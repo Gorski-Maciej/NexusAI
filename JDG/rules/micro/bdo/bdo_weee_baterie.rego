@@ -94,12 +94,3 @@ else := {
     cost := object.get(input.business, "remediation_estimated_cost_pln", 0)
 }
 
-# fallback
-else := {
-    "matched": true, "rule_id": "jdg.micro.bdo_weee.fallback",
-    "package": "jdg.micro.bdo_weee", "priority": 82599,
-    "micro_rule_active": true,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach",
-    "_warnings": ["[MICRO] BDO WEEE/Baterie/SUP — JDG nie podlega tym obowiązkom."]
-} { true }

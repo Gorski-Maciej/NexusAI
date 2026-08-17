@@ -150,6 +150,6 @@ else := {
     "package": "jdg.micro.bdo_ewidencja", "priority": 82299,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321)",
     "_warnings": ["[MICRO] BDO ewidencja — poza terminem sprawozdawczym lub brak odpadów w kwartale."]
 } { true }

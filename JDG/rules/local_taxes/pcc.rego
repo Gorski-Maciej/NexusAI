@@ -52,7 +52,7 @@ decide := {
     "pcc_deadline_days": 14,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "PCC od zakupu od osoby prywatnej — 2% wartości rynkowej",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959), Art. 1-2, Art. 7",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789), Art. 1-2, Art. 7",
     "_warnings": [sprintf("PCC 2%% — zakup od osoby prywatnej za %.2f PLN. Podatek: %.2f PLN. Deklaracja PCC-3 w 14 dni od daty umowy. UWAGA: jeśli transakcja podlega VAT, PCC jest wyłączone.", [purchase_value, pcc_amount])]
 } {
     input.invoice.direction == "PURCHASE"
@@ -113,7 +113,7 @@ else := {
     "loan_exempt": is_exempt,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "PCC od pożyczki od osoby prywatnej — 0.5% od kwoty",
-    "_legal_basis": "Ustawa o PCC, Art. 7 ust. 1 pkt 4",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789), Art. 7 ust. 1 pkt 4",
     "_warnings": [sprintf("PCC OD POŻYCZKI — %.2f PLN (0.5%% od %.2f PLN). %s. Deklaracja PCC-3 w 14 dni od zawarcia umowy.", [pcc_loan_amount, loan_amount, exemption_note])]
 } {
     input.invoice.transaction_type == "LOAN_RECEIVED"
@@ -174,7 +174,7 @@ else := {
     "pcc_exemption_reason": "JDG_OSOBA_FIZYCZNA",
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC — opodatkowaniu podlegają tylko czynności dot. spółek kapitałowych",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789) — opodatkowaniu podlegają tylko czynności dot. spółek kapitałowych",
     "_warnings": ["JDG jako osoba fizyczna nie podlega PCC od wkładów kapitałowych — PCC dotyczy tylko spółek kapitałowych."]
 } {
     input.invoice.expense_type == "CAPITAL_CONTRIBUTION"

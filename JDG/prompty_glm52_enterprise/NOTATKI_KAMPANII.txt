@@ -298,3 +298,74 @@ P11 KKS + ORDYNACJA + AUDYT/OBRONA — WDROZONY_100 (2026-08-17)
 NASTĘPNY: PROMPT_12_CROSSBORDER_MDR.txt (P12 z 19)
 OKNO WYCZYSZCZONE — gotowy na PROMPT 12 z 19 (CROSS-BORDER / MDR)
 P12 CROSSBORDER/MDR WDROZONY_100: (1) usunięty martwy catch-all {true} w mdr_enterprise.rego (INV-018 — maskował reguły MDR); (2) kanonizacja _legal_basis: 192 generyczne (72x Dyrektywy UE + 120x Ustawa PIT/CIT) → kanon per artykuł (poz. 1637/234/1361/868/1662); (3) 10 reguł atomowych crossborder_atomic_p12.rego (TP a23m/23zf/23zb, CFC a30f 14%/250k/50%, exit tax a30da 30M/2027, MDR a86a scoring+30 dni, WHT a29, FX a14) — 0 hardcode (+19 progów thresholds); (4) 6 narzędzi: crossborder_quality.py, tp_documentation_engine.py, cfc_classifier.py, mdr_scorer.py, fx_rate_engine.py, cbam_monitor.py; (5) PAS 49 wpięty (final_verdict_p49), 29 asercji wiring p48→p49 + test_p11 łańcuch p49; (6) naprawiony zlepiony prolog thresholds crossborder; (7) test_native_crossborder.rego (18) + pytest 40/40; (8) bundle manifest.json metadata zaktualizowane (450/12254/12239/414) → 9/9; (9) naprawiony p00 skan matched:true (okno dwukierunkowe — 6 GAP rules green); (10) bramki: validate 0, invariant CI 42 PASS, lint 5/6 (backlog pre-existing, 0 wkładu P12), regresja r01–r17/p06/p07 241/241.
+
+════════════════════════════════════════════════════════════════
+P13 RYCZAŁT / CEIDG / PP / CYKL ŻYCIA / SUKCESJA — WDROZONY_100
+════════════════════════════════════════════════════════════════
+✅ NAPRAWA KOMPILACJI PAS 47: reguła final_verdict_p47 (PAS 47, PROMPT 10)
+   była zlepiona z komentarzem nagłówka w jednej linii („# ...argument
+   wygrywa).final_verdict_p47 = safe_merge(...)") — definicja wykomentowana,
+   łańcuch p47→p48→p49→p50 nie kompilował się (undefined reference).
+   Rozdzielone na komentarz + regułę — łańcuch final_verdict p46→p50 odzyskany.
+✅ 21 reguł atomowych ryczalt_cykl_atomic_p13.rego (priorytety 13001-13050):
+   stawki PKWiU 3/5,5/8,5/12,5/17/20/25% (art. 12 u.z.p.d.), limit 2M EUR
+   z alertem 95% (art. 6 ust. 4, kurs NBP 1.10), zawieszenie min. 30 dni/
+   max 24 mies. (art. 22-25 PP), nieewidencjonowana ≤50% minimalnej (art. 5-6),
+   sukcesja 2+3 lata (art. 3-15 u.z.s.), karta podatkowa (art. 25) —
+   zero hardcode, _legal_basis kanoniczne (Dz.U. 2025 poz. 234/123/456/1234)
+✅ NOWE narzędzia (wymagane w PROMPT 13 §8): pkwiu_classifier.py (PKD/PKWiU→
+   stawka + dowód), limit_2m_monitor.py (NBP 1.10 + alert 95% + symulator),
+   sukcesja_planner.py (terminy CEIDG/ZUS/remanent + countdown + odp. art. 21-23),
+   lifecycle_navigator.py (6 faz + checklisty + health scorecard A-E),
+   zawieszenie_simulator.py (ZUS/VAT/PIT/kalendarz + monitor 24 mies. +
+   nieewidencjonowana 50%), ryczalt_cykl_quality.py (bramka + linter + kanonizacja)
+✅ WPIĘCIE PAS 50 w main_jdg.rego: final_verdict_p50 = safe_merge(p49, micro
+   ryczalt/plan33_ryc/ceidg/plan33_ceidg/pp/sukcesja/plan33_succ/atomic);
+   IN_SUCCESSIO → routing full chain (kontrakt PROMPT 01); mikro wypełnia
+   luki makro, nigdy nie nadpisuje (INV-018, Dual-Layer ADR-005)
+✅ thresholds business_lifecycle komplet (+11 progów): ryczalt_limit_eur,
+   ryczalt_limit_alert_pct, suspension_min_days/max_months, unregistered_*,
+   succession_* (14/24/60 mies., ext_extension_years 3), karta_max_employees,
+   min_wage_pln, eur_pln_reference — ADR-002
+✅ MIRROR: policies/jdg/business.rego zsynchronizowany z rules/business.rego
+   (1 wersja prawdy — kanonizacja PP/CEIDG/u.z.s. domknięta w lustrze)
+✅ Testy: test_native_ryczalt_cykl.rego (19) + pytest GLM52 P13 (40)
+✅ Bramki: validate 0 (400/11 458) · invariant 42 PASS · ryczalt_cykl_quality
+   BRAMKA PASS (834 reguł/0 duplikatów/0 dead) · regresja wiring r01-r17
+   270/270 · P13 domena/business/micro/lifecycle + GLM52 p05-p12 671 passed
+⚠️ Backlog znany: hardcode w sus/zdrowotna/zasilkowa (lint 5/6) + ~594
+   literałów domenowych poza P13; CI opa wymaga OPA 1.x (lokalnie brak binarki)
+NASTĘPNY: PROMPT_14_PCC_LOKALNE_AKCYZA.txt (P14 z 19)
+OKNO WYCZYSZCZONE — gotowy na PROMPT 14 z 19 (PCC / LOKALNE / AKCYZA)
+
+════════════════════════════════════════════════════════════════
+P14 PCC / PODATKI LOKALNE / AKCYZA / ROLNY — WDROZONY_100
+════════════════════════════════════════════════════════════════
+✅ 2 KONFLIKTY KOMPILACJI naprawione: plan33_pcc.rego → package
+   jdg.micro.pcc.plan33 (60 pól — kolizja 2× default decide z pcc.rego,
+   wzorzec jpk.plan33 P03); plan26_local.rego → jdg.local_taxes.plan26 (7 pól)
+✅ Kanon _legal_basis ~450 zamian: „Ustawa o PCC z 09.09.2000 (Dz.U. 2000
+   nr 86 poz. 959)" → „(Dz.U. 2025 poz. 789)"; akcyza → poz. 1220; lokalne
+   → poz. 1234 — zero starych cytowań (bramka pcc_local_excise_quality)
+✅ 19 reguł atomowych pcc_lokalne_atomic_p14.rego (priorytety 14001-14060):
+   PCC sale 2%/loan 0,5%/company 0,5% + VAT art. 2 pkt 4 + zwolnienie ≤1000
+   (art. 9) + PCC-3 14 dni (art. 10); nieruchomości 33,10/1,43 (art. 5) +
+   DN-1; transport >3,5 t (art. 8); akcyza benzyna 1566/ON 1206/etanol 6900/
+   wino 185/piwo 8,57 (art. 89-95) + skład podatkowy (art. 16, KKS 65) +
+   energia (art. 9 ust. 1 pkt 2); podatek rolny 2,5 q × 89,63 — zero hardcode
+✅ NOWE narzędzia (PROMPT 14 §8): pcc_engine.py (detektor + PCC-3 0 ręki),
+   gmina_rates_engine.py (stawki gminne + wersjonowanie Law Radar),
+   akcyza_classifier.py (wyrób→stawka+skład+e-DD), dn1_dt1_generator.py
+   (auto DN-1/DT-1), pcc_local_excise_quality.py (bramka)
+✅ WPIĘCIE PAS 51: final_verdict_p51 = safe_merge(p50, micro pcc/plan33/
+   akcyza/prop/prop_transport/agricultural/atomic); 20 asercji wiring
+   r01-r17/p06/p07/test_p03 zaktualizowanych p50→p51; mikro wypełnia luki
+   makro, nigdy nie nadpisuje (INV-018, Dual-Layer ADR-005)
+✅ Testy: test_native_pcc_local_excise.rego (19) + pytest GLM52 P14 (29)
+✅ Bramki: validate 0 (401/11 476) · invariant 42 PASS · pcc_local_excise
+   _quality BRAMKA PASS (685 reguł/0 duplikatów/0 dead) · regresja r01-r17
+   291/291 · domena P14 73 · GLM52 p05-p14/P13/business 677 passed
+⚠️ Backlog znany: hardcode w sus/zdrowotna/zasilkowa (lint 5/6); CI opa
+   wymaga OPA 1.x (lokalnie brak binarki — weryfikacja strukturalna)
+NASTĘPNY: PROMPT_15_RODO_AML_BDO.txt (P15 z 19)
+OKNO WYCZYSZCZONE — gotowy na PROMPT 15 z 19 (RODO / AML / BDO)

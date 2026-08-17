@@ -193,6 +193,6 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "micro_rule_active": true,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321)",
     "_warnings": ["[MICRO] BDO rejestracja — JDG nie wytwarza odpadów lub rejestracja prawidłowa."]
 } { true }

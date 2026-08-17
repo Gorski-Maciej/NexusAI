@@ -18,7 +18,7 @@ default decide := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  srodowisko.a7 — BDO — rejestracja (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o odpadach, SUP, CBAM                                                   ║
+# ║  Legal basis: ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.srodowisko.a7.r1: srodowisko_a7_r1_eligibility
@@ -43,7 +43,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — rejestracja: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -71,7 +71,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — rejestracja: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "srodowisko_condition_met", false) == true
@@ -99,7 +99,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — rejestracja: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "srodowisko_a7_r3_pass", false) == true
@@ -127,7 +127,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — rejestracja: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "srodowisko_a7_r4_checks", false) == true
@@ -155,7 +155,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — rejestracja: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "srodowisko_exclusion_applies", false) == false
@@ -183,7 +183,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — rejestracja: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "srodowisko_exclusion_2", false) == false
@@ -211,7 +211,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — rejestracja: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "srodowisko_a7_exception", false) == true
@@ -239,7 +239,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — rejestracja: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "srodowisko_a7_exception_2", false) == true
@@ -247,7 +247,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  srodowisko.a10 — BDO — ewidencja odpadów (10 reguł)                                    ║
-# ║  Legal basis: Ustawa o odpadach, SUP, CBAM                                                   ║
+# ║  Legal basis: ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.srodowisko.a10.r1: srodowisko_a10_r1_eligibility
@@ -272,7 +272,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — ewidencja odpadów: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -300,7 +300,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — ewidencja odpadów: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "srodowisko_condition_met", false) == true
@@ -328,7 +328,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — ewidencja odpadów: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "srodowisko_a10_r3_pass", false) == true
@@ -356,7 +356,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — ewidencja odpadów: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "srodowisko_a10_r4_checks", false) == true
@@ -384,7 +384,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — ewidencja odpadów: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "srodowisko_exclusion_applies", false) == false
@@ -412,7 +412,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — ewidencja odpadów: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "srodowisko_exclusion_2", false) == false
@@ -440,7 +440,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — ewidencja odpadów: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "srodowisko_a10_exception", false) == true
@@ -468,7 +468,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — ewidencja odpadów: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "srodowisko_a10_exception_2", false) == true
@@ -496,7 +496,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — ewidencja odpadów: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_srodowisko", false) == true
@@ -524,7 +524,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — ewidencja odpadów: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_srodowisko", false) == true
@@ -532,7 +532,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  srodowisko.a15 — BDO — sprawozdanie roczne (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o odpadach, SUP, CBAM                                                   ║
+# ║  Legal basis: ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.srodowisko.a15.r1: srodowisko_a15_r1_eligibility
@@ -557,7 +557,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — sprawozdanie roczne: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -585,7 +585,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — sprawozdanie roczne: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "srodowisko_condition_met", false) == true
@@ -613,7 +613,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — sprawozdanie roczne: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "srodowisko_a15_r3_pass", false) == true
@@ -641,7 +641,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — sprawozdanie roczne: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "srodowisko_a15_r4_checks", false) == true
@@ -669,7 +669,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — sprawozdanie roczne: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "srodowisko_exclusion_applies", false) == false
@@ -697,7 +697,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — sprawozdanie roczne: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "srodowisko_exclusion_2", false) == false
@@ -725,7 +725,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — sprawozdanie roczne: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "srodowisko_a15_exception", false) == true
@@ -753,7 +753,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] BDO — sprawozdanie roczne: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "srodowisko_a15_exception_2", false) == true
@@ -761,7 +761,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  srodowisko.a3s — SUP — opakowania jednorazowe (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o odpadach, SUP, CBAM                                                   ║
+# ║  Legal basis: ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.srodowisko.a3s.r1: srodowisko_a3s_r1_eligibility
@@ -786,7 +786,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] SUP — opakowania jednorazowe: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -814,7 +814,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] SUP — opakowania jednorazowe: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "srodowisko_condition_met", false) == true
@@ -842,7 +842,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] SUP — opakowania jednorazowe: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "srodowisko_a3s_r3_pass", false) == true
@@ -870,7 +870,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] SUP — opakowania jednorazowe: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "srodowisko_a3s_r4_checks", false) == true
@@ -898,7 +898,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] SUP — opakowania jednorazowe: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "srodowisko_exclusion_applies", false) == false
@@ -926,7 +926,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] SUP — opakowania jednorazowe: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "srodowisko_exclusion_2", false) == false
@@ -954,7 +954,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] SUP — opakowania jednorazowe: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "srodowisko_a3s_exception", false) == true
@@ -982,7 +982,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] SUP — opakowania jednorazowe: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "srodowisko_a3s_exception_2", false) == true
@@ -990,7 +990,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  srodowisko.a5s — SUP — opłata (6 reguł)                                    ║
-# ║  Legal basis: Ustawa o odpadach, SUP, CBAM                                                   ║
+# ║  Legal basis: ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.srodowisko.a5s.r1: srodowisko_a5s_r1_eligibility
@@ -1015,7 +1015,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] SUP — opłata: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1043,7 +1043,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] SUP — opłata: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "srodowisko_condition_met", false) == true
@@ -1071,7 +1071,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] SUP — opłata: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "srodowisko_a5s_r3_pass", false) == true
@@ -1099,7 +1099,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] SUP — opłata: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "srodowisko_a5s_r4_checks", false) == true
@@ -1127,7 +1127,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] SUP — opłata: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "srodowisko_exclusion_applies", false) == false
@@ -1155,7 +1155,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] SUP — opłata: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "srodowisko_exclusion_2", false) == false
@@ -1163,7 +1163,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  srodowisko.a8 — CBAM — raportowanie (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o odpadach, SUP, CBAM                                                   ║
+# ║  Legal basis: ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.srodowisko.a8.r1: srodowisko_a8_r1_eligibility
@@ -1188,7 +1188,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] CBAM — raportowanie: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1216,7 +1216,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] CBAM — raportowanie: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "srodowisko_condition_met", false) == true
@@ -1244,7 +1244,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] CBAM — raportowanie: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "srodowisko_a8_r3_pass", false) == true
@@ -1272,7 +1272,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] CBAM — raportowanie: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "srodowisko_a8_r4_checks", false) == true
@@ -1300,7 +1300,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] CBAM — raportowanie: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "srodowisko_exclusion_applies", false) == false
@@ -1328,7 +1328,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] CBAM — raportowanie: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "srodowisko_exclusion_2", false) == false
@@ -1356,7 +1356,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] CBAM — raportowanie: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "srodowisko_a8_exception", false) == true
@@ -1384,7 +1384,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach, SUP, CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), SUP, CBAM",
     "_warnings": ["[MICRO] CBAM — raportowanie: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "srodowisko_a8_exception_2", false) == true

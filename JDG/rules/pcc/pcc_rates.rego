@@ -2,7 +2,7 @@
 # NexusAI JDG — PCC Rate Changes & Special Provisions: Art. 3-7 Ustawy o PCC
 # Package: jdg.pcc.rate_changes — Zmiany umów, stawki szczególne
 # Version: 1.0.0 — Q3 2026 Critical Closure
-# Legal basis: Ustawa o PCC — Art. 3-7
+# Legal basis: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789) — Art. 3-7
 # Coverage: ~40 rules, ~40 legal points
 # ═══════════════════════════════════════════════════════════════════════════════
 

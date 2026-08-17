@@ -303,7 +303,7 @@ decide := {
     "bd_items": bd_items,
     "_routing": bd_routing,
     "_routing_reason": sprintf("Monitor BDO — %d obowiązków (RED: %d, AMBER: %d, niespełnione: %d). Rejestracja %d dni; KPO elektroniczna=%s.", [count(bd_items), bd_red_count, bd_amber_count, bd_unfiled_count, bdo_registration_days, bdo_kpo_electronic]),
-    "_legal_basis": "Ustawa o odpadach art. 49-53 (rejestracja BDO, ewidencja, KPO, opłata produktowa)",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321) art. 49-53 (rejestracja BDO, ewidencja, KPO, opłata produktowa)",
     "_warnings": [sprintf("BDO: %d obowiązków — %d RED, %d AMBER, %d niespełnionych.", [count(bd_items), bd_red_count, bd_amber_count, bd_unfiled_count])],
 } if {
     object.get(input.jdg_entrepreneur, "r14_rodo_aml_bdo_check", false) == true

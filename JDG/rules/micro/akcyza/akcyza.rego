@@ -18,7 +18,7 @@ default decide := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  akcyza.a2 — Wyroby akcyzowe (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o podatku akcyzowym z 06.12.2008                                                   ║
+# ║  Legal basis: ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.akcyza.a2.r1: akcyza_a2_r1_eligibility
@@ -43,7 +43,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Wyroby akcyzowe: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -71,7 +71,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Wyroby akcyzowe: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "akcyza_condition_met", false) == true
@@ -99,7 +99,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Wyroby akcyzowe: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "akcyza_a2_r3_pass", false) == true
@@ -127,7 +127,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Wyroby akcyzowe: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "akcyza_a2_r4_checks", false) == true
@@ -155,7 +155,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Wyroby akcyzowe: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "akcyza_exclusion_applies", false) == false
@@ -183,7 +183,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Wyroby akcyzowe: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "akcyza_exclusion_2", false) == false
@@ -211,7 +211,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Wyroby akcyzowe: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "akcyza_a2_exception", false) == true
@@ -239,7 +239,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Wyroby akcyzowe: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "akcyza_a2_exception_2", false) == true
@@ -247,7 +247,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  akcyza.a26 — OBB — obowiązek dokumentowania (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o podatku akcyzowym z 06.12.2008                                                   ║
+# ║  Legal basis: ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.akcyza.a26.r1: akcyza_a26_r1_eligibility
@@ -272,7 +272,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] OBB — obowiązek dokumentowania: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -300,7 +300,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] OBB — obowiązek dokumentowania: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "akcyza_condition_met", false) == true
@@ -328,7 +328,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] OBB — obowiązek dokumentowania: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "akcyza_a26_r3_pass", false) == true
@@ -356,7 +356,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] OBB — obowiązek dokumentowania: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "akcyza_a26_r4_checks", false) == true
@@ -384,7 +384,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] OBB — obowiązek dokumentowania: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "akcyza_exclusion_applies", false) == false
@@ -412,7 +412,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] OBB — obowiązek dokumentowania: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "akcyza_exclusion_2", false) == false
@@ -440,7 +440,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] OBB — obowiązek dokumentowania: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "akcyza_a26_exception", false) == true
@@ -468,7 +468,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] OBB — obowiązek dokumentowania: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "akcyza_a26_exception_2", false) == true
@@ -476,7 +476,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  akcyza.a30 — Skład podatkowy (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o podatku akcyzowym z 06.12.2008                                                   ║
+# ║  Legal basis: ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.akcyza.a30.r1: akcyza_a30_r1_eligibility
@@ -501,7 +501,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Skład podatkowy: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -529,7 +529,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Skład podatkowy: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "akcyza_condition_met", false) == true
@@ -557,7 +557,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Skład podatkowy: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "akcyza_a30_r3_pass", false) == true
@@ -585,7 +585,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Skład podatkowy: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "akcyza_a30_r4_checks", false) == true
@@ -613,7 +613,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Skład podatkowy: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "akcyza_exclusion_applies", false) == false
@@ -641,7 +641,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Skład podatkowy: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "akcyza_exclusion_2", false) == false
@@ -669,7 +669,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Skład podatkowy: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "akcyza_a30_exception", false) == true
@@ -697,7 +697,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Skład podatkowy: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "akcyza_a30_exception_2", false) == true
@@ -705,7 +705,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  akcyza.a99 — Obrót wyrobami akcyzowymi (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o podatku akcyzowym z 06.12.2008                                                   ║
+# ║  Legal basis: ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.akcyza.a99.r1: akcyza_a99_r1_eligibility
@@ -730,7 +730,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Obrót wyrobami akcyzowymi: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -758,7 +758,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Obrót wyrobami akcyzowymi: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "akcyza_condition_met", false) == true
@@ -786,7 +786,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Obrót wyrobami akcyzowymi: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "akcyza_a99_r3_pass", false) == true
@@ -814,7 +814,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Obrót wyrobami akcyzowymi: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "akcyza_a99_r4_checks", false) == true
@@ -842,7 +842,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Obrót wyrobami akcyzowymi: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "akcyza_exclusion_applies", false) == false
@@ -870,7 +870,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Obrót wyrobami akcyzowymi: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "akcyza_exclusion_2", false) == false
@@ -898,7 +898,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Obrót wyrobami akcyzowymi: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "akcyza_a99_exception", false) == true
@@ -926,7 +926,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 06.12.2008",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008",
     "_warnings": ["[MICRO] Obrót wyrobami akcyzowymi: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "akcyza_a99_exception_2", false) == true
@@ -960,7 +960,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 10 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 10: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a10_u1_p1_check", false) == true
@@ -987,7 +987,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 10 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 10: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a10_u2_p2_check", false) == true
@@ -1014,7 +1014,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a11_u1_p2_check", false) == true
@@ -1041,7 +1041,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a11_u3_p3_check", false) == true
@@ -1068,7 +1068,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a11_u4_p4_check", false) == true
@@ -1095,7 +1095,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 11 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 11: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a11_u5_p1_check", false) == true
@@ -1122,7 +1122,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a12_u2_p3_check", false) == true
@@ -1149,7 +1149,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a12_u3_p4_check", false) == true
@@ -1176,7 +1176,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a12_u4_p1_check", false) == true
@@ -1203,7 +1203,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 12 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 12: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a12_u5_p2_check", false) == true
@@ -1230,7 +1230,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a13_u1_p3_check", false) == true
@@ -1257,7 +1257,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a13_u2_p4_check", false) == true
@@ -1284,7 +1284,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a13_u3_p1_check", false) == true
@@ -1311,7 +1311,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 13 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 13: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a13_u4_p2_check", false) == true
@@ -1338,7 +1338,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a14_u1_p4_check", false) == true
@@ -1365,7 +1365,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a14_u2_p1_check", false) == true
@@ -1392,7 +1392,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a14_u3_p2_check", false) == true
@@ -1419,7 +1419,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 14 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 14: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a14_u5_p3_check", false) == true
@@ -1446,7 +1446,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a15_u1_p1_check", false) == true
@@ -1473,7 +1473,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a15_u2_p2_check", false) == true
@@ -1500,7 +1500,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a15_u4_p3_check", false) == true
@@ -1527,7 +1527,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 15 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 15: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a15_u5_p4_check", false) == true
@@ -1554,7 +1554,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a16_u1_p2_check", false) == true
@@ -1581,7 +1581,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a16_u3_p3_check", false) == true
@@ -1608,7 +1608,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a16_u4_p4_check", false) == true
@@ -1635,7 +1635,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 16 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 16: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a16_u5_p1_check", false) == true
@@ -1662,7 +1662,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a17_u2_p3_check", false) == true
@@ -1689,7 +1689,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a17_u3_p4_check", false) == true
@@ -1716,7 +1716,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a17_u4_p1_check", false) == true
@@ -1743,7 +1743,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 17 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 17: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a17_u5_p2_check", false) == true
@@ -1770,7 +1770,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a18_u1_p3_check", false) == true
@@ -1797,7 +1797,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a18_u2_p4_check", false) == true
@@ -1824,7 +1824,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a18_u3_p1_check", false) == true
@@ -1851,7 +1851,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 18 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 18: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a18_u4_p2_check", false) == true
@@ -1878,7 +1878,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a19_u1_p4_check", false) == true
@@ -1905,7 +1905,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a19_u2_p1_check", false) == true
@@ -1932,7 +1932,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a19_u3_p2_check", false) == true
@@ -1959,7 +1959,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 19 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 19: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a19_u5_p3_check", false) == true
@@ -1986,7 +1986,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a20_u1_p1_check", false) == true
@@ -2013,7 +2013,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a20_u2_p2_check", false) == true
@@ -2040,7 +2040,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a20_u4_p3_check", false) == true
@@ -2067,7 +2067,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 20 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 20: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a20_u5_p4_check", false) == true
@@ -2094,7 +2094,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a21_u1_p2_check", false) == true
@@ -2121,7 +2121,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a21_u3_p3_check", false) == true
@@ -2148,7 +2148,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a21_u4_p4_check", false) == true
@@ -2175,7 +2175,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 21 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 21: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a21_u5_p1_check", false) == true
@@ -2202,7 +2202,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a22_u2_p3_check", false) == true
@@ -2229,7 +2229,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a22_u3_p4_check", false) == true
@@ -2256,7 +2256,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a22_u4_p1_check", false) == true
@@ -2283,7 +2283,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 22 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 22: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a22_u5_p2_check", false) == true
@@ -2310,7 +2310,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a23_u1_p3_check", false) == true
@@ -2337,7 +2337,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a23_u2_p4_check", false) == true
@@ -2364,7 +2364,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a23_u3_p1_check", false) == true
@@ -2391,7 +2391,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 23 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 23: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a23_u4_p2_check", false) == true
@@ -2418,7 +2418,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a24_u1_p4_check", false) == true
@@ -2445,7 +2445,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a24_u2_p1_check", false) == true
@@ -2472,7 +2472,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a24_u3_p2_check", false) == true
@@ -2499,7 +2499,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 24 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 24: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a24_u5_p3_check", false) == true
@@ -2526,7 +2526,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a25_u1_p1_check", false) == true
@@ -2553,7 +2553,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a25_u2_p2_check", false) == true
@@ -2580,7 +2580,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a25_u4_p3_check", false) == true
@@ -2607,7 +2607,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 25 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 25: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a25_u5_p4_check", false) == true
@@ -2634,7 +2634,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a26_u1_p2_check", false) == true
@@ -2661,7 +2661,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a26_u3_p3_check", false) == true
@@ -2688,7 +2688,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a26_u4_p4_check", false) == true
@@ -2715,7 +2715,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 26 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 26: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a26_u5_p1_check", false) == true
@@ -2742,7 +2742,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a27_u2_p3_check", false) == true
@@ -2769,7 +2769,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a27_u3_p4_check", false) == true
@@ -2796,7 +2796,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a27_u4_p1_check", false) == true
@@ -2823,7 +2823,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 27 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 27: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a27_u5_p2_check", false) == true
@@ -2850,7 +2850,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a28_u1_p3_check", false) == true
@@ -2877,7 +2877,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a28_u2_p4_check", false) == true
@@ -2904,7 +2904,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a28_u3_p1_check", false) == true
@@ -2931,7 +2931,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 28 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 28: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a28_u4_p2_check", false) == true
@@ -2958,7 +2958,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a29_u1_p4_check", false) == true
@@ -2985,7 +2985,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a29_u2_p1_check", false) == true
@@ -3012,7 +3012,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a29_u3_p2_check", false) == true
@@ -3039,7 +3039,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 29 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 29: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a29_u5_p3_check", false) == true
@@ -3066,7 +3066,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a30_u1_p1_check", false) == true
@@ -3093,7 +3093,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a30_u2_p2_check", false) == true
@@ -3120,7 +3120,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a30_u4_p3_check", false) == true
@@ -3147,7 +3147,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 30 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 30: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a30_u5_p4_check", false) == true
@@ -3174,7 +3174,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a31_u1_p2_check", false) == true
@@ -3201,7 +3201,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a31_u3_p3_check", false) == true
@@ -3228,7 +3228,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a31_u4_p4_check", false) == true
@@ -3255,7 +3255,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 31 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 31: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a31_u5_p1_check", false) == true
@@ -3282,7 +3282,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a32_u2_p3_check", false) == true
@@ -3309,7 +3309,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a32_u3_p4_check", false) == true
@@ -3336,7 +3336,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a32_u4_p1_check", false) == true
@@ -3363,7 +3363,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 32 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 32: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a32_u5_p2_check", false) == true
@@ -3390,7 +3390,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a33_u1_p3_check", false) == true
@@ -3417,7 +3417,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a33_u2_p4_check", false) == true
@@ -3444,7 +3444,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a33_u3_p1_check", false) == true
@@ -3471,7 +3471,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 33 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 33: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a33_u4_p2_check", false) == true
@@ -3498,7 +3498,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a34_u1_p4_check", false) == true
@@ -3525,7 +3525,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a34_u2_p1_check", false) == true
@@ -3552,7 +3552,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a34_u3_p2_check", false) == true
@@ -3579,7 +3579,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 34 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 34: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a34_u5_p3_check", false) == true
@@ -3606,7 +3606,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a35_u4_p3_check", false) == true
@@ -3633,7 +3633,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 35 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 6.12.2008 (Dz.U. 2009 nr 3 poz. 11)",
     "_warnings": ["[MICRO] Art. 35: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "pcc_akc_a35_u5_p4_check", false) == true

@@ -29,7 +29,7 @@
 #                                           (p14 vat_vs_pcc_optimizer dawał
 #                                           rekomendację)
 #
-# Zgodność: ADR-001..009/017/022, ustawa o PCC (art. 1-16), ustawa o podatkach
+# Zgodność: ADR-001..009/017/022, ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789) (art. 1-16), ustawa o podatkach
 #           i opłatach lokalnych (art. 1-6, 8, 12), ustawa o podatku akcyzowym
 #           (art. 8-11, 16, 30, 46-51, 93-100), KKS art. 65; thresholds.
 #           pcc_local_excise (zero hardcode); INV-018; First-Match-Wins.
@@ -122,7 +122,7 @@ decide := {
     "pcc3_items": pcc3_items,
     "_routing": pcc3_routing,
     "_routing_reason": sprintf("Monitor PCC-3 — %d pozycji (RED: %d, AMBER: %d, niezłożone: %d). Termin %d dni (art. 10 PCC).", [count(pcc3_items), pcc3_red_count, pcc3_amber_count, pcc3_unfiled_count, pcc3_deadline_days]),
-    "_legal_basis": "ustawa o PCC art. 10 (PCC-3, 14 dni), art. 10 § 2 (sankcje)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789) art. 10 (PCC-3, 14 dni), art. 10 § 2 (sankcje)",
     "_warnings": [sprintf("PCC-3: %d deklaracji — %d RED (≤3 dni), %d AMBER (≤7 dni), %d niezłożonych. Termin %d dni.", [count(pcc3_items), pcc3_red_count, pcc3_amber_count, pcc3_unfiled_count, pcc3_deadline_days])],
 } if {
     object.get(input.jdg_entrepreneur, "r11_pcc_local_excise_check", false) == true
@@ -221,7 +221,7 @@ exc_routing := "TRIAGE_QUEUE" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r11_pcc_lokalne_akcyza_innovations.excise_product_classifier",
-    "_legal_basis": "ustawa o PCC art. 10 (PCC-3, 14 dni), art. 10 § 2 (sankcje)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789) art. 10 (PCC-3, 14 dni), art. 10 § 2 (sankcje)",
     "package": "jdg.r11_pcc_lokalne_akcyza_innovations",
     "priority": 11018,
     "decision_mode": "SUGGEST",
@@ -345,7 +345,7 @@ arb_routing := "" if {
 decide := {
     "matched": true,
     "rule_id": "jdg.r11_pcc_lokalne_akcyza_innovations.vat_vs_pcc_arbitrator",
-    "_legal_basis": "ustawa o PCC art. 10 (PCC-3, 14 dni), art. 10 § 2 (sankcje)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789) art. 10 (PCC-3, 14 dni), art. 10 § 2 (sankcje)",
     "package": "jdg.r11_pcc_lokalne_akcyza_innovations",
     "priority": 11020,
     "decision_mode": "SUGGEST",
@@ -359,7 +359,7 @@ decide := {
     "arb_pcc_due_pln": arb_pcc_due,
     "_routing": arb_routing,
     "_routing_reason": sprintf("Arbiter VAT vs PCC — typ %s, wartość %.2f, VAT=%s. %s", [arb_type, arb_value, arb_vat_applies, "PCC wyłączone (art. 2 pkt 4 — czynność opodatkowana VAT)." if {arb_pcc_excluded} else sprintf("PCC: %.2f PLN.", [arb_pcc_due]) if {arb_pcc_due > 0} else "PCC zwolnione/brak obowiązku."]),
-    "_legal_basis": "ustawa o PCC art. 2 pkt 4 (wyłączenie VAT), art. 7 (stawki), art. 9 (zwolnienia), art. 10 (termin)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789) art. 2 pkt 4 (wyłączenie VAT), art. 7 (stawki), art. 9 (zwolnienia), art. 10 (termin)",
     "_warnings": [sprintf("VAT/PCC: typ %s — %s", [arb_type, "PCC wyłączone (podlega VAT)." if {arb_pcc_excluded} else sprintf("PCC %.2f PLN (stawka %.2f%%).", [arb_pcc_due, arb_rate * 100])])],
 } if {
     object.get(input.jdg_entrepreneur, "r11_pcc_local_excise_check", false) == true

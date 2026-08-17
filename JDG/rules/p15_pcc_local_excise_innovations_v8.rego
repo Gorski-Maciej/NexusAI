@@ -101,7 +101,7 @@ decide := verdict {
         "pcc_deadline_days": 14,
         "pcc_vat_firewall_active": true,
         "pcc_rates_summary": {"SALE_MOVABLE": "2%", "SALE_REAL_ESTATE": "2%", "LOAN": "0.5%", "COMPANY": "0.5%", "EXCHANGE": "1-2%", "MORTGAGE": "0.1%", "SURETY": "0.5%", "INHERITANCE": "1%"},
-        "legal_basis": "Ustawa o PCC — Art. 1-7, Art. 9, Art. 10",
+        "legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789) — Art. 1-7, Art. 9, Art. 10",
         "_routing": detection_routing,
         "_routing_reason": sprintf("INN01 PCC: %s — %.2f PLN | %s", [pcc_type_label, pcc_tax, exempt_reason]),
         "_warnings": [sprintf("🔍 INN01 PCC DETECTION: %s — wartość %.2f PLN, stawka %.1f%%, podatek %.2f PLN. %s. Termin: PCC-3 w 14 dni od zawarcia umowy.", [pcc_type_label, trans_value, pcc_rate, pcc_tax, exempt_reason])]
@@ -279,7 +279,7 @@ else := verdict {
         "property_declaration": "DN-1",
         "property_installments": ["MARCH_15", "MAY_15", "SEPTEMBER_15", "NOVEMBER_15"],
         "property_installment_amount_pln": floor(annual_tax / 4 * 100) / 100,
-        "legal_basis": "Ustawa o podatkach i opłatach lokalnych — Art. 1a, 2-7",
+        "legal_basis": "ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234) — Art. 1a, 2-7",
         "_routing": "",
         "_routing_reason": sprintf("INN03: %s — %.2f PLN/rok (biz: %.2f + priv: %.2f) | KUP: %.0f%%",
             [classification, annual_tax, biz_tax, priv_tax, kup_pct]),
@@ -1239,6 +1239,6 @@ else := {
     "total_real_rules": 12,
     "ready_for_p16": true,
     "report_reference": "RAPORT_P15_JDG_PCC_LOCAL_EXCISE_v7.0.txt",
-    "legal_basis": "Ustawa o PCC, UoPiOL, Ustawa o akcyzie, Dyrektywa 2020/262, OrdPU",
+    "legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789), UoPiOL, Ustawa o akcyzie, Dyrektywa 2020/262, OrdPU",
     "_description": "P15: 12 innovations = FULLY IMPLEMENTED — PCC + Local Taxes + Excise complete coverage with real computation logic"
 }

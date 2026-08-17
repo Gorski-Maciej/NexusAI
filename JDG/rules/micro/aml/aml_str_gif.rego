@@ -112,12 +112,3 @@ else := {
     gap := object.get(input.jdg_entrepreneur, "aml_procedure_missing_element", "nieokreślony")
 }
 
-# fallback
-else := {
-    "matched": true, "rule_id": "jdg.micro.aml_str_gif.fallback",
-    "package": "jdg.micro.aml_str_gif", "priority": 83299,
-    "micro_rule_active": true,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Ustawa AML",
-    "_warnings": ["[MICRO] AML STR/GIIF — brak przesłanek do raportowania."]
-} { true }

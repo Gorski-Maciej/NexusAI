@@ -95,12 +95,3 @@ else := {
     score := object.get(input.vendor, "sanctions_match_confidence", 0)
 }
 
-# fallback
-else := {
-    "matched": true, "rule_id": "jdg.micro.aml_transakcje.fallback",
-    "package": "jdg.micro.aml_transakcje", "priority": 83199,
-    "micro_rule_active": true,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Ustawa AML",
-    "_warnings": ["[MICRO] AML transakcje — brak podejrzanych wzorców."]
-} { true }

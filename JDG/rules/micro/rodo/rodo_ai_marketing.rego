@@ -77,12 +77,3 @@ else := {
     object.get(input.jdg_entrepreneur, "markets_to_b2c", false) == true
 }
 
-# fallback
-else := {
-    "matched": true, "rule_id": "jdg.micro.rodo_ai_marketing.fallback",
-    "package": "jdg.micro.rodo_ai_marketing", "priority": 84399,
-    "micro_rule_active": true,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "RODO 2016/679",
-    "_warnings": ["[MICRO] RODO AI/marketing — brak profilowania AI, marketing prawidłowy."]
-} { true }

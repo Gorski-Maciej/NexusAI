@@ -73,12 +73,3 @@ else := {
     has_zus or has_acc
 }
 
-# fallback
-else := {
-    "matched": true, "rule_id": "jdg.micro.rodo_zatrudnienie.fallback",
-    "package": "jdg.micro.rodo_zatrudnienie", "priority": 84299,
-    "micro_rule_active": true,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "RODO 2016/679",
-    "_warnings": ["[MICRO] RODO zatrudnienie — brak przesłanek monitoringu/trzeźwości/zgód."]
-} { true }

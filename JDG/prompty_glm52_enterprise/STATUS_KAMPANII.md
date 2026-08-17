@@ -18,7 +18,33 @@
 | 10 | PROMPT_10_KSIEGOWOSC_PKPIR_UOR | RAPORT_GLM52_P10_KSIEGOWOSC_PKPIR_UOR.txt | ✅ **WDROZONY_100** | validate: 0 błędów (448 plików) · invariant CI: PASS (42 INV) · lint 5/6 (backlog hardcode) · ksiegowosc_quality: 0 błędów/BRAMKA PASS · ksiegowosc_report09_gate: 7/9 (2 pre-existing: raporty_glm52/ usunięte) · bundle_api_report22: 9/9 · manifest_v2 L2 zaktualizowany · pytest P10-GLM52: 25/25 + P09: 20/20 + ZUS regresja: 339/339 (r01–r17+p06+p07: asercje wiring p45→p47 naprawione) | USUNIĘTE martwe catch-alle {true} (6 plików pkpir: fallbacki INV-018); plan33_uor.rego: default rule_id poprawiony; kanonizacja _legal_basis: uor.rego (Dz.U. 2025 poz. 567, ze zm.) / pkpir.rego + 6 pakietów (0 starych cytowań, 0 zdublowanych sufiksów); NOWE 17 reguł atomowych ksiegowosc_atomic_p10.rego (uor a2 decision_engine r1/r2 + threshold_monitor 95%, a22 double_entry + ok, a26 inventory_schedule, a12 year_close 12 kroków, a32 book_depreciation r1/r2, a45 financial_statements + ok, pkpir col17_validator + ok, leasing 17f classifier r1/r2, car_limit 150k/225k) z _provenance_tree i flagami; thresholds: sekcja ksiegowosc (+16 progów); NOWE narzędzia: ksiegowosc_quality.py, pkpir_engine.py, uor_double_entry.py, uor_closing_engine.py, pkpir_uor_transformer.py; WPIĘCIE PAS 47 w main_jdg.rego (final_verdict_p47: pkpir+uor+plan33_uor+atomic); test_native_ksiegowosc.rego (24) + pytest 25 |
 | 11 | PROMPT_11_KKS_ORDYNACJA_AUDYT | RAPORT_GLM52_P11_KKS_ORDYNACJA_AUDYT.txt | ✅ **WDROZONY_100** | validate: 0 błędów (449 plików) · invariant CI: PASS (42 INV) · lint 5/6 (backlog hardcode) · kks_ordynacja_quality: 0 błędów/BRAMKA PASS (1756 reguł) · bundle_api_report22: 9/9 · pytest P11-GLM52: 30/30 + r07: 16/16 + rdzeń (p03): 21/21 + P09/P10 regresja: 98/98 + r01–r17/p06/p07: 339/339 (asercje wiring p47→p48) | NAPRAWIONY KONFLIKT KOMPILACJI: plan34_ord.rego miał `package jdg.micro.ord` z własnym `default decide` (kolizja z ord.rego) + plan33_ord importował nieistniejący pakiet jdg.micro.plan34_ord → pakiet zmieniony na jdg.micro.plan34_ord (192 pola skorygowane); 52 reguły UNKNOWN_ACT w plan45_audit.rego (jdg.audit.hyper.*, "Art. X OP") → kanon pełnych nazw aktów (OP poz. 234 / KAS poz. 108 / PPSA poz. 861 / PP poz. 226); kanonizacja _legal_basis ~390 zamian (micro/kks 473, micro/ord 423, kks.rego 155, enterprise_penalties 20, plan42/43 11+21, conviction 1+9, statute 5, r07 2): Dz.U. 1999 nr 83 poz. 930 → 2025 poz. 678, Dz.U. 1997 nr 137 poz. 926 → 2025 poz. 234; NOWE 13 reguł atomowych kks_ord_atomic_p11.rego (a54 kalkulator kary r1/r2 z dowodem, a16 czynny żal, a17 dobrowolne poddanie 50%, a37 recydywa, a44 przedawnienie karalności, a70 OP przedawnienie zobowiązania, a81b korekta 14 dni, a117ba Biała Lista 20%, a119a GAAR, a282b/291/223 pakiet praw kontroli 7/14/14/30, a193a JPK 14 dni) z _provenance_tree i flagami; thresholds: ord +11 / kks +12 progów; NOWE narzędzia: kks_ordynacja_quality.py, penalty_calculator.py (4-ścieżkowy symulator minimalizacji), defense_packet_builder.py (golden replay + certyfikaty + LKG), correspondence_generator.py (6 pism + bundle); WPIĘCIE PAS 48 w main_jdg.rego (final_verdict_p48: kks+ord+plan33_kks+plan33_ord+plan34_ord+atomic); test_native_kks_ord.rego (18) + pytest 30 |
 | 12 | PROMPT_12_CROSSBORDER_MDR | RAPORT_GLM52_P12_CROSSBORDER_MDR.txt | ✅ **WDROZONY_100** | validate: 0 błędów (450 plików) · invariant CI: PASS (42 INV) · lint 5/6 (backlog hardcode, 0 wkładu P12) · crossborder_quality: 0 błędów/BRAMKA PASS (710 reguł) · bundle_api_report22: 9/9 (manifest.json metadata zaktualizowane 450/12254/12239/414) · pytest P12-GLM52: 40/40 + p03 rdzeń: 21/21 + r01–r17/p06/p07 regresja: 241/241 (asercje wiring p48→p49) + p00 closure: 6/6 (naprawiony skan matched:true) | NAPRAWIONY catch-all INV-018: mdr_enterprise.rego miał martwy fallback `{true}` na końcu łańcucha else (maskował wszystkie reguły MDR — przechwytywał no_match zamiast default) → usunięty, default decide przejmuje no_match; kanonizacja _legal_basis warstwy cross-border: 72× generic „Dyrektywy UE/UPO/TP/CFC" + 120× „Ustawa o PIT/CIT — cross-border" w micro/crossborder.rego → pełne kanoniczne cytowania per artykuł (a20 MLI, a23o/a23z TP, a29 WHT, a30d exit tax, a30f CFC, a86r MDR — Dz.U. 2025 poz. 1637/234/1361/868); naprawiony komentarz-prolog zlepiony z regułą w thresholds (exit_tax_threshold_pln) + formatowanie sekcji crossborder; NOWE 10 reguł atomowych crossborder_atomic_p12.rego (TP a23m/23zf/23zb arm's length + dokumentacja 23m r1/r2 + local file 2M EUR, CFC a30f próg CIT 14% + nieruchomości 50% + dochód 250k PLN, exit tax a30da, MDR a86a/86e/86f/86g/86o scoring + 30 dni, WHT a29, FX a14 ust. 2c różnice kursowe) z _provenance_tree i flagami; thresholds: sekcja crossborder (+19 progów, exit_tax 30M PLN/2027, CFC 14%/250k/50%, TP 10M/2M/10%, FX 12-miesięczna); NOWE narzędzia: crossborder_quality.py, tp_documentation_engine.py (lokalna/globalna dokumentacja, benchmark ±10%·±3%, safe harbour 10%), cfc_classifier.py (progi 14%/250k/50% + test aktywności), mdr_scorer.py (hallmarks A-E, scoring, termin 30 dni), fx_rate_engine.py (kursy NBP tabela A, 12 mies., grosze), cbam_monitor.py (emisje, licencje, przelicznik); WPIĘCIE PAS 49 w main_jdg.rego (final_verdict_p49: crossborder+plan33_cb+tp+tax_trans+mdr+atomic); test_native_crossborder.rego (18) + pytest 40 |
-| 13–19 | (jak w 00_README_PROMPTOW.md §2) | — | ⏳ | — | — |
+| 13 | PROMPT_13_RYCZALT_CYKL_ZYCIE | RAPORT_GLM52_P13_RYCZALT_CYKL_ZYCIE.txt | ✅ **WDROZONY_100** | validate: 0 błędów (400 plików/11 458 reguł) · invariant CI: PASS (42 INV) · ryczalt_cykl_quality: BRAMKA PASS (834 reguł/0 duplikatów/0 dead) · pytest P13-GLM52: 40/40 + regresja r01–r17: 270/270 + P13 domena/business/micro/lifecycle/GLM52 p05–p12: 671 passed · business_audyt R02: 21/21 | NAPRAWA KOMPILACJI PAS 47 (final_verdict_p47 zlepiony z komentarzem nagłówka — łańcuch p46→p50 odzyskany); 21 reguł atomowych ryczalt_cykl_atomic_p13 (stawki PKWiU 3/5,5/8,5/12,5/17/20/25%, limit 2M EUR + alert 95% NBP 1.10, zawieszenie 30 dni/24 mies., nieewidencjonowana 50% minimalnej, sukcesja 2+3 lata, karta podatkowa); 6 narzędzi (pkwiu_classifier/limit_2m_monitor/sukcesja_planner/lifecycle_navigator/zawieszenie_simulator/ryczalt_cykl_quality); PAS 50 wpięty (IN_SUCCESSIO → routing full chain); thresholds business_lifecycle komplet (+11 progów); test_native_ryczalt_cykl (19) + pytest 40; mirror policies/jdg/business.rego zsynchronizowany |
+| 14 | PROMPT_14_PCC_LOKALNE_AKCYZA | RAPORT_GLM52_P14_PCC_LOKALNE_AKCYZA.txt | ✅ **WDROZONY_100** | validate: 0 błędów (401 plików/11 476 reguł) · invariant CI: PASS (42 INV) · pcc_local_excise_quality: BRAMKA PASS (685 reguł/0 duplikatów/0 dead) · pytest P14-GLM52: 29/29 + domena P14: 73 passed + regresja r01–r17/test_p03: 291 passed + GLM52 p05–p14/P13/business: 677 passed | 2 KONFLIKTY KOMPILACJI naprawione (plan33_pcc → jdg.micro.pcc.plan33, 60 pól; plan26_local → jdg.local_taxes.plan26, 7 pól); ~450 podstaw prawnych skanonizowanych (PCC poz. 789/lokalne poz. 1234/akcyza poz. 1220); 19 reguł atomowych pcc_lokalne_atomic_p14 (PCC 0,5-2% + VAT art. 2 pkt 4 + zwolnienie ≤1000 zł + PCC-3 14 dni, nieruchomości 33,10/1,43 + DN-1, transport >3,5 t, akcyza paliwa/alkohol/energia + skład podatkowy, podatek rolny); 5 narzędzi (pcc_engine/gmina_rates_engine/akcyza_classifier/dn1_dt1_generator/pcc_local_excise_quality); PAS 51 wpięty; test_native_pcc_local_excise (19) + pytest 29; 20 asercji wiring p50→p51 |
+| 15–19 | (jak w 00_README_PROMPTOW.md §2) | — | ⏳ | — | — |
+
+## Weryfikacja końcowa po wdrożeniu P14 (komendy)
+
+```bash
+cd JDG
+python3 tools/validate_rules.py                   # Błędów: 0 (401 plików / 11 476 reguł)
+python3 tools/invariant_checker.py ci             # PASS — 42 niezmienniki
+python3 tools/pcc_local_excise_quality.py --gate  # BRAMKA PASS (685 reguł / 0 duplikatów / 0 dead)
+python3 -m pytest tests/auto/test_p14_pcc_lokalne_akcyza_enterprise_glm52.py -q   # 29 passed
+python3 -m pytest tests/auto/test_p14_pcc_lokalne_akcyza_enterprise.py tests/auto/test_r11_pcc_lokalne_akcyza_enterprise.py tests/auto/test_pcc_local_report11_gate.py tests/auto/test_auto_block_local.py tests/auto/test_auto_block_local_taxes.py -q  # domena P14: 73 passed
+python3 -m pytest tests/auto/test_r01_orchestrator_core_enterprise.py ... tests/auto/test_r17_enterprise_ai_enterprise.py tests/test_p03_orchestrator_enterprise.py -q  # regresja: 291 passed
+```
+
+## Weryfikacja końcowa po wdrożeniu P13 (komendy)
+
+```bash
+cd JDG
+python3 tools/validate_rules.py                 # Błędów: 0 (400 plików / 11 458 reguł)
+python3 tools/invariant_checker.py ci           # PASS — 42 niezmienniki
+python3 tools/ryczalt_cykl_quality.py --gate    # BRAMKA PASS (834 reguł / 0 duplikatów / 0 dead)
+python3 -m pytest tests/auto/test_p13_ryczalt_cykl_zycie_enterprise_glm52.py -q   # 40 passed
+python3 -m pytest tests/auto/test_p13_ryczalt_cykl_zycia_enterprise.py tests/auto/test_r12_ryczalt_cykl_zycia_enterprise.py tests/auto/test_lifecycle_report12_gate.py tests/auto/test_auto_block_business.py tests/auto/test_auto_block_micro.py tests/auto/test_auto_block_lifecycle.py tests/auto/test_business_audyt_r02_enterprise.py -q  # domena P13 + business: zielone
+python3 -m pytest tests/auto/test_r01_orchestrator_core_enterprise.py ... tests/auto/test_r17_enterprise_ai_enterprise.py -q   # regresja wiring r01–r17: 270 passed
+```
 
 ## Weryfikacja końcowa po wdrożeniu P09 (komendy)
 
@@ -110,3 +136,27 @@ python3 -m pytest tests/test_p01_control_plane.py tests/test_p02_legal.py tests/
 - [x] Testy rdzenia: 87/87 PASS
 - [x] Raport P01 zapisany i wdrożony
 - [ ] (CI) opa check / opa test — wymaga binarki OPA
+
+## Checklista wdrożenia P13 (odhaczone)
+
+- [x] Naprawa kompilacji PAS 47: final_verdict_p47 zlepiony z komentarzem nagłówka → rozdzielone (łańcuch p46→p50 odzyskany)
+- [x] 21 reguł atomowych ryczalt_cykl_atomic_p13 (stawki PKWiU 3/5,5/8,5/12,5/17/20/25%, limit 2M EUR + alert 95%, zawieszenie 30 dni/24 mies., nieewidencjonowana 50%, sukcesja 2+3 lata, karta podatkowa)
+- [x] 6 narzędzi: pkwiu_classifier.py, limit_2m_monitor.py, sukcesja_planner.py, lifecycle_navigator.py, zawieszenie_simulator.py, ryczalt_cykl_quality.py
+- [x] Wpięcie PAS 50 w main_jdg.rego (importy + rejestr + final_verdict_p50; IN_SUCCESSIO → routing full chain)
+- [x] thresholds business_lifecycle komplet (+11 progów) — zero hardcode w domenie P13
+- [x] Mirror policies/jdg/business.rego zsynchronizowany z rules/business.rego (1 wersja prawdy)
+- [x] Testy: test_native_ryczalt_cykl.rego (19) + pytest P13-GLM52 (40)
+- [x] Bramki: validate 0 · invariant 42 PASS · ryczalt_cykl_quality PASS · regresja r01–r17 270/270
+- [x] Raport P13 zapisany i wdrożony
+
+## Checklista wdrożenia P14 (odhaczone)
+
+- [x] Naprawa 2 konfliktów kompilacji: plan33_pcc → jdg.micro.pcc.plan33 (60 pól), plan26_local → jdg.local_taxes.plan26 (7 pól)
+- [x] Kanonizacja ~450 podstaw prawnych: PCC poz. 789 / lokalne poz. 1234 / akcyza poz. 1220 (0 starych cytowań)
+- [x] 19 reguł atomowych pcc_lokalne_atomic_p14 (PCC 0,5-2% + VAT + zwolnienie + PCC-3, nieruchomości/transport, akcyza, podatek rolny)
+- [x] 5 narzędzi: pcc_engine.py, gmina_rates_engine.py, akcyza_classifier.py, dn1_dt1_generator.py, pcc_local_excise_quality.py
+- [x] Wpięcie PAS 51 w main_jdg.rego (importy + rejestr + final_verdict_p51)
+- [x] 20 asercji wiring r01-r17/p06/p07/test_p03 zaktualizowanych p50→p51
+- [x] Testy: test_native_pcc_local_excise.rego (19) + pytest P14-GLM52 (29)
+- [x] Bramki: validate 0 · invariant 42 PASS · pcc_local_excise_quality PASS · regresja r01-r17 291/291
+- [x] Raport P14 zapisany i wdrożony

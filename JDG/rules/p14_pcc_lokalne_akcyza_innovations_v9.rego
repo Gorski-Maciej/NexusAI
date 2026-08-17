@@ -20,8 +20,8 @@
 #   Sekcja 6: 12+ genialnych pomysłów Enterprise (INN-01..INN-12)
 #   Sekcja 7: Mapa drogowa P0/P1/P2 (w raporcie R14)
 #
-# Zgodność: Ustawa o PCC (Dz.U. 2025 poz. 789), podatki i opłaty lokalne
-#           (Dz.U. 2025 poz. 1234), Ustawa o podatku akcyzowym (06.12.2008),
+# Zgodność: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789), podatki i opłaty lokalne
+#           (Dz.U. 2025 poz. 1234), ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220),
 #           ADR-002 (progi z data.jdg.thresholds).
 # package: jdg.p14_pcc_lokalne_akcyza_innovations
 # deprecated: false
@@ -104,7 +104,7 @@ pcc_local_excise_coverage_report := {
     "micro_total_rule_ids": object.get(p14_audit_data, "total_rule_ids", 328),
     "_routing": "",
     "_routing_reason": "Mapa pokrycia artykułów PCC + lokalnych + akcyzy (art. 1-99) — status COMPLETE/PARTIAL/MISSING",
-    "_legal_basis": "Ustawa o PCC; podatki lokalne; ustawa o podatku akcyzowym",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789); podatki lokalne; ustawa o podatku akcyzowym",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
@@ -126,7 +126,7 @@ pcc_audit := {
     "pcc3_deadline_days": pcc3_deadline_days,
     "_routing": "",
     "_routing_reason": "Audyt PCC — czynności, stawki 1-2%, PCC-3 w 14 dni, zwolnienia (priorytet)",
-    "_legal_basis": "Ustawa o PCC (Dz.U. 2025 poz. 789) art. 1-10",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789) art. 1-10",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
@@ -148,7 +148,7 @@ pcc3_generator := {
     "note": "auto-generator PCC-3 — kwota podatku, termin 14 dni, formularz PCC-3/PCC-3/A",
     "_routing": "",
     "_routing_reason": "Auto-generator PCC-3 (INN-01) — kwota, termin 14 dni, formularz",
-    "_legal_basis": "Ustawa o PCC art. 10",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789) art. 10",
     "_warnings": [],
     "valid_from": "2001-01-01",
     "valid_to": null,
@@ -168,7 +168,7 @@ pcc_detector := {
     "note": "detektor czynności opodatkowanych PCC z dokumentów (umowy sprzedaży/pożyczki/spółki/zamiany)",
     "_routing": "",
     "_routing_reason": "Detektor czynności opodatkowanych PCC z dokumentów (INN-02)",
-    "_legal_basis": "Ustawa o PCC art. 1",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789) art. 1",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
@@ -189,14 +189,14 @@ local_taxes_audit := {
     },
     "transport": {
         "heavy_threshold_t": transport_heavy_threshold,
-        "note": "podatek od środków transportowych — pojazdy >3,5t (art. 8-13 ustawy lokalnej)",
+        "note": "podatek od środków transportowych — pojazdy >3,5t (art. 8-13 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234))",
     },
-    "market_fee": "opłata targowa — stawka gminna za sprzedaż na targowisku (art. 15 ustawy lokalnej)",
-    "health_resort_fee": "opłata uzdrowiskowa — stawka gminna (art. 17 ustawy lokalnej)",
+    "market_fee": "opłata targowa — stawka gminna za sprzedaż na targowisku (art. 15 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234))",
+    "health_resort_fee": "opłata uzdrowiskowa — stawka gminna (art. 17 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234))",
     "integrated_packages": ["jdg.local_taxes.real_estate", "jdg.local_taxes.transport", "jdg.local_taxes", "jdg.micro.plan33_prop", "jdg.micro.transport"],
     "_routing": "",
     "_routing_reason": "Audyt podatków lokalnych — nieruchomości DN-1, transport >3,5t, opłata targowa (priorytet)",
-    "_legal_basis": "Ustawa o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
+    "_legal_basis": "ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
@@ -219,7 +219,7 @@ gmina_rates_registry := {
     "note": "rejestr stawek gminnych — podatek od nieruchomości per gmina (2026)",
     "_routing": "",
     "_routing_reason": "Rejestr stawek gminnych — system thresholdów lokalnych (INN-03)",
-    "_legal_basis": "Ustawa o podatkach i opłatach lokalnych; obwieszczenia MF",
+    "_legal_basis": "ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234); obwieszczenia MF",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
@@ -239,7 +239,7 @@ real_estate_tax_calculator := {
     "note": "symulator podatku od nieruchomości — grunty i budynki firmowe (stawki gminne 2026)",
     "_routing": "",
     "_routing_reason": "Symulator podatku od nieruchomości — stawki gminne (INN-04)",
-    "_legal_basis": "Ustawa o podatkach i opłatach lokalnych",
+    "_legal_basis": "ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
@@ -253,10 +253,10 @@ transport_tax_calculator := {
     "matched": true,
     "vehicle_gvw_t": to_number(object.get(input.vehicle, "gvw_t", 0)),
     "taxable": to_number(object.get(input.vehicle, "gvw_t", 0)) > transport_heavy_threshold,
-    "note": "podatek od środków transportowych — pojazdy >3,5t, stawki gminne (art. 8-13 ustawy lokalnej)",
+    "note": "podatek od środków transportowych — pojazdy >3,5t, stawki gminne (art. 8-13 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234))",
     "_routing": "",
     "_routing_reason": "Kalkulator podatku od środków transportowych >3,5t (INN-05)",
-    "_legal_basis": "Ustawa o podatkach i opłatach lokalnych art. 8-13",
+    "_legal_basis": "ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234) art. 8-13",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
@@ -273,7 +273,7 @@ dn1_tracker := {
     "note": "tracker terminów DN-1 — 14 dni od nabycia, raty 15.03/15.05/15.09/15.11",
     "_routing": "",
     "_routing_reason": "Tracker terminów DN-1 (INN-06) — deklaracja i raty",
-    "_legal_basis": "Ustawa o podatkach i opłatach lokalnych",
+    "_legal_basis": "ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
@@ -294,7 +294,7 @@ excise_audit := {
     "banderoles": "banderole — obowiązkowe na wyrobach alkoholowych >100ml (znaki akcyzy)",
     "_routing": "",
     "_routing_reason": "Audyt akcyzy — paliwa, alkohol, tytoń, energia, ewidencja, skład podatkowy",
-    "_legal_basis": "Ustawa o podatku akcyzowym (06.12.2008) art. 89-99",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) art. 89-99",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
@@ -313,7 +313,7 @@ excise_fuel_calculator := {
     "note": "kalkulator akcyzy na paliwa — stawki 2026 (PLN/1000l): benzyna 1566, ON 1206, LPG 695",
     "_routing": "",
     "_routing_reason": "Kalkulator akcyzy na paliwa (INN-07) — stawki 2026",
-    "_legal_basis": "Ustawa o podatku akcyzowym art. 89",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) art. 89",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
@@ -343,7 +343,7 @@ excise_alcohol_calculator := {
     "note": "kalkulator akcyzy na alkohol — stawki 2026 (PLN/hl): alkohol 6900, piwo 8,57/°Plato, wino 185",
     "_routing": "",
     "_routing_reason": "Kalkulator akcyzy na alkohol (INN-08) — stawki 2026, skład podatkowy",
-    "_legal_basis": "Ustawa o podatku akcyzowym art. 92-96",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) art. 92-96",
     "_warnings": [],
     "valid_from": "2009-03-01",
     "valid_to": null,
@@ -362,7 +362,7 @@ excise_cost_detector := {
     "note": "wykrywacz akcyzy w kosztach — paliwo, alkohol, wyroby akcyzowe w kosztach firmy",
     "_routing": "",
     "_routing_reason": "Wykrywacz akcyzy w kosztach (INN-09) — ryzyko akcyzowe w kosztach",
-    "_legal_basis": "Ustawa o podatku akcyzowym",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220)",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
@@ -448,7 +448,7 @@ excise_warehouse_tracker := {
     "note": "tracker składu podatkowego — obowiązek rejestracji dla producentów wyrobów akcyzowych",
     "_routing": "",
     "_routing_reason": "Tracker składu podatkowego (INN-11) — rejestracja, przestępstwo art. 65 KKS",
-    "_legal_basis": "Ustawa o podatku akcyzowym; KKS art. 65",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220); KKS art. 65",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
@@ -471,7 +471,7 @@ pcc_local_excise_compliance_panel := {
     "compliance_score": 100 - to_number(object.get(input.jdg_entrepreneur, "pcc_penalties", 0)) * 10 if to_number(object.get(input.jdg_entrepreneur, "pcc_penalties", 0)) * 10 < 100 else 0,
     "_routing": "",
     "_routing_reason": "Panel zgodności PCC + lokalnych + akcyzy — compliance score (INN-12)",
-    "_legal_basis": "Ustawa o PCC; podatki lokalne; akcyza",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789); podatki lokalne; akcyza",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
@@ -494,7 +494,7 @@ pcc_obligation_detector := {
     "note": "kupno pojazdu od osoby prywatnej = obowiązek PCC 2% + PCC-3 w 14 dni (transakcje VAT wyłączone — art. 2 pkt 4)",
     "_routing": "TRIAGE_QUEUE" if obligation else "",
     "_routing_reason": "Auto-detektor obowiązku PCC — analiza transakcji, kupno od osoby prywatnej (INN-13)",
-    "_legal_basis": "Ustawa o PCC art. 1, 4, 7; art. 2 pkt 4 (wyłączenie VAT)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789) art. 1, 4, 7; art. 2 pkt 4 (wyłączenie VAT)",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
@@ -520,7 +520,7 @@ pcc3_zero_click := {
     "note": "zero-click PCC-3 — kwota podatku, countdown 14 dni, formularz PCC-3/PCC-3/A",
     "_routing": "TRIAGE_QUEUE" if days_elapsed >= pcc3_deadline_days - 3 else "",
     "_routing_reason": "Zero-click PCC-3 — countdown 14 dni z alertem (INN-14)",
-    "_legal_basis": "Ustawa o PCC art. 10",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789) art. 10",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
@@ -545,7 +545,7 @@ gmina_rates_map := {
     "note": "mapa stawek gminnych — rejestr per gmina z porównaniem rok do roku",
     "_routing": "",
     "_routing_reason": "Mapa stawek gminnych — rejestr z wersjonowaniem i deltą YoY (INN-15)",
-    "_legal_basis": "Ustawa o podatkach i opłatach lokalnych; obwieszczenia MF",
+    "_legal_basis": "ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234); obwieszczenia MF",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
@@ -567,7 +567,7 @@ vat_vs_pcc_optimizer := {
     "note": "legalna optymalizacja struktury transakcji — VAT 23% vs PCC 2% (kupno od osoby prywatnej gdy brak odliczenia)",
     "_routing": "TRIAGE_QUEUE" if object.get(input.transaction, "from_private_party", false) == true and object.get(input.transaction, "buyer_vat_deductible", false) != true else "",
     "_routing_reason": "Rekomendacja struktury transakcji — VAT vs PCC (optymalizacja legalna, INN-16)",
-    "_legal_basis": "Ustawa o PCC art. 2 pkt 4; VAT art. 86 (odliczenie)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789) art. 2 pkt 4; VAT art. 86 (odliczenie)",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
@@ -588,7 +588,7 @@ excise_import_detector := {
     "cross_border_integration": "spójność z P12 (cross-border) — dokumenty celne + akcyza",
     "_routing": "TRIAGE_QUEUE" if excise_goods else "",
     "_routing_reason": "Wykrywacz obowiązku akcyzowego w imporcie (INN-17) — spójność P12",
-    "_legal_basis": "Ustawa o podatku akcyzowym art. 39-41 (import); ustawa o PCC",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) art. 39-41 (import); ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true
@@ -614,7 +614,7 @@ decide := {
     "excise_import": excise_import_detector,
     "_routing": "REPORT",
     "_routing_reason": "Raport syntetyczny PCC + Lokalne + Akcyza (P14) — czynności, stawki, DN-1, transport, akcyza, luki",
-    "_legal_basis": "Ustawa o PCC; podatki i opłaty lokalne; ustawa o podatku akcyzowym",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789); podatki i opłaty lokalne; ustawa o podatku akcyzowym",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p14_pcc_check", false) == true

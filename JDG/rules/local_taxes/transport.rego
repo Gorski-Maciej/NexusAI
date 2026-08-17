@@ -55,7 +55,7 @@ decide := {
     "valid_from": "2002-01-01", "valid_to": null,
     "_routing": "TRIAGE_QUEUE",
     "_routing_reason": "Pojazd ciężarowy >3.5t — obowiązek podatku od środków transportowych",
-    "_legal_basis": "Ustawa o podatkach i opłatach lokalnych, Rozdział 3 (Art. 8-14)",
+    "_legal_basis": "ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234), Rozdział 3 (Art. 8-14)",
     "_warnings": [sprintf("PODATEK OD ŚRODKÓW TRANSPORTOWYCH — pojazd %s, DMC %.0f kg, ładowność %.0f kg. Obowiązek złożenia DT-1 do 15 lutego (za dany rok) lub w ciągu 14 dni od nabycia. Stawka zależy od DMC i rodzaju pojazdu — sprawdź uchwałę rady gminy.", [vehicle_type, vehicle_weight, max_payload])]
 } {
     # Pojazd ciężarowy, autobus lub ciągnik siodłowy

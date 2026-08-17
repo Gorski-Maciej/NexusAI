@@ -11,7 +11,7 @@
 #   transport (DT-1 korekta, sprzedaż pojazdu w trakcie roku),
 #   interakcje między-podatkowe (PCC×VAT edge cases, property×amortyzacja).
 # architecture: Enterprise Multi-Pass (ADR-001), First-Match-Wins else-chain
-# legal_basis: Ustawa o PCC, OrdPU, Ustawa o podatkach lokalnych
+# legal_basis: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789), OrdPU, Ustawa o podatkach lokalnych
 # package: jdg.local_taxes.procedures_enterprise
 # deprecated: false
 # ═══════════════════════════════════════════════════════════════════════════════

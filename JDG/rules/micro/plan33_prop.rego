@@ -7,7 +7,7 @@ package jdg.micro.prop
 default decide := {"matched":false,"rule_id":"jdg.micro.prop.no_match","package":"jdg.micro.prop","priority":99999}
 
 # jdg.prop.a1.r1 — `real_estate_tax_land_rate`: Grunty związane z działalnością gospodarczą → Stawka max 1,16 PLN/m2 (2026)
-decide :=   {"matched":true,"rule_id":"jdg.prop.a1.r1","package":"jdg.micro.prop","priority":7100,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Grunty związane z działalnością gospodarczą","_legal_basis":"Ustawa o podatkach i opłatach lokalnych Art. 5","_warnings":["[MICRO] Grunty związane z działalnością gospodarczą"]} {
+decide :=   {"matched":true,"rule_id":"jdg.prop.a1.r1","package":"jdg.micro.prop","priority":7100,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Grunty związane z działalnością gospodarczą","_legal_basis":"ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234) Art. 5","_warnings":["[MICRO] Grunty związane z działalnością gospodarczą"]} {
     object.get(input.jdg_entrepreneur, "land_owned_sqm", 0) > 0
 }
 
@@ -42,17 +42,17 @@ else :=   {"matched":true,"rule_id":"jdg.prop.a1.r7","package":"jdg.micro.prop",
 }
 
 # jdg.prop.a2.r1 — `real_estate_tax_deadline_dn1`: Deklaracja DN-1 do 31 stycznia roku podatkowego → Termin
-else :=   {"matched":true,"rule_id":"jdg.prop.a2.r1","package":"jdg.micro.prop","priority":7107,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Deklaracja DN-1 do 31 stycznia roku podatkowego","_legal_basis":"Art. 6 ust. 1 u.p.o.l.","_warnings":["[MICRO] Deklaracja DN-1 do 31 stycznia roku podatkowego"]} {
+else :=   {"matched":true,"rule_id":"jdg.prop.a2.r1","package":"jdg.micro.prop","priority":7107,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Deklaracja DN-1 do 31 stycznia roku podatkowego","_legal_basis":"Art. 6 ust. 1 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)","_warnings":["[MICRO] Deklaracja DN-1 do 31 stycznia roku podatkowego"]} {
     object.get(input.jdg_entrepreneur, "home_office_area_sqm", 0) > 0
 }
 
 # jdg.prop.a2.r2 — `real_estate_tax_installments`: Podatek płatny w 4 ratach (do 15 marca, 15 maja, 15 września, 15 listopada) → Raty kwartalne
-else :=   {"matched":true,"rule_id":"jdg.prop.a2.r2","package":"jdg.micro.prop","priority":7108,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Podatek płatny w 4 ratach (do 15 marca, 15 maja, 15 września, 15 listopada)","_legal_basis":"Art. 7 ust. 1 u.p.o.l.","_warnings":["[MICRO] Podatek płatny w 4 ratach (do 15 marca, 15 maja, 15 września, 15 listopada)"]} {
+else :=   {"matched":true,"rule_id":"jdg.prop.a2.r2","package":"jdg.micro.prop","priority":7108,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Podatek płatny w 4 ratach (do 15 marca, 15 maja, 15 września, 15 listopada)","_legal_basis":"Art. 7 ust. 1 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)","_warnings":["[MICRO] Podatek płatny w 4 ratach (do 15 marca, 15 maja, 15 września, 15 listopada)"]} {
     object.get(input.jdg_entrepreneur, "home_office_area_sqm", 0) > 0
 }
 
 # jdg.prop.a2.r3 — `real_estate_tax_single_payment`: Kwota < 100 PLN: jednorazowo do 15 marca → Jednorazowo
-else :=   {"matched":true,"rule_id":"jdg.prop.a2.r3","package":"jdg.micro.prop","priority":7109,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Kwota < 100 PLN: jednorazowo do 15 marca","_legal_basis":"Art. 7 ust. 2 u.p.o.l.","_warnings":["[MICRO] Kwota < 100 PLN: jednorazowo do 15 marca"]} {
+else :=   {"matched":true,"rule_id":"jdg.prop.a2.r3","package":"jdg.micro.prop","priority":7109,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Kwota < 100 PLN: jednorazowo do 15 marca","_legal_basis":"Art. 7 ust. 2 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)","_warnings":["[MICRO] Kwota < 100 PLN: jednorazowo do 15 marca"]} {
     object.get(input.jdg_entrepreneur, "home_office_area_sqm", 0) > 0
 }
 

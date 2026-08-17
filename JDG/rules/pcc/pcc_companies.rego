@@ -2,7 +2,7 @@
 # NexusAI JDG — PCC Companies & Exchanges: Art. 1-2 Ustawy o PCC
 # Package: jdg.pcc.exchanges_companies — Umowy spółki, zamiany
 # Version: 1.0.0 — Q3 2026 Critical Closure
-# Legal basis: Ustawa o PCC — Art. 1 ust. 1 pkt 1 lit. c-k, Art. 3, 6-7
+# Legal basis: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789) — Art. 1 ust. 1 pkt 1 lit. c-k, Art. 3, 6-7
 # Coverage: ~40 rules, ~40 legal points
 # ═══════════════════════════════════════════════════════════════════════════════
 

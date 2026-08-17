@@ -2,7 +2,7 @@
 # NexusAI JDG — PCC Sales Agreements: Art. 1-2 Ustawy o PCC
 # Package: jdg.pcc.sales_agreements — Umowy sprzedaży (PCC-3)
 # Version: 1.0.0 — Q3 2026 Critical Closure (P28 Grand Finale)
-# Legal basis: Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)
+# Legal basis: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)
 # Coverage: Art. 1-2 — ~60 rules, ~60 legal points
 # ═══════════════════════════════════════════════════════════════════════════════
 

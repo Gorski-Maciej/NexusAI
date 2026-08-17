@@ -482,6 +482,23 @@ import data.jdg.micro.sukcesja as micro_sukcesja_full
 import data.jdg.micro.succ as micro_succ_plan33
 import data.jdg.micro.ryczalt_cykl_atomic_p13
 
+# ── PAS 18am: P14 GLM52 PCC / PODATKI LOKALNE / AKCYZA MIKRO (2026-08-17) ──
+# Warstwa micro PCC + lokalne + akcyza (pcc 90 + plan33_pcc 60 + akcyza 133 +
+# prop 31 + prop_transport 6 + agricultural_tax 6 + pcc_lokalne_atomic_p14 19):
+# wypełnia LUKI makro (no_match), nigdy nie nadpisuje decyzji makro (safe_merge:
+# lewy argument wygrywa, INV-018). Konsolidacja P14: plan33_pcc.rego → package
+# jdg.micro.pcc.plan33 (konflikt 2× default decide z pcc.rego naprawiony —
+# wzorzec jpk.plan33 P03); plan26_local.rego → jdg.local_taxes.plan26 (konflikt
+# 2× default decide z local_taxes.rego); kanon _legal_basis: PCC poz. 789 /
+# lokalne poz. 1234 / akcyza poz. 1220 (0 starych cytowań).
+import data.jdg.micro.pcc as micro_pcc_full
+import data.jdg.micro.pcc.plan33 as micro_pcc_plan33
+import data.jdg.micro.akcyza as micro_akcyza_full
+import data.jdg.micro.prop as micro_prop_plan33
+import data.jdg.micro.prop_transport as micro_prop_transport_plan33
+import data.jdg.micro.agricultural_tax as micro_agricultural_plan33
+import data.jdg.micro.pcc_lokalne_atomic_p14
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # B1: SHARDED INDEX ROUTER — Context Hashing + Dynamic Path Selection
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1556,6 +1573,13 @@ _package_decisions := {
     "jdg.micro.sukcesja": micro_sukcesja_full.decide,
     "jdg.micro.succ": micro_succ_plan33.decide,
     "jdg.micro.ryczalt_cykl_atomic_p13": ryczalt_cykl_atomic_p13.decide,
+    "jdg.micro.pcc": micro_pcc_full.decide,
+    "jdg.micro.pcc.plan33": micro_pcc_plan33.decide,
+    "jdg.micro.akcyza": micro_akcyza_full.decide,
+    "jdg.micro.prop": micro_prop_plan33.decide,
+    "jdg.micro.prop_transport": micro_prop_transport_plan33.decide,
+    "jdg.micro.agricultural_tax": micro_agricultural_plan33.decide,
+    "jdg.micro.pcc_lokalne_atomic_p14": pcc_lokalne_atomic_p14.decide,
     "jdg.p21_innovations": p21_innovations.decide,
     "jdg.p22_innovations": p22_innovations.decide,
     "jdg.p23_innovations": p23_innovations.decide,
@@ -2181,7 +2205,8 @@ final_verdict_p46 = safe_merge(final_verdict_p45,
 # 16 reguł atomowych: próg 2M EUR, podwójny zapis, inwentaryzacja, sprawozdanie,
 # zamknięcie roku, amortyzacja księgowa, walidator 17 kolumn, leasing): wypełnia
 # LUKI makro (no_match), nigdy nie nadpisuje decyzji makro (safe_merge: lewy
-# argument wygrywa).final_verdict_p47 = safe_merge(final_verdict_p46,
+# argument wygrywa).
+final_verdict_p47 = safe_merge(final_verdict_p46,
     safe_merge(micro_pkpir.decide,
     safe_merge(micro_pkpir_columns.decide,
     safe_merge(micro_pkpir_corrections.decide,
@@ -2250,6 +2275,25 @@ final_verdict_p50 = safe_merge(final_verdict_p49,
     )))))))))
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# PAS 51: PCC / PODATKI LOKALNE / AKCYZA / PODATEK ROLNY MIKRO (PROMPT 14 — GLM52 P14)
+# Warstwa micro PCC + lokalne + akcyza (micro/pcc 90 + plan33_pcc 60 + akcyza
+# 133 + prop 31 + prop_transport 6 + agricultural_tax 6 + pcc_lokalne_atomic_p14
+# 19 reguł atomowych: stawki PCC 0,5-2% + wyłączenie VAT + zwolnienie ≤1000 zł +
+# PCC-3 14 dni, nieruchomości 33,10/1,43 + DN-1, transport >3,5 t, akcyza paliwa/
+# alkohol/energia + skład podatkowy, podatek rolny): wypełnia LUKI makro
+# (no_match), nigdy nie nadpisuje decyzji makro (safe_merge: lewy argument wygrywa).
+final_verdict_p51 = safe_merge(final_verdict_p50,
+    safe_merge(micro_pcc_full.decide,
+    safe_merge(micro_pcc_plan33.decide,
+    safe_merge(micro_akcyza_full.decide,
+    safe_merge(micro_prop_plan33.decide,
+    safe_merge(micro_prop_transport_plan33.decide,
+    safe_merge(micro_agricultural_plan33.decide,
+    safe_merge(pcc_lokalne_atomic_p14.decide,
+        fallback.decide
+    )))))))))
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
 #   • _invariant_report  — wynik evaluate() (invariant_failed, failed, levels),
@@ -2263,7 +2307,7 @@ final_verdict_p50 = safe_merge(final_verdict_p49,
 # ═══════════════════════════════════════════════════════════════════════════════
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
-final_verdict_post_merge = object.union(final_verdict_p50,
+final_verdict_post_merge = object.union(final_verdict_p51,
     {"_routing_context": routing_context})
 
 final_verdict_enforced = object.union(final_verdict_post_merge,

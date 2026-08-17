@@ -126,12 +126,3 @@ else := {
     discrepancy_msg = "UBO zgodny" { not disc }; discrepancy_msg = "ROZBIEŻNOŚĆ — zgłoś!" { disc }
 }
 
-# fallback
-else := {
-    "matched": true, "rule_id": "jdg.micro.aml_ryzyko.fallback",
-    "package": "jdg.micro.aml_ryzyko", "priority": 83099,
-    "micro_rule_active": true,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Ustawa AML",
-    "_warnings": ["[MICRO] AML ryzyko — JDG nie jest podmiotem obowiązanym lub transakcja poniżej progu."]
-} { true }

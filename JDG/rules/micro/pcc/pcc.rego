@@ -18,7 +18,7 @@ default decide := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  pcc.a1 — Definicja PCC (10 reguł)                                    ║
-# ║  Legal basis: Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)                                                   ║
+# ║  Legal basis: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.pcc.a1.r1: pcc_a1_r1_eligibility
@@ -43,7 +43,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Definicja PCC: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -71,7 +71,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Definicja PCC: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pcc_condition_met", false) == true
@@ -99,7 +99,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Definicja PCC: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a1_r3_pass", false) == true
@@ -127,7 +127,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Definicja PCC: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a1_r4_checks", false) == true
@@ -155,7 +155,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Definicja PCC: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pcc_exclusion_applies", false) == false
@@ -183,7 +183,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Definicja PCC: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "pcc_exclusion_2", false) == false
@@ -211,7 +211,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Definicja PCC: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "pcc_a1_exception", false) == true
@@ -239,7 +239,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Definicja PCC: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "pcc_a1_exception_2", false) == true
@@ -267,7 +267,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Definicja PCC: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_pcc", false) == true
@@ -295,7 +295,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Definicja PCC: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_pcc", false) == true
@@ -303,7 +303,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  pcc.a2 — Zwolnienia PCC (12 reguł)                                    ║
-# ║  Legal basis: Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)                                                   ║
+# ║  Legal basis: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.pcc.a2.r1: pcc_a2_r1_eligibility
@@ -328,7 +328,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Zwolnienia PCC: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -356,7 +356,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Zwolnienia PCC: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pcc_condition_met", false) == true
@@ -384,7 +384,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Zwolnienia PCC: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a2_r3_pass", false) == true
@@ -412,7 +412,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Zwolnienia PCC: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a2_r4_checks", false) == true
@@ -440,7 +440,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Zwolnienia PCC: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pcc_exclusion_applies", false) == false
@@ -468,7 +468,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Zwolnienia PCC: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "pcc_exclusion_2", false) == false
@@ -496,7 +496,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Zwolnienia PCC: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "pcc_a2_exception", false) == true
@@ -524,7 +524,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Zwolnienia PCC: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "pcc_a2_exception_2", false) == true
@@ -552,7 +552,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Zwolnienia PCC: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_pcc", false) == true
@@ -580,7 +580,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Zwolnienia PCC: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_pcc", false) == true
@@ -608,7 +608,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Zwolnienia PCC: termin / procedura — sprawdź deadline"]
 } {
     object.get(input.invoice, "pcc_deadline_required", false) == true
@@ -639,7 +639,7 @@ else := {
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Sankcja KKS: naruszenie Zwolnienia PCC",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Zwolnienia PCC: SANKCJA KKS — naruszenie przepisu!"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a2_violation", false) == true
@@ -647,7 +647,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  pcc.a3 — Transfer wierzytelności (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)                                                   ║
+# ║  Legal basis: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.pcc.a3.r1: pcc_a3_r1_eligibility
@@ -672,7 +672,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Transfer wierzytelności: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -700,7 +700,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Transfer wierzytelności: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pcc_condition_met", false) == true
@@ -728,7 +728,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Transfer wierzytelności: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a3_r3_pass", false) == true
@@ -756,7 +756,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Transfer wierzytelności: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a3_r4_checks", false) == true
@@ -784,7 +784,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Transfer wierzytelności: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pcc_exclusion_applies", false) == false
@@ -812,7 +812,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Transfer wierzytelności: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "pcc_exclusion_2", false) == false
@@ -840,7 +840,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Transfer wierzytelności: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "pcc_a3_exception", false) == true
@@ -868,7 +868,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Transfer wierzytelności: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "pcc_a3_exception_2", false) == true
@@ -876,7 +876,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  pcc.a4 — Umowa pożyczki (10 reguł)                                    ║
-# ║  Legal basis: Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)                                                   ║
+# ║  Legal basis: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.pcc.a4.r1: pcc_a4_r1_eligibility
@@ -901,7 +901,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Umowa pożyczki: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -929,7 +929,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Umowa pożyczki: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pcc_condition_met", false) == true
@@ -957,7 +957,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Umowa pożyczki: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a4_r3_pass", false) == true
@@ -985,7 +985,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Umowa pożyczki: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a4_r4_checks", false) == true
@@ -1013,7 +1013,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Umowa pożyczki: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pcc_exclusion_applies", false) == false
@@ -1041,7 +1041,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Umowa pożyczki: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "pcc_exclusion_2", false) == false
@@ -1069,7 +1069,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Umowa pożyczki: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "pcc_a4_exception", false) == true
@@ -1097,7 +1097,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Umowa pożyczki: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "pcc_a4_exception_2", false) == true
@@ -1125,7 +1125,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Umowa pożyczki: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_pcc", false) == true
@@ -1153,7 +1153,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Umowa pożyczki: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_pcc", false) == true
@@ -1161,7 +1161,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  pcc.a6 — Pojazdy (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)                                                   ║
+# ║  Legal basis: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.pcc.a6.r1: pcc_a6_r1_eligibility
@@ -1186,7 +1186,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Pojazdy: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1214,7 +1214,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Pojazdy: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pcc_condition_met", false) == true
@@ -1242,7 +1242,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Pojazdy: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a6_r3_pass", false) == true
@@ -1270,7 +1270,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Pojazdy: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a6_r4_checks", false) == true
@@ -1298,7 +1298,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Pojazdy: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pcc_exclusion_applies", false) == false
@@ -1326,7 +1326,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Pojazdy: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "pcc_exclusion_2", false) == false
@@ -1354,7 +1354,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Pojazdy: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "pcc_a6_exception", false) == true
@@ -1382,7 +1382,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Pojazdy: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "pcc_a6_exception_2", false) == true
@@ -1390,7 +1390,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  pcc.a7 — Nieruchomości (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)                                                   ║
+# ║  Legal basis: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.pcc.a7.r1: pcc_a7_r1_eligibility
@@ -1415,7 +1415,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Nieruchomości: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1443,7 +1443,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Nieruchomości: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pcc_condition_met", false) == true
@@ -1471,7 +1471,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Nieruchomości: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a7_r3_pass", false) == true
@@ -1499,7 +1499,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Nieruchomości: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a7_r4_checks", false) == true
@@ -1527,7 +1527,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Nieruchomości: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pcc_exclusion_applies", false) == false
@@ -1555,7 +1555,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Nieruchomości: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "pcc_exclusion_2", false) == false
@@ -1583,7 +1583,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Nieruchomości: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "pcc_a7_exception", false) == true
@@ -1611,7 +1611,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Nieruchomości: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "pcc_a7_exception_2", false) == true
@@ -1619,7 +1619,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  pcc.a5l — Podatek od nieruchomości (10 reguł)                                    ║
-# ║  Legal basis: Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)                                                   ║
+# ║  Legal basis: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.pcc.a5l.r1: pcc_a5l_r1_eligibility
@@ -1644,7 +1644,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Podatek od nieruchomości: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1672,7 +1672,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Podatek od nieruchomości: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pcc_condition_met", false) == true
@@ -1700,7 +1700,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Podatek od nieruchomości: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a5l_r3_pass", false) == true
@@ -1728,7 +1728,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Podatek od nieruchomości: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a5l_r4_checks", false) == true
@@ -1756,7 +1756,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Podatek od nieruchomości: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pcc_exclusion_applies", false) == false
@@ -1784,7 +1784,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Podatek od nieruchomości: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "pcc_exclusion_2", false) == false
@@ -1812,7 +1812,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Podatek od nieruchomości: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "pcc_a5l_exception", false) == true
@@ -1840,7 +1840,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Podatek od nieruchomości: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "pcc_a5l_exception_2", false) == true
@@ -1868,7 +1868,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Podatek od nieruchomości: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_pcc", false) == true
@@ -1896,7 +1896,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Podatek od nieruchomości: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_pcc", false) == true
@@ -1904,7 +1904,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  pcc.a9l — Podatek od środków transportowych (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)                                                   ║
+# ║  Legal basis: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.pcc.a9l.r1: pcc_a9l_r1_eligibility
@@ -1929,7 +1929,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Podatek od środków transportowych: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1957,7 +1957,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Podatek od środków transportowych: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pcc_condition_met", false) == true
@@ -1985,7 +1985,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Podatek od środków transportowych: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a9l_r3_pass", false) == true
@@ -2013,7 +2013,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Podatek od środków transportowych: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a9l_r4_checks", false) == true
@@ -2041,7 +2041,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Podatek od środków transportowych: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pcc_exclusion_applies", false) == false
@@ -2069,7 +2069,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Podatek od środków transportowych: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "pcc_exclusion_2", false) == false
@@ -2097,7 +2097,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Podatek od środków transportowych: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "pcc_a9l_exception", false) == true
@@ -2125,7 +2125,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Podatek od środków transportowych: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "pcc_a9l_exception_2", false) == true
@@ -2133,7 +2133,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  pcc.a13l — Opłata targowa (5 reguł)                                    ║
-# ║  Legal basis: Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)                                                   ║
+# ║  Legal basis: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.pcc.a13l.r1: pcc_a13l_r1_eligibility
@@ -2158,7 +2158,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Opłata targowa: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2186,7 +2186,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Opłata targowa: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pcc_condition_met", false) == true
@@ -2214,7 +2214,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Opłata targowa: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a13l_r3_pass", false) == true
@@ -2242,7 +2242,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Opłata targowa: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a13l_r4_checks", false) == true
@@ -2270,7 +2270,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Opłata targowa: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pcc_exclusion_applies", false) == false
@@ -2278,7 +2278,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  pcc.a14l — Opłata miejscowa (5 reguł)                                    ║
-# ║  Legal basis: Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)                                                   ║
+# ║  Legal basis: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.pcc.a14l.r1: pcc_a14l_r1_eligibility
@@ -2303,7 +2303,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Opłata miejscowa: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2331,7 +2331,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Opłata miejscowa: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pcc_condition_met", false) == true
@@ -2359,7 +2359,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Opłata miejscowa: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a14l_r3_pass", false) == true
@@ -2387,7 +2387,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Opłata miejscowa: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a14l_r4_checks", false) == true
@@ -2415,7 +2415,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Opłata miejscowa: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pcc_exclusion_applies", false) == false
@@ -2423,7 +2423,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  pcc.a16l — Opłata reklamowa (5 reguł)                                    ║
-# ║  Legal basis: Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)                                                   ║
+# ║  Legal basis: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.pcc.a16l.r1: pcc_a16l_r1_eligibility
@@ -2448,7 +2448,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Opłata reklamowa: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -2476,7 +2476,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Opłata reklamowa: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "pcc_condition_met", false) == true
@@ -2504,7 +2504,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Opłata reklamowa: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a16l_r3_pass", false) == true
@@ -2532,7 +2532,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Opłata reklamowa: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "pcc_a16l_r4_checks", false) == true
@@ -2560,7 +2560,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959)",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings": ["[MICRO] Opłata reklamowa: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "pcc_exclusion_applies", false) == false

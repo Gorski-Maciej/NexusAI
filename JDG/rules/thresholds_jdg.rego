@@ -1049,6 +1049,25 @@ pcc_local_excise := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# RODO / AML / BDO THRESHOLDS — RAPORT_15 (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+rodo_aml_bdo := {
+    # RODO (UE 2016/679)
+    "rodo_erasure_deadline_days": 30,            # art. 17 — usunięcie w 30 dni
+    "rodo_breach_deadline_hours": 72,            # art. 33 — zgłoszenie naruszenia 72 h
+    "rodo_fine_max_eur": 20000000,               # art. 83 ust. 5 — 20 mln EUR / 4% obrotu
+    # AML (Dz.U. 2025 poz. 213)
+    "aml_cash_threshold_eur": 15000,             # transakcje okazjonalne > 15 000 EUR
+    "aml_str_deadline_hours": 48,                # art. 74-80 — STR/GIIF 48 h
+    # BDO / odpady (Dz.U. 2025 poz. 321)
+    "bdo_registration_fee_pln": 100,             # art. 17-18 — opłata rejestracyjna 100-500 zł
+    "bdo_fine_art194_pln": 5000,                 # art. 194 — kara 5000 zł (brak ewidencji/rejestracji)
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # BUSINESS / CEIDG THRESHOLDS
 # ═══════════════════════════════════════════════════════════════════════════════
 

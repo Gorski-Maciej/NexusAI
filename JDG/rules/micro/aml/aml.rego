@@ -18,7 +18,7 @@ default decide := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  aml.a8 — Instytucje obowiązane (10 reguł)                                    ║
-# ║  Legal basis: Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)                                                   ║
+# ║  Legal basis: Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.aml.a8.r1: aml_a8_r1_eligibility
@@ -43,7 +43,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Instytucje obowiązane: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -71,7 +71,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Instytucje obowiązane: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "aml_condition_met", false) == true
@@ -99,7 +99,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Instytucje obowiązane: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "aml_a8_r3_pass", false) == true
@@ -127,7 +127,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Instytucje obowiązane: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "aml_a8_r4_checks", false) == true
@@ -155,7 +155,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Instytucje obowiązane: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "aml_exclusion_applies", false) == false
@@ -183,7 +183,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Instytucje obowiązane: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "aml_exclusion_2", false) == false
@@ -211,7 +211,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Instytucje obowiązane: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "aml_a8_exception", false) == true
@@ -239,7 +239,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Instytucje obowiązane: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "aml_a8_exception_2", false) == true
@@ -267,7 +267,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Instytucje obowiązane: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_aml", false) == true
@@ -295,7 +295,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Instytucje obowiązane: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_aml", false) == true
@@ -303,7 +303,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  aml.a10 — Środki bezpieczeństwa finansowego (10 reguł)                                    ║
-# ║  Legal basis: Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)                                                   ║
+# ║  Legal basis: Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.aml.a10.r1: aml_a10_r1_eligibility
@@ -328,7 +328,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Środki bezpieczeństwa finansowego: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -356,7 +356,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Środki bezpieczeństwa finansowego: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "aml_condition_met", false) == true
@@ -384,7 +384,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Środki bezpieczeństwa finansowego: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "aml_a10_r3_pass", false) == true
@@ -412,7 +412,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Środki bezpieczeństwa finansowego: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "aml_a10_r4_checks", false) == true
@@ -440,7 +440,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Środki bezpieczeństwa finansowego: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "aml_exclusion_applies", false) == false
@@ -468,7 +468,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Środki bezpieczeństwa finansowego: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "aml_exclusion_2", false) == false
@@ -496,7 +496,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Środki bezpieczeństwa finansowego: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "aml_a10_exception", false) == true
@@ -524,7 +524,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Środki bezpieczeństwa finansowego: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "aml_a10_exception_2", false) == true
@@ -552,7 +552,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Środki bezpieczeństwa finansowego: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_aml", false) == true
@@ -580,7 +580,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Środki bezpieczeństwa finansowego: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_aml", false) == true
@@ -588,7 +588,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  aml.a15 — Raportowanie SAR (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)                                                   ║
+# ║  Legal basis: Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.aml.a15.r1: aml_a15_r1_eligibility
@@ -613,7 +613,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Raportowanie SAR: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -641,7 +641,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Raportowanie SAR: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "aml_condition_met", false) == true
@@ -669,7 +669,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Raportowanie SAR: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "aml_a15_r3_pass", false) == true
@@ -697,7 +697,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Raportowanie SAR: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "aml_a15_r4_checks", false) == true
@@ -725,7 +725,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Raportowanie SAR: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "aml_exclusion_applies", false) == false
@@ -753,7 +753,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Raportowanie SAR: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "aml_exclusion_2", false) == false
@@ -781,7 +781,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Raportowanie SAR: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "aml_a15_exception", false) == true
@@ -809,7 +809,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Raportowanie SAR: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "aml_a15_exception_2", false) == true
@@ -817,7 +817,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  aml.a18 — Transakcje >15k EUR (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)                                                   ║
+# ║  Legal basis: Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.aml.a18.r1: aml_a18_r1_eligibility
@@ -842,7 +842,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Transakcje >15k EUR: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -870,7 +870,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Transakcje >15k EUR: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "aml_condition_met", false) == true
@@ -898,7 +898,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Transakcje >15k EUR: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "aml_a18_r3_pass", false) == true
@@ -926,7 +926,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Transakcje >15k EUR: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "aml_a18_r4_checks", false) == true
@@ -954,7 +954,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Transakcje >15k EUR: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "aml_exclusion_applies", false) == false
@@ -982,7 +982,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Transakcje >15k EUR: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "aml_exclusion_2", false) == false
@@ -1010,7 +1010,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Transakcje >15k EUR: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "aml_a18_exception", false) == true
@@ -1038,7 +1038,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Transakcje >15k EUR: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "aml_a18_exception_2", false) == true
@@ -1046,7 +1046,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  aml.a22 — Sankcje AML (8 reguł)                                    ║
-# ║  Legal basis: Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)                                                   ║
+# ║  Legal basis: Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)                                                   ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.aml.a22.r1: aml_a22_r1_eligibility
@@ -1071,7 +1071,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Sankcje AML: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -1099,7 +1099,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Sankcje AML: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "aml_condition_met", false) == true
@@ -1127,7 +1127,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Sankcje AML: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "aml_a22_r3_pass", false) == true
@@ -1155,7 +1155,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Sankcje AML: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "aml_a22_r4_checks", false) == true
@@ -1183,7 +1183,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Sankcje AML: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "aml_exclusion_applies", false) == false
@@ -1211,7 +1211,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Sankcje AML: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "aml_exclusion_2", false) == false
@@ -1239,7 +1239,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Sankcje AML: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "aml_a22_exception", false) == true
@@ -1267,7 +1267,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213)",
     "_warnings": ["[MICRO] Sankcje AML: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "aml_a22_exception_2", false) == true

@@ -114,7 +114,7 @@ transport_tax_exemptions := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Excise Rates 2026 (Ustawa o podatku akcyzowym)
+# Excise Rates 2026 (ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220))
 # ═══════════════════════════════════════════════════════════════════════════════
 
 excise_fuel := {

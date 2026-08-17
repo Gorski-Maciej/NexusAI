@@ -72,12 +72,3 @@ else := {
     not enc_ok or not pseud_ok
 }
 
-# fallback
-else := {
-    "matched": true, "rule_id": "jdg.micro.rodo_erasure.fallback",
-    "package": "jdg.micro.rodo_erasure", "priority": 84099,
-    "micro_rule_active": true,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "RODO 2016/679",
-    "_warnings": ["[MICRO] RODO erasure — brak żądań usunięcia, dane zminimalizowane, zabezpieczenia OK."]
-} { true }

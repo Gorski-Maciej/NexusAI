@@ -24,6 +24,6 @@ else :=   {"matched":true,"rule_id":"jdg.pcc.real_estate_purchase","package":"jd
 }
 
 # jdg.pcc.aggregate_liability_check — Agregacja wszystkich zobowiązań PCC
-else :=   {"matched":true,"rule_id":"jdg.pcc.aggregate_liability_check","package":"jdg.pcc","priority":1304,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Agregacja wszystkich zobowiązań PCC","_legal_basis":"Ustawa o PCC","_warnings":["Niezłożone deklaracje PCC-3 w roku podatkowym"]} {
+else :=   {"matched":true,"rule_id":"jdg.pcc.aggregate_liability_check","package":"jdg.pcc","priority":1304,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"WARNING","_routing_reason":"Agregacja wszystkich zobowiązań PCC","_legal_basis":"ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)","_warnings":["Niezłożone deklaracje PCC-3 w roku podatkowym"]} {
     object.get(input.invoice, "direction", "") == "PURCHASE"; object.get(input.vendor, "is_company", true) == false
 }

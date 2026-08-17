@@ -99,7 +99,7 @@ def test_r14_main_router_wired_p39():
     assert "import data.jdg.r14_rodo_aml_bdo_innovations" in src
     assert '"jdg.r14_rodo_aml_bdo_innovations": r14_rodo_aml_bdo_innovations.decide' in src
     assert "final_verdict_p39 = safe_merge(final_verdict_p38" in src
-    assert "final_verdict_post_merge = object.union(final_verdict_p50" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p51" in src
 
 
 # ── R14-INN-01: rodo_register_monitor ────────────────────────────────────────
@@ -158,7 +158,7 @@ def test_inn05_bdo_monitor():
 
 def test_invariants_after_r14():
     src = _read(MAIN_REGO)
-    assert "final_verdict_post_merge = object.union(final_verdict_p50" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p51" in src
     assert "final_verdict_enforced = object.union(final_verdict_post_merge" in src
     assert "_decision_certificate" in src or "decision_certificate" in src
     assert "_certainty_guard" in src

@@ -2,7 +2,7 @@
 # NexusAI JDG — Akcyza Fuel & Energy: Art. 89-99 Ustawy o podatku akcyzowym
 # Package: jdg.akcyza.fuel_energy — Paliwa i energia
 # Version: 1.0.0 — Q3 2026 Critical Closure
-# Legal basis: Ustawa o podatku akcyzowym z 06.12.2008 (Dz.U. 2009 nr 3 poz. 11)
+# Legal basis: ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) z 06.12.2008 (Dz.U. 2009 nr 3 poz. 11)
 # Coverage: Art. 89-99 — ~70 rules, ~70 legal points
 # ═══════════════════════════════════════════════════════════════════════════════
 

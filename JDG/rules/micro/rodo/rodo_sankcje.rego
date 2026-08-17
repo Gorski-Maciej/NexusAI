@@ -84,12 +84,3 @@ else := {
     score >= 90
 }
 
-# fallback
-else := {
-    "matched": true, "rule_id": "jdg.micro.rodo_sankcje.fallback",
-    "package": "jdg.micro.rodo_sankcje", "priority": 84499,
-    "micro_rule_active": true,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "RODO 2016/679",
-    "_warnings": ["[MICRO] RODO sankcje — brak naruszeń, compliance score OK."]
-} { true }

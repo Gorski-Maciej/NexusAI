@@ -22,7 +22,7 @@
 #   Sekcja 6: 14 genialnych pomysłów Enterprise (INN-01..INN-14)
 #   Sekcja 7: Mapa drogowa P0/P1/P2 (w raporcie R16)
 #
-# Zgodność: RODO (UE 2016/679), Ustawa AML (Dz.U. 2018 poz. 723 z późn. zm.),
+# Zgodność: RODO (UE 2016/679), Ustawa AML (Dz.U. 2025 poz. 213 z późn. zm.),
 #           AMLR (UE 2024/1624 — nadchodzący), ePrivacy (2002/58/WE), ustawa
 #           o ochronie danych osobowych, Wytyczne EROD, ADR-002 (progi z
 #           data.jdg.thresholds).
@@ -383,7 +383,7 @@ aml_audit := {
     "integrated_packages": ["jdg.compliance.aml (24 reguły)", "jdg.micro.aml (125+ reguł)", "jdg.compliance"],
     "_routing": "",
     "_routing_reason": "Audyt AML — CBDD, beneficjenci, STR/GIF, progi transakcyjne, ryzyko, sankcje (priorytet)",
-    "_legal_basis": "Ustawa AML (Dz.U. 2018 poz. 723 z późn. zm.)",
+    "_legal_basis": "Ustawa AML (Dz.U. 2025 poz. 213 z późn. zm.)",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p16_compliance_check", false) == true
@@ -829,7 +829,7 @@ str_gijf_auto_submission := {
     "note": "automatyczna wysyłka STR do GIIF via API + urzędowe potwierdzenie odbioru (P0)",
     "_routing": str_submission_routing(submitted, confirmed, days_since),
     "_routing_reason": sprintf("STR %s: submitted=%v, UPO=%v, %d dni od wykrycia", [object.get(input.str_gijf, "str_id", ""), submitted, confirmed, days_since]),
-    "_legal_basis": "Art. 74-80 u.AML (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Art. 74-80 u.AML (Dz.U. 2025 poz. 213)",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p16_compliance_check", false) == true
@@ -986,7 +986,7 @@ aml_obligation_detector := {
     "note": "auto-wykrycie obowiązku AML przy profilu działalności (PKD) — kantory, faktoring, nieruchomości, doradcy, prawnicy (INN-15)",
     "_routing": "AML_OBLIGATION_QUEUE" if obliged else "",
     "_routing_reason": sprintf("AML obliged=%v (PKD %v) — źródło: %s", [obliged, object.get(input.company_setup, "pkd", ""), obligation_source]),
-    "_legal_basis": "Art. 2 ust. 1 u.AML (Dz.U. 2018 poz. 723)",
+    "_legal_basis": "Art. 2 ust. 1 u.AML (Dz.U. 2025 poz. 213)",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p16_compliance_check", false) == true

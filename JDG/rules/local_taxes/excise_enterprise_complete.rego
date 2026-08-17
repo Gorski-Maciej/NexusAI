@@ -12,7 +12,7 @@
 #   zawieszenia akcyzy, AKC-4/AKC-4ZO, zwolnienia (lotnictwo, rolnictwo,
 #   ogrzewanie, żegluga), banderole, zabezpieczenia akcyzowe, e-DD.
 # architecture: Enterprise Multi-Pass (ADR-001), First-Match-Wins else-chain
-# legal_basis: Ustawa o podatku akcyzowym (Dz.U. 2025 poz. 901),
+# legal_basis: ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) (Dz.U. 2025 poz. 901),
 #   Rozporządzenia MF w sprawie stawek akcyzy, Dyrektywa 2020/262
 # package: jdg.local_taxes.excise_enterprise
 # deprecated: false

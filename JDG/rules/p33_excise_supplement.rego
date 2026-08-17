@@ -14,7 +14,7 @@
 #   - Zabezpieczenia akcyzowe: gwarancje bankowe, kaucje
 #   - Banderole: obowiązek, zwolnienia
 # architecture: Enterprise Supplement, First-Match-Wins else-chain
-# legal_basis: Ustawa o podatku akcyzowym (Dz.U. 2025 poz. 901)
+# legal_basis: ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) (Dz.U. 2025 poz. 901)
 # package: jdg.p33_excise_supplement
 # ═══════════════════════════════════════════════════════════════════════════════
 

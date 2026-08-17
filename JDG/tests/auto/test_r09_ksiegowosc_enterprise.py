@@ -103,7 +103,7 @@ def test_r09_main_router_wired_p34():
     assert "import data.jdg.r09_ksiegowosc_pkpir_uor_innovations" in src
     assert '"jdg.r09_ksiegowosc_pkpir_uor_innovations": r09_ksiegowosc_pkpir_uor_innovations.decide' in src
     assert "final_verdict_p34 = safe_merge(final_verdict_p33" in src
-    assert "final_verdict_post_merge = object.union(final_verdict_p50" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p51" in src
 
 
 # ── R09-INN-01: uor_threshold_simulator ──────────────────────────────────────
@@ -191,7 +191,7 @@ def test_inn05_autopack_fail_closed():
 
 def test_invariants_after_r09():
     src = _read(MAIN_REGO)
-    assert "final_verdict_post_merge = object.union(final_verdict_p50" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p51" in src
     assert "final_verdict_enforced = object.union(final_verdict_post_merge" in src
     assert "_decision_certificate" in src or "decision_certificate" in src
     assert "_certainty_guard" in src

@@ -9,7 +9,7 @@
 #   Pokrycie: rejestracja BDO, kody EWC, ewidencja kwartalna, KPO,
 #   transport, transgraniczne przemieszczanie, zezwolenia, sankcje i EPR.
 # architecture: Multi-Pass Enterprise (ADR-001)
-# legal_basis: Ustawa o odpadach, Rozporządzenie ws. BDO, Dyrektywa 2008/98/WE
+# legal_basis: ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321), Rozporządzenie ws. BDO, Dyrektywa 2008/98/WE
 # package: jdg.environmental.bdo
 # deprecated: false
 #
@@ -643,6 +643,6 @@ else := {
     "zus_social_base_type": "", "zus_health_rate": "",
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Ustawa o odpadach",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321)",
     "_warnings": ["[BDO] Gospodarka odpadami — brak naruszeń. Ewidencja BDO prowadzona prawidłowo."]
 } { true }

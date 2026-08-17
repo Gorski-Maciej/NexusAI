@@ -1,9 +1,9 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI JDG Policies — Micro Layer: Prawo budowlane — 6 artykułów → ~50 reguł Micro
+# NexusAI JDG Policies — Micro Layer: ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) — 6 artykułów → ~50 reguł Micro
 # Dual-Layer Architecture: Micro (Deep-Tier) — Atomic legal validation
 # Generated: 2026-07-14
 # Package: jdg.micro.budownictwo
-# Legal basis: Prawo budowlane (Dz.U. 1994 nr 89 poz. 414), KC art. 647-658, VAT reverse charge
+# Legal basis: ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101), KC art. 647-658, VAT reverse charge
 # ═══════════════════════════════════════════════════════════════════════════════
 
 package jdg.micro.budownictwo
@@ -19,7 +19,7 @@ default decide := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  budownictwo.a1 — Pozwolenie na budowę / zgłoszenie (8 reguł)              ║
-# ║  Legal basis: Art. 28-35 Prawa budowlanego                                  ║
+# ║  Legal basis: Art. 28-35 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101)                                  ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.budownictwo.a1.r1: budownictwo_a1_r1_permit_required
@@ -44,7 +44,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Brak pozwolenia na budowę — inwestycja wymaga pozwolenia",
-    "_legal_basis": "Art. 28 Prawa budowlanego",
+    "_legal_basis": "Art. 28 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101)",
     "_warnings": ["[MICRO] Pozwolenie na budowę: sprawdzenie czy inwestycja wymaga pozwolenia"],
     "valid_from": "1995-01-01",
     "valid_to": null,
@@ -76,7 +76,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "Zgłoszenie budowlane wystarczające dla tej kategorii",
-    "_legal_basis": "Art. 29-30 Prawa budowlanego",
+    "_legal_basis": "Art. 29-30 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101)",
     "_warnings": ["[MICRO] Pozwolenie na budowę: inwestycja kwalifikuje się do zgłoszenia, nie wymaga pozwolenia"]
 } {
     object.get(input.jdg_entrepreneur, "construction_project_type", "") == "NOTIFICATION_ONLY"
@@ -105,7 +105,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "Pozwolenie na budowę uzyskane — inwestycja zgodna z prawem",
-    "_legal_basis": "Art. 28 Prawa budowlanego",
+    "_legal_basis": "Art. 28 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101)",
     "_warnings": ["[MICRO] Pozwolenie na budowę: dokumentacja kompletna, pozwolenie ważne"]
 } {
     object.get(input.jdg_entrepreneur, "building_permit_obtained", false) == true
@@ -134,7 +134,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Pozwolenie na budowę wygasło — wymagane nowe pozwolenie",
-    "_legal_basis": "Art. 37 Prawa budowlanego",
+    "_legal_basis": "Art. 37 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101)",
     "_warnings": ["[MICRO] Pozwolenie na budowę WYGASŁO! Rozpoczęcie robót bez ważnego pozwolenia grozi wstrzymaniem budowy i karą"]
 } {
     object.get(input.jdg_entrepreneur, "building_permit_valid_until", "1970-01-01") < input.current_date
@@ -162,7 +162,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "Dziennik budowy — obowiązek prowadzenia dla inwestycji z pozwoleniem",
-    "_legal_basis": "Art. 45 Prawa budowlanego",
+    "_legal_basis": "Art. 45 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101)",
     "_warnings": ["[MICRO] Dziennik budowy: obowiązek prowadzenia dla tej inwestycji — brak dziennika = wykroczenie"]
 } {
     object.get(input.jdg_entrepreneur, "construction_project_type", "") == "REQUIRES_PERMIT"
@@ -191,7 +191,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Kierownik budowy wymagany — brak ustanowienia kierownika",
-    "_legal_basis": "Art. 42 Prawa budowlanego",
+    "_legal_basis": "Art. 42 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101)",
     "_warnings": ["[MICRO] Kierownik budowy: OBOWIĄZKOWY dla tej kategorii inwestycji — ustanów kierownika przed rozpoczęciem robót"]
 } {
     object.get(input.jdg_entrepreneur, "construction_project_type", "") == "REQUIRES_PERMIT"
@@ -220,7 +220,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "Pozwolenie na użytkowanie — obowiązek uzyskania przed oddaniem obiektu",
-    "_legal_basis": "Art. 55-59 Prawa budowlanego",
+    "_legal_basis": "Art. 55-59 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101)",
     "_warnings": ["[MICRO] Pozwolenie na użytkowanie: wymagane przed rozpoczęciem użytkowania obiektu"]
 } {
     object.get(input.jdg_entrepreneur, "construction_status", "") == "COMPLETED"
@@ -250,7 +250,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Samowola budowlana — konsekwencje prawne i finansowe",
-    "_legal_basis": "Art. 48-50 Prawa budowlanego",
+    "_legal_basis": "Art. 48-50 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101)",
     "_warnings": ["[MICRO] SAMOWOLA BUDOWLANA! Grozi nakaz rozbiórki, kara do 1 000 000 PLN, odpowiedzialność karna"]
 } {
     object.get(input.jdg_entrepreneur, "construction_without_permit", false) == true
@@ -762,7 +762,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Plan BIOZ wymagany — brak planu bezpieczeństwa i ochrony zdrowia",
-    "_legal_basis": "Art. 21a Prawa budowlanego, Rozporządzenie MI",
+    "_legal_basis": "Art. 21a ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101), Rozporządzenie MI",
     "_warnings": ["[MICRO] Plan BIOZ: OBOWIĄZKOWY przy budowach powyżej 30 dni i 20 pracowników — brak = wykroczenie"]
 } {
     object.get(input.jdg_entrepreneur, "construction_duration_days", 0) > 30
@@ -908,7 +908,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "Tablica informacyjna budowy — obowiązek wywieszenia",
-    "_legal_basis": "Art. 42 ust. 2 pkt 2 Prawa budowlanego",
+    "_legal_basis": "Art. 42 ust. 2 pkt 2 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101)",
     "_warnings": ["[MICRO] Tablica informacyjna: OBOWIĄZKOWA na każdej budowie z pozwoleniem — zawiera dane inwestora, projektanta, kierownika"]
 } {
     object.get(input.jdg_entrepreneur, "construction_project_type", "") == "REQUIRES_PERMIT"
@@ -1270,7 +1270,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  budownictwo.a6 — Katastrofa budowlana i odpowiedzialność karna (8 reguł) ║
-# ║  Legal basis: Art. 90-98 Prawa budowlanego, KK/KW                          ║
+# ║  Legal basis: Art. 90-98 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101), KK/KW                          ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.budownictwo.a6.r1: budownictwo_a6_r1_catastrophe_notification
@@ -1295,7 +1295,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Katastrofa budowlana — obowiązek natychmiastowego zgłoszenia",
-    "_legal_basis": "Art. 75 Prawa budowlanego",
+    "_legal_basis": "Art. 75 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101)",
     "_warnings": ["[MICRO] KATASTROFA BUDOWLANA! Natychmiast zgłoś do: PINB, Policja, Prokuratura. Niezgłoszenie = przestępstwo"]
 } {
     object.get(input.jdg_entrepreneur, "construction_catastrophe_occurred", false) == true
@@ -1324,7 +1324,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "Postępowanie wyjaśniające przyczyny katastrofy — koszty ekspertyz = KUP",
-    "_legal_basis": "Art. 76 Prawa budowlanego",
+    "_legal_basis": "Art. 76 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101)",
     "_warnings": ["[MICRO] Katastrofa budowlana: koszty ekspertyz technicznych i opinii rzeczoznawców = KUP (zabezpieczenie źródła przychodów)"]
 } {
     object.get(input.jdg_entrepreneur, "catastrophe_investigation_ordered", false) == true
@@ -1352,7 +1352,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Nieprowadzenie dziennika budowy — wykroczenie",
-    "_legal_basis": "Art. 93 pkt 3 Prawa budowlanego",
+    "_legal_basis": "Art. 93 pkt 3 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101)",
     "_warnings": ["[MICRO] Dziennik budowy: nieprowadzenie dziennika = kara grzywny do 5 000 PLN (wykroczenie)"]
 } {
     object.get(input.jdg_entrepreneur, "construction_log_required", false) == true
@@ -1381,7 +1381,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Istotne odstąpienie od projektu bez zgody — samowola budowlana",
-    "_legal_basis": "Art. 36a Prawa budowlanego, Art. 50",
+    "_legal_basis": "Art. 36a ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101), Art. 50",
     "_warnings": ["[MICRO] Odstąpienie od projektu: istotne zmiany bez zgody projektanta i PINB = samowola budowlana — nakaz rozbiórki!"]
 } {
     object.get(input.jdg_entrepreneur, "project_deviation_significant", false) == true
@@ -1410,7 +1410,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Brak kierownika budowy przy robotach wymagających pozwolenia — przestępstwo",
-    "_legal_basis": "Art. 90 Prawa budowlanego",
+    "_legal_basis": "Art. 90 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101)",
     "_warnings": ["[MICRO] Brak kierownika budowy: prowadzenie robót bez kierownika = kara ograniczenia wolności albo pozbawienia wolności do lat 2!"]
 } {
     object.get(input.jdg_entrepreneur, "construction_project_type", "") == "REQUIRES_PERMIT"
@@ -1468,7 +1468,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "Brak tablicy informacyjnej — kara administracyjna",
-    "_legal_basis": "Art. 93 pkt 7 Prawa budowlanego",
+    "_legal_basis": "Art. 93 pkt 7 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101)",
     "_warnings": ["[MICRO] Tablica informacyjna: brak tablicy = kara grzywny. Koszt tablicy = KUP"]
 } {
     object.get(input.jdg_entrepreneur, "construction_project_type", "") == "REQUIRES_PERMIT"

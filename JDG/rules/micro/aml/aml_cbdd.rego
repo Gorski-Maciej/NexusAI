@@ -78,12 +78,3 @@ else := {
     object.get(input.jdg_entrepreneur, "cbdd_discrepancy_detected", false) == true
 }
 
-# fallback
-else := {
-    "matched": true, "rule_id": "jdg.micro.aml_cbdd.fallback",
-    "package": "jdg.micro.aml_cbdd", "priority": 83399,
-    "micro_rule_active": true,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "Ustawa o CBDD",
-    "_warnings": ["[MICRO] AML CBDD — zgłoszenie CRBR prawidłowe."]
-} { true }

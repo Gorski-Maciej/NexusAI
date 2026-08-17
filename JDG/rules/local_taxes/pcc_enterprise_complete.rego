@@ -18,7 +18,7 @@
 #   - Opłata targowa, uzdrowiskowa, reklamowa, od posiadania psów
 #   - Wyłączenia PCC przy transakcjach VAT
 # architecture: Enterprise Multi-Pass (ADR-001), First-Match-Wins else-chain
-# legal_basis: Ustawa o PCC (Dz.U. 2025 poz. 789), Ustawa o podatkach lokalnych
+# legal_basis: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789), Ustawa o podatkach lokalnych
 #   (Dz.U. 2025 poz. 1234), Art. 2 pkt 4 PCC (wyłączenie VAT)
 # package: jdg.local_taxes.pcc_enterprise
 # deprecated: false
@@ -194,7 +194,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "",
     "_routing_reason": sprintf("Podatek od nieruchomości: %s — %.2f PLN/m² × %.0f m² = %.2f PLN/rok", [prop_type, tax_rate, area, annual_tax]),
-    "_legal_basis": "Art. 2-7 ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis": "Art. 2-7 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings": [sprintf("PODATEK OD NIERUCHOMOŚCI — %s. Powierzchnia: %.0f m². Stawka: %.2f PLN/m²/rok. Roczny podatek: %.2f PLN. (1) Złóż DN-1 do 14 dni od nabycia/zmiany, (2) Płatność w ratach: do 15 marca, maja, września, listopada, (3) Stawka FIRMOWA (~33 PLN/m²) vs MIESZKALNA (~1.15 PLN/m²) — ogromna różnica!", [prop_type, area, tax_rate, annual_tax])]
 } {
     input.jdg_entrepreneur.has_business_property == true
@@ -224,7 +224,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "_routing": dn1_routing,
     "_routing_reason": sprintf("DN-1 — deklaracja na podatek od nieruchomości. %s", [dn1_status]),
-    "_legal_basis": "Art. 6 ust. 9 ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis": "Art. 6 ust. 9 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings": [sprintf("DN-1 — %s. Termin: 14 dni od nabycia/zmiany nieruchomości. Złóż w urzędzie gminy właściwym dla położenia nieruchomości. Opłata w 4 ratach rocznych.", [dn1_status])]
 } {
     input.jdg_entrepreneur.has_business_property == true
@@ -248,7 +248,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 6 ust. 11-13 ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis": "Art. 6 ust. 11-13 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings": [sprintf("PODATEK OD NIERUCHOMOŚCI — Płatność w 4 ratach po %.2f PLN: (1) do 15 marca, (2) do 15 maja, (3) do 15 września, (4) do 15 listopada. Przy kwocie do 100 PLN — jednorazowo do 15 marca.", [installment])]
 } {
     input.jdg_entrepreneur.has_business_property == true
@@ -275,7 +275,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "",
     "_routing_reason": sprintf("Podatek od środków transportu: DMC %.0f kg — %.2f PLN/rok", [dmv, annual_tax]),
-    "_legal_basis": "Art. 8-14 ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis": "Art. 8-14 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings": [sprintf("PODATEK OD ŚRODKÓW TRANSPORTU — Samochód ciężarowy DMC %.0f kg. Podatek roczny: %.2f PLN. Złóż DT-1 do 15 lutego. Płatność w 2 ratach: do 15 lutego i 15 września.", [dmv, annual_tax])],
     "valid_from": "2002-01-01", "valid_to": null,
 } {
@@ -302,7 +302,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "",
     "_routing_reason": "Podatek od ciągnika siodłowego — 2 300 PLN/rok",
-    "_legal_basis": "Art. 10 ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis": "Art. 10 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings": ["PODATEK OD CIĄGNIKA SIODŁOWEGO — 2 300 PLN/rok. Złóż DT-1 do 15 lutego. Płatność w 2 ratach."]
 } {
     input.jdg_entrepreneur.vehicle_type == "TRACTOR_UNIT"
@@ -326,7 +326,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "",
     "_routing_reason": sprintf("Opłata reklamowa: tablica %.1f m² — %.2f PLN/dzień", [ad_area, daily_fee]),
-    "_legal_basis": "Art. 18a-18d ustawy o podatkach i opłatach lokalnych (opłata reklamowa)",
+    "_legal_basis": "Art. 18a-18d ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234) (opłata reklamowa)",
     "_warnings": [sprintf("OPŁATA REKLAMOWA — Tablica reklamowa %.1f m². %.2f PLN/dzień. Uchwała rady gminy określa stawki. Nie każda gmina pobiera!", [ad_area, daily_fee])]
 } {
     input.jdg_entrepreneur.has_advertising_board == true
@@ -348,7 +348,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "",
     "_routing_reason": sprintf("Opłata targowa: %.2f PLN/dzień", [market_fee_daily]),
-    "_legal_basis": "Art. 15-18 ustawy o podatkach i opłatach lokalnych (opłata targowa)",
+    "_legal_basis": "Art. 15-18 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234) (opłata targowa)",
     "_warnings": [sprintf("OPŁATA TARGOWA — Sprzedaż na targowisku: %.2f PLN/dzień. Pobiera gmina. Stawka zależy od rodzaju sprzedaży i powierzchni.", [market_fee_daily])]
 } {
     input.invoice.is_market_sale == true
@@ -486,7 +486,7 @@ else := {
     "kus_qualification":"KUP_DEDUCTIBLE_PROPORTIONAL","kus_percent":kup_pct,
     "property_business_pct":business_pct,"property_tax_annual_pln":annual_tax,
     "_routing":"","_routing_reason":sprintf("Nieruchomość mieszana: %.0f%% firmowa, %.0f%% prywatna",[business_pct,100-business_pct]),
-    "_legal_basis":"Art. 1a ust. 5, Art. 4 ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis":"Art. 1a ust. 5, Art. 4 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings":[sprintf("NIERUCHOMOŚĆ MIESZANA — %.0f m² całkowitej, z czego %.0f m² (%.0f%%) do działalności. Podatek FIRMOWY od części biznesowej: %.2f PLN × %.0f m² = %.2f PLN. Podatek PRYWATNY od reszty: %.2f PLN × %.0f m² = %.2f PLN. ŁĄCZNIE: %.2f PLN/rok. KUP proporcjonalnie: %.0f%%.",[total_area,business_area,business_pct,biz_rate,business_area,biz_tax,priv_rate,priv_area,priv_tax,annual_tax,kup_pct])]
 } {
     input.jdg_entrepreneur.has_business_property==true
@@ -543,7 +543,7 @@ else := {
     "kus_qualification":"KUP_DEDUCTIBLE","kus_percent":100,
     "garage_business_use":is_biz,"garage_tax_annual_pln":garage_tax,
     "_routing":gg_routing,"_routing_reason":sprintf("Garaż firmowy: %.1f m² — %.2f PLN/rok",[garage_area,garage_tax]),
-    "_legal_basis":"Art. 1a ust. 1 pkt 3 ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis":"Art. 1a ust. 1 pkt 3 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings":[sprintf("GARAŻ / BUDYNEK GOSPODARCZY — %.1f m². %s Stawka firmowa: %.2f PLN/m² = %.2f PLN/rok. UWAGA: Nawet garaż wolnostojący używany do celów firmowych = stawka firmowa!",[garage_area,usage_note,bldg_rate,garage_tax])]
 } {
     input.jdg_entrepreneur.has_business_garage==true
@@ -564,7 +564,7 @@ else := {
     "kus_qualification":"KUP_DEDUCTIBLE_AMORTIZATION","kus_percent":100,
     "construction_tax_rate_pct":2.0,"construction_tax_annual_pln":constr_tax,
     "_routing":"","_routing_reason":sprintf("Podatek od budowli firmowych — 2%% od %.0f PLN = %.2f PLN/rok",[constr_value,constr_tax]),
-    "_legal_basis":"Art. 4 ust. 1 pkt 3 ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis":"Art. 4 ust. 1 pkt 3 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings":[sprintf("PODATEK OD BUDOWLI — Wartość budowli: %.2f PLN (podstawa amortyzacji). Podatek 2%% rocznie = %.2f PLN. DOTYCZY: parkingów, ogrodzeń, sieci, placów, silosów. NIE mylić z budynkami (te podlegają stawce za m²)!",[constr_value,constr_tax])]
 } {
     input.jdg_entrepreneur.has_business_constructions==true
@@ -579,7 +579,7 @@ else := {
     "temp_building_applies":true,"temp_area":tmp_area,
     "temp_tax_monthly_pln":tmp_tax,
     "_routing":"","_routing_reason":sprintf("Budynek tymczasowy %.0f m² — %.2f PLN/mies",[tmp_area,tmp_tax]),
-    "_legal_basis":"Art. 6 ust. 2 ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis":"Art. 6 ust. 2 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings":[sprintf("BUDYNEK TYMCZASOWY / KONTENER — %.1f m², używany od %.0f miesięcy. Podatek naliczany proporcjonalnie za okres użytkowania. Przy >1 roku = pełny podatek od nieruchomości.",[tmp_area,months_used])]
 } {
     input.jdg_entrepreneur.has_temporary_building==true
@@ -614,7 +614,7 @@ else := {
     "kus_qualification":"KUP_DEDUCTIBLE","kus_percent":100,
     "transport_tax_type":"BUS","transport_tax_annual_pln":annual_tax,
     "_routing":"","_routing_reason":sprintf("Autobus %d miejsc — %.0f PLN/rok",[seats,annual_tax]),
-    "_legal_basis":"Art. 12 ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis":"Art. 12 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings":[sprintf("AUTOBUS — %d miejsc (z kierowcą). Podatek: %.0f PLN/rok. DT-1 do 15 lutego. 2 raty: 15.02 i 15.09.",[seats,annual_tax])]
 } {
     input.jdg_entrepreneur.vehicle_type=="BUS"
@@ -629,7 +629,7 @@ else := {
     "package":"jdg.local_taxes.pcc_enterprise","priority":823,
     "transport_tax_type":"SPECIAL","transport_tax_annual_pln":annual_tax,
     "_routing":"","_routing_reason":sprintf("Pojazd specjalny — %.0f PLN/rok",[annual_tax]),
-    "_legal_basis":"Art. 9-10 ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis":"Art. 9-10 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings":[sprintf("POJAZD SPECJALNY — %s. DMC: %.1f t. Podatek: %.0f PLN/rok. DT-1.",[spec_type,dmc,annual_tax])]
 } {
     input.jdg_entrepreneur.vehicle_type in {"SPECIAL_VEHICLE","CRANE","CONCRETE_MIXER","GARBAGE_TRUCK"}
@@ -644,7 +644,7 @@ else := {
     "package":"jdg.local_taxes.pcc_enterprise","priority":824,
     "transport_tax_type":"TRAILER","transport_tax_annual_pln":annual_tax,
     "_routing":"","_routing_reason":sprintf("Przyczepa/naczepa DMC %.1f t — %.0f PLN/rok",[dmc,annual_tax]),
-    "_legal_basis":"Art. 10 ust. 1 ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis":"Art. 10 ust. 1 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings":[sprintf("PRZYCZEPA / NACZEPA — DMC %.1f t, %d osi(e). Podatek: %.0f PLN/rok (niezależnie od podatku od ciągnika!).",[dmc,axles,annual_tax])]
 } {
     input.jdg_entrepreneur.vehicle_type in {"TRAILER","SEMI_TRAILER"}
@@ -661,7 +661,7 @@ else := {
     "package":"jdg.local_taxes.pcc_enterprise","priority":825,
     "transport_tax_exempt":true,"transport_tax_annual_pln":0,
     "_routing":"","_routing_reason":"Pojazd zabytkowy — ZWOLNIONY z podatku",
-    "_legal_basis":"Art. 12 ust. 1 pkt 2 ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis":"Art. 12 ust. 1 pkt 2 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings":["POJAZD ZABYTKOWY — caŁkowicie ZWOLNIONY z podatku od środków transportu. Wymagany wpis do rejestru zabytków lub wojewódzka ewidencja zabytków."]
 } {
     input.jdg_entrepreneur.vehicle_is_historic==true
@@ -673,7 +673,7 @@ else := {
     "package":"jdg.local_taxes.pcc_enterprise","priority":826,
     "transport_tax_exempt":true,"transport_tax_annual_pln":0,
     "_routing":"","_routing_reason":"Pojazd elektryczny — ZWOLNIONY z podatku",
-    "_legal_basis":"Art. 12 ust. 1 pkt 1 i 2a ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis":"Art. 12 ust. 1 pkt 1 i 2a ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings":[sprintf("%s — ZWOLNIONY z podatku od środków transportu! %s",[vehicle_info,charge_info])]
 } {
     input.jdg_entrepreneur.vehicle_is_electric==true
@@ -688,7 +688,7 @@ else := {
     "package":"jdg.local_taxes.pcc_enterprise","priority":827,
     "transport_tax_seasonal":true,"transport_tax_annual_pln":proportional_tax,
     "_routing":"","_routing_reason":sprintf("Pojazd sezonowy — %.0f PLN (%.0f/12 × %.0f PLN)",[proportional_tax,months,full_tax]),
-    "_legal_basis":"Art. 11a ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis":"Art. 11a ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings":[sprintf("POJAZD SEZONOWY — Używany tylko %d miesięcy w roku. Podatek proporcjonalny: %d/12 × %.0f PLN = %.0f PLN. Zgłoś sezonowe wyrejestrowanie w WK.",[months,months,full_tax,proportional_tax])]
 } {
     input.jdg_entrepreneur.vehicle_is_seasonal==true
@@ -706,7 +706,7 @@ else := {
     "dt1_required":true,"dt1_deadline":"FEBRUARY_15",
     "dt1_filed":dt1_ok,"dt1_late_days":late_days,
     "_routing":dt1_rt,"_routing_reason":sprintf("DT-1: %s",[dt1_stat]),
-    "_legal_basis":"Art. 9 ust. 5 ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis":"Art. 9 ust. 5 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings":[sprintf("DT-1 — %s. Termin: 15 lutego. %s",[dt1_stat,dt1_action])]
 } {
     input.jdg_entrepreneur.has_heavy_vehicle==true
@@ -725,7 +725,7 @@ else := {
     "transport_tax_refund_eligible":true,
     "transport_tax_refund_pln":refund_amount,
     "_routing":"","_routing_reason":sprintf("Wycofanie pojazdu — zwrot podatku %.2f PLN",[refund_amount]),
-    "_legal_basis":"Art. 9 ust. 5-6 ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis":"Art. 9 ust. 5-6 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings":[sprintf("WYCOFANIE POJAZDU — Sprzedaż/złomowanie w miesiącu %d. Należny zwrot nadpłaconego podatku za %d pozostałych miesięcy: %.2f PLN. Złóż korektę DT-1 z wnioskiem o zwrot.",[month,remaining,refund_amount])]
 } {
     input.jdg_entrepreneur.vehicle_retired==true
@@ -747,7 +747,7 @@ else := {
     "package":"jdg.local_taxes.pcc_enterprise","priority":832,
     "dog_fee_applies":true,"dog_count":dog_count,"dog_fee_annual_pln":dog_fee_total,
     "_routing":"","_routing_reason":sprintf("Opłata za %d psa/psy — %.2f PLN/rok",[dog_count,dog_fee_total]),
-    "_legal_basis":"Art. 18e-18f ustawy o podatkach i opłatach lokalnych (opłata od posiadania psów)",
+    "_legal_basis":"Art. 18e-18f ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234) (opłata od posiadania psów)",
     "_warnings":[sprintf("OPŁATA OD POSIADANIA PSÓW — %d pies/psy. %.2f PLN/szt/rok = %.2f PLN. Gmina MOŻE pobierać, nie musi (uchwała rady gminy). Zwolnienia: psy asystujące, gospodarstwa rolne (max 2 psy).",[dog_count,dog_fee_per,dog_fee_total])]
 } {
     input.jdg_entrepreneur.has_dogs==true
@@ -762,7 +762,7 @@ else := {
     "package":"jdg.local_taxes.pcc_enterprise","priority":833,
     "resort_fee_category":"A","resort_fee_daily_pln":6.00,
     "_routing":"","_routing_reason":"Opłata miejscowa kat. A — 6.00 PLN/os/dzień",
-    "_legal_basis":"Art. 17 ust. 2 ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis":"Art. 17 ust. 2 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings":["OPŁATA MIEJSCOWA kat. A — Strefa o szczególnie korzystnych warunkach klimatyczno-krajobrazowych. Maks. 6.00 PLN/os/dzień. Pobiera gmina od turystów przebywających >1 dobę."]
 } {
     input.invoice.local_tax_type=="RESORT_FEE_A"
@@ -774,7 +774,7 @@ else := {
     "package":"jdg.local_taxes.pcc_enterprise","priority":834,
     "resort_fee_category":"B","resort_fee_daily_pln":4.50,
     "_routing":"","_routing_reason":"Opłata miejscowa kat. B — 4.50 PLN/os/dzień",
-    "_legal_basis":"Art. 17 ust. 2a ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis":"Art. 17 ust. 2a ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings":["OPŁATA MIEJSCOWA kat. B — Pozostałe miejscowości turystyczne. Maks. 4.50 PLN/os/dzień."]
 } {
     input.invoice.local_tax_type=="RESORT_FEE_B"
@@ -786,7 +786,7 @@ else := {
     "package":"jdg.local_taxes.pcc_enterprise","priority":835,
     "spa_fee_daily_pln":spa_rate,"spa_fee_category":spa_cat,
     "_routing":"","_routing_reason":sprintf("Opłata uzdrowiskowa kat. %s — %.2f PLN/os/dzień",[spa_cat,spa_rate]),
-    "_legal_basis":"Art. 17a ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis":"Art. 17a ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings":[sprintf("OPŁATA UZDROWISKOWA kat. %s — %.2f PLN/os/dzień. Pobierana w uzdrowiskach. Fundusz uzdrowiskowy finansuje infrastrukturę leczniczą.",[spa_cat,spa_rate])]
 } {
     input.invoice.local_tax_type=="SPA_FEE"
@@ -803,7 +803,7 @@ else := {
     "kus_qualification":"KUP_DEDUCTIBLE","kus_percent":100,
     "advertising_fee_daily_pln":total_fee,"advertising_category":at,
     "_routing":"","_routing_reason":sprintf("Opłata reklamowa %s: %.1f m² = %.2f PLN/dzień",[at,area,total_fee]),
-    "_legal_basis":"Art. 18a-18d ustawy o podatkach i opłatach lokalnych",
+    "_legal_basis":"Art. 18a-18d ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings":[sprintf("OPŁATA REKLAMOWA — Typ: %s. Powierzchnia: %.1f m². Stawka: %.2f PLN/m²/dzień (max). %.2f PLN/dzień = ~%.2f PLN/rok. Rada gminy ustala stawki uchwałą.",[at,area,rate,total_fee,total_fee*365])]
 } {
     input.jdg_entrepreneur.has_advertising_board==true
@@ -821,7 +821,7 @@ else := {
     "package":"jdg.local_taxes.pcc_enterprise","priority":837,
     "advertising_fee_exempt":true,
     "_routing":"","_routing_reason":"Reklama własna na własnym budynku — ZWOLNIONA",
-    "_legal_basis":"Art. 18b ust. 2 ustawy o podatkach i opłatach lokalnych (zwolnienie dla własnej reklamy)",
+    "_legal_basis":"Art. 18b ust. 2 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234) (zwolnienie dla własnej reklamy)",
     "_warnings":["OPŁATA REKLAMOWA — ZWOLNIENIE! Tablica/szyld reklamujący WŁASNĄ działalność na WŁASNYM budynku NIE podlega opłacie reklamowej. Warunek: powierzchnia ≤ 3 m² i szyld informuje o prowadzonej działalności."]
 } {
     input.jdg_entrepreneur.has_advertising_board==true
@@ -847,7 +847,7 @@ else := {
     "package":"jdg.local_taxes.pcc_enterprise","priority":839,
     "local_tax_calendar":["DN-1: 31 stycznia","DT-1: 15 lutego","IR-1 (rolny): 15 stycznia","IL-1 (leśny): 15 stycznia","PCC-3: 14 dni od umowy","Raty nieruchomość: 15.03, 15.05, 15.09, 15.11"],
     "_routing":"","_routing_reason":"Kalendarz podatków lokalnych — zapamiętaj terminy!",
-    "_legal_basis":"Ustawa o podatkach lokalnych i opłatach + Ustawa o PCC",
+    "_legal_basis":"Ustawa o podatkach lokalnych i opłatach + ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
     "_warnings":["KALENDARZ PODATKÓW LOKALNYCH: DN-1 → 31 stycznia | DT-1 → 15 lutego | IR-1 → 15 stycznia | IL-1 → 15 stycznia | PCC-3 → 14 dni od umowy | Raty PN → 15.03/15.05/15.09/15.11"]
 } {
     input.jdg_entrepreneur.has_local_taxes==true
@@ -865,7 +865,7 @@ else := {
     "excise_product_type":"COAL",
     "excise_rate_pln_per_unit":1.28,"excise_amount_pln":excise_amount,
     "_routing":"","_routing_reason":sprintf("Akcyza węglowa: %.1f ton × 1.28 PLN/GJ",[tonnes]),
-    "_legal_basis":"Art. 89 ust. 1 pkt 1, Art. 89a ustawy o podatku akcyzowym",
+    "_legal_basis":"Art. 89 ust. 1 pkt 1, Art. 89a ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220)",
     "_warnings":[sprintf("AKCYZA WĘGLOWA — %.1f ton węgla/koksu. Akcyza = %.2f PLN. UWAGA: zwolnienie dla gospodarstw domowych! Dla firm — pełna akcyza. e-DD przy przewozie >500 kg.",[tonnes,excise_amount])]
 } {
     input.invoice.excise_category=="COAL"
@@ -881,7 +881,7 @@ else := {
     "excise_product_type":"NATURAL_GAS",
     "excise_rate_pln_per_mwh":1.28,"excise_amount_pln":excise_amount,
     "_routing":"","_routing_reason":sprintf("Akcyza gazowa: %.0f MWh — %.2f PLN",[mwh,excise_amount]),
-    "_legal_basis":"Art. 89 ust. 1a ustawy o podatku akcyzowym",
+    "_legal_basis":"Art. 89 ust. 1a ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220)",
     "_warnings":[sprintf("AKCYZA GAZOWA — %.0f MWh gazu ziemnego. Akcyza: %.2f PLN. Stawka 1.28 PLN/MWh. Zwolnienie: CNG/LNG do napędu silników.",[mwh,excise_amount])]
 } {
     input.invoice.excise_category=="NATURAL_GAS"
@@ -896,7 +896,7 @@ else := {
     "excise_product_type":"ELECTRICITY",
     "excise_rate_pln_per_mwh":5.00,"excise_amount_pln":excise_amount,
     "_routing":"","_routing_reason":sprintf("Akcyza elektryczna: %.0f MWh — %.2f PLN",[mwh,excise_amount]),
-    "_legal_basis":"Art. 89 ust. 3 ustawy o podatku akcyzowym",
+    "_legal_basis":"Art. 89 ust. 3 ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220)",
     "_warnings":[sprintf("AKCYZA OD ENERGII ELEKTRYCZNEJ — %.0f MWh. Akcyza: %.2f PLN (5.00 PLN/MWh). Obowiązek podatkowy: wydanie energii odbiorcy. UWAGA: instalacje OZE do 1 MW = zwolnione z akcyzy!",[mwh,excise_amount])]
 } {
     input.invoice.excise_category=="ELECTRICITY"
@@ -913,7 +913,7 @@ else := {
     "excise_product_type":"ENERGY_PRODUCTS",
     "excise_rate_pln_per_unit":rate,"excise_amount_pln":excise_amount,
     "_routing":"BLOCK_AND_ALERT","_routing_reason":"Akcyza od wyrobów energetycznych — obowiązek rejestracji AKC-R!",
-    "_legal_basis":"Art. 86-92 ustawy o podatku akcyzowym",
+    "_legal_basis":"Art. 86-92 ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220)",
     "_warnings":[sprintf("AKCYZA — WYRÓB ENERGETYCZNY: %s. Ilość: %.0f %s. Stawka: %.2f PLN/%s. Akcyza: %.2f PLN. Rejestracja AKC-R WYMAGANA!",[product,quantity,unit,rate,unit,excise_amount])]
 } {
     input.invoice.excise_category=="ENERGY_PRODUCTS"
@@ -932,7 +932,7 @@ else := {
     "excise_warehouse_required":true,"excise_warehouse_type":wh_type,
     "excise_suspension":suspension_active,
     "_routing":"BLOCK_AND_ALERT","_routing_reason":"Skład podatkowy — wymagane zezwolenie + zabezpieczenie akcyzowe!",
-    "_legal_basis":"Art. 48-66 ustawy o podatku akcyzowym",
+    "_legal_basis":"Art. 48-66 ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220)",
     "_warnings":[sprintf("SKŁAD PODATKOWY — %s. Procedura zawieszona: %s. Warunki: (1) Zezwolenie naczelnika US, (2) Zabezpieczenie akcyzowe (gwarancja bankowa %s PLN), (3) EMCS — system elektroniczny, (4) Miesięczne AKC-4.",[wh_type,susp_note,guarantee])]
 } {
     input.jdg_entrepreneur.has_excise_warehouse==true
@@ -951,7 +951,7 @@ else := {
     "excise_registration_required":true,"excise_registration_form":"AKC-R",
     "excise_akcr_filed":akcr_ok,
     "_routing":akcr_rt,"_routing_reason":sprintf("AKC-R: %s",[akcr_stat]),
-    "_legal_basis":"Art. 16-17 ustawy o podatku akcyzowym",
+    "_legal_basis":"Art. 16-17 ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220)",
     "_warnings":[sprintf("AKC-R — %s. Obowiązek rejestracji PRZED pierwszą czynnością podlegającą akcyzie! Brak rejestracji = nielegalna produkcja/obrót = sankcja KKS + konfiskata towaru.",[akcr_stat])]
 } {
     input.jdg_entrepreneur.is_excise_taxpayer==true
@@ -968,7 +968,7 @@ else := {
     "excise_declaration_form":"AKC-4","excise_declaration_deadline":"25th of month",
     "excise_akc4_filed":akc4_ok,
     "_routing":akc4_rt,"_routing_reason":sprintf("AKC-4: %s",[akc4_stat]),
-    "_legal_basis":"Art. 21-24 ustawy o podatku akcyzowym",
+    "_legal_basis":"Art. 21-24 ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220)",
     "_warnings":[sprintf("AKC-4 — %s. Deklaracja miesięczna do 25. dnia następnego miesiąca. Obejmuje: ilość wyrobów, stawki, kwotę akcyzy, e-DD.",[akc4_stat])]
 } {
     input.jdg_entrepreneur.is_excise_taxpayer==true
@@ -984,7 +984,7 @@ else := {
     "package":"jdg.local_taxes.pcc_enterprise","priority":848,
     "excise_exempt":true,"excise_exemption_type":"SMALL_PRODUCER",
     "_routing":"","_routing_reason":"Mały producent — zwolniony z akcyzy wg limitów",
-    "_legal_basis":"Art. 30 ust. 2 pkt 4, Art. 31b ustawy o podatku akcyzowym",
+    "_legal_basis":"Art. 30 ust. 2 pkt 4, Art. 31b ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220)",
     "_warnings":[sprintf("AKCYZA — MAŁY PRODUCENT. %s. Limit: %.0f %s rocznie. Zwolnienie wymaga ewidencji uproszczonej (nie pełny skład podatkowy).",[product,annual_limit,unit])]
 } {
     input.jdg_entrepreneur.is_excise_small_producer==true
@@ -1000,7 +1000,7 @@ else := {
     "package":"jdg.local_taxes.pcc_enterprise","priority":849,
     "excise_sanction_risk":"CRITICAL",
     "_routing":"BLOCK_AND_ALERT","_routing_reason":"RYZYKO NIELEGALNEJ AKCYZY — sankcja KKS + konfiskata!",
-    "_legal_basis":"Art. 63-73 KKS; Art. 30-31 ustawy o podatku akcyzowym",
+    "_legal_basis":"Art. 63-73 KKS; Art. 30-31 ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220)",
     "_warnings":["NIELEGALNY WYRÓB AKCYZOWY — (1) Kara KKS: grzywna do 720 stawek dziennych + kara pozbawienia wolności do 3 lat, (2) Przepadek wyrobów + urządzeń, (3) Szacunkowe określenie akcyzy (10-krotność stawki!), (4) Odpowiedzialność solidarna całego łańcucha dostaw."]
 } {
     input.jdg_entrepreneur.excise_risk_illegal==true
@@ -1022,7 +1022,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": sprintf("AKCYZA — %s. Wymagana rejestracja w systemie EMCS/PCC!", [excise_type]),
-    "_legal_basis": "Ustawa o podatku akcyzowym (Dz.U. 2025 poz. 678)",
+    "_legal_basis": "ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) (Dz.U. 2025 poz. 678)",
     "_warnings": [sprintf("AKCYZA — %s. Obowiązki: (1) Rejestracja AKC-R przed pierwszą czynnością, (2) Zabezpieczenie akcyzowe (dla składów podatkowych), (3) Deklaracja AKC-4 miesięcznie do 25. dnia, (4) e-DD — dokument dostawy przy przemieszczaniu.", [excise_type])]
 } {
     input.invoice.category_code in {"ALCOHOL", "TOBACCO", "FUEL", "ENERGY_ELECTRIC"}
@@ -1047,7 +1047,7 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PCC / Ustawa o podatkach lokalnych",
+    "_legal_basis": "ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789) / Ustawa o podatkach lokalnych",
     "_warnings": ["Transakcja nie podlega PCC ani podatkom lokalnym — OK"]
 } {
     true

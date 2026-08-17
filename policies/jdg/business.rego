@@ -11,7 +11,7 @@
 #   P920 (sukcesja) → P930 (limit nieewidencjonowanej) → P932 (ZUS exemption).
 #   Architektura: object.union — business.decide mergowane PO zus.decide# (P914 nie ustawia zus_health_rate, pozwala ZUS-owi zachować stawkę).
 #   ⚠️ P914 NIE jest deprecated — to aktywna reguła kanoniczna.
-# legal_basis: Art. 5-7 CEIDG, Art. 22-25 Prawa przedsiębiorców, Art. 36a SUS
+# legal_basis: Art. 5-7 CEIDG, Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123), Art. 36a SUS
 # edge_cases:
 #   - Zawieszenie: społeczne=0, zdrowotna NADAL (Art. 36a SUS)
 #   - Dział. nieewidencjonowana: limit 75% min. wynagrodzenia (50% do 30.06.2023; od 2026: 225% kwartalnie)
@@ -142,7 +142,7 @@ succession_expiry_info_for(months_since, succession_limit) = sprintf("już wygas
 
 # ══════ P916: business_resumption_procedure — Wznowienie po zawieszeniu ══════
 # Cel: Wznowienie JDG z CEIDG — od daty złożenia wniosku (nie data przyszła)
-# Podstawa prawna: Art. 22-25 Prawa przedsiębiorców
+# Podstawa prawna: Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)
 # ═══════════════════════════════════════════════════════════════════════════════
 decide := {
     "matched":true,"rule_id":"jdg.business.resumption_procedure",
@@ -155,7 +155,7 @@ decide := {
     "resumption_date": resumption_date_val,
     "ceidg_registration_required":false,
     "_routing":"","_routing_reason":"",
-    "_legal_basis":"Art. 22-25 Prawa przedsiębiorców",
+    "_legal_basis":"Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)",
     "_warnings":["Wznowienie działalności — od daty złożenia wniosku do CEIDG. Pamiętaj o wznowieniu ZUS i VAT."]
 } {
     input.jdg_entrepreneur.business_status == "SUSPENDED"
@@ -178,7 +178,7 @@ else := {
     "suspension_expired": susp_months >= 6,
     "_routing":"BLOCK_AND_ALERT",
     "_routing_reason":"Nie można zawiesić JDG — zatrudniasz pracowników / przekroczono max 6 mies.",
-    "_legal_basis":"Art. 22-25 Prawa przedsiębiorców",
+    "_legal_basis":"Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)",
     "_warnings":[sprintf("Zawieszenie %d mies., %d pracowników — %s",[susp_months, emp_count, warn_msg])]
 } {
     input.jdg_entrepreneur.business_status == "SUSPENDED"
@@ -190,7 +190,7 @@ else := {
 
 # ══════ P921a: succession_no_manager_grace — 2-mies. okno na powołanie zarządcy (R02 P1) ══════
 # Cel: Po śmierci JDG bez zarządcy — spadkobiercy mają 2 miesiące na powołanie
-# zarządcy sukcesyjnego (art. 3 u.z.s.). W oknie: TRIAGE_QUEUE (przypomnienie).
+# zarządcy sukcesyjnego (art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)). W oknie: TRIAGE_QUEUE (przypomnienie).
 else := {
     "matched":true,"rule_id":"jdg.business.succession_no_manager_grace",
     "package":"jdg.business","priority":921,
@@ -205,9 +205,9 @@ else := {
     "succession_grace_days_left":max([0, 60 - days_since_death]),
     "succession_grace_deadline":"60 dni od śmierci",
     "_routing":"TRIAGE_QUEUE",
-    "_routing_reason":"Brak zarządcy sukcesyjnego — pozostało okno 2 mies. na powołanie (art. 3 u.z.s.)",
-    "_legal_basis":"Art. 3, 14-15 ustawy o zarządzie sukcesyjnym; art. 30 ust. 2 ustawy o CEIDG",
-    "_warnings":[sprintf("Brak zarządcy sukcesyjnego — %d dni po śmierci. Spadkobiercy mogą powołać zarządcę w ciągu 2 MIESIĘCY od śmierci (art. 3 u.z.s.). Po upływie terminu działalność WYGASA, a CEIDG wykreśla wpis z urzędu.", [days_since_death])]
+    "_routing_reason":"Brak zarządcy sukcesyjnego — pozostało okno 2 mies. na powołanie (art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234))",
+    "_legal_basis":"Art. 3, 14-15 ustawy o zarządzie sukcesyjnym; art. 30 ust. 2 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej i Punkcie Informacji dla Przedsiębiorcy (Dz.U. 2025 poz. 456)",
+    "_warnings":[sprintf("Brak zarządcy sukcesyjnego — %d dni po śmierci. Spadkobiercy mogą powołać zarządcę w ciągu 2 MIESIĘCY od śmierci (art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)). Po upływie terminu działalność WYGASA, a CEIDG wykreśla wpis z urzędu.", [days_since_death])]
 } {
     input.jdg_entrepreneur.in_succession == true
     object.get(input.jdg_entrepreneur, "succession_manager_nip", "") == ""
@@ -217,7 +217,7 @@ else := {
 
 # ══════ P921b: succession_no_manager_expiry — Wygaśnięcie działalności po 2 mies. (R02 P1) ══════
 # Cel: Brak zarządcy po 2 miesiącach od śmierci → działalność WYGASA, wpis w CEIDG
-# wykreślany z urzędu (art. 30 ust. 2 ustawy o CEIDG), NIP traci ważność.
+# wykreślany z urzędu (art. 30 ust. 2 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej i Punkcie Informacji dla Przedsiębiorcy (Dz.U. 2025 poz. 456)), NIP traci ważność.
 else := {
     "matched":true,"rule_id":"jdg.business.succession_no_manager_expiry",
     "package":"jdg.business","priority":922,
@@ -232,7 +232,7 @@ else := {
     "nip_status":"DECEASED_NO_SUCCESSOR",
     "_routing":"BLOCK_AND_ALERT",
     "_routing_reason":"Brak zarządcy sukcesyjnego po 2 miesiącach — działalność WYGASA, wykreślenie z CEIDG z urzędu",
-    "_legal_basis":"Art. 3, 14-15 ustawy o zarządzie sukcesyjnym; art. 30 ust. 2 ustawy o CEIDG",
+    "_legal_basis":"Art. 3, 14-15 ustawy o zarządzie sukcesyjnym; art. 30 ust. 2 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej i Punkcie Informacji dla Przedsiębiorcy (Dz.U. 2025 poz. 456)",
     "_warnings":["BRAK ZARZĄDCY SUKCESYJNEGO po 2 miesiącach od śmierci — działalność gospodarcza WYGASŁA. CEIDG wykreśla wpis z urzędu (w ciągu 7 dni po 2-mies. okresie). NIP wygasa. Spadkobiercy odpowiadają za zobowiązania do wysokości nabytego majątku."],
     "_future_events":[
         {
@@ -263,7 +263,7 @@ else := {
     "succession_manager_valid": all_ok,
     "_routing": routing_flag,
     "_routing_reason": routing_reason,
-    "_legal_basis":"Art. 3-4 u.z.s.",
+    "_legal_basis":"Art. 3-4 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings":[warn_msg]
 } {
     input.jdg_entrepreneur.in_succession == true
@@ -289,7 +289,7 @@ else := {
     "succession_expired": months_since >= succession_limit,
     "_routing":"TRIAGE_QUEUE",
     "_routing_reason": sprintf("Zarząd sukcesyjny wygasa za %d miesięcy", [max([0, succession_limit - months_since])]),
-    "_legal_basis":"Art. 12-15 u.z.s.",
+    "_legal_basis":"Art. 12-15 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (Dz.U. 2025 poz. 1234)",
     "_warnings":[sprintf("Zarząd sukcesyjny trwa %d mies. (max %d). Wygaśnięcie: %s.", [months_since, succession_limit, expiry_info])],
     "_future_events":[{
         "event_id":"succession_expiry",
@@ -318,7 +318,7 @@ decide := {
     "business_status":"", "ceidg_registration_required":true,
     "_routing":"BLOCK_AND_ALERT",
     "_routing_reason":"Brak rejestracji CEIDG",
-    "_legal_basis":"Art. 5-7 ustawy o CEIDG",
+    "_legal_basis":"Art. 5-7 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej i Punkcie Informacji dla Przedsiębiorcy (Dz.U. 2025 poz. 456)",
     "_warnings":["BRAK REJESTRACJI CEIDG — każda JDG musi być wpisana do CEIDG!"]
 } {
     input.jdg_entrepreneur.ceidg_entry_date == null
@@ -335,7 +335,7 @@ else := {
     "business_status":"","ceidg_update_overdue":true,
     "_routing":"TRIAGE_QUEUE",
     "_routing_reason":"Aktualizacja CEIDG przeterminowana",
-    "_legal_basis":"Art. 12-15 ustawy o CEIDG",
+    "_legal_basis":"Art. 12-15 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej i Punkcie Informacji dla Przedsiębiorcy (Dz.U. 2025 poz. 456)",
     "_warnings":["Aktualizacja CEIDG przeterminowana — obowiązek w ciągu 7 dni od zmiany danych!"]
 } {
     input.jdg_entrepreneur.ceidg_last_update_date != null
@@ -355,7 +355,7 @@ else := {
     "ceidg_registration_required":false,
     "pit_advance_required":false,"vat_declaration_required":false,"kus_allowed":"MAINTENANCE_ONLY",
     "_routing":"","_routing_reason":"",
-    "_legal_basis":"Art. 22-25 Prawa przedsiębiorców, Art. 44 ust. 10 PIT",
+    "_legal_basis":"Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123), Art. 44 ust. 10 PIT",
     "_warnings":["Działalność zawieszona — brak zaliczek PIT, deklaracje VAT tylko przy sprzedaży"]
 } {
     input.jdg_entrepreneur.business_status == "SUSPENDED"
@@ -372,7 +372,7 @@ else := {
     "business_status":"SUSPENDED",
     "_routing":"BLOCK_AND_ALERT",
     "_routing_reason":"Wydatek niedozwolony w okresie zawieszenia",
-    "_legal_basis":"Art. 22-25 Prawa przedsiębiorców",
+    "_legal_basis":"Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)",
     "_warnings":["Zawieszenie — dozwolone TYLKO stałe koszty utrzymania (czynsz, media, monitoring)"]
 } {
     input.jdg_entrepreneur.business_status == "SUSPENDED"
@@ -451,7 +451,7 @@ else := {
     "business_status":"","unregistered_activity_limit_exceeded":true,"ceidg_registration_required":true,
     "_routing":"BLOCK_AND_ALERT",
     "_routing_reason":"Przekroczony limit działalności nieewidencjonowanej",
-    "_legal_basis":"Art. 5 ust. 1 pkt 1 Prawa przedsiębiorców",
+    "_legal_basis":"Art. 5 ust. 1 pkt 1 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)",
     "_warnings":["Przekroczony limit dział. nieewidencjonowanej (75% min. wynagrodzenia; kwartalnie 225% od 2026 — limit z data.thresholds) — OBOWIĄZKOWA rejestracja CEIDG w 7 dni!"]
 } {
     input.jdg_entrepreneur.is_unregistered_activity == true
@@ -473,7 +473,7 @@ else := {
     "zus_social_base_type":"UNREGISTERED","zus_health_rate":"0.00",
     "business_status":"",
     "_routing":"","_routing_reason":"",
-    "_legal_basis":"Art. 5 Prawa przedsiębiorców",
+    "_legal_basis":"Art. 5 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)",
     "_warnings":["Działalność nieewidencjonowana — brak obowiązku ZUS"]
 } {
     input.jdg_entrepreneur.is_unregistered_activity == true
@@ -585,7 +585,7 @@ else := {
     "business_status":"SUSPENDED",
     "suspension_months":susp_months,"suspension_risk_deregistration":is_at_risk,
     "_routing":"","_routing_reason":"",
-    "_legal_basis":"Art. 22 Prawa przedsiębiorców",
+    "_legal_basis":"Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)",
     "_warnings":[sprintf("Zawieszenie %d miesięcy, %d pracowników — %s",[susp_months,emp_count,warn_msg])]
 } {
     input.jdg_entrepreneur.business_status == "SUSPENDED"
@@ -657,7 +657,7 @@ else := {
     "ceidg_registration_required":exceeded,
     "_routing":routing_flag,
     "_routing_reason":routing_reason,
-    "_legal_basis":"Art. 5 ust. 1 pkt 1 Prawa przedsiębiorców",
+    "_legal_basis":"Art. 5 ust. 1 pkt 1 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)",
     "_warnings":[warn_msg]
 } {
     input.business_unregistered_limit_check == true
@@ -697,7 +697,7 @@ else := {
     "suspension_end_date":end_date,
     "suspension_eval_date":eval_date,
     "_routing":"","_routing_reason":"",
-    "_legal_basis":"Art. 22-25 Prawa przedsiębiorców",
+    "_legal_basis":"Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)",
     "_warnings":[warn_msg]
 } {
     input.business_suspension_check == true

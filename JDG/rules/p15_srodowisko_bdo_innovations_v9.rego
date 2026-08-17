@@ -21,7 +21,7 @@
 #   Sekcja 7: 12+ genialnych pomysłów Enterprise (INN-01..INN-12)
 #   Sekcja 8: Mapa drogowa P0/P1/P2 (w raporcie R15)
 #
-# Zgodność: Ustawa o odpadach (UoO — Dz.U. 2025 poz. 321), prawo budowlane,
+# Zgodność: ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321) (UoO — Dz.U. 2025 poz. 321), prawo budowlane,
 #           ustawa o transporcie drogowym, ustawa o podatku rolnym, CBAM
 #           (Rozporządzenie UE 2023/956), ADR-002 (progi z data.jdg.thresholds).
 # package: jdg.p15_srodowisko_bdo_innovations
@@ -115,7 +115,7 @@ srodowisko_bdo_coverage_report := {
     "micro_total_rule_ids": object.get(p15_audit_data, "total_rule_ids", 166),
     "_routing": "",
     "_routing_reason": "Mapa pokrycia modułów BDO + środowiska + budownictwa — status COMPLETE/PARTIAL/MISSING",
-    "_legal_basis": "Ustawa o odpadach; prawo budowlane; ustawa o transporcie drogowym",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321); prawo budowlane; ustawa o transporcie drogowym",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
@@ -147,7 +147,7 @@ bdo_audit := {
     "integrated_packages": ["jdg.environmental.bdo (bdo_enterprise)", "jdg.micro.bdo_rejestracja", "jdg.micro.bdo_ewidencja", "jdg.micro.bdo_ewc", "jdg.micro.bdo_transport", "jdg.micro.bdo_zezwolenia", "jdg.micro.bdo_weee_baterie"],
     "_routing": "",
     "_routing_reason": "Audyt BDO — rejestracja, ewidencja, EWC, KPO, transport, pozwolenia, WEEE/baterie, opakowania (priorytet)",
-    "_legal_basis": "Ustawa o odpadach (Dz.U. 2025 poz. 321)",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321) (Dz.U. 2025 poz. 321)",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
@@ -167,7 +167,7 @@ bdo_assistant := {
     "note": "automatyczny asystent BDO — rejestracja, opłaty, ewidencja, terminy",
     "_routing": "",
     "_routing_reason": "Automatyczny asystent BDO (INN-01) — rejestracja, opłaty, ewidencja, terminy",
-    "_legal_basis": "Ustawa o odpadach art. 49-70",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321) art. 49-70",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
@@ -186,7 +186,7 @@ kpo_generator := {
     "note": "generator kart przekazania odpadów KPO — kod EWC, formularz elektroniczny BDO",
     "_routing": "",
     "_routing_reason": "Generator kart przekazania odpadów KPO (INN-02) — kod EWC, BDO",
-    "_legal_basis": "Ustawa o odpadach art. 66-70",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321) art. 66-70",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
@@ -202,7 +202,7 @@ bdo_deadline_tracker := {
     "note": "tracker terminów sprawozdań BDO — ewidencja kwartalna i sprawozdania roczne",
     "_routing": "",
     "_routing_reason": "Tracker terminów sprawozdań BDO (INN-03) — ewidencja i sprawozdania",
-    "_legal_basis": "Ustawa o odpadach art. 71-74",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321) art. 71-74",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
@@ -221,7 +221,7 @@ product_fee_tracker := {
     "note": "tracker opłat produktowych — opakowania, WEEE, baterie (art. 17-18 UoO)",
     "_routing": "",
     "_routing_reason": "Tracker opłat produktowych (INN-04) — opakowania, WEEE, baterie",
-    "_legal_basis": "Ustawa o odpadach art. 17-18; ustawa o WEEE",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321) art. 17-18; ustawa o WEEE",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
@@ -242,7 +242,7 @@ budownictwo_audit := {
     "integrated_packages": ["jdg.micro.budownictwo (65 reguł)", "jdg.local_taxes.real_estate"],
     "_routing": "",
     "_routing_reason": "Audyt budownictwa — pozwolenia, zgłoszenia, nadzór, podatek, VAT/KUP (priorytet)",
-    "_legal_basis": "Prawo budowlane (Dz.U. 2025 poz. 456); ustawy lokalne",
+    "_legal_basis": "ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 456); ustawy lokalne",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
@@ -260,7 +260,7 @@ budowlane_pozwolenie_calculator := {
     "note": "kalkulator pozwolenia na budowę / zgłoszenia — typ inwestycji (prawo budowlane art. 28-30)",
     "_routing": "",
     "_routing_reason": "Kalkulator pozwolenia na budowę / zgłoszenia (INN-05)",
-    "_legal_basis": "Prawo budowlane art. 28-30",
+    "_legal_basis": "ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101) art. 28-30",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
@@ -543,7 +543,7 @@ bdo_api_integration := {
     "note": "integracja API BDO dla KPO i sprawozdań rocznych (P0-2) — endpointy z thresholds",
     "_routing": "",
     "_routing_reason": "Integracja z systemem BDO (API) — KPO i sprawozdania roczne (P0-2)",
-    "_legal_basis": "Ustawa o odpadach art. 66-74; rozporządzenia ws. systemu BDO",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321) art. 66-74; rozporządzenia ws. systemu BDO",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
@@ -670,7 +670,7 @@ bdo_online_registration := {
     "note": "rejestracja online w BDO przez API/portal (P2-2) — kroki, opłata, terminy",
     "_routing": "",
     "_routing_reason": "Rejestracja online w BDO (P2-2) — status, kroki, opłata, terminy aktualizacji/wyrejestrowania",
-    "_legal_basis": "Ustawa o odpadach art. 49-55",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321) art. 49-55",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
@@ -700,7 +700,7 @@ zero_click_bdo := {
     "note": "zero-click BDO — ewidencja odpadów generowana automatycznie z dokumentów WZ (INN-13)",
     "_routing": "",
     "_routing_reason": "Zero-click BDO (INN-13) — ewidencja z WZ, KPO auto, spójność z P18 (automatyzacja)",
-    "_legal_basis": "Ustawa o odpadach art. 66-70; rozporządzenie ws. BDO",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321) art. 66-70; rozporządzenie ws. BDO",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
@@ -725,7 +725,7 @@ bdo_registration_detector := {
     "p13_integration": "spójność z P13 company_setup_assistant — krok rejestracji BDO dodawany do checklisty zakładania firmy",
     "_routing": "BDO_REGISTRATION_QUEUE" if registration_required else "",
     "_routing_reason": "Auto-wykrycie obowiązku rejestracji BDO przy zakładaniu firmy (INN-14) — integracja P13, rejestracja przed startem",
-    "_legal_basis": "Ustawa o odpadach art. 49-53 (rejestracja przed rozpoczęciem działalności)",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321) art. 49-53 (rejestracja przed rozpoczęciem działalności)",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true
@@ -833,7 +833,7 @@ decide := {
     },
     "_routing": "REPORT",
     "_routing_reason": "Raport syntetyczny Środowisko + BDO + Branża (P15) — BDO, budownictwo, transport, rolnictwo, CBAM + mapa drogowa P0/P1/P2",
-    "_legal_basis": "Ustawa o odpadach; prawo budowlane; u.t.d.; podatek rolny; CBAM",
+    "_legal_basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321); prawo budowlane; u.t.d.; podatek rolny; CBAM",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p15_branza_check", false) == true

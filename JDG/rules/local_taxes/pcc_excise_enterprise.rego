@@ -14,8 +14,8 @@
 #   uzdrowiskowa, od posiadania psów, reklamowa), BDO/SUP/KOBiZE rozszerzone.
 #   Zwiększa pokrycie Klasa IX z ~1% → ~85%.
 # architecture: Enterprise Multi-Pass (ADR-001), First-Match-Wins else-chain
-# legal_basis: Ustawa o PCC, Ustawa o podatkach i opłatach lokalnych,
-#   Ustawa o podatku akcyzowym, Ustawa o odpadach (BDO), Dyrektywa SUP
+# legal_basis: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789), ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234),
+#   ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220), Ustawa o odpadach (BDO), Dyrektywa SUP
 # package: jdg.local.enterprise
 # deprecated: false
 # ═══════════════════════════════════════════════════════════════════════════════

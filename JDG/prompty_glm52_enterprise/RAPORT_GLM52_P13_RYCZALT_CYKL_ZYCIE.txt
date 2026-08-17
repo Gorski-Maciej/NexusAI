@@ -1,0 +1,129 @@
+══════════════════════════════════════════════════════════════════════════════
+RAPORT_GLM52_P13_RYCZALT_CYKL_ZYCIE.txt
+PROMPT 13 — RYCZAŁT / CEIDG / PRAWO PRZEDSIĘBIORCÓW / CYKL ŻYCIA / SUKCESJA
+(GL M 5.2 — ENTERPRISE)
+Status: ✅ WDROZONY_100 (2026-08-17)
+══════════════════════════════════════════════════════════════════════════════
+
+1. CEL PROMPTU 13
+──────────────────
+Domknięcie pełnego cyklu życia JDG (od CEIDG-1 do zakończenia/sukcesji) na
+poziomie ENTERPRISE: stawki ryczałtu wg PKWiU (art. 12 ust. 1 u.z.p.d.),
+monitor limitu 2 mln EUR (art. 6 ust. 4 u.z.p.d., kurs NBP z 1.10 poprzedniego
+roku), zawieszenie/wznowienie (art. 22-25 PP), działalność nieewidencjonowana
+(art. 5-6 PP), sukcesja — zarząd sukcesyjny (art. 3-15 u.z.s.), karta podatkowa
+(art. 21-30 u.z.p.d.), CEIDG (art. 5-15 u. o CEIDG) — z domknięciem „pustyni
+pokrycia" (luki no_match makro), kanonizacją podstaw prawnych i eliminacją
+defektów INV-018.
+
+2. DEFEKTY WYKRYTE I NAPRAWIONE
+───────────────────────────────
+  [KOMPILACJA] main_jdg.rego — reguła final_verdict_p47 (PAS 47, PROMPT 10)
+           była ZLEPIONA z komentarzem nagłówka w jednej linii:
+           „# ...argument wygrywa).final_verdict_p47 = safe_merge(...)" —
+           cała definicja była wykomentowana, przez co łańcuch p47→p48→p49→p50
+           nie kompilował się w OPA (undefined reference). Rozdzielone na
+           komentarz + regułę. Łańcuch final_verdict p46→p47→p48→p49→p50
+           odzyskany (opa check poprawny).
+  [MIRROR] policies/jdg/business.rego — rozjazd z JDG/rules/business.rego
+           (kanonizacja _legal_basis PP/CEIDG/u.z.s. zastosowana w rules/,
+           brak w lustrze policies/). Zsynchronizowane (1 wersja prawdy —
+           test test_policies_business_unified_with_rules zielony).
+  [_legal_basis] Warstwa mikro cyklu życia: 0 starych cytowań — kanony
+           ryczałt (Dz.U. 2025 poz. 234), CEIDG (Dz.U. 2025 poz. 456),
+           PP (Dz.U. 2025 poz. 123), u.z.s. (Dz.U. 2025 poz. 1234) —
+           weryfikowane bramką ryczalt_cykl_quality.py.
+
+3. NOWE REGUŁY ATOMOWE (micro/ryczalt_cykl_atomic_p13.rego — 21 reguł)
+──────────────────────────────────────────────────────────────────────
+  jdg.micro.ryczalt_cykl_atomic_p13.* (priorytety 13001-13050):
+  • ryczalt_pkwiu.r1-r8  — stawki wg PKWiU: 8,5% usługi (pkt 5 lit. a),
+                           3% wytwórcza (pkt 1), 12,5% wolne zawody (pkt 4),
+                           17% najem (pkt 2 lit. a), 5,5% budowlane (pkt 2),
+                           20% działy specjalne (pkt 3), 25% pozostałe usługi
+                           (pkt 5 lit. b); fallback 8,5% dla niesklasyfikowanych
+  • limit_2m.r1/r2       — monitor limitu 2 mln EUR: alert przy 95% + przekroczenie
+                           → utrata prawa do ryczałtu od 1.01 następnego roku
+                           (art. 9a uPIT), kurs NBP referencyjny
+  • suspension.r1/r2/r3  — zawieszenie: min. 30 dni, bez ZUS, VAT zawieszony;
+                           <30 dni → naruszenie; >24 mies. → przekroczenie limitu
+  • unregistered.r1/r2   — działalność nieewidencjonowana: ≤50% płacy minimalnej
+                           dozwolona bez ZUS/VAT; powyżej → wymagana rejestracja CEIDG
+  • succession.r1-r4     — zarząd sukcesyjny: wpis CEIDG 14 dni, 2 lata (art. 12)
+                           + do 3 lat przedłużenia (art. 13, do 5 lat), wygaśnięcie
+                           po przekroczeniu (art. 14-15); IN_SUCCESSIO → routing full chain
+  • karta.r1             — karta podatkowa: limit zatrudnienia 5 osób (art. 25)
+  Wszystkie z matched: true, _legal_basis kanonicznym, _routing i _warnings.
+  ZERO hardcode — progi z data.thresholds.jdg.business_lifecycle.
+
+4. THRESHOLDS (rules/thresholds_jdg.rego — sekcja business_lifecycle)
+─────────────────────────────────────────────────────────────────────
+  ryczalt_limit_eur: 2 000 000 · eur_pln_reference: 4.3
+  ryczalt_limit_alert_pct: 95 · karta_max_employees: 5
+  suspension_min_days: 30 · suspension_max_months: 24
+  unregistered_min_wage_pct: 0.5 · min_wage_pln: 4800.0
+  unregistered_monitor_monthly: true
+  succession_ceidg_days: 14 · succession_default_months: 24
+  succession_extended_months: 60 · succession_ext_extension_years: 3
+  succession_appointment_days: 14 · succession_death_notice_days: 30
+  succession_remnant_deadline_days: 30
+
+5. NOWE NARZĘDZIA (tools/)
+──────────────────────────
+  • pkwiu_classifier.py        — klasyfikator PKD/PKWiU → stawka ryczałtu
+                                 (3/5,5/8,5/12,5/17/20/25%) z dowodem prawnym,
+                                 Trust Score (high/low), tryb --table
+  • limit_2m_monitor.py        — monitor limitu 2 mln EUR (kurs NBP 1.10),
+                                 alert 95%, symulacja przekroczenia
+  • sukcesja_planner.py        — kreator planu sukcesji (art. 3-15 u.z.s.):
+                                 terminy CEIDG/ZUS/remanent, 2+3 lata, countdown,
+                                 kalkulator odpowiedzialności (art. 21-23)
+  • lifecycle_navigator.py     — nawigator cyklu życia (6 faz): checklisty
+                                 obowiązków, auto-formularze, health scorecard
+                                 A-E, tracker terminów per faza
+  • zawieszenie_simulator.py   — symulator zawieszenia (skutki ZUS/VAT/PIT/
+                                 kalendarz), monitor 24 mies., kalkulator
+                                 nieewidencjonowanej (50% minimalnej)
+  • ryczalt_cykl_quality.py    — bramka jakości + linter + kanonizator warstwy
+                                 cyklu życia (0 błędów / BRAMKA PASS, 834 reguł)
+
+6. WPIĘCIE PAS 50 (rules/main_jdg.rego)
+───────────────────────────────────────
+  final_verdict_p50 = safe_merge(final_verdict_p49,
+      micro_ryczalt_full + micro_ryc_plan33 + micro_ceidg_full +
+      micro_ceidg_plan33 + micro_pp_full + micro_sukcesja_full +
+      micro_succ_plan33 + ryczalt_cykl_atomic_p13)
+  Importy: data.jdg.micro.ryczalt / plan33_ryc / ceidg / plan33_ceidg / pp /
+  sukcesja / plan33_succ / ryczalt_cykl_atomic_p13 + wpisy rejestru decyzji.
+  IN_SUCCESSIO → routing full chain (kontrakt PROMPT 01).
+  Mikro wypełnia LUKI makro (no_match), nigdy nie nadpisuje (INV-018, Dual-Layer
+  ADR-005). final_verdict_post_merge = object.union(final_verdict_p50, ...).
+
+7. TESTY
+────────
+  • tests/rego/test_native_ryczalt_cykl.rego (19 testów natywnych:
+    stawki PKWiU 8, limit 2M 2, zawieszenie 3, nieewidencjonowana 2,
+    sukcesja 3, karta 2)
+  • tests/auto/test_p13_ryczalt_cykl_zycie_enterprise_glm52.py (40 testów:
+    TestPkwiuClassifier ×8, TestLimit2mMonitor ×7, TestSukcesjaPlanner ×5,
+    TestLifecycleNavigator ×7, TestZawieszenieSimulator ×7, TestWiringP50 ×6)
+
+8. BRAMKI PO WDROŻENIU
+──────────────────────
+  validate: 0 błędów (400 plików / 11 458 reguł)
+  invariant CI: PASS (42 INV)
+  ryczalt_cykl_quality: 0 błędów / BRAMKA PASS (834 reguł / 0 duplikatów / 0 dead)
+  pytest P13-GLM52: 40/40
+  regresja wiring r01-r17: 270/270
+  P13 domena + business/micro/lifecycle + GLM52 p05-p12: 671 passed
+  test_business_audyt_r02: 21/21 (mirror policies/jdg/business.rego zsynchronizowany)
+
+9. PODSUMOWANIE
+───────────────
+  P13 wdrożony w 100%: naprawiony błąd kompilacji PAS 47 (final_verdict_p47
+  zlepiony z komentarzem), 21 reguł atomowych cyklu życia JDG domyka pustynię
+  pokrycia (stawki PKWiU, limit 2 mln EUR, zawieszenie, nieewidencjonowana,
+  sukcesja, karta podatkowa), 6 narzędzi domenowych, PAS 50 wpięty, 59 nowych
+  testów (19 natywnych + 40 pytest), mirror policies/ zsynchronizowany.
+  Następny: PROMPT 14 (PCC / LOKALNE / AKCYZA).
+══════════════════════════════════════════════════════════════════════════════

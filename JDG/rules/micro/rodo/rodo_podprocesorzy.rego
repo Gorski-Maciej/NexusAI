@@ -68,12 +68,3 @@ else := {
     name := object.get(input.jdg_entrepreneur, "processor_name_breach", "procesor")
 }
 
-# fallback
-else := {
-    "matched": true, "rule_id": "jdg.micro.rodo_podprocesorzy.fallback",
-    "package": "jdg.micro.rodo_podprocesorzy", "priority": 84199,
-    "micro_rule_active": true,
-    "_routing": "", "_routing_reason": "",
-    "_legal_basis": "RODO 2016/679",
-    "_warnings": ["[MICRO] RODO podprocesorzy — łańcuch powierzenia prawidłowy, umowy podpisane."]
-} { true }

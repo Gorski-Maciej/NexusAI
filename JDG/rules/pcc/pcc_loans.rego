@@ -2,7 +2,7 @@
 # NexusAI JDG — PCC Loans: Art. 1, 7 Ustawy o PCC
 # Package: jdg.pcc.loans — Pożyczki (PCC-3)
 # Version: 1.0.0 — Q3 2026 Critical Closure
-# Legal basis: Ustawa o PCC — Art. 1 ust. 1 pkt 1 lit. b, Art. 7 ust. 1 pkt 4
+# Legal basis: ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789) — Art. 1 ust. 1 pkt 1 lit. b, Art. 7 ust. 1 pkt 4
 # Coverage: ~30 rules, ~30 legal points
 # ═══════════════════════════════════════════════════════════════════════════════
 

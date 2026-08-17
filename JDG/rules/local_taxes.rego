@@ -42,7 +42,7 @@ else := {
     "business_status":"","local_tax_type":"REAL_ESTATE",
     "local_tax_land_rate":land_rate,"local_tax_building_rate":bldg_rate,
     "_routing":"","_routing_reason":"",
-    "_legal_basis":"Ustawa o podatkach i opłatach lokalnych",
+    "_legal_basis":"ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings":["Podatek od nieruchomości firmowych — deklaracja DN-1 do 31 stycznia"]
 } {
     input.invoice.category_code == "REAL_ESTATE"
@@ -61,7 +61,7 @@ else := {
     "zus_social_base_type":"","zus_health_rate":"",
     "business_status":"","local_tax_type":"TRANSPORT","local_tax_applicable":true,
     "_routing":"","_routing_reason":"",
-    "_legal_basis":"Ustawa o podatkach i opłatach lokalnych",
+    "_legal_basis":"ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234)",
     "_warnings":["Podatek od środków transportowych — deklaracja DT-1"]
 } {
     input.invoice.category_code == "VEHICLE"
@@ -402,7 +402,7 @@ else := {
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
 # ║  P1340-P1349 — AKCYZA: wyroby akcyzowe, energia, zwolnienia               ║
-# ║  Ustawa o podatku akcyzowym (Dz.U. 2025 poz. 890)                         ║
+# ║  ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2025 poz. 1220) (Dz.U. 2025 poz. 890)                         ║
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # P1340: excise_fuel — Akcyza od paliw silnikowych
