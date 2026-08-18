@@ -18,6 +18,8 @@ from unittest.mock import AsyncMock, MagicMock
 import duckdb
 import pytest
 
+pytest.importorskip("nexus_ai", reason="legacy nexus_ai package nieobecny w repo (JDG = OPA/Rego)")
+
 from nexus_ai.tax.pipeline import TaxPipeline, PipelineResult
 from nexus_ai.tax.rules import ensure_tax_schemas, seed_default_rules, RuleEngine
 from nexus_ai.core.context_interpreter import ContextInterpreter as CtxInterpreter

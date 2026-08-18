@@ -1,14 +1,14 @@
 # 📋 JDG MANIFEST — Tracker Pokrycia Reguł vs Mapa Kanoniczna 38c
 
-> **Auto-generowane:** 2026-08-17 13:39:20
+> **Auto-generowane:** 2026-08-18 07:57:48
 > **Generator:** v8.0 (parser strukturalny, 100% plików)
-> **Completeness Score:** 🟢 **92/100**
->   - Plików w manifescie: 404/450 (89%)
->   - Aktualność: 97/100 | Sumy spójne: ✅ | Routing: 70%
-> **Plików Rego:** 450
-> **Plików z matched:true:** 404
-> **Bloków matched:true:** 11754
-> **Unikalnych rule_id:** 11751
+> **Completeness Score:** 🟡 **88/100**
+>   - Plików w manifescie: 407/453 (89%)
+>   - Aktualność: 87/100 | Sumy spójne: ✅ | Routing: 67%
+> **Plików Rego:** 453
+> **Plików z matched:true:** 407
+> **Bloków matched:true:** 11792
+> **Unikalnych rule_id:** 11789
 > **Duplikatów:** 3
 
 ---
@@ -36,11 +36,11 @@
 | `rules/audit/plan45_audit.rego` | 55 | 3 | 6 | 0016f227d516aea9 |
 | `rules/audit_defense_enterprise.rego` | 4 | 0 | 0 | 773ecbf2fdd10558 |
 | `rules/banking_automation_enterprise.rego` | 14 | 0 | 0 | a41d729d474d8daf |
-| `rules/business.rego` | 23 | 8 | 5 | c7ef3a8c0eb3cf26 |
-| `rules/business/gig_economy.rego` | 5 | 0 | 1 | dcd54ded7691a903 |
-| `rules/business/plan26_suspension_succession.rego` | 5 | 3 | 1 | 28f987857b5bdb23 |
+| `rules/business.rego` | 23 | 8 | 5 | f856e084da38e22d |
+| `rules/business/gig_economy.rego` | 5 | 0 | 1 | 4fefd676c291ef24 |
+| `rules/business/plan26_suspension_succession.rego` | 5 | 3 | 1 | 9dab893c5c0dde48 |
 | `rules/calendar/plan44_calendar.rego` | 6 | 0 | 0 | 97afca8223372d0b |
-| `rules/calendar/plan45_calendar.rego` | 35 | 3 | 0 | 5872884be8585469 |
+| `rules/calendar/plan45_calendar.rego` | 35 | 0 | 0 | ec34f22964bb2b98 |
 | `rules/cashflow_tax_predictor_enterprise.rego` | 6 | 0 | 0 | 977e5c82b638ab94 |
 | `rules/cbam_full.rego` | 3 | 0 | 0 | 4f8e307dd6fb925e |
 | `rules/cfc_auto_classifier.rego` | 3 | 0 | 0 | 515d8c0591521b34 |
@@ -61,7 +61,7 @@
 | `rules/edge_cases.rego` | 187 | 44 | 54 | 06a0cbadf025b055 |
 | `rules/employer.rego` | 27 | 5 | 2 | 9d5ea3cc03fa1d20 |
 | `rules/environmental.rego` | 14 | 3 | 2 | ebd04aff302927de |
-| `rules/environmental/bdo_enterprise.rego` | 23 | 11 | 10 | 16d66c9397fb6bbc |
+| `rules/environmental/bdo_enterprise.rego` | 22 | 11 | 10 | 908e3d635fbd2cfc |
 | `rules/epuap_enterprise.rego` | 3 | 0 | 0 | 567efd5fb2b64dae |
 | `rules/esig/plan44_esig.rego` | 7 | 0 | 0 | 70bbecf50e9ffb0f |
 | `rules/esig/plan45_esig.rego` | 36 | 2 | 0 | 309e1c17789c01a7 |
@@ -84,20 +84,20 @@
 | `rules/interest_calculator_enterprise.rego` | 3 | 0 | 0 | d904bc52d221bc19 |
 | `rules/international.rego` | 16 | 0 | 8 | 4eb3e1f20a295841 |
 | `rules/international_expanded.rego` | 23 | 5 | 2 | 25c484011e921088 |
-| `rules/jdg/hyper/audit/plan45.rego` | 25 | 2 | 0 | c54cfdd0d45d03b0 |
-| `rules/jdg/hyper/deadlines/plan45.rego` | 56 | 4 | 0 | aa48a819b04c62c5 |
-| `rules/jdg/hyper/edelivery/plan45.rego` | 21 | 0 | 0 | 151e1a5fdc3e3d65 |
-| `rules/jdg/hyper/family/plan45.rego` | 21 | 0 | 0 | 52aa82f1e4146c6c |
-| `rules/jdg/hyper/force_majeure/plan45.rego` | 21 | 0 | 0 | 8d256e37f70c3eb8 |
-| `rules/jdg/hyper/fx/plan45.rego` | 24 | 0 | 0 | 813718a8c4ef2562 |
-| `rules/jdg/hyper/general/plan45.rego` | 100 | 0 | 0 | dd71f37c4ac70ce8 |
-| `rules/jdg/hyper/limits/plan45.rego` | 33 | 0 | 0 | 57f1680e4283621a |
-| `rules/jdg/hyper/mdr/plan45.rego` | 38 | 0 | 0 | edb1511b39e18c27 |
-| `rules/jdg/hyper/misc/plan45.rego` | 49 | 1 | 0 | c2e615fd89eaf7d2 |
-| `rules/jdg/hyper/procurement/plan45.rego` | 21 | 0 | 0 | 7311cc8d7dfde9cc |
-| `rules/jdg/hyper/sanctions/plan45.rego` | 51 | 5 | 2 | 66197fa7c92179aa |
-| `rules/jdg/hyper/solidarity/plan45.rego` | 11 | 0 | 0 | 38d18bb8f0f134e6 |
-| `rules/jdg/hyper/wis/plan45.rego` | 18 | 0 | 0 | bd503dd8c945dfc2 |
+| `rules/jdg/hyper/audit/plan45.rego` | 25 | 0 | 0 | 5aefd6dea03670c3 |
+| `rules/jdg/hyper/deadlines/plan45.rego` | 56 | 0 | 0 | 9e36747f3ca66ea8 |
+| `rules/jdg/hyper/edelivery/plan45.rego` | 21 | 0 | 0 | a49133fcea89233b |
+| `rules/jdg/hyper/family/plan45.rego` | 21 | 0 | 0 | 1abdcbc4580b1676 |
+| `rules/jdg/hyper/force_majeure/plan45.rego` | 21 | 0 | 0 | be0e41090b860621 |
+| `rules/jdg/hyper/fx/plan45.rego` | 24 | 0 | 0 | 9bd4a2df74e3c8ff |
+| `rules/jdg/hyper/general/plan45.rego` | 100 | 0 | 0 | 0e652cc35274bfe2 |
+| `rules/jdg/hyper/limits/plan45.rego` | 33 | 0 | 0 | 875ea5f59f7b7a30 |
+| `rules/jdg/hyper/mdr/plan45.rego` | 38 | 0 | 0 | 7f758f027cf3b744 |
+| `rules/jdg/hyper/misc/plan45.rego` | 49 | 0 | 0 | 8add5c039dbd38c8 |
+| `rules/jdg/hyper/procurement/plan45.rego` | 21 | 0 | 0 | d77626873209a2bf |
+| `rules/jdg/hyper/sanctions/plan45.rego` | 51 | 0 | 0 | 669c53f21fd8927f |
+| `rules/jdg/hyper/solidarity/plan45.rego` | 11 | 0 | 0 | 83397bd4a8fbf6c3 |
+| `rules/jdg/hyper/wis/plan45.rego` | 18 | 0 | 0 | 3188b3baea8f7c84 |
 | `rules/jpk/plan26_deadlines.rego` | 1 | 0 | 0 | 48d7ae022bf552fa |
 | `rules/jpk_cit.rego` | 4 | 0 | 0 | 84ef50cf89d927a8 |
 | `rules/jpk_corrections_workflow_enterprise.rego` | 3 | 0 | 0 | 52ffe716fe1e6305 |
@@ -123,30 +123,30 @@
 | `rules/ksef_upo_tracker_enterprise.rego` | 3 | 0 | 0 | f8bd61a3544eb11c |
 | `rules/legislative_monitor_enterprise.rego` | 5 | 0 | 0 | 2e93fa2d1da19e21 |
 | `rules/liability.rego` | 15 | 2 | 2 | 788cae0eaf08ea40 |
-| `rules/lifecycle_manager_enterprise.rego` | 4 | 1 | 0 | bcd20b369c30f140 |
-| `rules/local_taxes.rego` | 27 | 2 | 6 | 45adb9e05e941018 |
+| `rules/lifecycle_manager_enterprise.rego` | 4 | 1 | 0 | f1aefbef6586dc98 |
+| `rules/local_taxes.rego` | 27 | 2 | 6 | 1e35767154b24e08 |
 | `rules/local_taxes/akcyza_alcohol.rego` | 20 | 4 | 0 | e1bdec59e7d15093 |
-| `rules/local_taxes/akcyza_fuel.rego` | 18 | 1 | 1 | 3f6157ddd041fb67 |
-| `rules/local_taxes/excise_enterprise_complete.rego` | 15 | 2 | 1 | 60f6cd87baf5036b |
-| `rules/local_taxes/local_procedures_enterprise.rego` | 15 | 0 | 0 | 6166538bb9880480 |
-| `rules/local_taxes/pcc.rego` | 3 | 0 | 2 | dbea1bcc45d01d19 |
-| `rules/local_taxes/pcc_enterprise_complete.rego` | 51 | 4 | 2 | f0f3155f8cdda848 |
-| `rules/local_taxes/pcc_excise_enterprise.rego` | 18 | 3 | 3 | c7ce2f1353ac89e0 |
-| `rules/local_taxes/plan26_local.rego` | 6 | 0 | 1 | d4f459b64b2d79c5 |
-| `rules/local_taxes/real_estate.rego` | 2 | 0 | 2 | 26564bc0a882feb5 |
-| `rules/local_taxes/transport.rego` | 1 | 0 | 1 | 7f34215231ef5770 |
+| `rules/local_taxes/akcyza_fuel.rego` | 18 | 1 | 1 | 24704989d869b118 |
+| `rules/local_taxes/excise_enterprise_complete.rego` | 15 | 2 | 1 | 691c82b09134c9f6 |
+| `rules/local_taxes/local_procedures_enterprise.rego` | 15 | 0 | 0 | 97e2649c0911e6aa |
+| `rules/local_taxes/pcc.rego` | 3 | 0 | 2 | 3b17ceafc4369362 |
+| `rules/local_taxes/pcc_enterprise_complete.rego` | 51 | 4 | 2 | e21f7b9f86f6b99b |
+| `rules/local_taxes/pcc_excise_enterprise.rego` | 18 | 3 | 3 | d0c72c26e0669e87 |
+| `rules/local_taxes/plan26_local.rego` | 6 | 0 | 1 | 5e43af6aec03f1cb |
+| `rules/local_taxes/real_estate.rego` | 2 | 0 | 2 | a3a2112a641c0a2e |
+| `rules/local_taxes/transport.rego` | 1 | 0 | 1 | 12c4c0b1494ce58e |
 | `rules/mdr/mdr_enterprise.rego` | 16 | 4 | 12 | d4df30687512ce80 |
 | `rules/mdr/mdr_hallmarks.rego` | 20 | 17 | 0 | 76d998a773937527 |
 | `rules/mdr/plan44_mdr.rego` | 10 | 1 | 7 | 12e82419eac65364 |
 | `rules/mdr/plan45_mdr.rego` | 42 | 2 | 34 | a10ee7c10c33de63 |
 | `rules/mdr_auto_generator.rego` | 5 | 2 | 0 | bcda782191abda4d |
 | `rules/mdr_dac6_enterprise.rego` | 3 | 0 | 0 | 237cba88865257e2 |
-| `rules/micro/akcyza/akcyza.rego` | 132 | 0 | 0 | ba4053a1ea873cbc |
-| `rules/micro/aml/aml.rego` | 125 | 0 | 0 | d459d166a582ddb5 |
-| `rules/micro/aml/aml_cbdd.rego` | 6 | 2 | 2 | dd1f829738482e3f |
-| `rules/micro/aml/aml_ryzyko.rego` | 8 | 3 | 3 | 3cbde7ab8096074f |
-| `rules/micro/aml/aml_str_gif.rego` | 8 | 3 | 4 | 3a0a5cec1917a620 |
-| `rules/micro/aml/aml_transakcje.rego` | 7 | 3 | 2 | 24fcb944cea5a32c |
+| `rules/micro/akcyza/akcyza.rego` | 132 | 0 | 0 | 5e5f111a19150c37 |
+| `rules/micro/aml/aml.rego` | 125 | 0 | 0 | a3c508ea40618333 |
+| `rules/micro/aml/aml_cbdd.rego` | 5 | 2 | 2 | 4015ef343903da34 |
+| `rules/micro/aml/aml_ryzyko.rego` | 7 | 3 | 3 | 41613d9882ee5969 |
+| `rules/micro/aml/aml_str_gif.rego` | 7 | 3 | 4 | f3d09fba094566a7 |
+| `rules/micro/aml/aml_transakcje.rego` | 6 | 3 | 2 | bbf5a1fefa264c20 |
 | `rules/micro/amortyzacja/pit_a22a.rego` | 9 | 2 | 0 | dc70591fc87f9bb1 |
 | `rules/micro/amortyzacja/pit_a22b.rego` | 6 | 1 | 0 | c07c7467c84f052b |
 | `rules/micro/amortyzacja/pit_a22c.rego` | 6 | 5 | 0 | 64606d724f2df0fa |
@@ -154,14 +154,14 @@
 | `rules/micro/amortyzacja/pit_a22i.rego` | 8 | 1 | 0 | 6919aa91e0735093 |
 | `rules/micro/amortyzacja/pit_a22k.rego` | 6 | 2 | 0 | 550fbb350be52c7b |
 | `rules/micro/amortyzacja/pit_a22n.rego` | 6 | 1 | 0 | cccfda501bf86590 |
-| `rules/micro/bdo/bdo_ewc.rego` | 9 | 2 | 2 | 4c1d018b2400ccd5 |
-| `rules/micro/bdo/bdo_ewidencja.rego` | 9 | 1 | 1 | 44f8e50eb50aa91d |
-| `rules/micro/bdo/bdo_rejestracja.rego` | 9 | 3 | 2 | 618c0ccc57be4984 |
-| `rules/micro/bdo/bdo_transport.rego` | 7 | 4 | 0 | 1545f1547c85b35f |
-| `rules/micro/bdo/bdo_weee_baterie.rego` | 6 | 1 | 4 | 0452100f69d0a69d |
-| `rules/micro/bdo/bdo_zezwolenia.rego` | 7 | 4 | 1 | e9f5b71284ce1820 |
-| `rules/micro/budownictwo/budownictwo.rego` | 64 | 13 | 0 | 8adcc7f55d9c5520 |
-| `rules/micro/ceidg/ceidg.rego` | 42 | 5 | 0 | ed8518a7adfc92e6 |
+| `rules/micro/bdo/bdo_ewc.rego` | 8 | 2 | 2 | 9c62f8d6303aabd9 |
+| `rules/micro/bdo/bdo_ewidencja.rego` | 8 | 1 | 1 | 8507f279415be2ac |
+| `rules/micro/bdo/bdo_rejestracja.rego` | 8 | 3 | 2 | 29bac77629462408 |
+| `rules/micro/bdo/bdo_transport.rego` | 6 | 4 | 0 | 02ddfa9012c0d1ff |
+| `rules/micro/bdo/bdo_weee_baterie.rego` | 5 | 1 | 4 | c420f8546920e24a |
+| `rules/micro/bdo/bdo_zezwolenia.rego` | 6 | 4 | 1 | 56459362bbeca7f3 |
+| `rules/micro/budownictwo/budownictwo.rego` | 64 | 13 | 0 | 81d5a2caa0581188 |
+| `rules/micro/ceidg/ceidg.rego` | 42 | 5 | 0 | 36794ba33964c20b |
 | `rules/micro/crossborder/crossborder.rego` | 192 | 0 | 0 | a37424e14665a3bd |
 | `rules/micro/crossborder_atomic_p12.rego` | 9 | 5 | 3 | 59dcd7c04694a644 |
 | `rules/micro/jpk/jpk.rego` | 35 | 1 | 0 | f520af362478d53e |
@@ -171,7 +171,8 @@
 | `rules/micro/ksiegowosc_atomic_p10.rego` | 16 | 5 | 3 | 83d93847a4bffea6 |
 | `rules/micro/ord/ord.rego` | 423 | 3 | 0 | 5e500ff7d4d06e67 |
 | `rules/micro/p24_innovations_enterprise.rego` | 29 | 3 | 0 | 0c49c842b5a9269b |
-| `rules/micro/pcc/pcc.rego` | 89 | 1 | 0 | 1b42a6cda9d86c1c |
+| `rules/micro/pcc/pcc.rego` | 89 | 1 | 0 | 9f73dbd4cb19eb69 |
+| `rules/micro/pcc_lokalne_atomic_p14.rego` | 18 | 0 | 0 | b5bab5a7422a2790 |
 | `rules/micro/pit/pit.rego` | 811 | 24 | 0 | 9a07d48293446f4a |
 | `rules/micro/pkpir/pkpir.rego` | 11 | 1 | 0 | 835586dd96378bd0 |
 | `rules/micro/pkpir/pkpir_kolumny.rego` | 11 | 2 | 0 | 602ab1df36ef2a12 |
@@ -182,7 +183,7 @@
 | `rules/micro/pkpir/pkpir_remanent.rego` | 8 | 1 | 2 | 723cfd1aa5ea2b9d |
 | `rules/micro/plan33_agricultural_tax.rego` | 5 | 0 | 0 | 4e4a166138ee2ac3 |
 | `rules/micro/plan33_cb.rego` | 20 | 0 | 0 | 5d931f1770238ff4 |
-| `rules/micro/plan33_ceidg.rego` | 15 | 0 | 0 | c10c21b3c45bd9b4 |
+| `rules/micro/plan33_ceidg.rego` | 15 | 0 | 0 | fa7bcef0abfd95d8 |
 | `rules/micro/plan33_est.rego` | 15 | 0 | 0 | 82b7f3ac1359dc25 |
 | `rules/micro/plan33_health.rego` | 40 | 0 | 0 | 03e0148dd9561c59 |
 | `rules/micro/plan33_jpk.rego` | 70 | 0 | 0 | 8d5acd79dd8826bf |
@@ -190,13 +191,13 @@
 | `rules/micro/plan33_ksef.rego` | 74 | 0 | 0 | d55a2fcff51a2c62 |
 | `rules/micro/plan33_mdr.rego` | 10 | 0 | 0 | c4753ab7bc637876 |
 | `rules/micro/plan33_ord.rego` | 1 | 0 | 0 | 2c6c4d2dcb827cd8 |
-| `rules/micro/plan33_pcc.rego` | 59 | 0 | 0 | 8d10b54000402bb6 |
+| `rules/micro/plan33_pcc.rego` | 59 | 0 | 0 | 6948ffbe27d97cbb |
 | `rules/micro/plan33_pit.rego` | 86 | 0 | 0 | eb83f697ad513ea3 |
-| `rules/micro/plan33_prop.rego` | 30 | 0 | 0 | 98a3824c4046eca6 |
-| `rules/micro/plan33_prop_transport.rego` | 5 | 0 | 0 | 8122729e3acbb8d7 |
-| `rules/micro/plan33_rodo.rego` | 10 | 2 | 3 | aa1a460ee88d7f15 |
-| `rules/micro/plan33_ryc.rego` | 158 | 0 | 0 | 70709fc14f384f5f |
-| `rules/micro/plan33_succ.rego` | 20 | 0 | 0 | 9cecece3ec1201c0 |
+| `rules/micro/plan33_prop.rego` | 30 | 0 | 0 | f3c412ccb382f479 |
+| `rules/micro/plan33_prop_transport.rego` | 5 | 0 | 0 | 4676bdb51f0696c6 |
+| `rules/micro/plan33_rodo.rego` | 10 | 2 | 3 | ab8cea230220a012 |
+| `rules/micro/plan33_ryc.rego` | 158 | 0 | 0 | 5faee91f63181aee |
+| `rules/micro/plan33_succ.rego` | 20 | 0 | 0 | 37973a93c8b80d87 |
 | `rules/micro/plan33_tax_trans.rego` | 15 | 0 | 0 | 3bc38a7d177cabf4 |
 | `rules/micro/plan33_tp.rego` | 15 | 0 | 0 | d7696465db58d528 |
 | `rules/micro/plan33_uor.rego` | 25 | 0 | 0 | 7ce000ce8951f57a |
@@ -205,16 +206,18 @@
 | `rules/micro/plan34_ord.rego` | 189 | 0 | 0 | 48afd725c492c787 |
 | `rules/micro/plan34_pit.rego` | 265 | 0 | 0 | 5c6da186989dc109 |
 | `rules/micro/plan34_vat.rego` | 179 | 0 | 0 | ada7cc696e777a78 |
-| `rules/micro/pp/pp.rego` | 147 | 2 | 0 | 258024a7f793518b |
+| `rules/micro/pp/pp.rego` | 147 | 2 | 0 | 85f2167f2441d252 |
 | `rules/micro/rodo/rodo.rego` | 40 | 0 | 0 | 8e54380c2692ee0a |
-| `rules/micro/rodo/rodo_ai_marketing.rego` | 6 | 1 | 1 | db1f4c0a31fdb719 |
-| `rules/micro/rodo/rodo_erasure.rego` | 5 | 0 | 4 | 57cbaf0e6fc6079d |
-| `rules/micro/rodo/rodo_podprocesorzy.rego` | 5 | 2 | 2 | fa1e055dd8e1a3eb |
-| `rules/micro/rodo/rodo_sankcje.rego` | 6 | 2 | 2 | 1a0c75041366a5d8 |
-| `rules/micro/rodo/rodo_zatrudnienie.rego` | 5 | 0 | 4 | 4402464b1c4ee1f1 |
-| `rules/micro/ryczalt/ryczalt.rego` | 155 | 8 | 0 | 09354e758441e508 |
-| `rules/micro/srodowisko/srodowisko.rego` | 48 | 0 | 0 | 8283974bb67d3383 |
-| `rules/micro/sukcesja/sukcesja.rego` | 140 | 3 | 1 | 75292a242fc270d3 |
+| `rules/micro/rodo/rodo_ai_marketing.rego` | 5 | 1 | 1 | 10b8a66fbc4c0dc2 |
+| `rules/micro/rodo/rodo_erasure.rego` | 4 | 0 | 4 | 36391c9ab30567f7 |
+| `rules/micro/rodo/rodo_podprocesorzy.rego` | 4 | 2 | 2 | bdac6d6f845e95ab |
+| `rules/micro/rodo/rodo_sankcje.rego` | 5 | 2 | 2 | 03df0acbc8bd9213 |
+| `rules/micro/rodo/rodo_zatrudnienie.rego` | 4 | 0 | 4 | 887a84d73a023a4a |
+| `rules/micro/rodo_aml_bdo_atomic_p15.rego` | 17 | 0 | 0 | 970671dcdaa95d8a |
+| `rules/micro/ryczalt/ryczalt.rego` | 155 | 8 | 0 | 84a01b0054941bc2 |
+| `rules/micro/ryczalt_cykl_atomic_p13.rego` | 20 | 0 | 0 | b218d39be59d0f73 |
+| `rules/micro/srodowisko/srodowisko.rego` | 48 | 0 | 0 | a04b6dd8e5dced38 |
+| `rules/micro/sukcesja/sukcesja.rego` | 140 | 3 | 1 | 73dccfba540c5cc9 |
 | `rules/micro/sus/sus.rego` | 122 | 0 | 0 | 03bddeeb39170f47 |
 | `rules/micro/transport/transport.rego` | 44 | 0 | 0 | 7723aaa8e6fd7425 |
 | `rules/micro/uor/uor.rego` | 148 | 34 | 26 | 12435ff40919a626 |
@@ -266,17 +269,17 @@
 | `rules/p12_crossborder_innovations_v9.rego` | 26 | 0 | 6 | 16ab2a535f9850c8 |
 | `rules/p12_uor_innovations_v8.rego` | 13 | 0 | 0 | eef64fdfc9446820 |
 | `rules/p13_crossborder_innovations_v8.rego` | 13 | 0 | 0 | 3c227d83c378f9e4 |
-| `rules/p13_ryczalt_cykl_zycia_innovations_v9.rego` | 25 | 0 | 4 | 1ce6bc47f6289df3 |
+| `rules/p13_ryczalt_cykl_zycia_innovations_v9.rego` | 25 | 0 | 4 | 1f84e02fd5cada72 |
 | `rules/p14_compliance_innovations_v8.rego` | 12 | 0 | 0 | 15c0f8be6e3bacca |
-| `rules/p14_pcc_lokalne_akcyza_innovations_v9.rego` | 24 | 0 | 4 | 1e79dba1a2716a5c |
-| `rules/p15_pcc_local_excise_innovations_v8.rego` | 13 | 0 | 0 | ff4658412002ff8c |
-| `rules/p15_srodowisko_bdo_innovations_v9.rego` | 32 | 0 | 0 | 1d2a6cafbeead1b4 |
-| `rules/p16_autoform_generator_enterprise.rego` | 7 | 0 | 4 | cd50acd350baf8a0 |
-| `rules/p16_business_lifecycle_innovations_v8.rego` | 13 | 0 | 0 | 02f55c80aca11db4 |
+| `rules/p14_pcc_lokalne_akcyza_innovations_v9.rego` | 24 | 0 | 4 | aabcf33e5f9d336a |
+| `rules/p15_pcc_local_excise_innovations_v8.rego` | 13 | 0 | 0 | 0eb766b4ab206bdf |
+| `rules/p15_srodowisko_bdo_innovations_v9.rego` | 32 | 0 | 0 | fbc4958b83a6a495 |
+| `rules/p16_autoform_generator_enterprise.rego` | 7 | 0 | 4 | ec48a972b2452333 |
+| `rules/p16_business_lifecycle_innovations_v8.rego` | 13 | 0 | 0 | 17a7e4eb9afd93dc |
 | `rules/p16_enhanced_sca_enterprise.rego` | 3 | 0 | 0 | 8e0b9e542029abc0 |
 | `rules/p16_entrepreneur_test_enterprise.rego` | 1 | 0 | 0 | d6f6a546405fbaf6 |
 | `rules/p16_estonian_cit_enterprise.rego` | 4 | 0 | 0 | fa42af3a94c172b7 |
-| `rules/p16_rodo_aml_security_innovations_v9.rego` | 33 | 2 | 0 | 50a7906353226761 |
+| `rules/p16_rodo_aml_security_innovations_v9.rego` | 33 | 2 | 0 | 1f1fa2b6e316b195 |
 | `rules/p17_edge_conflicts_innovations_v8.rego` | 12 | 0 | 0 | 8a6f7a58c41997e1 |
 | `rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego` | 29 | 0 | 0 | fb9960c26332f5c0 |
 | `rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego` | 30 | 0 | 0 | 23b3cbf0a78e4e86 |
@@ -291,7 +294,7 @@
 | `rules/p24_audyt_kompletny_innovations_v9.rego` | 1 | 0 | 0 | e0182e96f55717ff |
 | `rules/p24_innovations_enterprise.rego` | 28 | 0 | 6 | db3cca0f52c81bff |
 | `rules/p3233_innovations.rego` | 7 | 0 | 0 | 060d5ca35d4592b4 |
-| `rules/p33_excise_supplement.rego` | 7 | 0 | 0 | 582fc9ac33efea1f |
+| `rules/p33_excise_supplement.rego` | 7 | 0 | 0 | 9f42f86c32f4c3ef |
 | `rules/p33_ordpu_kks_supplement.rego` | 7 | 0 | 0 | 4c8b033e1694df80 |
 | `rules/p33_pcc_complete.rego` | 6 | 0 | 0 | 1da2800e93b73540 |
 | `rules/p33_uor_supplement.rego` | 7 | 0 | 0 | 487b7017468a8e94 |
@@ -302,11 +305,11 @@
 | `rules/p35_system_gaps.rego` | 10 | 0 | 7 | df8c4c17cc7ad6f9 |
 | `rules/payments/plan44_payments.rego` | 9 | 0 | 0 | 5696f2b93ed323e6 |
 | `rules/payments/plan45_payments.rego` | 50 | 6 | 1 | eb8a633993ce259e |
-| `rules/pcc/pcc_companies.rego` | 19 | 0 | 0 | d02a94f19ef1c819 |
-| `rules/pcc/pcc_loans.rego` | 15 | 1 | 1 | 05f36639a28d59bf |
-| `rules/pcc/pcc_rates.rego` | 25 | 1 | 0 | 31e6f7173aade5fb |
-| `rules/pcc/pcc_sales.rego` | 25 | 1 | 1 | 429806b7eaaae58c |
-| `rules/pcc/plan42_pcc.rego` | 4 | 0 | 0 | 1651ef0d81cb2823 |
+| `rules/pcc/pcc_companies.rego` | 19 | 0 | 0 | 50cd509ccb0ebd19 |
+| `rules/pcc/pcc_loans.rego` | 15 | 1 | 1 | 19a08da170f83f30 |
+| `rules/pcc/pcc_rates.rego` | 25 | 1 | 0 | f3b9eb8d779d9af1 |
+| `rules/pcc/pcc_sales.rego` | 25 | 1 | 1 | 768b727b2298278f |
+| `rules/pcc/plan42_pcc.rego` | 4 | 0 | 0 | 696e6b332b184355 |
 | `rules/pit/advances_returns.rego` | 12 | 1 | 1 | d697576e4f0f36d7 |
 | `rules/pit/art21_exemptions_enterprise.rego` | 28 | 0 | 2 | d4db43faaaad2456 |
 | `rules/pit/cross_relief_optimizer_enterprise.rego` | 7 | 1 | 0 | 9454a924a1b40fe7 |
@@ -345,10 +348,10 @@
 | `rules/r08_ordynacja_obrona_innovations_v9.rego` | 5 | 1 | 0 | 0e3a8fba69b33c3a |
 | `rules/r09_ksiegowosc_pkpir_uor_innovations_v9.rego` | 5 | 0 | 0 | a1e0644561b0bd6c |
 | `rules/r10_crossborder_innovations_v9.rego` | 5 | 0 | 0 | 4750b7b97f08af83 |
-| `rules/r11_pcc_lokalne_akcyza_innovations_v9.rego` | 5 | 0 | 0 | a49815d0c884efb3 |
-| `rules/r12_ryczalt_cykl_zycia_innovations_v9.rego` | 5 | 0 | 0 | c2e377ab9f8bd379 |
+| `rules/r11_pcc_lokalne_akcyza_innovations_v9.rego` | 5 | 0 | 0 | 226e5cf3480d3aa0 |
+| `rules/r12_ryczalt_cykl_zycia_innovations_v9.rego` | 5 | 0 | 0 | 1f7df62c086809f8 |
 | `rules/r13_hyper_konteksty_innovations_v9.rego` | 5 | 0 | 0 | b7c07e836daa80bf |
-| `rules/r14_rodo_aml_bdo_innovations_v9.rego` | 5 | 0 | 0 | a8eef85667af3d03 |
+| `rules/r14_rodo_aml_bdo_innovations_v9.rego` | 5 | 0 | 0 | 89e59c354985e54a |
 | `rules/r15_ksef_jpk_edeklaracje_innovations_v9.rego` | 5 | 0 | 0 | ffe90da4f524b548 |
 | `rules/r16_system_opa_innovations_v9.rego` | 5 | 0 | 0 | 39c57a5d0431b1a7 |
 | `rules/r17_enterprise_ai_innovations_v9.rego` | 5 | 0 | 0 | 6478f8cedc90434d |
@@ -364,8 +367,8 @@
 | `rules/risk.rego` | 17 | 9 | 6 | 870c035ae950de6a |
 | `rules/risk/plan26_kks.rego` | 4 | 2 | 2 | 24f2504e25bc0efc |
 | `rules/rodo.rego` | 12 | 2 | 10 | f48cd5b0df125f33 |
-| `rules/rodo/plan42_rodo.rego` | 3 | 0 | 1 | b8e1b1dedcb27709 |
-| `rules/rodo_extended.rego` | 17 | 4 | 12 | 3d8767f2d2db6fa3 |
+| `rules/rodo/plan42_rodo.rego` | 3 | 0 | 1 | d851bb7e918ece74 |
+| `rules/rodo_extended.rego` | 16 | 4 | 12 | 522342fc3e055d68 |
 | `rules/routing.rego` | 5 | 2 | 3 | 8be621b994f84f0a |
 | `rules/rule_lifecycle_enterprise.rego` | 4 | 1 | 0 | 21c867a814f5fe6c |
 | `rules/sanctions_optimization_enterprise.rego` | 4 | 1 | 0 | 1052e86a96b56c39 |
@@ -421,7 +424,7 @@
 | `rules/zus/plan42_benefits.rego` | 8 | 1 | 1 | 1bc26b568ebc91ac |
 | `rules/zus/sickness_benefits_enterprise.rego` | 14 | 1 | 0 | 1ab4ea7debfd583e |
 | `rules/zus/zus_extensions_enterprise.rego` | 6 | 0 | 0 | 4600db0d99adf678 |
-| **RAZEM** | **11754** | **850** | **691** | — |
+| **RAZEM** | **11792** | **835** | **689** | — |
 
 ---
 
@@ -922,27 +925,27 @@
 |:---------:|---------|:-------:|----------------|
 | 830 | `jdg.business.tax_form_change_inventory` | 🟡 TRIAGE | Art. 24 ust. 2 PIT, Art. 44 ust. 2 PIT |
 | 832 | `jdg.business.tax_form_change_kup_correction` | 🟡 TRIAGE | Art. 22 ust. 1 PIT, Art. 24 ust. 1 PIT |
-| 900 | `jdg.business.ceidg_registration_check` | 🔴 BLOCK | Art. 5-7 ustawy o CEIDG |
-| 902 | `jdg.business.ceidg_data_change_overdue` | 🟡 TRIAGE | Art. 12-15 ustawy o CEIDG |
-| 910 | `jdg.business.suspension_valid` |  | Art. 22-25 Prawa przedsiębiorców, Art. 44 ust. 10 PIT |
-| 912 | `jdg.business.suspension_kup_restrictions` | 🔴 BLOCK | Art. 22-25 Prawa przedsiębiorców |
+| 900 | `jdg.business.ceidg_registration_check` | 🔴 BLOCK | Art. 5-7 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencj... |
+| 902 | `jdg.business.ceidg_data_change_overdue` | 🟡 TRIAGE | Art. 12-15 ustawy z dnia 6 marca 2018 r. o Centralnej Ewiden... |
+| 910 | `jdg.business.suspension_valid` |  | Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębio... |
+| 912 | `jdg.business.suspension_kup_restrictions` | 🔴 BLOCK | Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębio... |
 | 914 | `jdg.business.suspension_zus` |  | Art. 36a ustawy o SUS (społeczne=0, ALE zdrowotna NADAL nale... |
-| 916 | `jdg.business.resumption_procedure` |  | Art. 22-25 Prawa przedsiębiorców |
+| 916 | `jdg.business.resumption_procedure` |  | Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębio... |
 | 916 | `jdg.business.suspension_depreciation_ban` | 🔴 BLOCK | Art. 22c pkt 4 PIT |
-| 917 | `jdg.business.max_suspension_block` | 🔴 BLOCK | Art. 22-25 Prawa przedsiębiorców |
-| 918 | `jdg.business.suspension_time_warning` |  | Art. 22 Prawa przedsiębiorców |
-| 918 | `jdg.business.suspension_period_boundary` |  | Art. 22-25 Prawa przedsiębiorców |
+| 917 | `jdg.business.max_suspension_block` | 🔴 BLOCK | Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębio... |
+| 918 | `jdg.business.suspension_time_warning` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 918 | `jdg.business.suspension_period_boundary` |  | Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębio... |
 | 919 | `jdg.business.suspension_vat_zero` |  | Art. 99 ust. 7a VAT |
 | 920 | `jdg.business.succession_continuity` |  | Ustawa o zarządzie sukcesyjnym |
 | 921 | `jdg.business.succession_no_manager_grace` | 🟡 TRIAGE | Art. 3, 14-15 ustawy o zarządzie sukcesyjnym; art. 30 ust. 2... |
 | 922 | `jdg.business.succession_no_manager_expiry` | 🔴 BLOCK | Art. 3, 14-15 ustawy o zarządzie sukcesyjnym; art. 30 ust. 2... |
 | 922 | `jdg.business.succession_tax_responsibilities` | 🔴 BLOCK | Art. 97 § 1-2, Art. 100 § 1-2 Ordynacji podatkowej |
 | 928 | `jdg.business.succession_inventory_death` | 🔴 BLOCK | Art. 24 ust. 2 PIT + Art. 14 ust. 2 PIT |
-| 929 | `jdg.business.succession_manager_valid` |  | Art. 3-4 u.z.s. |
-| 930 | `jdg.business.succession_expiry` | 🟡 TRIAGE | Art. 12-15 u.z.s. |
-| 930 | `jdg.business.unregistered_activity_limit_exceeded` | 🔴 BLOCK | Art. 5 ust. 1 pkt 1 Prawa przedsiębiorców |
-| 931 | `jdg.business.unregistered_limit_check` |  | Art. 5 ust. 1 pkt 1 Prawa przedsiębiorców |
-| 932 | `jdg.business.unregistered_zus_exemption` |  | Art. 5 Prawa przedsiębiorców |
+| 929 | `jdg.business.succession_manager_valid` |  | Art. 3-4 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjn... |
+| 930 | `jdg.business.succession_expiry` | 🟡 TRIAGE | Art. 12-15 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesy... |
+| 930 | `jdg.business.unregistered_activity_limit_exceeded` | 🔴 BLOCK | Art. 5 ust. 1 pkt 1 ustawy z dnia 6 marca 2018 r. — Prawo pr... |
+| 931 | `jdg.business.unregistered_limit_check` |  | Art. 5 ust. 1 pkt 1 ustawy z dnia 6 marca 2018 r. — Prawo pr... |
+| 932 | `jdg.business.unregistered_zus_exemption` |  | Art. 5 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
 
 ### `rules/business/gig_economy.rego` (5 reguł)
 
@@ -951,15 +954,15 @@
 | 595 | `jdg.business.gig_economy.rideshare_vat` |  | Art. 41 ust. 2, Art. 113 VAT |
 | 596 | `jdg.business.gig_economy.food_delivery_vat` |  | Art. 41 ust. 2 VAT |
 | 597 | `jdg.business.gig_economy.platform_commission_import` |  | Art. 28b, Art. 17 ust. 1 pkt 4 VAT |
-| 598 | `jdg.business.gig_economy.lump_sum_transport` |  | Art. 12 ust. 1 pkt 5 lit. a ustawy o ryczałcie |
+| 598 | `jdg.business.gig_economy.lump_sum_transport` |  | Art. 12 ust. 1 pkt 5 lit. a ustawy z dnia 20 listopada 1998 ... |
 | 599 | `jdg.business.gig_economy.mileage_tracking` | 🟡 TRIAGE | Art. 23 ust. 1 pkt 46 PIT, Art. 86a VAT |
 
 ### `rules/business/plan26_suspension_succession.rego` (5 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 916 | `jdg.business.resumption_procedure_valid` | 🟡 TRIAGE | Art. 22-25 Prawa przedsiębiorców |
-| 918 | `jdg.business.maximum_suspension_period_check` |  | Art. 22 Prawa przedsiębiorców |
+| 916 | `jdg.business.resumption_procedure_valid` | 🟡 TRIAGE | Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębio... |
+| 918 | `jdg.business.maximum_suspension_period_check` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
 | 925 | `jdg.business.succession_manager_appointment` | 🔴 BLOCK | Art. 3-7 ustawy o zarządzie sukcesyjnym |
 | 926 | `jdg.business.succession_time_limit_expiry` | 🔴 BLOCK | Art. 12-13 ustawy o zarządzie sukcesyjnym |
 | 927 | `jdg.business.succession_termination_events` | 🔴 BLOCK | Art. 14-15 ustawy o zarządzie sukcesyjnym |
@@ -979,41 +982,41 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1368 | `jdg.calendar.hyper.vat_monthly_25th` |  | Art. 103 ust. 1 VAT |
-| 1369 | `jdg.calendar.hyper.vat_quarterly_25th` |  | Art. 103 ust. 2 VAT |
-| 1370 | `jdg.calendar.hyper.vat_weekend_shift` |  | Art. 12 § 5 OP |
-| 1371 | `jdg.calendar.hyper.vat_arrears_interest` |  | Art. 56 OP |
-| 1372 | `jdg.calendar.hyper.vat_annual_correction_deadline` |  | Art. 86 ust. 7a VAT |
-| 1373 | `jdg.calendar.hyper.pit_advance_20th` |  | Art. 44 ust. 6 PIT |
-| 1374 | `jdg.calendar.hyper.pit_lump_sum_20th` |  | Art. 21 ust. 1 u.z.p.d. |
-| 1375 | `jdg.calendar.hyper.pit_annual_return_30april` |  | Art. 45 ust. 1 PIT |
-| 1376 | `jdg.calendar.hyper.pit_shift_weekend` |  | Art. 12 § 5 OP |
-| 1377 | `jdg.calendar.hyper.pit_arrears_interest` |  | Art. 56 OP |
-| 1378 | `jdg.calendar.hyper.zus_no_employees_10th` |  | Art. 47 ust. 1 pkt 1 SUS |
-| 1379 | `jdg.calendar.hyper.zus_employees_15th` |  | Art. 47 ust. 1 pkt 2 SUS |
-| 1380 | `jdg.calendar.hyper.zus_units_15th` |  | Art. 47 ust. 1 pkt 2 SUS |
-| 1381 | `jdg.calendar.hyper.zus_weekend_shift` |  | Art. 12 § 5 OP |
-| 1382 | `jdg.calendar.hyper.zus_arrears` |  | Art. 24 SUS |
-| 1383 | `jdg.calendar.hyper.pcc3_deadline_14days` |  | Art. 10 ust. 1 PCC |
-| 1384 | `jdg.calendar.hyper.pcc_payment_14days` |  | Art. 10 ust. 1 PCC |
-| 1385 | `jdg.calendar.hyper.pcc_weekend_shift` |  | Art. 12 § 5 OP |
-| 1386 | `jdg.calendar.hyper.pcc_arrears` |  | Art. 56 OP |
-| 1387 | `jdg.calendar.hyper.pcc_exemptions_check` |  | Art. 9 PCC |
-| 1388 | `jdg.calendar.hyper.alert_7_days_before` |  | Art. 12 OP |
-| 1389 | `jdg.calendar.hyper.alert_3_days_before` |  | Art. 12 OP |
-| 1390 | `jdg.calendar.hyper.alert_1_day_before` | 🔴 BLOCK | Art. 12 OP |
-| 1391 | `jdg.calendar.hyper.alert_on_deadline_day` | 🔴 BLOCK | Art. 12 OP |
-| 1392 | `jdg.calendar.hyper.alert_overdue` | 🔴 BLOCK | Art. 56 OP |
-| 1393 | `jdg.calendar.hyper.forecast_annual_tax` |  | — |
-| 1394 | `jdg.calendar.hyper.forecast_history_trend` |  | — |
-| 1395 | `jdg.calendar.hyper.forecast_cash_flow_warning` |  | — |
-| 1396 | `jdg.calendar.hyper.forecast_optimization` |  | Art. 103 ust. 2 VAT |
-| 1397 | `jdg.calendar.hyper.forecast_next_quarter` |  | — |
-| 1398 | `jdg.calendar.hyper.weekend_shift_saturday` |  | Art. 12 § 5 OP |
-| 1399 | `jdg.calendar.hyper.weekend_shift_sunday` |  | Art. 12 § 5 OP |
-| 1400 | `jdg.calendar.hyper.holiday_shift` |  | Art. 12 § 5 OP |
-| 1401 | `jdg.calendar.hyper.easter_shift` |  | Art. 12 § 5 OP |
-| 1402 | `jdg.calendar.hyper.christmas_shift` |  | Art. 12 § 5 OP |
+| 0 | `jdg.calendar.hyper.vat_monthly_25th` |  | Art. 103 ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.calendar.hyper.vat_quarterly_25th` |  | Art. 103 ust. 2 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.calendar.hyper.vat_weekend_shift` |  | Art. 12 § 5 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
+| 0 | `jdg.calendar.hyper.vat_arrears_interest` |  | Art. 56 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.calendar.hyper.vat_annual_correction_deadline` |  | Art. 86 ust. 7a ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.calendar.hyper.pit_advance_20th` |  | Art. 44 ust. 6 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.calendar.hyper.pit_lump_sum_20th` |  | Art. 21 ust. 1 ustawy z dnia 20 listopada 1998 r. o zryczałt... |
+| 0 | `jdg.calendar.hyper.pit_annual_return_30april` |  | Art. 45 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.calendar.hyper.pit_shift_weekend` |  | Art. 12 § 5 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
+| 0 | `jdg.calendar.hyper.pit_arrears_interest` |  | Art. 56 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.calendar.hyper.zus_no_employees_10th` |  | Art. 47 ust. 1 pkt 1 ustawy z dnia 13 października 1998 r. o... |
+| 0 | `jdg.calendar.hyper.zus_employees_15th` |  | Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o... |
+| 0 | `jdg.calendar.hyper.zus_units_15th` |  | Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o... |
+| 0 | `jdg.calendar.hyper.zus_weekend_shift` |  | Art. 12 § 5 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
+| 0 | `jdg.calendar.hyper.zus_arrears` |  | Art. 24 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 0 | `jdg.calendar.hyper.pcc3_deadline_14days` |  | Art. 10 ust. 1 ustawy z dnia 9 września 2000 r. o podatku od... |
+| 0 | `jdg.calendar.hyper.pcc_payment_14days` |  | Art. 10 ust. 1 ustawy z dnia 9 września 2000 r. o podatku od... |
+| 0 | `jdg.calendar.hyper.pcc_weekend_shift` |  | Art. 12 § 5 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
+| 0 | `jdg.calendar.hyper.pcc_arrears` |  | Art. 56 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.calendar.hyper.pcc_exemptions_check` |  | Art. 9 ustawy z dnia 9 września 2000 r. o podatku od czynnoś... |
+| 0 | `jdg.calendar.hyper.alert_7_days_before` |  | Art. 12 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.calendar.hyper.alert_3_days_before` |  | Art. 12 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.calendar.hyper.alert_1_day_before` |  | Art. 12 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.calendar.hyper.alert_on_deadline_day` |  | Art. 12 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.calendar.hyper.alert_overdue` |  | Art. 56 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.calendar.hyper.forecast_annual_tax` |  | Art. 44-45 ustawy z dnia 26 lipca 1991 r. o podatku dochodow... |
+| 0 | `jdg.calendar.hyper.forecast_history_trend` |  | Art. 44-45 ustawy z dnia 26 lipca 1991 r. o podatku dochodow... |
+| 0 | `jdg.calendar.hyper.forecast_cash_flow_warning` |  | Art. 44-45 ustawy z dnia 26 lipca 1991 r. o podatku dochodow... |
+| 0 | `jdg.calendar.hyper.forecast_optimization` |  | Art. 103 ust. 2 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.calendar.hyper.forecast_next_quarter` |  | Art. 44-45 ustawy z dnia 26 lipca 1991 r. o podatku dochodow... |
+| 0 | `jdg.calendar.hyper.weekend_shift_saturday` |  | Art. 12 § 5 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
+| 0 | `jdg.calendar.hyper.weekend_shift_sunday` |  | Art. 12 § 5 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
+| 0 | `jdg.calendar.hyper.holiday_shift` |  | Art. 12 § 5 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
+| 0 | `jdg.calendar.hyper.easter_shift` |  | Art. 12 § 5 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
+| 0 | `jdg.calendar.hyper.christmas_shift` |  | Art. 12 § 5 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
 
 ### `rules/cashflow_tax_predictor_enterprise.rego` (6 reguł)
 
@@ -1566,7 +1569,7 @@
 | 1407 | `jdg.environmental.packaging_recycling_fee` |  | Ustawa o gospodarce opakowaniami i odpadami opakowaniowymi |
 | 1770 | `jdg.environmental.sup_plastic_fee` |  | Ustawa SUP (Dz.U. 2023 poz. 877) |
 
-### `rules/environmental/bdo_enterprise.rego` (23 reguł)
+### `rules/environmental/bdo_enterprise.rego` (22 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -1592,7 +1595,6 @@
 | 1919 | `jdg.environmental.bdo.battery_compliance` | 🟡 TRIAGE | Ustawa o bateriach i akumulatorach, Rozp. UE 2023/1542 |
 | 1920 | `jdg.environmental.bdo.sup_extended` | 🟡 TRIAGE | Ustawa SUP (Dz.U. 2023 poz. 877) + Dyrektywa SUP 2019/904 + ... |
 | 1921 | `jdg.environmental.bdo.remediation` | 🔴 BLOCK | Ustawa o zapobieganiu szkodom w środowisku i ich naprawie (D... |
-| 1999 | `jdg.environmental.bdo.fallback` |  | Ustawa o odpadach |
 
 ### `rules/epuap_enterprise.rego` (3 reguł)
 
@@ -2018,560 +2020,560 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1090 | `jdg.hyper.audit.wis.binding_effect.not_against_law_change` |  | Art. 42h ust. 1 VAT |
-| 1091 | `jdg.hyper.audit.wis.binding_effect.covers_future_transactions` |  | Art. 42h ust. 1 VAT |
-| 1092 | `jdg.hyper.audit.wis.gtu.mapping_obligation` |  | Art. 42h ust. 1 VAT, Rozp. JPK_VAT |
-| 1093 | `jdg.hyper.audit.wis.sanction.incorrect_rate_no_wis` |  | Art. 64 KKS, Art. 42b VAT |
-| 1094 | `jdg.hyper.audit.wis.interaction.tax_audit_protection` |  | Art. 42h ust. 1 VAT |
-| 1095 | `jdg.hyper.audit.wis.interaction.individual_interpretation` |  | Art. 42h ust. 1 VAT |
-| 1096 | `jdg.hyper.audit.wit.eligibility.import_non_eu` |  | UKC, Art. 33 Rozp. 952/2013 |
-| 1097 | `jdg.hyper.audit.wit.validity.3_years` |  | UKC, Art. 33 Rozp. 952/2013 |
-| 1098 | `jdg.hyper.audit.wit.cost.free` |  | UKC |
-| 1099 | `jdg.hyper.audit.wit.binding_effect.customs_authorities` |  | UKC, Art. 33 Rozp. 952/2013 |
-| 1100 | `jdg.hyper.audit.wia.eligibility.excise_goods` |  | Ustawa o podatku akcyzowym |
-| 1101 | `jdg.hyper.audit.wia.validity.3_years` |  | Ustawa o podatku akcyzowym |
-| 1102 | `jdg.hyper.audit.wia.cost.250_pln` |  | Ustawa o podatku akcyzowym |
-| 1103 | `jdg.hyper.audit.binding_info.cost_benefit_analysis` |  | Art. 42g VAT, Art. 42b VAT |
-| 1104 | `jdg.hyper.audit.binding_info.renewal_strategy` |  | Art. 42h VAT |
-| 1105 | `jdg.hyper.audit.binding_info.portfolio.management` |  | Art. 42b-42d VAT |
-| 1106 | `jdg.hyper.audit.audit.type.verification` |  | Art. 272-280 OP |
-| 1107 | `jdg.hyper.audit.audit.type.tax_audit` |  | Art. 281-292 OP |
-| 1108 | `jdg.hyper.audit.audit.type.tax_proceeding` |  | Art. 120-129 OP |
-| 1109 | `jdg.hyper.audit.audit.type.customs_fiscal` |  | Art. 54-93 KAS |
-| 1110 | `jdg.hyper.audit.audit.trigger.cross_checking` |  | Art. 272-274 OP |
-| 1111 | `jdg.hyper.audit.audit.notification.7_days_art282b` | 🔴 BLOCK | Art. 282b § 1 OrdPU |
-| 1112 | `jdg.hyper.audit.audit.rights.during_control_art291_293` |  | Art. 291-293 OrdPU |
-| 1113 | `jdg.hyper.audit.audit.protocol.art294_objections_14days` | 🔴 BLOCK | Art. 294 OrdPU |
-| 1114 | `jdg.hyper.audit.audit.limitation.5_years_art70` |  | Art. 70 § 1 OrdPU |
+| 0 | `jdg.hyper.audit.wis.binding_effect.not_against_law_change` |  | Art. 42h ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.audit.wis.binding_effect.covers_future_transactions` |  | Art. 42h ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.audit.wis.gtu.mapping_obligation` |  | Art. 42h ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.audit.wis.sanction.incorrect_rate_no_wis` |  | Art. 64 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 0 | `jdg.hyper.audit.wis.interaction.tax_audit_protection` |  | Art. 42h ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.audit.wis.interaction.individual_interpretation` |  | Art. 42h ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.audit.wit.eligibility.import_non_eu` |  | UKC, Art. 33 Rozp. 952/2013 |
+| 0 | `jdg.hyper.audit.wit.validity.3_years` |  | UKC, Art. 33 Rozp. 952/2013 |
+| 0 | `jdg.hyper.audit.wit.cost.free` |  | UKC |
+| 0 | `jdg.hyper.audit.wit.binding_effect.customs_authorities` |  | UKC, Art. 33 Rozp. 952/2013 |
+| 0 | `jdg.hyper.audit.wia.eligibility.excise_goods` |  | Art. 7d ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym ... |
+| 0 | `jdg.hyper.audit.wia.validity.3_years` |  | Art. 7d ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym ... |
+| 0 | `jdg.hyper.audit.wia.cost.250_pln` |  | Art. 7d ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym ... |
+| 0 | `jdg.hyper.audit.binding_info.cost_benefit_analysis` |  | Art. 42g ustawy z dnia 11 marca 2004 r. o podatku od towarów... |
+| 0 | `jdg.hyper.audit.binding_info.renewal_strategy` |  | Art. 42h ustawy z dnia 11 marca 2004 r. o podatku od towarów... |
+| 0 | `jdg.hyper.audit.binding_info.portfolio.management` |  | Art. 42b-42d ustawy z dnia 11 marca 2004 r. o podatku od tow... |
+| 0 | `jdg.hyper.audit.audit.type.verification` |  | Art. 272-280 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.audit.audit.type.tax_audit` |  | Art. 281-292 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.audit.audit.type.tax_proceeding` |  | Art. 120-129 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.audit.audit.type.customs_fiscal` |  | Art. 54-93 ustawy z dnia 16 listopada 2016 r. o Krajowej Adm... |
+| 0 | `jdg.hyper.audit.audit.trigger.cross_checking` |  | Art. 272-274 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.audit.audit.notification.7_days_art282b` |  | Art. 282b § 1 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze ... |
+| 0 | `jdg.hyper.audit.audit.rights.during_control_art291_293` |  | Art. 291-293 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.audit.audit.protocol.art294_objections_14days` |  | Art. 294 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.audit.audit.limitation.5_years_art70` |  | Art. 70 § 1 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
 
 ### `rules/jdg/hyper/deadlines/plan45.rego` (56 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1610 | `jdg.hyper.deadlines.insurance.mandatory.detection_construction` |  | Art. 648 KC |
-| 1611 | `jdg.hyper.deadlines.insurance.mandatory.detection_transport` |  | Ustawa o transporcie drogowym |
-| 1612 | `jdg.hyper.deadlines.insurance.mandatory.detection_tax_advisor` |  | Ustawa o doradztwie podatkowym |
-| 1613 | `jdg.hyper.deadlines.insurance.kup.mandatory_oc_premium_full` |  | Art. 22 ust. 1 PIT |
-| 1614 | `jdg.hyper.deadlines.insurance.kup.mandatory_oc_over_limit_proportion` |  | Art. 22 ust. 1 PIT |
-| 1615 | `jdg.hyper.deadlines.insurance.kup.voluntary_oc_business` |  | Art. 22 ust. 1 PIT |
-| 1616 | `jdg.hyper.deadlines.insurance.kup.life_insurance_limited` |  | Art. 22 ust. 1 PIT |
-| 1617 | `jdg.hyper.deadlines.insurance.kup.property_insurance_full` |  | Art. 22 ust. 1 PIT |
-| 1618 | `jdg.hyper.deadlines.insurance.claim.payout_as_revenue` |  | Art. 14 ust. 1 PIT |
-| 1619 | `jdg.hyper.deadlines.insurance.claim.payout_reduced_by_damage` |  | Art. 14 ust. 1 PIT |
-| 1620 | `jdg.hyper.deadlines.insurance.claim.business_interruption_taxable` |  | Art. 14 PIT |
-| 1621 | `jdg.hyper.deadlines.insurance.claim.personal_injury_exempt` |  | Art. 21 ust. 1 pkt 3c PIT |
-| 1622 | `jdg.hyper.deadlines.insurance.claim.late_payment_interest_taxable` |  | Art. 17 ust. 1 PIT |
-| 1623 | `jdg.hyper.deadlines.insurance.vat.exemption_general` |  | Art. 43 ust. 1 pkt 37 VAT |
-| 1624 | `jdg.hyper.deadlines.insurance.vat.exception_assistance_services` |  | Art. 41 VAT |
-| 1625 | `jdg.hyper.deadlines.insurance.vat.exception_damage_assessment` |  | Art. 41 VAT |
-| 1626 | `jdg.hyper.deadlines.insurance.vat.exception_broker_services` |  | Art. 41 VAT |
-| 1627 | `jdg.hyper.deadlines.insurance.vat.input_vat_deduction_blocked` |  | Art. 88 VAT |
-| 1628 | `jdg.hyper.deadlines.insurance.voluntary.cyber_risk` |  | Art. 22 PIT |
-| 1629 | `jdg.hyper.deadlines.insurance.voluntary.directors_officers` |  | Art. 22 PIT |
-| 1630 | `jdg.hyper.deadlines.insurance.voluntary.key_person` |  | Art. 22 PIT |
-| 1631 | `jdg.hyper.deadlines.insurance.voluntary.trade_credit` |  | Art. 22 PIT |
-| 1632 | `jdg.hyper.deadlines.insurance.voluntary.inventory_theft` |  | Art. 22 PIT |
-| 1633 | `jdg.hyper.deadlines.insurance.gap.detection_mandatory_missing` |  | Ustawy branżowe |
-| 1634 | `jdg.hyper.deadlines.insurance.gap.detection_sum_insufficient` |  | Ustawy branżowe |
-| 1635 | `jdg.hyper.deadlines.insurance.gap.detection_policy_expiring` |  | — |
-| 1636 | `jdg.hyper.deadlines.payment.crypto.receiving_as_payment` |  | Art. 14 ust. 1 PIT |
-| 1637 | `jdg.hyper.deadlines.payment.crypto.vat_obligation_on_receipt` |  | Art. 19a ust. 8 VAT |
-| 1638 | `jdg.hyper.deadlines.payment.crypto.exchange_rate_determination` |  | Art. 14 PIT |
-| 1639 | `jdg.hyper.deadlines.payment.crypto.volatility_risk_warning` |  | — |
-| 1640 | `jdg.hyper.deadlines.payment.crypto.difference_from_crypto_trading` |  | Art. 14 vs Art. 17 PIT |
-| 1641 | `jdg.hyper.deadlines.payment.barter.double_supply` |  | Art. 7, Art. 8 VAT |
-| 1642 | `jdg.hyper.deadlines.payment.barter.vat_on_both_sides` |  | Art. 5 VAT |
-| 1643 | `jdg.hyper.deadlines.payment.barter.market_value_as_base` |  | Art. 29a VAT |
-| 1644 | `jdg.hyper.deadlines.payment.barter.pit_revenue_recognition` |  | Art. 14 PIT |
-| 1645 | `jdg.hyper.deadlines.payment.barter.documentation_requirements` |  | Art. 22 UoR |
-| 1646 | `jdg.hyper.deadlines.payment.offset.when_recognized` |  | Art. 498 KC + Art. 14 PIT |
-| 1647 | `jdg.hyper.deadlines.payment.offset.vat_cash_method` |  | Art. 21 VAT |
-| 1648 | `jdg.hyper.deadlines.payment.offset.vat_accrual_method` |  | Art. 19a VAT |
-| 1649 | `jdg.hyper.deadlines.payment.offset.mutual_agreement_required` |  | Art. 498-499 KC |
-| 1650 | `jdg.hyper.deadlines.payment.offset.documentation_required` |  | Art. 22 UoR |
-| 1651 | `jdg.hyper.deadlines.tax.vat_jpk_v7m_25th` |  | Art. 109 ust. 3c VAT |
-| 1652 | `jdg.hyper.deadlines.tax.vat7_quarterly_25th` |  | Art. 99 ust. 2 VAT |
-| 1653 | `jdg.hyper.deadlines.tax.pit_advance_20th` |  | Art. 44 ust. 6 PIT |
-| 1654 | `jdg.hyper.deadlines.tax.pit_annual_april30` | 🔴 BLOCK | Art. 45 ust. 1 PIT |
-| 1655 | `jdg.hyper.deadlines.tax.zus_dra_10th` |  | Art. 47 u.s.u.s. |
-| 1656 | `jdg.hyper.deadlines.tax.zus_contributions_15th_20th` |  | Art. 47 ust. 1-3 u.s.u.s. |
-| 1657 | `jdg.hyper.deadlines.tax.cit8_march31` |  | Art. 27 ust. 1 CIT |
-| 1658 | `jdg.hyper.deadlines.tax.holiday_shift_art12p5_ordpu` |  | Art. 12 § 5 OrdPU |
-| 1659 | `jdg.hyper.deadlines.tax.ksef_invoice_immediately_2026` |  | Art. 106na-106nb VAT |
-| 1660 | `jdg.hyper.deadlines.tax.appeal_14days` | 🔴 BLOCK | Art. 223 § 1 OrdPU |
-| 1661 | `jdg.hyper.deadlines.tax.jpk_on_demand_7days` | 🔴 BLOCK | Art. 193a OrdPU |
-| 1662 | `jdg.hyper.deadlines.tax.complaint_7days` |  | Art. 220 § 1 OrdPU |
-| 1663 | `jdg.hyper.deadlines.tax.interpretation_3months` |  | Art. 14c § 1 OrdPU |
-| 1664 | `jdg.hyper.deadlines.tax.ksef_appeal_30days` |  | Art. 106n ust. 6 VAT |
-| 1665 | `jdg.hyper.deadlines.tax.edelivery_pickup_14days` | 🔴 BLOCK | Ustawa o doręczeniach el. |
+| 0 | `jdg.hyper.deadlines.insurance.mandatory.detection_construction` |  | Art. 4 ustawy z dnia 22 maja 2003 r. o ubezpieczeniach obowi... |
+| 0 | `jdg.hyper.deadlines.insurance.mandatory.detection_transport` |  | ustawy z dnia 6 września 2001 r. o transporcie drogowym |
+| 0 | `jdg.hyper.deadlines.insurance.mandatory.detection_tax_advisor` |  | ustawy z dnia 5 lipca 1996 r. o doradztwie podatkowym |
+| 0 | `jdg.hyper.deadlines.insurance.kup.mandatory_oc_premium_full` |  | Art. 22 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.deadlines.insurance.kup.mandatory_oc_over_limit_proportion` |  | Art. 22 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.deadlines.insurance.kup.voluntary_oc_business` |  | Art. 22 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.deadlines.insurance.kup.life_insurance_limited` |  | Art. 22 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.deadlines.insurance.kup.property_insurance_full` |  | Art. 22 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.deadlines.insurance.claim.payout_as_revenue` |  | Art. 14 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.deadlines.insurance.claim.payout_reduced_by_damage` |  | Art. 14 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.deadlines.insurance.claim.business_interruption_taxable` |  | Art. 14 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.deadlines.insurance.claim.personal_injury_exempt` |  | Art. 21 ust. 1 pkt 3c ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.deadlines.insurance.claim.late_payment_interest_taxable` |  | Art. 17 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.deadlines.insurance.vat.exemption_general` |  | Art. 43 ust. 1 pkt 37 ustawy z dnia 11 marca 2004 r. o podat... |
+| 0 | `jdg.hyper.deadlines.insurance.vat.exception_assistance_services` |  | Art. 41 ustawy z dnia 11 marca 2004 r. o podatku od towarów ... |
+| 0 | `jdg.hyper.deadlines.insurance.vat.exception_damage_assessment` |  | Art. 41 ustawy z dnia 11 marca 2004 r. o podatku od towarów ... |
+| 0 | `jdg.hyper.deadlines.insurance.vat.exception_broker_services` |  | Art. 41 ustawy z dnia 11 marca 2004 r. o podatku od towarów ... |
+| 0 | `jdg.hyper.deadlines.insurance.vat.input_vat_deduction_blocked` |  | Art. 88 ustawy z dnia 11 marca 2004 r. o podatku od towarów ... |
+| 0 | `jdg.hyper.deadlines.insurance.voluntary.cyber_risk` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.deadlines.insurance.voluntary.directors_officers` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.deadlines.insurance.voluntary.key_person` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.deadlines.insurance.voluntary.trade_credit` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.deadlines.insurance.voluntary.inventory_theft` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.deadlines.insurance.gap.detection_mandatory_missing` |  | ustawy z dnia 22 maja 2003 r. o ubezpieczeniach obowiązkowyc... |
+| 0 | `jdg.hyper.deadlines.insurance.gap.detection_sum_insufficient` |  | ustawy z dnia 22 maja 2003 r. o ubezpieczeniach obowiązkowyc... |
+| 0 | `jdg.hyper.deadlines.insurance.gap.detection_policy_expiring` |  | ustawy z dnia 22 maja 2003 r. o ubezpieczeniach obowiązkowyc... |
+| 0 | `jdg.hyper.deadlines.payment.crypto.receiving_as_payment` |  | Art. 14 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.deadlines.payment.crypto.vat_obligation_on_receipt` |  | Art. 19a ust. 8 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.deadlines.payment.crypto.exchange_rate_determination` |  | Art. 14 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.deadlines.payment.crypto.volatility_risk_warning` |  | ustawy z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pien... |
+| 0 | `jdg.hyper.deadlines.payment.crypto.difference_from_crypto_trading` |  | Art. 14 vs Art. 17 ustawy z dnia 26 lipca 1991 r. o podatku ... |
+| 0 | `jdg.hyper.deadlines.payment.barter.double_supply` |  | Art. 7, Art. 8 ustawy z dnia 11 marca 2004 r. o podatku od t... |
+| 0 | `jdg.hyper.deadlines.payment.barter.vat_on_both_sides` |  | Art. 5 ustawy z dnia 11 marca 2004 r. o podatku od towarów i... |
+| 0 | `jdg.hyper.deadlines.payment.barter.market_value_as_base` |  | Art. 29a ustawy z dnia 11 marca 2004 r. o podatku od towarów... |
+| 0 | `jdg.hyper.deadlines.payment.barter.pit_revenue_recognition` |  | Art. 14 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.deadlines.payment.barter.documentation_requirements` |  | Art. 22 ustawy z dnia 29 września 1994 r. o rachunkowości (D... |
+| 0 | `jdg.hyper.deadlines.payment.offset.when_recognized` |  | Art. 498 ustawy z dnia 23 kwietnia 1964 r. — Kodeks cywilny,... |
+| 0 | `jdg.hyper.deadlines.payment.offset.vat_cash_method` |  | Art. 21 ustawy z dnia 11 marca 2004 r. o podatku od towarów ... |
+| 0 | `jdg.hyper.deadlines.payment.offset.vat_accrual_method` |  | Art. 19a ustawy z dnia 11 marca 2004 r. o podatku od towarów... |
+| 0 | `jdg.hyper.deadlines.payment.offset.mutual_agreement_required` |  | Art. 498-499 ustawy z dnia 23 kwietnia 1964 r. — Kodeks cywi... |
+| 0 | `jdg.hyper.deadlines.payment.offset.documentation_required` |  | Art. 22 ustawy z dnia 29 września 1994 r. o rachunkowości (D... |
+| 0 | `jdg.hyper.deadlines.tax.vat_jpk_v7m_25th` |  | Art. 109 ust. 3c ustawy z dnia 11 marca 2004 r. o podatku od... |
+| 0 | `jdg.hyper.deadlines.tax.vat7_quarterly_25th` |  | Art. 99 ust. 2 ustawy z dnia 11 marca 2004 r. o podatku od t... |
+| 0 | `jdg.hyper.deadlines.tax.pit_advance_20th` |  | Art. 44 ust. 6 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.deadlines.tax.pit_annual_april30` |  | Art. 45 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.deadlines.tax.zus_dra_10th` |  | Art. 47 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 0 | `jdg.hyper.deadlines.tax.zus_contributions_15th_20th` |  | Art. 47 ust. 1-3 ustawy z dnia 13 października 1998 r. o sys... |
+| 0 | `jdg.hyper.deadlines.tax.cit8_march31` |  | Art. 27 ust. 1 ustawy z dnia 15 lutego 1992 r. o podatku doc... |
+| 0 | `jdg.hyper.deadlines.tax.holiday_shift_art12p5_ordpu` |  | Art. 12 § 5 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
+| 0 | `jdg.hyper.deadlines.tax.ksef_invoice_immediately_2026` |  | Art. 106na-106nb ustawy z dnia 11 marca 2004 r. o podatku od... |
+| 0 | `jdg.hyper.deadlines.tax.appeal_14days` |  | Art. 223 § 1 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.deadlines.tax.jpk_on_demand_7days` |  | Art. 193a Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.deadlines.tax.complaint_7days` |  | Art. 220 § 1 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.deadlines.tax.interpretation_3months` |  | Art. 14c § 1 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.deadlines.tax.ksef_appeal_30days` |  | Art. 106n ust. 6 ustawy z dnia 11 marca 2004 r. o podatku od... |
+| 0 | `jdg.hyper.deadlines.tax.edelivery_pickup_14days` |  | Art. 144b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
 
 ### `rules/jdg/hyper/edelivery/plan45.rego` (21 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1180 | `jdg.hyper.edelivery.force_majeure.documents.backup_obligation` |  | Art. 86 OP |
-| 1181 | `jdg.hyper.edelivery.force_majeure.documents.electronic_preservation` |  | R1182 |
-| 1182 | `jdg.hyper.edelivery.force_majeure.insurance.cover_check` |  | Art. 14 PIT, KC |
-| 1183 | `jdg.hyper.edelivery.force_majeure.insurance.claim_procedure` |  | R1184 |
-| 1184 | `jdg.hyper.edelivery.force_majeure.insurance.payout_tax_treatment` |  | Art. 14 ust. 1 PIT |
-| 1185 | `jdg.hyper.edelivery.force_majeure.suspension.automatic` |  | R1186 |
-| 1186 | `jdg.hyper.edelivery.force_majeure.suspension.zus_consequences` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1187 | `jdg.hyper.edelivery.force_majeure.suspension.tax_consequences` |  | R1188 |
-| 1188 | `jdg.hyper.edelivery.force_majeure.loss.carry_back` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1189 | `jdg.hyper.edelivery.force_majeure.loss.enhanced_deduction` |  | R1190 |
-| 1190 | `jdg.hyper.edelivery.force_majeure.deadlines.mf_communication_monitoring` |  | Art. 47 SUS, Art. 103 VAT, Art. 44 PIT |
-| 1191 | `jdg.hyper.edelivery.force_majeure.deadlines.auto_extension_application` |  | Art. 47 SUS, Art. 103 VAT, Art. 44 PIT |
-| 1192 | `jdg.hyper.edelivery.force_majeure.aggregate.impact_assessment` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1193 | `jdg.hyper.edelivery.family.spouse.employment.kup_conditions` |  | R1194 |
-| 1194 | `jdg.hyper.edelivery.family.spouse.market_benchmark_test` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1195 | `jdg.hyper.edelivery.family.spouse.qualifications_check` |  | R1196 |
-| 1196 | `jdg.hyper.edelivery.family.spouse.work_evidence_required` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1197 | `jdg.hyper.edelivery.family.spouse.salary_above_market_red_flag` |  | R1198 |
-| 1198 | `jdg.hyper.edelivery.family.spouse.no_qualifications_red_flag` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1199 | `jdg.hyper.edelivery.family.spouse.no_work_evidence_nkup` |  | Brak dowodów pracy → NKUP (Art. 23 ust. 1 pkt 10 PIT) |
-| 1200 | `jdg.hyper.edelivery.family.spouse.contract_type.employment` |  | Art. 22 ust. 1 PIT, KP |
+| 0 | `jdg.hyper.edelivery.force_majeure.documents.backup_obligation` |  | Art. 86 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.edelivery.force_majeure.documents.electronic_preservation` |  | Art. 86 § 2 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
+| 0 | `jdg.hyper.edelivery.force_majeure.insurance.cover_check` |  | Art. 14 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.edelivery.force_majeure.insurance.claim_procedure` |  | Art. 14 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.edelivery.force_majeure.insurance.payout_tax_treatment` |  | Art. 14 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.edelivery.force_majeure.suspension.automatic` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 0 | `jdg.hyper.edelivery.force_majeure.suspension.zus_consequences` |  | Art. 36a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 0 | `jdg.hyper.edelivery.force_majeure.suspension.tax_consequences` |  | Art. 44 ust. 6b ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.edelivery.force_majeure.loss.carry_back` |  | Art. 9 ust. 3 ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 0 | `jdg.hyper.edelivery.force_majeure.loss.enhanced_deduction` |  | Art. 9 ust. 3 ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 0 | `jdg.hyper.edelivery.force_majeure.deadlines.mf_communication_monitoring` |  | Art. 47 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 0 | `jdg.hyper.edelivery.force_majeure.deadlines.auto_extension_application` |  | Art. 47 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 0 | `jdg.hyper.edelivery.force_majeure.aggregate.impact_assessment` |  | Art. 67a Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.edelivery.family.spouse.employment.kup_conditions` |  | Art. 23 ust. 1 pkt 10 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.edelivery.family.spouse.market_benchmark_test` |  | Art. 23 ust. 1 pkt 10 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.edelivery.family.spouse.qualifications_check` |  | Art. 23 ust. 1 pkt 10 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.edelivery.family.spouse.work_evidence_required` |  | Art. 23 ust. 1 pkt 10 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.edelivery.family.spouse.salary_above_market_red_flag` |  | Art. 23 ust. 1 pkt 10 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.edelivery.family.spouse.no_qualifications_red_flag` |  | Art. 23 ust. 1 pkt 10 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.edelivery.family.spouse.no_work_evidence_nkup` |  | Art. 23 ust. 1 pkt 10 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.edelivery.family.spouse.contract_type.employment` |  | Art. 22 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
 
 ### `rules/jdg/hyper/family/plan45.rego` (21 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1150 | `jdg.hyper.family.audit.representation.access_to_files` |  | Art. 178 OP |
-| 1151 | `jdg.hyper.family.audit.representation.participation_rights` |  | Art. 138e OP |
-| 1152 | `jdg.hyper.family.audit.cross_border.mutual_assistance` |  | Art. 86-87 OP, DAC |
-| 1153 | `jdg.hyper.family.audit.cross_border.simultaneous_audit` |  | Art. 86-87 OP |
-| 1154 | `jdg.hyper.family.audit.cross_border.presence_foreign_officials` |  | Art. 87 OP |
-| 1155 | `jdg.hyper.family.audit.closure.decision_issuance` |  | Art. 207-208 OP |
-| 1156 | `jdg.hyper.family.audit.closure.decision_deadline` |  | Art. 208 OP |
-| 1157 | `jdg.hyper.family.audit.closure.correction_window` |  | Art. 81 OP |
-| 1158 | `jdg.hyper.family.audit.follow_up.recommendations` |  | Art. 291-292 OP |
-| 1159 | `jdg.hyper.family.audit.follow_up.deadline_monitoring` |  | Art. 292 OP |
-| 1160 | `jdg.hyper.family.audit.aggregate.risk_score_update` |  | Art. 119b OP |
-| 1161 | `jdg.hyper.family.force_majeure.event.detection` |  | Art. 67a OP |
-| 1162 | `jdg.hyper.family.force_majeure.event.flood` |  | Art. 67a OP |
-| 1163 | `jdg.hyper.family.force_majeure.event.fire` |  | Art. 67a OP |
-| 1164 | `jdg.hyper.family.force_majeure.event.pandemic` |  | Art. 67a OP |
-| 1165 | `jdg.hyper.family.force_majeure.event.war_effects` |  | Art. 67a OP |
-| 1166 | `jdg.hyper.family.force_majeure.event.natural_disaster_other` |  | Art. 67a OP |
-| 1167 | `jdg.hyper.family.force_majeure.relief.tax_deferral` |  | Art. 67a § 1 pkt 1 OP |
-| 1168 | `jdg.hyper.family.force_majeure.relief.tax_installments` |  | Art. 67a § 1 pkt 2 OP |
-| 1169 | `jdg.hyper.family.force_majeure.relief.tax_remission` |  | Art. 67a § 1 pkt 3 OP |
-| 1170 | `jdg.hyper.family.force_majeure.relief.tax_suspension` |  | Art. 67a § 1 OP |
+| 0 | `jdg.hyper.family.audit.representation.access_to_files` |  | Art. 178 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.family.audit.representation.participation_rights` |  | Art. 138e Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.family.audit.cross_border.mutual_assistance` |  | Art. 86-87 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.... |
+| 0 | `jdg.hyper.family.audit.cross_border.simultaneous_audit` |  | Art. 86-87 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.... |
+| 0 | `jdg.hyper.family.audit.cross_border.presence_foreign_officials` |  | Art. 87 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.family.audit.closure.decision_issuance` |  | Art. 207-208 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.family.audit.closure.decision_deadline` |  | Art. 208 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.family.audit.closure.correction_window` |  | Art. 81 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.family.audit.follow_up.recommendations` |  | Art. 291-292 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.family.audit.follow_up.deadline_monitoring` |  | Art. 292 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.family.audit.aggregate.risk_score_update` |  | Art. 119b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.family.force_majeure.event.detection` |  | Art. 67a Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.family.force_majeure.event.flood` |  | Art. 67a Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.family.force_majeure.event.fire` |  | Art. 67a Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.family.force_majeure.event.pandemic` |  | Art. 67a Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.family.force_majeure.event.war_effects` |  | Art. 67a Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.family.force_majeure.event.natural_disaster_other` |  | Art. 67a Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.family.force_majeure.relief.tax_deferral` |  | Art. 67a § 1 pkt 1 Ordynacji podatkowej (Dz.U. 2025 poz. 234... |
+| 0 | `jdg.hyper.family.force_majeure.relief.tax_installments` |  | Art. 67a § 1 pkt 2 Ordynacji podatkowej (Dz.U. 2025 poz. 234... |
+| 0 | `jdg.hyper.family.force_majeure.relief.tax_remission` |  | Art. 67a § 1 pkt 3 Ordynacji podatkowej (Dz.U. 2025 poz. 234... |
+| 0 | `jdg.hyper.family.force_majeure.relief.tax_suspension` |  | Art. 67a § 1 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
 
 ### `rules/jdg/hyper/force_majeure/plan45.rego` (21 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1120 | `jdg.hyper.force_majeure.audit.right.record_activities` |  | Nagrywanie czynności za zgodą kontrolującego (Art. 286 § 3 O... |
-| 1121 | `jdg.hyper.force_majeure.audit.right.break_request` |  | Art. 286 OP |
-| 1122 | `jdg.hyper.force_majeure.audit.right.oppose_inspection` |  | Sprzeciw wobec kontroli naruszającej przepisy (Art. 84c PP) |
-| 1123 | `jdg.hyper.force_majeure.audit.right.correction_in_minus_blocked` |  | Art. 81b OP |
-| 1124 | `jdg.hyper.force_majeure.audit.right.correction_in_plus_allowed` |  | Art. 81b OP |
-| 1125 | `jdg.hyper.force_majeure.audit.right.right_to_be_heard` |  | Art. 200 OP |
-| 1126 | `jdg.hyper.force_majeure.audit.right.appeal_14_days` |  | Odwołanie od decyzji w 14 dni (Art. 223 OP) |
-| 1127 | `jdg.hyper.force_majeure.audit.right.wsa_complaint_30_days` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1128 | `jdg.hyper.force_majeure.audit.obligation.provide_documents` |  | R1129 |
-| 1129 | `jdg.hyper.force_majeure.audit.obligation.allow_inspection` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1130 | `jdg.hyper.force_majeure.audit.obligation.provide_explanations` |  | R1131 |
-| 1131 | `jdg.hyper.force_majeure.audit.obligation.sign_protocol` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1132 | `jdg.hyper.force_majeure.audit.obligation.retain_audit_docs` |  | R1133 |
-| 1133 | `jdg.hyper.force_majeure.audit.statute.suspension_effect` |  | Wszczęcie kontroli → zawieszenie biegu przedawnienia (Art. 7... |
-| 1134 | `jdg.hyper.force_majeure.audit.statute.suspension_duration` |  | R1135 |
-| 1135 | `jdg.hyper.force_majeure.audit.statute.resume_after_close` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1136 | `jdg.hyper.force_majeure.audit.penalty.obstruction_fine_5000` |  | Utrudnianie kontroli → grzywna do 5 000 PLN (Art. 262 OP) |
-| 1137 | `jdg.hyper.force_majeure.audit.penalty.obstruction_kks_art69` |  | Utrudnianie → odpowiedzialność KKS (Art. 69 KKS) |
-| 1138 | `jdg.hyper.force_majeure.audit.penalty.coercion_measures` |  | Środki przymusu: grzywna, przymuszenie bezpośrednie (Art. 15... |
-| 1139 | `jdg.hyper.force_majeure.audit.document.seizure_receipt` |  | Zatrzymanie dokumentów tylko za pokwitowaniem (Art. 288 OP) |
-| 1140 | `jdg.hyper.force_majeure.audit.document.seizure_duration` |  | R1141 |
+| 0 | `jdg.hyper.force_majeure.audit.right.record_activities` |  | Art. 286 § 3 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.force_majeure.audit.right.break_request` |  | Art. 286 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.force_majeure.audit.right.oppose_inspection` |  | Art. 84c ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorc... |
+| 0 | `jdg.hyper.force_majeure.audit.right.correction_in_minus_blocked` |  | Art. 81b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.force_majeure.audit.right.correction_in_plus_allowed` |  | Art. 81b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.force_majeure.audit.right.right_to_be_heard` |  | Art. 200 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.force_majeure.audit.right.appeal_14_days` |  | Art. 223 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.force_majeure.audit.right.wsa_complaint_30_days` |  | Art. 220 ustawy z dnia 30 sierpnia 2002 r. — Prawo o postępo... |
+| 0 | `jdg.hyper.force_majeure.audit.obligation.provide_documents` |  | Art. 281-292 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.force_majeure.audit.obligation.allow_inspection` |  | Art. 281-292 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.force_majeure.audit.obligation.provide_explanations` |  | Art. 281-292 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.force_majeure.audit.obligation.sign_protocol` |  | Art. 291 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.force_majeure.audit.obligation.retain_audit_docs` |  | Art. 86 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.force_majeure.audit.statute.suspension_effect` |  | Art. 70 § 6 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
+| 0 | `jdg.hyper.force_majeure.audit.statute.suspension_duration` |  | Art. 70 § 6 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
+| 0 | `jdg.hyper.force_majeure.audit.statute.resume_after_close` |  | Art. 70 § 6 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
+| 0 | `jdg.hyper.force_majeure.audit.penalty.obstruction_fine_5000` |  | Art. 262 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.force_majeure.audit.penalty.obstruction_kks_art69` |  | Art. 69 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 0 | `jdg.hyper.force_majeure.audit.penalty.coercion_measures` |  | Art. 151 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.force_majeure.audit.document.seizure_receipt` |  | Art. 288 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.force_majeure.audit.document.seizure_duration` |  | Art. 288 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
 
 ### `rules/jdg/hyper/fx/plan45.rego` (24 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1240 | `jdg.hyper.fx.edelivery.fiction.appeal_deadline_trigger` |  | Art. 144b OP |
-| 1241 | `jdg.hyper.fx.edelivery.monitoring.unread_messages` |  | Art. 144b OP |
-| 1242 | `jdg.hyper.fx.edelivery.monitoring.alert_7_days` |  | Art. 144b OP |
-| 1243 | `jdg.hyper.fx.edelivery.monitoring.alert_3_days` |  | R1244 |
-| 1244 | `jdg.hyper.fx.edelivery.monitoring.alert_1_day` |  | Art. 144b OP |
-| 1245 | `jdg.hyper.fx.eus.platform.required` |  | R1246 |
-| 1246 | `jdg.hyper.fx.eus.platform.incoming_letters_check` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1247 | `jdg.hyper.fx.eus.platform.declarations_status` |  | R1248 |
-| 1248 | `jdg.hyper.fx.eus.platform.payment_history` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1249 | `jdg.hyper.fx.eus.platform.mandates_management` |  | R1250 |
-| 1250 | `jdg.hyper.fx.eus.platform.certificates` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1251 | `jdg.hyper.fx.epuap.profile.required` |  | R1252 |
-| 1252 | `jdg.hyper.fx.epuap.signature.profile_zaufany` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1253 | `jdg.hyper.fx.epuap.submission.confirmation_upo` |  | R1254 |
-| 1254 | `jdg.hyper.fx.epuap.submission.timestamp` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1255 | `jdg.hyper.fx.electronic.delivery.address.update_obligation` |  | R1256 |
-| 1256 | `jdg.hyper.fx.electronic.delivery.sanction.outdated_address` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1257 | `jdg.hyper.fx.electronic.communication.retention.5_years` |  | R1258 |
-| 1258 | `jdg.hyper.fx.electronic.communication.evidence_value` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1259 | `jdg.hyper.fx.electronic.communication.encryption_requirements` |  | R1260 |
-| 1260 | `jdg.hyper.fx.electronic.communication.data_breach_notification` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1261 | `jdg.hyper.fx.currency.exchange.fifo_method` |  | Art. 14b ust. 3 PIT |
-| 1262 | `jdg.hyper.fx.currency.exchange.nbp_table_abc` |  | Art. 14b ust. 4 PIT |
-| 1263 | `jdg.hyper.fx.currency.exchange.jpk_v7_fx_mapping` |  | Art. 109 ust. 3c VAT |
+| 0 | `jdg.hyper.fx.edelivery.fiction.appeal_deadline_trigger` |  | Art. 144b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.fx.edelivery.monitoring.unread_messages` |  | Art. 144b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.fx.edelivery.monitoring.alert_7_days` |  | Art. 144b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.fx.edelivery.monitoring.alert_3_days` |  | Art. 144b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.fx.edelivery.monitoring.alert_1_day` |  | Art. 144b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.fx.eus.platform.required` |  | ustawy z dnia 16 listopada 2016 r. o Krajowej Administracji ... |
+| 0 | `jdg.hyper.fx.eus.platform.incoming_letters_check` |  | Art. 144b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.fx.eus.platform.declarations_status` |  | ustawy z dnia 16 listopada 2016 r. o Krajowej Administracji ... |
+| 0 | `jdg.hyper.fx.eus.platform.payment_history` |  | Art. 51-56 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.... |
+| 0 | `jdg.hyper.fx.eus.platform.mandates_management` |  | Art. 138a-138o Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze... |
+| 0 | `jdg.hyper.fx.eus.platform.certificates` |  | Art. 306g Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.fx.epuap.profile.required` |  | Art. 20a ustawy z dnia 17 lutego 2005 r. o informatyzacji dz... |
+| 0 | `jdg.hyper.fx.epuap.signature.profile_zaufany` |  | Art. 20a ustawy z dnia 17 lutego 2005 r. o informatyzacji dz... |
+| 0 | `jdg.hyper.fx.epuap.submission.confirmation_upo` |  | Art. 20d ustawy z dnia 17 lutego 2005 r. o informatyzacji dz... |
+| 0 | `jdg.hyper.fx.epuap.submission.timestamp` |  | Art. 20d ustawy z dnia 17 lutego 2005 r. o informatyzacji dz... |
+| 0 | `jdg.hyper.fx.electronic.delivery.address.update_obligation` |  | Art. 144b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.fx.electronic.delivery.sanction.outdated_address` |  | Art. 144b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.fx.electronic.communication.retention.5_years` |  | Art. 86 § 1 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
+| 0 | `jdg.hyper.fx.electronic.communication.evidence_value` |  | Art. 193a Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.fx.electronic.communication.encryption_requirements` |  | Art. 193a Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.fx.electronic.communication.data_breach_notification` |  | Art. 33 rozporządzenia Parlamentu Europejskiego i Rady (UE) ... |
+| 0 | `jdg.hyper.fx.currency.exchange.fifo_method` |  | Art. 14b ust. 3 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.fx.currency.exchange.nbp_table_abc` |  | Art. 14b ust. 4 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.fx.currency.exchange.jpk_v7_fx_mapping` |  | Art. 109 ust. 3c ustawy z dnia 11 marca 2004 r. o podatku od... |
 
 ### `rules/jdg/hyper/general/plan45.rego` (100 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1044 | `jdg.hyper.general.solidarity.levy.base.calculation` |  | Art. 30h ust. 2 PIT |
-| 1045 | `jdg.hyper.general.solidarity.levy.rate.4pct` |  | Art. 30h ust. 1 PIT |
-| 1046 | `jdg.hyper.general.solidarity.levy.minimum.zero` |  | Art. 30h ust. 2 PIT |
-| 1047 | `jdg.hyper.general.solidarity.levy.income.scale` |  | Art. 30h ust. 2 PIT |
-| 1048 | `jdg.hyper.general.solidarity.levy.income.linear` |  | Art. 30h ust. 2 PIT |
-| 1049 | `jdg.hyper.general.solidarity.levy.income.lump_sum` |  | Art. 30h ust. 2 PIT |
-| 1061 | `jdg.hyper.general.solidarity.levy.payment.method.mandatory_transfer` |  | Art. 30h ust. 6 PIT, Art. 61b OP |
-| 1062 | `jdg.hyper.general.solidarity.levy.sanction.late_payment` |  | Art. 56 OP |
-| 1063 | `jdg.hyper.general.solidarity.levy.sanction.underpayment_penalty` |  | Art. 54 KKS, Art. 56 KKS |
-| 1064 | `jdg.hyper.general.solidarity.levy.interaction.pit_free_amount` |  | Art. 30h ust. 2 PIT |
-| 1065 | `jdg.hyper.general.solidarity.levy.interaction.tax_scale` |  | Art. 30h ust. 4 PIT |
-| 1066 | `jdg.hyper.general.solidarity.levy.edge.first_year_1m` |  | Art. 30h ust. 2 PIT |
-| 1067 | `jdg.hyper.general.solidarity.levy.edge.loss_reduction` |  | Art. 30h ust. 2 PIT, Art. 9 ust. 3 PIT |
-| 1068 | `jdg.hyper.general.solidarity.levy.edge.one_time_income` |  | Art. 30h ust. 2 PIT |
-| 1069 | `jdg.hyper.general.solidarity.levy.aggregate.annual_forecast` |  | Art. 30h PIT |
-| 1086 | `jdg.hyper.general.wis.monitoring.expiry_alert_6months` |  | Art. 42h ust. 1 VAT |
-| 1087 | `jdg.hyper.general.wis.monitoring.expiry_alert_3months` |  | Art. 42h ust. 1 VAT |
-| 1088 | `jdg.hyper.general.wis.monitoring.expiry_alert_1month` |  | Art. 42h ust. 1 VAT |
-| 1089 | `jdg.hyper.general.wis.binding_effect.dyrektor_kis` |  | Art. 42h ust. 1 VAT |
-| 1111 | `jdg.hyper.general.audit.trigger.return_to_correct` |  | Art. 274 OP |
-| 1112 | `jdg.hyper.general.audit.trigger.inspection_warrant` |  | Art. 282 OP |
-| 1113 | `jdg.hyper.general.audit.trigger.external_information` |  | Art. 282 OP |
-| 1114 | `jdg.hyper.general.audit.right.notification_7_days` |  | Art. 282b OP |
-| 1115 | `jdg.hyper.general.audit.right.no_notification_exceptions` |  | Art. 282b § 2 OP |
-| 1116 | `jdg.hyper.general.audit.right.presence_during_activities` |  | Art. 285 OP |
-| 1117 | `jdg.hyper.general.audit.right.exclusion_of_inspector` |  | Art. 130 OP |
-| 1118 | `jdg.hyper.general.audit.right.refuse_self_incrimination` |  | Art. 199 OP |
-| 1119 | `jdg.hyper.general.audit.right.object_to_protocol` |  | Art. 291 OP |
-| 1141 | `jdg.hyper.general.audit.document.electronic_evidence` |  | Art. 193a OP |
-| 1142 | `jdg.hyper.general.audit.document.foreign_language` |  | Art. 180a OP |
-| 1143 | `jdg.hyper.general.audit.protocol.deadline_14_days_after_end` |  | Art. 291 OP |
-| 1144 | `jdg.hyper.general.audit.protocol.required_elements` |  | Art. 291 § 3 OP |
-| 1145 | `jdg.hyper.general.audit.protocol.objections_period` |  | Art. 291 § 1 OP |
-| 1146 | `jdg.hyper.general.audit.protocol.objections_to_director` |  | Art. 291 § 2 OP |
-| 1147 | `jdg.hyper.general.audit.protocol.electronic_service` |  | Art. 144b OP |
-| 1148 | `jdg.hyper.general.audit.representation.poa_pps1` |  | Art. 138a-138o OP |
-| 1149 | `jdg.hyper.general.audit.representation.poa_upl1` |  | Art. 138a-138o OP |
-| 1171 | `jdg.hyper.general.force_majeure.relief.deadline_extension` |  | Art. 67a § 1 OP |
-| 1172 | `jdg.hyper.general.force_majeure.relief.application_immediate` |  | Art. 67b OP |
-| 1173 | `jdg.hyper.general.force_majeure.relief.interest_suspension` |  | Art. 67a § 1 OP |
-| 1174 | `jdg.hyper.general.force_majeure.relief.zus_deferral` |  | Art. 28 SUS |
-| 1175 | `jdg.hyper.general.force_majeure.relief.zus_installments` |  | Art. 29 SUS |
-| 1176 | `jdg.hyper.general.force_majeure.relief.zus_remission` |  | Art. 29 SUS |
-| 1177 | `jdg.hyper.general.force_majeure.relief.zus_contribution_suspension` |  | Art. 18a SUS |
-| 1178 | `jdg.hyper.general.force_majeure.documents.loss_reporting` |  | Art. 86 § 2 OP |
-| 1179 | `jdg.hyper.general.force_majeure.documents.reconstruction_procedure` |  | Art. 86 § 2 OP |
-| 1201 | `jdg.hyper.general.family.spouse.contract_type.b2b` |  | Art. 23 ust. 1 pkt 10 PIT |
-| 1202 | `jdg.hyper.general.family.spouse.contract_type.mandate` |  | Art. 23 ust. 1 pkt 10 PIT |
-| 1203 | `jdg.hyper.general.family.children.employment.under_26` |  | Art. 23 ust. 1 pkt 10 PIT |
-| 1204 | `jdg.hyper.general.family.children.work_evidence_required` |  | Art. 22 ust. 1 PIT |
-| 1205 | `jdg.hyper.general.family.children.salary_arm_length` |  | Art. 22 ust. 1 PIT, Art. 23zf PIT |
-| 1206 | `jdg.hyper.general.family.children.pit_ulga_young_interaction` |  | Art. 21 ust. 1 pkt 148 PIT |
-| 1207 | `jdg.hyper.general.family.children.university_compatibility` |  | Art. 22 ust. 1 PIT |
-| 1208 | `jdg.hyper.general.family.cooperation.zus_person` |  | Art. 8 ust. 2 SUS |
-| 1209 | `jdg.hyper.general.family.cooperation.zus_health` |  | Art. 81 ustawy zdrowotnej |
-| 1231 | `jdg.hyper.general.family.succession.sd_z2_deadline_6months` |  | Ustawa o SD, Art. 4a |
-| 1232 | `jdg.hyper.general.family.succession.business_continuity` |  | Art. 12-13 ustawy o zarządzie sukcesyjnym |
-| 1233 | `jdg.hyper.general.family.multi_generation.tax_planning` |  | Art. 22-23 PIT |
-| 1234 | `jdg.hyper.general.family.aggregate.risk_assessment` |  | Art. 119b OP |
-| 1235 | `jdg.hyper.general.edelivery.registration.mandatory` |  | Ustawa o doręczeniach elektronicznych, Art. 5 |
-| 1236 | `jdg.hyper.general.edelivery.registration.deadline_by_entity_type` |  | Ustawa o doręczeniach elektronicznych |
-| 1237 | `jdg.hyper.general.edelivery.fiction.delivery_14_days` |  | Art. 144b OP |
-| 1238 | `jdg.hyper.general.edelivery.fiction.consequences_legal` |  | Art. 144b OP |
-| 1239 | `jdg.hyper.general.edelivery.fiction.critical_alert` |  | Art. 144b OP |
-| 1261 | `jdg.hyper.general.cross_border.eidas.recognition` |  | Rozp. eIDAS 910/2014 |
-| 1262 | `jdg.hyper.general.cross_border.crs.fatca.reporting` |  | Ustawa o wymianie informacji podatkowych |
-| 1263 | `jdg.hyper.general.cross_border.dac.directives.compliance` |  | Dyrektywy DAC1-DAC8 |
-| 1264 | `jdg.hyper.general.communication.calendar.deadlines_integration` |  | Art. 144b OP |
-| 1265 | `jdg.hyper.general.communication.offline.backup_procedure` |  | Art. 144b OP |
-| 1266 | `jdg.hyper.general.communication.offline.paper_allowed_when` |  | Art. 144 OP |
-| 1267 | `jdg.hyper.general.communication.language.polish_required` |  | Art. 4 ustawy o języku polskim |
-| 1268 | `jdg.hyper.general.communication.language.foreign_documents_translation` |  | Art. 180a OP |
-| 1269 | `jdg.hyper.general.communication.aggregate.status_dashboard` |  | Art. 138e-138i OP |
-| 1551 | `jdg.hyper.general.kks.conviction.bank_account_termination` |  | Art. 56 Prawa bankowego + AML |
-| 1552 | `jdg.hyper.general.kks.conviction.credit_score_impact` |  | BIK, praktyka bankowa |
-| 1553 | `jdg.hyper.general.kks.conviction.enhanced_aml_kyc` |  | Art. 43 AML |
-| 1554 | `jdg.hyper.general.kks.conviction.fintech_access_restriction` |  | Polityki fintechów |
-| 1555 | `jdg.hyper.general.kks.conviction.cash_transaction_monitoring` |  | GIIF |
-| 1556 | `jdg.hyper.general.kks.conviction.tax_office_scrutiny_increased` |  | Praktyka US |
-| 1557 | `jdg.hyper.general.kks.conviction.risk_profile_reclassification` |  | Art. 119b OP |
-| 1558 | `jdg.hyper.general.kks.conviction.public_warning_list_art119b` |  | Art. 119b OP |
-| 1559 | `jdg.hyper.general.kks.conviction.statute_interruption` |  | Art. 70 § 4 OP |
-| 1601 | `jdg.hyper.general.regulated.cross_border.eu_qualifications_recognition` |  | Dyrektywa 2005/36/WE |
-| 1602 | `jdg.hyper.general.regulated.cross_border.non_eu_qualifications` |  | Ustawy branżowe |
-| 1603 | `jdg.hyper.general.regulated.cross_border.temporary_services_eu` |  | Dyrektywa 2005/36/WE |
-| 1604 | `jdg.hyper.general.regulated.cross_border.double_taxation_specialist` |  | Umowy UPO |
-| 1605 | `jdg.hyper.general.regulated.cross_border.vat_registration_abroad` |  | Art. 28k VAT, OSS |
-| 1606 | `jdg.hyper.general.regulated.aggregate.profession_specific_risk_profile` |  | — |
-| 1607 | `jdg.hyper.general.regulated.aggregate.annual_compliance_checklist` |  | — |
-| 1608 | `jdg.hyper.general.insurance.mandatory.detection_legal` |  | Rozp. MS ws. OC adwokatów/radców |
-| 1609 | `jdg.hyper.general.insurance.mandatory.detection_medical` |  | Ustawa o zawodzie lekarza |
-| 1651 | `jdg.hyper.general.payment.installments.pit_revenue_per_installment` |  | Art. 14 PIT |
-| 1652 | `jdg.hyper.general.payment.installments.vat_accrual_full_immediately` |  | Art. 19a VAT |
-| 1653 | `jdg.hyper.general.payment.installments.vat_cash_per_installment` |  | Art. 21 VAT |
-| 1654 | `jdg.hyper.general.payment.installments.late_payment_interest` |  | Art. 56 OP |
-| 1655 | `jdg.hyper.general.payment.installments.contract_termination_consequences` |  | Art. 106j VAT |
-| 1656 | `jdg.hyper.general.payment.advance.vat_obligation_on_receipt` |  | Art. 19a ust. 8 VAT |
-| 1657 | `jdg.hyper.general.payment.advance.vat_invoice_required_15days` |  | Art. 106i VAT |
-| 1658 | `jdg.hyper.general.payment.advance.pit_revenue_on_receipt` |  | Art. 14 PIT |
-| 1659 | `jdg.hyper.general.payment.advance.advance_not_refunded_taxable` |  | Art. 14 PIT |
+| 0 | `jdg.hyper.general.solidarity.levy.base.calculation` |  | Art. 30h ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.general.solidarity.levy.rate.4pct` |  | Art. 30h ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.general.solidarity.levy.minimum.zero` |  | Art. 30h ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.general.solidarity.levy.income.scale` |  | Art. 30h ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.general.solidarity.levy.income.linear` |  | Art. 30h ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.general.solidarity.levy.income.lump_sum` |  | Art. 30h ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.general.solidarity.levy.payment.method.mandatory_transfer` |  | Art. 30h ust. 6 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.general.solidarity.levy.sanction.late_payment` |  | Art. 56 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.solidarity.levy.sanction.underpayment_penalty` |  | Art. 54 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 0 | `jdg.hyper.general.solidarity.levy.interaction.pit_free_amount` |  | Art. 30h ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.general.solidarity.levy.interaction.tax_scale` |  | Art. 30h ust. 4 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.general.solidarity.levy.edge.first_year_1m` |  | Art. 30h ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.general.solidarity.levy.edge.loss_reduction` |  | Art. 30h ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.general.solidarity.levy.edge.one_time_income` |  | Art. 30h ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.general.solidarity.levy.aggregate.annual_forecast` |  | Art. 30h ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 0 | `jdg.hyper.general.wis.monitoring.expiry_alert_6months` |  | Art. 42h ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.general.wis.monitoring.expiry_alert_3months` |  | Art. 42h ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.general.wis.monitoring.expiry_alert_1month` |  | Art. 42h ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.general.wis.binding_effect.dyrektor_kis` |  | Art. 42h ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.general.audit.trigger.return_to_correct` |  | Art. 274 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.audit.trigger.inspection_warrant` |  | Art. 282 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.audit.trigger.external_information` |  | Art. 282 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.audit.right.notification_7_days` |  | Art. 282b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.audit.right.no_notification_exceptions` |  | Art. 282b § 2 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze ... |
+| 0 | `jdg.hyper.general.audit.right.presence_during_activities` |  | Art. 285 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.audit.right.exclusion_of_inspector` |  | Art. 130 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.audit.right.refuse_self_incrimination` |  | Art. 199 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.audit.right.object_to_protocol` |  | Art. 291 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.audit.document.electronic_evidence` |  | Art. 193a Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.audit.document.foreign_language` |  | Art. 180a Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.audit.protocol.deadline_14_days_after_end` |  | Art. 291 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.audit.protocol.required_elements` |  | Art. 291 § 3 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.general.audit.protocol.objections_period` |  | Art. 291 § 1 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.general.audit.protocol.objections_to_director` |  | Art. 291 § 2 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.general.audit.protocol.electronic_service` |  | Art. 144b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.audit.representation.poa_pps1` |  | Art. 138a-138o Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze... |
+| 0 | `jdg.hyper.general.audit.representation.poa_upl1` |  | Art. 138a-138o Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze... |
+| 0 | `jdg.hyper.general.force_majeure.relief.deadline_extension` |  | Art. 67a § 1 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.general.force_majeure.relief.application_immediate` |  | Art. 67b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.force_majeure.relief.interest_suspension` |  | Art. 67a § 1 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.general.force_majeure.relief.zus_deferral` |  | Art. 28 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 0 | `jdg.hyper.general.force_majeure.relief.zus_installments` |  | Art. 29 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 0 | `jdg.hyper.general.force_majeure.relief.zus_remission` |  | Art. 29 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 0 | `jdg.hyper.general.force_majeure.relief.zus_contribution_suspension` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 0 | `jdg.hyper.general.force_majeure.documents.loss_reporting` |  | Art. 86 § 2 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
+| 0 | `jdg.hyper.general.force_majeure.documents.reconstruction_procedure` |  | Art. 86 § 2 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
+| 0 | `jdg.hyper.general.family.spouse.contract_type.b2b` |  | Art. 23 ust. 1 pkt 10 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.general.family.spouse.contract_type.mandate` |  | Art. 23 ust. 1 pkt 10 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.general.family.children.employment.under_26` |  | Art. 23 ust. 1 pkt 10 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.general.family.children.work_evidence_required` |  | Art. 22 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.general.family.children.salary_arm_length` |  | Art. 22 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.general.family.children.pit_ulga_young_interaction` |  | Art. 21 ust. 1 pkt 148 ustawy z dnia 26 lipca 1991 r. o poda... |
+| 0 | `jdg.hyper.general.family.children.university_compatibility` |  | Art. 22 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.general.family.cooperation.zus_person` |  | Art. 8 ust. 2 ustawy z dnia 13 października 1998 r. o system... |
+| 0 | `jdg.hyper.general.family.cooperation.zus_health` |  | Art. 81 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 0 | `jdg.hyper.general.family.succession.sd_z2_deadline_6months` |  | Art. 4a ustawy z dnia 28 lipca 1983 r. o podatku od spadków ... |
+| 0 | `jdg.hyper.general.family.succession.business_continuity` |  | Art. 12-13 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesy... |
+| 0 | `jdg.hyper.general.family.multi_generation.tax_planning` |  | Art. 22-23 ustawy z dnia 26 lipca 1991 r. o podatku dochodow... |
+| 0 | `jdg.hyper.general.family.aggregate.risk_assessment` |  | Art. 119b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.edelivery.registration.mandatory` |  | ustawy z dnia 18 listopada 2020 r. o doręczeniach elektronic... |
+| 0 | `jdg.hyper.general.edelivery.registration.deadline_by_entity_type` |  | ustawy z dnia 18 listopada 2020 r. o doręczeniach elektronic... |
+| 0 | `jdg.hyper.general.edelivery.fiction.delivery_14_days` |  | Art. 144b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.edelivery.fiction.consequences_legal` |  | Art. 144b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.edelivery.fiction.critical_alert` |  | Art. 144b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.cross_border.eidas.recognition` |  | rozporządzenia Parlamentu Europejskiego i Rady (UE) nr 910/2... |
+| 0 | `jdg.hyper.general.cross_border.crs.fatca.reporting` |  | ustawy z dnia 9 marca 2017 r. o wymianie informacji podatkow... |
+| 0 | `jdg.hyper.general.cross_border.dac.directives.compliance` |  | Dyrektyw Rady 2011/16/UE (DAC1-DAC8) w sprawie współpracy ad... |
+| 0 | `jdg.hyper.general.communication.calendar.deadlines_integration` |  | Art. 144b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.communication.offline.backup_procedure` |  | Art. 144b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.communication.offline.paper_allowed_when` |  | Art. 144 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.communication.language.polish_required` |  | Art. 4 ustawy z dnia 7 października 1999 r. o języku polskim |
+| 0 | `jdg.hyper.general.communication.language.foreign_documents_translation` |  | Art. 180a Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.communication.aggregate.status_dashboard` |  | Art. 138e-138i Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze... |
+| 0 | `jdg.hyper.general.kks.conviction.bank_account_termination` |  | Art. 56 ustawy z dnia 29 sierpnia 1997 r. — Prawo bankowe + ... |
+| 0 | `jdg.hyper.general.kks.conviction.credit_score_impact` |  | Art. 105 ustawy z dnia 29 sierpnia 1997 r. — Prawo bankowe |
+| 0 | `jdg.hyper.general.kks.conviction.enhanced_aml_kyc` |  | Art. 43 ustawy z dnia 1 marca 2018 r. o przeciwdziałaniu pra... |
+| 0 | `jdg.hyper.general.kks.conviction.fintech_access_restriction` |  | ustawy z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pien... |
+| 0 | `jdg.hyper.general.kks.conviction.cash_transaction_monitoring` |  | ustawy z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pien... |
+| 0 | `jdg.hyper.general.kks.conviction.tax_office_scrutiny_increased` |  | Art. 119b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.kks.conviction.risk_profile_reclassification` |  | Art. 119b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.kks.conviction.public_warning_list_art119b` |  | Art. 119b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.kks.conviction.statute_interruption` |  | Art. 70 § 4 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm... |
+| 0 | `jdg.hyper.general.regulated.cross_border.eu_qualifications_recognition` |  | Dyrektywa 2005/36/WE |
+| 0 | `jdg.hyper.general.regulated.cross_border.non_eu_qualifications` |  | ustaw regulujących wykonywanie zawodów regulowanych |
+| 0 | `jdg.hyper.general.regulated.cross_border.temporary_services_eu` |  | Dyrektywa 2005/36/WE |
+| 0 | `jdg.hyper.general.regulated.cross_border.double_taxation_specialist` |  | umów o unikaniu podwójnego opodatkowania (UPO) |
+| 0 | `jdg.hyper.general.regulated.cross_border.vat_registration_abroad` |  | Art. 28k ustawy z dnia 11 marca 2004 r. o podatku od towarów... |
+| 0 | `jdg.hyper.general.regulated.aggregate.profession_specific_risk_profile` |  | Art. 119b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.regulated.aggregate.annual_compliance_checklist` |  | ustaw regulujących wykonywanie zawodów regulowanych |
+| 0 | `jdg.hyper.general.insurance.mandatory.detection_legal` |  | Rozp. MS ws. OC adwokatów/radców |
+| 0 | `jdg.hyper.general.insurance.mandatory.detection_medical` |  | ustawy z dnia 5 grudnia 1996 r. o zawodach lekarza i lekarza... |
+| 0 | `jdg.hyper.general.payment.installments.pit_revenue_per_installment` |  | Art. 14 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.general.payment.installments.vat_accrual_full_immediately` |  | Art. 19a ustawy z dnia 11 marca 2004 r. o podatku od towarów... |
+| 0 | `jdg.hyper.general.payment.installments.vat_cash_per_installment` |  | Art. 21 ustawy z dnia 11 marca 2004 r. o podatku od towarów ... |
+| 0 | `jdg.hyper.general.payment.installments.late_payment_interest` |  | Art. 56 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.general.payment.installments.contract_termination_consequences` |  | Art. 106j ustawy z dnia 11 marca 2004 r. o podatku od towaró... |
+| 0 | `jdg.hyper.general.payment.advance.vat_obligation_on_receipt` |  | Art. 19a ust. 8 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.general.payment.advance.vat_invoice_required_15days` |  | Art. 106i ustawy z dnia 11 marca 2004 r. o podatku od towaró... |
+| 0 | `jdg.hyper.general.payment.advance.pit_revenue_on_receipt` |  | Art. 14 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.general.payment.advance.advance_not_refunded_taxable` |  | Art. 14 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
 
 ### `rules/jdg/hyper/limits/plan45.rego` (33 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1518 | `jdg.hyper.limits.seasonal.detection.months_with_revenue` |  | Art. 22 PP |
-| 1519 | `jdg.hyper.limits.seasonal.detection.revenue_gap_3plus_months` |  | Art. 22 PP |
-| 1520 | `jdg.hyper.limits.seasonal.detection.industry_code_tourism` |  | Art. 22 PP |
-| 1521 | `jdg.hyper.limits.seasonal.detection.industry_code_agriculture` |  | Art. 22 PP |
-| 1522 | `jdg.hyper.limits.seasonal.detection.construction_winter_break` |  | Art. 22 PP |
-| 1523 | `jdg.hyper.limits.seasonal.suspension.keep_nip` |  | Art. 22 PP |
-| 1524 | `jdg.hyper.limits.seasonal.suspension.max_24_months_total` |  | Art. 22 PP (max 24 mies. łącznie) |
-| 1525 | `jdg.hyper.limits.seasonal.closure.nip_loss_consequences` |  | Art. 30 CEIDG |
-| 1526 | `jdg.hyper.limits.seasonal.closure.reopening_zus_new_application` |  | Art. 36 SUS |
-| 1527 | `jdg.hyper.limits.seasonal.closure.vat_r_new_application` |  | Art. 96 VAT |
-| 1528 | `jdg.hyper.limits.seasonal.zus.suspension_no_social` |  | Art. 36a SUS |
-| 1529 | `jdg.hyper.limits.seasonal.zus.suspension_health_still_due` |  | Art. 36a SUS |
-| 1530 | `jdg.hyper.limits.seasonal.zus.closure_no_contributions` |  | Art. 6 SUS |
-| 1531 | `jdg.hyper.limits.seasonal.zus.annual_health_tier_lockstep` |  | Art. 81 ust. 2e-f u.ś.o.z. |
-| 1532 | `jdg.hyper.limits.seasonal.zus.maly_plus_revenue_120k_eur_test` |  | Art. 18c SUS |
-| 1533 | `jdg.hyper.limits.seasonal.pit.scale_annual_only_active_months` |  | Art. 27 PIT |
-| 1534 | `jdg.hyper.limits.seasonal.pit.advances_simplified_recommendation` |  | Art. 44 ust. 6b PIT |
-| 1535 | `jdg.hyper.limits.seasonal.pit.advances_no_income_months_zero` |  | Art. 44 ust. 3 PIT |
-| 1536 | `jdg.hyper.limits.seasonal.pit.lump_sum_annual_calculation` |  | Art. 12 ust. 1 u.z.p.d. |
-| 1537 | `jdg.hyper.limits.seasonal.pit.loss_carry_forward_5years` |  | Art. 9 ust. 3 PIT |
-| 1538 | `jdg.hyper.limits.seasonal.vat.zero_returns_in_suspension` |  | Art. 99 ust. 7a VAT |
-| 1539 | `jdg.hyper.limits.seasonal.vat.exemption_200k_proportion` |  | Art. 113 ust. 9 VAT |
-| 1540 | `jdg.hyper.limits.seasonal.vat.exemption_breach_mid_year` |  | Art. 113 ust. 5 VAT |
-| 1541 | `jdg.hyper.limits.seasonal.vat.margin_scheme_seasonal_goods` |  | Art. 120 VAT |
-| 1542 | `jdg.hyper.limits.seasonal.vat.deduction_maintenance_costs` |  | Art. 86 VAT |
-| 1543 | `jdg.hyper.limits.seasonal.aggregate.annual_summary_pit_zus` |  | — |
-| 1544 | `jdg.hyper.limits.seasonal.aggregate.comparison_normal_vs_seasonal` |  | — |
-| 1545 | `jdg.hyper.limits.seasonal.aggregate.optimal_strategy` |  | — |
-| 1546 | `jdg.hyper.limits.kks.conviction.business_ban_art41kk` |  | Art. 41 KK |
-| 1547 | `jdg.hyper.limits.kks.conviction.professional_license_revocation` |  | Art. 41 KK, ustawy korporacyjne |
-| 1548 | `jdg.hyper.limits.kks.conviction.public_procurement_exclusion` |  | Art. 108 PZP |
-| 1549 | `jdg.hyper.limits.kks.conviction.eu_funds_exclusion` |  | Rozp. 2018/1046 |
-| 1550 | `jdg.hyper.limits.kks.conviction.regulated_profession_consequences` |  | Ustawy branżowe |
+| 0 | `jdg.hyper.limits.seasonal.detection.months_with_revenue` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 0 | `jdg.hyper.limits.seasonal.detection.revenue_gap_3plus_months` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 0 | `jdg.hyper.limits.seasonal.detection.industry_code_tourism` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 0 | `jdg.hyper.limits.seasonal.detection.industry_code_agriculture` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 0 | `jdg.hyper.limits.seasonal.detection.construction_winter_break` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 0 | `jdg.hyper.limits.seasonal.suspension.keep_nip` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 0 | `jdg.hyper.limits.seasonal.suspension.max_24_months_total` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 0 | `jdg.hyper.limits.seasonal.closure.nip_loss_consequences` |  | Art. 30 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji... |
+| 0 | `jdg.hyper.limits.seasonal.closure.reopening_zus_new_application` |  | Art. 36 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 0 | `jdg.hyper.limits.seasonal.closure.vat_r_new_application` |  | Art. 96 ustawy z dnia 11 marca 2004 r. o podatku od towarów ... |
+| 0 | `jdg.hyper.limits.seasonal.zus.suspension_no_social` |  | Art. 36a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 0 | `jdg.hyper.limits.seasonal.zus.suspension_health_still_due` |  | Art. 36a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 0 | `jdg.hyper.limits.seasonal.zus.closure_no_contributions` |  | Art. 6 ustawy z dnia 13 października 1998 r. o systemie ubez... |
+| 0 | `jdg.hyper.limits.seasonal.zus.annual_health_tier_lockstep` |  | Art. 81 ust. 2e-f ustawy z dnia 27 sierpnia 2004 r. o świadc... |
+| 0 | `jdg.hyper.limits.seasonal.zus.maly_plus_revenue_120k_eur_test` |  | Art. 18c ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 0 | `jdg.hyper.limits.seasonal.pit.scale_annual_only_active_months` |  | Art. 27 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.limits.seasonal.pit.advances_simplified_recommendation` |  | Art. 44 ust. 6b ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.limits.seasonal.pit.advances_no_income_months_zero` |  | Art. 44 ust. 3 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.limits.seasonal.pit.lump_sum_annual_calculation` |  | Art. 12 ust. 1 ustawy z dnia 20 listopada 1998 r. o zryczałt... |
+| 0 | `jdg.hyper.limits.seasonal.pit.loss_carry_forward_5years` |  | Art. 9 ust. 3 ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 0 | `jdg.hyper.limits.seasonal.vat.zero_returns_in_suspension` |  | Art. 99 ust. 7a ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.limits.seasonal.vat.exemption_200k_proportion` |  | Art. 113 ust. 9 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.limits.seasonal.vat.exemption_breach_mid_year` |  | Art. 113 ust. 5 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.limits.seasonal.vat.margin_scheme_seasonal_goods` |  | Art. 120 ustawy z dnia 11 marca 2004 r. o podatku od towarów... |
+| 0 | `jdg.hyper.limits.seasonal.vat.deduction_maintenance_costs` |  | Art. 86 ustawy z dnia 11 marca 2004 r. o podatku od towarów ... |
+| 0 | `jdg.hyper.limits.seasonal.aggregate.annual_summary_pit_zus` |  | Art. 44 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.limits.seasonal.aggregate.comparison_normal_vs_seasonal` |  | Art. 44 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.limits.seasonal.aggregate.optimal_strategy` |  | Art. 44 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.limits.kks.conviction.business_ban_art41kk` |  | Art. 41 ustawy z dnia 6 czerwca 1997 r. — Kodeks karny |
+| 0 | `jdg.hyper.limits.kks.conviction.professional_license_revocation` |  | Art. 41 ustawy z dnia 6 czerwca 1997 r. — Kodeks karny, usta... |
+| 0 | `jdg.hyper.limits.kks.conviction.public_procurement_exclusion` |  | Art. 108 ustawy z dnia 11 września 2019 r. — Prawo zamówień ... |
+| 0 | `jdg.hyper.limits.kks.conviction.eu_funds_exclusion` |  | Rozp. 2018/1046 |
+| 0 | `jdg.hyper.limits.kks.conviction.regulated_profession_consequences` |  | ustaw regulujących wykonywanie zawodów regulowanych |
 
 ### `rules/jdg/hyper/mdr/plan45.rego` (38 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1004 | `jdg.hyper.mdr.mdr.hallmark.a4.loss_buying` |  | Art. 86a § 1 pkt 4 OP |
-| 1005 | `jdg.hyper.mdr.mdr.hallmark.a5.conversion_income` |  | Art. 86a § 1 pkt 5 OP |
-| 1006 | `jdg.hyper.mdr.mdr.hallmark.a6.circular_transactions` |  | Art. 86a § 1 pkt 6 OP |
-| 1007 | `jdg.hyper.mdr.mdr.hallmark.a7.double_deduction` |  | Art. 86a § 1 pkt 7 OP |
-| 1008 | `jdg.hyper.mdr.mdr.hallmark.a8.double_depreciation` |  | Art. 86a § 1 pkt 8 OP |
-| 1009 | `jdg.hyper.mdr.mdr.hallmark.a9.double_tax_relief` |  | Art. 86a § 1 pkt 9 OP |
-| 1010 | `jdg.hyper.mdr.mdr.hallmark.a10.main_benefit_test` |  | Art. 86a § 1 pkt 10 OP |
-| 1011 | `jdg.hyper.mdr.mdr.hallmark.b1.loss_utilization_group` |  | Art. 86a § 1 pkt 11 OP |
-| 1012 | `jdg.hyper.mdr.mdr.hallmark.b2.income_conversion_capital` |  | Art. 86a § 1 pkt 12 OP |
-| 1013 | `jdg.hyper.mdr.mdr.hallmark.b3.deduction_cross_border` |  | Art. 86a § 1 pkt 13 OP |
-| 1014 | `jdg.hyper.mdr.mdr.hallmark.b4.tax_haven_transfer` |  | Art. 86a § 1 pkt 14 OP |
-| 1015 | `jdg.hyper.mdr.mdr.hallmark.b5.non_arm_length_payment` |  | Art. 86a § 1 pkt 15 OP |
-| 1016 | `jdg.hyper.mdr.mdr.hallmark.b6.deductible_cross_border` |  | Art. 86a § 1 pkt 16 OP |
-| 1017 | `jdg.hyper.mdr.mdr.hallmark.b7.non_taxation_claim` |  | Art. 86a § 1 pkt 17 OP |
-| 1018 | `jdg.hyper.mdr.mdr.hallmark.b8.hybrid_mismatch` |  | Art. 86a § 1 pkt 18 OP |
-| 1019 | `jdg.hyper.mdr.mdr.hallmark.c1.strategic_acquisition` |  | Art. 86a § 1 pkt 19 OP |
-| 1020 | `jdg.hyper.mdr.mdr.hallmark.c2.income_reclassification` |  | Art. 86a § 1 pkt 20 OP |
-| 1021 | `jdg.hyper.mdr.mdr.hallmark.c3.circular_flow_round_trip` |  | Art. 86a § 1 pkt 21 OP |
-| 1022 | `jdg.hyper.mdr.mdr.hallmark.c4.cross_border_deduction` |  | Art. 86a § 1 pkt 22 OP |
-| 1023 | `jdg.hyper.mdr.mdr.hallmark.c5.transfer_pricing_gap` |  | Art. 86a § 1 pkt 23 OP |
-| 1024 | `jdg.hyper.mdr.mdr.hallmark.c6.ip_transfer_hard_to_value` |  | Art. 86a § 1 pkt 24 OP |
-| 1025 | `jdg.hyper.mdr.mdr.hallmark.c7.business_restructuring` |  | Art. 86a § 1 pkt 25 OP |
-| 1026 | `jdg.hyper.mdr.mdr.hallmark.c8.safe_harbour_manipulation` |  | Art. 86a § 1 pkt 26 OP |
-| 1027 | `jdg.hyper.mdr.mdr.hallmark.d1.ip_transfer_cross_border` |  | Art. 86a § 1 pkt 27 OP |
-| 1028 | `jdg.hyper.mdr.mdr.hallmark.d2.business_transfer` |  | Art. 86a § 1 pkt 28 OP |
-| 1029 | `jdg.hyper.mdr.mdr.hallmark.e1.automatic_exchange_bypass` |  | Art. 86a § 1 pkt 29 OP |
-| 1030 | `jdg.hyper.mdr.mdr.hallmark.e2.ubo_concealment` |  | Art. 86a § 1 pkt 30 OP |
-| 1031 | `jdg.hyper.mdr.mdr.hallmark.e3.trust_foundation_chain` |  | Art. 86a § 1 pkt 31 OP |
-| 1032 | `jdg.hyper.mdr.mdr.hallmark.e4.nominee_director` |  | Art. 86a § 1 pkt 32 OP |
-| 1034 | `jdg.hyper.mdr.mdr.obligation.user_reporting` |  | Art. 86b OP |
-| 1035 | `jdg.hyper.mdr.mdr.obligation.legal_professional_privilege` |  | Art. 86c OP |
-| 1036 | `jdg.hyper.mdr.mdr.obligation.quarterly_mdr4_report` |  | Art. 86f OP |
-| 1037 | `jdg.hyper.mdr.mdr.deadline.30_days_from_scheme_available` |  | Art. 86b § 1 OP |
-| 1038 | `jdg.hyper.mdr.mdr.deadline.30_days_from_first_implementation` |  | Art. 86b § 2 OP |
-| 1039 | `jdg.hyper.mdr.mdr.sanction.administrative_penalty_5m` |  | Art. 86o OP |
-| 1040 | `jdg.hyper.mdr.mdr.sanction.kks_liability` |  | Art. 54-56 KKS |
-| 1041 | `jdg.hyper.mdr.mdr.retention.scheme_documentation_6_years` |  | Art. 86m OP |
-| 1042 | `jdg.hyper.mdr.mdr.aggregate.annual_risk_score` |  | Art. 86a-86o OP |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.a4.loss_buying` |  | Art. 86a § 1 pkt 4 Ordynacji podatkowej (Dz.U. 2025 poz. 234... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.a5.conversion_income` |  | Art. 86a § 1 pkt 5 Ordynacji podatkowej (Dz.U. 2025 poz. 234... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.a6.circular_transactions` |  | Art. 86a § 1 pkt 6 Ordynacji podatkowej (Dz.U. 2025 poz. 234... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.a7.double_deduction` |  | Art. 86a § 1 pkt 7 Ordynacji podatkowej (Dz.U. 2025 poz. 234... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.a8.double_depreciation` |  | Art. 86a § 1 pkt 8 Ordynacji podatkowej (Dz.U. 2025 poz. 234... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.a9.double_tax_relief` |  | Art. 86a § 1 pkt 9 Ordynacji podatkowej (Dz.U. 2025 poz. 234... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.a10.main_benefit_test` |  | Art. 86a § 1 pkt 10 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.b1.loss_utilization_group` |  | Art. 86a § 1 pkt 11 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.b2.income_conversion_capital` |  | Art. 86a § 1 pkt 12 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.b3.deduction_cross_border` |  | Art. 86a § 1 pkt 13 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.b4.tax_haven_transfer` |  | Art. 86a § 1 pkt 14 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.b5.non_arm_length_payment` |  | Art. 86a § 1 pkt 15 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.b6.deductible_cross_border` |  | Art. 86a § 1 pkt 16 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.b7.non_taxation_claim` |  | Art. 86a § 1 pkt 17 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.b8.hybrid_mismatch` |  | Art. 86a § 1 pkt 18 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.c1.strategic_acquisition` |  | Art. 86a § 1 pkt 19 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.c2.income_reclassification` |  | Art. 86a § 1 pkt 20 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.c3.circular_flow_round_trip` |  | Art. 86a § 1 pkt 21 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.c4.cross_border_deduction` |  | Art. 86a § 1 pkt 22 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.c5.transfer_pricing_gap` |  | Art. 86a § 1 pkt 23 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.c6.ip_transfer_hard_to_value` |  | Art. 86a § 1 pkt 24 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.c7.business_restructuring` |  | Art. 86a § 1 pkt 25 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.c8.safe_harbour_manipulation` |  | Art. 86a § 1 pkt 26 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.d1.ip_transfer_cross_border` |  | Art. 86a § 1 pkt 27 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.d2.business_transfer` |  | Art. 86a § 1 pkt 28 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.e1.automatic_exchange_bypass` |  | Art. 86a § 1 pkt 29 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.e2.ubo_concealment` |  | Art. 86a § 1 pkt 30 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.e3.trust_foundation_chain` |  | Art. 86a § 1 pkt 31 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.hallmark.e4.nominee_director` |  | Art. 86a § 1 pkt 32 Ordynacji podatkowej (Dz.U. 2025 poz. 23... |
+| 0 | `jdg.hyper.mdr.mdr.obligation.user_reporting` |  | Art. 86b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.mdr.mdr.obligation.legal_professional_privilege` |  | Art. 86c Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.mdr.mdr.obligation.quarterly_mdr4_report` |  | Art. 86f Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.mdr.mdr.deadline.30_days_from_scheme_available` |  | Art. 86b § 1 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.mdr.mdr.deadline.30_days_from_first_implementation` |  | Art. 86b § 2 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.mdr.mdr.sanction.administrative_penalty_5m` |  | Art. 86o Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.mdr.mdr.sanction.kks_liability` |  | Art. 54-56 ustawy z dnia 10 września 1999 r. — Kodeks karny ... |
+| 0 | `jdg.hyper.mdr.mdr.retention.scheme_documentation_6_years` |  | Art. 86m Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.mdr.mdr.aggregate.annual_risk_score` |  | Art. 86a-86o Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
 
 ### `rules/jdg/hyper/misc/plan45.rego` (49 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1660 | `jdg.hyper.misc.payment.advance.kup_from_advance_to_supplier` |  | Art. 22 PIT |
-| 1661 | `jdg.hyper.misc.payment.inkind.market_value_determination` |  | Art. 14 ust. 2 PIT |
-| 1662 | `jdg.hyper.misc.payment.inkind.vat_base_market_value` |  | Art. 29a VAT |
-| 1663 | `jdg.hyper.misc.payment.inkind.mixed_cash_inkind_split` |  | Art. 29a VAT |
-| 1664 | `jdg.hyper.misc.payment.inkind.employee_compensation_tax` |  | Art. 12 PIT |
-| 1665 | `jdg.hyper.misc.payment.inkind.shareholder_benefit_tax` |  | Art. 30a PIT |
-| 1666 | `jdg.hyper.misc.payment.foreign.cash_limit_15k_pln_equivalent` |  | Art. 22p PIT |
-| 1667 | `jdg.hyper.misc.payment.foreign.transfer_whitelist_required` |  | Art. 96b VAT |
-| 1668 | `jdg.hyper.misc.payment.foreign.transfer_giif_reporting` |  | Art. 72 AML |
-| 1669 | `jdg.hyper.misc.payment.foreign.swift_sepa_authorization` |  | — |
-| 1670 | `jdg.hyper.misc.payment.foreign.fx_spread_recognition` |  | Art. 22 PIT |
-| 1671 | `jdg.hyper.misc.payment.terminal.obligation_20k_eur_turnover` |  | Ustawa o usługach płatniczych |
-| 1672 | `jdg.hyper.misc.payment.terminal.sanction_no_terminal_5000` |  | Ustawa o usługach płatniczych |
-| 1673 | `jdg.hyper.misc.payment.terminal.vat_deduction_terminal_cost` |  | Art. 22 PIT, Art. 86 VAT |
-| 1674 | `jdg.hyper.misc.advertising.vs_representation.distinction_test` |  | Art. 23 ust. 1 pkt 23 PIT |
-| 1675 | `jdg.hyper.misc.advertising.product_promotion_kup` |  | Art. 22 ust. 1 PIT |
-| 1676 | `jdg.hyper.misc.advertising.brand_building_kup` |  | Art. 22 ust. 1 PIT |
-| 1677 | `jdg.hyper.misc.advertising.representation_personal_prestige_nkup` |  | Art. 23 ust. 1 pkt 23 PIT |
-| 1678 | `jdg.hyper.misc.advertising.representation_nkup_100pct` | 🔴 BLOCK | Art. 23 ust. 1 pkt 23 PIT (stan prawny 01.01.2018+) |
-| 1679 | `jdg.hyper.misc.advertising.digital.google_ads_kup` |  | Art. 22 PIT |
-| 1680 | `jdg.hyper.misc.advertising.digital.facebook_ads_kup` |  | Art. 22 PIT |
-| 1681 | `jdg.hyper.misc.advertising.digital.seo_sem_kup` |  | Art. 22 PIT |
-| 1682 | `jdg.hyper.misc.advertising.digital.email_marketing_kup` |  | Art. 22 PIT |
-| 1683 | `jdg.hyper.misc.advertising.digital.affiliate_program_kup` |  | Art. 22 PIT |
-| 1684 | `jdg.hyper.misc.advertising.events.trade_fair_kup` |  | Art. 22 PIT, Art. 26ec PIT |
-| 1685 | `jdg.hyper.misc.advertising.events.business_dinner_with_agenda_kup` |  | Art. 22 PIT |
-| 1686 | `jdg.hyper.misc.advertising.events.luxury_trip_no_agenda_nkup` |  | Art. 23 ust. 1 pkt 23 PIT |
-| 1687 | `jdg.hyper.misc.advertising.events.conference_speaker_kup` |  | Art. 22 PIT |
-| 1688 | `jdg.hyper.misc.advertising.events.networking_event_kup` |  | Art. 22 PIT |
-| 1689 | `jdg.hyper.misc.advertising.gifts.under_200_pln_branded_kup` |  | Art. 23 ust. 1 pkt 23 PIT |
-| 1690 | `jdg.hyper.misc.advertising.gifts.over_200_pln_nkup` |  | Art. 23 ust. 1 pkt 23 PIT |
-| 1691 | `jdg.hyper.misc.advertising.gifts.unbranded_nkup` |  | Art. 23 ust. 1 pkt 23 PIT |
-| 1692 | `jdg.hyper.misc.advertising.gifts.samples_products_kup` |  | Art. 22 PIT |
-| 1693 | `jdg.hyper.misc.advertising.gifts.vat_deduction_100_pln_limit` |  | Art. 88 ust. 1 pkt 5 VAT |
-| 1694 | `jdg.hyper.misc.advertising.sponsorship.with_benefits_kup` |  | Art. 22 PIT |
-| 1695 | `jdg.hyper.misc.advertising.sponsorship.charity_donation_treatment` |  | Art. 26 PIT |
-| 1696 | `jdg.hyper.misc.advertising.sponsorship.sport_culture_kup` |  | Art. 22 PIT |
-| 1697 | `jdg.hyper.misc.advertising.sponsorship.local_event_kup` |  | Art. 22 PIT |
-| 1698 | `jdg.hyper.misc.advertising.sponsorship.vat_on_sponsorship` |  | Art. 86 VAT |
-| 1699 | `jdg.hyper.misc.advertising.vat.deduction_full_standard` |  | Art. 86 VAT |
-| 1700 | `jdg.hyper.misc.advertising.vat.deduction_gifts_100pln_limit` |  | Art. 88 ust. 1 pkt 5 VAT |
-| 1701 | `jdg.hyper.misc.advertising.vat.imported_ad_services_reverse_charge` |  | Art. 28b VAT |
-| 1702 | `jdg.hyper.misc.advertising.vat.cross_border_ads_vat_rules` |  | Art. 28b VAT |
-| 1703 | `jdg.hyper.misc.advertising.vat.ads_on_platform_google_fb` |  | Art. 28b VAT |
-| 1704 | `jdg.hyper.misc.advertising.influencer.kup_with_invoice_description` |  | Art. 22 PIT |
-| 1705 | `jdg.hyper.misc.advertising.influencer.nkup_no_business_connection` |  | Art. 23 ust. 1 pkt 23 PIT |
-| 1706 | `jdg.hyper.misc.advertising.influencer.vat_treatment_b2b` |  | Art. 28b VAT |
-| 1707 | `jdg.hyper.misc.advertising.influencer.gift_vs_service_classification` |  | Art. 22 vs 23 PIT |
-| 1708 | `jdg.hyper.misc.advertising.car_wrapping.vat26_full_deduction` |  | Art. 86a VAT, Art. 23 PIT |
+| 0 | `jdg.hyper.misc.payment.advance.kup_from_advance_to_supplier` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.payment.inkind.market_value_determination` |  | Art. 14 ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.misc.payment.inkind.vat_base_market_value` |  | Art. 29a ustawy z dnia 11 marca 2004 r. o podatku od towarów... |
+| 0 | `jdg.hyper.misc.payment.inkind.mixed_cash_inkind_split` |  | Art. 29a ustawy z dnia 11 marca 2004 r. o podatku od towarów... |
+| 0 | `jdg.hyper.misc.payment.inkind.employee_compensation_tax` |  | Art. 12 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.payment.inkind.shareholder_benefit_tax` |  | Art. 30a ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 0 | `jdg.hyper.misc.payment.foreign.cash_limit_15k_pln_equivalent` |  | Art. 22p ustawy z dnia 26 lipca 1991 r. o podatku dochodowym... |
+| 0 | `jdg.hyper.misc.payment.foreign.transfer_whitelist_required` |  | Art. 96b ustawy z dnia 11 marca 2004 r. o podatku od towarów... |
+| 0 | `jdg.hyper.misc.payment.foreign.transfer_giif_reporting` |  | Art. 72 ustawy z dnia 1 marca 2018 r. o przeciwdziałaniu pra... |
+| 0 | `jdg.hyper.misc.payment.foreign.swift_sepa_authorization` |  | ustawy z dnia 27 lipca 2002 r. — Prawo dewizowe |
+| 0 | `jdg.hyper.misc.payment.foreign.fx_spread_recognition` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.payment.terminal.obligation_20k_eur_turnover` |  | ustawy z dnia 19 sierpnia 2011 r. o usługach płatniczych |
+| 0 | `jdg.hyper.misc.payment.terminal.sanction_no_terminal_5000` |  | ustawy z dnia 19 sierpnia 2011 r. o usługach płatniczych |
+| 0 | `jdg.hyper.misc.payment.terminal.vat_deduction_terminal_cost` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.advertising.vs_representation.distinction_test` |  | Art. 23 ust. 1 pkt 23 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.misc.advertising.product_promotion_kup` |  | Art. 22 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.misc.advertising.brand_building_kup` |  | Art. 22 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.misc.advertising.representation_personal_prestige_nkup` |  | Art. 23 ust. 1 pkt 23 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.misc.advertising.representation_nkup_100pct` |  | Art. 23 ust. 1 pkt 23 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.misc.advertising.digital.google_ads_kup` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.advertising.digital.facebook_ads_kup` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.advertising.digital.seo_sem_kup` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.advertising.digital.email_marketing_kup` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.advertising.digital.affiliate_program_kup` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.advertising.events.trade_fair_kup` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.advertising.events.business_dinner_with_agenda_kup` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.advertising.events.luxury_trip_no_agenda_nkup` |  | Art. 23 ust. 1 pkt 23 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.misc.advertising.events.conference_speaker_kup` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.advertising.events.networking_event_kup` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.advertising.gifts.under_200_pln_branded_kup` |  | Art. 23 ust. 1 pkt 23 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.misc.advertising.gifts.over_200_pln_nkup` |  | Art. 23 ust. 1 pkt 23 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.misc.advertising.gifts.unbranded_nkup` |  | Art. 23 ust. 1 pkt 23 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.misc.advertising.gifts.samples_products_kup` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.advertising.gifts.vat_deduction_100_pln_limit` |  | Art. 88 ust. 1 pkt 5 ustawy z dnia 11 marca 2004 r. o podatk... |
+| 0 | `jdg.hyper.misc.advertising.sponsorship.with_benefits_kup` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.advertising.sponsorship.charity_donation_treatment` |  | Art. 26 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.advertising.sponsorship.sport_culture_kup` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.advertising.sponsorship.local_event_kup` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.advertising.sponsorship.vat_on_sponsorship` |  | Art. 86 ustawy z dnia 11 marca 2004 r. o podatku od towarów ... |
+| 0 | `jdg.hyper.misc.advertising.vat.deduction_full_standard` |  | Art. 86 ustawy z dnia 11 marca 2004 r. o podatku od towarów ... |
+| 0 | `jdg.hyper.misc.advertising.vat.deduction_gifts_100pln_limit` |  | Art. 88 ust. 1 pkt 5 ustawy z dnia 11 marca 2004 r. o podatk... |
+| 0 | `jdg.hyper.misc.advertising.vat.imported_ad_services_reverse_charge` |  | Art. 28b ustawy z dnia 11 marca 2004 r. o podatku od towarów... |
+| 0 | `jdg.hyper.misc.advertising.vat.cross_border_ads_vat_rules` |  | Art. 28b ustawy z dnia 11 marca 2004 r. o podatku od towarów... |
+| 0 | `jdg.hyper.misc.advertising.vat.ads_on_platform_google_fb` |  | Art. 28b ustawy z dnia 11 marca 2004 r. o podatku od towarów... |
+| 0 | `jdg.hyper.misc.advertising.influencer.kup_with_invoice_description` |  | Art. 22 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym ... |
+| 0 | `jdg.hyper.misc.advertising.influencer.nkup_no_business_connection` |  | Art. 23 ust. 1 pkt 23 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.misc.advertising.influencer.vat_treatment_b2b` |  | Art. 28b ustawy z dnia 11 marca 2004 r. o podatku od towarów... |
+| 0 | `jdg.hyper.misc.advertising.influencer.gift_vs_service_classification` |  | Art. 22 vs 23 ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 0 | `jdg.hyper.misc.advertising.car_wrapping.vat26_full_deduction` |  | Art. 86a ustawy z dnia 11 marca 2004 r. o podatku od towarów... |
 
 ### `rules/jdg/hyper/procurement/plan45.rego` (21 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1210 | `jdg.hyper.procurement.family.cooperation.notification_to_zus_7days` |  | Art. 36 ust. 14 SUS |
-| 1211 | `jdg.hyper.procurement.family.cooperation.pit_treatment` |  | R1212 |
-| 1212 | `jdg.hyper.procurement.family.car.usage.mixed_75pct_kup` |  | Art. 23 ust. 1 pkt 46 PIT |
-| 1213 | `jdg.hyper.procurement.family.car.usage.mileage_log_family` |  | R1214 |
-| 1214 | `jdg.hyper.procurement.family.car.usage.vat_deduction_50pct` |  | Art. 86a VAT |
-| 1215 | `jdg.hyper.procurement.family.asset.transfer.gift_to_spouse` |  | Ustawa o SD, Art. 4a |
-| 1216 | `jdg.hyper.procurement.family.asset.transfer.gift_to_children` |  | Ustawa o SD, Art. 4a |
-| 1217 | `jdg.hyper.procurement.family.asset.transfer.sale_arm_length` |  | Sprzedaż majątku rodzinie → cena rynkowa (Art. 14 PIT) |
-| 1218 | `jdg.hyper.procurement.family.asset.transfer.vat_opodatkowanie` |  | Art. 7 VAT |
-| 1219 | `jdg.hyper.procurement.family.asset.transfer.pcc_exemption` |  | R1220 |
-| 1220 | `jdg.hyper.procurement.family.joint_filing.conditions` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1221 | `jdg.hyper.procurement.family.joint_filing.benefit_calculation` |  | R1222 |
-| 1222 | `jdg.hyper.procurement.family.joint_filing.deadline_april30` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1223 | `jdg.hyper.procurement.family.joint_filing.exclusions` |  | R1224 |
-| 1224 | `jdg.hyper.procurement.family.single_parent.preferential_calculation` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1225 | `jdg.hyper.procurement.family.single_parent.child_custody_required` |  | R1226 |
-| 1226 | `jdg.hyper.procurement.family.health_insurance.family_members` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1227 | `jdg.hyper.procurement.family.health_insurance.kup_deduction` |  | R1228 |
-| 1228 | `jdg.hyper.procurement.family.pit4r.obligation` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
-| 1229 | `jdg.hyper.procurement.family.pit11.deadline_feb28` |  | R1230 |
-| 1230 | `jdg.hyper.procurement.family.succession.planning_inheritance` |  | Przepisy prawa podatkowego (LEGAL_REFERENCE_ACTS.md) |
+| 0 | `jdg.hyper.procurement.family.cooperation.notification_to_zus_7days` |  | Art. 36 ust. 14 ustawy z dnia 13 października 1998 r. o syst... |
+| 0 | `jdg.hyper.procurement.family.cooperation.pit_treatment` |  | Art. 23 ust. 1 pkt 10 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.procurement.family.car.usage.mixed_75pct_kup` |  | Art. 23 ust. 1 pkt 46 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.procurement.family.car.usage.mileage_log_family` |  | Art. 23 ust. 1 pkt 46 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.procurement.family.car.usage.vat_deduction_50pct` |  | Art. 86a ustawy z dnia 11 marca 2004 r. o podatku od towarów... |
+| 0 | `jdg.hyper.procurement.family.asset.transfer.gift_to_spouse` |  | Art. 4a ustawy z dnia 28 lipca 1983 r. o podatku od spadków ... |
+| 0 | `jdg.hyper.procurement.family.asset.transfer.gift_to_children` |  | Art. 4a ustawy z dnia 28 lipca 1983 r. o podatku od spadków ... |
+| 0 | `jdg.hyper.procurement.family.asset.transfer.sale_arm_length` |  | Art. 14 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.procurement.family.asset.transfer.vat_opodatkowanie` |  | Art. 7 ustawy z dnia 11 marca 2004 r. o podatku od towarów i... |
+| 0 | `jdg.hyper.procurement.family.asset.transfer.pcc_exemption` |  | Art. 4a ustawy z dnia 28 lipca 1983 r. o podatku od spadków ... |
+| 0 | `jdg.hyper.procurement.family.joint_filing.conditions` |  | Art. 6 ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 0 | `jdg.hyper.procurement.family.joint_filing.benefit_calculation` |  | Art. 6 ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 0 | `jdg.hyper.procurement.family.joint_filing.deadline_april30` |  | Art. 45 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.procurement.family.joint_filing.exclusions` |  | Art. 6 ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 0 | `jdg.hyper.procurement.family.single_parent.preferential_calculation` |  | Art. 6 ust. 4 ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 0 | `jdg.hyper.procurement.family.single_parent.child_custody_required` |  | Art. 6 ust. 4 ustawy z dnia 26 lipca 1991 r. o podatku docho... |
+| 0 | `jdg.hyper.procurement.family.health_insurance.family_members` |  | Art. 66 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 0 | `jdg.hyper.procurement.family.health_insurance.kup_deduction` |  | Art. 23 ust. 1 pkt 58 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.procurement.family.pit4r.obligation` |  | Art. 38 ust. 1a ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.procurement.family.pit11.deadline_feb28` |  | Art. 39 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.procurement.family.succession.planning_inheritance` |  | Art. 4a ustawy z dnia 28 lipca 1983 r. o podatku od spadków ... |
 
 ### `rules/jdg/hyper/sanctions/plan45.rego` (51 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1560 | `jdg.hyper.sanctions.kks.conviction.extended_audit_period` |  | Art. 83 PP |
-| 1561 | `jdg.hyper.sanctions.kks.conviction.business_partner_trust_loss` |  | — |
-| 1562 | `jdg.hyper.sanctions.kks.conviction.joint_vat_liability_partners` |  | Art. 105a VAT |
-| 1563 | `jdg.hyper.sanctions.kks.conviction.supply_chain_due_diligence` |  | Art. 105a VAT |
-| 1564 | `jdg.hyper.sanctions.kks.conviction.contract_termination_clauses` |  | KC — klauzule umowne |
-| 1565 | `jdg.hyper.sanctions.kks.conviction.isolation_from_business_networks` |  | Art. 105a VAT |
-| 1566 | `jdg.hyper.sanctions.kks.rehabilitation.misdemeanor_3_years` |  | Art. 21 KKS |
-| 1567 | `jdg.hyper.sanctions.kks.rehabilitation.crime_5_years` |  | Art. 21 KKS |
-| 1568 | `jdg.hyper.sanctions.kks.rehabilitation.effect_clean_record` |  | Art. 106 KK |
-| 1569 | `jdg.hyper.sanctions.kks.rehabilitation.business_ban_lift` |  | Art. 41 KK |
-| 1570 | `jdg.hyper.sanctions.kks.rehabilitation.tax_office_notification` |  | Praktyka |
-| 1571 | `jdg.hyper.sanctions.kks.enforcement.full_personal_liability` |  | Art. 26 OP |
-| 1572 | `jdg.hyper.sanctions.kks.enforcement.no_asset_concealment` |  | Art. 36 OP, Art. 61 KKS |
-| 1573 | `jdg.hyper.sanctions.kks.enforcement.bank_account_seizure` |  | Art. 75-89 Ustawy o post. egz. |
-| 1574 | `jdg.hyper.sanctions.kks.enforcement.collateral_requirements` |  | Art. 33 OP |
-| 1575 | `jdg.hyper.sanctions.kks.enforcement.insolvency_filing_obligation` |  | Art. 21 Prawa upadłościowego |
-| 1576 | `jdg.hyper.sanctions.regulated.vat.exemption_doctor` |  | Art. 43 ust. 1 pkt 18-19 VAT |
-| 1577 | `jdg.hyper.sanctions.regulated.vat.no_exemption_lawyer` |  | Art. 41 ust. 1 VAT |
-| 1578 | `jdg.hyper.sanctions.regulated.vat.exemption_nurse_midwife` |  | Art. 43 ust. 1 pkt 19-20 VAT |
-| 1579 | `jdg.hyper.sanctions.regulated.vat.education_tutor_exemption` |  | Art. 43 ust. 1 pkt 26-29 VAT |
-| 1580 | `jdg.hyper.sanctions.regulated.vat.exemption_psychologist` |  | Art. 43 ust. 1 pkt 21 VAT |
-| 1581 | `jdg.hyper.sanctions.regulated.kup.chamber_fees_full` |  | Art. 22 ust. 1 PIT |
-| 1582 | `jdg.hyper.sanctions.regulated.kup.professional_insurance_kup` |  | Art. 22 ust. 1 PIT |
-| 1583 | `jdg.hyper.sanctions.regulated.kup.continuing_education_kup` |  | Art. 22 ust. 1 PIT |
-| 1584 | `jdg.hyper.sanctions.regulated.kup.books_journals_kup` |  | Art. 22 ust. 1 PIT |
-| 1585 | `jdg.hyper.sanctions.regulated.kup.office_rent_home_office` |  | Art. 22 ust. 1 PIT |
-| 1586 | `jdg.hyper.sanctions.regulated.zus.no_start_relief_former_employer` |  | Art. 18a SUS |
-| 1587 | `jdg.hyper.sanctions.regulated.zus.concurrent_chamber_and_jdg` |  | Art. 9 SUS |
-| 1588 | `jdg.hyper.sanctions.regulated.zus.mandatory_sickness_insurance` |  | Art. 11 SUS |
-| 1589 | `jdg.hyper.sanctions.regulated.zus.dual_health_contribution` |  | Art. 82 u.ś.o.z. |
-| 1590 | `jdg.hyper.sanctions.regulated.zus.minimum_base_health` |  | Art. 81 ust. 2 u.ś.o.z. |
-| 1591 | `jdg.hyper.sanctions.regulated.privilege.attorney_client` |  | Art. 180 § 3 OP |
-| 1592 | `jdg.hyper.sanctions.regulated.privilege.tax_advisor` |  | Art. 180 § 3 OP |
-| 1593 | `jdg.hyper.sanctions.regulated.privilege.no_protection_for_business_records` |  | Art. 180 OP |
-| 1594 | `jdg.hyper.sanctions.regulated.privilege.mdr_transfer_to_client` |  | Art. 86a OP |
-| 1595 | `jdg.hyper.sanctions.regulated.privilege.limits_crime_fraud_exception` |  | Art. 180 § 4 OP |
-| 1596 | `jdg.hyper.sanctions.regulated.chamber.membership_mandatory` |  | Ustawy korporacyjne |
-| 1597 | `jdg.hyper.sanctions.regulated.chamber.fees_tax_deductible` |  | Art. 26 ust. 1 pkt 13 PIT |
-| 1598 | `jdg.hyper.sanctions.regulated.chamber.disciplinary_proceedings` |  | Ustawy korporacyjne |
-| 1599 | `jdg.hyper.sanctions.regulated.chamber.license_suspension_consequences` |  | Ustawy korporacyjne |
-| 1600 | `jdg.hyper.sanctions.regulated.chamber.practice_certificate_renewal` |  | Ustawy korporacyjne |
-| 1601 | `jdg.hyper.sanctions.vat.30pct_understatement` | 🔴 BLOCK | Art. 112b VAT |
-| 1602 | `jdg.hyper.sanctions.vat.30pct_undue_deduction` | 🔴 BLOCK | Art. 112c VAT |
-| 1603 | `jdg.hyper.sanctions.ksef.500k_pln_no_invoice` | 🔴 BLOCK | Art. 106n VAT (od 01.02.2026) |
-| 1604 | `jdg.hyper.sanctions.ksef.50pct_14day_correction` |  | Art. 106n ust. 4 VAT |
-| 1605 | `jdg.hyper.sanctions.jpk.on_demand_193a_ordpu` | 🔴 BLOCK | Art. 193a OrdPU |
-| 1606 | `jdg.hyper.sanctions.ordinal.penalty_2800_pln` |  | Art. 262 § 2 OrdPU |
-| 1607 | `jdg.hyper.sanctions.kks.voluntary_disclosure_art16` | 🟡 TRIAGE | Art. 16 § 1-2 KKS |
-| 1608 | `jdg.hyper.sanctions.kks.small_value_fine_250_5000` |  | Art. 48 KKS |
-| 1609 | `jdg.hyper.sanctions.kks.interest_150pct` | 🔴 BLOCK | Art. 56 § 1 KKS |
-| 1610 | `jdg.hyper.sanctions.aggregate_sanction_risk_score` | 🟡 TRIAGE | P23 |
+| 0 | `jdg.hyper.sanctions.kks.conviction.extended_audit_period` |  | Art. 83 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 0 | `jdg.hyper.sanctions.kks.conviction.business_partner_trust_loss` |  | Art. 105a ustawy z dnia 11 marca 2004 r. o podatku od towaró... |
+| 0 | `jdg.hyper.sanctions.kks.conviction.joint_vat_liability_partners` |  | Art. 105a ustawy z dnia 11 marca 2004 r. o podatku od towaró... |
+| 0 | `jdg.hyper.sanctions.kks.conviction.supply_chain_due_diligence` |  | Art. 105a ustawy z dnia 11 marca 2004 r. o podatku od towaró... |
+| 0 | `jdg.hyper.sanctions.kks.conviction.contract_termination_clauses` |  | ustawy z dnia 23 kwietnia 1964 r. — Kodeks cywilny |
+| 0 | `jdg.hyper.sanctions.kks.conviction.isolation_from_business_networks` |  | Art. 105a ustawy z dnia 11 marca 2004 r. o podatku od towaró... |
+| 0 | `jdg.hyper.sanctions.kks.rehabilitation.misdemeanor_3_years` |  | Art. 21 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 0 | `jdg.hyper.sanctions.kks.rehabilitation.crime_5_years` |  | Art. 21 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 0 | `jdg.hyper.sanctions.kks.rehabilitation.effect_clean_record` |  | Art. 106 ustawy z dnia 6 czerwca 1997 r. — Kodeks karny |
+| 0 | `jdg.hyper.sanctions.kks.rehabilitation.business_ban_lift` |  | Art. 41 ustawy z dnia 6 czerwca 1997 r. — Kodeks karny |
+| 0 | `jdg.hyper.sanctions.kks.rehabilitation.tax_office_notification` |  | Art. 119b Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.sanctions.kks.enforcement.full_personal_liability` |  | Art. 26 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.sanctions.kks.enforcement.no_asset_concealment` |  | Art. 36 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.), ... |
+| 0 | `jdg.hyper.sanctions.kks.enforcement.bank_account_seizure` |  | Art. 75-89 ustawy z dnia 17 czerwca 1966 r. o postępowaniu e... |
+| 0 | `jdg.hyper.sanctions.kks.enforcement.collateral_requirements` |  | Art. 33 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.sanctions.kks.enforcement.insolvency_filing_obligation` |  | Art. 21 ustawy z dnia 28 lutego 2003 r. — Prawo upadłościowe |
+| 0 | `jdg.hyper.sanctions.regulated.vat.exemption_doctor` |  | Art. 43 ust. 1 pkt 18-19 ustawy z dnia 11 marca 2004 r. o po... |
+| 0 | `jdg.hyper.sanctions.regulated.vat.no_exemption_lawyer` |  | Art. 41 ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od t... |
+| 0 | `jdg.hyper.sanctions.regulated.vat.exemption_nurse_midwife` |  | Art. 43 ust. 1 pkt 19-20 ustawy z dnia 11 marca 2004 r. o po... |
+| 0 | `jdg.hyper.sanctions.regulated.vat.education_tutor_exemption` |  | Art. 43 ust. 1 pkt 26-29 ustawy z dnia 11 marca 2004 r. o po... |
+| 0 | `jdg.hyper.sanctions.regulated.vat.exemption_psychologist` |  | Art. 43 ust. 1 pkt 21 ustawy z dnia 11 marca 2004 r. o podat... |
+| 0 | `jdg.hyper.sanctions.regulated.kup.chamber_fees_full` |  | Art. 22 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.sanctions.regulated.kup.professional_insurance_kup` |  | Art. 22 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.sanctions.regulated.kup.continuing_education_kup` |  | Art. 22 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.sanctions.regulated.kup.books_journals_kup` |  | Art. 22 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.sanctions.regulated.kup.office_rent_home_office` |  | Art. 22 ust. 1 ustawy z dnia 26 lipca 1991 r. o podatku doch... |
+| 0 | `jdg.hyper.sanctions.regulated.zus.no_start_relief_former_employer` |  | Art. 18a ustawy z dnia 13 października 1998 r. o systemie ub... |
+| 0 | `jdg.hyper.sanctions.regulated.zus.concurrent_chamber_and_jdg` |  | Art. 9 ustawy z dnia 13 października 1998 r. o systemie ubez... |
+| 0 | `jdg.hyper.sanctions.regulated.zus.mandatory_sickness_insurance` |  | Art. 11 ustawy z dnia 13 października 1998 r. o systemie ube... |
+| 0 | `jdg.hyper.sanctions.regulated.zus.dual_health_contribution` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
+| 0 | `jdg.hyper.sanctions.regulated.zus.minimum_base_health` |  | Art. 81 ust. 2 ustawy z dnia 27 sierpnia 2004 r. o świadczen... |
+| 0 | `jdg.hyper.sanctions.regulated.privilege.attorney_client` |  | Art. 180 § 3 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.sanctions.regulated.privilege.tax_advisor` |  | Art. 180 § 3 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.sanctions.regulated.privilege.no_protection_for_business_records` |  | Art. 180 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.sanctions.regulated.privilege.mdr_transfer_to_client` |  | Art. 86a Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.sanctions.regulated.privilege.limits_crime_fraud_exception` |  | Art. 180 § 4 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.sanctions.regulated.chamber.membership_mandatory` |  | ustaw regulujących wykonywanie zawodów regulowanych |
+| 0 | `jdg.hyper.sanctions.regulated.chamber.fees_tax_deductible` |  | Art. 26 ust. 1 pkt 13 ustawy z dnia 26 lipca 1991 r. o podat... |
+| 0 | `jdg.hyper.sanctions.regulated.chamber.disciplinary_proceedings` |  | ustaw regulujących wykonywanie zawodów regulowanych |
+| 0 | `jdg.hyper.sanctions.regulated.chamber.license_suspension_consequences` |  | ustaw regulujących wykonywanie zawodów regulowanych |
+| 0 | `jdg.hyper.sanctions.regulated.chamber.practice_certificate_renewal` |  | ustaw regulujących wykonywanie zawodów regulowanych |
+| 0 | `jdg.hyper.sanctions.vat.30pct_understatement` |  | Art. 112b ustawy z dnia 11 marca 2004 r. o podatku od towaró... |
+| 0 | `jdg.hyper.sanctions.vat.30pct_undue_deduction` |  | Art. 112c ustawy z dnia 11 marca 2004 r. o podatku od towaró... |
+| 0 | `jdg.hyper.sanctions.ksef.500k_pln_no_invoice` |  | Art. 106n ustawy z dnia 11 marca 2004 r. o podatku od towaró... |
+| 0 | `jdg.hyper.sanctions.ksef.50pct_14day_correction` |  | Art. 106n ust. 4 ustawy z dnia 11 marca 2004 r. o podatku od... |
+| 0 | `jdg.hyper.sanctions.jpk.on_demand_193a_ordpu` |  | Art. 193a Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze zm.) |
+| 0 | `jdg.hyper.sanctions.ordinal.penalty_2800_pln` |  | Art. 262 § 2 Ordynacji podatkowej (Dz.U. 2025 poz. 234, ze z... |
+| 0 | `jdg.hyper.sanctions.kks.voluntary_disclosure_art16` |  | Art. 16 § 1-2 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 0 | `jdg.hyper.sanctions.kks.small_value_fine_250_5000` |  | Art. 48 ustawy z dnia 10 września 1999 r. — Kodeks karny ska... |
+| 0 | `jdg.hyper.sanctions.kks.interest_150pct` |  | Art. 56 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 0 | `jdg.hyper.sanctions.aggregate_sanction_risk_score` |  | Art. 54-56 ustawy z dnia 10 września 1999 r. — Kodeks karny ... |
 
 ### `rules/jdg/hyper/solidarity/plan45.rego` (11 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1050 | `jdg.hyper.solidarity.solidarity.levy.income.ip_box` |  | Art. 30h ust. 2 PIT, Art. 30ca PIT |
-| 1051 | `jdg.hyper.solidarity.solidarity.levy.income.capital_gains` |  | Art. 30h ust. 2 PIT |
-| 1052 | `jdg.hyper.solidarity.solidarity.levy.income.foreign` |  | Art. 30h ust. 2 PIT, Art. 27 ust. 8 PIT |
-| 1053 | `jdg.hyper.solidarity.solidarity.levy.zus.social.exclusion` |  | Art. 30h ust. 2 PIT |
-| 1054 | `jdg.hyper.solidarity.solidarity.levy.zus.health.no_exclusion` |  | R1055 |
-| 1055 | `jdg.hyper.solidarity.solidarity.levy.exemption.metoda_wylaczenia` |  | Art. 30h ust. 3 PIT |
-| 1056 | `jdg.hyper.solidarity.solidarity.levy.exemption.foreign_tax_credit` |  | Art. 30h ust. 3 PIT |
-| 1057 | `jdg.hyper.solidarity.solidarity.levy.spouse.individual_calculation` |  | Art. 30h ust. 5 PIT |
-| 1058 | `jdg.hyper.solidarity.solidarity.levy.spouse.no_income_transfer` |  | Art. 30h ust. 5 PIT |
-| 1059 | `jdg.hyper.solidarity.solidarity.levy.payment.deadline.april30` |  | Art. 30h ust. 6 PIT |
-| 1060 | `jdg.hyper.solidarity.solidarity.levy.payment.no_advances` |  | R1061 |
+| 0 | `jdg.hyper.solidarity.solidarity.levy.income.ip_box` |  | Art. 30h ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.solidarity.solidarity.levy.income.capital_gains` |  | Art. 30h ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.solidarity.solidarity.levy.income.foreign` |  | Art. 30h ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.solidarity.solidarity.levy.zus.social.exclusion` |  | Art. 30h ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.solidarity.solidarity.levy.zus.health.no_exclusion` |  | Art. 30h ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.solidarity.solidarity.levy.exemption.metoda_wylaczenia` |  | Art. 30h ust. 3 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.solidarity.solidarity.levy.exemption.foreign_tax_credit` |  | Art. 30h ust. 3 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.solidarity.solidarity.levy.spouse.individual_calculation` |  | Art. 30h ust. 5 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.solidarity.solidarity.levy.spouse.no_income_transfer` |  | Art. 30h ust. 5 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.solidarity.solidarity.levy.payment.deadline.april30` |  | Art. 30h ust. 6 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.solidarity.solidarity.levy.payment.no_advances` |  | Art. 30h ust. 6 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
 
 ### `rules/jdg/hyper/wis/plan45.rego` (18 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1070 | `jdg.hyper.wis.solidarity.levy.aggregate.alert_900k` |  | Art. 30h ust. 2 PIT |
-| 1071 | `jdg.hyper.wis.wis.eligibility.cn_code_ambiguous` |  | Art. 42b ust. 1 VAT |
-| 1072 | `jdg.hyper.wis.wis.eligibility.composite_product` |  | Art. 42b ust. 1 VAT |
-| 1073 | `jdg.hyper.wis.wis.eligibility.new_product_launch` |  | Art. 42b ust. 1 VAT |
-| 1074 | `jdg.hyper.wis.wis.eligibility.import_first_time` |  | Art. 42b ust. 1 VAT |
-| 1075 | `jdg.hyper.wis.wis.eligibility.contradictory_interpretations` |  | Art. 42b ust. 1 VAT |
-| 1076 | `jdg.hyper.wis.wis.eligibility.food_supplement_borderline` |  | Art. 42b ust. 1 VAT |
-| 1077 | `jdg.hyper.wis.wis.eligibility.software_vs_service` |  | Art. 42b ust. 1 VAT |
-| 1078 | `jdg.hyper.wis.wis.eligibility.annual_turnover_50k` |  | Art. 42b ust. 1 VAT |
-| 1079 | `jdg.hyper.wis.wis.application.cost.40pln` |  | Art. 42g ust. 1 VAT |
-| 1080 | `jdg.hyper.wis.wis.application.form.electronic_only` |  | Art. 42g ust. 2 VAT |
-| 1081 | `jdg.hyper.wis.wis.application.required_fields` |  | Art. 42g ust. 1-3 VAT |
-| 1082 | `jdg.hyper.wis.wis.application.sample_may_be_required` |  | Art. 42g ust. 4 VAT |
-| 1083 | `jdg.hyper.wis.wis.validity.5_years_from_issue` |  | Art. 42h ust. 1 VAT |
-| 1084 | `jdg.hyper.wis.wis.validity.early_expiry.regulation_change` |  | Art. 42h ust. 2 pkt 1 VAT |
-| 1085 | `jdg.hyper.wis.wis.validity.early_expiry.cjeu_judgment` |  | Art. 42h ust. 2 pkt 2 VAT |
-| 1086 | `jdg.hyper.wis.wia.binding_info_akcyzowa_170_210pln` |  | Art. 7d ustawy o akcyzie |
-| 1087 | `jdg.hyper.wis.wit.binding_info_taryfowa_167pln` |  | Art. 33 rozporządzenia 952/2013 (UKC) |
+| 0 | `jdg.hyper.wis.solidarity.levy.aggregate.alert_900k` |  | Art. 30h ust. 2 ustawy z dnia 26 lipca 1991 r. o podatku doc... |
+| 0 | `jdg.hyper.wis.wis.eligibility.cn_code_ambiguous` |  | Art. 42b ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.wis.wis.eligibility.composite_product` |  | Art. 42b ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.wis.wis.eligibility.new_product_launch` |  | Art. 42b ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.wis.wis.eligibility.import_first_time` |  | Art. 42b ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.wis.wis.eligibility.contradictory_interpretations` |  | Art. 42b ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.wis.wis.eligibility.food_supplement_borderline` |  | Art. 42b ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.wis.wis.eligibility.software_vs_service` |  | Art. 42b ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.wis.wis.eligibility.annual_turnover_50k` |  | Art. 42b ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.wis.wis.application.cost.40pln` |  | Art. 42g ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.wis.wis.application.form.electronic_only` |  | Art. 42g ust. 2 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.wis.wis.application.required_fields` |  | Art. 42g ust. 1-3 ustawy z dnia 11 marca 2004 r. o podatku o... |
+| 0 | `jdg.hyper.wis.wis.application.sample_may_be_required` |  | Art. 42g ust. 4 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.wis.wis.validity.5_years_from_issue` |  | Art. 42h ust. 1 ustawy z dnia 11 marca 2004 r. o podatku od ... |
+| 0 | `jdg.hyper.wis.wis.validity.early_expiry.regulation_change` |  | Art. 42h ust. 2 pkt 1 ustawy z dnia 11 marca 2004 r. o podat... |
+| 0 | `jdg.hyper.wis.wis.validity.early_expiry.cjeu_judgment` |  | Art. 42h ust. 2 pkt 2 ustawy z dnia 11 marca 2004 r. o podat... |
+| 0 | `jdg.hyper.wis.wia.binding_info_akcyzowa_170_210pln` |  | Art. 7d ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym ... |
+| 0 | `jdg.hyper.wis.wit.binding_info_taryfowa_167pln` |  | Art. 33 rozporządzenia 952/2013 (UKC) |
 
 ### `rules/jpk/plan26_deadlines.rego` (1 reguł)
 
@@ -3131,8 +3133,8 @@
 | 1302 | `jdg.local.pcc_share_purchase` | 🟡 TRIAGE | Art. 7 ust. 1 pkt 1 lit. a Ustawy o PCC |
 | 1303 | `jdg.local.pcc_sale_agreement` | 🟡 TRIAGE | Art. 7 ust. 1 pkt 1 lit. a Ustawy o PCC |
 | 1304 | `jdg.local.pcc_exemption_check` |  | Art. 9 Ustawy o PCC |
-| 1310 | `jdg.local.real_estate_commercial` |  | Ustawa o podatkach i opłatach lokalnych |
-| 1320 | `jdg.local.transport_tax` |  | Ustawa o podatkach i opłatach lokalnych |
+| 1310 | `jdg.local.real_estate_commercial` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+| 1320 | `jdg.local.transport_tax` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
 | 1331 | `jdg.local.transport_tax_detailed` |  | Art. 9-14 Ustawy o podatkach i opłatach lokalnych |
 | 1332 | `jdg.local.transport_tax_tractor` |  | Art. 10 ust. 2 Ustawy o podatkach i opłatach lokalnych |
 | 1333 | `jdg.local.transport_tax_bus` |  | Art. 12 Ustawy o podatkach i opłatach lokalnych |
@@ -3246,9 +3248,9 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1300 | `jdg.local_taxes.pcc.pcc_mandatory_purchase` | 🟡 TRIAGE | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959), Art. ... |
-| 1302 | `jdg.local_taxes.pcc.pcc_loan_from_private` | 🟡 TRIAGE | Ustawa o PCC, Art. 7 ust. 1 pkt 4 |
-| 1304 | `jdg.local_taxes.pcc.pcc_formation_exempt` |  | Ustawa o PCC — opodatkowaniu podlegają tylko czynności dot. ... |
+| 1300 | `jdg.local_taxes.pcc.pcc_mandatory_purchase` | 🟡 TRIAGE | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 1302 | `jdg.local_taxes.pcc.pcc_loan_from_private` | 🟡 TRIAGE | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 1304 | `jdg.local_taxes.pcc.pcc_formation_exempt` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
 
 ### `rules/local_taxes/pcc_enterprise_complete.rego` (51 reguł)
 
@@ -3264,47 +3266,47 @@
 | 807 | `jdg.local_taxes.pcc.mortgage` |  | Art. 1 ust. 1 pkt 1 lit. l, Art. 7 ust. 1 pkt 7 ustawy o PCC |
 | 808 | `jdg.local_taxes.pcc.surety` |  | Art. 1 ust. 1 pkt 1 lit. l, Art. 7 ust. 1 pkt 7 ustawy o PCC |
 | 809 | `jdg.local_taxes.pcc.installment_sale` | 🟡 TRIAGE | Art. 6 ust. 1 pkt 1 ustawy o PCC |
-| 810 | `jdg.local_taxes.property.business_vs_residential` |  | Art. 2-7 ustawy o podatkach i opłatach lokalnych |
-| 811 | `jdg.local_taxes.property.dn1_declaration` |  | Art. 6 ust. 9 ustawy o podatkach i opłatach lokalnych |
-| 812 | `jdg.local_taxes.property.payment_schedule` |  | Art. 6 ust. 11-13 ustawy o podatkach i opłatach lokalnych |
-| 813 | `jdg.local_taxes.property.mixed_use` |  | Art. 1a ust. 5, Art. 4 ustawy o podatkach i opłatach lokalny... |
+| 810 | `jdg.local_taxes.property.business_vs_residential` |  | Art. 2-7 ustawy z dnia 12 stycznia 1991 r. o podatkach i opł... |
+| 811 | `jdg.local_taxes.property.dn1_declaration` |  | Art. 6 ust. 9 ustawy z dnia 12 stycznia 1991 r. o podatkach ... |
+| 812 | `jdg.local_taxes.property.payment_schedule` |  | Art. 6 ust. 11-13 ustawy z dnia 12 stycznia 1991 r. o podatk... |
+| 813 | `jdg.local_taxes.property.mixed_use` |  | Art. 1a ust. 5, Art. 4 ustawy z dnia 12 stycznia 1991 r. o p... |
 | 814 | `jdg.local_taxes.property.agricultural` |  | Ustawa o podatku rolnym (Dz.U. 2025 poz. 345) |
 | 815 | `jdg.local_taxes.property.forestry` |  | Ustawa o podatku leśnym (Dz.U. 2025 poz. 456) |
-| 816 | `jdg.local_taxes.property.garage` |  | Art. 1a ust. 1 pkt 3 ustawy o podatkach i opłatach lokalnych |
-| 817 | `jdg.local_taxes.property.construction` |  | Art. 4 ust. 1 pkt 3 ustawy o podatkach i opłatach lokalnych |
-| 818 | `jdg.local_taxes.property.temp_building` |  | Art. 6 ust. 2 ustawy o podatkach i opłatach lokalnych |
+| 816 | `jdg.local_taxes.property.garage` |  | Art. 1a ust. 1 pkt 3 ustawy z dnia 12 stycznia 1991 r. o pod... |
+| 817 | `jdg.local_taxes.property.construction` |  | Art. 4 ust. 1 pkt 3 ustawy z dnia 12 stycznia 1991 r. o poda... |
+| 818 | `jdg.local_taxes.property.temp_building` |  | Art. 6 ust. 2 ustawy z dnia 12 stycznia 1991 r. o podatkach ... |
 | 819 | `jdg.local_taxes.property.as_kup` |  | Art. 22 ust. 1 PIT, Art. 23 ust. 1 pkt 20 PIT |
-| 820 | `jdg.local_taxes.transport.truck_over_3_5t` |  | Art. 8-14 ustawy o podatkach i opłatach lokalnych |
-| 821 | `jdg.local_taxes.transport.tractor_unit` |  | Art. 10 ustawy o podatkach i opłatach lokalnych |
-| 822 | `jdg.local_taxes.transport.bus` |  | Art. 12 ustawy o podatkach i opłatach lokalnych |
-| 823 | `jdg.local_taxes.transport.special` |  | Art. 9-10 ustawy o podatkach i opłatach lokalnych |
-| 824 | `jdg.local_taxes.transport.trailer` |  | Art. 10 ust. 1 ustawy o podatkach i opłatach lokalnych |
-| 825 | `jdg.local_taxes.transport.historic` |  | Art. 12 ust. 1 pkt 2 ustawy o podatkach i opłatach lokalnych |
-| 826 | `jdg.local_taxes.transport.ev` |  | Art. 12 ust. 1 pkt 1 i 2a ustawy o podatkach i opłatach loka... |
-| 827 | `jdg.local_taxes.transport.seasonal` |  | Art. 11a ustawy o podatkach i opłatach lokalnych |
-| 828 | `jdg.local_taxes.transport.dt1_deadline` |  | Art. 9 ust. 5 ustawy o podatkach i opłatach lokalnych |
-| 829 | `jdg.local_taxes.transport.retirement` |  | Art. 9 ust. 5-6 ustawy o podatkach i opłatach lokalnych |
-| 830 | `jdg.local_taxes.advertising.fee` |  | Art. 18a-18d ustawy o podatkach i opłatach lokalnych (opłata... |
-| 831 | `jdg.local_taxes.market_fee` |  | Art. 15-18 ustawy o podatkach i opłatach lokalnych (opłata t... |
-| 832 | `jdg.local_taxes.dog_fee` |  | Art. 18e-18f ustawy o podatkach i opłatach lokalnych (opłata... |
-| 833 | `jdg.local_taxes.resort_fee_a` |  | Art. 17 ust. 2 ustawy o podatkach i opłatach lokalnych |
-| 834 | `jdg.local_taxes.resort_fee_b` |  | Art. 17 ust. 2a ustawy o podatkach i opłatach lokalnych |
-| 835 | `jdg.local_taxes.spa_fee_detailed` |  | Art. 17a ustawy o podatkach i opłatach lokalnych |
-| 836 | `jdg.local_taxes.advertising.fee_categories` |  | Art. 18a-18d ustawy o podatkach i opłatach lokalnych |
-| 837 | `jdg.local_taxes.advertising.self_adv_exempt` |  | Art. 18b ust. 2 ustawy o podatkach i opłatach lokalnych (zwo... |
+| 820 | `jdg.local_taxes.transport.truck_over_3_5t` |  | Art. 8-14 ustawy z dnia 12 stycznia 1991 r. o podatkach i op... |
+| 821 | `jdg.local_taxes.transport.tractor_unit` |  | Art. 10 ustawy z dnia 12 stycznia 1991 r. o podatkach i opła... |
+| 822 | `jdg.local_taxes.transport.bus` |  | Art. 12 ustawy z dnia 12 stycznia 1991 r. o podatkach i opła... |
+| 823 | `jdg.local_taxes.transport.special` |  | Art. 9-10 ustawy z dnia 12 stycznia 1991 r. o podatkach i op... |
+| 824 | `jdg.local_taxes.transport.trailer` |  | Art. 10 ust. 1 ustawy z dnia 12 stycznia 1991 r. o podatkach... |
+| 825 | `jdg.local_taxes.transport.historic` |  | Art. 12 ust. 1 pkt 2 ustawy z dnia 12 stycznia 1991 r. o pod... |
+| 826 | `jdg.local_taxes.transport.ev` |  | Art. 12 ust. 1 pkt 1 i 2a ustawy z dnia 12 stycznia 1991 r. ... |
+| 827 | `jdg.local_taxes.transport.seasonal` |  | Art. 11a ustawy z dnia 12 stycznia 1991 r. o podatkach i opł... |
+| 828 | `jdg.local_taxes.transport.dt1_deadline` |  | Art. 9 ust. 5 ustawy z dnia 12 stycznia 1991 r. o podatkach ... |
+| 829 | `jdg.local_taxes.transport.retirement` |  | Art. 9 ust. 5-6 ustawy z dnia 12 stycznia 1991 r. o podatkac... |
+| 830 | `jdg.local_taxes.advertising.fee` |  | Art. 18a-18d ustawy z dnia 12 stycznia 1991 r. o podatkach i... |
+| 831 | `jdg.local_taxes.market_fee` |  | Art. 15-18 ustawy z dnia 12 stycznia 1991 r. o podatkach i o... |
+| 832 | `jdg.local_taxes.dog_fee` |  | Art. 18e-18f ustawy z dnia 12 stycznia 1991 r. o podatkach i... |
+| 833 | `jdg.local_taxes.resort_fee_a` |  | Art. 17 ust. 2 ustawy z dnia 12 stycznia 1991 r. o podatkach... |
+| 834 | `jdg.local_taxes.resort_fee_b` |  | Art. 17 ust. 2a ustawy z dnia 12 stycznia 1991 r. o podatkac... |
+| 835 | `jdg.local_taxes.spa_fee_detailed` |  | Art. 17a ustawy z dnia 12 stycznia 1991 r. o podatkach i opł... |
+| 836 | `jdg.local_taxes.advertising.fee_categories` |  | Art. 18a-18d ustawy z dnia 12 stycznia 1991 r. o podatkach i... |
+| 837 | `jdg.local_taxes.advertising.self_adv_exempt` |  | Art. 18b ust. 2 ustawy z dnia 12 stycznia 1991 r. o podatkac... |
 | 838 | `jdg.local_taxes.all.kup_deduction` |  | Art. 22 ust. 1 PIT (wszystkie podatki jako KUP) |
-| 839 | `jdg.local_taxes.calendar` |  | Ustawa o podatkach lokalnych i opłatach + Ustawa o PCC |
-| 840 | `jdg.local_taxes.excise.alcohol_tobacco` | 🔴 BLOCK | Ustawa o podatku akcyzowym (Dz.U. 2025 poz. 678) |
-| 841 | `jdg.local_taxes.excise.coal` |  | Art. 89 ust. 1 pkt 1, Art. 89a ustawy o podatku akcyzowym |
-| 842 | `jdg.local_taxes.excise.gas` |  | Art. 89 ust. 1a ustawy o podatku akcyzowym |
-| 843 | `jdg.local_taxes.excise.electricity` |  | Art. 89 ust. 3 ustawy o podatku akcyzowym |
-| 844 | `jdg.local_taxes.excise.energy_products` | 🔴 BLOCK | Art. 86-92 ustawy o podatku akcyzowym |
-| 845 | `jdg.local_taxes.excise.warehouse` | 🔴 BLOCK | Art. 48-66 ustawy o podatku akcyzowym |
-| 846 | `jdg.local_taxes.excise.akcr_registration` |  | Art. 16-17 ustawy o podatku akcyzowym |
-| 847 | `jdg.local_taxes.excise.akc4_declaration` |  | Art. 21-24 ustawy o podatku akcyzowym |
-| 848 | `jdg.local_taxes.excise.small_producer_exemption` |  | Art. 30 ust. 2 pkt 4, Art. 31b ustawy o podatku akcyzowym |
-| 849 | `jdg.local_taxes.excise.sanction_illegal` | 🔴 BLOCK | Art. 63-73 KKS; Art. 30-31 ustawy o podatku akcyzowym |
-| 899 | `jdg.local_taxes.pcc.fallback` |  | Ustawa o PCC / Ustawa o podatkach lokalnych |
+| 839 | `jdg.local_taxes.calendar` |  | Ustawa o podatkach lokalnych i opłatach + ustawy z dnia 9 wr... |
+| 840 | `jdg.local_taxes.excise.alcohol_tobacco` | 🔴 BLOCK | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 841 | `jdg.local_taxes.excise.coal` |  | Art. 89 ust. 1 pkt 1, Art. 89a ustawy z dnia 6 grudnia 2008 ... |
+| 842 | `jdg.local_taxes.excise.gas` |  | Art. 89 ust. 1a ustawy z dnia 6 grudnia 2008 r. o podatku ak... |
+| 843 | `jdg.local_taxes.excise.electricity` |  | Art. 89 ust. 3 ustawy z dnia 6 grudnia 2008 r. o podatku akc... |
+| 844 | `jdg.local_taxes.excise.energy_products` | 🔴 BLOCK | Art. 86-92 ustawy z dnia 6 grudnia 2008 r. o podatku akcyzow... |
+| 845 | `jdg.local_taxes.excise.warehouse` | 🔴 BLOCK | Art. 48-66 ustawy z dnia 6 grudnia 2008 r. o podatku akcyzow... |
+| 846 | `jdg.local_taxes.excise.akcr_registration` |  | Art. 16-17 ustawy z dnia 6 grudnia 2008 r. o podatku akcyzow... |
+| 847 | `jdg.local_taxes.excise.akc4_declaration` |  | Art. 21-24 ustawy z dnia 6 grudnia 2008 r. o podatku akcyzow... |
+| 848 | `jdg.local_taxes.excise.small_producer_exemption` |  | Art. 30 ust. 2 pkt 4, Art. 31b ustawy z dnia 6 grudnia 2008 ... |
+| 849 | `jdg.local_taxes.excise.sanction_illegal` | 🔴 BLOCK | Art. 63-73 KKS; Art. 30-31 ustawy z dnia 6 grudnia 2008 r. o... |
+| 899 | `jdg.local_taxes.pcc.fallback` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
 
 ### `rules/local_taxes/pcc_excise_enterprise.rego` (18 reguł)
 
@@ -3333,25 +3335,25 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1300 | `jdg.local_taxes.pcc_purchase_from_private` |  | Ustawa o PCC, Art. 1-2, Art. 7 |
-| 1302 | `jdg.local_taxes.pcc_loan_from_private` |  | Ustawa o PCC, Art. 7 ust. 1 pkt 4 |
-| 1304 | `jdg.local_taxes.pcc_company_exempt_info` |  | Ustawa o PCC |
-| 1310 | `jdg.local_taxes.real_estate_commercial_rate` |  | Ustawa o podatkach i opłatach lokalnych, Art. 2-7 |
-| 1312 | `jdg.local_taxes.real_estate_dn1_filing` | 🟡 TRIAGE | Ustawa o podatkach i opłatach lokalnych |
-| 1320 | `jdg.local_taxes.transport_tax_applicable` |  | Ustawa o podatkach i opłatach lokalnych, Rozdział 3 |
+| 1300 | `jdg.local_taxes.pcc_purchase_from_private` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 1302 | `jdg.local_taxes.pcc_loan_from_private` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 1304 | `jdg.local_taxes.pcc_company_exempt_info` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 1310 | `jdg.local_taxes.real_estate_commercial_rate` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+| 1312 | `jdg.local_taxes.real_estate_dn1_filing` | 🟡 TRIAGE | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+| 1320 | `jdg.local_taxes.transport_tax_applicable` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
 
 ### `rules/local_taxes/real_estate.rego` (2 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1310 | `jdg.local_taxes.real_estate.commercial_rate` | 🟡 TRIAGE | Ustawa o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 123... |
-| 1312 | `jdg.local_taxes.real_estate.deadline_overdue` | 🟡 TRIAGE | Ustawa o podatkach i opłatach lokalnych, Art. 6 ust. 6-7 |
+| 1310 | `jdg.local_taxes.real_estate.commercial_rate` | 🟡 TRIAGE | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+| 1312 | `jdg.local_taxes.real_estate.deadline_overdue` | 🟡 TRIAGE | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
 
 ### `rules/local_taxes/transport.rego` (1 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1320 | `jdg.local_taxes.transport.tax_applicable` | 🟡 TRIAGE | Ustawa o podatkach i opłatach lokalnych, Rozdział 3 (Art. 8-... |
+| 1320 | `jdg.local_taxes.transport.tax_applicable` | 🟡 TRIAGE | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
 
 ### `rules/mdr/mdr_enterprise.rego` (16 reguł)
 
@@ -3483,138 +3485,138 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 50000 | `jdg.pcc_akc.a10.u1.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50001 | `jdg.pcc_akc.a10.u2.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50002 | `jdg.pcc_akc.a11.u1.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50003 | `jdg.pcc_akc.a11.u3.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50004 | `jdg.pcc_akc.a11.u4.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50005 | `jdg.pcc_akc.a11.u5.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50006 | `jdg.pcc_akc.a12.u2.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50007 | `jdg.pcc_akc.a12.u3.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50008 | `jdg.pcc_akc.a12.u4.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50009 | `jdg.pcc_akc.a12.u5.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50010 | `jdg.pcc_akc.a13.u1.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50011 | `jdg.pcc_akc.a13.u2.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50012 | `jdg.pcc_akc.a13.u3.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50013 | `jdg.pcc_akc.a13.u4.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50014 | `jdg.pcc_akc.a14.u1.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50015 | `jdg.pcc_akc.a14.u2.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50016 | `jdg.pcc_akc.a14.u3.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50017 | `jdg.pcc_akc.a14.u5.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50018 | `jdg.pcc_akc.a15.u1.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50019 | `jdg.pcc_akc.a15.u2.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50020 | `jdg.pcc_akc.a15.u4.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50021 | `jdg.pcc_akc.a15.u5.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50022 | `jdg.pcc_akc.a16.u1.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50023 | `jdg.pcc_akc.a16.u3.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50024 | `jdg.pcc_akc.a16.u4.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50025 | `jdg.pcc_akc.a16.u5.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50026 | `jdg.pcc_akc.a17.u2.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50027 | `jdg.pcc_akc.a17.u3.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50028 | `jdg.pcc_akc.a17.u4.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50029 | `jdg.pcc_akc.a17.u5.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50030 | `jdg.pcc_akc.a18.u1.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50031 | `jdg.pcc_akc.a18.u2.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50032 | `jdg.pcc_akc.a18.u3.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50033 | `jdg.pcc_akc.a18.u4.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50034 | `jdg.pcc_akc.a19.u1.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50035 | `jdg.pcc_akc.a19.u2.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50036 | `jdg.pcc_akc.a19.u3.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50037 | `jdg.pcc_akc.a19.u5.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50038 | `jdg.pcc_akc.a20.u1.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50039 | `jdg.pcc_akc.a20.u2.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50040 | `jdg.pcc_akc.a20.u4.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50041 | `jdg.pcc_akc.a20.u5.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50042 | `jdg.pcc_akc.a21.u1.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50043 | `jdg.pcc_akc.a21.u3.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50044 | `jdg.pcc_akc.a21.u4.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50045 | `jdg.pcc_akc.a21.u5.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50046 | `jdg.pcc_akc.a22.u2.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50047 | `jdg.pcc_akc.a22.u3.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50048 | `jdg.pcc_akc.a22.u4.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50049 | `jdg.pcc_akc.a22.u5.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50050 | `jdg.pcc_akc.a23.u1.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50051 | `jdg.pcc_akc.a23.u2.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50052 | `jdg.pcc_akc.a23.u3.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50053 | `jdg.pcc_akc.a23.u4.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50054 | `jdg.pcc_akc.a24.u1.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50055 | `jdg.pcc_akc.a24.u2.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50056 | `jdg.pcc_akc.a24.u3.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50057 | `jdg.pcc_akc.a24.u5.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50058 | `jdg.pcc_akc.a25.u1.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50059 | `jdg.pcc_akc.a25.u2.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50060 | `jdg.pcc_akc.a25.u4.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50061 | `jdg.pcc_akc.a25.u5.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50062 | `jdg.pcc_akc.a26.u1.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50063 | `jdg.pcc_akc.a26.u3.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50064 | `jdg.pcc_akc.a26.u4.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50065 | `jdg.pcc_akc.a26.u5.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50066 | `jdg.pcc_akc.a27.u2.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50067 | `jdg.pcc_akc.a27.u3.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50068 | `jdg.pcc_akc.a27.u4.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50069 | `jdg.pcc_akc.a27.u5.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50070 | `jdg.pcc_akc.a28.u1.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50071 | `jdg.pcc_akc.a28.u2.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50072 | `jdg.pcc_akc.a28.u3.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50073 | `jdg.pcc_akc.a28.u4.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50074 | `jdg.pcc_akc.a29.u1.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50075 | `jdg.pcc_akc.a29.u2.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50076 | `jdg.pcc_akc.a29.u3.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50077 | `jdg.pcc_akc.a29.u5.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50078 | `jdg.pcc_akc.a30.u1.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50079 | `jdg.pcc_akc.a30.u2.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50080 | `jdg.pcc_akc.a30.u4.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50081 | `jdg.pcc_akc.a30.u5.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50082 | `jdg.pcc_akc.a31.u1.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50083 | `jdg.pcc_akc.a31.u3.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50084 | `jdg.pcc_akc.a31.u4.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50085 | `jdg.pcc_akc.a31.u5.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50086 | `jdg.pcc_akc.a32.u2.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50087 | `jdg.pcc_akc.a32.u3.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50088 | `jdg.pcc_akc.a32.u4.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50089 | `jdg.pcc_akc.a32.u5.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50090 | `jdg.pcc_akc.a33.u1.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50091 | `jdg.pcc_akc.a33.u2.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50092 | `jdg.pcc_akc.a33.u3.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50093 | `jdg.pcc_akc.a33.u4.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50094 | `jdg.pcc_akc.a34.u1.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50095 | `jdg.pcc_akc.a34.u2.p1` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50096 | `jdg.pcc_akc.a34.u3.p2` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50097 | `jdg.pcc_akc.a34.u5.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50098 | `jdg.pcc_akc.a35.u4.p3` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 50099 | `jdg.pcc_akc.a35.u5.p4` |  | Ustawa o podatku akcyzowym z 6.12.2008 (Dz.U. 2009 nr 3 poz.... |
-| 250002 | `jdg.micro.akcyza.a2.r1` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250003 | `jdg.micro.akcyza.a2.r2` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250004 | `jdg.micro.akcyza.a2.r3` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250005 | `jdg.micro.akcyza.a2.r4` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250006 | `jdg.micro.akcyza.a2.r5` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250007 | `jdg.micro.akcyza.a2.r6` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250008 | `jdg.micro.akcyza.a2.r7` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250009 | `jdg.micro.akcyza.a2.r8` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250010 | `jdg.micro.akcyza.a26.r1` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250011 | `jdg.micro.akcyza.a26.r2` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250012 | `jdg.micro.akcyza.a26.r3` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250013 | `jdg.micro.akcyza.a26.r4` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250014 | `jdg.micro.akcyza.a26.r5` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250015 | `jdg.micro.akcyza.a26.r6` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250016 | `jdg.micro.akcyza.a26.r7` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250017 | `jdg.micro.akcyza.a26.r8` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250018 | `jdg.micro.akcyza.a30.r1` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250019 | `jdg.micro.akcyza.a30.r2` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250020 | `jdg.micro.akcyza.a30.r3` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250021 | `jdg.micro.akcyza.a30.r4` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250022 | `jdg.micro.akcyza.a30.r5` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250023 | `jdg.micro.akcyza.a30.r6` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250024 | `jdg.micro.akcyza.a30.r7` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250025 | `jdg.micro.akcyza.a30.r8` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250026 | `jdg.micro.akcyza.a99.r1` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250027 | `jdg.micro.akcyza.a99.r2` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250028 | `jdg.micro.akcyza.a99.r3` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250029 | `jdg.micro.akcyza.a99.r4` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250030 | `jdg.micro.akcyza.a99.r5` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250031 | `jdg.micro.akcyza.a99.r6` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250032 | `jdg.micro.akcyza.a99.r7` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
-| 250033 | `jdg.micro.akcyza.a99.r8` |  | Ustawa o podatku akcyzowym z 06.12.2008 |
+| 50000 | `jdg.pcc_akc.a10.u1.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50001 | `jdg.pcc_akc.a10.u2.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50002 | `jdg.pcc_akc.a11.u1.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50003 | `jdg.pcc_akc.a11.u3.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50004 | `jdg.pcc_akc.a11.u4.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50005 | `jdg.pcc_akc.a11.u5.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50006 | `jdg.pcc_akc.a12.u2.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50007 | `jdg.pcc_akc.a12.u3.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50008 | `jdg.pcc_akc.a12.u4.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50009 | `jdg.pcc_akc.a12.u5.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50010 | `jdg.pcc_akc.a13.u1.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50011 | `jdg.pcc_akc.a13.u2.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50012 | `jdg.pcc_akc.a13.u3.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50013 | `jdg.pcc_akc.a13.u4.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50014 | `jdg.pcc_akc.a14.u1.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50015 | `jdg.pcc_akc.a14.u2.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50016 | `jdg.pcc_akc.a14.u3.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50017 | `jdg.pcc_akc.a14.u5.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50018 | `jdg.pcc_akc.a15.u1.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50019 | `jdg.pcc_akc.a15.u2.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50020 | `jdg.pcc_akc.a15.u4.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50021 | `jdg.pcc_akc.a15.u5.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50022 | `jdg.pcc_akc.a16.u1.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50023 | `jdg.pcc_akc.a16.u3.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50024 | `jdg.pcc_akc.a16.u4.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50025 | `jdg.pcc_akc.a16.u5.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50026 | `jdg.pcc_akc.a17.u2.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50027 | `jdg.pcc_akc.a17.u3.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50028 | `jdg.pcc_akc.a17.u4.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50029 | `jdg.pcc_akc.a17.u5.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50030 | `jdg.pcc_akc.a18.u1.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50031 | `jdg.pcc_akc.a18.u2.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50032 | `jdg.pcc_akc.a18.u3.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50033 | `jdg.pcc_akc.a18.u4.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50034 | `jdg.pcc_akc.a19.u1.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50035 | `jdg.pcc_akc.a19.u2.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50036 | `jdg.pcc_akc.a19.u3.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50037 | `jdg.pcc_akc.a19.u5.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50038 | `jdg.pcc_akc.a20.u1.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50039 | `jdg.pcc_akc.a20.u2.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50040 | `jdg.pcc_akc.a20.u4.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50041 | `jdg.pcc_akc.a20.u5.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50042 | `jdg.pcc_akc.a21.u1.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50043 | `jdg.pcc_akc.a21.u3.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50044 | `jdg.pcc_akc.a21.u4.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50045 | `jdg.pcc_akc.a21.u5.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50046 | `jdg.pcc_akc.a22.u2.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50047 | `jdg.pcc_akc.a22.u3.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50048 | `jdg.pcc_akc.a22.u4.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50049 | `jdg.pcc_akc.a22.u5.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50050 | `jdg.pcc_akc.a23.u1.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50051 | `jdg.pcc_akc.a23.u2.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50052 | `jdg.pcc_akc.a23.u3.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50053 | `jdg.pcc_akc.a23.u4.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50054 | `jdg.pcc_akc.a24.u1.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50055 | `jdg.pcc_akc.a24.u2.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50056 | `jdg.pcc_akc.a24.u3.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50057 | `jdg.pcc_akc.a24.u5.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50058 | `jdg.pcc_akc.a25.u1.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50059 | `jdg.pcc_akc.a25.u2.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50060 | `jdg.pcc_akc.a25.u4.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50061 | `jdg.pcc_akc.a25.u5.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50062 | `jdg.pcc_akc.a26.u1.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50063 | `jdg.pcc_akc.a26.u3.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50064 | `jdg.pcc_akc.a26.u4.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50065 | `jdg.pcc_akc.a26.u5.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50066 | `jdg.pcc_akc.a27.u2.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50067 | `jdg.pcc_akc.a27.u3.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50068 | `jdg.pcc_akc.a27.u4.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50069 | `jdg.pcc_akc.a27.u5.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50070 | `jdg.pcc_akc.a28.u1.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50071 | `jdg.pcc_akc.a28.u2.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50072 | `jdg.pcc_akc.a28.u3.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50073 | `jdg.pcc_akc.a28.u4.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50074 | `jdg.pcc_akc.a29.u1.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50075 | `jdg.pcc_akc.a29.u2.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50076 | `jdg.pcc_akc.a29.u3.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50077 | `jdg.pcc_akc.a29.u5.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50078 | `jdg.pcc_akc.a30.u1.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50079 | `jdg.pcc_akc.a30.u2.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50080 | `jdg.pcc_akc.a30.u4.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50081 | `jdg.pcc_akc.a30.u5.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50082 | `jdg.pcc_akc.a31.u1.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50083 | `jdg.pcc_akc.a31.u3.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50084 | `jdg.pcc_akc.a31.u4.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50085 | `jdg.pcc_akc.a31.u5.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50086 | `jdg.pcc_akc.a32.u2.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50087 | `jdg.pcc_akc.a32.u3.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50088 | `jdg.pcc_akc.a32.u4.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50089 | `jdg.pcc_akc.a32.u5.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50090 | `jdg.pcc_akc.a33.u1.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50091 | `jdg.pcc_akc.a33.u2.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50092 | `jdg.pcc_akc.a33.u3.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50093 | `jdg.pcc_akc.a33.u4.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50094 | `jdg.pcc_akc.a34.u1.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50095 | `jdg.pcc_akc.a34.u2.p1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50096 | `jdg.pcc_akc.a34.u3.p2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50097 | `jdg.pcc_akc.a34.u5.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50098 | `jdg.pcc_akc.a35.u4.p3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 50099 | `jdg.pcc_akc.a35.u5.p4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250002 | `jdg.micro.akcyza.a2.r1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250003 | `jdg.micro.akcyza.a2.r2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250004 | `jdg.micro.akcyza.a2.r3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250005 | `jdg.micro.akcyza.a2.r4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250006 | `jdg.micro.akcyza.a2.r5` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250007 | `jdg.micro.akcyza.a2.r6` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250008 | `jdg.micro.akcyza.a2.r7` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250009 | `jdg.micro.akcyza.a2.r8` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250010 | `jdg.micro.akcyza.a26.r1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250011 | `jdg.micro.akcyza.a26.r2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250012 | `jdg.micro.akcyza.a26.r3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250013 | `jdg.micro.akcyza.a26.r4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250014 | `jdg.micro.akcyza.a26.r5` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250015 | `jdg.micro.akcyza.a26.r6` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250016 | `jdg.micro.akcyza.a26.r7` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250017 | `jdg.micro.akcyza.a26.r8` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250018 | `jdg.micro.akcyza.a30.r1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250019 | `jdg.micro.akcyza.a30.r2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250020 | `jdg.micro.akcyza.a30.r3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250021 | `jdg.micro.akcyza.a30.r4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250022 | `jdg.micro.akcyza.a30.r5` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250023 | `jdg.micro.akcyza.a30.r6` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250024 | `jdg.micro.akcyza.a30.r7` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250025 | `jdg.micro.akcyza.a30.r8` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250026 | `jdg.micro.akcyza.a99.r1` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250027 | `jdg.micro.akcyza.a99.r2` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250028 | `jdg.micro.akcyza.a99.r3` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250029 | `jdg.micro.akcyza.a99.r4` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250030 | `jdg.micro.akcyza.a99.r5` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250031 | `jdg.micro.akcyza.a99.r6` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250032 | `jdg.micro.akcyza.a99.r7` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 250033 | `jdg.micro.akcyza.a99.r8` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
 
 ### `rules/micro/aml/aml.rego` (125 reguł)
 
@@ -3701,52 +3703,52 @@
 | 50078 | `jdg.aml_full.a49.u5.p3` |  | Ustawa AML V z 1.03.2018 |
 | 50079 | `jdg.aml_full.a50.u4.p3` |  | Ustawa AML V z 1.03.2018 |
 | 50080 | `jdg.aml_full.a50.u5.p4` |  | Ustawa AML V z 1.03.2018 |
-| 200008 | `jdg.micro.aml.a8.r1` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200009 | `jdg.micro.aml.a8.r2` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200010 | `jdg.micro.aml.a8.r3` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200011 | `jdg.micro.aml.a8.r4` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200012 | `jdg.micro.aml.a8.r5` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200013 | `jdg.micro.aml.a8.r6` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200014 | `jdg.micro.aml.a8.r7` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200015 | `jdg.micro.aml.a8.r8` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200016 | `jdg.micro.aml.a8.r9` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200017 | `jdg.micro.aml.a8.r10` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200018 | `jdg.micro.aml.a10.r1` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200019 | `jdg.micro.aml.a10.r2` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200020 | `jdg.micro.aml.a10.r3` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200021 | `jdg.micro.aml.a10.r4` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200022 | `jdg.micro.aml.a10.r5` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200023 | `jdg.micro.aml.a10.r6` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200024 | `jdg.micro.aml.a10.r7` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200025 | `jdg.micro.aml.a10.r8` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200026 | `jdg.micro.aml.a10.r9` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200027 | `jdg.micro.aml.a10.r10` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200028 | `jdg.micro.aml.a15.r1` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200029 | `jdg.micro.aml.a15.r2` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200030 | `jdg.micro.aml.a15.r3` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200031 | `jdg.micro.aml.a15.r4` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200032 | `jdg.micro.aml.a15.r5` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200033 | `jdg.micro.aml.a15.r6` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200034 | `jdg.micro.aml.a15.r7` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200035 | `jdg.micro.aml.a15.r8` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200036 | `jdg.micro.aml.a18.r1` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200037 | `jdg.micro.aml.a18.r2` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200038 | `jdg.micro.aml.a18.r3` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200039 | `jdg.micro.aml.a18.r4` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200040 | `jdg.micro.aml.a18.r5` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200041 | `jdg.micro.aml.a18.r6` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200042 | `jdg.micro.aml.a18.r7` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200043 | `jdg.micro.aml.a18.r8` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200044 | `jdg.micro.aml.a22.r1` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200045 | `jdg.micro.aml.a22.r2` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200046 | `jdg.micro.aml.a22.r3` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200047 | `jdg.micro.aml.a22.r4` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200048 | `jdg.micro.aml.a22.r5` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200049 | `jdg.micro.aml.a22.r6` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200050 | `jdg.micro.aml.a22.r7` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
-| 200051 | `jdg.micro.aml.a22.r8` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2018 poz. 723) |
+| 200008 | `jdg.micro.aml.a8.r1` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200009 | `jdg.micro.aml.a8.r2` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200010 | `jdg.micro.aml.a8.r3` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200011 | `jdg.micro.aml.a8.r4` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200012 | `jdg.micro.aml.a8.r5` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200013 | `jdg.micro.aml.a8.r6` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200014 | `jdg.micro.aml.a8.r7` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200015 | `jdg.micro.aml.a8.r8` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200016 | `jdg.micro.aml.a8.r9` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200017 | `jdg.micro.aml.a8.r10` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200018 | `jdg.micro.aml.a10.r1` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200019 | `jdg.micro.aml.a10.r2` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200020 | `jdg.micro.aml.a10.r3` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200021 | `jdg.micro.aml.a10.r4` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200022 | `jdg.micro.aml.a10.r5` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200023 | `jdg.micro.aml.a10.r6` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200024 | `jdg.micro.aml.a10.r7` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200025 | `jdg.micro.aml.a10.r8` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200026 | `jdg.micro.aml.a10.r9` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200027 | `jdg.micro.aml.a10.r10` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200028 | `jdg.micro.aml.a15.r1` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200029 | `jdg.micro.aml.a15.r2` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200030 | `jdg.micro.aml.a15.r3` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200031 | `jdg.micro.aml.a15.r4` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200032 | `jdg.micro.aml.a15.r5` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200033 | `jdg.micro.aml.a15.r6` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200034 | `jdg.micro.aml.a15.r7` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200035 | `jdg.micro.aml.a15.r8` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200036 | `jdg.micro.aml.a18.r1` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200037 | `jdg.micro.aml.a18.r2` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200038 | `jdg.micro.aml.a18.r3` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200039 | `jdg.micro.aml.a18.r4` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200040 | `jdg.micro.aml.a18.r5` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200041 | `jdg.micro.aml.a18.r6` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200042 | `jdg.micro.aml.a18.r7` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200043 | `jdg.micro.aml.a18.r8` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200044 | `jdg.micro.aml.a22.r1` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200045 | `jdg.micro.aml.a22.r2` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200046 | `jdg.micro.aml.a22.r3` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200047 | `jdg.micro.aml.a22.r4` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200048 | `jdg.micro.aml.a22.r5` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200049 | `jdg.micro.aml.a22.r6` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200050 | `jdg.micro.aml.a22.r7` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
+| 200051 | `jdg.micro.aml.a22.r8` |  | Ustawa o AML z 01.03.2018 (Dz.U. 2025 poz. 213) |
 
-### `rules/micro/aml/aml_cbdd.rego` (6 reguł)
+### `rules/micro/aml/aml_cbdd.rego` (5 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -3755,9 +3757,8 @@
 | 83303 | `jdg.micro.aml_cbdd.r3` | 🟡 TRIAGE | Art. 63 Ustawy o CBDD |
 | 83304 | `jdg.micro.aml_cbdd.r4` | 🟡 TRIAGE | Art. 61-66 Ustawy o CBDD |
 | 83305 | `jdg.micro.aml_cbdd.r5` | 🔴 BLOCK | Art. 68 Ustawy o CBDD, Art. 153 AML |
-| 83399 | `jdg.micro.aml_cbdd.fallback` |  | Ustawa o CBDD |
 
-### `rules/micro/aml/aml_ryzyko.rego` (8 reguł)
+### `rules/micro/aml/aml_ryzyko.rego` (7 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -3768,9 +3769,8 @@
 | 83005 | `jdg.micro.aml_ryzyko.r5` | 🔴 BLOCK | Art. 43-46 Ustawy AML |
 | 83006 | `jdg.micro.aml_ryzyko.r6` | 🔴 BLOCK | Art. 43 ust. 5 Ustawy AML |
 | 83007 | `jdg.micro.aml_ryzyko.r7` | 🟡 TRIAGE | Art. 61-79 Ustawy o CBDD, Art. 35 AML |
-| 83099 | `jdg.micro.aml_ryzyko.fallback` |  | Ustawa AML |
 
-### `rules/micro/aml/aml_str_gif.rego` (8 reguł)
+### `rules/micro/aml/aml_str_gif.rego` (7 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -3781,9 +3781,8 @@
 | 83205 | `jdg.micro.aml_str_gif.r5` | 🟡 TRIAGE | Art. 48 Ustawy AML |
 | 83206 | `jdg.micro.aml_str_gif.r6` | 🟡 TRIAGE | Art. 50 ust. 3 Ustawy AML |
 | 83207 | `jdg.micro.aml_str_gif.r7` | 🟡 TRIAGE | Art. 50-52 Ustawy AML |
-| 83299 | `jdg.micro.aml_str_gif.fallback` |  | Ustawa AML |
 
-### `rules/micro/aml/aml_transakcje.rego` (7 reguł)
+### `rules/micro/aml/aml_transakcje.rego` (6 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -3793,7 +3792,6 @@
 | 83104 | `jdg.micro.aml_transakcje.r4` |  | Art. 35 Ustawy AML |
 | 83105 | `jdg.micro.aml_transakcje.r5` | 🔴 BLOCK | Rozp. UE 2023/1113 (TFR) |
 | 83106 | `jdg.micro.aml_transakcje.r6` | 🔴 BLOCK | Rozp. UE 269/2014 |
-| 83199 | `jdg.micro.aml_transakcje.fallback` |  | Ustawa AML |
 
 ### `rules/micro/amortyzacja/pit_a22a.rego` (9 reguł)
 
@@ -3877,7 +3875,7 @@
 | 81305 | `jdg.micro.amort_a22n.r5` | 🔴 BLOCK | Art. 22n ust. 5 PIT |
 | 81306 | `jdg.micro.amort_a22n.r6` |  | Art. 22n ust. 4 PIT, Art. 14 PIT |
 
-### `rules/micro/bdo/bdo_ewc.rego` (9 reguł)
+### `rules/micro/bdo/bdo_ewc.rego` (8 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -3889,9 +3887,8 @@
 | 82106 | `jdg.micro.bdo_ewc.r6` | 🟡 TRIAGE | Rozp. ws. postępowania z olejami odpadowymi, Art. 92-95 UoO |
 | 82107 | `jdg.micro.bdo_ewc.r7` |  | Ustawa o bateriach i akumulatorach |
 | 82110 | `jdg.micro.bdo_ewc.ewc_catalog_lookup` |  | Rozporządzenie ws. katalogu odpadów (Dz.U. 2020 poz. 10) |
-| 82199 | `jdg.micro.bdo_ewc.fallback` |  | Rozporządzenie ws. katalogu odpadów |
 
-### `rules/micro/bdo/bdo_ewidencja.rego` (9 reguł)
+### `rules/micro/bdo/bdo_ewidencja.rego` (8 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -3903,9 +3900,8 @@
 | 82206 | `jdg.micro.bdo_ewidencja.r6` | 🔴 BLOCK | Art. 67 Ustawy o odpadach |
 | 82207 | `jdg.micro.bdo_ewidencja.r7` |  | Art. 67 Ustawy o odpadach |
 | 82208 | `jdg.micro.bdo_ewidencja.r8` |  | Art. 69 Ustawy o odpadach |
-| 82299 | `jdg.micro.bdo_ewidencja.fallback` |  | Ustawa o odpadach |
 
-### `rules/micro/bdo/bdo_rejestracja.rego` (9 reguł)
+### `rules/micro/bdo/bdo_rejestracja.rego` (8 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -3917,9 +3913,8 @@
 | 82006 | `jdg.micro.bdo_rejestracja.r6` | 🟡 TRIAGE | Art. 55 Ustawy o odpadach |
 | 82007 | `jdg.micro.bdo_rejestracja.r7` |  | Art. 55a Ustawy o odpadach |
 | 82008 | `jdg.micro.bdo_rejestracja.r8` | 🔴 BLOCK | Art. 194 Ustawy o odpadach |
-| 82099 | `jdg.micro.bdo_rejestracja.fallback` |  | Ustawa o odpadach |
 
-### `rules/micro/bdo/bdo_transport.rego` (7 reguł)
+### `rules/micro/bdo/bdo_transport.rego` (6 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -3929,9 +3924,8 @@
 | 82304 | `jdg.micro.bdo_transport.r4` | 🔴 BLOCK | Rozp. WE 1013/2006, Ustawa o międzynarodowym przemieszczaniu... |
 | 82305 | `jdg.micro.bdo_transport.r5` |  | Rozp. WE 1013/2006, Załącznik VII (zielona lista) |
 | 82306 | `jdg.micro.bdo_transport.r6` | 🔴 BLOCK | Art. 25 Ustawy o odpadach |
-| 82399 | `jdg.micro.bdo_transport.fallback` |  | Ustawa o odpadach |
 
-### `rules/micro/bdo/bdo_weee_baterie.rego` (6 reguł)
+### `rules/micro/bdo/bdo_weee_baterie.rego` (5 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -3940,9 +3934,8 @@
 | 82503 | `jdg.micro.bdo_weee.r3` | 🟡 TRIAGE | Ustawa o bateriach i akumulatorach, Rozp. UE 2023/1542 |
 | 82504 | `jdg.micro.bdo_weee.r4` | 🟡 TRIAGE | Ustawa SUP (Dz.U. 2023 poz. 877), Dyrektywa SUP 2019/904 |
 | 82505 | `jdg.micro.bdo_weee.r5` | 🔴 BLOCK | Ustawa o zapobieganiu szkodom w środowisku i ich naprawie |
-| 82599 | `jdg.micro.bdo_weee.fallback` |  | Ustawa o odpadach |
 
-### `rules/micro/bdo/bdo_zezwolenia.rego` (7 reguł)
+### `rules/micro/bdo/bdo_zezwolenia.rego` (6 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -3952,20 +3945,19 @@
 | 82404 | `jdg.micro.bdo_zezwolenia.r4` | 🔴 BLOCK | Art. 194 Ustawy o odpadach |
 | 82405 | `jdg.micro.bdo_zezwolenia.r5` | 🔴 BLOCK | Art. 195 Ustawy o odpadach |
 | 82406 | `jdg.micro.bdo_zezwolenia.r6` | 🔴 BLOCK | Art. 197 Ustawy o odpadach |
-| 82499 | `jdg.micro.bdo_zezwolenia.fallback` |  | Ustawa o odpadach |
 
 ### `rules/micro/budownictwo/budownictwo.rego` (64 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 250001 | `jdg.micro.budownictwo.a1.r1` | 🔴 BLOCK | Art. 28 Prawa budowlanego |
-| 250002 | `jdg.micro.budownictwo.a1.r2` |  | Art. 29-30 Prawa budowlanego |
-| 250003 | `jdg.micro.budownictwo.a1.r3` |  | Art. 28 Prawa budowlanego |
-| 250004 | `jdg.micro.budownictwo.a1.r4` | 🔴 BLOCK | Art. 37 Prawa budowlanego |
-| 250005 | `jdg.micro.budownictwo.a1.r5` |  | Art. 45 Prawa budowlanego |
-| 250006 | `jdg.micro.budownictwo.a1.r6` | 🔴 BLOCK | Art. 42 Prawa budowlanego |
-| 250007 | `jdg.micro.budownictwo.a1.r7` |  | Art. 55-59 Prawa budowlanego |
-| 250008 | `jdg.micro.budownictwo.a1.r8` | 🔴 BLOCK | Art. 48-50 Prawa budowlanego |
+| 250001 | `jdg.micro.budownictwo.a1.r1` | 🔴 BLOCK | Art. 28 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipc... |
+| 250002 | `jdg.micro.budownictwo.a1.r2` |  | Art. 29-30 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 l... |
+| 250003 | `jdg.micro.budownictwo.a1.r3` |  | Art. 28 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipc... |
+| 250004 | `jdg.micro.budownictwo.a1.r4` | 🔴 BLOCK | Art. 37 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipc... |
+| 250005 | `jdg.micro.budownictwo.a1.r5` |  | Art. 45 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipc... |
+| 250006 | `jdg.micro.budownictwo.a1.r6` | 🔴 BLOCK | Art. 42 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipc... |
+| 250007 | `jdg.micro.budownictwo.a1.r7` |  | Art. 55-59 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 l... |
+| 250008 | `jdg.micro.budownictwo.a1.r8` | 🔴 BLOCK | Art. 48-50 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 l... |
 | 250009 | `jdg.micro.budownictwo.a2.r1` |  | Art. 17 ust. 1 pkt 8 VAT, Załącznik nr 14 |
 | 250010 | `jdg.micro.budownictwo.a2.r2` |  | Art. 17 ust. 1 pkt 8 VAT |
 | 250011 | `jdg.micro.budownictwo.a2.r3` | 🔴 BLOCK | Art. 106e ust. 1 pkt 18 VAT |
@@ -3982,12 +3974,12 @@
 | 250022 | `jdg.micro.budownictwo.a3.r6` |  | Art. 22 ust. 1 PIT, Art. 19a VAT |
 | 250023 | `jdg.micro.budownictwo.a3.r7` |  | Art. 23 ust. 1 pkt 19 PIT (kary umowne z tytułu wad towarów/... |
 | 250024 | `jdg.micro.budownictwo.a3.r8` |  | Art. 647 KC, Art. 19a ust. 1 VAT (data wykonania usługi), Ar... |
-| 250025 | `jdg.micro.budownictwo.a4.r1` | 🔴 BLOCK | Art. 21a Prawa budowlanego, Rozporządzenie MI |
+| 250025 | `jdg.micro.budownictwo.a4.r1` | 🔴 BLOCK | Art. 21a ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lip... |
 | 250026 | `jdg.micro.budownictwo.a4.r2` |  | Art. 237³ Kodeksu Pracy, Rozporządzenie MGiP ws. szkoleń BHP |
 | 250027 | `jdg.micro.budownictwo.a4.r3` |  | Art. 237⁶ KP, Rozporządzenie ws. ogólnych przepisów BHP |
 | 250028 | `jdg.micro.budownictwo.a4.r4` |  | Rozporządzenie ws. BHP przy pracach na wysokości |
 | 250029 | `jdg.micro.budownictwo.a4.r5` |  | Rozporządzenie ws. BHP na budowie § 9-15 |
-| 250030 | `jdg.micro.budownictwo.a4.r6` |  | Art. 42 ust. 2 pkt 2 Prawa budowlanego |
+| 250030 | `jdg.micro.budownictwo.a4.r6` |  | Art. 42 ust. 2 pkt 2 ustawy z dnia 7 lipca 1994 r. — ustawy ... |
 | 250031 | `jdg.micro.budownictwo.a4.r7` |  | Rozporządzenie ws. BHP przy robotach ziemnych |
 | 250032 | `jdg.micro.budownictwo.a4.r8` |  | Rozporządzenie ws. BHP przy urządzeniach elektroenergetyczny... |
 | 250033 | `jdg.micro.budownictwo.a5.r1` |  | Art. 568 § 1 KC w zw. z art. 638 KC (5 lat dla wad nieruchom... |
@@ -4000,13 +3992,13 @@
 | 250040 | `jdg.micro.budownictwo.a5.r8` |  | Art. 6 KC (ciężar dowodu), Art. 22 UoR (dowody księgowe) |
 | 250041 | `jdg.micro.budownictwo.a5.r9` |  | Art. 66 Ustawy o odpadach, Art. 22 ust. 1 PIT (KUP) |
 | 250042 | `jdg.micro.budownictwo.a5.r10` |  | Art. 22 ust. 1 PIT, Art. 86 VAT (odliczenie VAT od składki) |
-| 250043 | `jdg.micro.budownictwo.a6.r1` | 🔴 BLOCK | Art. 75 Prawa budowlanego |
-| 250044 | `jdg.micro.budownictwo.a6.r2` |  | Art. 76 Prawa budowlanego |
-| 250045 | `jdg.micro.budownictwo.a6.r3` | 🔴 BLOCK | Art. 93 pkt 3 Prawa budowlanego |
-| 250046 | `jdg.micro.budownictwo.a6.r4` | 🔴 BLOCK | Art. 36a Prawa budowlanego, Art. 50 |
-| 250047 | `jdg.micro.budownictwo.a6.r5` | 🔴 BLOCK | Art. 90 Prawa budowlanego |
+| 250043 | `jdg.micro.budownictwo.a6.r1` | 🔴 BLOCK | Art. 75 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipc... |
+| 250044 | `jdg.micro.budownictwo.a6.r2` |  | Art. 76 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipc... |
+| 250045 | `jdg.micro.budownictwo.a6.r3` | 🔴 BLOCK | Art. 93 pkt 3 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia ... |
+| 250046 | `jdg.micro.budownictwo.a6.r4` | 🔴 BLOCK | Art. 36a ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lip... |
+| 250047 | `jdg.micro.budownictwo.a6.r5` | 🔴 BLOCK | Art. 90 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia 7 lipc... |
 | 250048 | `jdg.micro.budownictwo.a6.r6` |  | Art. 51 KW, Uchwały rad gmin o ciszy nocnej |
-| 250049 | `jdg.micro.budownictwo.a6.r7` |  | Art. 93 pkt 7 Prawa budowlanego |
+| 250049 | `jdg.micro.budownictwo.a6.r7` |  | Art. 93 pkt 7 ustawy z dnia 7 lipca 1994 r. — ustawy z dnia ... |
 | 250050 | `jdg.micro.budownictwo.a6.r8` |  | Art. 86 Ordynacji podatkowej (5 lat), Art. 74 UoR |
 | 250051 | `jdg.micro.budownictwo.a7.r1` |  | Art. 41 ust. 12 ustawy o VAT |
 | 250052 | `jdg.micro.budownictwo.a7.r2` |  | Art. 41 ust. 1 w zw. z art. 41 ust. 12 VAT |
@@ -4027,48 +4019,48 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 140005 | `jdg.micro.ceidg.a5.r1` |  | Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140006 | `jdg.micro.ceidg.a5.r2` |  | Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140007 | `jdg.micro.ceidg.a5.r3` |  | Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140008 | `jdg.micro.ceidg.a5.r4` |  | Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140009 | `jdg.micro.ceidg.a5.r5` |  | Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140010 | `jdg.micro.ceidg.a5.r6` |  | Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140011 | `jdg.micro.ceidg.a5.r7` |  | Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140012 | `jdg.micro.ceidg.a5.r8` |  | Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140013 | `jdg.micro.ceidg.a12.r1` |  | Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140014 | `jdg.micro.ceidg.a12.r2` |  | Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140015 | `jdg.micro.ceidg.a12.r3` |  | Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140016 | `jdg.micro.ceidg.a12.r4` |  | Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140017 | `jdg.micro.ceidg.a12.r5` |  | Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140018 | `jdg.micro.ceidg.a12.r6` |  | Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140019 | `jdg.micro.ceidg.a12.r7` |  | Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140020 | `jdg.micro.ceidg.a12.r8` |  | Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140021 | `jdg.micro.ceidg.a15.r1` |  | Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140022 | `jdg.micro.ceidg.a15.r2` |  | Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140023 | `jdg.micro.ceidg.a15.r3` |  | Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140024 | `jdg.micro.ceidg.a15.r4` |  | Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140025 | `jdg.micro.ceidg.a15.r5` |  | Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140026 | `jdg.micro.ceidg.a15.r6` |  | Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140027 | `jdg.micro.ceidg.a22.r1` |  | Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140028 | `jdg.micro.ceidg.a22.r2` |  | Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140029 | `jdg.micro.ceidg.a22.r3` |  | Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140030 | `jdg.micro.ceidg.a22.r4` |  | Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140031 | `jdg.micro.ceidg.a22.r5` |  | Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140032 | `jdg.micro.ceidg.a22.r6` |  | Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140033 | `jdg.micro.ceidg.a25.r1` |  | Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140034 | `jdg.micro.ceidg.a25.r2` |  | Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140035 | `jdg.micro.ceidg.a25.r3` |  | Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140036 | `jdg.micro.ceidg.a25.r4` |  | Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140037 | `jdg.micro.ceidg.a25.r5` |  | Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140038 | `jdg.micro.ceidg.a25.r6` |  | Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 140039 | `jdg.micro.ceidg.a13.r1` | 🔴 BLOCK | Art. 14 ust. 1 ustawy o CEIDG |
-| 140040 | `jdg.micro.ceidg.a13.r2` | 🔴 BLOCK | Art. 48-49 ustawy o CEIDG |
-| 140041 | `jdg.micro.ceidg.a13.r3` | 🔴 BLOCK | Art. 48-49 ustawy o CEIDG |
-| 140042 | `jdg.micro.ceidg.a5data.r1` | 🔴 BLOCK | Art. 5 ustawy o CEIDG |
-| 140043 | `jdg.micro.ceidg.a5data.r2` | 🔴 BLOCK | Art. 6 ustawy o CEIDG |
-| 140044 | `jdg.micro.ceidg.a5data.r3` |  | Art. 7 ustawy o CEIDG |
-| 140045 | `jdg.micro.ceidg.a5data.r4` |  | Art. 7a ustawy o CEIDG (CEIDG ↔ ZUS integracja) |
-| 140046 | `jdg.micro.ceidg.a5data.r5` |  | Art. 8 ustawy o CEIDG |
+| 140005 | `jdg.micro.ceidg.a5.r1` |  | Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140006 | `jdg.micro.ceidg.a5.r2` |  | Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140007 | `jdg.micro.ceidg.a5.r3` |  | Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140008 | `jdg.micro.ceidg.a5.r4` |  | Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140009 | `jdg.micro.ceidg.a5.r5` |  | Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140010 | `jdg.micro.ceidg.a5.r6` |  | Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140011 | `jdg.micro.ceidg.a5.r7` |  | Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140012 | `jdg.micro.ceidg.a5.r8` |  | Art. 5 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140013 | `jdg.micro.ceidg.a12.r1` |  | Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140014 | `jdg.micro.ceidg.a12.r2` |  | Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140015 | `jdg.micro.ceidg.a12.r3` |  | Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140016 | `jdg.micro.ceidg.a12.r4` |  | Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140017 | `jdg.micro.ceidg.a12.r5` |  | Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140018 | `jdg.micro.ceidg.a12.r6` |  | Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140019 | `jdg.micro.ceidg.a12.r7` |  | Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140020 | `jdg.micro.ceidg.a12.r8` |  | Art. 12 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140021 | `jdg.micro.ceidg.a15.r1` |  | Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140022 | `jdg.micro.ceidg.a15.r2` |  | Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140023 | `jdg.micro.ceidg.a15.r3` |  | Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140024 | `jdg.micro.ceidg.a15.r4` |  | Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140025 | `jdg.micro.ceidg.a15.r5` |  | Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140026 | `jdg.micro.ceidg.a15.r6` |  | Art. 15 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140027 | `jdg.micro.ceidg.a22.r1` |  | Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140028 | `jdg.micro.ceidg.a22.r2` |  | Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140029 | `jdg.micro.ceidg.a22.r3` |  | Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140030 | `jdg.micro.ceidg.a22.r4` |  | Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140031 | `jdg.micro.ceidg.a22.r5` |  | Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140032 | `jdg.micro.ceidg.a22.r6` |  | Art. 22 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140033 | `jdg.micro.ceidg.a25.r1` |  | Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140034 | `jdg.micro.ceidg.a25.r2` |  | Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140035 | `jdg.micro.ceidg.a25.r3` |  | Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140036 | `jdg.micro.ceidg.a25.r4` |  | Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140037 | `jdg.micro.ceidg.a25.r5` |  | Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140038 | `jdg.micro.ceidg.a25.r6` |  | Art. 25 Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 140039 | `jdg.micro.ceidg.a13.r1` | 🔴 BLOCK | Art. 14 ust. 1 ustawy z dnia 6 marca 2018 r. o Centralnej Ew... |
+| 140040 | `jdg.micro.ceidg.a13.r2` | 🔴 BLOCK | Art. 48-49 ustawy z dnia 6 marca 2018 r. o Centralnej Ewiden... |
+| 140041 | `jdg.micro.ceidg.a13.r3` | 🔴 BLOCK | Art. 48-49 ustawy z dnia 6 marca 2018 r. o Centralnej Ewiden... |
+| 140042 | `jdg.micro.ceidg.a5data.r1` | 🔴 BLOCK | Art. 5 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji ... |
+| 140043 | `jdg.micro.ceidg.a5data.r2` | 🔴 BLOCK | Art. 6 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji ... |
+| 140044 | `jdg.micro.ceidg.a5data.r3` |  | Art. 7 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji ... |
+| 140045 | `jdg.micro.ceidg.a5data.r4` |  | Art. 7a ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji... |
+| 140046 | `jdg.micro.ceidg.a5data.r5` |  | Art. 8 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji ... |
 
 ### `rules/micro/crossborder/crossborder.rego` (192 reguł)
 
@@ -5387,95 +5379,118 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 170001 | `jdg.micro.pcc.a1.r1` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170002 | `jdg.micro.pcc.a1.r2` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170003 | `jdg.micro.pcc.a1.r3` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170004 | `jdg.micro.pcc.a1.r4` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170005 | `jdg.micro.pcc.a1.r5` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170006 | `jdg.micro.pcc.a1.r6` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170007 | `jdg.micro.pcc.a1.r7` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170008 | `jdg.micro.pcc.a1.r8` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170009 | `jdg.micro.pcc.a1.r9` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170010 | `jdg.micro.pcc.a1.r10` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170011 | `jdg.micro.pcc.a2.r1` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170012 | `jdg.micro.pcc.a2.r2` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170013 | `jdg.micro.pcc.a2.r3` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170014 | `jdg.micro.pcc.a2.r4` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170015 | `jdg.micro.pcc.a2.r5` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170016 | `jdg.micro.pcc.a2.r6` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170017 | `jdg.micro.pcc.a2.r7` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170018 | `jdg.micro.pcc.a2.r8` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170019 | `jdg.micro.pcc.a2.r9` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170020 | `jdg.micro.pcc.a2.r10` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170021 | `jdg.micro.pcc.a2.r11` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170022 | `jdg.micro.pcc.a2.r12` | 🔴 BLOCK | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170023 | `jdg.micro.pcc.a3.r1` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170024 | `jdg.micro.pcc.a3.r2` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170025 | `jdg.micro.pcc.a3.r3` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170026 | `jdg.micro.pcc.a3.r4` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170027 | `jdg.micro.pcc.a3.r5` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170028 | `jdg.micro.pcc.a3.r6` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170029 | `jdg.micro.pcc.a3.r7` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170030 | `jdg.micro.pcc.a3.r8` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170031 | `jdg.micro.pcc.a4.r1` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170032 | `jdg.micro.pcc.a4.r2` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170033 | `jdg.micro.pcc.a4.r3` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170034 | `jdg.micro.pcc.a4.r4` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170035 | `jdg.micro.pcc.a4.r5` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170036 | `jdg.micro.pcc.a4.r6` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170037 | `jdg.micro.pcc.a4.r7` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170038 | `jdg.micro.pcc.a4.r8` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170039 | `jdg.micro.pcc.a4.r9` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170040 | `jdg.micro.pcc.a4.r10` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170041 | `jdg.micro.pcc.a6.r1` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170042 | `jdg.micro.pcc.a6.r2` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170043 | `jdg.micro.pcc.a6.r3` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170044 | `jdg.micro.pcc.a6.r4` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170045 | `jdg.micro.pcc.a6.r5` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170046 | `jdg.micro.pcc.a6.r6` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170047 | `jdg.micro.pcc.a6.r7` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170048 | `jdg.micro.pcc.a6.r8` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170049 | `jdg.micro.pcc.a7.r1` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170050 | `jdg.micro.pcc.a7.r2` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170051 | `jdg.micro.pcc.a7.r3` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170052 | `jdg.micro.pcc.a7.r4` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170053 | `jdg.micro.pcc.a7.r5` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170054 | `jdg.micro.pcc.a7.r6` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170055 | `jdg.micro.pcc.a7.r7` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170056 | `jdg.micro.pcc.a7.r8` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170057 | `jdg.micro.pcc.a5l.r1` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170058 | `jdg.micro.pcc.a5l.r2` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170059 | `jdg.micro.pcc.a5l.r3` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170060 | `jdg.micro.pcc.a5l.r4` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170061 | `jdg.micro.pcc.a5l.r5` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170062 | `jdg.micro.pcc.a5l.r6` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170063 | `jdg.micro.pcc.a5l.r7` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170064 | `jdg.micro.pcc.a5l.r8` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170065 | `jdg.micro.pcc.a5l.r9` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170066 | `jdg.micro.pcc.a5l.r10` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170067 | `jdg.micro.pcc.a9l.r1` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170068 | `jdg.micro.pcc.a9l.r2` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170069 | `jdg.micro.pcc.a9l.r3` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170070 | `jdg.micro.pcc.a9l.r4` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170071 | `jdg.micro.pcc.a9l.r5` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170072 | `jdg.micro.pcc.a9l.r6` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170073 | `jdg.micro.pcc.a9l.r7` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170074 | `jdg.micro.pcc.a9l.r8` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170075 | `jdg.micro.pcc.a13l.r1` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170076 | `jdg.micro.pcc.a13l.r2` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170077 | `jdg.micro.pcc.a13l.r3` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170078 | `jdg.micro.pcc.a13l.r4` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170079 | `jdg.micro.pcc.a13l.r5` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170080 | `jdg.micro.pcc.a14l.r1` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170081 | `jdg.micro.pcc.a14l.r2` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170082 | `jdg.micro.pcc.a14l.r3` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170083 | `jdg.micro.pcc.a14l.r4` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170084 | `jdg.micro.pcc.a14l.r5` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170085 | `jdg.micro.pcc.a16l.r1` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170086 | `jdg.micro.pcc.a16l.r2` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170087 | `jdg.micro.pcc.a16l.r3` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170088 | `jdg.micro.pcc.a16l.r4` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
-| 170089 | `jdg.micro.pcc.a16l.r5` |  | Ustawa o PCC z 09.09.2000 (Dz.U. 2000 nr 86 poz. 959) |
+| 170001 | `jdg.micro.pcc.a1.r1` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170002 | `jdg.micro.pcc.a1.r2` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170003 | `jdg.micro.pcc.a1.r3` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170004 | `jdg.micro.pcc.a1.r4` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170005 | `jdg.micro.pcc.a1.r5` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170006 | `jdg.micro.pcc.a1.r6` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170007 | `jdg.micro.pcc.a1.r7` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170008 | `jdg.micro.pcc.a1.r8` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170009 | `jdg.micro.pcc.a1.r9` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170010 | `jdg.micro.pcc.a1.r10` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170011 | `jdg.micro.pcc.a2.r1` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170012 | `jdg.micro.pcc.a2.r2` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170013 | `jdg.micro.pcc.a2.r3` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170014 | `jdg.micro.pcc.a2.r4` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170015 | `jdg.micro.pcc.a2.r5` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170016 | `jdg.micro.pcc.a2.r6` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170017 | `jdg.micro.pcc.a2.r7` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170018 | `jdg.micro.pcc.a2.r8` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170019 | `jdg.micro.pcc.a2.r9` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170020 | `jdg.micro.pcc.a2.r10` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170021 | `jdg.micro.pcc.a2.r11` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170022 | `jdg.micro.pcc.a2.r12` | 🔴 BLOCK | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170023 | `jdg.micro.pcc.a3.r1` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170024 | `jdg.micro.pcc.a3.r2` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170025 | `jdg.micro.pcc.a3.r3` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170026 | `jdg.micro.pcc.a3.r4` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170027 | `jdg.micro.pcc.a3.r5` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170028 | `jdg.micro.pcc.a3.r6` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170029 | `jdg.micro.pcc.a3.r7` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170030 | `jdg.micro.pcc.a3.r8` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170031 | `jdg.micro.pcc.a4.r1` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170032 | `jdg.micro.pcc.a4.r2` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170033 | `jdg.micro.pcc.a4.r3` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170034 | `jdg.micro.pcc.a4.r4` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170035 | `jdg.micro.pcc.a4.r5` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170036 | `jdg.micro.pcc.a4.r6` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170037 | `jdg.micro.pcc.a4.r7` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170038 | `jdg.micro.pcc.a4.r8` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170039 | `jdg.micro.pcc.a4.r9` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170040 | `jdg.micro.pcc.a4.r10` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170041 | `jdg.micro.pcc.a6.r1` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170042 | `jdg.micro.pcc.a6.r2` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170043 | `jdg.micro.pcc.a6.r3` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170044 | `jdg.micro.pcc.a6.r4` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170045 | `jdg.micro.pcc.a6.r5` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170046 | `jdg.micro.pcc.a6.r6` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170047 | `jdg.micro.pcc.a6.r7` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170048 | `jdg.micro.pcc.a6.r8` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170049 | `jdg.micro.pcc.a7.r1` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170050 | `jdg.micro.pcc.a7.r2` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170051 | `jdg.micro.pcc.a7.r3` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170052 | `jdg.micro.pcc.a7.r4` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170053 | `jdg.micro.pcc.a7.r5` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170054 | `jdg.micro.pcc.a7.r6` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170055 | `jdg.micro.pcc.a7.r7` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170056 | `jdg.micro.pcc.a7.r8` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170057 | `jdg.micro.pcc.a5l.r1` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170058 | `jdg.micro.pcc.a5l.r2` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170059 | `jdg.micro.pcc.a5l.r3` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170060 | `jdg.micro.pcc.a5l.r4` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170061 | `jdg.micro.pcc.a5l.r5` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170062 | `jdg.micro.pcc.a5l.r6` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170063 | `jdg.micro.pcc.a5l.r7` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170064 | `jdg.micro.pcc.a5l.r8` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170065 | `jdg.micro.pcc.a5l.r9` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170066 | `jdg.micro.pcc.a5l.r10` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170067 | `jdg.micro.pcc.a9l.r1` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170068 | `jdg.micro.pcc.a9l.r2` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170069 | `jdg.micro.pcc.a9l.r3` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170070 | `jdg.micro.pcc.a9l.r4` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170071 | `jdg.micro.pcc.a9l.r5` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170072 | `jdg.micro.pcc.a9l.r6` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170073 | `jdg.micro.pcc.a9l.r7` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170074 | `jdg.micro.pcc.a9l.r8` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170075 | `jdg.micro.pcc.a13l.r1` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170076 | `jdg.micro.pcc.a13l.r2` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170077 | `jdg.micro.pcc.a13l.r3` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170078 | `jdg.micro.pcc.a13l.r4` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170079 | `jdg.micro.pcc.a13l.r5` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170080 | `jdg.micro.pcc.a14l.r1` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170081 | `jdg.micro.pcc.a14l.r2` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170082 | `jdg.micro.pcc.a14l.r3` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170083 | `jdg.micro.pcc.a14l.r4` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170084 | `jdg.micro.pcc.a14l.r5` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170085 | `jdg.micro.pcc.a16l.r1` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170086 | `jdg.micro.pcc.a16l.r2` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170087 | `jdg.micro.pcc.a16l.r3` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170088 | `jdg.micro.pcc.a16l.r4` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 170089 | `jdg.micro.pcc.a16l.r5` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+
+### `rules/micro/pcc_lokalne_atomic_p14.rego` (18 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 14001 | `jdg.micro.pcc_lokalne_atomic_p14.pcc_sale.r1` |  | Art. 7 ust. 1 pkt 1 ustawy z dnia 9 września 2000 r. o podat... |
+| 14002 | `jdg.micro.pcc_lokalne_atomic_p14.pcc_loan.r1` |  | Art. 7 ust. 1 pkt 4 ustawy z dnia 9 września 2000 r. o podat... |
+| 14003 | `jdg.micro.pcc_lokalne_atomic_p14.pcc_company.r1` |  | Art. 7 ust. 1 pkt 9 ustawy z dnia 9 września 2000 r. o podat... |
+| 14010 | `jdg.micro.pcc_lokalne_atomic_p14.pcc_vat_exclusion.r1` |  | Art. 2 pkt 4 ustawy z dnia 9 września 2000 r. o podatku od c... |
+| 14011 | `jdg.micro.pcc_lokalne_atomic_p14.pcc_small_value.r1` |  | Art. 9 pkt 1 ustawy z dnia 9 września 2000 r. o podatku od c... |
+| 14012 | `jdg.micro.pcc_lokalne_atomic_p14.pcc3_deadline.r1` |  | Art. 10 ustawy z dnia 9 września 2000 r. o podatku od czynno... |
+| 14020 | `jdg.micro.pcc_lokalne_atomic_p14.real_estate_building.r1` |  | Art. 5 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłat... |
+| 14021 | `jdg.micro.pcc_lokalne_atomic_p14.real_estate_land.r1` |  | Art. 5 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłat... |
+| 14030 | `jdg.micro.pcc_lokalne_atomic_p14.transport_heavy.r1` |  | Art. 8 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłat... |
+| 14031 | `jdg.micro.pcc_lokalne_atomic_p14.dn1_deadline.r1` |  | Art. 6 ust. 9 ustawy z dnia 12 stycznia 1991 r. o podatkach ... |
+| 14040 | `jdg.micro.pcc_lokalne_atomic_p14.excise_gasoline.r1` |  | Art. 89 ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym ... |
+| 14041 | `jdg.micro.pcc_lokalne_atomic_p14.excise_diesel.r1` |  | Art. 89 ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym ... |
+| 14042 | `jdg.micro.pcc_lokalne_atomic_p14.excise_ethanol.r1` |  | Art. 93 ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym ... |
+| 14043 | `jdg.micro.pcc_lokalne_atomic_p14.excise_wine.r1` |  | Art. 95 ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym ... |
+| 14044 | `jdg.micro.pcc_lokalne_atomic_p14.excise_beer.r1` |  | Art. 94 ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym ... |
+| 14050 | `jdg.micro.pcc_lokalne_atomic_p14.excise_warehouse.r1` |  | Art. 16 ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym ... |
+| 14051 | `jdg.micro.pcc_lokalne_atomic_p14.excise_energy.r1` |  | Art. 9 ust. 1 pkt 2 ustawy z dnia 6 grudnia 2008 r. o podatk... |
+| 14060 | `jdg.micro.pcc_lokalne_atomic_p14.agricultural_tax.r1` |  | Ustawa z dnia 15 listopada 1984 r. o podatku rolnym (t.j. ze... |
 
 ### `rules/micro/pit/pit.rego` (811 reguł)
 
@@ -6435,21 +6450,21 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 5200 | `jdg.ceidg.r1` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 5201 | `jdg.ceidg.r10` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 5202 | `jdg.ceidg.r11` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 5203 | `jdg.ceidg.r12` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 5204 | `jdg.ceidg.r13` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 5205 | `jdg.ceidg.r14` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 5206 | `jdg.ceidg.r15` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 5207 | `jdg.ceidg.r2` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 5208 | `jdg.ceidg.r3` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 5209 | `jdg.ceidg.r4` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 5210 | `jdg.ceidg.r5` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 5211 | `jdg.ceidg.r6` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 5212 | `jdg.ceidg.r7` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 5213 | `jdg.ceidg.r8` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
-| 5214 | `jdg.ceidg.r9` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2018 poz. 647) |
+| 5200 | `jdg.ceidg.r1` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 5201 | `jdg.ceidg.r10` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 5202 | `jdg.ceidg.r11` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 5203 | `jdg.ceidg.r12` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 5204 | `jdg.ceidg.r13` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 5205 | `jdg.ceidg.r14` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 5206 | `jdg.ceidg.r15` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 5207 | `jdg.ceidg.r2` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 5208 | `jdg.ceidg.r3` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 5209 | `jdg.ceidg.r4` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 5210 | `jdg.ceidg.r5` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 5211 | `jdg.ceidg.r6` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 5212 | `jdg.ceidg.r7` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 5213 | `jdg.ceidg.r8` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
+| 5214 | `jdg.ceidg.r9` |  | Ustawa o CEIDG z 06.03.2018 (Dz.U. 2025 poz. 456) |
 
 ### `rules/micro/plan33_est.rego` (15 reguł)
 
@@ -6919,16 +6934,16 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 7100 | `jdg.prop.a1.r1` |  | Ustawa o podatkach i opłatach lokalnych Art. 5 |
+| 7100 | `jdg.prop.a1.r1` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
 | 7101 | `jdg.prop.a1.r2` |  | Art. 5 ust. 1 pkt 2 lit. a |
 | 7102 | `jdg.prop.a1.r3` |  | Art. 5 ust. 1 pkt 2 lit. b |
 | 7103 | `jdg.prop.a1.r4` |  | Art. 5 ust. 1 pkt 3 |
 | 7104 | `jdg.prop.a1.r5` |  | Art. 5 ust. 1 |
 | 7105 | `jdg.prop.a1.r6` |  | Art. 5 ust. 1 |
 | 7106 | `jdg.prop.a1.r7` |  | Art. 5 ust. 1 pkt 2 |
-| 7107 | `jdg.prop.a2.r1` |  | Art. 6 ust. 1 u.p.o.l. |
-| 7108 | `jdg.prop.a2.r2` |  | Art. 7 ust. 1 u.p.o.l. |
-| 7109 | `jdg.prop.a2.r3` |  | Art. 7 ust. 2 u.p.o.l. |
+| 7107 | `jdg.prop.a2.r1` |  | Art. 6 ust. 1 ustawy z dnia 12 stycznia 1991 r. o podatkach ... |
+| 7108 | `jdg.prop.a2.r2` |  | Art. 7 ust. 1 ustawy z dnia 12 stycznia 1991 r. o podatkach ... |
+| 7109 | `jdg.prop.a2.r3` |  | Art. 7 ust. 2 ustawy z dnia 12 stycznia 1991 r. o podatkach ... |
 | 7110 | `jdg.prop.r1` |  | Art. 5 ust. 1 |
 | 7111 | `jdg.prop.r10` |  | Art. 3 |
 | 7112 | `jdg.prop.r11` |  | Art. 3 |
@@ -6954,11 +6969,11 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 7550 | `jdg.prop_transport.r1` |  | Art. 8 u.p.o.l. |
-| 7551 | `jdg.prop_transport.r2` |  | Art. 8 ust. 2 u.p.o.l. |
-| 7552 | `jdg.prop_transport.r3` |  | Art. 8 ust. 3 u.p.o.l. |
-| 7553 | `jdg.prop_transport.r4` |  | Art. 8 ust. 4 u.p.o.l. |
-| 7554 | `jdg.prop_transport.r5` |  | Art. 9 u.p.o.l. |
+| 7550 | `jdg.prop_transport.r1` |  | Art. 8 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłat... |
+| 7551 | `jdg.prop_transport.r2` |  | Art. 8 ust. 2 ustawy z dnia 12 stycznia 1991 r. o podatkach ... |
+| 7552 | `jdg.prop_transport.r3` |  | Art. 8 ust. 3 ustawy z dnia 12 stycznia 1991 r. o podatkach ... |
+| 7553 | `jdg.prop_transport.r4` |  | Art. 8 ust. 4 ustawy z dnia 12 stycznia 1991 r. o podatkach ... |
+| 7554 | `jdg.prop_transport.r5` |  | Art. 9 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłat... |
 
 ### `rules/micro/plan33_rodo.rego` (10 reguł)
 
@@ -6979,16 +6994,16 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 3000 | `jdg.ryc.a10.r1` |  | Art. 10 ust. 1 ustawy o ryczałcie |
-| 3001 | `jdg.ryc.a10.r2` |  | Art. 10 ust. 2 ustawy o ryczałcie |
-| 3002 | `jdg.ryc.a10.r3` |  | Art. 10 ust. 3 ustawy o ryczałcie |
-| 3003 | `jdg.ryc.a10.r4` |  | Art. 10 ust. 4 ustawy o ryczałcie |
-| 3004 | `jdg.ryc.a11.r1` |  | Art. 11 ust. 1 ustawy o ryczałcie |
-| 3005 | `jdg.ryc.a11.r2` |  | Art. 11 ust. 2 ustawy o ryczałcie |
-| 3006 | `jdg.ryc.a11.r3` |  | Art. 11 ust. 3 ustawy o ryczałcie |
-| 3007 | `jdg.ryc.a11.r4` |  | Art. 11 ust. 4 ustawy o ryczałcie |
-| 3008 | `jdg.ryc.a11.r5` |  | Art. 11 ust. 5 ustawy o ryczałcie |
-| 3009 | `jdg.ryc.a11.r6` |  | Art. 11 ust. 6 ustawy o ryczałcie |
+| 3000 | `jdg.ryc.a10.r1` |  | Art. 10 ust. 1 ustawy z dnia 20 listopada 1998 r. o zryczałt... |
+| 3001 | `jdg.ryc.a10.r2` |  | Art. 10 ust. 2 ustawy z dnia 20 listopada 1998 r. o zryczałt... |
+| 3002 | `jdg.ryc.a10.r3` |  | Art. 10 ust. 3 ustawy z dnia 20 listopada 1998 r. o zryczałt... |
+| 3003 | `jdg.ryc.a10.r4` |  | Art. 10 ust. 4 ustawy z dnia 20 listopada 1998 r. o zryczałt... |
+| 3004 | `jdg.ryc.a11.r1` |  | Art. 11 ust. 1 ustawy z dnia 20 listopada 1998 r. o zryczałt... |
+| 3005 | `jdg.ryc.a11.r2` |  | Art. 11 ust. 2 ustawy z dnia 20 listopada 1998 r. o zryczałt... |
+| 3006 | `jdg.ryc.a11.r3` |  | Art. 11 ust. 3 ustawy z dnia 20 listopada 1998 r. o zryczałt... |
+| 3007 | `jdg.ryc.a11.r4` |  | Art. 11 ust. 4 ustawy z dnia 20 listopada 1998 r. o zryczałt... |
+| 3008 | `jdg.ryc.a11.r5` |  | Art. 11 ust. 5 ustawy z dnia 20 listopada 1998 r. o zryczałt... |
+| 3009 | `jdg.ryc.a11.r6` |  | Art. 11 ust. 6 ustawy z dnia 20 listopada 1998 r. o zryczałt... |
 | 3010 | `jdg.ryc.a12.r1` |  | Art. 12 ust. 1 pkt 1 |
 | 3011 | `jdg.ryc.a12.r10` |  | Art. 12 ust. 1 pkt 7 |
 | 3012 | `jdg.ryc.a12.r2` |  | Art. 12 ust. 1 pkt 2 |
@@ -7014,21 +7029,21 @@
 | 3032 | `jdg.ryc.a16.r3` |  | Art. 16 ust. 3 |
 | 3033 | `jdg.ryc.a16.r4` |  | Art. 16 ust. 4 |
 | 3034 | `jdg.ryc.a16.r5` |  | Art. 16 ust. 5 |
-| 3035 | `jdg.ryc.a2.r1` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3036 | `jdg.ryc.a2.r10` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3037 | `jdg.ryc.a2.r11` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3038 | `jdg.ryc.a2.r12` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
+| 3035 | `jdg.ryc.a2.r1` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3036 | `jdg.ryc.a2.r10` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3037 | `jdg.ryc.a2.r11` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3038 | `jdg.ryc.a2.r12` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
 | 3039 | `jdg.ryc.a2.r13` |  | Art. 2 ust. 1, Art. 12 ust. 1 pkt 2a |
 | 3040 | `jdg.ryc.a2.r14` |  | Art. 2 ust. 1, Art. 12 ust. 1 pkt 3 |
 | 3041 | `jdg.ryc.a2.r15` |  | Art. 2 ust. 1, Art. 12 ust. 1 pkt 5/4 |
-| 3042 | `jdg.ryc.a2.r2` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3043 | `jdg.ryc.a2.r3` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3044 | `jdg.ryc.a2.r4` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3045 | `jdg.ryc.a2.r5` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3046 | `jdg.ryc.a2.r6` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3047 | `jdg.ryc.a2.r7` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3048 | `jdg.ryc.a2.r8` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3049 | `jdg.ryc.a2.r9` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
+| 3042 | `jdg.ryc.a2.r2` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3043 | `jdg.ryc.a2.r3` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3044 | `jdg.ryc.a2.r4` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3045 | `jdg.ryc.a2.r5` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3046 | `jdg.ryc.a2.r6` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3047 | `jdg.ryc.a2.r7` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3048 | `jdg.ryc.a2.r8` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3049 | `jdg.ryc.a2.r9` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
 | 3050 | `jdg.ryc.a20.r1` |  | Art. 20 ust. 1 |
 | 3051 | `jdg.ryc.a20.r10` |  | Art. 20 ust. 10 |
 | 3052 | `jdg.ryc.a20.r2` |  | Art. 20 ust. 2 |
@@ -7054,61 +7069,61 @@
 | 3072 | `jdg.ryc.a25.r5` |  | Art. 25 ust. 5 |
 | 3073 | `jdg.ryc.a25.r6` |  | Art. 25 ust. 6 |
 | 3074 | `jdg.ryc.a25.r7` |  | Art. 25 ust. 7 |
-| 3075 | `jdg.ryc.a3.r1` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3076 | `jdg.ryc.a3.r2` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3077 | `jdg.ryc.a3.r3` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3078 | `jdg.ryc.a4.r1` |  | Art. 4 ust. 1 ustawy o ryczałcie |
-| 3079 | `jdg.ryc.a4.r10` |  | Art. 4 ust. 6 ustawy o ryczałcie |
-| 3080 | `jdg.ryc.a4.r2` |  | Art. 4 ust. 2 ustawy o ryczałcie |
-| 3081 | `jdg.ryc.a4.r3` |  | Art. 4 ust. 3 ustawy o ryczałcie |
-| 3082 | `jdg.ryc.a4.r4` |  | Art. 4 ust. 4 ustawy o ryczałcie |
-| 3083 | `jdg.ryc.a4.r5` |  | Art. 4 ust. 4 pkt 1 ustawy o ryczałcie |
-| 3084 | `jdg.ryc.a4.r6` |  | Art. 4 ust. 4 pkt 2 ustawy o ryczałcie |
-| 3085 | `jdg.ryc.a4.r7` |  | Art. 4 ust. 4 pkt 3 ustawy o ryczałcie |
-| 3086 | `jdg.ryc.a4.r8` |  | Art. 4 ust. 4 pkt 3 ustawy o ryczałcie |
-| 3087 | `jdg.ryc.a4.r9` |  | Art. 4 ust. 5 ustawy o ryczałcie |
-| 3088 | `jdg.ryc.a6.r10` |  | Art. 6 ust. 1 pkt 5 ustawy o ryczałcie |
-| 3089 | `jdg.ryc.a6.r11` |  | Art. 6 ust. 1 pkt 6 ustawy o ryczałcie |
-| 3090 | `jdg.ryc.a6.r12` |  | Art. 6 ust. 1 pkt 7 ustawy o ryczałcie |
-| 3091 | `jdg.ryc.a6.r13` |  | Art. 6 ust. 1 pkt 8 ustawy o ryczałcie |
-| 3092 | `jdg.ryc.a6.r14` |  | Art. 6 ust. 1 pkt 9 ustawy o ryczałcie |
-| 3093 | `jdg.ryc.a6.r15` |  | Art. 6 ust. 1 pkt 10 ustawy o ryczałcie |
-| 3094 | `jdg.ryc.a6.r6` |  | Art. 6 ust. 1 pkt 1 ustawy o ryczałcie |
-| 3095 | `jdg.ryc.a6.r7` |  | Art. 6 ust. 1 pkt 1 ustawy o ryczałcie |
-| 3096 | `jdg.ryc.a6.r8` |  | Art. 6 ust. 1 pkt 3 ustawy o ryczałcie |
-| 3097 | `jdg.ryc.a6.r9` |  | Art. 6 ust. 1 pkt 4 ustawy o ryczałcie |
-| 3098 | `jdg.ryc.a7.r1` |  | Art. 7 ust. 1 ustawy o ryczałcie |
-| 3099 | `jdg.ryc.a7.r2` |  | Art. 7 ust. 2 ustawy o ryczałcie |
-| 3100 | `jdg.ryc.a7.r3` |  | Art. 7 ust. 3 ustawy o ryczałcie |
-| 3101 | `jdg.ryc.a7.r4` |  | Art. 7 ust. 4 ustawy o ryczałcie |
-| 3102 | `jdg.ryc.a7.r5` |  | Art. 7 ust. 5 ustawy o ryczałcie |
-| 3103 | `jdg.ryc.a8.r1` |  | Art. 8 ust. 1 ustawy o ryczałcie |
-| 3104 | `jdg.ryc.a8.r2` |  | Art. 8 ust. 2 ustawy o ryczałcie |
-| 3105 | `jdg.ryc.a8.r3` |  | Art. 8 ust. 3 ustawy o ryczałcie |
-| 3106 | `jdg.ryc.a8.r4` |  | Art. 8 ust. 4 ustawy o ryczałcie |
-| 3107 | `jdg.ryc.a8.r5` |  | Art. 8 ust. 5 ustawy o ryczałcie |
-| 3108 | `jdg.ryc.calc.r1` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3109 | `jdg.ryc.calc.r10` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3110 | `jdg.ryc.calc.r11` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3111 | `jdg.ryc.calc.r12` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3112 | `jdg.ryc.calc.r13` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3113 | `jdg.ryc.calc.r14` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3114 | `jdg.ryc.calc.r15` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3115 | `jdg.ryc.calc.r16` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3116 | `jdg.ryc.calc.r17` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3117 | `jdg.ryc.calc.r18` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3118 | `jdg.ryc.calc.r19` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3119 | `jdg.ryc.calc.r2` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3120 | `jdg.ryc.calc.r20` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3121 | `jdg.ryc.calc.r3` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3122 | `jdg.ryc.calc.r4` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3123 | `jdg.ryc.calc.r5` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3124 | `jdg.ryc.calc.r6` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3125 | `jdg.ryc.calc.r7` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3126 | `jdg.ryc.calc.r8` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
-| 3127 | `jdg.ryc.calc.r9` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 poz. 930) |
+| 3075 | `jdg.ryc.a3.r1` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3076 | `jdg.ryc.a3.r2` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3077 | `jdg.ryc.a3.r3` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3078 | `jdg.ryc.a4.r1` |  | Art. 4 ust. 1 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 3079 | `jdg.ryc.a4.r10` |  | Art. 4 ust. 6 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 3080 | `jdg.ryc.a4.r2` |  | Art. 4 ust. 2 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 3081 | `jdg.ryc.a4.r3` |  | Art. 4 ust. 3 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 3082 | `jdg.ryc.a4.r4` |  | Art. 4 ust. 4 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 3083 | `jdg.ryc.a4.r5` |  | Art. 4 ust. 4 pkt 1 ustawy z dnia 20 listopada 1998 r. o zry... |
+| 3084 | `jdg.ryc.a4.r6` |  | Art. 4 ust. 4 pkt 2 ustawy z dnia 20 listopada 1998 r. o zry... |
+| 3085 | `jdg.ryc.a4.r7` |  | Art. 4 ust. 4 pkt 3 ustawy z dnia 20 listopada 1998 r. o zry... |
+| 3086 | `jdg.ryc.a4.r8` |  | Art. 4 ust. 4 pkt 3 ustawy z dnia 20 listopada 1998 r. o zry... |
+| 3087 | `jdg.ryc.a4.r9` |  | Art. 4 ust. 5 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 3088 | `jdg.ryc.a6.r10` |  | Art. 6 ust. 1 pkt 5 ustawy z dnia 20 listopada 1998 r. o zry... |
+| 3089 | `jdg.ryc.a6.r11` |  | Art. 6 ust. 1 pkt 6 ustawy z dnia 20 listopada 1998 r. o zry... |
+| 3090 | `jdg.ryc.a6.r12` |  | Art. 6 ust. 1 pkt 7 ustawy z dnia 20 listopada 1998 r. o zry... |
+| 3091 | `jdg.ryc.a6.r13` |  | Art. 6 ust. 1 pkt 8 ustawy z dnia 20 listopada 1998 r. o zry... |
+| 3092 | `jdg.ryc.a6.r14` |  | Art. 6 ust. 1 pkt 9 ustawy z dnia 20 listopada 1998 r. o zry... |
+| 3093 | `jdg.ryc.a6.r15` |  | Art. 6 ust. 1 pkt 10 ustawy z dnia 20 listopada 1998 r. o zr... |
+| 3094 | `jdg.ryc.a6.r6` |  | Art. 6 ust. 1 pkt 1 ustawy z dnia 20 listopada 1998 r. o zry... |
+| 3095 | `jdg.ryc.a6.r7` |  | Art. 6 ust. 1 pkt 1 ustawy z dnia 20 listopada 1998 r. o zry... |
+| 3096 | `jdg.ryc.a6.r8` |  | Art. 6 ust. 1 pkt 3 ustawy z dnia 20 listopada 1998 r. o zry... |
+| 3097 | `jdg.ryc.a6.r9` |  | Art. 6 ust. 1 pkt 4 ustawy z dnia 20 listopada 1998 r. o zry... |
+| 3098 | `jdg.ryc.a7.r1` |  | Art. 7 ust. 1 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 3099 | `jdg.ryc.a7.r2` |  | Art. 7 ust. 2 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 3100 | `jdg.ryc.a7.r3` |  | Art. 7 ust. 3 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 3101 | `jdg.ryc.a7.r4` |  | Art. 7 ust. 4 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 3102 | `jdg.ryc.a7.r5` |  | Art. 7 ust. 5 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 3103 | `jdg.ryc.a8.r1` |  | Art. 8 ust. 1 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 3104 | `jdg.ryc.a8.r2` |  | Art. 8 ust. 2 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 3105 | `jdg.ryc.a8.r3` |  | Art. 8 ust. 3 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 3106 | `jdg.ryc.a8.r4` |  | Art. 8 ust. 4 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 3107 | `jdg.ryc.a8.r5` |  | Art. 8 ust. 5 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 3108 | `jdg.ryc.calc.r1` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3109 | `jdg.ryc.calc.r10` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3110 | `jdg.ryc.calc.r11` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3111 | `jdg.ryc.calc.r12` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3112 | `jdg.ryc.calc.r13` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3113 | `jdg.ryc.calc.r14` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3114 | `jdg.ryc.calc.r15` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3115 | `jdg.ryc.calc.r16` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3116 | `jdg.ryc.calc.r17` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3117 | `jdg.ryc.calc.r18` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3118 | `jdg.ryc.calc.r19` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3119 | `jdg.ryc.calc.r2` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3120 | `jdg.ryc.calc.r20` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3121 | `jdg.ryc.calc.r3` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3122 | `jdg.ryc.calc.r4` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3123 | `jdg.ryc.calc.r5` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3124 | `jdg.ryc.calc.r6` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3125 | `jdg.ryc.calc.r7` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3126 | `jdg.ryc.calc.r8` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
+| 3127 | `jdg.ryc.calc.r9` |  | Ustawa o ryczałcie z 20.11.1998 (Dz.U. 2025 poz. 234) |
 | 3128 | `jdg.ryc.rate.r1` |  | Art. 12 ust. 1 pkt 5 |
-| 3129 | `jdg.ryc.rate.r10` |  | Art. 12 ustawy o ryczałcie — Stawki |
+| 3129 | `jdg.ryc.rate.r10` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
 | 3130 | `jdg.ryc.rate.r11` |  | Art. 12 ust. 1 pkt 3b |
 | 3131 | `jdg.ryc.rate.r12` |  | Art. 12 ust. 1 pkt 3b |
 | 3132 | `jdg.ryc.rate.r13` |  | Art. 12 ust. 1 pkt 3a |
@@ -7130,7 +7145,7 @@
 | 3148 | `jdg.ryc.rate.r28` |  | Art. 12 ust. 1 pkt 1a |
 | 3149 | `jdg.ryc.rate.r29` |  | Art. 12 ust. 1 pkt 0a |
 | 3150 | `jdg.ryc.rate.r3` |  | Art. 12 ust. 1 pkt 5 |
-| 3151 | `jdg.ryc.rate.r30` |  | Art. 12 ustawy o ryczałcie — Stawki |
+| 3151 | `jdg.ryc.rate.r30` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
 | 3152 | `jdg.ryc.rate.r4` |  | Art. 12 ust. 1 pkt 5 |
 | 3153 | `jdg.ryc.rate.r5` |  | Art. 12 ust. 1 pkt 4 |
 | 3154 | `jdg.ryc.rate.r6` |  | Art. 12 ust. 1 pkt 4 |
@@ -7142,26 +7157,26 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 5400 | `jdg.succ.r1` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5401 | `jdg.succ.r10` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5402 | `jdg.succ.r11` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5403 | `jdg.succ.r12` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5404 | `jdg.succ.r13` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5405 | `jdg.succ.r14` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5406 | `jdg.succ.r15` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5407 | `jdg.succ.r16` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5408 | `jdg.succ.r17` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5409 | `jdg.succ.r18` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5410 | `jdg.succ.r19` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5411 | `jdg.succ.r2` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5412 | `jdg.succ.r20` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5413 | `jdg.succ.r3` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5414 | `jdg.succ.r4` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5415 | `jdg.succ.r5` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5416 | `jdg.succ.r6` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5417 | `jdg.succ.r7` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5418 | `jdg.succ.r8` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
-| 5419 | `jdg.succ.r9` |  | Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2018 poz.... |
+| 5400 | `jdg.succ.r1` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5401 | `jdg.succ.r10` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5402 | `jdg.succ.r11` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5403 | `jdg.succ.r12` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5404 | `jdg.succ.r13` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5405 | `jdg.succ.r14` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5406 | `jdg.succ.r15` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5407 | `jdg.succ.r16` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5408 | `jdg.succ.r17` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5409 | `jdg.succ.r18` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5410 | `jdg.succ.r19` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5411 | `jdg.succ.r2` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5412 | `jdg.succ.r20` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5413 | `jdg.succ.r3` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5414 | `jdg.succ.r4` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5415 | `jdg.succ.r5` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5416 | `jdg.succ.r6` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5417 | `jdg.succ.r7` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5418 | `jdg.succ.r8` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
+| 5419 | `jdg.succ.r9` |  | ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przeds... |
 
 ### `rules/micro/plan33_tax_trans.rego` (15 reguł)
 
@@ -8187,150 +8202,150 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 50000 | `jdg.pp.a40.u1.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50001 | `jdg.pp.a40.u2.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50002 | `jdg.pp.a41.u1.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50003 | `jdg.pp.a41.u3.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50004 | `jdg.pp.a41.u4.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50005 | `jdg.pp.a41.u5.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50006 | `jdg.pp.a42.u2.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50007 | `jdg.pp.a42.u3.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50008 | `jdg.pp.a42.u4.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50009 | `jdg.pp.a42.u5.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50010 | `jdg.pp.a43.u1.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50011 | `jdg.pp.a43.u2.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50012 | `jdg.pp.a43.u3.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50013 | `jdg.pp.a43.u4.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50014 | `jdg.pp.a44.u1.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50015 | `jdg.pp.a44.u2.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50016 | `jdg.pp.a44.u3.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50017 | `jdg.pp.a44.u5.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50018 | `jdg.pp.a45.u1.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50019 | `jdg.pp.a45.u2.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50020 | `jdg.pp.a45.u4.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50021 | `jdg.pp.a45.u5.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50022 | `jdg.pp.a46.u1.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50023 | `jdg.pp.a46.u3.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50024 | `jdg.pp.a46.u4.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50025 | `jdg.pp.a46.u5.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50026 | `jdg.pp.a47.u2.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50027 | `jdg.pp.a47.u3.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50028 | `jdg.pp.a47.u4.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50029 | `jdg.pp.a47.u5.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50030 | `jdg.pp.a48.u1.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50031 | `jdg.pp.a48.u2.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50032 | `jdg.pp.a48.u3.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50033 | `jdg.pp.a48.u4.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50034 | `jdg.pp.a49.u1.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50035 | `jdg.pp.a49.u2.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50036 | `jdg.pp.a49.u3.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50037 | `jdg.pp.a49.u5.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50038 | `jdg.pp.a50.u1.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50039 | `jdg.pp.a50.u2.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50040 | `jdg.pp.a50.u4.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50041 | `jdg.pp.a50.u5.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50042 | `jdg.pp.a51.u1.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50043 | `jdg.pp.a51.u3.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50044 | `jdg.pp.a51.u4.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50045 | `jdg.pp.a51.u5.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50046 | `jdg.pp.a52.u2.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50047 | `jdg.pp.a52.u3.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50048 | `jdg.pp.a52.u4.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 50049 | `jdg.pp.a52.u5.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
-| 130003 | `jdg.micro.pp.a3.r1` |  | Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130004 | `jdg.micro.pp.a3.r2` |  | Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130005 | `jdg.micro.pp.a3.r3` |  | Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130006 | `jdg.micro.pp.a3.r4` |  | Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130007 | `jdg.micro.pp.a3.r5` |  | Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130008 | `jdg.micro.pp.a3.r6` |  | Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130009 | `jdg.micro.pp.a3.r7` |  | Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130010 | `jdg.micro.pp.a3.r8` |  | Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130011 | `jdg.micro.pp.a3.r9` |  | Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130012 | `jdg.micro.pp.a3.r10` |  | Art. 3 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130013 | `jdg.micro.pp.a4.r1` |  | Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130014 | `jdg.micro.pp.a4.r2` |  | Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130015 | `jdg.micro.pp.a4.r3` |  | Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130016 | `jdg.micro.pp.a4.r4` |  | Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130017 | `jdg.micro.pp.a4.r5` |  | Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130018 | `jdg.micro.pp.a4.r6` |  | Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130019 | `jdg.micro.pp.a4.r7` |  | Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130020 | `jdg.micro.pp.a4.r8` |  | Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130021 | `jdg.micro.pp.a4.r9` |  | Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130022 | `jdg.micro.pp.a4.r10` |  | Art. 4 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130023 | `jdg.micro.pp.a5.r1` |  | Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130024 | `jdg.micro.pp.a5.r2` |  | Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130025 | `jdg.micro.pp.a5.r3` |  | Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130026 | `jdg.micro.pp.a5.r4` |  | Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130027 | `jdg.micro.pp.a5.r5` |  | Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130028 | `jdg.micro.pp.a5.r6` |  | Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130029 | `jdg.micro.pp.a5.r7` |  | Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130030 | `jdg.micro.pp.a5.r8` |  | Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130031 | `jdg.micro.pp.a5.r9` |  | Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130032 | `jdg.micro.pp.a5.r10` |  | Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130033 | `jdg.micro.pp.a5.r11` |  | Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130034 | `jdg.micro.pp.a5.r12` | 🔴 BLOCK | Art. 5 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. 6... |
-| 130035 | `jdg.micro.pp.a14.r1` |  | Art. 14 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130036 | `jdg.micro.pp.a14.r2` |  | Art. 14 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130037 | `jdg.micro.pp.a14.r3` |  | Art. 14 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130038 | `jdg.micro.pp.a14.r4` |  | Art. 14 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130039 | `jdg.micro.pp.a14.r5` |  | Art. 14 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130040 | `jdg.micro.pp.a14.r6` |  | Art. 14 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130041 | `jdg.micro.pp.a14.r7` |  | Art. 14 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130042 | `jdg.micro.pp.a14.r8` |  | Art. 14 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130043 | `jdg.micro.pp.a17.r1` |  | Art. 17 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130044 | `jdg.micro.pp.a17.r2` |  | Art. 17 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130045 | `jdg.micro.pp.a17.r3` |  | Art. 17 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130046 | `jdg.micro.pp.a17.r4` |  | Art. 17 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130047 | `jdg.micro.pp.a17.r5` |  | Art. 17 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130048 | `jdg.micro.pp.a17.r6` |  | Art. 17 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130049 | `jdg.micro.pp.a17.r7` |  | Art. 17 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130050 | `jdg.micro.pp.a17.r8` |  | Art. 17 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130051 | `jdg.micro.pp.a22.r1` |  | Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130052 | `jdg.micro.pp.a22.r2` |  | Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130053 | `jdg.micro.pp.a22.r3` |  | Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130054 | `jdg.micro.pp.a22.r4` |  | Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130055 | `jdg.micro.pp.a22.r5` |  | Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130056 | `jdg.micro.pp.a22.r6` |  | Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130057 | `jdg.micro.pp.a22.r7` |  | Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130058 | `jdg.micro.pp.a22.r8` |  | Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130059 | `jdg.micro.pp.a22.r9` |  | Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130060 | `jdg.micro.pp.a22.r10` |  | Art. 22 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130061 | `jdg.micro.pp.a23.r1` |  | Art. 23 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130062 | `jdg.micro.pp.a23.r2` |  | Art. 23 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130063 | `jdg.micro.pp.a23.r3` |  | Art. 23 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130064 | `jdg.micro.pp.a23.r4` |  | Art. 23 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130065 | `jdg.micro.pp.a23.r5` |  | Art. 23 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130066 | `jdg.micro.pp.a23.r6` |  | Art. 23 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130067 | `jdg.micro.pp.a23.r7` |  | Art. 23 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130068 | `jdg.micro.pp.a23.r8` |  | Art. 23 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130069 | `jdg.micro.pp.a25.r1` |  | Art. 25 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130070 | `jdg.micro.pp.a25.r2` |  | Art. 25 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130071 | `jdg.micro.pp.a25.r3` |  | Art. 25 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130072 | `jdg.micro.pp.a25.r4` |  | Art. 25 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130073 | `jdg.micro.pp.a25.r5` |  | Art. 25 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130074 | `jdg.micro.pp.a25.r6` |  | Art. 25 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130075 | `jdg.micro.pp.a25.r7` |  | Art. 25 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130076 | `jdg.micro.pp.a25.r8` |  | Art. 25 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130077 | `jdg.micro.pp.a34.r1` |  | Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130078 | `jdg.micro.pp.a34.r2` |  | Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130079 | `jdg.micro.pp.a34.r3` |  | Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130080 | `jdg.micro.pp.a34.r4` |  | Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130081 | `jdg.micro.pp.a34.r5` |  | Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130082 | `jdg.micro.pp.a34.r6` |  | Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130083 | `jdg.micro.pp.a34.r7` |  | Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130084 | `jdg.micro.pp.a34.r8` |  | Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130085 | `jdg.micro.pp.a34.r9` |  | Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130086 | `jdg.micro.pp.a34.r10` |  | Art. 34 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130087 | `jdg.micro.pp.a36.r1` |  | Art. 36 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130088 | `jdg.micro.pp.a36.r2` |  | Art. 36 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130089 | `jdg.micro.pp.a36.r3` |  | Art. 36 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130090 | `jdg.micro.pp.a36.r4` |  | Art. 36 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130091 | `jdg.micro.pp.a36.r5` |  | Art. 36 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130092 | `jdg.micro.pp.a36.r6` |  | Art. 36 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130093 | `jdg.micro.pp.a36.r7` |  | Art. 36 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
-| 130094 | `jdg.micro.pp.a36.r8` |  | Art. 36 Prawo Przedsiębiorców z 06.03.2018 (Dz.U. 2018 poz. ... |
+| 50000 | `jdg.pp.a40.u1.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50001 | `jdg.pp.a40.u2.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50002 | `jdg.pp.a41.u1.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50003 | `jdg.pp.a41.u3.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50004 | `jdg.pp.a41.u4.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50005 | `jdg.pp.a41.u5.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50006 | `jdg.pp.a42.u2.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50007 | `jdg.pp.a42.u3.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50008 | `jdg.pp.a42.u4.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50009 | `jdg.pp.a42.u5.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50010 | `jdg.pp.a43.u1.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50011 | `jdg.pp.a43.u2.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50012 | `jdg.pp.a43.u3.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50013 | `jdg.pp.a43.u4.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50014 | `jdg.pp.a44.u1.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50015 | `jdg.pp.a44.u2.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50016 | `jdg.pp.a44.u3.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50017 | `jdg.pp.a44.u5.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50018 | `jdg.pp.a45.u1.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50019 | `jdg.pp.a45.u2.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50020 | `jdg.pp.a45.u4.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50021 | `jdg.pp.a45.u5.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50022 | `jdg.pp.a46.u1.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50023 | `jdg.pp.a46.u3.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50024 | `jdg.pp.a46.u4.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50025 | `jdg.pp.a46.u5.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50026 | `jdg.pp.a47.u2.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50027 | `jdg.pp.a47.u3.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50028 | `jdg.pp.a47.u4.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50029 | `jdg.pp.a47.u5.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50030 | `jdg.pp.a48.u1.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50031 | `jdg.pp.a48.u2.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50032 | `jdg.pp.a48.u3.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50033 | `jdg.pp.a48.u4.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50034 | `jdg.pp.a49.u1.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50035 | `jdg.pp.a49.u2.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50036 | `jdg.pp.a49.u3.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50037 | `jdg.pp.a49.u5.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50038 | `jdg.pp.a50.u1.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50039 | `jdg.pp.a50.u2.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50040 | `jdg.pp.a50.u4.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50041 | `jdg.pp.a50.u5.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50042 | `jdg.pp.a51.u1.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50043 | `jdg.pp.a51.u3.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50044 | `jdg.pp.a51.u4.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50045 | `jdg.pp.a51.u5.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50046 | `jdg.pp.a52.u2.p3` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50047 | `jdg.pp.a52.u3.p4` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50048 | `jdg.pp.a52.u4.p1` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 50049 | `jdg.pp.a52.u5.p2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
+| 130003 | `jdg.micro.pp.a3.r1` |  | Art. 3 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130004 | `jdg.micro.pp.a3.r2` |  | Art. 3 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130005 | `jdg.micro.pp.a3.r3` |  | Art. 3 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130006 | `jdg.micro.pp.a3.r4` |  | Art. 3 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130007 | `jdg.micro.pp.a3.r5` |  | Art. 3 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130008 | `jdg.micro.pp.a3.r6` |  | Art. 3 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130009 | `jdg.micro.pp.a3.r7` |  | Art. 3 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130010 | `jdg.micro.pp.a3.r8` |  | Art. 3 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130011 | `jdg.micro.pp.a3.r9` |  | Art. 3 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130012 | `jdg.micro.pp.a3.r10` |  | Art. 3 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130013 | `jdg.micro.pp.a4.r1` |  | Art. 4 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130014 | `jdg.micro.pp.a4.r2` |  | Art. 4 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130015 | `jdg.micro.pp.a4.r3` |  | Art. 4 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130016 | `jdg.micro.pp.a4.r4` |  | Art. 4 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130017 | `jdg.micro.pp.a4.r5` |  | Art. 4 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130018 | `jdg.micro.pp.a4.r6` |  | Art. 4 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130019 | `jdg.micro.pp.a4.r7` |  | Art. 4 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130020 | `jdg.micro.pp.a4.r8` |  | Art. 4 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130021 | `jdg.micro.pp.a4.r9` |  | Art. 4 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130022 | `jdg.micro.pp.a4.r10` |  | Art. 4 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130023 | `jdg.micro.pp.a5.r1` |  | Art. 5 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130024 | `jdg.micro.pp.a5.r2` |  | Art. 5 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130025 | `jdg.micro.pp.a5.r3` |  | Art. 5 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130026 | `jdg.micro.pp.a5.r4` |  | Art. 5 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130027 | `jdg.micro.pp.a5.r5` |  | Art. 5 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130028 | `jdg.micro.pp.a5.r6` |  | Art. 5 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130029 | `jdg.micro.pp.a5.r7` |  | Art. 5 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130030 | `jdg.micro.pp.a5.r8` |  | Art. 5 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130031 | `jdg.micro.pp.a5.r9` |  | Art. 5 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130032 | `jdg.micro.pp.a5.r10` |  | Art. 5 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130033 | `jdg.micro.pp.a5.r11` |  | Art. 5 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130034 | `jdg.micro.pp.a5.r12` | 🔴 BLOCK | Art. 5 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców... |
+| 130035 | `jdg.micro.pp.a14.r1` |  | Art. 14 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130036 | `jdg.micro.pp.a14.r2` |  | Art. 14 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130037 | `jdg.micro.pp.a14.r3` |  | Art. 14 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130038 | `jdg.micro.pp.a14.r4` |  | Art. 14 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130039 | `jdg.micro.pp.a14.r5` |  | Art. 14 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130040 | `jdg.micro.pp.a14.r6` |  | Art. 14 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130041 | `jdg.micro.pp.a14.r7` |  | Art. 14 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130042 | `jdg.micro.pp.a14.r8` |  | Art. 14 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130043 | `jdg.micro.pp.a17.r1` |  | Art. 17 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130044 | `jdg.micro.pp.a17.r2` |  | Art. 17 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130045 | `jdg.micro.pp.a17.r3` |  | Art. 17 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130046 | `jdg.micro.pp.a17.r4` |  | Art. 17 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130047 | `jdg.micro.pp.a17.r5` |  | Art. 17 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130048 | `jdg.micro.pp.a17.r6` |  | Art. 17 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130049 | `jdg.micro.pp.a17.r7` |  | Art. 17 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130050 | `jdg.micro.pp.a17.r8` |  | Art. 17 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130051 | `jdg.micro.pp.a22.r1` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130052 | `jdg.micro.pp.a22.r2` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130053 | `jdg.micro.pp.a22.r3` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130054 | `jdg.micro.pp.a22.r4` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130055 | `jdg.micro.pp.a22.r5` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130056 | `jdg.micro.pp.a22.r6` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130057 | `jdg.micro.pp.a22.r7` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130058 | `jdg.micro.pp.a22.r8` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130059 | `jdg.micro.pp.a22.r9` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130060 | `jdg.micro.pp.a22.r10` |  | Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130061 | `jdg.micro.pp.a23.r1` |  | Art. 23 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130062 | `jdg.micro.pp.a23.r2` |  | Art. 23 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130063 | `jdg.micro.pp.a23.r3` |  | Art. 23 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130064 | `jdg.micro.pp.a23.r4` |  | Art. 23 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130065 | `jdg.micro.pp.a23.r5` |  | Art. 23 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130066 | `jdg.micro.pp.a23.r6` |  | Art. 23 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130067 | `jdg.micro.pp.a23.r7` |  | Art. 23 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130068 | `jdg.micro.pp.a23.r8` |  | Art. 23 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130069 | `jdg.micro.pp.a25.r1` |  | Art. 25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130070 | `jdg.micro.pp.a25.r2` |  | Art. 25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130071 | `jdg.micro.pp.a25.r3` |  | Art. 25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130072 | `jdg.micro.pp.a25.r4` |  | Art. 25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130073 | `jdg.micro.pp.a25.r5` |  | Art. 25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130074 | `jdg.micro.pp.a25.r6` |  | Art. 25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130075 | `jdg.micro.pp.a25.r7` |  | Art. 25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130076 | `jdg.micro.pp.a25.r8` |  | Art. 25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130077 | `jdg.micro.pp.a34.r1` |  | Art. 34 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130078 | `jdg.micro.pp.a34.r2` |  | Art. 34 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130079 | `jdg.micro.pp.a34.r3` |  | Art. 34 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130080 | `jdg.micro.pp.a34.r4` |  | Art. 34 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130081 | `jdg.micro.pp.a34.r5` |  | Art. 34 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130082 | `jdg.micro.pp.a34.r6` |  | Art. 34 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130083 | `jdg.micro.pp.a34.r7` |  | Art. 34 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130084 | `jdg.micro.pp.a34.r8` |  | Art. 34 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130085 | `jdg.micro.pp.a34.r9` |  | Art. 34 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130086 | `jdg.micro.pp.a34.r10` |  | Art. 34 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130087 | `jdg.micro.pp.a36.r1` |  | Art. 36 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130088 | `jdg.micro.pp.a36.r2` |  | Art. 36 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130089 | `jdg.micro.pp.a36.r3` |  | Art. 36 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130090 | `jdg.micro.pp.a36.r4` |  | Art. 36 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130091 | `jdg.micro.pp.a36.r5` |  | Art. 36 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130092 | `jdg.micro.pp.a36.r6` |  | Art. 36 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130093 | `jdg.micro.pp.a36.r7` |  | Art. 36 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
+| 130094 | `jdg.micro.pp.a36.r8` |  | Art. 36 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorcó... |
 | 270500 | `jdg.micro.pp.a5index.r1` |  | Art. 5 ustawy Prawo przedsiębiorców — 75% minimalnego wynagr... |
-| 270501 | `jdg.micro.pp.a5index.r2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2018 poz. 6... |
+| 270501 | `jdg.micro.pp.a5index.r2` |  | Art. 36 Prawo Przedsiębiorców z 6.03.2018 (Dz.U. 2025 poz. 1... |
 | 270502 | `jdg.micro.pp.a5index.r3` | 🔴 BLOCK | Art. 5 ust. 3 PP — utrata prawa do działalności nieewidencjo... |
 | 270503 | `jdg.micro.pp.a5index.r4` |  | Art. 5 PP + Obwieszczenie MRPiPS o minimalnym wynagrodzeniu ... |
 | 270504 | `jdg.micro.pp.a5index.r5` |  | Art. 5 ust. 2 PP — limit dotyczy łącznych przychodów |
@@ -8380,7 +8395,7 @@
 | 210044 | `jdg.micro.rodo.a33.r7` |  | RODO — Rozporządzenie UE 2016/679 |
 | 210045 | `jdg.micro.rodo.a33.r8` |  | RODO — Rozporządzenie UE 2016/679 |
 
-### `rules/micro/rodo/rodo_ai_marketing.rego` (6 reguł)
+### `rules/micro/rodo/rodo_ai_marketing.rego` (5 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -8389,9 +8404,8 @@
 | 84303 | `jdg.micro.rodo_ai_marketing.r3` | 🟡 TRIAGE | Art. 6 RODO, Art. 172 PT |
 | 84304 | `jdg.micro.rodo_ai_marketing.r4` |  | Art. 6 ust. 1 lit. f RODO |
 | 84305 | `jdg.micro.rodo_ai_marketing.r5` |  | Art. 6 ust. 1 lit. a RODO + Art. 172 PT |
-| 84399 | `jdg.micro.rodo_ai_marketing.fallback` |  | RODO 2016/679 |
 
-### `rules/micro/rodo/rodo_erasure.rego` (5 reguł)
+### `rules/micro/rodo/rodo_erasure.rego` (4 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -8399,9 +8413,8 @@
 | 84002 | `jdg.micro.rodo_erasure.r2` | 🟡 TRIAGE | Art. 17 ust. 3 lit. b RODO + Art. 74 UoR |
 | 84003 | `jdg.micro.rodo_erasure.r3` | 🟡 TRIAGE | Art. 5 ust. 1 lit. c RODO (minimalizacja), Art. 25 RODO |
 | 84004 | `jdg.micro.rodo_erasure.r4` | 🟡 TRIAGE | Art. 32 RODO |
-| 84099 | `jdg.micro.rodo_erasure.fallback` |  | RODO 2016/679 |
 
-### `rules/micro/rodo/rodo_podprocesorzy.rego` (5 reguł)
+### `rules/micro/rodo/rodo_podprocesorzy.rego` (4 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -8409,9 +8422,8 @@
 | 84102 | `jdg.micro.rodo_podprocesorzy.r2` | 🔴 BLOCK | Art. 44-49 RODO, Wyrok TSUE Schrems II |
 | 84103 | `jdg.micro.rodo_podprocesorzy.r3` | 🟡 TRIAGE | Art. 33 ust. 5 RODO |
 | 84104 | `jdg.micro.rodo_podprocesorzy.r4` | 🔴 BLOCK | Art. 82 RODO |
-| 84199 | `jdg.micro.rodo_podprocesorzy.fallback` |  | RODO 2016/679 |
 
-### `rules/micro/rodo/rodo_sankcje.rego` (6 reguł)
+### `rules/micro/rodo/rodo_sankcje.rego` (5 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -8420,9 +8432,8 @@
 | 84403 | `jdg.micro.rodo_sankcje.r3` | 🟡 TRIAGE | Art. 83 ust. 2 RODO (kryteria nakładania kar) |
 | 84404 | `jdg.micro.rodo_sankcje.r4` | 🟡 TRIAGE | Art. 24 ust. 1 RODO (accountability), Art. 32 ust. 1 lit. d |
 | 84405 | `jdg.micro.rodo_sankcje.r5` |  | Art. 24 RODO |
-| 84499 | `jdg.micro.rodo_sankcje.fallback` |  | RODO 2016/679 |
 
-### `rules/micro/rodo/rodo_zatrudnienie.rego` (5 reguł)
+### `rules/micro/rodo/rodo_zatrudnienie.rego` (4 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -8430,347 +8441,393 @@
 | 84202 | `jdg.micro.rodo_zatrudnienie.r2` | 🟡 TRIAGE | Art. 22(1c) KP, Art. 9 RODO |
 | 84203 | `jdg.micro.rodo_zatrudnienie.r3` | 🟡 TRIAGE | Art. 7 RODO, Wytyczne EROD 05/2020 |
 | 84204 | `jdg.micro.rodo_zatrudnienie.r4` | 🟡 TRIAGE | Art. 5 ust. 1 lit. e RODO + Art. 74 UoR + Art. 147a OrdPU |
-| 84299 | `jdg.micro.rodo_zatrudnienie.fallback` |  | RODO 2016/679 |
+
+### `rules/micro/rodo_aml_bdo_atomic_p15.rego` (17 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 15001 | `jdg.micro.rodo_aml_bdo_atomic_p15.rodo_register.r1` |  | Art. 30 rozporządzenia Parlamentu Europejskiego i Rady (UE) ... |
+| 15002 | `jdg.micro.rodo_aml_bdo_atomic_p15.rodo_erasure.r1` |  | Art. 17 rozporządzenia Parlamentu Europejskiego i Rady (UE) ... |
+| 15003 | `jdg.micro.rodo_aml_bdo_atomic_p15.rodo_processor.r1` |  | Art. 28 rozporządzenia Parlamentu Europejskiego i Rady (UE) ... |
+| 15004 | `jdg.micro.rodo_aml_bdo_atomic_p15.rodo_breach.r1` |  | Art. 33 rozporządzenia Parlamentu Europejskiego i Rady (UE) ... |
+| 15005 | `jdg.micro.rodo_aml_bdo_atomic_p15.rodo_dpia.r1` |  | Art. 35 rozporządzenia Parlamentu Europejskiego i Rady (UE) ... |
+| 15006 | `jdg.micro.rodo_aml_bdo_atomic_p15.rodo_fine.r1` |  | Art. 83 ust. 5 rozporządzenia Parlamentu Europejskiego i Rad... |
+| 15010 | `jdg.micro.rodo_aml_bdo_atomic_p15.aml_cbdd.r1` |  | Art. 28a-34 ustawy z dnia 1 marca 2018 r. o przeciwdziałaniu... |
+| 15011 | `jdg.micro.rodo_aml_bdo_atomic_p15.aml_cash_15k.r1` |  | Art. 34 ustawy z dnia 1 marca 2018 r. o przeciwdziałaniu pra... |
+| 15012 | `jdg.micro.rodo_aml_bdo_atomic_p15.aml_str.r1` |  | Art. 74-80 ustawy z dnia 1 marca 2018 r. o przeciwdziałaniu ... |
+| 15013 | `jdg.micro.rodo_aml_bdo_atomic_p15.aml_beneficiary.r1` |  | Art. 28a ustawy z dnia 1 marca 2018 r. o przeciwdziałaniu pr... |
+| 15020 | `jdg.micro.rodo_aml_bdo_atomic_p15.bdo_registration.r1` |  | Art. 17-18 ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U... |
+| 15021 | `jdg.micro.rodo_aml_bdo_atomic_p15.bdo_ewidencja.r1` |  | Art. 49-55 ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U... |
+| 15022 | `jdg.micro.rodo_aml_bdo_atomic_p15.bdo_ewc.r1` |  | Rozporządzenie ws. katalogu odpadów (EWC) — ustawa o odpadac... |
+| 15023 | `jdg.micro.rodo_aml_bdo_atomic_p15.bdo_transport.r1` |  | Art. 66-74 ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U... |
+| 15024 | `jdg.micro.rodo_aml_bdo_atomic_p15.bdo_fine.r1` |  | Art. 194 ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. ... |
+| 15030 | `jdg.micro.rodo_aml_bdo_atomic_p15.budownictwo_permit.r1` |  | Art. 28 ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.... |
+| 15031 | `jdg.micro.rodo_aml_bdo_atomic_p15.transport_license.r1` |  | Ustawa z dnia 6 września 2001 r. o transporcie drogowym (t.j... |
 
 ### `rules/micro/ryczalt/ryczalt.rego` (155 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 50000 | `jdg.ryc.a22.u1.p1` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50001 | `jdg.ryc.a22.u2.p2` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50002 | `jdg.ryc.a22.u3.p3` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50003 | `jdg.ryc.a22.u4.p4` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50004 | `jdg.ryc.a23.u1.p2` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50005 | `jdg.ryc.a23.u2.p3` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50006 | `jdg.ryc.a23.u3.p4` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50007 | `jdg.ryc.a23.u5.p1` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50008 | `jdg.ryc.a24.u1.p3` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50009 | `jdg.ryc.a24.u2.p4` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50010 | `jdg.ryc.a24.u4.p1` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50011 | `jdg.ryc.a24.u5.p2` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50012 | `jdg.ryc.a25.u1.p4` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50013 | `jdg.ryc.a25.u3.p1` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50014 | `jdg.ryc.a25.u4.p2` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50015 | `jdg.ryc.a25.u5.p3` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50016 | `jdg.ryc.a26.u2.p1` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50017 | `jdg.ryc.a26.u3.p2` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50018 | `jdg.ryc.a26.u4.p3` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50019 | `jdg.ryc.a26.u5.p4` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50020 | `jdg.ryc.a27.u1.p1` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50021 | `jdg.ryc.a27.u2.p2` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50022 | `jdg.ryc.a27.u3.p3` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50023 | `jdg.ryc.a27.u4.p4` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50024 | `jdg.ryc.a28.u1.p2` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50025 | `jdg.ryc.a28.u2.p3` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50026 | `jdg.ryc.a28.u3.p4` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50027 | `jdg.ryc.a28.u5.p1` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50028 | `jdg.ryc.a29.u1.p3` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50029 | `jdg.ryc.a29.u2.p4` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50030 | `jdg.ryc.a29.u4.p1` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50031 | `jdg.ryc.a29.u5.p2` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50032 | `jdg.ryc.a30.u1.p4` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50033 | `jdg.ryc.a30.u3.p1` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50034 | `jdg.ryc.a30.u4.p2` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50035 | `jdg.ryc.a30.u5.p3` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50036 | `jdg.ryc.a31.u2.p1` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50037 | `jdg.ryc.a31.u3.p2` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50038 | `jdg.ryc.a31.u4.p3` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50039 | `jdg.ryc.a31.u5.p4` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50040 | `jdg.ryc.a32.u1.p1` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50041 | `jdg.ryc.a32.u2.p2` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50042 | `jdg.ryc.a32.u3.p3` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50043 | `jdg.ryc.a32.u4.p4` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50044 | `jdg.ryc.a33.u1.p2` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50045 | `jdg.ryc.a33.u2.p3` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50046 | `jdg.ryc.a33.u3.p4` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50047 | `jdg.ryc.a33.u5.p1` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50048 | `jdg.ryc.a34.u4.p1` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 50049 | `jdg.ryc.a34.u5.p2` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100004 | `jdg.micro.ryczalt.a4.r1` |  | Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100005 | `jdg.micro.ryczalt.a4.r2` |  | Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100006 | `jdg.micro.ryczalt.a4.r3` |  | Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100007 | `jdg.micro.ryczalt.a4.r4` |  | Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100008 | `jdg.micro.ryczalt.a4.r5` |  | Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100009 | `jdg.micro.ryczalt.a4.r6` |  | Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100010 | `jdg.micro.ryczalt.a4.r7` |  | Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100011 | `jdg.micro.ryczalt.a4.r8` |  | Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100012 | `jdg.micro.ryczalt.a4.r9` |  | Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100013 | `jdg.micro.ryczalt.a4.r10` |  | Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100014 | `jdg.micro.ryczalt.a4.r11` |  | Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100015 | `jdg.micro.ryczalt.a4.r12` | 🔴 BLOCK | Art. 4 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100016 | `jdg.micro.ryczalt.a6.r1` |  | Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100017 | `jdg.micro.ryczalt.a6.r2` |  | Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100018 | `jdg.micro.ryczalt.a6.r3` |  | Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100019 | `jdg.micro.ryczalt.a6.r4` |  | Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100020 | `jdg.micro.ryczalt.a6.r5` |  | Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100021 | `jdg.micro.ryczalt.a6.r6` |  | Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100022 | `jdg.micro.ryczalt.a6.r7` |  | Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100023 | `jdg.micro.ryczalt.a6.r8` |  | Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100024 | `jdg.micro.ryczalt.a6.r9` |  | Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100025 | `jdg.micro.ryczalt.a6.r10` |  | Art. 6 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100026 | `jdg.micro.ryczalt.a8.r1` |  | Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100027 | `jdg.micro.ryczalt.a8.r2` |  | Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100028 | `jdg.micro.ryczalt.a8.r3` |  | Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100029 | `jdg.micro.ryczalt.a8.r4` |  | Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100030 | `jdg.micro.ryczalt.a8.r5` |  | Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100031 | `jdg.micro.ryczalt.a8.r6` |  | Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100032 | `jdg.micro.ryczalt.a8.r7` |  | Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100033 | `jdg.micro.ryczalt.a8.r8` |  | Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100034 | `jdg.micro.ryczalt.a8.r9` |  | Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100035 | `jdg.micro.ryczalt.a8.r10` |  | Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100036 | `jdg.micro.ryczalt.a8.r11` |  | Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100037 | `jdg.micro.ryczalt.a8.r12` | 🔴 BLOCK | Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100038 | `jdg.micro.ryczalt.a8.r13` |  | Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100039 | `jdg.micro.ryczalt.a8.r14` |  | Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100040 | `jdg.micro.ryczalt.a8.r15` |  | Art. 8 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 po... |
-| 100041 | `jdg.micro.ryczalt.a12.r1` |  | Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100042 | `jdg.micro.ryczalt.a12.r2` |  | Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100043 | `jdg.micro.ryczalt.a12.r3` |  | Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100044 | `jdg.micro.ryczalt.a12.r4` |  | Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100045 | `jdg.micro.ryczalt.a12.r5` |  | Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100046 | `jdg.micro.ryczalt.a12.r6` |  | Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100047 | `jdg.micro.ryczalt.a12.r7` |  | Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100048 | `jdg.micro.ryczalt.a12.r8` |  | Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100049 | `jdg.micro.ryczalt.a12.r9` |  | Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100050 | `jdg.micro.ryczalt.a12.r10` |  | Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100051 | `jdg.micro.ryczalt.a12.r11` |  | Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100052 | `jdg.micro.ryczalt.a12.r12` | 🔴 BLOCK | Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100053 | `jdg.micro.ryczalt.a12.r13` |  | Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100054 | `jdg.micro.ryczalt.a12.r14` |  | Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100055 | `jdg.micro.ryczalt.a12.r15` |  | Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100056 | `jdg.micro.ryczalt.a12.r16` |  | Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100057 | `jdg.micro.ryczalt.a12.r17` |  | Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100058 | `jdg.micro.ryczalt.a12.r18` |  | Art. 12 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100059 | `jdg.micro.ryczalt.a15.r1` |  | Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100060 | `jdg.micro.ryczalt.a15.r2` |  | Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100061 | `jdg.micro.ryczalt.a15.r3` |  | Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100062 | `jdg.micro.ryczalt.a15.r4` |  | Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100063 | `jdg.micro.ryczalt.a15.r5` |  | Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100064 | `jdg.micro.ryczalt.a15.r6` |  | Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100065 | `jdg.micro.ryczalt.a15.r7` |  | Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100066 | `jdg.micro.ryczalt.a15.r8` |  | Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100067 | `jdg.micro.ryczalt.a15.r9` |  | Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100068 | `jdg.micro.ryczalt.a15.r10` |  | Art. 15 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100069 | `jdg.micro.ryczalt.a21.r1` |  | Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100070 | `jdg.micro.ryczalt.a21.r2` |  | Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100071 | `jdg.micro.ryczalt.a21.r3` |  | Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100072 | `jdg.micro.ryczalt.a21.r4` |  | Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100073 | `jdg.micro.ryczalt.a21.r5` |  | Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100074 | `jdg.micro.ryczalt.a21.r6` |  | Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100075 | `jdg.micro.ryczalt.a21.r7` |  | Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100076 | `jdg.micro.ryczalt.a21.r8` |  | Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100077 | `jdg.micro.ryczalt.a21.r9` |  | Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100078 | `jdg.micro.ryczalt.a21.r10` |  | Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100079 | `jdg.micro.ryczalt.a21.r11` |  | Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100080 | `jdg.micro.ryczalt.a21.r12` | 🔴 BLOCK | Art. 21 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100081 | `jdg.micro.ryczalt.a27.r1` |  | Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100082 | `jdg.micro.ryczalt.a27.r2` |  | Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100083 | `jdg.micro.ryczalt.a27.r3` |  | Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100084 | `jdg.micro.ryczalt.a27.r4` |  | Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100085 | `jdg.micro.ryczalt.a27.r5` |  | Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100086 | `jdg.micro.ryczalt.a27.r6` |  | Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100087 | `jdg.micro.ryczalt.a27.r7` |  | Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100088 | `jdg.micro.ryczalt.a27.r8` |  | Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100089 | `jdg.micro.ryczalt.a27.r9` |  | Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100090 | `jdg.micro.ryczalt.a27.r10` |  | Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100091 | `jdg.micro.ryczalt.a27.r11` |  | Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100092 | `jdg.micro.ryczalt.a27.r12` | 🔴 BLOCK | Art. 27 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100093 | `jdg.micro.ryczalt.a30.r1` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100094 | `jdg.micro.ryczalt.a30.r2` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100095 | `jdg.micro.ryczalt.a30.r3` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100096 | `jdg.micro.ryczalt.a30.r4` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100097 | `jdg.micro.ryczalt.a30.r5` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100098 | `jdg.micro.ryczalt.a30.r6` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100099 | `jdg.micro.ryczalt.a30.r7` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100100 | `jdg.micro.ryczalt.a30.r8` |  | Art. 30 ustawy o ryczałcie z 20.11.1998 (Dz.U. 1998 nr 144 p... |
-| 100500 | `jdg.micro.ryczalt.a29.r1` | 🔴 BLOCK | Art. 29 ust. 1 ustawy o ryczałcie |
-| 100501 | `jdg.micro.ryczalt.a29.r2` |  | Art. 21-25 ustawy o ryczałcie |
-| 100502 | `jdg.micro.ryczalt.a29.r3` |  | Art. 23-26 ustawy o ryczałcie — tabele stawek miesięcznych |
-| 100503 | `jdg.micro.ryczalt.a29.r4` |  | Art. 24 ustawy o ryczałcie |
-| 100504 | `jdg.micro.ryczalt.a29.r5` | 🔴 BLOCK | Art. 30 ustawy o ryczałcie — utrata prawa do karty |
-| 100600 | `jdg.micro.ryczalt.a6kurs.r1` |  | Art. 6 ust. 4 ustawy o ryczałcie |
-| 100601 | `jdg.micro.ryczalt.a6kurs.r2` | 🔴 BLOCK | Art. 6 ust. 4 w zw. z art. 8 ust. 2 ustawy o ryczałcie |
-| 100602 | `jdg.micro.ryczalt.a6kurs.r3` |  | Art. 6 ust. 4 ustawy o ryczałcie — NBP Tabela A z 1.10 |
+| 50000 | `jdg.ryc.a22.u1.p1` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50001 | `jdg.ryc.a22.u2.p2` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50002 | `jdg.ryc.a22.u3.p3` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50003 | `jdg.ryc.a22.u4.p4` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50004 | `jdg.ryc.a23.u1.p2` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50005 | `jdg.ryc.a23.u2.p3` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50006 | `jdg.ryc.a23.u3.p4` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50007 | `jdg.ryc.a23.u5.p1` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50008 | `jdg.ryc.a24.u1.p3` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50009 | `jdg.ryc.a24.u2.p4` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50010 | `jdg.ryc.a24.u4.p1` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50011 | `jdg.ryc.a24.u5.p2` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50012 | `jdg.ryc.a25.u1.p4` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50013 | `jdg.ryc.a25.u3.p1` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50014 | `jdg.ryc.a25.u4.p2` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50015 | `jdg.ryc.a25.u5.p3` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50016 | `jdg.ryc.a26.u2.p1` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50017 | `jdg.ryc.a26.u3.p2` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50018 | `jdg.ryc.a26.u4.p3` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50019 | `jdg.ryc.a26.u5.p4` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50020 | `jdg.ryc.a27.u1.p1` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50021 | `jdg.ryc.a27.u2.p2` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50022 | `jdg.ryc.a27.u3.p3` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50023 | `jdg.ryc.a27.u4.p4` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50024 | `jdg.ryc.a28.u1.p2` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50025 | `jdg.ryc.a28.u2.p3` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50026 | `jdg.ryc.a28.u3.p4` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50027 | `jdg.ryc.a28.u5.p1` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50028 | `jdg.ryc.a29.u1.p3` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50029 | `jdg.ryc.a29.u2.p4` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50030 | `jdg.ryc.a29.u4.p1` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50031 | `jdg.ryc.a29.u5.p2` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50032 | `jdg.ryc.a30.u1.p4` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50033 | `jdg.ryc.a30.u3.p1` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50034 | `jdg.ryc.a30.u4.p2` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50035 | `jdg.ryc.a30.u5.p3` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50036 | `jdg.ryc.a31.u2.p1` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50037 | `jdg.ryc.a31.u3.p2` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50038 | `jdg.ryc.a31.u4.p3` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50039 | `jdg.ryc.a31.u5.p4` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50040 | `jdg.ryc.a32.u1.p1` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50041 | `jdg.ryc.a32.u2.p2` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50042 | `jdg.ryc.a32.u3.p3` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50043 | `jdg.ryc.a32.u4.p4` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50044 | `jdg.ryc.a33.u1.p2` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50045 | `jdg.ryc.a33.u2.p3` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50046 | `jdg.ryc.a33.u3.p4` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50047 | `jdg.ryc.a33.u5.p1` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50048 | `jdg.ryc.a34.u4.p1` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 50049 | `jdg.ryc.a34.u5.p2` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100004 | `jdg.micro.ryczalt.a4.r1` |  | Art. 4 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100005 | `jdg.micro.ryczalt.a4.r2` |  | Art. 4 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100006 | `jdg.micro.ryczalt.a4.r3` |  | Art. 4 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100007 | `jdg.micro.ryczalt.a4.r4` |  | Art. 4 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100008 | `jdg.micro.ryczalt.a4.r5` |  | Art. 4 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100009 | `jdg.micro.ryczalt.a4.r6` |  | Art. 4 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100010 | `jdg.micro.ryczalt.a4.r7` |  | Art. 4 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100011 | `jdg.micro.ryczalt.a4.r8` |  | Art. 4 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100012 | `jdg.micro.ryczalt.a4.r9` |  | Art. 4 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100013 | `jdg.micro.ryczalt.a4.r10` |  | Art. 4 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100014 | `jdg.micro.ryczalt.a4.r11` |  | Art. 4 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100015 | `jdg.micro.ryczalt.a4.r12` | 🔴 BLOCK | Art. 4 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100016 | `jdg.micro.ryczalt.a6.r1` |  | Art. 6 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100017 | `jdg.micro.ryczalt.a6.r2` |  | Art. 6 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100018 | `jdg.micro.ryczalt.a6.r3` |  | Art. 6 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100019 | `jdg.micro.ryczalt.a6.r4` |  | Art. 6 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100020 | `jdg.micro.ryczalt.a6.r5` |  | Art. 6 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100021 | `jdg.micro.ryczalt.a6.r6` |  | Art. 6 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100022 | `jdg.micro.ryczalt.a6.r7` |  | Art. 6 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100023 | `jdg.micro.ryczalt.a6.r8` |  | Art. 6 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100024 | `jdg.micro.ryczalt.a6.r9` |  | Art. 6 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100025 | `jdg.micro.ryczalt.a6.r10` |  | Art. 6 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100026 | `jdg.micro.ryczalt.a8.r1` |  | Art. 8 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100027 | `jdg.micro.ryczalt.a8.r2` |  | Art. 8 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100028 | `jdg.micro.ryczalt.a8.r3` |  | Art. 8 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100029 | `jdg.micro.ryczalt.a8.r4` |  | Art. 8 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100030 | `jdg.micro.ryczalt.a8.r5` |  | Art. 8 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100031 | `jdg.micro.ryczalt.a8.r6` |  | Art. 8 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100032 | `jdg.micro.ryczalt.a8.r7` |  | Art. 8 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100033 | `jdg.micro.ryczalt.a8.r8` |  | Art. 8 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100034 | `jdg.micro.ryczalt.a8.r9` |  | Art. 8 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100035 | `jdg.micro.ryczalt.a8.r10` |  | Art. 8 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100036 | `jdg.micro.ryczalt.a8.r11` |  | Art. 8 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100037 | `jdg.micro.ryczalt.a8.r12` | 🔴 BLOCK | Art. 8 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100038 | `jdg.micro.ryczalt.a8.r13` |  | Art. 8 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100039 | `jdg.micro.ryczalt.a8.r14` |  | Art. 8 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100040 | `jdg.micro.ryczalt.a8.r15` |  | Art. 8 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym p... |
+| 100041 | `jdg.micro.ryczalt.a12.r1` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100042 | `jdg.micro.ryczalt.a12.r2` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100043 | `jdg.micro.ryczalt.a12.r3` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100044 | `jdg.micro.ryczalt.a12.r4` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100045 | `jdg.micro.ryczalt.a12.r5` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100046 | `jdg.micro.ryczalt.a12.r6` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100047 | `jdg.micro.ryczalt.a12.r7` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100048 | `jdg.micro.ryczalt.a12.r8` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100049 | `jdg.micro.ryczalt.a12.r9` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100050 | `jdg.micro.ryczalt.a12.r10` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100051 | `jdg.micro.ryczalt.a12.r11` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100052 | `jdg.micro.ryczalt.a12.r12` | 🔴 BLOCK | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100053 | `jdg.micro.ryczalt.a12.r13` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100054 | `jdg.micro.ryczalt.a12.r14` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100055 | `jdg.micro.ryczalt.a12.r15` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100056 | `jdg.micro.ryczalt.a12.r16` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100057 | `jdg.micro.ryczalt.a12.r17` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100058 | `jdg.micro.ryczalt.a12.r18` |  | Art. 12 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100059 | `jdg.micro.ryczalt.a15.r1` |  | Art. 15 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100060 | `jdg.micro.ryczalt.a15.r2` |  | Art. 15 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100061 | `jdg.micro.ryczalt.a15.r3` |  | Art. 15 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100062 | `jdg.micro.ryczalt.a15.r4` |  | Art. 15 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100063 | `jdg.micro.ryczalt.a15.r5` |  | Art. 15 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100064 | `jdg.micro.ryczalt.a15.r6` |  | Art. 15 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100065 | `jdg.micro.ryczalt.a15.r7` |  | Art. 15 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100066 | `jdg.micro.ryczalt.a15.r8` |  | Art. 15 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100067 | `jdg.micro.ryczalt.a15.r9` |  | Art. 15 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100068 | `jdg.micro.ryczalt.a15.r10` |  | Art. 15 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100069 | `jdg.micro.ryczalt.a21.r1` |  | Art. 21 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100070 | `jdg.micro.ryczalt.a21.r2` |  | Art. 21 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100071 | `jdg.micro.ryczalt.a21.r3` |  | Art. 21 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100072 | `jdg.micro.ryczalt.a21.r4` |  | Art. 21 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100073 | `jdg.micro.ryczalt.a21.r5` |  | Art. 21 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100074 | `jdg.micro.ryczalt.a21.r6` |  | Art. 21 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100075 | `jdg.micro.ryczalt.a21.r7` |  | Art. 21 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100076 | `jdg.micro.ryczalt.a21.r8` |  | Art. 21 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100077 | `jdg.micro.ryczalt.a21.r9` |  | Art. 21 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100078 | `jdg.micro.ryczalt.a21.r10` |  | Art. 21 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100079 | `jdg.micro.ryczalt.a21.r11` |  | Art. 21 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100080 | `jdg.micro.ryczalt.a21.r12` | 🔴 BLOCK | Art. 21 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100081 | `jdg.micro.ryczalt.a27.r1` |  | Art. 27 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100082 | `jdg.micro.ryczalt.a27.r2` |  | Art. 27 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100083 | `jdg.micro.ryczalt.a27.r3` |  | Art. 27 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100084 | `jdg.micro.ryczalt.a27.r4` |  | Art. 27 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100085 | `jdg.micro.ryczalt.a27.r5` |  | Art. 27 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100086 | `jdg.micro.ryczalt.a27.r6` |  | Art. 27 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100087 | `jdg.micro.ryczalt.a27.r7` |  | Art. 27 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100088 | `jdg.micro.ryczalt.a27.r8` |  | Art. 27 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100089 | `jdg.micro.ryczalt.a27.r9` |  | Art. 27 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100090 | `jdg.micro.ryczalt.a27.r10` |  | Art. 27 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100091 | `jdg.micro.ryczalt.a27.r11` |  | Art. 27 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100092 | `jdg.micro.ryczalt.a27.r12` | 🔴 BLOCK | Art. 27 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100093 | `jdg.micro.ryczalt.a30.r1` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100094 | `jdg.micro.ryczalt.a30.r2` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100095 | `jdg.micro.ryczalt.a30.r3` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100096 | `jdg.micro.ryczalt.a30.r4` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100097 | `jdg.micro.ryczalt.a30.r5` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100098 | `jdg.micro.ryczalt.a30.r6` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100099 | `jdg.micro.ryczalt.a30.r7` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100100 | `jdg.micro.ryczalt.a30.r8` |  | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100500 | `jdg.micro.ryczalt.a29.r1` | 🔴 BLOCK | Art. 29 ust. 1 ustawy z dnia 20 listopada 1998 r. o zryczałt... |
+| 100501 | `jdg.micro.ryczalt.a29.r2` |  | Art. 21-25 ustawy z dnia 20 listopada 1998 r. o zryczałtowan... |
+| 100502 | `jdg.micro.ryczalt.a29.r3` |  | Art. 23-26 ustawy z dnia 20 listopada 1998 r. o zryczałtowan... |
+| 100503 | `jdg.micro.ryczalt.a29.r4` |  | Art. 24 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100504 | `jdg.micro.ryczalt.a29.r5` | 🔴 BLOCK | Art. 30 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
+| 100600 | `jdg.micro.ryczalt.a6kurs.r1` |  | Art. 6 ust. 4 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 100601 | `jdg.micro.ryczalt.a6kurs.r2` | 🔴 BLOCK | Art. 6 ust. 4 w zw. z art. 8 ust. 2 ustawy z dnia 20 listopa... |
+| 100602 | `jdg.micro.ryczalt.a6kurs.r3` |  | Art. 6 ust. 4 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+
+### `rules/micro/ryczalt_cykl_atomic_p13.rego` (20 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 13001 | `jdg.micro.ryczalt_cykl_atomic_p13.ryczalt_pkwiu.r1` |  | Art. 12 ust. 1 pkt 5 ustawy z dnia 20 listopada 1998 r. o zr... |
+| 13002 | `jdg.micro.ryczalt_cykl_atomic_p13.ryczalt_pkwiu.r2` |  | Art. 12 ust. 1 pkt 5 lit. a ustawy z dnia 20 listopada 1998 ... |
+| 13003 | `jdg.micro.ryczalt_cykl_atomic_p13.ryczalt_pkwiu.r3` |  | Art. 12 ust. 1 pkt 1 ustawy z dnia 20 listopada 1998 r. o zr... |
+| 13004 | `jdg.micro.ryczalt_cykl_atomic_p13.ryczalt_pkwiu.r4` |  | Art. 12 ust. 1 pkt 4 ustawy z dnia 20 listopada 1998 r. o zr... |
+| 13005 | `jdg.micro.ryczalt_cykl_atomic_p13.ryczalt_pkwiu.r5` |  | Art. 12 ust. 1 pkt 2 lit. a ustawy z dnia 20 listopada 1998 ... |
+| 13006 | `jdg.micro.ryczalt_cykl_atomic_p13.ryczalt_pkwiu.r6` |  | Art. 12 ust. 1 pkt 2 ustawy z dnia 20 listopada 1998 r. o zr... |
+| 13007 | `jdg.micro.ryczalt_cykl_atomic_p13.ryczalt_pkwiu.r7` |  | Art. 12 ust. 1 pkt 3 ustawy z dnia 20 listopada 1998 r. o zr... |
+| 13008 | `jdg.micro.ryczalt_cykl_atomic_p13.ryczalt_pkwiu.r8` |  | Art. 12 ust. 1 pkt 5 lit. b ustawy z dnia 20 listopada 1998 ... |
+| 13010 | `jdg.micro.ryczalt_cykl_atomic_p13.limit_2m.r1` |  | Art. 6 ust. 4 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 13011 | `jdg.micro.ryczalt_cykl_atomic_p13.limit_2m.r2` |  | Art. 6 ust. 4 ustawy z dnia 20 listopada 1998 r. o zryczałto... |
+| 13020 | `jdg.micro.ryczalt_cykl_atomic_p13.suspension.r1` |  | Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębio... |
+| 13021 | `jdg.micro.ryczalt_cykl_atomic_p13.suspension.r2` |  | Art. 22 ust. 3 ustawy z dnia 6 marca 2018 r. — Prawo przedsi... |
+| 13022 | `jdg.micro.ryczalt_cykl_atomic_p13.suspension.r3` |  | Art. 22 ust. 1 ustawy z dnia 6 marca 2018 r. — Prawo przedsi... |
+| 13030 | `jdg.micro.ryczalt_cykl_atomic_p13.unregistered.r1` |  | Art. 5-6 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorc... |
+| 13031 | `jdg.micro.ryczalt_cykl_atomic_p13.unregistered.r2` |  | Art. 5-6 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorc... |
+| 13040 | `jdg.micro.ryczalt_cykl_atomic_p13.succession.r1` |  | Art. 3-4 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjn... |
+| 13041 | `jdg.micro.ryczalt_cykl_atomic_p13.succession.r2` |  | Art. 12-13 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesy... |
+| 13042 | `jdg.micro.ryczalt_cykl_atomic_p13.succession.r3` |  | Art. 13 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 13043 | `jdg.micro.ryczalt_cykl_atomic_p13.succession.r4` |  | Art. 12-13 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesy... |
+| 13050 | `jdg.micro.ryczalt_cykl_atomic_p13.karta.r1` |  | Art. 25 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym ... |
 
 ### `rules/micro/srodowisko/srodowisko.rego` (48 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 220007 | `jdg.micro.srodowisko.a7.r1` |  | Ustawa o odpadach, SUP, CBAM |
-| 220008 | `jdg.micro.srodowisko.a7.r2` |  | Ustawa o odpadach, SUP, CBAM |
-| 220009 | `jdg.micro.srodowisko.a7.r3` |  | Ustawa o odpadach, SUP, CBAM |
-| 220010 | `jdg.micro.srodowisko.a7.r4` |  | Ustawa o odpadach, SUP, CBAM |
-| 220011 | `jdg.micro.srodowisko.a7.r5` |  | Ustawa o odpadach, SUP, CBAM |
-| 220012 | `jdg.micro.srodowisko.a7.r6` |  | Ustawa o odpadach, SUP, CBAM |
-| 220013 | `jdg.micro.srodowisko.a7.r7` |  | Ustawa o odpadach, SUP, CBAM |
-| 220014 | `jdg.micro.srodowisko.a7.r8` |  | Ustawa o odpadach, SUP, CBAM |
-| 220015 | `jdg.micro.srodowisko.a10.r1` |  | Ustawa o odpadach, SUP, CBAM |
-| 220016 | `jdg.micro.srodowisko.a10.r2` |  | Ustawa o odpadach, SUP, CBAM |
-| 220017 | `jdg.micro.srodowisko.a10.r3` |  | Ustawa o odpadach, SUP, CBAM |
-| 220018 | `jdg.micro.srodowisko.a10.r4` |  | Ustawa o odpadach, SUP, CBAM |
-| 220019 | `jdg.micro.srodowisko.a10.r5` |  | Ustawa o odpadach, SUP, CBAM |
-| 220020 | `jdg.micro.srodowisko.a10.r6` |  | Ustawa o odpadach, SUP, CBAM |
-| 220021 | `jdg.micro.srodowisko.a10.r7` |  | Ustawa o odpadach, SUP, CBAM |
-| 220022 | `jdg.micro.srodowisko.a10.r8` |  | Ustawa o odpadach, SUP, CBAM |
-| 220023 | `jdg.micro.srodowisko.a10.r9` |  | Ustawa o odpadach, SUP, CBAM |
-| 220024 | `jdg.micro.srodowisko.a10.r10` |  | Ustawa o odpadach, SUP, CBAM |
-| 220025 | `jdg.micro.srodowisko.a15.r1` |  | Ustawa o odpadach, SUP, CBAM |
-| 220026 | `jdg.micro.srodowisko.a15.r2` |  | Ustawa o odpadach, SUP, CBAM |
-| 220027 | `jdg.micro.srodowisko.a15.r3` |  | Ustawa o odpadach, SUP, CBAM |
-| 220028 | `jdg.micro.srodowisko.a15.r4` |  | Ustawa o odpadach, SUP, CBAM |
-| 220029 | `jdg.micro.srodowisko.a15.r5` |  | Ustawa o odpadach, SUP, CBAM |
-| 220030 | `jdg.micro.srodowisko.a15.r6` |  | Ustawa o odpadach, SUP, CBAM |
-| 220031 | `jdg.micro.srodowisko.a15.r7` |  | Ustawa o odpadach, SUP, CBAM |
-| 220032 | `jdg.micro.srodowisko.a15.r8` |  | Ustawa o odpadach, SUP, CBAM |
-| 220033 | `jdg.micro.srodowisko.a3s.r1` |  | Ustawa o odpadach, SUP, CBAM |
-| 220034 | `jdg.micro.srodowisko.a3s.r2` |  | Ustawa o odpadach, SUP, CBAM |
-| 220035 | `jdg.micro.srodowisko.a3s.r3` |  | Ustawa o odpadach, SUP, CBAM |
-| 220036 | `jdg.micro.srodowisko.a3s.r4` |  | Ustawa o odpadach, SUP, CBAM |
-| 220037 | `jdg.micro.srodowisko.a3s.r5` |  | Ustawa o odpadach, SUP, CBAM |
-| 220038 | `jdg.micro.srodowisko.a3s.r6` |  | Ustawa o odpadach, SUP, CBAM |
-| 220039 | `jdg.micro.srodowisko.a3s.r7` |  | Ustawa o odpadach, SUP, CBAM |
-| 220040 | `jdg.micro.srodowisko.a3s.r8` |  | Ustawa o odpadach, SUP, CBAM |
-| 220041 | `jdg.micro.srodowisko.a5s.r1` |  | Ustawa o odpadach, SUP, CBAM |
-| 220042 | `jdg.micro.srodowisko.a5s.r2` |  | Ustawa o odpadach, SUP, CBAM |
-| 220043 | `jdg.micro.srodowisko.a5s.r3` |  | Ustawa o odpadach, SUP, CBAM |
-| 220044 | `jdg.micro.srodowisko.a5s.r4` |  | Ustawa o odpadach, SUP, CBAM |
-| 220045 | `jdg.micro.srodowisko.a5s.r5` |  | Ustawa o odpadach, SUP, CBAM |
-| 220046 | `jdg.micro.srodowisko.a5s.r6` |  | Ustawa o odpadach, SUP, CBAM |
-| 220047 | `jdg.micro.srodowisko.a8.r1` |  | Ustawa o odpadach, SUP, CBAM |
-| 220048 | `jdg.micro.srodowisko.a8.r2` |  | Ustawa o odpadach, SUP, CBAM |
-| 220049 | `jdg.micro.srodowisko.a8.r3` |  | Ustawa o odpadach, SUP, CBAM |
-| 220050 | `jdg.micro.srodowisko.a8.r4` |  | Ustawa o odpadach, SUP, CBAM |
-| 220051 | `jdg.micro.srodowisko.a8.r5` |  | Ustawa o odpadach, SUP, CBAM |
-| 220052 | `jdg.micro.srodowisko.a8.r6` |  | Ustawa o odpadach, SUP, CBAM |
-| 220053 | `jdg.micro.srodowisko.a8.r7` |  | Ustawa o odpadach, SUP, CBAM |
-| 220054 | `jdg.micro.srodowisko.a8.r8` |  | Ustawa o odpadach, SUP, CBAM |
+| 220007 | `jdg.micro.srodowisko.a7.r1` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220008 | `jdg.micro.srodowisko.a7.r2` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220009 | `jdg.micro.srodowisko.a7.r3` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220010 | `jdg.micro.srodowisko.a7.r4` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220011 | `jdg.micro.srodowisko.a7.r5` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220012 | `jdg.micro.srodowisko.a7.r6` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220013 | `jdg.micro.srodowisko.a7.r7` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220014 | `jdg.micro.srodowisko.a7.r8` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220015 | `jdg.micro.srodowisko.a10.r1` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220016 | `jdg.micro.srodowisko.a10.r2` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220017 | `jdg.micro.srodowisko.a10.r3` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220018 | `jdg.micro.srodowisko.a10.r4` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220019 | `jdg.micro.srodowisko.a10.r5` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220020 | `jdg.micro.srodowisko.a10.r6` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220021 | `jdg.micro.srodowisko.a10.r7` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220022 | `jdg.micro.srodowisko.a10.r8` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220023 | `jdg.micro.srodowisko.a10.r9` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220024 | `jdg.micro.srodowisko.a10.r10` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220025 | `jdg.micro.srodowisko.a15.r1` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220026 | `jdg.micro.srodowisko.a15.r2` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220027 | `jdg.micro.srodowisko.a15.r3` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220028 | `jdg.micro.srodowisko.a15.r4` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220029 | `jdg.micro.srodowisko.a15.r5` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220030 | `jdg.micro.srodowisko.a15.r6` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220031 | `jdg.micro.srodowisko.a15.r7` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220032 | `jdg.micro.srodowisko.a15.r8` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220033 | `jdg.micro.srodowisko.a3s.r1` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220034 | `jdg.micro.srodowisko.a3s.r2` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220035 | `jdg.micro.srodowisko.a3s.r3` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220036 | `jdg.micro.srodowisko.a3s.r4` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220037 | `jdg.micro.srodowisko.a3s.r5` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220038 | `jdg.micro.srodowisko.a3s.r6` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220039 | `jdg.micro.srodowisko.a3s.r7` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220040 | `jdg.micro.srodowisko.a3s.r8` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220041 | `jdg.micro.srodowisko.a5s.r1` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220042 | `jdg.micro.srodowisko.a5s.r2` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220043 | `jdg.micro.srodowisko.a5s.r3` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220044 | `jdg.micro.srodowisko.a5s.r4` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220045 | `jdg.micro.srodowisko.a5s.r5` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220046 | `jdg.micro.srodowisko.a5s.r6` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220047 | `jdg.micro.srodowisko.a8.r1` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220048 | `jdg.micro.srodowisko.a8.r2` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220049 | `jdg.micro.srodowisko.a8.r3` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220050 | `jdg.micro.srodowisko.a8.r4` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220051 | `jdg.micro.srodowisko.a8.r5` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220052 | `jdg.micro.srodowisko.a8.r6` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220053 | `jdg.micro.srodowisko.a8.r7` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 220054 | `jdg.micro.srodowisko.a8.r8` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
 
 ### `rules/micro/sukcesja/sukcesja.rego` (140 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 50000 | `jdg.suk.a10.u1.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50001 | `jdg.suk.a10.u2.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50002 | `jdg.suk.a10.u3.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50003 | `jdg.suk.a10.u4.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50004 | `jdg.suk.a11.u1.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50005 | `jdg.suk.a11.u2.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50006 | `jdg.suk.a11.u3.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50007 | `jdg.suk.a11.u5.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50008 | `jdg.suk.a12.u1.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50009 | `jdg.suk.a12.u1.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50010 | `jdg.suk.a12.u2.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50011 | `jdg.suk.a12.u2.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50012 | `jdg.suk.a12.u4.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50013 | `jdg.suk.a12.u5.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50014 | `jdg.suk.a13.u1.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50015 | `jdg.suk.a13.u1.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50016 | `jdg.suk.a13.u3.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50017 | `jdg.suk.a13.u3.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50018 | `jdg.suk.a13.u4.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50019 | `jdg.suk.a13.u4.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50020 | `jdg.suk.a13.u5.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50021 | `jdg.suk.a13.u5.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50022 | `jdg.suk.a14.u2.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50023 | `jdg.suk.a14.u2.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50024 | `jdg.suk.a14.u3.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50025 | `jdg.suk.a14.u3.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50026 | `jdg.suk.a14.u4.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50027 | `jdg.suk.a14.u4.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50028 | `jdg.suk.a14.u5.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50029 | `jdg.suk.a14.u5.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50030 | `jdg.suk.a15.u1.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50031 | `jdg.suk.a15.u1.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50032 | `jdg.suk.a15.u2.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50033 | `jdg.suk.a15.u2.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50034 | `jdg.suk.a15.u3.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50035 | `jdg.suk.a15.u3.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50036 | `jdg.suk.a15.u4.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50037 | `jdg.suk.a15.u4.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50038 | `jdg.suk.a16.u1.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50039 | `jdg.suk.a16.u1.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50040 | `jdg.suk.a16.u2.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50041 | `jdg.suk.a16.u2.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50042 | `jdg.suk.a16.u3.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50043 | `jdg.suk.a16.u3.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50044 | `jdg.suk.a16.u5.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50045 | `jdg.suk.a16.u5.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50046 | `jdg.suk.a17.u1.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50047 | `jdg.suk.a17.u1.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50048 | `jdg.suk.a17.u2.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50049 | `jdg.suk.a17.u2.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50050 | `jdg.suk.a17.u4.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50051 | `jdg.suk.a17.u4.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50052 | `jdg.suk.a17.u5.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50053 | `jdg.suk.a17.u5.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50054 | `jdg.suk.a18.u1.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50055 | `jdg.suk.a18.u1.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50056 | `jdg.suk.a18.u3.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50057 | `jdg.suk.a18.u3.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50058 | `jdg.suk.a18.u4.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50059 | `jdg.suk.a18.u4.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50060 | `jdg.suk.a18.u5.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50061 | `jdg.suk.a18.u5.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50062 | `jdg.suk.a19.u2.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50063 | `jdg.suk.a19.u2.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50064 | `jdg.suk.a19.u3.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50065 | `jdg.suk.a19.u3.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50066 | `jdg.suk.a19.u4.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50067 | `jdg.suk.a19.u4.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50068 | `jdg.suk.a19.u5.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50069 | `jdg.suk.a19.u5.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50070 | `jdg.suk.a20.u1.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50071 | `jdg.suk.a20.u2.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50072 | `jdg.suk.a20.u3.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50073 | `jdg.suk.a20.u4.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50074 | `jdg.suk.a21.u1.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50075 | `jdg.suk.a21.u2.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50076 | `jdg.suk.a21.u3.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50077 | `jdg.suk.a21.u5.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50078 | `jdg.suk.a22.u4.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50079 | `jdg.suk.a8.u1.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50080 | `jdg.suk.a9.u2.p2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50081 | `jdg.suk.a9.u3.p3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50082 | `jdg.suk.a9.u4.p4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 50083 | `jdg.suk.a9.u5.p1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 5.07.2018 (Dz.U. 20... |
-| 150003 | `jdg.micro.sukcesja.a3.r1` |  | Art. 3 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 20... |
-| 150004 | `jdg.micro.sukcesja.a3.r2` |  | Art. 3 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 20... |
-| 150005 | `jdg.micro.sukcesja.a3.r3` |  | Art. 3 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 20... |
-| 150006 | `jdg.micro.sukcesja.a3.r4` |  | Art. 3 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 20... |
-| 150007 | `jdg.micro.sukcesja.a3.r5` |  | Art. 3 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 20... |
-| 150008 | `jdg.micro.sukcesja.a3.r6` |  | Art. 3 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 20... |
-| 150009 | `jdg.micro.sukcesja.a3.r7` |  | Art. 3 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 20... |
-| 150010 | `jdg.micro.sukcesja.a3.r8` |  | Art. 3 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 20... |
-| 150011 | `jdg.micro.sukcesja.a12.r1` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150012 | `jdg.micro.sukcesja.a12.r2` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150013 | `jdg.micro.sukcesja.a12.r3` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150014 | `jdg.micro.sukcesja.a12.r4` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150015 | `jdg.micro.sukcesja.a12.r5` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150016 | `jdg.micro.sukcesja.a12.r6` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150017 | `jdg.micro.sukcesja.a12.r7` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150018 | `jdg.micro.sukcesja.a12.r8` |  | Art. 12 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150019 | `jdg.micro.sukcesja.a14.r1` |  | Art. 14 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150020 | `jdg.micro.sukcesja.a14.r2` |  | Art. 14 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150021 | `jdg.micro.sukcesja.a14.r3` |  | Art. 14 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150022 | `jdg.micro.sukcesja.a14.r4` |  | Art. 14 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150023 | `jdg.micro.sukcesja.a14.r5` |  | Art. 14 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150024 | `jdg.micro.sukcesja.a14.r6` |  | Art. 14 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150025 | `jdg.micro.sukcesja.a14.r7` |  | Art. 14 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150026 | `jdg.micro.sukcesja.a14.r8` |  | Art. 14 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150027 | `jdg.micro.sukcesja.a21.r1` |  | Art. 21 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150028 | `jdg.micro.sukcesja.a21.r2` |  | Art. 21 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150029 | `jdg.micro.sukcesja.a21.r3` |  | Art. 21 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150030 | `jdg.micro.sukcesja.a21.r4` |  | Art. 21 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150031 | `jdg.micro.sukcesja.a21.r5` |  | Art. 21 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150032 | `jdg.micro.sukcesja.a21.r6` |  | Art. 21 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150033 | `jdg.micro.sukcesja.a21.r7` |  | Art. 21 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150034 | `jdg.micro.sukcesja.a21.r8` |  | Art. 21 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150035 | `jdg.micro.sukcesja.a24.r1` |  | Art. 24 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150036 | `jdg.micro.sukcesja.a24.r2` |  | Art. 24 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150037 | `jdg.micro.sukcesja.a24.r3` |  | Art. 24 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150038 | `jdg.micro.sukcesja.a24.r4` |  | Art. 24 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150039 | `jdg.micro.sukcesja.a24.r5` |  | Art. 24 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
-| 150040 | `jdg.micro.sukcesja.a24.r6` |  | Art. 24 Ustawa o zarządzie sukcesyjnym z 05.07.2018 (Dz.U. 2... |
+| 50000 | `jdg.suk.a10.u1.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50001 | `jdg.suk.a10.u2.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50002 | `jdg.suk.a10.u3.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50003 | `jdg.suk.a10.u4.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50004 | `jdg.suk.a11.u1.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50005 | `jdg.suk.a11.u2.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50006 | `jdg.suk.a11.u3.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50007 | `jdg.suk.a11.u5.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50008 | `jdg.suk.a12.u1.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50009 | `jdg.suk.a12.u1.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50010 | `jdg.suk.a12.u2.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50011 | `jdg.suk.a12.u2.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50012 | `jdg.suk.a12.u4.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50013 | `jdg.suk.a12.u5.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50014 | `jdg.suk.a13.u1.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50015 | `jdg.suk.a13.u1.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50016 | `jdg.suk.a13.u3.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50017 | `jdg.suk.a13.u3.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50018 | `jdg.suk.a13.u4.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50019 | `jdg.suk.a13.u4.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50020 | `jdg.suk.a13.u5.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50021 | `jdg.suk.a13.u5.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50022 | `jdg.suk.a14.u2.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50023 | `jdg.suk.a14.u2.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50024 | `jdg.suk.a14.u3.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50025 | `jdg.suk.a14.u3.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50026 | `jdg.suk.a14.u4.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50027 | `jdg.suk.a14.u4.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50028 | `jdg.suk.a14.u5.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50029 | `jdg.suk.a14.u5.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50030 | `jdg.suk.a15.u1.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50031 | `jdg.suk.a15.u1.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50032 | `jdg.suk.a15.u2.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50033 | `jdg.suk.a15.u2.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50034 | `jdg.suk.a15.u3.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50035 | `jdg.suk.a15.u3.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50036 | `jdg.suk.a15.u4.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50037 | `jdg.suk.a15.u4.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50038 | `jdg.suk.a16.u1.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50039 | `jdg.suk.a16.u1.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50040 | `jdg.suk.a16.u2.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50041 | `jdg.suk.a16.u2.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50042 | `jdg.suk.a16.u3.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50043 | `jdg.suk.a16.u3.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50044 | `jdg.suk.a16.u5.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50045 | `jdg.suk.a16.u5.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50046 | `jdg.suk.a17.u1.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50047 | `jdg.suk.a17.u1.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50048 | `jdg.suk.a17.u2.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50049 | `jdg.suk.a17.u2.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50050 | `jdg.suk.a17.u4.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50051 | `jdg.suk.a17.u4.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50052 | `jdg.suk.a17.u5.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50053 | `jdg.suk.a17.u5.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50054 | `jdg.suk.a18.u1.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50055 | `jdg.suk.a18.u1.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50056 | `jdg.suk.a18.u3.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50057 | `jdg.suk.a18.u3.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50058 | `jdg.suk.a18.u4.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50059 | `jdg.suk.a18.u4.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50060 | `jdg.suk.a18.u5.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50061 | `jdg.suk.a18.u5.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50062 | `jdg.suk.a19.u2.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50063 | `jdg.suk.a19.u2.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50064 | `jdg.suk.a19.u3.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50065 | `jdg.suk.a19.u3.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50066 | `jdg.suk.a19.u4.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50067 | `jdg.suk.a19.u4.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50068 | `jdg.suk.a19.u5.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50069 | `jdg.suk.a19.u5.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50070 | `jdg.suk.a20.u1.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50071 | `jdg.suk.a20.u2.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50072 | `jdg.suk.a20.u3.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50073 | `jdg.suk.a20.u4.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50074 | `jdg.suk.a21.u1.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50075 | `jdg.suk.a21.u2.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50076 | `jdg.suk.a21.u3.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50077 | `jdg.suk.a21.u5.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50078 | `jdg.suk.a22.u4.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50079 | `jdg.suk.a8.u1.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50080 | `jdg.suk.a9.u2.p2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50081 | `jdg.suk.a9.u3.p3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50082 | `jdg.suk.a9.u4.p4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 50083 | `jdg.suk.a9.u5.p1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150003 | `jdg.micro.sukcesja.a3.r1` |  | Art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym... |
+| 150004 | `jdg.micro.sukcesja.a3.r2` |  | Art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym... |
+| 150005 | `jdg.micro.sukcesja.a3.r3` |  | Art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym... |
+| 150006 | `jdg.micro.sukcesja.a3.r4` |  | Art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym... |
+| 150007 | `jdg.micro.sukcesja.a3.r5` |  | Art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym... |
+| 150008 | `jdg.micro.sukcesja.a3.r6` |  | Art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym... |
+| 150009 | `jdg.micro.sukcesja.a3.r7` |  | Art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym... |
+| 150010 | `jdg.micro.sukcesja.a3.r8` |  | Art. 3 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym... |
+| 150011 | `jdg.micro.sukcesja.a12.r1` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150012 | `jdg.micro.sukcesja.a12.r2` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150013 | `jdg.micro.sukcesja.a12.r3` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150014 | `jdg.micro.sukcesja.a12.r4` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150015 | `jdg.micro.sukcesja.a12.r5` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150016 | `jdg.micro.sukcesja.a12.r6` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150017 | `jdg.micro.sukcesja.a12.r7` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150018 | `jdg.micro.sukcesja.a12.r8` |  | Art. 12 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150019 | `jdg.micro.sukcesja.a14.r1` |  | Art. 14 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150020 | `jdg.micro.sukcesja.a14.r2` |  | Art. 14 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150021 | `jdg.micro.sukcesja.a14.r3` |  | Art. 14 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150022 | `jdg.micro.sukcesja.a14.r4` |  | Art. 14 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150023 | `jdg.micro.sukcesja.a14.r5` |  | Art. 14 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150024 | `jdg.micro.sukcesja.a14.r6` |  | Art. 14 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150025 | `jdg.micro.sukcesja.a14.r7` |  | Art. 14 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150026 | `jdg.micro.sukcesja.a14.r8` |  | Art. 14 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150027 | `jdg.micro.sukcesja.a21.r1` |  | Art. 21 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150028 | `jdg.micro.sukcesja.a21.r2` |  | Art. 21 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150029 | `jdg.micro.sukcesja.a21.r3` |  | Art. 21 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150030 | `jdg.micro.sukcesja.a21.r4` |  | Art. 21 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150031 | `jdg.micro.sukcesja.a21.r5` |  | Art. 21 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150032 | `jdg.micro.sukcesja.a21.r6` |  | Art. 21 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150033 | `jdg.micro.sukcesja.a21.r7` |  | Art. 21 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150034 | `jdg.micro.sukcesja.a21.r8` |  | Art. 21 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150035 | `jdg.micro.sukcesja.a24.r1` |  | Art. 24 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150036 | `jdg.micro.sukcesja.a24.r2` |  | Art. 24 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150037 | `jdg.micro.sukcesja.a24.r3` |  | Art. 24 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150038 | `jdg.micro.sukcesja.a24.r4` |  | Art. 24 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150039 | `jdg.micro.sukcesja.a24.r5` |  | Art. 24 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
+| 150040 | `jdg.micro.sukcesja.a24.r6` |  | Art. 24 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjny... |
 | 150041 | `jdg.micro.sukcesja.a19.r1` |  | Art. 19 ust. 1 ustawy o zarządzie sukcesyjnym |
 | 150042 | `jdg.micro.sukcesja.a19.r2` |  | Art. 19 ust. 2 ustawy o zarządzie sukcesyjnym |
 | 150043 | `jdg.micro.sukcesja.a19.r3` | 🔴 BLOCK | Art. 19 ust. 3 ustawy o zarządzie sukcesyjnym |
@@ -11351,30 +11408,30 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1010 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc_local_excise_coverage_report` |  | Ustawa o PCC; podatki lokalne; ustawa o podatku akcyzowym |
-| 1120 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc_audit` |  | Ustawa o PCC (Dz.U. 2025 poz. 789) art. 1-10 |
-| 1121 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc3_generator` |  | Ustawa o PCC art. 10 |
-| 1122 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc_detector` |  | Ustawa o PCC art. 1 |
-| 1130 | `jdg.p14_pcc_lokalne_akcyza_innovations.local_taxes_audit` |  | Ustawa o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 123... |
-| 1131 | `jdg.p14_pcc_lokalne_akcyza_innovations.gmina_rates_registry` |  | Ustawa o podatkach i opłatach lokalnych; obwieszczenia MF |
-| 1132 | `jdg.p14_pcc_lokalne_akcyza_innovations.real_estate_tax_calculator` |  | Ustawa o podatkach i opłatach lokalnych |
-| 1133 | `jdg.p14_pcc_lokalne_akcyza_innovations.transport_tax_calculator` |  | Ustawa o podatkach i opłatach lokalnych art. 8-13 |
-| 1134 | `jdg.p14_pcc_lokalne_akcyza_innovations.dn1_tracker` |  | Ustawa o podatkach i opłatach lokalnych |
-| 1140 | `jdg.p14_pcc_lokalne_akcyza_innovations.excise_audit` |  | Ustawa o podatku akcyzowym (06.12.2008) art. 89-99 |
-| 1141 | `jdg.p14_pcc_lokalne_akcyza_innovations.excise_fuel_calculator` |  | Ustawa o podatku akcyzowym art. 89 |
-| 1142 | `jdg.p14_pcc_lokalne_akcyza_innovations.excise_alcohol_calculator` |  | Ustawa o podatku akcyzowym art. 92-96 |
-| 1143 | `jdg.p14_pcc_lokalne_akcyza_innovations.excise_cost_detector` |  | Ustawa o podatku akcyzowym |
+| 1010 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc_local_excise_coverage_report` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 1120 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc_audit` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 1121 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc3_generator` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 1122 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc_detector` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 1130 | `jdg.p14_pcc_lokalne_akcyza_innovations.local_taxes_audit` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+| 1131 | `jdg.p14_pcc_lokalne_akcyza_innovations.gmina_rates_registry` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+| 1132 | `jdg.p14_pcc_lokalne_akcyza_innovations.real_estate_tax_calculator` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+| 1133 | `jdg.p14_pcc_lokalne_akcyza_innovations.transport_tax_calculator` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+| 1134 | `jdg.p14_pcc_lokalne_akcyza_innovations.dn1_tracker` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+| 1140 | `jdg.p14_pcc_lokalne_akcyza_innovations.excise_audit` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 1141 | `jdg.p14_pcc_lokalne_akcyza_innovations.excise_fuel_calculator` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 1142 | `jdg.p14_pcc_lokalne_akcyza_innovations.excise_alcohol_calculator` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 1143 | `jdg.p14_pcc_lokalne_akcyza_innovations.excise_cost_detector` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
 | 1150 | `jdg.p14_pcc_lokalne_akcyza_innovations.gaps_duplicates_audit` |  | LEGAL_COVERAGE.md; MANIFEST.md |
-| 1157 | `jdg.p14_pcc_lokalne_akcyza_innovations.report` |  | Ustawa o PCC; podatki i opłaty lokalne; ustawa o podatku akc... |
+| 1157 | `jdg.p14_pcc_lokalne_akcyza_innovations.report` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
 | 1160 | `jdg.p14_pcc_lokalne_akcyza_innovations.local_taxes_pipeline_snapshot` |  | ADR-002; uchwały rad gmin; obwieszczenia MF |
 | 1170 | `jdg.p14_pcc_lokalne_akcyza_innovations.gmina_rates_hook` |  | ADR-002; uchwały rad gmin |
-| 1171 | `jdg.p14_pcc_lokalne_akcyza_innovations.excise_warehouse_tracker` |  | Ustawa o podatku akcyzowym; KKS art. 65 |
-| 1172 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc_local_excise_compliance_panel` |  | Ustawa o PCC; podatki lokalne; akcyza |
-| 1173 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc_obligation_detector` | 🟡 TRIAGE | Ustawa o PCC art. 1, 4, 7; art. 2 pkt 4 (wyłączenie VAT) |
-| 1174 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc3_zero_click` | 🟡 TRIAGE | Ustawa o PCC art. 10 |
-| 1175 | `jdg.p14_pcc_lokalne_akcyza_innovations.gmina_rates_map` |  | Ustawa o podatkach i opłatach lokalnych; obwieszczenia MF |
-| 1176 | `jdg.p14_pcc_lokalne_akcyza_innovations.vat_vs_pcc_optimizer` | 🟡 TRIAGE | Ustawa o PCC art. 2 pkt 4; VAT art. 86 (odliczenie) |
-| 1177 | `jdg.p14_pcc_lokalne_akcyza_innovations.excise_import_detector` | 🟡 TRIAGE | Ustawa o podatku akcyzowym art. 39-41 (import); ustawa o PCC |
+| 1171 | `jdg.p14_pcc_lokalne_akcyza_innovations.excise_warehouse_tracker` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 1172 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc_local_excise_compliance_panel` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 1173 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc_obligation_detector` | 🟡 TRIAGE | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 1174 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc3_zero_click` | 🟡 TRIAGE | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 1175 | `jdg.p14_pcc_lokalne_akcyza_innovations.gmina_rates_map` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+| 1176 | `jdg.p14_pcc_lokalne_akcyza_innovations.vat_vs_pcc_optimizer` | 🟡 TRIAGE | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 1177 | `jdg.p14_pcc_lokalne_akcyza_innovations.excise_import_detector` | 🟡 TRIAGE | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
 
 ### `rules/p15_pcc_local_excise_innovations_v8.rego` (13 reguł)
 
@@ -11398,24 +11455,24 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 1010 | `jdg.p15_srodowisko_bdo_innovations.srodowisko_bdo_coverage_report` |  | Ustawa o odpadach; prawo budowlane; ustawa o transporcie dro... |
-| 1120 | `jdg.p15_srodowisko_bdo_innovations.bdo_audit` |  | Ustawa o odpadach (Dz.U. 2025 poz. 321) |
-| 1121 | `jdg.p15_srodowisko_bdo_innovations.bdo_assistant` |  | Ustawa o odpadach art. 49-70 |
-| 1122 | `jdg.p15_srodowisko_bdo_innovations.kpo_generator` |  | Ustawa o odpadach art. 66-70 |
-| 1123 | `jdg.p15_srodowisko_bdo_innovations.bdo_deadline_tracker` |  | Ustawa o odpadach art. 71-74 |
-| 1124 | `jdg.p15_srodowisko_bdo_innovations.product_fee_tracker` |  | Ustawa o odpadach art. 17-18; ustawa o WEEE |
+| 1010 | `jdg.p15_srodowisko_bdo_innovations.srodowisko_bdo_coverage_report` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 1120 | `jdg.p15_srodowisko_bdo_innovations.bdo_audit` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 1121 | `jdg.p15_srodowisko_bdo_innovations.bdo_assistant` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 1122 | `jdg.p15_srodowisko_bdo_innovations.kpo_generator` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 1123 | `jdg.p15_srodowisko_bdo_innovations.bdo_deadline_tracker` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 1124 | `jdg.p15_srodowisko_bdo_innovations.product_fee_tracker` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
 | 1126 | `jdg.p15_srodowisko_bdo_innovations.product_fee_material_map` |  | Ustawa o gospodarce opakowaniami i odpadami opakowaniowymi; ... |
-| 1127 | `jdg.p15_srodowisko_bdo_innovations.bdo_api_integration` |  | Ustawa o odpadach art. 66-74; rozporządzenia ws. systemu BDO |
+| 1127 | `jdg.p15_srodowisko_bdo_innovations.bdo_api_integration` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
 | 1128 | `jdg.p15_srodowisko_bdo_innovations.ewc_full_catalog` |  | Rozporządzenie ws. katalogu odpadów (Dz.U. 2020 poz. 10) |
 | 1129 | `jdg.p15_srodowisko_bdo_innovations.agricultural_tax_rate_registry` |  | Ustawa o podatku rolnym (Dz.U. 2025 poz. 268) |
-| 1130 | `jdg.p15_srodowisko_bdo_innovations.budownictwo_audit` |  | Prawo budowlane (Dz.U. 2025 poz. 456); ustawy lokalne |
+| 1130 | `jdg.p15_srodowisko_bdo_innovations.budownictwo_audit` |  | ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 ... |
 | 1130 | `jdg.p15_srodowisko_bdo_innovations.transport_permit_tables` |  | Ustawa o transporcie drogowym art. 5-8; rozp. UE 165/2014 (t... |
-| 1131 | `jdg.p15_srodowisko_bdo_innovations.budowlane_pozwolenie_calculator` |  | Prawo budowlane art. 28-30 |
+| 1131 | `jdg.p15_srodowisko_bdo_innovations.budowlane_pozwolenie_calculator` |  | ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 ... |
 | 1131 | `jdg.p15_srodowisko_bdo_innovations.cbam_certificates_2026` |  | Rozporządzenie UE 2023/956 art. 21-30 (CBAM) |
-| 1132 | `jdg.p15_srodowisko_bdo_innovations.bdo_online_registration` |  | Ustawa o odpadach art. 49-55 |
+| 1132 | `jdg.p15_srodowisko_bdo_innovations.bdo_online_registration` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
 | 1140 | `jdg.p15_srodowisko_bdo_innovations.transport_rolnictwo_audit` |  | Ustawa o transporcie drogowym; PIT art. 20; ustawa o podatku... |
 | 1150 | `jdg.p15_srodowisko_bdo_innovations.regulated_taxfree_seasonal_audit` |  | Ustawy zawodowe; VAT art. 127-130 (tax-free); VAT sezonowy |
-| 1157 | `jdg.p15_srodowisko_bdo_innovations.report` |  | Ustawa o odpadach; prawo budowlane; u.t.d.; podatek rolny; C... |
+| 1157 | `jdg.p15_srodowisko_bdo_innovations.report` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
 | 1160 | `jdg.p15_srodowisko_bdo_innovations.cbam_audit` |  | Rozporządzenie UE 2023/956 (CBAM); CIT estoński |
 | 1161 | `jdg.p15_srodowisko_bdo_innovations.cbam_calculator` |  | Rozporządzenie UE 2023/956 |
 | 1170 | `jdg.p15_srodowisko_bdo_innovations.bdo_pipeline_snapshot` |  | ADR-002; rozporządzenia UE; nowelizacje UoO |
@@ -11425,8 +11482,8 @@
 | 1174 | `jdg.p15_srodowisko_bdo_innovations.taxfree_calculator` |  | VAT art. 127-130 |
 | 1175 | `jdg.p15_srodowisko_bdo_innovations.seasonal_assistant` |  | VAT; PIT — rozliczenia okresowe |
 | 1176 | `jdg.p15_srodowisko_bdo_innovations.agricultural_tax_calculator` |  | Ustawa o podatku rolnym |
-| 1182 | `jdg.p15_srodowisko_bdo_innovations.zero_click_bdo` |  | Ustawa o odpadach art. 66-70; rozporządzenie ws. BDO |
-| 1183 | `jdg.p15_srodowisko_bdo_innovations.bdo_registration_detector` |  | Ustawa o odpadach art. 49-53 (rejestracja przed rozpoczęciem... |
+| 1182 | `jdg.p15_srodowisko_bdo_innovations.zero_click_bdo` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
+| 1183 | `jdg.p15_srodowisko_bdo_innovations.bdo_registration_detector` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
 | 1184 | `jdg.p15_srodowisko_bdo_innovations.weee_product_fee_calculator` |  | Ustawa o zużytym sprzęcie elektrycznym i elektronicznym art.... |
 | 1185 | `jdg.p15_srodowisko_bdo_innovations.recycling_level_tracker` |  | Ustawa o gospodarce opakowaniami i odpadami opakowaniowymi a... |
 | 1186 | `jdg.p15_srodowisko_bdo_innovations.transport_licence_assistant` |  | Ustawa o transporcie drogowym art. 5-8 |
@@ -11492,7 +11549,7 @@
 | 2120 | `jdg.p16_rodo_aml_security_innovations.rodo_audit` |  | RODO (UE 2016/679) |
 | 2121 | `jdg.p16_rodo_aml_security_innovations.rodo_register_automation` |  | Art. 30 RODO |
 | 2122 | `jdg.p16_rodo_aml_security_innovations.breach_72h_tracker` |  | Art. 33-34 RODO |
-| 2130 | `jdg.p16_rodo_aml_security_innovations.aml_audit` |  | Ustawa AML (Dz.U. 2018 poz. 723 z późn. zm.) |
+| 2130 | `jdg.p16_rodo_aml_security_innovations.aml_audit` |  | Ustawa AML (Dz.U. 2025 poz. 213 z późn. zm.) |
 | 2131 | `jdg.p16_rodo_aml_security_innovations.aml_risk_scoring_client` |  | Art. 28-34 u.AML; Wytyczne EBA ws. czynników ryzyka |
 | 2132 | `jdg.p16_rodo_aml_security_innovations.aml_risk_scoring_transaction` |  | Art. 34 u.AML (15 000 EUR) + Art. 74-80 u.AML (STR) |
 | 2140 | `jdg.p16_rodo_aml_security_innovations.security_audit` |  | P34 Red Team; Art. 32 RODO |
@@ -11510,13 +11567,13 @@
 | 2167 | `jdg.p16_rodo_aml_security_innovations.beneficiary_verifier` |  | Art. 2 pkt 3 u.AML; Rejestr Beneficjentów Rzeczywistych |
 | 2168 | `jdg.p16_rodo_aml_security_innovations.compliance_scorecard` |  | RODO 2016/679; u.AML; P34 |
 | 2170 | `jdg.p16_rodo_aml_security_innovations.crbr_registry_api` |  | Art. 2 pkt 3 u.AML; Ustawa o CRBR (Dz.U. 2019 poz. 1659) |
-| 2171 | `jdg.p16_rodo_aml_security_innovations.str_gijf_auto_submission` |  | Art. 74-80 u.AML (Dz.U. 2018 poz. 723) |
+| 2171 | `jdg.p16_rodo_aml_security_innovations.str_gijf_auto_submission` |  | Art. 74-80 u.AML (Dz.U. 2025 poz. 213) |
 | 2172 | `jdg.p16_rodo_aml_security_innovations.subprocessor_saas_map` |  | Art. 28 ust. 2-4 RODO |
 | 2173 | `jdg.p16_rodo_aml_security_innovations.rodo_deadline_calendar` |  | Art. 24, 28, 30, 32, 35 RODO; Art. 74 UoR |
 | 2174 | `jdg.p16_rodo_aml_security_innovations.aml_sanctions_screening` |  | Rozp. Rady UE (sankcje); Ustawa AML Art. 34-43 (CBDD); Rozp.... |
 | 2175 | `jdg.p16_rodo_aml_security_innovations.amlr_2027_implementation` |  | AMLR (UE 2024/1624) — zastosowanie od 2027-07-10 |
 | 2176 | `jdg.p16_rodo_aml_security_innovations.compliance_dashboard_ui` |  | Art. 33 RODO (72h); Art. 28a u.AML + Wytyczne EBA |
-| 2177 | `jdg.p16_rodo_aml_security_innovations.aml_obligation_detector` |  | Art. 2 ust. 1 u.AML (Dz.U. 2018 poz. 723) |
+| 2177 | `jdg.p16_rodo_aml_security_innovations.aml_obligation_detector` |  | Art. 2 ust. 1 u.AML (Dz.U. 2025 poz. 213) |
 | 2178 | `jdg.p16_rodo_aml_security_innovations.rodo_by_design_anonymizer` |  | Art. 5 ust. 1 lit. c RODO (minimalizacja); F4 Decision Certi... |
 | 2179 | `jdg.p16_rodo_aml_security_innovations.rodo_request_workflow` |  | Art. 12, 15-21 RODO (termin 30 dni, przedłużenie o 2 miesiąc... |
 | 2180 | `jdg.p16_rodo_aml_security_innovations.penalty_simulator` | 🔴 BLOCK | Art. 83 RODO; Art. 153 u.AML; Art. 34-36 u.AML |
@@ -12186,7 +12243,7 @@
 | 1301 | `jdg.pcc.loan_from_private_person` |  | Art. 1 ust. 1 pkt 2, Art. 7 ust. 1 pkt 4 Ustawy o PCC |
 | 1302 | `jdg.pcc.car_purchase_from_private` |  | Art. 1 ust. 1 pkt 1 lit. a Ustawy o PCC |
 | 1303 | `jdg.pcc.real_estate_purchase` |  | Art. 1 ust. 1 pkt 1 lit. a Ustawy o PCC |
-| 1304 | `jdg.pcc.aggregate_liability_check` |  | Ustawa o PCC |
+| 1304 | `jdg.pcc.aggregate_liability_check` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
 
 ### `rules/pit/advances_returns.rego` (12 reguł)
 
@@ -12732,11 +12789,11 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 11016 | `jdg.r11_pcc_lokalne_akcyza_innovations.pcc3_deadline_alert_monitor` |  | ustawa o PCC art. 10 (PCC-3, 14 dni), art. 10 § 2 (sankcje) |
+| 11016 | `jdg.r11_pcc_lokalne_akcyza_innovations.pcc3_deadline_alert_monitor` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
 | 11017 | `jdg.r11_pcc_lokalne_akcyza_innovations.real_estate_tax_simulator` |  | ustawa o podatkach i opłatach lokalnych art. 2-6 (stawki mak... |
-| 11018 | `jdg.r11_pcc_lokalne_akcyza_innovations.excise_product_classifier` |  | ustawa o PCC art. 10 (PCC-3, 14 dni), art. 10 § 2 (sankcje) |
+| 11018 | `jdg.r11_pcc_lokalne_akcyza_innovations.excise_product_classifier` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
 | 11019 | `jdg.r11_pcc_lokalne_akcyza_innovations.transport_tax_deadline_monitor` |  | ustawa o podatkach i opłatach lokalnych art. 9 (DN-1, 14 dni... |
-| 11020 | `jdg.r11_pcc_lokalne_akcyza_innovations.vat_vs_pcc_arbitrator` |  | ustawa o PCC art. 10 (PCC-3, 14 dni), art. 10 § 2 (sankcje) |
+| 11020 | `jdg.r11_pcc_lokalne_akcyza_innovations.vat_vs_pcc_arbitrator` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
 
 ### `rules/r12_ryczalt_cykl_zycia_innovations_v9.rego` (5 reguł)
 
@@ -12766,7 +12823,7 @@
 | 11032 | `jdg.r14_rodo_aml_bdo_innovations.aml_transaction_risk_scorer` |  | RODO art. 30 (rejestr czynności przetwarzania), art. 5 (zasa... |
 | 11033 | `jdg.r14_rodo_aml_bdo_innovations.rodo_sanction_calculator` |  | RODO art. 30 (rejestr czynności przetwarzania), art. 5 (zasa... |
 | 11034 | `jdg.r14_rodo_aml_bdo_innovations.str_gijf_deadline_monitor` |  | ustawa AML art. 74-80 (STR do GIIF, 1 dzień roboczy), art. 1... |
-| 11035 | `jdg.r14_rodo_aml_bdo_innovations.bdo_obligation_monitor` |  | Ustawa o odpadach art. 49-53 (rejestracja BDO, ewidencja, KP... |
+| 11035 | `jdg.r14_rodo_aml_bdo_innovations.bdo_obligation_monitor` |  | ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz.... |
 
 ### `rules/r15_ksef_jpk_edeklaracje_innovations_v9.rego` (5 reguł)
 
@@ -13040,7 +13097,7 @@
 | 1612 | `jdg.rodo.data_retention_policy` |  | Art. 5 ust. 1 lit. e RODO |
 | 1613 | `jdg.rodo.dpo_requirement` |  | Art. 37 RODO |
 
-### `rules/rodo_extended.rego` (17 reguł)
+### `rules/rodo_extended.rego` (16 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -13060,7 +13117,6 @@
 | 1653 | `jdg.rodo_extended.marketing_b2b_vs_b2c` | 🟡 TRIAGE | Art. 6 ust. 1 lit. f RODO (B2B — prawnie uzasadniony interes... |
 | 1654 | `jdg.rodo_extended.sanctions_uodo` | 🔴 BLOCK | Art. 83 RODO (kary administracyjne), Art. 107-111 Ustawy o o... |
 | 1655 | `jdg.rodo_extended.annual_compliance_review` | 🟡 TRIAGE | Art. 24 ust. 1 RODO (odpowiedzialność administratora), Art. ... |
-| 1699 | `jdg.rodo_extended.fallback` |  | RODO 2016/679 |
 
 ### `rules/routing.rego` (5 reguł)
 
@@ -14233,5 +14289,5 @@
 | 999 | `jdg.zus.extensions.coverage_summary` |  | Art. 30h PIT (składka solidarnościowa 4% od nadwyżki >1M PLN... |
 
 ---
-*Wygenerowano automatycznie — 2026-08-17 13:39:20*
+*Wygenerowano automatycznie — 2026-08-18 07:57:48*
 *Generator v8.0 — `python JDG/tools/generate_manifest.py`*

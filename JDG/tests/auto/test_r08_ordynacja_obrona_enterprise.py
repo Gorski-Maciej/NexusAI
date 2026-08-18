@@ -97,7 +97,7 @@ def test_r08_main_router_wired_p33():
     assert "import data.jdg.r08_ordynacja_obrona_innovations" in src
     assert '"jdg.r08_ordynacja_obrona_innovations": r08_ordynacja_obrona_innovations.decide' in src
     assert "final_verdict_p33 = safe_merge(final_verdict_p32" in src
-    assert "final_verdict_post_merge = object.union(final_verdict_p51" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p53" in src
 
 
 # ── R08-INN-01: interest_calculator_temporal ─────────────────────────────────
@@ -193,7 +193,7 @@ def test_inn05_statute_years_from_thresholds():
 def test_invariants_after_r08():
     src = _read(MAIN_REGO)
     # final_verdict_post_merge musi budować na p33
-    assert "final_verdict_post_merge = object.union(final_verdict_p51" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p53" in src
     # invariants + certificate nadal obecne
     assert "final_verdict_enforced = object.union(final_verdict_post_merge" in src
     assert "_decision_certificate" in src or "decision_certificate" in src

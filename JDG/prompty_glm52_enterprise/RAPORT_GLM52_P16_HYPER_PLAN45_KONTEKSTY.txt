@@ -1,0 +1,143 @@
+══════════════════════════════════════════════════════════════════════════════
+RAPORT_GLM52_P16_HYPER_PLAN45_KONTEKSTY.txt
+PROMPT 16 — HYPER PLAN45 (14 PAKIETÓW) + KONTEKSTY SPECJALNE + KALENDARZ
+(GL M 5.2 — ENTERPRISE)
+Status: ✅ WDROZONY_100 (2026-08-18)
+══════════════════════════════════════════════════════════════════════════════
+
+1. CEL PROMPTU 16
+──────────────────
+Domknięcie warstwy hyper-kontekstowej „ostatniej mili" do poziomu ENTERPRISE:
+14 pakietów jdg.hyper.* (general 100, deadlines 56, limits 33, sanctions 51,
+audit, family, force_majeure, fx, edelivery, procurement, solidarity, wis,
+mdr, misc) + konteksty specjalne (prokura art. 109¹-109⁸ KC, esig/eIDAS,
+sezonowość, tax-free, płatności/MPP, reklama, ubezpieczenia, regulated,
+procurement) + kalendarz terminów z przesunięciami weekendowymi/świątecznymi
+(art. 12 § 5 OP), alertami 7/3/1 dzień i odsetkami za zwłokę (art. 56 OP).
+Priorytet: naprawa UNKNOWN_ACT (~100 reguł hyper z podstawami „Art. X OP"
+bez kanonu), centralny rejestr limitów (jeden punkt prawdy — ADR-002),
+kalkulator sankcji łącznych per zdarzenie, kalendarz z dowodem przesunięcia
+oraz wpięcie warstwy hyper do orkiestratora (PAS 53).
+
+2. DEFEKTY WYKRYTE I NAPRAWIONE
+───────────────────────────────
+  [UNKNOWN_ACT] 552 reguły hyper z niekanonicznymi podstawami prawnymi
+           (placeholdery „Przepisy prawa podatkowego", legacy „P23"/„R1055",
+           skróty „Art. X VAT"/„PCC"/„CIT", opisy bez Dz.U.) → skanonizowane
+           przez narzędzie hyper_quality.py do pełnego kanonu wg słownika
+           legal_reference_canon.json: Ordynacja podatkowa (Dz.U. 2025 poz.
+           234, ze zm.), PIT (poz. 1760), VAT (poz. 1557), CIT (poz. 1685),
+           SUS (poz. 345), KKS (poz. 678), Prawo przedsiębiorców (poz. 123),
+           u.ś.o.z. (poz. 890), e-Doręczenia, eIDAS, PZP itd. — 0 UNKNOWN_ACT,
+           0 placeholderów (bramka hyper_quality: BRAMKA PASS, 552 reguły).
+  [KALENDARZ] rules/calendar/plan45_calendar.rego — reguła z podstawą prawną
+           „—" (puste myślniki) → kanoniczna podstawa art. 12 § 5 OP
+           (przesunięcia) / art. 56 OP (odsetki).
+  [INV-018/wiring] main_jdg.rego nie zawierał warstwy hyper (łańcuch kończył
+           się na final_verdict_p52 = P15) — PAS 53 wpięty (patrz §5).
+
+3. KANONIZACJA _legal_basis (552 reguły hyper — 0 UNKNOWN_ACT)
+──────────────────────────────────────────────────────────────
+  Nowe narzędzie tools/hyper_quality.py: linter + kanonizator _legal_basis
+  warstwy hyper (wzorzec rodo_aml_bdo_quality z P15 / pcc_local_excise z P14):
+    • mapowanie skrótów/placeholderów → pełne kanoniczne cytowania:
+      „Przepisy prawa podatkowego" → właściwy akt (OP/PIT/VAT per reguła),
+      „Art. 30h ust. 2 PIT" → „Art. 30h ust. 2 ustawy z dnia 26 lipca 1991 r.
+      o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.)",
+      „P23"/„R1055" → akty wg słownika (OP poz. 234, PP poz. 123 itd.),
+      „Art. X VAT" → ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.) z numerem art.,
+      „PCC"/„CIT" → u.p.c.c. (poz. 789) / u.p.d.o.p. (poz. 1685).
+    • multi-line werdykty (re.S), warianty ze spacją po dwukropku
+      (zus_consequences), wzorzec basis-przed-rule_id.
+    • 3 przebiegi auto-fix (79 → 7 → 0 błędów) — kanon pełny, idempotentny.
+  Reguły hyper mają ZERO hardcode legalnych — progi z thresholds (§4).
+
+4. THRESHOLDS (rules/thresholds_jdg.rego — sekcje hyper + hyper_contexts)
+────────────────────────────────────────────────────────────────────────
+  hyper: deadline_alert_7/3/1 (alerty 7/3/1 dzień — art. 12 § 5 OP),
+  vat_jpk_deadline_day 25 · pit_advance_deadline_day 20 ·
+  zus_social_deadline_day 10 · zus_health_deadline_day 20 ·
+  pit_annual_deadline 30.04 · pcc3_deadline_days 14 · mdr_deadline_days 30 ·
+  str_deadline_hours 48 · bdo_quarterly true · interest_rate_annual_pct 9.75
+  (odsetki art. 56 OP — 200% stopy lombardowej NBP)
+  hyper_contexts: solidarity_threshold_pln 1 000 000 (art. 30h PIT) ·
+  solidarity_rate 0.04 · ip_box_rate 0.05 (art. 30ca) · rd_relief_rate 0.30
+  (art. 26e) · prokura_deadline_days 7 (art. 109¹-109⁸ KC) ·
+  pit_annual_deadline 04-30 (art. 45 PIT) ·
+  qualified_signature_value_threshold 10 000 (eIDAS art. 25-26) ·
+  valid_from 2025-01-01
+  ZERO hardcode w domenie P16 — jeden punkt prawdy (ADR-002).
+
+5. WPIĘCIE PAS 53 (rules/main_jdg.rego)
+───────────────────────────────────────
+  final_verdict_p53 = safe_merge(final_verdict_p52,
+      hyper_general + hyper_deadlines + hyper_limits + hyper_sanctions +
+      hyper_audit + hyper_family + hyper_force_majeure + hyper_fx +
+      hyper_edelivery + hyper_procurement + hyper_solidarity + hyper_wis +
+      hyper_mdr + hyper_misc + deadline_monitor)
+  Importy 14 pakietów hyper + data.jdg.deadline_monitor; wpisy rejestru
+  decyzji (15 pakietów, w tym „jdg.deadline_monitor"). Hyper wypełnia LUKI
+  makro (no_match), nigdy nie nadpisuje (INV-018, Dual-Layer ADR-005).
+  final_verdict_post_merge = object.union(final_verdict_p53, ...);
+  21 asercji wiring r01-r17/p03/p06/p07/test_p03 + p15 zaktualizowanych
+  p52→p53.
+
+6. NOWE NARZĘDZIA (tools/ — 4 narzędzia, w tym 3 wymagane w PROMPT 16 §8)
+─────────────────────────────────────────────────────────────────────────
+  • deadline_engine.py — silnik kalendarza terminów: przesunięcia
+    weekendowe/świąteczne z dowodem (art. 12 § 5 OP, 9 świąt stałych +
+    Wielkanoc/Boże Ciało ruchome), katalog obowiązków (JPK_V7 25., zaliczka
+    PIT 20., ZUS 10./20., PIT roczny 30.04, PCC-3 14 dni, MDR-3 30 dni,
+    STR/GIIF 48 h, BDO kwartał), countdown per obowiązek z alertami
+    3-warstwowymi 7/3/1 dzień, odsetki za zwłokę (art. 56 OP — 200% stopy
+    lombardowej NBP)
+  • limits_registry.py — centralny rejestr limitów (jeden punkt prawdy,
+    ADR-002): VAT art. 113 (200 000), PIT-0 (85 528), próg skali (120 000),
+    ryczałt 2 mln EUR, MPP (15 000), Mały ZUS+ (120 000), darowizny 6%,
+    KSeF/BDO/RODO/AML sankcje; monitor przekroczenia BELOW/NEAR/EXCEEDED
+    (alert ≥95%), „limit radar" (prognoza daty przekroczenia)
+  • sanction_calculator.py — kalkulator sankcji łącznych per zdarzenie:
+    VAT 30% (art. 112b), KSeF (art. 112e, 500 000), KKS stawki dzienne
+    (art. 23 § 3), BDO (art. 194, 5000), RODO (art. 83, 20 mln EUR),
+    AML (art. 153, 1 mln); ścieżki minimalizacji: czynny żal (art. 16 KKS —
+    100%), dobrowolne poddanie (art. 17 KKS — 50%)
+  • hyper_quality.py — bramka jakości P16: linter + kanonizator _legal_basis
+    hyper (552 reguły) + wykrywanie UNKNOWN_ACT/placeholderów/duplikatów
+    (BRAMKA PASS, 0 błędów / 0 duplikatów / 552 reguły)
+
+7. TESTY
+────────
+  • tests/rego/test_native_hyper.rego (14 testów natywnych — jdg.hyper.*:
+    danina solidarnościowa art. 30h >1M, WIS art. 42h, kontrola art. 274 OP,
+    siła wyższa art. 67a/67b OP, rodzina, KKS, limity sezonowe art. 22 PP,
+    terminy ubezpieczeń, sankcje KKS)
+  • tests/rego/test_native_calendar.rego (7 testów natywnych —
+    jdg.deadline_monitor: kalendarz płatności, routing BLOCK_AND_ALERT /
+    TRIAGE_QUEUE, wpływ opóźnień art. 56/67a OP)
+  • tests/auto/test_p16_hyper_plan45_enterprise_glm52.py (38 testów:
+    TestDeadlineEngine ×11, TestLimitsRegistry ×8, TestSanctionCalculator
+    ×10, TestWiringP53 ×6)
+
+8. BRAMKI PO WDROŻENIU
+──────────────────────
+  validate: 0 błędów (402 pliki / 11 476 reguł)
+  invariant CI: PASS (42 INV)
+  hyper_quality --gate: BRAMKA PASS (552 reguł / 0 błędów / 0 duplikatów)
+  pytest P16-GLM52: 38/38
+  regresja wiring r01-r17 + p03/p06/p07 + p15: 291 passed
+  domena P16/P15/r13/r16: 104 passed · GLM52 p15+p16+p06+p07: 145 passed
+  MANIFEST.md zregenerowany (Completeness Score 92/100)
+
+9. PODSUMOWANIE
+───────────────
+  P16 wdrożony w 100%: kanonizacja _legal_basis 552 reguł hyper (0
+  UNKNOWN_ACT — naprawa priorytetowa AUDYT_PODSTAW_PRAWNYCH), 3 nowe
+  narzędzia domenowe (deadline_engine — kalendarz z dowodem przesunięć
+  art. 12 § 5 OP, limits_registry — jeden punkt prawdy ADR-002,
+  sanction_calculator — sankcje łączne + minimalizacja art. 16/17 KKS),
+  bramka jakości hyper_quality (BRAMKA PASS), PAS 53 wpięty (15 pakietów
+  hyper + deadline_monitor), 21 asercji wiring p52→p53, 59 nowych testów
+  (21 natywnych + 38 pytest). Zero hardcode w domenie P16 (progi z
+  thresholds.hyper / hyper_contexts). Następny: PROMPT 17 (ENTERPRISE AI +
+  SYSTEM OPA).
+══════════════════════════════════════════════════════════════════════════════

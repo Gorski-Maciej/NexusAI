@@ -10,6 +10,10 @@ Covers:
 
 from __future__ import annotations
 
+import pytest
+
+pytest.importorskip("nexus_ai", reason="legacy nexus_ai package nieobecny w repo (JDG = OPA/Rego)")
+
 from nexus_ai.services.ksef_generator import generate_ksef_xml
 
 

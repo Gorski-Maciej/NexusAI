@@ -4,7 +4,11 @@ import importlib.util
 import sys
 
 
-cfo_spec = importlib.util.spec_from_file_location("cfo_module", Path(__file__).resolve().parents[1] / "Code" / "services" / "cfo_offline.py")
+_cfo_path = Path(__file__).resolve().parents[1] / "Code" / "services" / "cfo_offline.py"
+if not _cfo_path.exists():
+    import pytest
+    pytest.skip(f"legacy Code/services nieobecny w repo: {_cfo_path}", allow_module_level=True)
+cfo_spec = importlib.util.spec_from_file_location("cfo_module", _cfo_path)
 cfo_module = importlib.util.module_from_spec(cfo_spec)
 assert cfo_spec and cfo_spec.loader
 sys.modules["cfo_module"] = cfo_module

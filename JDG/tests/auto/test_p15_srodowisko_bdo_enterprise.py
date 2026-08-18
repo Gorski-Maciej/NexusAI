@@ -275,8 +275,10 @@ def test_audit_rego_files_real():
     assert any("micro/bdo/" in f for f in res["files_audited"])
     assert any("micro/srodowisko/" in f for f in res["files_audited"])
     assert any("micro/budownictwo/" in f for f in res["files_audited"])
-    assert res["total_rule_ids"] >= 166, "Oczekiwano ≥166 rule_id (bdo 52 + srodowisko 49 + budownictwo 65)"
-    assert res["unique_count"] >= 160
+    # GLM52 P15 (2026-08-18): usunięto 5 martwych fallbacków {true} (INV-018)
+    # w micro/bdo — rule_id spadły z 166 do 161 (bdo 52→47 + srodowisko 49 + budownictwo 65)
+    assert res["total_rule_ids"] >= 161, "Oczekiwano ≥161 rule_id (bdo 47 + srodowisko 49 + budownictwo 65)"
+    assert res["unique_count"] >= 161
 
 
 def test_audit_coverage_reports_real():

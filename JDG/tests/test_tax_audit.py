@@ -16,6 +16,8 @@ import hashlib
 import duckdb
 import pytest
 
+pytest.importorskip("nexus_ai", reason="legacy nexus_ai package nieobecny w repo (JDG = OPA/Rego)")
+
 from nexus_ai.tax.audit import (
     DecisionTraceLogger,
     ensure_schema,

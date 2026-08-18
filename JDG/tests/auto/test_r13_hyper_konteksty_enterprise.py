@@ -99,7 +99,7 @@ def test_r13_main_router_wired_p38():
     assert "import data.jdg.r13_hyper_konteksty_innovations" in src
     assert '"jdg.r13_hyper_konteksty_innovations": r13_hyper_konteksty_innovations.decide' in src
     assert "final_verdict_p38 = safe_merge(final_verdict_p37" in src
-    assert "final_verdict_post_merge = object.union(final_verdict_p51" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p53" in src
 
 
 # ── R13-INN-01: cross_domain_conflict_detector ───────────────────────────────
@@ -161,7 +161,7 @@ def test_inn05_signature_selector():
 
 def test_invariants_after_r13():
     src = _read(MAIN_REGO)
-    assert "final_verdict_post_merge = object.union(final_verdict_p51" in src
+    assert "final_verdict_post_merge = object.union(final_verdict_p53" in src
     assert "final_verdict_enforced = object.union(final_verdict_post_merge" in src
     assert "_decision_certificate" in src or "decision_certificate" in src
     assert "_certainty_guard" in src

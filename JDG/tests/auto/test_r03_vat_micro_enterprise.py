@@ -147,7 +147,7 @@ class TestR03MainJdgWiring:
         assert "final_verdict_p33 = safe_merge(final_verdict_p32," in text
         # P03: łańcuch wydłużony o PAS 43 (warstwa mikro VAT + JPK wpięta najgłębiej)
         assert "final_verdict_p43 = safe_merge(final_verdict_p42," in text
-        assert "final_verdict_post_merge = object.union(final_verdict_p51," in text
+        assert "final_verdict_post_merge = object.union(final_verdict_p53," in text
         assert "final_verdict_enforced = object.union(final_verdict_post_merge," in text
         assert "final_verdict = final_verdict_enforced" in text
 

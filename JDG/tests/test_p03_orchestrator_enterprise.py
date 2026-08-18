@@ -71,7 +71,7 @@ class TestRuntimeInvariants:
         # P03: PAS 43 (warstwa mikro VAT+JPK) wydłużył łańcuch post-merge;
         # P09 (GLM52): PAS 46 (mikro ZUS); P10 (GLM52): PAS 47 (mikro księgowość);
         # P11 (GLM52): PAS 48 (mikro KKS/Ordynacja/Audyt)
-        assert "final_verdict_post_merge = object.union(final_verdict_p51," in main
+        assert "final_verdict_post_merge = object.union(final_verdict_p53," in main
         assert "runtime_invariants.enforce(final_verdict_post_merge)" in main
         assert "final_verdict_enforced" in main
 
@@ -182,7 +182,7 @@ class TestMainJdgWiring:
         assert "final_verdict_p47 = safe_merge(final_verdict_p46," in text
         # P11 (GLM52): PAS 48 — warstwa mikro KKS/Ordynacja/Audyt (kks/ord/plan33/plan34/atomic)
         assert "final_verdict_p48 = safe_merge(final_verdict_p47," in text
-        assert "final_verdict_post_merge = object.union(final_verdict_p51," in text
+        assert "final_verdict_post_merge = object.union(final_verdict_p53," in text
         assert "final_verdict_enforced = object.union(final_verdict_post_merge," in text
         assert "final_verdict = final_verdict_enforced" in text
         assert '"_routing_context": routing_context' in text

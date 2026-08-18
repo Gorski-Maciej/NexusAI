@@ -1,0 +1,145 @@
+══════════════════════════════════════════════════════════════════════════════
+RAPORT_GLM52_P15_RODO_AML_BDO.txt
+PROMPT 15 — RODO / AML-CBDD / BDO-ŚRODOWISKO / BUDOWNICTWO / TRANSPORT / SECURITY
+(GL M 5.2 — ENTERPRISE)
+Status: ✅ WDROZONY_100 (2026-08-18)
+══════════════════════════════════════════════════════════════════════════════
+
+1. CEL PROMPTU 15
+──────────────────
+Domknięcie warstwy compliance do poziomu ENTERPRISE: RODO (rejestr czynności
+art. 30, prawo do usunięcia art. 17, podprocesorzy art. 28, naruszenia art. 33-34
+72 h, DPIA art. 35, sankcje art. 83 do 20 mln EUR / 4% obrotu), AML/CBDD (art.
+28a-34, transakcje okazjonalne > 15 000 EUR, beneficjenci rzeczywiści CRBR,
+STR/GIIF art. 74-80 w 48 h, sankcja art. 153 do 1 mln zł, AMLR-ready), BDO
+i środowisko (rejestracja art. 17-18 z opłatą 100-500 zł, ewidencja art. 49-55
+z KPO, EWC, transport art. 66-74, kara art. 194 — 5000 zł), budownictwo
+(pozwolenie art. 28 Pb), transport drogowy (licencje) — z domknięciem „pustyni
+pokrycia" (luki no_match makro), kanonizacją podstaw prawnych i eliminacją
+defektów strukturalnych (martwe fallbacki INV-018, konflikty pakietów).
+
+2. DEFEKTY WYKRYTE I NAPRAWIONE
+───────────────────────────────
+  [INV-018] 7 martwych fallbacków `else := {...} { true }` usuniętych — bloki
+           przechwytywały no_match (matched: true zawsze) i maskowały default
+           decide:
+             • rodo_extended.rego      (jdg.rodo_extended.fallback)
+             • environmental/bdo_enterprise.rego (jdg.environmental.bdo.fallback)
+             • micro/bdo/bdo_rejestracja.rego · bdo_ewidencja.rego · bdo_ewc.rego
+               · bdo_transport.rego · bdo_zezwolenia.rego
+           Efekt: default decide przywraca no_match (konwencja INV-018, wzorzec
+           P03-P05/P14); rule_id w domenie BDO: 166 → 161 (5 martwych reguł mniej).
+  [KOMPILACJA] rodo/plan42_rodo.rego — `package jdg.rodo` (kolizja 2× default
+           decide z rodo.rego) → package jdg.rodo.plan42 (4 pola package
+           skorygowane; rule_id jdg.rodo.* zachowane — spójne z policy_registry
+           i legal_graph; wzorzec plan33_pcc z P14).
+  [THRESHOLDS] Duplikat kompletnej reguły `rodo_aml_bdo := {...}` w
+           thresholds_jdg.rego (blok RAPORT_14 + blok RAPORT_15 — błąd kompilacji
+           OPA: complete rules must not produce multiple outputs) → zmergowany
+           w JEDEN kanoniczny blok 15 kluczy (rodo_sanction_min/max_eur,
+           aml_threshold_eur, bdo_registration_days itd. zachowane; valid_from
+           2026-01-01). Konsumenci obu bloków (r14_rodo_aml_bdo_innovations_v9 +
+           rodo_aml_bdo_atomic_p15) działają na tym samym obiekcie.
+  [_legal_basis] Naprawiony zduplikowany tekst podstawy prawnej w
+           rodo_aml_bdo_atomic_p15 (budownictwo_permit.r1): „ustawy z dnia
+           7 lipca 1994 r. — ustawy z dnia 7 lipca 1994 r. — Prawo budowlane
+           (Dz.U. 2025 poz. 1101) (Dz.U. 2025 poz. 1101)" → kanoniczne
+           „ustawy z dnia 7 lipca 1994 r. — Prawo budowlane (Dz.U. 2025 poz. 1101)".
+  [_legal_basis] Kanonizacja warstwy P15 (bramka rodo_aml_bdo_quality):
+           0 starych cytowań (Dz.U. 2018 poz. 723 / Dz.U. 2013 poz. 21 /
+           Dz.U. 1994 nr 89 poz. 414) — kanony: RODO 2016/679 · AML Dz.U. 2025
+           poz. 213 · odpady poz. 321 · Prawo budowlane poz. 1101.
+
+3. NOWE REGUŁY ATOMOWE (micro/rodo_aml_bdo_atomic_p15.rego — 17 reguł)
+─────────────────────────────────────────────────────────────────────
+  jdg.micro.rodo_aml_bdo_atomic_p15.* (priorytety 15001-15031):
+  • RODO: rodo_register.r1 (art. 30 — rejestr czynności), rodo_erasure.r1
+    (art. 17 — 30 dni z dowodem), rodo_processor.r1 (art. 28 — DPA z
+    podprocesorem), rodo_breach.r1 (art. 33 — zgłoszenie 72 h),
+    rodo_dpia.r1 (art. 35 — ocena skutków), rodo_fine.r1 (art. 83 ust. 5 —
+    sankcja do 20 mln EUR)
+  • AML: aml_cbdd.r1 (art. 28a-34 — CBDD + beneficjent), aml_cash_15k.r1
+    (art. 34 — transakcja okazjonalna > 15 000 EUR), aml_str.r1 (art. 74-80 —
+    STR/GIIF 48 h), aml_beneficiary.r1 (art. 28a — CRBR)
+  • BDO: bdo_registration.r1 (art. 17-18 — opłata 100-500 zł),
+    bdo_ewidencja.r1 (art. 49-55 — KPO/ewidencja), bdo_ewc.r1 (kod EWC z
+    data.jdg.compliance_rates.ewc_codes), bdo_transport.r1 (art. 66-74 —
+    karta przekazania + zezwolenie), bdo_fine.r1 (art. 194 — kara 5000 zł)
+  • Budownictwo/transport: budownictwo_permit.r1 (art. 28 Pb — pozwolenie),
+    transport_license.r1 (licencja transportu drogowego)
+  Wszystkie z matched: true, _legal_basis kanonicznym, _routing i _warnings.
+  ZERO hardcode — progi z data.thresholds.jdg.rodo_aml_bdo (ADR-002).
+
+4. THRESHOLDS (rules/thresholds_jdg.rego — sekcja rodo_aml_bdo, zmergowana)
+────────────────────────────────────────────────────────────────────────
+  rodo_erasure_deadline_days 30 · rodo_breach_deadline_hours 72 ·
+  rodo_fine_max_eur 20 000 000 · rodo_sanction_min_eur 10 000 000 ·
+  rodo_sanction_max_eur 20 000 000 · aml_cash_threshold_eur 15 000 ·
+  aml_threshold_eur 15 000 · aml_str_deadline_hours 48 ·
+  aml_str_deadline_days 1 · aml_sanction_max_pln 1 000 000 ·
+  bdo_registration_fee_pln 100 · bdo_fee_micro_pln 100 ·
+  bdo_registration_days 30 · bdo_kpo_electronic true ·
+  bdo_fine_art194_pln 5000
+
+5. NOWE NARZĘDZIA (tools/ — 7 narzędzi, w tym 6 wymaganych w PROMPT 15 §8)
+────────────────────────────────────────────────────────────────────────
+  • rodo_register_generator.py — rejestr czynności art. 30 (auto-z szablonów),
+    tracker naruszeń 72 h (art. 33), kalkulator sankcji art. 83 (tier 1/2)
+  • erasure_engine.py — silnik erasure art. 17: wykrycie → usunięcie → dowód
+    (deletion_hash) → raport; odmowa wg art. 17 ust. 3; RODO Shield
+    (pseudonimizacja HMAC-SHA256 — werdykty bez PII)
+  • aml_cbdd_engine.py — checklista CBDD (art. 28a-34), monitor 15 000 EUR
+    (art. 34), scorer ryzyka (matryca), detektor beneficjentów (>25%)
+  • str_generator.py — zawiadomienie STR/GIIF (art. 74-80) z countdownem 48 h
+  • bdo_ewidencja_engine.py — rejestracja BDO (art. 17-18), karta KPO zero-ręki
+    (art. 49-55), monitor kwartalny, ryzyko kary art. 194
+  • ewc_classifier.py — klasyfikator odpadów → kod EWC (9 kategorii)
+  • rodo_aml_bdo_quality.py — bramka jakości P15: linter + kanonizator
+    _legal_basis + wykrywanie martwych fallbacków (INV-018) + konfliktów
+    pakietów + duplikatów rule_id (BRAMKA PASS, 653 reguły)
+
+6. WPIĘCIE PAS 52 (rules/main_jdg.rego)
+───────────────────────────────────────
+  final_verdict_p52 = safe_merge(final_verdict_p51,
+      micro_rodo_full + micro_rodo_plan33 + micro_aml_full +
+      micro_bdo_rejestracja + micro_bdo_ewidencja + micro_bdo_ewc +
+      micro_bdo_transport + micro_bdo_zezwolenia + micro_bdo_weee +
+      micro_srodowisko_full + micro_est_plan33 + micro_budownictwo_full +
+      micro_transport_full + rodo_aml_bdo_atomic_p15)
+  Importy + wpisy rejestru decyzji (15 pakietów). Mikro wypełnia LUKI makro
+  (no_match), nigdy nie nadpisuje (INV-018, Dual-Layer ADR-005).
+  final_verdict_post_merge = object.union(final_verdict_p52, ...);
+  20 asercji wiring r01-r17/p03/p06/p07 zaktualizowanych p51→p52.
+
+7. TESTY
+────────
+  • tests/rego/test_native_rodo.rego (13 testów natywnych — RODO art. 30/17/28/33/35/83)
+  • tests/rego/test_native_aml.rego (10 testów natywnych — AML/CBDD/STR/beneficjent)
+  • tests/rego/test_native_bdo.rego (16 testów natywnych — BDO/EWC/transport/budownictwo)
+  • tests/auto/test_p15_rodo_aml_bdo_enterprise_glm52.py (38 testów:
+    TestRodoRegisterGenerator ×6, TestErasureEngine ×5, TestAmlCbddEngine ×7,
+    TestStrGenerator ×2, TestBdoEwidencjaEngine ×5, TestEwcClassifier ×5,
+    TestWiringP52 ×8)
+  • test_p15_srodowisko_bdo_enterprise.py zaktualizowany (audyt 166→161
+    rule_id — po usunięciu 5 martwych fallbacków)
+
+8. BRAMKI PO WDROŻENIU
+──────────────────────
+  validate: 0 błędów (402 pliki / 11 476 reguł)
+  invariant CI: PASS (42 INV)
+  rodo_aml_bdo_quality: 0 błędów / BRAMKA PASS (653 reguł / 0 duplikatów / 0 dead)
+  pytest P15-GLM52: 38/38
+  regresja wiring r01-r17 + p03/p06/p07: 360 passed
+  domena P15/P16/P14 (p15_glm52 + p15_old + p16 + p14 + r14 + r16): 192 passed
+  MANIFEST.md + COVERAGE_REPORT.md zregenerowane (453 plików / 12 280 rule_id)
+
+9. PODSUMOWANIE
+───────────────
+  P15 wdrożony w 100%: 7 martwych fallbacków {true} usuniętych (INV-018),
+  konflikt pakietu jdg.rodo naprawiony (plan42_rodo → jdg.rodo.plan42),
+  duplikat thresholdów rodo_aml_bdo zmergowany, 17 reguł atomowych domyka
+  warstwę compliance (RODO/AML/BDO/budownictwo/transport), 7 narzędzi
+  domenowych, PAS 52 wpięty (15 pakietów mikro), 77 nowych testów
+  (39 natywnych + 38 pytest). Zero hardcode w domenie P15 (progi z thresholds).
+  Następny: PROMPT 16 (HYPER PLAN45 / KONTEKSTY).
+══════════════════════════════════════════════════════════════════════════════

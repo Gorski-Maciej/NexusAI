@@ -5,7 +5,13 @@
   "tax_year": 2027,
   "effective_from": "2027-01-01",
   "effective_to": "2027-12-31",
-  "description": "Overlay JDG dla roku podatkowego 2027 — placeholder na przyszłe zmiany.",
+  "description": "Overlay JDG dla roku podatkowego 2027 — tylko zmienione reguły.",
   "changes": [],
-  "files": []
+  "files": [],
+  "generated_by": "overlay_generator.py",
+  "generated_at": "2026-08-18",
+  "lkg": {
+    "acts": 26,
+    "covered_nodes": 133
+  }
 }

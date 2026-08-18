@@ -22,11 +22,12 @@ from __future__ import annotations
 import sys
 from unittest.mock import MagicMock, PropertyMock, patch
 
+import pytest
+
+pytest.importorskip("nexus_ai", reason="legacy nexus_ai package nieobecny w repo (JDG = OPA/Rego)")
+
 # Move msgspec import after docstring
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
-from unittest.mock import MagicMock, PropertyMock, patch
-
-import pytest
 
 # ── Mock config BEFORE importing RiskController ──────────────────────────────
 # RiskController._with_guard używa `from config import AppConfig`, ale w projekcie

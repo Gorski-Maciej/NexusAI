@@ -16,6 +16,8 @@ from datetime import datetime, timezone
 import duckdb
 import pytest
 
+pytest.importorskip("nexus_ai", reason="legacy nexus_ai package nieobecny w repo (JDG = OPA/Rego)")
+
 from nexus_ai.services.semantic_guard import (
     SemanticGuard,
     ANOMALY_RULES_SCHEMA,

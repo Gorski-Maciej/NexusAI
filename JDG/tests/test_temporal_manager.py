@@ -15,10 +15,13 @@ from __future__ import annotations
 import uuid
 from datetime import date
 
+import pytest
+
+pytest.importorskip("nexus_ai", reason="legacy nexus_ai package nieobecny w repo (JDG = OPA/Rego)")
+
 from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 
 import duckdb
-import pytest
 
 from nexus_ai.services.temporal_manager import TemporalManager, TemporalRule
 from nexus_ai.tax.rules import ensure_tax_schemas, seed_default_rules

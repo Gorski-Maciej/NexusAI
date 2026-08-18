@@ -18,6 +18,8 @@ from decimal import Decimal
 import duckdb
 import pytest
 
+pytest.importorskip("nexus_ai", reason="legacy nexus_ai package nieobecny w repo (JDG = OPA/Rego)")
+
 from nexus_ai.tax.exceptions import NoMatchingRuleError
 from nexus_ai.tax.rules import (
     ContextInterpreter,

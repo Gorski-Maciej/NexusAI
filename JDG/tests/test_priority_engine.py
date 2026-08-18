@@ -13,9 +13,11 @@ from __future__ import annotations
 
 import uuid
 
-from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
-
 import pytest
+
+pytest.importorskip("nexus_ai", reason="legacy nexus_ai package nieobecny w repo (JDG = OPA/Rego)")
+
+from nexus_ai.core.msgspec_utils import msgspec_dumps, msgspec_loads, msgspec_dumps_bytes
 
 from nexus_ai.services.priority_engine import PriorityEngine, PrioritizedRule, MatchResult
 

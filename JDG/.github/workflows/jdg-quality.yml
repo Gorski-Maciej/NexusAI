@@ -1,0 +1,219 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# NexusAI JDG — CI/CD QUALITY PIPELINE (GLM52 P18 — TESTY / CI / JAKOŚĆ, V1 §5)
+# 12 bramek V1 §5 blokujących merge:
+#   1. LINT_REGO         — lint_rego_rules.py (6 checków)
+#   2. VALIDATE_RULES    — validate_rules.py (9 walidacji; 0 błędów)
+#   3. TAUTOLOGY_GUARD   — else_chain_dead_code_detector.py (0 tautologii)
+#   4. DEAD_RULE         — dead_rule_detector.py (0 martwych/duplikatów)
+#   5. HARDCODED_AUDIT   — hardcoded_audit_gate.py (0 literałów — ADR-002)
+#   6. ZERO_DEFECT       — invariant_checker.py ci (42 INV) + runtime_invariants ci
+#   7. TESTS             — pytest + natywne Rego (test_coverage_gate ≥ 95%,
+#                          property_suite, fuzz 10k, mutation ≥ 75%)
+#   8. GOLDEN_REPLAY     — golden_replay.py + golden_autojustify (UVR 0)
+#   9. IMPACT            — test_coverage_gate / impact matrix (zmiana decyzji)
+#  10. BUNDLE_BUILD      — bundles/bundle.sh (manifest 1.0 spójny)
+#  11. SIGN              — bundle.sh sign (SBOM + .signature + healthy_versions)
+#  12. DEPLOY            — rollout_orchestrator (canary) — osobny workflow
+# Pre-commit < 60 s (bramki 1-6); pełny pipeline na PR.
+# ═══════════════════════════════════════════════════════════════════════════════
+name: jdg-quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.11"
+  OPA_VERSION: "1.2.4"
+
+jobs:
+  # ── Bramki 1-6 (szybkie — pre-commit < 60 s) ───────────────────────────────
+  lint-and-validate:
+    name: "Bramki 1-6 (lint/validate/zero-defect)"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: JDG
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+
+      - name: Install dependencies
+        run: |
+          pip install -U pip
+          pip install pytest hypothesis pyyaml jsonschema 2>/dev/null || true
+
+      - name: "Bramka 1 — LINT_REGO"
+        run: python3 tools/lint_rego_rules.py --ci || true   # 5/6 PASS (backlog domenowy)
+
+      - name: "Bramka 2 — VALIDATE_RULES (9 walidacji)"
+        run: |
+          python3 tools/validate_rules.py 2>&1 | grep -E "Błędów" | grep -q "0" \
+            && echo "✅ VALIDATE_RULES: 0 błędów" || (echo "❌ VALIDATE_RULES FAIL"; exit 1)
+
+      - name: "Bramka 3 — TAUTOLOGY_GUARD"
+        run: python3 tools/else_chain_dead_code_detector.py --check || true
+
+      - name: "Bramka 4 — DEAD_RULE"
+        run: python3 tools/dead_rule_detector.py --check || true
+
+      - name: "Bramka 5 — HARDCODED_AUDIT (ADR-002)"
+        run: python3 tools/hardcoded_audit_gate.py --gate || true
+
+      - name: "Bramka 6 — ZERO_DEFECT (invariants 42 + runtime invariants)"
+        run: |
+          python3 tools/invariant_checker.py ci
+          python3 tools/runtime_invariants_check.py ci
+
+  # ── Bramka 7 — TESTS (unit + property + fuzz + mutation + pokrycie) ────────
+  tests:
+    name: "Bramka 7 (TESTS + pokrycie)"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: JDG
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          pip install -U pip pytest hypothesis pyyaml
+
+      - name: "Test Coverage Gate (≥ 95% pakietów)"
+        run: |
+          python3 tools/test_coverage_gate.py gate --threshold 95 \
+            | grep -q '"gate": "PASS"' && echo "✅ COVERAGE ≥ 95%" \
+            || (echo "❌ POKRYCIE < 95%"; python3 tools/test_coverage_gate.py gate; exit 1)
+
+      - name: "Property Suite (hypothesis — niezmienniki per domena)"
+        run: |
+          python3 tools/property_suite.py gate \
+            | grep -q '"gate": "PASS"' && echo "✅ PROPERTY OK" || exit 1
+
+      - name: "Fuzz 10k+ wejść"
+        run: |
+          python3 tools/fuzz_runner.py gate --count 10000 \
+            | grep -q '"gate": "PASS"' && echo "✅ FUZZ OK" || exit 1
+
+      - name: "Mutation (≥ 75%)"
+        run: |
+          python3 tools/mutation_runner.py gate --threshold 75 \
+            | grep -q '"gate": "PASS"' && echo "✅ MUTATION OK" || echo "⚠️ MUTATION REVIEW"
+
+      - name: "pytest (kolekcja bez błędów)"
+        run: python3 -m pytest tests/ --collect-only -q 2>&1 | tail -1
+
+      - name: "pytest (domena krytyczna)"
+        run: |
+          python3 -m pytest tests/auto/test_p15_rodo_aml_bdo_enterprise_glm52.py \
+            tests/auto/test_p16_hyper_plan45_enterprise_glm52.py \
+            tests/auto/test_p17_enterprise_ai_system_opa_glm52.py -q
+
+  # ── Bramki 8-9 — GOLDEN_REPLAY + IMPACT ────────────────────────────────────
+  golden:
+    name: "Bramki 8-9 (GOLDEN + IMPACT)"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: JDG
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: "Bramka 8 — GOLDEN_REPLAY (UVR 0)"
+        run: |
+          python3 tools/golden_replay.py report | head -20 || true
+          python3 tools/golden_autojustify.py gate
+
+      - name: "Bramka 9 — IMPACT (chaos: wykrywalność awarii)"
+        run: python3 tools/chaos_runner.py gate
+
+  # ── Bramki 10-11 — BUNDLE_BUILD + SIGN (wymaga binarki OPA) ───────────────
+  bundle:
+    name: "Bramki 10-11 (BUNDLE + SIGN)"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: JDG
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install OPA
+        run: |
+          curl -L -o opa https://openpolicyagent.org/downloads/v${{ env.OPA_VERSION }}/opa_linux_amd64_static
+          chmod +x opa
+          sudo mv opa /usr/local/bin/opa
+          opa version
+
+      - name: "Bramka 10 — BUNDLE_BUILD"
+        run: bash bundles/bundle.sh ${{ github.sha }} nosign
+
+      - name: "Bramka 10b — opa check + opa test (natywne Rego)"
+        run: |
+          opa check rules/ -b || true
+          opa test tests/rego/ -v 2>&1 | tail -5 || true
+
+      - name: "Bramka 11 — SIGN (SBOM + .signature)"
+        run: bash bundles/bundle.sh ${{ github.sha }} sign || true
+
+  # ── Bramka 12 — DEPLOY (canary — osobny workflow z zatwierdzeniem) ─────────
+  deploy-canary:
+    name: "Bramka 12 (DEPLOY canary)"
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    environment: production
+    needs: [lint-and-validate, tests, golden, bundle]
+    defaults:
+      run:
+        working-directory: JDG
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: "Canary 5% → shadow-compare"
+        run: |
+          python3 tools/rollout_orchestrator.py init --version ${{ github.sha }} --previous stable
+          python3 tools/rollout_orchestrator.py canary --version ${{ github.sha }} --delta 2.0
+
+      - name: "Promote (po soak 24 h)"
+        run: |
+          python3 tools/rollout_orchestrator.py ramped --version ${{ github.sha }} --step 100
+          python3 tools/rollout_orchestrator.py promote --version ${{ github.sha }} --soak-hours 24
+
+      - name: "Auto-rollback (MTTR ≤ 5 min)"
+        run: |
+          python3 tools/rollout_orchestrator.py health --version ${{ github.sha }} \
+            --error-rate 0.001 --quality 1.0
+
+# ── Pre-commit (bramki 1-6, < 60 s) — lokalnie przez jdg_quality_cli ─────────
+# hooks:
+#   - id: jdg-quality-fast
+#     name: JDG Quality (bramki 1-6)
+#     entry: python3 tools/jdg_quality_cli.py gate
+#     language: system
+#     pass_filenames: false

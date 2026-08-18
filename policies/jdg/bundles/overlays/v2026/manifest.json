@@ -9,10 +9,24 @@
   "changes": [
     {
       "type": "MODIFY",
-      "rule": "jdg.pit.forms.tax_scale_bracket",
+      "rule": "jdg.business.unregistered_activity_limit_exceeded",
+      "description": "Limit nieewidencjonowanej: 50% → 75% min. wynagrodzenia",
+      "status": "PLANNED",
+      "legal_basis": "Nowelizacja Prawa przedsiębiorców"
+    },
+    {
+      "type": "MODIFY",
+      "rule": "jdg.pit.forms.scale",
       "description": "Próg podatkowy 120000 → 130000 PLN (propozycja MF)",
       "status": "PLANNED",
       "legal_basis": "Projekt ustawy o PIT 2026"
+    },
+    {
+      "type": "MODIFY",
+      "rule": "jdg.zus.health_contribution_rate_matrix",
+      "description": "Składka zdrowotna 9% → 8.5% (propozycja)",
+      "status": "PLANNED",
+      "legal_basis": "Projekt ustawy zdrowotnej 2026"
     },
     {
       "type": "MODIFY",
@@ -20,14 +34,13 @@
       "description": "Składka zdrowotna 9% → 8.5% (propozycja)",
       "status": "PLANNED",
       "legal_basis": "Projekt ustawy zdrowotnej 2026"
-    },
-    {
-      "type": "MODIFY",
-      "rule": "jdg.business.unregistered_activity_limit_exceeded",
-      "description": "Limit nieewidencjonowanej: 50% → 75% min. wynagrodzenia",
-      "status": "PLANNED",
-      "legal_basis": "Nowelizacja Prawa przedsiębiorców"
     }
   ],
-  "files": []
+  "files": [],
+  "generated_by": "overlay_generator.py",
+  "generated_at": "2026-08-18",
+  "lkg": {
+    "acts": 26,
+    "covered_nodes": 133
+  }
 }

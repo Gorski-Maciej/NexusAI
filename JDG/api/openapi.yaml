@@ -617,6 +617,176 @@ paths:
                         coverage_pct:
                           type: integer
 
+  # ═════════════════════════════════════════════════════════════════════════════
+  # P17 — CONTROL PLANE ENDPOINTS (ENTERPRISE AI + SYSTEM OPA)
+  #   GET  /jdg/rules    — Policy Registry API (wyszukiwarka reguł)
+  #   POST /jdg/change   — Declarative Change (formularz → diff → canary)
+  #   POST /jdg/cert     — Decision Certificate (F4 V2 §5 — pieczęć HSM)
+  # ═════════════════════════════════════════════════════════════════════════════
+  /jdg/rules:
+    get:
+      tags: [ControlPlane]
+      summary: Policy Registry API — search rules
+      description: |
+        P17 (V1 §2, V2 §8): wyszukiwarka reguł w rejestrze policy_registry.json.
+        Filtry: domain, status (SHADOW/CANDIDATE/ACTIVE/ROLLED_BACK), legal_act.
+      operationId: searchRules
+      parameters:
+        - name: domain
+          in: query
+          schema:
+            type: string
+          description: Filtr domeny (vat, pit, zus, kks, hyper, ...)
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [SHADOW, CANDIDATE, ACTIVE, ROLLED_BACK, RETIRED]
+          description: Filtr cyklu życia reguły (Rule Lifecycle V1 §3)
+        - name: legal_act
+          in: query
+          schema:
+            type: string
+          description: Filtr aktu prawnego w _legal_basis
+        - name: q
+          in: query
+          schema:
+            type: string
+          description: Pełnotekstowe wyszukiwanie rule_id
+      responses:
+        '200':
+          description: Lista reguł
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                  rules:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        rule_id:
+                          type: string
+                        domain:
+                          type: string
+                        status:
+                          type: string
+                        legal_basis:
+                          type: string
+                        version:
+                          type: string
+        '401':
+          description: Unauthorized (JWT/RBAC)
+
+  /jdg/change:
+    post:
+      tags: [ControlPlane]
+      summary: Declarative Change — „człowiek opisuje, maszyna wykonuje"
+      description: |
+        P17 (V2 F6): zgłoszenie zmiany deklaratywnej — formularz 8 pól →
+        diff → testy → PR → 4-eyes → canary (5% → 100%) → promote.
+      operationId: createDeclarativeChange
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [rule_id, change_type, description]
+              properties:
+                rule_id:
+                  type: string
+                  description: ID reguły do zmiany (nowa lub istniejąca)
+                change_type:
+                  type: string
+                  enum: [ADD, MODIFY, DEPRECATE, RETIRE, SUSPEND]
+                description:
+                  type: string
+                  description: Opis zmiany (deklaratywny, biznesowy)
+                valid_from:
+                  type: string
+                  format: date
+                legal_basis:
+                  type: string
+                thresholds:
+                  type: object
+                  description: Progi zmieniane przez Data API (hot-reload < 1 min)
+      responses:
+        '201':
+          description: Zmiana przyjęta do pipeline (SHADOW)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  change_id:
+                    type: string
+                  status:
+                    type: string
+                    enum: [SHADOW, CANDIDATE, ACTIVE]
+                  review_required:
+                    type: boolean
+                  estimated_canary_s:
+                    type: integer
+        '422':
+          description: Niekompletny formularz zmiany
+
+  /jdg/cert:
+    post:
+      tags: [ControlPlane]
+      summary: Issue Decision Certificate (F4 V2 §5)
+      description: |
+        P17 (V2 F4): wystawienie certyfikatu decyzyjnego z pieczęcią
+        (SHA-256 → Merkle → HSM) i klasą pewności (CERTAIN/CONDITIONAL/
+        NEEDS_ADVICE). Werdykt NIE-CERTAIN nigdy nie dostaje AUTO_POST.
+      operationId: issueCertificate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [verdict]
+              properties:
+                verdict:
+                  type: object
+                  description: Werdykt 25-polowy (kontrakt PROMPT 01)
+                invariants:
+                  type: array
+                  items:
+                    type: string
+                  description: Naruszenia INV (np. ["INV-006"])
+                transaction_date:
+                  type: string
+                  format: date
+      responses:
+        '201':
+          description: Certyfikat wystawiony
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  certificate_id:
+                    type: string
+                  certainty_class:
+                    type: string
+                    enum: [CERTAIN, CONDITIONAL, NEEDS_ADVICE]
+                  seal:
+                    type: object
+                    properties:
+                      payload_hash:
+                        type: string
+                      hsm_signature:
+                        type: string
+                      verification_url:
+                        type: string
+        '422':
+          description: Werdykt niekompletny (brak pól kontraktu)
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # COMPONENTS — Schemas
 # ═══════════════════════════════════════════════════════════════════════════════
