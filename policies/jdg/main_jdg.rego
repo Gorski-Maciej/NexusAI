@@ -32,7 +32,7 @@ import data.jdg.vat.deductions
 import data.jdg.vat.procedures
 import data.jdg.pit.forms
 import data.jdg.pit.kup
-import data.jdg.pit.advances_returns
+import data.jdg.pit.advances
 import data.jdg.pit.exemptions
 import data.jdg.pit.transitions
 import data.jdg.allowances
@@ -156,7 +156,7 @@ final_verdict = safe_merge(risk.decide,
     safe_merge(procedures.decide,
     safe_merge(forms.decide,
     safe_merge(kup.decide,
-    safe_merge(advances_returns.decide,
+    safe_merge(advances.decide,
     safe_merge(exemptions.decide,
     safe_merge(transitions.decide,
     safe_merge(transition_intel.decide,

@@ -1,0 +1,29 @@
+{
+  "audit_events": [
+    {
+      "actor": "system",
+      "at": "2026-08-19T18:18:32+00:00",
+      "change_id": null,
+      "details": {
+        "legacy_registry_entries": 13
+      },
+      "event": "CONTROL_PLANE_BOOTSTRAPPED",
+      "event_id": "AUD-00000001"
+    }
+  ],
+  "bootstrap": {
+    "at": "2026-08-19T18:18:32+00:00",
+    "legacy_registry_entries": 13,
+    "legacy_registry_path": "bundles/rule_registry.json",
+    "migration_status": "LEGACY_ENTRIES_REQUIRE_MANIFEST_REVIEW",
+    "production_mutation": "NONE"
+  },
+  "changes": {},
+  "control_plane_id": "jdg.control_plane.lifecycle",
+  "law_events": {},
+  "production_mutation_policy": "FORBIDDEN",
+  "registry_source": "JDG/bundles/rule_registry.json",
+  "rollouts": {},
+  "schema_version": "1.0.0",
+  "traceability": {}
+}

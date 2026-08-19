@@ -1,0 +1,294 @@
+{
+  "schema_version": "1.0.0",
+  "contract_id": "jdg.enterprise.master_operating_contract",
+  "contract_version": "1.0.0",
+  "stage": "ETAP_00",
+  "scope": "JDG oraz jawne zależności repozytorium NexusAI",
+  "status": "IMPLEMENTED",
+  "production_activation": "NOT_CERTIFIED",
+  "principles": [
+    "single_source_of_truth",
+    "rule_code_parameter_data",
+    "temporal_validity",
+    "fail_closed",
+    "immutable_versioning",
+    "deterministic_opa_decision",
+    "ai_recommends_never_decides",
+    "four_eyes_review",
+    "golden_replay_before_promotion",
+    "auditable_reversible_change"
+  ],
+  "naming_standard": {
+    "stage_id": "ETAP_00..ETAP_28",
+    "prompt_file": "JDG/prompty_glm52_enterprise/NN_<UPPER_SNAKE_CASE>.txt",
+    "report_file": "JDG/raporty_glm52_enterprise/NN_<UPPER_SNAKE_CASE>.txt",
+    "rule_id": "jdg.<domain>.<capability>.<rule_name>",
+    "bundle_version": "jdg-<domain>-bundle-v<major>.<minor>.<patch>",
+    "evidence_file": "JDG/bundles/<stage>_evidence.json",
+    "test_file": "JDG/tests/test_<stage>_*.py albo JDG/tests/rego/test_<stage>_*.rego"
+  },
+  "stage_data_contract": {
+    "required_fields": [
+      "stage_id",
+      "prompt_path",
+      "report_path",
+      "status",
+      "implementation_scope",
+      "inputs",
+      "outputs",
+      "dependencies",
+      "evidence",
+      "gates",
+      "production_activation"
+    ],
+    "status_enum": [
+      "NOT_STARTED",
+      "IN_PROGRESS",
+      "IMPLEMENTED",
+      "WDROZONY_100",
+      "BLOCKED",
+      "ROLLED_BACK"
+    ],
+    "evidence_policy": "Każde twierdzenie o implementacji wymaga ścieżki artefaktu i wyniku bramki; deklaracja bez dowodu ma status UNVERIFIED.",
+    "handoff_policy": "Następny etap może konsumować wyłącznie raport oznaczony WDROZONY_100 oraz jego artefakty; brak dowodu blokuje przejście."
+  },
+  "report_schema": {
+    "required_sections": [
+      "IDENTITY",
+      "SCOPE_AND_SOURCES",
+      "DATA_CONTRACT",
+      "NAMING_STANDARD",
+      "SLO_SLA",
+      "PASS_FAIL_GATES",
+      "DEPENDENCY_MAP",
+      "IMPLEMENTED_ARTIFACTS",
+      "KNOWN_LIMITATIONS",
+      "VERIFICATION",
+      "STATUS"
+    ],
+    "claim_labels": [
+      "POTWIERDZONE_KODEM",
+      "POTWIERDZONE_TESTEM",
+      "DEKLARACJA",
+      "HIPOTEZA",
+      "LUKA",
+      "UNVERIFIED"
+    ]
+  },
+  "slo_sla": {
+    "decision_latency_p95_ms_domestic": 5,
+    "decision_latency_p95_ms_full_chain": 50,
+    "availability_percent": 99.95,
+    "rule_change_routine_hours": 24,
+    "rule_change_p0_hours": 4,
+    "parameter_hot_reload_minutes": 15,
+    "rollback_minutes": 5,
+    "incident_p0_minutes": 15,
+    "incident_p1_minutes": 60,
+    "rto_minutes": 15,
+    "rpo_minutes": 5,
+    "shadow_delta_max_percent": 2,
+    "mutation_coverage_min_percent": 70,
+    "critical_package_native_test_coverage_percent": 100,
+    "duplicate_rule_ids_target": 0,
+    "production_stub_target": 0
+  },
+  "pass_fail_gates": [
+    {
+      "id": "G01_CONTRACT_SCHEMA",
+      "description": "Kontrakt i raport mają wymagane pola i sekcje.",
+      "on_fail": "BLOCK"
+    },
+    {
+      "id": "G02_SOURCE_INVENTORY",
+      "description": "Święte źródła architektury, rules, tests, migrations, bundles i policies istnieją.",
+      "on_fail": "BLOCK"
+    },
+    {
+      "id": "G03_RULE_QUALITY",
+      "description": "Składnia, legal basis, temporalność, duplikaty, stuby i hardcode są sprawdzane przez dedykowane bramki.",
+      "on_fail": "BLOCK"
+    },
+    {
+      "id": "G04_RUNTIME_SAFETY",
+      "description": "Runtime invariants, fail-closed, provenance i Decision Certificate są obecne przed publikacją werdyktu.",
+      "on_fail": "BLOCK"
+    },
+    {
+      "id": "G05_GOLDEN_REPLAY",
+      "description": "Każda nieidentyczna zmiana werdyktu wymaga uzasadnienia prawnego.",
+      "on_fail": "BLOCK"
+    },
+    {
+      "id": "G06_PROGRESSIVE_DELIVERY",
+      "description": "Bundle przechodzi canary, shadow, ramped, soak i ma auto-rollback.",
+      "on_fail": "BLOCK"
+    },
+    {
+      "id": "G07_STATUS_HANDOFF",
+      "description": "Raport jest WDROZONY_100 dopiero po przejściu bramek i zapisaniu dowodów.",
+      "on_fail": "BLOCK"
+    }
+  ],
+  "dependency_map": {
+    "ETAP_00": [],
+    "ETAP_01": ["ETAP_00"],
+    "ETAP_02": ["ETAP_01"],
+    "ETAP_03": ["ETAP_02"],
+    "ETAP_04": ["ETAP_03"],
+    "ETAP_05": ["ETAP_04"],
+    "ETAP_06": ["ETAP_05"],
+    "ETAP_07": ["ETAP_06"],
+    "ETAP_08": ["ETAP_07"],
+    "ETAP_09": ["ETAP_08"],
+    "ETAP_10": ["ETAP_09"],
+    "ETAP_11": ["ETAP_10"],
+    "ETAP_12": ["ETAP_11"],
+    "ETAP_13": ["ETAP_12"],
+    "ETAP_14": ["ETAP_13"],
+    "ETAP_15": ["ETAP_14"],
+    "ETAP_16": ["ETAP_15"],
+    "ETAP_17": ["ETAP_16"],
+    "ETAP_18": ["ETAP_17"],
+    "ETAP_19": ["ETAP_18"],
+    "ETAP_20": ["ETAP_19"],
+    "ETAP_21": ["ETAP_20"],
+    "ETAP_22": ["ETAP_21"],
+    "ETAP_23": ["ETAP_22"],
+    "ETAP_24": ["ETAP_23"],
+    "ETAP_25": ["ETAP_24"],
+    "ETAP_26": ["ETAP_25"],
+    "ETAP_27": ["ETAP_26"],
+    "ETAP_28": ["ETAP_27"]
+  },
+  "required_architecture_sources": [
+    "JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md",
+    "JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md",
+    "JDG/docs/ARCHITEKTURA.md",
+    "JDG/docs/Bbb",
+    "JDG/rules",
+    "JDG/tests",
+    "JDG/migrations",
+    "JDG/bundles",
+    "JDG/tools",
+    "policies"
+  ],
+  "stage_00": {
+    "prompt_path": "JDG/prompty_glm52_enterprise/00_MASTER_OPERATING_CONTRACT.txt",
+    "report_path": "JDG/raporty_glm52_enterprise/00_MASTER_OPERATING_CONTRACT.txt",
+    "implementation_scope": [
+      "machine_readable_operating_contract",
+      "cross_stage_data_contract",
+      "naming_and_report_schema",
+      "slo_sla_and_pass_fail_gates",
+      "dependency_map",
+      "fail_closed_handoff_policy"
+    ],
+    "existing_supporting_artifacts": [
+      "JDG/tools/manifest_v2.py",
+      "JDG/tools/invariant_checker.py",
+      "JDG/tools/deployment_orchestrator.py",
+      "JDG/tools/policy_registry_api.py",
+      "JDG/tools/legal_twin.py",
+      "JDG/tools/golden_replay.py",
+      "JDG/tools/decision_certificate.py",
+      "JDG/tools/law_radar.py",
+      "JDG/tools/declarative_change.py",
+      "JDG/migrations/003_jdg_v8_legal_twin.sql",
+      "JDG/migrations/004_jdg_v9_control_plane.sql"
+    ],
+    "production_activation": "NOT_CERTIFIED_WITHOUT_HOST_TELEMETRY_AND_SIGNED_BUNDLE",
+    "status": "WDROZONY_100"
+  },
+  "stage_01": {
+    "prompt_path": "JDG/prompty_glm52_enterprise/01_INVENTORY_TRUTH_RECONCILIATION.txt",
+    "report_path": "JDG/raporty_glm52_enterprise/01_INVENTORY_TRUTH_RECONCILIATION.txt",
+    "implementation_scope": [
+      "full_repository_file_inventory",
+      "canonical_and_mirror_rule_inventory",
+      "rule_id_package_test_tool_migration_catalog",
+      "manifest_and_document_reconciliation",
+      "duplicate_stub_dead_and_unloaded_candidate_detection",
+      "missing_package_import_detection",
+      "authoritative_manifest_and_rule_registry_schema",
+      "append_only_safe_cleanup_plan"
+    ],
+    "evidence": [
+      "JDG/bundles/inventory_manifest.json",
+      "JDG/tools/inventory_reconciliation.py",
+      "JDG/tests/test_inventory_reconciliation.py"
+    ],
+    "production_activation": "NOT_CERTIFIED",
+    "status": "WDROZONY_100"
+  },
+  "stage_02": {
+    "prompt_path": "JDG/prompty_glm52_enterprise/02_LEGAL_SOURCES_BBB.txt",
+    "report_path": "JDG/raporty_glm52_enterprise/02_LEGAL_SOURCES_BBB.txt",
+    "implementation_scope": [
+      "versioned_legal_source_record",
+      "source_hash_and_hash_scope",
+      "effective_interval_and_temporal_validation",
+      "legal_node_source_provenance_and_confidence",
+      "isap_rcl_official_snapshot_boundary",
+      "legal_diff_requires_four_eyes_review",
+      "fail_closed_publication_gate",
+      "accounting_and_form_source_catalogue_boundary"
+    ],
+    "evidence": [
+      "JDG/bundles/legal_source_registry.json",
+      "JDG/tools/legal_source_registry.py",
+      "JDG/migrations/005_jdg_v10_legal_sources.sql",
+      "JDG/tests/test_legal_source_registry.py",
+      "JDG/docs/LEGAL_SOURCE_REGISTRY.md"
+    ],
+    "production_activation": "NOT_CERTIFIED_WITHOUT_OFFICIAL_SNAPSHOT_AND_TWO_EYES_REVIEW",
+    "status": "WDROZONY_100"
+  },
+  "stage_03": {
+    "prompt_path": "JDG/prompty_glm52_enterprise/03_LEGAL_TWIN_TRACEABILITY.txt",
+    "report_path": "JDG/raporty_glm52_enterprise/03_LEGAL_TWIN_TRACEABILITY.txt",
+    "implementation_scope": [
+      "bidirectional_rule_to_legal_node_traceability",
+      "canonical_article_range_and_suffix_mapping",
+      "legal_basis_refs_migration_boundary",
+      "lci_tcl_rv_uvr_metrics",
+      "coverage_desert_detection",
+      "test_threshold_interpretation_and_verdict_evidence_links",
+      "temporal_time_travel_evidence",
+      "fail_closed_uncertain_mapping_gate"
+    ],
+    "evidence": [
+      "JDG/bundles/legal_twin_traceability.json",
+      "JDG/tools/legal_twin_traceability.py",
+      "JDG/migrations/006_jdg_v11_legal_traceability.sql",
+      "JDG/tests/test_legal_twin_traceability.py",
+      "JDG/docs/LEGAL_TWIN_TRACEABILITY.md"
+    ],
+    "production_activation": "NOT_CERTIFIED_WITHOUT_RESOLVED_MAPPING_AND_VERIFIED_SOURCE",
+    "status": "WDROZONY_100"
+  },
+  "stage_04": {
+    "prompt_path": "JDG/prompty_glm52_enterprise/04_CONTROL_PLANE_RULE_LIFECYCLE.txt",
+    "report_path": "JDG/raporty_glm52_enterprise/04_CONTROL_PLANE_RULE_LIFECYCLE.txt",
+    "implementation_scope": [
+      "immutable_rule_change_manifest_and_semver",
+      "add_change_deprecate_retire_purge_suspend_rollback_lifecycle",
+      "policy_registry_and_legacy_manifest_migration_boundary",
+      "declarative_change_routing_to_data_or_rule_pipeline",
+      "law_radar_amendment_issue_pr_bundle_verdict_traceability",
+      "four_eyes_separation_of_duties",
+      "canary_shadow_delta_ramped_soak_health_gates",
+      "fail_closed_auto_rollback_and_append_only_audit",
+      "forbidden_live_production_mutation"
+    ],
+    "evidence": [
+      "JDG/bundles/control_plane_state.json",
+      "JDG/tools/control_plane_lifecycle.py",
+      "JDG/migrations/007_jdg_v12_control_plane_lifecycle.sql",
+      "JDG/tests/test_control_plane_lifecycle.py",
+      "JDG/docs/CONTROL_PLANE_RULE_LIFECYCLE.md"
+    ],
+    "production_activation": "NOT_CERTIFIED_WITHOUT_HSM_TELEMETRY_AND_SIGNED_BUNDLE",
+    "status": "WDROZONY_100"
+  }
+}

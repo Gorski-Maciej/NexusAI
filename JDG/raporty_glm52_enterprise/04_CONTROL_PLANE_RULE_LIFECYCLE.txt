@@ -1,0 +1,213 @@
+====================================================================================================
+RAPORT WDROŻENIOWY GLM52 ENTERPRISE — ETAP 04/29
+CONTROL PLANE, POLICY REGISTRY, RULE LIFECYCLE, DECLARATIVE CHANGE I LAW RADAR
+====================================================================================================
+
+IDENTITY
+--------
+Etap: ETAP_04
+Prompt źródłowy: JDG/prompty_glm52_enterprise/04_CONTROL_PLANE_RULE_LIFECYCLE.txt
+Raport: JDG/raporty_glm52_enterprise/04_CONTROL_PLANE_RULE_LIFECYCLE.txt
+Kontrakt nadrzędny: JDG/bundles/enterprise_operating_contract.json
+Koordynator: JDG/tools/control_plane_lifecycle.py
+Stan control plane: JDG/bundles/control_plane_state.json
+Migracja: JDG/migrations/007_jdg_v12_control_plane_lifecycle.sql
+Testy: JDG/tests/test_control_plane_lifecycle.py
+Dokumentacja: JDG/docs/CONTROL_PLANE_RULE_LIFECYCLE.md
+Status raportu: WDROŻONY_100
+Zakres statusu: kompletny lokalny mechanizm koordynacji i blokad lifecycle.
+Status nie oznacza aktywacji produkcyjnej, podpisu HSM ani certyfikacji danych
+telemetrycznych.
+
+SCOPE_AND_SOURCES
+-----------------
+[POTWIERDZONE_KODEM] Przeanalizowano prompt ETAPU 04 oraz:
+- JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- JDG/docs/RULE_LIFECYCLE.md
+- JDG/tools/rule_lifecycle_manager.py
+- JDG/tools/policy_registry_api.py
+- JDG/tools/declarative_change.py
+- JDG/tools/law_radar.py
+- JDG/tools/law_impact_matrix.py
+- JDG/tools/legal_change_impact_analyzer.py
+- JDG/tools/isap_rule_update_pipeline.py
+- JDG/tools/deployment_orchestrator.py
+- JDG/tools/rollout_orchestrator.py
+- JDG/tools/golden_replay.py
+- JDG/tools/invariant_checker.py
+- JDG/migrations/002_jdg_enterprise_v7.sql
+- JDG/migrations/003_jdg_v8_legal_twin.sql
+- JDG/migrations/004_jdg_v9_control_plane.sql
+[POTWIERDZONE_KODEM] Istniejące komponenty zostały zachowane. Nowy koordynator
+nie zastępuje specjalistycznych narzędzi i nie zapisuje bezpośrednio do
+JDG/rules, policies ani legacy bundles/rule_registry.json.
+
+DATA_CONTRACT
+-------------
+[POTWIERDZONE_KODEM] Każda zmiana ma niezmienny manifest zawierający:
+- operation: ADD, CHANGE, DEPRECATE, RETIRE, PURGE, SUSPEND albo ROLLBACK;
+- rule_id, tytuł, semver, owner, domain i change_ticket;
+- legal_node_ids z LKG oraz valid_from/valid_to;
+- dependencies, tests i impact;
+- content_hash, bundle_version, signer i signature;
+- author oraz supersedes/reason dla operacji, które tego wymagają.
+[POTWIERDZONE_KODEM] Manifest otrzymuje manifest_hash, a każda decyzja trafia
+do append-only audit_events z aktorem, czasem, change_id i szczegółami.
+[POTWIERDZONE_KODEM] Stan zawiera jawne `production_mutation_policy=FORBIDDEN`.
+Bootstrap wykazał 13 istniejących wpisów legacy rule_registry; są one oznaczone
+`LEGACY_ENTRIES_REQUIRE_MANIFEST_REVIEW`, bez automatycznego przepisywania ani
+usuwania.
+
+NAMING_STANDARD
+---------------
+[POTWIERDZONE_KODEM]
+- change: `CHG-NNNNNNNN`;
+- audit: `AUD-NNNNNNNN`;
+- rule version: semver `x.y.z`;
+- bundle: `jdg-<domain>-bundle-v<major>.<minor>.<patch>`;
+- legal node: `LKG-NNNN`;
+- migration: `007_jdg_v12_control_plane_lifecycle.sql`.
+
+LIFECYCLE_AND_PHASES
+--------------------
+[POTWIERDZONE_KODEM] ADD/CHANGE:
+1. submit immutable manifest → PENDING_REVIEW;
+2. independent legal/policy review exact manifest_hash;
+3. third operator authorizes deployment;
+4. rollout only przez SHADOW/CANARY gates;
+5. ACTIVE dopiero po pełnym evidence chain.
+
+[POTWIERDZONE_KODEM] DEPRECATE/RETIRE/PURGE:
+- DEPRECATE wymaga źródłowego ACTIVE/SUSPENDED i reason;
+- RETIRE wymaga jawnego current_status=DEPRECATED;
+- PURGE wymaga current_status=RETIRED i zero active_references;
+- PURGE zachowuje manifest i historię audytu — zmienia wyłącznie runtime eligibility.
+
+[POTWIERDZONE_KODEM] SUSPEND/ROLLBACK:
+- SUSPEND wymaga reason i zapisuje kill-switch w ledgerze;
+- ROLLBACK wymaga supersedes, targetuje poprzednią wersję i zapisuje przyczynę;
+- rollback nie modyfikuje historycznego manifestu.
+
+[POTWIERDZONE_KODEM] Progressive delivery:
+- CANARY: dokładnie 5%;
+- SHADOW_COMPARE: delta werdyktów obecna i ≤ 2%;
+- RAMPED: tylko 25%, 50% albo 100%;
+- SOAK: minimum 24 godziny;
+- ACTIVE: quality ≥ 95 oraz error_rate ≤ 1;
+- naruszenie bramki blokuje rollout, a rollback pozostaje audytowalny.
+
+FOUR_EYES_AND_SOD
+-----------------
+[POTWIERDZONE_KODEM] Autor nie może być recenzentem. Recenzent nie może być
+operatorem wdrożenia. Operator nie może być autorem. Recenzja jest przypięta do
+konkretnego manifest_hash, a powtórna recenzja tego samego recenzenta jest
+odrzucana. To zapewnia niezależność review i ogranicza możliwość samodzielnego
+wdrożenia zmiany.
+[POTWIERDZONE_KODEM] Lokalny signer jest deterministycznym podpisem testowym.
+W produkcji wymagany jest HSM/KMS; brak takiego podpisu nie może być uznany za
+certyfikację produkcyjną.
+
+DECLARATIVE_CHANGE_AND_LAW_RADAR
+--------------------------------
+[POTWIERDZONE_KODEM] `plan_declarative_change()` rozdziela zmianę na:
+- DATA_SERVICE dla stawek, limitów, progów i kwot;
+- LAW_RADAR_AND_RULE_LIFECYCLE dla nowelizacji i zmian logicznych.
+Każda ścieżka wymaga legal source, impact, golden replay, tests, four-eyes i
+rolloutu; bezpośredni zapis do produkcji jest zawsze false.
+[POTWIERDZONE_KODEM] Law Radar jest łączony z ledgerem przez:
+`amendment_id → issue_id → pr_id → change_id → bundle_version → verdict_ids`.
+Dzięki temu projekt/nowelizacja nie jest anonimowym wpisem, lecz identyfikatorem
+całego łańcucha od źródła prawa do decyzji.
+
+PASS_FAIL_GATES
+---------------
+[POTWIERDZONE_KODEM] Structural PASS obejmuje:
+- kompletność manifestu i formaty dat/semver/hash;
+- legal_node_ids, podpis i SoD;
+- integralność manifest_hash;
+- niezmienność audytu i zakaz live production mutation;
+- porządek etapów progressive delivery.
+[POTWIERDZONE_KODEM] Publication FAIL_CLOSED obejmuje dodatkowo:
+- niezależną autoryzację operatora;
+- SHADOW_COMPARE ≤ 2% i SOAK ≥ 24 h;
+- final health metrics;
+- komplet amendment/issue/PR/bundle/verdict traceability.
+[POTWIERDZONE_KODEM] Migracja SQL odtwarza te warunki przez tabele request,
+review, rollout, traceability i audit oraz widok
+`control_plane_publication_gate`.
+
+DEPENDENCY_MAP
+--------------
+[POTWIERDZONE_KODEM]
+ETAP_04 konsumuje:
+- ETAP_00 — kontrakt i politykę fail-closed;
+- ETAP_01 — inventory i legacy registry boundary;
+- ETAP_02 — source records/provenance/4-eyes legal source;
+- ETAP_03 — LKG legal_node_ids i traceability.
+ETAP_04 przekazuje następnemu etapowi wyłącznie change_id, manifest_hash,
+rollout evidence i traceability chain. Legacy wpis bez manifest review nie jest
+traktowany jako gotowy do produkcji.
+
+IMPLEMENTED_ARTIFACTS — PLIK PO PLIKU
+--------------------------------------
+[POTWIERDZONE_KODEM]
+1. `JDG/tools/control_plane_lifecycle.py` — centralny ledger, manifest,
+   operacje lifecycle, SoD, rollout gates, rollback, Law Radar links,
+   declarative routing, integrity validation i bootstrap legacy boundary.
+2. `JDG/bundles/control_plane_state.json` — bootstrap evidence, schema state,
+   jawny zakaz live mutation i append-only audit baseline.
+3. `JDG/migrations/007_jdg_v12_control_plane_lifecycle.sql` — requests,
+   reviews, rollout evidence, traceability chain, audit i publication view.
+4. `JDG/tests/test_control_plane_lifecycle.py` — 7 testów acceptance dla pełnego
+   roundtripu, SoD, hash tamper, lifecycle, rollback i declarative routing.
+5. `JDG/docs/CONTROL_PLANE_RULE_LIFECYCLE.md` — runbook kontraktu i ograniczeń.
+6. `JDG/bundles/enterprise_operating_contract.json` — stage_04, zakres,
+   evidence, status i production boundary.
+7. `JDG/raporty_glm52_enterprise/04_CONTROL_PLANE_RULE_LIFECYCLE.txt` — niniejszy
+   raport z dowodami i markerem przekazania.
+[POTWIERDZONE_KODEM] Istniejące pliki `rule_lifecycle_manager.py`,
+`policy_registry_api.py`, `declarative_change.py`, `law_radar.py`,
+`deployment_orchestrator.py` i `golden_replay.py` pozostają komponentami
+wywoływanymi/komplementarnymi. Nie przeprowadzono nieodwracalnej migracji ich
+historycznych danych.
+
+SLO_SLA
+-------
+[POTWIERDZONE_KODEM] Egzekwowane lokalnie cele jakości to: shadow delta ≤ 2%,
+canary 5%, soak ≥ 24 h, quality ≥ 95, error_rate ≤ 1. Docelowe SLA ETAPU 00
+(24 h/4 h P0, hot-reload 15 min, rollback 5 min) pozostają wymaganiem hosta
+telemetrycznego i nie są udawane przez lokalny ledger.
+
+KNOWN_LIMITATIONS
+-----------------
+[LUKA] Nie wykonano wdrożenia produkcyjnego, HSM/KMS ani połączenia z hostową
+telemetrią. `control_plane_state.json` jest lokalnym evidence bundle.
+[LUKA] Legacy 13 wpisów registry nie dostało automatycznie pełnych manifestów;
+pozostają w kolejce do jawnego migration/review.
+[LUKA] SQL nie jest uruchamiany przeciwko produkcyjnej bazie w tym cyklu.
+[LUKA] Law Radar i ISAP/RCL pozostają granicą zewnętrznego ingestu; lokalny
+system nie twierdzi, że pobrał aktualne prawo.
+[DEKLARACJA] WDROŻONY_100 oznacza kompletność mechanizmu kontrolnego ETAPU 04,
+a nie certyfikację produkcji ani poprawności materialnej prawa.
+
+VERIFICATION
+------------
+[POTWIERDZONE_TESTEM] `pytest -q JDG/tests/test_control_plane_lifecycle.py`
+→ 7 passed.
+[POTWIERDZONE_KODEM] `python JDG/tools/control_plane_lifecycle.py bootstrap`
+→ PASS; 13 legacy registry entries recorded; production mutation NONE.
+[POTWIERDZONE_KODEM] `python JDG/tools/control_plane_lifecycle.py validate`
+→ PASS; zero changes, zero structural issues, one bootstrap audit event.
+[POTWIERDZONE_KODEM] `python -m py_compile JDG/tools/control_plane_lifecycle.py`
+→ PASS.
+[POTWIERDZONE_KODEM] `git diff --check` → PASS.
+
+STATUS
+------
+Status raportu: WDROŻONY_100
+Produkcja: NOT_CERTIFIED
+Publication gate: FAIL_CLOSED bez HSM, telemetryki i pełnego evidence chain
+Następny raport: ETAP_05 / JDG/prompty_glm52_enterprise/05_*.txt
+
+ETAP_04_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAP_05.
