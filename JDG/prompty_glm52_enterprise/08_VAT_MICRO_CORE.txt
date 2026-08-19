@@ -1,0 +1,27 @@
+INSTRUKCJA DLA GLM 5.2 — ETAP 08/29
+TEMAT: VAT Micro Core — atomy artykułowe i binding macro→micro→verdict
+
+PLIKI:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/r03_vat_micro_articles.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan34_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p03_vat_micro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p04_vat_micro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p05_vat_micro_atomic_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/vat_micro_inventory.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/vat_gap_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/vat_traceability_matrix.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/micro/test_native_micro_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/VAT_MICRO_P04.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+ŚWIĘTE DOKUMENTY: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md oraz https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+
+WYMAGANE: Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. poziom ENTERPRISE. poziom ENTERPRISE. poziom ENTERPRISE. poziom ENTERPRISE. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów.
+
+ZADANIE:
+Przeanalizuj pliki atomowe artykuł po artykule, nie zakładając, że `matched:true` oznacza poprawność. Zbuduj mapę art./ust./pkt→micro rule→macro consumer→test→legal source. Wykryj duplikaty, sprzeczne priorytety, martwe gałęzie, stuby, nieobsłużone wyjątki, hardcode i brak temporalności. Zaprojektuj generator atomów, binding registry i coverage desert alarm. Ze względu na rozmiar głównego pliku analizuj go warstwowo; nie próbuj wczytać treści większej niż połowa kontekstu. Wdróż tylko udowodnione poprawki.
+
+Raport/patche: `JDG/raporty_glm52_enterprise/08_VAT_MICRO_CORE.txt`.
+Na końcu: `ETAP_08_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAP_09.`

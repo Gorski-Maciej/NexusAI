@@ -1,0 +1,25 @@
+INSTRUKCJA DLA GLM 5.2 — ETAP 12/29
+TEMAT: ZUS Core — składki społeczne, zdrowotna, ulgi, terminy i świadczenia
+
+PLIKI:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/plan23_interactions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/plan42_benefits.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/enterprise_benefits.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/sickness_benefits_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/health_contribution_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/cumulative_revenue_engine.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/health_precision_engine_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p07_zus_macro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZUS_MACRO_P07.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+ŚWIĘTE DOKUMENTY: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md oraz https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+
+WYMAGANE: Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. poziom ENTERPRISE. poziom ENTERPRISE. poziom ENTERPRISE. poziom ENTERPRISE. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów.
+
+ZADANIE:
+Zweryfikuj podstawy, okresy i warunki ulgi na start, preferencyjnego ZUS, Małego ZUS Plus, składek społecznych, zdrowotnej dla każdej formy, zasiłków, PPK/PFRON, terminów i korekt. Każdy kalkulator musi mieć wersję danych, jednostki, zaokrąglenia, źródło prawne i test graniczny. Wykryj reguły immutable, kolizje z PIT/VAT, nieaktualne limity i decyzje bez danych. Dodaj certyfikat obliczenia, audyt i manual gate dla wyjątków.
+
+Raport/patche: `JDG/raporty_glm52_enterprise/12_ZUS_CORE.txt`.
+Na końcu: `ETAP_12_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAP_13.`

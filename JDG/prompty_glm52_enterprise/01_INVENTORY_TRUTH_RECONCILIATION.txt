@@ -1,0 +1,28 @@
+INSTRUKCJA DLA GLM 5.2 — ETAP 01/29
+TEMAT: Inwentaryzacja całego JDG, jedno źródło prawdy i reconciliation manifestów
+
+Przeczytaj dokładnie:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/INWENTARYZACJA_PLIKOW.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KATALOG_REGUL.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KATALOG_NARZEDZI.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/README.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/unified_plan_v8.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/unified_plan_progress.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/policies
+
+OBOWIĄZKOWE MYŚLENIE: Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. poziom ENTERPRISE. poziom ENTERPRISE. poziom ENTERPRISE. poziom ENTERPRISE. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów.
+
+ZADANIE:
+1. Zbuduj faktyczny katalog wszystkich plików, pakietów, rule_id, testów, narzędzi, migracji i artefaktów.
+2. Porównaj README, MANIFEST, bundle manifest, legal reports, policies mirror i plan postępu.
+3. Wykryj duplikaty, stuby, martwe reguły, pliki nieładowane, importy do nieistniejących pakietów i rozjazdy liczników.
+4. Zaproponuj jeden autorytatywny manifest oraz schemat `rule_registry` zgodny z V1/V2.
+5. Wygeneruj plan bezpiecznego uporządkowania, bez usuwania historii.
+
+W raporcie podaj plik, linię, dowód, ryzyko, właściciela, priorytet i test akceptacyjny. Jeśli możesz, wygeneruj kod narzędzia reconciliation oraz testy; jeśli nie, wypisz kompletne patche. Raport zapisz jako `JDG/raporty_glm52_enterprise/01_INVENTORY_TRUTH_RECONCILIATION.txt`.
+
+Na końcu: `ETAP_01_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAP_02.`

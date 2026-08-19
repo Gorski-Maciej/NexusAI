@@ -1,0 +1,25 @@
+INSTRUKCJA DLA GLM 5.2 — ETAP 04/29
+TEMAT: Control Plane, Policy Registry, Rule Lifecycle, Declarative Change i Law Radar
+
+PLIKI:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/RULE_LIFECYCLE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/rule_lifecycle_manager.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/declarative_change.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/isap_crawler.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/isap_rule_update_pipeline.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/law_radar.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_change_impact_analyzer.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/002_jdg_enterprise_v7.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/003_jdg_v8_legal_twin.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+OBOWIĄZKOWE MYŚLENIE: Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. poziom ENTERPRISE. poziom ENTERPRISE. poziom ENTERPRISE. poziom ENTERPRISE. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów.
+
+ZADANIE:
+Zaprojektuj realny, prosty dla człowieka i bezpieczny dla systemu cykl ADD/CHANGE/DEPRECATE/RETIRE/PURGE/SUSPEND/ROLLBACK. Każda reguła ma manifest, ownera, podstawę LKG, wersję, zakres czasowy, zależności, testy, impact, podpis i status. Zaimplementuj Policy Registry, declarative change, Law Radar, 4-eyes SoD, shadow/canary, delta compare, auto-rollback i traceability nowelizacja→PR→bundle→werdykt. Oddziel reguły od danych i wymuś brak edycji produkcji „na żywo”.
+
+Wygeneruj raport oraz kod/migracje/testy, jeśli dostępne. Każdą zmianę opisz plik po pliku. Raport: `JDG/raporty_glm52_enterprise/04_CONTROL_PLANE_RULE_LIFECYCLE.txt`.
+
+Na końcu: `ETAP_04_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAP_05.`

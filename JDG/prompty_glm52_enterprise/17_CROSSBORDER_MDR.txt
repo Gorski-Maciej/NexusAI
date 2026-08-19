@@ -1,0 +1,32 @@
+INSTRUKCJA DLA GLM 5.2 — ETAP 17/29
+TEMAT: Cross-border — WNT/WDT, TP, MDR/DAC6/DAC8, CFC, CBAM, ViDA i FX
+
+PLIKI:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/international.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/international_expanded.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder/plan23_ue.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder/exit_tax_cfc_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/mdr_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/mdr_hallmarks.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/plan45_mdr.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr_dac6_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vida_drr_full.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/dac8_report_generator.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cbam_full.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tp/plan45_tp.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/crossborder_auditor.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/mdr_scorer.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/tp_documentation_engine.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/CROSSBORDER_P12.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+ŚWIĘTE DOKUMENTY: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md oraz https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+
+WYMAGANE: Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. poziom ENTERPRISE. poziom ENTERPRISE. poziom ENTERPRISE. poziom ENTERPRISE. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów.
+
+ZADANIE:
+Przeanalizuj rezydencję, kierunek transakcji, miejsce świadczenia, kursy NBP, dokumenty WDT/WNT, TP, CFC, exit tax, MDR hallmarks, DAC6/8, CBAM i ViDA. Zbuduj evidence-first workflow, terminologię i legal traceability, wykrywanie sprzeczności oraz manual review dla wysokiego ryzyka. Nie generuj porad transgranicznych bez źródła i confidence.
+
+Raport/patche: `JDG/raporty_glm52_enterprise/17_CROSSBORDER_MDR.txt`.
+Na końcu: `ETAP_17_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAP_18.`

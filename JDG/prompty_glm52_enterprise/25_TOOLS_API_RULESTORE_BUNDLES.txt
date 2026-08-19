@@ -1,0 +1,29 @@
+INSTRUKCJA DLA GLM 5.2 — ETAP 25/29
+TEMAT: Narzędzia systemowe, OpenAPI, RuleStore, bundle server, podpis i deployment
+
+PLIKI:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/001_jdg_rule_store.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/002_jdg_enterprise_v7.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/003_jdg_v8_legal_twin.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/004_jdg_v9_control_plane.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/data_service.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/bundle_server.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/deployment_orchestrator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/policy_registry_api.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/decision_certificate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/certificate_service.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/bundle.sh
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/API_REFERENCJA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/STRUKTURA_PROJEKTU.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+ŚWIĘTE DOKUMENTY: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md oraz https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+
+WYMAGANE: Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. poziom ENTERPRISE. poziom ENTERPRISE. poziom ENTERPRISE. poziom ENTERPRISE. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów.
+
+ZADANIE:
+Porównaj OpenAPI z realnymi artefaktami, dopnij schematy, JWT/RBAC/SoD, idempotencję, wersjonowanie, migracje i constraints. Zbuduj działający control/data plane: podpis bundle, SBOM, weryfikacja na węźle, persist ostatniej zdrowej wersji, canary/shadow/ramped/soak/rollback, hot-reload danych, WORM/Merkle audit i DR. Nie nazywaj mocka produkcją; oznacz brakujące implementacje.
+
+Raport/patche: `JDG/raporty_glm52_enterprise/25_TOOLS_API_RULESTORE_BUNDLES.txt`.
+Na końcu: `ETAP_25_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAP_26.`

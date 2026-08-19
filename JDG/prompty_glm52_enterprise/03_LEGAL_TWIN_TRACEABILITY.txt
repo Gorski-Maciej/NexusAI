@@ -1,0 +1,25 @@
+INSTRUKCJA DLA GLM 5.2 — ETAP 03/29
+TEMAT: Legal Twin/LKG — dwukierunkowa traceability i dowód poprawności prawnej
+
+PLIKI:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_TWIN_RAPORT.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE_GAP_RAPORT.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_twin.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_basis_audit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_legal_basis_v2.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/legal_graph.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/legal_basis_audit.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/legal_basis_v2_report.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/003_jdg_v8_legal_twin.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+OBOWIĄZKOWE MYŚLENIE: Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. poziom ENTERPRISE. poziom ENTERPRISE. poziom ENTERPRISE. poziom ENTERPRISE. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów.
+
+ZADANIE:
+Zaprojektuj i wdroż Legal Twin tak, aby każdy akt → artykuł → ustęp → punkt → wersja czasowa miał relację do reguł, progów, testów, interpretacji i werdyktów. Zdefiniuj LCI, TCL, RV, UVR, coverage deserts oraz dowody reverse coverage. Wzmocnij parser kanoniczny, detekcję błędnych referencji, semantyczne mapowanie artykułów, historię zmian i `_legal_basis_refs`. Dodaj dowód, że przepis istniał i obowiązywał w dacie decyzji. Wymuś fail-closed dla brakującego źródła lub niepewnego mapowania.
+
+Raport musi zawierać schema, algorytmy, migracje, testy, przykładowe rekordy, plan migracji starych stringów i dokładne kryteria PASS/FAIL. Kod wdrażaj tylko po sprawdzeniu duplikatów. Raport: `JDG/raporty_glm52_enterprise/03_LEGAL_TWIN_TRACEABILITY.txt`.
+
+Na końcu: `ETAP_03_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAP_04.`

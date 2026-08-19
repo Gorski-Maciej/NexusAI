@@ -1,0 +1,27 @@
+INSTRUKCJA DLA GLM 5.2 — ETAP 09/29
+TEMAT: VAT Micro Special — KSeF, marża, miejsce świadczenia, proporcje i WDT/WNT
+
+PLIKI:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/ksef_micro.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/margin_scheme_micro.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/place_of_supply_micro.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/proportion_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/wdt_export_import.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_ksef.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_jpk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/verify_vat_micro_atomic.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/verify_vat_mpp.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+
+ŚWIĘTE DOKUMENTY: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md oraz https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+
+WYMAGANE: Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. poziom ENTERPRISE. poziom ENTERPRISE. poziom ENTERPRISE. poziom ENTERPRISE. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów.
+
+ZADANIE:
+Zbuduj audyt scenariuszowy dla marży, POS, proporcji, importu, WDT/WNT i KSeF. Uwzględnij B2B/B2C, statusy kontrahenta, brak danych, wyjątki, daty, dokumenty, kursy i korekty. Zaprojektuj atomowe dowody, testy graniczne, cross-domain conflict records i automatyczne kierowanie do TRIAGE zamiast zgadywania. Nie twórz fikcyjnych aktów ani stawek. Zaimplementuj tylko poprawki zgodne z Legal Twin.
+
+Raport: `JDG/raporty_glm52_enterprise/09_VAT_MICRO_SPECIAL.txt`.
+Na końcu: `ETAP_09_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAP_10.`

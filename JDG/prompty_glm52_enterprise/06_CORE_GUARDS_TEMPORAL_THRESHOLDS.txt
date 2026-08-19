@@ -1,0 +1,28 @@
+INSTRUKCJA DLA GLM 5.2 — ETAP 06/29
+TEMAT: Constitutional Layer — validation, temporal, thresholds, fallback, provenance, invariants
+
+PLIKI:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/validation.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/temporal.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/thresholds_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fallback.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/api_fallback.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/provenance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/reliability_guarantee_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/audit/runtime_invariants_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/hardcoded_audit_gate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/runtime_invariants_check.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/data_service.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+ŚWIĘTE DOKUMENTY: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md oraz https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+
+OBOWIĄZKOWE MYŚLENIE: Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. zaawansowany poziom Enterprise. poziom ENTERPRISE. poziom ENTERPRISE. poziom ENTERPRISE. poziom ENTERPRISE. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów. innowacyjne ulepszenia wyprzedzające profesjonalistów.
+
+ZADANIE:
+Wymuś zero niejawnych fallbacków, zero magicznych progów, brak luk i nakładek interwałów, deterministyczny wybór wersji prawa, walidację jednostek/walut/zaokrągleń, legal basis refs, certainty propagation i 42+ runtime invariants. Zidentyfikuj wszystkie wartości hardcoded oraz odróżnij legalny parametr od stubu. Zaprojektuj formalne własności, boundary tests dzień-1/dzień-0/dzień+1, fuzzing, SMT/Z3 dla krytycznych reguł i degradację z audytowalnym źródłem.
+
+Wygeneruj kod, migracje i testy, albo dokładne patche. Raport: `JDG/raporty_glm52_enterprise/06_CORE_GUARDS_TEMPORAL_THRESHOLDS.txt`.
+
+Na końcu: `ETAP_06_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAP_07.`

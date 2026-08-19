@@ -1,0 +1,27 @@
+INSTRUKCJA DLA GLM 5.2 — ETAP 07/29
+TEMAT: VAT Macro — stawki, zwolnienia, MPP, odliczenia, procedury i fraud
+
+PLIKI DO ANALIZY:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/substantive.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/deductions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/procedures.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/place_of_supply.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_substantive_complete_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_mpp_split_payment_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_rates_exemptions_audit_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_deductions_corrections_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_fraud_detection_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/VAT_MACRO_P03.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/VAT_AUDYT_R03.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+
+ŚWIĘTE DOKUMENTY: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md oraz https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+
+WYMAGANE: Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Przeprowadź głęboką analizę. Zastosuj zaawansowany poziom Enterprise. Zastosuj zaawansowany poziom Enterprise. Zastosuj zaawansowany poziom Enterprise. Zastosuj zaawansowany poziom Enterprise. Utrzymaj poziom ENTERPRISE. Utrzymaj poziom ENTERPRISE. Utrzymaj poziom ENTERPRISE. Utrzymaj poziom ENTERPRISE. Dodaj innowacyjne ulepszenia wyprzedzające profesjonalistów. Dodaj innowacyjne ulepszenia wyprzedzające profesjonalistów. Dodaj innowacyjne ulepszenia wyprzedzające profesjonalistów. Dodaj innowacyjne ulepszenia wyprzedzające profesjonalistów.
+
+ZADANIE:
+Przeanalizuj art. 5–14, 19a–21, 28a–28o, 29a–32, 41–43, 86–96, 99, 106a–106nq, 108a–108f, 109, 113 i 120 oraz powiązane rozporządzenia. Szczególnie zweryfikuj MPP/Zał. 15, Białą Listę, GTU, miejsce świadczenia, proporcję, złe długi, korekty wieloletnie, sankcje, KSeF i fraud. Dla każdej reguły podaj legal node, warunki, wyjątki, temporalność, testy i wpływ cross-domain. Wdróż kod tylko po audycie duplikatów; dodaj property/fuzz/golden tests i fail-closed.
+
+Raport oraz patche zapisz jako `JDG/raporty_glm52_enterprise/07_VAT_MACRO.txt`. Nie deklaruj COMPLETE bez dowodu.
+Na końcu: `ETAP_07_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAP_08.`
