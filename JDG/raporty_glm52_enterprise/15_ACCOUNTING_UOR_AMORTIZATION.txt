@@ -1,0 +1,119 @@
+====================================================================================================
+RAPORT WDROŻENIOWY GLM52 ENTERPRISE — ETAP 15/29
+UOR — PEŁNA KSIĘGOWOŚĆ, AKTYWA, AMORTYZACJA, INWENTARYZACJA, SPRAWOZDANIA
+====================================================================================================
+
+IDENTITY
+--------
+Etap: ETAP_15
+Prompt: JDG/prompty_glm52_enterprise/15_ACCOUNTING_UOR_AMORTIZATION.txt
+Raport: JDG/raporty_glm52_enterprise/15_ACCOUNTING_UOR_AMORTIZATION.txt
+Audytor: JDG/tools/uor_etap15_audit.py
+Bundle: JDG/bundles/uor_etap15_audit_state.json
+Pakiet wdrożeniowy: JDG/rules/uor_etap15_v1.rego
+Status raportu: WDROZONY_100
+
+SCOPE
+-----
+Warstwa ETAPU 15 weryfikuje obowiązek UoR (próg 2 mln EUR), księgi podwójne
+(ΣD=ΣC), dowody, wycenę, aktywa, amortyzację bilansową vs podatkową,
+inwentaryzację, zamknięcie i sprawozdania. Buduje przejście PKPiR→UoR z
+reconciliation i idempotencją, wykrywa hardcode, pozorne COMPLETE, braki
+dokumentów i konflikt z PIT. Dodaje testy bilansowe, sumy kontrolne, property
+invariants i manual approval dla sprawozdań.
+
+FILES
+-----
+| Plik | Status |
+|------|--------|
+| rules/uor/uor_obligation.rego | PRESENT |
+| rules/uor/uor_books.rego | PRESENT |
+| rules/uor/uor_revenue.rego | PRESENT |
+| rules/uor/uor_costs.rego | PRESENT |
+| rules/uor/uor_assets.rego | PRESENT |
+| rules/uor/uor_inventory.rego | PRESENT |
+| rules/uor/uor_closing.rego | PRESENT |
+| rules/uor/uor_financial_stmt.rego | PRESENT |
+| rules/accounting/uor_enterprise_live.rego | PRESENT |
+| rules/accounting/depreciation_enterprise.rego | PRESENT |
+| rules/accounting/depreciation_enterprise_complete.rego | PRESENT |
+| rules/micro/uor/uor.rego | PRESENT |
+| rules/micro/amortyzacja/pit_a22a.rego | PRESENT |
+| rules/micro/amortyzacja/pit_a22i.rego | PRESENT |
+| rules/micro/amortyzacja/pit_a22k.rego | PRESENT |
+| tools/uor_double_entry.py | PRESENT |
+| tools/uor_closing_engine.py | PRESENT |
+| docs/Bbb | PRESENT |
+| rules/uor_etap15_v1.rego | PRESENT |
+
+IMPLEMENTED PHASES
+------------------
+1. Obowiązek UoR — próg 2 mln EUR + wczesne ostrzeżenie 75% (art. 2 ust. 1 pkt 5).
+2. Księgi podwójne — invariant Σ debetów = Σ kredytów (art. 15 ust. 1 UoR).
+3. Dowody księgowe — wymagany numer dowodu (art. 21 UoR).
+4. Wycena i aktywa — bilans aktywa = zobowiązania + kapitał (art. 28-32).
+5. Amortyzacja bilansowa vs podatkowa (art. 32 UoR vs art. 22a-22n PIT) —
+   różnica ujawniana jako konflikt do przeglądu.
+6. Inwentaryzacja (art. 26 UoR) i zamknięcie roku (art. 12 ust. 2 UoR).
+7. Sprawozdania finansowe (art. 45-49 UoR) — manual approval obowiązkowy.
+8. Przejście PKPiR→UoR — ciągłość bilansu otwarcia + idempotencja migracji.
+9. Detekcja hardcode / pozorne COMPLETE / braków dokumentów / konfliktu PIT.
+10. Property invariants — ΣD=ΣC, bilans, kwoty ≥ 0, zakaz auto-zatwierdzania FS.
+11. Calculation certificate — wersje progów/prawa/faktów, waluta, jednostki.
+12. Safe orchestration — SUGGEST only, no_auto_post, final p59 + invariants.
+
+GATES
+-----
+| Gate | Result |
+|------|--------|
+| scope_files_present | PASS |
+| package_structure | PASS |
+| uor_obligation | PASS |
+| double_entry | PASS |
+| documents_valuation_assets | PASS |
+| amortization_bilansowa_podatkowa | PASS |
+| inventory_closing | PASS |
+| financial_stmt_manual_approval | PASS |
+| pkpir_uor_transition | PASS |
+| hardcode_fake_complete_detection | PASS |
+| property_invariants | PASS |
+| certificate_units_rounding | PASS |
+| legal_basis_and_threshold_versions | PASS |
+| suggest_only_and_router | PASS |
+| tests_and_report_present | PASS |
+
+CALCULATION CONTRACT
+--------------------
+- Waluta: PLN (kwoty), EUR (próg UoR).
+- Zaokrąglenie: PLN_HALF_UP_2DP (kontrakt ujawniony w certyfikacie).
+- Źródło progów: data.jdg.thresholds.accounting.
+- Wersjonowanie: evaluation_date, evaluation_year, threshold_version,
+  legal_basis_version, facts_version.
+- Granice: próg UoR 2 mln EUR (kurs 4.50), ostrzeżenie 75%, inwentaryzacja
+  co rok, retencja sprawozdań 5 lat.
+
+SAFETY CONTRACT
+---------------
+[POTWIERDZONE_KODEM] Brak daty oceny, wersji progów, wersji prawa lub wersji
+faktów daje BLOCK_AND_ALERT.
+[POTWIERDZONE_KODEM] Naruszenie ΣD=ΣC lub brak numeru dowodu blokuje
+automatyzację (BLOCK_AND_ALERT).
+[POTWIERDZONE_KODEM] Sprawozdanie finansowe nigdy nie jest auto-zatwierdzane —
+wymaga manual approval.
+[POTWIERDZONE_KODEM] Pakiet działa wyłącznie w trybie SUGGEST i nie publikuje
+operacji automatycznych.
+[OGRANICZENIE] Evidence pack jest dowodem technicznym; nie zastępuje aktualnej
+weryfikacji tekstu ustawy, Bbb/LKG, 4-eyes review ani porady prawnej.
+
+VERIFICATION
+------------
+Evidence: 15/15 gates.
+Status: WDROZONY_100
+
+STATUS
+------
+Status raportu: WDROZONY_100
+Produkcja: NOT_CERTIFIED
+Następny raport: ETAP_16 / JDG/prompty_glm52_enterprise/16_*.txt
+
+ETAP_15_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAP_16.

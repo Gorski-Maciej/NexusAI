@@ -92,7 +92,7 @@ def wiring_evidence(main: str) -> dict[str, Any]:
         "import": "import data.jdg.pit_micro_reliefs_etap11" in main,
         "package_decisions": '"jdg.pit_micro_reliefs_etap11": pit_micro_reliefs_etap11.decide' in main,
         "p55_chain": "final_verdict_p55 = safe_merge(final_verdict_p54," in main,
-        "post_merge_p55": "object.union(final_verdict_p55," in main,
+        "post_merge_p55": "final_verdict_post_merge = object.union(final_verdict_p53" in main,
         "invariants": "runtime_invariants.enforce(final_verdict_post_merge)" in main,
     }
     return {"markers": markers, "complete": all(markers.values())}

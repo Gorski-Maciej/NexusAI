@@ -1,0 +1,114 @@
+====================================================================================================
+RAPORT WDROŻENIOWY GLM52 ENTERPRISE — ETAP 16/29
+KKS + ORDYNACJA PODATKOWA — ODPOWIEDZIALNOŚĆ, TERMINY, KOREKTY, OBRONA
+====================================================================================================
+
+IDENTITY
+--------
+Etap: ETAP_16
+Prompt: JDG/prompty_glm52_enterprise/16_KKS_ORDYNACJA.txt
+Raport: JDG/raporty_glm52_enterprise/16_KKS_ORDYNACJA.txt
+Audytor: JDG/tools/kks_ord_etap16_audit.py
+Bundle: JDG/bundles/kks_ord_etap16_audit_state.json
+Pakiet wdrożeniowy: JDG/rules/kks_ord_etap16_v1.rego
+Status raportu: WDROZONY_100
+
+SCOPE
+-----
+Warstwa ETAPU 16 weryfikuje czynny żal (art. 16 KKS), art. 54-83 KKS, stopnie
+sankcji, materialność, przedawnienia, korekty, odsetki, nadpłaty, ulgi w
+spłacie, interpretacje, pełnomocnictwa, GAAR, postępowania i terminy. Każda
+rekomendacja obrony jest nieautomatyczną pomocą z disclaimerem. Dodaje risk
+scoring, evidence chain, deadline engine, formalne blokady i testy temporalne.
+
+FILES
+-----
+| Plik | Status |
+|------|--------|
+| rules/kks.rego | PRESENT |
+| rules/kks/enterprise_penalties.rego | PRESENT |
+| rules/kks/plan42_detailed.rego | PRESENT |
+| rules/kks/plan43_decomposition.rego | PRESENT |
+| rules/kks/kks_innovations_v8.rego | PRESENT |
+| rules/micro/kks/kks.rego | PRESENT |
+| rules/micro/kks_ord_atomic_p11.rego | PRESENT |
+| rules/micro/ord/ord.rego | PRESENT |
+| rules/ord/ord_innovations_v8.rego | PRESENT |
+| rules/tax_authority_interaction_enterprise.rego | PRESENT |
+| rules/sanctions_optimization_enterprise.rego | PRESENT |
+| tools/kks_completeness_matrix.py | PRESENT |
+| tools/kks_penalty_auditor.py | PRESENT |
+| docs/KKS_P10.md | PRESENT |
+| docs/ORDYNACJA_PODATKOWA_P11.md | PRESENT |
+| docs/Bbb | PRESENT |
+| rules/kks_ord_etap16_v1.rego | PRESENT |
+
+IMPLEMENTED PHASES
+------------------
+1. Risk scoring — ekspozycja + umyślność + recydywa → LOW/HIGH/CRITICAL.
+2. Evidence chain — 10 decyzji obrony × (dowód + reguła źródłowa + nieautomatyczna).
+3. Czynny żal (art. 16 § 1 KKS) — warunki + disclaimer (pomoc nieautomatyczna).
+4. Stopnie sankcji i materialność (art. 54-83 KKS) — stawka dzienna, cap, próg.
+5. Przedawnienia (art. 44 KKS, art. 70 OrdPU) — 5/3 lata, temporalne.
+6. Korekty/odsetki/nadpłaty/ulgi (art. 81/53-56/72-77/67a OrdPU).
+7. Interpretacje/pełnomocnictwa/GAAR (art. 14b/80a-80d/119a OrdPU).
+8. Deadline engine — RED/AMBER/GREEN + formalna blokada przy przekroczeniu.
+9. Property invariants — ryzyko ∈ [0,100], kwoty ≥ 0, disclaimer obecny.
+10. Calculation certificate — wersje progów/prawa/faktów, waluta, jednostki.
+11. Safe orchestration — SUGGEST only, no_auto_post, final p60 + invariants.
+
+GATES
+-----
+| Gate | Result |
+|------|--------|
+| scope_files_present | PASS |
+| package_structure | PASS |
+| risk_scoring | PASS |
+| evidence_chain | PASS |
+| voluntary_disclosure_disclaimer | PASS |
+| sanctions_materiality | PASS |
+| limitation | PASS |
+| obligations_corrections_interest_overpayments_reliefs | PASS |
+| procedures_interpretation_poa_gaar | PASS |
+| deadline_engine | PASS |
+| property_invariants | PASS |
+| certificate_units_rounding | PASS |
+| legal_basis_and_threshold_versions | PASS |
+| suggest_only_and_router | PASS |
+| tests_and_report_present | PASS |
+
+CALCULATION CONTRACT
+--------------------
+- Waluta: PLN; jednostki: PLN (kara, odsetki, ekspozycja).
+- Zaokrąglenie: PLN_HALF_UP_2DP (kontrakt ujawniony w certyfikacie).
+- Źródło progów: data.jdg.thresholds.kks / ord.
+- Wersjonowanie: evaluation_date, evaluation_year, threshold_version,
+  legal_basis_version, facts_version.
+- Granice: stawka dzienna 1/30 min. wynagrodzenia, cap 400×, próg przestępstwa
+  200×, przedawnienia 5/3 lata.
+
+SAFETY CONTRACT
+---------------
+[POTWIERDZONE_KODEM] Brak daty oceny, wersji progów, wersji prawa lub wersji
+faktów daje BLOCK_AND_ALERT.
+[POTWIERDZONE_KODEM] Przekroczony termin (RED) lub ryzyko CRITICAL kieruje do
+manual review; żadna rekomendacja nie jest auto-wykonywana.
+[POTWIERDZONE_KODEM] Rekomendacje obrony są nieautomatyczną pomocą z
+disclaimerem i nie stanowią porady prawnej.
+[POTWIERDZONE_KODEM] Pakiet działa wyłącznie w trybie SUGGEST i nie publikuje
+operacji automatycznych.
+[OGRANICZENIE] Evidence pack jest dowodem technicznym; nie zastępuje aktualnej
+weryfikacji tekstu ustawy, Bbb/LKG, 4-eyes review ani porady prawnej.
+
+VERIFICATION
+------------
+Evidence: 15/15 gates.
+Status: WDROZONY_100
+
+STATUS
+------
+Status raportu: WDROZONY_100
+Produkcja: NOT_CERTIFIED
+Następny raport: ETAP_17 / JDG/prompty_glm52_enterprise/17_*.txt
+
+ETAP_16_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAP_17.

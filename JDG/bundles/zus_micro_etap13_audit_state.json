@@ -1,0 +1,148 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "jdg.zus_micro_etap13_audit",
+  "stage": "ETAP_13",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "package_structure": true,
+    "atom_map_present": true,
+    "coverage_monitor": true,
+    "insurance_periods": true,
+    "benefits_calculators": true,
+    "property_invariants": true,
+    "fail_closed_manual_gate": true,
+    "certificate_units_rounding": true,
+    "legal_basis_and_threshold_versions": true,
+    "temporal_and_rounding_contract": true,
+    "suggest_only": true,
+    "router_wired": true,
+    "tests_present": true,
+    "report_present": true
+  },
+  "gate_summary": {
+    "passed": 15,
+    "total": 15
+  },
+  "files": {
+    "declared": 15,
+    "present": 15,
+    "all_present": true,
+    "files": {
+      "rules/micro/sus/sus.rego": true,
+      "rules/micro/zdrowotna/zdrowotna.rego": true,
+      "rules/micro/zasilkowa/zasilkowa.rego": true,
+      "rules/micro/plan33_zus.rego": true,
+      "rules/p07_zus_macro_innovations_v9.rego": true,
+      "rules/p08_zus_micro_innovations_v9.rego": true,
+      "tests/rego/micro/test_native_micro_sus.rego": true,
+      "tests/rego/micro/test_native_micro_zdrowotna.rego": true,
+      "tests/rego/micro/test_native_micro_zasilkowa.rego": true,
+      "tests/rego/micro/test_native_micro_zus.rego": true,
+      "tools/zus_atom_linter.py": true,
+      "tools/zus_atom_test_matrix.py": true,
+      "docs/ZUS_MICRO_P08.md": true,
+      "docs/Bbb": true,
+      "rules/zus_micro_etap13_v1.rego": true
+    }
+  },
+  "referenced_but_absent": [
+    "rules/micro/plan34_zus.rego"
+  ],
+  "package": {
+    "package": true,
+    "balanced_braces": true,
+    "rule_ids": 2,
+    "duplicate_rule_ids": [],
+    "duplicate_free": true,
+    "markers": {
+      "atom_map": true,
+      "coverage_summary": true,
+      "period_analysis": true,
+      "benefit_calculation": true,
+      "property_invariants": true,
+      "invariant_failed": true,
+      "calculation_certificate": true,
+      "threshold_snapshot": true,
+      "missing_context": true,
+      "uncertainty_markers": true,
+      "cross_domain_collisions": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "decision_mode := \"SUGGEST\"": true,
+      "no_auto_post": true,
+      "rounding_contract": true,
+      "unit": true,
+      "legal_basis": true,
+      "source": true
+    },
+    "markers_complete": true,
+    "legal_basis": {
+      "Art. 6, 9 SUS": true,
+      "Art. 36a SUS": true,
+      "Art. 4/11/19/29/32/33 ustawy zasiłkowej": true,
+      "u.ś.o.z. art. 79-82": true,
+      "SUS art. 6-47": true
+    },
+    "legal_basis_complete": true,
+    "thresholds": {
+      "data_source": true,
+      "benefit_rates_externalized": true,
+      "period_thresholds_externalized": true,
+      "version_carried": true
+    },
+    "thresholds_externalized": true,
+    "activation": true,
+    "no_auto_post_literal": true,
+    "sections": {
+      "atom_map": true,
+      "coverage": true,
+      "periods": true,
+      "benefits": true,
+      "invariants": true,
+      "certificate": true
+    }
+  },
+  "wiring": {
+    "markers": {
+      "import": true,
+      "package_decisions": true,
+      "p57_chain": true,
+      "post_merge_p57": true,
+      "invariants": true,
+      "public_final": true
+    },
+    "complete": true
+  },
+  "tests": {
+    "present": true,
+    "test_count": 12,
+    "markers": {
+      "atom_map": true,
+      "coverage": true,
+      "period": true,
+      "benefit": true,
+      "property": true,
+      "invariant": true,
+      "missing_context": true,
+      "collision": true,
+      "SUGGEST": true,
+      "temporal": true,
+      "boundary": true
+    },
+    "complete": true
+  },
+  "native_tests": {
+    "present": true,
+    "test_count": 17,
+    "markers": {
+      "test_negative": true,
+      "test_temporal": true,
+      "test_property": true,
+      "test_boundary": true,
+      "package test_jdg_micro_zus": true
+    },
+    "complete": true
+  },
+  "generated_at": "2026-08-20T17:29:30.481743+00:00"
+}

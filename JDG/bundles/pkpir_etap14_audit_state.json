@@ -1,0 +1,160 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "jdg.pkpir_etap14_audit",
+  "stage": "ETAP_14",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "package_structure": true,
+    "evidence_pack": true,
+    "columns_numbering_chronology": true,
+    "moment_revenue_cost": true,
+    "nkup_vehicles_leasing_wages": true,
+    "remanent_storno_korekty": true,
+    "three_way_reconciliation": true,
+    "idempotent_bookkeeping": true,
+    "auto_post_lock": true,
+    "property_invariants": true,
+    "certificate_units_rounding": true,
+    "legal_basis_and_threshold_versions": true,
+    "suggest_only_and_router": true,
+    "tests_and_report_present": true
+  },
+  "gate_summary": {
+    "passed": 15,
+    "total": 15
+  },
+  "files": {
+    "declared": 16,
+    "present": 16,
+    "all_present": true,
+    "files": {
+      "rules/accounting.rego": true,
+      "rules/accounting/pkpir_enterprise_live.rego": true,
+      "rules/accounting/pkpir_enterprise_validation.rego": true,
+      "rules/accounting/pkpir_enterprise_validator.rego": true,
+      "rules/accounting/plan42_pkpir.rego": true,
+      "rules/micro/pkpir/pkpir.rego": true,
+      "rules/micro/pkpir/pkpir_kolumny.rego": true,
+      "rules/micro/pkpir/pkpir_przychody.rego": true,
+      "rules/micro/pkpir/pkpir_koszty.rego": true,
+      "rules/micro/pkpir/pkpir_nkup.rego": true,
+      "rules/micro/pkpir/pkpir_remanent.rego": true,
+      "rules/micro/pkpir/pkpir_korekty.rego": true,
+      "tools/pkpir_engine.py": true,
+      "docs/KSIEGOWOSC_PKPIR_UOR_P09.md": true,
+      "docs/Bbb": true,
+      "rules/pkpir_etap14_v1.rego": true
+    }
+  },
+  "package": {
+    "package": true,
+    "balanced_braces": true,
+    "rule_ids": 2,
+    "duplicate_rule_ids": [],
+    "duplicate_free": true,
+    "markers": {
+      "evidence_pack": true,
+      "column_audit": true,
+      "moment_audit": true,
+      "deduction_audit": true,
+      "adjustment_audit": true,
+      "reconciliation": true,
+      "idempotency_audit": true,
+      "property_invariants": true,
+      "invariant_failed": true,
+      "calculation_certificate": true,
+      "threshold_snapshot": true,
+      "missing_context": true,
+      "uncertainty_markers": true,
+      "cross_domain_collisions": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "auto_post_allowed": true,
+      "decision_mode := \"SUGGEST\"": true,
+      "no_auto_post": true,
+      "rounding_contract": true,
+      "unit": true,
+      "legal_basis": true,
+      "source": true
+    },
+    "markers_complete": true,
+    "legal_basis": {
+      "§10-12 rozp. MF z 15.11.2025 r. w sprawie PKPiR": true,
+      "art. 14 ust. 1 PIT": true,
+      "art. 23 ust. 1 PIT": true,
+      "art. 23b PIT": true,
+      "art. 23f PIT": true,
+      "art. 109 ust. 3 VAT": true,
+      "§18-19 rozp. MF PKPiR": true
+    },
+    "legal_basis_complete": true,
+    "thresholds": {
+      "data_source": true,
+      "columns_externalized": true,
+      "limits_externalized": true,
+      "version_carried": true
+    },
+    "thresholds_externalized": true,
+    "activation": true,
+    "no_auto_post_literal": true,
+    "sections": {
+      "evidence_pack": true,
+      "columns": true,
+      "moment": true,
+      "deductions": true,
+      "adjustments": true,
+      "reconciliation": true,
+      "idempotency": true,
+      "invariants": true
+    }
+  },
+  "wiring": {
+    "markers": {
+      "import": true,
+      "package_decisions": true,
+      "p58_chain": true,
+      "post_merge_p58": true,
+      "invariants": true,
+      "public_final": true
+    },
+    "complete": true
+  },
+  "tests": {
+    "present": true,
+    "test_count": 15,
+    "markers": {
+      "evidence_pack": true,
+      "column": true,
+      "chronology": true,
+      "moment": true,
+      "nkup": true,
+      "vehicle": true,
+      "leasing": true,
+      "wages": true,
+      "remanent": true,
+      "storno": true,
+      "correction": true,
+      "reconciliation": true,
+      "idempotent": true,
+      "auto_post": true,
+      "SUGGEST": true,
+      "temporal": true,
+      "boundary": true
+    },
+    "complete": true
+  },
+  "native_tests": {
+    "present": true,
+    "test_count": 20,
+    "markers": {
+      "test_negative": true,
+      "test_temporal": true,
+      "test_property": true,
+      "test_boundary": true,
+      "package test_jdg_pkpir_etap14": true
+    },
+    "complete": true
+  },
+  "generated_at": "2026-08-20T17:56:15.959340+00:00"
+}

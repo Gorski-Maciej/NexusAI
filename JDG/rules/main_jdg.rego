@@ -275,6 +275,14 @@ import data.jdg.pit_macro_etap10
 import data.jdg.pit_micro_reliefs_etap11
 # ── ETAP 12: ZUS Core calculation certificate and fail-closed audit layer ──
 import data.jdg.zus_core_etap12
+# ── ETAP 13: ZUS Micro atom map, periods, benefits and property invariants ──
+import data.jdg.zus_micro_etap13
+# ── ETAP 14: PKPiR columns, documents, reconciliation and idempotency ──
+import data.jdg.pkpir_etap14
+# ── ETAP 15: UoR double-entry, assets, amortization, closing, financial stmt ──
+import data.jdg.uor_etap15
+# ── ETAP 16: KKS + Ordynacja — risk scoring, evidence chain, deadlines ──
+import data.jdg.kks_ord_etap16
 # ── PAS 18g: P06 PIT MICRO + AMORTYZACJA ENTERPRISE v9.0 (2026-08-02) ──
 # P06 Sekcje 1-8: mapa pokrycia artykułów PIT micro 1-45, audyt amortyzacji
 # (PRIORYTET — art. 22a-22n: KŚT, jednorazowa 100k EUR, samochody 150k/225k,
@@ -1521,6 +1529,10 @@ _package_decisions := {
     "jdg.pit_macro_etap10": pit_macro_etap10.decide,
     "jdg.pit_micro_reliefs_etap11": pit_micro_reliefs_etap11.decide,
     "jdg.zus_core_etap12": zus_core_etap12.decide,
+    "jdg.zus_micro_etap13": zus_micro_etap13.decide,
+    "jdg.pkpir_etap14": pkpir_etap14.decide,
+    "jdg.uor_etap15": uor_etap15.decide,
+    "jdg.kks_ord_etap16": kks_ord_etap16.decide,
     "jdg.p06_pit_micro_innovations": p06_pit_micro_innovations.decide,
     "jdg.p07_zus_macro_innovations": p07_zus_macro_innovations.decide,
     "jdg.p08_zus_micro_innovations": p08_zus_micro_innovations.decide,
@@ -2417,6 +2429,34 @@ final_verdict_p56 = safe_merge(final_verdict_p55,
     ))
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 13: ZUS Micro — mapa atomów, okresy, świadczenia, property invariants.
+final_verdict_p57 = safe_merge(final_verdict_p56,
+    safe_merge(zus_micro_etap13.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 14: PKPiR — dowody, kolumny, uzgodnienie 3-stronne i idempotencja.
+final_verdict_p58 = safe_merge(final_verdict_p57,
+    safe_merge(pkpir_etap14.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 15: UoR — podwójny zapis, aktywa, amortyzacja, zamknięcie, sprawozdania.
+final_verdict_p59 = safe_merge(final_verdict_p58,
+    safe_merge(uor_etap15.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 16: KKS + Ordynacja — risk scoring, evidence chain, deadline engine.
+final_verdict_p60 = safe_merge(final_verdict_p59,
+    safe_merge(kks_ord_etap16.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
 #   • _invariant_report  — wynik evaluate() (invariant_failed, failed, levels),
@@ -2433,7 +2473,7 @@ final_verdict_p56 = safe_merge(final_verdict_p55,
 # Compatibility anchor: legacy gates assert the p53 prefix; p54 remains the
 # effective inner verdict and therefore is included before POST-MERGE checks.
 final_verdict_post_merge = object.union(final_verdict_p53,
-    object.union(final_verdict_p56,
+    object.union(final_verdict_p60,
         {"_routing_context": routing_context}))
 
 final_verdict_enforced = object.union(final_verdict_post_merge,

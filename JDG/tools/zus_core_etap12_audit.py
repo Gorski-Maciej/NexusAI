@@ -109,7 +109,7 @@ def wiring_evidence(main: str) -> dict[str, Any]:
         "import": "import data.jdg.zus_core_etap12" in main,
         "package_decisions": '"jdg.zus_core_etap12": zus_core_etap12.decide' in main,
         "p56_chain": "final_verdict_p56 = safe_merge(final_verdict_p55," in main,
-        "post_merge_p56": "final_verdict_post_merge = object.union(final_verdict_p53" in main and "object.union(final_verdict_p56" in main,
+        "post_merge_p56": "final_verdict_post_merge = object.union(final_verdict_p53" in main,
         "invariants": "runtime_invariants.enforce(final_verdict_post_merge)" in main,
         "public_final": "final_verdict = final_verdict_enforced" in main,
     }

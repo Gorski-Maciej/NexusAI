@@ -1,0 +1,167 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "jdg.kks_ord_etap16_audit",
+  "stage": "ETAP_16",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "package_structure": true,
+    "risk_scoring": true,
+    "evidence_chain": true,
+    "voluntary_disclosure_disclaimer": true,
+    "sanctions_materiality": true,
+    "limitation": true,
+    "obligations_corrections_interest_overpayments_reliefs": true,
+    "procedures_interpretation_poa_gaar": true,
+    "deadline_engine": true,
+    "property_invariants": true,
+    "certificate_units_rounding": true,
+    "legal_basis_and_threshold_versions": true,
+    "suggest_only_and_router": true,
+    "tests_and_report_present": true
+  },
+  "gate_summary": {
+    "passed": 15,
+    "total": 15
+  },
+  "files": {
+    "declared": 17,
+    "present": 17,
+    "all_present": true,
+    "files": {
+      "rules/kks.rego": true,
+      "rules/kks/enterprise_penalties.rego": true,
+      "rules/kks/plan42_detailed.rego": true,
+      "rules/kks/plan43_decomposition.rego": true,
+      "rules/kks/kks_innovations_v8.rego": true,
+      "rules/micro/kks/kks.rego": true,
+      "rules/micro/kks_ord_atomic_p11.rego": true,
+      "rules/micro/ord/ord.rego": true,
+      "rules/ord/ord_innovations_v8.rego": true,
+      "rules/tax_authority_interaction_enterprise.rego": true,
+      "rules/sanctions_optimization_enterprise.rego": true,
+      "tools/kks_completeness_matrix.py": true,
+      "tools/kks_penalty_auditor.py": true,
+      "docs/KKS_P10.md": true,
+      "docs/ORDYNACJA_PODATKOWA_P11.md": true,
+      "docs/Bbb": true,
+      "rules/kks_ord_etap16_v1.rego": true
+    }
+  },
+  "package": {
+    "package": true,
+    "balanced_braces": true,
+    "rule_ids": 2,
+    "duplicate_rule_ids": [],
+    "duplicate_free": true,
+    "markers": {
+      "risk_scoring": true,
+      "evidence_chain": true,
+      "voluntary_disclosure_audit": true,
+      "sanction_audit": true,
+      "limitation_audit": true,
+      "obligation_audit": true,
+      "procedure_audit": true,
+      "deadline_audit": true,
+      "property_invariants": true,
+      "invariant_failed": true,
+      "calculation_certificate": true,
+      "threshold_snapshot": true,
+      "missing_context": true,
+      "uncertainty_markers": true,
+      "cross_domain_collisions": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "decision_mode := \"SUGGEST\"": true,
+      "no_auto_post": true,
+      "disclaimer": true,
+      "rounding_contract": true,
+      "unit": true,
+      "legal_basis": true,
+      "source": true
+    },
+    "markers_complete": true,
+    "legal_basis": {
+      "art. 16 § 1 KKS": true,
+      "art. 54-83 KKS": true,
+      "art. 44 KKS": true,
+      "art. 70 OrdPU": true,
+      "art. 81/72-77/67a/53-56 OrdPU": true,
+      "art. 14b (interpretacje)": true,
+      "art. 119a OrdPU": true
+    },
+    "legal_basis_complete": true,
+    "thresholds": {
+      "data_source": true,
+      "kks_externalized": true,
+      "ord_externalized": true,
+      "version_carried": true
+    },
+    "thresholds_externalized": true,
+    "activation": true,
+    "no_auto_post_literal": true,
+    "sections": {
+      "risk": true,
+      "evidence": true,
+      "disclosure": true,
+      "sanctions": true,
+      "limitation": true,
+      "obligations": true,
+      "procedures": true,
+      "deadline": true,
+      "invariants": true
+    }
+  },
+  "wiring": {
+    "markers": {
+      "import": true,
+      "package_decisions": true,
+      "p60_chain": true,
+      "post_merge_p60": true,
+      "invariants": true,
+      "public_final": true
+    },
+    "complete": true
+  },
+  "tests": {
+    "present": true,
+    "test_count": 16,
+    "markers": {
+      "risk": true,
+      "evidence": true,
+      "voluntary": true,
+      "disclaimer": true,
+      "sanction": true,
+      "materiality": true,
+      "limitation": true,
+      "correction": true,
+      "interest": true,
+      "overpayment": true,
+      "relief": true,
+      "interpretation": true,
+      "poa": true,
+      "gaar": true,
+      "deadline": true,
+      "property": true,
+      "SUGGEST": true,
+      "temporal": true,
+      "boundary": true,
+      "manual": true
+    },
+    "complete": true
+  },
+  "native_tests": {
+    "present": true,
+    "test_count": 15,
+    "markers": {
+      "test_negative": true,
+      "test_temporal": true,
+      "test_property": true,
+      "test_boundary": true,
+      "test_risk": true,
+      "package test_jdg_kks_ord_etap16": true
+    },
+    "complete": true
+  },
+  "generated_at": "2026-08-20T18:20:29.718191+00:00"
+}

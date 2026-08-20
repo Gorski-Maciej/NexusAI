@@ -1,0 +1,173 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "jdg.uor_etap15_audit",
+  "stage": "ETAP_15",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "package_structure": true,
+    "uor_obligation": true,
+    "double_entry": true,
+    "documents_valuation_assets": true,
+    "amortization_bilansowa_podatkowa": true,
+    "inventory_closing": true,
+    "financial_stmt_manual_approval": true,
+    "pkpir_uor_transition": true,
+    "hardcode_fake_complete_detection": true,
+    "property_invariants": true,
+    "certificate_units_rounding": true,
+    "legal_basis_and_threshold_versions": true,
+    "suggest_only_and_router": true,
+    "tests_and_report_present": true
+  },
+  "gate_summary": {
+    "passed": 15,
+    "total": 15
+  },
+  "files": {
+    "declared": 19,
+    "present": 19,
+    "all_present": true,
+    "files": {
+      "rules/uor/uor_obligation.rego": true,
+      "rules/uor/uor_books.rego": true,
+      "rules/uor/uor_revenue.rego": true,
+      "rules/uor/uor_costs.rego": true,
+      "rules/uor/uor_assets.rego": true,
+      "rules/uor/uor_inventory.rego": true,
+      "rules/uor/uor_closing.rego": true,
+      "rules/uor/uor_financial_stmt.rego": true,
+      "rules/accounting/uor_enterprise_live.rego": true,
+      "rules/accounting/depreciation_enterprise.rego": true,
+      "rules/accounting/depreciation_enterprise_complete.rego": true,
+      "rules/micro/uor/uor.rego": true,
+      "rules/micro/amortyzacja/pit_a22a.rego": true,
+      "rules/micro/amortyzacja/pit_a22i.rego": true,
+      "rules/micro/amortyzacja/pit_a22k.rego": true,
+      "tools/uor_double_entry.py": true,
+      "tools/uor_closing_engine.py": true,
+      "docs/Bbb": true,
+      "rules/uor_etap15_v1.rego": true
+    }
+  },
+  "package": {
+    "package": true,
+    "balanced_braces": true,
+    "rule_ids": 2,
+    "duplicate_rule_ids": [],
+    "duplicate_free": true,
+    "markers": {
+      "obligation_audit": true,
+      "double_entry_audit": true,
+      "document_audit": true,
+      "assets_audit": true,
+      "amortization_audit": true,
+      "inventory_audit": true,
+      "closing_audit": true,
+      "financial_stmt_audit": true,
+      "transition_audit": true,
+      "hardcode_scan": true,
+      "coverage_audit": true,
+      "property_invariants": true,
+      "invariant_failed": true,
+      "calculation_certificate": true,
+      "threshold_snapshot": true,
+      "missing_context": true,
+      "uncertainty_markers": true,
+      "cross_domain_collisions": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "auto_post_allowed": true,
+      "decision_mode := \"SUGGEST\"": true,
+      "no_auto_post": true,
+      "rounding_contract": true,
+      "unit": true,
+      "legal_basis": true,
+      "source": true
+    },
+    "markers_complete": true,
+    "legal_basis": {
+      "art. 2 ust. 1 pkt 5 UoR": true,
+      "art. 15 ust. 1 UoR": true,
+      "art. 21 UoR": true,
+      "art. 26 UoR": true,
+      "art. 32 UoR": true,
+      "art. 45-49 UoR": true,
+      "art. 22a-22n PIT": true
+    },
+    "legal_basis_complete": true,
+    "thresholds": {
+      "data_source": true,
+      "obligation_externalized": true,
+      "inventory_externalized": true,
+      "version_carried": true
+    },
+    "thresholds_externalized": true,
+    "activation": true,
+    "no_auto_post_literal": true,
+    "sections": {
+      "obligation": true,
+      "double_entry": true,
+      "documents": true,
+      "assets": true,
+      "amortization": true,
+      "inventory": true,
+      "closing": true,
+      "financial_stmt": true,
+      "transition": true,
+      "invariants": true
+    }
+  },
+  "wiring": {
+    "markers": {
+      "import": true,
+      "package_decisions": true,
+      "p59_chain": true,
+      "post_merge_p59": true,
+      "invariants": true,
+      "public_final": true
+    },
+    "complete": true
+  },
+  "tests": {
+    "present": true,
+    "test_count": 15,
+    "markers": {
+      "obligation": true,
+      "double_entry": true,
+      "document": true,
+      "valuation": true,
+      "asset": true,
+      "amortization": true,
+      "inventory": true,
+      "closing": true,
+      "financial": true,
+      "transition": true,
+      "hardcode": true,
+      "fake_complete": true,
+      "reconciliation": true,
+      "idempotent": true,
+      "property": true,
+      "manual": true,
+      "SUGGEST": true,
+      "temporal": true,
+      "boundary": true,
+      "balance": true
+    },
+    "complete": true
+  },
+  "native_tests": {
+    "present": true,
+    "test_count": 16,
+    "markers": {
+      "test_negative": true,
+      "test_temporal": true,
+      "test_property": true,
+      "test_boundary": true,
+      "test_balance": true,
+      "package test_jdg_uor_etap15": true
+    },
+    "complete": true
+  },
+  "generated_at": "2026-08-20T18:10:45.870199+00:00"
+}
