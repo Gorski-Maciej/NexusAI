@@ -1,0 +1,114 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "jdg.pit_micro_reliefs_etap11_audit",
+  "stage": "ETAP_11",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "package_structure": true,
+    "relief_registry_complete": true,
+    "evidence_pack_complete": true,
+    "qualification_and_document_gates": true,
+    "temporal_contract": true,
+    "what_if_and_conflict_safety": true,
+    "suggest_only": true,
+    "router_wired": true,
+    "tests_present": true,
+    "report_present": true
+  },
+  "gate_summary": {
+    "passed": 11,
+    "total": 11
+  },
+  "files": {
+    "declared": 13,
+    "present": 13,
+    "all_present": true,
+    "files": {
+      "rules/micro/pit/pit.rego": true,
+      "rules/micro/plan33_pit.rego": true,
+      "rules/micro/plan34_pit.rego": true,
+      "rules/pit/art21_exemptions_enterprise.rego": true,
+      "rules/pit/rd_relief_enterprise.rego": true,
+      "rules/pit/ipbox_enterprise.rego": true,
+      "rules/pit/thermo_relief_enterprise.rego": true,
+      "rules/pit/donation_relief_enterprise.rego": true,
+      "rules/pit/cross_relief_optimizer_enterprise.rego": true,
+      "rules/pit/tax_loss_harvesting_enterprise.rego": true,
+      "rules/pit/family_estonian_enterprise.rego": true,
+      "rules/p06_pit_micro_innovations_v9.rego": true,
+      "rules/pit_micro_reliefs_etap11_v1.rego": true
+    }
+  },
+  "package": {
+    "package": true,
+    "balanced_braces": true,
+    "rule_ids": 2,
+    "duplicate_rule_ids": [],
+    "duplicate_free": true,
+    "reliefs": {
+      "BR": true,
+      "IP_BOX": true,
+      "THERMO": true,
+      "PROTOTYPE": true,
+      "ROBOTIZATION": true,
+      "EXPANSION": true,
+      "DONATION": true,
+      "FAMILY_4PLUS": true,
+      "CHILD": true,
+      "LOSS": true
+    },
+    "registry_complete": true,
+    "evidence_fields": {
+      "legal_node": true,
+      "facts": true,
+      "documents": true,
+      "calculation": true,
+      "tests": true,
+      "confidence": true,
+      "manual_review": true
+    },
+    "evidence_complete": true,
+    "gates": {
+      "atomic_evidence_pack": true,
+      "formal_qualification_gate": true,
+      "document_completeness_gate": true,
+      "confidence_and_manual_review": true,
+      "relief_conflict_detector": true,
+      "what_if_after_eligibility": true,
+      "temporal_relief_snapshot": true,
+      "no_auto_post": true
+    },
+    "gates_complete": true,
+    "decision_mode_suggest": true,
+    "activation": true,
+    "legal_basis": true,
+    "temporal": true,
+    "no_auto_post": true
+  },
+  "wiring": {
+    "markers": {
+      "import": true,
+      "package_decisions": true,
+      "p55_chain": true,
+      "post_merge_p55": true,
+      "invariants": true
+    },
+    "complete": true
+  },
+  "tests": {
+    "present": true,
+    "test_count": 7,
+    "markers": {
+      "B+R": true,
+      "IP_BOX": true,
+      "missing": true,
+      "documents": true,
+      "manual_review": true,
+      "what_if": true,
+      "cross_domain": true
+    },
+    "complete": true
+  },
+  "generated_at": "2026-08-20T16:29:46.065126+00:00"
+}

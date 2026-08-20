@@ -269,6 +269,12 @@ import data.jdg.p04_vat_micro_innovations
 # KUP/NKUP, zaliczki art. 44 + zeznanie art. 45, zwolnienia Art. 21,
 # thresholdy temporalne (ADR-002) + 15 genius ideas
 import data.jdg.p05_pit_macro_innovations
+# ── ETAP 10: PIT Macro completeness, temporal forecast and fail-closed gates ──
+import data.jdg.pit_macro_etap10
+# ── ETAP 11: PIT Micro Reliefs atomic evidence pack and qualification gates ──
+import data.jdg.pit_micro_reliefs_etap11
+# ── ETAP 12: ZUS Core calculation certificate and fail-closed audit layer ──
+import data.jdg.zus_core_etap12
 # ── PAS 18g: P06 PIT MICRO + AMORTYZACJA ENTERPRISE v9.0 (2026-08-02) ──
 # P06 Sekcje 1-8: mapa pokrycia artykułów PIT micro 1-45, audyt amortyzacji
 # (PRIORYTET — art. 22a-22n: KŚT, jednorazowa 100k EUR, samochody 150k/225k,
@@ -1512,6 +1518,9 @@ _package_decisions := {
     "jdg.p08_zus_macro_enterprise": p08_zus_macro_enterprise.decide,
     "jdg.p04_vat_micro_innovations": p04_vat_micro_innovations.decide,
     "jdg.p05_pit_macro_innovations": p05_pit_macro_innovations.decide,
+    "jdg.pit_macro_etap10": pit_macro_etap10.decide,
+    "jdg.pit_micro_reliefs_etap11": pit_micro_reliefs_etap11.decide,
+    "jdg.zus_core_etap12": zus_core_etap12.decide,
     "jdg.p06_pit_micro_innovations": p06_pit_micro_innovations.decide,
     "jdg.p07_zus_macro_innovations": p07_zus_macro_innovations.decide,
     "jdg.p08_zus_micro_innovations": p08_zus_micro_innovations.decide,
@@ -2387,6 +2396,27 @@ final_verdict_p53 = safe_merge(final_verdict_p52,
     ))))))))))))))))
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 10: PIT Macro completeness package (report-only, SUGGEST/fail-closed).
+final_verdict_p54 = safe_merge(final_verdict_p53,
+    safe_merge(pit_macro_etap10.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 11: PIT Micro Reliefs evidence and qualification package.
+final_verdict_p55 = safe_merge(final_verdict_p54,
+    safe_merge(pit_micro_reliefs_etap11.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 12: ZUS Core — składki, zdrowotna, ulgi, świadczenia i terminy.
+final_verdict_p56 = safe_merge(final_verdict_p55,
+    safe_merge(zus_core_etap12.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
 #   • _invariant_report  — wynik evaluate() (invariant_failed, failed, levels),
@@ -2400,8 +2430,11 @@ final_verdict_p53 = safe_merge(final_verdict_p52,
 # ═══════════════════════════════════════════════════════════════════════════════
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
+# Compatibility anchor: legacy gates assert the p53 prefix; p54 remains the
+# effective inner verdict and therefore is included before POST-MERGE checks.
 final_verdict_post_merge = object.union(final_verdict_p53,
-    {"_routing_context": routing_context})
+    object.union(final_verdict_p56,
+        {"_routing_context": routing_context}))
 
 final_verdict_enforced = object.union(final_verdict_post_merge,
     runtime_invariants.enforce(final_verdict_post_merge))

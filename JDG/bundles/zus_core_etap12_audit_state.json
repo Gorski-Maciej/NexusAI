@@ -1,0 +1,132 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "jdg.zus_core_etap12_audit",
+  "stage": "ETAP_12",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "package_structure": true,
+    "health_social_calculators": true,
+    "reliefs_benefits_deadlines": true,
+    "ppk_pfron_and_cross_domain": true,
+    "certificate_units_rounding": true,
+    "legal_basis_and_threshold_versions": true,
+    "boundary_and_temporal_contract": true,
+    "fail_closed_manual_gate": true,
+    "suggest_only": true,
+    "router_wired": true,
+    "tests_present": true,
+    "report_present": true
+  },
+  "gate_summary": {
+    "passed": 13,
+    "total": 13
+  },
+  "files": {
+    "declared": 17,
+    "present": 17,
+    "all_present": true,
+    "files": {
+      "rules/zus.rego": true,
+      "rules/zus/plan23_interactions.rego": true,
+      "rules/zus/plan42_benefits.rego": true,
+      "rules/zus/enterprise_benefits.rego": true,
+      "rules/zus/sickness_benefits_enterprise.rego": true,
+      "rules/zus/health_contribution_enterprise.rego": true,
+      "rules/zus/cumulative_revenue_engine.rego": true,
+      "rules/zus/health_precision_engine_v8.rego": true,
+      "rules/p07_zus_macro_innovations_v9.rego": true,
+      "rules/p08_zus_micro_innovations_v9.rego": true,
+      "rules/r06_zus_innovations_v9.rego": true,
+      "rules/micro/sus/sus.rego": true,
+      "rules/micro/zdrowotna/zdrowotna.rego": true,
+      "rules/micro/zasilkowa/zasilkowa.rego": true,
+      "docs/ZUS_MACRO_P07.md": true,
+      "docs/Bbb": true,
+      "rules/zus_core_etap12_v1.rego": true
+    }
+  },
+  "package": {
+    "package": true,
+    "balanced_braces": true,
+    "rule_ids": 2,
+    "duplicate_rule_ids": [],
+    "duplicate_free": true,
+    "markers": {
+      "health_calculations": true,
+      "social_calculations": true,
+      "relief_audit": true,
+      "benefit_calculation": true,
+      "ppk_pfron_audit": true,
+      "deadline_audit": true,
+      "calculation_certificate": true,
+      "threshold_snapshot": true,
+      "boundary_tests": true,
+      "missing_context": true,
+      "uncertainty_markers": true,
+      "cross_domain_collisions": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "decision_mode := \"SUGGEST\"": true,
+      "no_auto_post": true,
+      "rounding_contract": true,
+      "unit": true,
+      "legal_basis": true,
+      "source": true
+    },
+    "markers_complete": true,
+    "legal_basis": {
+      "Art. 18, 22 ustawy o SUS": true,
+      "Art. 81 ust. 2 pkt 1 u.ś.o.z.": true,
+      "Art. 81 ust. 2 pkt 2 u.ś.o.z.": true,
+      "Art. 81 ust. 2 pkt 3 u.ś.o.z.": true,
+      "Art. 4 i 11 ustawy zasiłkowej": true,
+      "Art. 47 ust. 1 ustawy o SUS": true
+    },
+    "legal_basis_complete": true,
+    "thresholds": {
+      "data_source": true,
+      "rates_externalized": true,
+      "reliefs_externalized": true,
+      "version_carried": true
+    },
+    "thresholds_externalized": true,
+    "activation": true,
+    "no_auto_post_literal": true,
+    "sections": {
+      "health": true,
+      "social": true,
+      "reliefs": true,
+      "benefits": true,
+      "ppk_pfron": true,
+      "deadlines": true
+    }
+  },
+  "wiring": {
+    "markers": {
+      "import": true,
+      "package_decisions": true,
+      "p56_chain": true,
+      "post_merge_p56": true,
+      "invariants": true,
+      "public_final": true
+    },
+    "complete": true
+  },
+  "tests": {
+    "present": true,
+    "test_count": 7,
+    "markers": {
+      "health": true,
+      "social": true,
+      "relief": true,
+      "benefit": true,
+      "boundary": true,
+      "missing_context": true,
+      "collision": true,
+      "SUGGEST": true
+    },
+    "complete": true
+  },
+  "generated_at": "2026-08-20T16:46:07.369727+00:00"
+}

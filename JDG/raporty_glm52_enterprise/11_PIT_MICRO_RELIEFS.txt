@@ -1,0 +1,107 @@
+====================================================================================================
+RAPORT WDROŻENIOWY GLM52 ENTERPRISE — ETAP 11/29
+PIT MICRO — ULGI, IP BOX, B+R, RODZINA I STRATY
+====================================================================================================
+
+IDENTITY
+--------
+Etap: ETAP_11
+Prompt: JDG/prompty_glm52_enterprise/11_PIT_MICRO_RELIEFS.txt
+Raport: JDG/raporty_glm52_enterprise/11_PIT_MICRO_RELIEFS.txt
+Audytor: JDG/tools/pit_micro_reliefs_audit.py
+Bundle: JDG/bundles/pit_micro_reliefs_audit_state.json
+Pakiet wdrożeniowy: JDG/rules/pit_micro_reliefs_etap11_v1.rego
+Status raportu: WDROZONY_100
+
+SCOPE
+-----
+Warstwa audytowa obejmuje istniejące atomy PIT Micro, plan33/plan34,
+Art. 21, B+R, IP Box, termomodernizację, prototyp, robotyzację, ekspansję,
+darowizny, rodzinę i straty. Nie powiela istniejących decyzji ulgowych;
+produkuje evidence pack i blokuje optymalizację bez dowodu formalnego.
+
+FILES
+-----
+| Plik | Status |
+|------|--------|
+| rules/micro/pit/pit.rego | PRESENT |
+| rules/micro/plan33_pit.rego | PRESENT |
+| rules/micro/plan34_pit.rego | PRESENT |
+| rules/pit/art21_exemptions_enterprise.rego | PRESENT |
+| rules/pit/rd_relief_enterprise.rego | PRESENT |
+| rules/pit/ipbox_enterprise.rego | PRESENT |
+| rules/pit/thermo_relief_enterprise.rego | PRESENT |
+| rules/pit/donation_relief_enterprise.rego | PRESENT |
+| rules/pit/cross_relief_optimizer_enterprise.rego | PRESENT |
+| rules/pit/tax_loss_harvesting_enterprise.rego | PRESENT |
+| rules/pit/family_estonian_enterprise.rego | PRESENT |
+| rules/p06_pit_micro_innovations_v9.rego | PRESENT |
+| rules/pit_micro_reliefs_etap11_v1.rego | PRESENT |
+
+IMPLEMENTED PHASES
+------------------
+1. Atomic relief registry — 10 ulg z legal node i katalogiem wymaganych dowodów.
+2. Qualification gate — eligibility, wyłączenia i typ formularza przed optymalizacją.
+3. Evidence pack — legal node, facts, documents, calculation, tests, confidence,
+   manual_review i status per ulga.
+4. Limit and temporal gate — evaluation date, threshold version i Bbb/LKG.
+5. Accumulation guard — suma claimed_amount nie może przekroczyć dochodu.
+6. Conflict guard — B+R/IP Box wymagają rozdzielenia strumieni dochodu;
+   ryczałt nie uruchamia ulg właściwych dla dochodu.
+7. What-if simulator — ranking uruchamiany dopiero na eligible reliefs.
+8. Manual review — confidence < 0.90 lub brak źródła kieruje do TRIAGE_QUEUE.
+9. Safe orchestration — SUGGEST only, no AUTO_POST, final p55 + invariants.
+
+GATES
+-----
+| Gate | Result |
+|------|--------|
+| scope_files_present | PASS |
+| package_structure | PASS |
+| relief_registry_complete | PASS |
+| evidence_pack_complete | PASS |
+| qualification_and_document_gates | PASS |
+| temporal_contract | PASS |
+| what_if_and_conflict_safety | PASS |
+| suggest_only | PASS |
+| router_wired | PASS |
+| tests_present | PASS |
+| report_present | PASS |
+
+RELIEF REGISTRY
+---------------
+| Relief | Legal node |
+|--------|------------|
+| BR | Art. 26e PIT |
+| IP_BOX | Art. 30ca-30cb PIT |
+| THERMO | Art. 26h PIT |
+| PROTOTYPE | Art. 26eb PIT |
+| ROBOTIZATION | Art. 26gb PIT |
+| EXPANSION | Art. 26ec PIT |
+| DONATION | Art. 26 ust. 1 pkt 9 PIT |
+| FAMILY_4PLUS | Art. 21 ust. 1 pkt 153 PIT |
+| CHILD | Art. 27f PIT |
+| LOSS | Art. 9 ust. 3-6 PIT |
+
+SAFETY CONTRACT
+---------------
+[POTWIERDZONE_KODEM] Brak eligibility, dokumentów, legal node, obliczenia
+lub testu blokuje relief z evidence packu.
+[POTWIERDZONE_KODEM] Niepewność confidence/manual_review kieruje do TRIAGE_QUEUE.
+[POTWIERDZONE_KODEM] Konflikty B+R/IP Box, ryczałtowe wyłączenia i przekroczenie
+sumy odliczeń kierują do BLOCK_AND_ALERT.
+[OGRANICZENIE] Evidence pack jest dowodem technicznym systemu; nie zastępuje
+weryfikacji aktualnego tekstu ustawy, 4-eyes review ani porady prawnej.
+
+VERIFICATION
+------------
+Evidence: 11/11 gates.
+Status: WDROZONY_100
+
+STATUS
+------
+Status raportu: WDROZONY_100
+Produkcja: NOT_CERTIFIED
+Następny raport: ETAP_12 / JDG/prompty_glm52_enterprise/12_*.txt
+
+ETAP_11_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAP_12.

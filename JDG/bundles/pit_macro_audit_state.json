@@ -1,0 +1,129 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "jdg.pit_macro_etap10_audit",
+  "stage": "ETAP_10",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "package_structure": true,
+    "four_forms_and_scope": true,
+    "temporal_source_contract": true,
+    "fail_closed_manual_gates": true,
+    "forecast_3y_5y": true,
+    "cross_domain_guards": true,
+    "router_wired": true,
+    "tests_present": true,
+    "report_present": true
+  },
+  "gate_summary": {
+    "passed": 10,
+    "total": 10
+  },
+  "files": {
+    "declared": 13,
+    "present": 13,
+    "all_present": true,
+    "files": {
+      "rules/pit/forms.rego": true,
+      "rules/pit/kup.rego": true,
+      "rules/pit/advances_returns.rego": true,
+      "rules/pit/exemptions.rego": true,
+      "rules/pit/transitions.rego": true,
+      "rules/pit/plan26_detailed.rego": true,
+      "rules/tax_optimization_enterprise.rego": true,
+      "rules/form_optimizer_enterprise.rego": true,
+      "rules/form_transition_simulator_enterprise.rego": true,
+      "rules/p05_pit_macro_innovations_v9.rego": true,
+      "rules/r04_pit_core_innovations_v9.rego": true,
+      "rules/r05_pit_enterprise_innovations_v9.rego": true,
+      "rules/pit_macro_etap10_innovations_v1.rego": true
+    }
+  },
+  "package": {
+    "package": true,
+    "balanced_braces": true,
+    "rule_ids": 2,
+    "unique_rule_ids": 2,
+    "duplicates": [],
+    "duplicate_free": true,
+    "activation": true,
+    "decision_mode_suggest": true,
+    "no_auto_post": true
+  },
+  "coverage": {
+    "forms": {
+      "PIT_SCALE": true,
+      "LINEAR": true,
+      "LUMP_SUM": true,
+      "TAX_CARD": true
+    },
+    "four_forms_complete": true,
+    "scope_markers": {
+      "Art. 27, 30c PIT": true,
+      "Art. 22-23 PIT": true,
+      "Art. 44, 45 PIT": true,
+      "Art. 21 PIT": true,
+      "three_five_year_simulator": true,
+      "vat_zus_uor_reconciliation_gates": true
+    },
+    "scope_complete": true,
+    "manual_gate_markers": {
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "FORM_CHANGE_REVIEW": true,
+      "KUP_NKUP_EVIDENCE": true,
+      "VAT_RECONCILIATION": true,
+      "ZUS_RECONCILIATION": true,
+      "UOR_RECONCILIATION": true,
+      "LEGAL_SOURCE_REVIEW": true
+    },
+    "manual_gates_complete": true
+  },
+  "temporal": {
+    "markers": {
+      "thresholds_data": true,
+      "threshold_version": true,
+      "valid_from": true,
+      "valid_to": true,
+      "evaluation_date": true,
+      "legal_source_registry": true
+    },
+    "complete": true
+  },
+  "forecast": {
+    "markers": {
+      "three_year": true,
+      "five_year": true,
+      "growth_rate": true,
+      "form_comparison": true,
+      "deterministic": true
+    },
+    "complete": true
+  },
+  "cross_domain": {
+    "markers": {
+      "vat": true,
+      "zus": true,
+      "uor": true,
+      "conflict_routes_to_triage": true,
+      "fail_closed_risks": true
+    },
+    "complete": true
+  },
+  "wiring": {
+    "markers": {
+      "import": true,
+      "package_decisions": true,
+      "p54_chain": true,
+      "post_merge_p54": true,
+      "invariants_after_merge": true
+    },
+    "complete": true
+  },
+  "tests": {
+    "test_file_present": true,
+    "test_count": 7,
+    "has_boundary_cases": true
+  },
+  "generated_at": "2026-08-20T16:29:45.315538+00:00"
+}
