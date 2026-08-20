@@ -1,0 +1,841 @@
+{
+  "schema_version": "1.0.0",
+  "orchestrator_contract_id": "jdg.orchestrator_data_contract",
+  "generated_at": "2026-08-20T08:54:12.985007+00:00",
+  "stage": "ETAP_05",
+  "status": "PASS",
+  "verdict_contract": {
+    "input_fields": 25,
+    "required_fields": 6,
+    "fields": {
+      "matched": {
+        "type": "boolean",
+        "required": true
+      },
+      "rule_id": {
+        "type": "string",
+        "required": true
+      },
+      "package": {
+        "type": "string",
+        "required": true
+      },
+      "priority": {
+        "type": "integer",
+        "required": true
+      },
+      "_routing": {
+        "type": "string",
+        "required": true
+      },
+      "_routing_reason": {
+        "type": "string",
+        "required": false
+      },
+      "_legal_basis": {
+        "type": "string",
+        "required": true
+      },
+      "_warnings": {
+        "type": "array",
+        "required": false
+      },
+      "vat_rate": {
+        "type": "string",
+        "required": false
+      },
+      "vat_exemption": {
+        "type": "string",
+        "required": false
+      },
+      "pit_form": {
+        "type": "string",
+        "required": false
+      },
+      "pit_rate": {
+        "type": "string",
+        "required": false
+      },
+      "pit_bracket": {
+        "type": "string",
+        "required": false
+      },
+      "kus_qualification": {
+        "type": "string",
+        "required": false
+      },
+      "kus_percent": {
+        "type": "number",
+        "required": false
+      },
+      "zus_social_base_type": {
+        "type": "string",
+        "required": false
+      },
+      "zus_health_rate": {
+        "type": "string",
+        "required": false
+      },
+      "business_status": {
+        "type": "string",
+        "required": false
+      },
+      "ceidg_registration_required": {
+        "type": "boolean",
+        "required": false
+      },
+      "rounding_level": {
+        "type": "string",
+        "required": false
+      },
+      "gtu_code": {
+        "type": "string",
+        "required": false
+      },
+      "pit_annual_return_type": {
+        "type": "string",
+        "required": false
+      },
+      "pit_kup_qualification": {
+        "type": "string",
+        "required": false
+      },
+      "vat_advance_corrected": {
+        "type": "boolean",
+        "required": false
+      },
+      "zus_base_type": {
+        "type": "string",
+        "required": false
+      }
+    }
+  },
+  "response_contract": {
+    "output_fields": 35,
+    "required_fields": 5,
+    "fields": {
+      "matched": {
+        "type": "boolean",
+        "required": true
+      },
+      "rule_id": {
+        "type": "string",
+        "required": true
+      },
+      "package": {
+        "type": "string",
+        "required": false
+      },
+      "priority": {
+        "type": "integer",
+        "required": true
+      },
+      "_routing": {
+        "type": "string",
+        "required": true
+      },
+      "_routing_reason": {
+        "type": "string",
+        "required": false
+      },
+      "_legal_basis": {
+        "type": "string",
+        "required": true
+      },
+      "_warnings": {
+        "type": "array",
+        "required": false
+      },
+      "vat_rate": {
+        "type": "string",
+        "required": false
+      },
+      "vat_exemption": {
+        "type": "string",
+        "required": false
+      },
+      "pit_form": {
+        "type": "string",
+        "required": false
+      },
+      "pit_rate": {
+        "type": "string",
+        "required": false
+      },
+      "pit_bracket": {
+        "type": "string",
+        "required": false
+      },
+      "kus_qualification": {
+        "type": "string",
+        "required": false
+      },
+      "kus_percent": {
+        "type": "number",
+        "required": false
+      },
+      "zus_social_base_type": {
+        "type": "string",
+        "required": false
+      },
+      "zus_health_rate": {
+        "type": "string",
+        "required": false
+      },
+      "business_status": {
+        "type": "string",
+        "required": false
+      },
+      "ceidg_registration_required": {
+        "type": "boolean",
+        "required": false
+      },
+      "rounding_level": {
+        "type": "string",
+        "required": false
+      },
+      "gtu_code": {
+        "type": "string",
+        "required": false
+      },
+      "pit_annual_return_type": {
+        "type": "string",
+        "required": false
+      },
+      "pit_kup_qualification": {
+        "type": "string",
+        "required": false
+      },
+      "vat_advance_corrected": {
+        "type": "boolean",
+        "required": false
+      },
+      "zus_base_type": {
+        "type": "string",
+        "required": false
+      },
+      "_provenance_tree": {
+        "type": "object",
+        "required": false
+      },
+      "_invariant_report": {
+        "type": "object",
+        "required": false
+      },
+      "_certainty_class": {
+        "type": "string",
+        "required": false,
+        "enum": [
+          "CERTAIN",
+          "CONDITIONAL",
+          "NEEDS_ADVICE"
+        ]
+      },
+      "_certainty_guard": {
+        "type": "string",
+        "required": false,
+        "enum": [
+          "CERTAINTY_BLOCKED",
+          "MANUAL_REVIEW",
+          "AUTO_POST_ALLOWED"
+        ]
+      },
+      "_decision_certificate": {
+        "type": "object",
+        "required": false
+      },
+      "_routing_context": {
+        "type": "object",
+        "required": false
+      },
+      "_cross_domain_conflicts": {
+        "type": "array",
+        "required": false
+      },
+      "_package_decisions": {
+        "type": "object",
+        "required": false
+      },
+      "_evaluation_ms": {
+        "type": "number",
+        "required": false
+      },
+      "immutable_verdict": {
+        "type": "boolean",
+        "required": false
+      }
+    }
+  },
+  "pass_definitions": [
+    {
+      "id": 0,
+      "name": "RISK",
+      "packages": [
+        "jdg.risk"
+      ],
+      "abort_on": "BLOCK_AND_ALERT",
+      "description": "fraud/GKS/GAAR — early abort"
+    },
+    {
+      "id": 1,
+      "name": "ROUTING",
+      "packages": [
+        "jdg.routing"
+      ],
+      "abort_on": "BLOCK_AND_ALERT",
+      "description": "field confidence + shard routing"
+    },
+    {
+      "id": 2,
+      "name": "COMPLIANCE",
+      "packages": [
+        "jdg.compliance",
+        "jdg.compliance.aml",
+        "jdg.validation",
+        "jdg.edge_cases",
+        "jdg.ksef_jpk",
+        "jdg.mdr",
+        "jdg.mdr.enterprise",
+        "jdg.api_fallback"
+      ],
+      "abort_on": "BLOCK_AND_ALERT",
+      "description": "Biała Lista/MPP/EPS/KSeF"
+    },
+    {
+      "id": 3,
+      "name": "CROSSBORDER",
+      "packages": [
+        "jdg.crossborder",
+        "jdg.crossborder.post_brexit",
+        "jdg.international",
+        "jdg.tp",
+        "jdg.residency"
+      ],
+      "abort_on": "BLOCK_AND_ALERT",
+      "description": "WNT/WDT/import"
+    },
+    {
+      "id": 4,
+      "name": "VAT",
+      "packages": [
+        "jdg.vat.substantive",
+        "jdg.vat.deductions",
+        "jdg.vat.procedures"
+      ],
+      "abort_on": null,
+      "description": "stawki + GTU + deductions"
+    },
+    {
+      "id": 5,
+      "name": "PIT",
+      "packages": [
+        "jdg.pit.forms",
+        "jdg.pit.kup",
+        "jdg.pit.advances",
+        "jdg.pit.exemptions",
+        "jdg.pit.art21_exemptions",
+        "jdg.pit.transitions",
+        "jdg.pit.elearning",
+        "jdg.pit.missing_reliefs"
+      ],
+      "abort_on": null,
+      "description": "forma + KUP + zaliczki"
+    },
+    {
+      "id": 6,
+      "name": "ALLOWANCES",
+      "packages": [
+        "jdg.allowances",
+        "jdg.solidarity"
+      ],
+      "abort_on": null,
+      "description": "ulgi podatkowe"
+    },
+    {
+      "id": 7,
+      "name": "ACCOUNTING",
+      "packages": [
+        "jdg.accounting",
+        "jdg.accounting.pkpir",
+        "jdg.accounting.pkpir_validation",
+        "jdg.accounting.depreciation",
+        "jdg.business",
+        "jdg.business.gig_economy",
+        "jdg.corrections"
+      ],
+      "abort_on": null,
+      "description": "PKPiR + amortyzacja"
+    },
+    {
+      "id": 8,
+      "name": "ZUS_BUSINESS_MISC",
+      "packages": [
+        "jdg.zus",
+        "jdg.zus.sickness_benefits",
+        "jdg.zus.health_contribution",
+        "jdg.liability",
+        "jdg.audit",
+        "jdg.representation",
+        "jdg.local_taxes",
+        "jdg.jpk_cit",
+        "jdg.employer",
+        "jdg.environmental",
+        "jdg.environmental.bdo",
+        "jdg.restructuring",
+        "jdg.temporal",
+        "jdg.digital",
+        "jdg.retention",
+        "jdg.edelivery",
+        "jdg.rodo",
+        "jdg.rodo_extended",
+        "jdg.mpips"
+      ],
+      "abort_on": null,
+      "description": "ZUS + BUSINESS + KSeF + JPK + RESZTA"
+    }
+  ],
+  "safe_merge": {
+    "cases": 3,
+    "immutable_allowlist": [
+      "jdg.security.fortress",
+      "jdg.zus.health_contribution",
+      "jdg.zus.sickness_benefits",
+      "jdg.business",
+      "jdg.zus",
+      "jdg.zus.enterprise_benefits"
+    ],
+    "invariants": [
+      "INV-018",
+      "INV-042"
+    ],
+    "description": "safe_merge(a,b): a immutable → a; b immutable → union(b,a); else → union(a,b). Left wins for non-immutable."
+  },
+  "provenance": {
+    "field": "_provenance_tree",
+    "enrichment": "provenance.enrich_verdict()",
+    "fields_in_tree": [
+      "path",
+      "root_hash",
+      "evaluation_ms",
+      "evaluated_at",
+      "bundle_version",
+      "rule_version",
+      "threshold_version",
+      "decision_hash",
+      "verdict_summary"
+    ],
+    "invariants": [
+      "INV-030"
+    ]
+  },
+  "certainty_class": {
+    "classes": [
+      "CERTAIN",
+      "CONDITIONAL",
+      "NEEDS_ADVICE"
+    ],
+    "guards": [
+      "CERTAINTY_BLOCKED",
+      "MANUAL_REVIEW",
+      "AUTO_POST_ALLOWED"
+    ],
+    "invariant": "INV-035",
+    "rule": "NEEDS_ADVICE or CERTAINTY_BLOCKED → no AUTO_POST"
+  },
+  "degradation": {
+    "patterns": [
+      "_degraded_context",
+      "fallback.decide",
+      "kill-switch",
+      "CERTAINTY_BLOCKED"
+    ],
+    "fail_closed": true
+  },
+  "invariants": {
+    "INV-018": "safe_merge: left argument wins on conflict; immutable_verdict packages must never be overwritten",
+    "INV-020": "routing_context must be attached BEFORE invariant enforcement",
+    "INV-030": "bundle_version, rule_version, threshold_version in provenance tree",
+    "INV-035": "NEEDS_ADVICE / CERTAINTY_BLOCKED → no AUTO_POST",
+    "INV-036": "evaluation_date is part of routing context (temporal guard)",
+    "INV-042": "safe_merge integrity — no key overwrites for immutable packages"
+  },
+  "findings_summary": {
+    "total": 52,
+    "blocks": 0,
+    "warnings": 3,
+    "info": 49
+  },
+  "validation": {
+    "status": "PASS",
+    "checks_run": 52,
+    "checks_passed": 52,
+    "checks_failed": 0,
+    "findings": [
+      {
+        "severity": "INFO",
+        "invariant": "G01",
+        "message": "Package declaration: jdg.main ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G02",
+        "message": "Liczba importów: 282",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-018",
+        "message": "safe_merge użyty 577 razy w main_jdg.rego",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-042",
+        "message": "immutable_verdict_allowlist obecna w main_jdg.rego ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-030",
+        "message": "provenance.enrich_verdict() podłączony ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-030",
+        "message": "_package_decisions map obecny ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G07",
+        "message": "final_verdict = final_verdict_enforced (public contract) ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-035",
+        "message": "runtime_invariants.enforce() podłączony ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-020",
+        "message": "_routing_context dołączony do final_verdict_post_merge ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G03",
+        "message": "Else-chain obecna (first-match-wins) ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-030",
+        "message": "main_jdg.rego: _provenance_tree × 1",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-030",
+        "message": "main_jdg.rego: _provenance (inny) × 5",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-030",
+        "message": "provenance.rego: _provenance_tree × 4",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-030",
+        "message": "provenance.rego: _provenance (inny) × 3",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-030",
+        "message": "openapi.yaml: _provenance (inny) × 2",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G05",
+        "message": "OpenAPI zawiera _provenance (sprawdź zgodność z Rego)",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "PASS-0",
+        "message": "PASS 0 (RISK): wszystkie pakiety zaimportowane (1) ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "PASS-0",
+        "message": "PASS 0 (RISK): abort_on=BLOCK_AND_ALERT (early abort aktywny) ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "PASS-1",
+        "message": "PASS 1 (ROUTING): wszystkie pakiety zaimportowane (1) ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "PASS-1",
+        "message": "PASS 1 (ROUTING): abort_on=BLOCK_AND_ALERT (early abort aktywny) ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "PASS-2",
+        "message": "PASS 2 (COMPLIANCE): wszystkie pakiety zaimportowane (8) ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "PASS-3",
+        "message": "PASS 3 (CROSSBORDER): wszystkie pakiety zaimportowane (5) ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "PASS-4",
+        "message": "PASS 4 (VAT): wszystkie pakiety zaimportowane (3) ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "PASS-5",
+        "message": "PASS 5 (PIT): wszystkie pakiety zaimportowane (8) ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "PASS-6",
+        "message": "PASS 6 (ALLOWANCES): wszystkie pakiety zaimportowane (2) ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "PASS-7",
+        "message": "PASS 7 (ACCOUNTING): wszystkie pakiety zaimportowane (7) ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "PASS-8",
+        "message": "PASS 8 (ZUS_BUSINESS_MISC): wszystkie pakiety zaimportowane (19) ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-018",
+        "message": "safe_merge: case 1 (a immutable → return a) ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-018",
+        "message": "safe_merge: case 2 (b immutable → union(b,a)) ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-018",
+        "message": "safe_merge: case 3 (standard → union(a,b)) ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-042",
+        "message": "has_immutable_flag helper obecny ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "WARNING",
+        "invariant": "INV-018",
+        "message": "object.union() użyte 2x w sekcji post-merge — może nadpisywać immutable verdicts",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G08",
+        "message": "Cross-domain conflicts: BLOCK=7, TRIAGE=11, WARNING=9",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G08",
+        "message": "conflicts raportuje do _cross_domain_conflicts (read-only) ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G08",
+        "message": "conflicts: else-chain (first-match-wins) ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G04",
+        "message": "decision_composer: routing_priority definiuje priorytety BLOCK>TRIAGE>WARN>FALLBACK ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G04",
+        "message": "decision_composer: BLOCK_AND_ALERT obsługiwany ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "WARNING",
+        "invariant": "G01",
+        "message": "enterprise_operating_contract: tylko 0 etapów",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G01",
+        "message": "Bundle schema_version: 1.0.0 ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "WARNING",
+        "invariant": "INV-035",
+        "message": "Brak runtime_invariants_enterprise.rego",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G06",
+        "message": "_degraded_context obecny w main_jdg.rego ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G06",
+        "message": "fallback.decide podłączony jako catch-all ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G05",
+        "message": "API field 'matched' obecny ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G05",
+        "message": "API field 'rule_id' obecny ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G05",
+        "message": "API field 'vat_rate' obecny ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G05",
+        "message": "API field '_routing' obecny ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G05",
+        "message": "API field '_legal_basis' obecny ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G05",
+        "message": "API field '_warnings' obecny ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G05",
+        "message": "API field '_provenance' obecny ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G05",
+        "message": "API field '_cost_ms' obecny ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "G05",
+        "message": "API: ProvenanceTree schema obecna ✓",
+        "file_ref": "",
+        "line": 0
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-030",
+        "message": "API: decision_hash w ProvenanceTree ✓",
+        "file_ref": "",
+        "line": 0
+      }
+    ]
+  },
+  "report_path": "raporty_glm52_enterprise/05_ORCHESTRATOR_DATA_CONTRACT.txt"
+}

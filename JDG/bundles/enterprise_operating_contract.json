@@ -290,5 +290,30 @@
     ],
     "production_activation": "NOT_CERTIFIED_WITHOUT_HSM_TELEMETRY_AND_SIGNED_BUNDLE",
     "status": "WDROZONY_100"
+  },
+  "stage_05": {
+    "prompt_path": "JDG/prompty_glm52_enterprise/05_ORCHESTRATOR_DATA_CONTRACT.txt",
+    "report_path": "JDG/raporty_glm52_enterprise/05_ORCHESTRATOR_DATA_CONTRACT.txt",
+    "implementation_scope": [
+      "pass_0_8_multi_pass_architecture_analysis",
+      "routing_o1_sharded_index_router",
+      "safe_merge_immutable_verdicts_inv018_inv042",
+      "provenance_tree_a1_inv030",
+      "decision_certificate_f4_inv035",
+      "certainty_class_and_guard",
+      "degradation_fail_closed_patterns",
+      "conflicts_post_merge_cross_domain",
+      "naming_contract_api_rego_consistency",
+      "schema_versioning_bundle_rule_threshold"
+    ],
+    "evidence": [
+      "JDG/bundles/orchestrator_data_contract.json",
+      "JDG/tools/orchestrator_data_contract.py",
+      "JDG/migrations/008_jdg_v13_orchestrator_contract.sql",
+      "JDG/tests/test_orchestrator_data_contract.py",
+      "JDG/docs/ORCHESTRATOR_DATA_CONTRACT.md"
+    ],
+    "production_activation": "NOT_CERTIFIED_WITHOUT_HSM_AND_RUNTIME_OPA",
+    "status": "WDROZONY_100"
   }
 }
