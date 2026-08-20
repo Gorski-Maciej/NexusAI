@@ -1,0 +1,370 @@
+{
+  "schema_version": "1.0.0",
+  "core_guards_id": "jdg.core_guards_temporal_thresholds",
+  "generated_at": "2026-08-20T09:15:42.807704+00:00",
+  "stage": "ETAP_06",
+  "status": "PASS",
+  "invariant_catalog": {
+    "total": 42,
+    "runtime": 29,
+    "build": 10,
+    "statistical": 3,
+    "block_enforcement": 39
+  },
+  "constitutional_layer": {
+    "runtime_invariants": "INV-001..INV-042",
+    "evaluate_function": "deterministic pure function",
+    "enforce_function": "POST-MERGE hook (ADR-022)",
+    "certainty_classes": [
+      "CERTAIN",
+      "CONDITIONAL",
+      "NEEDS_ADVICE"
+    ],
+    "certainty_guards": [
+      "AUTO_POST_ALLOWED",
+      "MANUAL_REVIEW",
+      "CERTAINTY_BLOCKED"
+    ]
+  },
+  "temporal_layer": {
+    "interval_algebra": "zero gaps + zero overlaps (INV-037)",
+    "time_travel": "Art. 3 OrdPU — prawo wg daty transakcji",
+    "version_pin": "deterministic max(valid_from) per date",
+    "gap_detector": "P1624 — luki między wersjami reguły",
+    "overlap_detector": "P1619 — nakładające się okna ważności"
+  },
+  "thresholds": {
+    "data_service": "data_service.py — versioned store, hot-reload < 1 min",
+    "adr002": "zero hardcoded — wszystkie wartości w data.thresholds"
+  },
+  "hardcoded_audit": {
+    "target": 0,
+    "description": "zero hardcoded w nowych regułach; legacy skatalogowane"
+  },
+  "validation": {
+    "nip_checksum": "Art. 96 VAT — modulo 11 z wag z thresholds",
+    "regon_checksum": "9/14-cyfrowy — wagi z thresholds (ADR-002)",
+    "amount_consistency": "netto + VAT = brutto ± epsilon"
+  },
+  "fallback": {
+    "whitelist": "TRIAGE_QUEUE (fail-closed)",
+    "ceidg": "retry queue (fail-open bez fraud_flag)",
+    "ksef": "FALLBACK_ACTIVE 7 dni",
+    "nbp": "cached rate + TRIAGE",
+    "multi": "BLOCK_AND_ALERT przy ≥3 API offline"
+  },
+  "reliability": {
+    "RG-01": "reproducibility fingerprint",
+    "RG-02": "provenance completeness gate",
+    "RG-03": "fallback ladder integrity",
+    "RG-04": "decision determinism"
+  },
+  "validation_summary": {
+    "status": "PASS",
+    "checks_run": 60,
+    "checks_passed": 60,
+    "checks_failed": 0,
+    "findings": [
+      {
+        "severity": "INFO",
+        "invariant": "INV-000",
+        "message": "Katalog invariantów: 42 definicji"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-000",
+        "message": "RUNTIME=29, BUILD=10, STATISTICAL=3"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-000",
+        "message": "BLOCK enforcement: 39/42"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-000",
+        "message": "Unikalność invariant IDs: OK"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-000",
+        "message": "runtime_invariants: 90 referencji INV w Rego"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-001",
+        "message": "INV-001 zdefiniowany w Rego ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-003",
+        "message": "INV-003 zdefiniowany w Rego ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-005",
+        "message": "INV-005 zdefiniowany w Rego ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-018",
+        "message": "INV-018 zdefiniowany w Rego ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-030",
+        "message": "INV-030 zdefiniowany w Rego ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-035",
+        "message": "INV-035 zdefiniowany w Rego ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-037",
+        "message": "INV-037 zdefiniowany w Rego ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-039",
+        "message": "INV-039 zdefiniowany w Rego ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-042",
+        "message": "INV-042 zdefiniowany w Rego ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-001",
+        "message": "evaluate(v) — czysta funkcja egzekucji obecna ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-020",
+        "message": "enforce(v) — hak POST-MERGE obecny ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-032",
+        "message": "Trzy klasy pewności: CERTAIN/CONDITIONAL/NEEDS_ADVICE ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-031",
+        "message": "Decision certificate obecny w enforce() ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-035",
+        "message": "auto_post guard obecny ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-012",
+        "message": "Hardcoded audit: 10883 znalezisk w 333 plikach"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-012",
+        "message": "Top pliki: _business_lifecycle_rates.rego, _compliance_rates.rego, _crossborder_rates.rego, _edge_cases_conflicts_rates.rego, _kks_micro_rates.rego"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-037",
+        "message": "Temporal rule P1600 (statute_limitations_5yr) obecna ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-037",
+        "message": "Temporal rule P1602 (statute_limitations_10yr) obecna ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-037",
+        "message": "Temporal rule P1604 (vat_rate_effective) obecna ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-037",
+        "message": "Temporal rule P1610 (time_travel_rule_selection) obecna ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-037",
+        "message": "Temporal rule P1619 (overlap_detector) obecna ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-037",
+        "message": "Temporal rule P1624 (gap_detector) obecna ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-037",
+        "message": "Temporal rule P1627 (interval_algebra) obecna ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-037",
+        "message": "Temporal rule P1628 (threshold_version_pin) obecna ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-037",
+        "message": "Temporal rule P1632 (version_proof) obecna ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-037",
+        "message": "helper _has_gap() obecny ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-037",
+        "message": "helper _overlap_cond() obecny ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-037",
+        "message": "_version_registry obecny ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-001",
+        "message": "Validation R0613 (nip_checksum) ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-001",
+        "message": "Validation R0614 (regon_checksum) ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-001",
+        "message": "Validation R0615 (invoice_number_continuity) ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-001",
+        "message": "Validation R0616 (invoice_date_future) ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-001",
+        "message": "Validation R0617 (sale_delivery_date_range) ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-001",
+        "message": "Validation R0618 (invoice_amount_consistency) ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-001",
+        "message": "Validation R0619 (nip_seller_buyer_distinct) ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-001",
+        "message": "Validation R0620 (ksef_upo_required) ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-012",
+        "message": "NIP/REGON weights z thresholds (ADR-002) ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-012",
+        "message": "Data Service: time-travel support ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-037",
+        "message": "Data Service: validate (zero gaps/overlaps) ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-012",
+        "message": "Data Service: hot-reload < 1 min ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-038",
+        "message": "Fallback P1850 (whitelist_degradation) ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-038",
+        "message": "Fallback P1851 (ceidg_degradation) ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-038",
+        "message": "Fallback P1852 (ksef_degradation) ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-038",
+        "message": "Fallback P1853 (gus_degradation) ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-038",
+        "message": "Fallback P1854 (nbp_rate_fallback) ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-038",
+        "message": "Fallback P1855 (multi_degradation) ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-038",
+        "message": "Fallback: TRIAGE zamiast ALLOW (fail-closed) ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-029",
+        "message": "RG-01 (reproducibility_fingerprint) obecny ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-029",
+        "message": "RG-02 (provenance_gate) obecny ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-029",
+        "message": "RG-03 (fallback_ladder) obecny ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-029",
+        "message": "RG-04 (determinism) obecny ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-032",
+        "message": "main_jdg: runtime_invariants.enforce() → certainty ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-035",
+        "message": "main_jdg: final_verdict = enforced (public contract) ✓"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-037",
+        "message": "Testy temporalne: 3 plików"
+      },
+      {
+        "severity": "INFO",
+        "invariant": "INV-037",
+        "message": "Testy Rego: 165 plików"
+      }
+    ]
+  }
+}

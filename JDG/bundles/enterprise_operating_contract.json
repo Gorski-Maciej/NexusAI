@@ -315,5 +315,30 @@
     ],
     "production_activation": "NOT_CERTIFIED_WITHOUT_HSM_AND_RUNTIME_OPA",
     "status": "WDROZONY_100"
+  },
+  "stage_06": {
+    "prompt_path": "JDG/prompty_glm52_enterprise/06_CORE_GUARDS_TEMPORAL_THRESHOLDS.txt",
+    "report_path": "JDG/raporty_glm52_enterprise/06_CORE_GUARDS_TEMPORAL_THRESHOLDS.txt",
+    "implementation_scope": [
+      "42_runtime_invariants_inv001_to_inv042",
+      "evaluate_pure_function_and_enforce_post_merge_hook",
+      "certainty_class_propagation_certain_conditional_needs_advice",
+      "temporal_interval_algebra_zero_gaps_zero_overlaps",
+      "hardcoded_audit_gate_zero_magic_thresholds",
+      "validation_nip_regon_checksum_amount_consistency",
+      "fallback_degradation_fail_closed_patterns",
+      "reliability_guarantee_rg01_to_rg04",
+      "data_service_versioned_thresholds_hot_reload",
+      "decision_certificate_f4_with_decision_hash"
+    ],
+    "evidence": [
+      "JDG/bundles/core_guards_state.json",
+      "JDG/tools/core_guards_temporal_thresholds.py",
+      "JDG/migrations/009_jdg_v14_core_guards.sql",
+      "JDG/tests/test_core_guards_temporal_thresholds.py",
+      "JDG/docs/CORE_GUARDS_TEMPORAL_THRESHOLDS.md"
+    ],
+    "production_activation": "NOT_CERTIFIED_WITHOUT_RUNTIME_OPA_AND_HSM",
+    "status": "WDROZONY_100"
   }
 }
