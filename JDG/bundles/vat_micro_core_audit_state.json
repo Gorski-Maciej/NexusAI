@@ -1,0 +1,115 @@
+{
+  "schema_version": "1.0.0",
+  "vat_micro_core_audit_id": "jdg.vat_micro_core_audit",
+  "generated_at": "2026-08-20T09:47:23.206335+00:00",
+  "stage": "ETAP_08",
+  "status": "PASS",
+  "structure": {
+    "files": 6,
+    "total_rules": 1423,
+    "unique_articles": 193,
+    "total_stubs": 2
+  },
+  "binding_registry": {
+    "macro_to_micro": "main_jdg.rego → safe_merge → micro.vat.*",
+    "micro_to_verdict": "micro rules → _provenance_tree → final_verdict"
+  },
+  "validation_summary": {
+    "status": "PASS",
+    "checks_run": 18,
+    "checks_passed": 18,
+    "checks_failed": 0,
+    "findings": [
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "rules/micro/vat/vat.rego: 1092 reguł, 149 artykułów, 1 stubów"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "rules/micro/vat/r03_vat_micro_articles.rego: 14 reguł, 29 artykułów, 1 stubów"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "rules/micro/plan33_vat.rego: 116 reguł, 18 artykułów, 0 stubów"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "rules/micro/plan34_vat.rego: 180 reguł, 22 artykułów, 0 stubów"
+      },
+      {
+        "severity": "WARNING",
+        "gate": "G03",
+        "message": "Brak pliku: rules/p03_vat_micro_innovations_v9.rego"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "rules/p04_vat_micro_innovations_v9.rego: 10 reguł, 2 artykułów, 0 stubów"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "rules/p05_vat_micro_atomic_v9.rego: 11 reguł, 2 artykułów, 0 stubów"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G01",
+        "message": "VAT Micro: 6 plików, 1423 reguł, 193 artykułów, 2 stubów, 6 tautologii"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Brak duplikatów rule_id w warstwie micro ✓"
+      },
+      {
+        "severity": "WARNING",
+        "gate": "G03",
+        "message": "Kolizje priorytetów: 17 (top: [999999, 500, 501, 502, 503])"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G01",
+        "message": "Article coverage: 27/29 (93.1%)"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G01",
+        "message": "Uncovered: Art. 28a (Miejsce WNT), Art. 90 (Odliczenie przy zwolnieniach)"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G02",
+        "message": "Temporal markers: 5/6 plików"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G02",
+        "message": "Niektóre pliki bez temporal markers — sprawdź"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G01",
+        "message": "main_jdg: data.jdg.micro.vat importowany ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G01",
+        "message": "main_jdg: safe_merge z micro packages ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G01",
+        "message": "main_jdg: 65 wpisów jdg.micro.* w _package_decisions"
+      },
+      {
+        "severity": "WARNING",
+        "gate": "G03",
+        "message": "Tautologie {true} (poza catch-all): 6"
+      }
+    ]
+  }
+}
