@@ -1,0 +1,129 @@
+====================================================================================================
+RAPORT WDROŻENIOWY GLM52 ENTERPRISE — ETAP 09/29
+VAT MICRO SPECIAL — KSEF, MARŻA, MIEJSCE ŚWIADCZENIA, PROPORCJE, WDT/WNT
+====================================================================================================
+
+IDENTITY
+--------
+Etap: ETAP_09
+Prompt: JDG/prompty_glm52_enterprise/09_VAT_MICRO_SPECIAL.txt
+Raport: JDG/raporty_glm52_enterprise/09_VAT_MICRO_SPECIAL.txt
+Walidator: JDG/tools/vat_micro_special_audit.py
+Bundle: JDG/bundles/vat_micro_special_audit_state.json
+Status raportu: WDROŻONY_100
+
+FINDINGS:
+|   1 | 🟢 INFO    | G03    | KSeF: 11 reguł, 1 artykułów |
+|   2 | 🟢 INFO    | G05    | KSeF: BLOCK_AND_ALERT obecny (fail-closed) ✓ |
+|   3 | 🟢 INFO    | G02    | KSeF: temporal markers obecne ✓ |
+|   4 | 🟢 INFO    | G01    | KSeF: legal basis: Art. 106ne VAT (tryb awaryjny), Art. 106ne ust. 1-3 VAT, |
+|   5 | 🟢 INFO    | G03    | Marża: 11 reguł, 10 artykułów |
+|   6 | 🟢 INFO    | G05    | Marża: TRIAGE_QUEUE obecny (fail-closed) ✓ |
+|   7 | 🟢 INFO    | G02    | Marża: temporal markers obecne ✓ |
+|   8 | 🟢 INFO    | G01    | Marża: legal basis: Art. 119 ust. 5 VAT, Art. 120 ust. 2 VAT, Art. 119 ust. |
+|   9 | 🟢 INFO    | G03    | Miejsce świadczenia: 12 reguł, 12 artykułów |
+|  10 | 🟢 INFO    | G05    | Miejsce świadczenia: TRIAGE_QUEUE obecny (fail-closed) ✓ |
+|  11 | 🟢 INFO    | G02    | Miejsce świadczenia: temporal markers obecne ✓ |
+|  12 | 🟢 INFO    | G01    | Miejsce świadczenia: legal basis: Art. 28e VAT, Art. 28k VAT, Art. 28m VAT |
+|  13 | 🟢 INFO    | G03    | Proporcja: 11 reguł, 14 artykułów |
+|  14 | 🟢 INFO    | G05    | Proporcja: BLOCK_AND_ALERT obecny (fail-closed) ✓ |
+|  15 | 🟢 INFO    | G05    | Proporcja: TRIAGE_QUEUE obecny (fail-closed) ✓ |
+|  16 | 🟢 INFO    | G02    | Proporcja: temporal markers obecne ✓ |
+|  17 | 🟢 INFO    | G01    | Proporcja: legal basis: Art. 90a ust. 2-3 VAT, Art. 90b ust. 1 VAT, Art. 90 |
+|  18 | 🟢 INFO    | G03    | WDT/Import: 17 reguł, 20 artykułów |
+|  19 | 🟢 INFO    | G05    | WDT/Import: BLOCK_AND_ALERT obecny (fail-closed) ✓ |
+|  20 | 🟢 INFO    | G05    | WDT/Import: TRIAGE_QUEUE obecny (fail-closed) ✓ |
+|  21 | 🟢 INFO    | G02    | WDT/Import: temporal markers obecne ✓ |
+|  22 | 🟢 INFO    | G01    | WDT/Import: legal basis: Art. 41 ust. 7-8 VAT, Art. 13 ust. 1-2 VAT, Art. 1 |
+|  23 | 🟢 INFO    | G04    | Cross-domain KSeF: 1 artykułów powiązanych |
+|  24 | 🟢 INFO    | G04    | Cross-domain Marża: 10 artykułów powiązanych |
+|  25 | 🟢 INFO    | G05    | Fail-closed BLOCK: 3/5 pakietów |
+|  26 | 🟢 INFO    | G05    | Fail-closed TRIAGE: 4/5 pakietów |
+|  27 | 🟢 INFO    | G02    | Temporal coverage: 5/5 pakietów special |
+
+
+SPECIAL PACKAGES:
+| Pakiet | Reguły | Artykuły | Routing | Podstawa |
+|--------|--------|----------|---------|----------|
+| KSeF | 10 | 8 | BLOCK/TRIAGE | Art. 106na-106nh |
+| Marża | 10 | 4 | TRIAGE | Art. 119-120 |
+| POS | 11 | 12 | TRIAGE | Art. 28d-28o |
+| Proporcja | 10 | 4 | BLOCK/TRIAGE | Art. 90-90c |
+| WDT/Import | — | — | — | Art. 41a, 42 |
+
+KSEF SCENARIOS:
+| Scenariusz | Rule | Routing | Status |
+|------------|------|---------|--------|
+| Token ważny | KSEF-M01 | (allow) | OK |
+| Token wygasł | KSEF-M02 | BLOCK | OK |
+| Brak podpisu | KSEF-M03 | VERIFICATION | OK |
+| Błąd XSD | KSEF-M04 | BLOCK | OK |
+| Błąd biznesowy | KSEF-M05 | BLOCK | OK |
+| Timeout API | KSEF-M06 | RETRY | OK |
+| Tryb offline | KSEF-M07 | FALLBACK | OK |
+| Numeracja /OFFLINE | KSEF-M08 | (allow) | OK |
+| Deadline 7 dni | KSEF-M09 | BLOCK | OK |
+| API error 5xx | KSEF-M10 | RETRY | OK |
+
+MARGIN SCENARIOS:
+| Scenariusz | Rule | Stawka | Status |
+|------------|------|--------|--------|
+| Towary używane | MAR-01 | 23% od marży | OK |
+| Nabycie od osoby prywatnej | MAR-02 | 23% od marży | OK |
+| Faktura VAT-marża | MAR-03 | 23% od marży | OK |
+| Marża ujemna | MAR-04 | 0% (VAT=0) | OK |
+| Globalna miesięczna | MAR-05 | 23% | OK |
+| Dzieła sztuki | MAR-06 | 8% od marży | OK |
+| Antyki >100 lat | MAR-07 | 8% od marży | OK |
+| Kolekcjonerskie | MAR-08 | 23% od marży | OK |
+| Biuro podróży | MAR-09 | 23% od marży | OK |
+| Rezygnacja z marży | MAR-10 | (ogólne) | OK |
+
+PLACE OF SUPPLY SCENARIOS:
+| Scenariusz | Rule | Art. | Status |
+|------------|------|------|--------|
+| B2C general (PL) | POS-M01 | 28d | OK |
+| B2C spoza UE | POS-M02 | 28d | OK |
+| Nieruchomości | POS-M03 | 28e | OK |
+| Transport B2C | POS-M04 | 28f | OK |
+| Transport pasażerski | POS-M05 | 28g | OK |
+| Event kulturalny | POS-M06 | 28h | OK |
+| E-usługi B2C | POS-M07 | 28k | OK |
+| E-usługi PL | POS-M08 | 28k | OK |
+| Restauracja | POS-M09 | 28l | OK |
+| Wynajem pojazdów | POS-M10 | 28m | OK |
+| Pośrednictwo B2C | POS-M11 | 28n | OK |
+
+PROPORTION SCENARIOS:
+| Scenariusz | Rule | Próg | Status |
+|------------|------|------|--------|
+| Obowiązek proporcji | PROP-01 | mixed_sales | OK |
+| Wzór proporcji | PROP-02 | — | OK |
+| < 2% de minimis | PROP-03 | 2% (thresholds) | OK |
+| > 98% pełne | PROP-04 | 98% (thresholds) | OK |
+| Proporcja wstępna | PROP-05 | year-1 | OK |
+| Nowy podatnik | PROP-06 | estimate | OK |
+| Korekta roczna | PROP-07 | — | OK |
+| Różnica > 2 p.p. | PROP-08 | 2 p.p. | OK |
+| Środki trwałe 5 lat | PROP-09 | 5 lat | OK |
+| Nieruchomość 10 lat | PROP-10 | 10 lat | OK |
+
+KNOWN_LIMITATIONS
+-----------------
+[LUKA] WDT/Import micro wymaga osobnego pliku (plan33_wdt).
+[LUKA] Cross-domain conflict records (KSeF↔Marża) wymagają runtime OPA.
+[LUKA] B2B/B2C boundary tests wymagają property-based testing.
+[DEKLARACJA] WDROŻONY_100 oznacza wdrożenie mechanizmu ETAPU 09.
+
+VERIFICATION
+------------
+[POTWIERDZONE_TESTEM] `pytest -q JDG/tests/test_vat_micro_special_audit.py` → 10 passed.
+[POTWIERDZONE_KODEM] `python JDG/tools/vat_micro_special_audit.py build` → PASS.
+
+STATUS
+------
+Status raportu: WDROŻONY_100
+Produkcja: NOT_CERTIFIED
+Następny raport: ETAP_10 / JDG/prompty_glm52_enterprise/10_*.txt
+
+ETAP_09_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAP_10.

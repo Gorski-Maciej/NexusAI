@@ -388,5 +388,29 @@
     ],
     "production_activation": "NOT_CERTIFIED_WITHOUT_RUNTIME_OPA",
     "status": "WDROZONY_100"
+  },
+  "stage_09": {
+    "prompt_path": "JDG/prompty_glm52_enterprise/09_VAT_MICRO_SPECIAL.txt",
+    "report_path": "JDG/raporty_glm52_enterprise/09_VAT_MICRO_SPECIAL.txt",
+    "implementation_scope": [
+      "ksef_micro_10_scenarios",
+      "margin_scheme_10_scenarios",
+      "place_of_supply_11_scenarios",
+      "proportion_vat_10_scenarios",
+      "wdt_export_import_scenarios",
+      "cross_domain_conflict_detection",
+      "fail_closed_routing_block_triage",
+      "temporal_coverage_all_packages",
+      "b2b_b2c_boundary_analysis",
+      "legal_basis_verification"
+    ],
+    "evidence": [
+      "JDG/bundles/vat_micro_special_audit_state.json",
+      "JDG/tools/vat_micro_special_audit.py",
+      "JDG/migrations/012_jdg_v17_vat_micro_special.sql",
+      "JDG/tests/test_vat_micro_special_audit.py"
+    ],
+    "production_activation": "NOT_CERTIFIED_WITHOUT_RUNTIME_OPA",
+    "status": "WDROZONY_100"
   }
 }

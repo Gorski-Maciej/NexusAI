@@ -1,0 +1,161 @@
+{
+  "schema_version": "1.0.0",
+  "vat_micro_special_audit_id": "jdg.vat_micro_special_audit",
+  "generated_at": "2026-08-20T09:56:52.438165+00:00",
+  "stage": "ETAP_09",
+  "status": "PASS",
+  "structure": {
+    "packages": 5,
+    "total_rules": 62,
+    "unique_articles": 57
+  },
+  "special_domains": {
+    "ksef": "Art. 106na-106nh (authorization, rejection, offline, retry)",
+    "margin": "Art. 119-120 (used goods, art, antiques, collectibles, travel)",
+    "place_of_supply": "Art. 28d-28o (B2C, real estate, transport, e-services)",
+    "proportion": "Art. 90-90c (annual, de minimis, full, correction, fixed assets)"
+  },
+  "validation_summary": {
+    "status": "PASS",
+    "checks_run": 27,
+    "checks_passed": 27,
+    "checks_failed": 0,
+    "findings": [
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "KSeF: 11 reguł, 1 artykułów"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G05",
+        "message": "KSeF: BLOCK_AND_ALERT obecny (fail-closed) ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G02",
+        "message": "KSeF: temporal markers obecne ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G01",
+        "message": "KSeF: legal basis: Art. 106ne VAT (tryb awaryjny), Art. 106ne ust. 1-3 VAT, Art. 106ne ust. 5 VAT"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Marża: 11 reguł, 10 artykułów"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G05",
+        "message": "Marża: TRIAGE_QUEUE obecny (fail-closed) ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G02",
+        "message": "Marża: temporal markers obecne ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G01",
+        "message": "Marża: legal basis: Art. 119 ust. 5 VAT, Art. 120 ust. 2 VAT, Art. 119 ust. 3 VAT, Art. 120 ust. 5-6 VAT"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Miejsce świadczenia: 12 reguł, 12 artykułów"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G05",
+        "message": "Miejsce świadczenia: TRIAGE_QUEUE obecny (fail-closed) ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G02",
+        "message": "Miejsce świadczenia: temporal markers obecne ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G01",
+        "message": "Miejsce świadczenia: legal basis: Art. 28e VAT, Art. 28k VAT, Art. 28m VAT"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Proporcja: 11 reguł, 14 artykułów"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G05",
+        "message": "Proporcja: BLOCK_AND_ALERT obecny (fail-closed) ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G05",
+        "message": "Proporcja: TRIAGE_QUEUE obecny (fail-closed) ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G02",
+        "message": "Proporcja: temporal markers obecne ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G01",
+        "message": "Proporcja: legal basis: Art. 90a ust. 2-3 VAT, Art. 90b ust. 1 VAT, Art. 90c ust. 1 VAT"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "WDT/Import: 17 reguł, 20 artykułów"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G05",
+        "message": "WDT/Import: BLOCK_AND_ALERT obecny (fail-closed) ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G05",
+        "message": "WDT/Import: TRIAGE_QUEUE obecny (fail-closed) ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G02",
+        "message": "WDT/Import: temporal markers obecne ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G01",
+        "message": "WDT/Import: legal basis: Art. 41 ust. 7-8 VAT, Art. 13 ust. 1-2 VAT, Art. 17 ust. 1 pkt 3 VAT"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G04",
+        "message": "Cross-domain KSeF: 1 artykułów powiązanych"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G04",
+        "message": "Cross-domain Marża: 10 artykułów powiązanych"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G05",
+        "message": "Fail-closed BLOCK: 3/5 pakietów"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G05",
+        "message": "Fail-closed TRIAGE: 4/5 pakietów"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G02",
+        "message": "Temporal coverage: 5/5 pakietów special"
+      }
+    ]
+  }
+}
