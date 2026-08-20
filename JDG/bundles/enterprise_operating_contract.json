@@ -340,5 +340,29 @@
     ],
     "production_activation": "NOT_CERTIFIED_WITHOUT_RUNTIME_OPA_AND_HSM",
     "status": "WDROZONY_100"
+  },
+  "stage_07": {
+    "prompt_path": "JDG/prompty_glm52_enterprise/07_VAT_MACRO.txt",
+    "report_path": "JDG/raporty_glm52_enterprise/07_VAT_MACRO.txt",
+    "implementation_scope": [
+      "vat_rates_23_8_5_0_zw_np",
+      "vat_exemptions_14_categories",
+      "gtu_mapping_13_codes",
+      "reverse_charge_patterns",
+      "mpp_split_payment_mandatory_voluntary",
+      "bad_debt_relief_slim_vat_3",
+      "fraud_detection_patterns",
+      "article_coverage_91_articles",
+      "duplicate_rule_id_audit",
+      "first_match_wins_else_chain"
+    ],
+    "evidence": [
+      "JDG/bundles/vat_macro_audit_state.json",
+      "JDG/tools/vat_macro_audit.py",
+      "JDG/migrations/010_jdg_v15_vat_macro.sql",
+      "JDG/tests/test_vat_macro_audit.py"
+    ],
+    "production_activation": "NOT_CERTIFIED_WITHOUT_RUNTIME_OPA",
+    "status": "WDROZONY_100"
   }
 }

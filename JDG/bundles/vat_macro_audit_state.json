@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.0.0",
+  "vat_macro_audit_id": "jdg.vat_macro_audit",
+  "generated_at": "2026-08-20T09:34:21.234304+00:00",
+  "stage": "ETAP_07",
+  "status": "PASS",
+  "article_coverage": {
+    "total": 91,
+    "description": "VAT articles 5-120, 106a-106nq (rates, exemptions, MPP, KSeF)"
+  },
+  "validation_summary": {
+    "status": "PASS",
+    "checks_run": 28,
+    "checks_passed": 28,
+    "checks_failed": 0,
+    "findings": [
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Rule V.01 (goods_delivery_taxable) — Art. 5 ust. 1 pkt 1 ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Rule V.02 (wnt_reverse_charge_buyer) — Art. 17 ust. 1 pkt 5 ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Rule P50 (margin_scheme) — Art. 120 ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Rule P51 (subject_exemption_jdg) — Art. 113 ust. 1 ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Rule P52 (fuel_pl) — 23% ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Rule P53 (food_pl) — 5% ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Rule P55 (education_exempt) — 0% zwolnienie ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Rule P56 (healthcare_exempt) — 0% zwolnienie ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Rule P57 (financial_exempt) — 0% zwolnienie ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Rule P60 (bad_debt_relief) — Art. 89a ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Rule P64 (rate_8pct) — 8% ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Rule P65 (gtu_mapping) — GTU 13 kodów ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Rule P100 (split_payment_mandatory) — Art. 108a ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Rule P80 (wnt_goods_from_eu) — Art. 9 ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "Rule P90 (import_of_services_b2b) — Art. 28b ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G02",
+        "message": "Stawki z thresholds (ADR-002) ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G03",
+        "message": "First-match-wins (else-chain) ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G04",
+        "message": "Fraud F01 (empty_invoice) ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G04",
+        "message": "Fraud F02 (carousel_fraud) — check"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G04",
+        "message": "Fraud F03 (missing_taxpayer) — check"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G04",
+        "message": "Fraud F04 (unusual_patterns) — check"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G04",
+        "message": "Fraud F05 (blacklist_vendor) — check"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G04",
+        "message": "Fraud: BLOCK_AND_ALERT enforcement ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G05",
+        "message": "MPP/Split Payment coverage obecny ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G05",
+        "message": "MPP: Art. 108a obecny ✓"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G01",
+        "message": "Article coverage: 70/91 (76.9%)"
+      },
+      {
+        "severity": "INFO",
+        "gate": "G01",
+        "message": "Uncovered: 8b, 29b, 41a, 88a, 91a, 91b, 108c, 108d, 108e, 108f"
+      },
+      {
+        "severity": "WARNING",
+        "gate": "G03",
+        "message": "Duplikaty rule_id: 9 (top: ['jdg.accounting.no_match', 'jdg.allowances.no_match', 'jdg.kks.no_match'])"
+      }
+    ]
+  }
+}
