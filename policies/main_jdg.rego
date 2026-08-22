@@ -269,6 +269,20 @@ import data.jdg.p04_vat_micro_innovations
 # KUP/NKUP, zaliczki art. 44 + zeznanie art. 45, zwolnienia Art. 21,
 # thresholdy temporalne (ADR-002) + 15 genius ideas
 import data.jdg.p05_pit_macro_innovations
+# ── ETAP 10: PIT Macro completeness, temporal forecast and fail-closed gates ──
+import data.jdg.pit_macro_etap10
+# ── ETAP 11: PIT Micro Reliefs atomic evidence pack and qualification gates ──
+import data.jdg.pit_micro_reliefs_etap11
+# ── ETAP 12: ZUS Core calculation certificate and fail-closed audit layer ──
+import data.jdg.zus_core_etap12
+# ── ETAP 13: ZUS Micro atom map, periods, benefits and property invariants ──
+import data.jdg.zus_micro_etap13
+# ── ETAP 14: PKPiR columns, documents, reconciliation and idempotency ──
+import data.jdg.pkpir_etap14
+# ── ETAP 15: UoR double-entry, assets, amortization, closing, financial stmt ──
+import data.jdg.uor_etap15
+# ── ETAP 16: KKS + Ordynacja — risk scoring, evidence chain, deadlines ──
+import data.jdg.kks_ord_etap16
 # ── PAS 18g: P06 PIT MICRO + AMORTYZACJA ENTERPRISE v9.0 (2026-08-02) ──
 # P06 Sekcje 1-8: mapa pokrycia artykułów PIT micro 1-45, audyt amortyzacji
 # (PRIORYTET — art. 22a-22n: KŚT, jednorazowa 100k EUR, samochody 150k/225k,
@@ -384,6 +398,34 @@ import data.jdg.r09_ksiegowosc_pkpir_uor_innovations
 # Monitor 30 dni dowodu WDT, scorer ryzyka MDR/DAC6, symulator TP, przypisanie
 # dochodu CFC, różnice kursowe z time-travel (kursy NBP per okres).
 import data.jdg.r10_crossborder_innovations
+# ── ETAP 17: evidence-first cross-border safety/control layer ──
+# Domyślnie no_match; po aktywacji wymaga źródeł, wersji, evidence pack i manual gate.
+import data.jdg.crossborder_etap17
+# ── ETAP 18: formalny state machine cyklu życia JDG ──
+# CEIDG/ryczałt/PP/sukcesja: effective dates, formularze, terminy, rollback,
+# owner approval i fail-closed manual gate.
+import data.jdg.business_lifecycle_etap18
+# ── ETAP 19: PCC / podatki lokalne / nieruchomości / transport / akcyza ──
+# Temporalny rejestr stawek, terytorium gminy, dokumenty i evidence-first gates.
+import data.jdg.local_excise_etap19
+# ── ETAP 20: KSeF / JPK / e-Deklaracje / e-Doręczenia / WIS ──
+# State machine dokumentu, XSD, UPO, tokeny, offline/retry, outbox exactly-once,
+# rekonsyliacja księga↔JPK↔KSeF i fail-closed przy niedostępności MF.
+import data.jdg.ksef_jpk_etap20
+# ── ETAP 22: Hyper Enterprise Contexts / Plan45 Meta-Validator ──
+# Konteksty, deadline engine, limit registry, MDR/sankcje, FX, WIS,
+# e-Doręczenia, konflikty, priorytety i graf zależności.
+import data.jdg.hyper_enterprise_contexts_etap22
+import data.jdg.enterprise_ai_neural_etap23
+import data.jdg.tests_ci_quality_etap24
+import data.jdg.tools_api_rulestore_bundles_etap25
+import data.jdg.policies_mirror_sync_etap26
+import data.jdg.cross_domain_red_team_etap27
+import data.jdg.final_certification_etap28
+# ── ETAP 21: RODO / AML / BDO / HR / PPK / PFRON ──
+# Privacy-by-design, evidence chain, UBO/CBDD/STR, KPO/EWC, zatrudnienie,
+# manual approval i rozdzielenie guidance compliance od decyzji podatkowej.
+import data.jdg.rodo_aml_bdo_hr_etap21
 # ── PAS 18y: R11 GLM52 PCC / PODATKI LOKALNE / AKCYZĄ (2026-08-15) ──
 # Monitor PCC-3 14 dni, symulator podatku od nieruchomości, klasyfikator
 # wyrobów akcyzowych, monitor DN-1, arbiter VAT vs PCC (art. 2 pkt 4).
@@ -1512,6 +1554,13 @@ _package_decisions := {
     "jdg.p08_zus_macro_enterprise": p08_zus_macro_enterprise.decide,
     "jdg.p04_vat_micro_innovations": p04_vat_micro_innovations.decide,
     "jdg.p05_pit_macro_innovations": p05_pit_macro_innovations.decide,
+    "jdg.pit_macro_etap10": pit_macro_etap10.decide,
+    "jdg.pit_micro_reliefs_etap11": pit_micro_reliefs_etap11.decide,
+    "jdg.zus_core_etap12": zus_core_etap12.decide,
+    "jdg.zus_micro_etap13": zus_micro_etap13.decide,
+    "jdg.pkpir_etap14": pkpir_etap14.decide,
+    "jdg.uor_etap15": uor_etap15.decide,
+    "jdg.kks_ord_etap16": kks_ord_etap16.decide,
     "jdg.p06_pit_micro_innovations": p06_pit_micro_innovations.decide,
     "jdg.p07_zus_macro_innovations": p07_zus_macro_innovations.decide,
     "jdg.p08_zus_micro_innovations": p08_zus_micro_innovations.decide,
@@ -1547,6 +1596,18 @@ _package_decisions := {
     "jdg.r08_ordynacja_obrona_innovations": r08_ordynacja_obrona_innovations.decide,
     "jdg.r09_ksiegowosc_pkpir_uor_innovations": r09_ksiegowosc_pkpir_uor_innovations.decide,
     "jdg.r10_crossborder_innovations": r10_crossborder_innovations.decide,
+    "jdg.crossborder_etap17": crossborder_etap17.decide,
+    "jdg.business_lifecycle_etap18": business_lifecycle_etap18.decide,
+    "jdg.local_excise_etap19": local_excise_etap19.decide,
+    "jdg.ksef_jpk_etap20": ksef_jpk_etap20.decide,
+    "jdg.hyper_enterprise_contexts_etap22": hyper_enterprise_contexts_etap22.decide,
+    "jdg.enterprise_ai_neural_etap23": enterprise_ai_neural_etap23.decide,
+    "jdg.tests_ci_quality_etap24": tests_ci_quality_etap24.decide,
+    "jdg.tools_api_rulestore_bundles_etap25": tools_api_rulestore_bundles_etap25.decide,
+    "jdg.policies_mirror_sync_etap26": policies_mirror_sync_etap26.decide,
+    "jdg.cross_domain_red_team_etap27": cross_domain_red_team_etap27.decide,
+    "jdg.final_certification_etap28": final_certification_etap28.decide,
+    "jdg.rodo_aml_bdo_hr_etap21": rodo_aml_bdo_hr_etap21.decide,
     "jdg.r11_pcc_lokalne_akcyza_innovations": r11_pcc_lokalne_akcyza_innovations.decide,
     "jdg.r12_ryczalt_cykl_zycia_innovations": r12_ryczalt_cykl_zycia_innovations.decide,
     "jdg.r13_hyper_konteksty_innovations": r13_hyper_konteksty_innovations.decide,
@@ -2387,6 +2448,142 @@ final_verdict_p53 = safe_merge(final_verdict_p52,
     ))))))))))))))))
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 10: PIT Macro completeness package (report-only, SUGGEST/fail-closed).
+final_verdict_p54 = safe_merge(final_verdict_p53,
+    safe_merge(pit_macro_etap10.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 11: PIT Micro Reliefs evidence and qualification package.
+final_verdict_p55 = safe_merge(final_verdict_p54,
+    safe_merge(pit_micro_reliefs_etap11.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 12: ZUS Core — składki, zdrowotna, ulgi, świadczenia i terminy.
+final_verdict_p56 = safe_merge(final_verdict_p55,
+    safe_merge(zus_core_etap12.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 13: ZUS Micro — mapa atomów, okresy, świadczenia, property invariants.
+final_verdict_p57 = safe_merge(final_verdict_p56,
+    safe_merge(zus_micro_etap13.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 14: PKPiR — dowody, kolumny, uzgodnienie 3-stronne i idempotencja.
+final_verdict_p58 = safe_merge(final_verdict_p57,
+    safe_merge(pkpir_etap14.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 15: UoR — podwójny zapis, aktywa, amortyzacja, zamknięcie, sprawozdania.
+final_verdict_p59 = safe_merge(final_verdict_p58,
+    safe_merge(uor_etap15.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 16: KKS + Ordynacja — risk scoring, evidence chain, deadline engine.
+final_verdict_p60 = safe_merge(final_verdict_p59,
+    safe_merge(kks_ord_etap16.decide,
+        fallback.decide
+    ))
+
+# ETAP 17: Cross-border evidence-first safety layer. It is SUGGEST-only and
+# fail-closed; the package is inactive unless the explicit stage flag is set.
+final_verdict_p61 = safe_merge(final_verdict_p60,
+    safe_merge(crossborder_etap17.decide,
+        fallback.decide
+    ))
+
+# ETAP 18: formalny state machine cyklu życia JDG; SUGGEST-only i fail-closed.
+final_verdict_p62 = safe_merge(final_verdict_p61,
+    safe_merge(business_lifecycle_etap18.decide,
+        fallback.decide
+    ))
+
+# ETAP 19: PCC/local/excise evidence-first safety layer; SUGGEST-only and fail-closed.
+final_verdict_p63 = safe_merge(final_verdict_p62,
+    safe_merge(local_excise_etap19.decide,
+        fallback.decide
+    ))
+
+# ETAP 20: KSeF/JPK/e-Deklaracje evidence-first safety layer; SUGGEST-only,
+# no_auto_post i fail-closed przy braku MF/XSD/UPO/evidence.
+final_verdict_p64 = safe_merge(final_verdict_p63,
+    safe_merge(ksef_jpk_etap20.decide,
+        fallback.decide
+    ))
+
+# ETAP 21: RODO/AML/BDO/HR evidence-first safety layer; guidance-only,
+# SUGGEST/no_auto_post i fail-closed przy braku dowodów lub owner approval.
+final_verdict_p65 = safe_merge(final_verdict_p64,
+    safe_merge(rodo_aml_bdo_hr_etap21.decide,
+        fallback.decide
+    ))
+
+# ETAP 22: Hyper Plan45 meta-validator; SUGGEST/no_auto_post i fail-closed.
+final_verdict_p66 = safe_merge(final_verdict_p65,
+    safe_merge(hyper_enterprise_contexts_etap22.decide,
+        fallback.decide
+    ))
+
+# ETAP 23: Enterprise AI / Neural Mesh governance; advisory-only,
+# deterministic legal authority, calibration/drift/safety gates and manual review.
+final_verdict_p67 = safe_merge(final_verdict_p66,
+    safe_merge(enterprise_ai_neural_etap23.decide,
+        fallback.decide
+    ))
+
+# ETAP 24: Tests / CI / quality release gate; fail-closed and reproducible.
+final_verdict_p68 = safe_merge(final_verdict_p67,
+    safe_merge(tests_ci_quality_etap24.decide,
+        fallback.decide
+    ))
+
+# ETAP 25: Tools / API / RuleStore / bundles control-data plane governance;
+# JWT/RBAC/SoD, idempotency, versioning, migrations+constraints, bundle signing/
+# SBOM/node-verify/persist-healthy, progressive delivery, hot-reload, WORM/Merkle
+# audit and DR. Fail-closed; mock is never certified as production.
+final_verdict_p69 = safe_merge(final_verdict_p68,
+    safe_merge(tools_api_rulestore_bundles_etap25.decide,
+        fallback.decide
+    ))
+
+# ETAP 26: Policies `policies/` mirror/overlay sync governance;
+# source of truth = JDG/rules/; mirror cannot silently change JDG decisions;
+# drift 0%, hash/decision/legal parity 100%, overlays TCL 100%, zero ghosts,
+# experimental variants clearly marked. Fail-closed.
+final_verdict_p70 = safe_merge(final_verdict_p69,
+    safe_merge(policies_mirror_sync_etap26.decide,
+        fallback.decide
+    ))
+
+# ETAP 27: Cross-domain red team governance — conflict registry,
+# attack catalog, chaos matrix, temporal edge contracts, fraud scenarios,
+# fail-closed proof and AUTO_POST guard.
+final_verdict_p71 = safe_merge(final_verdict_p70,
+    safe_merge(cross_domain_red_team_etap27.decide,
+        fallback.decide
+    ))
+
+# ETAP 28: Final certification — reconciliation of all 27 stages,
+# act→legal node→rule→test→bundle→verdict→operator matrix, domain
+# certification (CERTIFIED/CONDITIONAL/BLOCKED), production blockers,
+# SLO/SLA, change control and brutal honesty report.
+final_verdict_p72 = safe_merge(final_verdict_p71,
+    safe_merge(final_certification_etap28.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
 #   • _invariant_report  — wynik evaluate() (invariant_failed, failed, levels),
@@ -2400,8 +2597,24 @@ final_verdict_p53 = safe_merge(final_verdict_p52,
 # ═══════════════════════════════════════════════════════════════════════════════
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
+# Compatibility anchor: legacy gates assert the p53 prefix; p54 remains the
+# effective inner verdict and therefore is included before POST-MERGE checks.
+# Compatibility anchors retain earlier stage visibility for downstream consumers;
+# ETAP 19 remains the effective outer layer.
 final_verdict_post_merge = object.union(final_verdict_p53,
-    {"_routing_context": routing_context})
+    object.union(final_verdict_p61,
+        object.union(final_verdict_p62,
+            object.union(final_verdict_p63,
+                object.union(final_verdict_p64,
+                    object.union(final_verdict_p65,
+                        object.union(final_verdict_p66,
+                            object.union(final_verdict_p67,
+                                object.union(final_verdict_p68,
+                                object.union(final_verdict_p69,
+                                object.union(final_verdict_p70,
+                                    object.union(final_verdict_p71,
+                                        object.union(final_verdict_p72,
+                                            {"_routing_context": routing_context}))))))))))))))))
 
 final_verdict_enforced = object.union(final_verdict_post_merge,
     runtime_invariants.enforce(final_verdict_post_merge))

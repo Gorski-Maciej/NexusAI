@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "jdg.cross_domain_red_team_etap27_audit",
+  "stage": "ETAP_27",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "conflict_registry": true,
+    "attack_catalog": true,
+    "chaos_matrix": true,
+    "temporal_boundary": true,
+    "fraud_scenarios": true,
+    "fail_closed_proof": true,
+    "auto_post_guard": true,
+    "contract_tests": true,
+    "tools_verified": true,
+    "threshold_registry": true,
+    "orchestrator_wiring": true,
+    "pytest_contract": true,
+    "native_rego_contract": true,
+    "report_present": true
+  },
+  "gate_summary": {
+    "passed": 15,
+    "total": 15
+  },
+  "files": {
+    "declared": 18,
+    "present": 18,
+    "all_present": true,
+    "files": {
+      "docs/AUDYT_KOMPLETNY_P24.md": true,
+      "prompty_glm52_enterprise/27_CROSS_DOMAIN_RED_TEAM.txt": true,
+      "rules/conflicts.rego": true,
+      "rules/cross_domain_red_team_etap27_v1.rego": true,
+      "rules/edge_cases.rego": true,
+      "rules/main_jdg.rego": true,
+      "rules/p35_cross_act_coherence.rego": true,
+      "rules/p35_innovations_engine.rego": true,
+      "rules/p35_system_gaps.rego": true,
+      "rules/risk.rego": true,
+      "rules/security/security_fortress_v8.rego": true,
+      "rules/thresholds_jdg.rego": true,
+      "tools/chaos_engineering.py": true,
+      "tools/chaos_runner.py": true,
+      "tools/cross_package_conflict_detector.py": true,
+      "tools/fraud_graph_scanner.py": true,
+      "tools/predictive_audit_shield.py": true,
+      "tools/rule_impact_simulator.py": true
+    }
+  },
+  "package": {
+    "package": true,
+    "balanced_braces": true,
+    "balanced_parentheses": true,
+    "rule_ids": 2,
+    "rule_ids_unique": true,
+    "markers": {
+      "conflict_registry_complete": true,
+      "attack_catalog_complete": true,
+      "chaos_matrix_complete": true,
+      "temporal_boundary_complete": true,
+      "fraud_scenarios_complete": true,
+      "fail_closed_proof_complete": true,
+      "auto_post_guard_complete": true,
+      "contract_tests_complete": true,
+      "tools_verified_complete": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "RED_TEAM_DEFEATED": true,
+      "RED_TEAM_VULNERABLE": true,
+      "auto_post_blocked_on_error": true,
+      "manual_review_hard_block": true,
+      "decision_mode_suggest_only": true,
+      "no_auto_post": true,
+      "decision_mode := \"SUGGEST\"": true
+    },
+    "markers_complete": true
+  },
+  "conflicts": {
+    "conflicts_rego": true,
+    "cross_act_coherence": true,
+    "edge_cases": true,
+    "cross_package_detector": true,
+    "complete": true
+  },
+  "chaos": {
+    "chaos_runner": true,
+    "chaos_engineering": true,
+    "corrupt_bundle": true,
+    "ksef_offline": true,
+    "missing_thresholds": true,
+    "complete": true
+  },
+  "fraud": {
+    "risk_rego": true,
+    "security_fortress": true,
+    "fraud_scanner": true,
+    "complete": true
+  },
+  "temporal": {
+    "p35_gaps": true,
+    "p35_innovations": true,
+    "temporal_present": true,
+    "complete": true
+  },
+  "fail_closed": {
+    "rule_impact_simulator": true,
+    "predictive_shield": true,
+    "complete": true
+  },
+  "orchestrator": {
+    "markers": {
+      "import": true,
+      "package_decisions": true,
+      "stage_chain": true,
+      "post_merge": true,
+      "public_final": true
+    },
+    "complete": true
+  },
+  "tests": {
+    "pytest": {
+      "present": true,
+      "test_count": 11
+    },
+    "native_rego": {
+      "present": true,
+      "test_count": 11
+    },
+    "markers": {
+      "pytest_present": true,
+      "native_rego_present": true,
+      "pytest_non_empty": true,
+      "native_non_empty": true,
+      "fail_closed": true,
+      "conflict": true,
+      "chaos": true,
+      "fraud": true,
+      "auto_post": true,
+      "wiring": true
+    },
+    "complete": true
+  },
+  "thresholds": {
+    "markers": {
+      "cross_domain_red_team_etap27 := {": true,
+      "min_conflict_pairs": true,
+      "min_attack_scenarios": true,
+      "min_chaos_experiments": true,
+      "max_rto_min": true,
+      "max_fail_closed_errors_silent": true,
+      "auto_post_always_blocked_on_error": true,
+      "required_gates": true
+    },
+    "complete": true
+  },
+  "generated_at": "2026-08-22T13:59:02.607058+00:00"
+}

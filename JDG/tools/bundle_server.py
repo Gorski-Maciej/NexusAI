@@ -73,11 +73,16 @@ def publish(version: str, rules_count: int = 0, signature: str = "") -> dict:
 
 
 def verify(version: str) -> dict:
-    """Weryfikacja podpisu i integralności bundle (na węźle przed aktywacją)."""
+    """Weryfikacja podpisu, integralności bundle i SBOM/Merkle na węźle OPA (fail-closed).
+    SBOM weryfikowany jest poprzez SHA-256 pliku .sbom.json (bundle.sh).
+    Merkle-root-lite = SHA-256 zawartości SBOM. Brak SBOM = node_verification FAIL_CLOSED.
+    """
     cat = _catalog()
     entry = cat.get("versions", {}).get(version)
     if not entry:
-        return {"version": version, "verified": False, "reason": "nieznana wersja"}
+        return {"version": version, "verified": False, "reason": "nieznana wersja",
+                "sbom_verified": False, "merkle_root": "", "merkle_verified": False,
+                "node_verification": "FAIL_CLOSED"}
     payload = json.dumps({"version": version,
                           "rules_count": entry["rules_count"],
                           "published_at": entry["published_at"]}, sort_keys=True)
@@ -85,9 +90,25 @@ def verify(version: str) -> dict:
     sig = entry.get("signature", "")
     ok_digest = digest == entry.get("sha256")
     ok_sig = sig.startswith("HSM:") and sig[4:] == entry.get("sha256", "")[:32]
+    # SBOM + Merkle-root-lite: SHA-256 pliku .sbom.json (bundle.sh SBOM)
+    sbom_path = BUNDLES_DIR / f"{entry.get('sbom', version + '.sbom.json')}"
+    sbom_ok = False
+    merkle_root = ""
+    if sbom_path.exists():
+        try:
+            sbom_text = sbom_path.read_text(encoding="utf-8")
+            json.loads(sbom_text)  # walidacja JSON
+            merkle_root = sha256(sbom_text)
+            sbom_ok = True
+        except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+            sbom_ok = False
     verified = ok_digest and ok_sig
+    node_ok = verified and sbom_ok
     return {"version": version, "verified": verified,
             "sha256": digest, "signature": sig,
+            "sbom_verified": sbom_ok, "merkle_root": merkle_root,
+            "merkle_verified": sbom_ok,
+            "node_verification": "PASS" if node_ok else "FAIL_CLOSED",
             "status": entry.get("status", "UNKNOWN")}
 
 

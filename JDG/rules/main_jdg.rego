@@ -418,6 +418,10 @@ import data.jdg.ksef_jpk_etap20
 import data.jdg.hyper_enterprise_contexts_etap22
 import data.jdg.enterprise_ai_neural_etap23
 import data.jdg.tests_ci_quality_etap24
+import data.jdg.tools_api_rulestore_bundles_etap25
+import data.jdg.policies_mirror_sync_etap26
+import data.jdg.cross_domain_red_team_etap27
+import data.jdg.final_certification_etap28
 # ── ETAP 21: RODO / AML / BDO / HR / PPK / PFRON ──
 # Privacy-by-design, evidence chain, UBO/CBDD/STR, KPO/EWC, zatrudnienie,
 # manual approval i rozdzielenie guidance compliance od decyzji podatkowej.
@@ -1599,6 +1603,10 @@ _package_decisions := {
     "jdg.hyper_enterprise_contexts_etap22": hyper_enterprise_contexts_etap22.decide,
     "jdg.enterprise_ai_neural_etap23": enterprise_ai_neural_etap23.decide,
     "jdg.tests_ci_quality_etap24": tests_ci_quality_etap24.decide,
+    "jdg.tools_api_rulestore_bundles_etap25": tools_api_rulestore_bundles_etap25.decide,
+    "jdg.policies_mirror_sync_etap26": policies_mirror_sync_etap26.decide,
+    "jdg.cross_domain_red_team_etap27": cross_domain_red_team_etap27.decide,
+    "jdg.final_certification_etap28": final_certification_etap28.decide,
     "jdg.rodo_aml_bdo_hr_etap21": rodo_aml_bdo_hr_etap21.decide,
     "jdg.r11_pcc_lokalne_akcyza_innovations": r11_pcc_lokalne_akcyza_innovations.decide,
     "jdg.r12_ryczalt_cykl_zycia_innovations": r12_ryczalt_cykl_zycia_innovations.decide,
@@ -2540,6 +2548,41 @@ final_verdict_p68 = safe_merge(final_verdict_p67,
         fallback.decide
     ))
 
+# ETAP 25: Tools / API / RuleStore / bundles control-data plane governance;
+# JWT/RBAC/SoD, idempotency, versioning, migrations+constraints, bundle signing/
+# SBOM/node-verify/persist-healthy, progressive delivery, hot-reload, WORM/Merkle
+# audit and DR. Fail-closed; mock is never certified as production.
+final_verdict_p69 = safe_merge(final_verdict_p68,
+    safe_merge(tools_api_rulestore_bundles_etap25.decide,
+        fallback.decide
+    ))
+
+# ETAP 26: Policies `policies/` mirror/overlay sync governance;
+# source of truth = JDG/rules/; mirror cannot silently change JDG decisions;
+# drift 0%, hash/decision/legal parity 100%, overlays TCL 100%, zero ghosts,
+# experimental variants clearly marked. Fail-closed.
+final_verdict_p70 = safe_merge(final_verdict_p69,
+    safe_merge(policies_mirror_sync_etap26.decide,
+        fallback.decide
+    ))
+
+# ETAP 27: Cross-domain red team governance — conflict registry,
+# attack catalog, chaos matrix, temporal edge contracts, fraud scenarios,
+# fail-closed proof and AUTO_POST guard.
+final_verdict_p71 = safe_merge(final_verdict_p70,
+    safe_merge(cross_domain_red_team_etap27.decide,
+        fallback.decide
+    ))
+
+# ETAP 28: Final certification — reconciliation of all 27 stages,
+# act→legal node→rule→test→bundle→verdict→operator matrix, domain
+# certification (CERTIFIED/CONDITIONAL/BLOCKED), production blockers,
+# SLO/SLA, change control and brutal honesty report.
+final_verdict_p72 = safe_merge(final_verdict_p71,
+    safe_merge(final_certification_etap28.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -2567,7 +2610,11 @@ final_verdict_post_merge = object.union(final_verdict_p53,
                         object.union(final_verdict_p66,
                             object.union(final_verdict_p67,
                                 object.union(final_verdict_p68,
-                                    {"_routing_context": routing_context})))))))))
+                                object.union(final_verdict_p69,
+                                object.union(final_verdict_p70,
+                                    object.union(final_verdict_p71,
+                                        object.union(final_verdict_p72,
+                                            {"_routing_context": routing_context}))))))))))))))))
 
 final_verdict_enforced = object.union(final_verdict_post_merge,
     runtime_invariants.enforce(final_verdict_post_merge))

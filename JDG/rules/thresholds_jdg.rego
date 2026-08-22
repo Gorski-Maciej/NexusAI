@@ -1420,6 +1420,84 @@ enterprise_ai := {
 # ETAP 24 TESTS / CI / QUALITY THRESHOLDS (ADR-002)
 # ═══════════════════════════════════════════════════════════════════════════════
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 25 TOOLS / API / RULESTORE / BUNDLES CONTROL-DATA PLANE THRESHOLDS
+# (ADR-002 zero hardcode; V1 §9, V2 §8, V1 §12.2)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+tools_api_rulestore_bundles_etap25 := {
+    "registry_version": "tools-api-rulestore-bundles-etap25-2026.08",
+    "legal_basis_version": "control-data-plane-2026.08",
+    "min_canary_pct": 5,
+    "max_shadow_delta_pct": 2.0,
+    "soak_hours": 24,
+    "max_rollback_mttr_min": 5,
+    "hot_reload_sla_min": 15,
+    "max_rpo_min": 15,
+    "max_rto_min": 30,
+    "max_openapi_gap_count": 0,
+    "sod_four_eyes_required": true,
+    "worm_append_only": true,
+    "production_status": "NOT_CERTIFIED",
+    "required_gates": ["api_schema", "authnz_rbac_sod", "idempotency", "versioning", "migrations_constraints", "bundle_signing_sbom", "node_verification", "healthy_persisted", "progressive_delivery", "hot_reload", "worm_merkle", "disaster_recovery", "production_honesty"],
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 26 POLICIES MIRROR / SYNC / OVERLAYS THRESHOLDS (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+policies_mirror_sync_etap26 := {
+    "registry_version": "policies-mirror-sync-etap26-2026.08",
+    "legal_basis_version": "mirror-sync-2026.08",
+    "max_drift_pct": 0.0,
+    "min_parity_pct": 100.0,
+    "source_of_truth": "JDG/rules/",
+    "mirror_role": "OVERLAY",
+    "experimental_variants_marked": true,
+    "overlays_required": ["v2026", "v2027"],
+    "required_gates": ["source_of_truth", "mirror_sync", "hash_parity", "decision_parity", "legal_parity", "overlays_tcl", "no_ghosts", "experimental_marked", "no_silent_change"],
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 27 CROSS-DOMAIN RED TEAM / INTEGRATION / RESILIENCE THRESHOLDS (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+cross_domain_red_team_etap27 := {
+    "registry_version": "cross-domain-red-team-etap27-2026.08",
+    "legal_basis_version": "red-team-resilience-2026.08",
+    "min_conflict_pairs": 6,
+    "min_attack_scenarios": 12,
+    "min_chaos_experiments": 8,
+    "max_rto_min": 30,
+    "max_fail_closed_errors_silent": 0,
+    "auto_post_always_blocked_on_error": true,
+    "required_gates": ["conflict_registry", "attack_catalog", "chaos_matrix", "temporal_boundary", "fraud_scenarios", "fail_closed_proof", "auto_post_guard", "contract_tests", "tools_verified"],
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 28 FINAL CERTIFICATION / MASTER REPORT THRESHOLDS (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+final_certification_etap28 := {
+    "registry_version": "final-certification-etap28-2026.08",
+    "total_etapy": 28,
+    "min_wdrozone_etapy": 28,
+    "max_unproven_reports": 0,
+    "min_audit_states": 20,
+    "min_domains_certified_or_conditional": 15,
+    "max_blocked_domains": 0,
+    "production_status": "NOT_CERTIFIED",
+    "required_gates": ["reconciliation", "traceability_matrix", "domain_certification", "production_blockers", "slo_sla", "change_control", "what_really_works", "honesty"],
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+}
+
 tests_ci_quality_etap24 := {
     "registry_version": "tests-ci-quality-etap24-2026.08",
     "legal_basis_version": "quality-governance-2026.08",

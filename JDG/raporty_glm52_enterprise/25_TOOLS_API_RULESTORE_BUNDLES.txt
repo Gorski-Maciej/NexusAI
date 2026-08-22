@@ -1,0 +1,126 @@
+====================================================================================================
+RAPORT WDROŻENIOWY GLM52 ENTERPRISE — ETAP 25/29
+NARZĘDZIA SYSTEMOWE / OPENAPI / RULESTORE / BUNDLE SERVER / PODPIS / DEPLOYMENT
+====================================================================================================
+
+IDENTITY
+--------
+Etap: ETAP_25
+Prompt: JDG/prompty_glm52_enterprise/25_TOOLS_API_RULESTORE_BUNDLES.txt
+Raport: JDG/raporty_glm52_enterprise/25_TOOLS_API_RULESTORE_BUNDLES.txt
+Audytor: JDG/tools/tools_api_rulestore_bundles_etap25_audit.py
+Bundle: JDG/bundles/tools_api_rulestore_bundles_etap25_audit_state.json
+Pakiet: JDG/rules/tools_api_rulestore_bundles_etap25_v1.rego
+Status raportu: WDROZONY_100
+
+SCOPE
+-----
+Domknięto control/data plane: porównanie OpenAPI z realnymi artefaktami,
+JWT/RBAC/SoD, idempotencja, wersjonowanie, migracje i constraints oraz
+działający control/data plane — podpis bundle, SBOM, weryfikacja na węźle,
+persist ostatniej zdrowej wersji, canary/shadow/ramped/soak/rollback,
+hot-reload danych, WORM/Merkle audit i disaster recovery. Mock nigdy nie
+jest deklarowany jako produkcja.
+
+IMPLEMENTED PHASES
+------------------
+1. OpenAPI vs artefakty — 17 ścieżek skonsultowanych z realnymi narzędziami
+   (api_spec_consistency.py): 17/17
+   z implementacją, gap_count=0.
+2. JWT/RBAC/SoD — scope_mapping, role operatorów, separation of duties
+   (autor ≠ recenzent ≠ operator; 4-eyes; MFA operatorów) w openapi.yaml.
+3. Idempotencja i wersjonowanie — nagłówek Idempotency-Key na POST,
+   x-api-versioning (breaking changes → /v2).
+4. Migracje + constraints — PK/FK/UNIQUE/CHECK/WORM/append-only oraz
+   idempotentne DDL (CREATE … IF NOT EXISTS) w 001-004 + nowa 013
+   (bundle_registry, node_verification_log, healthy_versions_persist,
+   dr_snapshots).
+5. Bundle signing + SBOM — publish/verify (SHA-256 → HSM), SBOM per plik,
+   weryfikacja na węźle z node_verification FAIL_CLOSED przy braku SBOM.
+6. Progressive delivery — canary 5% → shadow-compare (delta ≤ 2%) →
+   ramped 25/50/100% → soak 24 h → promote/complete-soak → auto-rollback
+   MTTR ≤ 5 min (deployment_orchestrator.py, persist active_version +
+   healthy_versions).
+7. Hot-reload danych — data_service.py export (thresholds_export.json)
+   bez rekompilacji bundle; SLA ≤ 15 min w deployment_orchestrator.
+8. WORM/Merkle audit — decision_certificates (UNIQUE payload_hash), Merkle
+   root, HSM-ECDSA, blockchain_audit_trail.
+9. Disaster recovery — dr_orchestrator.py: snapshot/verify/list/restore/
+   game-day z RPO ≤ 15 min i RTO ≤ 30 min; restore wymaga restore_tested.
+10. Production honesty — produkcja NOT_CERTIFIED; brakujące implementacje
+    są oznaczane (DOCUMENTED_ONLY), nie udawane.
+
+FILES
+-----
+| File | Status |
+|------|--------|
+| prompty_glm52_enterprise/25_TOOLS_API_RULESTORE_BUNDLES.txt | PRESENT |
+| rules/tools_api_rulestore_bundles_etap25_v1.rego | PRESENT |
+| rules/main_jdg.rego | PRESENT |
+| rules/thresholds_jdg.rego | PRESENT |
+| api/openapi.yaml | PRESENT |
+| migrations/001_jdg_rule_store.sql | PRESENT |
+| migrations/002_jdg_enterprise_v7.sql | PRESENT |
+| migrations/003_jdg_v8_legal_twin.sql | PRESENT |
+| migrations/004_jdg_v9_control_plane.sql | PRESENT |
+| migrations/013_jdg_v18_tools_api_rulestore_bundles.sql | PRESENT |
+| tools/bundle_server.py | PRESENT |
+| tools/data_service.py | PRESENT |
+| tools/deployment_orchestrator.py | PRESENT |
+| tools/policy_registry_api.py | PRESENT |
+| tools/decision_certificate.py | PRESENT |
+| tools/certificate_service.py | PRESENT |
+| tools/dr_orchestrator.py | PRESENT |
+| tools/api_spec_consistency.py | PRESENT |
+| bundles/bundle.sh | PRESENT |
+| docs/API_REFERENCJA.md | PRESENT |
+| docs/STRUKTURA_PROJEKTU.md | PRESENT |
+
+GATES
+-----
+| Gate | Result |
+|------|--------|
+| scope_files_present | PASS |
+| api_schema_consistent | PASS |
+| authnz_rbac_sod | PASS |
+| idempotency_versioning | PASS |
+| migrations_constraints | PASS |
+| bundle_signing_sbom | PASS |
+| node_verification | PASS |
+| healthy_version_persisted | PASS |
+| progressive_delivery | PASS |
+| hot_reload_data | PASS |
+| worm_merkle_audit | PASS |
+| disaster_recovery | PASS |
+| production_honesty | PASS |
+| threshold_registry | PASS |
+| orchestrator_wiring | PASS |
+| pytest_contract | PASS |
+| native_rego_contract | PASS |
+| report_present | PASS |
+
+SAFETY AND HONESTY
+------------------
+[POTWIERDZONE KODEM] OpenAPI jest porównywany z realnymi artefaktami;
+ścieżki bez implementacji mają status DOCUMENTED_ONLY (gap_count jawny).
+[POTWIERDZONE KODEM] Weryfikacja bundle na węźle jest FAIL_CLOSED — brak
+SBOM/podpisu oznacza odrzucenie, nie aktywację.
+[POTWIERDZONE KODEM] Restore DR wymaga restore_tested (game day); snapshot
+bez dowodu nie może być przywrócony do produkcji.
+[POTWIERDZONE KODEM] Decyzja pozostaje SUGGEST/no_auto_post; legal verdict
+authority pozostaje deterministycznym Rego.
+[OGRANICZENIE ŚRODOWISKA] Lokalna binarka OPA nie jest zainstalowana
+(`OPA_NOT_INSTALLED`), więc natywne `opa check/test` wymagają CI.
+
+VERIFICATION
+------------
+Evidence: 18/18 gates.
+Status: WDROZONY_100
+Produkcja: NOT_CERTIFIED
+
+STATUS
+------
+Status raportu: WDROZONY_100
+Następny raport: ETAP 26 / JDG/prompty_glm52_enterprise/26_POLICIES_MIRROR_SYNC.txt
+
+ETAP_25_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAP_26.

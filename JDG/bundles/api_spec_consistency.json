@@ -1,0 +1,175 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-22T13:58:38.598000+00:00",
+  "openapi_version": "1.0.0",
+  "paths_total": 17,
+  "implemented": 17,
+  "documented_only": 0,
+  "gaps": [],
+  "gap_count": 0,
+  "markers": {
+    "Idempotency-Key": true,
+    "x-api-versioning": true,
+    "x-rbac": true,
+    "x-sod": true,
+    "BearerAuth": true,
+    "breaking_changes": true,
+    "separation of duties": true
+  },
+  "markers_complete": true,
+  "endpoints": [
+    {
+      "path": "/jdg/decide",
+      "method": "POST",
+      "operation_id": "evaluateJdgTransaction",
+      "artifact": "tools/main_jdg.rego -> rules/main_jdg.rego (final_verdict); evaluacja przez OPA",
+      "status": "IMPLEMENTED",
+      "security": true,
+      "idempotency": true
+    },
+    {
+      "path": "/jdg/simulate",
+      "method": "POST",
+      "operation_id": "simulateJdgTransaction",
+      "artifact": "tools/judgment_predictor.py + rules (shadow mode)",
+      "status": "IMPLEMENTED",
+      "security": true,
+      "idempotency": true
+    },
+    {
+      "path": "/jdg/audit/{verdict_id}",
+      "method": "GET",
+      "operation_id": "auditHistoricalVerdict",
+      "artifact": "tools/golden_replay.py + migrations/001 (jdg_verdict_audit)",
+      "status": "IMPLEMENTED",
+      "security": true,
+      "idempotency": false
+    },
+    {
+      "path": "/jdg/health",
+      "method": "GET",
+      "operation_id": "healthCheck",
+      "artifact": "tools/bundle_server.py status + bundles/deployments.json",
+      "status": "IMPLEMENTED",
+      "security": true,
+      "idempotency": false
+    },
+    {
+      "path": "/jdg/explain",
+      "method": "POST",
+      "operation_id": "explainVerdict",
+      "artifact": "tools/llm_bridge.py",
+      "status": "IMPLEMENTED",
+      "security": true,
+      "idempotency": true
+    },
+    {
+      "path": "/jdg/thresholds",
+      "method": "GET",
+      "operation_id": "listThresholds",
+      "artifact": "tools/data_service.py export + bundles/thresholds_data.json",
+      "status": "IMPLEMENTED",
+      "security": true,
+      "idempotency": false
+    },
+    {
+      "path": "/jdg/manifest",
+      "method": "GET",
+      "operation_id": "getManifest",
+      "artifact": "tools/manifest_v2.py + bundles/manifest_v2.json",
+      "status": "IMPLEMENTED",
+      "security": true,
+      "idempotency": false
+    },
+    {
+      "path": "/jdg/coverage",
+      "method": "GET",
+      "operation_id": "getCoverageReport",
+      "artifact": "tools/generate_coverage_report.py + bundles/legal_coverage_gaps.json",
+      "status": "IMPLEMENTED",
+      "security": true,
+      "idempotency": false
+    },
+    {
+      "path": "/jdg/rules/{rule_id}",
+      "method": "GET",
+      "operation_id": "getRuleDetail",
+      "artifact": "tools/policy_registry_api.py get + bundles/policy_registry.json",
+      "status": "IMPLEMENTED",
+      "security": true,
+      "idempotency": false
+    },
+    {
+      "path": "/jdg/legal-coverage",
+      "method": "GET",
+      "operation_id": "getLegalCoverage",
+      "artifact": "tools/legal_coverage_heatmap.py + bundles/legal_coverage_gaps.json",
+      "status": "IMPLEMENTED",
+      "security": true,
+      "idempotency": false
+    },
+    {
+      "path": "/jdg/rules",
+      "method": "GET",
+      "operation_id": "searchRules",
+      "artifact": "tools/policy_registry_api.py search/build + bundles/policy_registry.json",
+      "status": "IMPLEMENTED",
+      "security": true,
+      "idempotency": false
+    },
+    {
+      "path": "/jdg/change",
+      "method": "POST",
+      "operation_id": "createDeclarativeChange",
+      "artifact": "tools/declarative_change.py + tools/control_plane_lifecycle.py",
+      "status": "IMPLEMENTED",
+      "security": true,
+      "idempotency": true
+    },
+    {
+      "path": "/jdg/cert",
+      "method": "POST",
+      "operation_id": "issueCertificate",
+      "artifact": "tools/decision_certificate.py issue + bundles/decision_certificates.json",
+      "status": "IMPLEMENTED",
+      "security": true,
+      "idempotency": true
+    },
+    {
+      "path": "/bundles",
+      "method": "GET",
+      "operation_id": "listBundles",
+      "artifact": "tools/bundle_server.py publish/status + bundles/bundle_catalog.json",
+      "status": "IMPLEMENTED",
+      "security": true,
+      "idempotency": false
+    },
+    {
+      "path": "/bundles/{version}/verify",
+      "method": "POST",
+      "operation_id": "verifyBundle",
+      "artifact": "tools/bundle_server.py verify (weryfikacja na węźle)",
+      "status": "IMPLEMENTED",
+      "security": true,
+      "idempotency": false
+    },
+    {
+      "path": "/bundles/{version}/health",
+      "method": "GET",
+      "operation_id": "bundleHealth",
+      "artifact": "tools/deployment_orchestrator.py health + bundles/deployments.json",
+      "status": "IMPLEMENTED",
+      "security": true,
+      "idempotency": false
+    },
+    {
+      "path": "/dr/restore",
+      "method": "POST",
+      "operation_id": "restoreDisaster",
+      "artifact": "tools/dr_orchestrator.py restore + bundles/dr_snapshots/",
+      "status": "IMPLEMENTED",
+      "security": true,
+      "idempotency": false
+    }
+  ]
+}

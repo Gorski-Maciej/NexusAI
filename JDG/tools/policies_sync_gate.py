@@ -24,6 +24,7 @@ Usage:
 import argparse
 import hashlib
 import json
+import re
 import shutil
 import sys
 from datetime import datetime, timezone
@@ -32,6 +33,10 @@ from pathlib import Path
 JDG_ROOT = Path(__file__).resolve().parent.parent
 RULES_DIR = JDG_ROOT / "rules"
 POLICIES_DIR = JDG_ROOT.parent / "policies"  # mirror na poziomie repo (NexusAI/policies)
+
+RULE_ID_RE = re.compile(r'"rule_id"\s*[:=]\s*"([^"]+)"')
+LEGAL_BASIS_RE = re.compile(r'"_?legal_basis"\s*:\s*"([^"]+)"')
+ART_REF_RE = re.compile(r'[Aa]rt\.\s*(\d+[a-z]*)')
 
 
 def sha256(path: Path) -> str:
@@ -148,8 +153,116 @@ def cmd_overlay(args) -> None:
         print("   Brak lat do analizy luk.")
 
 
+def extract_rule_ids(text: str) -> set[str]:
+    return set(RULE_ID_RE.findall(text))
+
+
+def extract_legal_articles(text: str) -> set[str]:
+    return set(ART_REF_RE.findall(text))
+
+
+def extract_legal_basis(text: str) -> list[str]:
+    return LEGAL_BASIS_RE.findall(text)
+
+
+def cmd_hash_parity(args) -> None:
+    """Hash parity per plik: SHA-256 każdego pliku z rules/ musi być == w policies/."""
+    rules = walk_rego(RULES_DIR)
+    policies = walk_rego(POLICIES_DIR)
+    mismatches = []
+    total = 0
+    for rel in sorted(set(rules) & set(policies)):
+        total += 1
+        if sha256(rules[rel]) != sha256(policies[rel]):
+            mismatches.append(rel)
+    missing = sorted(set(rules) - set(policies))
+    parity_pct = round((total - len(mismatches)) / total * 100, 2) if total else 100.0
+    report = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "compared": total,
+        "mismatched_count": len(mismatches),
+        "missing_in_mirror": missing,
+        "missing_count": len(missing),
+        "hash_parity_pct": parity_pct,
+        "gate_threshold_pct": args.gate,
+        "gate_passed": parity_pct >= (100.0 - args.gate),
+        "mismatches": mismatches,
+    }
+    if args.json:
+        print(json.dumps(report, indent=2, ensure_ascii=False))
+    else:
+        print(f"🔍 Hash parity: {parity_pct:.2f}% [próg: {args.gate}%] — {"PASS" if report['gate_passed'] else "FAIL"}")
+        if mismatches:
+            for p in mismatches[:20]:
+                print(f"   MISMATCH: {p}")
+        if missing:
+            print(f"   MISSING: {len(missing)} plików — potrzebny sync")
+    sys.exit(0 if report["gate_passed"] else 1)
+
+
+def cmd_contract(args) -> None:
+    """Decision parity: zbiór rule_id w mirrorze = zbiór rule_id w źródle (nadzbiór)."""
+    src_ids = set()
+    for p in RULES_DIR.rglob("*.rego"):
+        src_ids |= extract_rule_ids(p.read_text(encoding="utf-8", errors="replace"))
+    mirror_ids = set()
+    for p in POLICIES_DIR.rglob("*.rego"):
+        mirror_ids |= extract_rule_ids(p.read_text(encoding="utf-8", errors="replace"))
+    missing_ids = src_ids - mirror_ids
+    extra_ids = mirror_ids - src_ids
+    parity_pct = round((len(src_ids) - len(missing_ids)) / len(src_ids) * 100, 2) if src_ids else 100.0
+    report = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "source_rule_ids": len(src_ids),
+        "mirror_rule_ids": len(mirror_ids),
+        "missing_from_mirror": len(missing_ids),
+        "extra_in_mirror": len(extra_ids),
+        "decision_parity_pct": parity_pct,
+        "gate_threshold_pct": args.gate,
+        "gate_passed": parity_pct >= (100.0 - args.gate),
+        "conclusion": "DECISION_PARITY_OK" if parity_pct >= (100.0 - args.gate) else "DECISION_PARITY_BREACH",
+    }
+    if args.json:
+        print(json.dumps(report, indent=2, ensure_ascii=False))
+    else:
+        print(f"⚖  Decision parity: {parity_pct:.2f}% ({len(src_ids)} source → {len(mirror_ids)} mirror) [próg: {args.gate}%]")
+        if missing_ids:
+            print(f"   MISSING in mirror: {list(missing_ids)[:20]}...")
+        print(f"   {"PASS" if report['gate_passed'] else 'FAIL'}")
+    sys.exit(0 if report["gate_passed"] else 1)
+
+
+def cmd_legal_parity(args) -> None:
+    """Legal parity: pokrycie artykułów prawnych w mirrorze ≥ źródle."""
+    src_arts = set()
+    for p in RULES_DIR.rglob("*.rego"):
+        src_arts |= extract_legal_articles(p.read_text(encoding="utf-8", errors="replace"))
+    mirror_arts = set()
+    for p in POLICIES_DIR.rglob("*.rego"):
+        mirror_arts |= extract_legal_articles(p.read_text(encoding="utf-8", errors="replace"))
+    missing_arts = src_arts - mirror_arts
+    parity_pct = round((len(src_arts) - len(missing_arts)) / len(src_arts) * 100, 2) if src_arts else 100.0
+    report = {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "source_articles": len(src_arts),
+        "mirror_articles": len(mirror_arts),
+        "missing_from_mirror": len(missing_arts),
+        "legal_parity_pct": parity_pct,
+        "gate_threshold_pct": args.gate,
+        "gate_passed": parity_pct >= (100.0 - args.gate),
+        "conclusion": "LEGAL_PARITY_OK" if parity_pct >= (100.0 - args.gate) else "LEGAL_PARITY_BREACH",
+    }
+    if args.json:
+        print(json.dumps(report, indent=2, ensure_ascii=False))
+    else:
+        print(f"📚 Legal parity: {parity_pct:.2f}% ({len(src_arts)} source → {len(mirror_arts)} mirror) [próg: {args.gate}%]")
+        if missing_arts:
+            print(f"   MISSING articles in mirror: {sorted(missing_arts)[:30]}...")
+        print(f"   {"PASS" if report['gate_passed'] else 'FAIL'}")
+    sys.exit(0 if report["gate_passed"] else 1)
+
+
 def re_year(name: str):
-    import re
     return re.match(r"^v\d{4}$", name)
 
 
@@ -168,6 +281,21 @@ def main() -> None:
     o = sub.add_parser("overlay")
     o.add_argument("--year", type=int, default=None)
     o.set_defaults(fn=cmd_overlay)
+
+    hp = sub.add_parser("hash-parity")
+    hp.add_argument("--gate", type=float, default=0.0, help="próg niezgodności %")
+    hp.add_argument("--json", action="store_true")
+    hp.set_defaults(fn=cmd_hash_parity)
+
+    ct = sub.add_parser("contract")
+    ct.add_argument("--gate", type=float, default=0.0, help="próg niezgodności decyzyjnej %")
+    ct.add_argument("--json", action="store_true")
+    ct.set_defaults(fn=cmd_contract)
+
+    lp = sub.add_parser("legal-parity")
+    lp.add_argument("--gate", type=float, default=0.0, help="próg niezgodności prawnej %")
+    lp.add_argument("--json", action="store_true")
+    lp.set_defaults(fn=cmd_legal_parity)
 
     args = p.parse_args()
     args.fn(args)

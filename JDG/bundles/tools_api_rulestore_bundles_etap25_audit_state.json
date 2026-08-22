@@ -1,0 +1,206 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "jdg.tools_api_rulestore_bundles_etap25_audit",
+  "stage": "ETAP_25",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "api_schema_consistent": true,
+    "authnz_rbac_sod": true,
+    "idempotency_versioning": true,
+    "migrations_constraints": true,
+    "bundle_signing_sbom": true,
+    "node_verification": true,
+    "healthy_version_persisted": true,
+    "progressive_delivery": true,
+    "hot_reload_data": true,
+    "worm_merkle_audit": true,
+    "disaster_recovery": true,
+    "production_honesty": true,
+    "threshold_registry": true,
+    "orchestrator_wiring": true,
+    "pytest_contract": true,
+    "native_rego_contract": true,
+    "report_present": true
+  },
+  "gate_summary": {
+    "passed": 18,
+    "total": 18
+  },
+  "files": {
+    "declared": 21,
+    "present": 21,
+    "all_present": true,
+    "files": {
+      "prompty_glm52_enterprise/25_TOOLS_API_RULESTORE_BUNDLES.txt": true,
+      "rules/tools_api_rulestore_bundles_etap25_v1.rego": true,
+      "rules/main_jdg.rego": true,
+      "rules/thresholds_jdg.rego": true,
+      "api/openapi.yaml": true,
+      "migrations/001_jdg_rule_store.sql": true,
+      "migrations/002_jdg_enterprise_v7.sql": true,
+      "migrations/003_jdg_v8_legal_twin.sql": true,
+      "migrations/004_jdg_v9_control_plane.sql": true,
+      "migrations/013_jdg_v18_tools_api_rulestore_bundles.sql": true,
+      "tools/bundle_server.py": true,
+      "tools/data_service.py": true,
+      "tools/deployment_orchestrator.py": true,
+      "tools/policy_registry_api.py": true,
+      "tools/decision_certificate.py": true,
+      "tools/certificate_service.py": true,
+      "tools/dr_orchestrator.py": true,
+      "tools/api_spec_consistency.py": true,
+      "bundles/bundle.sh": true,
+      "docs/API_REFERENCJA.md": true,
+      "docs/STRUKTURA_PROJEKTU.md": true
+    }
+  },
+  "openapi": {
+    "markers": {
+      "Idempotency-Key": true,
+      "x-api-versioning": true,
+      "breaking_changes": true,
+      "x-rbac": true,
+      "x-sod": true,
+      "separation of duties": true,
+      "BearerAuth": true,
+      "  /bundles:": true,
+      "/bundles/{version}/verify": true,
+      "  /dr/restore": true,
+      "scope_mapping": true,
+      "MFA wymagane dla operatorów": true
+    },
+    "markers_complete": true
+  },
+  "migrations": {
+    "files": [
+      "migrations/001_jdg_rule_store.sql",
+      "migrations/002_jdg_enterprise_v7.sql",
+      "migrations/003_jdg_v8_legal_twin.sql",
+      "migrations/004_jdg_v9_control_plane.sql",
+      "migrations/013_jdg_v18_tools_api_rulestore_bundles.sql"
+    ],
+    "markers": {
+      "PRIMARY KEY": true,
+      "FOREIGN KEY": true,
+      "UNIQUE": true,
+      "CHECK": true,
+      "CREATE TABLE IF NOT EXISTS": true,
+      "NOT NULL": true,
+      "WORM": true,
+      "append-only": true
+    },
+    "complete": true
+  },
+  "tools": {
+    "markers": {
+      "bundle_signing": true,
+      "sbom_build": true,
+      "progressive_delivery": true,
+      "hot_reload_data": true,
+      "worm_merkle": true,
+      "disaster_recovery": true,
+      "api_consistency": true
+    },
+    "complete": true,
+    "all_present": true
+  },
+  "consistency": {
+    "ran": true,
+    "paths_total": 17,
+    "implemented": 17,
+    "documented_only": 0,
+    "gap_count": 0,
+    "markers_complete": true,
+    "no_gaps": true
+  },
+  "package": {
+    "package": true,
+    "balanced_braces": true,
+    "balanced_parentheses": true,
+    "rule_ids": 2,
+    "rule_ids_unique": true,
+    "markers": {
+      "api_schema_consistent": true,
+      "authnz_complete": true,
+      "idempotency_complete": true,
+      "versioning_complete": true,
+      "migrations_constraints_complete": true,
+      "bundle_integrity_complete": true,
+      "healthy_persisted": true,
+      "progressive_delivery_complete": true,
+      "hot_reload_complete": true,
+      "worm_merkle_complete": true,
+      "dr_complete": true,
+      "production_honest": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "CONTROL_PLANE_READY": true,
+      "CONTROL_PLANE_BLOCKED": true,
+      "NOT_CERTIFIED": true,
+      "mock_claimed_as_production": true,
+      "decision_mode := \"SUGGEST\"": true,
+      "no_auto_post": true
+    },
+    "markers_complete": true,
+    "no_assert_true": true
+  },
+  "orchestrator": {
+    "markers": {
+      "import": true,
+      "package_decisions": true,
+      "stage_chain": true,
+      "post_merge": true,
+      "public_final": true
+    },
+    "complete": true
+  },
+  "tests": {
+    "pytest": {
+      "present": true,
+      "test_count": 11
+    },
+    "native_rego": {
+      "present": true,
+      "test_count": 13
+    },
+    "markers": {
+      "pytest_present": true,
+      "native_rego_present": true,
+      "pytest_non_empty": true,
+      "native_non_empty": true,
+      "fail_closed": true,
+      "openapi": true,
+      "authnz": true,
+      "migrations": true,
+      "bundle": true,
+      "delivery": true,
+      "hot_reload": true,
+      "worm": true,
+      "dr": true,
+      "honesty": true,
+      "wiring": true
+    },
+    "complete": true
+  },
+  "thresholds": {
+    "markers": {
+      "tools_api_rulestore_bundles_etap25 := {": true,
+      "min_canary_pct": true,
+      "max_shadow_delta_pct": true,
+      "soak_hours": true,
+      "max_rollback_mttr_min": true,
+      "hot_reload_sla_min": true,
+      "max_rpo_min": true,
+      "max_rto_min": true,
+      "required_gates": true,
+      "production_status": true,
+      "worm_append_only": true,
+      "sod_four_eyes_required": true
+    },
+    "complete": true
+  },
+  "opa_available": false,
+  "opa_status": "OPA_NOT_INSTALLED",
+  "generated_at": "2026-08-22T13:58:38.639012+00:00"
+}

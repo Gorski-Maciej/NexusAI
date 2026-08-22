@@ -1,0 +1,1252 @@
+{
+  "manifest": {
+    "snapshot_id": "dr-20260822-112954",
+    "taken_at": "2026-08-22T11:29:54+00:00",
+    "checksum_sha256": "de6678fcff8e916c3624d6215a1ff9a6034e772b7759b5b5f393ee018c552d2f",
+    "files": [
+      "deployments.json",
+      "healthy_versions.json",
+      "thresholds_data.json",
+      "bundle_catalog.json",
+      "decision_certificates.json"
+    ],
+    "restore_tested": false,
+    "rpo_minutes": null,
+    "rto_minutes": null,
+    "restored_at": null
+  },
+  "state": {
+    "deployments.json": {
+      "deployments": {
+        "smoke-bundle": {
+          "phase": "FULL_SOAK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-08T11:39:50+00:00",
+          "canary_ok": false,
+          "shadow_delta_pct": null,
+          "soak_until": "2026-08-09T11:39:51.032159+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": null,
+          "canary_started_at": "2026-08-08T11:39:50+00:00"
+        },
+        "jdg-bundle-v8.0.0": {
+          "phase": "FULL_SOAK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T08:27:32+00:00",
+          "canary_ok": false,
+          "shadow_delta_pct": null,
+          "soak_until": "2026-08-14T08:28:40.911595+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": null,
+          "canary_started_at": "2026-08-13T08:27:53+00:00",
+          "previous_active_version": null,
+          "pending_active_version": "jdg-bundle-v8.0.0",
+          "soak_completed_at": "2026-08-14T10:28:40+00:00"
+        },
+        "jdg-kks-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T08:27:32+00:00",
+          "canary_ok": true,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-14T08:28:59.866100+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "fail-closed certification: no production telemetry stream for KKS; exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-13T08:27:54+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-kks-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-14T10:28:59+00:00",
+          "rollback_target": "jdg-bundle-v8.0.0",
+          "rolled_back_at": "2026-08-13T08:29:19+00:00",
+          "incident_started_at": "2026-08-13T08:24:19+00:00",
+          "rollback_mttr_minutes": 5.0,
+          "rollback_sla_limit_minutes": 5,
+          "rollback_sla_pass": true,
+          "rollback_applied": true
+        },
+        "jdg-ord-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T08:45:23+00:00",
+          "canary_ok": true,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-14T08:45:44.057996+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "fail-closed certification: no production telemetry stream for ORD; exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-13T08:45:23+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-ord-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-14T10:45:44+00:00",
+          "rollback_target": "jdg-bundle-v8.0.0",
+          "rolled_back_at": "2026-08-13T08:45:44+00:00",
+          "incident_started_at": "2026-08-13T08:40:44+00:00",
+          "rollback_mttr_minutes": 5.0,
+          "rollback_sla_limit_minutes": 5,
+          "rollback_sla_pass": true,
+          "rollback_applied": true
+        },
+        "jdg-acc-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T09:08:17+00:00",
+          "canary_ok": true,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-14T09:08:19.231450+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "fail-closed certification: no production telemetry stream for ACCOUNTING; exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-13T09:08:17+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-acc-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-14T11:08:19+00:00",
+          "rollback_target": "jdg-bundle-v8.0.0",
+          "rolled_back_at": "2026-08-13T09:08:44+00:00",
+          "incident_started_at": "2026-08-13T09:04:43+00:00",
+          "rollback_mttr_minutes": 4.02,
+          "rollback_sla_limit_minutes": 5,
+          "rollback_sla_pass": true,
+          "rollback_applied": true
+        },
+        "jdg-xb-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T10:10:27+00:00",
+          "canary_ok": true,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-14T10:13:11.264453+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": null,
+          "rollback_reason": "RAPORT_10 fail-closed: no production telemetry for cross-border",
+          "canary_started_at": "2026-08-13T10:10:28+00:00",
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-xb-bundle-v9.0.0",
+          "shadow_ok": true,
+          "soak_completed_at": "2026-08-15T12:00:00+00:00",
+          "rollback_target": "jdg-bundle-v8.0.0",
+          "rolled_back_at": "2026-08-13T10:14:37+00:00",
+          "incident_started_at": "2026-08-13T10:10:37+00:00",
+          "rollback_mttr_minutes": 4.0,
+          "rollback_sla_limit_minutes": 5,
+          "rollback_sla_pass": true,
+          "rollback_applied": true
+        },
+        "jdg-plb-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T10:49:25+00:00",
+          "canary_ok": true,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-14T10:49:49.081359+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": null,
+          "rollback_reason": "RAPORT_11 fail-closed: no production telemetry for PCC/local/excise",
+          "canary_started_at": "2026-08-13T10:49:26+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-plb-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T12:00:00+00:00",
+          "rollback_target": "jdg-bundle-v8.0.0",
+          "rolled_back_at": "2026-08-13T10:50:11+00:00",
+          "incident_started_at": "2026-08-13T10:46:10+00:00",
+          "rollback_mttr_minutes": 4.02,
+          "rollback_sla_limit_minutes": 5,
+          "rollback_sla_pass": true,
+          "rollback_applied": true
+        },
+        "jdg-lc-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T11:37:14+00:00",
+          "canary_ok": false,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-14T11:40:47.681738+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "G-06 fail-closed verification: incident SLA 5 min",
+          "canary_started_at": "2026-08-13T11:37:14+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-lc-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T12:00:00+00:00",
+          "rollback_target": "jdg-bundle-v8.0.0",
+          "rolled_back_at": "2026-08-13T11:42:49+00:00",
+          "incident_started_at": "2026-08-13T11:38:49+00:00",
+          "rollback_mttr_minutes": 4.0,
+          "rollback_sla_limit_minutes": 5,
+          "rollback_sla_pass": true,
+          "rollback_applied": true
+        },
+        "jdg-hp-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T12:29:00+00:00",
+          "canary_ok": false,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-14T12:29:23.069121+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "G-06 fail-closed verification: incident SLA 5 min",
+          "canary_started_at": "2026-08-13T12:29:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-hp-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T12:00:00+00:00",
+          "rollback_target": "jdg-bundle-v8.0.0",
+          "rolled_back_at": "2026-08-13T12:29:43+00:00",
+          "incident_started_at": "2026-08-13T12:25:43+00:00",
+          "rollback_mttr_minutes": 4.0,
+          "rollback_sla_limit_minutes": 5,
+          "rollback_sla_pass": true,
+          "rollback_applied": true
+        },
+        "jdg-rab-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T13:35:00+00:00",
+          "canary_ok": false,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-14T13:35:23.000000+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "RAPORT_14 fail-closed: no production telemetry for RODO/AML/BDO; exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-13T13:35:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-rab-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T12:00:00+00:00",
+          "rollback_target": "jdg-bundle-v8.0.0",
+          "rolled_back_at": "2026-08-13T13:40:02+00:00",
+          "incident_started_at": "2026-08-13T13:36:02+00:00",
+          "rollback_mttr_minutes": 4.0,
+          "rollback_sla_limit_minutes": 5,
+          "rollback_sla_pass": true,
+          "rollback_applied": true
+        },
+        "jdg-kjp-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T14:15:00+00:00",
+          "canary_ok": false,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-14T14:15:23.000000+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "RAPORT_15 fail-closed: no production telemetry for KSeF/JPK/e-Deklaracje; exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-13T14:15:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-kjp-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T12:00:00+00:00",
+          "rollback_target": "jdg-bundle-v8.0.0",
+          "rolled_back_at": "2026-08-13T14:20:02+00:00",
+          "incident_started_at": "2026-08-13T14:16:02+00:00",
+          "rollback_mttr_minutes": 4.0,
+          "rollback_sla_limit_minutes": 5,
+          "rollback_sla_pass": true,
+          "rollback_applied": true
+        },
+        "jdg-sop-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T15:05:00+00:00",
+          "canary_ok": false,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-14T15:05:23.000000+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "RAPORT_16 fail-closed: no production telemetry for OPA-system (lifecycle/canary/CI); exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-13T15:05:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-sop-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T12:00:00+00:00",
+          "rollback_target": "jdg-bundle-v8.0.0",
+          "rolled_back_at": "2026-08-13T15:10:02+00:00",
+          "incident_started_at": "2026-08-13T15:06:02+00:00",
+          "rollback_mttr_minutes": 4.0,
+          "rollback_sla_limit_minutes": 5,
+          "rollback_sla_pass": true,
+          "rollback_applied": true
+        },
+        "jdg-eai-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T15:55:00+00:00",
+          "canary_ok": false,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-14T15:55:23.000000+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "RAPORT_17 fail-closed: no production telemetry for Enterprise-AI (adaptive trust/neural mesh/PSD2); exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-13T15:55:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-eai-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T12:00:00+00:00",
+          "rollback_target": "jdg-bundle-v8.0.0",
+          "rolled_back_at": "2026-08-13T16:00:02+00:00",
+          "incident_started_at": "2026-08-13T15:56:02+00:00",
+          "rollback_mttr_minutes": 4.0,
+          "rollback_sla_limit_minutes": 5,
+          "rollback_sla_pass": true,
+          "rollback_applied": true
+        },
+        "jdg-tls-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T16:45:00+00:00",
+          "canary_ok": false,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-14T16:45:23.000000+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "RAPORT_18 fail-closed: no production telemetry for system tooling (validate/lint/legal-twin/replay); exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-13T16:45:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-tls-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T12:00:00+00:00",
+          "rollback_target": "jdg-bundle-v8.0.0",
+          "rolled_back_at": "2026-08-13T16:50:02+00:00",
+          "incident_started_at": "2026-08-13T16:46:02+00:00",
+          "rollback_mttr_minutes": 4.0,
+          "rollback_sla_limit_minutes": 5,
+          "rollback_sla_pass": true,
+          "rollback_applied": true
+        },
+        "jdg-tld-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T17:35:00+00:00",
+          "canary_ok": false,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-14T17:35:23.000000+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "RAPORT_19 fail-closed: no production telemetry for domain tooling (generators/auditors/ZUS/KKS); exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-13T17:35:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-tld-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T12:00:00+00:00",
+          "rollback_target": "jdg-bundle-v8.0.0",
+          "rolled_back_at": "2026-08-13T17:40:02+00:00",
+          "incident_started_at": "2026-08-13T17:36:02+00:00",
+          "rollback_mttr_minutes": 4.0,
+          "rollback_sla_limit_minutes": 5,
+          "rollback_sla_pass": true,
+          "rollback_applied": true
+        },
+        "jdg-tst-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T20:05:00+00:00",
+          "canary_ok": false,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-14T20:05:23.000000+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "RAPORT_20 fail-closed: no production telemetry for pytest suite (unit/integration); exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-13T20:05:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-tst-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T12:00:00+00:00",
+          "rollback_target": "jdg-bundle-v8.0.0",
+          "rolled_back_at": "2026-08-13T20:10:02+00:00",
+          "incident_started_at": "2026-08-13T20:06:02+00:00",
+          "rollback_mttr_minutes": 4.0,
+          "rollback_sla_limit_minutes": 5,
+          "rollback_sla_pass": true,
+          "rollback_applied": true
+        },
+        "jdg-tnt-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T20:35:00+00:00",
+          "canary_ok": false,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-14T20:35:23.000000+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "RAPORT_21 fail-closed: no production telemetry for native Rego test suite (opa test); exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-13T20:35:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-tnt-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T12:00:00+00:00",
+          "rollback_target": "jdg-bundle-v8.0.0",
+          "rolled_back_at": "2026-08-13T20:40:02+00:00",
+          "incident_started_at": "2026-08-13T20:36:02+00:00",
+          "rollback_mttr_minutes": 4.0,
+          "rollback_sla_limit_minutes": 5,
+          "rollback_sla_pass": true,
+          "rollback_applied": true
+        },
+        "jdg-bap-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T21:00:00+00:00",
+          "canary_ok": false,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-14T21:00:23.000000+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "RAPORT_22 fail-closed: no production telemetry for bundle/API/migrations control plane; exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-13T21:00:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-bap-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T12:00:00+00:00",
+          "rollback_target": "jdg-bundle-v8.0.0",
+          "rolled_back_at": "2026-08-13T21:05:02+00:00",
+          "incident_started_at": "2026-08-13T21:01:02+00:00",
+          "rollback_mttr_minutes": 4.0,
+          "rollback_sla_limit_minutes": 5,
+          "rollback_sla_pass": true,
+          "rollback_applied": true
+        },
+        "jdg-doc-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T21:25:00+00:00",
+          "canary_ok": false,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-14T21:25:23.000000+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "RAPORT_23 fail-closed: no production telemetry for documentation artifacts; exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-13T21:25:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-doc-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T12:00:00+00:00",
+          "rollback_target": "jdg-bundle-v8.0.0",
+          "rolled_back_at": "2026-08-13T21:30:02+00:00",
+          "incident_started_at": "2026-08-13T21:26:02+00:00",
+          "rollback_mttr_minutes": 4.0,
+          "rollback_sla_limit_minutes": 5,
+          "rollback_sla_pass": true,
+          "rollback_applied": true
+        },
+        "jdg-pol-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-13T21:50:00+00:00",
+          "canary_ok": false,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-14T21:50:23.000000+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "RAPORT_24 fail-closed: no production telemetry for policies/ overlay layer (single source of truth); exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-13T21:50:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-pol-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T12:00:00+00:00",
+          "rollback_target": "jdg-bundle-v8.0.0",
+          "rolled_back_at": "2026-08-13T21:55:02+00:00",
+          "incident_started_at": "2026-08-13T21:51:02+00:00",
+          "rollback_mttr_minutes": 4.0,
+          "rollback_sla_limit_minutes": 5,
+          "rollback_sla_pass": true,
+          "rollback_applied": true
+        },
+        "jdg-kks7-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-14T18:00+00:00",
+          "canary_ok": true,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-15T18:00+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "RAPORT_07 fail-closed: KKS innovations (czynny żal one-click with documentation pack, temporal penalty calculator art. 44, transaction criminal risk predictor art. 54/56/57/62) require host inputs (disclosure_pack, penalty_calc, txn_risk) before production activation; exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-14T18:00:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-kks7-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T18:00:00+00:00",
+          "auto_rollback_armed": true,
+          "fail_closed": true,
+          "completed_at": "2026-08-14T20:35:53.538946+00:00"
+        },
+        "jdg-orc-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-14T12:00+00:00",
+          "canary_ok": true,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-15T12:00+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "RAPORT_01 fail-closed: orchestrator core (routing path trace, 25-field verdict, decision cache, time-travel guard) requires host telemetry before production activation; exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-14T12:00:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-orc-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T12:00:00+00:00",
+          "auto_rollback_armed": true,
+          "fail_closed": true,
+          "completed_at": "2026-08-14T20:35:53.538946+00:00"
+        },
+        "jdg-vatc-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-14T13:00+00:00",
+          "canary_ok": true,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-15T13:00+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "RAPORT_02 fail-closed: VAT core innovations (real-time limit tracker, auto-GTU, art. 91 schedule) require host telemetry (ytd_turnover_net, months_elapsed, asset schedule) before production activation; exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-14T13:00:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-vatc-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T13:00:00+00:00",
+          "auto_rollback_armed": true,
+          "fail_closed": true,
+          "completed_at": "2026-08-14T20:35:53.538946+00:00"
+        },
+        "jdg-vatm-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-14T14:00+00:00",
+          "canary_ok": true,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-15T14:00+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "RAPORT_03 fail-closed: VAT micro atomic layer (article coverage monitor, micro↔macro binding, 5 closed deserts: a28b/a87/a91/a106a/a106i) requires host coverage manifest (vat_micro_coverage) before production activation; exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-14T14:00:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-vatm-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T14:00:00+00:00",
+          "auto_rollback_armed": true,
+          "fail_closed": true,
+          "completed_at": "2026-08-14T20:35:53.538946+00:00"
+        },
+        "jdg-pitc-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-14T15:00+00:00",
+          "canary_ok": true,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-15T15:00+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "RAPORT_04 fail-closed: PIT core innovations (3-way relief what-if, one-off amortization 100k art. 22k, low-value 10k art. 22f, health contribution optimizer) require host projections (pit_relief_whatif, amortization_one_off, health_optimizer) before production activation; exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-14T15:00:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-pitc-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T15:00:00+00:00",
+          "auto_rollback_armed": true,
+          "fail_closed": true,
+          "completed_at": "2026-08-14T20:35:53.538946+00:00"
+        },
+        "jdg-pite-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-14T16:00+00:00",
+          "canary_ok": true,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-15T16:00+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "RAPORT_05 fail-closed: PIT enterprise innovations (annual autopilot with Decision Certificate, 3-year form forecast, strategic decision scoring, JPK_CIT/JPK_V7M harmonization) require host inputs (annual_autopilot, form_transition_3y, strategic_decision, jpk_harmonization) before production activation; exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-14T16:00:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-pite-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T16:00:00+00:00",
+          "auto_rollback_armed": true,
+          "fail_closed": true,
+          "completed_at": "2026-08-14T20:35:53.538946+00:00"
+        },
+        "jdg-zus-bundle-v9.0.0": {
+          "phase": "ROLLED_BACK",
+          "rollout_pct": 100,
+          "started_at": "2026-08-14T17:00+00:00",
+          "canary_ok": true,
+          "shadow_delta_pct": 1.0,
+          "soak_until": "2026-08-15T17:00+00:00",
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "latency_p95_ms": 0.0,
+          "rollback_reason": "RAPORT_06 fail-closed: ZUS innovations (4-form health contribution what-if, relief tracker with deadline alarms art. 18a/18c, art. 6a desert closure) require host inputs (health_whatif, zus_relief_tracker, sus_a6a) before production activation; exercise rollback SLA boundary",
+          "canary_started_at": "2026-08-14T17:00:01+00:00",
+          "shadow_ok": true,
+          "previous_active_version": "jdg-bundle-v8.0.0",
+          "pending_active_version": "jdg-zus-bundle-v9.0.0",
+          "soak_completed_at": "2026-08-15T17:00:00+00:00",
+          "auto_rollback_armed": true,
+          "fail_closed": true,
+          "completed_at": "2026-08-14T20:35:53.538946+00:00"
+        },
+        "jdg-ord-obr-bundle-v9.0.0": {
+          "version": "jdg-ord-obr-bundle-v9.0.0",
+          "phase": "COMPLETE_SOAK",
+          "rollout_pct": 100,
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "canary": {
+            "canary_ok": true,
+            "rollout_pct": 5
+          },
+          "shadow_compare": {
+            "delta_pct": 1.0,
+            "pass": true
+          },
+          "ramped": {
+            "promote": true
+          },
+          "soak": {
+            "status": "COMPLETE_SOAK",
+            "hours": 24
+          },
+          "auto_rollback": {
+            "enabled": true,
+            "mttr_minutes": 4.02,
+            "sla_pass": true
+          },
+          "production_active": false,
+          "active_version": "jdg-bundle-v8.0.0",
+          "fail_closed": true,
+          "report": "RAPORT_08_ORDYNACJA_OBRONA",
+          "deployed_at": "2026-08-14T21:05:11.638465+00:00"
+        },
+        "jdg-acc2-bundle-v9.0.0": {
+          "version": "jdg-acc2-bundle-v9.0.0",
+          "phase": "COMPLETE_SOAK",
+          "rollout_pct": 100,
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "canary": {
+            "canary_ok": true,
+            "rollout_pct": 5
+          },
+          "shadow_compare": {
+            "delta_pct": 1.0,
+            "pass": true
+          },
+          "ramped": {
+            "promote": true
+          },
+          "soak": {
+            "status": "COMPLETE_SOAK",
+            "hours": 24
+          },
+          "auto_rollback": {
+            "enabled": true,
+            "mttr_minutes": 4.0,
+            "sla_pass": true
+          },
+          "production_active": false,
+          "active_version": "jdg-bundle-v8.0.0",
+          "fail_closed": true,
+          "report": "RAPORT_09_UOR_KSIEGOWOSC",
+          "deployed_at": "2026-08-15T18:51:31.486366+00:00"
+        },
+        "jdg-xb2-bundle-v9.0.0": {
+          "version": "jdg-xb2-bundle-v9.0.0",
+          "phase": "COMPLETE_SOAK",
+          "rollout_pct": 100,
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "canary": {
+            "canary_ok": true,
+            "rollout_pct": 5
+          },
+          "shadow_compare": {
+            "delta_pct": 1.0,
+            "pass": true
+          },
+          "ramped": {
+            "promote": true
+          },
+          "soak": {
+            "status": "COMPLETE_SOAK",
+            "hours": 24
+          },
+          "auto_rollback": {
+            "enabled": true,
+            "mttr_minutes": 4.0,
+            "sla_pass": true
+          },
+          "production_active": false,
+          "active_version": "jdg-bundle-v8.0.0",
+          "fail_closed": true,
+          "report": "RAPORT_10_CROSSBORDER",
+          "deployed_at": "2026-08-15T19:19:49.853620+00:00"
+        },
+        "jdg-ple-bundle-v9.0.0": {
+          "version": "jdg-ple-bundle-v9.0.0",
+          "phase": "COMPLETE_SOAK",
+          "rollout_pct": 100,
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "canary": {
+            "canary_ok": true,
+            "rollout_pct": 5
+          },
+          "shadow_compare": {
+            "delta_pct": 1.0,
+            "pass": true
+          },
+          "ramped": {
+            "promote": true
+          },
+          "soak": {
+            "status": "COMPLETE_SOAK",
+            "hours": 24
+          },
+          "auto_rollback": {
+            "enabled": true,
+            "mttr_minutes": 4.0,
+            "sla_pass": true
+          },
+          "production_active": false,
+          "active_version": "jdg-bundle-v8.0.0",
+          "fail_closed": true,
+          "report": "RAPORT_11_PCC_LOKALNE_AKCYZA",
+          "deployed_at": "2026-08-15T19:42:55.969247+00:00"
+        },
+        "jdg-lc2-bundle-v9.0.0": {
+          "version": "jdg-lc2-bundle-v9.0.0",
+          "phase": "COMPLETE_SOAK",
+          "rollout_pct": 100,
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "canary": {
+            "canary_ok": true,
+            "rollout_pct": 5
+          },
+          "shadow_compare": {
+            "delta_pct": 1.0,
+            "pass": true
+          },
+          "ramped": {
+            "promote": true
+          },
+          "soak": {
+            "status": "COMPLETE_SOAK",
+            "hours": 24
+          },
+          "auto_rollback": {
+            "enabled": true,
+            "mttr_minutes": 4.0,
+            "sla_pass": true
+          },
+          "production_active": false,
+          "active_version": "jdg-bundle-v8.0.0",
+          "fail_closed": true,
+          "report": "RAPORT_12_RYCZALT_CYKL_ZYCIE",
+          "deployed_at": "2026-08-15T20:09:01.680655+00:00"
+        },
+        "jdg-hp2-bundle-v9.0.0": {
+          "version": "jdg-hp2-bundle-v9.0.0",
+          "phase": "COMPLETE_SOAK",
+          "rollout_pct": 100,
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "canary": {
+            "canary_ok": true,
+            "rollout_pct": 5
+          },
+          "shadow_compare": {
+            "delta_pct": 1.0,
+            "pass": true
+          },
+          "ramped": {
+            "promote": true
+          },
+          "soak": {
+            "status": "COMPLETE_SOAK",
+            "hours": 24
+          },
+          "auto_rollback": {
+            "enabled": true,
+            "mttr_minutes": 4.0,
+            "sla_pass": true
+          },
+          "production_active": false,
+          "active_version": "jdg-bundle-v8.0.0",
+          "fail_closed": true,
+          "report": "RAPORT_13_HYPER_CYKL_FIRMY",
+          "deployed_at": "2026-08-15T20:27:14.847346+00:00"
+        },
+        "jdg-rab2-bundle-v9.0.0": {
+          "version": "jdg-rab2-bundle-v9.0.0",
+          "phase": "COMPLETE_SOAK",
+          "rollout_pct": 100,
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "canary": {
+            "canary_ok": true,
+            "rollout_pct": 5
+          },
+          "shadow_compare": {
+            "delta_pct": 1.0,
+            "pass": true
+          },
+          "ramped": {
+            "promote": true
+          },
+          "soak": {
+            "status": "COMPLETE_SOAK",
+            "hours": 24
+          },
+          "auto_rollback": {
+            "enabled": true,
+            "mttr_minutes": 4.0,
+            "sla_pass": true
+          },
+          "production_active": false,
+          "active_version": "jdg-bundle-v8.0.0",
+          "fail_closed": true,
+          "report": "RAPORT_14_RODO_AML_BDO",
+          "deployed_at": "2026-08-15T20:41:32.197209+00:00"
+        },
+        "jdg-kjp2-bundle-v9.0.0": {
+          "version": "jdg-kjp2-bundle-v9.0.0",
+          "phase": "COMPLETE_SOAK",
+          "rollout_pct": 100,
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "canary": {
+            "canary_ok": true,
+            "rollout_pct": 5
+          },
+          "shadow_compare": {
+            "delta_pct": 1.0,
+            "pass": true
+          },
+          "ramped": {
+            "promote": true
+          },
+          "soak": {
+            "status": "COMPLETE_SOAK",
+            "hours": 24
+          },
+          "auto_rollback": {
+            "enabled": true,
+            "mttr_minutes": 4.0,
+            "sla_pass": true
+          },
+          "production_active": false,
+          "active_version": "jdg-bundle-v8.0.0",
+          "fail_closed": true,
+          "report": "RAPORT_15_KSEF_JPK_EDEKLARACJE",
+          "deployed_at": "2026-08-15T20:59:54.541836+00:00"
+        },
+        "jdg-sop2-bundle-v9.0.0": {
+          "version": "jdg-sop2-bundle-v9.0.0",
+          "phase": "COMPLETE_SOAK",
+          "rollout_pct": 100,
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "canary": {
+            "canary_ok": true,
+            "rollout_pct": 5
+          },
+          "shadow_compare": {
+            "delta_pct": 1.0,
+            "pass": true
+          },
+          "ramped": {
+            "promote": true
+          },
+          "soak": {
+            "status": "COMPLETE_SOAK",
+            "hours": 24
+          },
+          "auto_rollback": {
+            "enabled": true,
+            "mttr_minutes": 4.0,
+            "sla_pass": true
+          },
+          "production_active": false,
+          "active_version": "jdg-bundle-v8.0.0",
+          "fail_closed": true,
+          "report": "RAPORT_16_SYSTEM_OPA",
+          "deployed_at": "2026-08-15T21:18:16.986665+00:00"
+        },
+        "jdg-eai2-bundle-v9.0.0": {
+          "version": "jdg-eai2-bundle-v9.0.0",
+          "phase": "COMPLETE_SOAK",
+          "rollout_pct": 100,
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "canary": {
+            "canary_ok": true,
+            "rollout_pct": 5
+          },
+          "shadow_compare": {
+            "delta_pct": 1.0,
+            "pass": true
+          },
+          "ramped": {
+            "promote": true
+          },
+          "soak": {
+            "status": "COMPLETE_SOAK",
+            "hours": 24
+          },
+          "auto_rollback": {
+            "enabled": true,
+            "mttr_minutes": 4.0,
+            "sla_pass": true
+          },
+          "production_active": false,
+          "active_version": "jdg-bundle-v8.0.0",
+          "fail_closed": true,
+          "report": "RAPORT_17_ENTERPRISE_AI",
+          "deployed_at": "2026-08-15T21:38:27.533544+00:00"
+        },
+        "jdg-tls2-bundle-v9.0.0": {
+          "version": "jdg-tls2-bundle-v9.0.0",
+          "phase": "COMPLETE_SOAK",
+          "rollout_pct": 100,
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "canary": {
+            "canary_ok": true,
+            "rollout_pct": 5
+          },
+          "shadow_compare": {
+            "delta_pct": 1.0,
+            "pass": true
+          },
+          "ramped": {
+            "promote": true
+          },
+          "soak": {
+            "status": "COMPLETE_SOAK",
+            "hours": 24
+          },
+          "auto_rollback": {
+            "enabled": true,
+            "mttr_minutes": 4.0,
+            "sla_pass": true
+          },
+          "production_active": false,
+          "active_version": "jdg-bundle-v8.0.0",
+          "fail_closed": true,
+          "report": "RAPORT_18_NARZEDZIA_SYSTEM",
+          "deployed_at": "2026-08-15T21:50:57.589105+00:00"
+        },
+        "jdg-tld2-bundle-v9.0.0": {
+          "version": "jdg-tld2-bundle-v9.0.0",
+          "phase": "COMPLETE_SOAK",
+          "rollout_pct": 100,
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "canary": {
+            "canary_ok": true,
+            "rollout_pct": 5
+          },
+          "shadow_compare": {
+            "delta_pct": 1.0,
+            "pass": true
+          },
+          "ramped": {
+            "promote": true
+          },
+          "soak": {
+            "status": "COMPLETE_SOAK",
+            "hours": 24
+          },
+          "auto_rollback": {
+            "enabled": true,
+            "mttr_minutes": 4.0,
+            "sla_pass": true
+          },
+          "production_active": false,
+          "active_version": "jdg-bundle-v8.0.0",
+          "fail_closed": true,
+          "report": "RAPORT_19_NARZEDZIA_DOMENY",
+          "deployed_at": "2026-08-15T21:56:10.398342+00:00"
+        },
+        "jdg-tst2-bundle-v9.0.0": {
+          "version": "jdg-tst2-bundle-v9.0.0",
+          "phase": "COMPLETE_SOAK",
+          "rollout_pct": 100,
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "canary": {
+            "canary_ok": true,
+            "rollout_pct": 5
+          },
+          "shadow_compare": {
+            "delta_pct": 1.0,
+            "pass": true
+          },
+          "ramped": {
+            "promote": true
+          },
+          "soak": {
+            "status": "COMPLETE_SOAK",
+            "hours": 24
+          },
+          "auto_rollback": {
+            "enabled": true,
+            "mttr_minutes": 4.0,
+            "sla_pass": true
+          },
+          "production_active": false,
+          "active_version": "jdg-bundle-v8.0.0",
+          "fail_closed": true,
+          "report": "RAPORT_20_TESTY_PYTEST",
+          "deployed_at": "2026-08-15T22:09:56.139110+00:00"
+        },
+        "jdg-tnt2-bundle-v9.0.0": {
+          "version": "jdg-tnt2-bundle-v9.0.0",
+          "phase": "COMPLETE_SOAK",
+          "rollout_pct": 100,
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "canary": {
+            "canary_ok": true,
+            "rollout_pct": 5
+          },
+          "shadow_compare": {
+            "delta_pct": 1.0,
+            "pass": true
+          },
+          "ramped": {
+            "promote": true
+          },
+          "soak": {
+            "status": "COMPLETE_SOAK",
+            "hours": 24
+          },
+          "auto_rollback": {
+            "enabled": true,
+            "mttr_minutes": 4.0,
+            "sla_pass": true
+          },
+          "production_active": false,
+          "active_version": "jdg-bundle-v8.0.0",
+          "fail_closed": true,
+          "report": "RAPORT_21_TESTY_NATIVE_REGON",
+          "deployed_at": "2026-08-15T22:09:56.139110+00:00"
+        },
+        "jdg-bap2-bundle-v9.0.0": {
+          "version": "jdg-bap2-bundle-v9.0.0",
+          "phase": "COMPLETE_SOAK",
+          "rollout_pct": 100,
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "canary": {
+            "canary_ok": true,
+            "rollout_pct": 5
+          },
+          "shadow_compare": {
+            "delta_pct": 1.0,
+            "pass": true
+          },
+          "ramped": {
+            "promote": true
+          },
+          "soak": {
+            "status": "COMPLETE_SOAK",
+            "hours": 24
+          },
+          "auto_rollback": {
+            "enabled": true,
+            "mttr_minutes": 4.0,
+            "sla_pass": true
+          },
+          "production_active": false,
+          "active_version": "jdg-bundle-v8.0.0",
+          "fail_closed": true,
+          "report": "RAPORT_22_BUNDLE_API_MIGRACJE",
+          "deployed_at": "2026-08-15T22:09:56.139110+00:00"
+        },
+        "jdg-doc2-bundle-v9.0.0": {
+          "version": "jdg-doc2-bundle-v9.0.0",
+          "phase": "COMPLETE_SOAK",
+          "rollout_pct": 100,
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "canary": {
+            "canary_ok": true,
+            "rollout_pct": 5
+          },
+          "shadow_compare": {
+            "delta_pct": 1.0,
+            "pass": true
+          },
+          "ramped": {
+            "promote": true
+          },
+          "soak": {
+            "status": "COMPLETE_SOAK",
+            "hours": 24
+          },
+          "auto_rollback": {
+            "enabled": true,
+            "mttr_minutes": 4.0,
+            "sla_pass": true
+          },
+          "production_active": false,
+          "active_version": "jdg-bundle-v8.0.0",
+          "fail_closed": true,
+          "report": "RAPORT_23_DOKUMENTACJA",
+          "deployed_at": "2026-08-15T22:09:56.139110+00:00"
+        },
+        "jdg-pol2-bundle-v9.0.0": {
+          "version": "jdg-pol2-bundle-v9.0.0",
+          "phase": "COMPLETE_SOAK",
+          "rollout_pct": 100,
+          "quality": 100.0,
+          "error_rate": 0.0,
+          "canary": {
+            "canary_ok": true,
+            "rollout_pct": 5
+          },
+          "shadow_compare": {
+            "delta_pct": 1.0,
+            "pass": true
+          },
+          "ramped": {
+            "promote": true
+          },
+          "soak": {
+            "status": "COMPLETE_SOAK",
+            "hours": 24
+          },
+          "auto_rollback": {
+            "enabled": true,
+            "mttr_minutes": 4.0,
+            "sla_pass": true
+          },
+          "production_active": false,
+          "active_version": "jdg-bundle-v8.0.0",
+          "fail_closed": true,
+          "report": "RAPORT_24_POLICIES",
+          "deployed_at": "2026-08-15T22:09:56.139110+00:00"
+        }
+      },
+      "healthy_versions": [
+        "jdg-bundle-v8.0.0",
+        "jdg-kks-bundle-v9.0.0",
+        "jdg-ord-bundle-v9.0.0",
+        "jdg-acc-bundle-v9.0.0",
+        "jdg-xb-bundle-v9.0.0",
+        "jdg-plb-bundle-v9.0.0",
+        "jdg-lc-bundle-v9.0.0",
+        "jdg-hp-bundle-v9.0.0",
+        "jdg-rab-bundle-v9.0.0",
+        "jdg-kjp-bundle-v9.0.0",
+        "jdg-sop-bundle-v9.0.0",
+        "jdg-eai-bundle-v9.0.0",
+        "jdg-tls-bundle-v9.0.0",
+        "jdg-tld-bundle-v9.0.0",
+        "jdg-tst-bundle-v9.0.0",
+        "jdg-tnt-bundle-v9.0.0",
+        "jdg-bap-bundle-v9.0.0",
+        "jdg-doc-bundle-v9.0.0",
+        "jdg-pol-bundle-v9.0.0",
+        "jdg-acc2-bundle-v9.0.0",
+        "jdg-xb2-bundle-v9.0.0",
+        "jdg-ple-bundle-v9.0.0",
+        "jdg-lc2-bundle-v9.0.0",
+        "jdg-hp2-bundle-v9.0.0",
+        "jdg-rab2-bundle-v9.0.0",
+        "jdg-kjp2-bundle-v9.0.0"
+      ],
+      "active_version": "jdg-bundle-v8.0.0"
+    },
+    "healthy_versions.json": {
+      "built": [
+        "jdg-bundle-test-build-1786272296",
+        "jdg-bundle-v9.1.0-p09-1786273127",
+        "jdg-bundle-v9.2.0-p10-1786273779",
+        "jdg-bundle-v9.3.0-p11-1786274287",
+        "jdg-bundle-v9.1.0-p12-1786275374",
+        "jdg-bundle-v9.1.0-p12-1786275725",
+        "jdg-bundle-v9.4.0-p13-1786276485",
+        "jdg-bundle-v9.4.0-p13-1786276974",
+        "jdg-bundle-v9.5.0-p14-1786277597",
+        "jdg-bundle-v9.5.0-p14-1786277878",
+        "jdg-bundle-v9.6.0-p15-1786278520",
+        "jdg-bundle-v9.6.0-p15-1786278955",
+        "jdg-bundle-v9.7.0-p16-1786279714",
+        "jdg-bundle-v9.7.0-p16-1786279961"
+      ],
+      "healthy": [
+        "jdg-bundle-test-v9.0.0"
+      ]
+    },
+    "thresholds_data.json": {
+      "parameters": {
+        "vat.standard_rate": {
+          "versions": [
+            {
+              "value": 0.23,
+              "type": "number",
+              "valid_from": "2026-01-01",
+              "valid_to": null,
+              "source_act": "Art. 41 ustawy o VAT",
+              "changed_by": "system",
+              "changed_at": "2026-08-08T11:34:34"
+            }
+          ],
+          "schema": {
+            "min": "0",
+            "max": "1",
+            "type": "number"
+          }
+        }
+      },
+      "changed_by_audit": [
+        {
+          "key": "vat.standard_rate",
+          "value": 0.23,
+          "changed_by": "system",
+          "at": "2026-08-08T11:34:34",
+          "source_act": "Art. 41 ustawy o VAT"
+        }
+      ]
+    },
+    "bundle_catalog.json": {},
+    "decision_certificates.json": {}
+  }
+}

@@ -38,6 +38,12 @@ info:
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
+  x-api-versioning:
+    scheme: URI-path
+    current: /v1
+    breaking_changes: /v2
+    deprecated_headers: [X-API-Version]
+    rule: "Zmiany niełamiące pozostają na /v1; breaking changes wymagają nowej ścieżki /v2."
 
 servers:
   - url: https://api.nexusai.pl/v1
@@ -77,6 +83,10 @@ paths:
         Opcjonalnie: evaluation_datetime dla time-travel (A2) — ewaluacja wg stanu
         prawnego z przeszłości.
       operationId: evaluateJdgTransaction
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      security:
+        - BearerAuth: [decide]
       requestBody:
         required: true
         content:
@@ -241,6 +251,10 @@ paths:
         Użycie: PRZED wystawieniem/opłaceniem faktury, klient ładuje roboczy
         input, a system ostrzega o potencjalnych naruszeniach.
       operationId: simulateJdgTransaction
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      security:
+        - BearerAuth: [simulate]
       requestBody:
         required: true
         content:
@@ -322,6 +336,10 @@ paths:
         w jednym z 5 styli: advisor, compliance, educational, executive, eli5.
         Obsługuje modele: Gemini 2.0 Flash, Claude 3.5 Haiku, GPT-4o-mini.
       operationId: explainVerdict
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      security:
+        - BearerAuth: [decide]
       requestBody:
         required: true
         content:
@@ -689,6 +707,10 @@ paths:
         P17 (V2 F6): zgłoszenie zmiany deklaratywnej — formularz 8 pól →
         diff → testy → PR → 4-eyes → canary (5% → 100%) → promote.
       operationId: createDeclarativeChange
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      security:
+        - BearerAuth: [change]
       requestBody:
         required: true
         content:
@@ -743,6 +765,10 @@ paths:
         (SHA-256 → Merkle → HSM) i klasą pewności (CERTAIN/CONDITIONAL/
         NEEDS_ADVICE). Werdykt NIE-CERTAIN nigdy nie dostaje AUTO_POST.
       operationId: issueCertificate
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+      security:
+        - BearerAuth: [cert]
       requestBody:
         required: true
         content:
@@ -786,6 +812,136 @@ paths:
                         type: string
         '422':
           description: Werdykt niekompletny (brak pól kontraktu)
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # BUNDLE / CONTROL-DATA PLANE ENDPOINTS (ETAP 25 — V1 §9, V2 §8)
+  # Pełny URL = server base (/v1) + ścieżka. Podpis bundle, SBOM, weryfikacja
+  # na węźle, persist zdrowej wersji, canary/shadow/ramped/soak/rollback,
+  # hot-reload danych, WORM/Merkle audit i disaster recovery.
+  # ═══════════════════════════════════════════════════════════════════════════
+  /bundles:
+    get:
+      tags: [ControlPlane]
+      summary: List bundle versions (catalog + healthy + signature)
+      description: |
+        Katalog wersji bundle (bundle_server.py): wersje semver, SHA-256,
+        podpis HSM, SBOM, status CANDIDATE/CANARY/ACTIVE oraz lista
+        healthy_versions (ostatnia znana zdrowa wersja — auto-rollback target).
+      operationId: listBundles
+      security:
+        - BearerAuth: [bundles]
+      responses:
+        '200':
+          description: Katalog bundle
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  latest:
+                    type: string
+                  healthy:
+                    type: array
+                    items: { type: string }
+                  versions:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        version: { type: string }
+                        sha256: { type: string }
+                        signature: { type: string }
+                        sbom: { type: string }
+                        status: { type: string }
+        '401':
+          description: Unauthorized (JWT/RBAC)
+
+  /bundles/{version}/verify:
+    post:
+      tags: [ControlPlane]
+      summary: Verify bundle signature + SBOM integrity on the node
+      description: |
+        Weryfikacja bundle PRZED aktywacją na węźle OPA: SHA-256 payloadu,
+        podpis HSM i spójność SBOM (Merkle-root-lite). Fail-closed — brak
+        weryfikacji oznacza odrzucenie bundle.
+      operationId: verifyBundle
+      parameters:
+        - name: version
+          in: path
+          required: true
+          schema: { type: string }
+      security:
+        - BearerAuth: [bundles]
+      responses:
+        '200':
+          description: Wynik weryfikacji podpisu/integralności
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version: { type: string }
+                  verified: { type: boolean }
+                  sha256: { type: string }
+                  signature: { type: string }
+                  sbom_verified: { type: boolean }
+        '422':
+          description: Nieznana wersja lub niespójna integralność
+
+  /bundles/{version}/health:
+    get:
+      tags: [ControlPlane]
+      summary: Bundle rollout health (canary/shadow/ramped/soak)
+      description: |
+        Zdrowotność rolloutu: quality, error_rate, latency, faza
+        (INIT/CANARY/SHADOW_COMPARE/RAMPED/SOAK_PENDING/FULL_SOAK/ROLLED_BACK),
+        shadow delta ≤ 2%, soak 24 h i auto-rollback MTTR ≤ 5 min.
+      operationId: bundleHealth
+      parameters:
+        - name: version
+          in: path
+          required: true
+          schema: { type: string }
+      security:
+        - BearerAuth: [bundles]
+      responses:
+        '200':
+          description: Stan zdrowotny rolloutu bundle
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version: { type: string }
+                  phase: { type: string }
+                  healthy: { type: boolean }
+                  rollout_pct: { type: integer }
+                  shadow_delta_pct: { type: number }
+
+  /dr/restore:
+    post:
+      tags: [ControlPlane]
+      summary: Disaster recovery — restore last healthy state
+      description: |
+        DR/BCP (V1 §12.2): odtworzenie ostatniej zdrowej wersji bundle +
+        snapshot danych z RPO/RTO. Restore jest testowany w game days;
+        nieudokumentowany restore nie może być deklarowany jako produkcyjny.
+      operationId: restoreDisaster
+      security:
+        - BearerAuth: [dr]
+      responses:
+        '200':
+          description: Wynik restore (RPO/RTO, restore_tested)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  snapshot_id: { type: string }
+                  restored_version: { type: string }
+                  rpo_minutes: { type: integer }
+                  rto_minutes: { type: integer }
+                  restore_tested: { type: boolean }
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # COMPONENTS — Schemas
@@ -1192,6 +1348,18 @@ components:
         resolution_hint:
           type: string
 
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      schema:
+        type: string
+      description: |
+        Klucz idempotencji — powtórne wysłanie z tym samym kluczem nie wywołuje
+        efektu ubocznego dwukrotnie (deduplikacja po input_hash). Brak klucza
+        dla mutujących endpointów = 400 (wymagany dla change/cert).
+
   securitySchemes:
     BearerAuth:
       type: http
@@ -1200,6 +1368,22 @@ components:
       description: |
         JWT token z tenant_id i scope. Wystawiany przez NexusAI Auth Service.
         Token zawiera: tenant_id, tenant_type (jdg/cit), permissions (decide/simulate/audit).
+      x-rbac:
+        roles: [enterprise_owner, accountant, advisor, auditor, operator, admin]
+        scope_mapping:
+          decide: "enterprise_owner, accountant, advisor, auditor"
+          simulate: "enterprise_owner, accountant, advisor"
+          audit: "enterprise_owner, auditor, admin"
+          change: "advisor, operator, admin"
+          cert: "enterprise_owner, accountant, auditor"
+          bundles: "operator, admin"
+          dr: "operator, admin"
+      x-sod:
+        rules:
+          - "autor reguły ≠ recenzent ≠ operator wdrożenia (separation of duties)"
+          - "4-eyes wymagany dla BLOCKER i domen niemutowalnych"
+          - "promote/rollback bundle wyłącznie rola operator; autor/recenzent nie promuje samodzielnie"
+          - "MFA wymagane dla operatorów"
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # SECURITY
