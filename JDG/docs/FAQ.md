@@ -21,13 +21,13 @@
 ## 1. Ogólne
 
 ### Q1.1 Czym jest NexusAI JDG?
-Silnik reguł podatkowych (Policy-as-Code) dla polskich jednoosobowych działalności gospodarczych. Koduje 13 aktów prawnych jako ~11 452 reguł OPA/Rego, które automatycznie ewaluują faktury i podejmują decyzje księgowe. Szczegóły: [README.md](../README.md).
+Silnik reguł podatkowych (Policy-as-Code) dla polskich jednoosobowych działalności gospodarczych. Koduje 13 aktów prawnych jako ~11 808 reguł OPA/Rego (472 pliki), które automatycznie ewaluują faktury i podejmują decyzje księgowe. Szczegóły: [README.md](../README.md).
 
 ### Q1.2 Jaki jest status produktu?
 Reguły i API: **PRODUCTION (ENTERPRISE v8.0)**. RuleStore DuckDB: BETA. Testy: BETA. Pełna tabela statusów: [README.md §Status](../README.md).
 
 ### Q1.3 Ile reguł pokrywa system?
-~11 452 unikalnych `rule_id` w 439 plikach Rego (MANIFEST.md, 2026-08-05). Uwaga: `bundles/manifest.json` (2026-08-02) raportuje starszą liczbę 10 878 reguł w 383 plikach — aktualizowany przy budowie bundle.
+~11 808 unikalnych `rule_id` w 472 plikach Rego (MANIFEST.md, 2026-08-22). Uwaga: `bundles/manifest.json` bywa starszy — aktualizowany przy budowie bundle (`bundle.sh`).
 
 ### Q1.4 Czy to zastępuje księgowego?
 Nie w pełni. Automatyzuje ~85% transakcji (AUTO_POST), ale ~3–5% wymaga decyzji człowieka (ASK_USER), a doradca/księgowa nadzoruje strategię i obronę przed KAS.
@@ -124,7 +124,7 @@ Tak — korekta w module korekt (`rules/corrections.rego`); system uwzględnia t
 ## 5. Wdrożenie i DevOps
 
 ### Q5.1 Jakie są wymagania sprzętowe?
-OPA Server + DuckDB RuleStore + serwis thresholdów; rekomendowane minimum: 2 vCPU / 4 GB RAM dla testów, 4 vCPU / 8 GB dla produkcji (pełny bundle 439 plików).
+OPA Server + DuckDB RuleStore + serwis thresholdów; rekomendowane minimum: 2 vCPU / 4 GB RAM dla testów, 4 vCPU / 8 GB dla produkcji (pełny bundle 472 plików).
 
 ### Q5.2 Jak wygląda CI/CD?
 Workflow blokujący merge przy: lint FAIL, validate FAIL, manifest niespójny, tautologia, zero-defect < 85%. Codzienny scheduler ISAP wykrywa zmiany prawa. [docs/DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) §6.
@@ -150,4 +150,27 @@ Koszty zależne od: ruchu API (rate limiting 60 req/min/klucz), wywołań LLM (`
 
 ---
 
-*Spójny z: README.md · ARCHITEKTURA.md · API_REFERENCJA.md · ZGODNOSC_PRAWNA.md · PODRECZNIK_UZYTKOWNIKA.md · LOGIKA_BIZNESOWA.md*
+## 7. Kampania GLM 5.2 i certyfikacja (ETAP 10–28)
+
+### Q7.1 Co to jest kampania GLM 5.2?
+Seria 19 audytowanych etapów wdrożenia (ETAP 10–28) rozwijająca silnik JDG od fundamentów (ETAP 04–06) do certyfikacji końcowej. Każdy etap ma reguły Rego, audyt (`JDG/tools/*_etapNN_audit.py`), audit-state (`JDG/bundles/*audit_state.json`) oraz testy pytest + natywne Rego. Pełna tabela: [KAMPANIA_GLM52_ETAPY_10_28.md](KAMPANIA_GLM52_ETAPY_10_28.md).
+
+### Q7.2 Jaki jest status certyfikacji?
+ETAP 28/29 — **WDROZONY_100** (2026-08-22): 14/14 bramek PASSED, 29/29 raportów kampanii `WDROZONY_100`. Domeny: **13 CERTIFIED / 5 CONDITIONAL / 0 BLOCKED** (VAT, orchestrator, legal_twin, control_plane, security są CONDITIONAL). Status produkcji: **NOT_CERTIFIED** — system nie przeszedł jeszcze pełnej certyfikacji produkcyjnej (raport szczerości ETAP 28).
+
+### Q7.3 Gdzie są dowody wdrożenia (evidence)?
+`JDG/bundles/*audit_state.json` (22 pliki) — każdy zawiera bramki (`gate_summary`), listę plików, pakiety, wyniki testów i znaczniki (np. `no_auto_post`). Certyfikacja końcowa: `JDG/bundles/final_certification_etap28_audit_state.json`.
+
+### Q7.4 Jak samodzielnie zweryfikować etap?
+```bash
+python JDG/tools/final_certification_etap28_audit.py   # bramki 14/14
+pytest -q JDG/tests/test_final_certification_etap28_audit.py
+opa test JDG/tests/rego/test_native_final_certification_etap28.rego -v
+```
+
+### Q7.5 Co znaczy „no AUTO_POST" w audit-state?
+Wszystkie etapy deklarują `decision_mode := "SUGGEST"` i `no_auto_post: true` — host NIGDY nie księguje automatycznie bez przejścia przez klasy pewności (CERTAIN → AUTO_POST_ALLOWED). To gwarancja bezpieczeństwa przed błędnymi decyzjami.
+
+---
+
+*Spójny z: README.md · ARCHITEKTURA.md · API_REFERENCJA.md · ZGODNOSC_PRAWNA.md · PODRECZNIK_UZYTKOWNIKA.md · LOGIKA_BIZNESOWA.md · KAMPANIA_GLM52_ETAPY_10_28.md*

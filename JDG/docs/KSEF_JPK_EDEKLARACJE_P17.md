@@ -1,5 +1,9 @@
 # P17 — KSeF + JPK + e-Deklaracje (Enterprise)
 
+> **📌 Aktualizacja 2026-08-22:** dokument historyczny opisujący wdrożenie promptu GLM 5.2.
+> Raporty źródłowe (`prompty_glm52/`, `raporty_glm52/`, `raporty_jdg_enterprise/`) zostały zarchiwizowane poza repo.
+> Aktualny stan wdrożenia: [`KAMPANIA_GLM52_ETAPY_10_28.md`](KAMPANIA_GLM52_ETAPY_10_28.md) + `JDG/bundles/*audit_state.json` (certyfikacja końcowa ETAP 28/29 — 2026-08-22, 14/14 bramek).
+
 Pakiet: `jdg.p17_ksef_jpk_edeklaracje_innovations`
 Plik: `JDG/rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego`
 Raport: `raporty_jdg_enterprise/R17_KSeF_JPK_eDeklaracje.txt`

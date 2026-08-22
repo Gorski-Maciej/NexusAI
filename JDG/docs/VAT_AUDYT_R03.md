@@ -181,7 +181,7 @@ sport pkt 28, kultura pkt 33, finanse pkt 36, najem mieszkalny pkt 2).
 - **Funkcje zeroargumentowe**: OPA 0.68 nie typuje `f() = v { ... }` („undefined function”) —
   wbudowano wartość wprost.
 - NOTA: pliki z zagnieżdżonymi ciałami (`x = val { cond }` — niepoprawne we WSZYSTKICH wersjach Rego)
-  pozostają zgodne z konwencją repozytorium (dotyczy ~245/439 plików, w tym R02/R04) —
+  pozostają zgodne z konwencją repozytorium (dotyczy ~245/472 plików, w tym R02/R04) —
   wdrożenie R03 NIE rozszerza tego stanu.
 
 ---

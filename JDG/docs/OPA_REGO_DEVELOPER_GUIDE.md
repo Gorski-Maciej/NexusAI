@@ -1,7 +1,8 @@
 # 🛠️ OPA Rego — Developer Guide dla Modułu JDG
 
-> **Status:** v8.0 | **Data:** 2026-08-02
+> **Status:** v8.3 | **Data:** 2026-08-02 (aktualizacja: 2026-08-22)
 > **Przewodnik po konwencjach, strukturze i workflow dla deweloperów reguł Rego w NexusAI JDG**
+> **Stan reguł:** 472 pliki / ~11 808 rule_id / 88/100 Completeness (MANIFEST 2026-08-22)
 
 ---
 

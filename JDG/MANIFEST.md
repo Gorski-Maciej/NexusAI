@@ -1,14 +1,14 @@
 # 📋 JDG MANIFEST — Tracker Pokrycia Reguł vs Mapa Kanoniczna 38c
 
-> **Auto-generowane:** 2026-08-18 07:57:48
+> **Auto-generowane:** 2026-08-22 16:23:47
 > **Generator:** v8.0 (parser strukturalny, 100% plików)
 > **Completeness Score:** 🟡 **88/100**
->   - Plików w manifescie: 407/453 (89%)
->   - Aktualność: 87/100 | Sumy spójne: ✅ | Routing: 67%
-> **Plików Rego:** 453
-> **Plików z matched:true:** 407
-> **Bloków matched:true:** 11792
-> **Unikalnych rule_id:** 11789
+>   - Plików w manifescie: 426/472 (90%)
+>   - Aktualność: 86/100 | Sumy spójne: ✅ | Routing: 64%
+> **Plików Rego:** 472
+> **Plików z matched:true:** 426
+> **Bloków matched:true:** 11811
+> **Unikalnych rule_id:** 11808
 > **Duplikatów:** 3
 
 ---
@@ -39,6 +39,7 @@
 | `rules/business.rego` | 23 | 8 | 5 | f856e084da38e22d |
 | `rules/business/gig_economy.rego` | 5 | 0 | 1 | 4fefd676c291ef24 |
 | `rules/business/plan26_suspension_succession.rego` | 5 | 3 | 1 | 9dab893c5c0dde48 |
+| `rules/business_lifecycle_etap18_v1.rego` | 1 | 0 | 0 | 0d073f85023b9af9 |
 | `rules/calendar/plan44_calendar.rego` | 6 | 0 | 0 | 97afca8223372d0b |
 | `rules/calendar/plan45_calendar.rego` | 35 | 0 | 0 | ec34f22964bb2b98 |
 | `rules/cashflow_tax_predictor_enterprise.rego` | 6 | 0 | 0 | 977e5c82b638ab94 |
@@ -50,16 +51,19 @@
 | `rules/conviction/plan44_conviction.rego` | 6 | 2 | 0 | 29f5650936a1717b |
 | `rules/conviction/plan45_conviction.rego` | 30 | 10 | 0 | ae5cd4584312b483 |
 | `rules/corrections.rego` | 19 | 3 | 4 | 92c60f4e77b985a0 |
+| `rules/cross_domain_red_team_etap27_v1.rego` | 1 | 0 | 0 | 55b9c3e65be7a063 |
 | `rules/crossborder.rego` | 31 | 3 | 11 | 74c0774f3b5900ba |
 | `rules/crossborder/exit_tax_cfc_complete.rego` | 16 | 3 | 0 | 856fc17fabacf309 |
 | `rules/crossborder/plan23_ue.rego` | 8 | 1 | 2 | 09dd78f4f45b63d5 |
 | `rules/crossborder/post_brexit.rego` | 3 | 0 | 1 | 145f7f73001e316f |
+| `rules/crossborder_etap17_v1.rego` | 1 | 0 | 0 | 6a05de9a9556d9ad |
 | `rules/dac8_report_generator.rego` | 3 | 0 | 0 | 2d1b867d9d9c4ace |
 | `rules/decision_core_completeness_enterprise.rego` | 5 | 1 | 2 | 72b7e25371b65cee |
 | `rules/edelivery/plan44_edelivery.rego` | 8 | 1 | 0 | 12a2e7e4322c28f0 |
 | `rules/edelivery/plan45_edelivery.rego` | 41 | 5 | 4 | fcbf67c85a54b0d1 |
 | `rules/edge_cases.rego` | 187 | 44 | 54 | 06a0cbadf025b055 |
 | `rules/employer.rego` | 27 | 5 | 2 | 9d5ea3cc03fa1d20 |
+| `rules/enterprise_ai_neural_etap23_v1.rego` | 1 | 0 | 0 | 26df9f71460adf1f |
 | `rules/environmental.rego` | 14 | 3 | 2 | ebd04aff302927de |
 | `rules/environmental/bdo_enterprise.rego` | 22 | 11 | 10 | 908e3d635fbd2cfc |
 | `rules/epuap_enterprise.rego` | 3 | 0 | 0 | 567efd5fb2b64dae |
@@ -70,6 +74,7 @@
 | `rules/exit_tax_mdr_enterprise.rego` | 7 | 3 | 1 | d633bc4faec58b10 |
 | `rules/family/plan44_family.rego` | 10 | 0 | 3 | 785ae69f58a4ce20 |
 | `rules/family/plan45_family.rego` | 51 | 4 | 2 | 3e5d04c613440602 |
+| `rules/final_certification_etap28_v1.rego` | 1 | 0 | 0 | 26f909478131e84a |
 | `rules/force_majeure/plan44_force_majeure.rego` | 8 | 0 | 2 | fd381596132fd031 |
 | `rules/force_majeure/plan45_force_majeure.rego` | 32 | 0 | 16 | 31f8759fc9a7e5f8 |
 | `rules/form_optimizer_enterprise.rego` | 5 | 0 | 0 | 0004fb8022a3ed6a |
@@ -78,6 +83,7 @@
 | `rules/fx/plan45_fx.rego` | 46 | 0 | 0 | f2dcd2df33efd817 |
 | `rules/gaar_shield_enterprise.rego` | 2 | 0 | 0 | 6f872e94cc614ba0 |
 | `rules/gtu_completeness_checker_enterprise.rego` | 3 | 0 | 1 | 5e0e2d1f98caab8b |
+| `rules/hyper_enterprise_contexts_etap22_v1.rego` | 1 | 0 | 0 | 5d5e80c21cb6593b |
 | `rules/hyper_plan45_meta_enterprise.rego` | 3 | 0 | 1 | 610630abf7a5459a |
 | `rules/insurance/plan44_insurance.rego` | 6 | 1 | 0 | 74e4f66b83fd8d01 |
 | `rules/insurance/plan45_insurance.rego` | 28 | 1 | 0 | 65e62827cf82d045 |
@@ -111,9 +117,11 @@
 | `rules/kks/plan42_detailed.rego` | 12 | 7 | 1 | d94e4532eb0e1286 |
 | `rules/kks/plan43_decomposition.rego` | 21 | 10 | 1 | dbc30481973c52a9 |
 | `rules/kks/plan44_kks_conviction.rego` | 2 | 1 | 0 | 310631a5c8c8ed85 |
+| `rules/kks_ord_etap16_v1.rego` | 1 | 0 | 0 | d0a28cab2c748f48 |
 | `rules/ksef_firewall_enterprise.rego` | 3 | 0 | 0 | b0b4c36c5d849a05 |
 | `rules/ksef_innovations_enterprise.rego` | 5 | 0 | 0 | 9b28e94d01803fa5 |
 | `rules/ksef_jpk.rego` | 10 | 2 | 2 | 6678aa6f3e892273 |
+| `rules/ksef_jpk_etap20_v1.rego` | 1 | 0 | 0 | 097f907c48d1ba12 |
 | `rules/ksef_offline_queue_enterprise.rego` | 3 | 0 | 0 | 65c76ba02f605c91 |
 | `rules/ksef_outbox_enterprise.rego` | 4 | 0 | 0 | 6f3dc0edb7bc86d9 |
 | `rules/ksef_receipt_digest_enterprise.rego` | 3 | 0 | 1 | 0d3d6d71c3abe41c |
@@ -124,6 +132,7 @@
 | `rules/legislative_monitor_enterprise.rego` | 5 | 0 | 0 | 2e93fa2d1da19e21 |
 | `rules/liability.rego` | 15 | 2 | 2 | 788cae0eaf08ea40 |
 | `rules/lifecycle_manager_enterprise.rego` | 4 | 1 | 0 | f1aefbef6586dc98 |
+| `rules/local_excise_etap19_v1.rego` | 1 | 0 | 0 | 03a4e2b15823bcd0 |
 | `rules/local_taxes.rego` | 27 | 2 | 6 | 1e35767154b24e08 |
 | `rules/local_taxes/akcyza_alcohol.rego` | 20 | 4 | 0 | e1bdec59e7d15093 |
 | `rules/local_taxes/akcyza_fuel.rego` | 18 | 1 | 1 | 24704989d869b118 |
@@ -332,8 +341,12 @@
 | `rules/pit/tax_loss_harvesting_enterprise.rego` | 5 | 1 | 0 | 243a3e3424a4e9d6 |
 | `rules/pit/thermo_relief_enterprise.rego` | 10 | 2 | 0 | 252be7e6e6539185 |
 | `rules/pit/transitions.rego` | 9 | 1 | 2 | 909764f31e1e081d |
+| `rules/pit_macro_etap10_innovations_v1.rego` | 1 | 0 | 0 | 4a986070dc13658e |
+| `rules/pit_micro_reliefs_etap11_v1.rego` | 1 | 0 | 0 | f8c2b1dee27e8406 |
+| `rules/pkpir_etap14_v1.rego` | 1 | 0 | 0 | 68c5d2654cc96045 |
 | `rules/pkpir_to_uor_transformer.rego` | 6 | 0 | 0 | ce4a2192b145ec94 |
 | `rules/poa_manager_enterprise.rego` | 2 | 0 | 0 | 33407c0d5453f1ea |
+| `rules/policies_mirror_sync_etap26_v1.rego` | 1 | 0 | 0 | 38240b93ed460404 |
 | `rules/ppk_pfron_enterprise.rego` | 7 | 0 | 0 | 0750fe7995c7c3ea |
 | `rules/proceeding_tracker_enterprise.rego` | 2 | 1 | 0 | 99d28e88c3fe6148 |
 | `rules/procurement/plan44_procurement.rego` | 7 | 1 | 0 | c7bac0828712af1d |
@@ -368,6 +381,7 @@
 | `rules/risk/plan26_kks.rego` | 4 | 2 | 2 | 24f2504e25bc0efc |
 | `rules/rodo.rego` | 12 | 2 | 10 | f48cd5b0df125f33 |
 | `rules/rodo/plan42_rodo.rego` | 3 | 0 | 1 | d851bb7e918ece74 |
+| `rules/rodo_aml_bdo_hr_etap21_v1.rego` | 1 | 0 | 0 | c3933a0d14bda7b5 |
 | `rules/rodo_extended.rego` | 16 | 4 | 12 | 522342fc3e055d68 |
 | `rules/routing.rego` | 5 | 2 | 3 | 8be621b994f84f0a |
 | `rules/rule_lifecycle_enterprise.rego` | 4 | 1 | 0 | 21c867a814f5fe6c |
@@ -385,6 +399,8 @@
 | `rules/taxfree/plan44_taxfree.rego` | 6 | 0 | 0 | 8e50b4902b4c50d8 |
 | `rules/taxfree/plan45_taxfree.rego` | 38 | 1 | 1 | 1cd9e2d03b03054c |
 | `rules/temporal.rego` | 29 | 3 | 3 | 8b0789abe0a9fc84 |
+| `rules/tests_ci_quality_etap24_v1.rego` | 1 | 0 | 0 | 348e51f006508042 |
+| `rules/tools_api_rulestore_bundles_etap25_v1.rego` | 1 | 0 | 0 | d15926e99c55a98a |
 | `rules/tp/plan44_tp.rego` | 9 | 2 | 3 | 1c977d94613b070e |
 | `rules/tp/plan45_tp.rego` | 52 | 9 | 11 | 95a7d1411ad32684 |
 | `rules/uor/plan42_uor.rego` | 5 | 0 | 1 | 0ef0faada0f09980 |
@@ -396,6 +412,7 @@
 | `rules/uor/uor_inventory.rego` | 17 | 1 | 3 | 6336f6cd409b109f |
 | `rules/uor/uor_obligation.rego` | 30 | 9 | 6 | 3ecbc77b7c3f36f3 |
 | `rules/uor/uor_revenue.rego` | 29 | 0 | 1 | fbf82f96837d4d2d |
+| `rules/uor_etap15_v1.rego` | 1 | 0 | 0 | 3dd15737920c422a |
 | `rules/validation.rego` | 8 | 5 | 3 | 7fdb119701a4dc5b |
 | `rules/vat/deductions.rego` | 28 | 5 | 4 | 7858b9de3622cba1 |
 | `rules/vat/enterprise_vat_bridge.rego` | 11 | 0 | 0 | c158ab7ad11e2f06 |
@@ -424,7 +441,9 @@
 | `rules/zus/plan42_benefits.rego` | 8 | 1 | 1 | 1bc26b568ebc91ac |
 | `rules/zus/sickness_benefits_enterprise.rego` | 14 | 1 | 0 | 1ab4ea7debfd583e |
 | `rules/zus/zus_extensions_enterprise.rego` | 6 | 0 | 0 | 4600db0d99adf678 |
-| **RAZEM** | **11792** | **835** | **689** | — |
+| `rules/zus_core_etap12_v1.rego` | 1 | 0 | 0 | 0deafadceff840d8 |
+| `rules/zus_micro_etap13_v1.rego` | 1 | 0 | 0 | 35107838d81b4232 |
+| **RAZEM** | **11811** | **835** | **689** | — |
 
 ---
 
@@ -967,6 +986,12 @@
 | 926 | `jdg.business.succession_time_limit_expiry` | 🔴 BLOCK | Art. 12-13 ustawy o zarządzie sukcesyjnym |
 | 927 | `jdg.business.succession_termination_events` | 🔴 BLOCK | Art. 14-15 ustawy o zarządzie sukcesyjnym |
 
+### `rules/business_lifecycle_etap18_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 18001 | `jdg.business_lifecycle_etap18.state_machine_verdict` |  | CEIDG art. 5-15; Prawo przedsiębiorców art. 18, 22-25, 31-36... |
+
 ### `rules/calendar/plan44_calendar.rego` (6 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
@@ -1171,6 +1196,12 @@
 | 434 | `jdg.corrections.correction_overpayment` |  | Art. 78 OrdPU |
 | 435 | `jdg.corrections.correction_underpayment` | 🔴 BLOCK | Art. 53 OrdPU |
 
+### `rules/cross_domain_red_team_etap27_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 27001 | `jdg.cross_domain_red_team_etap27.red_team_governance` |  | V1 §3-6 security; ADR-011 (security_fortress); chaos_runner.... |
+
 ### `rules/crossborder.rego` (31 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
@@ -1248,6 +1279,12 @@
 | 170 | `jdg.crossborder.post_brexit.uk_goods_import` | 🟡 TRIAGE | Art. 17 ust. 1 pkt 1 VAT, ustawa o ceł, TCA UK-EU |
 | 171 | `jdg.crossborder.post_brexit.uk_services_export_b2b` |  | Art. 28b VAT |
 | 172 | `jdg.crossborder.post_brexit.uk_vat_registration_b2c` |  | UK VAT Act 1994, Distance Selling Regulations |
+
+### `rules/crossborder_etap17_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 17001 | `jdg.crossborder_etap17.evidence_first_verdict` |  | VAT art. 9-13, 28a-28o, 41-42; PIT art. 3, 23m-23zf, 24c, 30... |
 
 ### `rules/dac8_report_generator.rego` (3 reguł)
 
@@ -1550,6 +1587,12 @@
 | 1222 | `jdg.employer.ohs_medical_exams_kup` |  | Art. 229 KP w zw. z Art. 22 ust. 1 PIT |
 | 1223 | `jdg.employer.obligations_checklist` | 🟡 TRIAGE | Art. 38, 39, 42 PIT + Art. 46-47 SUS + Art. 31-32 PPK + Art.... |
 
+### `rules/enterprise_ai_neural_etap23_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 23001 | `jdg.enterprise_ai_neural_etap23.governance_verdict` |  | RODO art. 5; RODO art. 22; RODO art. 25; AI governance/ADR-0... |
+
 ### `rules/environmental.rego` (14 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
@@ -1757,6 +1800,12 @@
 | 1242 | `jdg.family.hyper.family_4plus_vs_young_relief_interaction` |  | Art. 21 ust. 1 pkt 148 vs 153 PIT |
 | 1243 | `jdg.family.hyper.child_relief_aggregate_recommendations` |  | Art. 27f + Art. 21 PIT |
 
+### `rules/final_certification_etap28_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 28001 | `jdg.final_certification_etap28.system_certification` |  | ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md; WIZJA_OPA_ENTERPRISE_... |
+
 ### `rules/force_majeure/plan44_force_majeure.rego` (8 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
@@ -1906,6 +1955,12 @@
 | 2120 | `jdg.gtu_checker.completeness_audit` |  | § 10 rozporządzenia JPK_VAT; Załącznik nr 15 do ustawy o VAT |
 | 2125 | `jdg.gtu_checker.per_invoice_validation` |  | Art. 106e ust. 1 pkt 18a VAT; Załącznik nr 15 |
 | 2130 | `jdg.gtu_checker.correction_proposal` | 🟡 TRIAGE | Art. 106j VAT (faktura korygująca); Załącznik nr 15 do ustaw... |
+
+### `rules/hyper_enterprise_contexts_etap22_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 22001 | `jdg.hyper_enterprise_contexts_etap22.hyper_meta_verdict` |  | PIT art. 30ca, 30h, 45; OrdPU art. 12, 126, 193a; MDR art. 8... |
 
 ### `rules/hyper_plan45_meta_enterprise.rego` (3 reguł)
 
@@ -2992,6 +3047,12 @@
 | 1960 | `jdg.kks.conviction_business_ban` | 🔴 BLOCK | Art. 41 KK |
 | 1964 | `jdg.kks.conviction_rehabilitation` |  | Art. 21 KKS, Art. 106 KK |
 
+### `rules/kks_ord_etap16_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 600 | `jdg.kks_ord_etap16.report` |  | KKS art. 16/37/44/53-83; OrdPU art. 14b/53-56/67a/70/72-77/8... |
+
 ### `rules/ksef_firewall_enterprise.rego` (3 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
@@ -3024,6 +3085,12 @@
 | 985 | `jdg.ksef_jpk.ksef_duplicate_detected` | 🔴 BLOCK | Art. 106na-106nq VAT (KSeF 2.0), Art. 22 UoR (zasada wierneg... |
 | 986 | `jdg.ksef_jpk.ksef_offline_pkpir` | 🟡 TRIAGE | Art. 106ne VAT (tryb awaryjny), Art. 24a PIT (PKPiR) |
 | 1790 | `jdg.ksef_jpk.token_stale` | 🔴 BLOCK | Specyfikacja techniczna KSeF v3.0 |
+
+### `rules/ksef_jpk_etap20_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 20001 | `jdg.ksef_jpk_etap20.ksef_jpk_declaration_verdict` |  | VAT art. 106na-106nq, 106j, 42a; OrdPU art. 193a; rozporządz... |
 
 ### `rules/ksef_offline_queue_enterprise.rego` (3 reguł)
 
@@ -3123,6 +3190,12 @@
 | 200 | `jdg.lifecycle.compliance_timeline` |  | Prawo Przedsiębiorców; CEIDG; Art. 96 VAT; Art. 43 SUS; Art.... |
 | 300 | `jdg.lifecycle.health_scorecard` |  | Kompleksowa ocena stanu JDG |
 | 400 | `jdg.lifecycle.exit_strategy` | 🔴 BLOCK | Prawo Przedsiębiorców Art. 31-36; Art. 24 PIT; Art. 14 VAT; ... |
+
+### `rules/local_excise_etap19_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 19001 | `jdg.local_excise_etap19.pcc_local_excise_verdict` |  | ustawa o PCC art. 1, 2 pkt 4, 6-10; ustawa o podatkach i opł... |
 
 ### `rules/local_taxes.rego` (27 reguł)
 
@@ -12607,6 +12680,24 @@
 | 598 | `jdg.pit.transitions.scale_to_linear_mid_year` |  | Art. 9a ust. 2, Art. 30c ust. 1 PIT |
 | 599 | `jdg.pit.transitions.two_annual_returns` |  | Art. 45 ust. 1b PIT |
 
+### `rules/pit_macro_etap10_innovations_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 540 | `jdg.pit_macro_etap10.pit_macro_audit` |  | Art. 27, 30c PIT; Art. 22-23 PIT; Art. 44, 45 PIT; Art. 21 P... |
+
+### `rules/pit_micro_reliefs_etap11_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 550 | `jdg.pit_micro_reliefs_etap11.relief_evidence_audit` |  | Art. 9, 21, 26, 26e, 26eb, 26ec, 26gb, 26h, 27f, 30ca-30cb P... |
+
+### `rules/pkpir_etap14_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 580 | `jdg.pkpir_etap14.report` |  | §10-12/§18-19 rozp. MF PKPiR; art. 14/22/23/23a/23b/23f/24 P... |
+
 ### `rules/pkpir_to_uor_transformer.rego` (6 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
@@ -12624,6 +12715,12 @@
 |:---------:|---------|:-------:|----------------|
 | 3120 | `jdg.poa_manager.poa_registry` |  | Art. 138a-138o OrdPU; Art. 80a OrdPU (UPL-1) |
 | 3130 | `jdg.poa_manager.poa_expiry_monitor` |  | Art. 138g OrdPU (wygaśnięcie pełnomocnictwa) |
+
+### `rules/policies_mirror_sync_etap26_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 26001 | `jdg.policies_mirror_sync_etap26.mirror_governance` |  | V1 §1 single source of truth; V1 §6.3 overlays; ADR-011; pol... |
 
 ### `rules/ppk_pfron_enterprise.rego` (7 reguł)
 
@@ -13097,6 +13194,12 @@
 | 1612 | `jdg.rodo.data_retention_policy` |  | Art. 5 ust. 1 lit. e RODO |
 | 1613 | `jdg.rodo.dpo_requirement` |  | Art. 37 RODO |
 
+### `rules/rodo_aml_bdo_hr_etap21_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 21001 | `jdg.rodo_aml_bdo_hr_etap21.compliance_hr_verdict` |  | RODO art. 5; RODO art. 17; RODO art. 22, 24, 28, 30, 32-34, ... |
+
 ### `rules/rodo_extended.rego` (16 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
@@ -13421,6 +13524,18 @@
 | 1630 | `jdg.temporal.retroactive_change` | 🟡 TRIAGE | Art. 3 OrdPU (prawo w dacie zdarzenia) + ADR-003 |
 | 1631 | `jdg.temporal.pinning_drift` |  | A2 Temporal Causality Chain + ADR-003 + P03 GLM52 §3 |
 | 1632 | `jdg.temporal.version_proof` |  | ADR-003 + A2 (deterministyczny wybór wersji) + P03 GLM52 §3 |
+
+### `rules/tests_ci_quality_etap24_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 24001 | `jdg.tests_ci_quality_etap24.quality_release_verdict` |  | ADR-001; ADR-006; ADR-013; ADR-017; ADR-018; ADR-022; OPA te... |
+
+### `rules/tools_api_rulestore_bundles_etap25_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 25001 | `jdg.tools_api_rulestore_bundles_etap25.control_data_plane_governance` |  | V1 §9, V2 §8, V1 §12.2; ADR-001; ADR-006; ADR-022; OpenAPI 3... |
 
 ### `rules/tp/plan44_tp.rego` (9 reguł)
 
@@ -13781,6 +13896,12 @@
 | 100237 | `jdg.uor.revenue.refund.r1` |  | Art. 29 ust. 1 UoR |
 | 100238 | `jdg.uor.revenue.barter.r1` |  | Art. 3 ust. 1 pkt 30; Art. 28 ust. 1 UoR |
 | 100239 | `jdg.uor.revenue.donation.r1` |  | Art. 3 ust. 1 pkt 30 UoR |
+
+### `rules/uor_etap15_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 590 | `jdg.uor_etap15.report` |  | art. 2/3/4/12/15/21/26/28-32/45-49 UoR; art. 22a-22n PIT |
 
 ### `rules/validation.rego` (8 reguł)
 
@@ -14288,6 +14409,18 @@
 | 830 | `jdg.zus.extensions.temporal_rates` |  | Art. 30h PIT (składka solidarnościowa 4% od nadwyżki >1M PLN... |
 | 999 | `jdg.zus.extensions.coverage_summary` |  | Art. 30h PIT (składka solidarnościowa 4% od nadwyżki >1M PLN... |
 
+### `rules/zus_core_etap12_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 560 | `jdg.zus_core_etap12.report` |  | Ustawa o SUS art. 6-22/47; u.ś.o.z. art. 81; ustawa zasiłkow... |
+
+### `rules/zus_micro_etap13_v1.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 570 | `jdg.zus_micro_etap13.report` |  | SUS art. 6-47; u.ś.o.z. art. 79-82; ustawa zasiłkowa art. 4-... |
+
 ---
-*Wygenerowano automatycznie — 2026-08-18 07:57:48*
+*Wygenerowano automatycznie — 2026-08-22 16:23:47*
 *Generator v8.0 — `python JDG/tools/generate_manifest.py`*

@@ -10,8 +10,8 @@
 |---|---|
 | **Nazwa** | NexusAI |
 | **Slug** | `nexus-ai` |
-| **Wersja** | **3.0.0-dev** — „Agentic Architecture" |
-| **Data wydania** | 2026-07-05 |
+| **Wersja** | **8.0.0** — „SC Enterprise + JDG OPA v8" |
+| **Data wydania** | 2026-08-22 (JDG: certyfikacja końcowa ETAP 28/29) |
 | **Status deweloperski** | Beta (klasa 4) — patrz `pyproject.toml` classifiers |
 | **Język** | Python ≥3.13 (free-threaded, `cp313t`) + Rust ≥1.78 |
 | **Architektura** | Modularny Monolit z komunikacją przez NATS JetStream; CQRS + Event Sourcing |
@@ -154,5 +154,5 @@ M6 Ludzie/proces→ CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, RELAT
 
 ---
 
-> **Data aktualizacji:** 2026-07-05 · **Autor:** NexusAI Team · **Wersja:** 3.0.0-dev
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-05 · **Weryfikator:** Technical Lead
+> **Data aktualizacji:** 2026-08-22 · **Autor:** NexusAI Team · **Wersja:** 8.0.0
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-08-22 · **Weryfikator:** Technical Lead

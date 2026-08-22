@@ -2,21 +2,37 @@
 # Innowacja 11: Unified Plan Progress Tracker
 # Dane źródłowe dla UNIFIED_PLAN.md — auto-generowane przez CI
 
-generated: "2026-08-02T00:00:00Z"
+generated: "2026-08-22T00:00:00Z"
 generator: "unified_plan_progress.py v8.0"
 source: "MANIFEST.md (auto-generated)"
 
 # Stan faktyczny (z MANIFEST)
 current_state:
-  total_rego_files: 383
-  files_with_matched_true: 349
-  matched_blocks: 10878
-  unique_rule_ids: 10509
-  duplicate_rule_ids: 369
+  total_rego_files: 472
+  files_with_matched_true: 426
+  matched_blocks: 11811
+  unique_rule_ids: 11808
+  duplicate_rule_ids: 3
   enterprise_initiatives: 24
-  enterprise_files: 90
-  micro_files: 106
-  completeness_score: 78
+  tools_python: 298
+  pytest_tests: 198
+  native_rego_tests: 207
+  migrations: 13
+  audit_states: 22
+  glm52_reports_wdrozone: 29
+  completeness_score: 88
+
+# Certyfikacja końcowa ETAP 28/29 (2026-08-22)
+final_certification:
+  stage: "ETAP_28"
+  status: "WDROZONY_100"
+  gates_passed: 14
+  gates_total: 14
+  domains_covered: 18
+  domains_certified: 13
+  domains_conditional: 5
+  domains_blocked: 0
+  reports_wdrozone_100: 29
 
 # Fazy wdrożenia v8.0 (z UNIFIED_PLAN.md)
 phases:

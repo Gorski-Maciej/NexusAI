@@ -1,5 +1,9 @@
 # P22 — NARZĘDZIA WALIDACJI I JAKOŚCI (Gwarancja Zero-Defect)
 
+> **📌 Aktualizacja 2026-08-22:** dokument historyczny opisujący wdrożenie promptu GLM 5.2.
+> Raporty źródłowe (`prompty_glm52/`, `raporty_glm52/`, `raporty_jdg_enterprise/`) zostały zarchiwizowane poza repo.
+> Aktualny stan wdrożenia: [`KAMPANIA_GLM52_ETAPY_10_28.md`](KAMPANIA_GLM52_ETAPY_10_28.md) + `JDG/bundles/*audit_state.json` (certyfikacja końcowa ETAP 28/29 — 2026-08-22, 14/14 bramek).
+
 **Raport:** RAPORT ANALITYCZNY ENTERPRISE — JDG NARZĘDZIA JAKOŚCI (P22) v8.0
 **Pakiet Rego:** `jdg.p22_validation_tools_innovations` (`JDG/rules/p22_validation_tools_innovations_v9.rego`)
 **Status:** ✅ WDROŻONY — POSTĘP 22/24
@@ -22,14 +26,14 @@ zweryfikowana względem ISAP, żadna wadliwa reguła nie wejdzie do produkcji.
 ### Sekcja 1 — Audyt Manifestu i Pokrycia
 | Reguła | Opis |
 |---|---|
-| `manifest_audit` | generate_manifest.py (10878 reguł, 10509 unikalnych, 369 duplikatów, 383 pliki), Completeness 78/100, pokrycie 96% |
+| `manifest_audit` | generate_manifest.py (11811 bloków, 11808 unikalnych, 3 duplikaty, 472 pliki), Completeness 88/100, pokrycie 100% |
 | `ci_gate_rules` (INN-01) | CI-gate na liczbę reguł — blokada deploy przy spadku < 10000 |
 | `real_time_manifest` (INN-02) | Manifest czasu rzeczywistego — auto-regeneracja w pre-commit + CI |
 
 ### Sekcja 2 — Audyt Detektorów (PRIORYTET ★)
 | Reguła | Opis |
 |---|---|
-| `detectors_audit` | dead_rule_detector (512 stubów { true }), tautology_guard (3), else_chain_dead (2), hardcoded_audit (265), cross_package_conflict (0), temporal_drift (1) |
+| `detectors_audit` | dead_rule_detector (512 stubów { true } — po kampanii P00: **25**), tautology_guard (3), else_chain_dead (2), hardcoded_audit (265), cross_package_conflict (0), temporal_drift (1) |
 | `semantic_detection` (INN-03) | Detekcja semantyczna — analiza przepływu danych, property-based testing, fuzzing |
 | `rule_fuzzer` (INN-04) | Fuzzer reguł — 10000 losowych wejść, zero crashy |
 

@@ -1,5 +1,9 @@
 # VAT MICRO ENTERPRISE — P04 v9.0
 
+> **📌 Aktualizacja 2026-08-22:** dokument historyczny opisujący wdrożenie promptu GLM 5.2.
+> Raporty źródłowe (`prompty_glm52/`, `raporty_glm52/`, `raporty_jdg_enterprise/`) zostały zarchiwizowane poza repo.
+> Aktualny stan wdrożenia: [`KAMPANIA_GLM52_ETAPY_10_28.md`](KAMPANIA_GLM52_ETAPY_10_28.md) + `JDG/bundles/*audit_state.json` (certyfikacja końcowa ETAP 28/29 — 2026-08-22, 14/14 bramek).
+
 > Raport: RAPORT_ANALITYCZNY_ENTERPRISE_JDG_VAT_MICRO (P04) v8.0
 > Prompt źródłowy: `prompts_glm52/P04_VAT_Micro.txt`
 > Data wdrożenia: 2026-08-02

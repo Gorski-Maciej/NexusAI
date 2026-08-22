@@ -5,6 +5,19 @@
 
 ---
 
+## [8.1.0] — 2026-08-22 — "JDG OPA Enterprise — Kampania GLM 5.2 (ETAP 06–28)"
+
+### 🏛️ Moduł JDG — certyfikacja końcowa ETAP 28/29
+
+- **472 pliki Rego** w `JDG/rules/` (~11 808 unikalnych `rule_id`, 88/100 Completeness Score)
+- **ETAP 06–28 wdrożony w 100%** — 29/29 raportów kampanii GLM 5.2 = `WDROZONY_100`, 22 audit-state, 14/14 bramek certyfikacji końcowej
+- **18 domen**: 13 CERTIFIED / 5 CONDITIONAL / 0 BLOCKED (VAT, PIT, ZUS, księgowość, KKS+Ordynacja, cross-border, PCC/lokalne, KSeF/JPK, RODO/AML/BDO, hyper-konteksty, AI/neural, mirror sync, disaster recovery)
+- **298 narzędzi Python** (`JDG/tools/`), **198 testów pytest + 207 testów natywnych Rego**, 13 migracji DuckDB
+- **policies/ mirror zsynchronizowany** (ETAP 26: hash-parity 0% drift, 472↔546 plików)
+- Nowe warstwy architektoniczne: Legal Twin / LKG (ADR-016), Runtime Invariants INV-001..042 (ADR-017/022), Golden Oracle (ADR-018), Decision Certificate F4 (ADR-019), Law Radar (ADR-020), Declarative Change (ADR-021), Control Plane Rule Lifecycle
+
+---
+
 ## [8.0.0] — 2026-07-11 — "SC Enterprise — Spółka Cywilna Policy-as-Code System"
 
 ### 🏛️ Spółka Cywilna (SC) — Kompletny System Reguł OPA/Rego ENTERPRISE

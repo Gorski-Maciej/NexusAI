@@ -1,5 +1,9 @@
 # P23 — TESTY REGO + PYTEST + CI (Niezniszczalna Tarcza Testowa)
 
+> **📌 Aktualizacja 2026-08-22:** dokument historyczny opisujący wdrożenie promptu GLM 5.2.
+> Raporty źródłowe (`prompty_glm52/`, `raporty_glm52/`, `raporty_jdg_enterprise/`) zostały zarchiwizowane poza repo.
+> Aktualny stan wdrożenia: [`KAMPANIA_GLM52_ETAPY_10_28.md`](KAMPANIA_GLM52_ETAPY_10_28.md) + `JDG/bundles/*audit_state.json` (certyfikacja końcowa ETAP 28/29 — 2026-08-22, 14/14 bramek).
+
 **Raport:** RAPORT ANALITYCZNY ENTERPRISE — JDG TESTY + CI (P23) v8.0
 **Pakiet Rego:** `jdg.p23_test_rego_ci_innovations` (`JDG/rules/p23_test_rego_ci_innovations_v9.rego`)
 **Status:** ✅ WDROŻONY — POSTĘP 23/24
@@ -22,8 +26,8 @@ nie przejdzie do produkcji** przy zmianach prawa.
 ### Sekcja 1 — Audyt Pokrycia Testami
 | Reguła | Opis |
 |---|---|
-| `coverage_audit` | Mapa: 406 rego vs 98 testów rego + 76 pytest (22 enterprise + 54 auto_block) — pokrycie ≥ 90% |
-| `test_generator` (INN-01) | Auto-generator testów z rule_id (10509 reguł, 500 testów) |
+| `coverage_audit` | Mapa: 472 rego vs 207 testów rego + 198 pytest — pokrycie ≥ 90% (aktualizacja 2026-08-22) |
+| `test_generator` (INN-01) | Auto-generator testów z rule_id (11808 reguł, 500+ testów) |
 | `mutation_analysis` (INN-02) | Analiza mutacji — wynik ≥ 70% (85/100 mutantów zabitych) |
 | `decision_fuzzer` (INN-03) | Fuzzer decyzyjny — 10000 wejść, zero crashy |
 

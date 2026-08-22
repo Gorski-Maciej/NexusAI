@@ -1,6 +1,6 @@
 # 📚 NexusAI JDG — Katalog Pakietów Reguł (wszystkie pliki Rego)
 
-> **Dokument:** KATALOG_REGUL.md | **Zakres:** **każdy plik `.rego`** w `JDG/rules/` (439) oraz `policies/` (76 pakietów)
+> **Dokument:** KATALOG_REGUL.md | **Zakres:** **każdy plik `.rego`** w `JDG/rules/` (472, 459 pakietów) oraz `policies/` (546 plików, 496 pakietów)
 > **Dane:** ekstrakcja statyczna (package, bloki `matched:true`, unikalne `rule_id`); liczby kanoniczne (M1/M2) w [MANIFEST.md](../MANIFEST.md)
 > **Cel:** Ctrl+F po nazwie pliku, pakiecie lub domenie → od razu wiesz, ile reguł zawiera i gdzie szukać.
 
@@ -18,7 +18,7 @@
 
 | Plik | Pakiet | R | ID | Rola |
 |---|---|---|---|---|
-| `main_jdg.rego` | `jdg.main` | 0 | 0 | 🧠 orkiestrator Multi-Pass + Sharded Router (1656 linii) |
+| `main_jdg.rego` | `jdg.main` | 0 | 0 | 🧠 orkiestrator Multi-Pass + Sharded Router (final_verdict_p26..p34 + final_verdict_enforced) |
 | `_helpers_jdg.rego` | `jdg.helpers` | 0 | 0 | helpery (thresholds, FC, MPP) |
 | `_metadata_jdg.rego` | `jdg.metadata` | 0 | 0 | metadane reguł (severity, remediacja) |
 | `thresholds_jdg.rego` | `jdg.thresholds` | 0 | 0 | definicje progów JDG |
@@ -554,21 +554,50 @@
 
 ---
 
+## 12b. ETAP 10–28 — pliki audytów kampanii GLM 5.2 (`rules/*_etapNN_v1.rego`)
+
+> Reguły decyzyjne + bramki jakości dla każdego etapu kampanii. Pełny opis: [`KAMPANIA_GLM52_ETAPY_10_28.md`](KAMPANIA_GLM52_ETAPY_10_28.md) + `JDG/bundles/*audit_state.json`.
+
+| Plik | Pakiet | Rola |
+|---|---|---|
+| `pit_macro_etap10_innovations_v1.rego` | `jdg.pit_macro_etap10` | PIT Macro innowacje |
+| `pit_micro_reliefs_etap11_v1.rego` | `jdg.pit_micro_reliefs_etap11` | PIT Micro ulgi |
+| `zus_core_etap12_v1.rego` | `jdg.zus_core_etap12` | ZUS Core |
+| `zus_micro_etap13_v1.rego` | `jdg.zus_micro_etap13` | ZUS Micro |
+| `pkpir_etap14_v1.rego` | `jdg.pkpir_etap14` | PKPiR |
+| `uor_etap15_v1.rego` | `jdg.uor_etap15` | UoR / amortyzacja |
+| `kks_ord_etap16_v1.rego` | `jdg.kks_ord_etap16` | KKS + Ordynacja |
+| `crossborder_etap17_v1.rego` | `jdg.crossborder_etap17` | Cross-border / TP / MDR |
+| `business_lifecycle_etap18_v1.rego` | `jdg.business_lifecycle_etap18` | Cykl życia JDG |
+| `local_excise_etap19_v1.rego` | `jdg.local_excise_etap19` | PCC / lokalne / akcyza |
+| `ksef_jpk_etap20_v1.rego` | `jdg.ksef_jpk_etap20` | KSeF / JPK / e-Deklaracje |
+| `rodo_aml_bdo_hr_etap21_v1.rego` | `jdg.rodo_aml_bdo_hr_etap21` | RODO / AML / BDO / HR |
+| `hyper_enterprise_contexts_etap22_v1.rego` | `jdg.hyper_enterprise_contexts_etap22` | Hyper Enterprise Contexts |
+| `enterprise_ai_neural_etap23_v1.rego` | `jdg.enterprise_ai_neural_etap23` | Enterprise AI / Neural Mesh |
+| `tests_ci_quality_etap24_v1.rego` | `jdg.tests_ci_quality_etap24` | Testy + CI/CD |
+| `tools_api_rulestore_bundles_etap25_v1.rego` | `jdg.tools_api_rulestore_bundles_etap25` | Narzędzia / API / RuleStore / Bundle |
+| `policies_mirror_sync_etap26_v1.rego` | `jdg.policies_mirror_sync_etap26` | policies mirror sync |
+| `cross_domain_red_team_etap27_v1.rego` | `jdg.cross_domain_red_team_etap27` | Cross-domain red team / chaos |
+| `final_certification_etap28_v1.rego` | `jdg.final_certification_etap28` | Certyfikacja końcowa |
+
+---
+
 ## 13. Podsumowanie statystyczne
 
 | Obszar | Pliki | Reguły (matched) | Największe pliki |
 |---|---|---|---|
-| **JDG/rules — rdzeń i domeny** | ~180 | ~2 400 | kks.rego (255), edge_cases (187), accounting.rego (74) |
-| **JDG/rules — micro** | ~110 | ~6 900 | micro/vat/vat.rego (1091), micro/pit/pit.rego (811), micro/kks/kks.rego (473) |
+| **JDG/rules — rdzeń i domeny** | ~231 | ~2 400+ | kks.rego (255), edge_cases (187), accounting.rego (74) |
+| **JDG/rules — micro** | 91 | ~6 900 | micro/vat/vat.rego (1091), micro/pit/pit.rego (811), micro/kks/kks.rego (473) |
 | **JDG/rules — plan44/45 + hyper** | ~70 | ~1 500 | hyper/general (100), hyper/deadlines (56) |
 | **JDG/rules — innowacje v8/v9** | ~55 | ~750 | p21_innovations (48), p22_innovations (48) |
 | **JDG/rules — enterprise S1–S24** | ~50 | ~450 | nkup_enterprise_complete (59), pit/art21 (29) |
-| **policies/jdg** | 36 | ~700 | kks.rego (152), edge_cases (114) |
+| **JDG/rules — ETAP 10–28 (`*_etapNN_v1.rego`)** | 19 | ~200 | patrz §12b |
+| **policies/jdg (mirror)** | 52 | ~700 | kks.rego (152), edge_cases (114) |
 | **policies/tax (SC)** | 29 | ~120 | direct/pit (7), sc_partnership (7) |
 
 > ⚠️ **Uwaga o metodzie:** wiersze **nie są rozłączne** — pliki plan44/45 w katalogach domenowych (np. `audit/`, `calendar/`) są uwzględnione zarówno w „rdzeń i domeny", jak i w „plan44/45 + hyper". Suma wierszy (~12 800) może więc przekraczać kanoniczne 11 821 bloków `matched:true` z MANIFEST — traktuj wiersze jako orientacyjne, a MANIFEST.md jako źródło prawdy.
 
-> **Uwaga metodyczna:** kolumny R/ID pochodzą z ekstrakcji statycznej (grep linii `matched…true` i `rule_id"`). Kanoniczne wartości M1/M2 (11 821 bloków, 11 452 unikalnych rule_id) — patrz [MANIFEST.md](../MANIFEST.md).
+> **Uwaga metodyczna:** kolumny R/ID pochodzą z ekstrakcji statycznej (grep linii `matched…true` i `rule_id"`). Kanoniczne wartości M1/M2 (11 811 bloków, 11 808 unikalnych rule_id) — patrz [MANIFEST.md](../MANIFEST.md).
 
 ---
 

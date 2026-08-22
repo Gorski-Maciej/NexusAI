@@ -1,6 +1,6 @@
 # 🛠️ NexusAI JDG — Katalog Narzędzi (wszystkie pliki w `JDG/tools/`)
 
-> **Dokument:** KATALOG_NARZEDZI.md | **Zakres:** **wszystkie 130 plików `.py`** w `JDG/tools/` (~39 900 linii)
+> **Dokument:** KATALOG_NARZEDZI.md | **Zakres:** **wszystkie 298 plików `.py`** w `JDG/tools/` (~80 000 linii)
 > **Cel:** Ctrl+F po nazwie narzędzia → cel, kategoria i typowe wywołanie. Pełny opis kategorii: [tools/README.md](../tools/README.md).
 
 ---
@@ -189,19 +189,23 @@
 
 ## 10. Podsumowanie
 
-> ⚠️ **Uwaga:** skan katalogu wykrył **130 plików `.py`**. Poniższe kategorie zawierają 131 wierszy, z czego 6 narzędzi w §8 to **duplikaty** (oznaczone „patrz §1") — liczba unikalnych narzędzi ≈ **125**.
+> ⚠️ **Uwaga:** katalog zawiera obecnie **298 plików `.py`** (stan 2026-08-22; kampania GLM 5.2 dodała ~170 narzędzi: audyty ETAP 10–28, bramki raportowe R01–R24, generatory). Poniższe sekcje opisują kategorie rdzenia; pełną listę generuje `ls JDG/tools/*.py` oraz [INWENTARYZACJA_PLIKOW.md](INWENTARYZACJA_PLIKOW.md).
 
 | Kategoria | Narzędzi | Reprezentatywne |
 |---|---:|---|
-| Rdzeń produkcyjny (CI) | 27 | validate_rules, generate_manifest, lint_rego |
-| Generatory reguł/testów | 12 | generate_micro_rules, generate_massive_rules |
-| Audytorzy domen P02–P24 | 21 | kks_penalty_auditor, zus_macro_auditor |
-| Toolkity domenowe | 10 | p11_accounting_toolkit, p10_kks_micro_toolkit |
-| Toolkity ZUS | 11 | zus_completeness_engine, health_tier_recalculator |
-| Toolkity KKS | 9 | kks_penalty_simulator, kks_voluntary_disclosure |
-| Fixy jednorazowe | 10 | convert_true_to_conditions, fix_* |
-| Innowacje P28 | 16 (10 unikalnych + 6 duplikatów §1) | self_healing_engine, blockchain_audit_trail |
-| Monitoring prawa / pomocnicze | 15 | isap_crawler, llm_bridge, judgment_predictor |
+| Rdzeń produkcyjny (CI) | 27+ | validate_rules, generate_manifest, lint_rego |
+| Generatory reguł/testów | 12+ | generate_micro_rules, generate_massive_rules |
+| Audytorzy domen P02–P24 | 21+ | kks_penalty_auditor, zus_macro_auditor |
+| **Audyty ETAP 10–28 (`*_etapNN_audit.py`)** | **17** | policies_mirror_sync_etap26_audit, final_certification_etap28_audit |
+| **Bramki raportów GLM52 (`*_gate.py`)** | **37** | vat_core_report02_gate, orchestrator_core_report01_gate |
+| Toolkity domenowe | 10+ | p11_accounting_toolkit, p10_kks_micro_toolkit |
+| Toolkity ZUS | 11+ | zus_completeness_engine, health_tier_recalculator |
+| Toolkity KKS | 9+ | kks_penalty_simulator, kks_voluntary_disclosure |
+| Fixy jednorazowe | 10+ | convert_true_to_conditions, fix_* |
+| Innowacje P28 | 16+ | self_healing_engine, blockchain_audit_trail |
+| Monitoring prawa / pomocnicze | 15+ | isap_crawler, llm_bridge, judgment_predictor |
+
+> 📌 Pełna lista 298 narzędzi: `ls JDG/tools/*.py` — kategorie powyżej są reprezentatywne, nie wyczerpujące.
 
 **Typowe wywołania:**
 

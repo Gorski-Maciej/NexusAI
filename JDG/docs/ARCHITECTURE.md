@@ -1,6 +1,6 @@
-# 🏗️ JDG Architecture Decision Records (ADR) — v8.0
+# 🏗️ JDG Architecture Decision Records (ADR) — v8.3
 
-> **Status:** ENTERPRISE v8.0 | **Data:** 2026-08-02 | **14 ADR-ów**
+> **Status:** ENTERPRISE v8.3 | **Data:** 2026-08-22 | **22 ADR-y** (001–022)
 
 ---
 
@@ -175,15 +175,15 @@ temporal_validity := {
 
 **Decyzja:** Wprowadzenie 3 rozłącznych metryk pokrycia:
 
-| Metryka | Definicja | Wartość (2026-08-02) |
+| Metryka | Definicja | Wartość (2026-08-22) |
 |---------|-----------|----------------------|
-| **M1: Bloki matched:true** | Liczba wystąpień `"matched": true` we wszystkich plikach Rego | ~10,827+ |
-| **M2: Unikalne rule_id** | Liczba unikalnych identyfikatorów reguł (dedup) | 10,827 |
-| **M3: Punkty Doc 50** | Liczba punktów prawnych z Doc 50 zmapowanych na rule_id | 44/509 (8% — VAT only) |
+| **M1: Bloki matched:true** | Liczba wystąpień `"matched": true` we wszystkich plikach Rego | **11 811** |
+| **M2: Unikalne rule_id** | Liczba unikalnych identyfikatorów reguł (dedup) | **11 808** |
+| **M3: Punkty Doc 50** | Liczba punktów prawnych z Doc 50 zmapowanych na rule_id | 29/29 raportów GLM52 WDROZONY_100 |
 
 **Źródło jednej prawdy:** MANIFEST.md (auto-generowany przez generate_manifest.py v8.0)
 
-**Status wdrożenia:** ✅ IMPLEMENTED (generate_manifest.py v8.0 liczy M1 i M2; M3 w COVERAGE_REPORT.md)
+**Status wdrożenia:** ✅ IMPLEMENTED (generate_manifest.py v8.0 liczy M1 i M2; M3 w COVERAGE_REPORT.md; MANIFEST 2026-08-22: 472 pliki / 88/100 Completeness)
 
 ---
 
@@ -197,9 +197,9 @@ temporal_validity := {
 - `opa test JDG/tests/ -v` w CI
 - Pokrycie testami: cel >=20 plików testowych do Q4 2026
 
-**Aktualny stan:** ❌ 0 plików .rego w JDG/tests/ — tylko pytest Python.
+**Aktualny stan:** ✅ **207 natywnych plików testowych Rego** w `JDG/tests/` (w tym `tests/rego/` 103 + `tests/rego/micro/` 25 + testy natywne ETAP 14–28) + **198 testów pytest** (`tests/`, `tests/auto/`). Cel >=20 plików przekroczony ~10×.
 
-**Status wdrożenia:** ⬜ NOT IMPLEMENTED (Faza 4)
+**Status wdrożenia:** ✅ IMPLEMENTED (Faza 4 — przekroczone; testy natywne `test_native_*.rego` dla każdego ETAP 14–28)
 
 ---
 

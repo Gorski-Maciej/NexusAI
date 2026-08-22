@@ -14,6 +14,7 @@ M1b Rozszerzenia    → SCRIPTS, INSTALLER, FRONTEND, EVENTS, PIPELINE, INFERENC
 M2 Architektura     → ARCHITECTURE, FOUNDATION, DOMAIN, PDFIUM, WORKFLOWS, DECISIONS, DATABASE, MODULES, BUILD_CONFIG, RUST_MODULE, MODELS_MANIFEST
 M2b Agenci AI       → AGENTS (5 agentów, Decision Engine, Cognitive Audit Trail)
 M2c Reguły SC       → SC_README (Spółka Cywilna OPA/Rego), canonical_rules_index, package_fusion_strategy
+M2d Moduł JDG       → JDG/README.md (472 pliki Rego, ~11 808 rule_id, ETAP 06–28, certyfikacja 2026-08-22)
 M3 API              → API
 M4 Operacje         → INSTALLATION, TESTING, DEPLOYMENT, TROUBLESHOOTING
 M5 Bezpieczeństwo   → SECURITY, COMPLIANCE
@@ -196,6 +197,11 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 - Plik: [`docs/package_fusion_strategy.md`](package_fusion_strategy.md) (NOWY)
 - Zawartość: Plan fuzji 33→12 pakietów, analiza zależności, priorytety, szacowany zysk wydajnościowy 20-35%.
 
+### Sekcja 20i — Moduł JDG (Policy-as-Code dla jednoosobowych firm) (NOWY)
+- Plik: [`JDG/README.md`](../JDG/README.md) (NOWY)
+- Zawartość: **472 pliki Rego, ~11 808 unikalnych `rule_id`**, Multi-Pass PASS 0–8, Sharded Router O(1), Temporal Bundle Routing, Immutable Audit Trail, Decision Certificate F4, Legal Twin/LKG. Kampania GLM 5.2: **ETAP 06–28 — 29/29 raportów WDROZONY_100, 22 audit-state, certyfikacja końcowa (2026-08-22): 18 domen — 13 CERTIFIED / 5 CONDITIONAL / 0 BLOCKED**. 298 narzędzi, 198 testów pytest, 207 testów natywnych Rego.
+- Powiązane: [`JDG/docs/UNIFIED_PLAN.md`](../JDG/docs/UNIFIED_PLAN.md), [`JDG/MANIFEST.md`](../JDG/MANIFEST.md), [`JDG/docs/ARCHITECTURE.md`](../JDG/docs/ARCHITECTURE.md) (ADR 001–022), [`policies/README.md`](../policies/README.md) (mirror + overlays v2026/v2027).
+
 ---
 
 ## 🔎 Szybkie wyszukiwanie
@@ -358,7 +364,7 @@ Wszystkie ADR znajdują się w [`ARCHITECTURE.md`](ARCHITECTURE.md#5-kluczowe-de
 | 41 | **`docs/package_fusion_strategy.md`** | **20h. Fuzja pakietów** | **NOWY — v8.0** | ✅ |
 | 42 | **`policies/tax/README.md`** | **20f. SC Policy-as-Code** | **NOWY — v8.0** | ✅ |
 
-**Razem: 42 pliki dokumentacji.**
+**Razem: 42 pliki dokumentacji** w `docs/` + **62 pliki dokumentacji modułu JDG** w [`JDG/docs/`](../JDG/docs/) (sekcja 20i).
 
 ---
 
@@ -382,7 +388,7 @@ Wszystkie ADR znajdują się w [`ARCHITECTURE.md`](ARCHITECTURE.md#5-kluczowe-de
 | 6l. Engine PDF | [`PDFIUM.md`](PDFIUM.md) | PDFium, renderowanie, ProgressivePDFLoader |
 | 6m. System Decyzyjny | [`DECISIONS.md`](DECISIONS.md) | DecisionLogger, DecisionQueue, TrustScore |
 | 6n. Build Config | [`BUILD_CONFIG.md`](BUILD_CONFIG.md) | pixi.toml, pyproject.toml, pre-commit |
-| **🆕 10a. Agenci AI** | **[`AGENTS.md`](AGENTS.md)** | **5 agentów, 13 modeli, Cognitive Audit Trail** |
+| **🆕 20i. Moduł JDG** | **[`JDG/README.md`](../JDG/README.md)** | **472 pliki Rego, ~11 808 rule_id, ETAP 06–28** |
 
 ---
 
@@ -394,5 +400,5 @@ Wszystkie ADR znajdują się w [`ARCHITECTURE.md`](ARCHITECTURE.md#5-kluczowe-de
 
 ---
 
-> **Data aktualizacji:** 2026-07-11 · **Autor:** NexusAI Team · **Wersja:** 8.0.0 — "SC Enterprise"
-> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-07-11 · **Weryfikator:** Technical Lead
+> **Data aktualizacji:** 2026-08-22 · **Autor:** NexusAI Team · **Wersja:** 8.0.0 — "SC Enterprise + JDG v8"
+> **Status dokumentu:** Stabilny · **Ostatnia weryfikacja:** 2026-08-22 · **Weryfikator:** Technical Lead

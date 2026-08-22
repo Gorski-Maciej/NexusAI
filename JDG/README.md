@@ -1,8 +1,8 @@
 # 🏛️ NexusAI JDG — Silnik Reguł Podatkowych dla Jednoosobowej Działalności Gospodarczej
 
-> **Status:** 🟢 PRODUCTION — ENTERPRISE v8.0
-> **Reguły:** ~11 452 unikalnych `rule_id` | **Pliki Rego:** 439 | **Akty prawne:** 13 | **Inicjatywy strategiczne:** 24 (A1–C3, S1–S24)
-> **Data wydania:** 2026-08-02 | **Licencja:** MIT
+> **Status:** 🟢 PRODUCTION — ENTERPRISE v8.0 | 🏁 **Certyfikacja końcowa ETAP 28/29 — WDROŻONY_100 (2026-08-22)**
+> **Reguły:** ~11 808 unikalnych `rule_id` | **Pliki Rego:** 472 | **Akty prawne:** 13 | **Inicjatywy strategiczne:** 24 (A1–C3, S1–S24)
+> **Data wydania:** 2026-08-02 (aktualizacja: 2026-08-22) | **Licencja:** MIT
 
 ```
 ╔══════════════════════════════════════════════════════════════════╗
@@ -25,13 +25,13 @@ NexusAI JDG zamienia skomplikowane, wielokrotnie nowelizowane prawo podatkowe (V
 
 | Obszar | Status | Uwagi |
 |---|---|---|
-| **Silnik reguł Rego (JDG/rules)** | 🟢 **PRODUCTION** | 439 plików, ~11 452 rule_id, First-Match-Wins |
-| **API (JDG/api/openapi.yaml)** | 🟢 **PRODUCTION (spec 1.0.0)** | 10 endpointów, JWT Bearer |
-| **RuleStore DuckDB (JDG/migrations)** | 🟡 **BETA** | 9 tabel, 2 migracje, seed 50 progów |
-| **Bundle OPA (JDG/bundles)** | 🟢 **PRODUCTION** | bundle.sh v8.0, manifest 10 878 reguł |
-| **Narzędzia (JDG/tools)** | 🟢 **PRODUCTION** | 57+ narzędzi, ~22 500 linii |
-| **Testy (JDG/tests)** | 🟡 **BETA** | pytest + natywne testy Rego (`tests/rego/`, `tests/micro/`) |
-| **policies/ (mirror reguł)** | 🟡 **BETA** | 32 pakietów, bundle z overlays v2026/v2027 |
+| **Silnik reguł Rego (JDG/rules)** | 🟢 **PRODUCTION** | 472 pliki, ~11 808 rule_id, First-Match-Wins |
+| **API (JDG/api/openapi.yaml)** | 🟢 **PRODUCTION (spec 1.0.0)** | 17 endpointów, JWT Bearer |
+| **RuleStore DuckDB (JDG/migrations)** | 🟡 **BETA** | 9 tabel, 13 migracji (001–013), seed 50 progów |
+| **Bundle OPA (JDG/bundles)** | 🟢 **PRODUCTION** | bundle.sh v8.0, manifest, 22 audit-state |
+| **Narzędzia (JDG/tools)** | 🟢 **PRODUCTION** | 298 narzędzi (~22 500+ linii) |
+| **Testy (JDG/tests)** | 🟢 **PRODUCTION** | 198 pytest + 207 natywnych testów Rego (`tests/rego/`, `tests/micro/`) |
+| **policies/ (mirror reguł)** | 🟢 **SYNCHRONIZED (ETAP 26)** | mirror z hash-parity 0% drift, bundle z overlays v2026/v2027 |
 
 > 🔎 **Wyszukiwarka:** wpisz `Ctrl+F` → `status`, `produkcja`, `production`, `alpha`, `beta`, `enterprise v8` — każda sekcja opisuje swój stan wdrożenia.
 
@@ -46,10 +46,10 @@ NexusAI JDG zamienia skomplikowane, wielokrotnie nowelizowane prawo podatkowe (V
 - **🔒 Immutable Audit Trail** — werdykty ZUS/zdrowotne podpisywane HMAC-SHA256 + Merkle Tree (A1, ADR-006).
 - **📉 Zero Hardcoded Values** — stawki/progi/limity ładowane z DuckDB przez OPA Data API (`data.thresholds.jdg.*`) (B2, ADR-002).
 - **🤖 Tryby automatyzacji** — `AUTO_POST` (≥0.92), `SUGGEST` (0.75–0.92), `ASK_USER` (<0.75).
-- **🧩 Warstwa mikro-atomowa** — 106+ plików `rules/micro/` z regułami per artykuł ustawy (ADR-010).
+- **🧩 Warstwa mikro-atomowa** — 91 plików `rules/micro/` z regułami per artykuł ustawy (ADR-010).
 - **📡 Integracje zewnętrzne** — KSeF, JPK, Biała Lista MF, CEIDG, NBP, ISAP (crawler aktów prawnych), e-Doręczenia, ePUAP, WIS.
 - **🗂️ Enterprise S1–S24** — optymalizacja podatkowa, cross-domain intelligence, predykcja wyroków, KSeF resilience, automatyzacja bankowości (PSD2/PolishAPI), auto-deklaracje PIT-36/36L/28, JPK_V7M, monitor legislacyjny.
-- **🧪 57+ narzędzi deweloperskich** — linter Rego, walidator, generator manifestu, detektor martwych reguł, chaos engineering, self-healing engine.
+- **🧪 298 narzędzi deweloperskich** — linter Rego, walidator, generator manifestu, detektor martwych reguł, chaos engineering, self-healing engine, audyty ETAP 10–28.
 
 ---
 
@@ -70,7 +70,7 @@ NexusAI JDG zamienia skomplikowane, wielokrotnie nowelizowane prawo podatkowe (V
 | **Przedsiębiorca JDG** | Codzienne księgowanie faktur, deklaracje, terminy ZUS | Zero pracy ręcznej, zero ryzyka kary |
 | **Księgowa / biuro rachunkowe** | Weryfikacja decyzji systemu, obsługa ASK_USER, korekty | 85% mniej rutynowej pracy, pełna dokumentacja |
 | **Doradca podatkowy** | Analiza ryzyka (simulate), optymalizacja, obrona przed KAS | Symulacja kar, strategia 4-ścieżkowa KKS |
-| **Developer / DevOps** | Integracja API, budowa bundle, rozwój reguł | OpenAPI 3.0, 57 narzędzi, CI/CD |
+| **Developer / DevOps** | Integracja API, budowa bundle, rozwój reguł | OpenAPI 3.0, 298 narzędzi, CI/CD |
 | **Audytor / KAS** | Weryfikacja historycznych decyzji | Merkle-proof, time-travel, niezmienny log |
 
 ---
@@ -142,6 +142,133 @@ flowchart LR
     API --> LLM
 ```
 
+### C4 Level 2 — Container (Containers)
+
+```mermaid
+flowchart TB
+    subgraph Klient
+        C1[Klient REST / Flet UI]
+    end
+
+    subgraph NexusAI JDG
+        A1["API Litestar<br/>REST + JWT (port 8000)"]
+        OPA["OPA Server<br/>Silnik reguł Rego (port 8181)"]
+        RS["RuleStore DuckDB<br/>progi, wersje, audyt"]
+        LS["Serwis thresholdów<br/>OPA Data API (hot-reload)"]
+        LL["LLM Bridge<br/>wyjaśnienia, asystent (C2)"]
+        IS["ISAP Crawler<br/>monitoring prawa (C3)"]
+    end
+
+    C1 -->|HTTPS/JSON| A1
+    A1 -->|POST /v1/jdg/decide| OPA
+    OPA -->|data.thresholds| LS
+    OPA -->|werdykt 25-polowy| A1
+    A1 -->|zapis audytu| RS
+    A1 -->|wyjaśnienia| LL
+    IS -->|nowelizacje| RS
+```
+
+### C4 Level 3 — Component (struktura wewnętrzna OPA)
+
+```mermaid
+flowchart LR
+    subgraph OPA — Silnik Rego
+        M[main_jdg.rego<br/>Orkiestrator Multi-Pass]
+        R[risk.rego / routing.rego<br/>PASS 0-1]
+        C[compliance.rego / crossborder.rego<br/>PASS 2-3]
+        V[vat/ pit/ zus/ accounting/<br/>PASS 4-8]
+        E[enterprise S1-S24 + ETAP 10-28]
+        G[core_guards_temporal_thresholds.rego<br/>INV-001..042]
+        P[provenance.rego<br/>_provenance_tree + decision_hash]
+    end
+
+    M --> R
+    M --> C
+    M --> V
+    M --> E
+    M --> G
+    M --> P
+
+    subgraph Systemy zewnętrzne
+        KSEF["KSeF / Biała Lista / NBP / CEIDG / GUS"]
+        TH["data.thresholds.jdg.* (DuckDB)"]
+    end
+
+    C --> KSEF
+    V --> TH
+    G --> TH
+```
+
+### Warstwy architektoniczne
+
+| Warstwa | Odpowiedzialność | Artefakty |
+|---|---|---|
+| **Domain** | Reguły prawne i decyzyjne JDG | 472 pliki Rego (`JDG/rules/`), 459 pakietów |
+| **Application** | Orkiestracja, kontrakt werdyktu, use-case'y | `main_jdg.rego`, Decision API, Control Plane |
+| **Infrastructure** | RuleStore, OPA Data API, integracje zewnętrzne | DuckDB (001–013), threshold service, NATS |
+| **Presentation** | REST API + Flet UI | Litestar, `api/openapi.yaml` |
+
+### Wzorce projektowe
+
+| Wzorzec | Opis | ADR |
+|---|---|---|
+| **First-Match-Wins (else-chain)** | Deterministyczna kolejność reguł | ADR-001 |
+| **Multi-Pass Evaluation** | PASS 0–8 + POST-MERGE z early abort | ADR-007 |
+| **Sharded Router (O(1))** | Routing po kontekście transakcji, p95 < 5 ms | ADR-009 |
+| **Safe Merge** | Werdykty niemutowalne, allowlist, priority conflicts | INV-018/042 |
+| **Temporalność reguł** | `valid_from`/`valid_to`, time-travel | ADR-003 |
+| **Zero Hardcoded Values** | Progi/stawki przez OPA Data API | ADR-002 |
+| **Immutable Audit Trail** | HMAC-SHA256 + Merkle Tree | ADR-006 |
+| **Werdykt 25-polowy** | Standardowy kontrakt JSON | ADR-004 |
+| **Decision Certificate F4** | Klasy pewności, pieczęć SHA-256→Merkle | ADR-019 |
+
+Pełne diagramy i szczegóły: **[docs/ARCHITEKTURA.md](docs/ARCHITEKTURA.md)** (C4 L1–L3, wzorce, ADR 001–022).
+
+### Diagramy sekwencji — procesy krytyczne
+
+**Przetwarzanie faktury — od wpływu do decyzji:**
+
+```mermaid
+sequenceDiagram
+    participant U as Klient REST
+    participant API as API Litestar
+    participant OPA as OPA (main_jdg.rego)
+    participant TH as Thresholds (DuckDB)
+    participant AU as Audit Trail
+
+    U->>API: POST /jdg/decide (faktura)
+    API->>API: autoryzacja JWT + walidacja wejścia
+    API->>OPA: input {transaction, routing_context}
+    OPA->>OPA: PASS 0 RISK → PASS 1 ROUTING (early abort?)
+    OPA->>OPA: PASS 2-3 COMPLIANCE/CROSSBORDER (Biała Lista, WNT/WDT)
+    OPA->>TH: data.thresholds.jdg.* (stawki, progi)
+    OPA->>OPA: PASS 4-8 VAT/PIT/ZUS/ACCOUNTING + POST-MERGE
+    OPA->>OPA: enforce() — INV-001..042 + Decision Certificate
+    OPA-->>API: werdykt 25-polowy + _provenance_tree
+    API->>AU: zapis niezmiennego audytu (HMAC + Merkle)
+    API-->>U: 200 {verdict, routing, certainty_class}
+```
+
+**Proces decyzyjny (tryby automatyzacji):**
+
+```mermaid
+sequenceDiagram
+    participant S as System
+    participant D as Przedsiębiorca (Centrum decyzji)
+
+    S->>S: Trust Score >= 0.92?
+    alt TAK (CERTAIN, AUTO_POST_ALLOWED)
+        S-->>D: AUTO_POST — zaksięgowano automatycznie
+    else 0.75-0.92 lub CONDITIONAL (MANUAL_REVIEW)
+        S-->>D: SUGGEST — 2-5 opcji do wyboru
+        D-->>S: wybór opcji
+    else < 0.75 lub NEEDS_ADVICE (CERTAINTY_BLOCKED)
+        S-->>D: ASK_USER — pytanie z kontekstem
+        D-->>S: decyzja + ewentualna korekta
+    end
+    S->>S: zapis decyzji w audit trail (niezmienny)
+```
+
 ---
 
 ## 🚀 Szybki start
@@ -192,24 +319,29 @@ curl -X POST http://localhost:8000/v1/jdg/decide \
 
 | Metryka | Wartość |
 |---|---|
-| Pliki Rego | **439** |
-| Pliki z `matched: true` | **404** |
-| Bloki `matched: true` | **11 821** |
-| Unikalne `rule_id` | **11 452** |
-| Duplikaty `rule_id` | 369 |
+| Pliki Rego | **472** |
+| Pliki z `matched: true` | **426** |
+| Bloki `matched: true` | **11 811** |
+| Unikalne `rule_id` | **11 808** |
+| Duplikaty `rule_id` | 3 |
 | Akty prawne pokryte | **13** |
 | Inicjatywy strategiczne | 24 (A1–A3, B1–B3, C1–C3, S1–S24) |
 | Pakiety w orkiestratorze | ~60+ |
-| Completeness Score (MANIFEST) | 🟢 93/100 |
-| Reguły w bundle | 10 878 (bundle manifest 2026-08-02; aktualizowany przy `bundle.sh`) |
+| Completeness Score (MANIFEST) | 🟢 88/100 |
+| Narzędzia Python (JDG/tools) | **298** |
+| Testy pytest / natywne Rego | **198** / **207** |
+| Migracje DuckDB | **13** (001–013) |
+| Audit-state (ETAP 06–28) | **22** — wszystkie `WDROZONY_100` / `PASS` |
+| Domeny po certyfikacji końcowej | **18** — 13 CERTIFIED, 5 CONDITIONAL, 0 BLOCKED |
+| Raporty kampanii GLM 5.2 | **29/29** — `WDROZONY_100` |
 
 ### Warstwy architektury reguł
 
 | Warstwa | Plików | Reguł | Opis |
 |---|---:|---:|---|
-| **Macro (Core)** | ~153 | ~6 300 | Reguły decyzyjne: VAT, PIT, ZUS, KKS, PKPiR, cross-border |
-| **Micro (atomowe)** | ~106 | ~3 500 | Atomowe reguły per artykuł ustawy |
-| **Enterprise S1–S24** | 25+ | ~350 | Optymalizacja, cross-domain, KSeF, deklaracje, monitoring |
+| **Macro (Core)** | ~231 (root) | ~6 300 | Reguły decyzyjne: VAT, PIT, ZUS, KKS, PKPiR, cross-border |
+| **Micro (atomowe)** | 91 | ~3 500 | Atomowe reguły per artykuł ustawy |
+| **Enterprise S1–S24 + ETAP 10–28** | 40+ | ~1 000 | Optymalizacja, cross-domain, KSeF, deklaracje, monitoring, audyty |
 | **Hyper Plan45** | 14 | ~450 | Reguły hiper-szczegółowe (terminy, limity, sankcje, e-Doręczenia) |
 
 ---
@@ -218,21 +350,22 @@ curl -X POST http://localhost:8000/v1/jdg/decide \
 
 | Dokument | Zakres | Dla kogo |
 |---|---|---|
-| **[docs/ARCHITEKTURA.md](docs/ARCHITEKTURA.md)** | C4 (Context/Container/Component), warstwy, wzorce projektowe, diagramy sekwencji, ADR 001–015 | Architekci, developerzy |
-| **[docs/STRUKTURA_PROJEKTU.md](docs/STRUKTURA_PROJEKTU.md)** | Drzewo katalogów, konwencje nazewnicze, ERD, 9 tabel RuleStore, migracje i seed | Developerzy, DevOps |
-| **[docs/API_REFERENCJA.md](docs/API_REFERENCJA.md)** | 10 endpointów REST, request/response, curl, rate limiting, kody błędów | Integratorzy, frontend |
+| **[docs/ARCHITEKTURA.md](docs/ARCHITEKTURA.md)** | C4 (Context/Container/Component), warstwy, wzorce projektowe, diagramy sekwencji, ADR 001–022 | Architekci, developerzy |
+| **[docs/STRUKTURA_PROJEKTU.md](docs/STRUKTURA_PROJEKTU.md)** | Drzewo katalogów, konwencje nazewnicze, ERD, tabele RuleStore, migracje (001–013) i seed | Developerzy, DevOps |
+| **[docs/API_REFERENCJA.md](docs/API_REFERENCJA.md)** | 17 endpointów REST, request/response, curl, rate limiting, kody błędów | Integratorzy, frontend |
 | **[docs/LOGIKA_BIZNESOWA.md](docs/LOGIKA_BIZNESOWA.md)** | Moduły i algorytmy, diagramy sekwencji procesów krytycznych, błędy i debugowanie | Developerzy, testerzy |
 | **[docs/ZGODNOSC_PRAWNA.md](docs/ZGODNOSC_PRAWNA.md)** | UoR/IFRS/GAAP, KSeF, JPK, deklaracje VAT-7/CIT-8/PIT-36, ścieżka audytu, retencja | Compliance, księgowość |
 | **[docs/PODRECZNIK_UZYTKOWNIKA.md](docs/PODRECZNIK_UZYTKOWNIKA.md)** | Pierwsze uruchomienie, role RBAC, workflow AUTO_POST/ASK_USER, centrum decyzji, integracje | Użytkownicy końcowi |
 | **[docs/FAQ.md](docs/FAQ.md)** | Najczęściej zadawane pytania | Wszyscy |
-| **[docs/KATALOG_REGUL.md](docs/KATALOG_REGUL.md)** | Katalog **wszystkich 439 plików Rego** (JDG/rules) + 76 pakietów policies — pakiety, reguły, rule_id | Developerzy, QA |
-| **[docs/INWENTARYZACJA_PLIKOW.md](docs/INWENTARYZACJA_PLIKOW.md)** | Inwentaryzacja **wszystkich plików** JDG (1006) i policies (83) — statystyki per katalog | Wszyscy |
-| **[docs/KATALOG_NARZEDZI.md](docs/KATALOG_NARZEDZI.md)** | Katalog **wszystkich 130 narzędzi** Python z opisami | Developerzy, DevOps |
+| **[docs/KATALOG_REGUL.md](docs/KATALOG_REGUL.md)** | Katalog **wszystkich 472 plików Rego** (JDG/rules) + pakiety policies — pakiety, reguły, rule_id | Developerzy, QA |
+| **[docs/INWENTARYZACJA_PLIKOW.md](docs/INWENTARYZACJA_PLIKOW.md)** | Inwentaryzacja **wszystkich plików** JDG (1407) i policies (558) — statystyki per katalog | Wszyscy |
+| **[docs/KATALOG_NARZEDZI.md](docs/KATALOG_NARZEDZI.md)** | Katalog **wszystkich 298 narzędzi** Python z opisami | Developerzy, DevOps |
 | **[MANIFEST.md](MANIFEST.md)** | Tracker pokrycia reguł (auto-generowany) | QA, DevOps |
 | **[COVERAGE_REPORT.md](COVERAGE_REPORT.md)** | Raport pokrycia prawnego (auto-generowany) | QA, compliance |
 | **[api/openapi.yaml](api/openapi.yaml)** | Specyfikacja OpenAPI 3.0.3 | Integratorzy |
 
 > **Dokumenty tematyczne P02–P24** (np. `docs/VAT_MACRO_P03.md`, `docs/ZUS_MICRO_P08.md`, `docs/AUDYT_KOMPLETNY_P24.md`) opisują poszczególne inicjatywy — pełna lista w `docs/`.
+> **Kampania GLM 5.2 (ETAP 10–28):** [`docs/KAMPANIA_GLM52_ETAPY_10_28.md`](docs/KAMPANIA_GLM52_ETAPY_10_28.md) — audyty, certyfikacja końcowa, bramki.
 
 ---
 
@@ -244,18 +377,18 @@ JDG/
 ├── MANIFEST.md                        # Tracker pokrycia reguł (auto)
 ├── COVERAGE_REPORT.md                 # Raport pokrycia prawnego (auto)
 ├── unified_plan_v8.yaml               # Plan strategiczny v8
-├── rules/                             # 439 plików Rego (~11 452 rule_id)
+├── rules/                             # 472 plików Rego (~11 808 rule_id)
 │   ├── main_jdg.rego                  # 🧠 orkiestrator Multi-Pass + Sharded Router
 │   ├── risk.rego / routing.rego / compliance.rego / kks.rego
 │   ├── vat/ pit/ zus/ kks/ accounting/ crossborder/ pcc/
-│   ├── micro/                         # ~106 plików atomowych per artykuł
+│   ├── micro/                         # 91 plików atomowych per artykuł
 │   └── *_enterprise.rego              # inicjatywy S1–S24
 ├── tests/                             # pytest + natywne testy Rego
-├── tools/                             # 57+ narzędzi deweloperskich
+├── tools/                             # 298 narzędzi deweloperskich
 ├── bundles/                           # bundle.sh + manifest.json → OPA bundle
 ├── docs/                              # dokumentacja techniczna
 ├── api/openapi.yaml                   # specyfikacja REST API 1.0.0
-├── migrations/                        # DuckDB RuleStore (001, 002)
+├── migrations/                        # DuckDB RuleStore (001–013)
 └── policies/ (mirror w repo głównym)  # lżejsza wersja reguł + overlays
 ```
 
@@ -267,12 +400,13 @@ Pełne drzewo i konwencje: **[docs/STRUKTURA_PROJEKTU.md](docs/STRUKTURA_PROJEKT
 
 | Dokument | Opis |
 |---|---|
-| `Plan OPA/38c_JDG_CANONICAL_MAP.md` | Mapa kanoniczna ~779 reguł (źródło prawdy) |
+| `Plan OPA/38c_JDG_CANONICAL_MAP.md` | Mapa kanoniczna ~779 reguł (plan bazowy — przekroczony do 11 808) |
 | `Plan OPA/41_JDG_MEGA_MATRIX_7000_RULES.md` | Dual-Layer Architecture (horyzont ~7000) |
 | `Plan OPA/52_AUDYT_JAKOSCI_REGUL.md` | Audyt jakości reguł |
 | `NexusAI_JDG_7000_MASTER_IMPLEMENTATION_PLAN.txt` | Master plan strategiczny |
 
 ---
 
-*Wygenerowano przez NexusAI JDG Module Engine v8.0 — liczby z MANIFEST.md (2026-08-05)*
+*Wygenerowano przez NexusAI JDG Module Engine v8.0 — liczby z MANIFEST.md (2026-08-22)*
 *Regeneracja: `python JDG/tools/generate_manifest.py`*
+*Certyfikacja: ETAP 28/29 `final_certification_etap28_audit.py` — 14/14 bramek PASSED (2026-08-22)*

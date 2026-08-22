@@ -16,7 +16,7 @@
 | | |
 |---|---|
 | **P — Problem** | Integrator nie wie, jak wywołać ewaluację faktury, jakie pola wysłać i jak obsłużyć błędy (429, 503, 409). |
-| **W — Wartość** | Jeden dokument opisuje wszystkie 10 endpointów z gotowymi do wklejenia przykładami curl i pełną tabelą kodów błędów. |
+| **W — Wartość** | Jeden dokument opisuje wszystkie 17 endpointów z gotowymi do wklejenia przykładami curl i pełną tabelą kodów błędów. |
 | **E — Efekt** | Integracja systemu ERP z silnikiem JDG w jeden dzień, bez zgadywania. |
 
 ---
@@ -59,7 +59,7 @@ Token JWT wystawiany przez **NexusAI Auth Service**. Zawartość: `tenant_id`, `
 
 ---
 
-## 3. Lista endpointów (10)
+## 3. Lista endpointów (17)
 
 | # | Metoda | Ścieżka | Tag | Opis |
 |---|---|---|---|---|
@@ -73,6 +73,13 @@ Token JWT wystawiany przez **NexusAI Auth Service**. Zawartość: `tenant_id`, `
 | 8 | GET | `/jdg/coverage` | Health | Raport pokrycia prawnego |
 | 9 | GET | `/jdg/rules/{rule_id}` | Health | Szczegóły pojedynczej reguły |
 | 10 | GET | `/jdg/legal-coverage` | Health | Pokrycie prawne per akt (klasy A/B/C) |
+| 11 | GET | `/jdg/rules` | Registry | Policy Registry API — wyszukiwanie reguł |
+| 12 | POST | `/jdg/change` | Registry | Declarative Change (ADR-021) |
+| 13 | POST | `/jdg/cert` | Audit | Issue Decision Certificate (F4) |
+| 14 | GET | `/bundles` | Bundles | Katalog wersji bundle |
+| 15 | POST | `/bundles/{version}/verify` | Bundles | Weryfikacja podpisu + SBOM |
+| 16 | GET | `/bundles/{version}/health` | Bundles | Zdrowie rollout'u bundle |
+| 17 | POST | `/dr/restore` | DR | Disaster recovery — przywrócenie stanu |
 
 ---
 
@@ -282,7 +289,7 @@ curl -X GET "https://api.nexusai.pl/v1/jdg/audit/550e8400-e29b-41d4-a716-4466554
     "nbp": "online"
   },
   "shard_count": 4,
-  "rules_count": 11452,
+  "rules_count": 11808,
   "uptime_seconds": 86400
 }
 ```
@@ -359,6 +366,78 @@ curl -X GET "https://api.nexusai.pl/v1/jdg/rules/jdg.vat.substantive.fuel_pl" \
 
 ```bash
 curl -X GET "https://api.nexusai.pl/v1/jdg/legal-coverage?act=vat" -H "Authorization: Bearer $JWT"
+```
+
+### 4.11. GET `/jdg/rules` — Policy Registry API (wyszukiwanie reguł)
+
+**Parametry query:** `q` (fraza), `domain` (np. `vat`), `package`, `matched` (`true`/`false`), `page`, `page_size` (max 100).
+
+**Odpowiedź 200:** `items[]` (`rule_id`, `package`, `file`, `priority`, `matched`, `legal_basis`), `total`, `page`, `page_size`.
+
+```bash
+curl -X GET "https://api.nexusai.pl/v1/jdg/rules?domain=vat&matched=true" -H "Authorization: Bearer $JWT"
+```
+
+### 4.12. POST `/jdg/change` — Declarative Change (ADR-021)
+
+**Body:** `description` (zmiana w języku naturalnym, np. „stawka VAT 23% → 8% od 2027-01-01"), `domain`, `owner`, `change_ticket`.
+
+**Odpowiedzi:** `201` — plan zmiany wygenerowany (`change_id`, `impact`, `tests_required`, `golden_replay_plan`); `409` — konflikt z istniejącą zmianą; `422` — opis niejednoznaczny.
+
+```bash
+curl -X POST "https://api.nexusai.pl/v1/jdg/change" \
+  -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" \
+  -d '{"description": "stawka VAT 23% → 8% od 2027-01-01", "domain": "vat", "owner": "doradca@firma.pl"}'
+```
+
+### 4.13. POST `/jdg/cert` — Issue Decision Certificate (F4, ADR-019)
+
+**Body:** `verdict_id` (obowiązkowe), `format` (`pdf`/`xml`/`json`), `include_merkle_proof` (bool).
+
+**Odpowiedź 200:** `certificate` (`verdict_id`, `certainty_class`, `decision_hash`, `seal`, `merkle_proof`, `export_url`, `valid_until`). Certyfikat weryfikowalny offline — do eksportu dla KAS.
+
+```bash
+curl -X POST "https://api.nexusai.pl/v1/jdg/cert" \
+  -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" \
+  -d '{"verdict_id": "v-2026-000123", "format": "pdf"}'
+```
+
+### 4.14. GET `/bundles` — katalog wersji bundle
+
+**Odpowiedź 200:** `bundles[]` (`version`, `created_at`, `file_count`, `rule_count`, `signature_valid`, `deployment_state`, `soak_until`).
+
+```bash
+curl -X GET "https://api.nexusai.pl/v1/bundles" -H "Authorization: Bearer $JWT"
+```
+
+### 4.15. POST `/bundles/{version}/verify` — weryfikacja podpisu i SBOM
+
+**Parametr path:** `version` (np. `v9.0.0`).
+
+**Odpowiedź 200:** `verified` (bool), `signature_valid`, `sbom_ok`, `file_manifest_hash`, `details[]`. `409` — podpis niezgodny (bundle odrzucony).
+
+```bash
+curl -X POST "https://api.nexusai.pl/v1/bundles/v9.0.0/verify" -H "Authorization: Bearer $JWT"
+```
+
+### 4.16. GET `/bundles/{version}/health` — zdrowie rollout'u bundle
+
+**Odpowiedź 200:** `state` (`canary`/`shadow`/`ramped`/`soak`/`active`/`rolled_back`), `error_rate`, `quality_score`, `verdict_delta_pct` (shadow vs prod), `soak_remaining_hours`.
+
+```bash
+curl -X GET "https://api.nexusai.pl/v1/bundles/v9.0.0/health" -H "Authorization: Bearer $JWT"
+```
+
+### 4.17. POST `/dr/restore` — Disaster Recovery (odtworzenie ostatniego zdrowego stanu)
+
+**Body:** `restore_point` (`latest`/`pre_bundle`/timestamp), `verify_merkle` (bool, default `true`).
+
+**Odpowiedzi:** `200` — przywrócono (`restore_id`, `restored_at`, `verdicts_restored`, `merkle_verified`); `409` — przywracanie już w toku; `503` — brak zdrowego punktu.
+
+```bash
+curl -X POST "https://api.nexusai.pl/v1/dr/restore" \
+  -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" \
+  -d '{"restore_point": "latest", "verify_merkle": true}'
 ```
 
 ---

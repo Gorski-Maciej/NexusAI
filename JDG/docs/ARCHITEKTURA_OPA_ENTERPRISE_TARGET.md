@@ -408,7 +408,7 @@ Wymóg użytkownika: OPA musi być **inteligentnym systemem**. Inteligencja nie 
 | Podpis bundle | deklarowany (reguła) | faktyczny (HSM, weryfikacja na węźle) |
 | Kanary/rollback | deklarowane (reguły) | orchestrator deploymentu (5%→100%, auto-rollback ≤ 5 min) |
 | Zero hardcode | ~60% (265 wartości) | 100% |
-| Deduplikacja/stuby | 369 duplikatów / 512 stubów | 0 (blokada w CI) |
+| Deduplikacja/stuby | 3 duplikaty / 25 stubów (2026-08-22) | 0 (blokada w CI) |
 | Testy natywne | częściowo (103+ pliki, plan do Q4 2026) | ≥ 95% pakietów, golden replay, mutation |
 | Adaptacja prawa | crawl codzienny, cel 24 h | monitoring 24/7, AI-reader, 24 h rutynowo / 4 h P0, parametr 15 min |
 | Obserwowalność | health + telemetria | pełne SLO/SLI, traceability chain, pętla jakości |

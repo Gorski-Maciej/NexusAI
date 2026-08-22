@@ -33,7 +33,7 @@ JDG/                                        ← KATALOG GŁÓWNY MODUŁU
 ├── unified_plan_v8.yaml                    Plan strategiczny v8 (24 inicjatywy)
 ├── unified_plan_progress.yaml              Postęp wdrożenia planu
 │
-├── rules/                                  ★ SERCE — 439 plików Rego, ~11 452 rule_id
+├── rules/                                  ★ SERCE — 472 pliki Rego, ~11 808 rule_id
 │   ├── main_jdg.rego                       Orkiestrator Multi-Pass + Sharded Router (1656 linii)
 │   ├── _helpers_jdg.rego                   Helpery: thresholds, FC, MPP
 │   ├── _metadata_jdg.rego                  Metadane reguł (severity, remediation, temporalność)
@@ -52,14 +52,14 @@ JDG/                                        ← KATALOG GŁÓWNY MODUŁU
 │   ├── security/                           security_fortress_v8.rego
 │   └── *_enterprise.rego                   Inicjatywy S1–S24 (optimization, ksef_*, banking…)
 │
-├── tests/                                  Testy
-│   ├── test_*.py                           pytest (16 skopiowanych z tests/ + enterprise)
+├── tests/                                  Testy (198 pytest + 207 natywnych Rego)
+│   ├── test_*.py                           pytest (16 skopiowanych z tests/ + enterprise + audyty ETAP 10–28)
 │   ├── auto/test_auto_block_*.py           Automatyczne testy bloków tematycznych (~60 plików)
-│   ├── rego/test_native_*.rego             Natywne testy Rego (opa test)
+│   ├── rego/test_native_*.rego             Natywne testy Rego (opa test, w tym test_native_*_etapNN)
 │   ├── rego/micro/test_native_micro_*.rego Testy mikro-atomów (27 obszarów)
 │   └── jdg_rules_test.rego                 Testy reguł
 │
-├── tools/                                  ★ 57+ narzędzi Python (~22 500 linii)
+├── tools/                                  ★ 298 narzędzi Python (~80 000+ linii)
 │   ├── generate_manifest.py                Manifest → MANIFEST.md
 │   ├── validate_rules.py                   〓 9 walidacji jakości
 │   ├── lint_rego_rules.py                  Linter 6-check
@@ -73,21 +73,35 @@ JDG/                                        ← KATALOG GŁÓWNY MODUŁU
 │
 ├── bundles/                                OPA Bundle
 │   ├── bundle.sh                           Budowa tar.gz z zachowaniem struktury (fix R1)
-│   └── manifest.json                       Manifest bundle (10 878 reguł, serwis thresholds)
+│   └── manifest.json                       Manifest bundle (11 808 reguł, 472 pliki, serwis thresholds)
 │
 ├── docs/                                   ★ Dokumentacja (ta rodzina plików)
 │   ├── ARCHITEKTURA.md · STRUKTURA_PROJEKTU.md (ten) · API_REFERENCJA.md
 │   ├── LOGIKA_BIZNESOWA.md · ZGODNOSC_PRAWNA.md · PODRECZNIK_UZYTKOWNIKA.md · FAQ.md
 │   ├── DEVELOPER_GUIDE.md · OPA_REGO_DEVELOPER_GUIDE.md · RULE_LIFECYCLE.md
 │   ├── LEGAL_COVERAGE.md · LEGAL_REFERENCE_ACTS.md
+│   ├── CONTROL_PLANE_RULE_LIFECYCLE.md (ETAP 04) · ORCHESTRATOR_DATA_CONTRACT.md (ETAP 05)
+│   ├── CORE_GUARDS_TEMPORAL_THRESHOLDS.md (ETAP 06) · KAMPANIA_GLM52_ETAPY_10_28.md (ETAP 10–28)
 │   └── P02_* … P24_*                       Dokumenty inicjatyw (VAT_MACRO_P03, ZUS_MICRO_P08…)
 │
 ├── api/
-│   └── openapi.yaml                        ★ Specyfikacja REST API (OpenAPI 3.0.3, 10 endpointów)
+│   └── openapi.yaml                        ★ Specyfikacja REST API (OpenAPI 3.0.3, 17 endpointów)
 │
 └── migrations/                             ★ DuckDB RuleStore
     ├── 001_jdg_rule_store.sql              Tabele 1–5 + seed 50 progów
-    └── 002_jdg_enterprise_v7.sql           Tabele 6–9 (predykcje, stale rules, konflikty, cache)
+    ├── 002_jdg_enterprise_v7.sql           Tabele 6–9 (predykcje, stale rules, konflikty, cache)
+    ├── 003_jdg_v8_legal_twin.sql           Legal Twin / LKG (ADR-016)
+    ├── 004_jdg_v9_control_plane.sql        Control Plane v9
+    ├── 005_jdg_v10_legal_sources.sql       Legal Sources v10
+    ├── 006_jdg_v11_legal_traceability.sql  Legal Traceability v11
+    ├── 007_jdg_v12_control_plane_lifecycle.sql  Control Plane Lifecycle v12
+    ├── 008_jdg_v13_orchestrator_contract.sql    Orchestrator Data Contract v13
+    ├── 009_jdg_v14_core_guards.sql         Core Guards v14
+    ├── 010_jdg_v15_vat_macro.sql           VAT Macro v15
+    ├── 011_jdg_v16_vat_micro.sql           VAT Micro v16
+    ├── 012_jdg_v17_vat_micro_special.sql   VAT Micro Special v17
+    └── 013_jdg_v18_tools_api_rulestore_bundles.sql  Tools/API/RuleStore/Bundles v18
+    (razem: 13 migracji 001–013)
 
 policies/                                   ← MIRROR REGUŁ (starsza wersja + eksperymenty)
 ├── jdg/                                    32 pliki Rego (v2026.07.10)
@@ -473,6 +487,22 @@ ORDER BY hit_count DESC
 LIMIT 10;
 ```
 
+### Tabele 10+: warstwy v8.2–v8.3 (migracje 003–013)
+
+| Tabela | Migracja | Przeznaczenie | Kluczowe kolumny |
+|---|---|---|---|
+| `legal_graph` | 003 | Legal Twin / Legal Knowledge Graph (ADR-016) | `node_id`, `act`, `article`, `paragraph`, `point`, `valid_from`, `valid_to`, `content_hash` |
+| `golden_verdicts` | 003 | Golden Oracle — złote werdykty do ewaluacji różnicowej (ADR-018) | `verdict_id`, `decision_hash`, `input_snapshot`, `bundle_version`, `rule_version` |
+| `decision_certificates` | 003 | Decision Certificate F4 (ADR-019) | `verdict_id`, `certainty_class`, `seal`, `merkle_proof`, `export_format` |
+| `draft_law_radar` | 003 | Law Radar — projekty ustaw (ADR-020) | `amendment_id`, `source` (RCL/Sejm/Senat), `effective_date`, `lead_time_days`, `shadow_rules[]` |
+| `control_plane_*` | 004, 007 | Control Plane — żądania, review, rollout, audit (ADR-021) | `change_id`, `operation`, `state` (PENDING_REVIEW…ACTIVE), `signature`, `ticket`, `supersedes` |
+| `legal_sources` | 005 | Legal Sources — rejestr źródeł prawnych (ISAP/RCL) | `source_id`, `url`, `act`, `crawl_status`, `last_checked` |
+| `legal_traceability` | 006 | Legal Traceability — łańcuch reguła ↔ przepis ↔ werdykt | `rule_id`, `legal_node_id`, `verdict_id`, `direction` |
+| `orchestrator_contract` | 008 | Orchestrator Data Contract — kontrakt 25-polowy, provenance | `schema_version`, `field_registry`, `pass_config` |
+| `core_guards` | 009 | Core Guards — katalog INV-001..042 + temporal thresholds | `invariant_id`, `level` (RUNTIME/BUILD/STATISTICAL), `severity`, `enforcement` |
+| `vat_*` | 010–012 | VAT Macro/Micro/Special — progi, stawki, binding registry, KSeF/marża/proporcja | `article`, `rate`, `valid_from`, `valid_to`, `binding_micro_macro` |
+| `tools_api_bundles` | 013 | Narzędzia/API/RuleStore/Bundles — wersjonowanie i integracja | `artifact_id`, `version`, `sha256`, `deployment_state` |
+
 ---
 
 ## 6. Strategia migracji i seedowania
@@ -481,16 +511,34 @@ LIMIT 10;
 
 ```mermaid
 flowchart LR
-    MIG["migracje/001 + 002 (SQL)"] --> DUCK["DuckDB RuleStore"]
+    MIG["migracje/001–013 (SQL)"] --> DUCK["DuckDB RuleStore"]
     SEED["seed: 50 progów + wersje reguł + kartografia"] --> DUCK
     DUCK -->|OPA Data API| DATA["data.thresholds.jdg.*"]
     DATA --> REGO["Rego — ewaluacja"]
     ISAP["isap_crawler (daily)"] -->|diff| DUCK
 ```
 
+### 6.1a. Katalog migracji (001–013)
+
+| Migracja | Zakres | Tabele / funkcje |
+|---|---|---|
+| `001_jdg_rule_store.sql` | Fundacja RuleStore | tabele 1–5 (`jdg_tax_thresholds`, `rule_versions`, `jdg_verdict_audit`, `isap_history`, `jdg_legal_cartography`) + seed 50 progów |
+| `002_jdg_enterprise_v7.sql` | Enterprise v7 | tabele 6–9 (`jdg_prediction_history`, `jdg_stale_rules_registry`, `jdg_conflict_registry`, `jdg_explanation_cache`) |
+| `003_jdg_v8_legal_twin.sql` | Legal Twin / LKG (ADR-016) | `legal_graph`, `golden_verdicts`, `decision_certificates`, `draft_law_radar` |
+| `004_jdg_v9_control_plane.sql` | Control Plane v9 | rejestr zmian, review, rollout evidence |
+| `005_jdg_v10_legal_sources.sql` | Legal Sources v10 | rejestr źródeł prawnych (ISAP/RCL) |
+| `006_jdg_v11_legal_traceability.sql` | Legal Traceability v11 | łańcuch reguła ↔ przepis ↔ werdykt |
+| `007_jdg_v12_control_plane_lifecycle.sql` | Control Plane Lifecycle v12 | żądania, review, rollout, audit append-only |
+| `008_jdg_v13_orchestrator_contract.sql` | Orchestrator Data Contract v13 | kontrakt 25-polowy, provenance |
+| `009_jdg_v14_core_guards.sql` | Core Guards v14 | katalog INV-001..042, temporal thresholds |
+| `010_jdg_v15_vat_macro.sql` | VAT Macro v15 | progi/stawki VAT, MPP |
+| `011_jdg_v16_vat_micro.sql` | VAT Micro v16 | atomy artykułowe, binding registry |
+| `012_jdg_v17_vat_micro_special.sql` | VAT Micro Special v17 | KSeF, marża, proporcja, WDT/WNT |
+| `013_jdg_v18_tools_api_rulestore_bundles.sql` | Tools/API/RuleStore/Bundles v18 | endpointy, wersjonowanie, integracja bundle |
+
 ### 6.2. Zasady migracji
 
-1. **Wersjonowanie plików:** nowa tabela/kolumna → nowy plik `NNN_*.sql` w `migrations/` (obecnie 001, 002). Nie modyfikuj wydanych migracji.
+1. **Wersjonowanie plików:** nowa tabela/kolumna → nowy plik `NNN_*.sql` w `migrations/` (obecnie **001–013**). Nie modyfikuj wydanych migracji.
 2. **Idempotencja:** każda migracja używa `CREATE TABLE IF NOT EXISTS` / `CREATE INDEX IF NOT EXISTS` — można uruchamiać wielokrotnie.
 3. **Seed tylko w migracji:** dane startowe (50 progów, wersje P189/P500/P523, kartografia `lex:VAT:Art113` itd.) zapisane są razem z DDL — powtarzalny stan bazowy.
 4. **Temporalność w seedzie:** każdy próg ma `valid_from`/`valid_to`; zmiana prawa = `UPDATE` + nowy wiersz z `superseded_by`, **nie** edycja wiersza historycznego.
@@ -540,4 +588,4 @@ WHERE threshold_id = 'vat_standard_rate' AND valid_to = '2026-12-31';
 
 ---
 
-*Spójny z: README.md · migrations/001 · migrations/002 · tools/README.md · DEVELOPER_GUIDE.md*
+*Spójny z: README.md · migrations/001–013 · tools/README.md · DEVELOPER_GUIDE.md*

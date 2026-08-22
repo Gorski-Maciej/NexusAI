@@ -1,5 +1,9 @@
 # P24 — AUDYT KOMPLETNY + SYNTEZA MASTER (Ufortyfikowana Forteca Enterprise)
 
+> **📌 Aktualizacja 2026-08-22:** dokument historyczny opisujący wdrożenie promptu GLM 5.2.
+> Raporty źródłowe (`prompty_glm52/`, `raporty_glm52/`, `raporty_jdg_enterprise/`) zostały zarchiwizowane poza repo.
+> Aktualny stan wdrożenia: [`KAMPANIA_GLM52_ETAPY_10_28.md`](KAMPANIA_GLM52_ETAPY_10_28.md) + `JDG/bundles/*audit_state.json` (certyfikacja końcowa ETAP 28/29 — 2026-08-22, 14/14 bramek).
+
 **Raport:** MASTER RAPORT ENTERPRISE — JDG UFORTYFIKOWANA FORTECA (P24) v8.0
 **Pakiet Rego:** `jdg.p24_audyt_kompletny_innovations` (`JDG/rules/p24_audyt_kompletny_innovations_v9.rego`)
 **Status:** ✅ WDROŻONY — POSTĘP 24/24 (PROGRAM UKOŃCZONY)
@@ -27,7 +31,7 @@ księgowość JDG.
 ### Sekcja 1 — Synteza Stanu Modułu
 | Reguła | Opis |
 |---|---|
-| `state_synthesis` | 406 rego, 10509 unikalnych, 369 duplikatów, 512 stubów, Completeness 78/100, routing 62%, aktualność 53/100 — jedyna wersja prawdy |
+| `state_synthesis` | 472 rego, 11808 unikalnych, 3 duplikaty, 25 stubów, Completeness 88/100, routing 67% — aktualizacja 2026-08-22 |
 | `virtual_accountant` (INN-01) | Wirtualny księgowy — księgowość end-to-end (60/30/10) |
 
 ### Sekcja 2 — Ocena "Czy Zastąpi Księgowego" (PRIORYTET ★)
@@ -48,7 +52,7 @@ księgowość JDG.
 | Reguła | Opis |
 |---|---|
 | `fortress_architecture` | 6 warstw (input → multi-pass → graph → temporal → trust → decision), wskaźnik fortecy ≥ 95 |
-| `knowledge_graph` (INN-06) | Super-inteligentna sieć zależności (10509 węzłów, 50000 krawędzi, transitive closure) |
+| `knowledge_graph` (INN-06) | Super-inteligentna sieć zależności (11808 węzłów, 50000+ krawędzi, transitive closure) |
 | `proof_of_correctness` (INN-07) | Dowód poprawności każdej decyzji (100%) |
 | `jdg_simulation_twin` (INN-08) | Symulacyjny bliźniak całej JDG (10000 ewaluacji, 97% match) |
 | `self_learning_system` (INN-09) | Samo-uczenie na werdyktach rzeczywistych (trust score updates) |
@@ -126,5 +130,5 @@ Brak kolizji ze starym pakietem `jdg.p24_innovations` (v7, 30 reguł — Mikro-M
 - ✅ pytest P24: **37/37**
 - ✅ regresja P01–P24: **572/572 passed** (535 + 37)
 - ✅ py_compile OK, braces zbalansowane, smoke CLI
-- ✅ pokrycie realne: manifest (10509 unikalnych), okablowanie main_jdg.rego, raporty R01-R24
+- ✅ pokrycie realne: manifest (11808 unikalnych), okablowanie main_jdg.rego, raporty R01-R24 + ETAP 10–28
 - ✅ Code review (2 rundy, bez blokerów)

@@ -1,6 +1,6 @@
 # 🏗️ NexusAI JDG — Architektura Systemu (C4 + Warstwy + Wzorce)
 
-> **Status:** ENTERPRISE v8.0 | **Dokument:** ARCHITEKTURA.md | **Spójny z:** README.md, ADR 001–015, api/openapi.yaml
+> **Status:** ENTERPRISE v8.3 | **Dokument:** ARCHITEKTURA.md | **Spójny z:** README.md, ADR 001–022, api/openapi.yaml
 > **Cel:** Kompletny obraz architektury — od poziomu kontekstu (C4 L1) po wzorce projektowe i diagramy sekwencji procesów krytycznych.
 
 > 📌 **Uwaga:** obok istnieje [ARCHITECTURE.md](ARCHITECTURE.md) — to **odrębny** dokument zawierający Architecture Decision Records (ADR 001–015). ARCHITEKTURA.md opisuje diagramy C4 i wzorce; ARCHITECTURE.md dokumentuje decyzje projektowe. Nie są duplikatami.
@@ -165,7 +165,7 @@ System mapuje klasyczne warstwy DDD na konkretne artefakty:
 |---|---|---|
 | **Presentation** (prezentacja) | `api/openapi.yaml`, endpointy REST `/jdg/*`, dokumenty UI | Przyjęcie żądań, autoryzacja JWT, walidacja wejścia (schema + semantic guard) |
 | **Application** (aplikacja) | Orkiestrator `main_jdg.rego`, Sharded Router, Decision Composer, tryby AUTO_POST/SUGGEST/ASK_USER | Koordynacja przepływu decyzyjnego, wybór ścieżki ewaluacji, kompozycja odpowiedzi |
-| **Domain** (domena) | 439 plików Rego w pakietach `jdg.*` (VAT, PIT, ZUS, KKS, UoR, PCC, cross-border…), warstwa mikro-atomowa | Reguły biznesowe i prawne, pierwszeństwo dopasowania (First-Match-Wins), temporalność |
+| **Domain** (domena) | 472 pliki Rego w pakietach `jdg.*` (VAT, PIT, ZUS, KKS, UoR, PCC, cross-border…), warstwa mikro-atomowa | Reguły biznesowe i prawne, pierwszeństwo dopasowania (First-Match-Wins), temporalność |
 | **Infrastructure** (infrastruktura) | DuckDB RuleStore, bundle OPA, NATS, Redis, agenci AI, integracje zewnętrzne (KSeF, MF, CEIDG, NBP, GUS, ISAP), CI/CD | Pamięć, komunikacja, ekstrakcja danych, monitorowanie prawa |
 
 > **Zasada zależności:** warstwy wyżej mogą zależeć od warstw niżej, nigdy odwrotnie. Reguły domenowe **nie** zawierają logiki I/O — prógów nie czyta się z DuckDB bezpośrednio w Rego, tylko przez `data.thresholds.jdg.*`.

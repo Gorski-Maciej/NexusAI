@@ -1,9 +1,9 @@
 # 🏛️ NexusAI JDG — Policy-as-Code (OPA/Rego)
 
-> **Status:** PRODUCTION READY — 1/29 pakietów zaimplementowanych  
-> **Wersja:** 2026.07.10  
-> **Plik referencyjny:** `Plan OPA/34_JDG_DEFINITIVE_REGO_PLAN.md` (~1 200 reguł)  
-> **Pliki Rego:** 32 | **Linii kodu:** 2 769
+> **Status:** MIRROR SYNCHRONIZED — ETAP 26 (2026-08-22)  
+> **Wersja:** 2026.08 (mirror z `JDG/rules/`, hash-parity 0% drift)  
+> **Plik referencyjny:** `JDG/rules/` — źródło prawdy (472 pliki, ~11 808 rule_id)  
+> **Pliki Rego (mirror):** 52 | **Linii kodu:** ~15 500
 
 ---
 

@@ -1,5 +1,9 @@
 # P21 — OPA JAKO SYSTEM (Bundles, Policies, API, Migracje, Adaptacja do zmian prawa)
 
+> **📌 Aktualizacja 2026-08-22:** dokument historyczny opisujący wdrożenie promptu GLM 5.2.
+> Raporty źródłowe (`prompty_glm52/`, `raporty_glm52/`, `raporty_jdg_enterprise/`) zostały zarchiwizowane poza repo.
+> Aktualny stan wdrożenia: [`KAMPANIA_GLM52_ETAPY_10_28.md`](KAMPANIA_GLM52_ETAPY_10_28.md) + `JDG/bundles/*audit_state.json` (certyfikacja końcowa ETAP 28/29 — 2026-08-22, 14/14 bramek).
+
 **Raport:** RAPORT ANALITYCZNY ENTERPRISE — JDG OPA JAKO SYSTEM (P21) v8.0
 **Pakiet Rego:** `jdg.p21_opa_system_innovations` (`JDG/rules/p21_opa_system_innovations_v9.rego`)
 **Status:** ✅ WDROŻONY — POSTĘP 21/24
@@ -23,7 +27,7 @@ zero-downtime, monitoring jakości decyzji.
 ### Sekcja 1 — Audyt Bundles i Deploymentu
 | Reguła | Opis |
 |---|---|
-| `bundle_audit` | bundle.sh (fix R1 — struktura katalogów, zero kolizji nazw), manifest.json (10878 reguł, 383 pliki), podpis SHA256 |
+| `bundle_audit` | bundle.sh (fix R1 — struktura katalogów, zero kolizji nazw), manifest.json (11808 reguł, 472 pliki), podpis SHA256 |
 | `canary_deploy` (INN-01) | Kanary 5% ruchu, obserwacja 30 min, zero-downtime, auto-rollback (jakość < 95% lub błąd > 1%) |
 | `shadow_deployment` (INN-02) | Równoległa ewaluacja prod vs shadow, delta werdyktów ≤ 2% |
 | `bundle_signature` (INN-03) | Weryfikacja podpisu bundle (SHA256, manifest_hash, tamper detection) |
@@ -31,13 +35,13 @@ zero-downtime, monitoring jakości decyzji.
 ### Sekcja 2 — Audyt Policies Produkcyjnych (PRIORYTET ★)
 | Reguła | Opis |
 |---|---|
-| `policies_drift_audit` | Dryf policies/jdg (29 plików) + policies/tax (28) vs JDG/rules (383) — alert przy ≥ 10% |
+| `policies_drift_audit` | Dryf policies/jdg + policies/tax vs JDG/rules (472) — alert przy ≥ 10% (ETAP 26: 0% drift) |
 | `auto_sync_policies` (INN-04) | Single-source-of-truth (JDG/rules) + auto-sync co 24 h |
 
 ### Sekcja 3 — Audyt API i Migracji
 | Reguła | Opis |
 |---|---|
-| `api_migration_audit` | openapi.yaml (12 endpointów) vs docs/api.md vs implementacja; migracje 001/002 (rule_versions, jdg_verdict_audit) |
+| `api_migration_audit` | openapi.yaml vs docs/api.md vs implementacja; migracje 001–013 (rule_versions, jdg_verdict_audit, legal_twin, control_plane…) |
 | `temporal_migration` (INN-05) | Pełny schemat migracji temporalnych reguł (valid_from/valid_to, max 5 wersji) |
 
 ### Sekcja 4 — Audyt Narzędzi Systemowych (Control Tower)
@@ -61,7 +65,7 @@ zero-downtime, monitoring jakości decyzji.
 |---|---|---|
 | INN-07 | `legal_adaptation_24h` | Auto-adaptacja do nowelizacji w 24 h (ISAP → reguły → testy → bundle) |
 | INN-08 | `legal_change_simulator` | Symulator wpływu zmiany prawa na portfel decyzji |
-| INN-09 | `rule_registry_api` | Registry reguł z API (/v1/rules, 10878 reguł, searchable, versioned) |
+| INN-09 | `rule_registry_api` | Registry reguł z API (/v1/rules, 11 808 reguł, searchable, versioned) |
 | INN-10 | `rule_feature_flags` | Feature-flagi dla reguł (shadow mode, kill-switch) |
 | INN-11 | `rule_change_proof` | Blockchainowy proof zmian reguł (hash-chain, jdg_verdict_audit) |
 | INN-12 | `decision_quality_monitor` | Monitoring jakości decyzji (30 dni, jakość < 95% → alert) |
@@ -118,5 +122,5 @@ Brak kolizji ze starym pakietem `jdg.p21_innovations` (v7, 49 reguł — FX/TP/R
 - ✅ pytest P21: **37/37**
 - ✅ regresja P01–P21: **469/469 passed** (432 + 37)
 - ✅ py_compile OK, braces zbalansowane, smoke CLI
-- ✅ pokrycie realne infrastruktury OPA (bundle 383 pliki, policies 57+, migracje 2, narzędzia 98)
+- ✅ pokrycie realne infrastruktury OPA (bundle 472 pliki, policies mirror 546, migracje 13, narzędzia 298)
 - ✅ Code review (2 rundy, bez blokerów)

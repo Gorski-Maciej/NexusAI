@@ -22,24 +22,25 @@ Analizę przeprowadzono wyłącznie na podstawie dokumentacji zawartej w katalog
 
 ## 2. Synteza — co dokumentacja deklaruje o OPA w JDG
 
-### 2.1. Fakty liczbowe (wg README.md / MANIFEST.md, stan 2026-08-02/05)
+### 2.1. Fakty liczbowe (wg README.md / MANIFEST.md, stan 2026-08-22)
 
 | Metryka | Wartość | Źródło |
 |---|---|---|
-| Pliki Rego | 439 (rules/) | README, INWENTARYZACJA |
-| Unikalne rule_id | ~11 452 | README / MANIFEST |
-| Bloki `matched: true` | 11 821 | README |
-| Duplikaty rule_id | 369 | README / MANIFEST |
-| Stuby `{ true }` | 512 (dead_rule_detector) | P22 |
+| Pliki Rego | 472 (rules/) | README, MANIFEST (2026-08-22) |
+| Unikalne rule_id | 11 808 | README / MANIFEST |
+| Bloki `matched: true` | 11 811 | MANIFEST |
+| Duplikaty rule_id | 3 | MANIFEST |
+| Stuby `{ true }` | 25 (dead_rule_detector, po kampanii P00) | P22 / P00 |
 | Akty prawne pokryte | 13 | README |
 | Inicjatywy strategiczne | 24 (A1–C3, S1–S24) | README |
-| Pakiety w orkiestratorze | ~55–60 | OPA_REGO_DEVELOPER_GUIDE / ARCHITEKTURA |
-| Reguły w bundle | 10 878 (383 pliki) | bundles/manifest.json |
-| Narzędzia Python | 57+ (do 130 wg KATALOG_NARZEDZI) | README / KATALOG_NARZEDZI |
-| Natywne testy Rego | 103 pliki `test_native_*.rego` + 25 mikro | INWENTARYZACJA |
-| Testy pytest | 76+ (22 enterprise + 54 auto_block) | P23 |
-| Workflow CI | 15 (GitHub Actions) + pre-commit | P23 |
-| Tabele RuleStore | 9 (migracje 001/002) | STRUKTURA_PROJEKTU |
+| Pakiety w orkiestratorze | ~60+ | OPA_REGO_DEVELOPER_GUIDE / ARCHITEKTURA |
+| Reguły w bundle | 11 808 (472 pliki) | MANIFEST / bundles |
+| Narzędzia Python | 298 | KATALOG_NARZEDZI |
+| Natywne testy Rego | 207 plików `test_native_*.rego` (w tym mikro) | INWENTARYZACJA / ETAP 28 |
+| Testy pytest | 198 | ETAP 28 / INWENTARYZACJA |
+| Audit-state (ETAP 06–28) | 22 — wszystkie WDROZONY_100 | bundles/ |
+| Migracje RuleStore | 13 (001–013) | migrations/ |
+| Certyfikacja końcowa | ETAP 28/29 — 14/14 bramek, 18 domen (13 CERTIFIED) | final_certification_etap28 |
 | Endpointy API | 10–12 | openapi.yaml / api.md |
 
 ### 2.2. Architektura decyzyjna (jak OPA podejmuje decyzje)
@@ -69,7 +70,7 @@ Konwencje: rule_id `jdg.<domena>.<kategoria>` (ADR-008), CHECKPOINT-STUB dla reg
 
 ### 2.5. Bundle i deployment (ADR-011)
 
-- `bundle.sh` v8.0 buduje `jdg-bundle-{wersja}.tar.gz` z zachowaniem struktury katalogów (fix R1 — 8 kolizji nazw), weryfikacja licznika plików, manifest (10 878 reguł, serwis thresholds, podpis SHA256).
+- `bundle.sh` v8.0 buduje `jdg-bundle-{wersja}.tar.gz` z zachowaniem struktury katalogów (fix R1 — 8 kolizji nazw), weryfikacja licznika plików, manifest (11 808 reguł, 472 pliki, serwis thresholds, podpis SHA256).
 - Deployment: `curl -X PUT --data-binary @bundle.tar.gz http://opa-server:8181/v1/bundles/jdg`.
 - `policies/` — lżejszy mirror reguł (32 pakiety, v2026.07.10) z bundle overlays `v2026`/`v2027` (nakładki czasowe). **Zasada deklarowana:** `JDG/rules/` = źródło prawdy, `policies/` = eksperymenty/wersjonowanie. Zasada auto-sync co 24 h (P21 INN-04).
 - Rollback: wg PODRECZNIK_UZYTKOWNIKA.md — powrót do wcześniejszej wersji bundle („Aktualizacje → Historia → Wróć do vX.Y"), werdykty historyczne nienaruszone (time-travel).
@@ -136,14 +137,14 @@ Najważniejszy sygnał z analizy dokumentacji: **duża część „systemowości
 - Brak opisanego modelu wdrażania: kto, kiedy, jak wypycha bundle do N instancji OPA.
 
 ### L2. Niespójność danych dokumentacyjnych (utrudnia niezawodne operacje)
-- Pliki Rego: 439 (README/INWENTARYZACJA) vs 383 (MANIFEST/bundle) vs 176 (COVERAGE_REPORT).
-- rule_id: 11 452 (README) vs 10 878 (bundle manifest) vs 10 827 (UNIFIED_PLAN) vs 10 509 (P24).
+- Pliki Rego: 472 (README/INWENTARYZACJA/MANIFEST 2026-08-22) — spójne po kampanii GLM 5.2.
+- rule_id: 11 808 (README/MANIFEST 2026-08-22) — spójne; historyczne rozbieżności (10 878/10 827/10 509) rozwiązane przez regenerację MANIFEST.
 - Testy natywne: UNIFIED_PLAN Faza 4 mówi „0 plików .rego w JDG/tests/" (ADR-013: ❌), a INWENTARYZACJA_PLIKOW raportuje 103+25 plików `test_native_*.rego`, zaś P23 — 98 testów rego w mapie pokrycia. **Wewnętrzna sprzeczność dokumentów.**
 - Narzędzia: 57 (README) vs 98 (P21) vs 130 (KATALOG_NARZEDZI).
 - Wniosek: brak jednego „single source of truth" dla metryk — konieczny autorytatywny rejestr (manifest 2.0 + API), regenerowany w CI i blokujący przy rozbieżności.
 
 ### L3. Niesfinalizowana deduplikacja i higiena reguł
-- 369 duplikatów rule_id (README), 336 wg ADR-008/010, deduplikacja planowana na Fazę 3 (UNIFIED_PLAN, M4: 2026-10-01).
+- Duplikaty rule_id: **3** (MANIFEST 2026-08-22) — kampania P00/P01 zredukowała 369 → 99 → 3; deduplikacja domknięta (dawny cel M4: 2026-10-01 zrealizowany wcześniej).
 - 512 stubów `{ true }` (P22) — część oznaczona CHECKPOINT-STUB (ADR-015), ale skala wymaga systematycznego procesu „zero stubów w produkcji".
 - Wniosek: zanim system będzie „prosty" w dodawaniu reguł, musi istnieć automatyczny guard uniemożliwiający wprowadzenie duplikatu/stuba (blokada CI + pre-commit), a nie proces ręczny.
 

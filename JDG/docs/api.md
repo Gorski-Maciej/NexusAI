@@ -1,11 +1,11 @@
 # 📡 NexusAI JDG Decision API — Dokumentacja
 
-> **Auto-generowane:** 2026-08-02 08:39:57 | **Wersja:** 1.0.0
+> **Auto-generowane:** 2026-08-02 08:39:57 (aktualizacja stanu: 2026-08-22) | **Wersja:** 1.0.0
 > **Generator:** Innowacja 6 — API Documentation Auto-Generator
 
 Silnik decyzyjny JDG oparty na OPA/Rego. Ewaluuje transakcje gospodarcze
-Jednoosobowej Działalności Gospodarczej przeciwko 7000+ regułom podatkowym,
-ubezpieczeniowym i compliance. Zwraca werdykt z pełnym drzewem proweniencji
+Jednoosobowej Działalności Gospodarczej przeciwko ~11 808 regułom podatkowym,
+ubezpieczeniowym i compliance (472 pliki Rego). Zwraca werdykt z pełnym drzewem proweniencji
 (A1) i łańcuchem przyczynowości temporalnej (A2).
 
 Architektura Multi-Pass:

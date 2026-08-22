@@ -1,4 +1,69 @@
-# CHANGELOG — NexusAI v7.0 Audit Implementation
+# CHANGELOG — NexusAI v8.0 (JDG OPA Enterprise + GLM 5.2)
+
+## [v8.0 JDG OPA Enterprise] — 2026-08-22
+
+### 🎯 Kampania GLM 5.2 — ETAP 06–28 (29/29 raportów WDROZONY_100)
+
+Silnik reguł podatkowych JDG osiągnął **certyfikację końcową ETAP 28/29**
+(2026-08-22): 14/14 bramek PASSED, **18 domen — 13 CERTIFIED / 5 CONDITIONAL /
+0 BLOCKED**, 29/29 raportów kampanii zakończonych statusem WDROZONY_100.
+
+#### 📦 Artefakty (stan na 2026-08-22)
+
+- **472 pliki Rego** (`JDG/rules/`), **11 808 unikalnych `rule_id`** (426 plików z `matched:true`, 11 811 bloków, 3 duplikaty) — Completeness Score 88/100
+- **298 narzędzi Python** (`JDG/tools/`), **198 testów pytest + 207 testów natywnych Rego**
+- **13 migracji** DuckDB RuleStore (001–013), **22 audit-state** (`JDG/bundles/*audit_state.json`)
+- **policies/ mirror zsynchronizowany** (ETAP 26: hash-parity 0% drift) + overlays v2026/v2027
+
+#### 🏗️ ETAPY 06–09 (silnik rdzeniowy)
+
+- **ETAP 06 Core Guards Temporal Thresholds** — 42 niezmienniki (INV-001..042), algebra interwałów temporalnych (zero luk/nakładek), propagacja pewności (CERTAIN/CONDITIONAL/NEEDS_ADVICE), twardy audyt hardcoded (ADR-002)
+- **ETAP 07 VAT Macro** — stawki/zwolnienia (art. 41–43/113), MPP (art. 108a–108f), odliczenia (art. 86–95), fraud (FD-01..06), pokrycie artykułowe COMPLETE
+- **ETAP 08 VAT Micro Core** — 1423 reguły, 29 artykułów, dual-layer binding (micro↔macro), detekcja stubów
+- **ETAP 09 VAT Micro Special** — KSeF, marża, POS, proporcja, WDT/WNT
+
+#### 🏗️ ETAPY 10–28 (kampania GLM 5.2 — pełna lista)
+
+| ETAP | Domeny | Status |
+|------|--------|--------|
+| 10 | PIT Macro (innowacje) | ✅ WDROZONY_100 |
+| 11 | PIT Micro Reliefs | ✅ WDROZONY_100 |
+| 12 | ZUS Core | ✅ WDROZONY_100 |
+| 13 | ZUS Micro | ✅ WDROZONY_100 |
+| 14 | PKPiR | ✅ WDROZONY_100 |
+| 15 | UoR / Amortyzacja | ✅ WDROZONY_100 |
+| 16 | KKS + Ordynacja | ✅ WDROZONY_100 |
+| 17 | Cross-border / TP / MDR | ✅ WDROZONY_100 |
+| 18 | Cykl życia JDG | ✅ WDROZONY_100 |
+| 19 | PCC / podatki lokalne / akcyza | ✅ WDROZONY_100 |
+| 20 | KSeF / JPK / e-Deklaracje | ✅ WDROZONY_100 |
+| 21 | RODO / AML-CBDD / BDO / HR | ✅ WDROZONY_100 |
+| 22 | Hyper Enterprise Contexts (Plan45) | ✅ WDROZONY_100 |
+| 23 | Enterprise AI / Neural Mesh | ✅ WDROZONY_100 |
+| 24 | Testy + CI/CD jakość | ✅ WDROZONY_100 |
+| 25 | Narzędzia / API / RuleStore / Bundle | ✅ WDROZONY_100 |
+| 26 | policies mirror sync | ✅ WDROZONY_100 |
+| 27 | Cross-domain red team / chaos | ✅ WDROZONY_100 |
+| 28 | **Certyfikacja końcowa** | ✅ WDROZONY_100 |
+
+#### 🔐 Architektura i kontrolki (v8.2–v8.3)
+
+- **Legal Twin / Legal Knowledge Graph** (ADR-016) — podstawa prawna jako referencja do węzła LKG (`_legal_basis_refs`), LCI ≥ 99%
+- **Warstwa konstytucyjna runtime invariants** (ADR-017/022) — INV-001..042 egzekwowane na każdym werdykcie (`evaluate`/`enforce`)
+- **Golden Oracle + ewaluacja różnicowa** (ADR-018) — golden_verdicts, UVR=0, decision_hash
+- **Decision Certificate F4** (ADR-019) — klasy pewności, pieczęć SHA-256→Merkle→HSM, eksport PDF/XML dla KAS
+- **Law Radar + Declarative Change** (ADR-020/021) — proaktywna adaptacja legislacyjna (lead ≥ 30 dni)
+- **Control Plane Rule Lifecycle** (ETAP 04) — fail-closed koordynacja zmian reguł (PENDING_REVIEW → ACTIVE → ROLLBACK)
+- **Orchestrator Data Contract** (ETAP 05) — 25-polowy werdykt, PASS 0–8, safe_merge, provenance tree
+- **Multi-Pass PASS 0–8 + Sharded Router O(1)** — p95 < 5 ms na shard, early abort, POST-MERGE invariants
+
+#### 🔧 Poprawki i porządki
+
+- Deduplikacja rule_id: 369 → **3** duplikaty; stub detector 487 → 25 (2026-08-12)
+- MANIFEST.md zaktualizowany (2026-08-22): 472 pliki / 11 808 rule_id / 88/100
+- Dokumenty INWENTARYZACJA_PLIKOW.md / KATALOG_REGUL.md / KATALOG_NARZEDZI.md zsynchronizowane ze stanem faktycznym
+
+---
 
 ## [v7.0 Enterprise Audit] — 2026-07-25
 

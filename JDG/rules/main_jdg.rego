@@ -2337,7 +2337,7 @@ final_verdict_p48 = safe_merge(final_verdict_p47,
     safe_merge(micro_ord_plan34.decide,
     safe_merge(kks_ord_atomic_p11.decide,
         fallback.decide
-    ))))))
+    )))))))
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 49: CROSS-BORDER / TP / CFC / MDR MIKRO (PROMPT 12 — GLM52 P12)
@@ -2353,7 +2353,7 @@ final_verdict_p49 = safe_merge(final_verdict_p48,
     safe_merge(micro_mdr_plan33.decide,
     safe_merge(crossborder_atomic_p12.decide,
         fallback.decide
-    ))))))
+    )))))))
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18al: P13 GLM52 RYCZAŁT / CEIDG / PP / SUKCESJA MIKRO (PROMPT 13 — GLM52 P13)
@@ -2392,7 +2392,7 @@ final_verdict_p51 = safe_merge(final_verdict_p50,
     safe_merge(micro_agricultural_plan33.decide,
     safe_merge(pcc_lokalne_atomic_p14.decide,
         fallback.decide
-    )))))))))
+    ))))))))
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 52: RODO / AML-CBDD / BDO-ŚRODOWISKO / BUDOWNICTWO / TRANSPORT MIKRO (PROMPT 15 — GLM52 P15)
@@ -2614,7 +2614,7 @@ final_verdict_post_merge = object.union(final_verdict_p53,
                                 object.union(final_verdict_p70,
                                     object.union(final_verdict_p71,
                                         object.union(final_verdict_p72,
-                                            {"_routing_context": routing_context}))))))))))))))))
+                                            {"_routing_context": routing_context})))))))))))))
 
 final_verdict_enforced = object.union(final_verdict_post_merge,
     runtime_invariants.enforce(final_verdict_post_merge))

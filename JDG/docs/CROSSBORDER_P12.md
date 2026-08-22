@@ -1,5 +1,9 @@
 # P12 — Cross-Border / MDR / TP / CFC / FX (Enterprise)
 
+> **📌 Aktualizacja 2026-08-22:** dokument historyczny opisujący wdrożenie promptu GLM 5.2.
+> Raporty źródłowe (`prompty_glm52/`, `raporty_glm52/`, `raporty_jdg_enterprise/`) zostały zarchiwizowane poza repo.
+> Aktualny stan wdrożenia: [`KAMPANIA_GLM52_ETAPY_10_28.md`](KAMPANIA_GLM52_ETAPY_10_28.md) + `JDG/bundles/*audit_state.json` (certyfikacja końcowa ETAP 28/29 — 2026-08-22, 14/14 bramek).
+
 > Wdrożenie raportu analitycznego **P12_CrossBorder_MDR_TP_CFC_FX.txt** (v9.1)
 > jako działający pakiet rego + narzędzie audytowe + testy + dokumentacja.
 > **Priorytet: miejsce świadczenia B2B/B2C (art. 28a-28o VAT) i MDR/DAC6.**

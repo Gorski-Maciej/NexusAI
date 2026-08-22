@@ -1,9 +1,9 @@
 # 📊 Raport Pokrycia Prawnego JDG
 
-> **Data:** 2026-07-18  
+> **Data:** 2026-08-22 (generator wymaga `Plan OPA/50_JDG_BRAKUJACE_PUNKTY_PRAWNE.md` — plik archiwalny; aktualny stan pokrycia w MANIFEST.md i KAMPANIA_GLM52_ETAPY_10_28.md)  
 > **Źródło:** `Plan OPA/50_JDG_BRAKUJACE_PUNKTY_PRAWNE.md`  
-> **Reguły Rego:** `JDG/rules/` (176 plików, ~10145 rule_id — w tym S1-S13 Enterprise v5.2)  
-> **S11-S13 (2026-07-18):** Annual Declaration (PIT-36/36L/28 auto-fill), JPK_V7 Auto-Generator, Legislative Change Monitor
+> **Reguły Rego:** `JDG/rules/` (472 pliki, ~11 808 rule_id — w tym S1-S24 Enterprise v8 + ETAP 10–28)  
+> **Status kampanii GLM 5.2 (2026-08-22):** 29/29 raportów WDROZONY_100; 18 domen (13 CERTIFIED / 5 CONDITIONAL / 0 BLOCKED); 12 273 referencje prawne
 
 ---
 

@@ -1,5 +1,9 @@
 # P10 — KKS (Kodeks Karny Skarbowy) Enterprise
 
+> **📌 Aktualizacja 2026-08-22:** dokument historyczny opisujący wdrożenie promptu GLM 5.2.
+> Raporty źródłowe (`prompty_glm52/`, `raporty_glm52/`, `raporty_jdg_enterprise/`) zostały zarchiwizowane poza repo.
+> Aktualny stan wdrożenia: [`KAMPANIA_GLM52_ETAPY_10_28.md`](KAMPANIA_GLM52_ETAPY_10_28.md) + `JDG/bundles/*audit_state.json` (certyfikacja końcowa ETAP 28/29 — 2026-08-22, 14/14 bramek).
+
 Kampania: `prompty_glm52/10_PROMT_KKS_SANKCJE.txt`
 Raport: `raporty_glm52/RAPORT_07_KKS.txt`
 Status: **BLOCKED_BY_EVIDENCE** (8/9 bramek; 2026-08-12)

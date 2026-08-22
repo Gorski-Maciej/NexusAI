@@ -1,5 +1,9 @@
 # 📘 WARSTWA DECYZYJNA CORE — NexusAI JDG (P02, Sekcje 1-7)
 
+> **📌 Aktualizacja 2026-08-22:** dokument historyczny opisujący wdrożenie promptu GLM 5.2.
+> Raporty źródłowe (`prompty_glm52/`, `raporty_glm52/`, `raporty_jdg_enterprise/`) zostały zarchiwizowane poza repo.
+> Aktualny stan wdrożenia: [`KAMPANIA_GLM52_ETAPY_10_28.md`](KAMPANIA_GLM52_ETAPY_10_28.md) + `JDG/bundles/*audit_state.json` (certyfikacja końcowa ETAP 28/29 — 2026-08-22, 14/14 bramek).
+
 > **Status:** ✅ WDROŻONY (P02 v9.0, 2026-08-02)
 > **Pliki:** `JDG/rules/adaptive_trust_scoring_enterprise.rego`,
 > `JDG/rules/conflict_declaration_enterprise.rego`,

@@ -1,5 +1,9 @@
 # 🧪 JDG Tests
 
+> **Status:** v8.3 | **Data:** 2026-08-22
+> **198 testów pytest + 207 natywnych testów Rego** (`tests/`, `tests/auto/`, `tests/rego/`, `tests/rego/micro/`)
+> Audyty ETAP 10–28: `test_*_etapNN_audit.py` (pytest) + `test_native_*_etapNN.rego` (OPA)
+
 ## Skopiowane testy
 
 16 testów JDG skopiowanych z `tests/` do `JDG/tests/` ze zaktualizowanymi ścieżkami:
@@ -44,4 +48,5 @@ python JDG/tools/validate_rules.py --strict
 
 ---
 
-*Struktura ENTERPRISE JDG — 16 testów, 40/40 temporal_validity PASS ✅*
+*Struktura ENTERPRISE JDG — 198 pytest + 207 natywnych Rego, 40/40 temporal_validity PASS ✅*
+*Certyfikacja końcowa ETAP 28/29 (2026-08-22): 14/14 bramek PASSED*

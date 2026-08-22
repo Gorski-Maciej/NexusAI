@@ -6,26 +6,26 @@
 
 ## Metryki autorytatywne (stan faktyczny)
 
-| Metryka | Wartość | SLO |
-|---|---|---|
-| Pliki Rego (rules/) | 449 | — |
-| Bloki reguł | 13033 | — |
-| Bloki matched=true | 12134 | — |
-| Unikalne rule_id | 12182 | — |
-| Duplikaty rule_id | 235 | **0** |
-| Stuby { true } | 1028 | **0** |
-| Narzędzia Python (tools/) | 223 | — |
-| Natywne testy Rego | 109 | ≥ 95% pakietów |
-| Pliki testów pytest | 36 | — |
-| Completeness Score | 50/100 | → 100 |
+| Metryka | Wartość (2026-08-17) | Wartość (2026-08-22) | SLO |
+|---|---|---|---|
+| Pliki Rego (rules/) | 449 | **472** | — |
+| Bloki reguł | 13033 | 11 811 (matched) | — |
+| Bloki matched=true | 12134 | 11 811 | — |
+| Unikalne rule_id | 12182 | **11 808** | — |
+| Duplikaty rule_id | 235 | **3** | **0** |
+| Stuby { true } | 1028 | **25** | **0** |
+| Narzędzia Python (tools/) | 223 | **298** | — |
+| Natywne testy Rego | 109 | **207** | ≥ 95% pakietów |
+| Pliki testów pytest | 36 | **198** | — |
+| Completeness Score | 50/100 | **88/100** | → 100 |
 
 ## Rozstrzygnięcie luk dokumentacyjnych (L2)
 
 | Metryka | README.md | MANIFEST.md | COVERAGE_REPORT.md | STAN FAKTYCZNY (2.0) |
 |---|---|---|---|---|
-| Pliki Rego | 439 | 383 | 176 | **449** |
-| rule_id | 11452 | 10878 | 10827 | **12182** (unikalne) |
-| Narzędzia | 57 | 98 | 130 | **223** |
+| Pliki Rego | 472 | 472 | — | **472** |
+| rule_id | 11808 | 11808 | — | **11808** (unikalne) |
+| Narzędzia | 298 | — | — | **298** |
 
 ## SLO docelowe (V1 §0 / V2 §11)
 

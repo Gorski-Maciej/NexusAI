@@ -1,6 +1,6 @@
 # ⚖️ NexusAI JDG — Zgodność z Przepisami (Compliance)
 
-> **Dokument:** ZGODNOSC_PRAWNA.md | **Pokrycie:** 13 aktów prawnych, ~11 452 reguł
+> **Dokument:** ZGODNOSC_PRAWNA.md | **Pokrycie:** 13 aktów prawnych, ~11 808 reguł (472 pliki Rego)
 > **Cel:** Jak system zapewnia zgodność z przepisami księgowymi i podatkowymi, jak obsługuje KSeF/JPK/deklaracje, jak odtworzyć dowolną decyzję (ścieżka audytu) i jak długo przechowuje dane.
 
 > ⚠️ **Zastrzeżenie:** Ten dokument opisuje funkcje silnika reguł i ich podstawy prawne. Nie stanowi porady prawnej. Ostateczną interpretację przepisów zawsze weryfikuj z doradcą podatkowym.
@@ -241,6 +241,10 @@ sequenceDiagram
 | Reguły audytu enterprise | `rules/p16_rodo_aml_security_innovations_v9.rego` (audyt ścieżki decyzji, Merkle proof-chain) |
 | Konflikty do rejestru | `jdg_conflict_registry` (tabela 8) |
 | Predykcje audytowe | `tools/predictive_audit_shield.py`, `tools/blockchain_audit_trail.py` |
+| **Legal Twin / LKG (ADR-016)** | `legal_graph` (migracja 003) — podstawa prawna jako referencja do węzła prawa (`_legal_basis_refs`), LCI ≥ 99% |
+| **Golden Oracle (ADR-018)** | `golden_verdicts` (migracja 003) — ewaluacja różnicowa, UVR = 0, `decision_hash` |
+| **Decision Certificate F4 (ADR-019)** | `decision_certificates` (migracja 003) + `POST /jdg/cert` — certyfikat z klasą pewności i pieczęcią, eksport PDF/XML dla KAS |
+| **Core Guards INV-001..042 (ADR-017/022)** | `rules/audit/runtime_invariants_enterprise.rego` — `evaluate`/`enforce` na każdym werdykcie |
 
 ---
 

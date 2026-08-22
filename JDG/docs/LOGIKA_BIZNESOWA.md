@@ -316,6 +316,52 @@ python -m pytest JDG/tests/test_temporal_validity.py -v --log-cli-level=DEBUG
 
 ---
 
+## 6b. Warstwy konstytucyjne ETAP 04–06 i kampania ETAP 10–28
+
+> Od kampanii GLM 5.2 (2026-08) silnik JDG działa na trzech warstwach konstytucyjnych
+> opisanych w [KAMPANIA_GLM52_ETAPY_10_28.md](KAMPANIA_GLM52_ETAPY_10_28.md).
+
+### 6b.1. Control Plane Rule Lifecycle (ETAP 04) — zarządzanie zmianą reguł
+
+- Każda zmiana reguły przechodzi fail-closed cykl: `PENDING_REVIEW → REVIEW → AUTHORIZE → CANARY (5%) → SHADOW_COMPARE (delta ≤ 2%) → RAMPED (25/50/100%) → SOAK (≥ 24 h) → ACTIVE → ROLLBACK`.
+- **Zakaz:** żadna metoda tej warstwy nie zapisuje bezpośrednio do `JDG/rules/` ani `policies/` — mutacja produkcyjna jest `FORBIDDEN`; host konsumuje podpisany bundle.
+- Operacje: `ADD / CHANGE / DEPRECATE / RETIRE / PURGE / SUSPEND / ROLLBACK` — każda z własnym manifestem, podpisem i ticketem.
+- Narzędzie: `JDG/tools/control_plane_lifecycle.py` · migracja `007_jdg_v12_control_plane_lifecycle.sql`.
+
+### 6b.2. Orchestrator Data Contract (ETAP 05) — kontrakt werdyktu
+
+- **25 pól wejściowych** werdyktu (`matched, rule_id, package, priority, _routing, _legal_basis, vat_rate, …`) + rozszerzenia: `_provenance_tree`, `_invariant_report`, `_certainty_class`, `_certainty_guard`, `_decision_certificate`, `_routing_context`.
+- **PASS 0–8** z early abort (PASS 0 RISK, 1 ROUTING, 2 COMPLIANCE, 3 CROSSBORDER — `BLOCK_AND_ALERT`; PASS 4–8 bez aborcji).
+- **safe_merge (INV-018/042):** werdykty niemutowalne (ZUS, zdrowotna, business, security.fortress) nigdy nie są nadpisywane; allowlist chroniony w runtime.
+- Narzędzie: `JDG/tools/orchestrator_data_contract.py` · testy: `test_orchestrator_data_contract.py`.
+
+### 6b.3. Core Guards — Temporal Thresholds (ETAP 06) — 42 niezmienniki
+
+- **INV-001..042** egzekwowane na każdym werdykcie: `evaluate(v)` (czysta funkcja) → `enforce(v)` (blokada/blokada z alarmem).
+- Poziomy: **RUNTIME** (21, blokada werdyktu) · **BUILD** (14, blokada merge w CI) · **STATISTICAL** (7, auto-rollback).
+- Przykłady: INV-001 (stawka VAT ∈ dozwolonego zbioru), INV-003 (brutto = netto × (1+stawka) ± epsilon), INV-030 (wersje bundle/rule/threshold w proweniencji), INV-035 (BLOCK_AND_ALERT → brak AUTO_POST).
+- **Temporal Interval Algebra (INV-037):** zero luk + zero nakładek w oknach ważności; deterministyczny pin `max(valid_from)`.
+- Narzędzie: `JDG/tools/core_guards_temporal_thresholds.py` · reguły: `rules/audit/runtime_invariants_enterprise.rego`.
+
+### 6b.4. Kampania ETAP 10–28 — domeny i audyty
+
+| ETAP | Domeny | Artefakty |
+|:----:|--------|-----------|
+| 10–11 | PIT Macro + Micro Reliefs | `pit_macro_etap10_innovations_v1.rego`, `pit_micro_reliefs_etap11_v1.rego` |
+| 12–13 | ZUS Core + Micro | `zus_core_etap12_v1.rego`, `zus_micro_etap13_v1.rego` |
+| 14–15 | PKPiR + UoR/Amortyzacja | `pkpir_etap14_v1.rego`, `uor_etap15_v1.rego` |
+| 16–17 | KKS+Ordynacja + Cross-border | `kks_ord_etap16_v1.rego`, `crossborder_etap17_v1.rego` |
+| 18–19 | Cykl życia JDG + PCC/lokalne/akcyza | `business_lifecycle_etap18_v1.rego`, `local_excise_etap19_v1.rego` |
+| 20–21 | KSeF/JPK + RODO/AML/BDO/HR | `ksef_jpk_etap20_v1.rego`, `rodo_aml_bdo_hr_etap21_v1.rego` |
+| 22–23 | Hyper Contexts + AI/Neural | `hyper_enterprise_contexts_etap22_v1.rego`, `enterprise_ai_neural_etap23_v1.rego` |
+| 24–25 | Testy/CI + Narzędzia/API/Bundle | `tests_ci_quality_etap24_v1.rego`, `tools_api_rulestore_bundles_etap25_v1.rego` |
+| 26–27 | Mirror sync + Red team/chaos | `policies_mirror_sync_etap26_v1.rego`, `cross_domain_red_team_etap27_v1.rego` |
+| 28 | Certyfikacja końcowa | `final_certification_etap28_v1.rego` (14/14 bramek) |
+
+Każdy etap: `JDG/tools/<domena>_etapNN_audit.py` (bramki) + `JDG/bundles/<domena>_etapNN_audit_state.json` (dowód) + pytest + natywny test Rego.
+
+---
+
 ## 7. Narzędzia debugowania (tabela szybkiego dostępu)
 
 | Narzędzie (JDG/tools) | Polecenie | Diagnozuje |

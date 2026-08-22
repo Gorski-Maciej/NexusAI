@@ -1,7 +1,8 @@
 # NexusAI JDG — Narzędzia (Tools)
 
-> **Status:** v8.0 | **Data:** 2026-08-02
-> **57 plików .py, ~22,525 linii** — uporządkowane wg kategorii (R15)
+> **Status:** v8.3 | **Data:** 2026-08-22
+> **298 plików .py, ~80 000+ linii** — uporządkowane wg kategorii (R15) + audyty ETAP 10–28
+> Pełna lista narzędzi: [`docs/KATALOG_NARZEDZI.md`](../docs/KATALOG_NARZEDZI.md)
 
 ---
 

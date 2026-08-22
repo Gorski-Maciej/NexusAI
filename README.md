@@ -36,7 +36,7 @@ Pełna instrukcja krok po kroku: [`docs/QUICKSTART.md`](docs/QUICKSTART.md).
 | Funkcja | Opis |
 |---|---|
 | 🧾 **Księgowanie autonomiczne** | 5 Agentów AI analizuje fakturę i podejmuje decyzję: **AUTO_POST** (≥0.92), **SUGGEST** (≥0.75), lub **ASK_USER** (<0.75). Jeden poziom automatyzacji. |
-| ⚖️ **OPA/Rego Rule Engine** | **~779 reguł kanonicznych** JDG (zintegrowanych z Docs 22-43) w architekturze Dual-Layer Multi-Pass. Pokrycie: PIT, VAT, ZUS, KSeF, JPK, KKS, ulgi, crossborder, RODO, AML, KŚT, PKPiR, PCC, sukcesja. 32+ plików `.rego` z `# METADATA`, Temporal Bundle Routing, 175+ testów granicznych + 23 testy modułów v2.0. **9 inicjatyw strategicznych v2.0 wdrożonych** (Immutable Audit Trail, Rego Linter, Legal Explainer, DuckDB WASM PoC, Orthogonal Array Testing, Telemetry Fail-Fast, Federated KUP Benchmark, Tax Ruling Drafter, Liquidity Oracle). |
+| ⚖️ **OPA/Rego Rule Engine** | **~11 808 reguł kanonicznych** JDG (472 pliki `.rego`, Dual-Layer Multi-Pass, PASS 0–8 + POST-MERGE). Pokrycie: PIT, VAT, ZUS, KSeF, JPK, KKS, ulgi, crossborder, RODO, AML, KŚT, PKPiR, PCC, sukcesja. **ETAP 06–28 wdrożony w 100%** (kampania GLM 5.2 — 29/29 raportów, 22 audit-state, certyfikacja końcowa 2026-08-22: 18 domen — 13 CERTIFIED / 5 CONDITIONAL). 198 testów pytest + 207 testów natywnych Rego, Temporal Bundle Routing, Sharded Router O(1) p95 < 5 ms, Immutable Audit Trail (HMAC + Merkle), Decision Certificate F4, Legal Twin / Legal Knowledge Graph, Control Plane Rule Lifecycle. |
 | 🔍 **OCR ensemble (4 silniki)** | Tesseract + PaddleOCR + docTR + EasyOCR z konsensusem głosowania i Nadzorcą AI. Wyższe **recall** niż pojedynczy VLM. |
 | 🤖 **5 Agentów AI (lokalnych)** | Orkiestrator (Granite 3.2 3B), Ekstrakcji Danych, Analityczny, Walidator Jakości, Środków Trwałych. 13 modeli GGUF. Cognitive Audit Trail, 4-Eyes Principle, Bayesian Trust Score. [Pełna specyfikacja →](docs/AGENTS.md) |
 | 📜 **Pełna zgodność KSeF** | Generowanie XML wg schematu `FA_VAT(2)`, walidacja XSD, wysyłka do API KSeF MF. |
@@ -72,6 +72,9 @@ Cała dokumentacja znajduje się w katalogu [`docs/`](docs/INDEX.md):
 | 17 | [Podręcznik użytkownika](docs/USER_GUIDE.md) | Instrukcja dla przedsiębiorcy |
 | 18 | [Słownik pojęć](docs/GLOSSARY.md) | Terminy księgowe i techniczne |
 | 19 | [FAQ](docs/FAQ.md) | Najczęstsze pytania |
+| 20 | [Moduł JDG (OPA/Rego)](JDG/README.md) | Silnik reguł podatkowych: 472 pliki Rego, ~11 808 rule_id, ETAP 06–28, kampania GLM 5.2 |
+| 21 | [JDG — Kampania ETAP 10–28](JDG/docs/KAMPANIA_GLM52_ETAPY_10_28.md) | Audyty wdrożenia, certyfikacja końcowa (2026-08-22) |
+| 22 | [JDG — Spis dokumentacji](JDG/docs/STRUKTURA_PROJEKTU.md) | Dokumentacja techniczna modułu JDG |
 
 ---
 

@@ -1,6 +1,6 @@
 # 🗃️ NexusAI JDG — Inwentaryzacja Plików (każdy plik w JDG/ i policies/)
 
-> **Dokument:** INWENTARYZACJA_PLIKOW.md | **Zakres:** **wszystkie pliki** katalogów `JDG/` (1006) i `policies/` (83)
+> **Dokument:** INWENTARYZACJA_PLIKOW.md | **Zakres:** **wszystkie pliki** katalogów `JDG/` (1407) i `policies/` (558)
 > **Cel:** kompletna mapa plików — statystyki per katalog, lista plików, przeznaczenie. Dla reguł Rego szczegóły w [KATALOG_REGUL.md](KATALOG_REGUL.md), dla narzędzi w [KATALOG_NARZEDZI.md](KATALOG_NARZEDZI.md).
 
 ---
@@ -17,18 +17,18 @@
 
 | Obszar | Pliki | Linie (w przybliżeniu) |
 |---|---:|---:|
-| **JDG/ (razem, bez __pycache__)** | ~880 | **~480 000** |
-| `JDG/rules/` — reguły Rego (439 plików) | 439 | **~363 000** |
-| ├─ rdzeń i domeny (root + subkatalogi, bez mikro) | ~190 | ~121 300 |
-| ├─ mikro-atomy (`micro/` ze wszystkimi podkatalogami) | ~110 | **~241 500** |
-| `JDG/tools/` (narzędzia Python) | 130 | ~39 900 |
-| `JDG/tests/` (testy, bez __pycache__) | ~220 | ~54 400 |
-| `JDG/docs/` (dokumentacja) | 43+ | ~7 800 |
+| **JDG/ (razem, bez __pycache__)** | ~1 407 | **~520 000+** |
+| `JDG/rules/` — reguły Rego (472 pliki) | 472 | **~370 000+** |
+| ├─ rdzeń i domeny (root + subkatalogi, bez mikro) | ~381 | ~128 000 |
+| ├─ mikro-atomy (`micro/` ze wszystkimi podkatalogami) | 91 | **~241 500** |
+| `JDG/tools/` (narzędzia Python) | 298 | ~80 000+ |
+| `JDG/tests/` (testy, bez __pycache__) | 408 | ~60 000+ |
+| `JDG/docs/` (dokumentacja) | 62 | ~10 000 |
 | `JDG/api/` (OpenAPI) | 1 | 1 038 |
-| `JDG/migrations/` (SQL) | 2 | 399 |
-| `JDG/bundles/` (OPA bundle) | 2 | 107 |
+| `JDG/migrations/` (SQL) | 13 | ~3 000 |
+| `JDG/bundles/` (OPA bundle + audit-state) | 107 | ~4 000 |
 | root `JDG/` (README, plany) | 7 | 16 170 |
-| **policies/ (razem)** | 83 | ~15 400 |
+| **policies/ (razem)** | 558 | ~60 000+ |
 
 ---
 
@@ -38,10 +38,10 @@
 |---|---:|---:|---|
 | `JDG/` (root) | 7 | 16 170 | README, MANIFEST, COVERAGE_REPORT, plany, generatory |
 | `JDG/api/` | 1 | 1 038 | specyfikacja OpenAPI 3.0.3 (`openapi.yaml`) |
-| `JDG/bundles/` | 2 | 107 | `bundle.sh` + `manifest.json` (budowa OPA bundle) |
-| `JDG/docs/` | 46 | ~7 800 | dokumentacja techniczna (ta rodzina plików) |
-| `JDG/migrations/` | 2 | 399 | DuckDB RuleStore: 001 (tabele 1–5) + 002 (6–9) |
-| `JDG/rules/` | 189 | 80 563 | ★ 189 plików Rego (rdzeń, domeny, enterprise, hyper) |
+| `JDG/bundles/` | 107 | ~4 000 | `bundle.sh` + manifesty + **22 audit-state (ETAP 06–28)** + golden_verdicts |
+| `JDG/docs/` | 62 | ~10 000 | dokumentacja techniczna (ta rodzina plików) |
+| `JDG/migrations/` | 13 | ~3 000 | DuckDB RuleStore: 001–013 (w tym Legal Twin 003, Control Plane 007) |
+| `JDG/rules/` | 231 | ~100 000 | ★ 231 plików Rego (rdzeń, domeny, enterprise, hyper, ETAP 10–28) |
 | `JDG/rules/accounting/` | 8 | 3 738 | PKPiR, UoR, amortyzacja, leasing, transformer |
 | `JDG/rules/advertising/` | 2 | 221 | plan44/45: reklama |
 | `JDG/rules/allowances/` | 1 | 54 | plan23: ulgi |
@@ -109,11 +109,11 @@
 | `JDG/rules/vat/` | 8 | 5 023 | ★ VAT: substantive, deductions, procedures, POS, plany |
 | `JDG/rules/wis/` | 2 | 188 | plan44/45: WIS |
 | `JDG/rules/zus/` | 8 | 1 873 | ★ ZUS: składki, zasiłki, zdrowotna, silniki |
-| `JDG/tests/` | 31 | 8 972 | pytest (16 skopiowanych + enterprise) |
+| `JDG/tests/` | 65 | ~20 000 | pytest (16 skopiowanych + enterprise + audyty ETAP 10–28) |
 | `JDG/tests/auto/` | 81 | 28 792 | ★ automatyczne testy blokowe `test_auto_block_*.py` (~60) + `test_pNN_*_enterprise.py` |
 | `JDG/tests/rego/` | 103 | 13 414 | ★ natywne testy Rego `test_native_*.rego` |
 | `JDG/tests/rego/micro/` | 25 | 3 250 | natywne testy mikro `test_native_micro_*.rego` (27 obszarów) |
-| `JDG/tools/` | 130 | 39 902 | ★ narzędzia deweloperskie (patrz KATALOG_NARZEDZI.md) |
+| `JDG/tools/` | 298 | ~80 000+ | ★ narzędzia deweloperskie (patrz KATALOG_NARZEDZI.md) |
 
 ---
 
@@ -133,7 +133,7 @@
 
 | Plik | Linii | Przeznaczenie |
 |---|---:|---|
-| `api/openapi.yaml` | 1 038 | spec OpenAPI 3.0.3: 10 endpointów, 13 schematów, JWT |
+| `api/openapi.yaml` | 1 038 | spec OpenAPI 3.0.3: 17 endpointów, 13 schematów, JWT |
 | `migrations/001_jdg_rule_store.sql` | 296 | tabele 1–5 + seed 50 progów + wersje reguł + kartografia |
 | `migrations/002_jdg_enterprise_v7.sql` | 103 | tabele 6–9 (predykcje, stale rules, konflikty, cache) |
 
@@ -142,9 +142,9 @@
 | Plik | Przeznaczenie |
 |---|---|
 | `bundle.sh` | budowa `jdg-bundle-{wersja}.tar.gz` (zachowuje strukturę katalogów, weryfikacja licznika plików) |
-| `manifest.json` | manifest bundle: 10 878 reguł, 383 pliki, serwis thresholds (`http://thresholds-service:8080`) |
+| `manifest.json` | manifest bundle: reguły i pliki (aktualizowany przy `bundle.sh`) |
 
-## 6. `JDG/docs/` — pełna lista (46 plików)
+## 6. `JDG/docs/` — pełna lista (62 pliki)
 
 **Nowa dokumentacja enterprise (ta seria):** `README.md` (root), `ARCHITEKTURA.md`, `STRUKTURA_PROJEKTU.md`, `API_REFERENCJA.md`, `LOGIKA_BIZNESOWA.md`, `ZGODNOSC_PRAWNA.md`, `PODRECZNIK_UZYTKOWNIKA.md`, `FAQ.md`, `KATALOG_REGUL.md`, `INWENTARYZACJA_PLIKOW.md` (ten), `KATALOG_NARZEDZI.md`.
 
@@ -173,20 +173,28 @@
 | `PIT_AUDYT_R04.md` · `PRAWA_PRZEDSIEBIORCOW_AUDYT_R02.md` · `VAT_AUDYT_R03.md` | raporty audytowe R02–R04 |
 | `api.md` | dokumentacja API (auto-generowana z openapi.yaml) |
 | `Bbb` / `Bbb.md` | artefakt pomocniczy (nie dokumentacja operacyjna) |
+| `CORE_GUARDS_TEMPORAL_THRESHOLDS.md` | ETAP 06 — 42 niezmienniki INV-001..042 |
+| `ORCHESTRATOR_DATA_CONTRACT.md` | ETAP 05 — 25-polowy werdykt, PASS 0–8, safe_merge |
+| `CONTROL_PLANE_RULE_LIFECYCLE.md` | ETAP 04 — fail-closed cykl życia reguł |
+| `KAMPANIA_GLM52_ETAPY_10_28.md` | ETAP 10–28 — audyty kampanii GLM 5.2, certyfikacja końcowa (2026-08-22) |
+| `LEGAL_SOURCE_REGISTRY.md` · `LEGAL_TWIN_RAPORT.md` · `LEGAL_TWIN_TRACEABILITY.md` | Legal Twin / LKG (ETAP 02–03) |
+| `AUDYT_PODSTAW_PRAWNYCH.md` · `P00_REMEDIACJA_PODSTAW_PRAWNYCH.md` · `LEGAL_COVERAGE_GAP_RAPORT.md` | audyty podstaw prawnych (P00/P02) |
+| `MANIFEST_2_0.md` · `PEWNOSC_DASHBOARD.md` · `KALENDARZ_ZMIAN_PRAWNYCH.md` | manifest 2.0, dashboard pewności, kalendarz zmian prawnych |
+| `SLOWNIK_REFERENCJI_PRAWNYCH.md` · `ZGODNOSC_DOKUMENTY_KSIEGOWE.md` | słownik referencji, zgodność dokumentów księgowych |
 
 ## 7. `JDG/tests/` — struktura
 
 | Katalog | Plików | Przykłady |
 |---|---:|---|
-| `JDG/tests/` | 31 | `test_temporal_validity.py` (40/40 PASS), `test_ksef_generator.py`, `test_risk_guard.py`, `test_tax_pipeline.py`… |
-| `JDG/tests/auto/` | 81 | `test_auto_block_*.py` (~60 bloków: vat, pit, zus, kks, rodo, ksef_jpk…) + `test_pNN_*_enterprise.py` (P01–P24) + `test_pit_audyt_r04_enterprise.py` itd. |
-| `JDG/tests/rego/` | 103 | `test_native_*.rego` (annual_declaration, audit_defense, banking, cashflow, ksef_*, mdr, neural_mesh, poa, strategic…) |
+| `JDG/tests/` | 65 | `test_temporal_validity.py` (40/40 PASS), `test_ksef_generator.py`, `test_risk_guard.py`, `test_tax_pipeline.py`, audyty ETAP 10–28 (`test_*_etapNN_audit.py`)… |
+| `JDG/tests/auto/` | 133 | `test_auto_block_*.py` (~60 bloków: vat, pit, zus, kks, rodo, ksef_jpk…) + `test_pNN_*_enterprise.py` (P01–P24) + `test_pit_audyt_r04_enterprise.py` itd. |
+| `JDG/tests/rego/` | 180 | `test_native_*.rego` (annual_declaration, audit_defense, banking, cashflow, ksef_*, mdr, neural_mesh, poa, strategic…, `test_native_*_etapNN.rego` dla ETAP 14–28) |
 | `JDG/tests/rego/micro/` | 25 | `test_native_micro_*.rego` (akcyza, aml, amortyzacja, bdo, budownictwo, ceidg, crossborder, jpk, kks, ksef, ord, pcc, pit, pkpir, pp, rodo, ryczalt, srodowisko, sukcesja, sus, transport, uor, vat, zasilkowa, zdrowotna) |
 | `JDG/tests/` (rego root) | 3 | `jdg_rules_test.rego`, `p26_regression_test.rego`, `test_uor_obligation.rego` + testy uor/pcc/kks |
 
 ---
 
-## 8. `policies/` — pełna inwentaryzacja (83 pliki)
+## 8. `policies/` — pełna inwentaryzacja (558 plików; mirror zsynchronizowany ETAP 26 — hash-parity 0% drift)
 
 ### 8.1. `policies/` (root)
 
@@ -196,7 +204,7 @@
 | `bundle.sh` | 91 | budowa bundle |
 | `data/thresholds_sc.rego` | 195 | progi dla serii SC (`data.sc.thresholds`) |
 
-### 8.2. `policies/jdg/` — mirror reguł JDG (v2026.07.10)
+### 8.2. `policies/jdg/` — mirror reguł JDG (ETAP 26, v2026.08; 52 pliki rego — w tym `*_etapNN_v1.rego` dla ETAP 10–28)
 
 **Orkiestracja:** `main_jdg.rego` (194), `_helpers_jdg.rego` (268), `_metadata_jdg.rego` (273), `README.md` (233).
 
