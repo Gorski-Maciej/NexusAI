@@ -1,0 +1,142 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "jdg.local_excise_etap19_audit",
+  "stage": "ETAP_19",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "package_structure": true,
+    "pcc_subject_vat_and_pcc3": true,
+    "territorial_rate_registry": true,
+    "temporal_effective_dates": true,
+    "document_evidence": true,
+    "real_estate_and_transport": true,
+    "excise_controls": true,
+    "legal_traceability": true,
+    "manual_fail_closed": true,
+    "safe_routing": true,
+    "thresholds_externalized": true,
+    "orchestrator_wiring": true,
+    "pytest_contract": true,
+    "native_rego_contract": true,
+    "report_present": true
+  },
+  "gate_summary": {
+    "passed": 16,
+    "total": 16
+  },
+  "files": {
+    "declared": 18,
+    "present": 18,
+    "all_present": true,
+    "files": {
+      "rules/local_taxes.rego": true,
+      "rules/local_taxes/pcc.rego": true,
+      "rules/local_taxes/pcc_enterprise_complete.rego": true,
+      "rules/local_taxes/pcc_excise_enterprise.rego": true,
+      "rules/local_taxes/real_estate.rego": true,
+      "rules/local_taxes/transport.rego": true,
+      "rules/local_taxes/akcyza_alcohol.rego": true,
+      "rules/local_taxes/akcyza_fuel.rego": true,
+      "rules/micro/pcc/pcc.rego": true,
+      "rules/micro/pcc_lokalne_atomic_p14.rego": true,
+      "rules/micro/akcyza/akcyza.rego": true,
+      "tools/pcc_engine.py": true,
+      "tools/gmina_rates_engine.py": true,
+      "tools/akcyza_classifier.py": true,
+      "tools/dn1_dt1_generator.py": true,
+      "docs/PCC_LOKALNE_AKCYZA_P14.md": true,
+      "docs/Bbb": true,
+      "rules/local_excise_etap19_v1.rego": true
+    }
+  },
+  "package": {
+    "package": true,
+    "balanced_braces": true,
+    "balanced_parentheses": true,
+    "rule_ids": 2,
+    "duplicate_rule_ids": [],
+    "duplicate_free": true,
+    "markers": {
+      "pcc_subject_verified": true,
+      "pcc_vat_excluded": true,
+      "pcc3_required": true,
+      "pcc3_deadline_days": true,
+      "local_rate_registry": true,
+      "gmina": true,
+      "territory_code": true,
+      "resolution_id": true,
+      "resolution_date": true,
+      "valid_from": true,
+      "valid_to": true,
+      "local_gmina_mismatch": true,
+      "document_complete": true,
+      "legal_traceability": true,
+      "classification_verified": true,
+      "e_dd_required": true,
+      "warehouse_required": true,
+      "stamps_required": true,
+      "exemption_claimed": true,
+      "manual_review_required": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "decision_mode := \"SUGGEST\"": true,
+      "\"no_auto_post\": true": true,
+      "facts_version": true,
+      "threshold_version": true
+    },
+    "markers_complete": true,
+    "legal_basis": {
+      "ustawa o PCC art. 1": true,
+      "2 pkt 4": true,
+      "6-10": true,
+      "podatkach i opłatach lokalnych art. 2-9": true,
+      "podatku akcyzowym art. 8-11": true,
+      "16": true,
+      "30-32": true,
+      "89": true,
+      "93-100": true,
+      "114-118": true,
+      "KKS art. 65": true
+    },
+    "legal_basis_complete": true,
+    "thresholds_externalized": true,
+    "no_auto_post": true
+  },
+  "wiring": {
+    "markers": {
+      "import": true,
+      "package_decisions": true,
+      "stage_chain": true,
+      "post_merge": true,
+      "public_final": true
+    },
+    "complete": true
+  },
+  "tests": {
+    "pytest": {
+      "present": true,
+      "test_count": 8,
+      "markers": {
+        "pcc": true,
+        "territorial": true,
+        "excise": true,
+        "fail_closed": true,
+        "wiring": true
+      }
+    },
+    "native_rego": {
+      "present": true,
+      "test_count": 6,
+      "markers": {
+        "test_no_match": true,
+        "test_missing_evidence": true,
+        "test_wrong_gmina": true,
+        "test_valid_local": true,
+        "test_vat": true,
+        "test_unverified_excise": true
+      }
+    }
+  },
+  "generated_at": "2026-08-21T22:48:18.348973+00:00"
+}

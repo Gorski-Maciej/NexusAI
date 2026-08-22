@@ -77,8 +77,13 @@ class TestSemanticGuard:
             category_code="FOOD",
             amount_net=500.0,
         )
-        # Should not raise
-        assert True
+        result = guard.evaluate(
+            invoice_text="Faktura za catering",
+            vendor_nip="1234567890",
+            amount_net=500.0,
+        )
+        assert "anomaly_score" in result
+        assert result["action"] in {"ALLOW", "WARNING", "TRIAGE_QUEUE", "BLOCK_AND_ALERT"}
 
     def test_anomaly_rules_loaded(self, conn: duckdb.DuckDBPyConnection) -> None:
         """Default anomaly rules are present."""

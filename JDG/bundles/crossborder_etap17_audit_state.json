@@ -1,0 +1,141 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "jdg.crossborder_etap17_audit",
+  "stage": "ETAP_17",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "package_structure": true,
+    "evidence_first_contract": true,
+    "temporal_contract": true,
+    "domain_coverage": true,
+    "legal_traceability": true,
+    "conflict_detection": true,
+    "manual_review_gate": true,
+    "safe_routing": true,
+    "thresholds_externalized": true,
+    "orchestrator_wiring": true,
+    "pytest_contract": true,
+    "native_rego_contract": true,
+    "report_present": true
+  },
+  "gate_summary": {
+    "passed": 14,
+    "total": 14
+  },
+  "files": {
+    "declared": 19,
+    "present": 19,
+    "all_present": true,
+    "files": {
+      "rules/crossborder.rego": true,
+      "rules/international.rego": true,
+      "rules/international_expanded.rego": true,
+      "rules/crossborder/plan23_ue.rego": true,
+      "rules/crossborder/exit_tax_cfc_complete.rego": true,
+      "rules/mdr/mdr_enterprise.rego": true,
+      "rules/mdr/mdr_hallmarks.rego": true,
+      "rules/mdr/plan45_mdr.rego": true,
+      "rules/mdr_dac6_enterprise.rego": true,
+      "rules/vida_drr_full.rego": true,
+      "rules/dac8_report_generator.rego": true,
+      "rules/cbam_full.rego": true,
+      "rules/tp/plan45_tp.rego": true,
+      "tools/crossborder_auditor.py": true,
+      "tools/mdr_scorer.py": true,
+      "tools/tp_documentation_engine.py": true,
+      "docs/CROSSBORDER_P12.md": true,
+      "docs/Bbb": true,
+      "rules/crossborder_etap17_v1.rego": true
+    }
+  },
+  "package": {
+    "package": true,
+    "balanced_braces": true,
+    "balanced_parentheses": true,
+    "rule_ids": 2,
+    "duplicate_rule_ids": [],
+    "duplicate_free": true,
+    "markers": {
+      "evidence_pack": true,
+      "domain_scope": true,
+      "legal_traceability": true,
+      "phase_status": true,
+      "conflicts": true,
+      "manual_review_required": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "decision_mode := \"SUGGEST\"": true,
+      "\"no_auto_post\": true": true,
+      "source_refs": true,
+      "evaluation_date": true,
+      "threshold_version": true,
+      "legal_basis_version": true,
+      "facts_version": true
+    },
+    "markers_complete": true,
+    "legal_basis": {
+      "VAT art. 9-13": true,
+      "28a-28o": true,
+      "41-42": true,
+      "23m-23zf": true,
+      "30da-30f": true,
+      "86a-86r": true,
+      "DAC6": true,
+      "DAC8": true,
+      "CBAM": true,
+      "ViDA": true,
+      "24c": true
+    },
+    "legal_basis_complete": true,
+    "domain_count": 8,
+    "domain_coverage": {
+      "residency": true,
+      "direction": true,
+      "place_of_supply": true,
+      "wdt_wnt": true,
+      "tp_cfc": true,
+      "mdr_dac": true,
+      "cbam_vida_dac8": true,
+      "fx": true
+    },
+    "no_auto_post": true,
+    "thresholds_externalized": true
+  },
+  "wiring": {
+    "markers": {
+      "import": true,
+      "package_decisions": true,
+      "stage_chain": true,
+      "post_merge": true,
+      "public_final": true
+    },
+    "complete": true
+  },
+  "tests": {
+    "pytest": {
+      "present": true,
+      "test_count": 8,
+      "markers": {
+        "fail_closed": true,
+        "evidence": true,
+        "temporal": true,
+        "conflict": true,
+        "manual": true,
+        "wiring": true
+      }
+    },
+    "native_rego": {
+      "present": true,
+      "test_count": 6,
+      "markers": {
+        "test_missing_context": true,
+        "test_conflict": true,
+        "test_high_risk": true,
+        "test_complete": true,
+        "test_no_match": true
+      }
+    }
+  },
+  "generated_at": "2026-08-21T22:03:29.591777+00:00"
+}

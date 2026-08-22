@@ -1010,6 +1010,11 @@ crossborder := {
     "cbam_certificate_required_2026": true,     # CBAM: pełny mechanizm od 2026
     "dac8_crypto_reporting_2026": true,         # DAC8: raportowanie krypto od 2026
     "vida_platform_rules_2030": true,           # ViDA: e-fakturowanie 2030+
+    # ETAP 17 — safety/evidence gates (ADR-006/ADR-022)
+    "mdr_risk_high_threshold": 70,
+    "source_registry": "data.jdg.legal_source_registry",
+    "threshold_version": "crossborder-2026.08",
+    "legal_basis_version": "isap-lkg-2026.08",
     "valid_from": "2025-01-01",
     "valid_to": null,
 }
@@ -1046,6 +1051,107 @@ pcc_local_excise := {
     "excise_wine_per_hl": 185,                  # wino
     "valid_from": "2026-01-01",
     "valid_to": null,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 19 — PCC / LOKALNE / AKCYZA EVIDENCE REGISTRY (ADR-002)
+# Temporalne dane kontraktu; konkretne uchwały gminne przychodzą w evidence input.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+local_excise_etap19 := {
+    "registry_version": "local-excise-2026.08",
+    "source_registry": "data.jdg.legal_source_registry",
+    "legal_basis_version": "isap-lkg-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "pcc_rates": {
+        "SALE": 0.02,
+        "LOAN": 0.005,
+        "COMPANY": 0.005,
+        "MORTGAGE": 0.001,
+        "EXCHANGE": 0.01
+    },
+    "pcc_exemption_limit": 1000,
+    "family_loan_limit": 36120,
+    "pcc3_deadline_days": 14,
+    "dn1_deadline_days": 14,
+    "transport_threshold_t": 3.5,
+    "excise_rates": {
+        "GASOLINE": 1566,
+        "DIESEL": 1206,
+        "LPG": 695,
+        "ETHANOL": 6900,
+        "BEER": 8.57,
+        "WINE": 185,
+        "CIGARETTES": 105,
+        "ELECTRICITY": 5
+    }
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 20 — KSeF / JPK / E-DEKLARACJE EVIDENCE REGISTRY (ADR-002)
+# Dane kontraktu są zewnętrzne wobec reguły; konkretne dowody pochodzą z inputu.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+ksef_jpk_etap20 := {
+    "registry_version": "ksef-jpk-etap20-2026.08",
+    "source_registry": "data.jdg.legal_source_registry",
+    "legal_basis_version": "isap-mf-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "offline_grace_days": 7,
+    "max_retries": 3,
+    "upo_deadline_days": 1,
+    "reconciliation_tolerance_pln": 0.01,
+    "required_invoice_fields": ["P_1", "P_2", "P_3", "P_4", "P_5", "P_6", "P_7", "P_8"],
+    "schema_registry": ["FA(2)", "FA(2)-KOREKTA", "JPK_V7M", "JPK_V7K", "JPK_KR", "JPK_ST"],
+    "declaration_types": ["JPK_V7M", "JPK_V7K", "JPK_KR", "JPK_ST", "E_DEKLARACJA"],
+    "gtu_codes": ["GTU_01", "GTU_02", "GTU_03", "GTU_04", "GTU_05", "GTU_06", "GTU_07", "GTU_08", "GTU_09", "GTU_10", "GTU_11", "GTU_12", "GTU_13"],
+    "signature_types": ["QUALIFIED", "TRUSTED"],
+    "deadline_policy": "JPK_V7 do 25. dnia miesiąca; termin z inputu musi być udowodniony",
+    "offline_policy": "kolejka offline, retry i UPO po przywróceniu MF; przekroczenie blokuje",
+    "exactly_once_policy": "outbox + idempotency_key + brak duplikatu; brak dowodu nie oznacza wysyłki",
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 21 — RODO / AML / BDO / HR EVIDENCE REGISTRY (ADR-002)
+# Wartości są danymi konfiguracyjnymi; dowody konkretnej sprawy pochodzą z inputu.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+rodo_aml_bdo_hr_etap21 := {
+    "registry_version": "compliance-hr-etap21-2026.08",
+    "source_registry": "data.jdg.legal_source_registry",
+    "legal_basis_version": "isap-uodo-aml-bdo-kp-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "rodo_breach_deadline_hours": 72,
+    "rodo_erasure_deadline_days": 30,
+    "aml_transaction_threshold_eur": 15000,
+    "ubo_minimum_pct": 25,
+    "bdo_kpo_deadline_days": 7,
+    "pfron_employee_threshold": 25,
+    "privacy_minimization_required": true,
+    "manual_approval_required": true,
+    "aml_str_requires_reference": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 22 — HYPER ENTERPRISE CONTEXTS META REGISTRY (ADR-002)
+# Rejestr kontraktu meta-validatora: kontekst, graf, deadline, limit i safety.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+hyper_enterprise_contexts_etap22 := {
+    "registry_version": "hyper-etap22-2026.08",
+    "source_registry": "data.jdg.legal_source_registry",
+    "legal_basis_version": "isap-hyper-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "allowed_priorities": ["P0", "P1", "P2", "P3"],
+    "context_catalog": ["GENERAL", "DEADLINES", "LIMITS", "MDR", "SANCTIONS", "FX", "WIS", "EDELIVERY", "SPECIAL"],
+    "required_contract_fields": ["input_hash", "evidence_ref", "result", "test_ref", "recipient"],
+    "dependency_graph_required": true,
+    "conflict_detector_required": true,
+    "manual_review_required": true,
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1191,6 +1297,17 @@ business_lifecycle := {
     "lifecycle_vat_threshold_pln": 200000,      # próg VAT (art. 113 ust. 1)
     "lifecycle_health_scorecard_levels": 5,     # poziomy health scorecard (A-E)
 
+    # ETAP 18 — formalny state machine i legal-source contract
+    "state_machine_version": "lifecycle-2026.08",
+    "source_registry": "data.jdg.legal_source_registry",
+    "legal_basis_version": "isap-lkg-2026.08",
+    "rollback_requires_owner_approval": true,
+    "effective_date_required": true,
+    "growth_transition_days": 7,
+    "resume_registration_days": 7,
+    "tax_form_change_days": 20,
+    "close_notice_days": 7,
+    "close_finalize_days": 30,
     "valid_from": "2025-01-01",
     "valid_to": null,
 }
@@ -1297,6 +1414,43 @@ enterprise_ai := {
 
     "valid_from": "2025-01-01",
     "valid_to": null,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 24 TESTS / CI / QUALITY THRESHOLDS (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+tests_ci_quality_etap24 := {
+    "registry_version": "tests-ci-quality-etap24-2026.08",
+    "legal_basis_version": "quality-governance-2026.08",
+    "min_coverage_pct": 95,
+    "min_critical_coverage_pct": 100,
+    "min_mutation_pct": 85,
+    "min_fuzz_cases": 10000,
+    "min_property_cases": 200,
+    "max_flake_count": 0,
+    "fail_on_empty": true,
+    "opa_fail_on_empty": true,
+    "required_gates": ["syntax", "semantic", "contract", "property", "mutation", "fuzz", "boundary", "coverage", "regression", "golden", "chaos", "security", "disaster_recovery"],
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ETAP 23 ENTERPRISE AI / NEURAL GOVERNANCE THRESHOLDS (ADR-002)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+enterprise_ai_neural_etap23 := {
+    "registry_version": "enterprise-ai-neural-etap23-2026.08",
+    "legal_basis_version": "ai-governance-isap-2026.08",
+    "calibration_min_samples": 100,
+    "max_expected_calibration_error": 0.10,
+    "max_population_stability_index": 0.20,
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "prediction_role": "ADVISORY_ONLY",
+    "legal_verdict_authority": "DETERMINISTIC_REGO",
+    "required_controls": ["calibration", "drift", "bias", "safety", "explainability", "feedback", "manual_review"],
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

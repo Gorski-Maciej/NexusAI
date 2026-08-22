@@ -1,0 +1,187 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "jdg.tests_ci_quality_etap24_audit",
+  "stage": "ETAP_24",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "package_structure": true,
+    "quality_contract": true,
+    "workflow_fail_closed": true,
+    "critical_workflow_steps": true,
+    "assert_true_detector": true,
+    "static_validation": true,
+    "property_mutation_fuzz": true,
+    "coverage_regression_golden": true,
+    "chaos_security_dr": true,
+    "reproducible_evidence": true,
+    "threshold_registry": true,
+    "orchestrator_wiring": true,
+    "pytest_contract": true,
+    "native_rego_contract": true,
+    "report_present": true
+  },
+  "gate_summary": {
+    "passed": 16,
+    "total": 16
+  },
+  "files": {
+    "declared": 20,
+    "present": 20,
+    "all_present": true,
+    "files": {
+      "prompty_glm52_enterprise/24_TESTS_CI_QUALITY.txt": true,
+      "rules/tests_ci_quality_etap24_v1.rego": true,
+      "rules/main_jdg.rego": true,
+      "rules/thresholds_jdg.rego": true,
+      ".github/workflows/jdg-quality.yml": true,
+      "tools/jdg_quality_cli.py": true,
+      "tools/validate_rules.py": true,
+      "tools/lint_rego_rules.py": true,
+      "tools/test_coverage_gate.py": true,
+      "tools/property_suite.py": true,
+      "tools/fuzz_runner.py": true,
+      "tools/mutation_runner.py": true,
+      "tools/golden_replay.py": true,
+      "tools/golden_autojustify.py": true,
+      "tools/invariant_checker.py": true,
+      "tools/runtime_invariants_check.py": true,
+      "tools/chaos_runner.py": true,
+      "tools/native_rego_report21_gate.py": true,
+      "tests/README.md": true,
+      "docs/TESTY_REGO_CI_P23.md": true
+    }
+  },
+  "tools": {
+    "declared": 11,
+    "present": 11,
+    "all_present": true,
+    "files": {
+      "tools/validate_rules.py": true,
+      "tools/lint_rego_rules.py": true,
+      "tools/test_coverage_gate.py": true,
+      "tools/property_suite.py": true,
+      "tools/fuzz_runner.py": true,
+      "tools/mutation_runner.py": true,
+      "tools/golden_replay.py": true,
+      "tools/golden_autojustify.py": true,
+      "tools/invariant_checker.py": true,
+      "tools/runtime_invariants_check.py": true,
+      "tools/chaos_runner.py": true
+    }
+  },
+  "package": {
+    "package": true,
+    "balanced_braces": true,
+    "balanced_parentheses": true,
+    "rule_ids": 2,
+    "rule_ids_unique": true,
+    "duplicate_rule_ids": [],
+    "markers": {
+      "scope_complete": true,
+      "static_gates_complete": true,
+      "property_complete": true,
+      "mutation_complete": true,
+      "fuzz_complete": true,
+      "boundary_complete": true,
+      "coverage_complete": true,
+      "regression_complete": true,
+      "golden_complete": true,
+      "chaos_complete": true,
+      "security_complete": true,
+      "dr_complete": true,
+      "fail_on_empty": true,
+      "reproducibility_seed": true,
+      "run_hash": true,
+      "evidence_refs": true,
+      "manual_review_required": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "decision_mode := \"SUGGEST\"": true,
+      "no_auto_post": true,
+      "legal_verdict_authority": true
+    },
+    "markers_complete": true,
+    "no_assert_true": true
+  },
+  "workflow": {
+    "workflow_present": true,
+    "markers": {
+      "python3 tools/lint_rego_rules.py --ci": true,
+      "python3 tools/else_chain_dead_code_detector.py --check": true,
+      "python3 tools/dead_rule_detector.py --check": true,
+      "python3 tools/hardcoded_audit_gate.py --gate": true,
+      "opa test tests/rego/ -v --fail-on-empty": true,
+      "opa check rules/ -b": true,
+      "python3 tools/golden_replay.py report": true,
+      "python3 tools/golden_autojustify.py gate": true,
+      "python3 tools/chaos_runner.py gate": true,
+      "needs: [lint-and-validate, tests, golden, bundle]": true
+    },
+    "markers_complete": true,
+    "ignored_failure_count": 0,
+    "critical_failures_not_ignored": true,
+    "fail_on_empty": true,
+    "opa_commands_present": true,
+    "merge_dependencies_present": true
+  },
+  "tests": {
+    "pytest": {
+      "present": true,
+      "test_count": 9
+    },
+    "native_rego": {
+      "present": true,
+      "test_count": 12
+    },
+    "markers": {
+      "pytest_present": true,
+      "native_rego_present": true,
+      "pytest_non_empty": true,
+      "native_non_empty": true,
+      "assert_true_scan": true,
+      "fail_closed": true,
+      "property": true,
+      "mutation": true,
+      "fuzz": true,
+      "golden": true,
+      "chaos": true,
+      "security": true,
+      "dr": true,
+      "wiring": true
+    },
+    "complete": true
+  },
+  "false_positive_scan": {
+    "assert_true_files": [],
+    "assert_true_count": 0,
+    "scan_complete": true,
+    "no_assert_true": true
+  },
+  "thresholds": {
+    "markers": {
+      "tests_ci_quality_etap24 := {": true,
+      "min_coverage_pct": true,
+      "min_critical_coverage_pct": true,
+      "min_mutation_pct": true,
+      "min_fuzz_cases": true,
+      "fail_on_empty": true,
+      "required_gates": true
+    },
+    "complete": true
+  },
+  "orchestrator": {
+    "markers": {
+      "import": true,
+      "package_decisions": true,
+      "stage_chain": true,
+      "post_merge": true,
+      "public_final": true,
+      "runtime_invariants": true
+    },
+    "complete": true
+  },
+  "opa_available": false,
+  "opa_status": "OPA_NOT_INSTALLED",
+  "generated_at": "2026-08-22T09:59:59.940236+00:00"
+}

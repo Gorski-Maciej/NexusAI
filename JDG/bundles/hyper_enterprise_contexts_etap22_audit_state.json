@@ -1,0 +1,149 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "jdg.hyper_enterprise_contexts_etap22_audit",
+  "stage": "ETAP_22",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "package_structure": true,
+    "context_contract": true,
+    "deadline_engine": true,
+    "limits_registry": true,
+    "dependency_graph_conflicts": true,
+    "priority_territory_validation": true,
+    "special_contexts": true,
+    "evidence_temporal_versions": true,
+    "legal_traceability": true,
+    "manual_fail_closed": true,
+    "safe_routing": true,
+    "thresholds_externalized": true,
+    "orchestrator_wiring": true,
+    "pytest_contract": true,
+    "native_rego_contract": true,
+    "report_present": true
+  },
+  "gate_summary": {
+    "passed": 17,
+    "total": 17
+  },
+  "files": {
+    "declared": 22,
+    "present": 22,
+    "all_present": true,
+    "files": {
+      "prompty_glm52_enterprise/22_HYPER_ENTERPRISE_CONTEXTS.txt": true,
+      "rules/jdg/hyper/general/plan45.rego": true,
+      "rules/jdg/hyper/deadlines/plan45.rego": true,
+      "rules/jdg/hyper/limits/plan45.rego": true,
+      "rules/jdg/hyper/mdr/plan45.rego": true,
+      "rules/jdg/hyper/sanctions/plan45.rego": true,
+      "rules/jdg/hyper/audit/plan45.rego": true,
+      "rules/jdg/hyper/fx/plan45.rego": true,
+      "rules/jdg/hyper/wis/plan45.rego": true,
+      "rules/jdg/hyper/edelivery/plan45.rego": true,
+      "rules/jdg/hyper/misc/plan45.rego": true,
+      "rules/jdg/hyper/family/plan45.rego": true,
+      "rules/jdg/hyper/force_majeure/plan45.rego": true,
+      "rules/jdg/hyper/procurement/plan45.rego": true,
+      "rules/jdg/hyper/solidarity/plan45.rego": true,
+      "rules/hyper_plan45_meta_enterprise.rego": true,
+      "rules/r13_hyper_konteksty_innovations_v9.rego": true,
+      "tools/hyper_quality.py": true,
+      "tools/hyper_konteksty_report13_gate.py": true,
+      "docs/PRAWA_PRZEDSIEBIORCOW_AUDYT_R02.md": true,
+      "docs/Bbb": true,
+      "rules/hyper_enterprise_contexts_etap22_v1.rego": true
+    }
+  },
+  "package": {
+    "package": true,
+    "balanced_braces": true,
+    "balanced_parentheses": true,
+    "rule_ids": 2,
+    "duplicate_rule_ids": [],
+    "duplicate_free": true,
+    "markers": {
+      "context_catalog": true,
+      "context_registry_complete": true,
+      "output_contract_complete": true,
+      "input_hash": true,
+      "evidence_ref": true,
+      "test_ref": true,
+      "recipient": true,
+      "deadline_engine": true,
+      "limits_registry": true,
+      "dependency_graph": true,
+      "conflict_detector": true,
+      "priority_validation": true,
+      "territorial_validation": true,
+      "context_complete": true,
+      "source_complete": true,
+      "mdr_complete": true,
+      "sanctions_complete": true,
+      "fx_complete": true,
+      "wis_complete": true,
+      "edelivery_complete": true,
+      "manual_review_required": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "decision_mode := \"SUGGEST\"": true,
+      "\"no_auto_post\": true": true,
+      "valid_from": true,
+      "valid_to": true,
+      "facts_version": true,
+      "threshold_version": true
+    },
+    "markers_complete": true,
+    "legal_basis": {
+      "PIT art. 30ca": true,
+      "30h": true,
+      "45": true,
+      "OrdPU art. 12": true,
+      "126": true,
+      "MDR": true,
+      "eIDAS": true,
+      "doręczeniach elektronicznych": true,
+      "KKS": true
+    },
+    "legal_basis_complete": true,
+    "thresholds_externalized": true,
+    "no_auto_post": true
+  },
+  "wiring": {
+    "markers": {
+      "import": true,
+      "package_decisions": true,
+      "stage_chain": true,
+      "post_merge": true,
+      "public_final": true
+    },
+    "complete": true
+  },
+  "tests": {
+    "pytest": {
+      "present": true,
+      "test_count": 9,
+      "markers": {
+        "context": true,
+        "deadline": true,
+        "limits": true,
+        "graph": true,
+        "fail_closed": true,
+        "wiring": true
+      }
+    },
+    "native_rego": {
+      "present": true,
+      "test_count": 6,
+      "markers": {
+        "test_no_match": true,
+        "test_missing_evidence": true,
+        "test_graph": true,
+        "test_deadline": true,
+        "test_conflict": true,
+        "test_valid": true
+      }
+    }
+  },
+  "generated_at": "2026-08-22T08:32:45.044574+00:00"
+}

@@ -1,0 +1,173 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "jdg.enterprise_ai_neural_etap23_audit",
+  "stage": "ETAP_23",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "package_structure": true,
+    "contract_markers": true,
+    "legal_traceability": true,
+    "prediction_separation": true,
+    "calibration_and_drift": true,
+    "bias_safety": true,
+    "explainability_llm": true,
+    "feedback_predictions": true,
+    "temporal_evidence": true,
+    "safe_routing": true,
+    "threshold_registry": true,
+    "orchestrator_wiring": true,
+    "pytest_contract": true,
+    "native_rego_contract": true,
+    "report_present": true
+  },
+  "gate_summary": {
+    "passed": 16,
+    "total": 16
+  },
+  "files": {
+    "declared": 18,
+    "present": 18,
+    "all_present": true,
+    "files": {
+      "prompty_glm52_enterprise/23_ENTERPRISE_AI_NEURAL.txt": true,
+      "rules/enterprise_ai_neural_etap23_v1.rego": true,
+      "rules/main_jdg.rego": true,
+      "rules/thresholds_jdg.rego": true,
+      "rules/adaptive_trust_scoring_enterprise.rego": true,
+      "rules/neural_rule_mesh_enterprise.rego": true,
+      "rules/neural_mesh_v2_enterprise.rego": true,
+      "rules/cashflow_tax_predictor_enterprise.rego": true,
+      "rules/banking_automation_enterprise.rego": true,
+      "rules/strategic_advisor_enterprise.rego": true,
+      "rules/legislative_monitor_enterprise.rego": true,
+      "tools/llm_bridge.py": true,
+      "tools/decision_quality_monitor.py": true,
+      "tools/adaptive_trust_score.py": true,
+      "tools/neural_mesh_innovations_auditor.py": true,
+      "docs/NEURAL_MESH_INNOWACJE_P20.md": true,
+      "docs/WIZJA_OPA_ENTERPRISE_V2.md": true,
+      "docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md": true
+    }
+  },
+  "package": {
+    "package": true,
+    "balanced_braces": true,
+    "balanced_parentheses": true,
+    "rule_ids": 2,
+    "rule_ids_unique": 2,
+    "duplicate_rule_ids": [],
+    "duplicate_free": true,
+    "markers": {
+      "context_complete": true,
+      "source_complete": true,
+      "prediction_separation": true,
+      "prediction_evidence": true,
+      "calibration_complete": true,
+      "drift_ok": true,
+      "quality_complete": true,
+      "bias_safety_complete": true,
+      "explainability_complete": true,
+      "llm_safe": true,
+      "feedback_complete": true,
+      "cashflow_complete": true,
+      "banking_complete": true,
+      "manual_review_required": true,
+      "legal_verdict_authority": true,
+      "DETERMINISTIC_REGO": true,
+      "ADVISORY_ONLY": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "decision_mode := \"SUGGEST\"": true,
+      "no_auto_post": true,
+      "valid_from": true,
+      "valid_to": true,
+      "facts_version": true,
+      "threshold_version": true,
+      "input_hash": true,
+      "source_refs": true,
+      "legal_nodes": true
+    },
+    "markers_complete": true,
+    "legal_basis": {
+      "RODO art. 5": true,
+      "RODO art. 22": true,
+      "RODO art. 25": true,
+      "PIT art. 44": true,
+      "VAT art. 103": true,
+      "OrdPU art. 4": true,
+      "PSD2": true,
+      "ADR-006": true,
+      "ADR-022": true
+    },
+    "legal_basis_complete": true,
+    "no_automatic_action_literal": true
+  },
+  "thresholds": {
+    "markers": {
+      "enterprise_ai_neural_etap23 := {": true,
+      "calibration_min_samples": true,
+      "max_expected_calibration_error": true,
+      "max_population_stability_index": true,
+      "prediction_role": true,
+      "legal_verdict_authority": true,
+      "required_controls": true
+    },
+    "complete": true
+  },
+  "wiring": {
+    "markers": {
+      "import": true,
+      "package_decisions": true,
+      "stage_chain": true,
+      "post_merge": true,
+      "public_final": true,
+      "runtime_invariants": true
+    },
+    "complete": true
+  },
+  "safety": {
+    "markers": {
+      "manual_review": true,
+      "suggest_only": true,
+      "no_auto_post": true,
+      "legal_authority": true,
+      "prediction_advisory": true,
+      "llm_explanation_only": true,
+      "none_external_action": true
+    },
+    "complete": true
+  },
+  "tests": {
+    "pytest": {
+      "present": true,
+      "test_count": 7,
+      "markers": {
+        "prediction_separation": true,
+        "calibration": true,
+        "drift": true,
+        "bias": true,
+        "explainability": true,
+        "llm": true,
+        "cashflow": true,
+        "banking": true,
+        "fail_closed": true,
+        "manual_review": true,
+        "wiring": true
+      }
+    },
+    "native_rego": {
+      "present": true,
+      "test_count": 6,
+      "markers": {
+        "test_no_match": true,
+        "test_missing_contract": true,
+        "test_prediction_separation": true,
+        "test_quality": true,
+        "test_safety": true,
+        "test_valid": true
+      }
+    }
+  },
+  "generated_at": "2026-08-22T09:29:53.398371+00:00"
+}

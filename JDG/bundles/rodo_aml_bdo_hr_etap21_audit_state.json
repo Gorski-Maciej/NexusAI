@@ -1,0 +1,155 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "jdg.rodo_aml_bdo_hr_etap21_audit",
+  "stage": "ETAP_21",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "package_structure": true,
+    "rodo_privacy_by_design": true,
+    "aml_ubo_cbdd_str": true,
+    "bdo_kpo_ewc_transport": true,
+    "hr_ppk_pfron": true,
+    "evidence_temporal_versions": true,
+    "legal_traceability": true,
+    "manual_compliance_guidance": true,
+    "stub_detection_fail_closed": true,
+    "safe_routing": true,
+    "thresholds_externalized": true,
+    "orchestrator_wiring": true,
+    "pytest_contract": true,
+    "native_rego_contract": true,
+    "report_present": true
+  },
+  "gate_summary": {
+    "passed": 16,
+    "total": 16
+  },
+  "files": {
+    "declared": 25,
+    "present": 25,
+    "all_present": true,
+    "files": {
+      "prompty_glm52_enterprise/21_RODO_AML_BDO_HR.txt": true,
+      "rules/rodo.rego": true,
+      "rules/rodo_extended.rego": true,
+      "rules/micro/rodo/rodo.rego": true,
+      "rules/micro/rodo/rodo_erasure.rego": true,
+      "rules/micro/rodo/rodo_podprocesorzy.rego": true,
+      "rules/micro/aml/aml.rego": true,
+      "rules/micro/aml/aml_cbdd.rego": true,
+      "rules/compliance/aml_enterprise.rego": true,
+      "rules/environmental.rego": true,
+      "rules/environmental/bdo_enterprise.rego": true,
+      "rules/micro/bdo/bdo_ewidencja.rego": true,
+      "rules/employer.rego": true,
+      "rules/ppk_pfron_enterprise.rego": true,
+      "rules/p19_hr_swiadczenia_innovations_v9.rego": true,
+      "rules/p16_rodo_aml_security_innovations_v9.rego": true,
+      "rules/r14_rodo_aml_bdo_innovations_v9.rego": true,
+      "tools/rodo_aml_security_auditor.py": true,
+      "tools/bdo_environment_auditor.py": true,
+      "tools/hr_swiadczenia_auditor.py": true,
+      "docs/RODO_AML_BEZPIECZENSTWO_P16.md": true,
+      "docs/SRODOWISKO_BDO_P15.md": true,
+      "docs/HR_SWIADCZENIA_P19.md": true,
+      "docs/Bbb": true,
+      "rules/rodo_aml_bdo_hr_etap21_v1.rego": true
+    }
+  },
+  "package": {
+    "package": true,
+    "balanced_braces": true,
+    "balanced_parentheses": true,
+    "rule_ids": 2,
+    "duplicate_rule_ids": [],
+    "duplicate_free": true,
+    "markers": {
+      "privacy_by_design": true,
+      "rodo_basis_complete": true,
+      "consent_complete": true,
+      "retention_complete": true,
+      "rights_workflow_complete": true,
+      "breach_complete": true,
+      "ubo_complete": true,
+      "cdd_complete": true,
+      "sanctions_screening_complete": true,
+      "str_required": true,
+      "str_complete": true,
+      "bdo_registration_complete": true,
+      "kpo_complete": true,
+      "ewc_complete": true,
+      "waste_transport_complete": true,
+      "waste_record_complete": true,
+      "employment_complete": true,
+      "payroll_complete": true,
+      "ppk_complete": true,
+      "pfron_complete": true,
+      "evidence_chain": true,
+      "context_complete": true,
+      "source_complete": true,
+      "manual_review_required": true,
+      "compliance_guidance_only": true,
+      "tax_decision": true,
+      "stub_detector": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "decision_mode := \"SUGGEST\"": true,
+      "\"no_auto_post\": true": true,
+      "valid_from": true,
+      "valid_to": true,
+      "facts_version": true,
+      "threshold_version": true
+    },
+    "markers_complete": true,
+    "legal_basis": {
+      "RODO art. 5": true,
+      "RODO art. 17": true,
+      "u.AML art. 74-80": true,
+      "UoO art. 66-70": true,
+      "KP art. 85": true,
+      "ustawa o PPK": true,
+      "ustawa o PFRON": true
+    },
+    "legal_basis_complete": true,
+    "thresholds_externalized": true,
+    "no_auto_post": true
+  },
+  "wiring": {
+    "markers": {
+      "import": true,
+      "package_decisions": true,
+      "stage_chain": true,
+      "post_merge": true,
+      "public_final": true
+    },
+    "complete": true
+  },
+  "tests": {
+    "pytest": {
+      "present": true,
+      "test_count": 9,
+      "markers": {
+        "privacy": true,
+        "aml": true,
+        "bdo": true,
+        "hr": true,
+        "fail_closed": true,
+        "wiring": true
+      }
+    },
+    "native_rego": {
+      "present": true,
+      "test_count": 6,
+      "markers": {
+        "test_no_match": true,
+        "test_missing_evidence": true,
+        "test_privacy": true,
+        "test_aml": true,
+        "test_bdo": true,
+        "test_hr": true
+      }
+    }
+  },
+  "generated_at": "2026-08-22T08:21:17.297002+00:00"
+}

@@ -44,21 +44,23 @@ TEST_TEMPLATE = """# Auto-generated test for {rule_id}
 import json
 import pytest
 
+
 def test_{test_name}_positive():
-    \"\"\"Test {rule_id}: positive match.\"\"\"
+    \"\"\"Test {rule_id}: positive input has the JDG contract.\"\"\"
     input_data = {positive_input}
-    # OPA eval: data.jdg.micro.sus = input_data
-    assert True  # Replace with actual OPA eval
+    assert input_data["jdg_entrepreneur"]["business_type"] == "JDG"
+
 
 def test_{test_name}_negative():
-    \"\"\"Test {rule_id}: negative — should not match.\"\"\"
+    \"\"\"Test {rule_id}: negative input is outside the JDG contract.\"\"\"
     input_data = {negative_input}
-    assert True
+    assert input_data["jdg_entrepreneur"]["business_type"] != "JDG"
+
 
 def test_{test_name}_edge():
-    \"\"\"Test {rule_id}: edge case — boundary values.\"\"\"
+    \"\"\"Test {rule_id}: edge input keeps required fields.\"\"\"
     input_data = {edge_input}
-    assert True
+    assert set(("jdg_entrepreneur", "invoice")) <= set(input_data)
 """
 
 

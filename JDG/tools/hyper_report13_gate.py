@@ -160,6 +160,7 @@ CRITICAL_MARKERS = {
     ),
     "a45": (
         "jdg.calendar.hyper.pit_annual_return_30april",
+        "jdg.r13_hyper_konteksty_innovations.annual_deadline_calendar",
         "pit_annual_return_30april",
         "30 kwietnia",
         "zeznanie roczne",

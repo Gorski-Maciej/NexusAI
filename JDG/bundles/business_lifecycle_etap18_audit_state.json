@@ -1,0 +1,141 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "jdg.business_lifecycle_etap18_audit",
+  "stage": "ETAP_18",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "package_structure": true,
+    "state_machine": true,
+    "forms_and_deadlines": true,
+    "rollback_contract": true,
+    "temporal_effective_dates": true,
+    "rate_registry": true,
+    "legal_traceability": true,
+    "manual_gate": true,
+    "safe_routing": true,
+    "thresholds_externalized": true,
+    "orchestrator_wiring": true,
+    "pytest_contract": true,
+    "native_rego_contract": true,
+    "report_present": true
+  },
+  "gate_summary": {
+    "passed": 15,
+    "total": 15
+  },
+  "files": {
+    "declared": 15,
+    "present": 15,
+    "all_present": true,
+    "files": {
+      "rules/micro/ryczalt/ryczalt.rego": true,
+      "rules/micro/plan33_ryc.rego": true,
+      "rules/micro/ceidg/ceidg.rego": true,
+      "rules/micro/pp/pp.rego": true,
+      "rules/micro/sukcesja/sukcesja.rego": true,
+      "rules/business.rego": true,
+      "rules/business/plan26_suspension_succession.rego": true,
+      "rules/lifecycle_manager_enterprise.rego": true,
+      "rules/restructuring.rego": true,
+      "rules/form_transition_simulator_enterprise.rego": true,
+      "tools/ryczalt_lifecycle_auditor.py": true,
+      "tools/lifecycle_navigator.py": true,
+      "docs/RYCZALT_CYKL_ZYCIE_P13.md": true,
+      "docs/Bbb": true,
+      "rules/business_lifecycle_etap18_v1.rego": true
+    }
+  },
+  "package": {
+    "package": true,
+    "balanced_braces": true,
+    "balanced_parentheses": true,
+    "rule_ids": 2,
+    "duplicate_rule_ids": [],
+    "duplicate_free": true,
+    "markers": {
+      "state_machine": true,
+      "transition_catalog": true,
+      "required_forms": true,
+      "deadline_calendar": true,
+      "rollback_event": true,
+      "rate_registry": true,
+      "effective_from": true,
+      "effective_to": true,
+      "legal_traceability": true,
+      "manual_review_required": true,
+      "owner_approval": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "decision_mode := \"SUGGEST\"": true,
+      "\"no_auto_post\": true": true,
+      "facts_version": true,
+      "threshold_version": true,
+      "source_refs": true
+    },
+    "markers_complete": true,
+    "legal_basis": {
+      "CEIDG art. 5-15": true,
+      "Prawo przedsiębiorców art. 18": true,
+      "22-25": true,
+      "31-36": true,
+      "ryczałcie art. 6": true,
+      "art. 12": true,
+      "zarządzie sukcesyjnym art. 3-15": true,
+      "PIT art. 9a": true,
+      "VAT art. 14": true,
+      "SUS art. 18a/18c/43": true
+    },
+    "legal_basis_complete": true,
+    "states": {
+      "PRE_START": true,
+      "ACTIVE_STARTUP": true,
+      "ACTIVE_GROWTH": true,
+      "SUSPENDED": true,
+      "SUCCESSION": true,
+      "TRANSITION": true,
+      "CLOSING": true,
+      "CLOSED": true
+    },
+    "states_complete": true,
+    "transition_count": 13,
+    "no_auto_post": true,
+    "thresholds_externalized": true
+  },
+  "wiring": {
+    "markers": {
+      "import": true,
+      "package_decisions": true,
+      "stage_chain": true,
+      "post_merge": true,
+      "public_final": true
+    },
+    "complete": true
+  },
+  "tests": {
+    "pytest": {
+      "present": true,
+      "test_count": 7,
+      "markers": {
+        "state_machine": true,
+        "forms": true,
+        "deadline": true,
+        "rollback": true,
+        "manual": true,
+        "wiring": true
+      }
+    },
+    "native_rego": {
+      "present": true,
+      "test_count": 7,
+      "markers": {
+        "test_no_match": true,
+        "test_invalid_transition": true,
+        "test_suspend": true,
+        "test_succession": true,
+        "test_valid_register": true
+      }
+    }
+  },
+  "generated_at": "2026-08-21T22:15:48.754581+00:00"
+}

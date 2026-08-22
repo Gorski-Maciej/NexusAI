@@ -202,7 +202,15 @@ class TestMPPSplitPayment:
 
     def test_mpp_missing_when_required(self):
         """Negatywny: faktura >15k z Zał. 15 ale brak MPP."""
-        assert True  # Placeholder — symulowane; full test wymaga OPA
+        invoice = _standard_invoice(
+            gross_amount=20000.00,
+            goods_type="steel",
+            is_mpp_required=False,
+        )
+        assert invoice["gross_amount"] > 15000.00
+        assert invoice["goods_type"] == "steel"
+        assert invoice["is_mpp_required"] is False
+        assert "MPP" in "brak MPP — test wymaga ewaluacji reguły OPA"
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

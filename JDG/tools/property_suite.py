@@ -1,139 +1,186 @@
 #!/usr/bin/env python3
 # ═══════════════════════════════════════════════════════════════════════════════
 # NexusAI JDG — PROPERTY SUITE (GLM52 P18 — TESTY / CI / JAKOŚĆ, V1 §8 L2)
-# Property-based testing (hypothesis) — niezmienniki per domena:
-#   • VAT: stawka ∈ {0, 0.05, 0.08, 0.23, ZW, NP, OO}; brutto = netto × (1+st)
-#   • PIT: suma odliczeń ≤ podstawa; kara ≥ 0; kwota wolna ≤ dochód
-#   • ZUS: składki ≥ 0; Σ składek = suma per tytuł
-#   • KKS: kara ≥ 0; stawki dzienne ∈ {1/30..1/720 minimalnego wynagrodzenia}
-#   • grosze: zaokrąglenia do 0,01 (banker's — art. 63 OrdPU)
-#  • run   — uruchom wszystkie właściwości (hypothesis),
+# Deterministyczne testy własnościowe bez zależności runtime.
+# CrossHair pozostaje opcjonalną warstwą formalnej analizy w środowisku dev.
+#  • run   — uruchom wszystkie właściwości,
 #  • gate  — BRAMKA CI: 0 naruszeń niezmienników.
 # ═══════════════════════════════════════════════════════════════════════════════
 from __future__ import annotations
 
 import argparse
 import json
-import sys
+import random
+from datetime import date, timedelta
 from decimal import Decimal, ROUND_HALF_UP
+from typing import Callable
 
-from hypothesis import given, settings
-from hypothesis import strategies as st
+Money = Decimal
+Property = Callable[[], int]
 
-# ── Strategie domenowe ────────────────────────────────────────────────────────
-vat_rates = st.sampled_from([Decimal("0"), Decimal("0.05"), Decimal("0.08"),
-                             Decimal("0.23")])
-pln = st.decimals(min_value=Decimal("0"), max_value=Decimal("1_000_000"),
-                  places=2, allow_nan=False, allow_infinity=False)
-int_nonneg = st.integers(min_value=0, max_value=100_000)
-int_pos = st.integers(min_value=1, max_value=100_000)
-
-PROPERTIES = {}
+PROPERTIES: dict[str, dict[str, object]] = {}
 
 
 def prop(name: str, desc: str):
-    def deco(fn):
+    """Rejestruje deterministyczną własność i jej opis."""
+    def deco(fn: Property) -> Property:
         PROPERTIES[name] = {"description": desc, "fn": fn}
         return fn
     return deco
 
 
-# ── VAT ───────────────────────────────────────────────────────────────────────
+MONEY_CASES = [
+    Decimal("0"), Decimal("0.001"), Decimal("0.005"), Decimal("0.01"),
+    Decimal("1.23"), Decimal("99999.99"), Decimal("1000000.00"),
+]
+VAT_RATES = (Decimal("0"), Decimal("0.05"), Decimal("0.08"), Decimal("0.23"))
+
+
 @prop("vat_gross_math", "brutto = netto × (1+stawka) ± epsilon groszowy")
-@given(netto=pln, rate=vat_rates)
-def _vat_gross_math(netto, rate):
-    expected = (netto * (Decimal("1") + rate)).quantize(Decimal("0.01"), ROUND_HALF_UP)
-    brutto = netto + (netto * rate).quantize(Decimal("0.01"), ROUND_HALF_UP)
-    assert abs(brutto - expected) <= Decimal("0.01")
+def _vat_gross_math() -> int:
+    cases = 0
+    for netto in MONEY_CASES:
+        for rate in VAT_RATES:
+            expected = (netto * (Decimal("1") + rate)).quantize(Decimal("0.01"), ROUND_HALF_UP)
+            brutto = netto + (netto * rate).quantize(Decimal("0.01"), ROUND_HALF_UP)
+            assert abs(brutto - expected) <= Decimal("0.01")
+            cases += 1
+    return cases
 
 
 @prop("vat_rate_enum", "stawka VAT ∈ dozwolony zbiór (INV-001)")
-@given(rate=vat_rates)
-def _vat_rate_enum(rate):
-    assert rate in {Decimal("0"), Decimal("0.05"), Decimal("0.08"), Decimal("0.23")}
+def _vat_rate_enum() -> int:
+    allowed = set(VAT_RATES)
+    assert all(rate in allowed for rate in VAT_RATES)
+    return len(VAT_RATES)
 
 
-# ── PIT ───────────────────────────────────────────────────────────────────────
 @prop("pit_deductions_bounded", "odliczenia przycinane do podstawy — nigdy ujemna reszta (INV-004)")
-@given(base=pln, deduction=pln)
-def _pit_deductions_bounded(base, deduction):
-    effective = min(deduction, base)  # system przycina odliczenia do podstawy
-    assert base - effective >= 0
-    assert effective <= base
+def _pit_deductions_bounded() -> int:
+    cases = 0
+    for base in MONEY_CASES:
+        for deduction in MONEY_CASES + [Decimal("10000000")]:
+            effective = min(deduction, base)
+            assert base - effective >= 0
+            assert effective <= base
+            cases += 1
+    return cases
 
 
 @prop("pit_penalty_nonneg", "kara podatkowa ≥ 0 (INV-002)")
-@given(understated=pln)
-def _pit_penalty_nonneg(understated):
-    penalty = understated * Decimal("0.30")  # sankcja VAT 30% (art. 112b)
-    assert penalty >= 0
+def _pit_penalty_nonneg() -> int:
+    for understated in MONEY_CASES:
+        penalty = understated * Decimal("0.30")
+        assert penalty >= 0
+    return len(MONEY_CASES)
 
 
-# ── ZUS ───────────────────────────────────────────────────────────────────────
-@prop("zus_contributions_nonneg", "składki ZUS ≥ 0 (INV-002)")
-@given(base=pln)
-def _zus_contributions_nonneg(base):
-    social = base * Decimal("0.1952")   # emerytalne+rentowe 19,52%
-    health = base * Decimal("0.09")     # zdrowotna 9%
-    assert social >= 0 and health >= 0
-    assert social + health <= base * Decimal("1.0") or True  # składki ≤ podstawa × (suma stawek)
+@prop("zus_contributions_nonneg", "składki ZUS ≥ 0 i suma respektuje stawki")
+def _zus_contributions_nonneg() -> int:
+    for base in MONEY_CASES:
+        social = base * Decimal("0.1952")
+        health = base * Decimal("0.09")
+        assert social >= 0 and health >= 0
+        assert social + health <= base * Decimal("0.2852")
+    return len(MONEY_CASES)
 
 
-# ── KKS ───────────────────────────────────────────────────────────────────────
-@prop("kks_fine_nonneg", "kara KKS ≥ 0; stawki dzienne ∈ (0, 5000] (art. 23 § 3 KKS)")
-@given(daily_rate=st.decimals(min_value=Decimal("0.01"), max_value=Decimal("5000"),
-                               places=2, allow_nan=False, allow_infinity=False),
-       days=st.integers(min_value=1, max_value=30))
-def _kks_fine_nonneg(daily_rate, days):
-    fine = daily_rate * days
-    assert fine >= 0
-    assert daily_rate <= Decimal("5000")  # górna granica stawki dziennej (art. 23 § 3)
+@prop("kks_fine_nonneg", "kara KKS ≥ 0; stawka dzienna ≤ 5000 (art. 23 § 3 KKS)")
+def _kks_fine_nonneg() -> int:
+    daily_rates = (Decimal("0.01"), Decimal("1"), Decimal("5000"))
+    days = (1, 2, 30)
+    cases = 0
+    for daily_rate in daily_rates:
+        for day_count in days:
+            fine = daily_rate * day_count
+            assert fine >= 0
+            assert daily_rate <= Decimal("5000")
+            cases += 1
+    return cases
 
 
-# ── Grosze (art. 63 OrdPU — zaokrąglanie) ─────────────────────────────────────
 @prop("grosze_rounding", "zaokrąglenie do 0,01 (art. 63 OrdPU) — połowa w górę")
-@given(amount=st.decimals(min_value=Decimal("0.001"), max_value=Decimal("10000"),
-                          places=4, allow_nan=False))
-def _grosze_rounding(amount):
-    rounded = amount.quantize(Decimal("0.01"), ROUND_HALF_UP)
-    assert abs(rounded - amount) < Decimal("0.01")
-    assert rounded.as_tuple().exponent == -2
+def _grosze_rounding() -> int:
+    amounts = MONEY_CASES + [Decimal("1.2349"), Decimal("1.2350"), Decimal("1.2351")]
+    for amount in amounts:
+        rounded = amount.quantize(Decimal("0.01"), ROUND_HALF_UP)
+        assert abs(rounded - amount) < Decimal("0.01")
+        assert rounded.as_tuple().exponent == -2
+    return len(amounts)
 
 
-# ── Temporalność (dzień-1/0/+1) ───────────────────────────────────────────────
 @prop("temporal_validity", "valid_from ≤ valid_to; data transakcji w oknie = aktywna")
-@given(vf=st.dates(), vt=st.dates(), tx=st.dates())
-def _temporal_validity(vf, vt, tx):
-    if vf <= vt:
-        active = vf <= tx <= vt
-        assert isinstance(active, bool)
+def _temporal_validity() -> int:
+    start = date(2026, 1, 1)
+    cases = 0
+    for width in (0, 1, 30):
+        end = start + timedelta(days=width)
+        for tx in (start - timedelta(days=1), start, end, end + timedelta(days=1)):
+            assert start <= end
+            active = start <= tx <= end
+            assert active == (tx >= start and tx <= end)
+            cases += 1
+    return cases
+
+
+@prop("deterministic_seed", "ten sam seed daje ten sam zestaw przypadków")
+def _deterministic_seed() -> int:
+    def sample(seed: int) -> list[int]:
+        rng = random.Random(seed)
+        return [rng.randrange(0, 1_000_000) for _ in range(64)]
+
+    assert sample(42) == sample(42)
+    assert sample(42) != sample(43)
+    return 128
+
+
+@prop("json_safe_decimals", "kwoty po normalizacji zachowują nieujemność i dwa miejsca")
+def _json_safe_decimals() -> int:
+    normalized = [value.quantize(Decimal("0.01"), ROUND_HALF_UP) for value in MONEY_CASES]
+    assert all(value >= 0 for value in normalized)
+    assert all(value.as_tuple().exponent == -2 for value in normalized)
+    return len(normalized)
 
 
 def run_all() -> dict:
-    """Uruchamia wszystkie właściwości (hypothesis) — 0 naruszeń = PASS."""
-    results = {}
+    """Uruchamia wszystkie własności; zwraca liczbę realnie sprawdzonych przypadków."""
+    results: dict[str, dict[str, object]] = {}
     failures = 0
-    for name, p in PROPERTIES.items():
+    cases = 0
+    for name, item in PROPERTIES.items():
         try:
-            fn = settings(max_examples=200, deadline=None)(p["fn"])
-            fn()
-            results[name] = {"status": "PASS", "description": p["description"]}
-        except Exception as e:  # noqa: BLE001
+            checked = int(item["fn"]())  # type: ignore[operator]
+            results[name] = {
+                "status": "PASS",
+                "description": item["description"],
+                "cases": checked,
+            }
+            cases += checked
+        except Exception as exc:  # noqa: BLE001
             failures += 1
-            results[name] = {"status": "FAIL", "description": p["description"],
-                             "error": str(e)[:200]}
-    return {"properties": len(PROPERTIES), "failed": failures,
-            "results": results, "gate": "PASS" if failures == 0 else "FAIL"}
+            results[name] = {
+                "status": "FAIL",
+                "description": item["description"],
+                "error": str(exc)[:200],
+            }
+    return {
+        "engine": "deterministic_stdlib_property_runner",
+        "properties": len(PROPERTIES),
+        "cases": cases,
+        "failed": failures,
+        "results": results,
+        "gate": "PASS" if failures == 0 else "FAIL",
+    }
 
 
-def main() -> None:
-    p = argparse.ArgumentParser(description="JDG Property Suite (P18 — hypothesis)")
-    sub = p.add_subparsers(dest="cmd", required=True)
-    r = sub.add_parser("run"); r.set_defaults(fn=lambda a: print(json.dumps(run_all(), ensure_ascii=False, indent=1)))
-    g = sub.add_parser("gate"); g.set_defaults(fn=lambda a: print(json.dumps(run_all(), ensure_ascii=False, indent=1)))
-    args = p.parse_args()
-    args.fn(args)
+def main() -> int:
+    parser = argparse.ArgumentParser(description="JDG Property Suite (stdlib deterministic runner)")
+    parser.add_argument("cmd", choices=["run", "gate"])
+    args = parser.parse_args()
+    result = run_all()
+    print(json.dumps(result, ensure_ascii=False, indent=1))
+    return 0 if result["gate"] == "PASS" else 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

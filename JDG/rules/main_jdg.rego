@@ -398,6 +398,30 @@ import data.jdg.r09_ksiegowosc_pkpir_uor_innovations
 # Monitor 30 dni dowodu WDT, scorer ryzyka MDR/DAC6, symulator TP, przypisanie
 # dochodu CFC, różnice kursowe z time-travel (kursy NBP per okres).
 import data.jdg.r10_crossborder_innovations
+# ── ETAP 17: evidence-first cross-border safety/control layer ──
+# Domyślnie no_match; po aktywacji wymaga źródeł, wersji, evidence pack i manual gate.
+import data.jdg.crossborder_etap17
+# ── ETAP 18: formalny state machine cyklu życia JDG ──
+# CEIDG/ryczałt/PP/sukcesja: effective dates, formularze, terminy, rollback,
+# owner approval i fail-closed manual gate.
+import data.jdg.business_lifecycle_etap18
+# ── ETAP 19: PCC / podatki lokalne / nieruchomości / transport / akcyza ──
+# Temporalny rejestr stawek, terytorium gminy, dokumenty i evidence-first gates.
+import data.jdg.local_excise_etap19
+# ── ETAP 20: KSeF / JPK / e-Deklaracje / e-Doręczenia / WIS ──
+# State machine dokumentu, XSD, UPO, tokeny, offline/retry, outbox exactly-once,
+# rekonsyliacja księga↔JPK↔KSeF i fail-closed przy niedostępności MF.
+import data.jdg.ksef_jpk_etap20
+# ── ETAP 22: Hyper Enterprise Contexts / Plan45 Meta-Validator ──
+# Konteksty, deadline engine, limit registry, MDR/sankcje, FX, WIS,
+# e-Doręczenia, konflikty, priorytety i graf zależności.
+import data.jdg.hyper_enterprise_contexts_etap22
+import data.jdg.enterprise_ai_neural_etap23
+import data.jdg.tests_ci_quality_etap24
+# ── ETAP 21: RODO / AML / BDO / HR / PPK / PFRON ──
+# Privacy-by-design, evidence chain, UBO/CBDD/STR, KPO/EWC, zatrudnienie,
+# manual approval i rozdzielenie guidance compliance od decyzji podatkowej.
+import data.jdg.rodo_aml_bdo_hr_etap21
 # ── PAS 18y: R11 GLM52 PCC / PODATKI LOKALNE / AKCYZĄ (2026-08-15) ──
 # Monitor PCC-3 14 dni, symulator podatku od nieruchomości, klasyfikator
 # wyrobów akcyzowych, monitor DN-1, arbiter VAT vs PCC (art. 2 pkt 4).
@@ -1568,6 +1592,14 @@ _package_decisions := {
     "jdg.r08_ordynacja_obrona_innovations": r08_ordynacja_obrona_innovations.decide,
     "jdg.r09_ksiegowosc_pkpir_uor_innovations": r09_ksiegowosc_pkpir_uor_innovations.decide,
     "jdg.r10_crossborder_innovations": r10_crossborder_innovations.decide,
+    "jdg.crossborder_etap17": crossborder_etap17.decide,
+    "jdg.business_lifecycle_etap18": business_lifecycle_etap18.decide,
+    "jdg.local_excise_etap19": local_excise_etap19.decide,
+    "jdg.ksef_jpk_etap20": ksef_jpk_etap20.decide,
+    "jdg.hyper_enterprise_contexts_etap22": hyper_enterprise_contexts_etap22.decide,
+    "jdg.enterprise_ai_neural_etap23": enterprise_ai_neural_etap23.decide,
+    "jdg.tests_ci_quality_etap24": tests_ci_quality_etap24.decide,
+    "jdg.rodo_aml_bdo_hr_etap21": rodo_aml_bdo_hr_etap21.decide,
     "jdg.r11_pcc_lokalne_akcyza_innovations": r11_pcc_lokalne_akcyza_innovations.decide,
     "jdg.r12_ryczalt_cykl_zycia_innovations": r12_ryczalt_cykl_zycia_innovations.decide,
     "jdg.r13_hyper_konteksty_innovations": r13_hyper_konteksty_innovations.decide,
@@ -2456,6 +2488,58 @@ final_verdict_p60 = safe_merge(final_verdict_p59,
         fallback.decide
     ))
 
+# ETAP 17: Cross-border evidence-first safety layer. It is SUGGEST-only and
+# fail-closed; the package is inactive unless the explicit stage flag is set.
+final_verdict_p61 = safe_merge(final_verdict_p60,
+    safe_merge(crossborder_etap17.decide,
+        fallback.decide
+    ))
+
+# ETAP 18: formalny state machine cyklu życia JDG; SUGGEST-only i fail-closed.
+final_verdict_p62 = safe_merge(final_verdict_p61,
+    safe_merge(business_lifecycle_etap18.decide,
+        fallback.decide
+    ))
+
+# ETAP 19: PCC/local/excise evidence-first safety layer; SUGGEST-only and fail-closed.
+final_verdict_p63 = safe_merge(final_verdict_p62,
+    safe_merge(local_excise_etap19.decide,
+        fallback.decide
+    ))
+
+# ETAP 20: KSeF/JPK/e-Deklaracje evidence-first safety layer; SUGGEST-only,
+# no_auto_post i fail-closed przy braku MF/XSD/UPO/evidence.
+final_verdict_p64 = safe_merge(final_verdict_p63,
+    safe_merge(ksef_jpk_etap20.decide,
+        fallback.decide
+    ))
+
+# ETAP 21: RODO/AML/BDO/HR evidence-first safety layer; guidance-only,
+# SUGGEST/no_auto_post i fail-closed przy braku dowodów lub owner approval.
+final_verdict_p65 = safe_merge(final_verdict_p64,
+    safe_merge(rodo_aml_bdo_hr_etap21.decide,
+        fallback.decide
+    ))
+
+# ETAP 22: Hyper Plan45 meta-validator; SUGGEST/no_auto_post i fail-closed.
+final_verdict_p66 = safe_merge(final_verdict_p65,
+    safe_merge(hyper_enterprise_contexts_etap22.decide,
+        fallback.decide
+    ))
+
+# ETAP 23: Enterprise AI / Neural Mesh governance; advisory-only,
+# deterministic legal authority, calibration/drift/safety gates and manual review.
+final_verdict_p67 = safe_merge(final_verdict_p66,
+    safe_merge(enterprise_ai_neural_etap23.decide,
+        fallback.decide
+    ))
+
+# ETAP 24: Tests / CI / quality release gate; fail-closed and reproducible.
+final_verdict_p68 = safe_merge(final_verdict_p67,
+    safe_merge(tests_ci_quality_etap24.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -2472,9 +2556,18 @@ final_verdict_p60 = safe_merge(final_verdict_p59,
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
 # Compatibility anchor: legacy gates assert the p53 prefix; p54 remains the
 # effective inner verdict and therefore is included before POST-MERGE checks.
+# Compatibility anchors retain earlier stage visibility for downstream consumers;
+# ETAP 19 remains the effective outer layer.
 final_verdict_post_merge = object.union(final_verdict_p53,
-    object.union(final_verdict_p60,
-        {"_routing_context": routing_context}))
+    object.union(final_verdict_p61,
+        object.union(final_verdict_p62,
+            object.union(final_verdict_p63,
+                object.union(final_verdict_p64,
+                    object.union(final_verdict_p65,
+                        object.union(final_verdict_p66,
+                            object.union(final_verdict_p67,
+                                object.union(final_verdict_p68,
+                                    {"_routing_context": routing_context})))))))))
 
 final_verdict_enforced = object.union(final_verdict_post_merge,
     runtime_invariants.enforce(final_verdict_post_merge))

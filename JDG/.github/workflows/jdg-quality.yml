@@ -56,10 +56,10 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -U pip
-          pip install pytest hypothesis pyyaml jsonschema 2>/dev/null || true
+          pip install pytest hypothesis pyyaml jsonschema
 
       - name: "Bramka 1 — LINT_REGO"
-        run: python3 tools/lint_rego_rules.py --ci || true   # 5/6 PASS (backlog domenowy)
+        run: python3 tools/lint_rego_rules.py --ci
 
       - name: "Bramka 2 — VALIDATE_RULES (9 walidacji)"
         run: |
@@ -67,13 +67,13 @@ jobs:
             && echo "✅ VALIDATE_RULES: 0 błędów" || (echo "❌ VALIDATE_RULES FAIL"; exit 1)
 
       - name: "Bramka 3 — TAUTOLOGY_GUARD"
-        run: python3 tools/else_chain_dead_code_detector.py --check || true
+        run: python3 tools/else_chain_dead_code_detector.py --check
 
       - name: "Bramka 4 — DEAD_RULE"
-        run: python3 tools/dead_rule_detector.py --check || true
+        run: python3 tools/dead_rule_detector.py --check
 
       - name: "Bramka 5 — HARDCODED_AUDIT (ADR-002)"
-        run: python3 tools/hardcoded_audit_gate.py --gate || true
+        run: python3 tools/hardcoded_audit_gate.py --gate
 
       - name: "Bramka 6 — ZERO_DEFECT (invariants 42 + runtime invariants)"
         run: |
@@ -144,7 +144,7 @@ jobs:
 
       - name: "Bramka 8 — GOLDEN_REPLAY (UVR 0)"
         run: |
-          python3 tools/golden_replay.py report | head -20 || true
+          python3 tools/golden_replay.py report
           python3 tools/golden_autojustify.py gate
 
       - name: "Bramka 9 — IMPACT (chaos: wykrywalność awarii)"
@@ -172,11 +172,11 @@ jobs:
 
       - name: "Bramka 10b — opa check + opa test (natywne Rego)"
         run: |
-          opa check rules/ -b || true
-          opa test tests/rego/ -v 2>&1 | tail -5 || true
+          opa check rules/ -b
+          opa test tests/rego/ -v --fail-on-empty
 
       - name: "Bramka 11 — SIGN (SBOM + .signature)"
-        run: bash bundles/bundle.sh ${{ github.sha }} sign || true
+        run: bash bundles/bundle.sh ${{ github.sha }} sign
 
   # ── Bramka 12 — DEPLOY (canary — osobny workflow z zatwierdzeniem) ─────────
   deploy-canary:

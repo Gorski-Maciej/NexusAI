@@ -1,0 +1,153 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "jdg.ksef_jpk_etap20_audit",
+  "stage": "ETAP_20",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "package_structure": true,
+    "document_state_machine": true,
+    "format_xsd_identifiers": true,
+    "ksef_token_upo_mf_gate": true,
+    "offline_retry_outbox_exactly_once": true,
+    "jpk_declarations_gtu": true,
+    "deadlines_and_corrections": true,
+    "three_way_reconciliation": true,
+    "wis_edelivery_signature": true,
+    "sandbox_and_fail_closed": true,
+    "evidence_temporal_versions": true,
+    "legal_traceability": true,
+    "manual_suggest_no_auto_post": true,
+    "thresholds_externalized": true,
+    "orchestrator_wiring": true,
+    "pytest_contract": true,
+    "native_rego_contract": true,
+    "report_present": true
+  },
+  "gate_summary": {
+    "passed": 19,
+    "total": 19
+  },
+  "files": {
+    "declared": 22,
+    "present": 22,
+    "all_present": true,
+    "files": {
+      "prompty_glm52_enterprise/20_KSEF_JPK_DECLARATIONS.txt": true,
+      "rules/ksef_jpk.rego": true,
+      "rules/ksef_innovations_enterprise.rego": true,
+      "rules/ksef_resilience_enterprise.rego": true,
+      "rules/ksef_offline_queue_enterprise.rego": true,
+      "rules/ksef_outbox_enterprise.rego": true,
+      "rules/ksef_firewall_enterprise.rego": true,
+      "rules/ksef_upo_tracker_enterprise.rego": true,
+      "rules/ksef_sanction_monitor_enterprise.rego": true,
+      "rules/jpk_v7_autogen_enterprise.rego": true,
+      "rules/jpk_corrections_workflow_enterprise.rego": true,
+      "rules/jpk_kr_st_generator_enterprise.rego": true,
+      "rules/esig_auto_applicator_enterprise.rego": true,
+      "rules/epuap_enterprise.rego": true,
+      "rules/edelivery_gateway_enterprise.rego": true,
+      "rules/wis_api_enterprise.rego": true,
+      "tools/jpk_generator.py": true,
+      "tools/ksef_outbox.py": true,
+      "tools/ksef_offline_queue.py": true,
+      "docs/KSEF_JPK_EDEKLARACJE_P17.md": true,
+      "docs/Bbb": true,
+      "rules/ksef_jpk_etap20_v1.rego": true
+    }
+  },
+  "package": {
+    "package": true,
+    "balanced_braces": true,
+    "balanced_parentheses": true,
+    "rule_ids": 2,
+    "duplicate_rule_ids": [],
+    "duplicate_free": true,
+    "markers": {
+      "state_machine": true,
+      "transition_catalog": true,
+      "schema_registry": true,
+      "required_invoice_fields": true,
+      "identifier_complete": true,
+      "token_present": true,
+      "upo_present": true,
+      "offline_mode": true,
+      "max_retries": true,
+      "outbox_entry_present": true,
+      "exactly_once": true,
+      "declaration_types": true,
+      "gtu_codes": true,
+      "deadline_ok": true,
+      "correction_complete": true,
+      "reconciliation_ok": true,
+      "wis_complete": true,
+      "edelivery_complete": true,
+      "signature_complete": true,
+      "sandbox_complete": true,
+      "mf_available": true,
+      "source_complete": true,
+      "context_complete": true,
+      "manual_review_required": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "decision_mode := \"SUGGEST\"": true,
+      "\"no_auto_post\": true": true,
+      "NOT_SENT_BY_RULE": true,
+      "valid_from": true,
+      "valid_to": true,
+      "facts_version": true,
+      "threshold_version": true
+    },
+    "markers_complete": true,
+    "legal_basis": {
+      "106na-106nq": true,
+      "106j": true,
+      "42a": true,
+      "193a": true,
+      "eIDAS": true,
+      "doręczeniach elektronicznych": true,
+      "rozporządzenie JPK": true
+    },
+    "legal_basis_complete": true,
+    "thresholds_externalized": true,
+    "no_auto_post": true
+  },
+  "wiring": {
+    "markers": {
+      "import": true,
+      "package_decisions": true,
+      "stage_chain": true,
+      "post_merge": true,
+      "public_final": true
+    },
+    "complete": true
+  },
+  "tests": {
+    "pytest": {
+      "present": true,
+      "test_count": 10,
+      "markers": {
+        "state_machine": true,
+        "format": true,
+        "outbox": true,
+        "reconciliation": true,
+        "fail_closed": true,
+        "wiring": true
+      }
+    },
+    "native_rego": {
+      "present": true,
+      "test_count": 6,
+      "markers": {
+        "test_no_match": true,
+        "test_missing_evidence": true,
+        "test_invalid_transition": true,
+        "test_exactly_once": true,
+        "test_reconciliation": true,
+        "test_mf_unavailable": true
+      }
+    }
+  },
+  "generated_at": "2026-08-22T08:21:18.211295+00:00"
+}
