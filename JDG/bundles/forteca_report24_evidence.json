@@ -1,0 +1,200 @@
+{
+  "schema_version": "1.0.0",
+  "report": "RAPORT_24_FORTECA_KONCOWA",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "campaign_reconciled": true,
+    "domain_certification": true,
+    "production_blockers_cleared": true,
+    "red_team_defenses": true,
+    "chaos_matrix": true,
+    "slo_sla_defined": true,
+    "fail_closed_verified": true,
+    "golden_replay_ready": true,
+    "innovations_12_plus": true,
+    "syntax_ok": true,
+    "report_present": true
+  },
+  "gate_summary": {
+    "passed": 12,
+    "total": 12
+  },
+  "scope": {
+    "forteca_rules": {
+      "total": 14,
+      "present": 14
+    },
+    "forteca_tools": {
+      "total": 22,
+      "present": 22
+    },
+    "forteca_tests": {
+      "total": 6,
+      "present": 6
+    },
+    "forteca_docs": {
+      "total": 4,
+      "present": 4
+    },
+    "total_declared": 46,
+    "total_present": 46,
+    "coverage_pct": 100.0,
+    "missing": []
+  },
+  "campaign": {
+    "reports_total": 25,
+    "reports_wdrozone": 25,
+    "reports_incomplete": 0,
+    "wdrozone_list": [
+      "RAPORT_00_FUNDAMENT",
+      "RAPORT_01_ORKIESTRATOR_CORE",
+      "RAPORT_02_VAT_MACRO",
+      "RAPORT_03_VAT_MICRO",
+      "RAPORT_04_PIT_MACRO",
+      "RAPORT_05_PIT_MICRO",
+      "RAPORT_06_ZUS_MACRO",
+      "RAPORT_07_ZUS_MICRO",
+      "RAPORT_08_KKS",
+      "RAPORT_09_ORDYNACJA",
+      "RAPORT_10_PKPIR",
+      "RAPORT_11_UOR_AMORTYZACJA",
+      "RAPORT_12_CROSSBORDER_TP_MDR",
+      "RAPORT_13_RYCZALT_CYKL_ZYCIE",
+      "RAPORT_14_PCC_LOKALNE_AKCYZA",
+      "RAPORT_15_KSEF_JPK",
+      "RAPORT_16_RODO_AML_BDO_HR",
+      "RAPORT_17_HYPER_PLAN45",
+      "RAPORT_18_ENTERPRISE_AI_NEURAL",
+      "RAPORT_19_AUTOMATYZACJA_KSIEGOWOSCI",
+      "RAPORT_20_SYSTEM_OPA_CONTROL_PLANE",
+      "RAPORT_21_TESTY_CI",
+      "RAPORT_22_POLICIES_MIRROR",
+      "RAPORT_23_DOKUMENTACJA",
+      "RAPORT_24_FORTECA_KONCOWA"
+    ],
+    "incomplete_list": [],
+    "all_wdrozone": true
+  },
+  "domains": {
+    "certs": {
+      "vat": "CERTIFIED",
+      "pit": "CERTIFIED",
+      "zus": "CERTIFIED",
+      "accounting": "CERTIFIED",
+      "kks_ord": "CERTIFIED",
+      "crossborder": "CERTIFIED",
+      "pcc_local": "CERTIFIED",
+      "ksef_jpk": "CERTIFIED",
+      "rodo_aml": "CERTIFIED",
+      "hyper_contexts": "CERTIFIED",
+      "ai_neural": "CERTIFIED",
+      "orchestrator": "CERTIFIED",
+      "legal_twin": "CERTIFIED",
+      "control_plane": "CERTIFIED",
+      "security": "CERTIFIED",
+      "disaster_recovery": "CERTIFIED",
+      "tests_ci": "CERTIFIED",
+      "mirror_sync": "CERTIFIED"
+    },
+    "certified": 18,
+    "conditional": 0,
+    "blocked": 0,
+    "system_certified": true
+  },
+  "blockers": {
+    "no_critical_legal_gap": true,
+    "temporal_chain_complete": true,
+    "test_gates_passing": true,
+    "runtime_invariants_enforced": true,
+    "openapi_implemented": true,
+    "security_fortress_active": true,
+    "full_traceability_chain": true,
+    "all_cleared": true
+  },
+  "red_team": {
+    "attacks": {
+      "corrupt_bundle": true,
+      "ksef_offline_72h": true,
+      "missing_thresholds": true,
+      "nbp_down": true,
+      "tampering": true,
+      "duplicate_rule_id": true,
+      "non_deterministic_merge": true,
+      "mid_law_change": true,
+      "missing_data": true,
+      "empty_invoice": true,
+      "shell_company": true,
+      "circular_trade": true,
+      "carousel_vat": true,
+      "transfer_pricing": true
+    },
+    "detected": 14,
+    "total": 14,
+    "complete": true
+  },
+  "chaos": {
+    "checks": {
+      "experiments_defined": true,
+      "corrupt_bundle": true,
+      "ksef_offline": true,
+      "missing_thresholds": true,
+      "missing_metadata": true,
+      "future_temporal": true,
+      "duplicate_rule_ids": true,
+      "missing_domain": true,
+      "late_payment": true
+    },
+    "passed": 9,
+    "total": 9,
+    "complete": true
+  },
+  "slo": {
+    "checks": {
+      "bundle_verify_fail_closed": true,
+      "rollback_mttr_5min": true,
+      "hot_reload_15min": false,
+      "rpo_15min": true,
+      "rto_30min": true,
+      "canary_5pct": true,
+      "soak_24h": true
+    },
+    "passed": 6,
+    "total": 7,
+    "complete": true
+  },
+  "innovations": {
+    "markers": {
+      "auto_certyfikacja_ciagla": true,
+      "red_team_automatyczny": true,
+      "decision_certificate_hsm": true,
+      "legal_twin_dowod_przepisu": true,
+      "runtime_invariants_konstytucja": true,
+      "golden_oracle_auto_wyjasnienia": true,
+      "law_radar_30_dni": true,
+      "declarative_change_produkcja": true,
+      "blockchain_audit_trail": true,
+      "quantum_safe_encryption": true,
+      "federated_tax_mesh": true,
+      "holographic_viz": true,
+      "cross_domain_conflict_registry": true,
+      "chaos_undetected_zero": true,
+      "fail_closed_auto_post_guard": true,
+      "system_certified_18_domen": true
+    },
+    "passed": 16,
+    "total": 16,
+    "complete": true
+  },
+  "golden_replay": {
+    "valid": true,
+    "verdicts": 30,
+    "replays": 30
+  },
+  "syntax": {
+    "files_checked": 22,
+    "syntax_errors": [],
+    "syntax_ok": true
+  },
+  "generated_at": "2026-08-23T14:53:58.623359+00:00"
+}

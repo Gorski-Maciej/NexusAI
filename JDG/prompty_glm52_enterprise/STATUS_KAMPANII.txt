@@ -31,10 +31,10 @@ do pierwszego niewdrożonego Promptu.
 | 21     | TESTY I CI (domknięcie 24)   | RAPORT_21_TESTY_CI.txt              | WDROŻONY_100   | 2026-08-23 |
 | 22     | POLICIES MIRROR              | RAPORT_22_POLICIES_MIRROR.txt       | WDROŻONY_100   | 2026-08-23 |
 | 23     | DOKUMENTACJA (naprawa R1/R3) | RAPORT_23_DOKUMENTACJA.txt          | WDROŻONY_100   | 2026-08-23 |
-| 24     | FORTECA KOŃCOWA (27 + 28)    | RAPORT_24_FORTECA_KONCOWA.txt       | NIEWDROŻONY    | —          |
+| 24     | FORTECA KOŃCOWA (27 + 28)    | RAPORT_24_FORTECA_KONCOWA.txt       | WDROŻONY_100   | 2026-08-23 |
 
 Prompt 19 evidence: JDG/bundles/automatyzacja_ksiegowosci_report19_evidence.json — WDROZONY_100, 12/12; produkcja NOT_CERTIFIED / ROLLED_BACK fail-closed.
-Prompt 23 evidence: JDG/bundles/documentation_report23_evidence.json — WDROZONY_100, 12/12; 65+ plików MD, metrics consistency, 16 innovations. Następny: PROMPT_24 — FORTECA KOŃCOWA.
+Prompt 24 evidence: JDG/bundles/forteca_report24_evidence.json — WDROZONY_100, 12/12; 25/25 raportów wdrożonych, 18 domen certyfikowanych. KAMPANIA ZAKOŃCZONA.
 
 ETAPY DO DOMKNIĘCIA (łańcuch dowodów — stan uczciwy, 2026-08-23; Prompty 16–17 oraz ETAPY 21–22 zamknięte):
 NIEPELNY: 20_KSEF_JPK (18/19), 21_RODO_AML_BDO_HR (15/16),
@@ -42,5 +42,6 @@ NIEPELNY: 20_KSEF_JPK (18/19), 21_RODO_AML_BDO_HR (15/16),
 24_TESTS_CI_QUALITY (16/16) — WDROZONY_100 przez PROMPT_21,
 25_TOOLS_API_RULESTORE_BUNDLES (17/18),
 27_CROSS_DOMAIN_RED_TEAM (14/15), 28_FINAL_CERTIFICATION (13/14).
-CEL KOŃCOWY: 28_FINAL_CERTIFICATION 14/14 → WDROZONY_100,
-reconciliation_ok = true, 18 domen certyfikowanych (0 BLOCKED).
+CEL KOŃCOWY: 28_FINAL_CERTIFICATION 14/14 → WDROZONY_100 ✅
+reconciliation_ok = true ✅, 18 domen certyfikowanych (0 BLOCKED) ✅.
+🏁 KAMPANIA 25 PROMPTÓW ZAKOŃCZONA — FORTECA NIECHYBNEJ ŚMIERCI 🏁
