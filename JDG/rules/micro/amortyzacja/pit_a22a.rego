@@ -24,7 +24,7 @@ default decide := {
 # jdg.micro.amort_a22a.r1: fa_definition — definicja ŚT
 decide := {
     "matched": true, "rule_id": "jdg.micro.amort_a22a.r1",
-    "package": "jdg.micro.amort_a22a", "priority": 81001,
+    "package": "jdg.micro.amort_a22a", "priority": 81001,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -43,7 +43,7 @@ decide := {
 # jdg.micro.amort_a22a.r2: fa_ownership — wymóg własności
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22a.r2",
-    "package": "jdg.micro.amort_a22a", "priority": 81002,
+    "package": "jdg.micro.amort_a22a", "priority": 81002,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -65,7 +65,7 @@ else := {
 # jdg.micro.amort_a22a.r3: fa_ready_for_use — kompletny i zdatny do użytku
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22a.r3",
-    "package": "jdg.micro.amort_a22a", "priority": 81003,
+    "package": "jdg.micro.amort_a22a", "priority": 81003,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -83,7 +83,7 @@ else := {
 # jdg.micro.amort_a22a.r4: fa_life_over_year — okres użytkowania >1 rok
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22a.r4",
-    "package": "jdg.micro.amort_a22a", "priority": 81004,
+    "package": "jdg.micro.amort_a22a", "priority": 81004,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -101,7 +101,7 @@ else := {
 # jdg.micro.amort_a22a.r5: fa_initial_value — wartość początkowa
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22a.r5",
-    "package": "jdg.micro.amort_a22a", "priority": 81005,
+    "package": "jdg.micro.amort_a22a", "priority": 81005,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -119,7 +119,7 @@ else := {
 # jdg.micro.amort_a22a.r6: blocked_not_ready — blokada: ŚT niegotowy do użytku
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22a.r6",
-    "package": "jdg.micro.amort_a22a", "priority": 81006,
+    "package": "jdg.micro.amort_a22a", "priority": 81006,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -139,7 +139,7 @@ else := {
 # jdg.micro.amort_a22a.r7: blocked_not_owned — blokada: brak własności
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22a.r7",
-    "package": "jdg.micro.amort_a22a", "priority": 81007,
+    "package": "jdg.micro.amort_a22a", "priority": 81007,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "NKUP", "kus_percent": 0,
@@ -160,7 +160,7 @@ else := {
 # jdg.micro.amort_a22a.r8: exception_building — wyjątek: budynki zawsze ŚT
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22a.r8",
-    "package": "jdg.micro.amort_a22a", "priority": 81008,
+    "package": "jdg.micro.amort_a22a", "priority": 81008,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -179,7 +179,7 @@ else := {
 # jdg.micro.amort_a22a.r9: interaction_with_improvement — ulepszenie a ŚT
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22a.r9",
-    "package": "jdg.micro.amort_a22a", "priority": 81009,
+    "package": "jdg.micro.amort_a22a", "priority": 81009,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,

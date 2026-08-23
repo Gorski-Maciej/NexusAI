@@ -1,0 +1,6 @@
+RAPORT ETAPU: 23_ENTERPRISE_AI_NEURAL
+STATUS: NIEPELNY
+BRAMKI: 15/16
+ŹRÓDŁO: bundles/enterprise_ai_neural_etap23_audit_state.json (audit_state.json — odtworzony łańcuch dowodów)
+DATA: 2026-08-22T22:06:41+00:00
+UWAGI: Raport odtworzony z audit_state.json w ramach kampanii GLM 5.2 (PROMPT_00_FUNDAMENT). Status zgodny ze stanem faktycznym audytu; etapy NIEPELNY zostaną domknięte w dedykowanych Promptach kampanii.

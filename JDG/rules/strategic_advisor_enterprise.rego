@@ -22,7 +22,7 @@ package jdg.strategic_advisor
 import data.jdg.helpers
 
 default decide := {
-    "matched": false, "rule_id": "jdg.strategic.no_match",
+    "matched": false, "rule_id": "jdg.strategic_advisor.no_match",
     "package": "jdg.strategic_advisor", "priority": 9999
 }
 

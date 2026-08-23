@@ -29,7 +29,8 @@ VAT_ARTICLES = {
     "7": "Dostawa towarów (odwrotne obciążenie)",
     # Chapter 2: Miejsce świadczenia (Art. 8a-28o)
     "8a": "Miejsce świadczenia — usługi ogólne (B2B: siedziba nabywcy)",
-    "8b": "Miejsce świadczenia — usługi dla konsumentów (B2C: siedziba dostawcy)",
+    "8b": "Bony różnego przeznaczenia — opodatkowaniu podlega realizacja bonu, nie jego transfer; usługi pośrednictwa/dystrybucji opodatkowane (zweryfikowano: Lexlege)",
+    "17": "Podatnicy — odwrotne obciążenie (towary/usługi wrażliwe, Zał. 11/14/15)",
     "19a": "Miejsce świadczenia — transport towarów",
     "21": "Miejsce świadczenia — usługi elektroniczne (VOSS/OSS)",
     "28a": "Miejsce świadczenia — WNT (towary)",
@@ -49,7 +50,9 @@ VAT_ARTICLES = {
     "28o": "Miejsce świadczenia — usługi gastronomiczne",
     # Chapter 3: Podstawa opodatkowania (Art. 29-32)
     "29a": "Podstawa opodatkowania — ogólne zasady",
-    "29b": "Podstawa opodatkowania — marża (towary używane)",
+    # UWAGA (poprawka 2026-08-22): art. 29b, 41a, 91a, 91b NIE ISTNIEJĄ w ustawie o VAT
+    # (zweryfikowano na lexlege.pl — 404), a art. 88a został UCHYLONY. Usunięto je z mapy,
+    # aby pokrycie liczyło wyłącznie obowiązujące przepisy (zasada zero-doubt, Kontrakt C12).
     "30": "Podstawa opodatkowania —Import usług",
     "30a": "Podstawa opodatkowania —WNT nowy środek transportu",
     "30b": "Podstawa opodatkowania —Import usług (II)",
@@ -58,7 +61,6 @@ VAT_ARTICLES = {
     "32": "Obniżenie podstawy opodatkowania (bonifikaty, rabaty)",
     # Chapter 4: Stawki podatkowe (Art. 41-43)
     "41": "Stawka 23% (standardowa)",
-    "41a": "Stawka 0% (wewnątrzwspólnotowa dostawa)",
     "42": "Odliczenie VAT naliczonego (import usług/WNT)",
     "43": "Zwolnienia przedmiotowe (edukacja, medycyna, finanse, nieruchomości)",
     # Chapter 5: Odliczenie podatku naliczonego (Art. 86-96)
@@ -68,14 +70,11 @@ VAT_ARTICLES = {
     "86c": "Ograniczenie odliczenia (wycieczki, napoje alkoholowe 0%)",
     "87": "Proporcja odliczenia (współczynnik)",
     "88": "Korekta proporcji (korekta roczna)",
-    "88a": "Korekta roczna proporcji (VAT-26)",
     "89": "Ograniczenia odliczenia (odwrotne obciążenie)",
     "89a": "Ulga na złe długi VAT (wierzyciel) — SLIM VAT 3: 90 dni",
     "89b": "Złe długi (obowiązek dłużnika)",
     "90": "Odliczenie VAT przy zwolnieniach przedmiotowych",
     "91": "Korekty VAT naliczonego — wieloletnie (5/10 lat)",
-    "91a": "Korekty VAT naliczonego — samochody osobowe",
-    "91b": "Korekty VAT naliczonego — budynki/budowle",
     "92": "Odliczenie VAT od importu towarów (SAD)",
     "93": "Odliczenie VAT od importu usług",
     "94": "Odliczenie VAT od prezentów (do 200 PLN/rok)",
@@ -84,29 +83,31 @@ VAT_ARTICLES = {
     # Chapter 5a: MPP/Split Payment (Art. 108a-108f)
     "108a": "Mechanizm Podzielonej Płatności (MPP) — obowiązkowy",
     "108b": "Towary wrażliwe (Zał. nr 15 do ustawy o VAT)",
-    "108c": "Faktura w mechanizmie podzielonej płatności",
-    "108d": "Zwolnienie z obowiązku stosowania MPP",
-    "108e": "Sankcje za brak MPP (30% VAT + NKUP)",
-    "108f": "Zwolnienie solidarne (art. 108a ust. 10-11)",
+    "108c": "Ochrona przy MPP — brak dodatkowego zobowiązania (112b/112c); reguła 95% faktur (56b OrdPU); wyjątki: faktury fikcyjne",
+    "108d": "Obniżenie zobowiązania przy wcześniejszej zapłacie z rachunku VAT (S = Z x r x n / 365, zaokr. wg art. 63 par. 1 OrdPU)",
+    "108e": "Obowiązek posiadania rachunku rozliczeniowego w PLN (dostawcy i nabywcy towarow/uslug z Zal. 15, art. 49 ust. 1 pkt 1 PrBank)",
+    "108f": "Zwrot kosztow obsługi rachunkow (podatnicy nierezydenci — wniosek kwartalny/polroczny/roczny, zwrot 30 dni)",
     # Chapter 6: Zasady ogólne / Klausula derogacyjna (Art. 109-120)
     "109": "Obowiązek prowadzenia ewidencji sprzedaży (JPK_V7)",
     "113": "Zwolnienie podmiotowe (limit 200 000 PLN)",
     "120": "Procedura VAT-marża (towary używane, sztuka, antyki)",
     # Chapter 7: Faktury (Art. 106a-106nq)
+    "97": "Rejestracja jako podatnik VAT-UE (transakcje wewnątrzwspólnotowe)",
+    "99": "Deklaracje VAT (JPK_V7 z deklaracją — termin do 25.)",
+    "100": "Informacje podsumowujące (VAT-UE)",
     "106a": "Faktura — obowiązek wystawienia (SALE)",
     "106b": "Faktura uproszczona (do 450 PLN)",
-    "106c": "Faktura korygująca",
+    "106c": "Faktury wystawiane przez organy egzekucyjne i komornikow w imieniu dłużnika (art. 18 VAT)",
     "106d": "Faktura refaktura (transport, usługi ciągłe)",
     "106e": "Elementy faktury (22 pola)",
-    "106f": "FakturaRR (dla rolników)",
+    "106f": "Faktura zaliczkowa — wzor KP = ZB x SP (otrzymana zapłata)",
     "106g": "Faktura zaliczkowa",
-    "106h": "Faktura pro forma",
+    "106h": "Faktura do sprzedaży zaewidencjonowanej kasą rejestrującą (paragon w dokumentacji)",
     "106i": "Termin wystawienia faktury (do 15 dni od dostawy)",
     "106j": "Faktura w terminie (usługi ciągłe — do 15 dni od końca miesiąca)",
-    "106k": "Faktura zaliczkowa (przedpłata > 100%)",
-    "106l": "Faktura małego podatnika (14 dni)",
+    "106l": "Duplikat faktury (ponowne udostępnienie/wystawienie; wyraz DUPLIKAT)",
     "106m": "FakturaSplit Payment (oznaczenie MPP)",
-    "106nq": "KSeF — obowiązkowy e-faktur (od 01.02.2026 B2B)",
+    "106ga": "Obowiązek wystawiania faktur ustrukturyzowanych przy użyciu KSeF (ust. 1)",
     # Chapter 7a: KSeF (Art. 106na-106nq)
     "106na": "KSeF — obowiązek stosowania (B2B)",
     "106nb": "KSeF — numer identyfikacyjny (pooling)",
@@ -116,14 +117,12 @@ VAT_ARTICLES = {
     "106nf": "KSeF — UPO (Urzędowe Poświadczenie Odbioru)",
     "106ng": "KSeF — askForCorrection",
     "106nh": "KSeF — invoicingWithConnectionTimeout",
-    "106ni": "KSeF — InLineCorrection",
-    "106nj": "KSeF — InLineAnnotations",
-    "106nk": "KSeF — InLinePlacementOfFund",
-    "106nl": "KSeF — InLineMainFund",
-    "106nm": "KSeF — InLineApplicableForSelfInvoice",
-    "106nn": "KSeF — InLineSelfInvoicing",
-    "106nq": "KSeF — InLineFiscalCashRegister",
+    "106ni": "Kara pieniężna za naruszenie KSeF (do 100% podatku / 18,7% należności; wejście 01.01.2027)",
 }
+# UWAGA (poprawka 2026-08-22): seria InLine (106nj-106nq) NIE ISTNIEJE w ustawie
+# o VAT (zweryfikowano: lexlege.pl 404) — usunięto z mapy. Art. 106k (nota
+# korygująca) UCHYLONY — usunięto. Zasada zero-doubt: mapa zawiera wyłącznie
+# realne, obowiązujące artykuły.
 
 # ── Duplicate detection patterns ─────────────────────────────────────────────
 

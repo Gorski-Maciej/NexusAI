@@ -634,6 +634,27 @@ pit := {
     # Art. 21 ust. 1 pkt 148-154 PIT — wspólny limit ulg PIT-0 (mlodzi, powrót, 4+, senior)
     "pit_relief_shared_limit": 85528,            # PLN — limit łączny ulg PIT-0 (2026)
 
+    # ── PROMPT_04 (2026-08-22) — Danina solidarnościowa (Art. 30h PIT) ──
+    "pit_solidarity_threshold": 1000000,         # PLN — nadwyżka ponad 1 000 000 zł (Art. 30h ust. 2)
+    "pit_solidarity_rate": 0.04,                 # 4% — danina solidarnościowa (Art. 30h ust. 1)
+    "pit_solidarity_due_day": "04-30",           # deklaracja + wpłata do 30 kwietnia (Art. 30h ust. 4)
+
+    # ── PROMPT_04 (2026-08-22) — Ceny transferowe (Art. 23w, 23za, 23zf PIT) ──
+    # Art. 23w ust. 2 — progi dokumentacyjne lokalnej dokumentacji TP
+    "tp_doc_threshold_goods": 10000000,          # PLN — transakcja towarowa
+    "tp_doc_threshold_financial": 10000000,      # PLN — transakcja finansowa
+    "tp_doc_threshold_services": 2000000,        # PLN — transakcja usługowa
+    "tp_doc_threshold_other": 2000000,           # PLN — inna transakcja
+    # Art. 23w ust. 2a / Art. 23za ust. 1 — raje podatkowe (szkodliwa konkurencja)
+    "tp_doc_threshold_haven_financial": 2500000, # PLN — transakcja finansowa
+    "tp_doc_threshold_haven_other": 500000,      # PLN — transakcja inna niż finansowa
+    # Art. 23w ust. 1 — termin sporządzenia dokumentacji lokalnej
+    "tp_local_docs_due_month": 10,               # do końca 10. miesiąca po zakończeniu roku podatkowego
+    # Art. 23zf ust. 1 — termin złożenia TP-R
+    "tp_information_due_month": 11,              # do końca 11. miesiąca po zakończeniu roku podatkowego
+    # Art. 23m ust. 2 pkt 1 — próg znaczącego wpływu (powiązania)
+    "tp_significant_influence_pct": 0.25,        # >=25% udziałów / praw głosu / zysków
+
     # ── P05 GLM52 — PIT MAKRO (RAPORT_GLM52_P05_PIT_MAKRO.txt) ──
     # Art. 44 PIT — termin zaliczek (20. dzień miesiąca)
     "advance_due_day": 20,
@@ -702,6 +723,13 @@ zus := {
     "accident_rate_min": 0.0067,                 # 0.67% — min. stopa wypadkowa (art. 22 ust. 4 pkt 2 SUS)
     "accident_rate_max": 0.0333,                 # 3.33% — max. stopa wypadkowa (art. 22 ust. 4 pkt 1 SUS)
     "labour_fund_rate": 0.0245,                  # 2.45% — Fundusz Pracy
+
+    # Suma składek społecznych płatnika (emerytalna + rentowa + wypadkowa +
+    # chorobowa + Fundusz Pracy) = 19.52 + 8 + 1.67 + 2.45 + 2.45 = 34.09%
+    "zus_social_total_rate": 0.3409,             # 34.09% — łączna stopa społeczna (P780)
+
+    # Art. 19 SUS — roczny limit podstawy emerytalno-rentowej
+    "zus_annual_base_cap_multiplier": 30,        # 30-krotność przeciętnego wynagrodzenia
 
     # ── GLM52 P09 — ZUS MIKRO (mikro-atomowe reguły sus/zdrowotna/zasilkowa) ──
     # Podstawy wymiaru składek (art. 18/18a/18c SUS, mikro)
@@ -2264,6 +2292,8 @@ rates := {
     "sickness_voluntary": zus.sickness_voluntary_rate,
     "accident": zus.accident_rate,
     "labour_fund": zus.labour_fund_rate,
+    "zus_social_total": zus.zus_social_total_rate,
+    "zus_annual_base_cap_multiplier": zus.zus_annual_base_cap_multiplier,
     "eur_pln": bounds.eur_pln,
     "mileage_rate": bounds.mileage_rate_per_km,
     "business_trip_diet": bounds.business_trip_diet,

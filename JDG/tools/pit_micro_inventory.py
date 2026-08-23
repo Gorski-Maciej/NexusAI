@@ -123,10 +123,21 @@ def scan_file(path: Path) -> dict:
         if any(m in stripped for m in STUB_MARKERS):
             stubs.append((i, stripped[:120]))
 
+    # Poprawka 2026-08-22 (PROMPT_05): odcinamy komentarze i literały stringowe
+    # oraz pomijamy domyślne wartości FUNKCJI pomocniczych (np. `else = 0.0`,
+    # `max_coeff = 1.4 { true }`) — liczone są wyłącznie tautologie reguł
+    # decyzyjnych (najbliższe ':=' bez prefiksu else).
+    code_only = re.sub(r"#.*$", "", text, flags=re.M)
+    code_only = STRING_LITERAL_RE.sub('""', code_only)
     tautologies = 0
-    for m in TAUTOLOGY_RE.finditer(text):
-        prefix = text[max(0, m.start() - 40):m.start()]
-        if "else :=" in prefix or "} else" in prefix:
+    for m in TAUTOLOGY_RE.finditer(code_only):
+        eq = code_only.rfind(":=", 0, m.start())
+        head = code_only[max(0, eq - 10):eq] if eq >= 0 else ""
+        if "else" in head:
+            continue  # legalny catch-all else-chain
+        # tautologia decyzyjna tylko gdy blok ma werdykt (matched) —
+        # agregacje pomocnicze (np. total_years := ... { true }) NIE są tautologiami
+        if "matched" not in code_only[eq:m.start()]:
             continue
         tautologies += 1
 

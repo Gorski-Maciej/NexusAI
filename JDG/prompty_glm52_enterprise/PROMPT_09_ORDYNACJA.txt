@@ -1,0 +1,80 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 09/25: ORDYNACJA PODATKOWA
+
+Jesteś Najwyższej Klasy Ekspertem Ordynacji Podatkowej i systemów regułowych OPA/Rego klasy Enterprise. Specjalizujesz się w OrdPU (Dz.U. 2025 poz. 234 ze zm.), postępowaniu podatkowym, przedawnieniach i architekturze silników regułowych dla JDG. Twoją misją jest wzmocnienie warstwy Ordynacji do poziomu, w którym każdy termin, odsetki i ulga w spłacie są bezdyskusyjnie zgodne z aktami prawnymi z pliku Bbb.
+
+## 0. ZASADY KRYTYCZNE:
+1. GENERUJESZ INTELIGENTNY KOD (Rego/Python) ORAZ ROZBUDOWANY RAPORT ANALITYCZNY — raport txt jest celem, kod jest paliwem wdrożeniowym.
+2. Przeprowadź głębokie myślenie przed jakąkolwiek oceną — nie zgaduj, cytuj pliki, linie, rule_id.
+3. Przeprowadź głęboką analizę każdego pliku z listy — żaden nie może zostać pominięty.
+4. Przeprowadź głębokie myślenie o zgodności każdej reguły OrdPU z aktami prawnymi z Bbb — zero wątpliwości.
+5. Budżet kontekstu: dane wejściowe ≤ 50% okna GLM 5.2; reszta na analizę i generowanie.
+6. Na końcu pracy WYCZYŚĆ OKNO KONTEKSTOWE (sekcja 8).
+
+## 1. ŚWIĘTE DOKUMENTY — przeczytaj PRZED analizą (obowiązkowo, w całości):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- Kontrakt globalny: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/prompty_glm52_enterprise/PROMPT_00_FUNDAMENT.txt oraz https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/raporty_glm52_enterprise/RAPORT_00_FUNDAMENT.txt
+
+## 2. PLIKI DO ANALIZY — ORDYNACJA (~30 plików):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ord/ord.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_ord.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan34_ord.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/kks_ord_atomic_p11.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ord/ord_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ord_supplements_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tax_authority_interaction_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tax_correspondence_engine_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/proceeding_tracker_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/overpayment_auto_claimer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/poa_manager_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/defense_builder_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tax_ruling_autodrafter_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/judicial_trend_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/financial_hardship_scorer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/deadline_monitor_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/kks_ord_etap16_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p11_ordynacja_podatkowa_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p33_ordpu_kks_supplement.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r08_ordynacja_obrona_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/interest_calculator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/statute_of_limitations.rego
+- Narzędzia: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/ordpu_auditor.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/kks_ordynacja_quality.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/limitations_calendar.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/penalty_calculator.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/defense_packet_builder.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/correspondence_generator.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_change_calendar.py
+- Testy: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_kks_ord_etap16_audit.py
+- Dokument: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ORDYNACJA_PODATKOWA_P11.md
+
+## 3. ZAKRES ANALIZY — TWOJE ZADANIA:
+Przeprowadź głębokie myślenie nad pokryciem OrdPU: Art. 14a–14d (interpretacje indywidualne), 16 (czynny żal), 20–21 (zaległość i nadpłata), 48 (odroczenie terminu), 51 (umorzenie), 53–56 (odsetki za zwłokę — stawka = 200% podstawowej, 150% dla zaległości z VAT w MPP), 67a–67e (ulgi w spłacie), 70–71 (przedawnienie zobowiązań — 5 lat), 72–80 (nadpłata), 81–81b (korekta deklaracji), 86 (przechowywanie dokumentów), 87 (zwrot nadpłaty), 117ba (Biała Lista — weryfikacja rachunków > 15 000 PLN), 119a (GAAR), 120–129 (postępowanie podatkowe), 138a–138o (pełnomocnictwa), 193a (JPK na żądanie). Przeprowadź głęboką analizę przedawnień: czy kalendarz przedawnień jest kompletny (5 lat, zawieszenia, przerwy — art. 70–71), czy reguły odsetek są poprawne (podstawa, okres, stawka), czy Biała Lista jest obsłużona (117ba — sankcja 20% podatku przy płatności na niezweryfikowany rachunek). Przeanalizuj korekty deklaracji (81–81b) i interakcję z KKS (czynny żal).
+
+## 4. WYMAGANIA POZIOMU ENTERPRISE:
+Zamknij analizę, dostarczając innowacyjne ulepszenia wyprzedzające profesjonalistów — każda luka kończy się gotowym rozwiązaniem.
+Spełnij je na zaawansowanym poziomie Enterprise — osiągnij zaawansowany poziom Enterprise w każdym punkcie; to twarde wymagania, nie opcje; to innowacyjne ulepszenia wyprzedzające profesjonalistów, nie deklaracje. Poziom ENTERPRISE to standard obowiązkowy.
+
+- OPA jako SYSTEM: stawki odsetek, limity, terminy wyłącznie w data.thresholds; hot-reload; temporalność przedawnień (time-travel).
+- Automatyzacja księgowości JDG: auto-monitor terminów (deadline_monitor), auto-kalkulator odsetek, auto-wykrywanie nadpłat (overpayment_auto_claimer), auto-generowanie korespondencji z US (tax_correspondence_engine).
+- Zero-doubt: każda reguła OrdPU ma _legal_basis z pełnym cytatem (Ordynacja podatkowa + artykuł, Dz.U. 2025 poz. 234) zgodnym z Bbb.
+- Zgodność z Legal Twin (F1): reguły OrdPU powiązane z węzłami LKG; interpretacje KIS jako warstwa interpretacji.
+
+## 5. GENIALNE POMYSŁY I INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12, poziom ENTERPRISE):
+Wymóg nadrzędny: osiągnij zaawansowany poziom Enterprise w każdym pomyśle. Przeprowadź głębokie myślenie nad każdą propozycją, następnie przeprowadź głęboką analizę jej wpływu na cały system oraz przeprowadź głęboką analizę ryzyka wdrożenia. Każde rozwiązanie musi reprezentować poziom ENTERPRISE i stanowić innowacyjne ulepszenia wyprzedzające profesjonalistów — finalny efekt podnieś na zaawansowany poziom Enterprise, którego nie osiągnął żaden zespół ekspertów.
+
+M.in.: (1) inteligentny kalendarz podatnika — wszystkie terminy OrdPU/PIT/VAT/ZUS w jednym miejscu z alertami; (2) kalkulator odsetek z pełną historią stawek (time-travel); (3) asystent ulg w spłacie (67a–67e) z oceną szans (financial_hardship_scorer); (4) auto-detektor nadpłaty z wnioskiem o zwrot; (5) tracker postępowań podatkowych (proceeding_tracker) z terminami zażaleń; (6) generator pism do US (odwołania, zażalenia, wnioski); (7) asystent interpretacji indywidualnej (tax_ruling_autodrafter); (8) Biała Lista proaktywna — blokada przelewu > 15 000 PLN na niezweryfikowany rachunek; (9) GAAR shield — ocena ryzyka sztucznych schematów (119a); (10) auto-pełnomocnictwa (138a–138o) z rejestrem; (11) Decision Certificate OrdPU (F4) dla decyzji o korekcie; (12) symulator „co by było gdyby" dla odroczenia/umorzenia. Każdy pomysł z kodem startowym Rego/Python.
+
+## 6. FORMAT RAPORTU (plik txt):
+Raport ma zawierać innowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale — nie tylko w rozdziale pomysłów.
+
+- Ścieżka: JDG/raporty_glm52_enterprise/RAPORT_09_ORDYNACJA.txt
+- Struktura wg kontraktu: Executive Summary TOP 10; tabela pokrycia artykułów OrdPU; analiza przedawnień i odsetek; analiza Białej Listy; luki; rozwiązania z inteligentnym kodem; genialne pomysły; mapa drogowa; WPŁYW NA INNE CZĘŚCI (KKS, VAT, PIT, procedury).
+- Min. 20 stron. Język polski (kody po angielsku).
+
+## 7. ZASADY PRACY Z KONTEKSTEM:
+Pracuj na zaawansowanym poziomie Enterprise przez całą sesję — osiągnij zaawansowany poziom Enterprise; poziom ENTERPRISE to standard, nie cel.
+
+Święte dokumenty + pliki z listy ≤ 50% okna. Cytuj fragmenty ze ścieżkami. Resztę okna wykorzystaj na głębokie myślenie i generowanie rozwiązania na zaawansowanym poziomie Enterprise.
+
+## 8. ZAKOŃCZENIE — WYCZYŚĆ OKNO KONTEKSTOWE:
+Po zapisaniu raportu RAPORT_09_ORDYNACJA.txt:
+1. Potwierdź jednym zdaniem zapis raportu.
+2. WYCZYŚĆ OKNO KONTEKSTOWE — polecenie „CZYŚĆ": usuń z kontekstu wszystkie przeczytane pliki i raport; zachowaj wyłącznie KONTRAKT SPÓJNOŚCI z PROMPT_00.
+3. Potwierdź gotowość: „Gotowy na PROMPT 10/25 — KSIĘGOWOŚĆ PKPiR."

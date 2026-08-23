@@ -24,7 +24,7 @@ default decide := {
 # jdg.micro.amort_a22c.r1: blocked_land — grunty NIE amortyzowane (art. 22c pkt 1)
 decide := {
     "matched": true, "rule_id": "jdg.micro.amort_a22c.r1",
-    "package": "jdg.micro.amort_a22c", "priority": 81501,
+    "package": "jdg.micro.amort_a22c", "priority": 81501,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "NKUP", "kus_percent": 0,
@@ -44,7 +44,7 @@ decide := {
 # jdg.micro.amort_a22c.r2: blocked_residential_building — budynki mieszkalne z lokalami (art. 22c pkt 2)
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22c.r2",
-    "package": "jdg.micro.amort_a22c", "priority": 81502,
+    "package": "jdg.micro.amort_a22c", "priority": 81502,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "NKUP", "kus_percent": 0,
@@ -65,7 +65,7 @@ else := {
 # jdg.micro.amort_a22c.r3: blocked_art_works — dzieła sztuki i eksponaty muzealne (art. 22c pkt 3)
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22c.r3",
-    "package": "jdg.micro.amort_a22c", "priority": 81503,
+    "package": "jdg.micro.amort_a22c", "priority": 81503,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "NKUP", "kus_percent": 0,
@@ -84,7 +84,7 @@ else := {
 # jdg.micro.amort_a22c.r4: blocked_not_put_to_use — ŚT nieoddany do używania (art. 22c pkt 4)
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22c.r4",
-    "package": "jdg.micro.amort_a22c", "priority": 81504,
+    "package": "jdg.micro.amort_a22c", "priority": 81504,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "NKUP", "kus_percent": 0,
@@ -104,7 +104,7 @@ else := {
 # jdg.micro.amort_a22c.r5: blocked_wnip_not_in_business — WNiP nieużywana w działalności
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22c.r5",
-    "package": "jdg.micro.amort_a22c", "priority": 81505,
+    "package": "jdg.micro.amort_a22c", "priority": 81505,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "NKUP", "kus_percent": 0,
@@ -124,7 +124,7 @@ else := {
 # jdg.micro.amort_a22c.r6: land_value_split — wyodrębnienie wartości gruntu (art. 22g ust. 2)
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22c.r6",
-    "package": "jdg.micro.amort_a22c", "priority": 81506,
+    "package": "jdg.micro.amort_a22c", "priority": 81506,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "KUP_DEDUCTIBLE", "kus_percent": 100,

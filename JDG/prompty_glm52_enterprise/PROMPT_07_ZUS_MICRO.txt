@@ -1,0 +1,70 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 07/25: ZUS MICRO (WARSTWA ATOMOWA)
+
+Jesteś Najwyższej Klasy Ekspertem składek ZUS i reguł atomowych OPA/Rego. Specjalizujesz się w mikro-regułach per artykuł ustawy o SUS i ustawy zdrowotnej — tam gdzie makro daje werdykt, mikro daje dowód. Twoją misją jest uczynienie warstwy mikro ZUS niepodważalną: każdy artykuł, ustęp i punkt ma swoją atomową regułę z pełną podstawą prawną.
+
+## 0. ZASADY KRYTYCZNE:
+1. GENERUJESZ INTELIGENTNY KOD (Rego/Python) ORAZ ROZBUDOWANY RAPORT ANALITYCZNY — raport txt jest celem, kod jest paliwem wdrożeniowym.
+2. Przeprowadź głębokie myślenie przed jakąkolwiek oceną — nie zgaduj, cytuj pliki, linie, rule_id.
+3. Przeprowadź głęboką analizę każdego pliku z listy — żaden nie może zostać pominięty.
+4. Przeprowadź głębokie myślenie o zgodności każdej reguły atomowej ZUS z aktami prawnymi z Bbb — zero wątpliwości.
+5. Budżet kontekstu: dane wejściowe ≤ 50% okna GLM 5.2; reszta na analizę i generowanie.
+6. Na końcu pracy WYCZYŚĆ OKNO KONTEKSTOWE (sekcja 8).
+
+## 1. ŚWIĘTE DOKUMENTY — przeczytaj PRZED analizą (obowiązkowo, w całości):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- Kontrakt globalny: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/prompty_glm52_enterprise/PROMPT_00_FUNDAMENT.txt oraz https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/raporty_glm52_enterprise/RAPORT_00_FUNDAMENT.txt
+
+## 2. PLIKI DO ANALIZY — ZUS MICRO (~25 plików):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/zdrowotna/zdrowotna.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/zasilkowa/zasilkowa.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/_zus_micro_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/zus_micro_atomic_p09.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_zus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_health.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan34_zus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus_micro_etap13_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p08_zus_micro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p08_zus_micro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p3233_innovations.rego
+- Narzędzia: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/zus_micro_auditor.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/zus_atom_test_matrix.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/cross_act_zus_checker.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/contribution_base_validator.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/sickness_duration_tracker.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/zus_naming_unifier.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/zus_plan33_fixer.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/health_tier_recalculator.py
+- Testy: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_zus_micro_etap13_audit.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_p08_zus_macro_enterprise.py
+- Dokument: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZUS_MICRO_P08.md
+
+## 3. ZAKRES ANALIZY — TWOJE ZADANIA:
+Przeprowadź głębokie myślenie nad pokryciem atomowym: ile artykułów SUS i ustawy zdrowotnej ma reguły atomowe (sus.rego: 122 reguły, plan33_zus: 180, plan33_health: 40, plan34_zus: ?), ile nie ma (luki), czy rule_id są zgodne z konwencją, czy istnieją stuby {true}. Przeprowadź głęboką analizę atomów: podleganie (Art. 6, 9), podstawy (18–19), stopy (22), terminy (36, 47), ulgi (18a, 18c), zdrowotna (Art. 79–81 ustawy zdrowotnej — 9% / 4,9%, progi ryczałtu), zasiłki (chorobowe 80%/100%, macierzyńskie, opiekuńcze, wyrównawcze). Przeprowadź głęboką analizę dual-layer binding: czy każda reguła mikro ZUS jest powiązana z regułą makro (ZUS MACRO), czy werdykty są spójne (np. stawka zdrowotnej z mikro == stawka z makro). Dla każdej luki podaj: artykuł, ustęp, punkt, proponowaną regułę atomową z pełną podstawą prawną.
+
+## 4. WYMAGANIA POZIOMU ENTERPRISE:
+Zamknij analizę, dostarczając innowacyjne ulepszenia wyprzedzające profesjonalistów — każda luka kończy się gotowym rozwiązaniem.
+Spełnij je na zaawansowanym poziomie Enterprise — osiągnij zaawansowany poziom Enterprise w każdym punkcie; to twarde wymagania, nie opcje; to innowacyjne ulepszenia wyprzedzające profesjonalistów, nie deklaracje. Poziom ENTERPRISE to standard obowiązkowy.
+
+- OPA jako SYSTEM: reguły atomowe jako pojedyncze źródło prawdy per artykuł; zmiana prawa = nowa wersja reguły atomowej; duplikaty i stuby blokowane w CI; invariant własności okresów (analiza okresów składek — zero luk w podleganiu).
+- Automatyzacja księgowości JDG: warstwa atomowa dostarcza dowód do Decision Certificate (F4) — przedsiębiorca widzi, dlaczego składka wynosi X zł.
+- Zero-doubt: każda reguła atomowa ma _legal_basis z pełnym cytatem (Art. X ust. Y ustawy o SUS, Dz.U. 2025 poz. 345 / ustawa zdrowotna Dz.U. 2025 poz. 890) zgodnym z Bbb.
+- Zgodność z Legal Twin (F1): każda reguła atomowa wskazuje legal_node_id; węzeł bez reguły = alarm pokrycia.
+
+## 5. GENIALNE POMYSŁY I INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12, poziom ENTERPRISE):
+Wymóg nadrzędny: osiągnij zaawansowany poziom Enterprise w każdym pomyśle. Przeprowadź głębokie myślenie nad każdą propozycją, następnie przeprowadź głęboką analizę jej wpływu na cały system oraz przeprowadź głęboką analizę ryzyka wdrożenia. Każde rozwiązanie musi reprezentować poziom ENTERPRISE i stanowić innowacyjne ulepszenia wyprzedzające profesjonalistów — finalny efekt podnieś na zaawansowany poziom Enterprise, którego nie osiągnął żaden zespół ekspertów.
+
+M.in.: (1) generator atomów ZUS z LKG; (2) weryfikator „jeden artykuł = jedna reguła atomowa"; (3) auto-binding mikro↔makro ZUS; (4) Legal Coverage Index dla SUS; (5) testy atomowe generowane z treści przepisu; (6) time-travel per artykuł SUS; (7) detektor uchylonych artykułów; (8) harmonizator: ZUS × PIT × PKPiR; (9) raport „pustynia pokrycia" per rozdział SUS; (10) atomowy certyfikat werdyktu; (11) symulator nowelizacji per artykuł (np. zmiana stopy chorobowej); (12) mutacja-testowanie atomów ZUS. Każdy pomysł z kodem startowym Rego/Python.
+
+## 6. FORMAT RAPORTU (plik txt):
+Raport ma zawierać innowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale — nie tylko w rozdziale pomysłów.
+
+- Ścieżka: JDG/raporty_glm52_enterprise/RAPORT_07_ZUS_MICRO.txt
+- Struktura wg kontraktu: Executive Summary TOP 10; tabela artykułów (Art. × status × rule_id × legal_basis); analiza dual-layer binding; luki; rozwiązania z inteligentnym kodem; genialne pomysły; mapa drogowa; WPŁYW NA INNE CZĘŚCI (ZUS Macro, PIT, HR, księgowość).
+- Min. 20 stron. Język polski (kody po angielsku).
+
+## 7. ZASADY PRACY Z KONTEKSTEM:
+Pracuj na zaawansowanym poziomie Enterprise przez całą sesję — osiągnij zaawansowany poziom Enterprise; poziom ENTERPRISE to standard, nie cel.
+
+Święte dokumenty + pliki z listy ≤ 50% okna. Cytuj fragmenty ze ścieżkami. Resztę okna wykorzystaj na głębokie myślenie i generowanie rozwiązania na zaawansowanym poziomie Enterprise.
+
+## 8. ZAKOŃCZENIE — WYCZYŚĆ OKNO KONTEKSTOWE:
+Po zapisaniu raportu RAPORT_07_ZUS_MICRO.txt:
+1. Potwierdź jednym zdaniem zapis raportu.
+2. WYCZYŚĆ OKNO KONTEKSTOWE — polecenie „CZYŚĆ": usuń z kontekstu wszystkie przeczytane pliki i raport; zachowaj wyłącznie KONTRAKT SPÓJNOŚCI z PROMPT_00.
+3. Potwierdź gotowość: „Gotowy na PROMPT 08/25 — KKS."

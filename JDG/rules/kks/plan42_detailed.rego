@@ -6,7 +6,7 @@
 package jdg.kks.plan42
 import data.jdg.helpers
 
-default decide := {"matched":false,"rule_id":"jdg.kks.no_match","package":"jdg.kks.plan42","priority":99999}
+default decide := {"matched":false,"rule_id":"jdg.kks.plan42.no_match","package":"jdg.kks.plan42","priority":99999}
 
 # jdg.kks.unreliable_pkpir_art56 — Nierzetelne prowadzenie PKPiR — Art. 56 KKS
 decide :=   {"matched":true,"rule_id":"jdg.kks.plan42.unreliable_pkpir_art56","package":"jdg.kks.plan42","priority":130,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"BLOCK_AND_ALERT","_routing_reason":"Nierzetelne prowadzenie PKPiR — Art. 56 KKS","_legal_basis":"Art. 56 § 1-4 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)","_warnings":["Ryzyko KKS Art. 56 — nierzetelne PKPiR! Kara grzywny do 720 stawek dziennych"]} {

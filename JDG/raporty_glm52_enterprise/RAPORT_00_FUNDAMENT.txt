@@ -1,0 +1,120 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT_00_FUNDAMENT — FUNDAMENT I KONTRAKT GLOBALNY KAMPANII GLM 5.2
+Silnik Reguł Podatkowych OPA — moduł JDG (NexusAI)
+═══════════════════════════════════════════════════════════════════════════════
+Data: 2026-08-22 | Źródła: JDG/README.md, MANIFEST.md, docs/Bbb,
+docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1 — ŚWIĘTY),
+docs/WIZJA_OPA_ENTERPRISE_V2.md (V2 — ŚWIĘTY, kontynuacja V1),
+docs/ARCHITEKTURA.md, bundles/*audit_state.json, raporty_glm52_enterprise/
+
+───────────────────────────────────────────────────────────────────────────────
+1. STAN FAKTYCZNY (ZWERYFIKOWANY, NIE Z DEKLARACJI)
+───────────────────────────────────────────────────────────────────────────────
+METRYKI ZWERYFIKOWANE:
+- Pliki Rego: 472 | rule_id: 11 808 | bloki matched:true: ~11 811
+- Odwołania _legal_basis: 12 273 (4 832 unikalne cytaty)
+- Testy: 198 pytest + 207 natywnych Rego (405)
+- Narzędzia Python: 298 | Migracje DuckDB: 13 | Audit-state: 22
+- policies/ (mirror): 546 plików, hash-parity 0% drift (ETAP 26)
+
+STAN CERTYFIKACJI (PO ODTWORZENIU ŁAŃCUCHA DOWODÓW — stan uczciwy):
+- Raporty w raporty_glm52_enterprise/: 22/22 (07–28)
+- WDROZONY_100: 14 (07,08,09,10,11,12,13,14,15,16,17,18,19,26)
+- NIEPELNY: 8 (20 KSeF/JPK 18/19, 21 RODO/AML/BDO 15/16,
+  22 Hyper 16/17, 23 AI/Neural 15/16, 24 Testy/CI 15/16,
+  25 Narzędzia/API 17/18, 27 Red Team 14/15, 28 Certyfikacja 13/14)
+- final_certification_etap28_audit.py validate: NIEPELNY 13/14
+  (reconciliation_ok FAIL — 8 etapów do domknięcia; NIE udajemy inaczej)
+- honesty gate: „Production status: NOT_CERTIFIED" — utrzymany.
+
+KLUCZOWE ROZBIEŻNOŚCI WYKRYTE (do naprawy w dedykowanych Promptach):
+R1. README/KAMPANIA deklarują „14/14 PASSED, 13 CERTIFIED / 5 CONDITIONAL"
+    — stan faktyczny: NIEPELNY 13/14, 0 CERTIFIED / 18 CONDITIONAL.
+    → Naprawa: PROMPT_23 (DOKUMENTACJA) + domknięcia etapów.
+R2. Katalogi raporty_glm52_enterprise/ i prompty_glm52_enterprise/ były
+    usunięte z repo → przerwany łańcuch dowodów → odtworzone w PROMPT_00.
+R3. COVERAGE_REPORT.md (stale): 8% zmapowanych punktów prawnych — wymaga
+    regeneracji wg nowego stanu (PROMPT_23).
+R4. Testy: ~27 FAIL w testach audytów ETAP (brak raportów — po odtworzeniu
+    część przechodzi), 73 FAIL z importów legacy nexus_ai (test_phase5,
+    test_strategic_v2 — do przeniesienia na nową architekturę w PROMPT_21),
+    4 błędy środowiskowe (duckdb).
+R5. Jakość _legal_basis: mieszana — pełne cytaty obok skrótów („OP",
+    „ADR-002", „Ustawa o VAT — przepisy końcowe") → standaryzacja
+    w PROMPT_02–16 wg KONTRAKTU C6.
+
+───────────────────────────────────────────────────────────────────────────────
+2. GLOBALNY KONTRAKT SPÓJNOŚCI (WDRAŻANY W KAŻDEJ CZĘŚCI KAMPANII)
+───────────────────────────────────────────────────────────────────────────────
+C1. NIEMIENNIKI SYSTEMOWE (INV-001..042 — docs/CORE_GUARDS):
+    egzekwowane w runtime na końcu POST-MERGE (main_jdg.rego):
+    naruszenie = invariant_failed=true + CERTAINTY_BLOCKED + alarm;
+    INV-004 ZUS/business niemutowalne; INV-005 BLOCK_AND_ALERT ≠ AUTO_POST;
+    INV-008 matched=true ⇒ _legal_basis_refs niepuste.
+C2. REGUŁA = KOD, PARAMETR = DANE (ADR-002): zero wartości liczbowych
+    w regułach; stawki/progi/limity/terminy wyłącznie w data.thresholds.jdg.*
+    z wersjonowaniem (threshold_versions) i hot-reload (≤ 15 min).
+C3. TEMPORALNOŚĆ (ADR-003): każda reguła i parametr mają valid_from/valid_to;
+    time-travel wg daty transakcji; algebra interwałów (zero luk, zero
+    nakładek) jako bramka CI; zmiana prawa wchodzi automatycznie o dacie.
+C4. rule_id: unikalne globalnie, format jdg.<domena>.<kategoria>;
+    zero duplikatów, zero stubów {true} (tautology_guard, dead_rule_detector).
+C5. WERDYKT 25-POLOWY (ADR-004) nienaruszalny; rozszerzenia tylko przez
+    nowe pola (certainty_class F4, invariant_failed F2) bez zmiany kontraktu.
+C6. _legal_basis: pełny cytat wg Bbb — (akt, Dz.U., artykuł, ustęp, punkt);
+    niedozwolone: „OP", „ADR-*", „przepisy końcowe"; każda reguła ma
+    legal_node_id (Legal Twin F1) — bramka validate_legal_basis.py v2.
+C7. OPA JAKO SYSTEM (V1 §0): nowelizacja → reguły ≤ 24 h (rutynowo),
+    ≤ 4 h (P0); zmiana parametru ≤ 15 min; dodanie reguły ≤ 2 h maszynowo;
+    MTTR ≤ 15 min, auto-rollback ≤ 5 min; dostępność 99,95%;
+    latencja p95 < 5 ms; pokrycie testami ≥ 95% pakietów;
+    cykl życia SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK; kill-switch.
+C8. ZMIANA = NOWA WERSJA, NIGDY EDYCJA NA ŻYWO (V1 §3.3): semver
+    rule_id@2.0.0; shadow-compare (delta ≤ 2%); canary 5%→100%;
+    golden replay — zmiana werdyktu bez uzasadnienia w diffie prawnym = FAIL.
+C9. SPÓJNOŚĆ MIĘDZYDOMENOWA: każdy raport części zawiera sekcję
+    „WPŁYW NA INNE CZĘŚCI" (rejestr zależności VAT×PIT×ZUS×KKS×księgowość);
+    konflikty wykrywane przez cross_package_conflict_detector.
+C10. ZGODNOŚĆ Z Bbb: reguły OPA zgodne z aktami prawnymi i dokumentami
+     księgowymi (PKPiR, UoR) — Legal Coverage Index ≥ 99% domen w zakresie;
+     węzeł prawa bez reguły = alarm pokrycia (reverse coverage).
+C11. AUTOMATYZACJA KSIĘGOWOŚCI: cel 85% AUTO_POST / 10–12% SUGGEST /
+     3–5% ASK_USER; pracodawca wykonuje tylko „kilka kliknięć";
+     każda auto-operacja ma Decision Certificate (F4).
+C12. HONESTY: żaden status nie jest deklarowany bez dowodu; raporty
+     w raporty_glm52_enterprise/ odtwarzane wyłącznie z audit_state.json;
+     NIEPELNY pozostaje NIEPELNY, dopóki bramki nie przejdą.
+
+───────────────────────────────────────────────────────────────────────────────
+3. ROZWIĄZANIA WDROŻONE W TYM RAPORCIE (inteligentny kod / artefakty)
+───────────────────────────────────────────────────────────────────────────────
+A1. Odtworzony łańcuch dowodów: raporty_glm52_enterprise/07_..28_ (22 pliki)
+    ze statusami z audit_state.json (WDROZONY_100 / NIEPELNY — bez fikcji).
+A2. Tracking kampanii: prompty_glm52_enterprise/STATUS_KAMPANII.txt
+    (25 Promptów; PROMPT_00 → WDROŻONY_100; 01–24 → NIEWDROŻONY).
+A3. Mechanizm oznaczania: każdy wdrożony Prompt otrzymuje marker
+    „STATUS: WDROŻONY_100" w nagłówku pliku txt + wpis w STATUS_KAMPANII.
+A4. Zasada czyszczenia okna: po każdym wdrożonym raporcie GLM wykonuje
+    polecenie „CZYŚĆ" (sekcja 8 każdego Promptu) i przechodzi do kolejnego.
+
+───────────────────────────────────────────────────────────────────────────────
+4. MAPA DROGOWA KAMPANII (25 Promptów → 25 Raportów)
+───────────────────────────────────────────────────────────────────────────────
+00 FUNDAMENT (ten raport) → 01 ORKIESTRATOR_CORE → 02 VAT_MACRO →
+03 VAT_MICRO → 04 PIT_MACRO → 05 PIT_MICRO → 06 ZUS_MACRO → 07 ZUS_MICRO →
+08 KKS → 09 ORDYNACJA → 10 PKPIR → 11 UoR_AMORTYZACJA → 12 CROSSBORDER_TP_MDR →
+13 RYCZALT_CYKL_ZYCIE → 14 PCC_LOKALNE_AKCYZA → 15 KSEF_JPK (domknięcie 20) →
+16 RODO_AML_BDO_HR (domknięcie 21) → 17 HYPER_PLAN45 (domknięcie 22) →
+18 ENTERPRISE_AI_NEURAL (domknięcie 23) → 19 AUTOMATYZACJA_KSIEGOWOSCI →
+20 SYSTEM_OPA_CONTROL_PLANE (domknięcie 25) → 21 TESTY_CI (domknięcie 24) →
+22 POLICIES_MIRROR → 23 DOKUMENTACJA (naprawa R1/R3) →
+24 FORTECA_KONCOWA (domknięcie 27 + 28 → 14/14, certyfikacja końcowa).
+Po kampanii: Silnik OPA = Ufortyfikowana Forteca Niechybnej Śmierci.
+
+───────────────────────────────────────────────────────────────────────────────
+5. ZAKOŃCZENIE
+───────────────────────────────────────────────────────────────────────────────
+RAPORT_00 zapisany: JDG/raporty_glm52_enterprise/RAPORT_00_FUNDAMENT.txt
+KONTRAKT SPÓJNOŚCI (sekcja 2, C1–C12) obowiązuje we wszystkich Promptach 01–24.
+STATUS PROMPT_00: WDROŻONY_100 (2026-08-22)
+Następny: PROMPT_01_ORKIESTRATOR_CORE — WYCZYŚĆ OKNO KONTEKSTOWE.

@@ -376,7 +376,7 @@ else := verdict {
         "p17_risk_categories": risk_categories,
         "p17_risk_active_flags": risk_flags,
         "p17_risk_mitigation_actions": ["Złóż czynny żal (Art. 16 KKS)", "Skoryguj deklaracje", "Wdróż compliance", "Skonsultuj doradcę podatkowego"],
-        "legal_basis": "Art. 119a OrdPU, Art. 54-62 KKS, Art. 106nq VAT",
+        "legal_basis": "Art. 119a OrdPU, Art. 54-62 KKS, Art. 106ga ust. 1 VAT",
         "_routing": routing,
         "_routing_reason": sprintf("INN05 Risk Heatmap: %d/100 — %s", [score, risk_color]),
         "_warnings": [sprintf("🌡️ INN05 RISK HEATMAP: Score %d/100 — %s\n   Flagi: %d | Cross-border: %s | Audit: %s | Revenue: %.0f PLN\n   Kategorie: %d typow ryzyka",
@@ -668,7 +668,7 @@ else := verdict {
     mitigations := []
     # Risk-based recommendations
     mitigations := array.concat(mitigations, ["Wdróż split payment (MPP) — ochrona safe harbor (Art. 108a VAT)"]) { risk_score >= 3 }
-    mitigations := array.concat(mitigations, ["Zarejestruj KSeF — uniknij sankcji 100% VAT (Art. 106nq VAT)"]) { annual_revenue > 50000 }
+    mitigations := array.concat(mitigations, ["Zarejestruj KSeF — uniknij sankcji 100% VAT (Art. 106ga ust. 1 VAT)"]) { annual_revenue > 50000 }
     mitigations := array.concat(mitigations, ["Monitoruj limit VAT 200k — złóż VAT-R przed przekroczeniem"]) { annual_revenue > 150000 }
     mitigations := array.concat(mitigations, [sprintf("Rozważ przejście na liniowy 19%% — próg skali 120k przy %.0f PLN dochodu", [annual_revenue])]) { annual_revenue > 100000; pit_form == "PIT_SCALE" }
     mitigations := array.concat(mitigations, ["Zaplanuj przejście ZUS: ulga→preferencyjny→standardowy"]) { months_active < 30 }

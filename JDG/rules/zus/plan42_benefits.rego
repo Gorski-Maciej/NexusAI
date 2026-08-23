@@ -6,7 +6,7 @@
 package jdg.zus
 import data.jdg.helpers
 
-default decide := {"matched":false,"rule_id":"jdg.zus.no_match","package":"jdg.zus","priority":99999}
+default decide := {"matched":false,"rule_id":"jdg.zus.plan42.no_match","package":"jdg.zus","priority":99999}
 
 # jdg.zus.contribution_base_calculation — Podstawa wymiaru składek społecznych — 60% przeciętnego wynagrodzenia
 decide :=   {"matched":true,"rule_id":"jdg.zus.contribution_base_calculation","package":"jdg.zus","priority":770,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Podstawa wymiaru składek społecznych — 60% przeciętnego wynagrodzenia","_legal_basis":"Art. 18 ust. 8 SUS","_warnings":[]} {

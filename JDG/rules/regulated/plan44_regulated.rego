@@ -9,7 +9,7 @@ import data.jdg.helpers
 default decide := {"matched":false,"rule_id":"jdg.regulated.no_match","package":"jdg.regulated","priority":99999}
 
 # jdg.regulated.vat_exemption — P1970: Zwolnienia VAT dla zawodów regulowanych (lekarze, prawnicy)
-decide :=   {"matched":true,"rule_id":"jdg.regulated.vat_exemption","package":"jdg.regulated","priority":1970,"vat_rate":"zw","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"REGULATED","_routing":"","_routing_reason":"Zwolnienia VAT: lekarze (terapeutyczne), radcy/adwokaci (brak zwolnienia)","_legal_basis":"Art. 43 ust. 1 pkt 18-19 VAT","_warnings":["Zawody regulowane — lekarze zwolnieni z VAT, prawnicy opodatkowani 23%"]} {
+decide :=   {"matched":true,"rule_id":"jdg.regulated.vat_exemption","package":"jdg.regulated","priority":1970,"vat_rate":"ZW","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"REGULATED","_routing":"","_routing_reason":"Zwolnienia VAT: lekarze (terapeutyczne), radcy/adwokaci (brak zwolnienia)","_legal_basis":"Art. 43 ust. 1 pkt 18-19 VAT","_warnings":["Zawody regulowane — lekarze zwolnieni z VAT, prawnicy opodatkowani 23%"]} {
     object.get(input.jdg_entrepreneur, "is_regulated_profession", false) == true
 }
 
@@ -44,6 +44,6 @@ else :=   {"matched":true,"rule_id":"jdg.regulated.public_office_interaction","p
 }
 
 # jdg.regulated.healthcare_taxation — P1977: Zawody medyczne — zwolnienie VAT vs 23%, ryczałt 14%
-else :=   {"matched":true,"rule_id":"jdg.regulated.healthcare_taxation","package":"jdg.regulated","priority":1977,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"14","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Zawody medyczne — zwolnienie VAT (terapia) vs 23% (estetyczna), ryczałt PIT 14%","_legal_basis":"Art. 43 VAT, Art. 12 PIT","_warnings":["Medycyna — usługi terapeutyczne zwolnione z VAT, estetyczne opodatkowane 23%. Ryczałt 14%"]} {
+else :=   {"matched":true,"rule_id":"jdg.regulated.healthcare_taxation","package":"jdg.regulated","priority":1977,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"0.14","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Zawody medyczne — zwolnienie VAT (terapia) vs 23% (estetyczna), ryczałt PIT 14%","_legal_basis":"Art. 43 VAT, Art. 12 PIT","_warnings":["Medycyna — usługi terapeutyczne zwolnione z VAT, estetyczne opodatkowane 23%. Ryczałt 14%"]} {
     object.get(input.jdg_entrepreneur, "is_regulated_profession", false) == true
 }

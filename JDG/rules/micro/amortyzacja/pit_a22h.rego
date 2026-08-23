@@ -24,7 +24,7 @@ default decide := {
 # jdg.micro.amort_a22h.r1: write_off_is_kup — odpisy amortyzacyjne = KUP (art. 22h ust. 1)
 decide := {
     "matched": true, "rule_id": "jdg.micro.amort_a22h.r1",
-    "package": "jdg.micro.amort_a22h", "priority": 81601,
+    "package": "jdg.micro.amort_a22h", "priority": 81601,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "KUP_DEDUCTIBLE", "kus_percent": 100,
@@ -42,7 +42,7 @@ decide := {
 # jdg.micro.amort_a22h.r2: start_after_acceptance — pierwszy odpis po przyjęciu (art. 22h ust. 1 pkt 1)
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22h.r2",
-    "package": "jdg.micro.amort_a22h", "priority": 81602,
+    "package": "jdg.micro.amort_a22h", "priority": 81602,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "KUP_DEDUCTIBLE", "kus_percent": 100,
@@ -64,7 +64,7 @@ else := {
 # jdg.micro.amort_a22h.r3: blocked_depreciation_before_acceptance — odpis przed przyjęciem = NKUP
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22h.r3",
-    "package": "jdg.micro.amort_a22h", "priority": 81603,
+    "package": "jdg.micro.amort_a22h", "priority": 81603,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "NKUP", "kus_percent": 0,
@@ -83,7 +83,7 @@ else := {
 # jdg.micro.amort_a22h.r4: suspension — zawieszenie odpisów (art. 22h ust. 3)
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22h.r4",
-    "package": "jdg.micro.amort_a22h", "priority": 81604,
+    "package": "jdg.micro.amort_a22h", "priority": 81604,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "KUP_DEDUCTIBLE", "kus_percent": 0,
@@ -105,7 +105,7 @@ else := {
 # jdg.micro.amort_a22h.r5: invariant_depreciation_not_exceed_initial — invariant: suma odpisów ≤ wartość początkowa
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22h.r5",
-    "package": "jdg.micro.amort_a22h", "priority": 81605,
+    "package": "jdg.micro.amort_a22h", "priority": 81605,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "KUP_DEDUCTIBLE", "kus_percent": 100,
@@ -128,7 +128,7 @@ else := {
 # jdg.micro.amort_a22h.r6: blocked_write_offs_exceed_initial — BLOCK: przekroczenie wartości początkowej
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22h.r6",
-    "package": "jdg.micro.amort_a22h", "priority": 81606,
+    "package": "jdg.micro.amort_a22h", "priority": 81606,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "NKUP", "kus_percent": 0,

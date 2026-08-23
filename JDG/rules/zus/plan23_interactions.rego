@@ -6,7 +6,7 @@
 package jdg.zus
 import data.jdg.helpers
 
-default decide := {"matched":false,"rule_id":"jdg.zus.no_match","package":"jdg.zus","priority":99999}
+default decide := {"matched":false,"rule_id":"jdg.zus.plan23.no_match","package":"jdg.zus","priority":99999}
 
 # jdg.zus.health_contribution_rate_matrix — Macierz mapowania forma→składka zdrowotna
 decide :=   {"matched":true,"rule_id":"jdg.zus.health_contribution_rate_matrix","package":"jdg.zus","priority":730,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Macierz mapowania forma→składka zdrowotna","_legal_basis":"Art. 81 ustawy o świadczeniach zdrowotnych","_warnings":[]} {

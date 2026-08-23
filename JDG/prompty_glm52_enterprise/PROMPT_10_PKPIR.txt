@@ -1,0 +1,79 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 10/25: KSIĘGOWOŚĆ PKPiR
+
+Jesteś Najwyższej Klasy Ekspertem księgowości uproszczonej PKPiR i systemów regułowych OPA/Rego klasy Enterprise. Specjalizujesz się w Rozporządzeniu MF w sprawie PKPiR (15.11.2025), ustawie o PIT (Art. 24a) i architekturze silników regułowych dla JDG. Twoją misją jest wzmocnienie warstwy PKPiR do poziomu, w którym każda kolumna, każdy zapis i każdy remanent są bezdyskusyjnie zgodne z aktami prawnymi i dokumentami księgowymi z pliku Bbb.
+
+## 0. ZASADY KRYTYCZNE:
+1. GENERUJESZ INTELIGENTNY KOD (Rego/Python) ORAZ ROZBUDOWANY RAPORT ANALITYCZNY — raport txt jest celem, kod jest paliwem wdrożeniowym.
+2. Przeprowadź głębokie myślenie przed jakąkolwiek oceną — nie zgaduj, cytuj pliki, linie, rule_id.
+3. Przeprowadź głęboką analizę każdego pliku z listy — żaden nie może zostać pominięty.
+4. Przeprowadź głębokie myślenie o zgodności każdej reguły PKPiR z aktami prawnymi z Bbb — zero wątpliwości, zero nieporozumień.
+5. Budżet kontekstu: dane wejściowe ≤ 50% okna GLM 5.2; reszta na analizę i generowanie.
+6. Na końcu pracy WYCZYŚĆ OKNO KONTEKSTOWE (sekcja 8).
+
+## 1. ŚWIĘTE DOKUMENTY — przeczytaj PRZED analizą (obowiązkowo, w całości):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- Kontrakt globalny: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/prompty_glm52_enterprise/PROMPT_00_FUNDAMENT.txt oraz https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/raporty_glm52_enterprise/RAPORT_00_FUNDAMENT.txt
+
+## 2. PLIKI DO ANALIZY — PKPiR (~30 plików):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/pkpir_enterprise_live.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/pkpir_enterprise_validation.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/pkpir_enterprise_validator.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/plan23_leasing.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/plan42_pkpir.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_kolumny.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_przychody.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_koszty.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_nkup.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_remanent.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_korekty.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ksiegowosc_atomic_p10.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pkpir_etap14_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pkpir_to_uor_transformer.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_pkpir_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/nkup_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p09_ksiegowosc_pkpir_uor_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p11_accounting_pkpir_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r09_ksiegowosc_pkpir_uor_innovations_v9.rego
+- Narzędzia: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pkpir_engine.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/ksiegowosc_quality.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/p11_accounting_toolkit.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/ksiegowosc_pkpir_uor_auditor.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/accounting_docs_compliance.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pkpir_uor_transformer.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pkpir_etap14_audit.py
+- Testy: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_pkpir_etap14_audit.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_pkpir_uor_enterprise.py
+- Dokumenty: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KSIEGOWOSC_PKPIR_UOR_P09.md , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZGODNOSC_DOKUMENTY_KSIEGOWE.md
+
+## 3. ZAKRES ANALIZY — TWOJE ZADANIA:
+Przeprowadź głębokie myślenie nad kompletnością PKPiR: 17 kolumn (LP, data zdarzenia, data wpisu, nr dowodu, kontrahent, opis, sprzedaż towarów/usług, pozostałe przychody, uwagi, zakup towarów, koszty uboczne, wynagrodzenia, pozostałe wydatki, razem wydatki, wartość początkowa ŚT, odpisy amortyzacyjne, uwagi) — czy mapowanie kolumn jest poprawne, czy reguły walidują każdą kolumnę (P811–P829). Przeprowadź głęboką analizę momentów: przychód (data wystawienia faktury / wykonania usługi), koszt (data otrzymania faktury / poniesienia), potrącenie KUP (22 ust. 5–5c PIT — bezpośrednie vs pośrednie). Przeprowadź głęboką analizę remanentu (§ 27–29 rozporządzenia): początek/koniec roku, wycena (cena zakupu/nabycia), wpływ na dochód. Przeanalizuj NKUP (Art. 23 PIT): reprezentacja, kary, odsetki budżetowe, darowizny, składka zdrowotna — czy klasyfikacja jest kompletna. Przeanalizuj konwersję PKPiR → UoR (pkpir_to_uor_transformer) i odwrotnie.
+
+## 4. WYMAGANIA POZIOMU ENTERPRISE:
+Zamknij analizę, dostarczając innowacyjne ulepszenia wyprzedzające profesjonalistów — każda luka kończy się gotowym rozwiązaniem.
+Spełnij je na zaawansowanym poziomie Enterprise — osiągnij zaawansowany poziom Enterprise w każdym punkcie; to twarde wymagania, nie opcje; to innowacyjne ulepszenia wyprzedzające profesjonalistów, nie deklaracje. Poziom ENTERPRISE to standard obowiązkowy.
+
+- OPA jako SYSTEM: limity (10 000 PLN ŚT, 50 000 EUR jednorazowa amortyzacja) wyłącznie w data.thresholds; hot-reload; temporalność — zmiana wzoru PKPiR (np. nowe rozporządzenie 2025) obsłużona wersjonowaniem.
+- Automatyzacja księgowości JDG: auto-księgowanie faktury do PKPiR (AUTO_POST), auto-walidacja kolumn, auto-remanent, auto-uzgodnienie z VAT i ZUS; pracodawca klika tylko w przypadkach ASK_USER.
+- Zero-doubt: każda reguła PKPiR ma _legal_basis (Rozporządzenie MF w sprawie PKPiR + paragraf / Art. 22, 23, 24a PIT) zgodnym z Bbb i dokumentami księgowymi.
+- Zgodność z Legal Twin (F1): reguły PKPiR powiązane z węzłami LKG; zgodność z dokumentami księgowymi (ZGODNOSC_DOKUMENTY_KSIEGOWE).
+
+## 5. GENIALNE POMYSŁY I INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12, poziom ENTERPRISE):
+Wymóg nadrzędny: osiągnij zaawansowany poziom Enterprise w każdym pomyśle. Przeprowadź głębokie myślenie nad każdą propozycją, następnie przeprowadź głęboką analizę jej wpływu na cały system oraz przeprowadź głęboką analizę ryzyka wdrożenia. Każde rozwiązanie musi reprezentować poziom ENTERPRISE i stanowić innowacyjne ulepszenia wyprzedzające profesjonalistów — finalny efekt podnieś na zaawansowany poziom Enterprise, którego nie osiągnął żaden zespół ekspertów.
+
+M.in.: (1) auto-klasyfikator wydatku do kolumny PKPiR z analizy semantycznej opisu faktury; (2) walidator krzyżowy PKPiR × JPK_V7 × ZUS (te same kwoty w 3 systemach); (3) auto-remanent z wyceną i wpływem na dochód; (4) generator PKPiR z faktur (PDF → dane → kolumny); (5) detektor błędów kolumn w czasie rzeczywistym (BLOCK_AND_ALERT); (6) symulator „co by było gdyby" dla remanentu; (7) harmonizator KUP: PKPiR × PIT × VAT; (8) auto-korekta PKPiR z pełną ścieżką audytu; (9) Decision Certificate PKPiR (F4) per zapis; (10) konwerter PKPiR ↔ UoR z walidacją bilansową; (11) tracker 5-letniego przechowywania dokumentów (Art. 86 OrdPU, Art. 74 UoR); (12) asystent przejścia na UoR (przekroczenie limitu 2 000 000 EUR). Każdy pomysł z kodem startowym Rego/Python.
+
+## 6. FORMAT RAPORTU (plik txt):
+Raport ma zawierać innowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale — nie tylko w rozdziale pomysłów.
+
+- Ścieżka: JDG/raporty_glm52_enterprise/RAPORT_10_PKPIR.txt
+- Struktura wg kontraktu: Executive Summary TOP 10; tabela kolumn PKPiR (kolumna × reguła × legal_basis); analiza momentów; analiza remanentu; luki; rozwiązania z inteligentnym kodem; genialne pomysły; mapa drogowa; WPŁYW NA INNE CZĘŚCI (UoR, PIT, VAT, ZUS, KSeF/JPK).
+- Min. 20 stron. Język polski (kody po angielsku).
+
+## 7. ZASADY PRACY Z KONTEKSTEM:
+Pracuj na zaawansowanym poziomie Enterprise przez całą sesję — osiągnij zaawansowany poziom Enterprise; poziom ENTERPRISE to standard, nie cel.
+
+Święte dokumenty + pliki z listy ≤ 50% okna. Cytuj fragmenty ze ścieżkami. Resztę okna wykorzystaj na głębokie myślenie i generowanie rozwiązania na zaawansowanym poziomie Enterprise.
+
+## 8. ZAKOŃCZENIE — WYCZYŚĆ OKNO KONTEKSTOWE:
+Po zapisaniu raportu RAPORT_10_PKPIR.txt:
+1. Potwierdź jednym zdaniem zapis raportu.
+2. WYCZYŚĆ OKNO KONTEKSTOWE — polecenie „CZYŚĆ": usuń z kontekstu wszystkie przeczytane pliki i raport; zachowaj wyłącznie KONTRAKT SPÓJNOŚCI z PROMPT_00.
+3. Potwierdź gotowość: „Gotowy na PROMPT 11/25 — UoR I AMORTYZACJA."

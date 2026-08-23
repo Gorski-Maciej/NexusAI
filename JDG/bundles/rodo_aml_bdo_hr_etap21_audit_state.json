@@ -2,9 +2,9 @@
   "schema_version": "1.0.0",
   "audit_id": "jdg.rodo_aml_bdo_hr_etap21_audit",
   "stage": "ETAP_21",
-  "status": "WDROZONY_100",
+  "status": "NIEPELNY",
   "gates": {
-    "scope_files_present": true,
+    "scope_files_present": false,
     "package_structure": true,
     "rodo_privacy_by_design": true,
     "aml_ubo_cbdd_str": true,
@@ -22,15 +22,15 @@
     "report_present": true
   },
   "gate_summary": {
-    "passed": 16,
+    "passed": 15,
     "total": 16
   },
   "files": {
     "declared": 25,
-    "present": 25,
-    "all_present": true,
+    "present": 24,
+    "all_present": false,
     "files": {
-      "prompty_glm52_enterprise/21_RODO_AML_BDO_HR.txt": true,
+      "prompty_glm52_enterprise/21_RODO_AML_BDO_HR.txt": false,
       "rules/rodo.rego": true,
       "rules/rodo_extended.rego": true,
       "rules/micro/rodo/rodo.rego": true,
@@ -151,5 +151,5 @@
       }
     }
   },
-  "generated_at": "2026-08-22T08:21:17.297002+00:00"
+  "generated_at": "2026-08-22T19:56:19.310936+00:00"
 }

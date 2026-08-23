@@ -6,7 +6,7 @@
 package jdg.kks
 import data.jdg.helpers
 
-default decide := {"matched":false,"rule_id":"jdg.kks.no_match","package":"jdg.kks","priority":99999}
+default decide := {"matched":false,"rule_id":"jdg.kks.plan44.no_match","package":"jdg.kks","priority":99999}
 
 # jdg.kks.conviction_business_ban — Zakaz prowadzenia działalności po skazaniu KKS
 decide :=   {"matched":true,"rule_id":"jdg.kks.conviction_business_ban","package":"jdg.kks","priority":1960,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"BLOCK_AND_ALERT","_routing_reason":"Zakaz prowadzenia działalności po skazaniu KKS","_legal_basis":"Art. 41 KK","_warnings":["Skazanie KKS — zakaz prowadzenia działalności gospodarczej!"]} {

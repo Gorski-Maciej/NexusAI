@@ -70,6 +70,8 @@ import data.jdg.pit.advances
 import data.jdg.pit.exemptions
 import data.jdg.pit.art21_exemptions
 import data.jdg.pit.transitions
+import data.jdg.pit.zero_doubt as pit_zero_doubt
+import data.jdg.vat.zero_doubt as vat_zero_doubt
 import data.jdg.pit.elearning
 import data.jdg.allowances
 import data.jdg.zus
@@ -477,7 +479,7 @@ import data.jdg.micro.sus as micro_sus_full
 import data.jdg.micro.zdrowotna as micro_zdrowotna_full
 import data.jdg.micro.zasilkowa as micro_zasilkowa_full
 import data.jdg.micro.zus as micro_zus_plan33
-import data.jdg.micro.zus_atomic_p09
+import data.jdg.micro.zus_atomic_p09 as zus_micro_atomic_p09
 
 # ── PAS 18aj: P10 GLM52 KSIĘGOWOŚĆ PKPiR/UoR (2026-08-17) ──
 # Warstwa mikro księgowości (PKPiR 7 pakietów + UoR + plan33_uor + atomowe P10):
@@ -485,16 +487,16 @@ import data.jdg.micro.zus_atomic_p09
 # decyzji makro (safe_merge: final_verdict_p46 ma priorytet, INV-018).
 # Konsolidacja P10: usunięte fallbacki {true} (6 reguł martwych PKPiR),
 # kanoniczne _legal_basis (UoR: Dz.U. 2025 poz. 567; PKPiR: rozp. MF 15.11.2025).
-import data.jdg.micro.pkpir
-import data.jdg.micro.pkpir_columns
-import data.jdg.micro.pkpir_corrections
-import data.jdg.micro.pkpir_costs
-import data.jdg.micro.pkpir_nkup
-import data.jdg.micro.pkpir_revenue
-import data.jdg.micro.pkpir_remnant
-import data.jdg.micro.uor
-import data.jdg.micro.uor_plan33
-import data.jdg.micro.ksiegowosc_atomic_p10
+import data.jdg.micro.pkpir as micro_pkpir
+import data.jdg.micro.pkpir_columns as micro_pkpir_columns
+import data.jdg.micro.pkpir_corrections as micro_pkpir_corrections
+import data.jdg.micro.pkpir_costs as micro_pkpir_costs
+import data.jdg.micro.pkpir_nkup as micro_pkpir_nkup
+import data.jdg.micro.pkpir_revenue as micro_pkpir_revenue
+import data.jdg.micro.pkpir_remnant as micro_pkpir_remnant
+import data.jdg.micro.uor as micro_uor
+import data.jdg.micro.uor_plan33 as micro_uor_plan33
+import data.jdg.micro.ksiegowosc_atomic_p10 as ksiegowosc_atomic_p10
 import data.jdg.micro.kks as micro_kks_full
 import data.jdg.micro.ord as micro_ord_full
 import data.jdg.micro.kks.plan33 as micro_kks_plan33
@@ -1415,6 +1417,8 @@ _package_decisions := {
     "jdg.pit.exemptions": exemptions.decide,
     "jdg.pit.art21_exemptions": art21_exemptions.decide,
     "jdg.pit.transitions": transitions.decide,
+    "jdg.pit.zero_doubt": pit_zero_doubt.decide,
+    "jdg.vat.zero_doubt": vat_zero_doubt.decide,
     "jdg.pit.elearning": elearning.decide,
     "jdg.pit.missing_reliefs": missing_reliefs.decide,
     # PAS 6: Allowances

@@ -115,7 +115,7 @@ all_registered_rules := object.keys(rules_metadata)
 # - Polski Ład 2022 (Ustawa z 29.10.2021 o zmianie ustawy o PIT i ustawy o świadczeniach)
 #   → valid_from: "2022-01-01" — Art. 81 ust. 2 ustawy o świadczeniach zdrowotnych
 #                  → valid_from: "2022-04-01" — Art. 36a SUS (zawieszenie JDG, zdrowotna NADAL)
-# - KSeF (Ustawa z 16.06.2023 o zmianie ustawy o VAT, Art. 106na-106nq)
+# - KSeF (Ustawa z 16.06.2023 o zmianie ustawy o VAT, Art. 106na-106ni)
 #   → valid_from: "2026-02-01" (B2B; wg aktualnego harmonogramu MF)
 # - Mały ZUS Plus (Art. 18c ustawy o SUS) → valid_from: "2019-04-01"
 # - Ulga na start (Art. 18a ustawy o SUS) → valid_from: "2018-04-01" (z nowelizacji)
@@ -176,7 +176,7 @@ temporal_validity := {
         "supersedes": null
     },
 
-    # ── KSeF 2026-02-01 — Obowiązkowy KSeF dla B2B (Art. 106na-106nq VAT) ─────
+    # ── KSeF 2026-02-01 — Obowiązkowy KSeF dla B2B (Art. 106na-106ni VAT) ─────
     "jdg.validation.ksef_upo_required": {
         "valid_from": "2026-02-01",
         "valid_to": null,
@@ -186,7 +186,7 @@ temporal_validity := {
     "jdg.edge_cases.sanction_ksef_missing_100pct": {
         "valid_from": "2026-02-01",
         "valid_to": null,
-        "reason": "R0647 — sankcja 100% VAT (max 500k) za brak faktury w KSeF (Art. 106nq VAT)",
+        "reason": "R0647 — sankcja 100% VAT (max 500k) za brak faktury w KSeF (Art. 106ga ust. 1 VAT)",
         "supersedes": null
     },
     "jdg.edge_cases.deadline_ksef_offline_7_days": {

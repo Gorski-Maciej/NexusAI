@@ -17,7 +17,7 @@
 #   - Brak ZAW-NR: kara 5 000 PLN
 #
 # architecture: Enterprise v7.0 First-Match-Wins
-# legal_basis: Art. 106nq VAT (Dz.U. 2023 poz. 1598)
+# legal_basis: Art. 106ga ust. 1 VAT (Dz.U. 2023 poz. 1598)
 # package: jdg.ksef_sanction_monitor
 # deprecated: false
 # priority_range: 2030-2059
@@ -57,7 +57,7 @@ decide := {
     "ksef_exposure_zaw_nr_penalty": zaw_nr_penalty,
     "_routing": exposure_routing,
     "_routing_reason": exposure_reason,
-    "_legal_basis": "Art. 106nq ust. 1-3 VAT (Dz.U. 2023 poz. 1598)",
+    "_legal_basis": "Art. 106ga ust. 1 ust. 1-3 VAT (Dz.U. 2023 poz. 1598)",
     "_warnings": build_exposure_warnings(
         total_vat_missing, missing_count, sanction_100pct,
         sanction_70pct, sanction_18pct, max_aggregate, risk_level, zaw_nr_penalty
@@ -131,7 +131,7 @@ else := {
     "ksef_invoice_vat_amount": invoice_vat,
     "_routing": "",
     "_routing_reason": sprintf("Faktura %.2f PLN netto — potencjalna sankcja KSeF: %.0f PLN (%s VAT)", [invoice_net, estimated_sanction, sanction_label]),
-    "_legal_basis": "Art. 106nq VAT",
+    "_legal_basis": "Art. 106ga ust. 1 VAT",
     "_warnings": [sprintf("⚠️ SANKCJA KSeF za tę fakturę: %s VAT = %.0f PLN (art. 106nq VAT). Wyślij przez KSeF aby uniknąć sankcji!", [sanction_label, estimated_sanction])]
 } {
     input.ksef_per_invoice_sanction_check == true

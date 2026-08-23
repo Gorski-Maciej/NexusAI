@@ -2,9 +2,9 @@
   "schema_version": "1.0.0",
   "audit_id": "jdg.hyper_enterprise_contexts_etap22_audit",
   "stage": "ETAP_22",
-  "status": "WDROZONY_100",
+  "status": "NIEPELNY",
   "gates": {
-    "scope_files_present": true,
+    "scope_files_present": false,
     "package_structure": true,
     "context_contract": true,
     "deadline_engine": true,
@@ -23,15 +23,15 @@
     "report_present": true
   },
   "gate_summary": {
-    "passed": 17,
+    "passed": 16,
     "total": 17
   },
   "files": {
     "declared": 22,
-    "present": 22,
-    "all_present": true,
+    "present": 21,
+    "all_present": false,
     "files": {
-      "prompty_glm52_enterprise/22_HYPER_ENTERPRISE_CONTEXTS.txt": true,
+      "prompty_glm52_enterprise/22_HYPER_ENTERPRISE_CONTEXTS.txt": false,
       "rules/jdg/hyper/general/plan45.rego": true,
       "rules/jdg/hyper/deadlines/plan45.rego": true,
       "rules/jdg/hyper/limits/plan45.rego": true,
@@ -145,5 +145,5 @@
       }
     }
   },
-  "generated_at": "2026-08-22T12:11:58.933439+00:00"
+  "generated_at": "2026-08-22T19:47:25.346135+00:00"
 }

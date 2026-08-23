@@ -2,9 +2,9 @@
   "schema_version": "1.0.0",
   "audit_id": "jdg.ksef_jpk_etap20_audit",
   "stage": "ETAP_20",
-  "status": "WDROZONY_100",
+  "status": "NIEPELNY",
   "gates": {
-    "scope_files_present": true,
+    "scope_files_present": false,
     "package_structure": true,
     "document_state_machine": true,
     "format_xsd_identifiers": true,
@@ -25,15 +25,15 @@
     "report_present": true
   },
   "gate_summary": {
-    "passed": 19,
+    "passed": 18,
     "total": 19
   },
   "files": {
     "declared": 22,
-    "present": 22,
-    "all_present": true,
+    "present": 21,
+    "all_present": false,
     "files": {
-      "prompty_glm52_enterprise/20_KSEF_JPK_DECLARATIONS.txt": true,
+      "prompty_glm52_enterprise/20_KSEF_JPK_DECLARATIONS.txt": false,
       "rules/ksef_jpk.rego": true,
       "rules/ksef_innovations_enterprise.rego": true,
       "rules/ksef_resilience_enterprise.rego": true,
@@ -149,5 +149,5 @@
       }
     }
   },
-  "generated_at": "2026-08-22T08:21:18.211295+00:00"
+  "generated_at": "2026-08-22T22:39:48.217328+00:00"
 }

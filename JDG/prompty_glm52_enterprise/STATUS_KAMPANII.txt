@@ -1,0 +1,42 @@
+═══════════════════════════════════════════════════════════════════════════════
+STATUS KAMPANII GLM 5.2 — MODUŁ JDG (25 PROMPTÓW → 25 RAPORTÓW)
+Zasada: każdy Prompt = 1 plik txt. Po pełnym wdrożeniu raportu oznacz
+Prompt jako WDROŻONY_100, wyczyść okno kontekstowe („CZYŚĆ") i przejdź
+do pierwszego niewdrożonego Promptu.
+═══════════════════════════════════════════════════════════════════════════════
+
+| Prompt | Część JDG                    | Raport                              | Status         | Data       |
+|--------|------------------------------|-------------------------------------|----------------|------------|
+| 00     | FUNDAMENT + KONTRAKT         | RAPORT_00_FUNDAMENT.txt             | WDROŻONY_100   | 2026-08-22 |
+| 01     | ORKIESTRATOR I CORE          | RAPORT_01_ORKIESTRATOR_CORE.txt     | WDROŻONY_100   | 2026-08-22 |
+| 02     | VAT MACRO                    | RAPORT_02_VAT_MACRO.txt             | WDROŻONY_100   | 2026-08-22 |
+| 03     | VAT MICRO                    | RAPORT_03_VAT_MICRO.txt             | WDROŻONY_100   | 2026-08-22 |
+| 04     | PIT MACRO                    | RAPORT_04_PIT_MACRO.txt             | WDROŻONY_100   | 2026-08-22 |
+| 05     | PIT MICRO                    | RAPORT_05_PIT_MICRO.txt             | WDROŻONY_100   | 2026-08-22 |
+| 06     | ZUS MACRO                    | RAPORT_06_ZUS_MACRO.txt             | NIEWDROŻONY    | —          |
+| 07     | ZUS MICRO                    | RAPORT_07_ZUS_MICRO.txt             | NIEWDROŻONY    | —          |
+| 08     | KKS                          | RAPORT_08_KKS.txt                   | NIEWDROŻONY    | —          |
+| 09     | ORDYNACJA PODATKOWA          | RAPORT_09_ORDYNACJA.txt             | NIEWDROŻONY    | —          |
+| 10     | KSIĘGOWOŚĆ PKPiR             | RAPORT_10_PKPIR.txt                 | NIEWDROŻONY    | —          |
+| 11     | UoR I AMORTYZACJA            | RAPORT_11_UOR_AMORTYZACJA.txt       | NIEWDROŻONY    | —          |
+| 12     | CROSSBORDER / TP / MDR       | RAPORT_12_CROSSBORDER_TP_MDR.txt    | NIEWDROŻONY    | —          |
+| 13     | RYCZAŁT I CYKL ŻYCIA         | RAPORT_13_RYCZALT_CYKL_ZYCIE.txt    | NIEWDROŻONY    | —          |
+| 14     | PCC / LOKALNE / AKCYZA       | RAPORT_14_PCC_LOKALNE_AKCYZA.txt    | NIEWDROŻONY    | —          |
+| 15     | KSeF I JPK (domknięcie 20)   | RAPORT_15_KSEF_JPK.txt              | NIEWDROŻONY    | —          |
+| 16     | RODO / AML / BDO / HR (21)   | RAPORT_16_RODO_AML_BDO_HR.txt       | NIEWDROŻONY    | —          |
+| 17     | HYPER PLAN45 (domknięcie 22) | RAPORT_17_HYPER_PLAN45.txt          | NIEWDROŻONY    | —          |
+| 18     | ENTERPRISE AI / NEURAL (23)  | RAPORT_18_ENTERPRISE_AI_NEURAL.txt  | NIEWDROŻONY    | —          |
+| 19     | AUTOMATYZACJA KSIĘGOWOŚCI    | RAPORT_19_AUTOMATYZACJA_KSIEGOWOSCI.txt | NIEWDROŻONY | —          |
+| 20     | SYSTEM OPA / CONTROL PLANE (25) | RAPORT_20_SYSTEM_OPA_CONTROL_PLANE.txt | NIEWDROŻONY | —       |
+| 21     | TESTY I CI (domknięcie 24)   | RAPORT_21_TESTY_CI.txt              | NIEWDROŻONY    | —          |
+| 22     | POLICIES MIRROR              | RAPORT_22_POLICIES_MIRROR.txt       | NIEWDROŻONY    | —          |
+| 23     | DOKUMENTACJA (naprawa R1/R3) | RAPORT_23_DOKUMENTACJA.txt          | NIEWDROŻONY    | —          |
+| 24     | FORTECA KOŃCOWA (27 + 28)    | RAPORT_24_FORTECA_KONCOWA.txt       | NIEWDROŻONY    | —          |
+
+ETAPY DO DOMKNIĘCIA (łańcuch dowodów — stan uczciwy, 2026-08-22):
+NIEPELNY: 20_KSEF_JPK (18/19), 21_RODO_AML_BDO_HR (15/16),
+22_HYPER_ENTERPRISE_CONTEXTS (16/17), 23_ENTERPRISE_AI_NEURAL (15/16),
+24_TESTS_CI_QUALITY (15/16), 25_TOOLS_API_RULESTORE_BUNDLES (17/18),
+27_CROSS_DOMAIN_RED_TEAM (14/15), 28_FINAL_CERTIFICATION (13/14).
+CEL KOŃCOWY: 28_FINAL_CERTIFICATION 14/14 → WDROZONY_100,
+reconciliation_ok = true, 18 domen certyfikowanych (0 BLOCKED).

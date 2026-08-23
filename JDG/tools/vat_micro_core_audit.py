@@ -22,12 +22,20 @@ SCHEMA_VERSION = "1.0.0"
 
 # ── VAT Micro files to analyze ───────────────────────────────────────────────
 
+# Poprawka 2026-08-22 (PROMPT_03): plik p03 istnieje jako v8 (nie v9);
+# dodano 5 dedykowanych plików mikro (ksef, marża, miejsce świadczenia,
+# proporcja, WDT/WNT) — wcześniej audyt pomijał ich pokrycie artykułów.
 VAT_MICRO_FILES = [
     "rules/micro/vat/vat.rego",
     "rules/micro/vat/r03_vat_micro_articles.rego",
+    "rules/micro/vat/ksef_micro.rego",
+    "rules/micro/vat/margin_scheme_micro.rego",
+    "rules/micro/vat/place_of_supply_micro.rego",
+    "rules/micro/vat/proportion_vat.rego",
+    "rules/micro/vat/wdt_export_import.rego",
     "rules/micro/plan33_vat.rego",
     "rules/micro/plan34_vat.rego",
-    "rules/p03_vat_micro_innovations_v9.rego",
+    "rules/p03_vat_micro_innovations_v8.rego",
     "rules/p04_vat_micro_innovations_v9.rego",
     "rules/p05_vat_micro_atomic_v9.rego",
 ]
@@ -106,7 +114,10 @@ class FindingsCollector:
 
 RULE_ID_RE = re.compile(r'"rule_id"\s*:\s*"([^"]+)"')
 ARTICLE_RE = re.compile(r'Art\.\s*(\d+[a-z]?(?:\s*ust\.\s*\d+[a-z]?)?)', re.IGNORECASE)
-STUB_MARKERS = ['"matched":false', '"matched": false', 'STUB', 'TODO', 'FIXME']
+# Poprawka 2026-08-22 (PROMPT_03): 'matched":false' usunięto z markerów —
+# legalne werdykty negatywne (no_match / decyzje negatywne) nie są stubami;
+# markery wykrywane wyłącznie w kodzie (komentarze odcinane).
+STUB_MARKERS = ['STUB', 'TODO', 'FIXME', 'CHECKPOINT-STUB']
 ELSE_RE = re.compile(r'^\s*else\s*:=', re.MULTILINE)
 TAUTOLOGY_RE = re.compile(r'\{\s*true\s*\}')
 
@@ -122,19 +133,31 @@ def scan_file(path: Path) -> dict:
     articles = sorted(set(ARTICLE_RE.findall(text)))
     temporal = bool(re.search(r'valid_from|valid_to', text))
     else_count = len(ELSE_RE.findall(text))
+    # Poprawka 2026-08-22 (PROMPT_03): komentarze ORAZ literały stringowe
+    # odcinane PRZED detekcją tautologii — komentarze i _warnings z tekstem
+    # '{ true }' generowały fałszywe alarmy; detekcja przez najbliższe ':=':
+    # gałąź else jest legalnym catch-all.
+    code_only = re.sub(r"#.*$", "", text, flags=re.M)
+    code_no_strings = re.sub(r'"[^"]*"', '""', code_only)
     tautologies = 0
-    for m in TAUTOLOGY_RE.finditer(text):
-        prefix = text[max(0, m.start() - 40):m.start()]
-        if "else :=" not in prefix and "} else" not in prefix:
-            tautologies += 1
-
-    # Stub detection
-    stubs = []
-    for i, ln in enumerate(text.splitlines(), 1):
-        stripped = ln.strip()
-        if stripped.startswith("#") or stripped.startswith("default decide"):
+    for m in TAUTOLOGY_RE.finditer(code_no_strings):
+        eq = code_no_strings.rfind(":=", 0, m.start())
+        if eq < 0:
             continue
-        if any(m in stripped for m in STUB_MARKERS):
+        head = code_no_strings[max(0, eq - 10):eq]
+        if "else" in head:
+            continue  # legalny catch-all ostatniej gałęzi else-chain
+        tautologies += 1
+
+    # Stub detection (tylko kod, bez komentarzy; markery jako całe słowa —
+    # np. "STUB_DETECTOR" w nazwie reguły NIE jest stubem)
+    stub_re = re.compile(r"\b(?:STUB|TODO|FIXME)\b|CHECKPOINT-STUB")
+    stubs = []
+    for i, ln in enumerate(code_only.splitlines(), 1):
+        stripped = ln.strip()
+        if not stripped or stripped.startswith("default decide"):
+            continue
+        if stub_re.search(stripped):
             stubs.append((i, stripped[:100]))
 
     # Priority analysis
@@ -217,20 +240,29 @@ def check_duplicates(f: FindingsCollector, all_rule_ids: list):
 
 
 def check_priority_collisions(f: FindingsCollector, file_results: list):
-    """Sprawdza kolizje priorytetów między regułami."""
-    all_priorities = []
-    for info in file_results:
-        if "priorities" in info:
-            all_priorities.extend(info["priorities"])
+    """Sprawdza kolizje priorytetów między regułami.
 
-    priority_counter = Counter(all_priorities)
-    collisions = {p: cnt for p, cnt in priority_counter.items() if cnt > 1}
+    Poprawka 2026-08-22 (PROMPT_03): powtórzenia priorytetu W JEDNYM pliku to
+    legalne else-chain (First-Match-Wins) — flagowane są wyłącznie kolizje
+    MIĘDZY PLIKAMI (rzeczywista nieokreśloność przy safe_merge). Priorytet
+    999999 (konwencja no_match) pomijany.
+    """
+    per_file: dict[int, set] = {}
+    for info in file_results:
+        if "priorities" not in info:
+            continue
+        for p in info["priorities"]:
+            if p in (999999, 99999):  # konwencje no_match (makro/mikro)
+                continue
+            per_file.setdefault(p, set()).add(info["file"])
+
+    collisions = {p: files for p, files in per_file.items() if len(files) > 1}
 
     if collisions:
-        f.warning("G03", f"Kolizje priorytetów: {len(collisions)} "
+        f.warning("G03", f"Kolizje priorytetów między plikami: {len(collisions)} "
                   f"(top: {list(collisions.keys())[:5]})")
     else:
-        f.info("G03", "Brak kolizji priorytetów ✓")
+        f.info("G03", "Brak kolizji priorytetów między plikami ✓")
 
 
 def check_article_coverage(f: FindingsCollector, total_articles: set):

@@ -238,17 +238,17 @@ else :=   {"matched":true,"rule_id":"jdg.ksef.a106nh.r5","package":"jdg.micro.ks
 }
 
 # jdg.ksef.a106nq.r2 — `ksef_sanction_100pct_additional_tax`: Sankcja: dodatkowe zobowiązanie 100% VAT (za brak KSeF) → 100% VAT (max 500k PLN)
-else :=   {"matched":true,"rule_id":"jdg.ksef.a106nq.r2","package":"jdg.micro.ksef.plan33","priority":5646,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Sankcja: dodatkowe zobowiązanie 100% VAT (za brak KSeF)","_legal_basis":"Art. 106nq ust. 1 VAT","_warnings":["[MICRO] Sankcja: dodatkowe zobowiązanie 100% VAT (za brak KSeF)"]} {
+else :=   {"matched":true,"rule_id":"jdg.ksef.a106nq.r2","package":"jdg.micro.ksef.plan33","priority":5646,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Sankcja: dodatkowe zobowiązanie 100% VAT (za brak KSeF)","_legal_basis":"Art. 106ga ust. 1 ust. 1 VAT","_warnings":["[MICRO] Sankcja: dodatkowe zobowiązanie 100% VAT (za brak KSeF)"]} {
     object.get(input.invoice, "compliance_violation", false) == true
 }
 
 # jdg.ksef.a106nq.r3 — `ksef_sanction_reduced_for_first`: Sankcja dla pierwszego naruszenia: 50% VAT (maks. 250k PLN) → 50%
-else :=   {"matched":true,"rule_id":"jdg.ksef.a106nq.r3","package":"jdg.micro.ksef.plan33","priority":5647,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Sankcja dla pierwszego naruszenia: 50% VAT (maks. 250k PLN)","_legal_basis":"Art. 106nq ust. 2 VAT","_warnings":["[MICRO] Sankcja dla pierwszego naruszenia: 50% VAT (maks. 250k PLN)"]} {
+else :=   {"matched":true,"rule_id":"jdg.ksef.a106nq.r3","package":"jdg.micro.ksef.plan33","priority":5647,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Sankcja dla pierwszego naruszenia: 50% VAT (maks. 250k PLN)","_legal_basis":"Art. 106ga ust. 1 ust. 2 VAT","_warnings":["[MICRO] Sankcja dla pierwszego naruszenia: 50% VAT (maks. 250k PLN)"]} {
     object.get(input.invoice, "compliance_violation", false) == true
 }
 
 # jdg.ksef.a106nq.r4 — `ksef_sanction_offline_exception`: Brak sankcji za faktury w trybie awaryjnym (wysłane w 7 dni) → Wyjątek
-else :=   {"matched":true,"rule_id":"jdg.ksef.a106nq.r4","package":"jdg.micro.ksef.plan33","priority":5648,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Brak sankcji za faktury w trybie awaryjnym (wysłane w 7 dni)","_legal_basis":"Art. 106nq ust. 3 VAT","_warnings":["[MICRO] Brak sankcji za faktury w trybie awaryjnym (wysłane w 7 dni)"]} {
+else :=   {"matched":true,"rule_id":"jdg.ksef.a106nq.r4","package":"jdg.micro.ksef.plan33","priority":5648,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Brak sankcji za faktury w trybie awaryjnym (wysłane w 7 dni)","_legal_basis":"Art. 106ga ust. 1 ust. 3 VAT","_warnings":["[MICRO] Brak sankcji za faktury w trybie awaryjnym (wysłane w 7 dni)"]} {
     object.get(input.invoice, "ksef_status", "") == "OFFLINE"
 }
 
@@ -298,7 +298,7 @@ else :=   {"matched":true,"rule_id":"jdg.ksef.r17","package":"jdg.micro.ksef.pla
 }
 
 # jdg.ksef.r18 — `ksef_sanction_18pct_formal_errors`: Sankcja za bledy formalne: 18% VAT (max 500k PLN) → Sankcja (v7.0 FIX P18 LUKA-K5: ujednolicono 15%/100k → 18%/500k zgodnie z art. 106nq VAT)
-else :=   {"matched":true,"rule_id":"jdg.ksef.r18","package":"jdg.micro.ksef.plan33","priority":5658,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Sankcja za bledy formalne w fakturze: 18% VAT (max 500k PLN) — art. 106nq VAT","_legal_basis":"Art. 106nq ust. 1 VAT (Dz.U. 2023 poz. 1598)","_warnings":["[MICRO] Sankcja za bledy formalne w fakturze: 18% VAT (max 500k PLN) — art. 106nq VAT"]} {
+else :=   {"matched":true,"rule_id":"jdg.ksef.r18","package":"jdg.micro.ksef.plan33","priority":5658,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Sankcja za bledy formalne w fakturze: 18% VAT (max 500k PLN) — art. 106nq VAT","_legal_basis":"Art. 106ga ust. 1 ust. 1 VAT (Dz.U. 2023 poz. 1598)","_warnings":["[MICRO] Sankcja za bledy formalne w fakturze: 18% VAT (max 500k PLN) — art. 106nq VAT"]} {
     object.get(input.invoice, "compliance_violation", false) == true
 }
 

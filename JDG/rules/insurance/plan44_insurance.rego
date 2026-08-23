@@ -29,7 +29,7 @@ else :=   {"matched":true,"rule_id":"jdg.insurance.claim_tax_treatment","package
 }
 
 # jdg.insurance.vat_treatment — P1984: VAT od ubezpieczeń — zwolnione, assistance może być 23%
-else :=   {"matched":true,"rule_id":"jdg.insurance.vat_treatment","package":"jdg.insurance","priority":1984,"vat_rate":"zw","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Ubezpieczenia — zwolnione z VAT, assistance dodatkowe — 23%","_legal_basis":"Art. 43 ust. 1 pkt 37 VAT","_warnings":["Ubezpieczenia zwolnione z VAT. Usługi assistance mogą być opodatkowane 23%"]} {
+else :=   {"matched":true,"rule_id":"jdg.insurance.vat_treatment","package":"jdg.insurance","priority":1984,"vat_rate":"ZW","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Ubezpieczenia — zwolnione z VAT, assistance dodatkowe — 23%","_legal_basis":"Art. 43 ust. 1 pkt 37 VAT","_warnings":["Ubezpieczenia zwolnione z VAT. Usługi assistance mogą być opodatkowane 23%"]} {
     object.get(input.jdg_entrepreneur, "requires_mandatory_insurance", false) == true
 }
 

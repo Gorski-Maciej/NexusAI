@@ -23,7 +23,7 @@ default decide := {
 # jdg.micro.amort_a22b.r1: wnip_definition — definicja WNiP (art. 22b ust. 1)
 decide := {
     "matched": true, "rule_id": "jdg.micro.amort_a22b.r1",
-    "package": "jdg.micro.amort_a22b", "priority": 81401,
+    "package": "jdg.micro.amort_a22b", "priority": 81401,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "KUP_DEDUCTIBLE", "kus_percent": 100,
@@ -48,7 +48,7 @@ decide := {
 # jdg.micro.amort_a22b.r2: wnip_period_5y — okres używania >1 rok, ≤5 lat (art. 22b ust. 1)
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22b.r2",
-    "package": "jdg.micro.amort_a22b", "priority": 81402,
+    "package": "jdg.micro.amort_a22b", "priority": 81402,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "KUP_DEDUCTIBLE", "kus_percent": 100,
@@ -68,7 +68,7 @@ else := {
 # jdg.micro.amort_a22b.r3: wnip_start_next_month — rozpoczęcie od następnego miesiąca
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22b.r3",
-    "package": "jdg.micro.amort_a22b", "priority": 81403,
+    "package": "jdg.micro.amort_a22b", "priority": 81403,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "KUP_DEDUCTIBLE", "kus_percent": 100,
@@ -89,7 +89,7 @@ else := {
 # jdg.micro.amort_a22b.r4: blocked_wnip_not_in_business — WNiP nieużywana w działalności = NKUP
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22b.r4",
-    "package": "jdg.micro.amort_a22b", "priority": 81404,
+    "package": "jdg.micro.amort_a22b", "priority": 81404,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "NKUP", "kus_percent": 0,
@@ -108,7 +108,7 @@ else := {
 # jdg.micro.amort_a22b.r5: wnip_low_value_10k — niskocenna WNiP ≤ 10 000 zł (jednorazowo)
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22b.r5",
-    "package": "jdg.micro.amort_a22b", "priority": 81405,
+    "package": "jdg.micro.amort_a22b", "priority": 81405,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "KUP_DEDUCTIBLE", "kus_percent": 100,
@@ -129,7 +129,7 @@ else := {
 # jdg.micro.amort_a22b.r6: wnip_blocked_software_license_rent — licencja w formie opłat = koszt bieżący
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22b.r6",
-    "package": "jdg.micro.amort_a22b", "priority": 81406,
+    "package": "jdg.micro.amort_a22b", "priority": 81406,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "KUP_DEDUCTIBLE", "kus_percent": 100,

@@ -79,7 +79,7 @@ else := {
     "rule_id": "jdg.micro.vat.place_of_supply.pos_m03",
     "package": "jdg.micro.vat.place_of_supply",
     "priority": 28003,
-    "vat_rate": "23%",
+    "vat_rate": "0.23",
     "rounding_level": "position",
     "gtu_code": "GTU_09",
     "micro_rule_active": true,
@@ -104,7 +104,7 @@ else := {
     "rule_id": "jdg.micro.vat.place_of_supply.pos_m04",
     "package": "jdg.micro.vat.place_of_supply",
     "priority": 28004,
-    "vat_rate": "23%",
+    "vat_rate": "0.23",
     "rounding_level": "position",
     "gtu_code": "GTU_10",
     "micro_rule_active": true,
@@ -126,7 +126,7 @@ else := {
     "rule_id": "jdg.micro.vat.place_of_supply.pos_m05",
     "package": "jdg.micro.vat.place_of_supply",
     "priority": 28005,
-    "vat_rate": "8%",
+    "vat_rate": "0.08",
     "rounding_level": "position",
     "gtu_code": "GTU_10",
     "micro_rule_active": true,
@@ -151,7 +151,7 @@ else := {
     "rule_id": "jdg.micro.vat.place_of_supply.pos_m06",
     "package": "jdg.micro.vat.place_of_supply",
     "priority": 28006,
-    "vat_rate": "8%",
+    "vat_rate": "0.08",
     "rounding_level": "position",
     "gtu_code": "",
     "micro_rule_active": true,
@@ -176,7 +176,7 @@ else := {
     "rule_id": "jdg.micro.vat.place_of_supply.pos_m07",
     "package": "jdg.micro.vat.place_of_supply",
     "priority": 28007,
-    "vat_rate": "23%",
+    "vat_rate": "0.23",
     "rounding_level": "position",
     "gtu_code": "GTU_12",
     "micro_rule_active": true,
@@ -199,7 +199,7 @@ else := {
     "rule_id": "jdg.micro.vat.place_of_supply.pos_m08",
     "package": "jdg.micro.vat.place_of_supply",
     "priority": 28008,
-    "vat_rate": "23%",
+    "vat_rate": "0.23",
     "rounding_level": "position",
     "gtu_code": "GTU_12",
     "micro_rule_active": true,
@@ -225,7 +225,7 @@ else := {
     "rule_id": "jdg.micro.vat.place_of_supply.pos_m09",
     "package": "jdg.micro.vat.place_of_supply",
     "priority": 28009,
-    "vat_rate": "8%",
+    "vat_rate": "0.08",
     "rounding_level": "position",
     "gtu_code": "",
     "micro_rule_active": true,
@@ -249,7 +249,7 @@ else := {
     "rule_id": "jdg.micro.vat.place_of_supply.pos_m10",
     "package": "jdg.micro.vat.place_of_supply",
     "priority": 28010,
-    "vat_rate": "23%",
+    "vat_rate": "0.23",
     "rounding_level": "position",
     "gtu_code": "GTU_05",
     "micro_rule_active": true,
@@ -274,7 +274,7 @@ else := {
     "rule_id": "jdg.micro.vat.place_of_supply.pos_m11",
     "package": "jdg.micro.vat.place_of_supply",
     "priority": 28011,
-    "vat_rate": "23%",
+    "vat_rate": "0.23",
     "rounding_level": "position",
     "gtu_code": "",
     "micro_rule_active": true,
@@ -287,6 +287,48 @@ else := {
 } {
     object.get(input.invoice, "service_category", "") == "INTERMEDIATION"
     object.get(input.invoice, "customer_type", "") == "B2C"
+}
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  POS-DEF: Art. 28a VAT — definicje rozdziału o miejscu świadczenia        ║
+# ║  (PROMPT_03: domknięcie luki pokrycia G01 — Art. 28a)                     ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+# Art. 28a pkt 1 VAT: „podatnik" na potrzeby rozdziału = podmioty wykonujące
+#   samodzielnie działalność gospodarczą (art. 15 ust. 2 VAT) lub osoby prawne
+#   niebędące podatnikami, zidentyfikowane/obowiązane do identyfikacji do celów
+#   VAT lub VAT-UE.
+# Art. 28a pkt 2 VAT: podatnik wykonujący czynności niepodlegające opodatkowaniu
+#   (art. 5 ust. 1) pozostaje podatnikiem w odniesieniu do WSZYSTKICH usług
+#   świadczonych na jego rzecz — usługa dla takiego podmiotu = B2B (miejsce
+#   świadczenia wg art. 28b, nie 28c).
+# Zgodność: Bbb (Ustawa z 11.03.2004 o VAT, Dz.U. 2025 poz. 456 ze zm.).
+
+pos_definitions_28a := {
+    "matched": true,
+    "rule_id": "jdg.micro.vat.place_of_supply.pos_definitions_28a",
+    "package": "jdg.micro.vat.place_of_supply",
+    "priority": 28001,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "micro_rule_active": true,
+    "valid_from": "2010-01-01",
+    "valid_to": null,
+    "pos_definitions": {
+        "taxpayer_for_pos": taxpayer,
+        "reason": "Art. 28a VAT — kwalifikacja podmiotu jako podatnika dla miejsca świadczenia.",
+    },
+    "_routing": "AUTO_POST",
+    "_routing_reason": "Art. 28a VAT — definicja podatnika dla rozdziału o miejscu świadczenia.",
+    "_legal_basis": "Art. 28a pkt 1-2 VAT (Dz.U. 2025 poz. 456 ze zm.); art. 15 ust. 2, art. 5 ust. 1 VAT",
+    "_warnings": [
+        "[MICRO POS] Art. 28a: podmiot zidentyfikowany do celów VAT/VAT-UE jest podatnikiem dla miejsca świadczenia.",
+        "[MICRO POS] Art. 28a pkt 2: usługi świadczone na rzecz podatnika wykonującego czynności nieopodatkowane pozostają B2B (art. 28b, nie 28c).",
+    ],
+} {
+    object.get(input, "pos_definition_check", false) == true
+    entity := object.get(input.invoice, "entity", {})
+    taxpayer := object.get(entity, "identified_for_vat", false) or object.get(entity, "independent_economic_activity", false)
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
