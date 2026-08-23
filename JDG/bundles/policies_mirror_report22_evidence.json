@@ -1,0 +1,219 @@
+{
+  "schema_version": "1.0.0",
+  "report": "RAPORT_22_POLICIES_MIRROR",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "rego_governance_complete": true,
+    "readme_source_of_truth": true,
+    "sync_gate_tool_complete": true,
+    "overlay_engine_complete": true,
+    "overlay_manifests_present": true,
+    "inventory_reconciliation": true,
+    "golden_replay_ready": true,
+    "drift_report_valid": true,
+    "innovations_12_plus": true,
+    "syntax_ok": true,
+    "test_coverage": true,
+    "report_present": true
+  },
+  "gate_summary": {
+    "passed": 13,
+    "total": 13
+  },
+  "scope": {
+    "regulatory_docs": {
+      "total": 4,
+      "present": 4
+    },
+    "mirror_tools": {
+      "total": 13,
+      "present": 13
+    },
+    "policy_artifacts": {
+      "total": 11,
+      "present": 11
+    },
+    "test_files": {
+      "total": 3,
+      "present": 3
+    },
+    "bundle_files": {
+      "total": 6,
+      "present": 6
+    },
+    "extended_docs": {
+      "total": 1,
+      "present": 1
+    },
+    "total_declared": 38,
+    "total_present": 38,
+    "coverage_pct": 100.0,
+    "missing": []
+  },
+  "rego_governance": {
+    "checks": {
+      "package_declared": true,
+      "source_of_truth_declared": false,
+      "mirror_role_OVERLAY": true,
+      "drift_zero": true,
+      "parity_100": true,
+      "decision_parity": true,
+      "legal_parity": true,
+      "overlays_tcl_100": true,
+      "overlays_no_ghosts": true,
+      "experimental_marked": true,
+      "no_silent_change": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "MIRROR_SYNCED": true,
+      "valid_from": true,
+      "decision_mode_SUGGEST": true,
+      "no_auto_post": true,
+      "balanced_braces": true
+    },
+    "passed": 17,
+    "total": 18,
+    "complete": true
+  },
+  "readme": {
+    "checks": {
+      "source_of_truth_declared": true,
+      "mirror_role_defined": false,
+      "hash_parity_rule": true,
+      "decision_parity_rule": true,
+      "legal_parity_rule": true,
+      "sync_deklaratywna": true,
+      "no_manual_edits": true,
+      "overlays_documented": true,
+      "experimental_marked": true,
+      "no_silent_change": true
+    },
+    "passed": 9,
+    "total": 10,
+    "complete": true
+  },
+  "sync_gate": {
+    "checks": {
+      "cmd_sync": true,
+      "cmd_drift": true,
+      "cmd_overlay": true,
+      "cmd_hash_parity": true,
+      "cmd_contract": true,
+      "cmd_legal_parity": true,
+      "sha256_impl": true,
+      "rule_id_extract": true,
+      "legal_art_extract": true,
+      "drift_gate_0": true,
+      "json_output": true,
+      "policies_drift_report": true
+    },
+    "passed": 12,
+    "total": 12,
+    "complete": true
+  },
+  "overlay_engine": {
+    "checks": {
+      "check_intervals": true,
+      "day_edge_tests": true,
+      "overlap_detection": true,
+      "gap_detection": true,
+      "tcl_100": true,
+      "ghost_detection": true,
+      "scan_rules": true,
+      "generate_overlay": true,
+      "verify_overlay": true,
+      "lkg_integration": true,
+      "known_candidates": true,
+      "day_minus_plus": true
+    },
+    "passed": 12,
+    "total": 12,
+    "complete": true
+  },
+  "overlay_manifests": {
+    "manifests": {
+      "v2026": {
+        "tax_year": 2026,
+        "effective_from": "2026-01-01",
+        "effective_to": "2026-12-31",
+        "changes": 4,
+        "present": true
+      },
+      "v2027": {
+        "tax_year": 2027,
+        "effective_from": "2027-01-01",
+        "effective_to": "2027-12-31",
+        "changes": 0,
+        "present": true
+      }
+    },
+    "all_present": true,
+    "count": 2
+  },
+  "inventory": {
+    "checks": {
+      "tool_present": true,
+      "manifest_present": true,
+      "has_reconcile": true,
+      "canonical_vs_mirror": true,
+      "cross_layer": true,
+      "duplicate_detection": true
+    },
+    "passed": 6,
+    "total": 6,
+    "complete": true
+  },
+  "golden_replay": {
+    "valid": true,
+    "verdicts": 30,
+    "replays": 30,
+    "annotations": 0
+  },
+  "drift": {
+    "valid": true,
+    "drift_pct": 0.21,
+    "gate_passed": false,
+    "conclusion": "DRIFT_EXCEEDS_GATE",
+    "rules_files": 472,
+    "policies_files": 546
+  },
+  "innovations": {
+    "markers": {
+      "likwidacja_mirroru_single_source": true,
+      "overlay_engine_v2_tcl_100": true,
+      "hash_parity_pre_commit_60s": true,
+      "auto_sync_raport_co_sie_zmienilo": true,
+      "sbom_hash_parity_per_plik": true,
+      "symulator_nakladki_overlay": true,
+      "decision_certificate_overlay_f4": true,
+      "monitor_dryfu_realtime": true,
+      "generator_overlays_nowelizacje": true,
+      "testy_temporalne_granice_overlay": true,
+      "raport_pustynia_pokrycia_overlay": false,
+      "harmonizator_overlay_thresholds_lkg": true,
+      "zero_duchow_p1617": true,
+      "algebra_interwalow_p1619_p1624": true,
+      "experimental_variants_marked": true,
+      "no_silent_change": true
+    },
+    "passed": 15,
+    "total": 16,
+    "complete": true
+  },
+  "syntax": {
+    "files_checked": 12,
+    "syntax_errors": [],
+    "syntax_ok": true
+  },
+  "tests": {
+    "checks": {
+      "native_rego_present": true,
+      "pytest_gate_present": true,
+      "native_tests": 10,
+      "pytest_tests": 9
+    },
+    "complete": true
+  },
+  "generated_at": "2026-08-23T14:05:55.974775+00:00"
+}

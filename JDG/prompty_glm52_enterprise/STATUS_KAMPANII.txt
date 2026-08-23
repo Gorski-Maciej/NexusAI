@@ -29,12 +29,12 @@ do pierwszego niewdrożonego Promptu.
 | 19     | AUTOMATYZACJA KSIĘGOWOŚCI    | RAPORT_19_AUTOMATYZACJA_KSIEGOWOSCI.txt | WDROŻONY_100 | 2026-08-23 |
 | 20     | SYSTEM OPA / CONTROL PLANE (25) | RAPORT_20_SYSTEM_OPA_CONTROL_PLANE.txt | WDROŻONY_100 | 2026-08-23 |
 | 21     | TESTY I CI (domknięcie 24)   | RAPORT_21_TESTY_CI.txt              | WDROŻONY_100   | 2026-08-23 |
-| 22     | POLICIES MIRROR              | RAPORT_22_POLICIES_MIRROR.txt       | NIEWDROŻONY    | —          |
+| 22     | POLICIES MIRROR              | RAPORT_22_POLICIES_MIRROR.txt       | WDROŻONY_100   | 2026-08-23 |
 | 23     | DOKUMENTACJA (naprawa R1/R3) | RAPORT_23_DOKUMENTACJA.txt          | NIEWDROŻONY    | —          |
 | 24     | FORTECA KOŃCOWA (27 + 28)    | RAPORT_24_FORTECA_KONCOWA.txt       | NIEWDROŻONY    | —          |
 
 Prompt 19 evidence: JDG/bundles/automatyzacja_ksiegowosci_report19_evidence.json — WDROZONY_100, 12/12; produkcja NOT_CERTIFIED / ROLLED_BACK fail-closed.
-Prompt 21 evidence: JDG/bundles/tests_ci_report21_evidence.json — WDROZONY_100, 11/11; produkcja: NOT_APPLICABLE (infrastruktura testowa). Następny: PROMPT_22 — POLICIES MIRROR.
+Prompt 22 evidence: JDG/bundles/policies_mirror_report22_evidence.json — WDROZONY_100, 13/13; mirror drift 0%, hash parity 100%, TCL 100%. Następny: PROMPT_23 — DOKUMENTACJA.
 
 ETAPY DO DOMKNIĘCIA (łańcuch dowodów — stan uczciwy, 2026-08-23; Prompty 16–17 oraz ETAPY 21–22 zamknięte):
 NIEPELNY: 20_KSEF_JPK (18/19), 21_RODO_AML_BDO_HR (15/16),
