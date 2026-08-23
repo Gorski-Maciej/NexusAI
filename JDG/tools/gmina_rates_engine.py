@@ -8,14 +8,21 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 from __future__ import annotations
 
+try:
+    from .p14_thresholds import load_thresholds
+except ImportError:  # direct ``python JDG/tools/...py`` invocation
+    from p14_thresholds import load_thresholds
+
+_P14 = load_thresholds()
+
 LEGAL_LOCAL = ("ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach "
                "lokalnych (Dz.U. 2025 poz. 1234)")
 
 # Stawki maksymalne 2026 (obwieszczenie MF) — gmina może uchwalić niższe.
 MAX_RATES_2026 = {
-    "land_business": 1.43,        # PLN/m² grunt związany z działalnością
+    "land_business": _P14.land_business_rate,        # PLN/m² grunt związany z działalnością
     "land_other": 0.71,           # PLN/m² grunt pozostały
-    "building_business": 33.10,   # PLN/m² budynek związany z działalnością
+    "building_business": _P14.building_business_rate,   # PLN/m² budynek związany z działalnością
     "building_residential": 1.15, # PLN/m² budynek mieszkalny
     "construction_pct": 2.0,      # % wartości budowli
 }
@@ -38,8 +45,8 @@ GMINA_FACTORS = {
     "domyślna": 1.00,
 }
 
-TRANSPORT_HEAVY_THRESHOLD_T = 3.5  # art. 8 — pojazdy powyżej 3,5 t
-DN1_DEADLINE_DAYS = 14              # art. 6 ust. 9 — DN-1 w 14 dni
+TRANSPORT_HEAVY_THRESHOLD_T = _P14.transport_threshold_t  # art. 8 — pojazdy powyżej 3,5 t
+DN1_DEADLINE_DAYS = _P14.dn1_deadline_days              # art. 6 ust. 9 — DN-1 w 14 dni
 DN1_SCHEDULE = ["15.03", "15.05", "15.09", "15.11"]
 DT1_DEADLINE = "15.02"
 

@@ -116,11 +116,11 @@
     "native_test_functions": 12
   },
   "replay": {
-    "golden_verdicts_total": 28,
+    "golden_verdicts_total": 30,
     "kjp_verdicts": 1,
     "kjp_replays": 1,
     "uver_count": 0,
     "replay_verified": true
   },
-  "generated_at": "2026-08-15T21:03:15.160947+00:00"
+  "generated_at": "2026-08-23T07:50:19.902084+00:00"
 }

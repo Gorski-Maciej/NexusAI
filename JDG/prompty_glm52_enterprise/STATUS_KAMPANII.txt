@@ -20,12 +20,12 @@ do pierwszego niewdrożonego Promptu.
 | 10     | KSIĘGOWOŚĆ PKPiR             | RAPORT_10_PKPIR.txt                 | WDROŻONY_100   | 2026-08-23 |
 | 11     | UoR I AMORTYZACJA            | RAPORT_11_UOR_AMORTYZACJA.txt       | WDROŻONY_100   | 2026-08-23 |
 | 12     | CROSSBORDER / TP / MDR       | RAPORT_12_CROSSBORDER_TP_MDR.txt    | WDROŻONY_100   | 2026-08-23 |
-| 13     | RYCZAŁT I CYKL ŻYCIA         | RAPORT_13_RYCZALT_CYKL_ZYCIE.txt    | NIEWDROŻONY    | —          |
-| 14     | PCC / LOKALNE / AKCYZA       | RAPORT_14_PCC_LOKALNE_AKCYZA.txt    | NIEWDROŻONY    | —          |
-| 15     | KSeF I JPK (domknięcie 20)   | RAPORT_15_KSEF_JPK.txt              | NIEWDROŻONY    | —          |
-| 16     | RODO / AML / BDO / HR (21)   | RAPORT_16_RODO_AML_BDO_HR.txt       | NIEWDROŻONY    | —          |
-| 17     | HYPER PLAN45 (domknięcie 22) | RAPORT_17_HYPER_PLAN45.txt          | NIEWDROŻONY    | —          |
-| 18     | ENTERPRISE AI / NEURAL (23)  | RAPORT_18_ENTERPRISE_AI_NEURAL.txt  | NIEWDROŻONY    | —          |
+| 13     | RYCZAŁT I CYKL ŻYCIA         | RAPORT_13_RYCZALT_CYKL_ZYCIE.txt    | WDROŻONY_100   | 2026-08-23 |
+| 14     | PCC / LOKALNE / AKCYZA       | RAPORT_14_PCC_LOKALNE_AKCYZA.txt    | WDROŻONY_100   | 2026-08-23 |
+| 15     | KSeF I JPK (domknięcie 20)   | RAPORT_15_KSEF_JPK.txt              | WDROŻONY_100   | 2026-08-23 |
+| 16     | RODO / AML / BDO / HR (21)   | RAPORT_16_RODO_AML_BDO_HR.txt       | WDROŻONY_100   | 2026-08-23 |
+| 17     | HYPER PLAN45 (domknięcie 22) | RAPORT_17_HYPER_PLAN45.txt          | WDROŻONY_100   | 2026-08-23 |
+| 18     | ENTERPRISE AI / NEURAL (23)  | RAPORT_18_ENTERPRISE_AI_NEURAL.txt  | W TOKU         | 2026-08-23 |
 | 19     | AUTOMATYZACJA KSIĘGOWOŚCI    | RAPORT_19_AUTOMATYZACJA_KSIEGOWOSCI.txt | NIEWDROŻONY | —          |
 | 20     | SYSTEM OPA / CONTROL PLANE (25) | RAPORT_20_SYSTEM_OPA_CONTROL_PLANE.txt | NIEWDROŻONY | —       |
 | 21     | TESTY I CI (domknięcie 24)   | RAPORT_21_TESTY_CI.txt              | NIEWDROŻONY    | —          |
@@ -33,7 +33,7 @@ do pierwszego niewdrożonego Promptu.
 | 23     | DOKUMENTACJA (naprawa R1/R3) | RAPORT_23_DOKUMENTACJA.txt          | NIEWDROŻONY    | —          |
 | 24     | FORTECA KOŃCOWA (27 + 28)    | RAPORT_24_FORTECA_KONCOWA.txt       | NIEWDROŻONY    | —          |
 
-ETAPY DO DOMKNIĘCIA (łańcuch dowodów — stan uczciwy, 2026-08-22):
+ETAPY DO DOMKNIĘCIA (łańcuch dowodów — stan uczciwy, 2026-08-23; Prompty 16–17 oraz ETAPY 21–22 zamknięte):
 NIEPELNY: 20_KSEF_JPK (18/19), 21_RODO_AML_BDO_HR (15/16),
 22_HYPER_ENTERPRISE_CONTEXTS (16/17), 23_ENTERPRISE_AI_NEURAL (15/16),
 24_TESTS_CI_QUALITY (15/16), 25_TOOLS_API_RULESTORE_BUNDLES (17/18),

@@ -25,7 +25,7 @@ from typing import Any
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 BUNDLES_DIR = BASE_DIR / "bundles"
-REPORT_PATH = BASE_DIR / "raporty_glm52" / "RAPORT_15_KSEF_JPK_DEKLARACJE.txt"
+REPORT_PATH = BASE_DIR / "raporty_glm52_enterprise" / "RAPORT_15_KSEF_JPK.txt"
 EVIDENCE_PATH = BUNDLES_DIR / "ksef_jpk_report15_evidence.json"
 
 # Paths enumerated by RAPORT_15 (tabela 2.3), kept explicit so the audit

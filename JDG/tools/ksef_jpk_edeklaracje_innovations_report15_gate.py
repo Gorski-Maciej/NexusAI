@@ -37,7 +37,7 @@ from typing import Any
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 BUNDLES_DIR = BASE_DIR / "bundles"
-REPORT_PATH = BASE_DIR / "raporty_glm52" / "RAPORT_15_KSEF_JPK_EDEKLARACJE.txt"
+REPORT_PATH = BASE_DIR / "raporty_glm52_enterprise" / "RAPORT_15_KSEF_JPK.txt"
 EVIDENCE_PATH = BUNDLES_DIR / "ksef_jpk_edeklaracje_innovations_report15_evidence.json"
 
 R15_REGO = "rules/r15_ksef_jpk_edeklaracje_innovations_v9.rego"

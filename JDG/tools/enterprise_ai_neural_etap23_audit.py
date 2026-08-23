@@ -23,7 +23,7 @@ REPORT = ROOT / "raporty_glm52_enterprise" / "23_ENTERPRISE_AI_NEURAL.txt"
 BUNDLE = ROOT / "bundles" / "enterprise_ai_neural_etap23_audit_state.json"
 
 CORE_FILES = [
-    "prompty_glm52_enterprise/23_ENTERPRISE_AI_NEURAL.txt",
+    "prompty_glm52_enterprise/PROMPT_18_ENTERPRISE_AI_NEURAL.txt",
     PACKAGE,
     MAIN,
     THRESHOLDS,
@@ -215,7 +215,7 @@ ENTERPRISE AI / ADAPTIVE TRUST / NEURAL MESH / CASHFLOW / BANKING / LLM
 IDENTITY
 --------
 Etap: ETAP_23
-Prompt: JDG/prompty_glm52_enterprise/23_ENTERPRISE_AI_NEURAL.txt
+Prompt: JDG/prompty_glm52_enterprise/PROMPT_18_ENTERPRISE_AI_NEURAL.txt
 Raport: JDG/raporty_glm52_enterprise/23_ENTERPRISE_AI_NEURAL.txt
 Audytor: JDG/tools/enterprise_ai_neural_etap23_audit.py
 Bundle: JDG/bundles/enterprise_ai_neural_etap23_audit_state.json
@@ -283,7 +283,7 @@ OPA: sprawdź natywnie, jeśli binarne `opa` jest dostępne w środowisku.
 STATUS
 ------
 Status raportu: {evidence['status']}
-Następny raport: ETAP 24 / JDG/prompty_glm52_enterprise/24_*.txt
+Następny raport: Prompt 19 / JDG/prompty_glm52_enterprise/PROMPT_19_AUTOMATYZACJA_KSIEGOWOSCI.txt
 
 ETAP_23_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAPEM_24.
 """

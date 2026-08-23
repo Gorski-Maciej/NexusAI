@@ -1,0 +1,185 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT 17/25 — HYPER PLAN45 I KONTEKSTY ENTERPRISE
+NexusAI JDG · GLM 5.2 Enterprise Campaign
+Data: 2026-08-23 | Status: WDROŻONY_100
+═══════════════════════════════════════════════════════════════════════════════
+
+DOWÓD WDROŻENIA
+---------------
+Raport kampanii zapisano jako:
+  JDG/raporty_glm52_enterprise/RAPORT_17_HYPER_PLAN45.txt
+
+Prompt 17 konsoliduje Hyper Plan45, R13 oraz meta-kontrakt ETAP 22:
+  JDG/rules/hyper_enterprise_contexts_etap22_v1.rego
+
+Zakres obejmuje terminy, limity, sankcje, e-Doręczenia, rodzinę, siłę wyższą,
+FX, MDR, WIS, daninę solidarnościową, procurement, audyt, ubezpieczenia,
+rezydencję, sezonowość, tax-free, płatności, podpis elektroniczny i registry
+kontekstów. Wynik jest evidence-first, deterministyczny i fail-closed.
+
+BRAMKI PROMPTU 17
+------------------
+- `tools/hyper_plan45_report17_gate.py`: 9/9;
+- audyt kontraktu ETAP 22: 17/17;
+- testy Hyper Plan45 i ETAP 22: PASS;
+- 1269 rule_id w inwentarzu Hyper Plan45, 0 duplikatów;
+- registry kontekstów i kontrakt input/evidence/result/test/recipient: COMPLETE;
+- deadline engine, limits registry, dependency graph i conflict detector: COMPLETE;
+- replay bez unmatched oraz deployment rollback fail-closed.
+
+ETAP 22 jest techniczną warstwą Promptu 17, nie osobnym Promptem kampanii.
+Audyt wskazuje rzeczywisty `PROMPT_17_HYPER_PLAN45.txt`; nie tworzono fikcyjnego
+`PROMPT_22...`.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+1. EXECUTIVE SUMMARY TOP 10
+---------------------------
+1. Registry definiuje katalog GENERAL, DEADLINES, LIMITS, MDR, SANCTIONS, FX,
+   WIS, EDELIVERY i SPECIAL bez zmian w orkiestratorze przy dodaniu kontekstu.
+2. Każdy kontekst wymaga wejścia, hash, źródła/evidence, wyniku, testu i
+   odbiorcy; brak pola jest blokadą meta-walidatora.
+3. Deadline engine obsługuje termin, status, evidence, odbiorcę i alerty.
+4. Limits registry utrzymuje wartość, jednostkę, zakres obowiązywania i źródło.
+5. Dependency graph przechowuje wersję, węzły, krawędzie i conflict pairs;
+   konflikt nie jest automatycznie rozstrzygany.
+6. Priorytety i terytorium są walidowane przed oceną specjalnego kontekstu.
+7. MDR, sankcje, FX, WIS i e-Doręczenia mają własne kompletności i dowody.
+8. R13 dostarcza konflikt IP Box/B+R, daninę solidarnościową, prokurę,
+   kalendarz roczny i selektor podpisu kwalifikowanego.
+9. Progi i wersje są wstrzykiwane przez `thresholds_jdg.rego`; brak danych nie
+   jest zastępowany pozornie pewną wartością w decyzji.
+10. `WDROŻONY_100` oznacza komplet artefaktów i testów repozytorium; nie oznacza
+    certyfikacji prawnej ani produkcyjnego wysyłania dokumentów.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+2. TABELA KONTEKSTÓW I FAZ
+----------------------------
+
+| Kontekst | Kontrakt | Reguły | Podstawa / dowód |
+|---|---|---|---|
+| GENERAL | input + source + result | hyper/general, meta | OrdPU, PIT, KKS |
+| DEADLINES | deadline_id, due_date, status, recipient | hyper/deadlines, deadline_engine | OrdPU art. 12 |
+| LIMITS | limit_id, value, unit, valid dates | hyper/limits, limits_registry | data.thresholds |
+| MDR | hallmark, assessment, evidence, recipient | hyper/mdr | MDR art. 86a-86o |
+| SANCTIONS | violation, basis, appeal, evidence | hyper/sanctions | KKS, OrdPU |
+| FX | currency, rate, date, source | hyper/fx | źródło kursu |
+| WIS | request_id, status, evidence | hyper/wis, WIS API | VAT art. 42a |
+| EDELIVERY | address, mailbox, confirmation | hyper/edelivery | e-Doręczenia/eIDAS |
+| SPECIAL | domenowy wynik i owner | R13 + moduły Plan45 | Legal Twin |
+
+Fazy wdrożenia:
+A. Inventory — 54 pliki Hyper Plan45 oraz core meta artefakty.
+B. Registry — katalog kontekstów i wymagane pola kontraktowe.
+C. Engines — terminy, limity, sankcje, kalendarz, FX i forecast.
+D. Cross-domain — dependency graph, konflikty i priorytety.
+E. Special — MDR, WIS, e-Doręczenia, solidarność, prokura i podpis.
+F. Safety — SUGGEST, manual review, BLOCK_AND_ALERT/TRIAGE_QUEUE.
+G. Verification — testy, Legal Twin, replay i rollback.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+3. INNOWACJE I USPRAWNIENIA
+----------------------------
+
+1. Super-kalendarz terminów z alertami D-30/D-7/D-1.
+2. Prognozowanie przekroczenia limitu wraz z datą projekcji.
+3. Harmonizator Hyper limits z `data.thresholds` jako jednym źródłem prawdy.
+4. Registry kontraktów walidowane bez ręcznej zmiany routera.
+5. Graf zależności i wykrywanie konfliktów międzydomenowych.
+6. Decision Certificate Hyper z hashem wejścia, wersją faktów i odbiorcą.
+7. Symulator przekroczenia limitu w trybie guidance-only.
+8. Tracker WIS i kompletność wniosku przed ręcznym skierowaniem.
+9. Monitor e-Doręczeń z adresem, skrzynką i potwierdzeniem odbioru.
+10. Moduł siły wyższej z dowodem zdarzenia i oceną skutku.
+11. FX z walutą, kursem, datą kursu i referencją źródła.
+12. MDR z oceną raportowalności i terminem.
+13. Sankcje z mapą przepisu, kwoty, terminu odwołania i dowodu.
+14. Prognoza daniny solidarnościowej i alert nadwyżki ponad próg.
+15. Kalendarz PIT rocznego z przesunięciem weekend/święto.
+16. Selekcja podpisu kwalifikowanego zależna od typu dokumentu i wartości.
+
+Każde usprawnienie ma odpowiadający artefakt Rego/Python oraz kontrakt testowy.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+4. SAFETY I FAIL-CLOSED
+------------------------
+
+- `manual_review_required=true`; owner approval pozostaje wymagany.
+- Wynik jest `decision_mode=SUGGEST`, `compliance_guidance_only=true` i
+  `no_auto_post=true`.
+- Brak źródła, testu, odbiorcy, aktualnego limitu, terminu, grafu lub kontekstu
+  powoduje `BLOCK_AND_ALERT`.
+- Kompletna technicznie sprawa kierowana jest do `TRIAGE_QUEUE`, bo meta-warstwa
+  nie składa deklaracji, nie podpisuje dokumentów i nie wykonuje płatności.
+- Aktualność aktów, kursów FX, kalendarza świąt i źródeł urzędowych wymaga
+  zewnętrznego potwierdzenia.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+5. DOWODY I WYNIKI
+-------------------
+
+| Kontrola | Wynik |
+|---|---:|
+| Prompt 17 + raport kampanii | PRESENT |
+| Core Hyper Plan45 | COMPLETE |
+| ETAP 22 meta-contract | COMPLETE |
+| Registry kontekstów | COMPLETE |
+| Deadline / limits / graph | COMPLETE |
+| MDR / sanctions / FX / WIS / e-Doręczenia | COMPLETE |
+| Legal traceability | COMPLETE |
+| Duplicates | 0 |
+| Report 17 gate | 9/9 |
+| ETAP 22 audit | 17/17 |
+| OPA binary | NOT AVAILABLE — testy strukturalne |
+| Produkcja | NOT_CERTIFIED / ROLLED_BACK |
+
+Nie deklaruję wykonania `opa test`, ponieważ binarne OPA nie jest dostępne.
+Testy strukturalne i kontraktowe nie zastępują walidacji aktualnego prawa ani
+integracji zewnętrznych.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+6. WPŁYW KRZYŻOWY
+------------------
+
+- VAT/PIT/ZUS/PKPiR/KSeF korzystają z terminów i limitów wspólnej warstwy danych.
+- KKS i sankcje są sygnałami ryzyka, nie automatycznym przypisaniem winy.
+- e-Doręczenia i podpisy dostarczają dowód doręczenia/podpisu, ale nie wykonują
+  wysyłki z reguły.
+- FX i MDR wpływają na cross-border, TP i księgowość.
+- WIS wpływa na klasyfikację VAT, lecz wymaga potwierdzenia właściwego organu.
+- Graf konfliktów chroni przed bezdowodowym łączeniem sprzecznych wyników.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+7. OGRANICZENIA
+---------------
+
+1. Dane progowe i podstawy prawne muszą być okresowo potwierdzane.
+2. Brak produkcyjnych tokenów, API, UPO i telemetryki.
+3. Forecast, scoring i selekcja są guidance-only.
+4. Kalendarz świąt i terminy ustawowe wymagają wersjonowanego źródła.
+5. OPA nie jest zainstalowane w środowisku sesji.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+8. CERTYFIKACJA
+----------------
+
+| Kontrola | Wynik |
+|---|---:|
+| Prompt 17 evidence gate | 9/9 |
+| ETAP 22 audit | 17/17 |
+| Hyper rule_id inventory | 1269 / 1269 unique |
+| Safety | SUGGEST / no_auto_post |
+| Production dispatch | NOT_CERTIFIED |
+| Status Prompt 17 | WDROŻONY_100 |
+
+RAPORT 17/25 — KONIEC.
+Po zapisaniu raportu wykonano reset kontekstu roboczego; następny zakres to
+PROMPT 18/25 — ENTERPRISE AI I NEURAL MESH.
+═══════════════════════════════════════════════════════════════════════════════

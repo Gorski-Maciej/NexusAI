@@ -117,9 +117,13 @@ class P15Toolkit:
     def detect_pcc_obligation(self, amount, transaction_type, is_vat_invoice=False, from_vat_payer=False):
         pcc_applies = not is_vat_invoice and not from_vat_payer
         rate_info = PCC_RATES.get(transaction_type, PCC_RATES["SALE_MOVABLE"])
-        taxable = max(0, amount - rate_info["threshold_exempt"])
+        if amount < 0:
+            raise ValueError("amount must be non-negative")
+        threshold = rate_info["threshold_exempt"]
+        exempt_by_value = threshold > 0 and amount <= threshold
+        taxable = amount if not exempt_by_value else 0
         pcc_tax = round(taxable * rate_info["rate_pct"] / 100, 2)
-        exempt = taxable <= 0 or not pcc_applies
+        exempt = exempt_by_value or not pcc_applies
 
         return {
             "amount": amount,
@@ -129,7 +133,7 @@ class P15Toolkit:
             "taxable_amount": taxable,
             "pcc_tax_pln": pcc_tax if not exempt else 0,
             "is_exempt": exempt,
-            "exemption_reason": "ZWOLNIONE — kwota poniżej progu" if taxable <= 0 else "VAT wyłącza PCC (Art. 2 pkt 4)" if not pcc_applies else "NIE — podlega PCC",
+            "exemption_reason": "ZWOLNIONE — kwota w progu ustawowym" if exempt_by_value else "VAT wyłącza PCC (Art. 2 pkt 4)" if not pcc_applies else "NIE — podlega PCC",
             "declaration": rate_info["declaration"],
             "deadline_days": rate_info["deadline_days"],
             "legal_basis": "Art. 1-7 Ustawy o PCC",

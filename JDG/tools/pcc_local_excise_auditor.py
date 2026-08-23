@@ -35,31 +35,37 @@ import sys
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parents[1]
+try:
+    from .p14_thresholds import load_thresholds
+except ImportError:  # direct ``python JDG/tools/...py`` invocation
+    from p14_thresholds import load_thresholds
 
-# ── Progi ustawowe 2026 (spójne z data.jdg.thresholds.pcc_local_excise — ADR-002)
+_P14 = load_thresholds()
+
+# ── Progi ustawowe 2026 (z data.jdg.thresholds.pcc_local_excise — ADR-002)
 PCC = {
     "rates": {
-        "SALE_MOVABLE": 2.0, "SALE_REAL_ESTATE": 2.0, "SALE_VEHICLE_PRIVATE": 2.0,
-        "LOAN": 0.5, "SHARE_PURCHASE": 1.0, "COMPANY_FORMATION": 0.5,
-        "EXCHANGE_REAL_ESTATE": 2.0, "EXCHANGE_OTHER": 1.0, "MORTGAGE": 0.1,
+        "SALE_MOVABLE": _P14.pcc_sale_rate * 100, "SALE_REAL_ESTATE": _P14.pcc_sale_rate * 100, "SALE_VEHICLE_PRIVATE": _P14.pcc_sale_rate * 100,
+        "LOAN": _P14.pcc_loan_rate * 100, "SHARE_PURCHASE": 1.0, "COMPANY_FORMATION": _P14.pcc_company_rate * 100,
+        "EXCHANGE_REAL_ESTATE": _P14.pcc_sale_rate * 100, "EXCHANGE_OTHER": 1.0, "MORTGAGE": _P14.pcc_mortgage_rate * 100,
         "SURETY": 0.5, "INSTALLMENT_SALE": 2.0, "INHERITANCE_DIVISION": 1.0,
     },
-    "threshold_small": 1000.0,       # art. 9 pkt 1 — kwoty ≤ 1000 PLN zwolnione
-    "family_loan_limit": 36120.0,    # pożyczka rodzinna zwolniona do tego limitu
-    "pcc3_deadline_days": 14,        # art. 10 — PCC-3 w 14 dni
+    "threshold_small": _P14.pcc_exemption_limit,  # art. 9 pkt 1
+    "family_loan_limit": _P14.pcc_family_loan_limit,
+    "pcc3_deadline_days": _P14.pcc3_deadline_days,
     "real_estate_rates": {           # podatek od nieruchomości 2026
-        "land_business": 1.43, "land_other": 0.71,
-        "building_business": 33.10, "building_residential": 1.15,
+        "land_business": _P14.land_business_rate, "land_other": 0.71,
+        "building_business": _P14.building_business_rate, "building_residential": 1.15,
         "construction_pct_value": 2.0,
     },
-    "dn1_deadline_days": 14,
+    "dn1_deadline_days": _P14.dn1_deadline_days,
     "dn1_payment_schedule": ["MARCH_15", "MAY_15", "SEPTEMBER_15", "NOVEMBER_15"],
-    "transport_heavy_threshold_t": 3.5,
+    "transport_heavy_threshold_t": _P14.transport_threshold_t,
     "real_estate_rates_2025": {     # stawki 2025 (porównanie YoY w gmina_rates_map — INN-15)
         "land_business": 1.34, "building_business": 31.00, "construction_pct_value": 2.0,
     },
-    "excise_fuel": {"benzyna": 1566.0, "on": 1206.0, "lpg": 695.0},
-    "excise_alcohol": {"alkohol_etylowy_pln_hl": 6900.0, "piwo_pln_hl_plato": 8.57, "wino_pln_hl": 185.0},
+    "excise_fuel": {"benzyna": _P14.excise_gasoline, "on": _P14.excise_diesel, "lpg": _P14.excise_lpg},
+    "excise_alcohol": {"alkohol_etylowy_pln_hl": _P14.excise_ethanol_per_hl, "piwo_pln_hl_plato": _P14.excise_beer_per_plato, "wino_pln_hl": _P14.excise_wine_per_hl},
 }
 
 # Priorytetowe artykuły PCC+lokalne+akcyza (spójne z pakietem rego)
@@ -72,22 +78,28 @@ def round2(x: float) -> float:
 
 # ── Sekcja 1: kalkulator PCC (INN — stawki art. 6-7) ──────────────────────────
 def pcc_calculator(transaction_type: str = "SALE_MOVABLE", amount: float = 100000.0) -> dict:
+    if amount < 0:
+        raise ValueError("amount must be non-negative")
     rate = PCC["rates"].get(transaction_type, 2.0)
-    tax_due = round2(amount * rate / 100)
+    small_value_exempt = amount <= PCC["threshold_small"]
+    tax_due = 0.0 if small_value_exempt else round2(amount * rate / 100)
     return {
         "transaction_type": transaction_type,
         "amount": amount,
         "rate_pct": rate,
         "tax_due": tax_due,
-        "small_value_exempt": amount <= PCC["threshold_small"],
+        "small_value_exempt": small_value_exempt,
         "note": f"stawki PCC (art. 6-7): sprzedaż 2%, pożyczka 0,5%, spółki 0,5%, hipoteka 0,1% — podatek {tax_due:,.2f} PLN",
     }
 
 
 # ── Sekcja 1: auto-generator PCC-3 (INN-01) ───────────────────────────────────
 def pcc3_generator(transaction_type: str = "SALE_MOVABLE", amount: float = 100000.0) -> dict:
+    if amount < 0:
+        raise ValueError("amount must be non-negative")
     rate = PCC["rates"].get(transaction_type, 2.0)
-    tax_due = round2(amount * rate / 100)
+    small_value_exempt = amount <= PCC["threshold_small"]
+    tax_due = 0.0 if small_value_exempt else round2(amount * rate / 100)
     return {
         "transaction_type": transaction_type,
         "amount": amount,
@@ -95,7 +107,8 @@ def pcc3_generator(transaction_type: str = "SALE_MOVABLE", amount: float = 10000
         "tax_due": tax_due,
         "deadline_days": PCC["pcc3_deadline_days"],
         "form": "PCC-3 (deklaracja) + PCC-3/A (załącznik) do US w 14 dni od powstania obowiązku",
-        "small_value_exempt": amount <= PCC["threshold_small"],
+        "small_value_exempt": small_value_exempt,
+        "submission_required": not small_value_exempt,
         "note": "auto-generator PCC-3 — kwota podatku, termin 14 dni, formularz PCC-3/PCC-3/A",
     }
 
@@ -209,21 +222,25 @@ def pcc3_zero_click(transaction_type: str = "SALE_MOVABLE",
                     amount: float = 100000.0,
                     days_elapsed: int = 0) -> dict:
     """Auto-generowanie PCC-3 + countdown 14 dni (art. 10)."""
+    if amount < 0 or days_elapsed < 0:
+        raise ValueError("amount and days_elapsed must be non-negative")
     rate = PCC["rates"].get(transaction_type, 2.0)
-    tax_due = round2(amount * rate / 100)
+    small_value_exempt = amount <= PCC["threshold_small"]
+    tax_due = 0.0 if small_value_exempt else round2(amount * rate / 100)
     remaining = max(0, PCC["pcc3_deadline_days"] - days_elapsed)
     return {
         "transaction_type": transaction_type,
         "amount": amount,
         "rate_pct": rate,
         "tax_due": tax_due,
+        "small_value_exempt": small_value_exempt,
         "days_elapsed": days_elapsed,
         "days_remaining": remaining,
         "countdown": f"PCC-3 w {remaining} dni (termin: 14 dni od powstania obowiązku)",
         "form_auto_generated": True,
-        "submission_required": days_elapsed < PCC["pcc3_deadline_days"],
-        "urgency_alert": days_elapsed >= PCC["pcc3_deadline_days"] - 3,
-        "routing": "TRIAGE_QUEUE" if days_elapsed >= PCC["pcc3_deadline_days"] - 3 else "",
+        "submission_required": not small_value_exempt,
+        "urgency_alert": not small_value_exempt and days_elapsed >= PCC["pcc3_deadline_days"] - 3,
+        "routing": "TRIAGE_QUEUE" if not small_value_exempt and days_elapsed >= PCC["pcc3_deadline_days"] - 3 else "",
         "note": "zero-click PCC-3 — kwota podatku, countdown 14 dni, formularz PCC-3/PCC-3/A",
     }
 

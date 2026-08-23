@@ -1305,8 +1305,12 @@ business_lifecycle := {
     "ryczalt_rate_3_pct": 0.03,                 # działalność wytwórcza 3%
     "ryczalt_rate_55_pct": 0.055,               # działalność wytwórcza/roboty budowlane 5,5%
     "ryczalt_rate_85_pct": 0.085,               # usługi 8,5%
-    "ryczalt_rate_125_pct": 0.125,              # wolne zawody 12,5%
-    "ryczalt_rate_17_pct": 0.17,                # najem/lekarze 17%
+    "ryczalt_rate_10_pct": 0.10,                 # wybrane usługi 10%
+    "ryczalt_rate_12_pct": 0.12,                 # wybrane usługi 12%
+    "ryczalt_rate_125_pct": 0.125,              # wybrane przychody 12,5%
+    "ryczalt_rate_14_pct": 0.14,                # wybrane usługi 14%
+    "ryczalt_rate_15_pct": 0.15,                # wybrane usługi 15%
+    "ryczalt_rate_17_pct": 0.17,                # wolne zawody 17%
     "ryczalt_rate_20_pct": 0.20,                # 20% (przychody z działów specjalnych)
     "ryczalt_rate_25_pct": 0.25,                # 25% (pozostałe usługi, art. 12 ust. 1 pkt 5)
 

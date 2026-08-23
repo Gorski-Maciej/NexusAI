@@ -47,9 +47,18 @@ def test_pcc_calculator_loan():
 
 
 def test_pcc_calculator_small_value():
-    """Kwota 500 ≤ 1000 → zwolniona (art. 9 pkt 1)."""
+    """Kwota 500 ≤ 1000 → zwolniona (art. 9 pkt 1), bez podatku."""
     res = pcc_calculator("SALE_MOVABLE", 500)
     assert res["small_value_exempt"] is True
+    assert res["tax_due"] == 0.0
+
+
+def test_pcc_small_value_boundary():
+    """Granica zwolnienia: 1000 zł jest zwolnione, 1000,01 zł już nie."""
+    at_limit = pcc_calculator("SALE_MOVABLE", 1000)
+    above_limit = pcc_calculator("SALE_MOVABLE", 1000.01)
+    assert at_limit["tax_due"] == 0.0
+    assert above_limit["tax_due"] == 20.0
 
 
 # ── Auto-generator PCC-3 (INN-01 — art. 10, 14 dni) ───────────────────────────
@@ -240,6 +249,11 @@ def test_pcc_obligation_detector():
 
 def test_pcc3_zero_click():
     """INN-14: countdown 14 dni — 12 dni → 2 pozostałe + alert."""
+    exempt = pcc3_zero_click("SALE_MOVABLE", 1000, 12)
+    assert exempt["tax_due"] == 0.0
+    assert exempt["submission_required"] is False
+    assert exempt["routing"] == ""
+
     res = pcc3_zero_click("SALE_MOVABLE", 100000, 12)
     assert res["days_remaining"] == 2
     assert res["urgency_alert"] is True

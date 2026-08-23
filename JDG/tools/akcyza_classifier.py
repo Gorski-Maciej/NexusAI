@@ -7,21 +7,28 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 from __future__ import annotations
 
+try:
+    from .p14_thresholds import load_thresholds
+except ImportError:  # direct ``python JDG/tools/...py`` invocation
+    from p14_thresholds import load_thresholds
+
+_P14 = load_thresholds()
+
 LEGAL_AKCYZA = ("ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym "
                 "(Dz.U. 2025 poz. 1220)")
 
 # Stawki 2026
 FUEL = {                 # PLN / 1000 l (art. 89)
-    "gasoline": 1566.0,
-    "diesel": 1206.0,
-    "lpg": 695.0,
+    "gasoline": _P14.excise_gasoline,
+    "diesel": _P14.excise_diesel,
+    "lpg": _P14.excise_lpg,
     "cng": 449.0,
 }
 
 ALCOHOL = {              # PLN / hl (art. 93-96)
-    "ethanol": 6900.0,   # za hl 100% obj.
-    "wine": 185.0,
-    "beer": 8.57,        # za hl za °Plato
+    "ethanol": _P14.excise_ethanol_per_hl,   # za hl 100% obj.
+    "wine": _P14.excise_wine_per_hl,
+    "beer": _P14.excise_beer_per_plato,        # za hl za °Plato
     "cider": 108.0,
 }
 

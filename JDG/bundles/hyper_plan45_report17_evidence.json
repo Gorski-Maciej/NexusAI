@@ -1,37 +1,26 @@
 {
-  "schema_version": "1.0.0",
-  "audit_id": "jdg.hyper_enterprise_contexts_etap22_audit",
-  "stage": "ETAP_22",
+  "report": "RAPORT_17_HYPER_PLAN45",
   "status": "WDROZONY_100",
   "gates": {
-    "scope_files_present": true,
-    "package_structure": true,
-    "context_contract": true,
-    "deadline_engine": true,
-    "limits_registry": true,
-    "dependency_graph_conflicts": true,
-    "priority_territory_validation": true,
-    "special_contexts": true,
-    "evidence_temporal_versions": true,
+    "prompt_and_report_present": true,
+    "core_scope_complete": true,
+    "package_contract": true,
     "legal_traceability": true,
-    "manual_fail_closed": true,
-    "safe_routing": true,
     "thresholds_externalized": true,
-    "orchestrator_wiring": true,
-    "pytest_contract": true,
-    "native_rego_contract": true,
-    "report_present": true
+    "router_wired": true,
+    "tests_present": true,
+    "golden_replay_ok": true,
+    "rollback_fail_closed": true
   },
   "gate_summary": {
-    "passed": 17,
-    "total": 17
+    "passed": 9,
+    "total": 9
   },
-  "files": {
-    "declared": 22,
-    "present": 22,
+  "scope": {
+    "declared": 36,
+    "present": 36,
     "all_present": true,
     "files": {
-      "prompty_glm52_enterprise/PROMPT_17_HYPER_PLAN45.txt": true,
       "rules/jdg/hyper/general/plan45.rego": true,
       "rules/jdg/hyper/deadlines/plan45.rego": true,
       "rules/jdg/hyper/limits/plan45.rego": true,
@@ -46,22 +35,34 @@
       "rules/jdg/hyper/force_majeure/plan45.rego": true,
       "rules/jdg/hyper/procurement/plan45.rego": true,
       "rules/jdg/hyper/solidarity/plan45.rego": true,
+      "rules/advertising/plan45_advertising.rego": true,
+      "rules/calendar/plan45_calendar.rego": true,
+      "rules/conviction/plan45_conviction.rego": true,
+      "rules/esig/plan45_esig.rego": true,
+      "rules/insurance/plan45_insurance.rego": true,
+      "rules/payments/plan45_payments.rego": true,
+      "rules/procurement/plan45_procurement.rego": true,
+      "rules/regulated/plan45_regulated.rego": true,
+      "rules/residency/plan45_residency.rego": true,
+      "rules/seasonal/plan45_seasonal.rego": true,
+      "rules/solidarity/plan45_solidarity.rego": true,
+      "rules/taxfree/plan45_taxfree.rego": true,
       "rules/hyper_plan45_meta_enterprise.rego": true,
       "rules/r13_hyper_konteksty_innovations_v9.rego": true,
+      "rules/hyper_enterprise_contexts_etap22_v1.rego": true,
+      "tools/deadline_engine.py": true,
+      "tools/limits_registry.py": true,
+      "tools/sanction_calculator.py": true,
       "tools/hyper_quality.py": true,
-      "tools/hyper_konteksty_report13_gate.py": true,
-      "docs/PRAWA_PRZEDSIEBIORCOW_AUDYT_R02.md": true,
-      "docs/Bbb": true,
-      "rules/hyper_enterprise_contexts_etap22_v1.rego": true
+      "tools/hyper_enterprise_contexts_etap22_audit.py": true,
+      "tests/test_hyper_enterprise_contexts_etap22_audit.py": true,
+      "tests/rego/test_native_hyper_enterprise_contexts_etap22.rego": true
     }
   },
   "package": {
-    "package": true,
-    "balanced_braces": true,
-    "balanced_parentheses": true,
-    "rule_ids": 2,
-    "duplicate_rule_ids": [],
-    "duplicate_free": true,
+    "rule_ids": 955,
+    "unique_rule_ids": 955,
+    "duplicates": [],
     "markers": {
       "context_catalog": true,
       "context_registry_complete": true,
@@ -76,8 +77,6 @@
       "conflict_detector": true,
       "priority_validation": true,
       "territorial_validation": true,
-      "context_complete": true,
-      "source_complete": true,
       "mdr_complete": true,
       "sanctions_complete": true,
       "fx_complete": true,
@@ -93,8 +92,7 @@
       "facts_version": true,
       "threshold_version": true
     },
-    "markers_complete": true,
-    "legal_basis": {
+    "legal": {
       "PIT art. 30ca": true,
       "30h": true,
       "45": true,
@@ -104,46 +102,17 @@
       "eIDAS": true,
       "doręczeniach elektronicznych": true,
       "KKS": true
-    },
-    "legal_basis_complete": true,
-    "thresholds_externalized": true,
-    "no_auto_post": true
-  },
-  "wiring": {
-    "markers": {
-      "import": true,
-      "package_decisions": true,
-      "stage_chain": true,
-      "post_merge": true,
-      "public_final": true
-    },
-    "complete": true
-  },
-  "tests": {
-    "pytest": {
-      "present": true,
-      "test_count": 9,
-      "markers": {
-        "context": true,
-        "deadline": true,
-        "limits": true,
-        "graph": true,
-        "fail_closed": true,
-        "wiring": true
-      }
-    },
-    "native_rego": {
-      "present": true,
-      "test_count": 6,
-      "markers": {
-        "test_no_match": true,
-        "test_missing_evidence": true,
-        "test_graph": true,
-        "test_deadline": true,
-        "test_conflict": true,
-        "test_valid": true
-      }
     }
   },
-  "generated_at": "2026-08-23T09:18:06.666826+00:00"
+  "replay": {
+    "selected_verdicts": 2,
+    "replays": 30,
+    "unmatched": 0
+  },
+  "deployment": {
+    "phase": "ROLLED_BACK",
+    "rollback_reason": "G-06 fail-closed verification: incident SLA 5 min",
+    "active_version": "jdg-bundle-v8.0.0"
+  },
+  "generated_at": "2026-08-23T09:18:56.366226+00:00"
 }

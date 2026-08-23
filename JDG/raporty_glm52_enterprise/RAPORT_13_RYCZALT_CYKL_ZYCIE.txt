@@ -2,6 +2,7 @@
 RAPORT 13/25 — RYCZAŁT I CYKL ŻYCIA JDG
 NexusAI JDG · GLM 5.2 Enterprise Campaign
 Data: 2026-08-23 | Status: WDROŻONY_100
+Dowód wdrożenia: 6 brakujących narzędzi P13 + wspólny rejestr progów + 8 testów pytest; walidator stawek: PASS 9/9.
 ═══════════════════════════════════════════════════════════════════════════════
 
 ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -40,10 +41,11 @@ Data: 2026-08-23 | Status: WDROŻONY_100
    - p16 innovations: 13 reguł (auto-form generator, enhanced SCA, entrepreneur test, Estonian CIT full)
    - lifecycle_manager: 4 reguły (fazy cyklu, eventy, przejścia)
 
-6. STAN NARZĘDZI: 7 narzędzi Python — wszystkie zweryfikowane
-   (ryczalt_cykl_quality, ryczalt_lifecycle_auditor, sukcesja_planner,
-   lifecycle_navigator, zawieszenie_simulator, business_lifecycle_etap18_audit,
-   limit_2m_monitor)
+6. STAN NARZĘDZI: 13 narzędzi Python — wszystkie zweryfikowane
+   (7 istniejących oraz: ryczalt_rate_validator, tax_form_whatif_simulator,
+   ryczalt_zus_health_harmonizer, lifecycle_decision_certificate,
+   ceidg_deadline_tracker, unregistered_activity_assistant; wspólny odczyt progów
+   zapewnia p13_thresholds.py)
 
 7. LUKI ZIDENTYFIKOWANE: 6 luk
    - L1: Brak testów natywnych Rego dla ryczałtu i cyklu życia
@@ -275,8 +277,8 @@ LUKA 2: Brak walidatora spójności stawek ryczałtu vs PKWiU vs data.thresholds
 STATUS: WYSOKI
 OPIS: Stawki ryczałtu zdefiniowane w regułach Rego mogą być niespójne z data.thresholds
 ROZWIĄZANIE: ryczalt_rate_validator.py
-  → Wdrożono: narzędzie walidujące 10 stawek vs thresholds vs pliki .rego
-  → Cross-check: data.thresholds.ryczalt_rates[*] == Art. 12 ust. 1
+  → Wdrożono: JDG/tools/ryczalt_rate_validator.py, walidacja 9 stawek vs thresholds vs pliki .rego
+  → Cross-check: thresholds_jdg.rego == reguły Rego; wynik bramki: PASS 9/9
 
 LUKA 3: Brak automatu CEIDG-1 (generowanie wniosków rejestracyjnych)
 ────────────────────────────────────────────────────────────────────
@@ -291,25 +293,25 @@ LUKA 4: Brak symulatora „co gdyby zmiana formy opodatkowania"
 STATUS: ŚREDNI
 OPIS: Przedsiębiorca nie może zasymulować skutków przejścia ryczałt→skala/liniowy
 ROZWIĄZANIE: tax_form_whatif_simulator.py
-  → Wdrożono: narzędzie porównujące PIT przy 3 formach opodatkowania
-  → Wynik: roczna oszczędność/koszt netto + rekomendacja
+  → Wdrożono: JDG/tools/tax_form_whatif_simulator.py
+  → Wynik: PIT ryczałt/skala/liniowy, koszty, składki społeczne, rekomendacja i różnica względem najgorszej formy
 
 LUKA 5: Brak harmonizatora ryczałt × ZUS × zdrowotna (progi)
 ────────────────────────────────────────────────────────────
 STATUS: ŚREDNI
 OPIS: Brak narzędzia pokazującego łączny efekt progów ryczałtu, ZUS i zdrowotnej
 ROZWIĄZANIE: ryczalt_zus_health_harmonizer.py
-  → Wdrożono: narzędzie wyliczające całkowite obciążenie JDG
-  → Progi: ryczałt (3%-17%), ZUS (ulga/preferencyjny/pełny), zdrowotna
-    (4,9% ryczałt / 9% skala / 4,9% liniowy)
+  → Wdrożono: JDG/tools/ryczalt_zus_health_harmonizer.py
+  → Wynik: ryczałt + roczne składki ZUS + zdrowotna, tier przychodowy 60k/300k,
+    efektywna stopa i jawne założenia wejściowe (bez hardcodowania bieżących kwot)
 
 LUKA 6: Brak Decision Certificate (F4) dla zdarzeń cyklu życia
 ──────────────────────────────────────────────────────────────
 STATUS: NISKI
 OPIS: Zdarzenia cyklu życia nie generują certyfikatu decyzyjnego F4
 ROZWIĄZANIE: lifecycle_decision_certificate.py
-  → Wdrożono: generator certyfikatu per zdarzenie z hashem SHA-256
-  → Format: JSON z podpisem, legal_basis, timestamp, bundle_version
+  → Wdrożono: JDG/tools/lifecycle_decision_certificate.py
+  → Format: JSON F4 z legal_basis, timestamp, bundle_version, rule_version i SHA-256; dodano weryfikację naruszenia danych
 
 ═══════════════════════════════════════════════════════════════════════════════
 
@@ -428,7 +430,7 @@ Opis: Symulacja przejścia JDG → Sp. z o.o. + Estoński CIT.
 ║              7. KODY WDROŻENIOWE — TESTY NATYWNE REGO                        ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 
-7.1. test_native_ryczalt_cykl_zycia.rego (20 testów)
+7.1. test_native_ryczalt_cykl_zycia.rego (20 testów) + tests/test_p13_tools.py (8 testów)
 
 Plik: JDG/tests/rego/test_native_ryczalt_cykl_zycia.rego
 
@@ -584,9 +586,11 @@ ETAP 13.4 (DOCELOWY): Integracja z KSeF i JPK
 |-------------------------------------------|---------------------|
 | Łączna liczba reguł w domenie             | ~735                |
 | Pliki .rego w domenie                     | 18+                 |
-| Narzędzia Python                          | 7 istniejących + 6 NOWYCH |
+| Narzędzia Python                          | 7 istniejących + 6 nowych + p13_thresholds.py |
 | Testy natywne Rego                        | 20 NOWYCH           |
 | Luki zamknięte                            | 6/6                 |
+| Walidacja stawek                          | PASS 9/9            |
+| Testy pytest P13                          | 8 passed            |
 | Pomysły Enterprise wdrożone               | 12/12               |
 | Stawki ryczałtu zweryfikowane             | 10/10               |
 | Artykuły ustawy o ryczałcie pokryte       | Art. 4,6,8,10,11,12,14,15,21-30 |
@@ -597,6 +601,6 @@ ETAP 13.4 (DOCELOWY): Integracja z KSeF i JPK
 ═══════════════════════════════════════════════════════════════════════════════
 RAPORT 13/25 — KONIEC
 Data: 2026-08-23 | Autor: GLM 5.2 Enterprise via NexusAI JDG
-Wdrożenie: PEŁNE (6 luk zamkniętych, 12 pomysłów, 20 testów, 6 nowych narzędzi)
+Wdrożenie: PEŁNE (6 luk zamkniętych, 12 pomysłów, 20 testów Rego + 8 testów pytest, 6 nowych narzędzi)
 Następny: PROMPT 14/25 — PCC I PODATKI LOKALNE
 ═══════════════════════════════════════════════════════════════════════════════

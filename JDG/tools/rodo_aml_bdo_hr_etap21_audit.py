@@ -18,7 +18,7 @@ REPORT = ROOT / "raporty_glm52_enterprise" / "21_RODO_AML_BDO_HR.txt"
 BUNDLE = ROOT / "bundles" / "rodo_aml_bdo_hr_etap21_audit_state.json"
 
 SOURCE_FILES = [
-    "prompty_glm52_enterprise/21_RODO_AML_BDO_HR.txt",
+    "prompty_glm52_enterprise/PROMPT_16_RODO_AML_BDO_HR.txt",
     "rules/rodo.rego",
     "rules/rodo_extended.rego",
     "rules/micro/rodo/rodo.rego",
@@ -169,7 +169,7 @@ RODO / AML-CBDD / BDO / ŚRODOWISKO / PRACODAWCA / HR / PPK / PFRON
 IDENTITY
 --------
 Etap: ETAP_21
-Prompt: JDG/prompty_glm52_enterprise/21_RODO_AML_BDO_HR.txt
+Prompt: JDG/prompty_glm52_enterprise/PROMPT_16_RODO_AML_BDO_HR.txt
 Raport: JDG/raporty_glm52_enterprise/21_RODO_AML_BDO_HR.txt
 Audytor: JDG/tools/rodo_aml_bdo_hr_etap21_audit.py
 Bundle: JDG/bundles/rodo_aml_bdo_hr_etap21_audit_state.json
@@ -230,7 +230,7 @@ Produkcja: NOT_CERTIFIED
 STATUS
 ------
 Status raportu: {evidence['status']}
-Następny raport: ETAP_22 / JDG/prompty_glm52_enterprise/22_*.txt
+Następny raport: Prompt 17 / JDG/prompty_glm52_enterprise/PROMPT_17_HYPER_PLAN45.txt
 
 ETAP_21_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAPEM_22.
 """

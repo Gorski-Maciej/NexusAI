@@ -18,7 +18,7 @@ REPORT = ROOT / "raporty_glm52_enterprise" / "22_HYPER_ENTERPRISE_CONTEXTS.txt"
 BUNDLE = ROOT / "bundles" / "hyper_enterprise_contexts_etap22_audit_state.json"
 
 SOURCE_FILES = [
-    "prompty_glm52_enterprise/22_HYPER_ENTERPRISE_CONTEXTS.txt",
+    "prompty_glm52_enterprise/PROMPT_17_HYPER_PLAN45.txt",
     "rules/jdg/hyper/general/plan45.rego",
     "rules/jdg/hyper/deadlines/plan45.rego",
     "rules/jdg/hyper/limits/plan45.rego",
@@ -165,7 +165,7 @@ HYPER PLAN45 / TERMINY / LIMITY / MDR / SANKCJE / FX / WIS / e-DORĘCZENIA
 IDENTITY
 --------
 Etap: ETAP_22
-Prompt: JDG/prompty_glm52_enterprise/22_HYPER_ENTERPRISE_CONTEXTS.txt
+Prompt: JDG/prompty_glm52_enterprise/PROMPT_17_HYPER_PLAN45.txt
 Raport: JDG/raporty_glm52_enterprise/22_HYPER_ENTERPRISE_CONTEXTS.txt
 Audytor: JDG/tools/hyper_enterprise_contexts_etap22_audit.py
 Bundle: JDG/bundles/hyper_enterprise_contexts_etap22_audit_state.json
@@ -226,7 +226,7 @@ Produkcja: NOT_CERTIFIED
 STATUS
 ------
 Status raportu: {evidence['status']}
-Następny raport: ETAP_23 / JDG/prompty_glm52_enterprise/23_*.txt
+Następny raport: Prompt 18 / JDG/prompty_glm52_enterprise/PROMPT_18_ENTERPRISE_AI_NEURAL.txt
 
 ETAP_22_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAPEM_23.
 """

@@ -9,20 +9,27 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 from __future__ import annotations
 
+try:
+    from .p14_thresholds import load_thresholds
+except ImportError:  # direct ``python JDG/tools/...py`` invocation
+    from p14_thresholds import load_thresholds
+
+_P14 = load_thresholds()
+
 LEGAL_PCC = ("ustawy z dnia 9 września 2000 r. o podatku od czynności "
              "cywilnoprawnych (Dz.U. 2025 poz. 789)")
 
 # Stawki PCC (art. 7) — ułamki dziesiętne
 RATES = {
-    "sale": 0.02,          # art. 7 ust. 1 pkt 1 — sprzedaż rzeczy/praw majątkowych
-    "loan": 0.005,         # art. 7 ust. 1 pkt 4 — pożyczka
-    "company": 0.005,      # art. 7 ust. 1 pkt 9 — umowa spółki
-    "exchange": 0.01,      # art. 7 ust. 1 pkt 2 — zamiana
-    "mortgage": 0.001,     # art. 7 ust. 1 pkt 7 — hipoteka
+    "sale": _P14.pcc_sale_rate,       # art. 7 ust. 1 pkt 1 — sprzedaż rzeczy/praw majątkowych
+    "loan": _P14.pcc_loan_rate,         # art. 7 ust. 1 pkt 4 — pożyczka
+    "company": _P14.pcc_company_rate,   # art. 7 ust. 1 pkt 9 — umowa spółki
+    "exchange": 0.01,                   # art. 7 ust. 1 pkt 2 — zamiana
+    "mortgage": _P14.pcc_mortgage_rate, # art. 7 ust. 1 pkt 7 — hipoteka
 }
 
-EXEMPTION_LIMIT = 1000.0       # art. 9 pkt 1 — kwoty ≤ 1000 zł zwolnione
-PCC3_DEADLINE_DAYS = 14        # art. 10 — PCC-3 w 14 dni
+EXEMPTION_LIMIT = _P14.pcc_exemption_limit  # art. 9 pkt 1 — kwoty ≤ 1000 zł zwolnione
+PCC3_DEADLINE_DAYS = _P14.pcc3_deadline_days   # art. 10 — PCC-3 w 14 dni
 
 
 def rate_pct(transaction_type: str) -> float:
