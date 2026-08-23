@@ -1,0 +1,131 @@
+====================================================================================================
+RAPORT WDROZENIOWY GLM 5.2 — PROMPT 20/25
+SYSTEM OPA / CONTROL PLANE I DATA PLANE JDG
+====================================================================================================
+
+STATUS I DOWOD
+--------------
+Prompt: JDG/prompty_glm52_enterprise/PROMPT_20_SYSTEM_OPA_CONTROL_PLANE.txt
+Raport: JDG/raporty_glm52_enterprise/RAPORT_20_SYSTEM_OPA_CONTROL_PLANE.txt
+Gate: JDG/tools/system_opa_control_plane_report20_gate.py
+Evidence: JDG/bundles/system_opa_control_plane_report20_evidence.json
+Status: WDROZONY_100
+Wynik gate: 14/14
+Produkcja: NOT_CERTIFIED
+
+EXECUTIVE SUMMARY — TOP 10
+--------------------------
+1. OPA jest obsługiwany jako system: registry, lifecycle, bundle delivery i data plane.
+2. Każda zmiana reguły przechodzi manifest, legal reference, testy, review i rollout.
+3. Lifecycle obejmuje SHADOW, CANDIDATE, ACTIVE, SUSPENDED i ROLLED_BACK.
+4. Algebra interwałów wykrywa nakładki oraz luki valid_from/valid_to.
+5. Bundle server weryfikuje hash, podpis HSM-ready, SBOM i fail-closed node state.
+6. Delta jest transportem pomocniczym; aktywacja domen krytycznych wymaga pełnego snapshotu.
+7. Persist zapisuje ostatni zweryfikowany stan, ale brak dowodu nie tworzy certyfikacji.
+8. API obejmuje JWT, RBAC, SoD, Idempotency-Key, wersjonowanie i endpointy control-plane.
+9. ISAP, Law Radar, impact matrix, golden replay i declarative change tworzą zamknięty pipeline.
+10. Produkcja pozostaje NOT_CERTIFIED, ponieważ lokalne artefakty nie są telemetrią produkcyjną.
+
+SLO VS STAN FAKTYCZNY
+---------------------
+| SLO | Kontrakt | Dowód |
+|-----|----------|-------|
+| Rutynowa zmiana prawa | <= 24 h | legal adaptation + ISAP pipeline |
+| P0 change | <= 4 h | priority path w law pipeline |
+| Parametr data-only | <= 15 min | data_service hot-reload contract |
+| Canary | 5% | deployment_orchestrator CANARY_PCT |
+| Shadow delta | <= 2% | SHADOW_COMPARE guard |
+| Soak | 24 h | SOAK_HOURS |
+| Rollback | <= 5 min | deployment rollback SLA artifact |
+| API safety | JWT/RBAC/SoD/idempotency | openapi.yaml |
+| Production status | fail-closed | NOT_CERTIFIED / ROLLED_BACK |
+
+LUKI L1–L12 I DOMKNIĘCIA
+------------------------
+| Luka | Domknięcie |
+|------|------------|
+| L1 realny control plane | bundle_server, deployment_orchestrator, control_plane_lifecycle |
+| L2 podpis bundle | hash + HSM-ready signature + SBOM/node verification |
+| L3 delta bundles | delta_manifest with signed snapshot promotion policy |
+| L4 long-polling | bundle_server.poll(last_version, timeout) |
+| L5 persist=true | durable node_persistence checkpoint, restart fail-closed |
+| L6 status/discovery | explicit STATUS and DISCOVERY responses |
+| L7 lifecycle | rule_lifecycle_manager and control_plane_lifecycle |
+| L8 temporal continuity | overlap and gap detection |
+| L9 ISAP to rules | crawler, radar, impact, plan and candidate registry |
+| L10 golden replay | immutable schema v2 and UVR gate |
+| L11 RuleStore/legal graph | migrations 001–013, legal_graph and temporal fields |
+| L12 API contract | OpenAPI, JWT, RBAC, SoD, idempotency, versioning |
+
+CONTROL PLANE PHASES
+--------------------
+1. DECLARE: declarative change and manifest with owner, domain, legal nodes and tests.
+2. INGEST: ISAP/RCL/Sejm/Senat sources and law radar countdown.
+3. IMPACT: affected rules, legal graph references and decision portfolio delta.
+4. GENERATE: new immutable semver candidate; historical version is preserved.
+5. VALIDATE: Rego syntax, invariant checker, temporal algebra and control tower.
+6. REPLAY: golden verdicts; unexplained verdict change is UVR and blocks rollout.
+7. REVIEW: independent four-eyes review and separation of duties.
+8. PACKAGE: bundle hash, signature, SBOM and manifest.
+9. SHADOW: parallel evaluation without production effect.
+10. CANARY: 5% rollout with health telemetry.
+11. RAMP: 25%, 50%, 100% progressive delivery.
+12. SOAK: 24-hour health observation.
+13. ACTIVE OR ROLLBACK: only healthy evidence may promote; otherwise restore.
+
+DATA PLANE CONTRACT
+-------------------
+The P21 Rego package is deterministic and advisory-only. Its public report is
+SUGGEST with no_auto_post=true. Missing external proof, broken invariants,
+missing signatures, incomplete replay or unavailable telemetry cannot authorize
+an automatic production action. The runtime invariant layer remains the final
+post-merge enforcement point.
+
+INNOVATIONS
+-----------
+The implemented P21 contract exposes bundle audit, canary deployment, shadow
+comparison, bundle signature verification, policy drift audit, single-source
+sync, API/migration audit, temporal migration, control tower, legal adaptation,
+impact simulation, rule registry, feature flags, hash-chain proof, quality
+monitoring, ISAP drift alarm, self-healing, observability, lifecycle pipeline
+and resilience audit. Each is wired as a named rule or executable tool contract.
+
+RULESTORE AND LEGAL TWIN
+------------------------
+Migrations 001–013 preserve temporal fields, rule versions, verdict audit and
+legal cartography. legal_graph.json and golden_verdicts.json are treated as
+inputs to the evidence chain, not as proof merely because they exist. Current
+bundle evidence is repository-level; production activation remains separate.
+
+VERIFICATION
+------------
+| Gate | Result |
+|------|--------|
+| scope_files_present | PASS |
+| package_structure | PASS |
+| innovations_complete | PASS |
+| safety_suggest_no_auto_post | PASS |
+| legal_canonical | PASS |
+| control_plane_infrastructure | PASS |
+| api_rbac_sod_idempotency | PASS |
+| rulestore_temporal_migrations | PASS |
+| legal_adaptation_pipeline | PASS |
+| golden_replay_ready | PASS |
+| rollback_fail_closed | PASS |
+| tools_syntax_ok | PASS |
+| tests_complete | PASS |
+| report_present | PASS |
+
+LIMITATIONS AND HONESTY
+-----------------------
+Local verification does not establish live HSM/KMS, OPA runtime, bank/ISAP
+network availability or production telemetry. The evidence gate therefore
+certifies repository implementation only. The deployment record remains
+ROLLED_BACK and production status remains NOT_CERTIFIED.
+
+STATUS
+------
+Prompt 20: WDROZONY_100
+Następny: PROMPT 21/25 — TESTY I CI.
+Po zapisaniu dowodu wykonano CZYSC — zachowany wyłącznie kontrakt spójności C1–C12.
+====================================================================================================

@@ -68,3 +68,10 @@ Po zapisaniu raportu RAPORT_20_SYSTEM_OPA_CONTROL_PLANE.txt:
 1. Potwierdź jednym zdaniem zapis raportu.
 2. WYCZYŚĆ OKNO KONTEKSTOWE — polecenie „CZYŚĆ": usuń z kontekstu wszystkie przeczytane pliki i raport; zachowaj wyłącznie KONTRAKT SPÓJNOŚCI z PROMPT_00.
 3. Potwierdź gotowość: „Gotowy na PROMPT 21/25 — TESTY I CI."
+
+STATUS WDROŻENIA PROMPTU 20:
+- WDROŻONY_100 na podstawie `JDG/bundles/system_opa_control_plane_report20_evidence.json` (14/14 PASS).
+- Raport kanoniczny: `JDG/raporty_glm52_enterprise/RAPORT_20_SYSTEM_OPA_CONTROL_PLANE.txt`.
+- Produkcja: `NOT_CERTIFIED`, `ROLLED_BACK`, fail-closed; dowód repozytoryjny nie certyfikuje środowiska produkcyjnego.
+- Następny raport: PROMPT 21 — TESTY I CI.
+

@@ -25,17 +25,20 @@ do pierwszego niewdrożonego Promptu.
 | 15     | KSeF I JPK (domknięcie 20)   | RAPORT_15_KSEF_JPK.txt              | WDROŻONY_100   | 2026-08-23 |
 | 16     | RODO / AML / BDO / HR (21)   | RAPORT_16_RODO_AML_BDO_HR.txt       | WDROŻONY_100   | 2026-08-23 |
 | 17     | HYPER PLAN45 (domknięcie 22) | RAPORT_17_HYPER_PLAN45.txt          | WDROŻONY_100   | 2026-08-23 |
-| 18     | ENTERPRISE AI / NEURAL (23)  | RAPORT_18_ENTERPRISE_AI_NEURAL.txt  | W TOKU         | 2026-08-23 |
-| 19     | AUTOMATYZACJA KSIĘGOWOŚCI    | RAPORT_19_AUTOMATYZACJA_KSIEGOWOSCI.txt | NIEWDROŻONY | —          |
-| 20     | SYSTEM OPA / CONTROL PLANE (25) | RAPORT_20_SYSTEM_OPA_CONTROL_PLANE.txt | NIEWDROŻONY | —       |
+| 18     | ENTERPRISE AI / NEURAL (23)  | RAPORT_18_ENTERPRISE_AI_NEURAL.txt  | WDROŻONY_100   | 2026-08-23 |
+| 19     | AUTOMATYZACJA KSIĘGOWOŚCI    | RAPORT_19_AUTOMATYZACJA_KSIEGOWOSCI.txt | WDROŻONY_100 | 2026-08-23 |
+| 20     | SYSTEM OPA / CONTROL PLANE (25) | RAPORT_20_SYSTEM_OPA_CONTROL_PLANE.txt | WDROŻONY_100 | 2026-08-23 |
 | 21     | TESTY I CI (domknięcie 24)   | RAPORT_21_TESTY_CI.txt              | NIEWDROŻONY    | —          |
 | 22     | POLICIES MIRROR              | RAPORT_22_POLICIES_MIRROR.txt       | NIEWDROŻONY    | —          |
 | 23     | DOKUMENTACJA (naprawa R1/R3) | RAPORT_23_DOKUMENTACJA.txt          | NIEWDROŻONY    | —          |
 | 24     | FORTECA KOŃCOWA (27 + 28)    | RAPORT_24_FORTECA_KONCOWA.txt       | NIEWDROŻONY    | —          |
 
+Prompt 19 evidence: JDG/bundles/automatyzacja_ksiegowosci_report19_evidence.json — WDROZONY_100, 12/12; produkcja NOT_CERTIFIED / ROLLED_BACK fail-closed.
+Prompt 20 evidence: JDG/bundles/system_opa_control_plane_report20_evidence.json — WDROZONY_100, 14/14; produkcja NOT_CERTIFIED / ROLLED_BACK fail-closed. Następny: PROMPT_21 — TESTY I CI.
+
 ETAPY DO DOMKNIĘCIA (łańcuch dowodów — stan uczciwy, 2026-08-23; Prompty 16–17 oraz ETAPY 21–22 zamknięte):
 NIEPELNY: 20_KSEF_JPK (18/19), 21_RODO_AML_BDO_HR (15/16),
-22_HYPER_ENTERPRISE_CONTEXTS (16/17), 23_ENTERPRISE_AI_NEURAL (15/16),
+22_HYPER_ENTERPRISE_CONTEXTS (16/17),
 24_TESTS_CI_QUALITY (15/16), 25_TOOLS_API_RULESTORE_BUNDLES (17/18),
 27_CROSS_DOMAIN_RED_TEAM (14/15), 28_FINAL_CERTIFICATION (13/14).
 CEL KOŃCOWY: 28_FINAL_CERTIFICATION 14/14 → WDROZONY_100,

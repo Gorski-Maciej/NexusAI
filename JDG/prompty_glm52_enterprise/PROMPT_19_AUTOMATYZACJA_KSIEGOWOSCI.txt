@@ -83,3 +83,7 @@ Po zapisaniu raportu RAPORT_19_AUTOMATYZACJA_KSIEGOWOSCI.txt:
 1. Potwierdź jednym zdaniem zapis raportu.
 2. WYCZYŚĆ OKNO KONTEKSTOWE — polecenie „CZYŚĆ": usuń z kontekstu wszystkie przeczytane pliki i raport; zachowaj wyłącznie KONTRAKT SPÓJNOŚCI z PROMPT_00.
 3. Potwierdź gotowość: „Gotowy na PROMPT 20/25 — SYSTEM OPA (CONTROL PLANE)."
+
+STATUS WDROŻENIA — WDROŻONY_100
+Evidence: JDG/bundles/automatyzacja_ksiegowosci_report19_evidence.json
+Wynik: 12/12 bramek PASS; produkcja pozostaje NOT_CERTIFIED / ROLLED_BACK fail-closed.

@@ -1,0 +1,410 @@
+{
+  "schema_version": "1.0.0",
+  "report": "RAPORT_19_AUTOMATYZACJA_KSIEGOWOSCI",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "package_structure": true,
+    "innovations_complete": true,
+    "roadmap_complete": true,
+    "legal_traceability": true,
+    "modules_complete": true,
+    "safety_and_wiring": true,
+    "tools_syntax_ok": true,
+    "tests_complete": true,
+    "golden_replay_ready": true,
+    "rollback_fail_closed": true,
+    "report_present": true
+  },
+  "gate_summary": {
+    "passed": 12,
+    "total": 12
+  },
+  "scope": {
+    "declared": 45,
+    "present": 45,
+    "all_present": true,
+    "missing": [],
+    "files": {
+      "prompty_glm52_enterprise/PROMPT_19_AUTOMATYZACJA_KSIEGOWOSCI.txt": true,
+      "rules/main_jdg.rego": true,
+      "rules/thresholds_jdg.rego": true,
+      "tools/automatyzacja_ksiegowosci_auditor.py": true,
+      "tests/auto/test_p18_automatyzacja_ksiegowosci_enterprise.py": true,
+      "tests/rego/test_p18_automatyzacja_ksiegowosci_enterprise.rego": true,
+      "docs/AUTOMATYZACJA_KSIEGOWOSCI_P18.md": true,
+      "docs/PODRECZNIK_UZYTKOWNIKA.md": true,
+      "docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md": true,
+      "docs/WIZJA_OPA_ENTERPRISE_V2.md": true,
+      "docs/Bbb": true,
+      "rules/banking_automation_enterprise.rego": true,
+      "rules/annual_declaration_enterprise.rego": true,
+      "rules/form_transition_simulator_enterprise.rego": true,
+      "rules/form_optimizer_enterprise.rego": true,
+      "rules/p16_autoform_generator_enterprise.rego": true,
+      "rules/p16_estonian_cit_enterprise.rego": true,
+      "rules/p16_enhanced_sca_enterprise.rego": true,
+      "rules/p16_entrepreneur_test_enterprise.rego": true,
+      "rules/esig_auto_applicator_enterprise.rego": true,
+      "rules/edelivery_gateway_enterprise.rego": true,
+      "rules/edelivery_gateway_v2_enterprise.rego": true,
+      "rules/epuap_enterprise.rego": true,
+      "rules/wis_api_enterprise.rego": true,
+      "rules/wis_autorequester_enterprise.rego": true,
+      "rules/overpayment_auto_claimer_enterprise.rego": true,
+      "rules/tax_correspondence_engine_enterprise.rego": true,
+      "rules/decision_composer_enterprise.rego": true,
+      "rules/jpk_v7_autogen_enterprise.rego": true,
+      "rules/jpk_kr_st_generator_enterprise.rego": true,
+      "rules/jpk_cit.rego": true,
+      "rules/ksef_receipt_digest_enterprise.rego": true,
+      "rules/ksef_outbox_enterprise.rego": true,
+      "rules/ksef_upo_tracker_enterprise.rego": true,
+      "rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego": true,
+      "rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego": true,
+      "rules/p19_hr_swiadczenia_innovations_v9.rego": true,
+      "rules/p21_opa_system_innovations_v9.rego": true,
+      "tools/jpk_autogen.py": true,
+      "tools/form_simulator.py": true,
+      "tools/pit_annual_engine.py": true,
+      "tools/ksef_outbox.py": true,
+      "tools/edelivery_monitor.py": true,
+      "tools/correspondence_generator.py": true,
+      "tools/mpp_monitor.py": true
+    }
+  },
+  "package": {
+    "package": true,
+    "braces_balanced": true,
+    "parentheses_balanced": true,
+    "rule_ids": 31,
+    "unique_rule_ids": 31,
+    "duplicate_rule_ids": [],
+    "innovation_markers": {
+      "INN-01": true,
+      "INN-02": true,
+      "INN-03": true,
+      "INN-04": true,
+      "INN-05": true,
+      "INN-06": true,
+      "INN-07": true,
+      "INN-08": true,
+      "INN-09": true,
+      "INN-10": true,
+      "INN-11": true,
+      "INN-12": true,
+      "INN-13": true,
+      "INN-14": true,
+      "INN-15": true
+    },
+    "innovation_rules": {
+      "bank_statement_auto_booking": true,
+      "payment_auto_tagging": true,
+      "psd2_monitor": true,
+      "transfer_to_declaration_settlement": true,
+      "one_click_letter_flow": true,
+      "form_autofill_engine": true,
+      "immortal_tax_calendar": true,
+      "deadline_alert_tracker": true,
+      "bank_reconciliation_engine": true,
+      "cashflow_forecaster": true,
+      "overpayment_auto_claimer": true,
+      "correspondence_auto_generator": true,
+      "tax_deadline_priority": true,
+      "virtual_bookkeeper_assistant": true,
+      "split_payment_adviser": true
+    },
+    "roadmap_rules": {
+      "ais_pis_integration": true,
+      "sca_production_verification": true,
+      "pit_uor_autofill_engine": true,
+      "edelivery_b2b_b2g_flow": true,
+      "ml_cashflow_prediction": true,
+      "bookkeeper_dashboard_ui": true,
+      "declaration_correction_automation": true
+    },
+    "legal_markers": {
+      "PSD2": true,
+      "PolishAPI": true,
+      "eIDAS": true,
+      "u.PIT": true,
+      "VAT": true,
+      "u.ZUS": true,
+      "OrdPU": true,
+      "108a": true,
+      "doręczeniach elektronicznych": true
+    },
+    "roadmap_object": true,
+    "hot_reload": true,
+    "no_auto_post_contract": true,
+    "legal_basis_entries": 30
+  },
+  "modules": {
+    "modules": {
+      "banking": {
+        "status": "COMPLETE",
+        "rules": 82,
+        "stubs": 1,
+        "files": [
+          {
+            "file": "rules/banking_automation_enterprise.rego",
+            "exists": true,
+            "rules": 15
+          },
+          {
+            "file": "rules/payments/plan44_payments.rego",
+            "exists": true,
+            "rules": 10
+          },
+          {
+            "file": "rules/payments/plan45_payments.rego",
+            "exists": true,
+            "rules": 51
+          },
+          {
+            "file": "rules/vat_mpp_split_payment_enterprise.rego",
+            "exists": true,
+            "rules": 6
+          }
+        ]
+      },
+      "edelivery": {
+        "status": "COMPLETE",
+        "rules": 59,
+        "stubs": 0,
+        "files": [
+          {
+            "file": "rules/epuap_enterprise.rego",
+            "exists": true,
+            "rules": 4
+          },
+          {
+            "file": "rules/edelivery_gateway_enterprise.rego",
+            "exists": true,
+            "rules": 4
+          },
+          {
+            "file": "rules/edelivery_gateway_v2_enterprise.rego",
+            "exists": true,
+            "rules": 0
+          },
+          {
+            "file": "rules/edelivery/plan44_edelivery.rego",
+            "exists": true,
+            "rules": 9
+          },
+          {
+            "file": "rules/edelivery/plan45_edelivery.rego",
+            "exists": true,
+            "rules": 42
+          }
+        ]
+      },
+      "esig": {
+        "status": "COMPLETE",
+        "rules": 50,
+        "stubs": 0,
+        "files": [
+          {
+            "file": "rules/esig/plan44_esig.rego",
+            "exists": true,
+            "rules": 8
+          },
+          {
+            "file": "rules/esig/plan45_esig.rego",
+            "exists": true,
+            "rules": 37
+          },
+          {
+            "file": "rules/esig_auto_applicator_enterprise.rego",
+            "exists": true,
+            "rules": 5
+          }
+        ]
+      },
+      "wis": {
+        "status": "COMPLETE",
+        "rules": 49,
+        "stubs": 0,
+        "files": [
+          {
+            "file": "rules/wis/plan44_wis.rego",
+            "exists": true,
+            "rules": 9
+          },
+          {
+            "file": "rules/wis/plan45_wis.rego",
+            "exists": true,
+            "rules": 36
+          },
+          {
+            "file": "rules/wis_api_enterprise.rego",
+            "exists": true,
+            "rules": 4
+          },
+          {
+            "file": "rules/wis_autorequester_enterprise.rego",
+            "exists": true,
+            "rules": 0
+          }
+        ]
+      },
+      "forms": {
+        "status": "COMPLETE",
+        "rules": 18,
+        "stubs": 0,
+        "files": [
+          {
+            "file": "rules/form_optimizer_enterprise.rego",
+            "exists": true,
+            "rules": 6
+          },
+          {
+            "file": "rules/p16_autoform_generator_enterprise.rego",
+            "exists": true,
+            "rules": 8
+          },
+          {
+            "file": "rules/p16_enhanced_sca_enterprise.rego",
+            "exists": true,
+            "rules": 4
+          }
+        ]
+      },
+      "calendar": {
+        "status": "COMPLETE",
+        "rules": 46,
+        "stubs": 0,
+        "files": [
+          {
+            "file": "rules/calendar/plan44_calendar.rego",
+            "exists": true,
+            "rules": 7
+          },
+          {
+            "file": "rules/calendar/plan45_calendar.rego",
+            "exists": true,
+            "rules": 36
+          },
+          {
+            "file": "rules/calendar_notifier_enterprise.rego",
+            "exists": true,
+            "rules": 0
+          },
+          {
+            "file": "rules/deadline_monitor_enterprise.rego",
+            "exists": true,
+            "rules": 3
+          }
+        ]
+      },
+      "cashflow": {
+        "status": "COMPLETE",
+        "rules": 25,
+        "stubs": 0,
+        "files": [
+          {
+            "file": "rules/tax_correspondence_engine_enterprise.rego",
+            "exists": true,
+            "rules": 0
+          },
+          {
+            "file": "rules/decision_composer_enterprise.rego",
+            "exists": true,
+            "rules": 3
+          },
+          {
+            "file": "rules/proceeding_tracker_enterprise.rego",
+            "exists": true,
+            "rules": 3
+          },
+          {
+            "file": "rules/interest_calculator_enterprise.rego",
+            "exists": true,
+            "rules": 4
+          },
+          {
+            "file": "rules/cashflow_tax_predictor_enterprise.rego",
+            "exists": true,
+            "rules": 7
+          },
+          {
+            "file": "rules/vat_cashflow_predictor_enterprise.rego",
+            "exists": true,
+            "rules": 5
+          },
+          {
+            "file": "rules/overpayment_auto_claimer_enterprise.rego",
+            "exists": true,
+            "rules": 3
+          }
+        ]
+      }
+    },
+    "total_rule_ids": 329,
+    "summary": {
+      "total_modules": 7,
+      "complete": 7,
+      "missing": 0
+    },
+    "statuses": {
+      "banking": true,
+      "edelivery": true,
+      "esig": true,
+      "wis": true,
+      "forms": true,
+      "calendar": true,
+      "cashflow": true
+    },
+    "complete": true
+  },
+  "safety": {
+    "checks": {
+      "runtime_invariants": true,
+      "block_never_auto_post": true,
+      "risk_trust_threshold": true,
+      "target_thresholds": true,
+      "orchestrator_import": true,
+      "orchestrator_package_decision": true,
+      "orchestrator_stage": true,
+      "post_merge_enforced": true,
+      "package_suggest": true
+    },
+    "complete": true
+  },
+  "syntax": {
+    "syntax_errors": [],
+    "syntax_ok": true
+  },
+  "tests": {
+    "pytest_count": 49,
+    "native_count": 42,
+    "markers": {
+      "pytest_present": true,
+      "native_present": true,
+      "pytest_scope": true,
+      "native_scope": true,
+      "roadmap_tests": true,
+      "safety_tests": true
+    },
+    "complete": true
+  },
+  "replay": {
+    "valid": true,
+    "verdicts": 30,
+    "replays": 30,
+    "selected_accounting_related": 4,
+    "unmatched": 0,
+    "automation_marker_present": false
+  },
+  "deployment": {
+    "bundle": "jdg-tld-bundle-v9.0.0",
+    "phase": "ROLLED_BACK",
+    "quality": 100.0,
+    "error_rate": 0.0,
+    "rollback_reason": "RAPORT_19 fail-closed: no production telemetry for domain tooling (generators/auditors/ZUS/KKS); exercise rollback SLA boundary",
+    "active_version": "jdg-bundle-v8.0.0",
+    "production_status": "NOT_CERTIFIED"
+  },
+  "generated_at": "2026-08-23T11:28:13.313640+00:00"
+}

@@ -21,6 +21,8 @@ JDG_ROOT = Path(__file__).resolve().parent.parent
 BUNDLES_DIR = JDG_ROOT / "bundles"
 CATALOG_PATH = BUNDLES_DIR / "bundle_catalog.json"
 HEALTHY_PATH = BUNDLES_DIR / "healthy_versions.json"
+PERSIST_PATH = BUNDLES_DIR / "node_persistence.json"
+DELTA_DIR = BUNDLES_DIR / "deltas"
 
 
 def now() -> str:
@@ -49,6 +51,58 @@ def _healthy() -> dict:
     return load(HEALTHY_PATH)
 
 
+def persist_node_state(active_version: str | None, healthy_versions: list[str],
+                       *, verified_at: str | None = None) -> dict:
+    """Persist the last verified node state for offline restart.
+
+    This is a local durable checkpoint only. It is never a production
+    certification signal; an empty or unverified checkpoint stays fail-closed.
+    """
+    state = {
+        "schema_version": "1.0.0",
+        "persist": True,
+        "active_version": active_version,
+        "healthy_versions": sorted(set(healthy_versions)),
+        "verified_at": verified_at or now(),
+        "restart_policy": "START_LAST_VERIFIED_OR_FAIL_CLOSED",
+    }
+    save(PERSIST_PATH, state)
+    return state
+
+
+def persisted_node_state() -> dict:
+    """Return the durable node checkpoint without inferring health."""
+    state = load(PERSIST_PATH)
+    return state if state.get("persist") is True else {
+        "persist": False,
+        "active_version": None,
+        "healthy_versions": [],
+        "restart_policy": "FAIL_CLOSED",
+    }
+
+
+def delta_manifest(base_version: str, target_version: str) -> dict:
+    """Describe an unsigned delta and require a signed snapshot for promotion.
+
+    OPA delta bundles cannot replace signature verification for critical domains;
+    the control plane therefore exposes the delta for transport but requires a
+    verified full snapshot before activation.
+    """
+    manifest = {
+        "schema_version": "1.0.0",
+        "kind": "DELTA",
+        "base_version": base_version,
+        "target_version": target_version,
+        "signed": False,
+        "requires_signed_snapshot": True,
+        "promotion_policy": "FULL_SNAPSHOT_ONLY_FOR_CRITICAL_DOMAINS",
+        "generated_at": now(),
+    }
+    DELTA_DIR.mkdir(parents=True, exist_ok=True)
+    save(DELTA_DIR / f"{base_version}_to_{target_version}.json", manifest)
+    return manifest
+
+
 def publish(version: str, rules_count: int = 0, signature: str = "") -> dict:
     """Publikacja bundle: rejestracja wersji, podpis, SBOM-ekspres, healthy."""
     cat = _catalog()
@@ -63,6 +117,7 @@ def publish(version: str, rules_count: int = 0, signature: str = "") -> dict:
         "signature": signature or f"HSM:{digest[:32]}",
         "sbom": f"{version}.sbom.json",
         "status": "CANDIDATE",          # CANDIDATE → CANARY → ACTIVE (rollout_orchestrator)
+        "delivery": {"supports_delta": True, "delta_requires_signed_snapshot": True},
     }
     cat["versions"] = cat.get("versions", {})
     cat["versions"][version] = entry
@@ -104,11 +159,18 @@ def verify(version: str) -> dict:
             sbom_ok = False
     verified = ok_digest and ok_sig
     node_ok = verified and sbom_ok
+    if node_ok:
+        healthy = _healthy().get("healthy_versions", [])
+        if version not in healthy:
+            healthy.append(version)
+        persist_node_state(version, healthy, verified_at=now())
     return {"version": version, "verified": verified,
             "sha256": digest, "signature": sig,
             "sbom_verified": sbom_ok, "merkle_root": merkle_root,
             "merkle_verified": sbom_ok,
             "node_verification": "PASS" if node_ok else "FAIL_CLOSED",
+            "persisted": node_ok,
+            "delta_policy": "FULL_SNAPSHOT_REQUIRED" if not node_ok else "DELTA_ALLOWED_FOR_TRANSPORT_ONLY",
             "status": entry.get("status", "UNKNOWN")}
 
 
@@ -131,10 +193,14 @@ def status() -> dict:
     """Status floty: wszystkie wersje, healthy, świeżość."""
     cat = _catalog()
     healthy = _healthy()
+    persisted = persisted_node_state()
     return {
+        "mode": "STATUS",
         "latest": cat.get("latest"),
         "versions": len(cat.get("versions", {})),
         "healthy": healthy.get("healthy_versions", []),
+        "persisted_active_version": persisted.get("active_version"),
+        "persisted": persisted.get("persist", False),
         "updated_at": cat.get("updated_at"),
     }
 
@@ -143,8 +209,10 @@ def discovery() -> dict:
     """Discovery: punkt wejścia dla węzłów OPA (adresy, wersje, podpisy)."""
     cat = _catalog()
     return {
+        "mode": "DISCOVERY",
         "service": "jdg-bundle-server",
         "endpoint": "/v1/bundles",
+        "delta_endpoint": "/v1/bundles/{base}/delta/{target}",
         "latest": cat.get("latest"),
         "versions": list(cat.get("versions", {}).keys()),
         "signing": "HSM-SHA256-Merkle",
@@ -168,6 +236,9 @@ def main() -> None:
         poll(a.last_version, a.timeout), ensure_ascii=False, indent=1)))
     st = sub.add_parser("status"); st.set_defaults(fn=lambda a: print(json.dumps(status(), ensure_ascii=False, indent=1)))
     di = sub.add_parser("discovery"); di.set_defaults(fn=lambda a: print(json.dumps(discovery(), ensure_ascii=False, indent=1)))
+    ps = sub.add_parser("persist"); ps.set_defaults(fn=lambda a: print(json.dumps(persisted_node_state(), ensure_ascii=False, indent=1)))
+    dl = sub.add_parser("delta"); dl.add_argument("--base", required=True); dl.add_argument("--target", required=True)
+    dl.set_defaults(fn=lambda a: print(json.dumps(delta_manifest(a.base, a.target), ensure_ascii=False, indent=1)))
     args = p.parse_args()
     args.fn(args)
 

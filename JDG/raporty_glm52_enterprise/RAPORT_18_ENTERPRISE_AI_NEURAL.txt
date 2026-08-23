@@ -8,6 +8,8 @@ DOWÓD WDROŻENIA
 ---------------
 Raport kampanii zapisano jako:
   JDG/raporty_glm52_enterprise/RAPORT_18_ENTERPRISE_AI_NEURAL.txt
+Dowód raportu:
+  JDG/bundles/enterprise_ai_neural_report18_evidence.json (11/11)
 
 Prompt 18 konsoliduje Enterprise AI, Adaptive Trust, Neural Mesh, cashflow,
 bankowość PSD2, monitoring legislacyjny, strategic advisor i warstwę LLM jako
@@ -194,6 +196,6 @@ telemetrii.
 | Status Prompt 18 | WDROŻONY_100 |
 
 RAPORT 18/25 — KONIEC.
-Po zapisaniu raportu wykonano reset kontekstu roboczego; następny zakres to
+Po zapisaniu raportu wykonano reset kontekstu roboczego („CZYŚĆ"); następny zakres to
 PROMPT 19/25 — AUTOMATYZACJA KSIĘGOWOŚCI.
 ═══════════════════════════════════════════════════════════════════════════════

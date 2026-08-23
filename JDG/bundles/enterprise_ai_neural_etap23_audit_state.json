@@ -2,9 +2,9 @@
   "schema_version": "1.0.0",
   "audit_id": "jdg.enterprise_ai_neural_etap23_audit",
   "stage": "ETAP_23",
-  "status": "NIEPELNY",
+  "status": "WDROZONY_100",
   "gates": {
-    "scope_files_present": false,
+    "scope_files_present": true,
     "package_structure": true,
     "contract_markers": true,
     "legal_traceability": true,
@@ -22,15 +22,15 @@
     "report_present": true
   },
   "gate_summary": {
-    "passed": 15,
+    "passed": 16,
     "total": 16
   },
   "files": {
     "declared": 18,
-    "present": 17,
-    "all_present": false,
+    "present": 18,
+    "all_present": true,
     "files": {
-      "prompty_glm52_enterprise/23_ENTERPRISE_AI_NEURAL.txt": false,
+      "prompty_glm52_enterprise/PROMPT_18_ENTERPRISE_AI_NEURAL.txt": true,
       "rules/enterprise_ai_neural_etap23_v1.rego": true,
       "rules/main_jdg.rego": true,
       "rules/thresholds_jdg.rego": true,
@@ -169,5 +169,5 @@
       }
     }
   },
-  "generated_at": "2026-08-23T09:44:51.146310+00:00"
+  "generated_at": "2026-08-23T10:46:05.083381+00:00"
 }

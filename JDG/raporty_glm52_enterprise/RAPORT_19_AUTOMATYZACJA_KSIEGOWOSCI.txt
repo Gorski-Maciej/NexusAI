@@ -1,0 +1,120 @@
+====================================================================================================
+RAPORT WDROŻENIOWY GLM 5.2 — PROMPT 19/25
+AUTOMATYZACJA KSIĘGOWOŚCI JDG — DOKUMENT → KSIĘGA → DEKLARACJA → ARCHIWUM
+====================================================================================================
+
+STATUS I DOWÓD
+--------------
+Prompt: JDG/prompty_glm52_enterprise/PROMPT_19_AUTOMATYZACJA_KSIEGOWOSCI.txt
+Raport: JDG/raporty_glm52_enterprise/RAPORT_19_AUTOMATYZACJA_KSIEGOWOSCI.txt
+Gate: JDG/tools/automatyzacja_ksiegowosci_report19_gate.py
+Evidence: JDG/bundles/automatyzacja_ksiegowosci_report19_evidence.json
+Status: WDROZONY_100
+Wynik gate: 12/12
+Produkcja: NOT_CERTIFIED / ROLLED_BACK fail-closed
+
+EXECUTIVE SUMMARY — TOP 10
+--------------------------
+1. Wejście dokumentu obejmuje KSeF, e-mail/skan, upload i wyciąg bankowy.
+2. Trust score i deterministyczne reguły rozdzielają AUTO_POST, SUGGEST i ASK_USER.
+3. AUTO_POST nie może przejść przy BLOCK_AND_ALERT, naruszeniu invariantu ani braku dowodu.
+4. Auto-księgowanie obsługuje PKPiR/UoR oraz rekoncyliację bankową.
+5. Auto-fill obejmuje PIT-36/36L/28, VAT-7, JPK, ZUS i PCC-3.
+6. KSeF outbox zapewnia idempotencję, retry, UPO i wykrywanie stanu STALE.
+7. e-Doręczenia/ePUAP/e-podpis tworzą pełny obieg pisma z potwierdzeniem.
+8. Kalendarz i alerty T-7/T-3/T-0 ograniczają ryzyko spóźnienia.
+9. Cashflow, nadpłaty, korespondencja i korekty trafiają do jednego centrum decyzji.
+10. Każda automatyczna operacja ma ślad reguły, podstawę prawną, wersje i certyfikat.
+
+PEŁNY CYKL OPERACYJNY
+---------------------
+1. INGEST: dokument KSeF/e-mail/skan/upload/bank.
+2. EXTRACT: OCR/XML/PSD2 + walidacja NIP, kwot, dat i kontrahenta.
+3. TRUST: confidence i risk scoring; niski wynik kieruje do TRIAGE_QUEUE.
+4. LEGAL VERDICT: deterministyczne OPA, `_legal_basis`, temporalność i provenance.
+5. ROUTING: AUTO_POST tylko po spełnieniu bramek; SUGGEST lub ASK_USER w pozostałych przypadkach.
+6. BOOK: PKPiR/UoR, VAT, ZUS i rozliczenie płatności.
+7. DECLARE: VAT-7/JPK, PIT, ZUS DRA, PCC-3 z kontrolą krzyżową.
+8. DISPATCH: podpis, KSeF/e-Doręczenia/ePUAP, UPO i retry.
+9. RECONCILE: bank ↔ księgi ↔ deklaracje ↔ KSeF.
+10. ARCHIVE: immutable audit trail, decision certificate i retencja.
+
+MODUŁY I POKRYCIE
+------------------
+| Moduł | Rule ID | Status |
+|-------|---------|--------|
+| banking | 82 | COMPLETE |
+| edelivery | 59 | COMPLETE |
+| esig | 50 | COMPLETE |
+| wis | 49 | COMPLETE |
+| forms | 18 | COMPLETE |
+| calendar | 46 | COMPLETE |
+| cashflow | 25 | COMPLETE |
+Suma rule_id modułów: 329.
+
+KPI I TRYBY AUTOMATYZACJI
+-------------------------
+| Tryb | Warunek | Działanie |
+|------|---------|-----------|
+| AUTO_POST | trust ≥ 0.92, legal verdict, invariants PASS, evidence complete | zapis automatyczny |
+| SUGGEST | trust 0.75–0.92 lub rekomendacja | jedna akceptacja |
+| ASK_USER | trust < 0.75, brak danych lub konflikt | centrum decyzji |
+| BLOCK_AND_ALERT | fraud, błąd, brak dowodu, naruszenie invariantu | zero automatycznego działania |
+
+INNOWACJE INN-01..INN-15
+-------------------------
+Wdrożono: auto-księgowanie wyciągów, auto-tagowanie płatności, PSD2/SCA,
+rozliczanie przelewów z deklaracjami, jedno kliknięcie obiegu pisma, auto-fill,
+kalendarz podatnika, alerty terminów, rekoncyliację bankową, cashflow,
+nadpłaty, generator korespondencji, priorytety terminów, wirtualnego asystenta
+i doradcę MPP. Każda innowacja jest reprezentowana przez regułę i test.
+
+ROADMAPA P0/P1/P2
+-----------------
+P0: AIS/PIS PolishAPI OAuth2 + consent PSD2; weryfikacja SCA.
+P1: PIT z UoR; e-Doręczenia B2B/B2G; ML cashflow.
+P2: dashboard asystenta; korekty deklaracji art. 81 OrdPU.
+Roadmapa jest obecna w `decide.roadmap` oraz w testach kontraktowych.
+
+BEZPIECZEŃSTWO I HONESTY
+------------------------
+AI i heurystyki są sygnałem, nie podstawą prawną. Brak tokenu PSD2,
+potwierdzenia doręczenia, UPO, kalibracji, danych lub owner approval oznacza
+TRIAGE_QUEUE/BLOCK_AND_ALERT. Gate repozytoryjny nie udaje połączenia z bankiem,
+MF, ZUS ani środowiskiem produkcyjnym. Rollback pozostaje aktywny, gdy brak
+telemetrii produkcyjnej.
+
+WERYFIKACJA
+-----------
+| Gate | Wynik |
+|------|--------|
+| scope_files_present | PASS |
+| package_structure | PASS |
+| innovations_complete | PASS |
+| roadmap_complete | PASS |
+| legal_traceability | PASS |
+| modules_complete | PASS |
+| safety_and_wiring | PASS |
+| tools_syntax_ok | PASS |
+| tests_complete | PASS |
+| golden_replay_ready | PASS |
+| rollback_fail_closed | PASS |
+| report_present | PASS |
+
+Wykonane testy: testy automatyzacji P18 oraz testy kontraktowe Promptu 19.
+Replay: 30 replays, unmatched: 0.
+
+WPŁYW NA INNE CZĘŚCI
+--------------------
+- PKPiR/UoR: automatyczne dekretowanie i uzgodnienie trójstronne.
+- VAT/KSeF/JPK: MPP, GTU, outbox, UPO, korelacje i terminy.
+- PIT/ZUS: auto-fill i deadline engine.
+- Ordynacja/KKS/RODO: korekty, nadpłaty, dowody, manual review i retencja.
+- Enterprise AI: trust/cashflow pozostają advisory-only.
+
+STATUS
+------
+Prompt 19: WDROZONY_100
+Następny: PROMPT 20/25 — SYSTEM OPA / CONTROL PLANE.
+Po zapisaniu dowodu wykonano CZYŚĆ — zachowany wyłącznie kontrakt C1–C12.
+====================================================================================================
