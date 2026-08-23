@@ -25,11 +25,30 @@
     "19": "API + CONTROL PLANE + UI / CENTRUM DECYZJI",
     "20": "DOKUMENTACJA + LEGAL TWIN + HARMONIZACJA KONCOWA"
   },
-  "czesci": {},
+  "czesci": {
+    "00": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 2,
+      "lista_glownych_zmian": [
+        "SEED: audyt 8 dokumentow swietych + 4 wzorce promptow + 21 plikow promptow V3 (sekcja B raportu 00)",
+        "Budzet okna oszacowany i dotrzymany (45-50K tokenow / max 500K)",
+        "Wykryte 2 duplikaty rule_id w MANIFEST.md (C-01: jdg.liability.additional_tax_obligation_art16a, jdg.limitations.suspension_of_limitation_art21) — do naprawy w czesciach 01 i 13",
+        "Mapa SEED usprawnien dla czesci 01-20 (sekcja E raportu 00, filary F1-F6 i zasady V1)",
+        "Utworzenie JDG/prompty_enterprise_v3/STATUS_KAMPANII_V3.txt (00 = WDROZONY_100)"
+      ],
+      "luki_pozostale": [
+        "2 duplikaty rule_id w MANIFEST — naprawa w czesciach 01 i 13",
+        "Brak binarki opa lokalnie — wrapper/narzedzia w czesci 16 + CI",
+        "Luki C-01..C-23 z raportu 00 jako zrodlo zadan dla czesci 01-20"
+      ],
+      "raport_txt": "raporty_enterprise_v3/00_PULS_STARTU_GLOWNY_SEKWENCER.txt"
+    }
+  },
   "podsumowanie": {
     "czesc_do_zrobienia": 20,
-    "czesc_wykonanych": 0,
-    "ostatnia_zrobiona": null,
+    "czesc_wykonanych": 1,
+    "ostatnia_zrobiona": "00",
     "status_calosci": "W_TRAKCIE_KAMPANII"
   }
 }

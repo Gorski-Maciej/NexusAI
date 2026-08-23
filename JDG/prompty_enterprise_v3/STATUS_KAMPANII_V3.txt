@@ -1,0 +1,35 @@
+═══════════════════════════════════════════════════════════════════════════════
+STATUS KAMPANII V3 — MODUŁ JDG (21 PLIKÓW PROMPT → 20 CZĘŚCI + SEKWENCER)
+Zasada: każda część = 1 plik txt. Po pełnym wdrożeniu raportu oznacz
+część jako WDROŻONY_100, wyczyść okno kontekstowe („CZYŚĆ") i przejdź
+do pierwszej niewdrożonej części. Rejestr źródłowy: JDG/bundles/
+enterprise_v3_registry.json (blok w sekcji "czesci" — dopisz, nie nadpisuj).
+═══════════════════════════════════════════════════════════════════════════════
+
+| Część | Temat JDG                          | Raport (raporty_enterprise_v3/)                | Status         | Data       |
+|-------|------------------------------------|------------------------------------------------|----------------|------------|
+| 00    | SEKWENCER (start, mapa, kontrakt)  | 00_PULS_STARTU_GLOWNY_SEKWENCER.txt            | WDROŻONY_100   | 2026-08-23 |
+| 01    | FUNDAMENTY + ORKIESTRATOR          | 01_FUNDAMENTY_ORKIESTRATOR.txt                 | PENDING        |            |
+| 02    | VAT — MAKRO + MIKRO + KSeF-VAT     | 02_VAT.txt                                      | PENDING        |            |
+| 03    | PIT — FORMY, KUP, ULGI              | 03_PIT.txt                                      | PENDING        |            |
+| 04    | ZUS + SKŁADKA ZDROWOTNA (DRA)      | 04_ZUS_HEALTH.txt                              | PENDING        |            |
+| 05    | KSIĘGOWOŚĆ — PKPiR + UoR + AMORTYZ. | 05_KSIEGOWOSC.txt                              | PENDING        |            |
+| 06    | KKS — KODEKS KARNY SKARBOWY        | 06_KKS.txt                                      | PENDING        |            |
+| 07    | ORDYNACJA PODATKOWA                | 07_ORDYNACJA.txt                                | PENDING        |            |
+| 08    | CROSS-BORDER / TP / MDR / ViDA     | 08_CROSSBORDER.txt                              | PENDING        |            |
+| 09    | RYCZAŁT + CYKL ŻYCIA JDG           | 09_RYCZALT.txt                                  | PENDING        |            |
+| 10    | PCC + LOKALNE + AKCYZA             | 10_PCC_LOKALNE.txt                              | PENDING        |            |
+| 11    | KSeF / JPK / e-DORĘCZENIA          | 11_KSEF_JPK.txt                                 | PENDING        |            |
+| 12    | RODO / AML / BDO / HR              | 12_RODO_AML_BDO.txt                             | PENDING        |            |
+| 13    | WARSTWA MICRO — naprawa plików      | 13_MICRO.txt                                    | PENDING        |            |
+| 14    | HYPER CTX Plan44/45                | 14_HYPER_CTX.txt                                | PENDING        |            |
+| 15    | ENTERPRISE S1–S24 + Neural Mesh    | 15_ENTERPRISE.txt                               | PENDING        |            |
+| 16    | NARZĘDZIA + BRAMKI JAKOŚCI          | 16_GATES.txt                                    | PENDING        |            |
+| 17    | TESTY + CI/CD + CHAOS + GOLDEN     | 17_TESTY_CI.txt                                 | PENDING        |            |
+| 18    | BUNDLES + OVERLAYS + MIRROR        | 18_BUNDLES.txt                                  | PENDING        |            |
+| 19    | API + CONTROL PLANE + UI           | 19_API_UI.txt                                   | PENDING        |            |
+| 20    | DOKUMENTACJA + LEGAL TWIN          | 20_DOKUMENTACJA.txt                             | PENDING        |            |
+
+POSTĘP: 1/20 części wdrożonych (00 SEKWENCER — WDROŻONY_100, 2026-08-23).
+NASTĘPNA CZĘŚĆ: 01_FUNDAMENTY_ORKIESTRATOR.txt (PENDING).
+REGISTRY: JDG/bundles/enterprise_v3_registry.json — czesc 00 = "wdrozone".
