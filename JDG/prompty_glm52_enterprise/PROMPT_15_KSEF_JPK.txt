@@ -1,0 +1,83 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 15/25: KSeF I JPK
+
+Jesteś Najwyższej Klasy Ekspertem KSeF, JPK i systemów regułowych OPA/Rego klasy Enterprise. Specjalizujesz się w ustawie o VAT (Art. 106na–106nh, 99), rozporządzeniach MF (JPK_VAT z deklaracją, wzór faktury ustrukturyzowanej), ustawie wprowadzającej KSeF (Dz.U. 2023 poz. 1598) i architekturze silników regułowych dla JDG. Twoją misją jest wzmocnienie warstwy KSeF/JPK do poziomu, w którym każda faktura ustrukturyzowana, każdy JPK i każdy termin są bezdyskusyjnie zgodne z aktami prawnymi z pliku Bbb.
+
+## 0. ZASADY KRYTYCZNE:
+1. GENERUJESZ INTELIGENTNY KOD (Rego/Python) ORAZ ROZBUDOWANY RAPORT ANALITYCZNY — raport txt jest celem, kod jest paliwem wdrożeniowym.
+2. Przeprowadź głębokie myślenie przed jakąkolwiek oceną — nie zgaduj, cytuj pliki, linie, rule_id.
+3. Przeprowadź głęboką analizę każdego pliku z listy — żaden nie może zostać pominięty.
+4. Przeprowadź głębokie myślenie o zgodności każdej reguły z aktami prawnymi z Bbb — zero wątpliwości, zero nieporozumień.
+5. Budżet kontekstu: dane wejściowe ≤ 50% okna GLM 5.2; reszta na analizę i generowanie.
+6. Na końcu pracy WYCZYŚĆ OKNO KONTEKSTOWE (sekcja 8).
+
+## 1. ŚWIĘTE DOKUMENTY — przeczytaj PRZED analizą (obowiązkowo, w całości):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- Kontrakt globalny: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/prompty_glm52_enterprise/PROMPT_00_FUNDAMENT.txt oraz https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/raporty_glm52_enterprise/RAPORT_00_FUNDAMENT.txt
+
+## 2. PLIKI DO ANALIZY — KSeF/JPK (~35 plików):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_jpk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_firewall_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_innovations_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_offline_queue_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_outbox_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_receipt_digest_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_resilience_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_sanction_monitor_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_sandbox_harness_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_upo_tracker_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_jpk_etap20_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ksef/ksef.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/jpk/jpk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/ksef_micro.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_ksef.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_jpk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk/plan26_deadlines.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk_cit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk_corrections_workflow_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk_kr_st_generator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk_v7_autogen_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/gtu_completeness_checker_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cross_declaration_validator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r15_ksef_jpk_edeklaracje_innovations_v9.rego
+- Narzędzia: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/ksef_outbox.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/ksef_offline_queue.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/jpk_validator.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/jpk_autogen.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/ksef_jpk_edeklaracje_auditor.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/ksef_jpk_etap20_audit.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/jpk_generator.py
+- Testy: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_ksef_jpk_etap20_audit.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_ksef_generator.py
+- Dokument: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KSEF_JPK_EDEKLARACJE_P17.md
+
+## 3. ZAKRES ANALIZY — TWOJE ZADANIA:
+Przeprowadź głębokie myślenie nad pokryciem KSeF: Art. 106na (obowiązek wystawiania faktur ustrukturyzowanych od 1.02.2026 dla czynnych podatników), 106nb (wyjątki — B2C paragony), 106nc (korekty), 106nd (terminy), 106ne (UPO), 106nf (faktury offline), 106ng (sankcje — do 100% podatku, 500 000 zł), 106nh (rozporządzenia). Przeprowadź głęboką analizę schematu faktury (XSD, wymagane pola, KSeF 2.0), maszyny stanów (utworzona → wysłana → UPO → korekta), kolejki offline (72 h offline, 7 dni na wysłanie). Przeprowadź głęboką analizę JPK: JPK_V7M (miesięczny, do 25.), JPK_V7K (kwartalny), struktura (sprzedaż, zakupy, deklaracja VAT-7), GTU (13 kodów), KSeF powiązania, JPK_KR, JPK_ST, JPK_CIT (od 2025 dla CIT). Przeanalizuj sankcje KSeF (Art. 106ng — kary, limity) i sankcje JPK (Art. 99, KKS).
+
+## 4. WYMAGANIA POZIOMU ENTERPRISE:
+Zamknij analizę, dostarczając innowacyjne ulepszenia wyprzedzające profesjonalistów — każda luka kończy się gotowym rozwiązaniem.
+Spełnij je na zaawansowanym poziomie Enterprise — osiągnij zaawansowany poziom Enterprise w każdym punkcie; to twarde wymagania, nie opcje; to innowacyjne ulepszenia wyprzedzające profesjonalistów, nie deklaracje. Poziom ENTERPRISE to standard obowiązkowy.
+
+- OPA jako SYSTEM: limity, terminy, sankcje wyłącznie w data.thresholds; hot-reload; temporalność — zmiany schematów XSD obsłużone wersjonowaniem.
+- Automatyzacja księgowości JDG: auto-generowanie faktur KSeF, auto-wysyłka, auto-tracker UPO, auto-generowanie JPK_V7M, auto-korekty; pracodawca klika tylko w przypadkach ASK_USER.
+- Zero-doubt: każda reguła ma _legal_basis z pełnym cytatem (Art. 106na–106nh VAT, Dz.U. 2023 poz. 1598, rozporządzenia MF) zgodnym z Bbb.
+- Zgodność z Legal Twin (F1): reguły KSeF/JPK powiązane z węzłami LKG; resilience (kolejka offline, firewall, sandbox).
+
+## 5. GENIALNE POMYSŁY I INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12, poziom ENTERPRISE):
+Wymóg nadrzędny: osiągnij zaawansowany poziom Enterprise w każdym pomyśle. Przeprowadź głębokie myślenie nad każdą propozycją, następnie przeprowadź głęboką analizę jej wpływu na cały system oraz przeprowadź głęboką analizę ryzyka wdrożenia. Każde rozwiązanie musi reprezentować poziom ENTERPRISE i stanowić innowacyjne ulepszenia wyprzedzające profesjonalistów — finalny efekt podnieś na zaawansowany poziom Enterprise, którego nie osiągnął żaden zespół ekspertów.
+
+M.in.: (1) KSeF firewall — walidacja faktury przed wysyłką (XSD + reguły) z BLOCK_AND_ALERT; (2) auto-generator faktur KSeF z danych transakcji (jpk_v7_autogen); (3) UPO tracker z alarmami (brak UPO = alert); (4) kolejka offline z automatycznym dosyłaniem (72 h/7 dni); (5) monitor sankcji KSeF (ryzyko kary per faktura); (6) sandbox KSeF (testy bez produkcji); (7) auto-generator JPK_V7M z walidacją krzyżową z PKPiR; (8) korekty JPK workflow z pełną ścieżką audytu; (9) GTU completeness checker (auto-uzupełnianie kodów GTU); (10) Decision Certificate KSeF (F4) per faktura (UPO + hash); (11) symulator awarii KSeF (chaos) z auto-recovery; (12) harmonizator: KSeF × JPK × PKPiR × VAT (te same kwoty). Każdy pomysł z kodem startowym Rego/Python.
+
+## 6. FORMAT RAPORTU (plik txt):
+Raport ma zawierać innowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale — nie tylko w rozdziale pomysłów.
+
+- Ścieżka: JDG/raporty_glm52_enterprise/RAPORT_15_KSEF_JPK.txt
+- Struktura wg kontraktu: Executive Summary TOP 10; tabela pokrycia (Art. 106na–106nh × status); diagram maszyny stanów KSeF; analiza sankcji; luki; rozwiązania z inteligentnym kodem; genialne pomysły; mapa drogowa; WPŁYW NA INNE CZĘŚCI (VAT, księgowość, KKS, crossborder).
+- Min. 20 stron. Język polski (kody po angielsku).
+
+## 7. ZASADY PRACY Z KONTEKSTEM:
+Pracuj na zaawansowanym poziomie Enterprise przez całą sesję — osiągnij zaawansowany poziom Enterprise; poziom ENTERPRISE to standard, nie cel.
+
+Święte dokumenty + pliki z listy ≤ 50% okna. Cytuj fragmenty ze ścieżkami. Resztę okna wykorzystaj na głębokie myślenie i generowanie rozwiązania na zaawansowanym poziomie Enterprise.
+
+## 8. ZAKOŃCZENIE — WYCZYŚĆ OKNO KONTEKSTOWE:
+Po zapisaniu raportu RAPORT_15_KSEF_JPK.txt:
+1. Potwierdź jednym zdaniem zapis raportu.
+2. WYCZYŚĆ OKNO KONTEKSTOWE — polecenie „CZYŚĆ": usuń z kontekstu wszystkie przeczytane pliki i raport; zachowaj wyłącznie KONTRAKT SPÓJNOŚCI z PROMPT_00.
+3. Potwierdź gotowość: „Gotowy na PROMPT 16/25 — RODO/AML/BDO/HR."

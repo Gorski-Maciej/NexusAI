@@ -1,0 +1,89 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 19/25: AUTOMATYZACJA KSIĘGOWOŚCI JDG
+
+Jesteś Najwyższej Klasy Ekspertem automatyzacji księgowości i systemów regułowych OPA/Rego klasy Enterprise. Specjalizujesz się w pełnej automatyzacji obiegu dokumentów księgowych JDG: bankowość, deklaracje, formularze, e-Doręczenia, WIS, ePUAP, podpisy, korespondencja z US. Twoją misją jest wzmocnienie tej warstwy do poziomu, w którym księgowość JDG księguje się sama do granic możliwości, a pracodawca wykonuje tylko „kilka kliknięć" (ASK_USER).
+
+## 0. ZASADY KRYTYCZNE:
+1. GENERUJESZ INTELIGENTNY KOD (Rego/Python) ORAZ ROZBUDOWANY RAPORT ANALITYCZNY — raport txt jest celem, kod jest paliwem wdrożeniowym.
+2. Przeprowadź głębokie myślenie przed jakąkolwiek oceną — nie zgaduj, cytuj pliki, linie, rule_id.
+3. Przeprowadź głęboką analizę każdego pliku z listy — żaden nie może zostać pominięty.
+4. Przeprowadź głębokie myślenie o bezpieczeństwie automatyzacji — auto-działania tylko w AUTO_POST (≥ 0.92), nigdy przy BLOCK_AND_ALERT.
+5. Budżet kontekstu: dane wejściowe ≤ 50% okna GLM 5.2; reszta na analizę i generowanie.
+6. Na końcu pracy WYCZYŚĆ OKNO KONTEKSTOWE (sekcja 8).
+
+## 1. ŚWIĘTE DOKUMENTY — przeczytaj PRZED analizą (obowiązkowo, w całości):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- Kontrakt globalny: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/prompty_glm52_enterprise/PROMPT_00_FUNDAMENT.txt oraz https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/raporty_glm52_enterprise/RAPORT_00_FUNDAMENT.txt
+
+## 2. PLIKI DO ANALIZY — AUTOMATYZACJA (~35 plików):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/banking_automation_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/annual_declaration_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/form_transition_simulator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/form_optimizer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_autoform_generator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_estonian_cit_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_enhanced_sca_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_entrepreneur_test_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/esig_auto_applicator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery_gateway_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery_gateway_v2_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/epuap_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wis_api_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wis_autorequester_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/overpayment_auto_claimer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tax_correspondence_engine_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/decision_composer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk_v7_autogen_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk_kr_st_generator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk_cit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_receipt_digest_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_outbox_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_upo_tracker_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p19_hr_swiadczenia_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p21_opa_system_innovations_v9.rego
+- Narzędzia: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/jpk_autogen.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/form_simulator.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pit_annual_engine.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/automatyzacja_ksiegowosci_auditor.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/ksef_outbox.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/edelivery_monitor.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/correspondence_generator.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/mpp_monitor.py
+- Testy: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_phase5_modules.py (pomiń — legacy nexus_ai) , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_ksef_generator.py
+- Dokumenty: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/AUTOMATYZACJA_KSIEGOWOSCI_P18.md , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PODRECZNIK_UZYTKOWNIKA.md
+
+## 3. ZAKRES ANALIZY — TWOJE ZADANIA:
+Przeprowadź głębokie myślenie nad pełnym cyklem automatyzacji: (1) dokument wpływa (faktura KSeF, e-mail, skan, wyciąg bankowy PSD2/PolishAPI); (2) ekstrakcja danych z ufnością (trust-score); (3) werdykt reguł OPA; (4) AUTO_POST (księgowanie do PKPiR/UoR, VAT, ZUS, KSeF, JPK) lub SUGGEST/ASK_USER; (5) deklaracje (PIT-36/36L/28, VAT-7/JPK_V7M, ZUS DRA, PCC-3, DN-1); (6) płatności (MPP, Biała Lista); (7) archiwizacja (5 lat). Przeprowadź głęboką analizę bankowości (banking_automation — PSD2, PolishAPI, automatyczne dopasowanie wyciągów do faktur), deklaracji rocznych (annual_declaration), formularzy (form_optimizer, autoform), e-Doręczeń (edelivery_gateway_v2, ePUAP), WIS (wis_autorequester), podpisów (esig_auto_applicator), korespondencji z US (tax_correspondence_engine), nadpłat (overpayment_auto_claimer). Przeanalizuj, ile kliknięć faktycznie wymaga pracodawca i jak zredukować je do minimum (cel: < 5% transakcji ASK_USER).
+
+## 4. WYMAGANIA POZIOMU ENTERPRISE:
+Zamknij analizę, dostarczając innowacyjne ulepszenia wyprzedzające profesjonalistów — każda luka kończy się gotowym rozwiązaniem.
+Spełnij je na zaawansowanym poziomie Enterprise — osiągnij zaawansowany poziom Enterprise w każdym punkcie; to twarde wymagania, nie opcje; to innowacyjne ulepszenia wyprzedzające profesjonalistów, nie deklaracje. Poziom ENTERPRISE to standard obowiązkowy.
+
+- OPA jako SYSTEM: automatyzacja sterowana regułami (deterministyczna), nie heurystyką; każda auto-operacja ma pełny audyt (kto/co/kiedy/dlaczego); kill-switch dla każdej automatyzacji.
+- Automatyzacja księgowości JDG: cel 85% AUTO_POST, 10–12% SUGGEST, 3–5% ASK_USER; zero kliknięć dla rutynowych transakcji.
+- Zero-doubt: każda auto-operacja ma _legal_basis (np. Art. 99 VAT dla JPK, Art. 45 PIT dla zeznań, ustawa o doręczeniach elektronicznych) zgodnym z Bbb.
+- Zgodność z Legal Twin (F1) i Decision Certificate (F4): przedsiębiorca otrzymuje certyfikat każdej auto-operacji.
+
+## 5. GENIALNE POMYSŁY I INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12, poziom ENTERPRISE):
+Wymóg nadrzędny: osiągnij zaawansowany poziom Enterprise w każdym pomyśle. Przeprowadź głębokie myślenie nad każdą propozycją, następnie przeprowadź głęboką analizę jej wpływu na cały system oraz przeprowadź głęboką analizę ryzyka wdrożenia. Każde rozwiązanie musi reprezentować poziom ENTERPRISE i stanowić innowacyjne ulepszenia wyprzedzające profesjonalistów — finalny efekt podnieś na zaawansowany poziom Enterprise, którego nie osiągnął żaden zespół ekspertów.
+
+M.in.: (1) pełny pipeline „dokument → księgowanie → deklaracja → archiwum" bez dotyku człowieka; (2) auto-dopasowanie wyciągów bankowych do faktur (reconciliation AI + reguły); (3) auto-generowanie kompletnych deklaracji z walidacją krzyżową; (4) centrum decyzji (decision_composer) — jeden ekran dla ASK_USER; (5) auto-korespondencja z US z szablonami i podpisem; (6) auto-WIS (wniosek, śledzenie, zastosowanie stawki); (7) moduł nadpłat (auto-wykrycie i wniosek o zwrot); (8) symulator formularzy (co wypełnić, w jakiej kolejności); (9) monitor „ile kliknięć" (KPI automatyzacji); (10) Decision Certificate (F4) dla każdej auto-operacji (PDF + pieczęć); (11) integracja e-Doręczeń z pełnym potwierdzeniem; (12) harmonizator terminów: automatyzacja nigdy nie spóźnia się z terminem. Każdy pomysł z kodem startowym Rego/Python.
+
+## 6. FORMAT RAPORTU (plik txt):
+Raport ma zawierać innowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale — nie tylko w rozdziale pomysłów.
+
+- Ścieżka: JDG/raporty_glm52_enterprise/RAPORT_19_AUTOMATYZACJA_KSIEGOWOSCI.txt
+- Struktura wg kontraktu: Executive Summary TOP 10; diagram pełnego cyklu automatyzacji; tabela KPI (AUTO_POST/SUGGEST/ASK_USER per domena); luki; rozwiązania z inteligentnym kodem; genialne pomysły; mapa drogowa; WPŁYW NA INNE CZĘŚCI (PKPiR, VAT, ZUS, KSeF/JPK, deklaracje).
+- Min. 20 stron. Język polski (kody po angielsku).
+
+## 7. ZASADY PRACY Z KONTEKSTEM:
+Pracuj na zaawansowanym poziomie Enterprise przez całą sesję — osiągnij zaawansowany poziom Enterprise; poziom ENTERPRISE to standard, nie cel.
+
+Święte dokumenty + pliki z listy ≤ 50% okna. Cytuj fragmenty ze ścieżkami. Resztę okna wykorzystaj na głębokie myślenie i generowanie rozwiązania na zaawansowanym poziomie Enterprise.
+
+## 8. ZAKOŃCZENIE — WYCZYŚĆ OKNO KONTEKSTOWE:
+Po zapisaniu raportu RAPORT_19_AUTOMATYZACJA_KSIEGOWOSCI.txt:
+1. Potwierdź jednym zdaniem zapis raportu.
+2. WYCZYŚĆ OKNO KONTEKSTOWE — polecenie „CZYŚĆ": usuń z kontekstu wszystkie przeczytane pliki i raport; zachowaj wyłącznie KONTRAKT SPÓJNOŚCI z PROMPT_00.
+3. Potwierdź gotowość: „Gotowy na PROMPT 20/25 — SYSTEM OPA (CONTROL PLANE)."
+
+STATUS WDROŻENIA — WDROŻONY_100
+Evidence: JDG/bundles/automatyzacja_ksiegowosci_report19_evidence.json
+Wynik: 12/12 bramek PASS; produkcja pozostaje NOT_CERTIFIED / ROLLED_BACK fail-closed.

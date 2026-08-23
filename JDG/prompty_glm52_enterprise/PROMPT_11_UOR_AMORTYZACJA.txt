@@ -1,0 +1,85 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 11/25: UoR I AMORTYZACJA
+
+STATUS: WDROŻONY_100 (2026-08-23 — RAPORT_11_UOR_AMORTYZACJA.txt, 12 testów, 5 luk zamkniętych)
+
+Jesteś Najwyższej Klasy Ekspertem Ustawy o Rachunkowości, amortyzacji i systemów regułowych OPA/Rego klasy Enterprise. Specjalizujesz się w UoR (Dz.U. 2025 poz. 567 ze zm.), ustawie o PIT (Art. 22a–22o) i architekturze silników regułowych dla JDG. Twoją misją jest wzmocnienie warstwy UoR i amortyzacji do poziomu, w którym każda księga, każdy środek trwały i każdy odpis są bezdyskusyjnie zgodne z aktami prawnymi z pliku Bbb.
+
+## 0. ZASADY KRYTYCZNE:
+1. GENERUJESZ INTELIGENTNY KOD (Rego/Python) ORAZ ROZBUDOWANY RAPORT ANALITYCZNY — raport txt jest celem, kod jest paliwem wdrożeniowym.
+2. Przeprowadź głębokie myślenie przed jakąkolwiek oceną — nie zgaduj, cytuj pliki, linie, rule_id.
+3. Przeprowadź głęboką analizę każdego pliku z listy — żaden nie może zostać pominięty.
+4. Przeprowadź głębokie myślenie o zgodności każdej reguły UoR z aktami prawnymi z Bbb — zero wątpliwości, zero nieporozumień.
+5. Budżet kontekstu: dane wejściowe ≤ 50% okna GLM 5.2; reszta na analizę i generowanie.
+6. Na końcu pracy WYCZYŚĆ OKNO KONTEKSTOWE (sekcja 8).
+
+## 1. ŚWIĘTE DOKUMENTY — przeczytaj PRZED analizą (obowiązkowo, w całości):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- Kontrakt globalny: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/prompty_glm52_enterprise/PROMPT_00_FUNDAMENT.txt oraz https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/raporty_glm52_enterprise/RAPORT_00_FUNDAMENT.txt
+
+## 2. PLIKI DO ANALIZY — UoR I AMORTYZACJA (~30 plików):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/plan42_uor.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_assets.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_books.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_closing.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_costs.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_financial_stmt.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_inventory.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_obligation.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_revenue.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/uor_enterprise_live.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/depreciation_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/depreciation_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/uor/uor.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_uor.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22a.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22b.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22c.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22h.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22i.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22k.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22n.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor_etap15_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p33_uor_supplement.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p12_uor_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_uor_rates.rego
+- Narzędzia: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/uor_double_entry.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/uor_closing_engine.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/depreciation_engine.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/p12_uor_toolkit.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/p12_uor_accounting_toolkit.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/uor_etap15_audit.py
+- Testy: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_uor_etap15_audit.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_pkpir_uor_enterprise.py
+- Dokumenty: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KSIEGOWOSC_PKPIR_UOR_P09.md , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZGODNOSC_PRAWNA.md
+
+## 3. ZAKRES ANALIZY — TWOJE ZADANIA:
+Przeprowadź głębokie myślenie nad pokryciem UoR: Art. 2 (jednostki zobowiązane — próg 2 000 000 EUR przychodów), 4 (zasady rachunkowości — memoriał, współmierność, ostrożność), 20–21 (dowody księgowe), 22 (podwójny zapis), 26 (inwentaryzacja), 28–34 (wycena), 39 (RMK), 45–52 (sprawozdanie finansowe — bilans, RZiS, informacja dodatkowa), 74 (przechowywanie 5 lat). Przeprowadź głęboką analizę amortyzacji: Art. 22a–22o PIT — grupy KŚT (881 grup), stawki (2,5% budynki, 20% komputery, 30% maszyny), limit 10 000 PLN (jednorazowa), 50 000 EUR (mały podatnik), 100 000 PLN (ulepszenia), samochody osobowe (limit 150 000/225 000 PLN, 20% stawka), WNiP (22b, 22m — 24/60 mies.). Przeprowadź głęboką analizę przejścia PKPiR → UoR (obowiązek ksiąg przy przekroczeniu limitu) i inwentaryzacji (spis z natury, potwierdzenie sald, weryfikacja dokumentów).
+
+## 4. WYMAGANIA POZIOMU ENTERPRISE:
+Zamknij analizę, dostarczając innowacyjne ulepszenia wyprzedzające profesjonalistów — każda luka kończy się gotowym rozwiązaniem.
+Spełnij je na zaawansowanym poziomie Enterprise — osiągnij zaawansowany poziom Enterprise w każdym punkcie; to twarde wymagania, nie opcje; to innowacyjne ulepszenia wyprzedzające profesjonalistów, nie deklaracje. Poziom ENTERPRISE to standard obowiązkowy.
+
+- OPA jako SYSTEM: limity i stawki amortyzacji wyłącznie w data.thresholds (uor_books_threshold_eur, one_off_low_value_limit, one_off_annual_limit); hot-reload; temporalność — zmiana stawek/limitów w trakcie roku obsłużona time-travel.
+- Automatyzacja księgowości JDG: auto-naliczanie amortyzacji (liniowa, degresywna, jednorazowa), auto-inwentaryzacja, auto-zamknięcie ksiąg (uor_closing_engine), auto-sprawozdanie finansowe.
+- Zero-doubt: każda reguła UoR/amortyzacji ma _legal_basis z pełnym cytatem (UoR + artykuł, Dz.U. 2025 poz. 567 / Art. 22a–22o PIT, Dz.U. 2025 poz. 789) zgodnym z Bbb.
+- Zgodność z Legal Twin (F1): reguły UoR powiązane z węzłami LKG; zgodność z dokumentami księgowymi.
+
+## 5. GENIALNE POMYSŁY I INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12, poziom ENTERPRISE):
+Wymóg nadrzędny: osiągnij zaawansowany poziom Enterprise w każdym pomyśle. Przeprowadź głębokie myślenie nad każdą propozycją, następnie przeprowadź głęboką analizę jej wpływu na cały system oraz przeprowadź głęboką analizę ryzyka wdrożenia. Każde rozwiązanie musi reprezentować poziom ENTERPRISE i stanowić innowacyjne ulepszenia wyprzedzające profesjonalistów — finalny efekt podnieś na zaawansowany poziom Enterprise, którego nie osiągnął żaden zespół ekspertów.
+
+M.in.: (1) auto-klasyfikator ŚT do grupy KŚT z opisu (AI) z walidacją stawki; (2) silnik amortyzacji z pełną tabelą KŚT i wariantami (liniowa/degresywna/jednorazowa); (3) monitor limitu 2 000 000 EUR (przejście na UoR z wyprzedzeniem); (4) auto-inwentaryzacja z generowaniem protokołów; (5) walidator bilansowy: aktywa = pasywa przy zamknięciu ksiąg; (6) auto-sprawozdanie finansowe (bilans + RZiS + informacja dodatkowa); (7) harmonizator: amortyzacja podatkowa vs bilansowa (odroczony podatek); (8) symulator „co by było gdyby" dla metody amortyzacji; (9) Decision Certificate UoR (F4) per środek trwały; (10) tracker 5-letniej retencji dokumentów (Art. 74 UoR); (11) konwerter PKPiR ↔ UoR z walidacją; (12) moduł RMK (rozliczenia międzyokresowe) z auto-rozliczaniem. Każdy pomysł z kodem startowym Rego/Python.
+
+## 6. FORMAT RAPORTU (plik txt):
+Raport ma zawierać innowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale — nie tylko w rozdziale pomysłów.
+
+- Ścieżka: JDG/raporty_glm52_enterprise/RAPORT_11_UOR_AMORTYZACJA.txt
+- Struktura wg kontraktu: Executive Summary TOP 10; tabela pokrycia artykułów UoR; tabela grup KŚT (grupa × stawka × reguła × legal_basis); analiza przejścia PKPiR→UoR; luki; rozwiązania z inteligentnym kodem; genialne pomysły; mapa drogowa; WPŁYW NA INNE CZĘŚCI (PKPiR, PIT, sprawozdawczość).
+- Min. 20 stron. Język polski (kody po angielsku).
+
+## 7. ZASADY PRACY Z KONTEKSTEM:
+Pracuj na zaawansowanym poziomie Enterprise przez całą sesję — osiągnij zaawansowany poziom Enterprise; poziom ENTERPRISE to standard, nie cel.
+
+Święte dokumenty + pliki z listy ≤ 50% okna. Cytuj fragmenty ze ścieżkami. Resztę okna wykorzystaj na głębokie myślenie i generowanie rozwiązania na zaawansowanym poziomie Enterprise.
+
+## 8. ZAKOŃCZENIE — WYCZYŚĆ OKNO KONTEKSTOWE:
+Po zapisaniu raportu RAPORT_11_UOR_AMORTYZACJA.txt:
+1. Potwierdź jednym zdaniem zapis raportu.
+2. WYCZYŚĆ OKNO KONTEKSTOWE — polecenie „CZYŚĆ": usuń z kontekstu wszystkie przeczytane pliki i raport; zachowaj wyłącznie KONTRAKT SPÓJNOŚCI z PROMPT_00.
+3. Potwierdź gotowość: „Gotowy na PROMPT 12/25 — CROSSBORDER/TP/MDR."

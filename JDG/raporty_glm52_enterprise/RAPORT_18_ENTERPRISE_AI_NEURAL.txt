@@ -1,0 +1,201 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT 18/25 — ENTERPRISE AI I NEURAL MESH
+NexusAI JDG · GLM 5.2 Enterprise Campaign
+Data: 2026-08-23 | Status: WDROŻONY_100
+═══════════════════════════════════════════════════════════════════════════════
+
+DOWÓD WDROŻENIA
+---------------
+Raport kampanii zapisano jako:
+  JDG/raporty_glm52_enterprise/RAPORT_18_ENTERPRISE_AI_NEURAL.txt
+Dowód raportu:
+  JDG/bundles/enterprise_ai_neural_report18_evidence.json (11/11)
+
+Prompt 18 konsoliduje Enterprise AI, Adaptive Trust, Neural Mesh, cashflow,
+bankowość PSD2, monitoring legislacyjny, strategic advisor i warstwę LLM jako
+meta-governance nad deterministycznym Rego:
+  JDG/rules/enterprise_ai_neural_etap23_v1.rego
+
+Bramka kampanii:
+  `tools/enterprise_ai_neural_report18_gate.py`: 11/11.
+Audyt ETAP 23:
+  16/16.
+Testy AI/Neural Mesh oraz warstw bazowych:
+  73 passed w wykonanym zakresie.
+Produkcja:
+  NOT_CERTIFIED / ROLLED_BACK fail-closed.
+
+Najważniejsza zasada: AI może prognozować, objaśniać i rekomendować, ale
+`legal_verdict_authority=DETERMINISTIC_REGO`; AI nie może nadpisać werdyktu,
+blokady ani wymogu manual review.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+1. EXECUTIVE SUMMARY TOP 10
+---------------------------
+1. Warstwa AI działa poza właściwym werdyktem prawnym i korzysta z własnego
+   evidence chain, hashów, wersji modelu i wersji faktów.
+2. Adaptive Trust dostarcza confidence/trust i tryb rekomendacji, ale nie jest
+   podstawą prawną i nie zmienia wyniku Rego.
+3. Neural Mesh propaguje pewność po grafie domen oraz wykrywa konflikty VAT×PIT×
+   ZUS×KKS; konflikt trafia do triage.
+4. Predykcja cashflow ma horyzont, referencję prognozy i niepewność; nie tworzy
+   zobowiązania podatkowego.
+5. Bankowość PSD2 wymaga zgody i ma `transaction_authority=NONE`.
+6. Monitoring legislacyjny wskazuje wpływ i vacatio legis, ale aktualizację
+   reguł zatwierdza człowiek.
+7. Kalibracja, drift, jakość, bias, prompt injection i redakcja PII są
+   warunkami kompletności governance.
+8. LLM jest grounded explanation-only: prompt/output hash, evidence,
+   disclaimer i brak władzy nad decyzją.
+9. Feedback księgowej jest human-verified i zamyka pętlę bez automatycznego
+   przepisywania prawa lub reguł.
+10. `WDROŻONY_100` dotyczy repozytoryjnego kontraktu i testów, nie certyfikacji
+    produkcyjnego modelu ani automatycznego księgowania.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+2. DIAGRAM WARSTW
+------------------
+
+```
+DANE / DOKUMENT / PRAWO / LEGAL TWIN
+              |
+              v
+DETERMINISTYCZNE REGUŁY REGO  --->  LEGAL VERDICT (władza prawna)
+              |                              |
+              | decision_hash                | BLOCK_AND_ALERT / TRIAGE
+              v                              v
+AI META: trust / mesh / forecast / anomaly / judgment / LLM explanation
+              |
+              v
+confidence + evidence + rationale + recommendation (ADVISORY_ONLY)
+              |
+              v
+manual review / human feedback / calibration / drift monitoring
+```
+
+AI nie ma ścieżki do `AUTO_POST`, nie może zmienić `_legal_basis`, nie może
+usunąć blokady i nie może wykonać zewnętrznej operacji.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+3. WDROŻONE FAZY I KONTROLE
+----------------------------
+
+A. Contract/provenance: evaluation date, input hash, source refs, legal nodes,
+   facts/threshold/model versions i owner approval.
+B. Prediction firewall: `DETERMINISTIC_REGO`, `ADVISORY_ONLY`, `ai_may_decide_legal=false`.
+C. Quality: minimalna próba kalibracyjna, ECE, Brier, PSI, baseline i monitor driftu.
+D. Safety: bias test, prompt-injection test, PII redaction, fail-closed routing.
+E. Explainability: rationale, feature attribution, provenance i model version.
+F. LLM boundary: grounded evidence, prompt/output hash, disclaimer, explanation-only.
+G. Feedback: human-verified label policy, outcome ref i quality window.
+H. Domain mesh: cashflow uncertainty, banking consent, no transaction authority.
+I. Wiring: ETAP 23 wchodzi do `final_verdict_p67`, po czym działają invariants.
+J. Verification: 16 gate’ów ETAP 23, 11 gate’ów kampanii, testy i replay.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+4. OBSZARY AI I INNOWACJE
+--------------------------
+
+1. Neural Mesh v3 z propagacją confidence po Legal Knowledge Graph.
+2. Adaptive Trust per reguła/pakiet z progami AUTO_POST/SUGGEST/ASK_USER jako
+   rekomendacją, nigdy jako obejście blokady.
+3. Predyktor wpływu nowelizacji na portfel decyzji i domeny.
+4. Judgment predictor dla NSA/WSA z datą, źródłem i confidence.
+5. Generator reguł z nowelizacji wyłącznie jako propozycja do review.
+6. Detektor anomalii rozkładu werdyktów i alert jakości.
+7. Fraud graph: karuzele, znikający podatnik i relacje transakcyjne jako sygnał
+   do triage, bez ustalania winy.
+8. Strategic advisor z symulacją wariantów i jawnie opisanym ryzykiem.
+9. Decision Quality Monitor z minimalnym oknem feedbacku.
+10. Symulator wpływu nowelizacji na deklaracje i dokumenty.
+11. Trust scoring kontrahenta z referencją danych i okresem ważności.
+12. LLM explanation bridge z redakcją PII i disclaimerem.
+13. Harmonizator: identyczny snapshot danych dla Rego i modeli, aby ograniczyć
+    data drift.
+14. Dead innovation detector, hot reload i pipeline adaptacji z rollbackiem.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+5. SAFETY CONTRACT
+-------------------
+
+- `decision_mode=SUGGEST` i `no_auto_post=true`.
+- `legal_verdict_authority=DETERMINISTIC_REGO`.
+- `prediction_role=ADVISORY_ONLY`.
+- `auto_action=NONE — MANUAL_REVIEW_REQUIRED`.
+- Brak dowodu, kalibracji, stabilności, bezpieczeństwa, zgody PSD2, owner
+  approval lub wersji blokuje wynik `BLOCK_AND_ALERT`.
+- Kompletna predykcja jest nadal kierowana do `TRIAGE_QUEUE` i wymaga człowieka.
+- AI nie dostarcza podstawy prawnej; `_legal_basis` jest wyłącznie z reguł.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+6. DOWODY I WYNIKI
+-------------------
+
+| Kontrola | Wynik |
+|---|---:|
+| Prompt 18 + raport kampanii | PRESENT |
+| Enterprise AI / Neural core | COMPLETE |
+| Prediction separation | PASS |
+| Calibration / drift / quality | PASS |
+| Bias / safety / explainability / LLM | PASS |
+| Cashflow / banking / feedback | PASS |
+| Threshold registry | PASS |
+| Orchestrator wiring | PASS |
+| Report 18 gate | 11/11 |
+| ETAP 23 audit | 16/16 |
+| Testy wykonane | 73 passed |
+| Produkcja | NOT_CERTIFIED / ROLLED_BACK |
+
+Nie deklaruję `opa test`, jeśli binarne OPA nie jest dostępne. Testy strukturalne,
+kontraktowe i Python nie zastępują walidacji produkcyjnej modelu, PSD2, prawa ani
+telemetrii.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+7. WPŁYW KRZYŻOWY
+------------------
+
+- VAT/PIT/ZUS/KSeF/JPK korzystają z prognoz i anomalii tylko jako sygnałów.
+- KKS/AML korzystają z fraud graph i risk score, ale decyzja wymaga dowodów i
+  oceny człowieka.
+- Neural Mesh może wskazać konflikt międzydomenowy, lecz nie kompensuje reguł.
+- Księgowość otrzymuje rekomendację jakości i cashflow, nie automatyczne
+  księgowanie bez istniejącego legal verdict.
+- RODO ogranicza PII w promptach, feature’ach, logach i wyjaśnieniach.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+8. OGRANICZENIA
+---------------
+
+1. Brak produkcyjnych danych, tokenów, telemetryki i certyfikacji modeli.
+2. Confidence nie jest prawdopodobieństwem prawnym ani gwarancją wyniku.
+3. Fraud/anomaly nie stanowi dowodu naruszenia ani winy.
+4. Dane treningowe, kalibracja i drift muszą być okresowo audytowane.
+5. OPA nie jest instalowane w środowisku tej sesji.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+9. CERTYFIKACJA
+----------------
+
+| Kontrola | Wynik |
+|---|---:|
+| Prompt 18 evidence gate | 11/11 |
+| ETAP 23 audit | 16/16 |
+| AI legal authority | DETERMINISTIC_REGO |
+| AI role | ADVISORY_ONLY |
+| Safety | SUGGEST / no_auto_post |
+| Production dispatch | NOT_CERTIFIED |
+| Status Prompt 18 | WDROŻONY_100 |
+
+RAPORT 18/25 — KONIEC.
+Po zapisaniu raportu wykonano reset kontekstu roboczego („CZYŚĆ"); następny zakres to
+PROMPT 19/25 — AUTOMATYZACJA KSIĘGOWOŚCI.
+═══════════════════════════════════════════════════════════════════════════════

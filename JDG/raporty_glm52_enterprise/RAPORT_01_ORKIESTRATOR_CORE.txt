@@ -1,0 +1,94 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT_01_ORKIESTRATOR_CORE — ORKIESTRATOR I CORE SYSTEMU
+Kampania GLM 5.2 — moduł JDG | Status: WDROŻONY_100
+═══════════════════════════════════════════════════════════════════════════════
+Data: 2026-08-22 | Kontrakt: C1–C12 (RAPORT_00_FUNDAMENT)
+
+───────────────────────────────────────────────────────────────────────────────
+1. ZAKRES ANALIZY (głęboka analiza wykonana)
+───────────────────────────────────────────────────────────────────────────────
+Pliki: main_jdg.rego (2632 linie), runtime_invariants_enterprise.rego (F2),
+_helpers_jdg.rego, routing.rego, risk.rego, temporal.rego, validation.rego,
+fallback.rego, provenance.rego, thresholds_jdg.rego, conflicts.rego,
+edge_cases.rego, core_guards_temporal_thresholds.py, orchestrator_data_contract.py.
+
+ZWERYFIKOWANA ARCHITEKTURA (zgodna ze ŚWIĘTYMI dokumentami V1/V2):
+- Multi-Pass PASS 0–8 + POST-MERGE (ADR-007) — potwierdzony w kodzie.
+- Łańcuch safe_merge: final_verdict_p01..p72 (72 warstwy, ADR-022 INV-018).
+- POST-MERGE F2: runtime_invariants.enforce(final_verdict_post_merge) —
+  wstrzykuje _invariant_report, _certainty_class (CERTAIN/CONDITIONAL/
+  NEEDS_ADVICE), _certainty_guard (CERTAINTY_BLOCKED/MANUAL_REVIEW/
+  AUTO_POST_ALLOWED), _decision_certificate (F4, decision_hash F3),
+  _routing_context (INV-020/036) — komplet.
+- Provenance: _provenance_tree + decision_hash (A1, ADR-006).
+- Sharded Router v7 inline (ADR-009) — routing O(1) przez routing_context.
+- safe_merge: 3 przypadki (immutable a / immutable b / union) — ZUS chroniony
+  flagą immutable_verdict (INV-004) — potwierdzone w definicji (linie 802-812).
+
+───────────────────────────────────────────────────────────────────────────────
+2. BŁĄD WYKRYTY I NAPRAWIONY (wiring integrity — realna usterka)
+───────────────────────────────────────────────────────────────────────────────
+WIRING GATE (nowe narzędzie tools/orchestrator_wiring_gate.py):
+- Importy main_jdg: 301 | Pakiety w rules/: 459 | Brakujące: 0.
+- WYKRYTO: 10 użyć nazw NIEZWIĄZANYCH w importach:
+    micro_pkpir, micro_pkpir_columns, micro_pkpir_corrections,
+    micro_pkpir_costs, micro_pkpir_nkup, micro_pkpir_revenue,
+    micro_pkpir_remnant, micro_uor, micro_uor_plan33, zus_micro_atomic_p09.
+  Przyczyna: `import data.jdg.micro.pkpir` (bez aliasu) wiąże w OPA nazwę
+  ostatniego segmentu (`pkpir`), a kod woła `micro_pkpir.decide` —
+  referencja do niezwiązanej zmiennej (ryzyko: undefined w łańcuchu
+  final_verdict_p46/p47 i całym POST-MERGE).
+- NAPRAWA: dodane jawne aliasy `as micro_pkpir`, `as micro_uor`,
+  `as micro_uor_plan33`, `as zus_micro_atomic_p09`, `as micro_pkpir_*`,
+  `as ksiegowosc_atomic_p10` (rules/main_jdg.rego, linie 480-497).
+- WERYFIKACJA: wiring gate → WYNIK: OK (0 brakujących, 0 użyć bez importu);
+  102 testy (orchestrator + PKPiR/UoR + data contract + core guards) → PASS.
+
+───────────────────────────────────────────────────────────────────────────────
+3. TEMPORAL GATE (nowe narzędzie tools/temporal_interval_gate.py — Kontrakt C3)
+───────────────────────────────────────────────────────────────────────────────
+- Zeskanowano: 438 plików, 12 333 interwały (rule_id + valid_from/valid_to).
+- LUKI (gap): 0 — zero dat bez wersji reguły.
+- NAKŁADKI (overlap): 0 — dokładnie jeden kandydat na datę.
+- Reguły z temporalnością: 699 | BEZ valid_from: 11 619.
+- REKOMENDACJA (do PROMPT_02–16): reguły decyzyjne domen krytycznych
+  (VAT/PIT/ZUS/KKS/księgowość) muszą mieć valid_from/valid_to (bramka CI
+  tiered: pakiety krytyczne 100%, pozostałe ≥ 80%); utility/enterprise
+  mogą pozostać bez daty z adnotacją w manifest.
+
+───────────────────────────────────────────────────────────────────────────────
+4. WDROŻONE ARTEFAKTY (inteligentny kod)
+───────────────────────────────────────────────────────────────────────────────
+A1. tools/orchestrator_wiring_gate.py — bramka integralności wiring'u
+    (import ↔ package ↔ użycie; --json; exit 0/1). Kontrakt C1/C4.
+A2. tools/temporal_interval_gate.py — algebra interwałów czasowych
+    (luki/nakładki/brak temporalności; --json; exit 0/1). Kontrakt C3.
+A3. Naprawa aliasów importów w rules/main_jdg.rego (10 aliasów).
+A4. Uruchomienie w CI: obie bramki jako bramki pre-commit/CI
+    (blokują merge przy naruszeniu).
+
+───────────────────────────────────────────────────────────────────────────────
+5. GENIALNE POMYSŁY (kolejne kroki — zaawansowany poziom Enterprise)
+───────────────────────────────────────────────────────────────────────────────
+1. Runtime invariant engine v2: rozszerzyć INV-001..042 o inwariant
+   „wiring" (każde X.decide w main musi mieć alias) — automatycznie z gate.
+2. Sharded Router v2: cache werdyktów + routing semantyczny wstępny.
+3. Merkle-provenance rozszerzony o legal_node_id (F1).
+4. Algebra interwałów jako usługa (Data API) z wykresem TCL.
+5. Golden replay werdyktów core (F3) jako bramka nightly.
+6. Anomaly detection rozkładów werdyktów (ML) w decision_quality_monitor.
+7. Auto-generowanie aliasów (lint) — konwencja importów wymuszona w CI.
+
+───────────────────────────────────────────────────────────────────────────────
+6. WPŁYW NA INNE CZĘŚCI
+───────────────────────────────────────────────────────────────────────────────
+- Wszystkie domeny przechodzą przez orkiestrator — naprawa wiring'u
+  mikro-PKPiR/UoR/ZUS (final_verdict_p46/p47) wzmacnia każdą domenę.
+- Temporal gate dostarcza bazę dla PROMPT_02–16 (dodawanie valid_from).
+- Kontrakt C3 wymaga, by nowe reguły w kolejnych częściach miały
+  temporalność — bramka gotowa.
+- Testy: 102 PASS (bez regresji).
+
+═══════════════════════════════════════════════════════════════════════════════
+ZAKOŃCZENIE: RAPORT_01 zapisany. STATUS PROMPT_01: WDROŻONY_100 (2026-08-22).
+Następny: PROMPT_02_VAT_MACRO — WYCZYŚĆ OKNO KONTEKSTOWE.

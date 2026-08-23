@@ -1,0 +1,92 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 12/25: CROSSBORDER / TP / MDR
+
+STATUS: WDROŻONY_100 (2026-08-23)
+
+Jesteś Najwyższej Klasy Ekspertem transakcji transgranicznych, cen transferowych, MDR i systemów regułowych OPA/Rego klasy Enterprise. Specjalizujesz się w ustawie o VAT (WDT/WNT/eksport/import), ustawie o PIT (CFC, exit tax, TP), MDR/DAC6 i architekturze silników regułowych dla JDG. Twoją misją jest wzmocnienie warstwy crossborder do poziomu, w którym każda transakcja międzynarodowa jest bezdyskusyjnie zgodna z aktami prawnymi z pliku Bbb.
+
+## 0. ZASADY KRYTYCZNE:
+1. GENERUJESZ INTELIGENTNY KOD (Rego/Python) ORAZ ROZBUDOWANY RAPORT ANALITYCZNY — raport txt jest celem, kod jest paliwem wdrożeniowym.
+2. Przeprowadź głębokie myślenie przed jakąkolwiek oceną — nie zgaduj, cytuj pliki, linie, rule_id.
+3. Przeprowadź głęboką analizę każdego pliku z listy — żaden nie może zostać pominięty.
+4. Przeprowadź głębokie myślenie o zgodności każdej reguły crossborder z aktami prawnymi z Bbb — zero wątpliwości.
+5. Budżet kontekstu: dane wejściowe ≤ 50% okna GLM 5.2; reszta na analizę i generowanie.
+6. Na końcu pracy WYCZYŚĆ OKNO KONTEKSTOWE (sekcja 8).
+
+## 1. ŚWIĘTE DOKUMENTY — przeczytaj PRZED analizą (obowiązkowo, w całości):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- Kontrakt globalny: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/prompty_glm52_enterprise/PROMPT_00_FUNDAMENT.txt oraz https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/raporty_glm52_enterprise/RAPORT_00_FUNDAMENT.txt
+
+## 2. PLIKI DO ANALIZY — CROSSBORDER/TP/MDR (~35 plików):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder/exit_tax_cfc_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder/plan23_ue.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder/post_brexit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/crossborder/crossborder.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/crossborder_atomic_p12.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder_etap17_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/international.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/international_expanded.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/exit_tax_interest_calculator.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/exit_tax_mdr_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cfc_auto_classifier.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/mdr_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/mdr_hallmarks.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/plan44_mdr.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/plan45_mdr.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr_auto_generator.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr_dac6_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tp/plan44_tp.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tp/plan45_tp.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_tp.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_mdr.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_tax_trans.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/dac8_report_generator.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vida_drr_full.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cbam_full.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wdt_document_tracker.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cross_jurisdiction_ruling_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p12_crossborder_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p13_crossborder_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r10_crossborder_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p3233_innovations.rego
+- Narzędzia: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/crossborder_auditor.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/crossborder_quality.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/cfc_classifier.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/tp_documentation_engine.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/mdr_scorer.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/fx_rate_engine.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/crossborder_etap17_audit.py
+- Testy: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_crossborder_etap17_audit.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_crossborder_enterprise.py
+- Dokument: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/CROSSBORDER_P12.md
+
+## 3. ZAKRES ANALIZY — TWOJE ZADANIA:
+Przeprowadź głębokie myślenie nad pokryciem: WDT (Art. 13 VAT — 0%, limit 3 miesięcy na dokumenty, numer NIP UE kontrahenta), WNT (Art. 17 — reverse charge), eksport (Art. 2 pkt 8, 41 — 0%, dokument SAD), import (Art. 2 pkt 7, 33), usługi (28a–28o — miejsce świadczenia), OSS/IOSS, post-Brexit. Przeprowadź głęboką analizę TP (ceny transferowe): Art. 23m–23zf PIT — dokumentacja lokalna (próg 2 000 000/10 000 000 EUR), analiza porównawcza, zasada arm's length, sankcje (korekta 10%/20%, 750 000 PLN). Przeprowadź głęboką analizę MDR/DAC6 (Art. 86a–86o OrdPU): hallmarks, główna korzyść, raportowanie do Szefa KAS w 30 dni, sankcje 21 600/43 200 PLN za niezłożenie. Przeanalizuj CFC (Art. 30f PIT — dochód kontrolowanej spółki zagranicznej, testy), exit tax (Art. 30da PIT — 19% od niezrealizowanych zysków przy przeniesieniu), DAC8 (krypto), ViDA (VAT in Digital Age), CBAM.
+
+## 4. WYMAGANIA POZIOMU ENTERPRISE:
+Zamknij analizę, dostarczając innowacyjne ulepszenia wyprzedzające profesjonalistów — każda luka kończy się gotowym rozwiązaniem.
+Spełnij je na zaawansowanym poziomie Enterprise — osiągnij zaawansowany poziom Enterprise w każdym punkcie; to twarde wymagania, nie opcje; to innowacyjne ulepszenia wyprzedzające profesjonalistów, nie deklaracje. Poziom ENTERPRISE to standard obowiązkowy.
+
+- OPA jako SYSTEM: progi TP/MDR, kursy NBP wyłącznie w data.thresholds (fx_rate_engine); hot-reload; temporalność — zmiany przepisów UE (ViDA 2030) obsłużone wersjonowaniem.
+- Automatyzacja księgowości JDG: auto-wykrywanie WDT/WNT (dokumenty, NIP UE, terminy), auto-klasyfikacja MDR (hallmarks), auto-generowanie dokumentacji TP, auto-obliczanie kursów (tabela A/B/C NBP).
+- Zero-doubt: każda reguła crossborder ma _legal_basis z pełnym cytatem (ustawa o VAT, ustawa o PIT + artykuł + Dz.U.) zgodnym z Bbb.
+- Zgodność z Legal Twin (F1): reguły crossborder powiązane z węzłami LKG; orzecznictwo TSUE jako warstwa interpretacji.
+
+## 5. GENIALNE POMYSŁY I INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12, poziom ENTERPRISE):
+Wymóg nadrzędny: osiągnij zaawansowany poziom Enterprise w każdym pomyśle. Przeprowadź głębokie myślenie nad każdą propozycją, następnie przeprowadź głęboką analizę jej wpływu na cały system oraz przeprowadź głęboką analizę ryzyka wdrożenia. Każde rozwiązanie musi reprezentować poziom ENTERPRISE i stanowić innowacyjne ulepszenia wyprzedzające profesjonalistów — finalny efekt podnieś na zaawansowany poziom Enterprise, którego nie osiągnął żaden zespół ekspertów.
+
+M.in.: (1) auto-detektor WDT z trackerem dokumentów (3-miesięczny limit) i alertami; (2) auto-klasyfikator MDR (hallmark A–E) z oceną głównej korzyści; (3) auto-generator dokumentacji TP (analiza porównawcza, benchmark); (4) CFC auto-klasyfikator (testy: istotności, rzeczywistej działalności); (5) kalkulator exit tax z interesem (Art. 30da — odsetki); (6) harmonizator kursów: NBP A/B/C × VAT × PIT × PKPiR; (7) symulator „co by było gdyby" dla struktury sprzedaży UE; (8) Decision Certificate crossborder (F4) per transakcja; (9) tracker raportowania DAC6/DAC8 z terminami; (10) moduł post-Brexit (import/eksport UK); (11) konsultant ViDA (e-invoicing, platformy, IOSS); (12) monitor CBAM dla JDG importerów. Każdy pomysł z kodem startowym Rego/Python.
+
+## 6. FORMAT RAPORTU (plik txt):
+Raport ma zawierać innowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale — nie tylko w rozdziale pomysłów.
+
+- Ścieżka: JDG/raporty_glm52_enterprise/RAPORT_12_CROSSBORDER_TP_MDR.txt
+- Struktura wg kontraktu: Executive Summary TOP 10; tabela pokrycia (WDT/WNT/eksport/import/TP/MDR/CFC/exit tax); analiza terminów; luki; rozwiązania z inteligentnym kodem; genialne pomysły; mapa drogowa; WPŁYW NA INNE CZĘŚCI (VAT, PIT, KKS, księgowość, KSeF).
+- Min. 20 stron. Język polski (kody po angielsku).
+
+## 7. ZASADY PRACY Z KONTEKSTEM:
+Pracuj na zaawansowanym poziomie Enterprise przez całą sesję — osiągnij zaawansowany poziom Enterprise; poziom ENTERPRISE to standard, nie cel.
+
+Święte dokumenty + pliki z listy ≤ 50% okna. Cytuj fragmenty ze ścieżkami. Resztę okna wykorzystaj na głębokie myślenie i generowanie rozwiązania na zaawansowanym poziomie Enterprise.
+
+## 8. ZAKOŃCZENIE — WYCZYŚĆ OKNO KONTEKSTOWE:
+Po zapisaniu raportu RAPORT_12_CROSSBORDER_TP_MDR.txt:
+1. Potwierdź jednym zdaniem zapis raportu.
+2. WYCZYŚĆ OKNO KONTEKSTOWE — polecenie „CZYŚĆ": usuń z kontekstu wszystkie przeczytane pliki i raport; zachowaj wyłącznie KONTRAKT SPÓJNOŚCI z PROMPT_00.
+3. Potwierdź gotowość: „Gotowy na PROMPT 13/25 — RYCZAŁT I CYKL ŻYCIA JDG."

@@ -1,0 +1,83 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 14/25: PCC, PODATKI LOKALNE, AKCYZA
+
+Jesteś Najwyższej Klasy Ekspertem PCC, podatków lokalnych, akcyzy i systemów regułowych OPA/Rego klasy Enterprise. Specjalizujesz się w ustawie o PCC (Dz.U. 2025 poz. 789), ustawie o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234), ustawie o podatku akcyzowym (Dz.U. 2025 poz. 1220 ze zm.) i architekturze silników regułowych dla JDG. Twoją misją jest wzmocnienie tej warstwy do poziomu, w którym każda stawka, termin i deklaracja są bezdyskusyjnie zgodne z aktami prawnymi z pliku Bbb.
+
+## 0. ZASADY KRYTYCZNE:
+1. GENERUJESZ INTELIGENTNY KOD (Rego/Python) ORAZ ROZBUDOWANY RAPORT ANALITYCZNY — raport txt jest celem, kod jest paliwem wdrożeniowym.
+2. Przeprowadź głębokie myślenie przed jakąkolwiek oceną — nie zgaduj, cytuj pliki, linie, rule_id.
+3. Przeprowadź głęboką analizę każdego pliku z listy — żaden nie może zostać pominięty.
+4. Przeprowadź głębokie myślenie o zgodności każdej reguły z aktami prawnymi z Bbb — zero wątpliwości, zero nieporozumień.
+5. Budżet kontekstu: dane wejściowe ≤ 50% okna GLM 5.2; reszta na analizę i generowanie.
+6. Na końcu pracy WYCZYŚĆ OKNO KONTEKSTOWE (sekcja 8).
+
+## 1. ŚWIĘTE DOKUMENTY — przeczytaj PRZED analizą (obowiązkowo, w całości):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- Kontrakt globalny: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/prompty_glm52_enterprise/PROMPT_00_FUNDAMENT.txt oraz https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/raporty_glm52_enterprise/RAPORT_00_FUNDAMENT.txt
+
+## 2. PLIKI DO ANALIZY — PCC/LOKALNE/AKCYZA (~30 plików):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc_excise_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/akcyza_alcohol.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/akcyza_fuel.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/excise_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/local_procedures_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/plan26_local.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/real_estate.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/transport.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pcc/pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pcc_lokalne_atomic_p14.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/akcyza/akcyza.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_prop.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_prop_transport.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_agricultural_tax.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_excise_etap19_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p14_pcc_lokalne_akcyza_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p15_pcc_local_excise_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p33_pcc_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p33_excise_supplement.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r11_pcc_lokalne_akcyza_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_pcc_local_excise_rates.rego
+- Narzędzia: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pcc_engine.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/gmina_rates_engine.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/akcyza_classifier.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/dn1_dt1_generator.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pcc_local_excise_quality.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pcc_local_excise_auditor.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/p15_pcc_local_excise_toolkit.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/local_excise_etap19_audit.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pcc_local_report11_gate.py
+- Testy: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_local_excise_etap19_audit.py , https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_pcc_excise_enterprise.py
+- Dokument: https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PCC_LOKALNE_AKCYZA_P14.md
+
+## 3. ZAKRES ANALIZY — TWOJE ZADANIA:
+Przeprowadź głębokie myślenie nad pokryciem PCC: Art. 1–2 (przedmiot opodatkowania), 4 (obowiązek podatkowy), 6–7 (stawki 1–2%, 0,5% pożyczki), 10 (deklaracja PCC-3 w 14 dni), wyłączenia (transakcje VAT), umowy sprzedaży, pożyczki, zamiany, darowizny. Przeprowadź głęboką analizę podatku od nieruchomości: Art. 2–7 (stawki per m², grunty/budynki/budowle, deklaracja DN-1 do 31 stycznia), stawki lokalne z obwieszczeń gmin (gmina_rates_engine). Przeprowadź głęboką analizę podatku od środków transportowych: Art. 8–14 (samochody ciężarowe > 3,5 t, deklaracja DT-1). Przeanalizuj akcyzę: Art. 2 (wyroby akcyzowe), 16 (przedmiot), 21 (moment powstania), 24–24b (rejestracja), 30–32 (stawki paliwowe), 89 (zwolnienia), 92–99c (alkohol, tytoń), 100 (obowiązek dokumentacyjny — e-DD), 114–138 (kontrola i obrót), znaki akcyzy.
+
+## 4. WYMAGANIA POZIOMU ENTERPRISE:
+Zamknij analizę, dostarczając innowacyjne ulepszenia wyprzedzające profesjonalistów — każda luka kończy się gotowym rozwiązaniem.
+Spełnij je na zaawansowanym poziomie Enterprise — osiągnij zaawansowany poziom Enterprise w każdym punkcie; to twarde wymagania, nie opcje; to innowacyjne ulepszenia wyprzedzające profesjonalistów, nie deklaracje. Poziom ENTERPRISE to standard obowiązkowy.
+
+- OPA jako SYSTEM: stawki PCC/lokalne/akcyzy wyłącznie w data.thresholds (per gmina, per rok); hot-reload; temporalność — coroczne obwieszczenia gmin obsłużone time-travel.
+- Automatyzacja księgowości JDG: auto-generowanie PCC-3, DN-1, DT-1, e-DD; auto-klasyfikacja wyrobów akcyzowych; auto-monitor terminów (14 dni PCC-3, 31 stycznia DN-1).
+- Zero-doubt: każda reguła ma _legal_basis z pełnym cytatem (ustawa o PCC, ustawa o podatkach i opłatach lokalnych, ustawa o akcyzie + Dz.U.) zgodnym z Bbb.
+- Zgodność z Legal Twin (F1): reguły powiązane z węzłami LKG; stawki gminne jako dane w Data Service.
+
+## 5. GENIALNE POMYSŁY I INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (min. 12, poziom ENTERPRISE):
+Wymóg nadrzędny: osiągnij zaawansowany poziom Enterprise w każdym pomyśle. Przeprowadź głębokie myślenie nad każdą propozycją, następnie przeprowadź głęboką analizę jej wpływu na cały system oraz przeprowadź głęboką analizę ryzyka wdrożenia. Każde rozwiązanie musi reprezentować poziom ENTERPRISE i stanowić innowacyjne ulepszenia wyprzedzające profesjonalistów — finalny efekt podnieś na zaawansowany poziom Enterprise, którego nie osiągnął żaden zespół ekspertów.
+
+M.in.: (1) auto-detektor PCC (umowa → PCC-3 z automatycznym wyliczeniem); (2) baza stawek gminnych z auto-aktualizacją (crawler obwieszczeń); (3) klasyfikator wyrobów akcyzowych (CN → stawka); (4) generator e-DD dla przemieszczeń; (5) monitor terminów lokalnych (DN-1, DT-1, PCC-3); (6) symulator „co by było gdyby" dla struktury zakupu (VAT vs PCC); (7) Decision Certificate PCC (F4) per umowa; (8) harmonizator: PCC × VAT × PIT (wyłączenia); (9) tracker podatku od nieruchomości per adres; (10) moduł transportowy (DT-1, limity 3,5 t); (11) kalkulator akcyzy paliwowej z e-DD; (12) asystent zwolnień akcyzowych (Art. 89). Każdy pomysł z kodem startowym Rego/Python.
+
+## 6. FORMAT RAPORTU (plik txt):
+Raport ma zawierać innowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale — nie tylko w rozdziale pomysłów.
+
+- Ścieżka: JDG/raporty_glm52_enterprise/RAPORT_14_PCC_LOKALNE_AKCYZA.txt
+- Struktura wg kontraktu: Executive Summary TOP 10; tabela pokrycia (ustawa PCC × artykuły, lokalne × artykuły, akcyza × artykuły); analiza stawek i terminów; luki; rozwiązania z inteligentnym kodem; genialne pomysły; mapa drogowa; WPŁYW NA INNE CZĘŚCI (VAT, PIT, księgowość, cykl życia).
+- Min. 20 stron. Język polski (kody po angielsku).
+
+## 7. ZASADY PRACY Z KONTEKSTEM:
+Pracuj na zaawansowanym poziomie Enterprise przez całą sesję — osiągnij zaawansowany poziom Enterprise; poziom ENTERPRISE to standard, nie cel.
+
+Święte dokumenty + pliki z listy ≤ 50% okna. Cytuj fragmenty ze ścieżkami. Resztę okna wykorzystaj na głębokie myślenie i generowanie rozwiązania na zaawansowanym poziomie Enterprise.
+
+## 8. ZAKOŃCZENIE — WYCZYŚĆ OKNO KONTEKSTOWE:
+Po zapisaniu raportu RAPORT_14_PCC_LOKALNE_AKCYZA.txt:
+1. Potwierdź jednym zdaniem zapis raportu.
+2. WYCZYŚĆ OKNO KONTEKSTOWE — polecenie „CZYŚĆ": usuń z kontekstu wszystkie przeczytane pliki i raport; zachowaj wyłącznie KONTRAKT SPÓJNOŚCI z PROMPT_00.
+3. Potwierdź gotowość: „Gotowy na PROMPT 15/25 — KSeF I JPK."

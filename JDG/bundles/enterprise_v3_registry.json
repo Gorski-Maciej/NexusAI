@@ -1,0 +1,35 @@
+{
+  "kampania": "V3 — Ufortyfikowana Forteca OPA (20 części)",
+  "wersja": "1.0.0",
+  "utworzono": "2026-08-23",
+  "regula_uzycia": "KAŻDA część 01-20 po zakończeniu pracy DOPISUJE swój blok do sekcji 'czesci' (NIE nadpisuje cudzych bloków). Wartości pól: stan = pending|w_trakcie|wdrozone|zweryfikowane; zgodnosc_v1v2 = true|false; liczba_zmienionych_plikow = int; lista_glownych_zmian = [string]; luki_pozostale = [string]; raport_txt = 'raporty_enterprise_v3/NN_NAZWA.txt'.",
+  "mapa_czesci": {
+    "01": "FUNDAMENTY + ORKIESTRATOR + ROUTING/RISK/TEMPORALNOSC/STRAZNICY",
+    "02": "VAT - MAKRO + MIKRO + ODLICZENIA + KSEF-VAT + STAWKI + ZWOLNIENIA",
+    "03": "PIT - FORMY, KUP, ULGI, ZALICZKI, DEKLARACJE",
+    "04": "ZUS + SKLADKA ZDROWOTNA (DRA, ULGI, ZASILKI, PPK/PFRON)",
+    "05": "KSIEGOWOSC: PKPiR + UoR + AMORTYZACJA (double-entry)",
+    "06": "KKS - KODEKS KARNY SKARBOWY",
+    "07": "ORDYNACJA PODATKOWA",
+    "08": "CROSS-BORDER / TP / CFC / MDR-DAC6 / VIDA / EXIT",
+    "09": "RYCZALT + CYKL ZYCIA JDG (CEIDG, PRZERWA, SUKCESJA)",
+    "10": "PCC + PODATKI LOKALNE + AKCYZA",
+    "11": "KSEF + JPK + E-DORECZENIA + EPUAP + WIS + ESIG",
+    "12": "RODO + AML + BDO + SRODOWISKO + HR",
+    "13": "WARSTWA MICRO - NAPRAWA PLIKOW (SKLADNIA, PUSTE POLA)",
+    "14": "HYPER CONTEXTS PLAN44/45 - DEADLINES, LIMITS, KALENDARZE",
+    "15": "INICJATYWY ENTERPRISE S1-S24 + NEURAL MESH + SCORING",
+    "16": "NARZEDZIA + BRAMKI JAKOSCI + GAP REPORTS",
+    "17": "TESTY + CI/CD + CHAOS + MUTATION + GOLDEN",
+    "18": "BUNDLES + POLICIES MIRROR + RULESTORE + MIGRACJE + DEPLOY",
+    "19": "API + CONTROL PLANE + UI / CENTRUM DECYZJI",
+    "20": "DOKUMENTACJA + LEGAL TWIN + HARMONIZACJA KONCOWA"
+  },
+  "czesci": {},
+  "podsumowanie": {
+    "czesc_do_zrobienia": 20,
+    "czesc_wykonanych": 0,
+    "ostatnia_zrobiona": null,
+    "status_calosci": "W_TRAKCIE_KAMPANII"
+  }
+}

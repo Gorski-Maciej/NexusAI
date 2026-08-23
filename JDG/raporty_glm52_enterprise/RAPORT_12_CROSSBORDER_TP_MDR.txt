@@ -1,0 +1,125 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT 12/25 — CROSSBORDER / TP / MDR: ANALIZA STANU, LUKI I WDROŻENIE
+═══════════════════════════════════════════════════════════════════════════════
+Data: 2026-08-23 | Status: WDROŻONY_100 | Prompt: PROMPT_12_CROSSBORDER_TP_MDR.txt
+
+⸻
+
+1. EXECUTIVE SUMMARY — TOP 10
+
+1.  Domeną crossborder w JDG rządzi crossborder.rego (makro) + 3 pliki
+    enterprise (exit_tax_cfc_complete, plan23_ue, post_brexit) + 3 atomy
+    mikro (crossborder.rego, crossborder_atomic_p12.rego, plan33_tp/mdr/tax_trans).
+2.  WDT/WNT: Art. 13/17 VAT — 0% przy NIP UE + dokumenty w 3 mies. + deklaracja
+    VAT-UE. Tracker dokumentów (wdt_document_tracker.rego).
+3.  TP (Art. 23m–23zf PIT): próg 2M/10M EUR na dokumentację, arm's length,
+    analiza porównawcza (benchmark), sankcje 10-20% korekty.
+4.  MDR/DAC6 (Art. 86a–86o OrdPU): hallmark A-E, główna korzyść, 30 dni
+    do Szefa KAS, sankcja 21.6k-43.2k PLN.
+5.  CFC (Art. 30f PIT): dochód kontrolowanej spółki zagranicznej, testy
+    istotności/rzeczywistej działalności. cfc_auto_classifier.rego.
+6.  Exit tax (Art. 30da PIT): 19% od niezrealizowanych zysków, kalkulator
+    z odsetkami. exit_tax_interest_calculator.rego.
+7.  DAC8 (krypto), ViDA (e-invoicing 2030), CBAM (monitoring importu).
+    Pokryte w vida_drr_full.rego, dac8_report_generator.rego, cbam_full.rego.
+8.  Post-Brexit: UK jako państwo trzecie — import/eksport, post_brexit.rego.
+9.  Narzędzia (7): crossborder_auditor, crossborder_quality, cfc_classifier,
+    tp_documentation_engine, mdr_scorer, fx_rate_engine, etap17_audit.
+10. Wpływ: VAT (WDT/WNT/eksport/import/OSS/IOSS), PIT (CFC/exit tax/TP),
+    KKS (MDR sankcje), KSeF (e-faktury transgraniczne).
+
+⸻
+
+2. TABELA POKRYCIA — KLUCZOWE OBSZARY
+
+| Obszar            | Akty prawne                          | Główne pliki                              | Status   |
+|-------------------|--------------------------------------|-------------------------------------------|----------|
+| WDT/WNT           | Art. 13, 17 VAT, Art. 41-42          | crossborder.rego, plan23_ue.rego          | COMPLETE |
+| Eksport/Import    | Art. 2 pkt 7-8, 33, 41 VAT           | crossborder.rego                          | COMPLETE |
+| TP (ceny trans.) | Art. 23m–23zf PIT                    | plan44_tp.rego, plan45_tp.rego            | COMPLETE |
+| MDR/DAC6          | Art. 86a–86o OrdPU                   | mdr_enterprise.rego, mdr_hallmarks.rego   | COMPLETE |
+| CFC               | Art. 30f PIT                         | cfc_auto_classifier.rego                  | COMPLETE |
+| Exit Tax          | Art. 30da PIT                        | exit_tax_cfc_complete.rego                | COMPLETE |
+| DAC8 (krypto)     | DAC8 implementation                  | dac8_report_generator.rego                | COMPLETE |
+| ViDA              | VAT in Digital Age (2030)            | vida_drr_full.rego                        | COMPLETE |
+| CBAM              | Carbon Border Adjustment             | cbam_full.rego                            | COMPLETE |
+| Post-Brexit       | UK-TCA                              | post_brexit.rego                          | COMPLETE |
+| Usługi UE          | Art. 28a–28o VAT                    | crossborder.rego, micro/crossborder       | COMPLETE |
+| OSS/IOSS          | One-Stop-Shop                       | crossborder.rego                          | COMPLETE |
+
+Pokrycie: 12 obszarów, 30+ plików .rego. Wszystkie priorytetowe obszary pokryte.
+
+⸻
+
+3. ANALIZA TERMINÓW I SANKCJI
+
+WDT — limit 3 miesięcy na zgromadzenie dokumentów (Art. 13 ust. 4 VAT)
+MDR — 30 dni na zgłoszenie do Szefa KAS (Art. 86a §5 OrdPU)
+TP — dokumentacja do końca 10. miesiąca po zakończeniu roku (Art. 23zf PIT)
+CFC — deklaracja PIT-CFC do 30 kwietnia
+Exit tax — odsetki naliczane od dnia przeniesienia
+DAC8 — zgłoszenia roczne do 31 stycznia
+
+Sankcje:
+- Niezłożenie MDR: 21 600 PLN (kwalifikowane 43 200 PLN)
+- Brak dokumentacji TP: sankcja 10-20% × korekta dochodu
+- Niezłożenie PIT-CFC: 75 000 PLN
+- Brak dokumentów WDT: utrata stawki 0% (→ 23% VAT + odsetki)
+
+⸻
+
+4. LUKI I ROZWIĄZANIA (5 luk, ZAMKNIĘTE)
+
+Luka 1: Brak natywnych testów Rego crossborder → test_native_crossborder.rego (14 testów)
+Luka 2: Brak Law Radar crossborder → monitoring ISAP VAT/PIT/OrdPU
+Luka 3: Niepełne _legal_basis TP/MDR → uzupełnione Dz.U.
+Luka 4: Brak auto-harmonizacji kursów NBP → fx_rate_engine.py (rozszerzony)
+Luka 5: Brak testów dla MDR hallmarks → testy hallmarks A-E
+
+⸻
+
+5. ROZWIĄZANIA ENTERPRISE (8)
+
+5.1. Natywne testy crossborder — test_native_crossborder.rego
+5.2. Auto-detektor WDT z trackerem 3-miesięcznym
+5.3. Auto-klasyfikator MDR hallmarks
+5.4. Auto-generator dokumentacji TP
+5.5. CFC auto-klasyfikator
+5.6. Kalkulator exit tax z odsetkami
+5.7. Harmonizator kursów NBP
+5.8. Decision Certificate crossborder
+
+⸻
+
+6. GENIALNE POMYSŁY (12)
+
+P1-P12 zaprojektowane: auto-detektor WDT, auto-klasyfikator MDR, auto-generator
+TP, CFC auto-klasyfikator, kalkulator exit tax, harmonizator kursów, symulator
+sprzedaży UE, Decision Certificate crossborder, tracker DAC6/DAC8, post-Brexit,
+konsultant ViDA, monitor CBAM.
+
+⸻
+
+7. MAPA DROGOWA 13-24
+
+| 13 | RYCZAŁT | 14 | PCC | 15 | KSeF/JPK | 16 | RODO/AML | 17 | HYPER |
+| 18 | AI | 19 | AUTOMATYZACJA | 20 | OPA SYSTEM | 21 | TESTY CI |
+| 22 | POLICIES | 23 | DOKUMENTACJA | 24 | FORTECA |
+
+⸻
+
+8. WPŁYW NA INNE CZĘŚCI
+
+VAT — WDT/WNT/eksport/import, OSS/IOSS
+PIT — CFC, exit tax, TP
+KKS — sankcje MDR, niezłożenie dokumentacji
+Księgowość — kursy NBP, PKPiR transakcji zagranicznych
+KSeF — e-faktury transgraniczne, ViDA
+
+⸻
+
+9. PODSUMOWANIE
+
+5 luk zamkniętych, 14 testów natywnych, 8 rozwiązań Enterprise, 12 obszarów COMPLETE.
+WDROŻONY_100. Następny: PROMPT 13 — RYCZAŁT I CYKL ŻYCIA JDG.
+═══════════════════════════════════════════════════════════════════════════════

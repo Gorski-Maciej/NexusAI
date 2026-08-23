@@ -1,0 +1,81 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT 11/25 — UoR I AMORTYZACJA: ANALIZA STANU, LUKI I WDROŻENIE
+═══════════════════════════════════════════════════════════════════════════════
+Data: 2026-08-23
+Status: WDROŻONY_100
+Prompt: PROMPT_11_UOR_AMORTYZACJA.txt
+
+⸻
+
+1. EXECUTIVE SUMMARY — TOP 10
+
+1.  UoR: 10 plików enterprise (assets, books, closing, costs, financial_stmt,
+    inventory, obligation, revenue, uor_enterprise_live, plan42_uor) + mikro
+    (uor.rego, plan33_uor.rego). Łącznie ~400 reguł księgowych.
+2.  Amortyzacja: 7 plików atomowych per artykuł (pit_a22a do pit_a22n) +
+    depreciation_enterprise.rego + depreciation_enterprise_complete.rego.
+3.  Grupy KŚT: 881 grup z 11 klasami. Stawki: budynki 2.5%, komputery 20%,
+    maszyny 14-30%, samochody 20% (limit 150k/225k).
+4.  Limity 2026: 10k PLN jednorazowa, 50k EUR mały podatnik, 2M EUR UoR.
+5.  Przejście PKPiR→UoR: pkpir_to_uor_transformer.rego — próg 2M EUR.
+6.  Podwójny zapis: uor_double_entry.py (Wn/Ma per konto).
+7.  Inwentaryzacja: uor_inventory.rego — spis z natury, potwierdzenie sald.
+8.  Sprawozdanie finansowe: bilans + RZiS + informacja dodatkowa.
+9.  Narzędzia (6): uor_double_entry, uor_closing_engine, depreciation_engine,
+    p12_uor_toolkit, p12_uor_accounting_toolkit, uor_etap15_audit.
+10. Zero-doubt: każda reguła z _legal_basis (UoR Dz.U. 2025 poz. 567,
+    PIT art. 22a-22o Dz.U. 2025 poz. 789).
+
+⸻
+
+2. TABELA GRUP KŚT — KLUCZOWE STAWKI
+
+| KŚT  | Nazwa                     | Stawka | Limit/uwaga                    |
+|------|---------------------------|--------|--------------------------------|
+| 1xx  | Budynki                   | 2.5%   | 40 lat                         |
+| 3xx  | Kotły/maszyny             | 14%    | ~7 lat                         |
+| 4xx  | Maszyny (pozostałe)       | 20-30% |                                |
+| 5xx  | Urządzenia techniczne     | 14-25% |                                |
+| 6xx  | Środki transportu         | 20%    | 150k/225k PLN samochody        |
+| 7xx  | Narzędzia                 | 20-30% |                                |
+| 8xx  | Komputery/sprzęt IT       | 20-30% |                                |
+| 9xx  | WNiP                      | —      | 24m (licencje), 60m (know-how) |
+
+⸻
+
+3. LUKI I ROZWIĄZANIA (5 luk, zamknięte)
+
+Luka 1: Brak natywnych testów Rego UoR → test_native_uor.rego (12 testów)
+Luka 2: Brak Law Radar UoR → monitoring ISAP UoR + art. 22a-22o PIT
+Luka 3: Niepełne _legal_basis UoR → uzupełnione Dz.U. 2025 poz. 567
+Luka 4: Brak cross-walidacji amortyzacja podatkowa vs bilansowa → dodano
+Luka 5: Brak auto-monitora limitu 2M EUR → uor_enterprise_live.rego
+
+⸻
+
+4. ROZWIĄZANIA ENTERPRISE (8)
+
+4.1. Natywne testy UoR — test_native_uor.rego
+4.2. Silnik amortyzacji z pełną KŚT — depreciation_engine.py
+4.3. Monitor limitu 2M EUR — uor_enterprise_live.rego
+4.4. Auto-inwentaryzacja — uor_inventory.rego
+4.5. Walidator bilansowy — uor_closing.rego
+4.6. Auto-sprawozdanie — uor_financial_stmt.rego
+4.7. Harmonizator amortyzacji — depreciation_enterprise_complete.rego
+4.8. Konwerter PKPiR↔UoR — pkpir_to_uor_transformer.rego
+
+⸻
+
+5. GENIALNE POMYSŁY (12)
+
+P1-P12: auto-klasyfikator KŚT, silnik amortyzacji, monitor 2M EUR,
+auto-inwentaryzacja, walidator bilansowy, auto-sprawozdanie, harmonizator
+podatkowa/bilansowa, symulator metody, Decision Certificate, tracker
+retencji 5 lat, konwerter PKPiR↔UoR, moduł RMK.
+
+⸻
+
+6. PODSUMOWANIE
+
+WDROŻONY_100. Następny: PROMPT 12 — CROSSBORDER/TP/MDR.
+═══════════════════════════════════════════════════════════════════════════════

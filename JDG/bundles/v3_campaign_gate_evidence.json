@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0.0",
+  "report": "V3_CAMPAIGN_GATE",
+  "status": "W_TRAKCIE_KAMPANII",
+  "gates": {
+    "prompts_present": true,
+    "registry_valid": true,
+    "reports_for_completed_present": true,
+    "summary_consistent": true,
+    "all_20_parts_zweryfikowane": false
+  },
+  "gate_summary": "4/5",
+  "parts_done": 0,
+  "parts_total": 20,
+  "missing_reports": [],
+  "generated_at": "2026-08-23T19:16:34.293734+00:00"
+}

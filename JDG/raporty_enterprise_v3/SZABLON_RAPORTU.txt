@@ -1,0 +1,63 @@
+WZORCOWY SZABLON RAPORTU - KAMPANIA V3 (JDG/raporty_enterprise_v3/)
+======================================================================
+
+Ten plik definiuje DOKLADNA strukture kazdego raportu TXT generowanego przez
+GLM 5.2 po zakonczeniu danej czesci kampanii (01-20). Nazwa pliku raportu musi
+byc:  JDG/raporty_enterprise_v3/NN_NAZWA.txt
+(np. czesc 02 -> raport 02_VAT.txt, czesc 07 -> 07_ORDYNACJA.txt).
+
+=======================================================================
+STRUKTURA RAPORTU (sekcje A-J, minimum 12 stron tekstu):
+=======================================================================
+
+A. METRYKI PRZED/PO I PODSUMOWANIE
+   - liczba plikow regul przed/po, liczba rule_id przed/po,
+   - liczba pakietow podpietych do orkiestratora przed/po,
+   - wynik opa check / opa test / pytest przed i po,
+   - werdykt ogolny: co sie zmienilo, czy zgodnosc z V1/V2.
+
+B. AUDYT - KAZDY PLIK Z LISTY
+   Sekcja per plik (format):
+   [PLIK: JDG/...]
+   - co robi, jakie rule_id zawiera, legal_basis,
+   - co DZIALA (z dowodem: test/uruchomienie),
+   - co NIE dziala (blad, luka, stemp),
+   - dlaczego (przyczyny u zrodla),
+   - rekomendacja: naprawic / przepisac / usunac / polaczyc z innym.
+
+C. LUKI / BLEDY / NIEDOCIAGNIECIA (minimum 20 pozycji)
+   Format: [PRIORYTET: krytyczne/wazne/kosmetyczne] ID:
+   - opis luki, plik, przyczyna, skutek, propozycja naprawy.
+
+D. ROZWIAZANIA ENTERPRISE - KOD WDROZONY W JDG
+   - kazda zmiana: plik, rule_id, package, legal_basis, valid_from/to,
+     progi (ZERO HARDCODE - wszystko przez data.thresholds),
+   - fragmenty kodu Rego/Python (kompletne, wklejane do pliku),
+   - sposob weryfikacji (test).
+
+E. INNOWACJE - INNOWACYJNE ULEPSZENIA WYPRZEDZAJACE PROFESJONALISTOW
+   - opis pomyslu, jak usprawnia system, jak jego wdrozenie zmienia
+     architekture,
+   - zgodnosc z V1 (zasady 1-10) i V2 (filary F1-F6).
+
+F. TESTY - KOMUNIKATY I WYNIKI
+   - logi z: opa check -b, opa test, pytest -q, bramki JDG/tools,
+   - liczby: ile testow nowych, ile przechodza, czas trwania.
+
+G. SPOJNOSC MIEDZYCZESCIOWA
+   - czesci, z ktorymi czesc koresponduje (z rejestru:
+     JDG/bundles/enterprise_v3_registry.json),
+   - czy zmiany nie lamia ich kontraktow, jak sie komunikuja.
+
+H. DECYZJE CZLOWIEKA
+   - pytania wymagaja decyzji czlowieka (np. wybor formy opodatkowania),
+   - otwarte kwestie prawne (interpretacje, rozporzadzenia w toku).
+
+I. REJESTR ZMIANY (dopisz do bundles/enterprise_v3_registry.json)
+   - zaktualizowany blok czesci: stan, zgodnosc_v1v2, liczba_plikow,
+     lista_zmian, luki_pozostale, raport_txt.
+
+J. HASLO KONCOWE (dokladnie, w osobnej linii):
+   V3-{NN}_KOMPLETNE - SPOJNOSC ZAREJESTROWANA - CONTEXT_RESET_REQUIRED - wyczysc okno kontekstowe
+
+================= KONIEC SZABLONU ===================================

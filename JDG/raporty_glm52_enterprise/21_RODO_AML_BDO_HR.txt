@@ -1,0 +1,111 @@
+====================================================================================================
+RAPORT WDROŻENIOWY GLM52 ENTERPRISE — ETAP 21/29
+RODO / AML-CBDD / BDO / ŚRODOWISKO / PRACODAWCA / HR / PPK / PFRON
+====================================================================================================
+
+IDENTITY
+--------
+Etap: ETAP_21
+Prompt: JDG/prompty_glm52_enterprise/PROMPT_16_RODO_AML_BDO_HR.txt
+Raport: JDG/raporty_glm52_enterprise/21_RODO_AML_BDO_HR.txt
+Audytor: JDG/tools/rodo_aml_bdo_hr_etap21_audit.py
+Bundle: JDG/bundles/rodo_aml_bdo_hr_etap21_audit_state.json
+Pakiet wdrożeniowy: JDG/rules/rodo_aml_bdo_hr_etap21_v1.rego
+Status raportu: WDROZONY_100
+
+SCOPE
+-----
+Domknięto kanoniczną warstwę evidence-first nad P15/P16/R14/P19. Zakres
+obejmuje privacy-by-design, podstawy i zgody RODO, retencję, prawa osób,
+naruszenia, AML/CBDD, UBO, screening i STR/GIIF, BDO/KPO/EWC/transport,
+dokumentację zatrudnienia, płace, PPK i PFRON.
+
+IMPLEMENTED PHASES
+------------------
+1. RODO — podstawa, cel, kategorie danych, zgoda, minimalizacja, ograniczenie
+   celu, redakcja PII, retencja, prawa osób i tracker naruszeń 72h.
+2. AML/CBDD — UBO z progiem udziałów i źródłem, poziom CDD, screening,
+   próg transakcji, wykrywanie STR i dowód referencji GIIF.
+3. BDO — rejestracja, numer, KPO, kod EWC z weryfikacją, transport odpadów,
+   przewoźnik i ewidencja masy/jednostki.
+4. HR — dokument zatrudnienia, okres płacowy, uzgodnienie ZUS/PIT,
+   status PPK i obowiązek PFRON zależny od liczby pracowników.
+5. Evidence and safety — źródła, legal nodes, wersje faktów/progów/prawa,
+   wykrywanie stubów, manual approval, guidance-only i BLOCK_AND_ALERT/
+   TRIAGE_QUEUE z SUGGEST/no_auto_post.
+
+FILES
+-----
+| Plik | Status |
+|------|--------|
+| prompty_glm52_enterprise/PROMPT_16_RODO_AML_BDO_HR.txt | PRESENT |
+| rules/rodo.rego | PRESENT |
+| rules/rodo_extended.rego | PRESENT |
+| rules/micro/rodo/rodo.rego | PRESENT |
+| rules/micro/rodo/rodo_erasure.rego | PRESENT |
+| rules/micro/rodo/rodo_podprocesorzy.rego | PRESENT |
+| rules/micro/aml/aml.rego | PRESENT |
+| rules/micro/aml/aml_cbdd.rego | PRESENT |
+| rules/compliance/aml_enterprise.rego | PRESENT |
+| rules/environmental.rego | PRESENT |
+| rules/environmental/bdo_enterprise.rego | PRESENT |
+| rules/micro/bdo/bdo_ewidencja.rego | PRESENT |
+| rules/employer.rego | PRESENT |
+| rules/ppk_pfron_enterprise.rego | PRESENT |
+| rules/p19_hr_swiadczenia_innovations_v9.rego | PRESENT |
+| rules/p16_rodo_aml_security_innovations_v9.rego | PRESENT |
+| rules/r14_rodo_aml_bdo_innovations_v9.rego | PRESENT |
+| tools/rodo_aml_security_auditor.py | PRESENT |
+| tools/bdo_environment_auditor.py | PRESENT |
+| tools/hr_swiadczenia_auditor.py | PRESENT |
+| docs/RODO_AML_BEZPIECZENSTWO_P16.md | PRESENT |
+| docs/SRODOWISKO_BDO_P15.md | PRESENT |
+| docs/HR_SWIADCZENIA_P19.md | PRESENT |
+| docs/Bbb | PRESENT |
+| rules/rodo_aml_bdo_hr_etap21_v1.rego | PRESENT |
+
+GATES
+-----
+| Gate | Result |
+|------|--------|
+| scope_files_present | PASS |
+| package_structure | PASS |
+| rodo_privacy_by_design | PASS |
+| aml_ubo_cbdd_str | PASS |
+| bdo_kpo_ewc_transport | PASS |
+| hr_ppk_pfron | PASS |
+| evidence_temporal_versions | PASS |
+| legal_traceability | PASS |
+| manual_compliance_guidance | PASS |
+| stub_detection_fail_closed | PASS |
+| safe_routing | PASS |
+| thresholds_externalized | PASS |
+| orchestrator_wiring | PASS |
+| pytest_contract | PASS |
+| native_rego_contract | PASS |
+| report_present | PASS |
+
+SAFETY CONTRACT
+---------------
+[POTWIERDZONE_KODEM] Brak podstawy, zgody, minimalizacji, retencji, dowodu
+naruszenia, UBO/CBDD/STR, rejestracji BDO, KPO/EWC, dokumentu HR lub wersji
+blokuje wynik fail-closed.
+[POTWIERDZONE_KODEM] Raporty AML/RODO wymagają manual approval. Wynik nie jest
+decyzją podatkową ani kadrową; pakiet dostarcza wyłącznie compliance guidance.
+[POTWIERDZONE_KODEM] Pakiet nie wysyła STR/GIIF, KPO, zgłoszeń BDO, wypłat ani
+nie publikuje PII. `auto_action=NONE` i `no_auto_post=true`.
+[OGRANICZENIE] Bramka techniczna nie zastępuje aktualnej ustawy, rejestru,
+listy sankcyjnej, UODO/GIIF/BDO, dokumentacji pracowniczej ani porady eksperta.
+
+VERIFICATION
+------------
+Evidence: 16/16 gates.
+Status: WDROZONY_100
+Produkcja: NOT_CERTIFIED
+
+STATUS
+------
+Status raportu: WDROZONY_100
+Następny raport: Prompt 17 / JDG/prompty_glm52_enterprise/PROMPT_17_HYPER_PLAN45.txt
+
+ETAP_21_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAPEM_22.

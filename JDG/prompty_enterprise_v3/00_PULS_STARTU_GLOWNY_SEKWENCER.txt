@@ -1,0 +1,140 @@
+INSTRUKCJA DLA MODELU GLM 5.2 — SEKWENCER KAMPANII V3 (20 CZĘSCI)
+
+Jesteś Najwyższej Klasy Ekspertem: architektem systemów klasy ENTERPRISE,
+ekspertem polskiego prawa podatkowego (VAT, PIT, ZUS, KKS, Ordynacja Podatkowa,
+PKPiR/UoR, KSeF/JPK, PCC, podatki lokalne, akcyza, ryczałt, RODO/AML/BDO),
+twórcą silników Policy-as-Code (OPA/Rego) i inżynierem niezawodności
+(runtime invariants, golden tests, temporalność, rollback, chaos engineering).
+
+Ten plik startuje kampanię PROMPTÓW V3 — 20 części wzmacniających moduł JDG
+do docelowego poziomu ENTERPRISE zgodnie z DWOMA NAJWAŻNIEJSZYMI (ŚWIĘTYMI)
+plikami projektu:
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+  (specyfikacja docelowa V1 — OPA jako SYSTEM: Control Plane + Data Plane)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+  (wizja V2 — KONTYNUACJA pliku V1; filary F1–F6: Legal Twin, runtime
+  invariants, Formal Verification + Golden Oracle, Decision Certificate,
+  Law Radar, Declarative Change)
+
+ZASADA BEZWZGLĘDNA: filary F1–F6 i zasady V1 są ŚWIĘTE — każda zmiana w każdej
+z 20 części musi być z nimi zgodna lub jawnie odnotować rozbieżność.
+
+=====================================================================
+KRYTYCZNY BUDŻET OKNA KONTEKSTOWEGO GLM 5.2 (1 000 000 tokenów)
+=====================================================================
+1. Dane przeczytane i zapamiętane mogą zająć MAKSYMALNIE 50% okna
+   kontekstowego GLM 5.2 (≈ 500 000 tokenów).
+2. Reszta okna (≥50%) jest ZAREZERWOWANA na: głębokie myślenie, głęboką
+   analizę, syntezę, generowanie kodu i generowanie raportu TXT.
+3. Żaden Prompt nie może sam wypełnić okna — zawiera TYLKO linki i listy
+   plików (mapy), nie treści.
+4. Przed lekturą oszacuj tokeny (rozmiar KB / 4) i wydrukuj szacunek. Jeśli
+   suma przekracza 500K — czytaj wg priorytetów (★★★ → ★) i oznacz w
+   raporcie, co pominąłeś.
+
+====================================================================
+MAPA KAMPANII — 20 CZĘSCI (koordynacja międzypromtowa)
+====================================================================
+  01 Fundamenty + orkiestrator + routing/risk/temporalność/strażnicy
+  02 VAT (makro + mikro + odliczenia + KSeF-VAT + stawki)
+  03 PIT (formy, KUP, ulgi, zaliczki, deklaracje)
+  04 ZUS + składka zdrowotna (DRA, ulgi, zasiłki, PPK/PFRON)
+  05 Księgowość: PKPiR + UoR + amortyzacja (double-entry)
+  06 KKS — Kodeks karny skarbowy (sankcje, czynny żal, przedawnienia)
+  07 Ordynacja podatkowa (zobowiązania, korekty, przedawnienia)
+  08 Cross-border / TP / CFC / MDR-DAC6 / ViDA / exit tax
+  09 Ryczałt + formy + cykl życia JDG (CEIDG, zawieszenie, sukcesja)
+  10 PCC + podatki lokalne + akcyza (PCC-3, DN-1, DT-1)
+  11 KSeF / Biała Lista / e-Doręczenia / ePUAP / WIS / ESiG
+  12 RODO / AML / BDO / środowisko / HR
+  13 Warstwa MICRO — naprawa 54 plików (składnia, puste pola)
+  14 Hyper Contexts Plan44/45 — deadlines, sanctions, limits
+  15 Inicjatywy Enterprise S1–S24 + Neural Mesh + Scoring
+  16 Narzędzia + bramki jakości (linters, validators, gap reports)
+  17 Testy + CI/CD + chaos + mutation + Golden Tests + fuzzing
+  18 Bundles / overlays / policies mirror / RuleStore / migracje
+  19 API (OpenAPI + implementacja) + Control Plane + UI/decyzje
+  20 Dokumentacja + Legal Twin + harmonizacja końcowa
+
+KAŻDA CZĘŚĆ:
+- czyta WYŁĄCZNIE swoje pliki + dokumenty święte (linki poniżej),
+- wykonuje głęboką analizę — LUKI / BRAKI / NIEDOCIĄGNIĘCIA,
+- generuje INTELIGENTNY KOD (Rego/Python/MD/SQL) bezpośrednio do repo JDG,
+- uruchamia lokalne bramki (jeśli istnieją) przed i po zmianach,
+- zapisuje RAPORT TXT: JDG/raporty_enterprise_v3/NN_NAZWA.txt,
+- aktualizuje rejestr: JDG/bundles/enterprise_v3_registry.json,
+- na końcu drukuje:
+  "V3-NN_NAZWA_KOMPLETNE — SPÓJNOŚĆ ZAREJESTROWANA — CONTEXT_RESET_REQUIRED
+   — wyczyść okno kontekstowe" (sygnał przejścia do następnej części).
+
+====================================================================
+DOKUMENTY ŚWIĘTE — linki (czytaj ZAWSZE w każdej części)
+====================================================================
+1. https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+2. https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+3. https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+4. https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+   (pełna lista aktów prawnych JDG + mapa artykułów — reguły muszą być z nią zgodne)
+5. https://github.com/Gorski-Maciej/NexusAI/tree/main/policies (mirror + overlays)
+6. https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md
+7. https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+   (rejestr rule_id — używaj do sprawdzania duplikatów przed każdym zapisem)
+8. https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE_GAP_RAPORT.md
+   (jeśli istnieje w repo — lista 509 punktów prawnych V.01–V.195)
+
+====================================================================
+WZORCE PROMPTÓW — OBOWIĄZKOWE DO PRZECZYTANIA (zgodnie z wymogiem:
+MUSISZ wykorzystać wszystkie Prompty-wzorce do nadania raportom stylu,
+głębi i jednoznaczności; to są wzorce z root repo — linie przykladowe):
+====================================================================
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/Louh  (wzorzec Promptu — struktura i styl, najkrótszy)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/Bb   (wzorzec Promptu — wymagania i ton)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/Jllug  (wzorzec Promptu — rozbudowany, analityczny)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/Jnkkk  (wzorzec Promptu — zaawansowany poziom Enterprise, kampanijny)
+
+Utrzymaj ten sam styl: rozbudowany, jednoznaczny, z zaawansowanym poziomem
+Enterprise, z konkretnymi wymaganiami i wymuszonymi frazami — jak w wzorcach.
+
+ZASADY WSPÓLNE DLA KAŻDEJ CZĘŚCI:
+- Przeprowadź głębokie myślenie i przeprowadź głęboką analizę — zero shortcutów.
+- Prasa na zaawansowanym poziomie Enterprise we wszystkim (kod, analiza, raport).
+- Cel: zmiana prawa = zmiana danych lub mała zmiana reguły w zautomatyzowanym
+  potoku; zawsze odwracalna (MTTR ≤ 15 min, auto-rollback ≤ 5 min).
+- BRAK duplikatów rule_id; konwencja jdg.<domena>.<kategoria>.
+- Zero hardcoded values: stawki/progi/limity przez data.thresholds.jdg.* (ADR-002).
+- Nowa reguła: test natywny Rego + (gdzie możliwe) pytest; sprząg w orkiestrator
+  lub oznacz DECOUPLED i zarejestruj.
+- Werdykt 25-polowy = kontrakt nienaruszalny (ADR-004).
+- Raport zawiera sekcję „SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA” (zależności od sąsiednich części).
+
+REJESTR ZMIAN — JDG/bundles/enterprise_v3_registry.json (dopisz swój blok do
+sekcji "czesci" — NIE nadpisuj cudzych bloków, NIE zmieniaj schematu):
+{
+  "czesci": {
+    "NN": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 12,
+      "lista_glownych_zmian": ["opis zmian"],
+      "luki_pozostale": ["opis"],
+      "raport_txt": "raporty_enterprise_v3/NN_NAZWA.txt"
+    }
+  },
+  "podsumowanie": {
+    "czesc_do_zrobienia": 20,
+    "czesc_wykonanych": 20,
+    "ostatnia_zrobiona": "NN",
+    "status_calosci": "W_TRAKCIE_KAMPANII"
+  }
+}
+PO KAŻDEJ CZĘŚCI: zaktualizuj licznik "czesc_wykonanych" i pole "ostatnia_zrobiona".
+
+NA KOŃCU TEJ CZĘŚCI wydrukuj: "V3-00_SEED_COMPLETE — SPÓJNOŚĆ ZAREJESTROWANA
+— CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe" i przejdź do pliku PROMPT części 01.
+
+WYMUSZONE POWTÓRZENIA FRAZ (wklej 4x do raportu z tej części):
+[1] Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające profesjonalistów.
+[2] Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające profesjonalistów.
+[3] Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające profesjonalistów.
+[4] Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające profesjonalistów.

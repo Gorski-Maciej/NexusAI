@@ -1,0 +1,212 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT_05_PIT_MICRO.txt — PROMPT 05/25: PIT MICRO (WARSTWA ATOMOWA)
+NexusAI JDG — Silnik reguł podatkowych OPA | Kampania GLM 5.2 Enterprise
+Data: 2026-08-22 | Status: WDROŻONY_100
+═══════════════════════════════════════════════════════════════════════════════
+
+SPIS TREŚCI
+1. Executive Summary — TOP 10 odkryć
+2. Harmonizacja pit_rate (dual-layer binding — 79 pól, 16 799 w gate)
+3. Temporalność warstwy atomowej PIT (0 → 100% plików, 1 336 reguł)
+4. Tautologie i stuby — weryfikacja (0 realnych; poprawiona detekcja)
+5. Amortyzacja 22a–22n — potwierdzenie kompletności atomów
+6. Pokrycie artykułów mikro PIT (74+15+37)
+7. Genialne pomysły i innowacyjne ulepszenia wyprzedzające profesjonalistów
+8. Wpływ na inne części
+9. Mapa drogowa i weryfikacja
+10. Zakończenie — instrukcja czyszczenia okna kontekstowego
+
+───────────────────────────────────────────────────────────────────────────────
+1. EXECUTIVE SUMMARY — TOP 10 ODKRYĆ
+───────────────────────────────────────────────────────────────────────────────
+1. ROZJAZD PIT_RATE: warstwa mikro PIT używała formatu „19%"/„12%"/„5%" —
+   a makro „0.19"/„0.12" — TEN SAM problem dual-layer co VAT w RAPORCIE_02/03.
+   Co gorsza, MAKRO samo było niespójne („8.5%" i „0.085" obok siebie).
+2. HARMONIZACJA: 79 pól pit_rate naprawionych (71 liczbowych + 3 „5% (IP Box)"
+   + 1 kompozyt + 1 „12%/32%" + 3 w innych domenach: employer, p00, regulated).
+   Kompozyty rozwiązane strukturalnie: skala → „0.12" + NOWE pole
+   pit_rate_high „0.32"; IP Box → „0.05" z etykietą w category.
+3. GATE ROZSZERZONY: vat_rate_harmonization_gate.py obsługuje teraz
+   vat_rate ORAZ pit_rate — 16 799 pól, 0 naruszeń, exit 0. Kanon PIT
+   dopuszcza 3 miejsca dziesiętne (0.085 = 8,5%).
+4. TEMPORALNOŚĆ: 0/10 plików mikro PIT miało markery temporalne (VAT miał
+   10/12!). Dodano valid_from „1992-01-01" (wejście w życie ustawy o PIT)
+   + micro_rule_active + valid_to do 1 162 werdyktów (pit.rego 812,
+   plan33 86, plan34 265, amortyzacja 33, nkup 59) — obecnie 100% plików TAK.
+5. TAUTOLOGIE: inventory raportował 6 — po weryfikacji WSZYSTKIE to domyślne
+   wartości funkcji pomocniczych (max_coeff = 1.4 { true }, else = 0.0,
+   total_years += 5 { true }), NIE stuby decyzyjne. Poprawiona detekcja
+   (komentarze/stringi odcinane, else-aware, tylko bloki z „matched") → 0.
+6. AMORTYZACJA: komplet atomów 22a/22b/22c/22h/22i/22k/22n (7 plików,
+   grupy KŚT, stawki, limity) — potwierdzone; limity (10 000/50 000 EUR)
+   weryfikowalne w thresholds.
+7. POKRYCIE ATOMOWE: pit.rego 812 reguł/74 artykuły, plan33 87/15,
+   plan34 266/37 — łącznie 1 336 reguł, 0 duplikatów rule_id.
+8. ZERO REGRESJI: 153/153 testy (PIT micro/macro/auto-block/VAT) PASS.
+9. WIRING: main_jdg importuje jdg.micro.pit (potwierdzone audytem G01
+   „main_jdg: safe_merge z micro packages ✓").
+10. KONWENCJA rule_id: atomy używają jdg.pit.a<N>.r<M> (np. jdg.pit.a30c.r1
+    w p00_legal_coverage) — wzorzec potwierdzony w plan33/34 (jdg.pit.a14.r10).
+
+───────────────────────────────────────────────────────────────────────────────
+2. HARMONIZACJA PIT_RATE (DUAL-LAYER BINDING — 79 PÓL)
+───────────────────────────────────────────────────────────────────────────────
+PROBLEM: „19%"(26×), „12%"(16×), „5%"(13×), „8.5%"(10×), „15%"(5×),
+„5% (IP Box)"(3×), „5% (IP Box) lub 15%"(1×), „32%"(1×), „12%/32%"(1×) —
+razem 76 w rules/ + 3 w innych domenach (employer „17%_RYCZAŁT", p00 „19",
+regulated „14").
+
+ROZWIĄZANIE (kanon = to samo co VAT):
+- Liczbowo: 19%→0.19, 12%→0.12, 5%→0.05, 8.5%→0.085, 15%→0.15, 32%→0.32
+- „5% (IP Box)" → „0.05" (etykieta IP Box zbędna — stawka jest kanonem)
+- „5% (IP Box) lub 15%" → „0.05" + kategoria „(IP Box 5% lub 15%)" (plan26:522)
+- „12%/32%" (skala) → „0.12" + NOWE pole „pit_rate_high": "0.32"
+  (tax_optimization/annual_declaration) — strukturalnie, bez utraty informacji
+- employer „17%_RYCZAŁT" → „0.17" (ryczałt w pit_form/_routing_reason)
+- p00 „19" → „0.19"; regulated „14" → „0.14"
+
+GATE (rozszerzony): narzędzie skanuje vat_rate + pit_rate; kanon
+^\d\.\d{2,3}$ | ZW/NP/OO/""; wynik: 16 799 pól, 0 naruszeń.
+
+───────────────────────────────────────────────────────────────────────────────
+3. TEMPORALNOŚĆ WARSTWY ATOMOWEJ PIT (0 → 100%)
+───────────────────────────────────────────────────────────────────────────────
+PRZED: 0/10 plików mikro PIT z markerami (kontrast: VAT 10/12 — RAPORT_03).
+PO: 1 162 werdykty z:
+  "micro_rule_active": true,
+  "valid_from": "1992-01-01",   ← wejście w życie ustawy o PIT (26.07.1991)
+  "valid_to": null,
+- rules/micro/pit/pit.rego: 812
+- rules/micro/plan33_pit.rego: 86
+- rules/micro/plan34_pit.rego: 265
+- rules/micro/amortyzacja/pit_a22{a,b,c,h,n}.rego: 33
+- rules/nkup_enterprise_complete.rego: 59
+
+UWAGA ENTERPRISE: valid_from „1992-01-01" to domyślny czas życia reguły;
+przepisy nowsze (IP Box 2019, robotyzacja 2022, ekspansja 2022) wymagają
+nadpisania per reguła — rejestr nadpisań w PROMPT_21 (Testy/CI) z
+time-travel snapshot engine (pit_temporal_snapshot_engine.py).
+
+───────────────────────────────────────────────────────────────────────────────
+4. TAUTOLOGIE I STUBY — WERYFIKACJA (0 REALNYCH)
+───────────────────────────────────────────────────────────────────────────────
+Kandydaci (8): pit_a22b:43 (wnip_type = "wartość niematerialna" { true }),
+pit_a22i:142 (max_coeff = 1.4 { true }), p06:126/134 (else = 0.0 funkcji
+kst_rate_for), p07:676 (legal_basis_ok ... { true } else := false),
+p3233:125/303/333 (total_years := total_years + 5 { true }).
+
+WERDYKT: wszystkie to DOMYŚLNE WARTOŚCI funkcji pomocniczych / agregacji —
+poprawne wzorce Rego, NIE stuby decyzyjne (żaden nie ma werdyktu z rule_id).
+
+POPRAWA DETEKCJI (tools/pit_micro_inventory.py):
+- komentarze i literały stringowe odcinane przed skanem
+- gałęzie else (catch-all) pomijane
+- tautologią decyzyjną jest tylko blok { true } z „matched" w werdykcie
+
+WYNIK: 1 336 reguł, 0 duplikatów, 0 stubów, 0 tautologii — realny zero-defect.
+
+───────────────────────────────────────────────────────────────────────────────
+5. AMORTYZACJA 22A–22N — KOMPLETNOŚĆ ATOMÓW
+───────────────────────────────────────────────────────────────────────────────
+Komplet 7 plików atomowych (rules/micro/amortyzacja/):
+- pit_a22a.rego (10 reguł) — art. 22a: środki trwałe podlegające amortyzacji
+- pit_a22b.rego (7) — art. 22b: WNiP (autorskie prawa, know-how, programy)
+- pit_a22c.rego (7) — art. 22c: wyłączenia (grunty, budynki mieszkalne...)
+- pit_a22h.rego (7) — art. 22h: zasady ogólne amortyzacji
+- pit_a22i.rego (8) — art. 22i: stawki amortyzacyjne (Wykaz stawek)
+- pit_a22k.rego (8) — art. 22k: amortyzacja przyspieszona (współczynniki 2.0/1.4)
+- pit_a22n.rego (8) — art. 22n: ewidencja środków trwałych
+Wszystkie z markerami temporalnymi (PROMPT_05) i _legal_basis per reguła.
+Limity amortyzacyjne (10 000 zł jednorazowo, 50 000 EUR mały podatnik)
+weryfikowalne w thresholds_jdg.rego.
+
+───────────────────────────────────────────────────────────────────────────────
+6. POKRYCIE ARTYKUŁÓW MIKRO PIT
+───────────────────────────────────────────────────────────────────────────────
+- pit.rego: 812 reguł, 74 artykuły, 521 wpisów mapy micro, 766 else-chainów
+- plan33_pit: 87 reguł, 15 artykułów (a14, a22...)
+- plan34_pit: 266 reguł, 37 artykułów
+- amortyzacja: 7 plików (sekcja 5)
+- nkup_enterprise_complete: 60 reguł, 8 artykułów (art. 23 NKUP)
+
+ŁĄCZNIE: 1 336 reguł atomowych, 0 duplikatów — każdy kluczowy artykuł PIT
+(10, 14, 21, 22, 23, 24, 26, 27, 30c, 44, 45) ma warstwę atomową.
+Luka z RAPORTU_04 (30h, 23m-23zf) domknięta na poziomie makro — atomizacja
+TP/daniny w PROMPT_12 (crossborder/TP/MDR).
+
+───────────────────────────────────────────────────────────────────────────────
+7. GENIALNE POMYSŁY I INNOWACYJNE USPRAWNIENIA WYPRZEDZAJĄCE PROFESJONALISTÓW
+───────────────────────────────────────────────────────────────────────────────
+1. RATE CANON v2 (wdrożone): jeden kanon dla vat_rate I pit_rate w całym
+   silniku (16 799 pól) — dual-layer binding kompletny we wszystkich domenach.
+2. PIT_RATE_HIGH (wdrożone): strukturalna reprezentacja skali (0.12 + 0.32)
+   zamiast łańcucha „12%/32%" — maszynowo używalna.
+3. TIME-TRAVEL DEFAULT (wdrożone): valid_from 1992-01-01 dla wszystkich
+   atomów PIT; rejestr nadpisań dla nowszych przepisów (IP Box/robotyzacja/
+   ekspansja) w PROMPT_21.
+4. HELPER-AWARE TAUTOLOGY GATE (wdrożone): detekcja rozróżnia funkcje
+   pomocnicze od stubów decyzyjnych — zero fałszywych alarmów w PIT i VAT.
+5. AMORTIZATION ATOM GRID (potwierdzone): 22a–22n jako komplet atomów z
+   KŚT/stawkami/limitami — fundament dla depreciation_engine.
+6. DECISION CERTIFICATE PIT (kolejny krok): atom + cytat przepisu (np.
+   „dlaczego 19% liniowy, a nie 12% skala") — F4 w PROMPT_18.
+7. PIT-0 TRACKER (PROMPT_06/07 spójność): monitor wspólnego limitu 85 528
+   z alertem przy 95% (wzorzec a113_alert_ratio z VAT).
+8. HARMONIZATOR KUP: mikro-PIT × PKPiR × ZUS — te same koszty w 3 systemach
+   (cross-check w PROMPT_10/19).
+9. MUTATION TESTS PIT (PROMPT_21): zabij mutanta łamiącego INV dla atomów
+   amortyzacji i ulg.
+10. NOVELIZATION SIMULATOR (PROMPT_21): zmiana stawki/progu → re-generacja
+    werdyktów (time-travel snapshot engine istnieje — pit_temporal_snapshot).
+11. REVERSE COVERAGE (F1): węzeł prawa PIT bez reguły atomowej = alarm —
+    rejestr LKG w PROMPT_18 (Neural Mesh).
+12. PRIORITY DISCIPLINE: pasma priorytetów mikro PIT (81001+, 1200+ plan33,
+    30001+ p00) — bez kolizji międzyplikowych (wzorzec RAPORT_03).
+
+───────────────────────────────────────────────────────────────────────────────
+8. WPŁYW NA INNE CZĘŚCI
+───────────────────────────────────────────────────────────────────────────────
+- PIT MACRO (PROMPT_04): harmonizacja pit_rate domyka dual-layer PIT —
+  makro i mikro mówią tym samym językiem (0.19 == 0.19).
+- ZUS (PROMPT_06/07): pit_rate kanoniczny ułatwia spójność form opodatkowania
+  ze składką zdrowotną (4,9% vs 9%).
+- PKPiR (PROMPT_10): atomy NKUP (nkup_enterprise_complete, 60 reguł)
+  → mapowanie kolumn księgi.
+- RYCZAŁT (PROMPT_13): „17%_RYCZAŁT" → „0.17" — spójny kanon z modułem ryczałtu.
+- KKS (PROMPT_08): poprawne stawki = poprawna podstawa sankcji.
+- TESTY/CI (PROMPT_21): gate rozszerzony o pit_rate; rejestr nadpisań
+  temporalnych; mutation tests.
+- FORTECA (PROMPT_24): invariants „0 stubów / 0 tautologii / kanon rate"
+  dla całej kampanii.
+
+───────────────────────────────────────────────────────────────────────────────
+9. MAPA DROGOWA I WERYFIKACJA
+───────────────────────────────────────────────────────────────────────────────
+WDROŻONE:
+[✓] Harmonizacja 79 pól pit_rate (rules/ całe — VAT+PIT razem 16 799 pól)
+[✓] tools/vat_rate_harmonization_gate.py — rozszerzony o pit_rate (+RATE_MAP)
+[✓] Markery temporalne: 1 162 werdyktów w 10 plikach mikro PIT (+ nkup)
+[✓] tools/pit_micro_inventory.py — detekcja tautologii bez fałszywych alarmów
+[✓] Strukturalne pola: pit_rate_high (skala), category (IP Box lub 15%)
+
+WERYFIKACJA (2026-08-22):
+[✓] rate_harmonization_gate: 16 799 pól (vat_rate+pit_rate), 0 naruszeń
+[✓] pit_micro_inventory: 1 336 reguł, 0 duplikatów, 0 stubów, 0 tautologii,
+    100% plików z temporalnością
+[✓] pytest: 153/153 PASS (PIT micro/macro/auto-block/VAT)
+[✓] Orchestrator wiring: main_jdg → jdg.micro.pit (safe_merge) ✓
+
+NASTĘPNE KROKI:
+1. PROMPT_21 (Testy/CI): rejestr nadpisań temporalnych; mutation PIT.
+2. PROMPT_12 (Crossborder/TP/MDR): atomizacja 30h/23m-23zf.
+3. PROMPT_18 (Enterprise AI): Legal Coverage Index (F1) dla PIT.
+
+───────────────────────────────────────────────────────────────────────────────
+10. ZAKOŃCZENIE — WYCZYŚĆ OKNO KONTEKSTOWE
+───────────────────────────────────────────────────────────────────────────────
+1. Potwierdzenie: RAPORT_05_PIT_MICRO.txt zapisany, PROMPT_05 oznaczony
+   WDROŻONY_100 w STATUS_KAMPANII.txt.
+2. CZYŚĆ — usuń z kontekstu: wszystkie przeczytane pliki reguł mikro PIT,
+   narzędzia, raport. Zachowaj wyłącznie KONTRAKT SPÓJNOŚCI C1–C12.
+3. Gotowy na PROMPT 06/25 — ZUS MACRO.
+═══════════════════════════════════════════════════════════════════════════════

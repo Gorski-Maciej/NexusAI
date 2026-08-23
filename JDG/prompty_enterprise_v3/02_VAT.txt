@@ -1,0 +1,150 @@
+INSTRUKCJA DLA MODELU GLM 5.2 — CZĘŚĆ 02/20: VAT - MAKRO + MIKRO + ODLICZENIA + KSEF-VAT + STAWKI + ZWOLNIENIA
+
+Jesteś Najwyższej klasy Ekspertem — architektem silników OPA/Rego klasy ENTERPRISE, ekspertem polskiego prawa podatkowego (akty wg JDG/docs/Bbb) i inżynierem niezawodności. Twoim zadaniem: przeprowadź głębokie myślenie, przeprowadź głęboką analizę modułu „VAT - MAKRO + MIKRO + ODLICZENIA + KSEF-VAT + STAWKI + ZWOLNIENIA” w katalogu JDG, wykryj wszystkie luki, braki, niedociągnięcia, a następnie wygeneruj INTELIGENTNY KOD oraz rozbudowany raport na zaawansowanym poziomie Enterprise — poziom ENTERPRISE — z innowacyjnymi ulepszeniami wyprzedzającymi profesjonalistów. Wszystkie reguły Rego muszą być zgodne z aktami prawnymi z JDG/docs/Bbb (lista aktów) i z DWOMA ŚWIĘTYMI dokumentami docelowymi modułu (V1 i V2 — linki poniżej), które wyznaczają ostateczną strukturę modułu JDG.
+
+BUDŻET OKNA KONTEKSTOWEGO GLM 5.2 (1 000 000 tokenów) — PRZESTRZEGAJ:
+1. Dane i informacje, które przeczytasz i zapamiętasz, mogą zająć MAKSYMALNIE
+   50% okna kontekstowego (ok. 500 000 tokenów).
+2. Pozostałe >=50% okna jest ZAREZERWOWANE na: przeprowadzenie głębokiego
+   myślenia, przeprowadzenie głębokiej analizy, generowanie INTELIGENTNEGO
+   KODU oraz generowanie rozbudowanego raportu TXT.
+3. PRZED czytaniem: oszacuj tokeny (KB/4), wypisz szacunek dla każdego pliku i
+   czytaj wg priorytetów (★★★ → ★★ → ★). To, co pominiesz, oznacz w raporcie.
+
+DOKUMENTY ŚWIĘTE (czytaj ZAWSZE; każda zmiana musi być z nimi zgodna):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md  (V1 — OPA jako SYSTEM; SLO; zasady 1-10)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md  (V2 — KONTYNUACJA V1; filary F1-F6)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md  (stan obecny + ADR 001-022)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb  (kompletna lista aktów prawnych JDG + mapa artykułów)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md  (luki L1-L12)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md  (autorytatywny rejestr rule_id)
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/policies  (mirror + overlays — single source of truth)
+
+WZORCE PROMPTÓW — OBOWIĄZKOWE DO PRZECZYTANIA (zgodnie z wymogiem: 
+MUSISZ wykorzystać wszystkie Prompty-wzorce do nadania temu raportowi 
+stylu, głębi i jednoznaczności):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/Louh  (wzorzec Promptu — struktura i styl (najkrótszy))
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/Bb  (wzorzec Promptu — wymagania i ton (linia przykładowy))
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/Jllug  (wzorzec Promptu — rozbudowany, analityczny)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/Jnkkk  (wzorzec Promptu — zaawansowany poziom Enterprise, kampanijny)
+Po ich przeczytaniu: utrzymaj ten sam styl — rozbudowany, jednoznaczny, z zaawansowanym poziomem Enterprise, z konkretnymi wymaganiami i wymuszonymi frazami, jak w wzorcach.
+
+ZAKRES PRAWNY I TECHNICZNY TEJ CZĘŚCI (podstawa głębokiej analizy):
+Ustawa z 11.03.2004 o VAT (Dz.U. 2025 poz. 456 ze zm.): art. 5-14 (zakres), 15-18 (podatnicy), 19a-21 (obowiazek podatkowy), 28a-28n (miejsce), 29a-32 (podstawa), 41-42 + zal. nr 3/10 (stawki 23/8/5/0), 43 (zwolnienia), 86-96 (odliczenia, proporcja, pre-), 97-99 (deklaracje, JPK_V7M), 106a-106nq (faktury, KSEF), 108a-108f (split payment), 113 (zwolnienie podmiotowe 200 000 PLN, w tym ust 1/5/9/13), 120 (marza).
+
+
+ZNANE LUKI / BRAKI / NIEDOCIĄGNIĘCIA DO POTWIERDZENIA 
+(zweryfikuj KAŻDĄ w kodzie, potwierdź lub obal, dodaj nowe, minimum 20):
+LUKI: COVERAGE_REPORT pokazuje braki V.012, V.013, V.022, V.024, V.036, V.053; micro/vat jest warstwa szablonowa (puste pola, tautologie); brak runtime reconcilacji JPK<->KSEF; brak geodezji pod załaczniki 3/10.
+
+
+POMYSŁY SEED (rozbuduj je i dodaj własne innowacyjne ulepszenia wyprzedzające profesjonalistów):
+1) Fraud-graph - detekcja faktur kuzynkich (karuzela VAT); 2) auto-sugestia GTU wg klasyfikacji PKWiU; 3) rekoncyliacja JPK_V7M vs KSeF w czasie rzeczywistym; 4) korekta roczna pro-rata art. 90-91 z symulacja (SLIM 3: 150->90 dni); 5) Decision Certificate dla kazej stawki; 6) temporal lock na date transakcji; 7) sandbox KSeF z UPO; 8) rejestr stawiek wg obwieszczen MF (hot-reload).
+
+
+PLIKI DO ANALIZY (CZĘŚĆ 02) — czytaj wg priorytetów ★★★→★:
+
+Makro VAT (★★★):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/substantive.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/deductions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/procedures.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/place_of_supply.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan23_detailed.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan26_critical.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan42_reduced_rates.rego
+
+VAT Enterprise / zero-doubt (★):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/enterprise_vat_bridge.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/vat_enterprise_zero_doubt.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_mpp_split_payment_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_rates_exemptions_audit_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_deductions_corrections_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_fraud_detection_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_cashflow_predictor_enterprise.rego
+
+VAT mikro (★):
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/micro/vat
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan34_vat.rego
+
+KSEF/JPK po stronie VAT (★):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_jpk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_firewall_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_offline_queue_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_receipt_digest_enterprise.rego
+
+Innowacje VAT (★):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p02_vat_macro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p03_vat_micro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r02_vat_core_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r03_vat_micro_innovations_v9.rego
+
+Narzedzia i audyty (★):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/vat_rate_engine.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/vat_micro_inventory.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/vat_macro_audit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/vat_micro_core_audit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/vat_micro_special_audit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/vat_gap_detector.py
+
+Testy i dokumentacja (★):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego/micro/test_native_micro_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/VAT_MACRO_P03.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/VAT_MICRO_P04.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/VAT_AUDYT_R03.md
+KROK PO KROKU (wykonaj wszystkie bez wyjątków):
+0. Przeczytaj szablon JDG/raporty_enterprise_v3/SZABLON_RAPORTU.txt i
+   strukturę raportu A-J — zgodnie z nim buduj raport tej części.
+1. Przeprowadź głębokie myślenie o domenie tej części: akty prawne (docs/Bbb),
+   istotne artykuły ustaw i miejsce w architekturze JDG zgodnie z V1/V2.
+2. Przeprowadź głęboką analizę każdego pliku z listy: legal_basis, temporalność
+   (valid_from/valid_to), progi (data.thresholds), duplikaty rule_id, puste pola,
+   staby, pominięcia. Porównaj z MANIFEST oraz ze ŚWIETYMI plikami V1/V2.
+3. Sporządź listę LUK / BŁĘDÓW / NIEDOCIĄGNIĘĆ (minimum 20 pozycji, z
+   priorytetami: krytyczne / ważne / kosmetyczne).
+4. Zaprojektuj i wdroż innowacyjne ulepszenia wyprzedzające profesjonalistów
+   (minimum 10) — zgodnie z zasadami V1 (1-10) i filarami V2 (F1-F6):
+   Control/Data Plane, Legal Twin, runtime invariants, Golden Oracle,
+   Decision Certificate, Law Radar, Declarative Change, auto-rollback, canary,
+   zero-hardcode, temporalność, sharded router.
+5. Wygeneruj INTELIGENTNY KOD bezpośrednio w JDG: reguły Rego w JDG/rules/,
+   narzędzia i bramki w JDG/tools/, testy natywne Rego w JDG/tests/rego/,
+   testy pytest w JDG/tests/ (czytelne dla CI/CD).
+6. Uruchom lokalne bramki: `opa check -b` i `opa test` (gdy dostępny),
+   `pytest -q`, oraz narzędzia JDG/tools. Zapisz wyniki do raportu.
+7. Zaktualizuj rejestr zmian JDG/bundles/enterprise_v3_registry.json (dodaj
+   blok tej części; NIE nadpisuj całego rejestru).
+8. Zapisz raport TXT (ścieżka niżej) w pełnej strukturze z wymaganych sekcji.
+
+STRUKTURA RAPORTU TXT (JDG/raporty_enterprise_v3/02_VAT.txt) — min. 12 stron:
+A. METRYKI przed/po i podsumowanie.
+B. AUDYT — każdy plik z listy: co działa, co nie, dlaczego.
+C. LUKI (min. 20 pozycji: opis, plik, priorytet, skutek).
+D. ROZWIĄZANIA ENTERPRISE — kod wdrożony: plik, rule_id, package, legal_basis,
+   valid_from/valid_to, progi (zero hardcode).
+E. INNOWACJE — innowacyjne ulepszenia wyprzedzające profesjonalistów (V1/V2).
+F. TESTY — komunikaty i wyniki (logi, liczby).
+G. SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA z częściami: 01,03,08,11,13,16.
+H. DECYZJE CZŁOWIEKA — pytania i otwarte kwestie.
+
+FRAZY OBOWIĄZKOWE — użyj każdej co najmniej 4 razy (w kodzie i raporcie):
+- Przeprowadź głębokie myślenie
+- przeprowadź głęboką analizę
+- zaawansowany poziom Enterprise
+- poziom ENTERPRISE
+- innowacyjne ulepszenia wyprzedzające profesjonalistów
+
+NA KOŃCU PRACY:
+1. Zapisz raport: JDG/raporty_enterprise_v3/02_VAT.txt
+2. Zaktualizuj rejestr: JDG/bundles/enterprise_v3_registry.json (blok części 02).
+3. Wydrukuj dokładnie:
+   "V3-02_VAT_KOMPLETNE — SPÓJNOŚĆ ZAREJESTROWANA — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe"
+4. Kontynuuj kampanię szablonu: kolejność 01 → 20 zgodnie z sekwencerem.
+
+
+WYMUSZONE POWTÓRZENIA FRAZ (wklej 4x do raportu w sekcjach A-H):
+[1] Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające profesjonalistów
+[2] Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające profesjonalistów
+[3] Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające profesjonalistów
+[4] Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające profesjonalistów
+

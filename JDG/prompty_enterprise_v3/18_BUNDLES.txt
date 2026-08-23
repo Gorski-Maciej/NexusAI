@@ -1,0 +1,123 @@
+INSTRUKCJA DLA MODELU GLM 5.2 — CZĘŚĆ 18/20: BUNDLES + POLICIES MIRROR + RULESTORE + MIGRACJE + DEPLOY
+
+Jesteś Najwyższej klasy Ekspertem — architektem silników OPA/Rego klasy ENTERPRISE, ekspertem polskiego prawa podatkowego (akty wg JDG/docs/Bbb) i inżynierem niezawodności. Twoim zadaniem: przeprowadź głębokie myślenie, przeprowadź głęboką analizę modułu „BUNDLES + POLICIES MIRROR + RULESTORE + MIGRACJE + DEPLOY” w katalogu JDG, wykryj wszystkie luki, braki, niedociągnięcia, a następnie wygeneruj INTELIGENTNY KOD oraz rozbudowany raport na zaawansowanym poziomie Enterprise — poziom ENTERPRISE — z innowacyjnymi ulepszeniami wyprzedzającymi profesjonalistów. Wszystkie reguły Rego muszą być zgodne z aktami prawnymi z JDG/docs/Bbb (lista aktów) i z DWOMA ŚWIĘTYMI dokumentami docelowymi modułu (V1 i V2 — linki poniżej), które wyznaczają ostateczną strukturę modułu JDG.
+
+BUDŻET OKNA KONTEKSTOWEGO GLM 5.2 (1 000 000 tokenów) — PRZESTRZEGAJ:
+1. Dane i informacje, które przeczytasz i zapamiętasz, mogą zająć MAKSYMALNIE
+   50% okna kontekstowego (ok. 500 000 tokenów).
+2. Pozostałe >=50% okna jest ZAREZERWOWANE na: przeprowadzenie głębokiego
+   myślenia, przeprowadzenie głębokiej analizy, generowanie INTELIGENTNEGO
+   KODU oraz generowanie rozbudowanego raportu TXT.
+3. PRZED czytaniem: oszacuj tokeny (KB/4), wypisz szacunek dla każdego pliku i
+   czytaj wg priorytetów (★★★ → ★★ → ★). To, co pominiesz, oznacz w raporcie.
+
+DOKUMENTY ŚWIĘTE (czytaj ZAWSZE; każda zmiana musi być z nimi zgodna):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md  (V1 — OPA jako SYSTEM; SLO; zasady 1-10)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md  (V2 — KONTYNUACJA V1; filary F1-F6)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md  (stan obecny + ADR 001-022)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb  (kompletna lista aktów prawnych JDG + mapa artykułów)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md  (luki L1-L12)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md  (autorytatywny rejestr rule_id)
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/policies  (mirror + overlays — single source of truth)
+
+WZORCE PROMPTÓW — OBOWIĄZKOWE DO PRZECZYTANIA (zgodnie z wymogiem: 
+MUSISZ wykorzystać wszystkie Prompty-wzorce do nadania temu raportowi 
+stylu, głębi i jednoznaczności):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/Louh  (wzorzec Promptu — struktura i styl (najkrótszy))
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/Bb  (wzorzec Promptu — wymagania i ton (linia przykładowy))
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/Jllug  (wzorzec Promptu — rozbudowany, analityczny)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/Jnkkk  (wzorzec Promptu — zaawansowany poziom Enterprise, kampanijny)
+Po ich przeczytaniu: utrzymaj ten sam styl — rozbudowany, jednoznaczny, z zaawansowanym poziomem Enterprise, z konkretnymi wymaganiami i wymuszonymi frazami, jak w wzorcach.
+
+ZAKRES PRAWNY I TECHNICZNY TEJ CZĘŚCI (podstawa głębokiej analizy):
+Zakres: bundle.sh (v9.x), manifest.json, podpis, overlays v2026/v2027, mirror policies (546 plikow, hash-parity 0% drift), RuleStore DuckDB (13 migracje, 9 tabel), data_service (hot-reload), deployment_orchestrator (canary), dr_orchestrator (RTO/RPO).
+
+
+ZNANE LUKI / BRAKI / NIEDOCIĄGNIĘCIA DO POTWIERDZENIA 
+(zweryfikuj KAŻDĄ w kodzie, potwierdź lub obal, dodaj nowe, minimum 20):
+LUKI: podpisy bunday bez weryfikacji lokalnie; overlay v2027 testy; mirror oraz generat; brak test& siły podpisu kryptograficznego.
+
+
+POMYSŁY SEED (rozbuduj je i dodaj własne innowacyjne ulepszenia wyprzedzające profesjonalistów):
+['1) Bundle sign + verify w CI (F2); 2) overlay matrix test; 3) hash-parity blokujaca (0% drift); 4) RuleStore seed wg obwieszczen; 5) hot-reload test; 6) canary z rollback 5 min; 7) SBOM na kazdy bundle; 8) DR game-day co miesiac.']
+
+
+PLIKI DO ANALIZY (CZĘŚĆ 18) — czytaj wg priorytetów ★★★→★:
+
+Bundles (★):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/bundle.sh
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/bundles
+
+Overlays / policies (★):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/overlay_engine.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/overlay_generator.py
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/policies
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/README.md
+
+RuleStore / migracje (★):
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/migrations
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/001_jdg_rule_store.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/013_jdg_v18_tools_api_rulestore_bundles.sql
+
+Narzedzia (★):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/bundle_server.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/deployment_orchestrator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/data_service.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/dr_orchestrator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/policies_sync_gate.py
+KROK PO KROKU (wykonaj wszystkie bez wyjątków):
+0. Przeczytaj szablon JDG/raporty_enterprise_v3/SZABLON_RAPORTU.txt i
+   strukturę raportu A-J — zgodnie z nim buduj raport tej części.
+1. Przeprowadź głębokie myślenie o domenie tej części: akty prawne (docs/Bbb),
+   istotne artykuły ustaw i miejsce w architekturze JDG zgodnie z V1/V2.
+2. Przeprowadź głęboką analizę każdego pliku z listy: legal_basis, temporalność
+   (valid_from/valid_to), progi (data.thresholds), duplikaty rule_id, puste pola,
+   staby, pominięcia. Porównaj z MANIFEST oraz ze ŚWIETYMI plikami V1/V2.
+3. Sporządź listę LUK / BŁĘDÓW / NIEDOCIĄGNIĘĆ (minimum 20 pozycji, z
+   priorytetami: krytyczne / ważne / kosmetyczne).
+4. Zaprojektuj i wdroż innowacyjne ulepszenia wyprzedzające profesjonalistów
+   (minimum 10) — zgodnie z zasadami V1 (1-10) i filarami V2 (F1-F6):
+   Control/Data Plane, Legal Twin, runtime invariants, Golden Oracle,
+   Decision Certificate, Law Radar, Declarative Change, auto-rollback, canary,
+   zero-hardcode, temporalność, sharded router.
+5. Wygeneruj INTELIGENTNY KOD bezpośrednio w JDG: reguły Rego w JDG/rules/,
+   narzędzia i bramki w JDG/tools/, testy natywne Rego w JDG/tests/rego/,
+   testy pytest w JDG/tests/ (czytelne dla CI/CD).
+6. Uruchom lokalne bramki: `opa check -b` i `opa test` (gdy dostępny),
+   `pytest -q`, oraz narzędzia JDG/tools. Zapisz wyniki do raportu.
+7. Zaktualizuj rejestr zmian JDG/bundles/enterprise_v3_registry.json (dodaj
+   blok tej części; NIE nadpisuj całego rejestru).
+8. Zapisz raport TXT (ścieżka niżej) w pełnej strukturze z wymaganych sekcji.
+
+STRUKTURA RAPORTU TXT (JDG/raporty_enterprise_v3/18_BUNDLES.txt) — min. 12 stron:
+A. METRYKI przed/po i podsumowanie.
+B. AUDYT — każdy plik z listy: co działa, co nie, dlaczego.
+C. LUKI (min. 20 pozycji: opis, plik, priorytet, skutek).
+D. ROZWIĄZANIA ENTERPRISE — kod wdrożony: plik, rule_id, package, legal_basis,
+   valid_from/valid_to, progi (zero hardcode).
+E. INNOWACJE — innowacyjne ulepszenia wyprzedzające profesjonalistów (V1/V2).
+F. TESTY — komunikaty i wyniki (logi, liczby).
+G. SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA z częściami: 01,02,13,16,17,20.
+H. DECYZJE CZŁOWIEKA — pytania i otwarte kwestie.
+
+FRAZY OBOWIĄZKOWE — użyj każdej co najmniej 4 razy (w kodzie i raporcie):
+- Przeprowadź głębokie myślenie
+- przeprowadź głęboką analizę
+- zaawansowany poziom Enterprise
+- poziom ENTERPRISE
+- innowacyjne ulepszenia wyprzedzające profesjonalistów
+
+NA KOŃCU PRACY:
+1. Zapisz raport: JDG/raporty_enterprise_v3/18_BUNDLES.txt
+2. Zaktualizuj rejestr: JDG/bundles/enterprise_v3_registry.json (blok części 18).
+3. Wydrukuj dokładnie:
+   "V3-18_BUNDLES_KOMPLETNE — SPÓJNOŚĆ ZAREJESTROWANA — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe"
+4. Kontynuuj kampanię szablonu: kolejność 01 → 20 zgodnie z sekwencerem.
+
+
+WYMUSZONE POWTÓRZENIA FRAZ (wklej 4x do raportu w sekcjach A-H):
+[1] Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające profesjonalistów
+[2] Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające profesjonalistów
+[3] Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające profesjonalistów
+[4] Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające profesjonalistów
+

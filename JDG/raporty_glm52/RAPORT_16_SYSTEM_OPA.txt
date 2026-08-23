@@ -1,0 +1,12 @@
+RAPORT KOMPATYBILNOSCI — SYSTEM OPA
+
+Ten plik jest historycznym aliasem zachowanym dla kompatybilnosci testow i narzedzi.
+
+Kanoniczny raport wdrozeniowy System OPA / Control Plane:
+JDG/raporty_glm52_enterprise/RAPORT_20_SYSTEM_OPA_CONTROL_PLANE.txt
+
+Kanoniczny dowod:
+JDG/bundles/system_opa_control_plane_report20_evidence.json
+
+Status kanoniczny: WDROZONY_100 (14/14)
+Produkcja: NOT_CERTIFIED; ROLLED_BACK; fail-closed.

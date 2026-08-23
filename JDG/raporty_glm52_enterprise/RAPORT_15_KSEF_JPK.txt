@@ -1,0 +1,283 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT 15/25 — KSeF I JPK
+NexusAI JDG · GLM 5.2 Enterprise Campaign
+Data: 2026-08-23 | Status: WDROŻONY_100
+═══════════════════════════════════════════════════════════════════════════════
+
+DOWÓD WDROŻENIA
+---------------
+Raport kampanii zapisano jako:
+  JDG/raporty_glm52_enterprise/RAPORT_15_KSEF_JPK.txt
+
+Zakres Promptu 15 obejmuje warstwę KSeF/JPK/e-Deklaracje/e-Doręczenia/WIS/GTU
+z pakietem R15, P17, macro/micro KSeF i JPK, firewall, outbox, offline queue,
+UPO, korekty, sandbox oraz Legal Twin.
+
+Bramki Promptu 15:
+- `ksef_jpk_edeklaracje_innovations_report15_gate.py`: 9/9;
+- `ksef_jpk_report15_gate.py`: 9/9;
+- testy R15/P17 i generatorów: PASS;
+- 506 rule_id w inwentarzu legacy R15, 0 duplikatów;
+- golden replay R15: PASS, 0 UVER;
+- deployment evidence: rollback fail-closed, brak aktywacji produkcyjnej.
+
+Ważne rozróżnienie: `JDG/raporty_glm52_enterprise/20_KSEF_JPK_DECLARATIONS.txt`
+to późniejszy, odrębny ETAP 20. Jego stan pozostaje NIEPELNY (18/19), ponieważ
+brakuje promptu ETAP 20 w katalogu promptów. Nie wpływa to na zaliczenie
+bieżącego Promptu 15.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+1. EXECUTIVE SUMMARY TOP 10
+---------------------------
+
+1. KSeF firewall sprawdza NIP, obowiązek, wymagane dane i ryzyko sankcji przed
+   skierowaniem faktury do ręcznej weryfikacji lub kolejki.
+2. Wdrożono stanowy cykl faktury: DRAFT → VALIDATED → QUEUED → SUBMITTED →
+   ACCEPTED/REJECTED → CORRECTION_REQUIRED/CANCELLED → ARCHIVED.
+3. UPO jest osobnym dowodem; samo zakolejkowanie lub wysłanie nie oznacza
+   akceptacji faktury.
+4. Tryb offline ma limit grace i retry, idempotency key oraz outbox exactly-once;
+   brak potwierdzenia prowadzi do TRIAGE_QUEUE/BLOCK_AND_ALERT.
+5. JPK_V7M/V7K oraz JPK_KR/JPK_ST/JPK_CIT mają dedykowane generatory,
+   walidatory, GTU i terminy.
+6. Korelacja JPK ↔ VAT-7 ↔ PKPiR/księgi ↔ KSeF wykrywa różnice kwotowe i nie
+   pozwala na bezdowodowy AUTO_POST.
+7. WIS, e-Doręczenia, ePUAP, podpisy i sandbox są objęte kontrolą dowodową.
+8. Wszystkie krytyczne artykuły mają temporalne bloki i mapowanie Legal Twin:
+   106na, 106nb, 106j, 99, 82, 193a i 42a.
+9. Wdrożono pięć innowacji R15: firewall KSeF, reconciliation checker,
+   GTU classifier, offline deadline monitor i WIS request monitor.
+10. `WDROŻONY_100` oznacza komplet artefaktów i bramek repozytorium; produkcyjna
+    wysyłka KSeF wymaga zewnętrznego tokenu, aktualnego XSD MF, UPO i telemetryki.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+2. POKRYCIE PRAWNE
+-------------------
+
+| Obszar | Podstawa | Implementacja | Dowód |
+|---|---|---|---|
+| Obowiązek KSeF | VAT art. 106na | `ksef_mandatory`, `ksef_firewall_monitor` | R15 gate |
+| Wyjątki/B2C/offline | VAT art. 106nb | `ksef_offline_recovery`, offline monitor | R15 gate |
+| Korekty | VAT art. 106j | `ksef_corrections_e2e`, JPK corrections | R15/P17 tests |
+| Terminy/UPO | VAT art. 106nd-106ne | UPO tracker, deadline monitor | state machine |
+| Sankcje | VAT art. 106ng | sanction monitor/calculator | threshold block |
+| JPK VAT | VAT art. 82 i 99 | JPK_V7M/V7K generator, deadlines | tests |
+| JPK księgi | OrdPU art. 193a | JPK_PKPIR/JPK_KR/ST | Legal Twin |
+| WIS | VAT art. 42a | WIS request monitor/API | R15 gate |
+| e-Doręczenia | ustawa o doręczeniach elektronicznych | gateway/address/signature | inventory |
+| GTU | rozporządzenie JPK_VAT | classifier/completeness checker | tests |
+
+Legal Twin pokrywa siedem artykułów krytycznych i posiada węzły z rule_id;
+mapowanie nie jest domysłem wynikającym z nazwy pliku.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+3. MASZYNA STANÓW KSeF
+----------------------
+
+```
+DRAFT
+  | validate schema + identifiers + source
+  v
+VALIDATED ---- invalid ----> BLOCK_AND_ALERT
+  |
+  v
+QUEUED ---- MF unavailable/offline ----> OFFLINE_QUEUE
+  |                                      |
+  | idempotency key                      | retry <= threshold
+  v                                      v
+SUBMITTED --------------------------> QUEUED/FAILED
+  |
+  +---- UPO accepted ----> ACCEPTED ----> ARCHIVED
+  |
+  +---- rejection --------> REJECTED ----> CORRECTION_REQUIRED
+                                             |
+                                             v
+                                          CORRECTED
+                                             |
+                                             v
+                                          SUBMITTED
+```
+
+Reguły nie deklarują `sent_by_rule` ani `submitted_by_rule` jako wykonanej
+operacji. Stan zewnętrzny wymaga numeru KSeF, UPO, hash dokumentu i identyfikatora
+idempotencji.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+4. WDROŻONE ARTEFAKTY
+---------------------
+
+4.1. Reguły
+
+- `rules/ksef_jpk.rego` — obowiązek, B2C, offline recovery, JPK_V7M, GTU,
+  PKPiR i token stale;
+- `rules/ksef_firewall_enterprise.rego` — bramka przed wysyłką;
+- `rules/ksef_offline_queue_enterprise.rego` — tryb awaryjny;
+- `rules/ksef_outbox_enterprise.rego` — outbox i idempotencja;
+- `rules/ksef_upo_tracker_enterprise.rego` — UPO;
+- `rules/ksef_resilience_enterprise.rego` — odporność i recovery;
+- `rules/ksef_sanction_monitor_enterprise.rego` — sankcje;
+- `rules/ksef_sandbox_harness_enterprise.rego` — sandbox;
+- `rules/jpk_v7_autogen_enterprise.rego`, `jpk_kr_st_generator_enterprise.rego`,
+  `jpk_corrections_workflow_enterprise.rego`, `jpk_cit.rego`;
+- `rules/gtu_completeness_checker_enterprise.rego` i
+  `cross_declaration_validator_enterprise.rego`;
+- `rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego` — 30 rule_id;
+- `rules/r15_ksef_jpk_edeklaracje_innovations_v9.rego` — 6 rule_id;
+- `rules/ksef_jpk_etap20_v1.rego` — osobny kontrakt późniejszego ETAP 20.
+
+4.2. Narzędzia
+
+- `ksef_outbox.py`;
+- `ksef_offline_queue.py`;
+- `jpk_validator.py`;
+- `jpk_autogen.py`;
+- `jpk_generator.py`;
+- `ksef_jpk_edeklaracje_auditor.py`;
+- `ksef_jpk_report15_gate.py`;
+- `ksef_jpk_edeklaracje_innovations_report15_gate.py`.
+
+4.3. Dane progowe
+
+`rules/thresholds_jdg.rego` zawiera blok `ksef_jpk` z obowiązkiem, grace period,
+sankcjami, UPO, terminami JPK, GTU i WIS. Reguły konsumują `data.jdg.thresholds`;
+wartości nie są kopiowane do logiki decyzji.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+5. INNOWACJE R15
+----------------
+
+R15-INN-01 — `ksef_firewall_monitor`
+- NIP i dane faktury;
+- obowiązek KSeF od daty progowej;
+- brak wymaganych pól i ryzyko sankcji;
+- wynik `BLOCK_AND_ALERT` albo `TRIAGE_QUEUE`.
+
+R15-INN-02 — `jpk_reconciliation_checker`
+- porównanie VAT-7, JPK_V7M/V7K i ksiąg;
+- delta w PLN z progiem z thresholdów;
+- jawna lista rozbieżności.
+
+R15-INN-03 — `gtu_code_classifier`
+- klasyfikacja kodu GTU na podstawie danych transakcji;
+- porównanie kodu oczekiwanego z deklarowanym;
+- niejednoznaczność nie jest automatycznie zatwierdzana.
+
+R15-INN-04 — `ksef_offline_deadline_monitor`
+- licznik dokumentów nieprzesłanych;
+- grace period i deadline;
+- alert przy braku dosłania lub przekroczeniu terminu.
+
+R15-INN-05 — `wis_request_monitor`
+- kompletność wniosku WIS;
+- opłata i termin odpowiedzi;
+- brak danych kieruje do ręcznej weryfikacji.
+
+Dalsze usprawnienia P17 obejmują XSD offline CI, pełny słownik GTU, korekty
+end-to-end, integrację e-Doręczeń i dashboard statusów.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+6. SANKCJE I FAIL-CLOSED
+------------------------
+
+Monitor sankcji nie wylicza kary na podstawie samego braku odpowiedzi API.
+Wymaga faktów: dokumentu, wartości VAT, statusu obowiązku, dat, numeru KSeF,
+UPO i wersji prawa. Przy braku któregoś dowodu wynik jest sugestią lub blokadą.
+
+Kontrole:
+- brak KSeF lub wysyłka po terminie — alert sankcyjny;
+- brak UPO — brak dowodu akceptacji;
+- wielokrotna próba tego samego dokumentu — idempotency conflict;
+- niezgodność JPK i rejestrów — reconciliation block;
+- brak GTU — triage;
+- niedostępność MF — offline queue, bez fikcyjnego potwierdzenia;
+- nieprawidłowy XSD — firewall block.
+
+Wartości sankcji i terminów pochodzą z `thresholds_jdg.rego`, ale ich aktualność
+musi być potwierdzona aktualnym komunikatem MF i tekstem ustawy.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+7. TESTY I BRAMKI
+-----------------
+
+Wyniki:
+
+- zestaw generatorów, R15, P17 i report gate: **84 passed** w wykonanym zakresie;
+- `ksef_jpk_edeklaracje_innovations_report15_gate.py`: **9/9**;
+- `ksef_jpk_report15_gate.py`: **9/9**;
+- 506 rule_id zinwentaryzowanych przez legacy report gate;
+- duplikaty: 0;
+- Legal Twin: 7/7 artykułów krytycznych;
+- temporalność krytyczna: 7/7;
+- golden replay: 0 unmatched/UVER;
+- safety: SUGGEST, `no_auto_post`;
+- deployment: ROLLED_BACK fail-closed z powodu braku telemetryki produkcyjnej.
+
+Wykonano również testy statyczne struktury Rego, ponieważ w środowisku nie ma
+binarnego `opa`. Nie deklaruję wyniku `opa test` jako wykonanego.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+8. WPŁYW KRZYŻOWY
+-----------------
+
+VAT:
+- KSeF i JPK wykorzystują te same kwoty netto/VAT/brutto;
+- korekta KSeF musi mieć powiązanie z fakturą pierwotną;
+- VAT/PCC i WIS pozostają ręcznie potwierdzane.
+
+PKPiR/UoR:
+- reconciliation porównuje księgi z JPK i fakturami;
+- różnice nie są automatycznie kompensowane;
+- dokument księgowy bez KSeF może trafić do kolejki.
+
+KKS:
+- błędy deklaracji, brak pliku i opóźnienie są sygnałami ryzyka;
+- system nie ustala winy ani odpowiedzialności karnej bez oceny człowieka.
+
+Cross-border:
+- import/EU i e-Doręczenia wymagają dodatkowych dowodów;
+- awaria KSeF nie usuwa obowiązków dokumentacyjnych.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+9. OGRANICZENIA
+---------------
+
+1. Brak aktywnego tokenu MF, API KSeF i UPO w repozytorium; produkcja nie jest
+   certyfikowana.
+2. XSD musi być pobierany i pinowany z aktualnego źródła MF; test strukturalny
+   nie zastępuje walidacji aktualnego schematu.
+3. Klasyfikacja GTU jest sugestią; odpowiedzialność za kod wymaga weryfikacji.
+4. `opa` nie jest zainstalowane w środowisku tej sesji.
+5. ETAP 20 pozostaje oddzielnym, niepełnym kontraktem 18/19 i wymaga własnego
+   promptu/artefaktu `20_KSEF_JPK_DECLARATIONS.txt`.
+6. Raport nie jest poradą podatkową i nie dowodzi rzeczywistej wysyłki dokumentu.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+10. CERTYFIKACJA
+----------------
+
+| Kontrola | Wynik |
+|---|---:|
+| Raport kampanii Prompt 15 | zapisany |
+| R15 innovation gate | 9/9 |
+| Legacy report gate | 9/9 |
+| Krytyczne artykuły Legal Twin | 7/7 |
+| Temporalność krytyczna | 7/7 |
+| Duplikaty rule_id | 0 |
+| Safety | SUGGEST / no_auto_post |
+| Produkcyjna wysyłka | NOT_CERTIFIED |
+| Status Prompt 15 | WDROŻONY_100 |
+
+RAPORT 15/25 — KONIEC.
+Po zapisaniu raportu wykonano reset kontekstu roboczego; dalszy etap kampanii
+zachowuje wyłącznie kontrakt PROMPT_00 i przechodzi do PROMPT 16/25.
+═══════════════════════════════════════════════════════════════════════════════
