@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0.0",
+  "report": "DOKUMENTACJA_KOMPLETNOSC",
+  "status": "WDROZONY_100",
+  "docs": {
+    "README.md": {
+      "present": true,
+      "requirements": {
+        "misja": true,
+        "status_produktu": true,
+        "kluczowe_funkcje": true,
+        "pwe": true,
+        "uzytkownicy": true,
+        "slownik": true,
+        "c4_context": true,
+        "c4_container": true,
+        "c4_component": true,
+        "warstwy": true,
+        "wzorce": true,
+        "sekwencja_faktura": true,
+        "sekwencja_decyzja": true
+      },
+      "passed": 13,
+      "total": 13
+    },
+    "docs/STRUKTURA_PROJEKTU.md": {
+      "present": true,
+      "requirements": {
+        "drzewo": true,
+        "konwencje_nazewnicze": true,
+        "erd": true,
+        "tabele": true,
+        "migracje": true
+      },
+      "passed": 5,
+      "total": 5
+    },
+    "docs/API_REFERENCJA.md": {
+      "present": true,
+      "requirements": {
+        "endpointy": true,
+        "curl": true,
+        "rate_limit": true,
+        "kody_bledow": true,
+        "autoryzacja": true
+      },
+      "passed": 5,
+      "total": 5
+    },
+    "docs/LOGIKA_BIZNESOWA.md": {
+      "present": true,
+      "requirements": {
+        "moduly": true,
+        "algorytmy": true,
+        "sekwencje": true,
+        "bledy": true,
+        "debug": true
+      },
+      "passed": 5,
+      "total": 5
+    },
+    "docs/ZGODNOSC_PRAWNA.md": {
+      "present": true,
+      "requirements": {
+        "uor": true,
+        "ksef": true,
+        "jpk": true,
+        "deklaracje": true,
+        "sciezka_audytu": true,
+        "retencja": true
+      },
+      "passed": 6,
+      "total": 6
+    },
+    "docs/PODRECZNIK_UZYTKOWNIKA.md": {
+      "present": true,
+      "requirements": {
+        "pierwsze_uruchomienie": true,
+        "role": true,
+        "workflow": true,
+        "centrum_decyzji": true,
+        "raporty": true,
+        "integracje": true
+      },
+      "passed": 6,
+      "total": 6
+    },
+    "docs/FAQ.md": {
+      "present": true,
+      "requirements": {
+        "faq": true
+      },
+      "passed": 1,
+      "total": 1
+    }
+  },
+  "summary": {
+    "docs_total": 7,
+    "docs_present": 7,
+    "requirements_total": 41,
+    "requirements_passed": 41
+  },
+  "generated_at": "2026-08-23T15:13:02.148402+00:00"
+}
