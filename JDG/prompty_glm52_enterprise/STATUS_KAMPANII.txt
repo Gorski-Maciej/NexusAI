@@ -13,13 +13,13 @@ do pierwszego niewdrożonego Promptu.
 | 03     | VAT MICRO                    | RAPORT_03_VAT_MICRO.txt             | WDROŻONY_100   | 2026-08-22 |
 | 04     | PIT MACRO                    | RAPORT_04_PIT_MACRO.txt             | WDROŻONY_100   | 2026-08-22 |
 | 05     | PIT MICRO                    | RAPORT_05_PIT_MICRO.txt             | WDROŻONY_100   | 2026-08-22 |
-| 06     | ZUS MACRO                    | RAPORT_06_ZUS_MACRO.txt             | NIEWDROŻONY    | —          |
-| 07     | ZUS MICRO                    | RAPORT_07_ZUS_MICRO.txt             | NIEWDROŻONY    | —          |
-| 08     | KKS                          | RAPORT_08_KKS.txt                   | NIEWDROŻONY    | —          |
-| 09     | ORDYNACJA PODATKOWA          | RAPORT_09_ORDYNACJA.txt             | NIEWDROŻONY    | —          |
-| 10     | KSIĘGOWOŚĆ PKPiR             | RAPORT_10_PKPIR.txt                 | NIEWDROŻONY    | —          |
-| 11     | UoR I AMORTYZACJA            | RAPORT_11_UOR_AMORTYZACJA.txt       | NIEWDROŻONY    | —          |
-| 12     | CROSSBORDER / TP / MDR       | RAPORT_12_CROSSBORDER_TP_MDR.txt    | NIEWDROŻONY    | —          |
+| 06     | ZUS MACRO                    | RAPORT_06_ZUS_MACRO.txt             | WDROŻONY_100   | 2026-08-23 |
+| 07     | ZUS MICRO                    | RAPORT_07_ZUS_MICRO.txt             | WDROŻONY_100   | 2026-08-23 |
+| 08     | KKS                          | RAPORT_08_KKS.txt                   | WDROŻONY_100   | 2026-08-23 |
+| 09     | ORDYNACJA PODATKOWA          | RAPORT_09_ORDYNACJA.txt             | WDROŻONY_100   | 2026-08-23 |
+| 10     | KSIĘGOWOŚĆ PKPiR             | RAPORT_10_PKPIR.txt                 | WDROŻONY_100   | 2026-08-23 |
+| 11     | UoR I AMORTYZACJA            | RAPORT_11_UOR_AMORTYZACJA.txt       | WDROŻONY_100   | 2026-08-23 |
+| 12     | CROSSBORDER / TP / MDR       | RAPORT_12_CROSSBORDER_TP_MDR.txt    | WDROŻONY_100   | 2026-08-23 |
 | 13     | RYCZAŁT I CYKL ŻYCIA         | RAPORT_13_RYCZALT_CYKL_ZYCIE.txt    | NIEWDROŻONY    | —          |
 | 14     | PCC / LOKALNE / AKCYZA       | RAPORT_14_PCC_LOKALNE_AKCYZA.txt    | NIEWDROŻONY    | —          |
 | 15     | KSeF I JPK (domknięcie 20)   | RAPORT_15_KSEF_JPK.txt              | NIEWDROŻONY    | —          |

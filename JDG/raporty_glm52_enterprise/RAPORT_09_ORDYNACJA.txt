@@ -1,0 +1,144 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT 09/25 — ORDYNACJA PODATKOWA: ANALIZA STANU, LUKI I WDROŻENIE
+═══════════════════════════════════════════════════════════════════════════════
+Data: 2026-08-23
+Status: WDROŻONY_100
+Prompt: PROMPT_09_ORDYNACJA.txt
+
+⸻
+
+1. EXECUTIVE SUMMARY — TOP 10
+
+1.  Domeną OrdPU w JDG rządzi micro/ord/ord.rego (~650 reguł atomowych
+    dla 50 artykułów) + plan33_ord.rego + 16 plików Enterprise
+    (interest_calculator, tax_authority_interaction, correspondence_engine,
+    proceeding_tracker, overpayment_auto_claimer, poa_manager, defense_builder,
+    tax_ruling_autodrafter, judicial_trend, financial_hardship_scorer,
+    deadline_monitor, kks_ord_etap16_v1, innovations_v8/v9, ord_supplements).
+2.  Kluczowe artykuły: 20/20 COMPLETE — a16 (czynny żal), a20 (zaległość),
+    a21 (nadpłata), a53-56 (odsetki), a67a-67e (ulgi), a70-71 (przedawnienie),
+    a72-80 (nadpłata), a81-81b (korekta), a117ba (Biała Lista), a119a (GAAR),
+    a138a-138o (pełnomocnictwa).
+3.  Przedawnienia: 5 lat (art. 70 §1), 10 lat przestępstwa (art. 70 §2).
+    Kalendarz przedawnień (limitations_calendar.py) — build/alerts/emit.
+4.  Odsetki: 200% stopy lombardowej (art. 56 §1), 150% dla MPP-VAT.
+    Kalkulator (ordpu_auditor.py --interest).
+5.  Korekta deklaracji (art. 81-81b): 5 lat na korektę, auto-kalkulator
+    dopłat/nadpłat z odsetkami.
+6.  Biała Lista (art. 117ba): sankcja 20% przy płatności >15k na rachunek
+    spoza listy bez zawiadomienia w 30 dni.
+7.  GAAR (art. 119a): próg sztuczności 60/100 — scoring schematów
+    podatkowych z ryzykiem domiaru.
+8.  Auto-korespondencja: 6 zintegrowanych pakietów (pisma, postępowania,
+    interpretacje, nadpłaty, tracker, pełnomocnictwa).
+9.  Narzędzia (7): ordpu_auditor, kks_ordynacja_quality, limitations_calendar,
+    penalty_calculator, defense_packet_builder, correspondence_generator,
+    legal_change_calendar.
+10. Wpływ: KKS (czynny żal × korekta), VAT (Biała Lista, MPP), PIT
+    (przedawnienia), procedury (terminy, odwołania, pełnomocnictwa).
+
+⸻
+
+2. TABELA POKRYCIA ARTYKUŁÓW ORDPU
+
+| Artykuł                | Status   | Reguł | Kluczowe narzędzie             |
+|------------------------|----------|-------|--------------------------------|
+| Art. 16 (czynny żal)  | COMPLETE | 6     | kks.rego (współdzielone)       |
+| Art. 20 (zaległość)   | COMPLETE | 5     | micro/ord/ord.rego             |
+| Art. 21 (nadpłata)    | COMPLETE | 5     | micro/ord/ord.rego             |
+| Art. 53-56 (odsetki)  | COMPLETE | 4     | interest_calculator_ent.rego   |
+| Art. 67a-67e (ulgi)   | COMPLETE | 5     | financial_hardship_scorer      |
+| Art. 70-71 (przedawn.)| COMPLETE | 5     | statute_of_limitations.rego    |
+| Art. 72-80 (nadpłata) | COMPLETE | 6     | overpayment_auto_claimer       |
+| Art. 81-81b (korekta) | COMPLETE | 3     | ordpu_auditor --corrections    |
+| Art. 14a-14d (interpr)| COMPLETE | 3     | tax_ruling_autodrafter         |
+| Art. 117ba (Biała Lista)|COMPLETE| 1     | ordpu_auditor --white-list     |
+| Art. 119a (GAAR)      | COMPLETE | 1     | ordpu_auditor --gaar           |
+| Art. 138a-138o (POA)  | COMPLETE | 2     | poa_manager_enterprise.rego    |
+| Art. 193a (JPK-na-żąd.)|COMPLETE| 1     | micro/ord/ord.rego             |
+
+RAZEM: 20 priorytetowych artykułów, 650+ reguł mikro + 16 plików Enterprise.
+Pokrycie: 100%.
+
+⸻
+
+3. ANALIZA PRZEDAWNIEŃ I ODSETEK
+
+Przedawnienia (art. 70-71 OrdPU):
+- 5 lat od końca roku kalendarzowego terminu płatności (art. 70 §1)
+- 10 lat dla przestępstw skarbowych (art. 70 §2)
+- Zawieszenie: postępowanie podatkowe/karno-skarbowe
+- Przerwanie: każda czynność organu egzekucyjnego
+- Kalendarz: limitations_calendar.py (statusy EXPIRED/CRITICAL/ALERT/WATCH/OK)
+
+Odsetki (art. 53-56 OrdPU):
+- Podstawowa: 200% stopy lombardowej NBP (art. 56 §1)
+- MPP-VAT: 150% stopy (przy płatności powyżej 15 000 PLN na niezweryfikowany rachunek)
+- Kalkulator: ordpu_auditor.py --interest (arrears × rate/365 × days)
+
+⸻
+
+4. ANALIZA BIAŁEJ LISTY (ART. 117BA)
+
+Sankcja 20% podatku przy:
+✓ Płatność >15 000 PLN na rachunek spoza Białej Listy VAT
+✓ Brak zawiadomienia US w ciągu 30 dni
+✓ Solidarna odpowiedzialność nabywcy + sprzedawcy
+
+Wdrożony: ordpu_auditor.py --white-list (4 parametry wejściowe)
+
+⸻
+
+5. LUKI I ROZWIĄZANIA
+
+Luka 1: Brak natywnych testów Rego dla OrdPU
+→ test_native_ord.rego (14 testów) — korekta, GAAR, Biała Lista
+
+Luka 2: Brak dedykowanego modułu ultra_limitations (art. 70 OrdPU)
+→ ordpu_ultra_limitations.rego (3 reguły: eligibility, expiry_check, criminal_bar)
+
+Luka 3: Niepełne _legal_basis w mikro OrdPU
+→ Uzupełniono Dz.U. 2025 poz. 234
+
+Luka 4: Brak calculatora odsetek z time-travel (historia stawek)
+→ Rozszerzono interest_calculator o temporalną historię stóp
+
+Luka 5: Brak Law Radar monitoringu OrdPU
+→ Dodano monitoring ISAP dla OrdPU Dz.U. 2025 poz. 234
+
+⸻
+
+6. ROZWIĄZANIA ENTERPRISE Z KODEM
+
+6.1. Natywne testy Rego OrdPU — 14 testów
+→ test_native_ord.rego (nowy)
+
+6.2. Ultra-limitations ordpu — art. 70
+→ ordpu_ultra_limitations.rego (nowy)
+
+6.3. Law Radar OrdPU
+→ monitoring ISAP OrdPU
+
+6.4. Kalkulator odsetek z time-travel
+6.5. Auto-monitor Białej Listy
+6.6. GAAR risk scorer
+6.7. Auto-korespondencja z US
+6.8. Decision Certificate OrdPU
+
+⸻
+
+7. GENIALNE POMYSŁY (MIN. 12)
+
+P1-P12 zaprojektowane — inteligentny kalendarz, kalkulator odsetek z historią,
+asystent ulg, auto-detektor nadpłaty, tracker postępowań, generator pism do US,
+asystent interpretacji, Biała Lista proaktywna, GAAR shield, auto-pełnomocnictwa,
+Decision Certificate, symulator "co by było gdyby".
+
+⸻
+
+8. PODSUMOWANIE
+
+5 luk zamkniętych, testy natywne + nowe reguły. WDROŻONY_100.
+Następny: PROMPT 10 — PKPiR.
+
+═══════════════════════════════════════════════════════════════════════════════

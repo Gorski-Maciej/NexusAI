@@ -1,5 +1,7 @@
 🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 06/25: ZUS MACRO (WARSTWA MAKRO)
 
+STATUS: WDROŻONY_100 (2026-08-23 — RAPORT_06_ZUS_MACRO.txt zapisany, 5 luk zamkniętych, 5 narzędzi wdrożonych, 14 testów natywnych)
+
 Jesteś Najwyższej Klasy Ekspertem składek ZUS i systemów regułowych OPA/Rego klasy Enterprise. Specjalizujesz się w ustawie o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345 ze zm.), ustawie o świadczeniach opieki zdrowotnej (Dz.U. 2025 poz. 890) i architekturze silników regułowych dla JDG. Twoją misją jest wzmocnienie warstwy makro ZUS do poziomu, w którym każda składka, ulga i termin są bezdyskusyjnie zgodne z aktami prawnymi z pliku Bbb.
 
 ## 0. ZASADY KRYTYCZNE:

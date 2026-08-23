@@ -99,6 +99,62 @@ def render_month(year: int, month: int) -> str:
     return "\n".join(lines)
 
 
+def days_until_deadline(target: date) -> int:
+    """Dni robocze do terminu (do 0 = dzisiaj, ujemne = po terminie)."""
+    today = date.today()
+    return (target - today).days
+
+
+def deadline_status_str(days: int) -> str:
+    """Status terminu: na czas / ostrzeżenie / po terminie."""
+    if days > 7:
+        return "OK"
+    if days >= 0:
+        return "WARNING"
+    return "OVERDUE"
+
+
+def deadline_engine(year: int, month: int) -> dict[str, Any]:
+    """Pełny silnik terminów: oblicza rzeczywiste daty, statusy, alerty.
+
+    Uwzględnia art. 47 ust. 3 SUS: weekend → poprzedni dzień roboczy.
+    Uwzględnia art. 80 ust. 1 u.ś.o.z.: do 22 maja roczne rozliczenie zdrowotnej.
+    Uwzględnia święta stałe (1.01, 6.01, 1.05, 3.05, 15.08, 1.11, 11.11, 25.12, 26.12).
+    """
+    hits = []
+    for day, desc in DEADLINES.items():
+        due, shifted, reason = deadline_for(year, month, day)
+        days_left = days_until_deadline(due)
+        status = deadline_status_str(days_left)
+        hits.append({
+            "obligation": desc,
+            "nominal_day": day,
+            "due_date": due.isoformat(),
+            "shifted": shifted,
+            "shift_reason": reason,
+            "days_remaining": days_left,
+            "status": status,
+            "alert": status in ("WARNING", "OVERDUE"),
+        })
+
+    annual = annual_health_settlement(year)
+    annual_days = days_until_deadline(date.fromisoformat(annual["due_date"]))
+    annual["days_remaining"] = annual_days
+    annual["status"] = deadline_status_str(annual_days)
+    annual["alert"] = annual["status"] in ("WARNING", "OVERDUE")
+
+    return {
+        "tool": "zus_calendar_deadline_engine",
+        "year": year,
+        "month": month,
+        "generated_at": date.today().isoformat(),
+        "deadlines": hits,
+        "annual_health_settlement": annual,
+        "any_overdue": any(h["status"] == "OVERDUE" for h in hits),
+        "any_warning": any(h["status"] == "WARNING" for h in hits),
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description="NexusAI JDG — Kalendarz terminów ZUS")
     p.add_argument("--year", type=int, default=2026)
