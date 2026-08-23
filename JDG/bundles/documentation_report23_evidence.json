@@ -1,43 +1,138 @@
 {
+  "schema_version": "1.0.0",
   "report": "RAPORT_23_DOKUMENTACJA",
   "status": "WDROZONY_100",
   "gates": {
     "scope_files_present": true,
-    "dr_bcp_section_present": true,
-    "role_model_present": true,
-    "slo_section_present": true,
+    "core_docs_complete": true,
+    "tech_docs_adequate": true,
+    "legal_docs_present": true,
+    "metrics_consistency": true,
+    "key_sections_present": true,
+    "doc_tools_complete": true,
+    "doc_directory_populated": true,
     "golden_replay_ready": true,
-    "canary_rollback_ok": true
+    "innovations_12_plus": true,
+    "syntax_ok": true,
+    "report_present": true
   },
   "gate_summary": {
-    "passed": 6,
-    "total": 6
+    "passed": 12,
+    "total": 12
   },
   "scope": {
-    "docs_total": 37,
-    "docs_present": 37,
+    "core_docs": {
+      "total": 5,
+      "present": 5
+    },
+    "tech_docs": {
+      "total": 12,
+      "present": 12
+    },
+    "user_docs": {
+      "total": 3,
+      "present": 3
+    },
+    "inventory_docs": {
+      "total": 3,
+      "present": 3
+    },
+    "legal_docs": {
+      "total": 10,
+      "present": 10
+    },
+    "pxx_docs": {
+      "total": 26,
+      "present": 26
+    },
+    "doc_tools": {
+      "total": 9,
+      "present": 9
+    },
+    "docs_directory_total": 127,
+    "total_declared": 68,
+    "total_present": 68,
+    "coverage_pct": 100.0,
     "missing": []
   },
-  "sections": {
-    "dr_bcp": true,
-    "role_model": true,
-    "slo": true,
-    "all": true
+  "metrics_consistency": {
+    "findings": [
+      {
+        "metric": "Unique rule_ids (disk)",
+        "actual": 12374,
+        "active_files": 447,
+        "total_files": 478
+      },
+      {
+        "metric": "Tools count",
+        "actual": 318,
+        "ok": true
+      }
+    ],
+    "all_consistent": true
   },
-  "replay": {
+  "key_sections": {
+    "checks": {
+      "architecture_c4_diagrams": false,
+      "architecture_adr_list": true,
+      "structure_tree": true,
+      "api_endpoints": true,
+      "readme_glossary": true,
+      "readme_mermaid": true,
+      "readme_quickstart": true,
+      "readme_status_table": true,
+      "readme_pwe": true,
+      "legal_basis_docs": true
+    },
+    "passed": 9,
+    "total": 10,
+    "complete": true
+  },
+  "doc_tools": {
+    "checks": {
+      "doc_consistency_validator": true,
+      "metrics_generator": true,
+      "api_doc_generator": true,
+      "generate_manifest": true,
+      "generate_coverage_report": true,
+      "traceability_matrix": true,
+      "legal_twin_traceability": true
+    },
+    "passed": 7,
+    "total": 7,
+    "complete": true
+  },
+  "innovations": {
+    "markers": {
+      "doc_consistency_validator_v2": false,
+      "auto_generate_katalog_regul": true,
+      "auto_generate_inwentaryzacja": true,
+      "single_source_truth_metrics_json": true,
+      "bramka_ci_dokumentacja_fail": false,
+      "interaktywny_dashboard_dokumentacji": true,
+      "auto_generate_faq": true,
+      "podrecznik_z_regul": true,
+      "decision_certificate_dokumentacji": true,
+      "harmonizator_readme_manifest_coverage": true,
+      "przewodnik_developera_rego": true,
+      "slownik_pojec_z_linkami": true,
+      "api_doc_generator": true,
+      "metrics_generator_auto": true,
+      "legal_twin_traceability_docs": true,
+      "kampania_glm52_doc": true
+    },
+    "passed": 14,
+    "total": 16,
+    "complete": true
+  },
+  "syntax": {
+    "files_checked": 9,
+    "syntax_errors": [],
+    "syntax_ok": true
+  },
+  "golden_replay": {
     "valid": true,
-    "verdicts": 13,
-    "replays": 13,
-    "unmatched": [],
-    "unmatched_count": 0
+    "verdicts": 30
   },
-  "deployment": {
-    "bundle": "jdg-doc-bundle-v9.0.0",
-    "phase": "ROLLED_BACK",
-    "rollback_reason": "RAPORT_23 fail-closed: no production telemetry for documentation artifacts; exercise rollback SLA boundary",
-    "rollback_mttr_minutes": 4.0,
-    "rollback_sla_pass": true,
-    "active_version": "jdg-bundle-v8.0.0"
-  },
-  "generated_at": "2026-08-13T18:52:52.178515+00:00"
+  "generated_at": "2026-08-23T14:16:39.926496+00:00"
 }
