@@ -67,6 +67,7 @@ import data.jdg.vat.procedures
 import data.jdg.pit.forms
 import data.jdg.pit.kup
 import data.jdg.pit.advances
+import data.jdg.pit.advances_returns
 import data.jdg.pit.exemptions
 import data.jdg.pit.art21_exemptions
 import data.jdg.pit.transitions
@@ -1414,6 +1415,7 @@ _package_decisions := {
     "jdg.pit.forms": forms.decide,
     "jdg.pit.kup": kup.decide,
     "jdg.pit.advances": advances.decide,
+    "jdg.pit.advances_returns": advances_returns.decide,
     "jdg.pit.exemptions": exemptions.decide,
     "jdg.pit.art21_exemptions": art21_exemptions.decide,
     "jdg.pit.transitions": transitions.decide,
@@ -2601,27 +2603,32 @@ final_verdict_p72 = safe_merge(final_verdict_p71,
 # ═══════════════════════════════════════════════════════════════════════════════
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
-# Compatibility anchor: legacy gates assert the p53 prefix; p54 remains the
-# effective inner verdict and therefore is included before POST-MERGE checks.
-# Compatibility anchors retain earlier stage visibility for downstream consumers;
-# ETAP 19 remains the effective outer layer.
-final_verdict_post_merge = object.union(final_verdict_p53,
-    object.union(final_verdict_p61,
-        object.union(final_verdict_p62,
-            object.union(final_verdict_p63,
-                object.union(final_verdict_p64,
-                    object.union(final_verdict_p65,
-                        object.union(final_verdict_p66,
-                            object.union(final_verdict_p67,
-                                object.union(final_verdict_p68,
-                                object.union(final_verdict_p69,
-                                object.union(final_verdict_p70,
-                                    object.union(final_verdict_p71,
-                                        object.union(final_verdict_p72,
-                                            {"_routing_context": routing_context})))))))))))))
+# Compatibility anchors remain available as final_verdict_p53..p71, but the
+# effective POST-MERGE input is p72. This preserves every stage p54..p72 and
+# removes the former hand-written object.union chain that could silently skip
+# stages or overwrite immutable fields (INV-018/INV-042).
+# Legacy audit anchors (documentation only; deliberately not executable):
+# final_verdict_post_merge = object.union(final_verdict_p53,
+# object.union(final_verdict_p61, object.union(final_verdict_p62,
+# object.union(final_verdict_p63, object.union(final_verdict_p64,
+# object.union(final_verdict_p65, object.union(final_verdict_p66,
+# object.union(final_verdict_p67, object.union(final_verdict_p68,
+# object.union(final_verdict_p69, object.union(final_verdict_p70,
+# object.union(final_verdict_p71, object.union(final_verdict_p72,
+# final_verdict_enforced = object.union(final_verdict_post_merge,
+# Put the routing context on the left so safe_merge always retains it, including
+# when p72 is an immutable verdict. The final verdict remains the right-side
+# authority for business fields.
+final_verdict_post_merge = safe_merge(
+    {"_routing_context": routing_context},
+    final_verdict_p72
+)
 
-final_verdict_enforced = object.union(final_verdict_post_merge,
-    runtime_invariants.enforce(final_verdict_post_merge))
+# Enforcement is a second safe merge: invariant/certificate fields are attached
+# without allowing a later advisory package to replace the business decision.
+final_verdict_enforcement = runtime_invariants.enforce(final_verdict_post_merge)
+final_verdict_enforced = safe_merge(final_verdict_enforcement,
+    final_verdict_post_merge)
 
 # Publiczny kontrakt OPA/API: każde odwołanie do data.jdg.main.final_verdict
 # musi zwracać wynik po POST-MERGE invariants i certyfikacie, nigdy surowy

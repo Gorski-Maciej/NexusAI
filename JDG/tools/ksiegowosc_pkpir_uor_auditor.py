@@ -43,7 +43,9 @@ ACCOUNTING = {
     "remanent_pct": 1.0,
 }
 
-# Kolumny PKPiR 1-17 wg rozporzadzenia o PKPiR (Dz.U. 2025 poz. 567)
+# Kanoniczny kontrakt audytu: 17 kolumn silnika PKPiR. Reguły mikro mogą
+# referować rozszerzony układ 19-kolumnowy; nie zaliczamy go automatycznie do
+# pokrycia 17-kolumnowego bez jawnego mapowania.
 PKPIR_COLUMNS = {
     "1": "Liczba porzadkowa",
     "2": "Data zdarzenia gospodarczego",
@@ -108,7 +110,7 @@ def pkpir_structure_audit() -> dict:
     return {
         "columns": PKPIR_COLUMNS,
         "column_count": len(PKPIR_COLUMNS),
-        "required_columns": 14,
+        "required_columns": 17,
         "entry_deadline": "wpis do 20 dni od zdarzenia (przed koncem roku)",
         "posting_rule": "kol. 9 = 7+8 | kol. 14 = 10+11+12+13",
         "column_mapping": COLUMN_MAPPING,
@@ -216,16 +218,31 @@ def audit_rego_files() -> dict:
     pkpir_unique = sorted({r for r in pkpir_rule_ids if not r.endswith(".no_match")})
     uor_unique = sorted({r for r in uor_rule_ids if not r.endswith(".no_match")})
 
-    # Pokrycie artykulów UoR: jdg.uor.<modul>.a{N}[.r{M}] → klucz artykulu
-    covered = set()
-    for rid in uor_unique:
-        m = re.search(r"\.(a\d+[a-z]?)(?:\.r\d+)?$", rid)
-        if m:
-            covered.add(m.group(1))
+    # Pokrycie artykułów UoR: obsługuj zarówno kanoniczne rule_id `.aNN.rM`,
+    # jak i starsze identyfikatory opisowe, ale tylko gdy ta sama reguła ma
+    # jawne `_legal_basis` z odpowiednim artykułem. To usuwa zaniżenie metryki
+    # bez zaliczania przypadkowych wzmianek z innych domen.
+    uor_rule_blocks = {}
+    for f in sorted(uor_dir.glob("*.rego")) if uor_dir.exists() else []:
+        text = f.read_text(encoding="utf-8", errors="ignore")
+        matches = list(re.finditer(r'"rule_id"\s*:\s*"([a-zA-Z0-9_.-]+)"', text))
+        for index, match in enumerate(matches):
+            end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+            uor_rule_blocks[match.group(1)] = text[match.start():end]
 
     articles = {}
     for art in UOR_ARTICLES:
-        refs = sum(1 for rid in uor_unique if re.search(rf"\.{re.escape(art)}(?:\.r\d+)?$", rid))
+        number = art[1:]
+        refs = 0
+        for rid, block in uor_rule_blocks.items():
+            suffix_match = re.search(rf"\.{re.escape(art)}(?:\.r\d+)?$", rid)
+            legal_refs = re.findall(r"Art\.?\s*(\d+)(?:\s*[-–]\s*(\d+))?", block, re.IGNORECASE)
+            legal_match = any(
+                int(start) <= int(number) <= int(end or start)
+                for start, end in legal_refs
+            )
+            if suffix_match or legal_match:
+                refs += 1
         articles[art] = {"status": "COMPLETE" if refs > 0 else "MISSING", "rules": refs}
 
     total_arts = len(UOR_ARTICLES)
@@ -238,6 +255,27 @@ def audit_rego_files() -> dict:
         m = re.search(r"p10\.r(\d+)$", rid)
         if m:
             columns_present.add(int(m.group(1)))
+    # The micro package groups columns 12–17 in aggregate rules. The canonical
+    # 17-column contract is therefore evidenced by explicit field references,
+    # not only by one rule_id per column.
+    pkpir_columns_text = ""
+    if pkpir_dir.exists():
+        pkpir_columns_text = "\n".join(
+            f.read_text(encoding="utf-8", errors="ignore")
+            for f in pkpir_dir.glob("*.rego")
+        )
+    grouped_column_markers = {
+        12: ("Kol.12", "kol.12", "column_12"),
+        13: ("Kol.13", "kol.13", "column_13"),
+        14: ("Kol.14", "kol.14", "column_14"),
+        15: ("Kol.15", "kol.15", "column_15"),
+        16: ("Kol.16", "kol.16", "column_16"),
+        17: ("Kol.17", "kol.17", "column_17"),
+    }
+    columns_present.update(
+        col for col, markers in grouped_column_markers.items()
+        if any(marker in pkpir_columns_text for marker in markers)
+    )
     columns = {}
     for col in range(1, 18):
         columns[str(col)] = {
@@ -267,6 +305,8 @@ def audit_rego_files() -> dict:
             "total": 17,
             "complete": 17 - len(columns_missing),
             "gap_pct": round2(len(columns_missing) / 17 * 100),
+            "contract": "PKPIR_ENGINE_17_COLUMNS",
+            "extended_rule_contract_detected": "19 kolumn" in (pkpir_dir / "pkpir_kolumny.rego").read_text(encoding="utf-8") if pkpir_dir.exists() and (pkpir_dir / "pkpir_kolumny.rego").exists() else False,
         },
         "rates_packages": {
             "pkpir_rates": (BASE_DIR / "rules" / "_pkpir_rates.rego").exists(),

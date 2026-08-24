@@ -43,12 +43,103 @@
         "Luki C-01..C-23 z raportu 00 jako zrodlo zadan dla czesci 01-20"
       ],
       "raport_txt": "raporty_enterprise_v3/00_PULS_STARTU_GLOWNY_SEKWENCER.txt"
+    },
+    "01": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 0,
+      "lista_glownych_zmian": [
+        "Audyt i potwierdzenie kompletnego wiring-u main_jdg.rego: 303 importy, 0 brakujących pakietów i 0 użyć bez importu.",
+        "Potwierdzenie aktywnej ścieżki PASS 0-8, early-abort dla RISK/ROUTING oraz sharded routing dla transakcji krajowych.",
+        "Potwierdzenie safe_merge, immutable_verdict_allowlist, provenance.enrich_verdict, runtime_invariants.enforce i _routing_context przed enforce.",
+        "Potwierdzenie istniejących warstw trust-adaptive, decision certificate, rule lifecycle, temporalności, fallback/degradacji i grafu zależności.",
+        "Weryfikacja narzędzi kontraktowych i testów bez zmian kodu: 43 testy pytest zakończone powodzeniem; wiring/data contract PASS."
+      ],
+      "luki_pozostale": [
+        "OPA CLI nie jest zainstalowane lokalnie — opa check -b i opa test wymagają uruchomienia w obrazie/CI.",
+        "Wiring gate raportuje pakiety orphan jako informacyjne; nie są one błędem, lecz wymagają właścicieli lub jawnego statusu.",
+        "Istnieje ostrzeżenie statycznego analizatora o object.union w sekcji post-merge; semantyka finalnego łańcucha wymaga potwierdzenia przez OPA runtime.",
+        "Podpis HSM i produkcyjny auto-rollback pozostają zależne od hosta/control plane."
+      ],
+      "raport_txt": "raporty_enterprise_v3/01_FUNDAMENTY_ORKIESTRATOR.txt"
+    },
+    "02": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 2,
+      "lista_glownych_zmian": [
+        "Zweryfikowano reguły VAT makro/mikro, MPP, KSeF/JPK, odliczenia, fraud, stawki i zwolnienia.",
+        "Ulepszono vat_rate_engine o walidację ISO, obowiązkowy temporal snapshot, fail-closed poza zakresem i wynik z wersją snapshotu.",
+        "Dodano testy regresyjne temporalnej klasyfikacji stawek.",
+        "Zapisano raport dowodowy A-J z wynikami 111 testów, gap detectora i inventory."
+      ],
+      "luki_pozostale": [
+        "OPA CLI nie jest zainstalowane lokalnie — opa check -b i opa test wymagają uruchomienia w CI.",
+        "Gap detector wskazuje PARTIAL dla art. 28i i art. 115; nie ukryto tych luk.",
+        "Mapy CN/PKWiU i schematy KSeF/JPK wymagają aktualizacji przez właścicieli prawnych/control plane.",
+        "Klasyfikacja semantyczna nie zastępuje WIS ani zatwierdzenia eksperta podatkowego."
+      ],
+      "raport_txt": "raporty_enterprise_v3/02_VAT.txt"
+    },
+    "03": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 3,
+      "lista_glownych_zmian": [
+        "Powiązano pit_annual_engine z temporalnymi snapshotami parametrów roku.",
+        "Dodano fail-closed dla braku snapshotu, tax_year i legal_basis w wynikach obliczeń.",
+        "Terminy PIT-28/PIT-36 przesuwają się na następny dzień roboczy.",
+        "Dopięto import i wpis registry jdg.pit.advances_returns w orkiestratorze.",
+        "Zapisano raport dowodowy A-J."
+      ],
+      "luki_pozostale": [
+        "OPA CLI nie jest zainstalowane lokalnie — opa check -b i opa test wymagają uruchomienia w CI.",
+        "Snapshoty i mapy ulg wymagają zatwierdzenia eksperta oraz podpisanego źródła prawnego.",
+        "Schematy formularzy MF i kalendarz świąt powinny być zasilane z oficjalnych źródeł.",
+        "Wyniki optimizerów są sugestiami i nie zastępują manualnego zatwierdzenia."
+      ],
+      "raport_txt": "raporty_enterprise_v3/03_PIT.txt"
+    },
+    "04": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 3,
+      "lista_glownych_zmian": [
+        "Usunięto zdeprecjonowany plan34_zus.rego zgodnie z konsolidacją P09.",
+        "zus_calculator.py odczytuje limit zdrowotnej z thresholds_jdg.rego.",
+        "Zweryfikowano DRA, progi zdrowotne, micro inventory i audyt makro.",
+        "Zapisano raport dowodowy A-J."
+      ],
+      "luki_pozostale": [
+        "OPA CLI nie jest zainstalowane lokalnie — opa check -b i opa test wymagają CI.",
+        "Inventory wskazuje MISSING dla art. 6a, 81b, 81c i 81d.",
+        "Stawki i progi wymagają zatwierdzenia źródła prawnego.",
+        "DRA i rekomendacje wymagają manualnego zatwierdzenia."
+      ],
+      "raport_txt": "raporty_enterprise_v3/04_ZUS_HEALTH.txt"
+    },
+    "05": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 3,
+      "lista_glownych_zmian": [
+        "Audytor księgowości rozpoznaje kontrakt PKPIR_ENGINE_17_COLUMNS oraz grupowe markery kolumn 12-17.",
+        "Naprawiono parser podstaw prawnych UoR dla pojedynczych artykułów i zakresów.",
+        "Zweryfikowano PKPiR 17/17, UoR 18/18, 0 duplikatów oraz 123 testy PASS."
+      ],
+      "luki_pozostale": [
+        "OPA CLI nie jest dostępne lokalnie; opa check -b i opa test pozostają bramką CI.",
+        "Źródła prawne i stawki wymagają zatwierdzenia właściciela domeny.",
+        "Narzędzia księgowe pozostają trybem SUGGEST/manual review."
+      ],
+      "raport_txt": "raporty_enterprise_v3/05_KSIEGOWOSC.txt",
+      "evidence": "bundles/ksiegowosc_v3_audit_05.json"
     }
   },
   "podsumowanie": {
     "czesc_do_zrobienia": 20,
-    "czesc_wykonanych": 1,
-    "ostatnia_zrobiona": "00",
+    "czesc_wykonanych": 5,
+    "ostatnia_zrobiona": "05",
     "status_calosci": "W_TRAKCIE_KAMPANII"
   }
 }

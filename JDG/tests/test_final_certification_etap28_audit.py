@@ -61,7 +61,8 @@ def test_threshold_registry_and_orchestrator_wiring():
     assert "import data.jdg.final_certification_etap28" in main
     assert '"jdg.final_certification_etap28": final_certification_etap28.decide' in main
     assert "final_verdict_p72 = safe_merge(final_verdict_p71" in main
-    assert "object.union(final_verdict_p72" in main
+    assert "final_verdict_p72" in main
+    assert "final_verdict_post_merge = safe_merge(" in main
 
 
 def test_auditor_builds_complete_evidence():

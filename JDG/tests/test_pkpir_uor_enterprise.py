@@ -14,7 +14,21 @@ Pokrycie testowe:
 """
 import pytest
 import json
+import sys
+from pathlib import Path
 from typing import Dict, Any
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
+from ksiegowosc_pkpir_uor_auditor import pkpir_structure_audit, audit_rego_files
+
+def test_pkpir_audit_exposes_canonical_17_column_contract():
+    structure = pkpir_structure_audit()
+    audit = audit_rego_files()
+    assert structure["required_columns"] == 17
+    assert audit["pkpir_columns_coverage"]["contract"] == "PKPIR_ENGINE_17_COLUMNS"
+    # Extended 19-column rules are reported explicitly, never silently promoted.
+    assert audit["pkpir_columns_coverage"]["extended_rule_contract_detected"] is True
+
 
 # ── Fixtures ──────────────────────────────────────────────────────────────────
 

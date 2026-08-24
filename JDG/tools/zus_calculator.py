@@ -18,6 +18,8 @@ import json
 import sys
 from dataclasses import dataclass, field
 from typing import Any
+from pathlib import Path
+import re
 
 # stopy składek społecznych (art. 22 SUS, 2026)
 RATES = {
@@ -32,7 +34,7 @@ SOCIAL_WITHOUT_SICKNESS = SOCIAL_WITH_SICKNESS - RATES["sickness"]  # 0.2919
 # zdrowotna
 HEALTH_SCALE = 0.09       # skala PIT — 9% od dochodu
 HEALTH_LINEAR = 0.049     # liniowy — 4,9% od dochodu (odliczalna od podatku)
-HEALTH_LINEAR_DEDUCT_LIMIT = 14100.0  # max odliczenie roczne (2026 — P563 thresholds)
+HEALTH_LINEAR_DEDUCT_LIMIT = 14100.0  # fallback; preferuje data.jdg.thresholds.zus
 HEALTH_LUMP_LIMITS = (60000.0, 300000.0)
 HEALTH_LUMP_AMOUNTS = (491.40, 819.00, 1474.20)  # 60%/100%/180% przeciętnego
 
@@ -123,9 +125,26 @@ def relief_base(min_wage: float, avg_wage: float, relief: str,
         f"Standard — 60% przeciętnego ({avg_wage:.2f} PLN)"
 
 
+def _thresholds() -> dict[str, Any]:
+    """Odczytuje parametry zdrowotnej z kanonicznego thresholds_jdg.rego."""
+    path = Path(__file__).resolve().parent / "rules" / "thresholds_jdg.rego"
+    if not path.exists():
+        return {}
+    text = path.read_text(encoding="utf-8")
+    values: dict[str, Any] = {}
+    for key in ("health_linear_deduction_limit", "health_lump_tier_1_limit", "health_lump_tier_2_limit"):
+        match = re.search(rf'"{key}"\s*:\s*([0-9.]+)', text)
+        if match:
+            values[key] = float(match.group(1))
+    return values
+
+
 def calculate(base: float, tax_form: str, revenue: float = 0.0,
               sickness: bool = True) -> dict[str, Any]:
     """Pełna kalkulacja składek z dowodem."""
+    thresholds = _thresholds()
+    global HEALTH_LINEAR_DEDUCT_LIMIT
+    HEALTH_LINEAR_DEDUCT_LIMIT = thresholds.get("health_linear_deduction_limit", HEALTH_LINEAR_DEDUCT_LIMIT)
     proofs = social_contributions(base, sickness)
     if tax_form == "PIT_SCALE":
         health = health_scale(max([revenue, base]))

@@ -44,6 +44,8 @@ import sys
 from datetime import date
 from pathlib import Path
 
+from pit_temporal_snapshot_engine import get_snapshot_for_year
+
 SCALE_LOW = 0.12
 SCALE_HIGH = 0.32
 SCALE_THRESHOLD = 120000
@@ -78,6 +80,14 @@ QUARTERLY_DUE_MONTHS = [4, 7, 10, 1]   # art. 44 ust. 3g — 20.04/20.07/20.10/2
 ADVANCE_DUE_DAY = 20
 PIT36_DEADLINE = "04-30"               # art. 45 ust. 1 PIT
 PIT28_DEADLINE = "02-28"               # art. 21 ust. 1 ustawy o ryczałcie
+
+
+def _next_working_day(day: date) -> date:
+    """Przesuwa termin na następny dzień roboczy (art. 12 § 5 OrdPU)."""
+    from datetime import timedelta
+    while day.weekday() >= 5:
+        day += timedelta(days=1)
+    return day
 REFUND_DAYS = 45                       # art. 77 § 1 OrdPU
 INTEREST_RATE = 0.145                  # art. 53a OrdPU (2026)
 
@@ -99,34 +109,57 @@ def round_grosz(value: float) -> int:
     return int(v)
 
 
-def tax_reducing_amount(income: float) -> float:
+def _pit_parameters(tax_year: int = 2026) -> dict:
+    snapshot = get_snapshot_for_year(tax_year)
+    if not snapshot:
+        raise ValueError(f"Brak temporalnego snapshotu PIT dla roku {tax_year}")
+    return {
+        "scale_low_rate": snapshot["scale_low_rate"],
+        "scale_high_rate": snapshot["scale_high_rate"],
+        "scale_threshold": snapshot["scale_threshold"],
+        "tax_free_amount": snapshot["tax_free_amount"],
+        "tax_reducing_amount": snapshot["tax_reducing_amount"],
+        "legal_basis": snapshot["legal_basis"],
+    }
+
+
+def tax_reducing_amount(income: float, tax_year: int = 2026) -> float:
     """Kwota zmniejszająca podatek (art. 27 ust. 1 PIT od 2022):
     pełna 3 600 zł do 30 000 zł dochodu, degresja liniowa 30k–120k, zero ≥ 120k."""
     income = max(0.0, _num(income))
-    if income <= DEGRESSION_START:
-        return TAX_REDUCING_FULL
-    if income >= DEGRESSION_END:
+    params = _pit_parameters(tax_year)
+    reduction = params["tax_reducing_amount"]
+    reduction_start = params["tax_free_amount"]
+    reduction_end = params["scale_threshold"]
+    if income <= reduction_start:
+        return reduction
+    if income >= reduction_end:
         return 0.0
-    # degresja liniowa: 3600 × (1 − (income − 30 000) / 90 000)
-    ratio = (income - DEGRESSION_START) / (DEGRESSION_END - DEGRESSION_START)
-    return round(TAX_REDUCING_FULL * (1.0 - ratio), 2)
+    ratio = (income - reduction_start) / (reduction_end - reduction_start)
+    return round(reduction * (1.0 - ratio), 2)
 
 
-def scale_tax(income: float, apply_reducing: bool = True) -> dict:
+def scale_tax(income: float, apply_reducing: bool = True, tax_year: int = 2026) -> dict:
     """Podatek wg skali 12/32% + kwota zmniejszająca (groszowo)."""
     income = max(0.0, _num(income))
-    if income <= SCALE_THRESHOLD:
-        tax = round(income * SCALE_LOW, 2)
+    params = _pit_parameters(tax_year)
+    threshold = params["scale_threshold"]
+    low_rate = params["scale_low_rate"]
+    high_rate = params["scale_high_rate"]
+    if income <= threshold:
+        tax = round(income * low_rate, 2)
         bracket = "LOW"
     else:
-        tax = round(SCALE_THRESHOLD * SCALE_LOW + (income - SCALE_THRESHOLD) * SCALE_HIGH, 2)
+        tax = round(threshold * low_rate + (income - threshold) * high_rate, 2)
         bracket = "HIGH"
-    reducing = tax_reducing_amount(income) if apply_reducing else 0.0
+    reducing = tax_reducing_amount(income, tax_year) if apply_reducing else 0.0
     return {
         "bracket": bracket,
         "gross_tax": tax,
         "tax_reducing_amount": reducing,
         "tax_after_reducing": round(max(0.0, tax - reducing), 2),
+        "tax_year": tax_year,
+        "legal_basis": params["legal_basis"],
     }
 
 
@@ -137,7 +170,8 @@ def lump_tax(revenue: float, kup: float = 0.0, category: str = "services") -> fl
     return round(base * rate, 2)
 
 
-def compute(verdicts: list, form: str = "PIT_SCALE", lump_category: str = "services") -> dict:
+def compute(verdicts: list, form: str = "PIT_SCALE", lump_category: str = "services",
+            tax_year: int = 2026) -> dict:
     """Werdykty OPA → roczne rozliczenie (skala/liniowy/ryczałt)."""
     revenue = sum(_num(v.get("amount_net")) for v in verdicts if v.get("direction") == "SALE")
     kup = sum(_num(v.get("kup_amount")) for v in verdicts if v.get("kup_amount"))
@@ -146,8 +180,8 @@ def compute(verdicts: list, form: str = "PIT_SCALE", lump_category: str = "servi
     income = round(revenue - kup - zus_social, 2)
 
     if form == "PIT_SCALE":
-        taxable = max(0.0, income - TAX_FREE)
-        st = scale_tax(income)
+        taxable = max(0.0, income - _pit_parameters(tax_year)["tax_free_amount"])
+        st = scale_tax(income, tax_year=tax_year)
         tax = st["tax_after_reducing"]
         form_code = "PIT-36"
         health_deductible = 0.0  # skala: brak odliczenia zdrowotnej (2022+)
@@ -177,10 +211,12 @@ def compute(verdicts: list, form: str = "PIT_SCALE", lump_category: str = "servi
         "health_deductible": health_deductible,
         "to_pay": round(tax - health_deductible, 2),
         "detail": detail,
+        "tax_year": tax_year,
+        "legal_basis": _pit_parameters(tax_year)["legal_basis"],
     }
 
 
-def declaration(verdicts: list) -> dict:
+def declaration(verdicts: list, tax_year: int = 2026) -> dict:
     """Auto-wybór formularza + wypełnienie z werdyktów."""
     form = "PIT_SCALE"
     lump_category = "services"
@@ -192,7 +228,7 @@ def declaration(verdicts: list) -> dict:
         if v.get("pkwiu_code"):
             lump_category = _lump_category_from_pkwiu(v["pkwiu_code"])
             break
-    r = compute(verdicts, form, lump_category)
+    r = compute(verdicts, form, lump_category, tax_year)
     return {
         "declaration": r["form"],
         "fields": {
@@ -204,6 +240,8 @@ def declaration(verdicts: list) -> dict:
         },
         "deadline": PIT36_DEADLINE if r["form"] != "PIT-28" else PIT28_DEADLINE,
         "auto_filled": True,
+        "tax_year": tax_year,
+        "legal_basis": r["legal_basis"],
     }
 
 
@@ -241,7 +279,7 @@ def advances(form: str = "PIT_SCALE", income: float = 0.0, prev_year_income: flo
     elif form == "LUMP_SUM":
         annual_tax = lump_tax(income)
     else:
-        annual_tax = scale_tax(income)["tax_after_reducing"]
+        annual_tax = scale_tax(income, tax_year=year)["tax_after_reducing"]
 
     if simplified and prev_year_income > 0:
         prev_tax = scale_tax(prev_year_income)["tax_after_reducing"] if form != "LINEAR" \
@@ -310,18 +348,17 @@ def verify(computed: dict) -> dict:
         expected = lump_tax(computed.get("revenue", income), computed.get("kup", 0.0),
                             computed.get("detail", {}).get("lump_category", "services"))
     else:
-        expected = scale_tax(income)["tax_after_reducing"]
+        expected = scale_tax(income, tax_year=computed.get("tax_year", 2026))["tax_after_reducing"]
     return {"consistent": abs(tax - expected) <= 0.01, "tax": tax, "expected": expected}
 
 
 def schedule(year: int = 2026) -> dict:
     """Terminy roczne: PIT-36/36L 30.04, PIT-28 28.02 (korekta weekendu)."""
-    pit36 = date(year, 4, 30)
-    while pit36.weekday() >= 5:
-        pit36 = pit36.replace(day=pit36.day - 1)  # weekend → poprzedni dzień roboczy (MF)
+    pit36 = _next_working_day(date(year, 4, 30))
+    pit28 = _next_working_day(date(year, 2, 28))
     return {
         "pit_36_36l": pit36.isoformat(),
-        "pit_28": f"{year}-02-28",
+        "pit_28": pit28.isoformat(),
         "pit36_deadline": PIT36_DEADLINE,
         "pit28_deadline": PIT28_DEADLINE,
         "correction": "do 30 dni po wykryciu błędu (art. 81 OrdPU)",

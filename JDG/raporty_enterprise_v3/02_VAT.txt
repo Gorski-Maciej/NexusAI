@@ -1,0 +1,156 @@
+RAPORT WDROŻENIOWY KAMPANII V3 — CZĘŚĆ 02/20: VAT
+====================================================
+Status: WDROŻONY_100 (mechanizmy części 02 wdrożone i zweryfikowane)
+Data: 2026-08-24
+Źródło: JDG/prompty_enterprise_v3/02_VAT.txt
+
+A. METRYKI PRZED/PO I PODSUMOWANIE
+-----------------------------------
+Audyt objął reguły VAT makro/mikro, KSeF/JPK, MPP, stawki, zwolnienia,
+odliczenia, miejsce świadczenia, fraud oraz narzędzia audytowe. Stan po
+wdrożeniu: 111 testów VAT/P03/P04 PASS. Liczba reguł warstwy micro według
+vat_micro_inventory.py: 1469, wszystkie rule_id unikalne. Gap detector: 32
+artykuły COMPLETE, 2 PARTIAL, 0 MISSING. OPA CLI nie jest dostępne lokalnie;
+wynik opa check/test pozostaje bramką CI, a nie deklaracją lokalnej certyfikacji.
+
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające profesjonalistów.
+
+B. AUDYT PLIKÓW
+----------------
+[PLIK: JDG/rules/vat/substantive.rego]
+Działa: stawki, zwolnienia, WNT/WDT, MPP, marża, GTU i legal_basis. Progi są
+pobierane z thresholds. Ograniczenia: część klasyfikacji wymaga danych wejściowych
+oraz runtime OPA; tekstowy gap detector nie ocenia semantyki.
+
+[PLIK: JDG/rules/vat/deductions.rego]
+Działa: odliczenia, proporcja, korekty i złe długi. Walidacja wykonana przez
+istniejące testy mikro i audytowe. Ograniczenie: pełna zgodność zależy od aktualnej
+mapy danych prawnych i dokumentów źródłowych.
+
+[PLIK: JDG/rules/vat/procedures.rego]
+Działa: procedury szczególne i VAT-RR/MPP. Gap detector oznacza art. 115 jako
+PARTIAL, co pozostaje jawnie zapisane, bez fałszywego COMPLETE.
+
+[PLIK: JDG/rules/vat/place_of_supply.rego]
+Działa: reguły miejsca świadczenia. Art. 28i ma status PARTIAL w detektorze.
+
+[PLIK: JDG/rules/vat/enterprise_vat_bridge.rego]
+Działa: most danych enterprise do decyzji OPA; brak danych bridge jest obsługiwany
+kontraktem wejściowym i nie może być traktowany jako dowód pozytywnej decyzji.
+
+[PLIK: JDG/rules/vat/vat_enterprise_zero_doubt.rego]
+Działa: warstwa kontroli zero-doubt i fail-closed. Wymaga OPA runtime do pełnej
+oceny semantycznej.
+
+[PLIK: JDG/rules/vat_mpp_split_payment_enterprise.rego]
+Działa: MPP, próg 15 000 PLN, CN/semantyka, naruszenia i sankcja 30% VAT.
+
+[PLIK: JDG/rules/vat_rates_exemptions_audit_enterprise.rego]
+Działa: kontrola stawek, zwolnień, limitu 200 000 PLN i temporalnych scenariuszy.
+
+[PLIK: JDG/rules/vat_deductions_corrections_enterprise.rego]
+Działa: audyt odliczeń i korekt.
+
+[PLIK: JDG/rules/vat_fraud_detection_enterprise.rego]
+Działa: detekcja pustych faktur, karuzeli i znikającego podatnika oraz routing.
+
+[PLIK: JDG/rules/vat_cashflow_predictor_enterprise.rego]
+Działa: predykcja cashflow; wynik jest sygnałem audytowym, nie poradą podatkową.
+
+[PLIK: JDG/rules/ksef_jpk.rego]
+Działa: kontrakt KSeF/JPK i przejście do kontroli danych. Pełna walidacja wymaga
+aktualnego schematu oraz OPA.
+
+[PLIKI: JDG/tools/*vat*.py]
+Narzędzia wykonują audyty, inventory, gap detection, MPP oraz klasyfikację stawek.
+Usprawniono vat_rate_engine: data jest walidowana jako ISO, snapshot temporalny
+jest obowiązkowy, a wynik klasyfikacji zawiera wersję snapshotu.
+
+C. LUKI I NIEDOCIĄGNIĘCIA
+-------------------------
+1. [WAŻNE] OPA CLI nieobecne lokalnie — uruchomienie w CI.
+2. [WAŻNE] Gap detector wskazuje PARTIAL dla art. 28i.
+3. [WAŻNE] Gap detector wskazuje PARTIAL dla art. 115.
+4. [WAŻNE] Klasyfikacja semantyczna nie zastępuje WIS.
+5. [WAŻNE] Mapa CN/PKWiU jest podzbiorem i wymaga aktualizacji MF.
+6. [WAŻNE] KSeF wymaga aktualnego schematu XSD/API.
+7. [WAŻNE] JPK wymaga walidacji względem bieżącego schematu MF.
+8. [WAŻNE] Fraud scoring wymaga danych referencyjnych i kalibracji.
+9. [WAŻNE] MPP wymaga aktualnej listy Załącznika 15.
+10. [WAŻNE] Biała lista wymaga zewnętrznego źródła i daty sprawdzenia.
+11. [WAŻNE] Temporalność prawa wymaga podpisanych snapshotów.
+12. [WAŻNE] Reguły prawne wymagają przeglądu eksperta podatkowego.
+13. [WAŻNE] OPA runtime jest konieczny do oceny konfliktów reguł.
+14. [WAŻNE] Część micro zawiera hardcoded diagnostyczne markery; inventory je raportuje.
+15. [WAŻNE] Nie każdy wynik klasyfikatora jest certyfikatem decyzji.
+16. [KOSMETYCZNE] Historyczne dokumenty wskazują starsze nazwy etapów.
+17. [KOSMETYCZNE] Część dokumentacji odwołuje się do archiwalnych raportów.
+18. [KOSMETYCZNE] Gap detector bazuje na regexie legal_basis.
+19. [KOSMETYCZNE] Daty narzędzi powinny być generowane dynamicznie.
+20. [KOSMETYCZNE] Opisy kategorii wymagają ujednolicenia językowego.
+
+D. ROZWIĄZANIA ENTERPRISE WDROŻONE
+-----------------------------------
+1. `JDG/tools/vat_rate_engine.py`: walidacja daty ISO, temporal snapshot,
+   fail-closed poza zakresem snapshotów i dołączenie snapshotu do wyniku.
+2. `JDG/tools/vat_gap_detector.py`: audyt pokrycia artykułów i jawne statusy
+   COMPLETE/PARTIAL/MISSING.
+3. `JDG/tools/vat_micro_inventory.py`: unikalność rule_id, stuby, tautologie,
+   temporalność i pokrycie 30 artykułów.
+4. Reguły VAT: thresholds, legal_basis, MPP, odliczenia, KSeF/JPK, fraud i
+   routing zgodnie z istniejącym kontraktem orkiestratora.
+
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające profesjonalistów.
+
+E. INNOWACJE
+------------
+- Temporalny Legal Twin: klasyfikacja stawek nie działa poza znanym oknem prawa.
+- Zero-hardcode: stawki pobierane z snapshotu/thresholds.
+- Fail-closed: brak daty lub snapshotu nie tworzy pozytywnej decyzji.
+- Fraud graph i risk routing jako sygnał do triage.
+- MPP auto-detection po CN i opisie.
+- KSeF/JPK reconciliation jako kontrakt danych.
+- Micro inventory jako bramka jakości.
+- Decision Certificate pozostaje oddzielony od klasyfikacji.
+- Golden replay może potwierdzać regresje po zmianie prawa.
+- Canary/rollback pozostają odpowiedzialnością control plane.
+
+F. TESTY I BRAMKI
+-----------------
+Wykonano:
+`python3 -m pytest -q JDG/tests/test_vat_enterprise.py JDG/tests/test_vat_macro_audit.py JDG/tests/test_vat_micro_core_audit.py JDG/tests/test_vat_micro_special_audit.py JDG/tests/auto/test_p03_vat_macro_enterprise.py JDG/tests/auto/test_p04_vat_micro_enterprise.py`
+Wynik: **111 passed**.
+`python3 JDG/tools/vat_gap_detector.py JDG/rules`: 32 COMPLETE / 2 PARTIAL / 0 MISSING.
+`python3 JDG/tools/vat_micro_inventory.py`: 1469 reguł / 1469 unikalnych / 0 duplikatów / 0 stubów.
+`python3 JDG/tools/vat_rate_engine.py classify --description 'chleb żytni' --date 2026-01-01`: 5%, trust 0.85, snapshot od 2021-01-01.
+`opa check -b`, `opa test`: OPA CLI niedostępne lokalnie — NOT RUN.
+
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające profesjonalistów.
+
+G. SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA
+---------------------------
+Część 01 dostarcza orkiestrator, safe_merge, routing, temporalność i invariants.
+Części 03, 08, 11, 13 i 16 są konsumentami lub właścicielami odpowiednio PIT,
+cross-border, KSeF/JPK, micro oraz narzędzi/bramek. Zmiany nie zmieniają kontraktu
+wejścia orkiestratora ani finalnego verdictu; narzędzie rate engine rozszerza wynik
+addytywnie o temporal_snapshot.
+
+H. DECYZJE CZŁOWIEKA
+--------------------
+- Czy klasyfikacja ma wymagać WIS przy trust_score poniżej ustalonego progu?
+- Kto zatwierdza snapshoty MF i mapy CN/PKWiU?
+- Jaki aktualny schemat KSeF/JPK jest źródłem produkcyjnym?
+- Czy PARTIAL dla art. 28i i 115 ma być zamknięte w części 02, czy przekazane
+  właścicielom części 11/16?
+- Czy wdrożenie produkcyjne ma wymagać podpisu HSM?
+
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające profesjonalistów.
+
+I. REJESTR ZMIANY
+-----------------
+Blok rejestru został zaktualizowany osobno w `JDG/bundles/enterprise_v3_registry.json`.
+Raport: `raporty_enterprise_v3/02_VAT.txt`.
+
+J. HASŁO KOŃCOWE
+----------------
+V3-02_KOMPLETNE - SPOJNOSC ZAREJESTROWANA - CONTEXT_RESET_REQUIRED - wyczysc okno kontekstowe

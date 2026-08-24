@@ -24,6 +24,7 @@ import argparse
 import json
 import re
 import sys
+from datetime import date
 from pathlib import Path
 
 JDG_ROOT = Path(__file__).resolve().parent.parent
@@ -87,6 +88,14 @@ RATE_SNAPSHOTS = [
 ]
 
 
+def _valid_date(value: str) -> bool:
+    try:
+        date.fromisoformat(value)
+    except (TypeError, ValueError):
+        return False
+    return True
+
+
 def _load_thresholds() -> dict:
     """Odczyt stawek z thresholds_jdg.rego (jedno źródło prawdy, ADR-002)."""
     path = JDG_ROOT / "rules" / "thresholds_jdg.rego"
@@ -107,10 +116,15 @@ def classify(description: str = "", category_code: str = "", cn_code: str = "",
     Klasyfikacja towaru/usługi → stawka VAT z Trust Score.
     Kolejność: CN → PKWiU → semantyka → 23% (default).
     """
-    thr = _load_thresholds()
-    std = thr.get("standard_rate", STANDARD_RATE)
-    r8 = thr.get("reduced_rate_8", REDUCED_RATE_8)
-    r5 = thr.get("reduced_rate_5", REDUCED_RATE_5)
+    if not _valid_date(date_str):
+        raise ValueError("date_str must be an ISO date (YYYY-MM-DD)")
+    temporal = snapshot(date_str)
+    if "error" in temporal:
+        raise ValueError(temporal["error"])
+
+    std = temporal["standard"]
+    r8 = temporal["reduced_8"]
+    r5 = temporal["reduced_5"]
 
     rate, source, score = std, "DEFAULT_23", 0.3
 
@@ -156,6 +170,7 @@ def classify(description: str = "", category_code: str = "", cn_code: str = "",
         "cn_code": cn_code or "",
         "date": date_str,
         "legal_basis": "Art. 41-43 VAT + Rozp. MF z 4.12.2024 r.",
+        "temporal_snapshot": temporal,
     }
 
 
@@ -197,6 +212,8 @@ def snapshot(date_str: str) -> dict:
                 "standard": snap["standard"],
                 "reduced_8": snap["reduced_8"],
                 "reduced_5": snap["reduced_5"],
+                "from": snap["from"],
+                "to": snap["to"],
                 "legal_basis": "Art. 41-43 VAT (brzmienie temporalne)",
             }
     return {"date": date_str, "error": "data poza zakresem snapshots"}

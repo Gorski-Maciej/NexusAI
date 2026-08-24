@@ -1,0 +1,193 @@
+{
+  "tool": "ksiegowosc_pkpir_uor_auditor",
+  "module": "P09 Ksiegowosc PKPiR+UoR",
+  "audit": {
+    "pkpir_files": [
+      "micro/pkpir/pkpir.rego",
+      "micro/pkpir/pkpir_kolumny.rego",
+      "micro/pkpir/pkpir_korekty.rego",
+      "micro/pkpir/pkpir_koszty.rego",
+      "micro/pkpir/pkpir_nkup.rego",
+      "micro/pkpir/pkpir_przychody.rego",
+      "micro/pkpir/pkpir_remanent.rego"
+    ],
+    "uor_files": [
+      "uor/plan42_uor.rego",
+      "uor/uor_assets.rego",
+      "uor/uor_books.rego",
+      "uor/uor_closing.rego",
+      "uor/uor_costs.rego",
+      "uor/uor_financial_stmt.rego",
+      "uor/uor_inventory.rego",
+      "uor/uor_obligation.rego",
+      "uor/uor_revenue.rego"
+    ],
+    "pkpir_total_rule_ids": 75,
+    "pkpir_unique_count": 68,
+    "uor_total_rule_ids": 253,
+    "uor_unique_count": 244,
+    "uor_duplicates": [],
+    "articles": {
+      "a2": {
+        "status": "COMPLETE",
+        "rules": 11
+      },
+      "a4": {
+        "status": "COMPLETE",
+        "rules": 19
+      },
+      "a10": {
+        "status": "COMPLETE",
+        "rules": 6
+      },
+      "a11": {
+        "status": "COMPLETE",
+        "rules": 7
+      },
+      "a12": {
+        "status": "COMPLETE",
+        "rules": 7
+      },
+      "a20": {
+        "status": "COMPLETE",
+        "rules": 13
+      },
+      "a21": {
+        "status": "COMPLETE",
+        "rules": 11
+      },
+      "a22": {
+        "status": "COMPLETE",
+        "rules": 4
+      },
+      "a26": {
+        "status": "COMPLETE",
+        "rules": 3
+      },
+      "a27": {
+        "status": "COMPLETE",
+        "rules": 4
+      },
+      "a28": {
+        "status": "COMPLETE",
+        "rules": 32
+      },
+      "a32": {
+        "status": "COMPLETE",
+        "rules": 10
+      },
+      "a45": {
+        "status": "COMPLETE",
+        "rules": 11
+      },
+      "a46": {
+        "status": "COMPLETE",
+        "rules": 3
+      },
+      "a47": {
+        "status": "COMPLETE",
+        "rules": 11
+      },
+      "a49": {
+        "status": "COMPLETE",
+        "rules": 2
+      },
+      "a52": {
+        "status": "COMPLETE",
+        "rules": 1
+      },
+      "a74": {
+        "status": "COMPLETE",
+        "rules": 3
+      }
+    },
+    "uor_coverage": {
+      "total": 18,
+      "complete": 18,
+      "missing": 0,
+      "gap_pct": 0.0
+    },
+    "pkpir_columns": {
+      "1": {
+        "name": "Liczba porzadkowa",
+        "status": "COMPLETE"
+      },
+      "2": {
+        "name": "Data zdarzenia gospodarczego",
+        "status": "COMPLETE"
+      },
+      "3": {
+        "name": "Data wpisu do księgi",
+        "status": "COMPLETE"
+      },
+      "4": {
+        "name": "Nr dowodu księgowego",
+        "status": "COMPLETE"
+      },
+      "5": {
+        "name": "Kontrahent (imie/nazwa, adres)",
+        "status": "COMPLETE"
+      },
+      "6": {
+        "name": "Opis zdarzenia",
+        "status": "COMPLETE"
+      },
+      "7": {
+        "name": "Przychód — sprzedaz towarów i uslug",
+        "status": "COMPLETE"
+      },
+      "8": {
+        "name": "Przychód — pozostale",
+        "status": "COMPLETE"
+      },
+      "9": {
+        "name": "Razem przychody (7+8)",
+        "status": "COMPLETE"
+      },
+      "10": {
+        "name": "Zakup towarów handlowych i materialów",
+        "status": "COMPLETE"
+      },
+      "11": {
+        "name": "Koszty uboczne zakupu",
+        "status": "COMPLETE"
+      },
+      "12": {
+        "name": "Wynagrodzenia brutto",
+        "status": "COMPLETE"
+      },
+      "13": {
+        "name": "Pozostale wydatki",
+        "status": "COMPLETE"
+      },
+      "14": {
+        "name": "Razem wydatki (10+11+12+13)",
+        "status": "COMPLETE"
+      },
+      "15": {
+        "name": "Uwagi",
+        "status": "COMPLETE"
+      },
+      "16": {
+        "name": "VAT naliczony — do odliczenia",
+        "status": "COMPLETE"
+      },
+      "17": {
+        "name": "VAT naliczony — niepodlegajacy odliczeniu",
+        "status": "COMPLETE"
+      }
+    },
+    "pkpir_columns_missing": [],
+    "pkpir_columns_coverage": {
+      "total": 17,
+      "complete": 17,
+      "gap_pct": 0.0,
+      "contract": "PKPIR_ENGINE_17_COLUMNS",
+      "extended_rule_contract_detected": true
+    },
+    "rates_packages": {
+      "pkpir_rates": true,
+      "uor_rates": true
+    }
+  }
+}

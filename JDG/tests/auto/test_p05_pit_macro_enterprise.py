@@ -68,6 +68,12 @@ class TestPitReliefsOptimizer:
         adv = pro.advances_simulation(prev_year_income=120000, monthly_income=10000)
         assert adv["simplified_monthly"] == 10000.0  # 1/12 z poprzedniego roku
 
+    def test_schedule_shifts_weekend_deadlines_forward(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        from pit_annual_engine import schedule
+        result = schedule(2026)
+        assert result["pit_28"] == "2026-03-02"
+
     def test_snapshot_diff(self):
         sys.path.insert(0, str(TOOLS_DIR))
         import pit_reliefs_optimizer as pro

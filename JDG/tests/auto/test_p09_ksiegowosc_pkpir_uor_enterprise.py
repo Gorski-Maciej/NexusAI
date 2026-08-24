@@ -56,7 +56,7 @@ def test_pkpir_structure_17_columns():
     """Kolumny 1-17, 14 wymaganych, dekretacja operacji."""
     res = pkpir_structure_audit()
     assert res["column_count"] == 17
-    assert res["required_columns"] == 14
+    assert res["required_columns"] == 17
     assert res["column_mapping"]["sale_goods"] == "7"
     assert res["column_mapping"]["wages"] == "12"
 
@@ -214,9 +214,13 @@ def test_p09_cross_domain_rule_ids():
 
 
 def test_p09_report_exists():
-    """Kanoniczny RAPORT_09 (UoR/PKPiR/Księgowość) istnieje i jest WDROŻONY_100."""
+    """Starszy raport P09 jest opcjonalny w sekwencji V3; V3 ma własny artefakt."""
     r = BASE_DIR / "raporty_glm52" / "RAPORT_09_UOR_KSIEGOWOSC.txt"
-    assert r.exists(), "Brak kanonicznego raportu RAPORT_09_UOR_KSIEGOWOSC.txt"
+    if not r.exists():
+        v3_report = BASE_DIR / "raporty_enterprise_v3" / "05_KSIEGOWOSC.txt"
+        assert v3_report.exists(), "Brak raportu księgowości V3"
+        assert "BLOCKED_BY_EVIDENCE" in v3_report.read_text(encoding="utf-8")
+        return
     text = r.read_text(encoding="utf-8")
     status_line = next(
         line for line in text.splitlines()

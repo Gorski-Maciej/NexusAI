@@ -177,6 +177,19 @@ class TestVatRateEngine:
         assert r["vat_rate"] == "23"
         assert r["source"] == "CN_8703"
 
+    def test_classify_rejects_date_outside_supported_snapshot(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import vat_rate_engine as vre
+        with pytest.raises(ValueError):
+            vre.classify(description="chleb", date_str="2010-01-01")
+
+    def test_classify_exposes_temporal_snapshot(self):
+        sys.path.insert(0, str(TOOLS_DIR))
+        import vat_rate_engine as vre
+        result = vre.classify(description="chleb", date_str="2026-01-01")
+        assert result["temporal_snapshot"]["from"] == "2021-01-01"
+        assert result["temporal_snapshot"]["standard"] == 0.23
+
     def test_build_index_entries(self):
         sys.path.insert(0, str(TOOLS_DIR))
         import vat_rate_engine as vre
