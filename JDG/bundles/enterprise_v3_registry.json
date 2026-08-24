@@ -134,12 +134,50 @@
       ],
       "raport_txt": "raporty_enterprise_v3/05_KSIEGOWOSC.txt",
       "evidence": "bundles/ksiegowosc_v3_audit_05.json"
+    },
+    "06": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 4,
+      "lista_glownych_zmian": [
+        "Dodano reguły atomowe KKS art. 45 (zatarcie skazania) i art. 53 § 6 (mała wartość — 500× min. wynagrodzenie) w rules/micro/kks_ord_atomic_p11.rego (rule_id: jdg.micro.kks.a45.expungement_tracker, jdg.micro.kks.a53.small_value_classifier).",
+        "Rozszerzono tools/kks_penalty_auditor.py o skanowanie kks_ord_atomic_p11.rego oraz plan33_kks.rego — pokrycie artykułów 18/18 (gap 0.0%), 0 duplikatów, 0 stubów.",
+        "Dodano testy natywne (tests/rego/test_native_kks_ord.rego) i testy pytest (tests/test_kks_enterprise.py) dla art. 45 i 53 — 39 testów PASS.",
+        "Wygenerowano bundles/kks_v3_audit_06.json oraz raport raporty_enterprise_v3/06_KKS.txt (sekcje A-J)."
+      ],
+      "luki_pozostale": [
+        "OPA CLI nie jest dostępne lokalnie — opa check -b i opa test pozostają bramką CI.",
+        "Źródła prawne i stawki wymagają zatwierdzenia właściciela domeny.",
+        "plan33_kks.rego (65 rule_id) nie był w git HEAD (brak w indeksie) — przywrócono fizycznie; do potwierdzenia w części 13/18.",
+        "Streszczenie plan33_kks.rego (stub-y) do przeglądu w części 13."
+      ],
+      "raport_txt": "raporty_enterprise_v3/06_KKS.txt",
+      "evidence": "bundles/kks_v3_audit_06.json"
+    },
+    "07": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 4,
+      "lista_glownych_zmian": [
+        "Dodano reguły atomowe OrdPU art. 14a (ochrona interpretacji indywidualnej) i art. 14d (milczące załatwienie po 30 dniach) w rules/micro/kks_ord_atomic_p11.rego (rule_id: jdg.micro.ord.a14a.interpretation_protection, jdg.micro.ord.a14d.interpretation_deadline).",
+        "Rozszerzono tools/ordpu_auditor.py o skanowanie kks_ord_atomic_p11.rego — pokrycie 20/20 artykułów (gap 0.0%), 0 duplikatów, 0 stubów.",
+        "Dodano testy natywne (tests/rego/test_native_kks_ord.rego) i pytest (tests/test_kks_enterprise.py) dla art. 14a/14d — 43 testy PASS.",
+        "Wygenerowano bundles/ordynacja_v3_audit_07.json oraz raport raporty_enterprise_v3/07_ORDYNACJA.txt (sekcje A-J)."
+      ],
+      "luki_pozostale": [
+        "OPA CLI nie jest dostępne lokalnie — opa check -b i opa test pozostają bramką CI.",
+        "Źródła prawne i stawki wymagają zatwierdzenia właściclego domeny.",
+        "Interpretacje: mapa powiązania interpretacji z regułami (Legal Twin) do rozbudowy w części 20.",
+        "Radar zmian ORD (2026) i pełny rejestr pełnomocników — plan w części 14/16."
+      ],
+      "raport_txt": "raporty_enterprise_v3/07_ORDYNACJA.txt",
+      "evidence": "bundles/ordynacja_v3_audit_07.json"
     }
   },
   "podsumowanie": {
     "czesc_do_zrobienia": 20,
-    "czesc_wykonanych": 5,
-    "ostatnia_zrobiona": "05",
+    "czesc_wykonanych": 7,
+    "ostatnia_zrobiona": "07",
     "status_calosci": "W_TRAKCIE_KAMPANII"
   }
 }

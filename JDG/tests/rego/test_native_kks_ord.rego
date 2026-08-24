@@ -122,6 +122,113 @@ test_positive_kks_limitation {
     result._routing == "OK"
 }
 
+# ── 5b. KKS ART. 45 — ZATARCIE SKAZANIA ───────────────────────────────────────
+test_positive_expungement {
+    result := kks_ord_atomic_p11.decide with input as {
+        "jdg_entrepreneur": {
+            "business_status": "ACTIVE",
+            "kks_expungement_check": true,
+            "conviction_type": "PRZESTĘPSTWO",
+            "penalty_end_date": "2020-01-01",
+            "eval_date": "2026-06-01"
+        }
+    } with data.jdg.thresholds as {"kks": {"expungement_conviction_years": 5}}
+    result.rule_id == "jdg.micro.kks.a45.expungement_tracker"
+    result.expungement_eligible == true
+    result._routing == "OK"
+}
+
+test_negative_expungement_not_yet {
+  result := kks_ord_atomic_p11.decide with input as {
+    "jdg_entrepreneur": {
+      "business_status": "ACTIVE",
+      "kks_expungement_check": true,
+      "conviction_type": "PRZESTĘPSTWO",
+      "penalty_end_date": "2024-01-01",
+      "eval_date": "2026-06-01"
+    }
+  }
+  result.rule_id != "jdg.micro.kks.a45.expungement_tracker"
+}
+
+# ── 5ter. KKS ART. 53 — MAŁA WARTOŚĆ (próg 500 × min. wynagrodzenie) ──────────
+test_positive_small_value {
+  result := kks_ord_atomic_p11.decide with input as {
+    "jdg_entrepreneur": {
+      "business_status": "ACTIVE",
+      "kks_small_value_check": true,
+      "offense_value_pln": 100000,
+      "min_wage_pln": 4800.0
+    }
+  } with data.jdg.thresholds as {"kks": {"small_value_multiple": 500}}
+  result.rule_id == "jdg.micro.kks.a53.small_value_classifier"
+  result.small_value_class == "MAŁA WARTOŚĆ"
+  result._routing == "TRIAGE_QUEUE"
+}
+
+test_negative_small_value_over_threshold {
+  result := kks_ord_atomic_p11.decide with input as {
+    "jdg_entrepreneur": {
+      "business_status": "ACTIVE",
+      "kks_small_value_check": true,
+      "offense_value_pln": 3000000,
+      "min_wage_pln": 4800.0
+    }
+  }
+  result.rule_id != "jdg.micro.kks.a53.small_value_classifier"
+}
+
+# ── 5c. ORDYNACJA ART. 14a/14d — INTERPRETACJE INDYWIDUALNE (Legal Twin) ─────
+test_positive_interpretation_protection {
+    result := kks_ord_atomic_p11.decide with input as {
+        "jdg_entrepreneur": {
+            "business_status": "ACTIVE",
+            "interpretation_requested": true,
+            "facts_match_interpretation": true
+        }
+    } with data.jdg.thresholds as {"ord": {"interpretation_days": 30}}
+    result.rule_id == "jdg.micro.ord.a14a.interpretation_protection"
+    result.interpretation_protection_applicable == true
+    result._routing == "TRIAGE_QUEUE"
+}
+
+test_negative_interpretation_facts_mismatch {
+  result := kks_ord_atomic_p11.decide with input as {
+    "jdg_entrepreneur": {
+      "business_status": "ACTIVE",
+      "interpretation_requested": true,
+      "facts_match_interpretation": false
+    }
+  }
+  result.rule_id != "jdg.micro.ord.a14a.interpretation_protection"
+}
+
+test_positive_interpretation_deemed_issued {
+  result := kks_ord_atomic_p11.decide with input as {
+    "jdg_entrepreneur": {
+      "business_status": "ACTIVE",
+      "interpretation_requested": true,
+      "days_since_application": 45,
+      "case_obviously_unfounded": false
+    }
+  } with data.jdg.thresholds as {"ord": {"interpretation_days": 30}}
+  result.rule_id == "jdg.micro.ord.a14d.interpretation_deadline"
+  result.interpretation_deemed_issued == true
+  result._routing == "OK"
+}
+
+test_negative_interpretation_not_yet_deadline {
+  result := kks_ord_atomic_p11.decide with input as {
+    "jdg_entrepreneur": {
+      "business_status": "ACTIVE",
+      "interpretation_requested": true,
+      "days_since_application": 10,
+      "case_obviously_unfounded": false
+    }
+  }
+  result.rule_id != "jdg.micro.ord.a14d.interpretation_deadline"
+}
+
 # ── 6. ORDYNACJA ART. 70 — PRZEDAWNIENIE ZOBOWIĄZANIA (5 lat od końca roku) ───
 test_positive_ord_limitation {
     result := kks_ord_atomic_p11.decide with input as {

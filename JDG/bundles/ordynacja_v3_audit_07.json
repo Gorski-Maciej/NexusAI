@@ -1,0 +1,107 @@
+{
+  "tool": "ordpu_auditor",
+  "module": "P11 Ordynacja Podatkowa",
+  "audit": {
+    "files_audited": [
+      "micro/ord/ord.rego",
+      "micro/plan33_ord.rego",
+      "micro/kks_ord_atomic_p11.rego"
+    ],
+    "total_rule_ids": 444,
+    "unique_count": 444,
+    "no_match_defaults": 3,
+    "duplicates": [],
+    "duplicate_count": 0,
+    "stubs": [],
+    "stub_count": 0,
+    "dead_rules": [],
+    "articles": {
+      "a16": {
+        "status": "COMPLETE",
+        "rules": 6
+      },
+      "a53": {
+        "status": "COMPLETE",
+        "rules": 5
+      },
+      "a56b": {
+        "status": "COMPLETE",
+        "rules": 5
+      },
+      "a67a": {
+        "status": "COMPLETE",
+        "rules": 5
+      },
+      "a67b": {
+        "status": "COMPLETE",
+        "rules": 8
+      },
+      "a67c": {
+        "status": "COMPLETE",
+        "rules": 5
+      },
+      "a67d": {
+        "status": "COMPLETE",
+        "rules": 5
+      },
+      "a67e": {
+        "status": "COMPLETE",
+        "rules": 5
+      },
+      "a70": {
+        "status": "COMPLETE",
+        "rules": 16
+      },
+      "a72": {
+        "status": "COMPLETE",
+        "rules": 8
+      },
+      "a77": {
+        "status": "COMPLETE",
+        "rules": 5
+      },
+      "a78": {
+        "status": "COMPLETE",
+        "rules": 5
+      },
+      "a81": {
+        "status": "COMPLETE",
+        "rules": 10
+      },
+      "a81b": {
+        "status": "COMPLETE",
+        "rules": 6
+      },
+      "a117ba": {
+        "status": "COMPLETE",
+        "rules": 1
+      },
+      "a119a": {
+        "status": "COMPLETE",
+        "rules": 11
+      },
+      "a138a": {
+        "status": "COMPLETE",
+        "rules": 30
+      },
+      "a193a": {
+        "status": "COMPLETE",
+        "rules": 11
+      },
+      "a14a": {
+        "status": "COMPLETE",
+        "rules": 1
+      },
+      "a14d": {
+        "status": "COMPLETE",
+        "rules": 1
+      }
+    },
+    "coverage": {
+      "total": 20,
+      "complete": 20,
+      "missing": 0,
+      "gap_pct": 0.0
+    }
+  }
+}

@@ -246,6 +246,13 @@ def audit_rego_files() -> dict:
         texts.append(t)
         rule_ids += re.findall(r'"rule_id"\s*:\s*"([a-z0-9_.]+)"', t)
 
+    atomic = BASE_DIR / "rules" / "micro" / "kks_ord_atomic_p11.rego"
+    if atomic.exists():
+        files_audited.append("micro/kks_ord_atomic_p11.rego")
+        t = atomic.read_text(encoding="utf-8")
+        texts.append(t)
+        rule_ids += re.findall(r'"rule_id"\s*:\s*"([a-z0-9_.]+)"', t)
+
     total = len(rule_ids)
     unique = sorted(set(rule_ids))
     no_match_defaults = sum(1 for rid in rule_ids if rid.endswith(".no_match"))
@@ -257,9 +264,11 @@ def audit_rego_files() -> dict:
     dead_rules = _detect_dead_rules(unique)
 
     # Pokrycie artykułów: jdg.micro.kks.a{N} → klucz artykułu
+    # (kks_ord_atomic_p11.rego używa prefiksu jdg.micro.kks.a{N}.{nazwa} —
+    #  dopasowanie obejmuje kropkę po numerze artykułu)
     covered = set()
     for rid in unique:
-        m = re.match(r"jdg\.micro\.kks(?:\.plan33)?\.(a\d+[a-z]?)", rid)
+        m = re.match(r"jdg\.micro\.kks(?:\.plan33)?\.(a\d+[a-z]?)(?:\.|$)", rid)
         if m:
             covered.add(m.group(1))
 

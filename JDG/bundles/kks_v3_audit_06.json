@@ -1,0 +1,99 @@
+{
+  "tool": "kks_penalty_auditor",
+  "module": "P10 KKS (Kodeks Karny Skarbowy)",
+  "audit": {
+    "files_audited": [
+      "micro/kks/kks.rego",
+      "micro/plan33_kks.rego",
+      "micro/kks_ord_atomic_p11.rego"
+    ],
+    "total_rule_ids": 554,
+    "unique_count": 554,
+    "no_match_defaults": 3,
+    "duplicates": [],
+    "duplicate_count": 0,
+    "stubs": [],
+    "stub_count": 0,
+    "dead_rules": [],
+    "articles": {
+      "a16": {
+        "status": "COMPLETE",
+        "rules": 13
+      },
+      "a37": {
+        "status": "COMPLETE",
+        "rules": 1
+      },
+      "a44": {
+        "status": "COMPLETE",
+        "rules": 1
+      },
+      "a45": {
+        "status": "COMPLETE",
+        "rules": 1
+      },
+      "a53": {
+        "status": "COMPLETE",
+        "rules": 1
+      },
+      "a54": {
+        "status": "COMPLETE",
+        "rules": 23
+      },
+      "a55": {
+        "status": "COMPLETE",
+        "rules": 12
+      },
+      "a56": {
+        "status": "COMPLETE",
+        "rules": 22
+      },
+      "a57": {
+        "status": "COMPLETE",
+        "rules": 20
+      },
+      "a62": {
+        "status": "COMPLETE",
+        "rules": 22
+      },
+      "a64": {
+        "status": "COMPLETE",
+        "rules": 11
+      },
+      "a77": {
+        "status": "COMPLETE",
+        "rules": 16
+      },
+      "a78": {
+        "status": "COMPLETE",
+        "rules": 10
+      },
+      "a79": {
+        "status": "COMPLETE",
+        "rules": 10
+      },
+      "a80": {
+        "status": "COMPLETE",
+        "rules": 17
+      },
+      "a81": {
+        "status": "COMPLETE",
+        "rules": 10
+      },
+      "a82": {
+        "status": "COMPLETE",
+        "rules": 10
+      },
+      "a83": {
+        "status": "COMPLETE",
+        "rules": 10
+      }
+    },
+    "coverage": {
+      "total": 18,
+      "complete": 18,
+      "missing": 0,
+      "gap_pct": 0.0
+    }
+  }
+}

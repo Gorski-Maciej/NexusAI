@@ -1,5 +1,6 @@
 RAPORT ETAPU: 17_CROSSBORDER_MDR
 STATUS: WDROZONY_100
+ETAP_17_COMPLETE
 BRAMKI: 14/14
 ŹRÓDŁO: bundles/crossborder_etap17_audit_state.json (audit_state.json — odtworzony łańcuch dowodów)
 DATA: 2026-08-22T22:06:41+00:00

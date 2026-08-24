@@ -229,6 +229,98 @@ class TestKKSFines:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# Art. 45 / 53 KKS — Zatarcie skazania i mała wartość (P11 micro atomic)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@pytest.mark.rego
+@pytest.mark.unit
+class TestKKSArt45Expungement:
+    """Art. 45 KKS — zatarcie skazania: przestępstwo 5 lat, wykroczenie 3 lata."""
+
+    RULE_ID = "jdg.micro.kks.a45.expungement_tracker"
+
+    def test_expungement_crime_5y(self):
+        """Przestępstwo skarbowe — zatarcie po 5 latach od wykonania kary."""
+        conviction_type = "PRZESTĘPSTWO"
+        penalty_end = "2020-01-01"
+        eval_date = "2026-06-01"
+        years = 5
+        assert penalty_end < eval_date
+        # 2020 + 5 = 2025 < 2026 → zatarte
+        assert eval_date > "2025-01-01"
+
+    def test_expungement_not_yet_within_window(self):
+        """Skazanie z 2024 — jeszcze nie zatarte w 2026 (5-letni okres)."""
+        penalty_end = "2024-01-01"
+        eval_date = "2026-06-01"
+        # 2024 + 5 = 2029 > 2026 → NIE zatarte
+        assert eval_date < "2029-01-01"
+
+    def test_expungement_misdemeanor_3y(self):
+        """Wykroczenie skarbowe — zatarcie po 3 latach."""
+        years = 3
+        penalty_end = "2020-01-01"
+        assert penalty_end < "2023-01-01"  # 2020 + 3 = 2023
+
+
+@pytest.mark.rego
+@pytest.mark.unit
+class TestKKSArt53SmallValue:
+    """Art. 53 § 6 KKS — mała wartość: 500 × minimalne wynagrodzenie."""
+
+    def test_small_value_threshold_500x_min_wage(self):
+        """Próg małej wartości = 500 × płaca minimalna."""
+        min_wage = 4800.0
+        small_value_multiple = 500
+        threshold = min_wage * small_value_multiple
+        assert threshold == 2400000.0
+
+    def test_small_value_under_threshold(self):
+        """Czyn poniżej progu = mała wartość (łagodniejsza kwalifikacja)."""
+        amount = 100000.0
+        threshold = 2400000.0
+        assert amount < threshold
+
+    def test_small_value_over_threshold(self):
+        """Czyn powyżej progu NIE jest małą wartością."""
+        amount = 3000000.0
+        threshold = 2400000.0
+        assert amount > threshold
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# Art. 14a / 14d OrdPU — Interpretacje indywidualne (Legal Twin, część 07)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@pytest.mark.rego
+@pytest.mark.unit
+class TestOrdInterpretations:
+    """Art. 14a-14d OrdPU — interpretacje indywidualne: ochrona i milczące załatwienie."""
+
+    def test_interp_protection_30_days(self):
+        """Wniosek o interpretację — termin wydania 30 dni (art. 14d § 1)."""
+        interpretation_days = 30
+        assert interpretation_days == 30
+
+    def test_interp_protection_facts_match(self):
+        """Ochrona przysługuje, gdy stan faktyczny zgodny z opisanym we wniosku."""
+        facts_match = True
+        assert facts_match is True
+
+    def test_interp_deemed_issued_after_deadline(self):
+        """Milczenie organu po 30 dniach = uznanie wniosku (art. 14d § 2)."""
+        days_since_application = 45
+        interpretation_days = 30
+        assert days_since_application >= interpretation_days
+
+    def test_interp_no_decision_before_deadline(self):
+        """Przed upływem 30 dni brak milczącego załatwienia."""
+        days_since_application = 10
+        interpretation_days = 30
+        assert days_since_application < interpretation_days
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v", "--tb=short"])

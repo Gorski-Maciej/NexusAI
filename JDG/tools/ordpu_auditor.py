@@ -195,6 +195,16 @@ def audit_rego_files() -> dict:
         texts.append(t)
         rule_ids += re.findall(r'"rule_id"\s*:\s*"([a-z0-9_.]+)"', t)
 
+    # GLM52 P11 — reguły atomiczno-porządkowe (a70, a81b, a117ba, a119a,
+    # a193a, a282b, a14a, a14d) żyją w kks_ord_atomic_p11.rego; bez tego pliku
+    # audyt pokazywałby fałszywe MISSING (kontynuacja części 06 kampanii V3).
+    atomic = BASE_DIR / "rules" / "micro" / "kks_ord_atomic_p11.rego"
+    if atomic.exists():
+        files_audited.append("micro/kks_ord_atomic_p11.rego")
+        t = atomic.read_text(encoding="utf-8")
+        texts.append(t)
+        rule_ids += re.findall(r'"rule_id"\s*:\s*"([a-z0-9_.]+)"', t)
+
     total = len(rule_ids)
     unique = sorted(set(rule_ids))
     no_match_defaults = sum(1 for rid in rule_ids if rid.endswith(".no_match"))
