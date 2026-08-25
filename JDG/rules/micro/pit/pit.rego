@@ -13,7 +13,7 @@ default decide := {
     "matched": false,
     "rule_id": "jdg.micro.pit.no_match",
     "package": "jdg.micro.pit",
-    "priority": 999999
+    "priority": 999999,
     "micro_rule_active": true,
     "valid_from": "1992-01-01",
     "valid_to": null,

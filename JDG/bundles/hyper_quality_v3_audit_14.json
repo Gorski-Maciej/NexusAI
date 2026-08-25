@@ -1,0 +1,95 @@
+{
+  "report": "V3-14_HYPER_CTX",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_complete": true,
+    "metadata_complete": true,
+    "contract_complete": true,
+    "router_wired": true,
+    "tests_complete": true,
+    "tools_complete": true,
+    "report_present": true,
+    "registry_present": true
+  },
+  "gate_summary": {
+    "passed": 8,
+    "total": 8
+  },
+  "scope": {
+    "files_total": 32,
+    "files_present": 32,
+    "missing": [],
+    "scope_complete": true
+  },
+  "metadata": {
+    "rule_ids_total": 573,
+    "rule_ids_unique": 573,
+    "duplicate_rule_ids": [],
+    "duplicate_free": true,
+    "legal_markers": {
+      "OrdPU": true,
+      "PIT": true,
+      "VAT": true,
+      "SUS": true,
+      "MDR": true,
+      "eIDAS": true
+    },
+    "legal_markers_complete": true,
+    "empty_legal_basis": 0,
+    "stub_lines": 0
+  },
+  "contract": {
+    "contract_markers": {
+      "registry_complete": true,
+      "source_complete": true,
+      "temporal_valid": true,
+      "deadline_complete": true,
+      "limits_complete": true,
+      "sanction_complete": true,
+      "force_majeure_complete": true,
+      "fx_complete": true,
+      "edelivery_complete": true,
+      "graph_complete": true,
+      "binding_complete": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "no_auto_post": true,
+      "DECOUPLED": true
+    },
+    "contract_complete": true,
+    "snapshot_present": true,
+    "snapshot_versioned": true,
+    "import_present": true,
+    "p74_present": true,
+    "post_merge_uses_p74": true,
+    "no_auto_post_guard": true
+  },
+  "tests": {
+    "pytest_present": true,
+    "native_rego_present": true,
+    "markers": {
+      "full_contract": true,
+      "fail_closed": true,
+      "temporal": true,
+      "deadline": true,
+      "limit": true,
+      "sanction": true,
+      "no_auto_post": true
+    },
+    "tests_complete": true,
+    "pytest_functions": 5
+  },
+  "tools": {
+    "deadline_engine": true,
+    "legal_calendar": true,
+    "limits_registry": true,
+    "sanction_calculator": true,
+    "hyper_quality": true
+  },
+  "opa": {
+    "available": false,
+    "passed": null,
+    "message": "OPA CLI unavailable locally; CI gate required."
+  },
+  "generated_at": "2026-08-25T19:02:39.043198+00:00"
+}

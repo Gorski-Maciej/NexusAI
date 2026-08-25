@@ -321,7 +321,7 @@ pos_definitions_28a := {
     "_routing": "AUTO_POST",
     "_routing_reason": "Art. 28a VAT — definicja podatnika dla rozdziału o miejscu świadczenia.",
     "_legal_basis": "Art. 28a pkt 1-2 VAT (Dz.U. 2025 poz. 456 ze zm.); art. 15 ust. 2, art. 5 ust. 1 VAT",
-    "_warnings": [
+    "_warnings": [,
         "[MICRO POS] Art. 28a: podmiot zidentyfikowany do celów VAT/VAT-UE jest podatnikiem dla miejsca świadczenia.",
         "[MICRO POS] Art. 28a pkt 2: usługi świadczone na rzecz podatnika wykonującego czynności nieopodatkowane pozostają B2B (art. 28b, nie 28c).",
     ],

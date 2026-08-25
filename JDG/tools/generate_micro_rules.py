@@ -440,10 +440,8 @@ import data.jdg.helpers
 default decide := {{
     "matched": false,
     "rule_id": "jdg.micro.{package}.no_match",
-    "package": "jdg.micro.{package}",
-    "priority": 999999
-}}
-"""
+    "package": "jdg.micro.{package}",    "priority": 999999,
+}}"""
 
 ARTICLE_HEADER = """
 # ╔══════════════════════════════════════════════════════════════════════════════╗

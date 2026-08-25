@@ -223,6 +223,54 @@
       "raport_txt": "raporty_enterprise_v3/11_KSEF_JPK.txt",
       "evidence": "bundles/ksef_jpk_v3_audit_11.json"
     },
+    "13": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 7,
+      "lista_glownych_zmian": [
+        "Whole-tree gate rules/micro_quality_v3_13_gate.py audytuje 94 pliki micro, 6759 rule_id, puste pola, syntax, stuby, tautologie, hardcode, legal_basis i temporalność.",
+        "Naprawiono 2 jednoznaczne braki przecinka; po naprawie syntax_errors=0 i duplicate_rule_ids=0.",
+        "Dodano rules/micro/quality_v3_13.rego: fail-closed snapshot, Decision Certificate, DECOUPLED boundary, normalizacja pustych pól, explicit micro↔macro binding i Golden Oracle contract.",
+        "Dodano thresholds_jdg.rego: micro_quality_v3_13 snapshot threshold_version= micro-quality-2026.08, legal_basis_version, valid_from/to i polityki bezpieczeństwa.",
+        "Dopięto pakiet do rules/main_jdg.rego jako final_verdict_p73; p13 nie może wykonać AUTO_POST.",
+        "Dodano testy Python 5/5 PASS oraz natywne tests/rego/test_native_micro_quality_v3_13.rego T01-T08; OPA CLI pozostaje bramką CI.",
+        "Zapisano bundles/micro_quality_v3_audit_13.json i raport raporty_enterprise_v3/13_MICRO.txt w strukturze A-J."
+      ],
+      "luki_pozostale": [
+        "OPA CLI nie jest dostępne lokalnie — opa check -b i opa test wymagają CI.",
+        "Legacy 75590 pustych pól i 7348 literałów pozostaje w źródłach dla kompatybilności; jest audytowane i normalizowane na boundary.",
+        "10 tautologii wymaga klasyfikacji AST po uruchomieniu OPA.",
+        "Fizyczna eksternalizacja prawnych hardcode wymaga zatwierdzenia właściciela domeny/Law Radar.",
+        "Podpis evidence, mirror, canary i rollback przechodzą do części 16-19."
+      ],
+      "raport_txt": "raporty_enterprise_v3/13_MICRO.txt",
+      "evidence": "bundles/micro_quality_v3_audit_13.json"
+    },
+    "14": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 9,
+      "lista_glownych_zmian": [
+        "Dodano rules/hyper/quality_v3_14.rego: fail-closed kontrakt Hyper Contexts Plan44/45 z registry, source/legal nodes, temporalnością, deadline, limit, sankcja, force majeure, FX, e-Doręczenia, grafem zależności i bindingiem cross-domain.",
+        "Dodano thresholds_jdg.rego: wersjonowany snapshot hyper_quality_v3_14, registry_version, legal_basis_version, katalog kontekstów i politykę dni roboczych.",
+        "Dopięto pakiet do rules/main_jdg.rego jako final_verdict_p74 po p73; warstwa pozostaje DECOUPLED/SUGGEST i no_auto_post=true.",
+        "Dodano tools/hyper_quality_v3_14_gate.py: evidence gate obejmujący 32 artefakty, metadata, wiring, testy i narzędzia.",
+        "Dodano pytest tests/test_hyper_quality_v3_14.py oraz natywne tests/rego/test_native_hyper_quality_v3_14.rego dla pełnego kontraktu i fail-closed.",
+        "Gate V3-14: 8/8 bramek PASS, 573 rule_id w zakresie, 0 duplikatów, 0 pustych legal_basis i 0 stubów.",
+        "Zapisano bundles/hyper_quality_v3_audit_14.json oraz raport raporty_enterprise_v3/14_HYPER_CTX.txt w strukturze A-J.",
+        "Istniejące moduły Plan44/45 pozostawiono jako legacy source-of-domain; nie zmieniono ich semantyki masową migracją.",
+        "OPA CLI niedostępne lokalnie; opa check/test pozostają obowiązkową bramką CI."
+      ],
+      "luki_pozostale": [
+        "OPA CLI nie jest dostępne lokalnie — opa check -b i opa test wymagają CI.",
+        "Aktualność podstaw prawnych i zewnętrznych kalendarzy wymaga zatwierdzenia właściciela domeny/Law Radar.",
+        "Integracje MF, NBP, e-Doręczenia i podpis HSM pozostają odpowiedzialnością control plane/host.",
+        "Legacy Plan44/45 nie został masowo przepisywany, aby nie zmieniać niezweryfikowanej semantyki.",
+        "Canary, rollback, mirror i pełny Golden replay są przekazane do części 16-19."
+      ],
+      "raport_txt": "raporty_enterprise_v3/14_HYPER_CTX.txt",
+      "evidence": "bundles/hyper_quality_v3_audit_14.json"
+    },
     "12": {
       "stan": "wdrozone",
       "zgodnosc_v1v2": true,
@@ -288,11 +336,12 @@
       "raport_txt": "raporty_enterprise_v3/07_ORDYNACJA.txt",
       "evidence": "bundles/ordynacja_v3_audit_07.json"
     }
-  },
-  "podsumowanie": {
+  },    "podsumowanie": {
     "czesc_do_zrobienia": 20,
-    "czesc_wykonanych": 13,
-    "ostatnia_zrobiona": "12",
-    "status_calosci": "W_TRAKCIE_KAMPANII"
+    "czesc_wykonanych": 15,
+    "ostatnia_zrobiona": "14",
+    "status_calosci": "W_TRAKCIE_KAMPANII",
+    "nastepna": "15"
+
   }
 }

@@ -2492,6 +2492,65 @@ unregistered_quarterly_multiplier(eval_date) = 2.25 {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# V3-13 — MICRO QUALITY / DECOUPLED BOUNDARY SNAPSHOT (ADR-002)
+# Legacy generated micro records are audited without rewriting their semantics.
+# Empty optional fields are normalized at the boundary; macro handoff requires
+# an explicit binding and golden input evidence.
+micro_quality_v3_13 := {
+    "threshold_version": "micro-quality-2026.08",
+    "legal_basis_version": "micro-quality-contract-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "mode": "DECOUPLED",
+    "no_auto_post": true,
+    "empty_field_policy": "EMPTY_OPTIONAL_TO_NULL_AT_BOUNDARY",
+    "binding_policy": "EXPLICIT_MICRO_RULE_TO_MACRO_RULE",
+    "golden_input_required": true,
+    "syntax_errors_block": true,
+    "duplicate_rule_ids_block": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-14 — HYPER CONTEXTS PLAN44/45 QUALITY SNAPSHOT (ADR-002)
+# Registry i progi są wersjonowane oraz konsumowane przez pakiet jakości.
+hyper_quality_v3_14 := {
+    "threshold_version": "hyper-quality-2026.08",
+    "legal_basis_version": "hyper-contexts-legal-2026.08",
+    "registry_version": "hyper-registry-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "context_catalog": ["GENERAL", "DEADLINES", "LIMITS", "SANCTIONS", "MDR", "FX", "AUDIT", "EDELIVERY", "FAMILY", "FORCE_MAJEURE", "PROCUREMENT", "SOLIDARITY", "WIS", "RESIDENCY", "TP", "ESIG"],
+    "allowed_deadline_statuses": ["OPEN", "DUE", "FILED", "OVERDUE", "SHIFTED", "BLOCKED"],
+    "allowed_sanction_maps": ["KKS", "ORD", "VAT", "BDO", "RODO", "AML"],
+    "working_day_policy": "NEXT_WORKING_DAY",
+    "alert_days": [7, 3, 1],
+    "no_auto_post": true,
+    "force_manual_review": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-15 — ENTERPRISE INITIATIVES / NEURAL MESH / SCORING SNAPSHOT (ADR-002)
+enterprise_quality_v3_15 := {
+    "threshold_version": "enterprise-quality-2026.08",
+    "registry_version": "enterprise-s1-s24-2026.08",
+    "legal_basis_version": "enterprise-legal-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "score_auto_post_min": 92,
+    "score_suggest_min": 75,
+    "score_abstain_max": 50,
+    "calibration_min_samples": 100,
+    "calibration_accuracy_min": 0.95,
+    "calibration_brier_max": 0.10,
+    "max_conflicts_for_suggest": 0,
+    "min_mesh_nodes": 13,
+    "min_mesh_edges": 12,
+    "min_red_team_scenarios": 10,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # P01 SEK. 3 — WERSJONOWANIE THRESHOLDÓW PER OKRES ROZLICZENIOWY (A2+) ENTERPRISE
 # ═══════════════════════════════════════════════════════════════════════════════
 # System wersjonowania progów: każdy próg może mieć N wersji z oknami
