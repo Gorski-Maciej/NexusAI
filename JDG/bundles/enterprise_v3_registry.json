@@ -177,6 +177,75 @@
       "raport_txt": "raporty_enterprise_v3/09_RYCZALT.txt",
       "evidence": "bundles/ryczalt_lifecycle_v3_audit_09.json"
     },
+    "10": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 7,
+      "lista_glownych_zmian": [
+        "Nowy pakiet rules/local_taxes/v3_10_enterprise.rego (9 rule_id): PCC rate engine z auto-zwolnieniami (≤1000 zł, pożyczka rodzinna, art. 9 PCC), PCC-3 deadline guard (art. 14: strefy SAFE/REMIND/OVERDUE/BLOCK), max-rate validator nieruchomości (art. 2-7 pod. lok., evidence uchwały gminy), DN-1/DT-1 deadline guard (14 dni), akcyza rate check paliwa/alkohol (art. 29-32, 98-102), krotka akcyza-vs-VAT (art. 33 ustawy o VAT), zbiorczy Domain Certificate.",
+        "Fail-closed domeny: brak snapshotu data.jdg.thresholds.pcc_local_excise blokuje PCC/lokalne/akcyzę (V1 zasada 6); każdy verdict = Decision Certificate z threshold_version/legal_basis_version.",
+        "Zero-hardcode potwierdzony bramką: wszystkie progi v3_10 czytane z istniejących kluczy pcc_local_excise (+threshold_version = pcc-local-2026.08); skan kwot w kodzie: 0.",
+        "Wiring orkiestratora: import + wpis _package_decisions — domena PCC/lokalne/akcyza 15/15 pakietów podpięta (domknięte orphan-y jdg.local_taxes.pcc/real_estate/transport/plan26, jdg.akcyza.*, jdg.local.enterprise, jdg.micro.pcc/pcc.plan33/akcyza/prop).",
+        "Narzędzie bramkujące tools/pcc_lokalne_v3_gate.py: 15 plików domeny, duplikaty rule_id, wiring, skan hardcode ADR-002; evidence bundles/pcc_lokalne_v3_audit_10.json — PASS (494 rule_id, errors=0).",
+        "Testy natywne Rego tests/rego/test_native_pcc_v3_10.rego (12 scenariuszy T01-T12) + pytest tests/test_pcc_v3_10.py (8 PASS); zestaw kampanijny V3 09+08+10: 24 PASS.",
+        "Raport raporty_enterprise_v3/10_PCC_LOKALNE.txt: audyt 15 plików, 22 luki (L-10-001..022), 10 innowacji V1/V2."
+      ],
+      "luki_pozostale": [
+        "OPA CLI niedostępne lokalnie (Termux) — opa check -b / opa test pozostają bramką CI (artefakt natywny gotowy).",
+        "L-10-007: stawki akcyzy jednostkowej hardcode w micro/akcyza — eksternalizacja w części 13 (klucze thresholds gotowe).",
+        "L-10-009: plan26_local.rego współdzieli pakiet plan26 — decyzja scalania w części 13/18.",
+        "L-10-010: mapy per-gmina (uchwały) wymagają Law Radar i oficjalnych źródeł gminnych (część 14/16).",
+        "Stawki maksymalne nieruchomości 2026 i akcyzy wymagają zatwierdzenia właściciela domeny prawnej."
+      ],
+      "raport_txt": "raporty_enterprise_v3/10_PCC_LOKALNE.txt",
+      "evidence": "bundles/pcc_lokalne_v3_audit_10.json"
+    },
+    "11": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 6,
+      "lista_glownych_zmian": [
+        "Nowy pakiet rules/ksef_jpk/v3_11_enterprise.rego (10 rule_id): KSeF mandatory gate (art. 106na VAT, data obowiązku z thresholds), trójstopniowy monitor sankcji KSeF (FULL cap 500k / DELAY_70 cap 300k / APOLOGY_50 cap 250k), offline queue guard (okno 7 dni + alert 120h), UPO validation guard, e-Doręczenia address guard B2G (od 2026-01-01), B2C_NO_NIP handler, reconcile JPK↔KSeF, WIS expiry watcher (180/90 dni), zbiorczy Domain Certificate.",
+        "Fail-closed domeny: brak snapshotu data.jdg.thresholds.ksef_jpk_edeklaracje blokuje KSeF/JPK/e-Doręczenia (V1 z6); każdy verdict = Decision Certificate z threshold_version.",
+        "Zero-hardcode: dodane klucze threshold_version = ksef-jpk-2026.08 i legal_basis_version do istniejącej sekcji ksef_jpk_edeklaracje; wszystkie progi v3_11 konsumowane z thresholds (skan kwot: 0).",
+        "Domknięcie wiringu orkiestratora: 14 aliased-importów + wpisów _package_decisions — domena KSeF/JPK/e-Doręczeń 20/20 podpięta (orphan-y ksef_innovations/outbox/offline_queue/sandbox/upo_tracker/receipt_digest/sanction_monitor, jpk_corrections, jpk_kr_st, edelivery_gw/gw2, esig_auto, wis_auto).",
+        "Narzędzie bramkujące tools/ksef_jpk_v3_gate.py: 20 plików domeny, duplikaty rule_id, wiring, skan hardcode ADR-002; evidence bundles/ksef_jpk_v3_audit_11.json — PASS (186 rule_id, errors=0).",
+        "Testy natywne Rego tests/rego/test_native_ksef_jpk_v3_11.rego (12 scenariuszy T01-T12 z pełnymi asercjami sandbox) + pytest tests/test_ksef_jpk_v3_11.py (8 PASS); regresja części 10: 8 PASS.",
+        "Raport raporty_enterprise_v3/11_KSEF_JPK.txt: audyt 20 plików, 22 luki (L-11-001..022, w tym krytyczne 14 orphan-ów i 2 szkielety enterprise z 0 rule_id), 10 innowacji V1/V2."
+      ],
+      "luki_pozostale": [
+        "OPA CLI niedostępne lokalnie (Termux) — opa check -b / opa test pozostają bramką CI (artefakt natywny gotowy).",
+        "L-11-009/L-11-010: edelivery_gateway_v2 i wis_autorequester mają 0 rule_id (szkielety) — rozbudowa w częściach 13/15.",
+        "L-11-011..022: progi opisowe hardcode w micro/jpk i plan33_jpk — eksternalizacja w części 13.",
+        "Sandbox harness bez asercji end-to-end — domknięcie w części 17 (CHAOS/MUTATION/GOLDEN).",
+        "Ostateczny harmonogram KSeF 2.0 i mapy CN↔GTU wymagają Law Radar i zatwierdzenia właściciela domeny (część 14/16)."
+      ],
+      "raport_txt": "raporty_enterprise_v3/11_KSEF_JPK.txt",
+      "evidence": "bundles/ksef_jpk_v3_audit_11.json"
+    },
+    "12": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 6,
+      "lista_glownych_zmian": [
+        "Nowy pakiet rules/compliance/v3_12_enterprise.rego (9 rule_id): RODO breach guard z eskalacją czasową 72h (art. 33), erasure engine guard 30 dni (art. 17), AML transaction monitor ≥15k EUR ze STR (art. 34, 74 uAML), CBDD+UBO guard (beneficjenci rzeczywiści ≥25%), BDO KPO guard (7 dni / ważność 5 lat), DPIA guard dla AI/profilingu (art. 35), zbiorczy Domain Certificate.",
+        "Fail-closed domeny: brak snapshotu data.jdg.thresholds.rodo_aml_bdo_hr_etap21 blokuje compliance (V1 z6); każdy verdict = Decision Certificate z threshold_version.",
+        "Zero-hardcode: dodany klucz threshold_version = rodo-aml-bdo-2026.08; wszystkie progi v3_12 konsumowane z thresholds; skan kwot: 0 (2 trafienia legacy sklasyfikowane jako L-12-011/012 → część 13).",
+        "Domknięcie wiringu orkiestratora: 5 aliased-importów + wpisów _package_decisions — domena compliance 16/16 podpięta (orphan-y jdg.micro.aml_cbdd/aml_ryzyko/aml_str_gif/aml_transakcje).",
+        "Narzędzie bramkujące tools/compliance_v3_gate.py: 16 plików domeny, duplikaty rule_id, wiring, skan hardcode ADR-002; evidence bundles/compliance_v3_audit_12.json — PASS (382 rule_id, errors=0).",
+        "Testy natywne Rego tests/rego/test_native_compliance_v3_12.rego (12 scenariuszy T01-T12) + pytest tests/test_compliance_v3_12.py (8 PASS); regresja kampanijna 10+11: 16 PASS.",
+        "Raport raporty_enterprise_v3/12_RODO_AML_BDO.txt: audyt 16 plików, 22 luki (L-12-001..022), 10 innowacji V1/V2."
+      ],
+      "luki_pozostale": [
+        "OPA CLI niedostępne lokalnie (Termux) — opa check -b / opa test pozostają bramką CI (artefakt natywny gotowy).",
+        "L-12-011/L-12-012: statyczne capy KUP w employer.rego i fallback payroll w ppk_pfron — eksternalizacja w części 13.",
+        "L-12-013: kody odpadów BDO 2-27 wymagają walidacji Law Radar (część 14/16).",
+        "Rejestr czynności przetwarzania/powierzenia jako dokument Legal Twin — decyzja zakresowa w części 20.",
+        "Wysyłka STR do GIIF pozostaje integracją control-plane/host (silnik dostarcza decyzji)."
+      ],
+      "raport_txt": "raporty_enterprise_v3/12_RODO_AML_BDO.txt",
+      "evidence": "bundles/compliance_v3_audit_12.json"
+    },
     "08": {
       "stan": "wdrozone",
       "zgodnosc_v1v2": true,
@@ -222,8 +291,8 @@
   },
   "podsumowanie": {
     "czesc_do_zrobienia": 20,
-    "czesc_wykonanych": 10,
-    "ostatnia_zrobiona": "09",
+    "czesc_wykonanych": 13,
+    "ostatnia_zrobiona": "12",
     "status_calosci": "W_TRAKCIE_KAMPANII"
   }
 }

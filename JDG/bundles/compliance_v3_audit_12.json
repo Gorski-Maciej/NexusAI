@@ -1,0 +1,257 @@
+{
+  "tool": "compliance_v3_gate",
+  "kampania": "V3 część 12 — RODO + AML + BDO + ŚRODOWISKO + HR",
+  "gate_status": "PASS",
+  "errors": [],
+  "files_audited": [
+    {
+      "file": "rules/rodo.rego",
+      "exists": true,
+      "lines": 365,
+      "package": "jdg.rodo",
+      "rule_count": 13,
+      "unique_rule_ids": 13,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/rodo_extended.rego",
+      "exists": true,
+      "lines": 434,
+      "package": "jdg.rodo_extended",
+      "rule_count": 17,
+      "unique_rule_ids": 17,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/rodo/rodo.rego",
+      "exists": true,
+      "lines": 1163,
+      "package": "jdg.micro.rodo",
+      "rule_count": 41,
+      "unique_rule_ids": 41,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/plan33_rodo.rego",
+      "exists": true,
+      "lines": 61,
+      "package": "jdg.micro.rodo.plan33",
+      "rule_count": 11,
+      "unique_rule_ids": 11,
+      "duplicates_in_file": [],
+      "has_no_match_default": false,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/aml/aml.rego",
+      "exists": true,
+      "lines": 3468,
+      "package": "jdg.micro.aml",
+      "rule_count": 126,
+      "unique_rule_ids": 126,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/aml/aml_cbdd.rego",
+      "exists": true,
+      "lines": 81,
+      "package": "jdg.micro.aml_cbdd",
+      "rule_count": 6,
+      "unique_rule_ids": 6,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/aml/aml_ryzyko.rego",
+      "exists": true,
+      "lines": 129,
+      "package": "jdg.micro.aml_ryzyko",
+      "rule_count": 8,
+      "unique_rule_ids": 8,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/aml/aml_str_gif.rego",
+      "exists": true,
+      "lines": 115,
+      "package": "jdg.micro.aml_str_gif",
+      "rule_count": 8,
+      "unique_rule_ids": 8,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/aml/aml_transakcje.rego",
+      "exists": true,
+      "lines": 98,
+      "package": "jdg.micro.aml_transakcje",
+      "rule_count": 7,
+      "unique_rule_ids": 7,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/environmental.rego",
+      "exists": true,
+      "lines": 276,
+      "package": "jdg.environmental",
+      "rule_count": 15,
+      "unique_rule_ids": 15,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/environmental/bdo_enterprise.rego",
+      "exists": true,
+      "lines": 636,
+      "package": "jdg.environmental.bdo",
+      "rule_count": 23,
+      "unique_rule_ids": 23,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/srodowisko/srodowisko.rego",
+      "exists": true,
+      "lines": 1392,
+      "package": "jdg.micro.srodowisko",
+      "rule_count": 49,
+      "unique_rule_ids": 49,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/mpips.rego",
+      "exists": true,
+      "lines": 337,
+      "package": "jdg.mpips",
+      "rule_count": 13,
+      "unique_rule_ids": 13,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/employer.rego",
+      "exists": true,
+      "lines": 466,
+      "package": "jdg.employer",
+      "rule_count": 28,
+      "unique_rule_ids": 28,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/ppk_pfron_enterprise.rego",
+      "exists": true,
+      "lines": 371,
+      "package": "jdg.ppk_pfron",
+      "rule_count": 8,
+      "unique_rule_ids": 8,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/compliance/v3_12_enterprise.rego",
+      "exists": true,
+      "lines": 354,
+      "package": "jdg.compliance.v3_12",
+      "rule_count": 9,
+      "unique_rule_ids": 9,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    }
+  ],
+  "totals": {
+    "domain_files": 16,
+    "existing_files": 16,
+    "rule_ids_total": 382
+  },
+  "wiring": {
+    "required": 16,
+    "wired": [
+      "jdg.rodo",
+      "jdg.rodo_extended",
+      "jdg.micro.rodo",
+      "jdg.micro.rodo.plan33",
+      "jdg.micro.aml",
+      "jdg.micro.aml_cbdd",
+      "jdg.micro.aml_ryzyko",
+      "jdg.micro.aml_str_gif",
+      "jdg.micro.aml_transakcje",
+      "jdg.environmental",
+      "jdg.environmental.bdo",
+      "jdg.micro.srodowisko",
+      "jdg.mpips",
+      "jdg.employer",
+      "jdg.ppk_pfron",
+      "jdg.compliance.v3_12"
+    ],
+    "unwired": []
+  },
+  "thresholds": {
+    "present": [
+      "threshold_version",
+      "registry_version",
+      "legal_basis_version",
+      "rodo_breach_deadline_hours",
+      "rodo_erasure_deadline_days",
+      "rodo_fine_max_eur",
+      "rodo_sanction_max_eur",
+      "aml_transaction_threshold_eur",
+      "ubo_minimum_pct",
+      "aml_str_requires_reference",
+      "bdo_kpo_deadline_days",
+      "pfron_employee_threshold",
+      "privacy_minimization_required",
+      "manual_approval_required"
+    ],
+    "missing": []
+  },
+  "v3_12_contract": {
+    "all_pass": true,
+    "checks": {
+      "fail-closed przy braku snapshotu (V1 z6)": true,
+      "Decision Certificate (V2 F4)": true,
+      "wersja snapshotu progów (Golden Oracle F3)": true,
+      "odczyt progów z data.thresholds (ADR-002)": true,
+      "łańcuch first-match-wins": true
+    }
+  },
+  "cross_file_duplicates": []
+}

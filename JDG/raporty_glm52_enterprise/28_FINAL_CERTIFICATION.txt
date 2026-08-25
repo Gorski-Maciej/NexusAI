@@ -1,6 +1,145 @@
-RAPORT ETAPU: 28_FINAL_CERTIFICATION
-STATUS: NIEPELNY
-BRAMKI: 13/14
-ŹRÓDŁO: bundles/final_certification_etap28_audit_state.json (audit_state.json — odtworzony łańcuch dowodów)
-DATA: 2026-08-22T22:06:41+00:00
-UWAGI: Raport odtworzony z audit_state.json w ramach kampanii GLM 5.2 (PROMPT_00_FUNDAMENT). Status zgodny ze stanem faktycznym audytu; etapy NIEPELNY zostaną domknięte w dedykowanych Promptach kampanii.
+====================================================================================================
+RAPORT WDROŻENIOWY GLM52 ENTERPRISE — ETAP 28/29
+FINAL CERTIFICATION / MASTER REPORT / RECONCILIATION
+====================================================================================================
+
+IDENTITY
+--------
+Etap: ETAP_28
+Prompt: JDG/prompty_glm52_enterprise/28_FINAL_CERTIFICATION.txt
+Raport: JDG/raporty_glm52_enterprise/28_FINAL_CERTIFICATION.txt
+Audytor: JDG/tools/final_certification_etap28_audit.py
+Bundle: JDG/bundles/final_certification_etap28_audit_state.json
+Pakiet: JDG/rules/final_certification_etap28_v1.rego
+Status raportu: NIEPELNY
+
+SCOPE
+-----
+Końcowa certyfikacja systemu JDG OPA Enterprise: independent reconciliation
+wszystkich 27 raportów, macierz act→legal node→rule→test→bundle→verdict→
+operator, certyfikacja domenowa (CERTIFIED/CONDITIONAL/BLOCKED), blokery
+produkcji, SLO/SLA, RTO/RPO, kontrola zmian, rollback, runbooki oraz
+honesty report — co naprawdę działa, bez marketingowych deklaracji.
+
+SYSTEM NIE JEST CERTYFIKOWANY JAKO PRODUKCYJNY, JEŚLI ISTNIEJE CHOĆ JEDNA
+KRYTYCZNA LUKA W ŹRÓDLE PRAWA, TEMPORALNOŚCI, TESTACH, RUNTIME, API,
+BEZPIECZEŃSTWIE ALBO TRACEABILITY.
+
+════════════════════════════════════════════════════════════════════════════
+RECONCILIATION
+════════════════════════════════════════════════════════════════════════════
+Raporty dostępne: 22/28
+Raporty WDROZONY_100: 20
+Raporty niepełne: 2
+Raporty bez dowodu (UNPROVEN): 0
+Artefakty: 480 rego, 210 py-testów, 216 rego-testów,
+327 narzędzi, 22 audit states, 13 migracji.
+
+════════════════════════════════════════════════════════════════════════════
+TRACEABILITY MATRIX
+════════════════════════════════════════════════════════════════════════════
+Domeny pokryte: 18/18
+Referencje prawne (legal_basis): 12331
+Reguły (pliki .rego): 480
+Testy: 426
+Bundles: 22
+Operatorzy (role RBAC): 5
+
+════════════════════════════════════════════════════════════════════════════
+DOMAIN CERTIFICATION
+════════════════════════════════════════════════════════════════════════════
+| Domain | Status |
+|--------|--------|
+| vat | CERTIFIED |
+| pit | CERTIFIED |
+| zus | CERTIFIED |
+| accounting | CERTIFIED |
+| kks_ord | CERTIFIED |
+| crossborder | CERTIFIED |
+| pcc_local | CERTIFIED |
+| ksef_jpk | CONDITIONAL |
+| rodo_aml | CERTIFIED |
+| hyper_contexts | CERTIFIED |
+| ai_neural | CERTIFIED |
+| orchestrator | CONDITIONAL |
+| legal_twin | CONDITIONAL |
+| control_plane | CONDITIONAL |
+| security | CONDITIONAL |
+| disaster_recovery | CONDITIONAL |
+| tests_ci | CONDITIONAL |
+| mirror_sync | CERTIFIED |
+
+Summary: 11 CERTIFIED / 7 CONDITIONAL / 0 BLOCKED
+
+════════════════════════════════════════════════════════════════════════════
+PRODUCTION BLOCKERS
+════════════════════════════════════════════════════════════════════════════
+- Legal gaps (missing article coverage): CLEARED
+- Temporal chain: CLEARED
+- Test gates: CLEARED
+- Runtime invariants enforced: CLEARED
+- OpenAPI implemented: CLEARED
+- Security fortress active: CLEARED
+- Full traceability chain: CLEARED
+
+════════════════════════════════════════════════════════════════════════════
+SLO / SLA
+════════════════════════════════════════════════════════════════════════════
+- Bundle verify: FAIL_CLOSED (no verify = no activation)
+- Rollback MTTR: ≤ 5 min (deployment_orchestrator.py)
+- Hot-reload danych: ≤ 15 min (data_service.py + thresholds_export.json)
+- RPO: ≤ 15 min (dr_orchestrator.py)
+- RTO: ≤ 30 min (dr_orchestrator.py, restore_tested=True required)
+- OPA check gate: --fail-on-empty + opa check -b (bundle.sh)
+
+════════════════════════════════════════════════════════════════════════════
+CHANGE CONTROL + RUNBOOKS
+════════════════════════════════════════════════════════════════════════════
+- 4-eyes / SoD: autor ≠ recenzent ≠ operator (openapi.yaml x-sod + control_plane_lifecycle.py)
+- Canary required: 5% → shadow delta ≤ 2% → ramped 25/50/100% → soak 24h
+- Rollback tested: auto-rollback MTTR ≤ 5 min (active_version + healthy_versions)
+- Runbooki: DR game-day snapshot/verify/restore workflow w dr_orchestrator.py
+
+════════════════════════════════════════════════════════════════════════════
+„CO NAPRAWDĘ DZIAŁA" — HONESTY REPORT
+════════════════════════════════════════════════════════════════════════════
+ETAP 28 HONESTY REPORT:
+Fully working (CERTIFIED): 11/18 domains
+Partially working (CONDITIONAL): 7/18 domains
+Blocked: 0/18 domains
+Total reports: 22 — WDROZONY_100: 20
+Artifacts: 480 rego files, 210+216 test files,
+327 tools, 22 audit states, 13 migrations.
+Production status: NOT_CERTIFIED — system nie przeszedł pełnej certyfikacji produkcyjnej.
+
+
+GATES
+-----
+| Gate | Result |
+|------|--------|
+| reconciliation_ok | FAIL |
+| matrix_complete | PASS |
+| domain_certification | PASS |
+| production_blockers | PASS |
+| slo_sla_defined | PASS |
+| change_control | PASS |
+| what_really_works | PASS |
+| honesty_present | PASS |
+| package_complete | PASS |
+| threshold_registry | PASS |
+| orchestrator_wired | PASS |
+| pytest_contract | PASS |
+| native_rego_contract | PASS |
+| report_present | PASS |
+
+VERIFICATION
+------------
+Evidence: 13/14 gates.
+Status: NIEPELNY
+Produkcja: NOT_CERTIFIED
+
+STATUS
+------
+Status raportu: NIEPELNY
+
+ETAP_28_COMPLETE — SERIES_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe.

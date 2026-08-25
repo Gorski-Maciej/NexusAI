@@ -157,6 +157,27 @@ import data.jdg.hyper_plan45_meta
 import data.jdg.deadline_monitor
 import data.jdg.wis_api
 import data.jdg.epuap
+# ── V3-11: domknięcie wiringu orphan-pakietów KSeF/JPK/e-Doręczenia ──
+import data.jdg.ksef_innovations as ksef_innov
+import data.jdg.ksef_outbox as ksef_outbox
+import data.jdg.ksef_offline_queue as ksef_offq
+import data.jdg.ksef_sandbox as ksef_sandbox
+import data.jdg.ksef_upo_tracker as ksef_upo
+import data.jdg.ksef_receipt_digest as ksef_digest
+import data.jdg.ksef_sanction_monitor as ksef_sanction
+import data.jdg.jpk_corrections as jpk_corrections
+import data.jdg.jpk_kr_st as jpk_kr_st
+import data.jdg.edelivery_gateway as edelivery_gw
+import data.jdg.enterprise.edelivery_gateway as edelivery_gw2
+import data.jdg.esig_auto as esig_auto
+import data.jdg.enterprise.wis_autorequester as wis_auto
+import data.jdg.ksef_jpk.v3_11 as ksef_jpk_v3_11
+# ── V3-12: domknięcie wiringu orphan-pakietów RODO/AML/BDO/HR ──
+import data.jdg.micro.aml_cbdd as aml_cbdd
+import data.jdg.micro.aml_ryzyko as aml_ryzyko
+import data.jdg.micro.aml_str_gif as aml_str_gif
+import data.jdg.micro.aml_transakcje as aml_transakcje
+import data.jdg.compliance.v3_12 as compliance_v3_12
 import data.jdg.security.fortress
 import data.jdg.p34_remaining
 import data.jdg.p34_innovations
@@ -1435,6 +1456,27 @@ _package_decisions := {
     "jdg.akcyza.fuel_energy": akcyza_fuel.decide,
     "jdg.local.enterprise": local_enterprise.decide,
     "jdg.local_taxes.v3_10": local_taxes_v3_10.decide,
+    # ── V3-11: domknięcie wiringu orphan-pakietów KSeF/JPK/e-Doręczenia ──
+    "jdg.ksef_innovations": ksef_innov.decide,
+    "jdg.ksef_outbox": ksef_outbox.decide,
+    "jdg.ksef_offline_queue": ksef_offq.decide,
+    "jdg.ksef_sandbox": ksef_sandbox.decide,
+    "jdg.ksef_upo_tracker": ksef_upo.decide,
+    "jdg.ksef_receipt_digest": ksef_digest.decide,
+    "jdg.ksef_sanction_monitor": ksef_sanction.decide,
+    "jdg.jpk_corrections": jpk_corrections.decide,
+    "jdg.jpk_kr_st": jpk_kr_st.decide,
+    "jdg.edelivery_gateway": edelivery_gw.decide,
+    "jdg.enterprise.edelivery_gateway": edelivery_gw2.decide,
+    "jdg.esig_auto": esig_auto.decide,
+    "jdg.enterprise.wis_autorequester": wis_auto.decide,
+    "jdg.ksef_jpk.v3_11": ksef_jpk_v3_11.decide,
+    # ── V3-12: domknięcie wiringu orphan-pakietów RODO/AML/BDO/HR ──
+    "jdg.micro.aml_cbdd": aml_cbdd.decide,
+    "jdg.micro.aml_ryzyko": aml_ryzyko.decide,
+    "jdg.micro.aml_str_gif": aml_str_gif.decide,
+    "jdg.micro.aml_transakcje": aml_transakcje.decide,
+    "jdg.compliance.v3_12": compliance_v3_12.decide,
     "jdg.residency": residency.decide,
     # PAS 4: VAT
     "jdg.vat.substantive": substantive.decide,

@@ -108,6 +108,8 @@ vat := {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 ksef_jpk_edeklaracje := {
+    "threshold_version": "ksef-jpk-2026.08",      # Golden Oracle F3 (kampania V3, część 11)
+    "legal_basis_version": "vat-106na-2026-02-01; edor-1598-2026-01-01", # Legal Twin
     "ksef_mandatory_from": "2026-02-01",          # art. 106na-106nb VAT
     "ksef_offline_grace_days": 7,
     "ksef_sanction_max_pln": 500000,
@@ -1158,6 +1160,7 @@ ksef_jpk_etap20 := {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 rodo_aml_bdo_hr_etap21 := {
+    "threshold_version": "rodo-aml-bdo-2026.08",   # Golden Oracle F3 (kampania V3, część 12)
     "registry_version": "compliance-hr-etap21-2026.08",
     "source_registry": "data.jdg.legal_source_registry",
     "legal_basis_version": "isap-uodo-aml-bdo-kp-2026.08",

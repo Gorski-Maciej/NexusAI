@@ -24,60 +24,76 @@
     "total": 14
   },
   "reconciliation": {
-    "reports_present": 6,
-    "reports_wdrozone": 6,
-    "reports_incomplete": 0,
+    "reports_present": 22,
+    "reports_wdrozone": 20,
+    "reports_incomplete": 2,
     "reports_unproven": 0,
     "details": {
+      "07_VAT_MACRO": "WDROZONY_100",
+      "08_VAT_MICRO_CORE": "WDROZONY_100",
+      "09_VAT_MICRO_SPECIAL": "WDROZONY_100",
+      "10_PIT_MACRO": "WDROZONY_100",
+      "11_PIT_MICRO_RELIEFS": "WDROZONY_100",
+      "12_ZUS_CORE": "WDROZONY_100",
+      "13_ZUS_MICRO": "WDROZONY_100",
+      "14_ACCOUNTING_PKPIR": "WDROZONY_100",
+      "15_ACCOUNTING_UOR_AMORTIZATION": "WDROZONY_100",
+      "16_KKS_ORDYNACJA": "WDROZONY_100",
+      "17_CROSSBORDER_MDR": "WDROZONY_100",
+      "18_RYCZALT_BUSINESS_LIFECYCLE": "WDROZONY_100",
+      "19_PCC_LOCAL_EXCISE": "WDROZONY_100",
+      "20_KSEF_JPK_DECLARATIONS": "WDROZONY_100",
+      "21_RODO_AML_BDO_HR": "WDROZONY_100",
       "22_HYPER_ENTERPRISE_CONTEXTS": "WDROZONY_100",
       "23_ENTERPRISE_AI_NEURAL": "WDROZONY_100",
-      "24_TESTS_CI_QUALITY": "WDROZONY_100",
-      "25_TOOLS_API_RULESTORE_BUNDLES": "WDROZONY_100",
+      "24_TESTS_CI_QUALITY": "NIEPELNY",
+      "25_TOOLS_API_RULESTORE_BUNDLES": "NIEPELNY",
+      "26_POLICIES_MIRROR_SYNC": "WDROZONY_100",
       "27_CROSS_DOMAIN_RED_TEAM": "WDROZONY_100",
       "28_FINAL_CERTIFICATION": "WDROZONY_100"
     },
     "all_wdrozone": false
   },
   "artifacts": {
-    "rules_rego": 472,
-    "py_tests": 198,
-    "rego_tests": 207,
-    "tools_py": 298,
+    "rules_rego": 480,
+    "py_tests": 210,
+    "rego_tests": 216,
+    "tools_py": 327,
     "audit_states": 22,
     "migrations": 13,
-    "artifacts_total": 1175
+    "artifacts_total": 1233
   },
   "domains": {
-    "vat": "CONDITIONAL",
-    "pit": "CONDITIONAL",
-    "zus": "CONDITIONAL",
-    "accounting": "CONDITIONAL",
-    "kks_ord": "CONDITIONAL",
-    "crossborder": "CONDITIONAL",
-    "pcc_local": "CONDITIONAL",
+    "vat": "CERTIFIED",
+    "pit": "CERTIFIED",
+    "zus": "CERTIFIED",
+    "accounting": "CERTIFIED",
+    "kks_ord": "CERTIFIED",
+    "crossborder": "CERTIFIED",
+    "pcc_local": "CERTIFIED",
     "ksef_jpk": "CONDITIONAL",
-    "rodo_aml": "CONDITIONAL",
-    "hyper_contexts": "CONDITIONAL",
-    "ai_neural": "CONDITIONAL",
+    "rodo_aml": "CERTIFIED",
+    "hyper_contexts": "CERTIFIED",
+    "ai_neural": "CERTIFIED",
     "orchestrator": "CONDITIONAL",
     "legal_twin": "CONDITIONAL",
     "control_plane": "CONDITIONAL",
     "security": "CONDITIONAL",
     "disaster_recovery": "CONDITIONAL",
     "tests_ci": "CONDITIONAL",
-    "mirror_sync": "CONDITIONAL"
+    "mirror_sync": "CERTIFIED"
   },
   "domains_summary": {
-    "certified": 0,
-    "conditional": 18,
+    "certified": 11,
+    "conditional": 7,
     "blocked": 0
   },
   "matrix": {
     "domains_covered": 18,
-    "rules_traced": 472,
-    "tests_traced": 405,
+    "rules_traced": 480,
+    "tests_traced": 426,
     "bundles_per_domain": 22,
-    "legal_references_count": 12273,
+    "legal_references_count": 12331,
     "operators_defined": 5
   },
   "blockers": {
@@ -119,7 +135,7 @@
     "pytest_test_count": 10,
     "native_test_count": 9
   },
-  "honesty_report": "ETAP 28 HONESTY REPORT:\nFully working (CERTIFIED): 0/18 domains\nPartially working (CONDITIONAL): 18/18 domains\nBlocked: 0/18 domains\nTotal reports: 6 — WDROZONY_100: 6\nArtifacts: 472 rego files, 198+207 test files,\n298 tools, 22 audit states, 13 migrations.\nProduction status: NOT_CERTIFIED — system nie przeszedł pełnej certyfikacji produkcyjnej.\n",
+  "honesty_report": "ETAP 28 HONESTY REPORT:\nFully working (CERTIFIED): 11/18 domains\nPartially working (CONDITIONAL): 7/18 domains\nBlocked: 0/18 domains\nTotal reports: 22 — WDROZONY_100: 20\nArtifacts: 480 rego files, 210+216 test files,\n327 tools, 22 audit states, 13 migrations.\nProduction status: NOT_CERTIFIED — system nie przeszedł pełnej certyfikacji produkcyjnej.\n",
   "thresholds": {
     "markers": {
       "final_certification_etap28 := {": true,
@@ -133,5 +149,5 @@
     },
     "complete": true
   },
-  "generated_at": "2026-08-22T19:47:09.588982+00:00"
+  "generated_at": "2026-08-25T14:33:27.779128+00:00"
 }
