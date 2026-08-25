@@ -1019,6 +1019,15 @@ crossborder := {
     # Art. 30da PIT — Exit tax
     "exit_tax_threshold_pln": 4000000,          # próg 4 000 000 PLN
     "exit_tax_rate_pct": 0.19,                  # 19%
+    "exit_tax_deferral_years_eea": 5,           # art. 30da ust. 8 — odroczenie UE/EOG
+
+    # V3-08 (kampania) — WHT / DAC8 / UK post-Brexit (zero hardcode)
+    "wht_annual_threshold_pln": 2000000,        # art. 26 ust. 2e CIT — próg pay-and-refund
+    "wht_standard_rate_pct": 0.20,              # art. 26 ust. 1 CIT — stawka standardowa
+    "dac8_threshold_eur": 2000,                 # DAC8 Annex V — de minimis EUR/sprzedawcę
+    "dac8_threshold_tx": 30,                    # DAC8 Annex V — de minimis liczba transakcji
+    "dac8_deadline": "31_stycznia",             # termin raportu operatora platformy
+    "uk_vat_registration_threshold_gbp": 90000, # UK VAT Act 1994 s.3 — próg B2C GBP
 
     # GLM52 P12 — TP progi dokumentacyjne (art. 23zf PIT) — domknięcie pustyni pokrycia
     "tp_goods_transactions_pln": 10000000,      # transakcje towarowe: 10 000 000 zł
@@ -1075,8 +1084,10 @@ pcc_local_excise := {
 
     # Akcyza — alkohol (zł/hl, 2026)
     "excise_ethanol_per_hl": 6900,              # etanol 100%
-    "excise_beer_per_plato": 8.57,              # piwo za °Plato
-    "excise_wine_per_hl": 185,                  # wino
+    "excise_beer_per_plato": 8.57,              # piwo za °Plato    "excise_wine_per_hl": 185,                 # wino
+    # V3-10 (kampania) — wersjonowanie snapshotu dla Decision Certificates
+    "threshold_version": "pcc-local-2026.08",
+    "legal_basis_version": "isap-lkg-2026.08",
     "valid_from": "2026-01-01",
     "valid_to": null,
 }

@@ -1,0 +1,208 @@
+{
+  "tool": "ryczalt_lifecycle_v3_gate",
+  "kampania": "V3 część 09 — RYCZAŁT + FORMY + CYKL ŻYCIA JDG (CEIDG/ZAWIESZENIE/SUKCESJA)",
+  "gate_status": "PASS",
+  "errors": [],
+  "files_audited": [
+    {
+      "file": "rules/micro/ryczalt/ryczalt.rego",
+      "exists": true,
+      "lines": 4388,
+      "package": "jdg.micro.ryczalt",
+      "rule_count": 156,
+      "unique_rule_ids": 156,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/ryczalt_cykl_atomic_p13.rego",
+      "exists": true,
+      "lines": 605,
+      "package": "jdg.micro.ryczalt_cykl_atomic_p13",
+      "rule_count": 21,
+      "unique_rule_ids": 21,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/plan33_ryc.rego",
+      "exists": true,
+      "lines": 798,
+      "package": "jdg.micro.ryc",
+      "rule_count": 159,
+      "unique_rule_ids": 159,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/business.rego",
+      "exists": true,
+      "lines": 715,
+      "package": "jdg.business",
+      "rule_count": 24,
+      "unique_rule_ids": 24,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/business_lifecycle_etap18_v1.rego",
+      "exists": true,
+      "lines": 172,
+      "package": "jdg.business_lifecycle_etap18",
+      "rule_count": 2,
+      "unique_rule_ids": 2,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/business/plan26_suspension_succession.rego",
+      "exists": true,
+      "lines": 36,
+      "package": "jdg.business",
+      "rule_count": 5,
+      "unique_rule_ids": 5,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/business/gig_economy.rego",
+      "exists": true,
+      "lines": 172,
+      "package": "jdg.business.gig_economy",
+      "rule_count": 6,
+      "unique_rule_ids": 6,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/business/v3_09_enterprise.rego",
+      "exists": true,
+      "lines": 550,
+      "package": "jdg.business.v3_09",
+      "rule_count": 11,
+      "unique_rule_ids": 11,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/ceidg/ceidg.rego",
+      "exists": true,
+      "lines": 1245,
+      "package": "jdg.micro.ceidg",
+      "rule_count": 43,
+      "unique_rule_ids": 43,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/plan33_ceidg.rego",
+      "exists": true,
+      "lines": 83,
+      "package": "jdg.micro.plan33_ceidg",
+      "rule_count": 16,
+      "unique_rule_ids": 16,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/sukcesja/sukcesja.rego",
+      "exists": true,
+      "lines": 3932,
+      "package": "jdg.micro.sukcesja",
+      "rule_count": 141,
+      "unique_rule_ids": 141,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/plan33_succ.rego",
+      "exists": true,
+      "lines": 108,
+      "package": "jdg.micro.succ",
+      "rule_count": 21,
+      "unique_rule_ids": 21,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    }
+  ],
+  "totals": {
+    "domain_files": 12,
+    "existing_files": 12,
+    "rule_ids_total": 605
+  },
+  "wiring": {
+    "required": 11,
+    "wired": [
+      "jdg.micro.ryczalt",
+      "jdg.micro.ryc",
+      "jdg.micro.ryczalt_cykl_atomic_p13",
+      "jdg.business",
+      "jdg.business.gig_economy",
+      "jdg.business.v3_09",
+      "jdg.business_lifecycle_etap18",
+      "jdg.micro.ceidg",
+      "jdg.micro.plan33_ceidg",
+      "jdg.micro.sukcesja",
+      "jdg.micro.succ"
+    ],
+    "unwired": []
+  },
+  "thresholds": {
+    "present": [
+      "ryczalt_limit_eur",
+      "eur_pln_reference",
+      "ryczalt_warning_pct",
+      "ryczalt_limit_alert_pct",
+      "ryczalt_rate_min",
+      "ryczalt_rate_max",
+      "karta_max_employees",
+      "ceidg_registration_days",
+      "succession_ceidg_days",
+      "succession_default_months",
+      "succession_extended_months",
+      "succession_remnant_tax_rate",
+      "unregistered_min_wage_pct",
+      "min_wage_pln",
+      "suspension_max_months",
+      "suspension_min_days",
+      "suspension_alert_pct",
+      "suspension_health_due"
+    ],
+    "missing": []
+  },
+  "v3_09_contract": {
+    "all_pass": true,
+    "checks": {
+      "fail-closed przy braku snapshotu (V1 z6)": true,
+      "Decision Certificate (V2 F4)": true,
+      "wersja snapshotu progów (Golden Oracle F3)": true,
+      "odczyt progów z data.thresholds (ADR-002)": true,
+      "łańcuch first-match-wins": true
+    }
+  },
+  "cross_file_duplicates": []
+}

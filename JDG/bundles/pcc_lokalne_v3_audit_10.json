@@ -1,0 +1,247 @@
+{
+  "tool": "pcc_lokalne_v3_gate",
+  "kampania": "V3 część 10 — PCC + PODATKI LOKALNE + AKCYZA (PCC-3, DN-1, DT-1)",
+  "gate_status": "PASS",
+  "errors": [],
+  "files_audited": [
+    {
+      "file": "rules/local_taxes/pcc.rego",
+      "exists": true,
+      "lines": 183,
+      "package": "jdg.local_taxes.pcc",
+      "rule_count": 4,
+      "unique_rule_ids": 4,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/local_taxes/pcc_enterprise_complete.rego",
+      "exists": true,
+      "lines": 1055,
+      "package": "jdg.local_taxes.pcc_enterprise",
+      "rule_count": 52,
+      "unique_rule_ids": 52,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/local_taxes/pcc_excise_enterprise.rego",
+      "exists": true,
+      "lines": 508,
+      "package": "jdg.local.enterprise",
+      "rule_count": 19,
+      "unique_rule_ids": 19,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/local_taxes/v3_10_enterprise.rego",
+      "exists": true,
+      "lines": 415,
+      "package": "jdg.local_taxes.v3_10",
+      "rule_count": 9,
+      "unique_rule_ids": 9,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/pcc/pcc.rego",
+      "exists": true,
+      "lines": 2568,
+      "package": "jdg.micro.pcc",
+      "rule_count": 90,
+      "unique_rule_ids": 90,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/plan33_pcc.rego",
+      "exists": true,
+      "lines": 303,
+      "package": "jdg.micro.pcc.plan33",
+      "rule_count": 60,
+      "unique_rule_ids": 60,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/local_taxes.rego",
+      "exists": true,
+      "lines": 570,
+      "package": "jdg.local_taxes",
+      "rule_count": 28,
+      "unique_rule_ids": 28,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/local_taxes/real_estate.rego",
+      "exists": true,
+      "lines": 128,
+      "package": "jdg.local_taxes.real_estate",
+      "rule_count": 3,
+      "unique_rule_ids": 3,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/local_taxes/transport.rego",
+      "exists": true,
+      "lines": 86,
+      "package": "jdg.local_taxes.transport",
+      "rule_count": 2,
+      "unique_rule_ids": 2,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/local_taxes/plan26_local.rego",
+      "exists": true,
+      "lines": 40,
+      "package": "jdg.local_taxes.plan26",
+      "rule_count": 7,
+      "unique_rule_ids": 7,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/plan33_prop.rego",
+      "exists": true,
+      "lines": 158,
+      "package": "jdg.micro.prop",
+      "rule_count": 31,
+      "unique_rule_ids": 31,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/local_taxes/akcyza_alcohol.rego",
+      "exists": true,
+      "lines": 312,
+      "package": "jdg.akcyza.alcohol_tobacco",
+      "rule_count": 21,
+      "unique_rule_ids": 21,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/local_taxes/akcyza_fuel.rego",
+      "exists": true,
+      "lines": 281,
+      "package": "jdg.akcyza.fuel_energy",
+      "rule_count": 19,
+      "unique_rule_ids": 19,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/local_taxes/excise_enterprise_complete.rego",
+      "exists": true,
+      "lines": 647,
+      "package": "jdg.local_taxes.excise_enterprise",
+      "rule_count": 16,
+      "unique_rule_ids": 16,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/akcyza/akcyza.rego",
+      "exists": true,
+      "lines": 3640,
+      "package": "jdg.micro.akcyza",
+      "rule_count": 133,
+      "unique_rule_ids": 133,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    }
+  ],
+  "totals": {
+    "domain_files": 15,
+    "existing_files": 15,
+    "rule_ids_total": 494
+  },
+  "wiring": {
+    "required": 15,
+    "wired": [
+      "jdg.local_taxes",
+      "jdg.local_taxes.pcc",
+      "jdg.local_taxes.pcc_enterprise",
+      "jdg.local_taxes.real_estate",
+      "jdg.local_taxes.transport",
+      "jdg.local_taxes.plan26",
+      "jdg.local_taxes.excise_enterprise",
+      "jdg.akcyza.alcohol_tobacco",
+      "jdg.akcyza.fuel_energy",
+      "jdg.local.enterprise",
+      "jdg.micro.pcc",
+      "jdg.micro.pcc.plan33",
+      "jdg.micro.akcyza",
+      "jdg.micro.prop",
+      "jdg.local_taxes.v3_10"
+    ],
+    "unwired": []
+  },
+  "thresholds": {
+    "present": [
+      "pcc_sale_rate",
+      "pcc_loan_rate",
+      "pcc_company_rate",
+      "pcc_mortgage_rate",
+      "pcc_exemption_limit",
+      "pcc_family_loan_limit",
+      "pcc3_deadline_days",
+      "land_business_rate",
+      "building_business_rate",
+      "transport_dn1_deadline_days",
+      "excise_gasoline",
+      "excise_diesel",
+      "excise_lpg",
+      "excise_ethanol_per_hl",
+      "excise_beer_per_plato",
+      "excise_wine_per_hl",
+      "threshold_version"
+    ],
+    "missing": []
+  },
+  "v3_10_contract": {
+    "all_pass": true,
+    "checks": {
+      "fail-closed przy braku snapshotu (V1 z6)": true,
+      "Decision Certificate (V2 F4)": true,
+      "wersja snapshotu progów (Golden Oracle F3)": true,
+      "odczyt progów z data.thresholds (ADR-002)": true,
+      "łańcuch first-match-wins": true
+    }
+  },
+  "cross_file_duplicates": []
+}

@@ -16,8 +16,8 @@ enterprise_v3_registry.json (blok w sekcji "czesci" — dopisz, nie nadpisuj).
 | 05    | KSIĘGOWOŚĆ — PKPiR + UoR + AMORTYZ. | 05_KSIEGOWOSC.txt                               | WDROŻONY_100   | 2026-08-24 |
 | 06    | KKS — KODEKS KARNY SKARBOWY        | 06_KKS.txt                                      | WDROŻONY_100   | 2026-08-24 |
 | 07    | ORDYNACJA PODATKOWA                | 07_ORDYNACJA.txt                                | WDROŻONY_100   | 2026-08-24 |
-| 08    | CROSS-BORDER / TP / MDR / ViDA     | 08_CROSSBORDER.txt                              | PENDING        |            |
-| 09    | RYCZAŁT + CYKL ŻYCIA JDG           | 09_RYCZALT.txt                                  | PENDING        |            |
+| 08    | CROSS-BORDER / TP / MDR / ViDA     | 08_CROSSBORDER.txt                              | WDROŻONY_100   | 2026-08-25 |
+| 09    | RYCZAŁT + CYKL ŻYCIA JDG           | 09_RYCZALT.txt                                  | WDROŻONY_100   | 2026-08-25 |
 | 10    | PCC + LOKALNE + AKCYZA             | 10_PCC_LOKALNE.txt                              | PENDING        |            |
 | 11    | KSeF / JPK / e-DORĘCZENIA          | 11_KSEF_JPK.txt                                 | PENDING        |            |
 | 12    | RODO / AML / BDO / HR              | 12_RODO_AML_BDO.txt                             | PENDING        |            |
@@ -30,6 +30,6 @@ enterprise_v3_registry.json (blok w sekcji "czesci" — dopisz, nie nadpisuj).
 | 19    | API + CONTROL PLANE + UI           | 19_API_UI.txt                                   | PENDING        |            |
 | 20    | DOKUMENTACJA + LEGAL TWIN          | 20_DOKUMENTACJA.txt                             | PENDING        |            |
 
-POSTĘP: 8/20 części wdrożonych (00 SEKWENCER — WDROŻONY_100, 2026-08-23; 01 FUNDAMENTY + ORKIESTRATOR — WDROŻONY_100, 2026-08-24; 02 VAT — WDROŻONY_100, 2026-08-24; 03 PIT — WDROŻONY_100, 2026-08-24; 04 ZUS — WDROŻONY_100, 2026-08-24; 05 KSIĘGOWOŚĆ — WDROŻONY_100, 2026-08-24; 06 KKS — WDROŻONY_100, 2026-08-24; 07 ORDYNACJA — WDROŻONY_100, 2026-08-24).
-NASTĘPNA CZĘŚĆ: 08_CROSSBORDER.txt (PENDING).
-REGISTRY: JDG/bundles/enterprise_v3_registry.json — czesc 00-07 = "wdrozone".
+POSTĘP: 10/20 części wdrożonych (00 SEKWENCER — WDROŻONY_100, 2026-08-23; 01 FUNDAMENTY + ORKIESTRATOR — WDROŻONY_100, 2026-08-24; 02 VAT — WDROŻONY_100, 2026-08-24; 03 PIT — WDROŻONY_100, 2026-08-24; 04 ZUS — WDROŻONY_100, 2026-08-24; 05 KSIĘGOWOŚĆ — WDROŻONY_100, 2026-08-24; 06 KKS — WDROŻONY_100, 2026-08-24; 07 ORDYNACJA — WDROŻONY_100, 2026-08-24; 08 CROSS-BORDER — WDROŻONY_100, 2026-08-25; 09 RYCZAŁT — WDROŻONY_100, 2026-08-25).
+NASTĘPNA CZĘŚĆ: 10_PCC_LOKALNE.txt (PENDING).
+REGISTRY: JDG/bundles/enterprise_v3_registry.json — czesci 00-09 = "wdrozone".

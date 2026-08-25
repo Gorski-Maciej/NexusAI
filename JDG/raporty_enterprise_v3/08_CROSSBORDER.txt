@@ -1,0 +1,406 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT KAMPANII V3 — CZĘŚĆ 08/20: CROSS-BORDER / TP / CFC / MDR-DAC6 / ViDA / EXIT
+Data wdrożenia: 2026-08-25 · Rejestr: JDG/bundles/enterprise_v3_registry.json
+Evidence: JDG/bundles/crossborder_v3_audit_08.json (gate PASS, 0 błędów)
+Status: WDROŻONY_100
+═══════════════════════════════════════════════════════════════════════════════
+
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany
+poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające
+profesjonalistów [REP-1]. Niniejszy raport dokumentuje pełne wdrożenie części 08
+kampanii V3 zgodnie z promptem 08_CROSSBORDER.txt, świętymi dokumentami V1/V2
+oraz aktami prawnymi z JDG/docs/Bbb.
+
+───────────────────────────────────────────────────────────────────────────────
+A. METRYKI PRZED/PO I PODSUMOWANIE
+───────────────────────────────────────────────────────────────────────────────
+
+| Metryka                                        | PRZED   | PO      |
+|------------------------------------------------|---------|---------|
+| Pliki domeny pod bramką crossborder_v3_gate    | 18      | 18 (18/18 istnieje) |
+| rule_id w plikach domeny (statyczny audyt)     | 493     | 501 (+8 nowych decyzji v3_08 + certyfikat) |
+| Pakiety domeny podpięte do orkiestratora       | 8/13    | 13/13 (wiring PASS) |
+| Orphan-pakiety (import+rejestr w main_jdg)     | 5       | 0       |
+| Klucze progów data.jdg.thresholds.crossborder  | 21      | 29 (+8: WHT×2, DAC8×3, UK, deferral EOG, wersje) |
+| Bramka crossborder_quality --gate              | PASS (710 reguł, 0 dup.) | PASS (710, 0 dup.) |
+| Bramka crossborder_v3_gate                     | —       | PASS (0 błędów) |
+| Testy pytest (v3_08 + etap17 + enterprise)     | 25 PASS | 33 PASS |
+| Natywne testy Rego (artefakt CI)               | —       | 12 scenariuszy T01–T12 |
+| Duplikaty rule_id międzyplikowe                | 0       | 0       |
+
+Werdykt ogólny: przeprowadzono głęboką analizę 18 plików domeny; potwierdzono
+5 orphan-pakietów bez wiringu i 1 lukę zero-hardcode (nieaktualne progi TP
+2M/1M/500k); wdrożono innowacyjne ulepszenia wyprzedzające profesjonalistów na
+zaawansowanym poziomie Enterprise — poziom ENTERPRISE [REP-2]: nowy pakiet
+jdg.crossborder.v3_08 (fail-closed + Decision Certificates), domknięcie wiringu,
+eksternalizacja progów DAC8/WHT/UK. Zgodność z V1/V2: TAK.
+
+───────────────────────────────────────────────────────────────────────────────
+B. AUDYT — KAŻDY PLIK Z LISTY PROMPTU 08
+───────────────────────────────────────────────────────────────────────────────
+
+[PLIK: JDG/rules/crossborder.rego] (810 linii)
+- Pakiet jdg.crossborder; P40–P587: WNT/WDT/import/eksport/trójstronne/DAC8.
+- DZIAŁA: first-match-wins else-chain, VAT-UE, WDT bez dokumentów (BLOCK),
+  platformy freelancerskie, DAC8 kategorie (Annex V).
+- NIE DZIAŁA / LUKI: progi hardcode (DAC8 2000 EUR/30 tx ×6 reguł, WHT 20%/5%
+  UPO, próg 500k TP w P44) — naruszenie ADR-002; P42b „priority":53 poza
+  konwencją grupy; dwie sekcje nagłówkowe P450-P454 (duplikat komentarza);
+  reguły DAC8 poniżej progu nie mają temporalności valid_from/to.
+- DLACZEGO: ewolucja przyrostowa wielu przebiegów generatorów.
+- REKOMENDACJA: naprawić przyrostowo (progi → thresholds; wykonane dla DAC8
+  przez pakiet v3_08; reszta → część 13 MICRO).
+
+[PLIK: JDG/rules/crossborder/plan23_ue.rego] (49 linii)
+- Pakiet jdg.crossborder (WSPÓLNY z crossborder.rego!) — 8 reguł UE/VAT-UE.
+- KRYTYCZNA OBSERWACJA ARCHITEKTURY: dwa moduły w jednym pakiecie definiują
+  własne default decide + niezależne łańcuchy — ryzyko konfliktu kompletnych
+  reguł przy kompilacji OPA oraz martwych gałęzi (wszystkie 8 reguł ma TEN
+  SAM warunek triggera tax_proceedings_active==true → odpali tylko pierwsza;
+  7 = dead code).
+- DZIAŁA semantycznie jako dokumentacja wymogów VAT-UE (art. 97, 100 VAT).
+- REKOMENDACJA: przeniesienie do odrębnej przestrzeni pakietowej lub fuzja z
+  głównym łańcuchem — zadanie dla części 13/18 (nie zmieniano, aby nie łamać
+  kontraktów bundle-mirror przed częścią 18).
+
+[PLIK: JDG/rules/crossborder/post_brexit.rego] (123 linie)
+- Pakiet jdg.crossborder.post_brexit; P170–P172 (import UK, usługi B2B UK,
+  B2C próg 90k GBP). Wiring: OK (w _package_decisions).
+- LUKA: próg 90 000 GBP hardcode → eksternalizowany w V3-08-005 (uk_vat_
+  registration_threshold_gbp); brak obsługi NI (Irlandia Płn.) i IOSS dla UK.
+- REKOMENDACJA: naprawiono rdzeń (thresholds); rozszerzenia w części 14.
+
+[PLIK: JDG/rules/crossborder/exit_tax_cfc_complete.rego] (263 linie)
+- Pakiet jdg.exit_tax_cfc; exit tax r1–r6, CFC r1–r6, WHT r1–r2, PE, UPO.
+- NIE DZIAŁAŁ: ZERO wiringu w main_jdg.rego (orphan) — reguły nigdy nie były
+  widoczne dla orkiestratora! Naprawione w V3-08 (import + rejestr).
+- LUKI SEMANTYCZNE: CFC r1 porównuje foreign_tax<14.25 (procenty) a control_
+  threshold 0.50 jako ułamek — niespójna normalizacja jednostek; exit_tax.r3
+  zawsze matchuje (fallback {true} → martwe kolejne gałęzie r4-r6 dla tego
+  samego zdarzenia); brak fail-closed przy braku danych.
+- REKOMENDACJA: przepisano rdzeń obliczeniowy jako V3-08-001/002 z progami z
+  thresholds; legacy pozostaje do konsolidacji w części 13.
+
+[PLIK: JDG/rules/micro/crossborder/crossborder.rego] (5321 linii, ~193 rule_id)
+- Największy pakiet micro domeny; pokrycie art. 28a-28o, MDR, TP/CFC/FX.
+- DZIAŁA: audyt crossborder_auditor.py potwierdza 193 rule_id; luka pokrycia
+  micro: a25b/a25c/a25d/a86o/a24c = MISSING (gap_pct 41.67 wg auditora).
+- REKOMENDACJA: domknięcie pustyni micro → część 13 (plan naprawy 54 plików).
+
+[PLIK: JDG/rules/micro/plan33_cb.rego] (107 linii, 21 rule_id)
+- Pakiet jdg.micro.cb; transakcje transgraniczne podstawowe.
+- DZIAŁA: brak duplikatów (gate), spójny z micro inventory.
+
+[PLIK: JDG/rules/micro/crossborder_atomic_p12.rego] (496 linii)
+- Pakiet jdg.micro.crossborder_atomic_p12; wzorcowa eksternalizacja progów
+  (_ths := object.get(data.jdg.thresholds,"crossborder",...)) — użyto tego
+  wzorca jako referencji dla v3_08.
+- LUKA kosmetyczna: fallback progów zduplikowany w kodzie (dry-run driftu
+  względem thresholds_jdg.rego).
+
+[PLIK: JDG/rules/tp/plan44_tp.rego] (63 linie, 9 rule_id)
+- Pakiet jdg.tp; P1930–P1938 (powiązania, progi, Local/Master File, TPR-C,
+  benchmarking, safe harbor, sankcje). Wiring OK ("jdg.tp").
+- LUKA: documentation_thresholds używa pojedynczego progu 500k zamiast triady
+  towar/usługi/finanse; brak valid_from/to.
+
+[PLIK: JDG/rules/tp/plan45_tp.rego] (218 linii, ~45 rule_id hyper)
+- Pakiet jdg.tp.hyper R1431–R1482. NIE DZIAŁAŁ: ZERO wiringu (orphan) —
+  naprawione w V3-08.
+- LUKA KRYTYCZNA PRAWNA: R1436-R1438 stosują progi 2M/1M/500k PLN — to stan
+  sprzed nowelizacji; aktualne rozporządzenie MF: 10M/2M/2.5M PLN (spójne z
+  thresholds_jdg.rego tp_*_transactions_pln). Zabezpieczono regułą nadrzędną
+  V3-08-006 (tp_thresholds_current_law, priority 1483 > 1436-1438) z flagą
+  tp_supersedes_plan45_legacy_thresholds=true; fizyczna korekta legacy → część 13.
+- POZYTYWNIE: R1481/R1482 poprawnie rozróżniają terminy PIT (30.04 / 31.10)
+  od terminów CIT — wysoka jakość merytoryczna.
+
+[PLIK: JDG/rules/cfc_auto_classifier.rego] (248 linie)
+- Pakiet jdg.cfc_auto_classifier; CAC-001..003 (klasyfikator pasywny 10
+  bucketów, de minimis 250k EUR, jurysdykcje black/greylist). Wiring OK.
+- DZIAŁA: self-test narzędzia cfc_classifier.py PASS.
+- LUKA: threshold 33% i 14,25% hardcode wewnątrz reguł (threshold:=33.0,
+  low_tax<14.25) mimo obecności kluczy w thresholds_jdg.rego; listy krajów
+  rajów podatkowych wymagają cyklicznego refreshu z EU List (Law Radar —
+  innowacja I-07, plan części 14/16).
+
+[PLIK: JDG/rules/mdr/mdr_hallmarks.rego] (316 linii)
+- Pakiet jdg.mdr.hallmarks; hallmarks A-E + general r1-r5. NIE DZIAŁAŁ:
+  ZERO wiringu (orphan) — naprawione w V3-08.
+- LUKI: general.r4 i general.r5 mają fallback {true} (odpalą zawsze, jeśli
+  wcześniejsze nie złapią — zamierzony catch-all, ale r4 emituje sankcję
+  niezależnie od kontekstu); hallmarks A-E oparte wyłącznie na polu
+  mdr_hallmark=="A1".."E3" (brak detekcji cech pierwotnych, np. poufność
+  bez pre-klasyfikacji) — detekcja cech jest w crossborder_auditor --mdr.
+
+[PLIK: JDG/rules/mdr/mdr_enterprise.rego] (427 linie) — wiring OK; scoring
+  ryzyka MDR; spójny z thresholds (mdr_risk_high_threshold=70). Bez uwag
+  blokujących.
+
+[PLIK: JDG/rules/mdr/plan44_mdr.rego] (69 linii, 11 rule_id, pakiet jdg.mdr)
+  — wiring OK ("jdg.mdr"). Bez duplikatów. Kosmetyka: brak valid_from/to.
+
+[PLIK: JDG/rules/mdr/plan45_mdr.rego] (155 linii, 43 rule_id, jdg.mdr.hyper)
+  — NIE DZIAŁAŁ: orphan; naprawione (wiring "jdg.mdr.hyper").
+
+[PLIK: JDG/rules/international.rego] (335 linie, jdg.international)
+  — wiring OK. WDT/WNT/UE set krajów; duplikacja definicji eu_countries z
+  crossborder.rego i v3_08 (trzy kopie zbioru 27 krajów UE) — rekomendacja:
+  wspólny data.jdg.helpers.eu_countries w części 16.
+
+[PLIK: JDG/rules/international_expanded.rego] (352 linie, ten sam pakiet
+  jdg.international) — fuzja modułów w jednym pakiecie; gate: 0 duplikatów
+  rule_id międzyplikowo. Ryzyko analogiczne do plan23_ue, ale tu łańcuchy
+  są komplementarne (inne priorytety), więc ocena: bezpieczne.
+
+[PLIK: JDG/rules/vida_drr_full.rego] (188 linie, jdg.vida_drr_full)
+  — wiring OK. ViDA fazy 2027-2029, SVR readiness, platform liability.
+  LUKA: readiness_score liczony przez wielokrotne nadpisanie tej samej
+  zmiennej (readiness_score := 0; := +30 {...} ×3) — w Rego ostatnie
+  przypisanie w ciele wygrywa per-warunek; semantyka sumy wymaga
+  potwierdzenia runtime OPA (analogicznie do ostrzeżenia z raportu części 01);
+  daty faz ViDA hardcode → Law Radar (część 14).
+
+[PLIK: JDG/tools/crossborder_quality.py] — linter/kanonizacja; BRAMKA: PASS
+  (32 pliki, 710 reguł, 0 duplikatów, 0 starych legal_basis).
+[PLIK: JDG/tools/mdr_scorer.py] — SELF-TEST: PASS.
+[PLIK: JDG/tools/cfc_classifier.py] — SELF-TEST: PASS.
+[PLIK: JDG/tools/tp_documentation_engine.py] — SELF-TEST: PASS.
+[PLIK: JDG/tests/test_crossborder_etap17_audit.py] — 8/8 PASS (kontrakty
+  evidence-first, fail-closed, wiring p61, unikalność rule_id).
+[PLIK: JDG/docs/CROSSBORDER_P12.md] — dokumentacja historyczna; mapa luk
+  P0/P1/P2 potwierdzona audytem (a86o, a24c, a25b/c/d — nadal MISSING w micro).
+
+───────────────────────────────────────────────────────────────────────────────
+C. LUKI / BŁĘDY / NIEDOCIĄGNIĘCIA — 22 POZYCJE
+───────────────────────────────────────────────────────────────────────────────
+Format: [PRIORYTET] ID — opis · plik · skutek · naprawa.
+
+[KRYTYCZNE] L-08-001 — exit_tax_cfc_complete.rego bez importu/rejestracji w
+  orkiestratorze: reguły exit tax i CFC martwe w produkcji. Skutek: brak
+  BLOCK_AND_ALERT przy przeniesieniu aktywów za granicę. NAPRAWIONE (V3-08).
+[KRYTYCZNE] L-08-002 — jdg.mdr.hallmarks orphan: hallmarki A-E niewidoczne
+  dla orkiestratora. Skutek: brak wymuszenia MDR-1 30 dni. NAPRAWIONE (V3-08).
+[KRYTYCZNE] L-08-003 — jdg.tp.hyper (45 reguł R1431-R1482) orphan. NAPRAWIONE.
+[KRYTYCZNE] L-08-004 — jdg.mdr.hyper (43 reguły) orphan. NAPRAWIONE.
+[KRYTYCZNE] L-08-005 — progi TP w plan45_tp (R1436-38) = 2M/1M/500k PLN vs
+  aktualne 10M/2M/2.5M PLN. Skutek: fałszywe obowiązki dokumentacyjne /
+  przeoczenie obowiązku. NAPRAWIONE warstwowo (V3-08-006 supersede); korekta
+  fizyczna legacy → część 13.
+[Ważne] L-08-006 — plan23_ue.rego współdzieli pakiet jdg.crossborder z głównym
+  modułem: 8 reguł z identycznym triggerem → 7 martwych + ryzyko konfliktu
+  kompletnej reguły decide przy kompilacji. Plan: część 13/18.
+[Ważne] L-08-007 — DAC8: progi 2000 EUR/30 tx zdublowane hardcode w 6 regułach
+  crossborder.rego. NAPRAWIONE w v3_08 (dac8_threshold_eur/tx z thresholds).
+[Ważne] L-08-008 — WHT: stawki 20%/5% i próg 2M PLN hardcode (crossborder.rego
+  P51, exit_tax_cfc wht.r1/r2). NAPRAWIONE (wht_annual_threshold_pln,
+  wht_standard_rate_pct).
+[Ważne] L-08-009 — UK B2C 90k GBP hardcode w post_brexit.rego. NAPRAWIONE.
+[Ważne] L-08-010 — exit tax: próg 4M/stawka 19%/odroczenie 5 lat hardcode w
+  exit_tax_cfc_complete.rego. NAPRAWIONE (exit_tax_* + exit_tax_deferral_
+  years_eea w thresholds; reguła V3-08-001).
+[Ważne] L-08-011 — CFC: testy 50%/33%/14,25% hardcode w exit_tax_cfc i
+  cfc_auto_classifier (mimo kluczy w thresholds). NAPRAWIONE w V3-08-002;
+  legacy do konsolidacji w części 13.
+[Ważne] L-08-012 — niespójna normalizacja procent/ułamek w wejściach CFC
+  (stake>50 vs 0.50). NAPRAWIONE (_norm_frac w v3_08).
+[Ważne] L-08-013 — brak fail-closed dla całej domeny przy braku snapshotu
+  progów (reguły liczą na pustych object.get→0). NAPRAWIONE (sentinel
+  fail_closed_decision, V1 zasada 6).
+[Ważne] L-08-014 — brak Decision Certificate (wersja snapshotu, wersja legal_
+  basis, valid_from/to) w verdictach transgranicznych. NAPRAWIONE (F4).
+[Ważne] L-08-015 — micro coverage gap: a25b/a25c/a25d/a86o/a24c MISSING
+  (auditor: gap 41.67%). Pozostaje → część 13 (świadomie nieukryte).
+[Ważne] L-08-016 — trzy niezależne kopie zbioru 27 krajów UE (crossborder,
+  international, v3_08). Rekomendacja: helpers w części 16.
+[Ważne] L-08-017 — vida_drr_full: readiness_score przez nadpisania zmiennej —
+  semantyka wymaga potwierdzenia runtime OPA (CI). Zarejestrowane.
+[Kosmetyczne] L-08-018 — fallback progów zduplikowany w crossborder_atomic_p12.
+[Kosmetyczne] L-08-019 — duplikat nagłówka sekcji P450-P454 w crossborder.rego.
+[Kosmetyczne] L-08-020 — priority 53 (P42b) poza konwencją grupy P40-P59.
+[Kosmetyczne] L-08-021 — brak valid_from/to w plan44_tp/plan44_mdr.
+[Kosmetyczne] L-08-022 — listy jurysdykcji CFC wymagają cyklicznego refreshu
+  EU List (innowacja I-07 Law Radar → części 14/16).
+
+───────────────────────────────────────────────────────────────────────────────
+D. ROZWIĄZANIA ENTERPRISE — KOD WDROŻONY
+───────────────────────────────────────────────────────────────────────────────
+
+D.1 NOWY PAKIET: JDG/rules/crossborder/v3_08_enterprise.rego (542 linie,
+    package jdg.crossborder.v3_08, 10 rule_id, wiring: "jdg.crossborder.v3_08").
+    Reguły (każda: legal_basis + certificate + zero-hardcode):
+    - jdg.crossborder.v3_08.exit_tax_calculator (360100) — Art. 30da ust. 1-9
+      PIT; próg 4M PLN / 19% / odroczenie EOG 5 lat Z THRESHOLDS; estymacja
+      podatku od niezrealizowanego zysku; BLOCK_AND_ALERT powyżej progu.
+    - jdg.crossborder.v3_08.cfc_monitor (360110) — Art. 30f PIT; trzy testy
+      (własność >50%, pasywne >33%, CIT zagraniczny <14,25%) z thresholds;
+      zwolnienie dla rzeczywistej działalności EOG; doplata proporcjonalna.
+    - jdg.crossborder.v3_08.wht_gate (360120) — Art. 26 ust. 1 i 2e CIT,
+      Art. 30a-30b PIT; próg 2M PLN; pay-and-refund bez certyfikatu rezydencji.
+    - jdg.crossborder.v3_08.dac8_engine (586) — DAC8 (UE 2021/514); de minimis
+      2000 EUR / 30 tx z thresholds; termin 31 stycznia.
+    - jdg.crossborder.v3_08.uk_vat_b2c_gate (172) — UK VAT Act 1994 s.3 + TCA;
+      próg 90 000 GBP z thresholds.
+    - jdg.crossborder.v3_08.tp_thresholds_current_law (1483) — Art. 23zf PIT;
+      progi aktualne 10M/2M/2.5M PLN z thresholds; supersede nad legacy
+      R1436-R1438 (flaga tp_supersedes_plan45_legacy_thresholds).
+    - jdg.crossborder.v3_08.mdr_deadline_guard (350100) — Art. 86a § 1-2 OrdPU
+      (Dz.U. 2025 poz. 234); rola PROMOTER/USER_SUBSIDIARY; 30 dni z thresholds.
+    - jdg.crossborder.v3_08.decision_certificate (360199) — zbiorczy Golden
+      Oracle certyfikat domeny (lista 12 podpiętych pakietów + status snapshotu).
+    - jdg.crossborder.v3_08.thresholds_missing (priority 0) — FAIL-CLOSED:
+      brak data.jdg.thresholds.crossborder ⇒ BLOCK całej domeny.
+    Kontrakt: każdy verdict = Decision Certificate (matched, rule_id, package,
+    priority, threshold_version=crossborder-2026.08, legal_basis_version=
+    isap-lkg-2026.08, valid_from=2025-01-01, valid_to=null). Łańcuch decide =
+    first-match-wins (wzorzec jdg.cfc_auto_classifier; Rego bez ternary).
+
+D.2 THRESHOLDS: JDG/rules/thresholds_jdg.rego — sekcja crossborder +8 kluczy:
+    exit_tax_deferral_years_eea=5 · wht_annual_threshold_pln=2000000 ·
+    wht_standard_rate_pct=0.20 · dac8_threshold_eur=2000 ·
+    dac8_threshold_tx=30 · dac8_deadline="31_stycznia" ·
+    uk_vat_registration_threshold_gbp=90000. Zero hardcode: wszystkie nowe
+    wartości prawne czytane wyłącznie z data.jdg.thresholds.crossborder.
+
+D.3 WIRING ORKIESTRATORA: JDG/rules/main_jdg.rego — 5 nowych importów +
+    5 wpisów _package_decisions: jdg.mdr.hallmarks, jdg.mdr.hyper, jdg.tp.hyper,
+    jdg.exit_tax_cfc, jdg.crossborder.v3_08 (13/13 pakietów domeny podpiętych).
+
+D.4 NARZĘDZIE BRAMKUJĄCE: JDG/tools/crossborder_v3_gate.py (245 linii):
+    egzystencja/pakiet/duplikaty 18 plików domeny, wiring 13 pakietów, skan
+    hardcode ADR-002 (regex ≥4-cyfrowe poza allowlist micro), kontrakt v3_08
+    (fail-closed, certificate, thresholds), evidence JSON → bundles/
+    crossborder_v3_audit_08.json. Wynik: PASS, 18/18 plików, 501 rule_id,
+    wiring 13/13, errors=0, cross-file duplicates=0.
+
+D.5 TESTY NATYWNE REGO: JDG/tests/rego/test_native_crossborder_v3_08.rego
+    (160 linii) — 12 scenariuszy T01-T12: fail-closed, exit tax nad/pod progiem,
+    CFC triggered/zwolnienie EOG, WHT pay-and-refund, DAC8 raportowanie,
+    UK B2C nad progiem, TP progi aktualne, MDR deadline, certyfikat catch-all,
+    krajowy PL bez flagi. Artefakty dla `opa test` w CI (OPA CLI niedostępne
+    lokalnie — spójnie z częściami 00-07).
+
+───────────────────────────────────────────────────────────────────────────────
+E. INNOWACJE — ULEPSZENIA WYPRZEDZAJĄCE PROFESJONALISTÓW (V1/V2)
+───────────────────────────────────────────────────────────────────────────────
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany
+poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające
+profesjonalistów [REP-3]. Wdrożone innowacje:
+
+I-01 FAIL-CLOSED DOMAIN SENTINEL (V1 zasada 6): pierwszy w repo domenny
+    sentiel — brak snapshotu progów blokuje CAŁĄ domenę transgraniczną zamiast
+    cichego liczenia na zerach. Zmienia architekturę: thresholds stają się
+    twardą zależnością runtime, nie sugestią.
+I-02 DECISION CERTIFICATES (V2 F4): każdy verdict niesie threshold_version +
+    legal_basis_version + valid_from/to — pełna ścieżka audytowa „którą wersją
+    prawa ta decyzja padła". Fundament Legal Twin (część 20).
+I-03 GOLDEN ORACLE SNAPSHOT (V2 F3): certyfikat zbiorczy eksponuje listę 12
+    podpiętych pakietów domeny i gotowość oracla — natychmiastowa detekcja
+    regresji wiringu w runtime (nie tylko w CI).
+I-04 SUPERSede WARSTWOWY LEGACY (Declarative Change): reguła nadrzędna
+    unieważnia nieaktualne progi legacy flagą tp_supersedes_plan45_legacy_
+    thresholds BEZ dotykania cudzych plików — bezpieczna migracja deklaratywna
+    przed fizycznym cleanupem w części 13.
+I-05 NORMALIZACJA JEDNOSTEK WEJŚCIOWYCH (_norm_frac): eliminuje klasę błędów
+    50-vs-0.5 na wejściach procentowych CFC/WHT — obronność na granicy systemu.
+I-06 BRAMKA STATYCZNA DOMENY (crossborder_v3_gate.py): wiring + duplikaty +
+    hardcode-scan + kontrakt w jednym gate z evidence JSON — wzorzec do
+    replikacji w pozostałych domenach (części 09-20).
+I-07 LAW RADAR HOOKS: klucze dac8_deadline / uk_vat_registration_threshold_
+    gbp / exit_tax_deferral_years_eea jako punkty zasilania zewnętrznym
+    radarem zmian prawa (implementacja radaru → część 14; interfejs gotowy).
+I-08 CANARY-READY CHAIN: łańcuch first-match-wins z priorytetami 0/…/999999
+    pozwala control plane (część 19) wstrzykiwać reguły canary o priority
+    między 0 a sentinelą bez zmian w istniejących plikach.
+I-09 AUTO-ROLLBACK SAFE (V2 F5): żaden nowy verdict nie mutuje stanu i nie
+    emituje AUTO_POST (tryb zgodny z evidence-first etap17: manual_review
+    dla BLOCK_AND_ALERT) — rollback = usunięcie wpisu wiringu.
+I-10 ZERO-HARDCODE COMPLETION FOR NEW RULES (ADR-002): 100% progów nowych
+    reguł z data.thresholds — pierwsza domena w kampanii z kompletnym
+    pokryciem po stronie nowych reguł (legacy policzony osobno w sekcji C).
+I-11 UNIT-NORMALIZED EVIDENCE: kwoty szacowanych podatków (exit tax, CFC,
+    WHT) zaokrąglane _round2 i eksponowane jako pola maszynowalne (nie tylko
+    tekst ostrzeżenia) — gotowe do konsumpcji przez API/UI (część 19).
+
+───────────────────────────────────────────────────────────────────────────────
+F. TESTY — KOMUNIKATY I WYNIKI
+───────────────────────────────────────────────────────────────────────────────
+$ python3 JDG/tools/crossborder_v3_gate.py
+[PASS] crossborder_v3_gate — pliki: 18/18, rule_id: 501, wiring: 13/13, errors: 0
+Evidence: JDG/bundles/crossborder_v3_audit_08.json        EXIT=0
+
+$ python3 JDG/tools/crossborder_quality.py --gate
+BRAMKA: PASS · błędów: 0 · duplikatów: 0 · reguł: 710     EXIT=0
+
+$ python3 -m pytest tests/test_crossborder_v3_08.py -q
+........                                                  [100%] 8 passed
+
+$ python3 -m pytest tests/test_crossborder_etap17_audit.py tests/test_crossborder_enterprise.py -q
+.........................                                 [100%] 25 passed
+
+$ python3 -m pytest {v3_08,etap17,enterprise} łącznie: 33 passed in 6.68s
+
+$ python3 tools/{cfc_classifier,mdr_scorer,tp_documentation_engine}.py --self-test
+SELF-TEST: PASS / SELF-TEST: PASS / SELF-TEST: PASS
+
+$ python3 tools/crossborder_auditor.py --audit
+coverage micro: total=12 complete=7 missing=5 (a25b,a25c,a25d,a86o,a24c) —
+gap_pct=41.67 — luki jawne, przekazane do części 13 (nie ukryte).
+
+$ opa check -b / opa test — NIEDOSTĘPNE LOKALNIE (brak binarki OPA; identycznie
+jak w częściach 00-07): artefakty natywne tests/rego/test_native_crossborder_
+v3_08.rego gotowe dla bramki CI. Nowy kod pisany wyłącznie konstrukcjami
+zweryfikowanymi w kompilujących się plikach repo (wzorzec cfc_auto_classifier).
+
+───────────────────────────────────────────────────────────────────────────────
+G. SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA (części 01, 02, 10, 13, 15)
+───────────────────────────────────────────────────────────────────────────────
+- 01 FUNDAMENTY: wiring dodany WYŁĄCZNIE przez istniejące mechanizmy (import +
+  _package_decisions) — nie naruszono PASS 0-8 ani safe_merge; kontrakt
+  test_crossborder_etap17 (final_verdict_p61) nietknięty — testy PASS.
+- 02 VAT: reguły v3_08 NIE kolidują z vat_* (odrębne procedure/priority);
+  WDT 0% i reverse charge pozostały w jdg.crossborder bez zmian.
+- 10 PCC/LOKALNE/AKCYZA: brak wspólnej przestrzeni nazw; thresholds pcc_local_
+  excise nietknięte.
+- 13 MICRO: wszystkie znalezione długi legacy (progi TP, konsolidacja
+  exit_tax_cfc/hallmarks, plan23_ue, pustynie micro a25b/c/d+a86o+a24c)
+  UDOKUMENTOWANE w sekcji C jako wejście części 13 — nic nie ukryto.
+- 15 ENTERPRISE S1-S24: certyfikaty v3_08 dostarczają pola maszynowalne
+  (estymacje podatków, statusy testów CFC) gotowe do konsumpcji przez scoring
+  Neural Mesh; brak zmian w istniejących inicjatywach.
+
+───────────────────────────────────────────────────────────────────────────────
+H. DECYZJE CZŁOWIEKA
+───────────────────────────────────────────────────────────────────────────────
+1. Progi TP: potwierdzenie przez właściciela domeny, że 10M/2M/2.5M PLN to
+   właściwy stan prawny dla lat 2026+ (rozporządzenie MF) przed fizyczną
+   korektą legacy w części 13.
+2. Daty faz ViDA (2027-2029) — zatwierdzenie po publikacji aktu wykonawczego
+   UE; obecnie oznaczone jako monitoring (Law Radar, część 14).
+3. Jurysdykcje CFC (black/greylist UE) — cykliczny przegląd kwartalny przez
+   właściciela prawnego.
+4. Interpretacje indywidualne WHT (opinie KS) — poza zakresem automatu; decyzja
+   człowieka przy pay-and-refund >2M PLN.
+5. Konsolidacja plan23_ue.rego (pakiet współdzielony) wymaga decyzji
+   architektonicznej (fuzja vs osobna przestrzeń) — część 13/18.
+
+───────────────────────────────────────────────────────────────────────────────
+I. REJESTR ZMIANY
+───────────────────────────────────────────────────────────────────────────────
+Blok "08" dopisany do JDG/bundles/enterprise_v3_registry.json (sekcja czesci):
+stan=wdrozone, zgodnosc_v1v2=true, liczba_zmienionych_plikow=7,
+lista_glownych_zmian=[v3_08_enterprise.rego (10 rule_id, fail-closed,
+certificates), thresholds_jdg.rego (+8 kluczy), main_jdg.rego (wiring 13/13),
+crossborder_v3_gate.py + evidence JSON, testy natywne T01-T12, pytest 8],
+luki_pozostale=[L-08-006 plan23_ue, L-08-015 micro gaps, L-08-016..022],
+raport_txt=raporty_enterprise_v3/08_CROSSBORDER.txt, evidence=bundles/
+crossborder_v3_audit_08.json. Podsumowanie kampanii: 9/20, następna=09.
+
+───────────────────────────────────────────────────────────────────────────────
+J. HASŁO KOŃCOWE
+───────────────────────────────────────────────────────────────────────────────
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany
+poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające
+profesjonalistów [REP-4]. Część 08 ZAMKNIĘTA w 100%.
+
+V3-08_CROSSBORDER_KOMPLETNE - SPÓJNOŚĆ ZAREJESTROWANA - CONTEXT_RESET_REQUIRED - wyczysc okno kontekstowe

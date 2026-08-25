@@ -1,0 +1,315 @@
+{
+  "tool": "crossborder_v3_gate",
+  "kampania": "V3 część 08 — CROSS-BORDER / TP / CFC / MDR / ViDA / EXIT",
+  "gate_status": "PASS",
+  "errors": [],
+  "files_audited": [
+    {
+      "file": "rules/crossborder.rego",
+      "exists": true,
+      "lines": 811,
+      "package": "jdg.crossborder",
+      "rule_count": 32,
+      "unique_rule_ids": 32,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": [
+        "L700: 5000000 :: \"dac8_penalty_for_missing\":5000000,"
+      ]
+    },
+    {
+      "file": "rules/crossborder/plan23_ue.rego",
+      "exists": true,
+      "lines": 50,
+      "package": "jdg.crossborder",
+      "rule_count": 9,
+      "unique_rule_ids": 9,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/crossborder/post_brexit.rego",
+      "exists": true,
+      "lines": 124,
+      "package": "jdg.crossborder.post_brexit",
+      "rule_count": 4,
+      "unique_rule_ids": 4,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": [
+        "L108: 90000 :: \"uk_vat_threshold_gbp\": 90000,"
+      ]
+    },
+    {
+      "file": "rules/crossborder/exit_tax_cfc_complete.rego",
+      "exists": true,
+      "lines": 264,
+      "package": "jdg.exit_tax_cfc",
+      "rule_count": 17,
+      "unique_rule_ids": 17,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": [
+        "L203: 2000000 :: \"threshold_pln\": 2000000,"
+      ]
+    },
+    {
+      "file": "rules/crossborder/v3_08_enterprise.rego",
+      "exists": true,
+      "lines": 550,
+      "package": "jdg.crossborder.v3_08",
+      "rule_count": 10,
+      "unique_rule_ids": 10,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": [
+        "L101: 4000000 :: threshold_pln := _th(\"exit_tax_threshold_pln\", 4000000)",
+        "L116: 360100 :: verdict := _certificate(360100, {",
+        "L188: 360110 :: verdict := _certificate(360110, {",
+        "L238: 2000000 :: threshold := _th(\"wht_annual_threshold_pln\", 2000000)",
+        "L249: 360120 :: verdict := _certificate(360120, {",
+        "L344: 90000 :: threshold := _th(\"uk_vat_registration_threshold_gbp\", 90000)",
+        "L395: 10000000 :: goods_th := _th(\"tp_goods_transactions_pln\", 10000000)",
+        "L396: 2000000 :: services_th := _th(\"tp_services_transactions_pln\", 2000000)",
+        "L397: 2500000 :: financial_th := _th(\"tp_financial_transactions_pln\", 2500000)",
+        "L462: 350100 :: verdict := _certificate(350100, {",
+        "L507: 360199 :: verdict := _certificate(360199, {"
+      ]
+    },
+    {
+      "file": "rules/micro/crossborder/crossborder.rego",
+      "exists": true,
+      "lines": 5322,
+      "package": "jdg.micro.crossborder",
+      "rule_count": 193,
+      "unique_rule_ids": 193,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/plan33_cb.rego",
+      "exists": true,
+      "lines": 108,
+      "package": "jdg.micro.cb",
+      "rule_count": 21,
+      "unique_rule_ids": 21,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/micro/crossborder_atomic_p12.rego",
+      "exists": true,
+      "lines": 497,
+      "package": "jdg.micro.crossborder_atomic_p12",
+      "rule_count": 10,
+      "unique_rule_ids": 10,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/tp/plan44_tp.rego",
+      "exists": true,
+      "lines": 64,
+      "package": "jdg.tp",
+      "rule_count": 10,
+      "unique_rule_ids": 10,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/tp/plan45_tp.rego",
+      "exists": true,
+      "lines": 219,
+      "package": "jdg.tp.hyper",
+      "rule_count": 53,
+      "unique_rule_ids": 53,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/cfc_auto_classifier.rego",
+      "exists": true,
+      "lines": 249,
+      "package": "jdg.cfc_auto_classifier",
+      "rule_count": 4,
+      "unique_rule_ids": 4,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": [
+        "L38: 10000 :: passive_pct_for(passive_income, total_income) = floor(passive_income / total_income * 10000) / 100 {"
+      ]
+    },
+    {
+      "file": "rules/mdr/mdr_hallmarks.rego",
+      "exists": true,
+      "lines": 317,
+      "package": "jdg.mdr.hallmarks",
+      "rule_count": 21,
+      "unique_rule_ids": 21,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/mdr/mdr_enterprise.rego",
+      "exists": true,
+      "lines": 428,
+      "package": "jdg.mdr.enterprise",
+      "rule_count": 18,
+      "unique_rule_ids": 18,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": [
+        "L150: 21000000 :: max_penalty := object.get(object.get(data.thresholds, \"jdg\", {}), \"mdr_sanction_max_pln\", 21000000)",
+        "L302: 1000000 :: \"_routing_reason\": sprintf(\"MDR SANKCJA: brak MDR-3! Kara %.0f PLN za każdy dzień zwłoki (max %.0f m",
+        "L311: 21000000 :: max_penalty := object.get(object.get(data.thresholds, \"jdg\", {}), \"mdr_sanction_max_pln\", 21000000)",
+        "L353: 5000000 :: original_penalty := object.get(input.mdr, \"mdr_potential_penalty_pln\", 5000000)"
+      ]
+    },
+    {
+      "file": "rules/mdr/plan44_mdr.rego",
+      "exists": true,
+      "lines": 70,
+      "package": "jdg.mdr",
+      "rule_count": 11,
+      "unique_rule_ids": 11,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/mdr/plan45_mdr.rego",
+      "exists": true,
+      "lines": 156,
+      "package": "jdg.mdr.hyper",
+      "rule_count": 43,
+      "unique_rule_ids": 43,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": []
+    },
+    {
+      "file": "rules/international.rego",
+      "exists": true,
+      "lines": 336,
+      "package": "jdg.international",
+      "rule_count": 17,
+      "unique_rule_ids": 17,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": [
+        "L44: 100000 :: \"business_status\":\"\",\"tp_documentation_required\":true,\"tp_threshold\":100000,"
+      ]
+    },
+    {
+      "file": "rules/international_expanded.rego",
+      "exists": true,
+      "lines": 353,
+      "package": "jdg.international",
+      "rule_count": 24,
+      "unique_rule_ids": 24,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": [
+        "L34: 2000000 :: \"threshold_pln\": 2000000,"
+      ]
+    },
+    {
+      "file": "rules/vida_drr_full.rego",
+      "exists": true,
+      "lines": 189,
+      "package": "jdg.vida_drr_full",
+      "rule_count": 4,
+      "unique_rule_ids": 4,
+      "duplicates_in_file": [],
+      "has_no_match_default": true,
+      "has_legal_basis": true,
+      "hardcoded_amounts": [
+        "L54: 16931 :: drr_format := \"EN 16931 compliant e-invoice\"",
+        "L86: 16931 :: \"vdf_next_step\": \"Enable EN 16931 e-invoicing before 2028\" { not vida_readiness },",
+        "L90: 16931 :: \"_legal_basis\": \"ViDA (EU 2022/890); EN 16931; Art. 130a-130d VAT\","
+      ]
+    }
+  ],
+  "totals": {
+    "domain_files": 18,
+    "existing_files": 18,
+    "rule_ids_total": 501
+  },
+  "wiring": {
+    "required": 13,
+    "wired": [
+      "jdg.crossborder",
+      "jdg.crossborder.post_brexit",
+      "jdg.crossborder.v3_08",
+      "jdg.international",
+      "jdg.tp",
+      "jdg.tp.hyper",
+      "jdg.mdr",
+      "jdg.mdr.enterprise",
+      "jdg.mdr.hallmarks",
+      "jdg.mdr.hyper",
+      "jdg.exit_tax_cfc",
+      "jdg.cfc_auto_classifier",
+      "jdg.vida_drr_full"
+    ],
+    "unwired": []
+  },
+  "thresholds": {
+    "present": [
+      "exit_tax_threshold_pln",
+      "exit_tax_rate_pct",
+      "exit_tax_deferral_years_eea",
+      "wht_annual_threshold_pln",
+      "wht_standard_rate_pct",
+      "dac8_threshold_eur",
+      "dac8_threshold_tx",
+      "dac8_deadline",
+      "uk_vat_registration_threshold_gbp",
+      "cfc_ownership_min_pct",
+      "cfc_passive_income_pct",
+      "cfc_tax_rate_threshold_pct",
+      "tp_goods_transactions_pln",
+      "tp_services_transactions_pln",
+      "tp_financial_transactions_pln",
+      "mdr_deadline_days",
+      "threshold_version",
+      "legal_basis_version"
+    ],
+    "missing": []
+  },
+  "v3_08_contract": {
+    "all_pass": true,
+    "checks": {
+      "fail-closed przy braku snapshotu (V1 z6)": true,
+      "Decision Certificate (V2 F4)": true,
+      "wersja snapshotu progów (Golden Oracle F3)": true,
+      "odczyt progów z data.thresholds (ADR-002)": true,
+      "łańcuch first-match-wins": true
+    }
+  },
+  "cross_file_duplicates": []
+}

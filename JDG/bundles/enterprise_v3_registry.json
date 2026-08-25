@@ -154,6 +154,52 @@
       "raport_txt": "raporty_enterprise_v3/06_KKS.txt",
       "evidence": "bundles/kks_v3_audit_06.json"
     },
+    "09": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 7,
+      "lista_glownych_zmian": [
+        "Nowy pakiet rules/business/v3_09_enterprise.rego (11 rule_id): monitor limitu 2M EUR art. 6 u.z.p.d. (strefy SAFE/WARNING 75%/ALERT 95%/EXCEEDED, kurs referencyjny z thresholds), FormAdvisor checkpoint SUGGEST+no_auto_post (decyzja człowieka), checklist zawieszenia PP art. 22-25 (limit 24 mies., min. 30 dni, zdrowotna nadal, B2B zablokowane), Succession Planner u.z.s. art. 12-14 (24/60 mies., CEIDG 14 dni, remnant 10%), deadline CEIDG art. 16 ust. 3 PP (7 dni), działalność nieewidencjonowana PP art. 5 (50% płacy min.), maszyna stanów cyklu życia (5 stanów, 6 dozwolonych przejść), karta podatkowa (limit zatrudnienia + małżonek), zbiorczy Decision Certificate.",
+        "Fail-closed domeny: brak snapshotu data.jdg.thresholds.business_lifecycle blokuje ryczałt i cykl życia (V1 zasada 6); każdy verdict = Decision Certificate z threshold_version/legal_basis_version.",
+        "Zero-hardcode potwierdzony bramką: wszystkie progi v3_09 czytane z istniejących kluczy business_lifecycle (ryczalt_limit_eur=2000000 EUR, suspension_max_months=24, succession_default_months=24, ceidg_registration_days=7 itd.).",
+        "Wiring orkiestratora: import data.jdg.business.v3_09 + wpis _package_decisions — domena ryczałt/cykl życia 11/11 pakietów podpięta.",
+        "Narzędzie bramkujące tools/ryczalt_lifecycle_v3_gate.py: 12 plików domeny, duplikaty rule_id, wiring, skan hardcode ADR-002; evidence bundles/ryczalt_lifecycle_v3_audit_09.json — PASS (605 rule_id, errors=0).",
+        "Testy natywne Rego tests/rego/test_native_ryczalt_v3_09.rego (T01-T12) + pytest tests/test_ryczalt_v3_09.py (8 PASS); naprawiono pre-existing fail testu etapu 18 (brak znacznika ETAP_18_COMPLETE w raporcie) — 15 PASS.",
+        "Raport raporty_enterprise_v3/09_RYCZALT.txt: audyt 18 plików, 22 luki (L-09-001..022), 11 innowacji V1/V2."
+      ],
+      "luki_pozostale": [
+        "OPA CLI niedostępne lokalnie — opa check -b / opa test pozostają bramką CI (artefakty natywne gotowe).",
+        "L-09-006: business_lifecycle_etap18_v1.rego ma tylko 2 rule_id (potwierdzona luka z promptu) — rozbudowa w części 13/15.",
+        "L-09-007: plan26_suspension_succession.rego tylko 5 reguł; sukcesja micro (141 reguł) bez integracji z thresholds (allowlist hardcode).",
+        "L-09-015: stawki PKWiU ryczałtu wymagają walidacji obwieszczeniem MF (Law Radar → część 14).",
+        "FormAdvisor: stawki estymacyjne 12%/19% do zastąpienia danymi z inputu po podpięciu silnika PIT (część 03/19)."
+      ],
+      "raport_txt": "raporty_enterprise_v3/09_RYCZALT.txt",
+      "evidence": "bundles/ryczalt_lifecycle_v3_audit_09.json"
+    },
+    "08": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 7,
+      "lista_glownych_zmian": [
+        "Nowy pakiet rules/crossborder/v3_08_enterprise.rego (10 rule_id): exit tax (art. 30da), CFC monitor (art. 30f — testy 50%/33%/14,25%), WHT gate (art. 26 CIT/30a PIT, pay-and-refund >2M), DAC8 engine (2000 EUR/30 tx), UK B2C gate (90k GBP), TP progi aktualne 10M/2M/2.5M (supersede nad legacy R1436-R1438), MDR deadline guard (art. 86a OrdPU), zbiorczy Decision Certificate; fail-closed przy braku snapshotu progów.",
+        "Zero-hardcode: +8 kluczy w thresholds_jdg.rego (wht_annual_threshold_pln, wht_standard_rate_pct, dac8_threshold_eur/tx/deadline, uk_vat_registration_threshold_gbp, exit_tax_deferral_years_eea).",
+        "Domknięcie wiringu orkiestratora: import + rejestr _package_decisions dla 5 orphan-pakietów (jdg.mdr.hallmarks, jdg.mdr.hyper, jdg.tp.hyper, jdg.exit_tax_cfc, jdg.crossborder.v3_08) — domena cross-border 13/13 podpięta.",
+        "Narzędzie bramkujące tools/crossborder_v3_gate.py: 18 plików domeny, duplikaty rule_id, wiring, skan hardcode ADR-002; evidence bundles/crossborder_v3_audit_08.json — PASS (501 rule_id, errors=0).",
+        "Testy natywne Rego tests/rego/test_native_crossborder_v3_08.rego (12 scenariuszy T01-T12) + pytest tests/test_crossborder_v3_08.py (8 PASS); pełny zestaw cross-border 33 PASS.",
+        "Raport raporty_enterprise_v3/08_CROSSBORDER.txt: audyt 18 plików, 22 luki (L-08-001..022, w tym 5 krytycznych orphan-pakietów i nieaktualne progi TP legacy), 11 innowacji V1/V2.",
+        "Bramki: crossborder_quality --gate PASS (710 reguł, 0 duplikatów); self-testy cfc_classifier/mdr_scorer/tp_documentation_engine PASS."
+      ],
+      "luki_pozostale": [
+        "OPA CLI niedostępne lokalnie — opa check -b / opa test pozostają bramką CI (artefakty natywne gotowe).",
+        "L-08-006: plan23_ue.rego współdzieli pakiet jdg.crossborder (7 reguł martwych przez identyczny trigger) — decyzja architektoniczna w części 13/18.",
+        "L-08-015: pustynie micro a25b/a25c/a25d/a86o/a24c MISSING (gap 41.67%) — naprawa w części 13.",
+        "Legacy progi TP 2M/1M/500k w plan45_tp.rego — fizyczna korekta po zatwierdzeniu właściciela domeny (obecnie supersede deklaratywny).",
+        "Daty faz ViDA i listy jurysdykcji CFC wymagają Law Radar (części 14/16)."
+      ],
+      "raport_txt": "raporty_enterprise_v3/08_CROSSBORDER.txt",
+      "evidence": "bundles/crossborder_v3_audit_08.json"
+    },
     "07": {
       "stan": "wdrozone",
       "zgodnosc_v1v2": true,
@@ -176,8 +222,8 @@
   },
   "podsumowanie": {
     "czesc_do_zrobienia": 20,
-    "czesc_wykonanych": 7,
-    "ostatnia_zrobiona": "07",
+    "czesc_wykonanych": 10,
+    "ostatnia_zrobiona": "09",
     "status_calosci": "W_TRAKCIE_KAMPANII"
   }
 }

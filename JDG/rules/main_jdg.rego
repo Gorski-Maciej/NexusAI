@@ -80,7 +80,21 @@ import data.jdg.zus.sickness_benefits
 import data.jdg.zus.health_contribution
 import data.jdg.mdr
 import data.jdg.mdr.enterprise as mdr_enterprise
+import data.jdg.mdr.hallmarks as mdr_hallmarks
+import data.jdg.mdr.hyper as mdr_hyper
 import data.jdg.tp
+import data.jdg.tp.hyper as tp_hyper
+import data.jdg.exit_tax_cfc as exit_tax_cfc
+import data.jdg.crossborder.v3_08 as crossborder_v3_08
+import data.jdg.business.v3_09 as business_v3_09
+import data.jdg.local_taxes.pcc as lt_pcc
+import data.jdg.local_taxes.real_estate as lt_real_estate
+import data.jdg.local_taxes.transport as lt_transport
+import data.jdg.local_taxes.plan26 as lt_plan26
+import data.jdg.akcyza.alcohol_tobacco as akcyza_alcohol
+import data.jdg.akcyza.fuel_energy as akcyza_fuel
+import data.jdg.local.enterprise as local_enterprise
+import data.jdg.local_taxes.v3_10 as local_taxes_v3_10
 import data.jdg.solidarity
 import data.jdg.edelivery
 import data.jdg.audit
@@ -1401,11 +1415,26 @@ _package_decisions := {
     "jdg.mdr": mdr.decide,
     "jdg.mdr.enterprise": mdr_enterprise.decide,
     "jdg.api_fallback": api_fallback.decide,
-    # PAS 3: Crossborder
+    # PAS 3: Crossborder (+ V3-08: domknięcie wiringu orphan-pakietów)
     "jdg.crossborder": crossborder.decide,
     "jdg.crossborder.post_brexit": post_brexit.decide,
+    "jdg.crossborder.v3_08": crossborder_v3_08.decide,
     "jdg.international": international.decide,
     "jdg.tp": tp.decide,
+    "jdg.tp.hyper": tp_hyper.decide,
+    "jdg.mdr.hallmarks": mdr_hallmarks.decide,
+    "jdg.mdr.hyper": mdr_hyper.decide,
+    "jdg.exit_tax_cfc": exit_tax_cfc.decide,
+    "jdg.business.v3_09": business_v3_09.decide,
+    # ── V3-10: domknięcie wiringu orphan-pakietów PCC/lokalne/akcyza ──
+    "jdg.local_taxes.pcc": lt_pcc.decide,
+    "jdg.local_taxes.real_estate": lt_real_estate.decide,
+    "jdg.local_taxes.transport": lt_transport.decide,
+    "jdg.local_taxes.plan26": lt_plan26.decide,
+    "jdg.akcyza.alcohol_tobacco": akcyza_alcohol.decide,
+    "jdg.akcyza.fuel_energy": akcyza_fuel.decide,
+    "jdg.local.enterprise": local_enterprise.decide,
+    "jdg.local_taxes.v3_10": local_taxes_v3_10.decide,
     "jdg.residency": residency.decide,
     # PAS 4: VAT
     "jdg.vat.substantive": substantive.decide,
