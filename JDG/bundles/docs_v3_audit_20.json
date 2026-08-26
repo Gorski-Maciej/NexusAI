@@ -1,0 +1,136 @@
+{
+  "report": "V3-20_DOKUMENTACJA",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_complete": true,
+    "metadata_complete": true,
+    "contract_complete": true,
+    "router_wired": true,
+    "legal_twin_complete": true,
+    "harmonization_complete": true,
+    "user_docs_and_campaign_certified": true,
+    "artifacts_and_tests_ready": true
+  },
+  "gate_summary": {
+    "passed": 8,
+    "total": 8
+  },
+  "scope": {
+    "files_total": 22,
+    "files_present": 22,
+    "missing": [],
+    "scope_complete": true
+  },
+  "metadata": {
+    "rule_ids_total": 2,
+    "rule_ids_unique": 2,
+    "duplicate_rule_ids": [],
+    "duplicate_free": true,
+    "legal_markers": {
+      "OrdPU": true,
+      "PIT": true,
+      "VAT": true,
+      "RODO": true
+    },
+    "legal_markers_complete": true,
+    "empty_legal_basis": 0
+  },
+  "contract": {
+    "contract_markers": {
+      "legal_twin_ok": true,
+      "docs_gate_ok": true,
+      "manifest_ok": true,
+      "glossary_ok": true,
+      "user_docs_ok": true,
+      "certification_ok": true,
+      "v1v2_ok": true,
+      "temporal_valid": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "no_auto_post": true,
+      "DECOUPLED": true
+    },
+    "contract_complete": true,
+    "snapshot_present": true,
+    "snapshot_versioned": true,
+    "import_present": true,
+    "p80_present": true,
+    "post_merge_anchor_current": true,
+    "no_auto_post_guard": true
+  },
+  "legal_twin": {
+    "trace_chain_article_rule_test": true,
+    "amendment_chain": true,
+    "evidence_present": true,
+    "evidence_refs": 0
+  },
+  "harmonization": {
+    "manifest_v3_packages": {
+      "quality_v3_14": true,
+      "quality_v3_15": true,
+      "quality_v3_16": true,
+      "quality_v3_17": true,
+      "quality_v3_18": true,
+      "quality_v3_19": true,
+      "quality_v3_20": true
+    },
+    "manifest_v3_packages_count": 7,
+    "glossary_sources_registered": true,
+    "katalog_rules_listed": true,
+    "legal_audit_present": true,
+    "gap_report_present": true,
+    "legal_source_registry_present": true
+  },
+  "user_docs_and_certification": {
+    "faq_present": true,
+    "handbook_present": true,
+    "logika_present": true,
+    "zgodnosc_present": true,
+    "decision_narrative_pl": true,
+    "certification_tool_present": true,
+    "campaign_registry_wdrozone": [
+      "00",
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08",
+      "09",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20"
+    ],
+    "campaign_parts_wdrozone": 21,
+    "all_registered_parts_wdrozone": true
+  },
+  "tests": {
+    "pytest_present": true,
+    "native_rego_present": true,
+    "markers": {
+      "full_contract": true,
+      "fail_closed": true,
+      "certification": true,
+      "twin": true,
+      "no_auto_post": true
+    },
+    "tests_complete": true,
+    "pytest_functions": 7
+  },
+  "opa": {
+    "available": false,
+    "passed": null,
+    "message": "OPA CLI unavailable locally; CI gate required."
+  },
+  "generated_at": "2026-08-26T11:44:45.771518+00:00"
+}

@@ -2609,6 +2609,37 @@ bundles_quality_v3_18 := {
     "manual_review_required": true,
 }
 
+# ═══════════════════════════════════════════════════════════════
+# V3-19 — API + CONTROL PLANE + UI / CENTRUM DECYZJI SNAPSHOT (ADR-002)
+# Progi spójne z ETAP 25 (17 ścieżek) i V2 F4 (centrum decyzji).
+api_ui_quality_v3_19 := {
+    "threshold_version": "api-ui-v3-2026.08",
+    "registry_version": "api-ui-campaign-2026.08",
+    "legal_basis_version": "api-ui-legal-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "min_api_endpoints": 17,
+    "max_documented_only_gaps": 0,
+    "min_soak_hours": 24,
+    "required_decision_modes": ["AUTO_POST", "SUGGEST", "ASK_USER"],
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════
+# V3-20 — DOKUMENTACJA + LEGAL TWIN + HARMONIZACJA SNAPSHOT (ADR-002)
+docs_quality_v3_20 := {
+    "threshold_version": "docs-v3-2026.08",
+    "registry_version": "docs-campaign-2026.08",
+    "legal_basis_version": "docs-legal-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "campaign_total_parts": 20,
+    "min_v3_packages_in_manifest": 7,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # P01 SEK. 3 — WERSJONOWANIE THRESHOLDÓW PER OKRES ROZLICZENIOWY (A2+) ENTERPRISE
 # ═══════════════════════════════════════════════════════════════════════════════

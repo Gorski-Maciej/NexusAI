@@ -204,6 +204,14 @@ else   := { ... } { condition_3 }       # trzecia...
 
 Przepływ: `INPUT → PASS 0 → 1 → 2 → … → 8 → POST-MERGE → final_verdict`.
 
+> **Granice jakościowe kampanii V3:** wewnątrz POST-MERGE działa wersjonowany
+> łańcuch kontraktów granicznych `p54 → … → p74 (hyper) → p75 (enterprise) →
+> p76 (tools/gates) → p77 (tests/CI) → p78 (bundles/delivery) → p79 (API/UI/
+> centrum decyzji) → p80 (docs/Legal Twin/certyfikacja)`, doklejany przez
+> `safe_merge` przed runtime invariants. Każdy kontrakt jest fail-closed,
+> DECOUPLED, `no_auto_post=true` i bramkuje WYNIKI swojej warstwy z evidence
+> (`JDG/bundles/*_audit_*.json`). Pakiety: [MANIFEST.md §PAKIETY KAMPANII V3](../MANIFEST.md).
+
 ```mermaid
 flowchart LR
     IN["INPUT (faktura + kontekst JDG)"]

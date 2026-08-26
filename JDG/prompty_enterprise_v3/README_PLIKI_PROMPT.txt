@@ -1,6 +1,10 @@
 KAMPANIA V3 — 20 PROMPTÓW WZMACNIAJĄCYCH MODUŁ JDG (OPA/Rego)
 =====================================================================
 
+> ✅ **STATUS: KAMPANIA_V3_KOMPLETNA (21/21 części, 2026-08-26)** — wszystkie
+> raporty WDROŻONY_100; certyfikacja: bundles/docs_v3_audit_20.json.
+> Szczegóły: STATUS_KAMPANII_V3.txt oraz enterprise_v3_registry.json.
+
 JAK UŻYWAĆ (krok po kroku):
 1. Wklej do GLM 5.2 plik: 00_PULS_STARTU_GLOWNY_SEKWENCER.txt (start, mapa,
    budżet okna, zasady wspólne).

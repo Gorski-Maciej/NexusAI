@@ -99,6 +99,25 @@
 
 ---
 
+## 🛡️ Bramki kontraktów kampanii V3 (V3-14…V3-20)
+
+Evidence gates bramkujące wyniki warstw z evidence (`JDG/bundles/*_audit_*.json`);
+każdy kontrakt: fail-closed, DECOUPLED, `no_auto_post=true`. Szczegóły:
+[`docs/KATALOG_NARZEDZI.md`](../docs/KATALOG_NARZEDZI.md) oraz
+[MANIFEST.md §PAKIETY KAMPANII V3](../MANIFEST.md).
+
+```bash
+python JDG/tools/hyper_quality_v3_14_gate.py --write        # deadlines/limits/kalendarze
+python JDG/tools/enterprise_quality_v3_15_gate.py --write   # S1-S24 + Neural Mesh
+python JDG/tools/tools_quality_v3_16_gate.py --write        # lintery/walidatory/gap reports
+python JDG/tools/tests_ci_quality_v3_17_gate.py --write     # CI/chaos/mutation/golden
+python JDG/tools/bundles_quality_v3_18_gate.py --write      # delivery: sign/verify/SBOM/mirror/canary/DR
+python JDG/tools/api_ui_quality_v3_19_gate.py --write       # API spec/RBAC/centrum decyzji
+python JDG/tools/docs_quality_v3_20_gate.py --write         # Legal Twin/dokumentacja/certyfikacja kampanii
+```
+
+---
+
 ## Workflow deweloperski
 
 ```bash
@@ -114,9 +133,12 @@ python JDG/tools/generate_coverage_report.py
 
 # 4. Budowanie bundle
 cd JDG/bundles && bash bundle.sh
+
+# 5. Bramki kontraktów kampanii V3 (po każdej zmianie w danej warstwie)
+python JDG/tools/bundles_quality_v3_18_gate.py --write
 ```
 
 ---
 
-*Wygenerowano dla NexusAI JDG Module — 2026-08-02*
+*Wygenerowano dla NexusAI JDG Module — 2026-08-02; zaktualizowano po kampanii V3 (2026-08-26)*
 *R15: Segregacja core/legacy/one-shot na podstawie RAPORT_P25*

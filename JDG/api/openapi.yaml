@@ -44,6 +44,13 @@ info:
     breaking_changes: /v2
     deprecated_headers: [X-API-Version]
     rule: "Zmiany niełamiące pozostają na /v1; breaking changes wymagają nowej ścieżki /v2."
+  x-rate-limit:
+    scheme: token-bucket
+    default_limit_per_minute: 120
+    decide_limit_per_minute: 60
+    burst: 30
+    headers: [RateLimit-Limit, RateLimit-Remaining, RateLimit-Reset, Retry-After]
+    rule: "V3-19 seed 5: rate-limit per tenant; przekroczenie = 429 + Retry-After."
 
 servers:
   - url: https://api.nexusai.pl/v1
@@ -323,6 +330,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HealthResponse'
+
+  # ═══════════════════════════════════════════════════════════════════════════
+  # GET /jdg/ready — Readiness probe (V3-19 seed 6)
+  # ═══════════════════════════════════════════════════════════════════════════
+  /jdg/ready:
+    get:
+      tags: [Health]
+      summary: Readiness probe — czy node może obsługiwać werdykty
+      description: |
+        V3-19: readiness jako warunek wejścia do load balancera. Zwraca 200 tylko,
+        gdy węzeł ma załadowany podpisany i zweryfikowany bundle (verify-before-serve,
+        L-18-012), hot-reload danych ≤ 60 s i brak blokad DR. W przeciwnym razie 503.
+      operationId: readinessProbe
+      responses:
+        '200':
+          description: Node ready — serwuje werdykty AUTO_CANDIDATE
+        '503':
+          description: Node NOT ready — bundle niezweryfikowany lub DR/canary blokada
 
   # ═════════════════════════════════════════════════════════════════════════════
   # POST /jdg/explain — LLM Bridge C2
@@ -764,6 +789,17 @@ paths:
         P17 (V2 F4): wystawienie certyfikatu decyzyjnego z pieczęcią
         (SHA-256 → Merkle → HSM) i klasą pewności (CERTAIN/CONDITIONAL/
         NEEDS_ADVICE). Werdykt NIE-CERTAIN nigdy nie dostaje AUTO_POST.
+
+        Centrum decyzji UI — tryby obsługi werdyktu (V3-19):
+          • AUTO_POST — tylko CERTAIN + _certainty_guard = AUTO_POST_ALLOWED;
+          • SUGGEST  — propozycja z 1 kliknięciem zatwierdzenia (UI);
+          • ASK_USER — pytanie 2–5 opcji w centrum decyzji (Trust Score < 0.75).
+        Tryb wynika wyłącznie z _certainty_class i _certainty_guard werdyktu
+        (INV-006/INV-035); host NIGDY nie wykonuje AUTO_POST dla CERTAINTY_BLOCKED.
+      x-decision-modes:
+        modes: [AUTO_POST, SUGGEST, ASK_USER]
+        certainty_guard_required: true
+        rule: "AUTO_POST wyłącznie dla CERTAIN; CONDITIONAL → SUGGEST; NEEDS_ADVICE → ASK_USER."
       operationId: issueCertificate
       parameters:
         - $ref: '#/components/parameters/IdempotencyKey'

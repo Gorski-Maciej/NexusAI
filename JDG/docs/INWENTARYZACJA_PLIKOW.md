@@ -177,6 +177,7 @@
 | `ORCHESTRATOR_DATA_CONTRACT.md` | ETAP 05 — 25-polowy werdykt, PASS 0–8, safe_merge |
 | `CONTROL_PLANE_RULE_LIFECYCLE.md` | ETAP 04 — fail-closed cykl życia reguł |
 | `KAMPANIA_GLM52_ETAPY_10_28.md` | ETAP 10–28 — audyty kampanii GLM 5.2, certyfikacja końcowa (2026-08-22) |
+| `prompty_enterprise_v3/STATUS_KAMPANII_V3.txt` · `prompty_enterprise_v3/README_PLIKI_PROMPT.txt` | kampania V3 — status 21/21 WDROŻONY_100, KAMPANIA_V3_KOMPLETNA (2026-08-26); raporty per część: `raporty_enterprise_v3/NN_NAZWA.txt`; rejestr: `bundles/enterprise_v3_registry.json` |
 | `LEGAL_SOURCE_REGISTRY.md` · `LEGAL_TWIN_RAPORT.md` · `LEGAL_TWIN_TRACEABILITY.md` | Legal Twin / LKG (ETAP 02–03) |
 | `AUDYT_PODSTAW_PRAWNYCH.md` · `P00_REMEDIACJA_PODSTAW_PRAWNYCH.md` · `LEGAL_COVERAGE_GAP_RAPORT.md` | audyty podstaw prawnych (P00/P02) |
 | `MANIFEST_2_0.md` · `PEWNOSC_DASHBOARD.md` · `KALENDARZ_ZMIAN_PRAWNYCH.md` | manifest 2.0, dashboard pewności, kalendarz zmian prawnych |

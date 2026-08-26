@@ -72,6 +72,14 @@ Sharded Router: p95 < 5 ms na shard; ścieżka sharded dla transakcji krajowych 
 ### Q2.8 Czym różni się `policies/` od `JDG/rules/`?
 `JDG/rules/` to źródło prawdy (v8.0, sharded router, 25 pól, Enterprise S1–S24). `policies/` to lżejszy mirror (v2026.07.10, Multi-Pass bez shardów) z bundle overlays v2026/v2027. [ARCHITEKTURA.md §7](ARCHITEKTURA.md).
 
+### Q2.9 Czy API ma limity zapytań i co znaczy odpowiedź `/jdg/ready` 503?
+Tak — V3-19 definiuje w specyfikacji (`api/openapi.yaml`, `x-rate-limit`) token-bucket: domyślnie **120 req/min** per tenant, `/jdg/decide` **60 req/min**, burst 30. Po przekroczeniu: **429 + `Retry-After`**.
+
+Readiness probe `GET /jdg/ready` zwraca **503**, gdy węzeł nie może bezpiecznie serwować werdyktów: bundle niepodpisany/niezwerfikowany lokalnie (verify-before-serve), canary zablokowany albo DR aktywny — wtedy LB wyłącza węzeł z ruchu (kontrakt delivery V3-18 + V3-19).
+
+### Q2.10 Skąd wiadomo, czy werdykt zostanie automatycznie zaksięgowany?
+Tryb wynika z klasy pewności werdyktu (V3-19 `x-decision-modes`): **CERTAIN → AUTO_POST**, **CONDITIONAL → SUGGEST** (propozycja, 1 kliknięcie), **NEEDS_ADVICE → ASK_USER** (pytanie 2–5 opcji w Centrum decyzji). Host nigdy nie wykonuje AUTO_POST przy `_certainty_guard = CERTAINTY_BLOCKED`. Progi: ≥0.92 AUTO_POST / 0.75–0.92 SUGGEST / <0.75 ASK_USER. [PODRECZNIK_UZYTKOWNIKA.md](PODRECZNIK_UZYTKOWNIKA.md).
+
 ---
 
 ## 3. Prawne i zgodność

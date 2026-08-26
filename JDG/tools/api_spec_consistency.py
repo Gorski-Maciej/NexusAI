@@ -42,6 +42,7 @@ PATH_ARTIFACTS = {
     "/jdg/simulate": "tools/judgment_predictor.py + rules (shadow mode)",
     "/jdg/audit/{verdict_id}": "tools/golden_replay.py + migrations/001 (jdg_verdict_audit)",
     "/jdg/health": "tools/bundle_server.py status + bundles/deployments.json",
+    "/jdg/ready": "tools/bundle_server.py verify-before-serve (V3-19 L-18-012) + bundles/deployments.json",
     "/jdg/explain": "tools/llm_bridge.py",
     "/jdg/thresholds": "tools/data_service.py export + bundles/thresholds_data.json",
     "/jdg/manifest": "tools/manifest_v2.py + bundles/manifest_v2.json",
@@ -59,7 +60,7 @@ PATH_ARTIFACTS = {
 
 REQUIRED_MARKERS = [
     "Idempotency-Key", "x-api-versioning", "x-rbac", "x-sod",
-    "BearerAuth", "breaking_changes", "separation of duties",
+    "BearerAuth", "breaking_changes", "separation of duties", "x-rate-limit",
 ]
 
 

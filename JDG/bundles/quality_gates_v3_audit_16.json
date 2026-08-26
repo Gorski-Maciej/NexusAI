@@ -90,5 +90,5 @@
     "passed": null,
     "message": "OPA CLI unavailable locally; CI gate required."
   },
-  "generated_at": "2026-08-26T08:10:18.312670+00:00"
+  "generated_at": "2026-08-26T10:43:26.178990+00:00"
 }

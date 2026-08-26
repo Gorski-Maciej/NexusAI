@@ -40,6 +40,15 @@
 | **Ustawa o zarządzie sukcesyjnym** | ✅ 100% | `rules/micro/sukcesja/*` |
 | **RODO** | ✅ 95% | `rules/rodo_extended.rego`, `rules/micro/rodo/*` |
 | **AML + BDO** | ✅ 90% | `rules/compliance/aml_enterprise.rego`, `rules/micro/aml/*`, `rules/environmental/bdo_enterprise.rego`, `rules/micro/bdo/*` |
+| **Obwieszczenia MF** (stawki/progi per rok) | ✅ seed RuleStore | `migrations/*rule_store*.sql` (seed z obwieszczeń), `rules/thresholds_jdg.rego` (snapshots wersjonowane), Law Radar (`tools/law_radar.py`) |
+
+> **Źródła i pochodzenie danych prawnych (V3-20):** każdy akt ma wpis w
+> [LEGAL_SOURCE_REGISTRY.md](LEGAL_SOURCE_REGISTRY.md) z hashem SHA-256 źródła
+> (Dz.U./ISAP); progi roczne pochodzą z obwieszczeń MF (RuleStore seed,
+> niezmiennik `seeded_from_official_gazettes` w kontrakcie V3-18) i są
+> wersjonowane snapshotami temporalnymi. Ślad reguła↔artykuł: Legal Twin
+> ([LEGAL_TWIN_TRACEABILITY.md](LEGAL_TWIN_TRACEABILITY.md)); system dostarcza
+> evidence i wersje aktów — nie zastępuje interpretacji doradcy.
 
 ---
 

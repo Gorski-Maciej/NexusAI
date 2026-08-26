@@ -1,0 +1,122 @@
+{
+  "report": "V3-19_API_UI",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_complete": true,
+    "metadata_complete": true,
+    "contract_complete": true,
+    "router_wired": true,
+    "api_spec_complete": true,
+    "control_plane_complete": true,
+    "decision_center_documented": true,
+    "artifacts_and_tests_ready": true
+  },
+  "gate_summary": {
+    "passed": 8,
+    "total": 8
+  },
+  "scope": {
+    "files_total": 13,
+    "files_present": 13,
+    "missing": [],
+    "scope_complete": true
+  },
+  "metadata": {
+    "rule_ids_total": 2,
+    "rule_ids_unique": 2,
+    "duplicate_rule_ids": [],
+    "duplicate_free": true,
+    "legal_markers": {
+      "OrdPU": true,
+      "PIT": true,
+      "VAT": true,
+      "RODO": true
+    },
+    "legal_markers_complete": true,
+    "empty_legal_basis": 0
+  },
+  "contract": {
+    "contract_markers": {
+      "api_ok": true,
+      "consistency_ok": true,
+      "authz_ok": true,
+      "decision_center_ok": true,
+      "lifecycle_ok": true,
+      "declarative_ok": true,
+      "resilience_ok": true,
+      "versioning_ok": true,
+      "temporal_valid": true,
+      "BLOCK_AND_ALERT": true,
+      "TRIAGE_QUEUE": true,
+      "no_auto_post": true,
+      "DECOUPLED": true
+    },
+    "contract_complete": true,
+    "snapshot_present": true,
+    "snapshot_versioned": true,
+    "import_present": true,
+    "p79_present": true,
+    "post_merge_anchor_current": true,
+    "no_auto_post_guard": true
+  },
+  "api_spec": {
+    "openapi_markers": {
+      "IdempotencyKey": true,
+      "x-api-versioning": true,
+      "x-rbac": true,
+      "x-sod": true,
+      "BearerAuth": true,
+      "breaking_changes": true,
+      "x-rate-limit": true,
+      "/jdg/ready": true,
+      "/jdg/health": true,
+      "AUTO_POST": true,
+      "SUGGEST": true,
+      "ASK_USER": true
+    },
+    "openapi_markers_complete": true,
+    "consistency_audit_wired": true,
+    "spec_paths_implemented": 18,
+    "spec_gap_count": 0,
+    "spec_no_gaps": true
+  },
+  "control_plane": {
+    "lifecycle_stages": true,
+    "four_eyes_sod": true,
+    "rollback_supported": true,
+    "rule_lifecycle_ops": true,
+    "declarative_wizard": true,
+    "declarative_dry_run_default": true,
+    "declarative_never_automated": true
+  },
+  "decision_center": {
+    "modes": {
+      "AUTO_POST": true,
+      "SUGGEST": true,
+      "ASK_USER": true,
+      "NEEDS_ADVICE": true
+    },
+    "modes_documented": true,
+    "certainty_guard_mentioned": true
+  },
+  "tests": {
+    "pytest_present": true,
+    "native_rego_present": true,
+    "markers": {
+      "full_contract": true,
+      "fail_closed": true,
+      "decision_center": true,
+      "authz": true,
+      "resilience": true,
+      "no_auto_post": true
+    },
+    "tests_complete": true,
+    "pytest_functions": 7
+  },
+  "opa": {
+    "available": false,
+    "passed": null,
+    "message": "OPA CLI unavailable locally; CI gate required."
+  },
+  "generated_at": "2026-08-26T11:44:49.454595+00:00"
+}

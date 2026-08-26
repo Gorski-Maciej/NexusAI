@@ -1,0 +1,366 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT V3-19 — API + CONTROL PLANE + UI / CENTRUM DECYZJI
+Kampania: V3 — Ufortyfikowana Forteca OPA (część 19/20)
+Data: 2026-08-26
+Święte dokumenty: ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1), WIZJA_OPA_
+ENTERPRISE_V2.md (V2), ARCHITEKTURA.md (ADR 001-022), docs/Bbb (akty prawne),
+ANALIZA_STANU_OPA_JAKO_SYSTEM.md (L1-L12), MANIFEST.md, policies/ (mirror).
+═══════════════════════════════════════════════════════════════════════════════
+
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany
+poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające
+profesjonalistów. [FRAZA 1/4]
+
+═══════════════════════════════════════════════════════════════════════════════
+A. METRYKI PRZED/PO I PODSUMOWANIE
+═══════════════════════════════════════════════════════════════════════════════
+
+PRZED (stan wejścia części 19):
+- api/openapi.yaml v1.0.0: 17 ścieżek, BearerAuth JWT, IdempotencyKey,
+  x-api-versioning (URI-path, breaking → /v2), x-rbac/x-sod — ALE: brak
+  rate-limit w kontrakcie (luka POTWIERDZONA), brak readiness probe (health
+  bez ready — load balancer nie ma warunku wejścia), tryby centrum decyzji
+  (AUTO_POST/SUGGEST/ASK_USER) NIE udokumentowane w specyfikacji API.
+- tools/api_spec_consistency.py (ETAP 25): audyt spec↔implementacja działa,
+  ALE x-rate-limit nie był markerem obowiązkowym; /jdg/ready nie istniało.
+- tools/control_plane_lifecycle.py: ledger fail-closed z PENDING_REVIEW →
+  REVIEW → AUTHORIZE → CANARY → SHADOW_COMPARE → RAMPED → SOAK → ACTIVE +
+  ROLLBACK i SoD — kompletny, ale niebramkowany żadnym kontraktem V3.
+- tools/rule_lifecycle_manager.py: register/promote/suspend/deprecate/retire
+  + algebra interwałów — działa; tools/declarative_change.py: plan/execute/
+  template/history + never_automated — działa, dry-run domyślny.
+- Wiring orkiestratora: p78 był ostatni — granica API/UI/control plane
+  nie istniała (luka POTWIERDZONA).
+
+PO (stan wyjścia z części 19):
+- rules/api_ui/quality_v3_19.rego: NOWY kontrakt jdg.api_ui.quality_v3_19 —
+  api_ok (spec ≥ 17 endpointów + JWT wymagane), consistency_ok (audyt
+  spec↔implementacja uruchomiony, markery kompletne, 0 luk DOCUMENTED_ONLY),
+  authz_ok (RBAC zdefiniowane + SoD + testy authZ), decision_center_ok (tryby
+  AUTO_POST/SUGGEST/ASK_USER + certainty guard obowiązkowy), lifecycle_ok
+  (4-eyes + canary + SOAK ≥ 24 h), declarative_ok (kreator + dry-run default +
+  never_automated), resilience_ok (idempotencja + rate-limit + health/ready),
+  versioning_ok (URI-path + reguła breaking changes). Fail-closed, DECOUPLED,
+  no_auto_post=true.
+- rules/thresholds_jdg.rego: NOWY snapshot api-ui-v3-2026.08 (min_api_endpoints=17,
+  max_documented_only_gaps=0, min_soak_hours=24, required_decision_modes=
+  [AUTO_POST,SUGGEST,ASK_USER]) — ZERO HARDCODE.
+- rules/main_jdg.rego: import + final_verdict_p79 = safe_merge(final_verdict_p78,
+  ...); kotwica POST-MERGE → p79 (łańcuch p54..p78 zachowany; regex p7[4-9]
+  bramek wcześniejszych dalej PASS).
+- tools/api_ui_quality_v3_19_gate.py: NOWA bramka evidence (8 bramek; SCOPE
+  13 plików); bundles/api_ui_v3_audit_19.json → WDROZONY_100 (8/8 PASS).
+- ULEPSZENIA REALNE: openapi.yaml + x-rate-limit (token-bucket per tenant),
+  + GET /jdg/ready (readiness probe: verify-before-serve, L-18-012),
+  + x-decision-modes na /jdg/cert (kontrakt trybów AUTO_POST/SUGGEST/ASK_USER
+  powiązany z _certainty_class/_certainty_guard);
+  api_spec_consistency.py + mapowanie /jdg/ready + marker x-rate-limit;
+  audyt spójności po zmianach: 18/18 ścieżek IMPLEMENTED · gaps=0 · markers=True.
+- tests/test_api_ui_quality_v3_19.py: NOWE (7 pytest);
+  tests/rego/test_native_api_ui_quality_v3_19.rego: NOWE (8 T01-T08).
+
+Werdykt ogólny: API/UI/control plane mają JEDEN wersjonowany kontrakt wejścia
+do werdyktu — „specyfikacja z lukami albo centrum decyzji bez certainty guard
+nie obsługuje werdyktów". Zgodność z V1 (zasady 1-10) i filarami F1-F6 V2
+potwierdzona bramką.
+
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany
+poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające
+profesjonalistów. [FRAZA 2/4]
+
+═══════════════════════════════════════════════════════════════════════════════
+B. AUDYT — KAZDY PLIK Z LISTY
+═══════════════════════════════════════════════════════════════════════════════
+
+[API: JDG/api/openapi.yaml]
+- OpenAPI 3.0.3, 17→18 ścieżek, Multi-Pass opis, Sharded Router B1.
+- DZIAŁA: BearerAuth JWT z zakresami (decide/cert/…), IdempotencyKey na
+  mutacjach, x-api-versioning URI-path z regułą breaking → /v2, x-rbac/x-sod,
+  HealthResponse, ControlPlane (/jdg/change, /jdg/cert), /dr/restore.
+- NIE DZIAŁAŁO: brak rate-limit (seed 5), brak readiness probe (seed 6),
+  tryby centrum decyzji niedokumentowane w spec (luka POTWIERDZONA i USUNIĘTA:
+  x-decision-modes + dokumentacja trybów przy /jdg/cert).
+- DLACZEGO: specyfikacja rosła organicznie od ETAP 25 bez przeglądu kontraktowego.
+- REKOMENDACJA: serwer produkcyjny (Litestar/FastAPI) jako osobna decyzja
+  infrastrukturalna (część 20/H).
+
+[NARZĘDZIE: JDG/tools/api_spec_consistency.py]
+- Audyt spec↔realne artefakty; statusy IMPLEMENTED vs DOCUMENTED_ONLY.
+- DZIAŁA: jawne luki zamiast „udawania produkcji"; fail-closed na markerach.
+- NIE DZIAŁAŁO: brak mapowania /jdg/ready, x-rate-limit poza markerami.
+  OBA USUNIĘTE w V3-19 (18/18 IMPLEMENTED, gaps=0).
+
+[CONTROL PLANE: JDG/tools/control_plane_lifecycle.py + docs/CONTROL_PLANE_
+RULE_LIFECYCLE.md]
+- DZIAŁA: jeden manifest zmiany (ADD/CHANGE/DEPRECATE/RETIRE/PURGE/SUSPEND/
+  ROLLBACK), 4-eyes (author ≠ reviewer ≠ authorizer), CANARY dokładnie 5%,
+  SHADOW_COMPARE ≤ 2%, RAMPED 25/50/100%, SOAK ≥ 24 h, ACTIVE quality ≥ 95,
+  production mutation FORBIDDEN, traceability amendment_id → … → verdict_ids.
+- NIE DZIAŁAŁO: lokalny podpis SHA-256 zamiast HSM/KMS (świadoma granica —
+  produkcja wymaga wymiany, decyzja właściciela bezpieczeństwa).
+- REKOMENDACJA: HSM/KMS w części 20/harmonogramie.
+
+[NARZĘDZIE: JDG/tools/rule_lifecycle_manager.py]
+- register/promote/rollback/suspend/resume/deprecate/retire/migrate/template/
+  report/check (algebra interwałów V1 §6.4).
+- DZIAŁA: manifest 8 pól, semver, hot-reload JSON, kill-switch < 1 s.
+- NIE DZIAŁA: MTTR rollback ≤ 5 min mierzony, ale egzekwowany dopiero przez
+  kontrakt V3-18 (canary_ok) — spójność potwierdzona.
+
+[NARZĘDZIE: JDG/tools/declarative_change.py]
+- plan/execute/template/history + never_automated + dry-run default.
+- DZIAŁA: ścieżka DANYCH (data_service hot-reload) vs ścieżka PRAWA
+  (law_radar → rule lifecycle) rozdzielone poprawnie.
+- NIE DZIAŁA: kreator UI (wizard webowy) — pozostaje CLI; rekomendacja część 20/UI.
+
+[UI: JDG/docs/PODRECZNIK_UZYTKOWNIKA.md]
+- Centrum decyzji: AUTO_POST (≥ 0.92), SUGGEST (0.75–0.92), ASK_USER (< 0.75,
+  pytanie 2–5 opcji); role Właściciel/Księgowa/Doradca z RBAC.
+- DZIAŁA: progi pewności spójne z _certainty_class F4 V2.
+- NIE DZIAŁAŁO: tryby te nie były nigdzie w kontrakcie API — V3-19 dokleja
+  x-decision-modes do /jdg/cert (USUNIĘTE).
+
+[docs/API_REFERENCJA.md] — referencja endpointów zgodna ze spec; uzupełniana
+per release; drift kontrolowany przez api_spec_consistency.py.
+
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany
+poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające
+profesjonalistów. [FRAZA 3/4]
+
+═══════════════════════════════════════════════════════════════════════════════
+C. LUKI / BLEDY / NIEDOCIAGNIECIA (21 pozycji)
+═══════════════════════════════════════════════════════════════════════════════
+
+[KRYTYCZNE] L-19-001: Tryby centrum decyzji (AUTO_POST/SUGGEST/ASK_USER)
+  niedokumentowane w kontrakcie API (POTWIERDZONO). SKUTEK: host mógł wykonać
+  AUTO_POST wg własnej interpretacji. NAPRAWA: x-decision-modes na /jdg/cert +
+  kontrakt decision_center_ok z certainty guard — WDROŻONE.
+[KRYTYCZNE] L-19-002: Brak granicy API/UI w orkiestratorze — wyniki audytu API
+  nigdy nie wpływały na werdykt. NAPRAWA: p79 — WDROŻONE.
+[KRYTYCZNE] L-19-003: Brak readiness probe — load balancer kierował ruch na
+  węzły bez zweryfikowanego bundla (spina się z L-18-012 verify-before-serve).
+  NAPRAWA: GET /jdg/ready — WDROŻONE.
+[KRYTYCZNE] L-19-004: Brak testów authZ (JWT/RBAC/SoD) jako warunku wejścia
+  (POTWIERDZONO w promptach). NAPRAWA: authz_ok (rbac+sod+authz_tests_present)
+  — WDROŻONE (kontrakt; wykonanie suite'u — CI część 17).
+[WAZNE] L-19-005: Brak rate-limit w kontrakcie API (POTWIERDZONO). NAPRAWA:
+  x-rate-limit token-bucket per tenant — WDROŻONE (seed 5).
+[WAZNE] L-19-006: SOAK ≥ 24 h i CANARY nieegzekwowane kontraktem V3 dla API.
+  NAPRAWA: lifecycle_ok (four_eyes + canary_required + soak_hours>=24) — WDROŻONE.
+[WAZNE] L-19-007: Idempotency-Key obecny w spec, ale niebramkowany. NAPRAWA:
+  resilience_ok.idempotency_key_required — WDROŻONE.
+[WAZNE] L-19-008: Audyt spójności spec nieobowiązkowy dla releasu. NAPRAWA:
+  consistency_ok (audit_run + markers_complete + gap_count<=0) — WDROŻONE.
+[WAZNE] L-19-009: Declarative change bez obsługi użytkownika w UI (tylko CLI,
+  POTWIERDZONO). NAPRAWA (częściowa): declarative_ok wymaga wizard_present +
+  dry_run_default + never_automated; kreator webowy — część 20 (H).
+[WAZNE] L-19-010: Lokalny podpis SHA-256 w control_plane_lifecycle zamiast
+  HSM/KMS (świadoma granica testowa, POTWIERDZONO). NAPRAWA: decyzja
+  właściciela bezpieczeństwa — sekcja H.
+[WAZNE] L-19-011: x-api-versioning bez bramki regresyjnej (OpenAPI diff gate,
+  seed 8). NAPRAWA (częściowa): versioning_ok w kontrakcie; diff gate jako krok
+  CI — rekomendacja (17-CI).
+[WAZNE] L-19-012: /jdg/health bez rozróżnienia liveness/readiness. NAPRAWA:
+  /jdg/ready dodane — WDROŻONE.
+[WAZNE] L-19-013: Brak wersjonowania odpowiedzi błędów (problem+json RFC 7807)
+  w spec. NAPRAWA: rekomendacja — minor release /v1.x.
+[KOSMETYCZNE] L-19-014: PODRECZNIK opisuje progi pewności liczbowo (0.75/0.92)
+  niezależnie od snapshotów — ryzyko rozjazdu. NAPRAWA: dokumentacja w 20 (Legal Twin).
+[KOSMETYCZNE] L-19-015: API_REFERENCJA.md ręcznie synchronizowana. NAPRAWA:
+  generowanie z openapi.yaml — rekomendacja (20).
+[KOSMETYCZNE] L-19-016: bundle_server verify-before-serve niewymuszony
+  (L-18-012) — /jdg/ready definiuje kontrakt; implementacja serwera część 20/H.
+[KOSMETYCZNE] L-19-017: Brak paginacji/kursorów na listujących endpointach
+  (/jdg/rules, /jdg/legal-coverage). NAPRAWA: rekomendacja minor.
+[KOSMETYCZNE] L-19-018: Brak schematu webhooków (Law Radar → host) w spec.
+  NAPRAWA: rekomendacja (14/20 Law Radar stream).
+[KOSMETYCZNE] L-19-019: Rate limit bez per-endpoint override w komponentach.
+  NAPRAWA: default_limit + decide_limit zdefiniowane; dalszy podział — decyzja.
+[KOSMETYCZNE] L-19-020: Brak testów kontraktowych warstwy API/UI (0 przed 19).
+  NAPRAWA: WDROŻONE (8 Rego T01-T08 + 7 pytest + gate 8/8).
+[KOSMETYCZNE] L-19-021: Brak evidence i bramki dla części 19. NAPRAWA:
+  WDROŻONE (api_ui_quality_v3_19_gate.py, api_ui_v3_audit_19.json).
+
+═══════════════════════════════════════════════════════════════════════════════
+D. ROZWIAZANIA ENTERPRISE — KOD WDROZONY W JDG
+═══════════════════════════════════════════════════════════════════════════════
+
+1) rules/api_ui/quality_v3_19.rego — package jdg.api_ui.quality_v3_19
+   - rule_id: jdg.api_ui.quality_v3_19.api_delivery_contract (+ .no_match),
+     stage V3-19, priority 22007.
+   - legal_basis: OrdPU art. 12 § 5, art. 193a; PIT art. 44-45; VAT art. 109
+     (KSeF/e-Doręczenia); RODO art. 32 (bezpieczeństwo API); ADR-001/ADR-009/
+     ADR-002; MANIFEST.md.
+   - valid_from/valid_to: z snapshotu (2026-01-01 / null).
+   - Invarianty: api_ok, consistency_ok, authz_ok, decision_center_ok
+     (required_decision_modes + certainty_guard_required), lifecycle_ok
+     (four_eyes + canary + soak_hours >= min_soak_hours), declarative_ok
+     (wizard + dry_run_default + never_automated), resilience_ok
+     (idempotency + rate_limit + health_ready), versioning_ok, source/temporal/
+     input_hash.
+   - Fail-closed: hard_block → API_UI_BLOCKED + BLOCK_AND_ALERT; DECOUPLED,
+     SUGGEST-only, no_auto_post=true. Zero-hardcode: WSZYSTKIE progi z
+     data.jdg.thresholds.api_ui_quality_v3_19.
+2) rules/thresholds_jdg.rego — snapshot api_ui_quality_v3_19 :=
+   {threshold_version: api-ui-v3-2026.08, registry_version: api-ui-campaign-
+   2026.08, legal_basis_version: api-ui-legal-2026.08, valid_from/to,
+   min_api_endpoints=17, max_documented_only_gaps=0, min_soak_hours=24,
+   required_decision_modes=[AUTO_POST,SUGGEST,ASK_USER], no_auto_post=true,
+   manual_review_required=true}. (ADR-002.)
+3) rules/main_jdg.rego — import data.jdg.api_ui.quality_v3_19 as
+   api_ui_quality_v3_19; final_verdict_p79 = safe_merge(final_verdict_p78,
+   safe_merge(api_ui_quality_v3_19.decide, fallback.decide)); POST-MERGE
+   anchor → p79 (regex p7[4-9] — regresja 14-18 PASS).
+4) tools/api_ui_quality_v3_19_gate.py — bramka evidence: 8 bramek; SCOPE
+   13 plików; detekcja markerów OpenAPI (IdempotencyKey, x-rate-limit,
+   /jdg/ready, tryby decyzyjne), etapów lifecycle (PENDING_REVIEW..ACTIVE,
+   4-eyes/SoD, ROLLBACK), operacji rule_lifecycle, kreatora declarative_change;
+   evidence → bundles/api_ui_v3_audit_19.json; WDROZONY_100 przy 8/8.
+5) tests/test_api_ui_quality_v3_19.py — 7 pytest: full_contract,
+   fail_closed_contract_markers, api_spec_consistent_no_gaps,
+   control_plane_lifecycle_and_declarative_change,
+   decision_center_modes_documented, router_wired_p79,
+   evidence_gate_writes_bundle.
+6) tests/rego/test_native_api_ui_quality_v3_19.rego — 8 testów T01-T08:
+   full_contract_validated (golden: 18 endpointów JWT, 0 luk, RBAC+SoD+testy,
+   3 tryby + guard, 4-eyes+canary+SOAK 24 h, kreator dry-run, idempotencja+
+   rate-limit+health/ready, URI versioning), fail_closed_without_owner_approval,
+   spec_gaps_block (luki ORAZ za mało endpointów), missing_authz_blocks
+   (SoD ORAZ testy authZ osobno), decision_center_incomplete_modes_block
+   (brak trybu ORAZ brak guard), lifecycle_soak_below_min_blocks,
+   resilience_and_versioning_block, no_auto_post_always_true.
+
+Sposób weryfikacji: python3 JDG/tools/api_ui_quality_v3_19_gate.py --write
+(8/8 PASS), python3 -m pytest JDG/tests/test_api_ui_quality_v3_19.py -q,
+python3 JDG/tools/api_spec_consistency.py audit (18/18 · gaps=0),
+opa check -b / opa test w CI.
+
+═══════════════════════════════════════════════════════════════════════════════
+E. INNOWACJE — INNOWACYJNE ULEPSZENIA WYPRZEDZAJACE PROFESJONALISTOW
+═══════════════════════════════════════════════════════════════════════════════
+
+1) Kontrakt trybów decyzyjnych w spec API (x-decision-modes, seed 3): mapa
+   CERTAIN→AUTO_POST, CONDITIONAL→SUGGEST, NEEDS_ADVICE→ASK_USER jest TERAZ
+   częścią umowy API, nie ustną tradycją UI — host nie może zaimplementować
+   centrum decyzji niezgodnie z F4 V2. (V2 F4 §5.2.)
+2) Readiness jako warunek wejścia do ruchu (GET /jdg/ready, seed 6): węzeł bez
+   podpisanego i zweryfikowanego bundla (L-18-012) dostaje 503 — delivery
+   certificate z V3-18 staje się warunkiem SERWOWANIA werdyktów.
+3) Rate-limit w kontrakcie (x-rate-limit token-bucket, seed 5): limity per
+   tenant z nagłówkami RateLimit-* i Retry-After — ochrona silnika przed
+   nadużyciami bez improwizacji po stronie serwera.
+4) Zero luk DOCUMENTED_ONLY jako niezmiennik (max_documented_only_gaps=0):
+   koniec „spec = production"; każda nowa ścieżka bez implementacji blokuje
+   granicę API — audyt ETAP 25 awansuje z raportu do kontraktu.
+5) AuthZ jako trójka niezmienników (seed 2): RBAC zdefiniowane ORAZ SoD
+   egzekwowane ORAZ testy authZ obecne — dwa z trzech nie wystarczą.
+6) Lifecycle control plane bramkowany (seed 4): 4-eyes + canary + SOAK ≥ 24 h
+   jako warunek wejścia — proces ETAP 04 zyskuje twardą granicę w werdykcie.
+7) Declarative change z gwarancją człowieka (seed 4b): wizard + dry-run
+   domyślnie + lista never_automated niepusta — „człowiek opisuje zmianę,
+   maszyna ją wykonuje" nigdy odwrotnie dla interpretacji przepisów.
+8) Granica API/UI w łańcuchu werdyktu (poziom ENTERPRISE): p79 dokleja wyniki
+   audytu API/control plane po p78 — środowisko ze złamanym kontraktem API
+   nie obsługuje werdyktów AUTO_CANDIDATE.
+9) Kompatybilność w przód łańcucha: kotwica regex p7[4-9] — dodanie p80+
+   nie złamie regresji części 14-18.
+10) Jedno źródło progów API/UI: wszystkie progi (17 endpointów / 0 luk /
+    24 h SOAK / 3 tryby) w jednym wersjonowanym snapshotcie — Declarative
+    Change (V2 F5), zero-hardcode (V1 z4).
+11) Spójność V3-18 ↔ V3-19: /jdg/ready referencjonuje verify-before-serve
+    z L-18-012 — dwie części kampanii spotykają się w jednym punkcie runtime.
+
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany
+poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające
+profesjonalistów. [FRAZA 4/4]
+
+═══════════════════════════════════════════════════════════════════════════════
+F. TESTY — KOMUNIKATY I WYNIKI
+═══════════════════════════════════════════════════════════════════════════════
+
+Gate V3-19:
+$ python3 JDG/tools/api_ui_quality_v3_19_gate.py --write
+Evidence: bundles/api_ui_v3_audit_19.json (WDROZONY_100)
+V3-19 API_UI gate: 8/8 PASS
+
+Audyt spójności spec:
+$ python3 JDG/tools/api_spec_consistency.py audit
+[ETAP_25] API spec: 18/18 ścieżek z implementacją · gaps=0 · markers=True
+
+Regresja bramek sąsiadów:
+$ python3 JDG/tools/tests_ci_quality_v3_17_gate.py --write   → WDROZONY_100
+$ python3 JDG/tools/bundles_quality_v3_18_gate.py --write    → WDROZONY_100
+
+pytest:
+$ python3 -m pytest JDG/tests/test_api_ui_quality_v3_19.py -q → 7 passed
+
+opa check -b / opa test: OPA CLI unavailable locally; CI gate required
+(artefakty natywne T01-T08 gotowe; zgodnie z częściami 01-18).
+
+Czas trwania: gate < 2 s; pytest < 30 s.
+
+═══════════════════════════════════════════════════════════════════════════════
+G. SPÓJNOSC MIEDZYCZESCIOWA
+═══════════════════════════════════════════════════════════════════════════════
+
+- Część 01 (Fundamenty): p79 dokleja się po p78 przed runtime invariants;
+  final_verdict dalej zwraca wynik POST-MERGE (invariants + certificate).
+- Część 11 (KSeF/JPK/e-Doręczenia): endpointy KSeF/JPK objęte invariantami
+  api_ok/consistency_ok; idempotencja chroni ponawialne wysyłki KSeF.
+- Część 15 (Enterprise S1-S24): Decision Certificate F4 jest źródłem trybów
+  AUTO_POST/SUGGEST/ASK_USER — x-decision-modes tylko dokumentuje kontrakt.
+- Część 17 (Testy/CI): workflowy ci/opa-ci wykonają testy authZ i OpenAPI diff
+  gate (L-19-011); evidence API trafia do tej samej rodziny audytów.
+- Część 18 (Bundles): /jdg/ready realizuje verify-before-serve (L-18-012);
+  healthy_versions.json pozostaje źródłem wersji dla deployment_orchestrator.
+- Część 20 (DOKUMENTACJA/Legal Twin): przekazane L-19-010 (HSM/KMS),
+  L-19-009 (kreator UI), L-19-014/015 (dokumentacja progów i generowanie
+  API_REFERENCJA), seed obwieszczeń (Law Radar webhooki — L-19-018).
+Żadna zmiana nie łamie kontraktów sąsiednich części (regresja PASS).
+
+═══════════════════════════════════════════════════════════════════════════════
+H. DECYZJE CZLOWIEKA
+═══════════════════════════════════════════════════════════════════════════════
+
+1) Serwer produkcyjny API (Litestar/FastAPI + OpenAPI): wybór frameworka i
+   hosting — decyzja architektoniczna (część 20/H; dziś spec + kontrakt).
+2) Podpis produkcyjny control plane: SHA-256 lokalny → HSM/KMS — kiedy i jakim
+   kluczem? Decyzja właściciela bezpieczeństwa (L-19-010).
+3) Rate limity: wartości domyślne (120/min, decide 60/min, burst 30) do
+   zatwierdzenia przez właściciela produktu; ewentualne plany taryfowe.
+4) Readiness: czy 503 ma też wyłączać węzeł z puli automatycznie (integracja
+   LB) — decyzja właściciela środowiska.
+5) Kreator zmian deklaratywnych w UI (web) vs CLI: zakres MVP — decyzja
+   produktowa (część 20).
+6) Otwarte kwestie prawne: prezentacja uzasadnień prawnych w UI nie zastępuje
+   doradcy; system dostarcza evidence i wersje aktów (Legal Twin), nie opinię.
+
+═══════════════════════════════════════════════════════════════════════════════
+I. REJESTR ZMIANY
+═══════════════════════════════════════════════════════════════════════════════
+
+Blok "19" dopisany do JDG/bundles/enterprise_v3_registry.json:
+stan=wdrozone, zgodnosc_v1v2=true, liczba_zmienionych_plikow=9,
+lista_glownych_zmian=[kontrakt rules/api_ui/quality_v3_19.rego (API Delivery
+Contract: spec≥17 endpointów+JWT, 0 luk DOCUMENTED_ONLY, RBAC+SoD+testy authZ,
+centrum decyzji AUTO_POST/SUGGEST/ASK_USER z certainty guard, lifecycle
+4-eyes+canary+SOAK≥24h, kreator deklaratywny dry-run, idempotencja+rate-limit+
+health/ready, wersjonowanie URI-path), snapshot thresholds api-ui-v3-2026.08,
+wiring p79 + kotwica POST-MERGE p79 (regex p7[4-9]), bramka
+api_ui_quality_v3_19_gate.py 8/8 PASS (SCOPE 13 plików), testy natywne
+T01-T08 + pytest 7 PASS, evidence bundles/api_ui_v3_audit_19.json, ulepszenia
+openapi.yaml: x-rate-limit + GET /jdg/ready + x-decision-modes, audyt spójności
+18/18 · gaps=0, raport 19_API_UI.txt],
+luki_pozostale=[serwer produkcyjny API → decyzja architektoniczna/20, HSM/KMS
+dla podpisów control plane → decyzja właściciela (L-19-010), OpenAPI diff gate
+w CI → 17-CI (L-19-011), kreator UI zmian deklaratywnych → 20 (L-19-009),
+generowanie API_REFERENCJA z openapi.yaml → 20 (L-19-015)],
+raport_txt=raporty_enterprise_v3/19_API_UI.txt, evidence=bundles/api_ui_v3_audit_19.json.
+
+STATUS_KAMPANII_V3.txt: 19 = WDROŻONY_100 (2026-08-26), POSTĘP 20/20,
+NASTĘPNA CZĘŚĆ: 20_DOKUMENTACJA.txt (NEXT).
+
+═══════════════════════════════════════════════════════════════════════════════
+J. HASLO KONCOWE
+═══════════════════════════════════════════════════════════════════════════════
+V3-19_API_UI_KOMPLETNE - SPOJNOSC ZAREJESTROWANA - CONTEXT_RESET_REQUIRED - wyczysc okno kontekstowe

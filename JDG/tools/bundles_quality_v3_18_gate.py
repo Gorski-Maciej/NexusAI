@@ -118,7 +118,7 @@ def audit_contract() -> dict[str, Any]:
         "snapshot_versioned": all(key in snapshot_block for key in REQUIRED_SNAPSHOT_KEYS),
         "import_present": "import data.jdg.bundles.quality_v3_18 as bundles_quality_v3_18" in main,
         "p78_present": "final_verdict_p78 = safe_merge(final_verdict_p77" in main,
-        "post_merge_anchor_current": bool(re.search(r"final_verdict_post_merge = safe_merge\(\s*\{\"_routing_context\": routing_context\},\s*final_verdict_p7[4-9]", main)),
+        "post_merge_anchor_current": bool(re.search(r"final_verdict_post_merge = safe_merge\(\s*\{\"_routing_context\": routing_context\},\s*final_verdict_(p7[4-9]|p8[0-5])", main)),
         "no_auto_post_guard": '"no_auto_post": true' in contract,
     }
 

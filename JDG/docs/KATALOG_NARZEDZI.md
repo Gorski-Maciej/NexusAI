@@ -189,7 +189,19 @@
 
 ## 10. Podsumowanie
 
-> ⚠️ **Uwaga:** katalog zawiera obecnie **298 plików `.py`** (stan 2026-08-22; kampania GLM 5.2 dodała ~170 narzędzi: audyty ETAP 10–28, bramki raportowe R01–R24, generatory). Poniższe sekcje opisują kategorie rdzenia; pełną listę generuje `ls JDG/tools/*.py` oraz [INWENTARYZACJA_PLIKOW.md](INWENTARYZACJA_PLIKOW.md).
+> ⚠️ **Uwaga:** katalog zawiera obecnie **298 plików `.py`** (stan 2026-08-22; kampania GLM 5.2 dodała ~170 narzędzi: audyty ETAP 10–28, bramki raportowe R01–R24, generatory; kampania V3 dodała bramki kontraktów jakościowych V3-14…V3-20 — patrz tabela powyżej i [MANIFEST.md §PAKIETY KAMPANII V3](../MANIFEST.md)). Poniższe sekcje opisują kategorie rdzenia; pełną listę generuje `ls JDG/tools/*.py` oraz [INWENTARYZACJA_PLIKOW.md](INWENTARYZACJA_PLIKOW.md).
+
+**Bramki kampanii V3 (kontrakty jakościowe, evidence w `JDG/bundles/`):**
+
+```bash
+python JDG/tools/hyper_quality_v3_14_gate.py --write        # deadlines/limits/kalendarze
+python JDG/tools/enterprise_quality_v3_15_gate.py --write   # S1-S24 + Neural Mesh
+python JDG/tools/tools_quality_v3_16_gate.py --write        # lintery/walidatory/gap reports
+python JDG/tools/tests_ci_quality_v3_17_gate.py --write     # CI/chaos/mutation/golden
+python JDG/tools/bundles_quality_v3_18_gate.py --write      # delivery: sign/verify/SBOM/mirror/canary/DR
+python JDG/tools/api_ui_quality_v3_19_gate.py --write       # API spec/RBAC/centrum decyzji
+python JDG/tools/docs_quality_v3_20_gate.py --write         # Legal Twin/dokumentacja/certyfikacja
+```
 
 | Kategoria | Narzędzi | Reprezentatywne |
 |---|---:|---|
@@ -197,7 +209,8 @@
 | Generatory reguł/testów | 12+ | generate_micro_rules, generate_massive_rules |
 | Audytorzy domen P02–P24 | 21+ | kks_penalty_auditor, zus_macro_auditor |
 | **Audyty ETAP 10–28 (`*_etapNN_audit.py`)** | **17** | policies_mirror_sync_etap26_audit, final_certification_etap28_audit |
-| **Bramki raportów GLM52 (`*_gate.py`)** | **37** | vat_core_report02_gate, orchestrator_core_report01_gate |
+| **Bramki raportów GLM52 (`*_gate.py`)** | **37+3** | vat_core_report02_gate, orchestrator_core_report01_gate |
+| **Bramki kontraktów kampanii V3 (V3-14…V3-20)** | 7 | hyper_quality_v3_14_gate, enterprise_quality_v3_15_gate, tools_quality_v3_16_gate, tests_ci_quality_v3_17_gate, bundles_quality_v3_18_gate, api_ui_quality_v3_19_gate, docs_quality_v3_20_gate |
 | Toolkity domenowe | 10+ | p11_accounting_toolkit, p10_kks_micro_toolkit |
 | Toolkity ZUS | 11+ | zus_completeness_engine, health_tier_recalculator |
 | Toolkity KKS | 9+ | kks_penalty_simulator, kks_voluntary_disclosure |

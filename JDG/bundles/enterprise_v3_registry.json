@@ -404,13 +404,82 @@
       ],
       "raport_txt": "raporty_enterprise_v3/17_TESTY_CI.txt",
       "evidence": "bundles/tests_ci_v3_audit_17.json"
+    },
+    "18": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 7,
+      "lista_glownych_zmian": [
+        "Nowy kontrakt rules/bundles/quality_v3_18.rego (Delivery Certificate): bundle_ok (build+SBOM+signature), verify_ok (lokalna weryfikacja obowiazkowa — seed 1), overlay_ok (macierz v2026/v2027 przetestowana — seed 2), mirror_ok (0% drift / 100% hash-parity BLOKUJACE — seed 3), rulestore_ok (13 migracji + schema versioned + seed z obwieszczen MF — seed 4), canary_ok (hot-reload <=60 s — seed 5, rollback MTTR <=5 min — seed 6), dr_ok (RTO/RPO <=15 min, game-day <=30 dni — seed 8); fail-closed, DECOUPLED, no_auto_post=true.",
+        "Zero-hardcode: snapshot thresholds bundles_quality_v3_18 = bundles-v3-2026.08 (SLA progi 60 s / 5 min / 0% drift / 15+15 min RTO-RPO / 30 dni game-day) wg ADR-002.",
+        "Wiring orkiestratora: import data.jdg.bundles.quality_v3_18 + final_verdict_p78 = safe_merge(final_verdict_p77, ...); kotwica POST-MERGE → p78 (regex p7[4-9] — regresja 14/15/16/17 PASS).",
+        "Nowa bramka tools/bundles_quality_v3_18_gate.py: 8 bramek; SCOPE 15 plikow JDG + policies/README.md (repo) + licznik mirror .rego; evidence bundles/bundles_v3_audit_18.json WDROZONY_100 (8/8 PASS).",
+        "Testy natywne tests/rego/test_native_bundles_quality_v3_18.rego (T01-T08: golden delivery, fail-closed owner, unsigned bundle, mirror drift, migracje RuleStore, canary SLA hot-reload i MTTR osobno, DR game-day stale, no_auto_post zawsze true) + pytest tests/test_bundles_quality_v3_18.py (7 PASS).",
+        "Audyt potwierdzil luki z promptu: podpisy bez weryfikacji w CI (L-18-001), hash-parity nieblokujaca (L-18-002), brak granicy delivery (L-18-003); raport raporty_enterprise_v3/18_BUNDLES.txt (sekcje A-J).",
+        "Raport: 21 luk (L-18-001..021), 11 innowacji V1/V2 (sign+verify jako dwa niezalezne niezmienniki, overlay matrix test, mirror jako prawdziwy single source of truth, seed obwieszczen, Delivery Certificate w lancuchu werdyktu p78)."
+      ],
+      "luki_pozostale": [
+        "Sila podpisu produkcyjnego (opa sign vs HSM/KMS) — decyzja wlasciciela bezpieczenstwa / czesc 19 (L-18-004).",
+        "bundle_server verify-before-serve oraz integracja healthy_versions.json z deployment_orchestrator — czesc 19 API/Control Plane (L-18-012/L-18-013).",
+        "legal_basis_version per plik w mirrorze oraz README drift 0% — czesc 20 DOKUMENTACJA (L-18-015/L-18-019).",
+        "Testy idempotentnosci migracji SQL w CI — czesc 17 infrastruktura (L-18-014).",
+        "Auto-rollback 5 min jako polityka domyslna oraz harmonogram game-day co 30 dni — decyzje wlasciciela (sekcja H raportu)."
+      ],
+      "raport_txt": "raporty_enterprise_v3/18_BUNDLES.txt",
+      "evidence": "bundles/bundles_v3_audit_18.json"
+    },
+    "19": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 9,
+      "lista_glownych_zmian": [
+        "Nowy kontrakt rules/api_ui/quality_v3_19.rego (API Delivery Contract): api_ok (spec >= 17 endpointow + JWT), consistency_ok (audyt spec-implementacja, 0 luk DOCUMENTED_ONLY), authz_ok (RBAC + SoD + testy authZ), decision_center_ok (AUTO_POST/SUGGEST/ASK_USER + certainty guard), lifecycle_ok (4-eyes + canary + SOAK >= 24 h), declarative_ok (kreator + dry-run default + never_automated), resilience_ok (idempotencja + rate-limit + health/ready), versioning_ok; fail-closed, DECOUPLED, no_auto_post=true.",
+        "Zero-hardcode: snapshot thresholds api_ui_quality_v3_19 = api-ui-v3-2026.08 (min_api_endpoints=17, max_documented_only_gaps=0, min_soak_hours=24, required_decision_modes) wg ADR-002.",
+        "Wiring orkiestratora: import data.jdg.api_ui.quality_v3_19 + final_verdict_p79 = safe_merge(final_verdict_p78, ...); kotwica POST-MERGE → p79 (regex p7[4-9] — regresja 14-18 PASS).",
+        "Ulepszenia realne openapi.yaml: x-rate-limit (token-bucket per tenant), GET /jdg/ready (readiness probe / verify-before-serve L-18-012), x-decision-modes na /jdg/cert (CERTAIN→AUTO_POST, CONDITIONAL→SUGGEST, NEEDS_ADVICE→ASK_USER); api_spec_consistency.py: mapowanie /jdg/ready + marker x-rate-limit — audyt 18/18 IMPLEMENTED · gaps=0.",
+        "Nowa bramka tools/api_ui_quality_v3_19_gate.py: 8 bramek; SCOPE 13 plikow; evidence bundles/api_ui_v3_audit_19.json WDROZONY_100 (8/8 PASS).",
+        "Testy natywne tests/rego/test_native_api_ui_quality_v3_19.rego (T01-T08: golden API delivery, fail-closed owner, luki spec blokuja, brak SoD/testow authZ blokuje, niepelne tryby decyzyjne blokuja, SOAK < 24 h blokuje, resilience/versioning blokuja, no_auto_post zawsze true) + pytest tests/test_api_ui_quality_v3_19.py (7 PASS); regresja 17+18+19: 21 PASS.",
+        "Raport raporty_enterprise_v3/19_API_UI.txt (sekcje A-J): 21 luk (L-19-001..021), 11 innowacji V1/V2 (kontrakt trybow decyzyjnych w API, readiness jako warunek wejscia do ruchu, rate-limit w kontrakcie, zero luk jako niezmiennik, authZ trojka niezmiennikow, lifecycle control plane bramkowany)."
+      ],
+      "luki_pozostale": [
+        "Serwer produkcyjny API (Litestar/FastAPI) — decyzja architektoniczna / czesc 20.",
+        "HSM/KMS dla podpisow control plane zamiast lokalnego SHA-256 — decyzja wlasciciela bezpieczenstwa (L-19-010).",
+        "OpenAPI diff gate w CI oraz kreator UI zmian deklaratywnych — czesci 17-CI/20 (L-19-011/L-19-009).",
+        "Generowanie docs/API_REFERENCJA.md z openapi.yaml — czesc 20 (L-19-015).",
+        "Webhooki Law Radar w spec i per-endpoint rate-limit override — rekomendacje (L-19-017/L-19-018)."
+      ],
+      "raport_txt": "raporty_enterprise_v3/19_API_UI.txt",
+      "evidence": "bundles/api_ui_v3_audit_19.json"
+    },
+    "20": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 9,
+      "lista_glownych_zmian": [
+        "Nowy kontrakt rules/docs/quality_v3_20.rego (Documentation & Certification Contract): legal_twin_ok (traceability + auto-trace artykul→rule_id→test + lancuch amendment), docs_gate_ok (dwukierunkowa bramka: kazda regula ma legal_basis ORAZ kazde legal_basis ma regule), manifest_ok (MANIFEST v3 z pakietami kampanii, auto-generowany), glossary_ok, user_docs_ok (FAQ + podrecznik + narracja decyzyjna PL), certification_ok (kampania 20/20 WDROZONY_100 + evidence), v1v2_ok; fail-closed, DECOUPLED, no_auto_post=true.",
+        "Zero-hardcode: snapshot thresholds docs_quality_v3_20 = docs-v3-2026.08 (campaign_total_parts=20, min_v3_packages_in_manifest=7) wg ADR-002.",
+        "Wiring orkiestratora: import data.jdg.docs.quality_v3_20 + final_verdict_p80 = safe_merge(final_verdict_p79, ...); kotwica POST-MERGE → p80; regex kompatybilnosci w przod rozszerzony do p7[4-9]|p8[0-5] w bramkach 18/19/20 — regresja PASS.",
+        "Ulepszenie realne MANIFEST.md: NOWA sekcja PAKIETY KAMPANII V3 (V3-14..V3-20: plik, rule_id kontraktu, evidence) — luka MANIFEST bez nowych pakietow USUNIETA.",
+        "Nowa bramka tools/docs_quality_v3_20_gate.py: 8 bramek; SCOPE 23 plikow (Legal Twin + harmonizacja + dokumentacja uzytkownika + certyfikacja + kontrakt); evidence bundles/docs_v3_audit_20.json WDROZONY_100 (8/8 PASS).",
+        "Testy natywne tests/rego/test_native_docs_quality_v3_20.rego (T01-T08) + pytest tests/test_docs_quality_v3_20.py (7 PASS); certyfikacja kampanii: czesci 00-20 = wdrozone w rejestrze.",
+        "Raport raporty_enterprise_v3/20_DOKUMENTACJA.txt (sekcje A-J): 21 luk (L-20-001..021), 11 innowacji V1/V2 (Legal Twin v2 z auto-trace, dwukierunkowy documentation gate, MANIFEST v3 z pakietow, certyfikat kampanii jako niezmiennik werdyktu p80)."
+      ],
+      "luki_pozostale": [
+        "Regeneracja pelnego MANIFEST przez generate_manifest.py (sekcja per-plik) — decyzja CI/cron.",
+        "Kreator UI zmian deklaratywnych i serwer produkcyjny API — przekazane z 19 do harmonogramu produktowego.",
+        "HSM/KMS dla podpisow control plane — przekazane z 18/19, decyzja wlasciciela bezpieczenstwa.",
+        "Webhooki Law Radar w OpenAPI i generowanie API_REFERENCJA z openapi.yaml — backlog minor.",
+        "Interpretacje prawne niejednoznaczne — zawsze czlowiek (system dostarcza evidence i wersje aktow, nie opinie)."
+      ],
+      "raport_txt": "raporty_enterprise_v3/20_DOKUMENTACJA.txt",
+      "evidence": "bundles/docs_v3_audit_20.json"
     }
-  },    "podsumowanie": {
+  },
+  "podsumowanie": {
     "czesc_do_zrobienia": 20,
-    "czesc_wykonanych": 18,
-    "ostatnia_zrobiona": "17",
-    "status_calosci": "W_TRAKCIE_KAMPANII",
-    "nastepna": "18"
-
+    "czesc_wykonanych": 20,
+    "ostatnia_zrobiona": "20",
+    "status_calosci": "KAMPANIA_V3_KOMPLETNA",
+    "nastepna": null
   }
 }

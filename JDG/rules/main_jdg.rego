@@ -92,6 +92,8 @@ import data.jdg.enterprise.quality_v3_15 as enterprise_quality_v3_15
 import data.jdg.tools.quality_v3_16 as tools_quality_v3_16
 import data.jdg.tests_ci.quality_v3_17 as tests_ci_quality_v3_17
 import data.jdg.bundles.quality_v3_18 as bundles_quality_v3_18
+import data.jdg.api_ui.quality_v3_19 as api_ui_quality_v3_19
+import data.jdg.docs.quality_v3_20 as docs_quality_v3_20
 import data.jdg.business.v3_09 as business_v3_09
 import data.jdg.local_taxes.pcc as lt_pcc
 import data.jdg.local_taxes.real_estate as lt_real_estate
@@ -2711,6 +2713,22 @@ final_verdict_p78 = safe_merge(final_verdict_p77,
         fallback.decide
     ))
 
+# V3-19: API + Control Plane + UI / centrum decyzji boundary. The package
+# bramkuje wyniki audytu specyfikacji API i cyklu życia control plane z
+# evidence; decoupled i cannot authorize AUTO_POST.
+final_verdict_p79 = safe_merge(final_verdict_p78,
+    safe_merge(api_ui_quality_v3_19.decide,
+        fallback.decide
+    ))
+
+# V3-20: Dokumentacja + Legal Twin + harmonizacja końcowa boundary. The package
+# bramkuje wyniki audytu Legal Twin, spójności docs↔rules i certyfikacji
+# kampanii V3 z evidence; decoupled i cannot authorize AUTO_POST.
+final_verdict_p80 = safe_merge(final_verdict_p79,
+    safe_merge(docs_quality_v3_20.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -2725,8 +2743,8 @@ final_verdict_p78 = safe_merge(final_verdict_p77,
 # ═══════════════════════════════════════════════════════════════════════════════
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
-# Compatibility anchors remain available as final_verdict_p53..p78, but the
-# effective POST-MERGE input is p78. This preserves every stage p54..p77 and
+# Compatibility anchors remain available as final_verdict_p53..p80, but the
+# effective POST-MERGE input is p80. This preserves every stage p54..p79 and
 # removes the former hand-written object.union chain that could silently skip
 # stages or overwrite immutable fields (INV-018/INV-042).
 # Legacy audit anchors (documentation only; deliberately not executable):
@@ -2743,7 +2761,7 @@ final_verdict_p78 = safe_merge(final_verdict_p77,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p78
+    final_verdict_p80
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

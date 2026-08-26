@@ -14421,6 +14421,26 @@
 |:---------:|---------|:-------:|----------------|
 | 570 | `jdg.zus_micro_etap13.report` |  | SUS art. 6-47; u.ś.o.z. art. 79-82; ustawa zasiłkowa art. 4-... |
 
+## 🧩 PAKIETY KAMPANII V3 — KONTRAKTY JAKOŚCIOWE (V3-14..V3-20)
+
+Rejestr pakietów granicznych kampanii V3 (Ufortyfikowana Forteca OPA).
+Każdy pakiet bramkuje wyniki swojej warstwy z evidence, fail-closed,
+DECOUPLED, no_auto_post=true; łańcuch: p74 → … → p80 (POST-MERGE anchor).
+
+| Pakiet | Plik | Rule ID kontraktu | Evidence |
+|--------|------|-------------------|----------|
+| V3-14 HYPER CTX | `rules/hyper/quality_v3_14.rego` | `jdg.hyper.quality_v3_14.*` | `bundles/hyper_v3_audit_14.json` |
+| V3-15 ENTERPRISE | `rules/enterprise/quality_v3_15.rego` | `jdg.enterprise.quality_v3_15.*` | `bundles/enterprise_v3_audit_15.json` |
+| V3-16 NARZĘDZIA | `rules/tools/quality_v3_16.rego` | `jdg.tools.quality_v3_16.*` | `bundles/quality_gates_v3_audit_16.json` |
+| V3-17 TESTY CI | `rules/tests_ci/quality_v3_17.rego` | `jdg.tests_ci.quality_v3_17.*` | `bundles/tests_ci_v3_audit_17.json` |
+| V3-18 BUNDLES | `rules/bundles/quality_v3_18.rego` | `jdg.bundles.quality_v3_18.*` | `bundles/bundles_v3_audit_18.json` |
+| V3-19 API/UI | `rules/api_ui/quality_v3_19.rego` | `jdg.api_ui.quality_v3_19.*` | `bundles/api_ui_v3_audit_19.json` |
+| V3-20 DOCS/Legal Twin | `rules/docs/quality_v3_20.rego` | `jdg.docs.quality_v3_20.*` | `bundles/docs_v3_audit_20.json` |
+
+Progi wszystkich pakietów: `rules/thresholds_jdg.rego` (snapshots
+*-v3-2026.08, ADR-002). Rejestr kampanii:
+`JDG/bundles/enterprise_v3_registry.json`; status: STATUS_KAMPANII_V3.txt.
+
 ---
 *Wygenerowano automatycznie — 2026-08-22 16:23:47*
 *Generator v8.0 — `python JDG/tools/generate_manifest.py`*

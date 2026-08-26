@@ -49,6 +49,8 @@ Token JWT wystawiany przez **NexusAI Auth Service**. Zawartość: `tenant_id`, `
 | `Content-Type: application/json` | ✅ (POST) | Format body |
 | `Accept: application/json` | ✅ | Format odpowiedzi |
 | `X-Request-Id` | opcjonalny | Identyfikator korelacji (zwracany w `request_id` błędów) |
+| `RateLimit-Limit` / `RateLimit-Remaining` / `RateLimit-Reset` | zawsze | Limity per tenant (V3-19 `x-rate-limit`, token-bucket) |
+| `Retry-After` | przy 429 | Sekundy do ponowienia po przekroczeniu limitu |
 
 ### 2.4. Format dat
 
@@ -59,7 +61,7 @@ Token JWT wystawiany przez **NexusAI Auth Service**. Zawartość: `tenant_id`, `
 
 ---
 
-## 3. Lista endpointów (17)
+## 3. Lista endpointów (18)
 
 | # | Metoda | Ścieżka | Tag | Opis |
 |---|---|---|---|---|
@@ -80,6 +82,7 @@ Token JWT wystawiany przez **NexusAI Auth Service**. Zawartość: `tenant_id`, `
 | 15 | POST | `/bundles/{version}/verify` | Bundles | Weryfikacja podpisu + SBOM |
 | 16 | GET | `/bundles/{version}/health` | Bundles | Zdrowie rollout'u bundle |
 | 17 | POST | `/dr/restore` | DR | Disaster recovery — przywrócenie stanu |
+| 18 | GET | `/jdg/ready` | Health | Readiness probe — czy node serwuje werdykty (V3-19) |
 
 ---
 
@@ -396,6 +399,8 @@ curl -X POST "https://api.nexusai.pl/v1/jdg/change" \
 
 **Odpowiedź 200:** `certificate` (`verdict_id`, `certainty_class`, `decision_hash`, `seal`, `merkle_proof`, `export_url`, `valid_until`). Certyfikat weryfikowalny offline — do eksportu dla KAS.
 
+> **Tryby centrum decyzji (V3-19 `x-decision-modes`):** CERTAIN → `AUTO_POST`; CONDITIONAL → `SUGGEST`; NEEDS_ADVICE → `ASK_USER`. Host nigdy nie wykonuje AUTO_POST dla werdyktu z `_certainty_guard = CERTAINTY_BLOCKED`. Szczegóły: PODRECZNIK_UZYTKOWNIKA.md.
+
 ```bash
 curl -X POST "https://api.nexusai.pl/v1/jdg/cert" \
   -H "Authorization: Bearer $JWT" -H "Content-Type: application/json" \
@@ -440,6 +445,18 @@ curl -X POST "https://api.nexusai.pl/v1/dr/restore" \
   -d '{"restore_point": "latest", "verify_merkle": true}'
 ```
 
+### 4.18. GET `/jdg/ready` — readiness probe (V3-19)
+
+**Opis:** warunek wejścia node'a do puli load balancera. Zwraca **200** tylko, gdy węzeł ma załadowany **podpisany i zweryfikowany bundle** (verify-before-serve, L-18-012), hot-reload danych ≤ 60 s oraz brak blokad canary/DR. W przeciwnym razie **503** — węzeł nie powinien obsługiwać werdyktów AUTO_CANDIDATE.
+
+**Odpowiedzi:** `200` — node ready; `503` — NOT ready (`reason`: `bundle_unverified` / `canary_blocked` / `dr_blocked`).
+
+```bash
+curl -X GET https://api.nexusai.pl/v1/jdg/ready -H "Authorization: Bearer $JWT"
+```
+
+> Różnica vs `/jdg/health`: health = liveness (czy żyje i jakie są zależności); ready = readiness (czy MOŻE serwować decyzje wg kontraktu delivery V3-18).
+
 ---
 
 ## 5. Rate limiting i throttling
@@ -453,7 +470,7 @@ curl -X POST "https://api.nexusai.pl/v1/dr/restore" \
 | Burst (bucket) | 2× limit bazowy | Token bucket |
 | Retry-After | sekundy (integer) | Nagłówek w odpowiedzi 429 |
 
-> ⚠️ **Uwaga:** powyższe wartości to **zalecane ustawienia domyślne wdrożenia** — specyfikacja OpenAPI (`api/openapi.yaml`) definiuje tylko zachowanie przy 429 (`Retry-After`), nie konkretne limity. Wartości konfigurujesz w warstwie API Gateway (np. wg planu taryfowego licencji).
+> ℹ️ **V3-19:** specyfikacja OpenAPI (`api/openapi.yaml`) definiuje teraz politykę `x-rate-limit` (scheme token-bucket): default **120 req/min**, `/jdg/decide` **60 req/min**, burst **30**. Powyższe wartości wdrożenia mogą nadpisywać w API Gateway (np. plan taryfowy licencji) — nagłówki `RateLimit-*` i zachowanie 429 pozostają zgodne ze specyfikacją.
 
 **Zachowanie:** po przekroczeniu limitu API zwraca **429** z nagłówkiem `Retry-After: <sekundy>`. Klient powinien wykonać backoff i ponowić po wskazanym czasie. Przy degradacji zewnętrznych API zwracany jest **503** z `DegradationResponse` (lista `degraded_apis`, `fallback_active`, `retry_after_seconds`).
 
@@ -576,4 +593,4 @@ Pełne definicje JSON Schema: **[../api/openapi.yaml](../api/openapi.yaml)** →
 
 ---
 
-*Spójny z: api/openapi.yaml (v1.0.0) · docs/api.md (auto-generowany) · ARCHITEKTURA.md §5*
+*Spójny z: api/openapi.yaml (v1.0.0, x-rate-limit + /jdg/ready + x-decision-modes — V3-19) · docs/api.md (auto-generowany) · ARCHITEKTURA.md §5*
