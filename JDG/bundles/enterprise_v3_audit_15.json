@@ -1,56 +1,82 @@
 {
-  "report": "V3-14_HYPER_CTX",
+  "report": "V3-15_ENTERPRISE",
   "status": "WDROZONY_100",
   "gates": {
     "scope_complete": true,
     "metadata_complete": true,
+    "s1_s24_complete": true,
     "contract_complete": true,
     "router_wired": true,
-    "tests_complete": true,
     "tools_complete": true,
+    "tests_complete": true,
     "report_present": true,
     "registry_present": true
   },
   "gate_summary": {
-    "passed": 8,
-    "total": 8
+    "passed": 9,
+    "total": 9
   },
   "scope": {
-    "files_total": 32,
-    "files_present": 32,
+    "files_total": 18,
+    "files_present": 18,
     "missing": [],
     "scope_complete": true
   },
   "metadata": {
-    "rule_ids_total": 573,
-    "rule_ids_unique": 573,
+    "rule_ids_total": 76,
+    "rule_ids_unique": 76,
     "duplicate_rule_ids": [],
     "duplicate_free": true,
     "legal_markers": {
-      "OrdPU": true,
       "PIT": true,
       "VAT": true,
+      "OrdPU": true,
+      "KKS": true,
       "SUS": true,
-      "MDR": true,
-      "eIDAS": true
+      "RODO": true
     },
     "legal_markers_complete": true,
     "empty_legal_basis": 0,
-    "stub_lines": 0
+    "stub_lines": 6,
+    "s1_s24_ids_in_contract": [
+      "S1",
+      "S10",
+      "S11",
+      "S12",
+      "S13",
+      "S14",
+      "S15",
+      "S16",
+      "S17",
+      "S18",
+      "S19",
+      "S2",
+      "S20",
+      "S21",
+      "S22",
+      "S23",
+      "S24",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S7",
+      "S8",
+      "S9"
+    ],
+    "s1_s24_complete": true
   },
   "contract": {
     "contract_markers": {
-      "registry_complete": true,
+      "initiative_registry_complete": true,
       "source_complete": true,
       "temporal_valid": true,
-      "deadline_complete": true,
-      "limits_complete": true,
-      "sanction_complete": true,
-      "force_majeure_complete": true,
-      "fx_complete": true,
-      "edelivery_complete": true,
-      "graph_complete": true,
-      "binding_complete": true,
+      "scoring_calibrated": true,
+      "score_range_valid": true,
+      "mesh_complete": true,
+      "mesh_conflict_free": true,
+      "composer_complete": true,
+      "red_team_complete": true,
       "BLOCK_AND_ALERT": true,
       "TRIAGE_QUEUE": true,
       "no_auto_post": true,
@@ -60,9 +86,15 @@
     "snapshot_present": true,
     "snapshot_versioned": true,
     "import_present": true,
-    "p74_present": true,
-    "post_merge_uses_p74": true,
+    "p75_present": true,
+    "post_merge_uses_p75": true,
     "no_auto_post_guard": true
+  },
+  "tools": {
+    "autonomous_tax_strategy": true,
+    "red_team_audit": true,
+    "penalty_calculator": true,
+    "decision_quality_monitor": true
   },
   "tests": {
     "pytest_present": true,
@@ -70,26 +102,18 @@
     "markers": {
       "full_contract": true,
       "fail_closed": true,
-      "temporal": true,
-      "deadline": true,
-      "limit": true,
-      "sanction": true,
+      "calibration": true,
+      "mesh": true,
+      "red_team": true,
       "no_auto_post": true
     },
     "tests_complete": true,
-    "pytest_functions": 5
-  },
-  "tools": {
-    "deadline_engine": true,
-    "legal_calendar": true,
-    "limits_registry": true,
-    "sanction_calculator": true,
-    "hyper_quality": true
+    "pytest_functions": 7
   },
   "opa": {
     "available": false,
     "passed": null,
     "message": "OPA CLI unavailable locally; CI gate required."
   },
-  "generated_at": "2026-08-26T08:10:17.217393+00:00"
+  "generated_at": "2026-08-26T08:10:17.690708+00:00"
 }

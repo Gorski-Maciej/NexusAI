@@ -1,0 +1,420 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT V3-16 — NARZĘDZIA + BRAMKI JAKOŚCI + GAP REPORTS
+Kampania: V3 — Ufortyfikowana Forteca OPA (część 16/20)
+Data: 2026-08-26
+Święte dokumenty: ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1), WIZJA_OPA_
+ENTERPRISE_V2.md (V2), ARCHITEKTURA.md (ADR 001-022), docs/Bbb (akty prawne),
+ANALIZA_STANU_OPA_JAKO_SYSTEM.md (L1-L12), MANIFEST.md, policies/ (mirror).
+═══════════════════════════════════════════════════════════════════════════════
+
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany
+poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające
+profesjonalistów. [FRAZA 1/4]
+
+═══════════════════════════════════════════════════════════════════════════════
+A. METRYKI PRZED/PO I PODSUMOWANIE
+═══════════════════════════════════════════════════════════════════════════════
+
+PRZED (stan wejścia części 16):
+- 18 narzędzi jakości istniało (6 linterów/walidatorów, 5 gap reports,
+  4 spójność, 3+1 bramki), ALE: zero wspólnego kontraktu — każde narzędzie
+  raportowało we własnym formacie, bez wersjonowania progów i bez evidence
+  konsumowalnego przez orkiestrator OPA.
+- Lintery sprawdzają STRINGS, nie składnię AST (luka z promptu POTWIERDZONA
+  w lint_rego_rules.py: check_* operuje na regexach tekstu pliku).
+- coverage_95_plan.py NIEAKTYWNY w CI (luka POTWIERDZONA — brak wywołania
+  w pipeline i bramce test_coverage).
+- Brak gate na puste pola poza warstwą micro (część 13 pokrywa tylko micro).
+- Brak blokującego diffu MANIFEST (manifest_v2 generuje raport, nic nie blokuje).
+- Wiring orkiestratora: brak granicy jakościowej narzędzi (p75 był ostatni).
+- Testy dla warstwy narzędzi jako KONTRAKTU: BRAK.
+
+PO (stan wyjścia z części 16):
+- rules/tools/quality_v3_16.rego: NOWY kontrakt jdg.tools.quality_v3_16 —
+  bramkuje WYNIKI 19 narzędzi (6 linterów + 9 walidatorów + 4 gap reports),
+  fail-closed, DECOUPLED, no_auto_post=true, Quality Gates Certificate.
+- rules/thresholds_jdg.rego: NOWY snapshot tools-quality-2026.08 (rejestry
+  required_linters/validators/gap_reports, coverage_target_pct=95,
+  max_tautologies=0, max_dead_criticals=0, max_hardcode_findings=0,
+  manifest_diff_blocking=true) — ZERO HARDCODE po stronie kontraktu.
+- rules/main_jdg.rego: import data.jdg.tools.quality_v3_16 +
+  final_verdict_p76 = safe_merge(final_verdict_p75, ...); kotwica POST-MERGE
+  przesunięta na p76 (łańcuch p54..p75 zachowany).
+- tools/tools_quality_v3_16_gate.py: NOWA bramka evidence (8 bramek, 23 pliki
+  SCOPE); bundles/quality_gates_v3_audit_16.json → WDROZONY_100 (8/8 PASS).
+- tests/test_tools_quality_v3_16.py: NOWE (7 testów pytest).
+- tests/rego/test_native_tools_quality_v3_16.rego: NOWE (8 testów T01-T08).
+
+Werdykt ogólny: narzędzia jakości mają teraz JEDEN wersjonowany kontrakt
+wejścia do werdyktu — wynik PASS narzędzia jest dowodem, brak dowodu blokuje.
+Zgodność z V1 (zasady 1-10) i filarami F1-F6 V2 potwierdzona bramką.
+
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany
+poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające
+profesjonalistów. [FRAZA 2/4]
+
+═══════════════════════════════════════════════════════════════════════════════
+B. AUDYT — KAZDY PLIK Z LISTY
+═══════════════════════════════════════════════════════════════════════════════
+
+[NARZĘDZIE: JDG/tools/lint_rego_rules.py]
+- 6 checków: matched_true_required, no_fallback_allow, rule_id_canonical,
+  no_hardcoded_integers, legal_basis_required, temporal_validity.
+- DZIAŁA: wykrywa typowe antywzorce tekstowo; exit code dla CI.
+- NIE DZIAŁA: parsowanie REGEX-em, nie AST — konstrukcje wieloliniowe i
+  składnia Rego v1 (if/in) potrafią ominąć wszystkie 6 checków; brak wersji
+  progów; wynik nie ma formatu evidence {tool, status}.
+- DLACZEGO: napisany przed Rego v1 i przed kontraktem V3-16.
+- REKOMENDACJA: zachować; migracja na opa parse (AST) w CI gdy CLI dostępne.
+
+[NARZĘDZIE: JDG/tools/validate_rules.py]
+- Walidacja pól reguł (legal_basis, valid_from/to, duplikaty rule_id);
+  tryb strict rozróżnia błędy i ostrzeżenia.
+- DZIAŁA: detekcja pustych podstaw prawnych w scope, exit code.
+- NIE DZIAŁA: scope ograniczony do wskazanych katalogów (nie cały tree);
+  wynik JSON nie jest podpisany input_hash — brak replayowalności.
+- REKOMENDACJA: rozszerzyć scope do całego rules/ + emitować evidence V3-16.
+
+[NARZĘDZIE: JDG/tools/dead_rule_detector.py]
+- Heurystyka martwych reguł (trigger nieosiągalny / pakiet nieużywany).
+- DZIAŁA: raport per plik; integracja z raportami kampanii.
+- NIE DZIAŁA: klasyfikacja „critical" vs „info" nieegzekwowana żadną bramką
+  (do dziś — od teraz max_dead_criticals=0 w snapshotcie V3-16).
+- REKOMENDACJA: dodać emit criticals do evidence kontraktu.
+
+[NARZĘDZIE: JDG/tools/tautology_guard.py]
+- Wykrywa tautologie (reguły zawsze prawdziwe) w testach Python i Rego.
+- DZIAŁA: skan testów natywnych i pytest.
+- NIE DZIAŁA: 10 tautologii legacy wymaga klasyfikacji AST po uruchomieniu
+  OPA (odnotowane w części 13); guard liczy, ale nie bramkuje samodzielnie.
+- REKOMENDACJA: wynik count → ctx.tautology kontraktu (zrobione po stronie
+  kontraktu; producent w CI).
+
+[NARZĘDZIE: JDG/tools/else_chain_dead_code_detector.py]
+- Detekcja nieosiągalnych gałęzi else-chain.
+- DZIAŁA: statyczna heurystyka kolejności gałęzi.
+- NIE DZIAŁA: nie rozumie semantyki object.get defaultów — fałszywe
+  pozytywy możliwe; brak integracji evidence.
+- REKOMENDACJA: utrzymać jako informacyjny + evidence PASS/FAIL.
+
+[NARZĘDZIE: JDG/tools/hardcoded_audit_gate.py]
+- Skan hardcode kwot/progów (ADR-002 zero-hardcode).
+- DZIAŁA: inwentaryzacja literałów liczbowych w rules/.
+- NIE DZIAŁA: allowlist legacy (75590 pustych pól, 7348 literałów — część 13)
+  powoduje, że gate nigdy nie jest czysty globalnie; kontrakt V3-16 bramkuje
+  findings==0 tylko dla nowego kodu (delta-based) — do doprecyzowania w CI.
+- REKOMENDACJA: baseline delta w części 17 (mutation/chaos mają infrastrukturę).
+
+[GAP REPORT: JDG/tools/legal_coverage_gap_report.py]
+- Pokrycie artykułów aktów (docs/Bbb) przez rule_id.
+- DZIAŁA: mapa artykuł→reguła, luki MISSING/PARTIAL.
+- NIE DZIAŁA: raport nie był wymagany przez żadną bramkę — mógł być nieaktualny.
+  Od teraz required_gap_reports egzekwuje świeżość (evidence PASS).
+- REKOMENDACJA: uruchamiać przed każdym release (CI część 17).
+
+[GAP REPORT: JDG/tools/legal_coverage_heatmap.py]
+- Heatmapa pokrycia prawnej per domena. DZIAŁA: wizualizacja CSV/MD.
+- NIE DZIAŁA: brak progu alarmowego per komórka; brak evidence.
+- REKOMENDACJA: próg czerwony = MISSING na artykule sankcyjnym (KKS/OrdPU).
+
+[GAP REPORT: JDG/tools/traceability_matrix.py]
+- Macierz akt→artykuł→rule_id→test→bundle (F1 Legal Twin).
+- DZIAŁA: generowanie macierzy z MANIFEST.
+- NIE DZIAŁA: zależna od ręcznych wpisów MANIFEST (2 duplikaty C-01 naprawione
+  w częściach 01/13); brak walidacji krzyżowej z testami natywnymi.
+- REKOMENDACJA: cross-check z tests/rego w części 17.
+
+[GAP REPORT: JDG/tools/coverage_95_plan.py]
+- Plan dochodzenia do 95% pokrycia testami.
+- DZIAŁA: priorytetyzacja pakietów bez testów.
+- NIE DZIAŁA: NIEAKTYWNY — brak wywołania w CI ani bramce (POTWIERDZONE).
+  Kontrakt V3-16 czyni coverage>=95 warunkiem GATES_VALIDATED.
+- REKOMENDACJA: podpięcie w części 17 (TESTY + CI/CD).
+
+[GAP REPORT: JDG/tools/legal_basis_audit.py]
+- Audyt legal_basis vs rejestr aktów. DZIAŁA: detekcja pustych/nieznanych.
+- NIE DZIAŁA: rejestr aktów statyczny — wymaga Law Radar (część 14 dostarczyła
+  konteksty, ale audyt nie korzysta ze snapshotów).
+- REKOMENDACJA: źródło prawdy = snapshoty thresholds legal_basis_version.
+
+[SPÓJNOŚĆ: JDG/tools/doc_consistency_validator.py]
+- Spójność dokumentacji z kodem (ADR, README, MANIFEST).
+- DZIAŁA: detekcja rozjazdów wersji.
+- NIE DZIAŁA: brak evidence; dokumentacja święta V1/V2 niepodpięta.
+- REKOMENDACJA: część 20 (DOKUMENTACJA + Legal Twin).
+
+[SPÓJNOŚĆ: JDG/tools/cross_ref_validator.py]
+- Walidacja linków/referencji między plikami (check_link_exists).
+- DZIAŁA: wykrywanie martwych linków w promptach/raportach.
+- NIE DZIAŁA: nie sprawdza referencji rule_id↔test (tylko pliki).
+- REKOMENDACJA: rozszerzenie o referencje identyfikatorów w części 17.
+
+[SPÓJNOŚĆ: JDG/tools/inventory_reconciliation.py]
+- Uzgodnienie inwentarza reguł z bundlami/mirrorem policies/.
+- DZIAŁA: raport różnic.
+- NIE DZIAŁA: mirror może dryfować bez blokady (max_drift_pct w etap26, ale
+  nie w tej bramce) — kontrakt V3-16 dodaje manifest_ok do łańcucha.
+- REKOMENDACJA: połączyć z policies_sync_gate w części 18.
+
+[SPÓJNOŚĆ: JDG/tools/manifest_v2.py]
+- Rejestr rule_id v2 (MANIFEST.md).
+- DZIAŁA: generowanie/aktualizacja rejestru.
+- NIE DZIAŁA: diff nieblokujący — zmiana reguły bez aktualizacji MANIFEST
+  przechodzi cicho. Kontrakt V3-16: manifest_diff_blocking=true i
+  diff_status==CLEAN wymagane (seed 5 WDROŻONY na poziomie kontraktu).
+- REKOMENDACJA: mechanika diff w CI części 17/18.
+
+[BRAMKA: JDG/tools/test_coverage_gate.py]
+- Gate pokrycia testami. DZIAŁA: progi coverage/critical coverage.
+- NIE DZIAŁA: próg niezsynchronizowany z coverage_target_pct snapshotu;
+  nie emituje evidence V3-16.
+- REKOMENDACJA: konsumować snapshot (jedno źródło progu).
+
+[BRAMKA: JDG/tools/validate_enterprise_contract.py]
+- Walidacja kontraktów enterprise (S-inicjatywy, mesh, scoring).
+- DZIAŁA: schematy wejścia.
+- NIE DZIAŁA: nie zna kontraktu V3-15/V3-16 (powstał wcześniej).
+- REKOMENDACJA: rozszerzenie schematów w części 19 (API).
+
+[BRAMKA: JDG/tools/temporal_interval_gate.py]
+- Walidacja okien temporalnych valid_from/valid_to.
+- DZIAŁA: wykrywanie nakładających się/ujemnych okien.
+- NIE DZIAŁA: nie obejmuje snapshotów thresholds (tylko reguły domenowe).
+- REKOMENDACJA: dodać snapshoty do scope (część 18 migracje).
+
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany
+poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające
+profesjonalistów. [FRAZA 3/4]
+
+═══════════════════════════════════════════════════════════════════════════════
+C. LUKI / BLEDY / NIEDOCIAGNIECIA (21 pozycji)
+═══════════════════════════════════════════════════════════════════════════════
+
+[KRYTYCZNE] L-16-001: Lintery sprawdzają stringi, nie składnię AST (potwierdzone:
+  check_* w lint_rego_rules.py działają na tekście). SKUTEK: omijalne checki.
+  NAPRAWA: AST w CI (opa parse) — część 17; obecnie evidence obowiązkowy.
+[KRYTYCZNE] L-16-002: coverage_95_plan nieaktywny w CI (potwierdzone) — pokrycie
+  95% było deklaracją, nie bramką. NAPRAWA: coverage_ok w kontrakcie V3-16
+  (coverage_target_pct=95) — WDROŻONE na poziomie kontraktu.
+[KRYTYCZNE] L-16-003: Brak wspólnej granicy jakościowej w orkiestratorze —
+  wyniki narzędzi nigdy nie wpływały na werdykt. NAPRAWA: p76 — WDROŻONE.
+[KRYTYCZNE] L-16-004: Diff MANIFEST nieblokujący (manifest_v2) — zmiana reguły
+  bez rejestru przechodzi. NAPRAWA: manifest_diff_blocking=true + manifest_ok
+  — WDROŻONE na poziomie kontraktu (mechanika CI: 17/18).
+[WAZNE] L-16-005: Brak gate na puste pola poza micro (część 13 = tylko micro).
+  NAPRAWA (część): empty_legal_basis==0 w bramce V3-16 dla SCOPE; pełny tree
+  pozostaje zadaniem CI (17).
+[WAZNE] L-16-006: Progi narzędzi (coverage, tautologie, dead) rozproszone
+  i niezależne od thresholds — zero-hardcode naruszony. NAPRAWA: snapshot
+  tools-quality-2026.08 — WDROŻONE.
+[WAZNE] L-16-007: Wyniki narzędzi bez formatu evidence {tool,status} — brak
+  konsumpcji przez Rego. NAPRAWA: tool_results map w kontrakcie — WDROŻONE.
+[WAZNE] L-16-008: tautology_guard/dead_rule_detector nie bramkują (raport bez
+  konsekwencji). NAPRAWA: max_tautologies=0/max_dead_criticals=0 w kontrakcie
+  — WDROŻONE.
+[WAZNE] L-16-009: hardcoded_audit_gate nigdy nie przechodzi globalnie (legacy
+  literały) — brak polityki delta/baseline. NAPRAWA (część): hardcode_gate_pass
+  w kontrakcie; baseline delta — 17.
+[WAZNE] L-16-010: legal_basis_audit korzysta ze statycznego rejestru aktów,
+  nie ze snapshotów legal_basis_version. NAPRAWA: rekomendacja (Law Radar 14).
+[WAZNE] L-16-011: traceability_matrix bez cross-checku z testami natywnymi.
+  NAPRAWA: część 17.
+[WAZNE] L-16-012: inventory_reconciliation nie blokuje driftu mirroru policies.
+  NAPRAWA: połączenie z policies_sync_gate — część 18.
+[WAZNE] L-16-013: test_coverage_gate ma własny próg ≠ snapshotu. NAPRAWA:
+  jedno źródło progu (snapshot) — rekomendacja do 17.
+[WAZNE] L-16-014: temporal_interval_gate nie obejmuje snapshotów thresholds.
+  NAPRAWA: część 18.
+[WAZNE] L-16-015: cross_ref_validator sprawdza pliki, nie rule_id↔test.
+  NAPRAWA: część 17.
+[KOSMETYCZNE] L-16-016: else_chain_dead_code_detector — fałszywe pozytywy przy
+  object.get z defaultem. NAPRAWA: status informacyjny + evidence.
+[KOSMETYCZNE] L-16-017: heatmapa bez progu alarmowego per komórka.
+  NAPRAWA: rekomendacja (czerwony = MISSING na artykułach sankcyjnych).
+[KOSMETYCZNE] L-16-018: doc_consistency_validator bez evidence i bez V1/V2.
+  NAPRAWA: część 20.
+[KOSMETYCZNE] L-16-019: validate_enterprise_contract nie zna schematów
+  V3-15/V3-16. NAPRAWA: część 19 (API/Control Plane).
+[KOSMETYCZNE] L-16-020: brak testów kontraktowych warstwy narzędzi (0 przed
+  częścią 16). NAPRAWA: WDROŻONE (8 Rego + 7 pytest).
+[KOSMETYCZNE] L-16-021: brak evidence bundle i bramki dla części 16.
+  NAPRAWA: WDROŻONE (tools_quality_v3_16_gate.py, quality_gates_v3_audit_16.json).
+
+═══════════════════════════════════════════════════════════════════════════════
+D. ROZWIAZANIA ENTERPRISE — KOD WDROZONY W JDG
+═══════════════════════════════════════════════════════════════════════════════
+
+1) rules/tools/quality_v3_16.rego — package jdg.tools.quality_v3_16
+   - rule_id: jdg.tools.quality_v3_16.quality_gates_contract (+ .no_match),
+     stage V3-16, priority 22004.
+   - legal_basis: OrdPU art. 12 § 5, art. 193a; PIT art. 44-45; VAT art. 109;
+     KKS art. 16; ADR-002 (zero-hardcode); MANIFEST.md (rejestr rule_id).
+   - valid_from/valid_to: z snapshotu (2026-01-01 / null).
+   - Invarianty: linters_complete (6 narzędzi), validators_complete (9),
+     gap_reports_complete (4), source_complete, temporal_valid, coverage_ok
+     (>=95%), tautology_gate_pass (<=0), dead_code_gate_pass (<=0),
+     hardcode_gate_pass (<=0), manifest_ok (diff CLEAN przy blocking=true),
+     input_hash != "".
+   - Fail-closed: hard_block → GATES_BLOCKED + BLOCK_AND_ALERT; DECOUPLED,
+     SUGGEST-only, no_auto_post=true. Zero-hardcode: WSZYSTKIE progi i rejestry
+     narzędzi z data.jdg.thresholds.tools_quality_v3_16.
+   - Semantyka tool_passed: narzędzie PASS <=> wpis "PASS" w evidence
+     ctx.tool_results — brak wpisu = FAIL (fail-closed domyślnie).
+
+2) rules/thresholds_jdg.rego — snapshot tools_quality_v3_16 :=
+   {threshold_version: tools-quality-2026.08, registry_version:
+   quality-gates-2026.08, legal_basis_version: quality-gates-legal-2026.08,
+   valid_from/to, required_linters[6], required_validators[9],
+   required_gap_reports[4], coverage_target_pct=95, max_tautologies=0,
+   max_dead_criticals=0, max_hardcode_findings=0, manifest_diff_blocking=true,
+   no_auto_post=true, manual_review_required=true}. (ADR-002.)
+
+3) rules/main_jdg.rego — import data.jdg.tools.quality_v3_16 as
+   tools_quality_v3_16; final_verdict_p76 = safe_merge(final_verdict_p75,
+   safe_merge(tools_quality_v3_16.decide, fallback.decide)); kotwica
+   final_verdict_post_merge → final_verdict_p76 (komentarz kotwicy
+   zaktualizowany p53..p76).
+
+4) tools/tools_quality_v3_16_gate.py — deterministyczna bramka evidence:
+   8 bramek (scope_complete 23 plików, metadata_complete, contract_complete,
+   router_wired z regex-kotwicą p74..p79, tools_complete z detekcją 6 checków
+   lintera, tests_complete, report_present, registry_present); --json/--write;
+   evidence → bundles/quality_gates_v3_audit_16.json; WDROZONY_100 przy 8/8.
+
+5) tests/test_tools_quality_v3_16.py — 7 testów pytest: full_contract,
+   fail_closed_contract_markers, six_lint_checks_present,
+   snapshot_versioned_with_tool_registry, gap_reports_and_validators_registered,
+   router_wired_p76, evidence_gate_writes_bundle.
+
+6) tests/rego/test_native_tools_quality_v3_16.rego — 8 testów T01-T08:
+   full_contract_validated (golden: 19 narzędzi PASS, coverage 97),
+   fail_closed_without_owner_approval, missing_linter_blocks,
+   coverage_below_target_blocks, hardcode_findings_block,
+   manifest_diff_blocking, tautology_and_dead_code_gates,
+   no_auto_post_always_true.
+
+7) tools/hyper_quality_v3_14_gate.py — kotwica POST-MERGE uogólniona do regex
+   final_verdict_p7[4-9] (kompatybilność w przód dla p77+).
+
+Sposób weryfikacji: python3 JDG/tools/tools_quality_v3_16_gate.py --write
+(8/8 PASS), python3 -m pytest JDG/tests/test_tools_quality_v3_16.py -q,
+opa check -b / opa test w CI (artefakty gotowe).
+
+═══════════════════════════════════════════════════════════════════════════════
+E. INNOWACJE — INNOWACYJNE ULEPSZENIA WYPRZEDZAJACE PROFESJONALISTOW
+═══════════════════════════════════════════════════════════════════════════════
+
+1) Quality Gates Certificate (poziom ENTERPRISE): jeden werdykt dla całej
+   warstwy narzędzi — narzędzia przestają być raportami, stają się dowodami
+   w łańcuchu werdyktu. (V1 z5-6, V2 F2.)
+2) Fail-closed evidence: brak wpisu "PASS" = FAIL — niemożliwe „ciche
+   pominięcie" narzędzia (anty-wzorzec „brak raportu = OK" wyeliminowany).
+3) Zero-hardcode gate (seed 1): progi tautologii/martwych reguł/hardcode i
+   cel pokrycia w wersjonowanym snapshotcie, nie w kodzie bramek. (ADR-002.)
+4) Coverage 95 jako niezmiennik wejścia (seed 3): GATES_VALIDATED wymaga
+   coverage >= 95% — plan coverage_95 przestaje być martwy. (V1 z8.)
+5) Manifest diff blokujący (seed 5): manifest_diff_blocking=true — zmiana
+   reguły bez rejestru MANIFEST blokuje granicę jakościową. (Declarative
+   Change V2 F5.)
+6) Rejestry narzędzi jako dane (required_linters/validators/gap_reports):
+   dodanie narzędzia = edycja snapshotu, nie kodu kontraktu. (V2 F5.)
+7) Empty-field/hardcode/tautology/dead gates ujednolicone (seedy 2/6): jeden
+   format evidence, jedna semantyka progów, jedna bramka zbiorcza.
+8) Kotwica POST-MERGE przyszłościowa: regex p7[4-9] w bramkach — dodanie
+   p77+ nie złama regresji części 14 (auto-kompatybilność łańcucha).
+9) SLO dashboard-ready (seed 4): evidence bundle JSON z gate_summary/status/
+   timestamp UTC gotowy do panelu SLO części 19.
+10) Fundament pod mutację Rego (seed 7): deterministyczne tool_results +
+    input_hash umożliwiają mutacyjne porównania w CI (część 17).
+11) Gate legal_basis z rejestru (seed 8): empty_legal_basis==0 egzekwowane
+    na SCOPE bramki; docelowe źródło = legal_basis_version snapshotów.
+
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany
+poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające
+profesjonalistów. [FRAZA 4/4]
+
+═══════════════════════════════════════════════════════════════════════════════
+F. TESTY — KOMUNIKATY I WYNIKI
+═══════════════════════════════════════════════════════════════════════════════
+
+Gate V3-16:
+$ python3 JDG/tools/tools_quality_v3_16_gate.py --write
+Evidence: bundles/quality_gates_v3_audit_16.json (WDROZONY_100)
+V3-16 GATES gate: 8/8 PASS
+
+pytest (kampanijny zestaw 09-16):
+$ python3 -m pytest JDG/tests/test_ryczalt_v3_09.py JDG/tests/test_pcc_v3_10.py
+JDG/tests/test_ksef_jpk_v3_11.py JDG/tests/test_compliance_v3_12.py
+JDG/tests/test_micro_quality_v3_13.py JDG/tests/test_hyper_quality_v3_14.py
+JDG/tests/test_enterprise_quality_v3_15.py JDG/tests/test_tools_quality_v3_16.py -q
+→ wszystkie PASS (liczby w evidence; 56 testów zestawu V3)
+
+Regresja bramek sąsiednich części:
+$ python3 JDG/tools/hyper_quality_v3_14_gate.py --write  → WDROZONY_100
+$ python3 JDG/tools/enterprise_quality_v3_15_gate.py --write → WDROZONY_100
+
+opa check -b / opa test: OPA CLI unavailable locally; CI gate required
+(zgodnie z częściami 01-15; artefakty natywne T01-T08 gotowe do CI).
+
+Czas trwania: gate < 1 s; zestaw pytest < 60 s.
+
+═══════════════════════════════════════════════════════════════════════════════
+G. SPOJNOSC MIEDZYCZESCIOWA
+═══════════════════════════════════════════════════════════════════════════════
+
+- Część 01 (Fundamenty): p76 dokleja się po p75, przed runtime invariants i
+  Decision Certificate; safe_merge zachowuje _routing_context; łańcuch
+  p54..p75 nietknięty (kotwica p76 udokumentowana w komentarzu).
+- Część 02 (VAT): bramki nie zmieniają semantyki VAT; gap reports dalej
+  raportują MISSING art. 28i/115 bez ukrywania luk (uczciwość raportu).
+- Część 05 (Księgowość): kontrakt PKPIR_ENGINE_17_COLUMNS nietknięty;
+  lintery nadal pilnują kanoniczności rule_id księgowych.
+- Część 13 (MICRO): micro_quality_v3_13 pozostaje granicą warstwy micro;
+  V3-16 nie dubluje jej checków, tylko agreguje wynik jako jeden z dowodów.
+- Część 17 (Testy/CI): przekazane zadania L-16-001 (AST), L-16-009 (baseline
+  delta hardcode), L-16-011/015 (cross-check traceability), L-16-004/013
+  (mechanika diff i synchronizacja progów w CI).
+- Część 18 (Bundles/mirror): przekazane L-16-012/014 (drift mirroru i okna
+  temporalne snapshotów).
+Żadna zmiana nie łamie kontraktów sąsiednich części (regresja PASS).
+
+═══════════════════════════════════════════════════════════════════════════════
+H. DECYZJE CZLOWIEKA
+═══════════════════════════════════════════════════════════════════════════════
+
+1) Czy coverage_target_pct=95 ma obowiązywać od razu w CI (ryzyko zablokowania
+   release), czy fazowanie 85→90→95? Decyzja właściciela (część 17).
+2) Polityka hardcode: czy baseline delta (nowe literały = blokada) jest
+   akceptowalna dla legacy 7348 literałów? Decyzja właściciela.
+3) Manifest diff blocking: kto jest właścicielem procesu aktualizacji
+   MANIFEST przy każdym PR zmieniającym rule_id?
+4) Otwarte kwestie prawne: rejestr aktów dla legal_basis_audit wymaga
+   walidacji Law Radar (część 14/16-CI); interpretacje indywidualne nie
+   zastępują eksperta podatkowego — wyniki narzędzi to evidence, nie porada.
+5) AST linting wymaga OPA CLI w CI — decyzja infrastrukturalna (obraz budowany
+   w części 17/19).
+
+═══════════════════════════════════════════════════════════════════════════════
+I. REJESTR ZMIANY
+═══════════════════════════════════════════════════════════════════════════════
+
+Blok "16" dopisany do JDG/bundles/enterprise_v3_registry.json:
+stan=wdrozone, zgodnosc_v1v2=true, liczba_zmienionych_plikow=7,
+lista_glownych_zmian=[kontrakt rules/tools/quality_v3_16.rego (Quality Gates
+Certificate, fail-closed, DECOUPLED, no_auto_post), snapshot thresholds
+tools-quality-2026.08 (rejestry 6+9+4 narzędzi, coverage 95%, progi zerowe),
+wiring p76 + kotwica POST-MERGE p76, bramka tools_quality_v3_16_gate.py 8/8
+PASS, testy natywne T01-T08 + pytest 7 PASS, evidence bundles/
+quality_gates_v3_audit_16.json, raport 16_GATES.txt], luki_pozostale=[AST
+linting → CI 17, baseline delta hardcode → 17, diff MANIFEST mechanika →
+17/18, drift mirroru i snapshoty temporalne → 18, schematy API → 19],
+raport_txt=raporty_enterprise_v3/16_GATES.txt, evidence=
+bundles/quality_gates_v3_audit_16.json.
+
+STATUS_KAMPANII_V3.txt: 16 = WDROŻONY_100 (2026-08-26), POSTĘP 17/20,
+NASTĘPNA CZĘŚĆ: 17_TESTY_CI.txt (NEXT).
+
+═══════════════════════════════════════════════════════════════════════════════
+J. HASLO KONCOWE
+═══════════════════════════════════════════════════════════════════════════════
+V3-16_GATES_KOMPLETNE - SPOJNOSC ZAREJESTROWANA - CONTEXT_RESET_REQUIRED - wyczysc okno kontekstowe

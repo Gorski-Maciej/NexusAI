@@ -1,13 +1,13 @@
 {
-  "report": "V3-14_HYPER_CTX",
+  "report": "V3-16_GATES",
   "status": "WDROZONY_100",
   "gates": {
     "scope_complete": true,
     "metadata_complete": true,
     "contract_complete": true,
     "router_wired": true,
-    "tests_complete": true,
     "tools_complete": true,
+    "tests_complete": true,
     "report_present": true,
     "registry_present": true
   },
@@ -16,41 +16,36 @@
     "total": 8
   },
   "scope": {
-    "files_total": 32,
-    "files_present": 32,
+    "files_total": 23,
+    "files_present": 23,
     "missing": [],
     "scope_complete": true
   },
   "metadata": {
-    "rule_ids_total": 573,
-    "rule_ids_unique": 573,
+    "rule_ids_total": 2,
+    "rule_ids_unique": 2,
     "duplicate_rule_ids": [],
     "duplicate_free": true,
     "legal_markers": {
       "OrdPU": true,
       "PIT": true,
       "VAT": true,
-      "SUS": true,
-      "MDR": true,
-      "eIDAS": true
+      "KKS": true
     },
     "legal_markers_complete": true,
-    "empty_legal_basis": 0,
-    "stub_lines": 0
+    "empty_legal_basis": 0
   },
   "contract": {
     "contract_markers": {
-      "registry_complete": true,
-      "source_complete": true,
+      "linters_complete": true,
+      "validators_complete": true,
+      "gap_reports_complete": true,
+      "coverage_ok": true,
+      "tautology_gate_pass": true,
+      "dead_code_gate_pass": true,
+      "hardcode_gate_pass": true,
+      "manifest_ok": true,
       "temporal_valid": true,
-      "deadline_complete": true,
-      "limits_complete": true,
-      "sanction_complete": true,
-      "force_majeure_complete": true,
-      "fx_complete": true,
-      "edelivery_complete": true,
-      "graph_complete": true,
-      "binding_complete": true,
       "BLOCK_AND_ALERT": true,
       "TRIAGE_QUEUE": true,
       "no_auto_post": true,
@@ -60,9 +55,21 @@
     "snapshot_present": true,
     "snapshot_versioned": true,
     "import_present": true,
-    "p74_present": true,
-    "post_merge_uses_p74": true,
+    "p76_present": true,
+    "post_merge_anchor_current": true,
     "no_auto_post_guard": true
+  },
+  "tools": {
+    "lint_checks_six": true,
+    "dead_rule_detector": true,
+    "tautology_guard": true,
+    "else_chain_detector": true,
+    "hardcoded_audit_gate": true,
+    "gap_report": true,
+    "heatmap": true,
+    "traceability": true,
+    "coverage_95": true,
+    "manifest_v2": true
   },
   "tests": {
     "pytest_present": true,
@@ -70,26 +77,18 @@
     "markers": {
       "full_contract": true,
       "fail_closed": true,
-      "temporal": true,
-      "deadline": true,
-      "limit": true,
-      "sanction": true,
+      "coverage": true,
+      "hardcode": true,
+      "manifest": true,
       "no_auto_post": true
     },
     "tests_complete": true,
-    "pytest_functions": 5
-  },
-  "tools": {
-    "deadline_engine": true,
-    "legal_calendar": true,
-    "limits_registry": true,
-    "sanction_calculator": true,
-    "hyper_quality": true
+    "pytest_functions": 7
   },
   "opa": {
     "available": false,
     "passed": null,
     "message": "OPA CLI unavailable locally; CI gate required."
   },
-  "generated_at": "2026-08-26T08:10:17.217393+00:00"
+  "generated_at": "2026-08-26T08:10:18.312670+00:00"
 }

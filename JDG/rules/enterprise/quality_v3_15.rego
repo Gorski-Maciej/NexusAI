@@ -34,7 +34,7 @@ initiative_ids := [id |
     item := initiatives[_]
     id := object.get(item, "id", "")
 ]
-required_ids := [sprintf("S%d", [n]) | n := [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24][_]]
+required_ids := [sprintf("S%d", [n]) | n := numbers.range(1, 24)]
 missing_initiatives := [id | id := required_ids[_]; not id in initiative_ids]
 initiative_registry_missing := [id |
     id := initiative_ids[_]
@@ -46,7 +46,7 @@ initiative_registry_complete := count(initiatives) >= 24 and
 
 source_complete := count(source_refs) > 0 and count(legal_nodes) > 0 and
     legal_basis_version != ""
-temporal_complete := evaluation_date != "" and facts_version != "" and
+temporal_valid := evaluation_date != "" and facts_version != "" and
     threshold_version != "" and valid_from != ""
 
 scoring := object.get(ctx, "scoring", {})
@@ -64,7 +64,9 @@ score_class := "AUTO_CANDIDATE" if {
     score >= score_suggest_min
 } else := "ABSTAIN" if {
     score <= score_abstain_max
-} else := "MANUAL_REVIEW"
+} else := "MANUAL_REVIEW" if {
+    true
+}
 
 mesh := object.get(ctx, "mesh", {})
 mesh_nodes := object.get(mesh, "nodes", [])
@@ -87,14 +89,18 @@ red_team := object.get(ctx, "red_team", {})
 red_team_complete := object.get(red_team, "scenarios", 0) >= object.get(_snapshot, "min_red_team_scenarios", 0) and
     object.get(red_team, "undetected_failures", 1) == 0
 
-contract_complete := initiative_registry_complete and source_complete and temporal_complete and
+contract_complete := initiative_registry_complete and source_complete and temporal_valid and
     scoring_calibrated and score_range_valid and mesh_complete and mesh_conflict_free and
     composer_complete and red_team_complete and input_hash != ""
 hard_block := not contract_complete or not owner_approval or manual_recipient == ""
+contract_state := "ENTERPRISE_VALIDATED" if {
+    contract_complete
+    not hard_block
+} else := "ENTERPRISE_BLOCKED" if {
+    true
+}
 routing := "BLOCK_AND_ALERT" if {
     hard_block
-} else := "TRIAGE_QUEUE" if {
-    score_class != "AUTO_CANDIDATE" or count(mesh_conflicts) > max_conflicts_for_suggest
 } else := "TRIAGE_QUEUE"
 
 # Enterprise Decision Certificate: recommendation is never an external action.
@@ -104,14 +110,14 @@ decide := {
     "package": "jdg.enterprise.quality_v3_15",
     "priority": 22003,
     "stage": "V3-15",
-    "state": "ENTERPRISE_VALIDATED" if {contract_complete; not hard_block} else "ENTERPRISE_BLOCKED",
+    "state": contract_state,
     "decision_mode": "SUGGEST",
     "mode": "DECOUPLED",
     "no_auto_post": true,
     "initiative_registry_complete": initiative_registry_complete,
     "missing_initiatives": missing_initiatives,
     "source_complete": source_complete,
-    "temporal_complete": temporal_complete,
+    "temporal_valid": temporal_valid,
     "scoring": {"score": score, "class": score_class, "calibrated": scoring_calibrated, "sample_count": scoring_samples, "accuracy": scoring_accuracy, "brier_score": scoring_brier},
     "mesh": {"complete": mesh_complete, "nodes": count(mesh_nodes), "edges": count(mesh_edges), "conflicts": mesh_conflicts, "version": mesh_version},
     "composer_complete": composer_complete,

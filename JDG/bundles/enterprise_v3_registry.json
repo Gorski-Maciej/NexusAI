@@ -335,13 +335,82 @@
       ],
       "raport_txt": "raporty_enterprise_v3/07_ORDYNACJA.txt",
       "evidence": "bundles/ordynacja_v3_audit_07.json"
+    },
+    "15": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 7,
+      "lista_glownych_zmian": [
+        "Naprawiono kontrakt rules/enterprise/quality_v3_15.rego: składnia else-chain/inline-if zgodna ze wzorcem V3-14, rejestr S1-S24 deklaratywny przez numbers.range(1,24), stan przez osobną regułę contract_state.",
+        "Kontrakt S1-S24 + Neural Mesh + Scoring: initiative_registry_complete, source_complete, temporal_valid, scoring_calibrated (100 próbek / acc 0.95 / Brier 0.10 z snapshotu), mesh_complete+conflict_free, composer_complete (deterministic+evidence+test_refs), red_team_complete (min 10 scenariuszy, undetected_failures=0); fail-closed, DECOUPLED, no_auto_post=true.",
+        "Zero-hardcode: wszystkie progi kontraktu konsumowane z snapshotu thresholds enterprise_quality_v3_15 = enterprise-quality-2026.08 (score_auto_post_min=92, score_suggest_min=75, score_abstain_max=50, min_mesh_nodes=13, min_mesh_edges=12, min_red_team_scenarios=10).",
+        "Zweryfikowano wiring orkiestratora: import data.jdg.enterprise.quality_v3_15 + final_verdict_p75 = safe_merge(final_verdict_p74, ...) — POST-MERGE na p75; naprawiono przy okazji check post_merge w bramce V3-14 (akceptacja kotwicy p74/p75) — regresja 14 PASS.",
+        "Nowa bramka tools/enterprise_quality_v3_15_gate.py: 18 plików SCOPE (9 pakietów enterprise z listy promptu, kontrakt, thresholds, main, 4 narzędzia, testy), 9 bramek — evidence bundles/enterprise_v3_audit_15.json WDROŻONY_100 (9/9 PASS, 0 duplikatów rule_id, 0 pustych legal_basis).",
+        "Testy natywne tests/rego/test_native_enterprise_quality_v3_15.rego (T01-T08: golden contract, fail-closed owner/initiative/kalibracja/konflikt/red-team, pasma score_class, no_auto_post) + pytest tests/test_enterprise_quality_v3_15.py (7 PASS); zestaw kampanijny 13+14+15: 17 PASS.",
+        "Raport raporty_enterprise_v3/15_ENTERPRISE.txt: audyt 13 plików warstwy (9 Rego + 4 narzędzia), 22 luki (L-15-001..022, w tym 5 krytycznych: brak kontraktu, scoring bez kalibracji, hardcode kursu EUR/progów GAAR), 11 innowacji V1/V2."
+      ],
+      "luki_pozostale": [
+        "OPA CLI niedostępne lokalnie — opa check -b / opa test pozostają bramką CI (artefakt natywny gotowy).",
+        "L-15-004/L-15-005: hardcode kursu EUR 4.5 z inputu (neural_mesh_v2) oraz progów GAAR/base_chance (decision_scoring) — eksternalizacja do thresholds w części 16 po zatwierdzeniu właściciela domeny.",
+        "L-15-007/L-15-015: producent ctx.mesh i ctx.scoring (graf + emiter metryk z decision_quality_monitor) — dopięcie hosta w części 16/19.",
+        "L-15-010/L-15-011: overlap tax_optimization × neural_mesh_v2 oraz podwójny nadzorca Plan45 (meta × quality_v3_14) — decyzja konsolidacyjna w części 16/18.",
+        "L-15-020: reguła auto_post_override (neural_mesh_v2, priority 500021) sprzeczna z no_auto_post — usunięcie wymaga decyzji właściciela."
+      ],
+      "raport_txt": "raporty_enterprise_v3/15_ENTERPRISE.txt",
+      "evidence": "bundles/enterprise_v3_audit_15.json"
+    },
+    "16": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 7,
+      "lista_glownych_zmian": [
+        "Nowy kontrakt rules/tools/quality_v3_16.rego (Quality Gates Certificate): bramkuje WYNIKI 19 narzędzi (6 linterów + 9 walidatorów + 4 gap reports); fail-closed — brak wpisu PASS = FAIL; DECOUPLED, no_auto_post=true.",
+        "Zero-hardcode: snapshot thresholds tools_quality_v3_16 = tools-quality-2026.08 (required_linters[6], required_validators[9], required_gap_reports[4], coverage_target_pct=95, max_tautologies/max_dead_criticals/max_hardcode_findings=0, manifest_diff_blocking=true).",
+        "Wiring orkiestratora: import data.jdg.tools.quality_v3_16 + final_verdict_p76 = safe_merge(final_verdict_p75, ...); kotwica POST-MERGE przesunięta na p76; bramka V3-14 uodporniona regexem p7[4-9] (regresja 14/15 PASS).",
+        "Nowa bramka tools/tools_quality_v3_16_gate.py: 23 pliki SCOPE, 8 bramek — evidence bundles/quality_gates_v3_audit_16.json WDROZONY_100 (8/8 PASS, 0 duplikatów rule_id, 0 pustych legal_basis).",
+        "Testy natywne tests/rego/test_native_tools_quality_v3_16.rego (T01-T08: golden 19 narzędzi PASS/coverage 97, fail-closed owner/linter/coverage/hardcode/manifest/tautologie, no_auto_post) + pytest tests/test_tools_quality_v3_16.py (7 PASS); zestaw kampanijny V3 09-16: 56 PASS.",
+        "Audyt 18 narzędzi jakości z listy promptu: potwierdzone luki krytyczne — lintery na stringach nie AST, coverage_95_plan nieaktywny w CI, diff MANIFEST nieblokujący; raport raporty_enterprise_v3/16_GATES.txt (sekcje A-J).",
+        "Raport: 21 luk (L-16-001..021), 11 innowacji V1/V2 (Quality Gates Certificate, fail-closed evidence, rejestry narzędzi jako dane, kotwica przyszłościowa p7[4-9])."
+      ],
+      "luki_pozostale": [
+        "OPA CLI niedostępne lokalnie — opa check -b / opa test pozostają bramką CI (artefakt natywny gotowy).",
+        "L-16-001: AST linting wymaga OPA CLI w CI — decyzja infrastrukturalna w części 17.",
+        "L-16-009/L-16-004: baseline delta hardcode i mechanika blokującego diffu MANIFEST — części 17/18.",
+        "L-16-012/L-16-014: drift mirroru policies i okna temporalne snapshotów — część 18.",
+        "Fazowanie coverage 85→90→95 w CI oraz właściciel procesu MANIFEST — decyzje człowieka (raport sekcja H)."
+      ],
+      "raport_txt": "raporty_enterprise_v3/16_GATES.txt",
+      "evidence": "bundles/quality_gates_v3_audit_16.json"
+    },
+    "17": {
+      "stan": "wdrozone",
+      "zgodnosc_v1v2": true,
+      "liczba_zmienionych_plikow": 7,
+      "lista_glownych_zmian": [
+        "Nowy kontrakt rules/tests_ci/quality_v3_17.rego (CI Quality Certificate): suites_complete (pytest+native, puste suite = FAIL), coverage >= 95%, mutation >= 85 BLOCKING, fuzz >= 10000 ze schematami KSeF/JPK, property >= 200, chaos >= 5 z undetected_failures == 0, golden replay + DIFF PRAWNY czysty, 4 workflowy wymagane, auto-rejestracja regresji wersjonowana; fail-closed, DECOUPLED, no_auto_post=true.",
+        "Zero-hardcode: snapshot thresholds tests_ci_quality_v3_17 = tests-ci-v3-2026.08 SPÓJNY z etap24 (mutation 85, fuzz 10000, property 200, coverage 95).",
+        "Wiring orkiestratora: import data.jdg.tests_ci.quality_v3_17 + final_verdict_p77 = safe_merge(final_verdict_p76, ...); kotwica POST-MERGE → p77; kompatybilność w przód regexem p7[4-9] — regresja 14/15/16 PASS.",
+        "Nowa bramka tools/tests_ci_quality_v3_17_gate.py: SCOPE 13 plików + 4 workflowy repo (.github/workflows), 8 bramek — evidence bundles/tests_ci_v3_audit_17.json WDROZONY_100 (8/8 PASS, detekcja cmd_record/cmd_replay i immutability baseline golden_replay).",
+        "Testy natywne tests/rego/test_native_tests_ci_quality_v3_17.rego (T01-T08: golden CI 198+207/97/90 blocking/fuzz 12000/chaos 6-0, fail-closed owner/puste suite/mutation/golden-diff/chaos/workflows) + pytest tests/test_tests_ci_quality_v3_17.py (7 PASS); zestaw kampanijny V3 09-17: 63 PASS.",
+        "Audyt potwierdził luki krytyczne z promptu: golden bez diff a prawnego, brak auto-rejestracji regresji, mutation nieblokujący, chaos bez CRON, fuzz bez schematów KSeF/JPK; raport raporty_enterprise_v3/17_TESTY_CI.txt (sekcje A-J).",
+        "Raport: 21 luk (L-17-001..021), 11 innowacji V1/V2 (Golden v2 z diff prawnym, mutation blokowany, chaos jako obowiązek, empty-suite semantics, workflow contract)."
+      ],
+      "luki_pozostale": [
+        "OPA CLI niedostępne lokalnie — opa check -b / opa test pozostają bramką CI; instalacja w obrazie CI = decyzja infrastrukturalna.",
+        "L-17-007: dopisanie bramek V3-14..17 do jdg-quality-gates-blocking.yml — decyzja CI-owner (koszt minut).",
+        "L-17-001: producent diffu prawnego dla Golden v2 (dekompozycja polowa wg aktów) — część 20 Legal Twin/Law Radar.",
+        "L-17-008/L-17-014: chaos jako CRON (jdg-scheduled-drift) i replay historyczny na PR — decyzje właściciela środowiska/CI.",
+        "Flaga --blocking mutation_runnera i fazowanie progu 70→80→85 — ryzyko fali czerwonych mutantów micro, decyzja właściciela."
+      ],
+      "raport_txt": "raporty_enterprise_v3/17_TESTY_CI.txt",
+      "evidence": "bundles/tests_ci_v3_audit_17.json"
     }
   },    "podsumowanie": {
     "czesc_do_zrobienia": 20,
-    "czesc_wykonanych": 15,
-    "ostatnia_zrobiona": "14",
+    "czesc_wykonanych": 18,
+    "ostatnia_zrobiona": "17",
     "status_calosci": "W_TRAKCIE_KAMPANII",
-    "nastepna": "15"
+    "nastepna": "18"
 
   }
 }

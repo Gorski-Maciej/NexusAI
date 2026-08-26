@@ -2550,6 +2550,65 @@ enterprise_quality_v3_15 := {
     "manual_review_required": true,
 }
 
+# ═════════════════════════════════════════════════════════════════════════
+# V3-16 — NARZĘDZIA + BRAMKI JAKOŚCI + GAP REPORTS SNAPSHOT (ADR-002)
+tools_quality_v3_16 := {
+    "threshold_version": "tools-quality-2026.08",
+    "registry_version": "quality-gates-2026.08",
+    "legal_basis_version": "quality-gates-legal-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "required_linters": ["lint_rego_rules", "validate_rules", "dead_rule_detector", "tautology_guard", "else_chain_dead_code_detector", "hardcoded_audit_gate"],
+    "required_validators": ["validate_legal_basis", "validate_enterprise_contract", "cross_ref_validator", "doc_consistency_validator", "inventory_reconciliation", "test_coverage_gate", "temporal_interval_gate", "manifest_v2", "legal_basis_audit"],
+    "required_gap_reports": ["legal_coverage_gap_report", "legal_coverage_heatmap", "traceability_matrix", "coverage_95_plan"],
+    "coverage_target_pct": 95,
+    "max_tautologies": 0,
+    "max_dead_criticals": 0,
+    "max_hardcode_findings": 0,
+    "manifest_diff_blocking": true,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═════════════════════════════════════════════════════════════════
+# V3-17 — TESTY + CI/CD + CHAOS + MUTATION + GOLDEN SNAPSHOT (ADR-002)
+# Progi spójne z tests_ci_quality_etap24 (mutation 85, fuzz 10000, property 200).
+tests_ci_quality_v3_17 := {
+    "threshold_version": "tests-ci-v3-2026.08",
+    "registry_version": "tests-ci-campaign-2026.08",
+    "legal_basis_version": "tests-ci-legal-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "coverage_target_pct": 95,
+    "min_mutation_score": 85,
+    "min_fuzz_cases": 10000,
+    "min_property_cases": 200,
+    "min_chaos_experiments": 5,
+    "golden_replay_required": true,
+    "required_workflows": ["ci.yml", "opa-ci.yml", "jdg-quality-gates-blocking.yml", "jdg-scheduled-drift.yml"],
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════
+# V3-18 — BUNDLES + POLICIES MIRROR + RULESTORE + MIGRACJE + DEPLOY SNAPSHOT (ADR-002)
+bundles_quality_v3_18 := {
+    "threshold_version": "bundles-v3-2026.08",
+    "registry_version": "bundles-campaign-2026.08",
+    "legal_basis_version": "bundles-legal-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "min_rulestore_migrations": 13,
+    "max_hot_reload_seconds": 60,
+    "max_rollback_mttr_min": 5,
+    "max_mirror_drift_pct": 0,
+    "max_rto_min": 15,
+    "max_rpo_min": 15,
+    "dr_game_day_max_days": 30,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # P01 SEK. 3 — WERSJONOWANIE THRESHOLDÓW PER OKRES ROZLICZENIOWY (A2+) ENTERPRISE
 # ═══════════════════════════════════════════════════════════════════════════════

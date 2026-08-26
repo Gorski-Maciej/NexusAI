@@ -89,6 +89,9 @@ import data.jdg.crossborder.v3_08 as crossborder_v3_08
 import data.jdg.micro.quality_v3_13 as micro_quality_v3_13
 import data.jdg.hyper.quality_v3_14 as hyper_quality_v3_14
 import data.jdg.enterprise.quality_v3_15 as enterprise_quality_v3_15
+import data.jdg.tools.quality_v3_16 as tools_quality_v3_16
+import data.jdg.tests_ci.quality_v3_17 as tests_ci_quality_v3_17
+import data.jdg.bundles.quality_v3_18 as bundles_quality_v3_18
 import data.jdg.business.v3_09 as business_v3_09
 import data.jdg.local_taxes.pcc as lt_pcc
 import data.jdg.local_taxes.real_estate as lt_real_estate
@@ -2684,6 +2687,30 @@ final_verdict_p75 = safe_merge(final_verdict_p74,
         fallback.decide
     ))
 
+# V3-16: Tools + quality gates + gap reports boundary. The package bramkuje
+# WYNIKI narzędzi (lintery, walidatory, gap reports) z evidence; jest
+# decoupled i cannot authorize AUTO_POST.
+final_verdict_p76 = safe_merge(final_verdict_p75,
+    safe_merge(tools_quality_v3_16.decide,
+        fallback.decide
+    ))
+
+# V3-17: Tests + CI/CD + chaos + mutation + golden boundary. The package
+# bramkuje WYNIKI suite'ów CI z evidence; jest decoupled i cannot authorize
+# AUTO_POST.
+final_verdict_p77 = safe_merge(final_verdict_p76,
+    safe_merge(tests_ci_quality_v3_17.decide,
+        fallback.decide
+    ))
+
+# V3-18: Bundles + policies mirror + RuleStore + migrations + deploy boundary.
+# The package bramkuje wyniki control plane (sign/verify, SBOM, mirror parity,
+# canary/rollback, DR) z evidence; decoupled i cannot authorize AUTO_POST.
+final_verdict_p78 = safe_merge(final_verdict_p77,
+    safe_merge(bundles_quality_v3_18.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -2698,8 +2725,8 @@ final_verdict_p75 = safe_merge(final_verdict_p74,
 # ═══════════════════════════════════════════════════════════════════════════════
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
-# Compatibility anchors remain available as final_verdict_p53..p75, but the
-# effective POST-MERGE input is p75. This preserves every stage p54..p74 and
+# Compatibility anchors remain available as final_verdict_p53..p78, but the
+# effective POST-MERGE input is p78. This preserves every stage p54..p77 and
 # removes the former hand-written object.union chain that could silently skip
 # stages or overwrite immutable fields (INV-018/INV-042).
 # Legacy audit anchors (documentation only; deliberately not executable):
@@ -2716,7 +2743,7 @@ final_verdict_p75 = safe_merge(final_verdict_p74,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p75
+    final_verdict_p78
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

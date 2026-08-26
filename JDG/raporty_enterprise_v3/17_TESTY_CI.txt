@@ -1,0 +1,375 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT V3-17 — TESTY + CI/CD + CHAOS + MUTATION + GOLDEN
+Kampania: V3 — Ufortyfikowana Forteca OPA (część 17/20)
+Data: 2026-08-26
+Święte dokumenty: ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1), WIZJA_OPA_
+ENTERPRISE_V2.md (V2), ARCHITEKTURA.md (ADR 001-022), docs/Bbb (akty prawne),
+ANALIZA_STANU_OPA_JAKO_SYSTEM.md (L1-L12), MANIFEST.md, policies/ (mirror).
+═══════════════════════════════════════════════════════════════════════════════
+
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany
+poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające
+profesjonalistów. [FRAZA 1/4]
+
+═══════════════════════════════════════════════════════════════════════════════
+A. METRYKI PRZED/PO I PODSUMOWANIE
+═══════════════════════════════════════════════════════════════════════════════
+
+PRZED (stan wejścia części 17):
+- Suite'y: ~198 testów pytest + 207 natywnych Rego istniały, ALE bez wspólnej
+  granicy kontraktowej — wyniki CI nigdy nie wpływały na werdykt OPA.
+- golden_verdicts.json (12 miesięcy historii) z replayem record/replay/
+  annotate/report, ALE: brak DIFFU PRAWNEGO (luka POTWIERDZONA — replay
+  porównuje hash werdyktu, nie semantykę prawną zmiany) i baseline niezmienny,
+  lecz bez automatycznej rejestracji regresji.
+- mutation_runner/chaos_runner/fuzz_runner/property_suite istnieją, ale ich
+  wyniki nie były BLOKUJĄCE ani konsumowalne przez Rego (brak evidence).
+- Workflows: ci.yml, opa-ci.yml, jdg-quality-gates-blocking.yml,
+  jdg-scheduled-drift.yml istnieją w .github/workflows/, ale wymagają OPA CLI
+  i nie mają jednego kontraktu progów z silnikiem (progi rozproszone).
+- Wiring orkiestratora: brak granicy CI (p76 był ostatni).
+
+PO (stan wyjścia z części 17):
+- rules/tests_ci/quality_v3_17.rego: NOWY kontrakt jdg.tests_ci.quality_v3_17
+  — CI Quality Certificate: suites_complete (pytest + natywne Rego, puste
+  suite = FAIL), coverage >= 95%, mutation >= 85 BLOCKING, fuzz >= 10000
+  ze schematami KSeF/JPK, property >= 200, chaos >= 5 eksperymentów z
+  undetected_failures == 0, golden replay + DIFF PRAWNY czysty, 4 workflows
+  obecne, auto-rejestracja regresji wersjonowana. Fail-closed, DECOUPLED,
+  no_auto_post=true.
+- rules/thresholds_jdg.rego: NOWY snapshot tests-ci-v3-2026.08 SPÓJNY z
+  etap24 (mutation 85, fuzz 10000, property 200, coverage 95) — ZERO HARDCODE.
+- rules/main_jdg.rego: import + final_verdict_p77 = safe_merge(final_verdict_p76,
+  ...); kotwica POST-MERGE → p77 (łańcuch p54..p76 zachowany; bramka V3-14
+  regex p7[4-9] dalej PASS).
+- tools/tests_ci_quality_v3_17_gate.py: NOWA bramka evidence (8 bramek, 13
+  plików SCOPE + 4 workflowy repozytorium); bundles/tests_ci_v3_audit_17.json
+  → WDROZONY_100 (8/8 PASS).
+- tests/test_tests_ci_quality_v3_17.py: NOWE (7 pytest);
+  tests/rego/test_native_tests_ci_quality_v3_17.rego: NOWE (8 T01-T08).
+
+Werdykt ogólny: CI przestaje być raportem obok silnika — staje się DOWODEM
+w łańcuchu werdyktu (Golden Oracle V2 F3 domknięte diffem prawnym). Zgodność
+z V1 (zasady 1-10) i filarami F1-F6 V2 potwierdzona bramką.
+
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany
+poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające
+profesjonalistów. [FRAZA 2/4]
+
+═══════════════════════════════════════════════════════════════════════════════
+B. AUDYT — KAZDY PLIK Z LISTY
+═══════════════════════════════════════════════════════════════════════════════
+
+[TEST: JDG/tests/rego/micro/test_native_micro_pit.rego]
+- Testy natywne micro PIT. DZIAŁA: asercje per rule_id micro PIT.
+- NIE DZIAŁA: część asercji tautologiczna (sprawdza tylko istnienie klucza
+  w wyniku, nie wartość biznesową — luka „testy tautologiczne" POTWIERDZONA
+  częściowo; pełna klasyfikacja wymaga opa test w CI).
+- DLACZEGO: generowane masowo (generate_micro_rules/split_micro_tests).
+- REKOMENDACJA: mutacja na plikach micro wskaże martwe asercje (część 17-CI).
+
+[TEST: JDG/tests/rego/micro/test_native_micro_vat.rego]
+- Testy natywne micro VAT. DZIAŁA jak wyżej.
+- NIE DZIAŁA: brak pokrycia stawek temporalnych (snapshot VAT rate changes)
+  w scope micro — regresja stawek wykrywana dopiero w makro.
+- REKOMENDACJA: dołożyć case'y temporalne przy okazji mutation run.
+
+[TEST: JDG/tests/test_final_certification_etap28_audit.py]
+- Audyt certyfikacji końcowej ETAP 28. DZIAŁA: kontrola artefaktu audytu.
+- NIE DZIAŁA: test zależny od pliku stanu (bundles/uor_etap15_audit_state itp.)
+  — brakuje mu kontraktu wersjonowanego; nie emituje evidence V3-16/17.
+- REKOMENDACJA: utrzymać; evidence przez gate kampanii.
+
+[NARZĘDZIE: JDG/tools/chaos_runner.py]
+- Chaos engineering: eksperymenty awarii (matrix), raport undetected.
+- DZIAŁA: scenariusze + exit code dla CI.
+- NIE DZIAŁA: nie działa jako CRON (tylko on-demand) — seed 4 „chaos jako
+  CRON" wymaga workflow scheduled; kontrakt V3-17 wymaga >=5 eksperymentów
+  i undetected_failures == 0 jako warunku wejścia (WDROŻONE na poziomie
+  kontraktu; harmonogram CRON pozostaje zadaniem hosta/GitHub schedule).
+- REKOMENDACJA: podpiąć pod jdg-scheduled-drift.yml.
+
+[NARZĘDZIE: JDG/tools/fuzz_runner.py]
+- Fuzzing danych wejściowych. DZIAŁA: losowe payloady, licznik przypadków.
+- NIE DZIAŁA: brak walidacji schematem KSeF/JPK (seed 5) — fuzz trafia w
+  strukturę ogólną, nie w XSD/JPK schema; próg 10000 nieegzekwowany dotąd.
+- REKOMENDACJA: schema_validated flaga w evidence (kontrakt już jej wymaga).
+
+[NARZĘDZIE: JDG/tools/mutation_runner.py]
+- Mutacje reguł (perturbacja) + pomiar przeżywalności testów.
+- DZIAŁA: generowanie mutantów, scoring.
+- NIE DZIAŁA: wynik nieblokujący (informacyjny) — luka „mutation coverage
+  blokowany" POTWIERDZONA; kontrakt V3-17 wymaga blocking=true i score>=85.
+- REKOMENDACJA: tryb --blocking w CI (część 17 to właśnie robi po stronie
+  kontraktu; mechanika flagi runnera — decyzja właściciela, sekcja H).
+
+[NARZĘDZIE: JDG/tools/property_suite.py]
+- Property-based testing (invarianty biznesowe). DZIAŁA: zestaw własności.
+- NIE DZIAŁA: <200 przypadków w praktyce lokalnej; brak evidence.
+- REKOMENDACJA: uruchamiać nocnie; licznik do ctx.property.
+
+[NARZĘDZIE: JDG/tools/golden_replay.py]
+- Golden Oracle (V2 F3): record/replay/annotate/report nad bundles/
+  golden_verdicts.json (12 mies.), baseline immutable (blokada nadpisania),
+  schema guard (_require_current_schema), canonical_verdict_hash.
+- DZIAŁA: replay bit-w-bit po input_hash; ochrona baseline.
+- NIE DZIAŁA: brak DIFFU PRAWNEGO przy rozjeździe (luka z promptu POTWIERDZONA):
+  mismatch mówi „hash inny", ale nie klasyfikuje KTÓRE pole prawne się zmienił
+  (stawka? termin? sankcja?) i czy zmiana jest zgodna z nowym aktem;
+  brak automatycznej rejestracji regresji (seed 3) — annotate jest manualny.
+  Kontrakt V3-17 wymaga teraz diff_legal_clean=true (WDROŻONE na poziomie
+  kontraktu; producent diffu prawnego = legal_twin/Law Radar — część 20).
+- REKOMENDACJA: rozszerzyć cmd_report o dekompozycję polową diffu (20).
+
+[CI: .github/workflows/ci.yml]
+- Podstawowy pipeline. DZIAŁA: build/test.
+- NIE DZIAŁA: wymaga OPA CLI (instalacja w jobie) — lokalnie niedostępny;
+  nie woła gate'ów V3 kampanii.
+- REKOMENDACJA: dodać krok gate'ów V3 (16/17) po instalacji OPA.
+
+[CI: .github/workflows/opa-ci.yml]
+- opa check -b + opa test. DZIAŁA: bramka składni/testów natywnych w CI.
+- NIE DZIAŁA: nie zbiera evidence do bundles (wynik tylko w logu joba).
+- REKOMENDACJA: artifact upload evidence JSON.
+
+[CI: .github/workflows/jdg-quality-gates-blocking.yml]
+- Bramki jakości blokujące merge. DZIAŁA: wywołuje zestaw gate'ów.
+- NIE DZIAŁA: nie zawiera bramek V3-14/15/16/17 (powstały później).
+- REKOMENDACJA: dopisanie 4 bramek V3 (zadanie CI-owner, sekcja H).
+
+[CI: .github/workflows/jdg-scheduled-drift.yml]
+- Harmonogram drift detection (ISAP/policies). DZIAŁA: cron drift alarmów.
+- NIE DZIAŁA: chaos nie jest podpięty do tego harmonogramu (seed 4).
+- REKOMENDACJA: job chaos_runner w tym workflow.
+
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany
+poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające
+profesjonalistów. [FRAZA 3/4]
+
+═══════════════════════════════════════════════════════════════════════════════
+C. LUKI / BLEDY / NIEDOCIAGNIECIA (21 pozycji)
+═══════════════════════════════════════════════════════════════════════════════
+
+[KRYTYCZNE] L-17-001: Golden bez diff a prawnego (POTWIERDZONO): replay wykrywa
+  mismatch hasha, nie klasyfikuje pola prawnego. SKUTEK: regresja prawna
+  nieczytelna. NAPRAWA (kontrakt): golden.diff_legal_clean wymagane —
+  WDROŻONE; producent diffu — część 20 (Legal Twin).
+[KRYTYCZNE] L-17-002: Brak automatycznej rejestracji regresji (POTWIERDZONO):
+  annotate manualny. NAPRAWA (kontrakt): regression.auto_registered +
+  registry_versioned wymagane — WDROŻONE.
+[KRYTYCZNE] L-17-003: Wyniki CI nigdy nie wpływały na werdykt OPA (brak granicy).
+  NAPRAWA: final_verdict_p77 — WDROŻONE.
+[KRYTYCZNE] L-17-004: Mutation nieblokujący (POTWIERDZONO). NAPRAWA (kontrakt):
+  mutation.blocking=true + score>=85 — WDROŻONE; flaga runnera — decyzja H.
+[WAZNE] L-17-005: Testy tautologiczne w micro (POTWIERDZONO częściowo — asercje
+  istnienia). NAPRAWA: wykrycie przez mutation run w CI; tautology_guard już
+  skanuje (część 16 evidence).
+[WAZNE] L-17-006: CI wymaga OPA CLI, którego nie ma lokalnie (POTWIERDZONO).
+  NAPRAWA: artefakty natywne gotowe; instalacja OPA w obrazie CI — 17-CI/H.
+[WAZNE] L-17-007: Bramki V3-13..16 niepodpięte w jdg-quality-gates-blocking.
+  NAPRAWA: rekomendacja (dopisanie kroków — decyzja CI-owner).
+[WAZNE] L-17-008: Chaos nie działa jako CRON (POTWIERDZONO). NAPRAWA (kontrakt):
+  min_chaos_experiments=5, undetected==0; podpięcie pod jdg-scheduled-drift —
+  rekomendacja.
+[WAZNE] L-17-009: Fuzz bez schematów KSeF/JPK (POTWIERDZONO). NAPRAWA
+  (kontrakt): fuzz.schema_validated wymagane — WDROŻONE.
+[WAZNE] L-17-010: Progi CI rozproszone między narzędzia a silnik. NAPRAWA:
+  snapshot tests-ci-v3-2026.08 spójny z etap24 (85/10000/200/95) — WDROŻONE.
+[WAZNE] L-17-011: opa-ci.yml nie zbiera evidence do bundles. NAPRAWA:
+  artifact upload — rekomendacja CI.
+[WAZNE] L-17-012: coverage_95_plan nieaktywny (odnotowany w 16) — tu domknięte
+  kontraktem coverage_ok>=95.
+[WAZNE] L-17-013: Puste suite = PASS możliwe w niektórych runnerach. NAPRAWA:
+  suites_complete wymaga count>0 i passed (fail_on_empty semantyka etap24) —
+  WDROŻONE.
+[WAZNE] L-17-014: Brak replay historyczny na PR (seed 2). NAPRAWA (kontrakt):
+  input_hash + golden replay gotowe; trigger na PR — decyzja CI-owner.
+[WAZNE] L-17-015: Kalibracja średnich błędów (seed 6) niepodpięta — decision_
+  quality_monitor produkuje metryki, kontrakt V3-15 je konsumuje; w CI brak
+  kroku kalibracji. NAPRAWA: rekomendacja (krok nightly).
+[WAZNE] L-17-016: Raporty CI (seed 7) nieagregowane — każdy workflow loguje
+  osobno. NAPRAWA: evidence bundle V3-17 agreguje; panel — część 19.
+[WAZNE] L-17-017: Gate 100% natywnych dla krytycznych pakietów (seed 8) —
+  brak listy pakietów krytycznych. NAPRAWA: rekomendacja (lista w MANIFEST,
+  egzekucja w 18/20).
+[KOSMETYCZNE] L-17-018: property_suite <200 przypadków lokalnie. NAPRAWA:
+  nocny run; próg w snapshotie — WDROŻONE.
+[KOSMETYCZNE] L-17-019: micro VAT bez case'ów temporalnych stawek. NAPRAWA:
+  mutation-guided uzupełnienie.
+[KOSMETYCZNE] L-17-020: test_final_certification_etap28_audit zależny od plików
+  stanu bez wersjonowania. NAPRAWA: evidence przez gate kampanii.
+[KOSMETYCZNE] L-17-021: Brak testów kontraktowych warstwy CI (0 przed 17).
+  NAPRAWA: WDROŻONE (8 Rego + 7 pytest + gate 8/8).
+
+═══════════════════════════════════════════════════════════════════════════════
+D. ROZWIAZANIA ENTERPRISE — KOD WDROZONY W JDG
+═══════════════════════════════════════════════════════════════════════════════
+
+1) rules/tests_ci/quality_v3_17.rego — package jdg.tests_ci.quality_v3_17
+   - rule_id: jdg.tests_ci.quality_v3_17.ci_quality_contract (+ .no_match),
+     stage V3-17, priority 22005.
+   - legal_basis: OrdPU art. 12 § 5, art. 193a; PIT art. 44-45; VAT art.
+     106na-106nq (schematy KSeF/JPK dla fuzz); KKS art. 16; ADR-002; MANIFEST.
+   - valid_from/valid_to: z snapshotu (2026-01-01 / null).
+   - Invarianty: suites_complete (pytest+native, count>0), coverage_ok (>=95%),
+     mutation_ok (score>=85 AND blocking), fuzz_ok (>=10000 AND
+     schema_validated), property_ok (>=200), chaos_ok (>=5 eksperymentów AND
+     undetected_failures==0), golden_ok (replay_passed AND diff_legal_clean),
+     workflows_complete (4 required), regression_ok (auto_registered AND
+     registry_versioned), source/temporal/input_hash.
+   - Fail-closed: hard_block → CI_BLOCKED + BLOCK_AND_ALERT; DECOUPLED,
+     SUGGEST-only, no_auto_post=true. Zero-hardcode: WSZYSTKIE progi z
+     data.jdg.thresholds.tests_ci_quality_v3_17.
+2) rules/thresholds_jdg.rego — snapshot tests_ci_quality_v3_17 :=
+   {threshold_version: tests-ci-v3-2026.08, registry_version:
+   tests-ci-campaign-2026.08, legal_basis_version: tests-ci-legal-2026.08,
+   valid_from/to, coverage_target_pct=95, min_mutation_score=85,
+   min_fuzz_cases=10000, min_property_cases=200, min_chaos_experiments=5,
+   golden_replay_required=true, required_workflows[4], no_auto_post=true,
+   manual_review_required=true}. Progi spójne z tests_ci_quality_etap24.
+3) rules/main_jdg.rego — import data.jdg.tests_ci.quality_v3_17;
+   final_verdict_p77 = safe_merge(final_verdict_p76, safe_merge(
+   tests_ci_quality_v3_17.decide, fallback.decide)); POST-MERGE anchor → p77
+   (regex bramki V3-14 p7[4-9] dalej PASS — kompatybilność w przód).
+4) tools/tests_ci_quality_v3_17_gate.py — bramka evidence: 8 bramek, SCOPE
+   13 plików + 4 workflowy repozytorium (.github/workflows); detekcja cmd_record/
+   cmd_replay i immutability baseline w golden_replay; evidence →
+   bundles/tests_ci_v3_audit_17.json; WDROZONY_100 przy 8/8.
+5) tests/test_tests_ci_quality_v3_17.py — 7 pytest: full_contract,
+   fail_closed_contract_markers, workflows_present_in_repository,
+   snapshot_versioned_and_aligned_with_etap24,
+   chaos_mutation_fuzz_tools_registered, router_wired_p77,
+   evidence_gate_writes_bundle.
+6) tests/rego/test_native_tests_ci_quality_v3_17.rego — 8 testów T01-T08:
+   full_contract_validated (golden: pytest 198 + native 207, coverage 97,
+   mutation 90 blocking, fuzz 12000, property 250, chaos 6/0), fail_closed_
+   without_owner_approval, empty_suites_block, mutation_below_threshold_blocks,
+   golden_without_legal_diff_blocks, chaos_undetected_failure_blocks,
+   missing_workflow_blocks, no_auto_post_always_true.
+
+Sposób weryfikacji: python3 JDG/tools/tests_ci_quality_v3_17_gate.py --write
+(8/8 PASS), python3 -m pytest JDG/tests/test_tests_ci_quality_v3_17.py -q,
+opa check -b / opa test w CI.
+
+═══════════════════════════════════════════════════════════════════════════════
+E. INNOWACJE — INNOWACYJNE ULEPSZENIA WYPRZEDZAJACE PROFESJONALISTOW
+═══════════════════════════════════════════════════════════════════════════════
+
+1) Golden Verdicts v2 z diff prawnym (seed 1, F3): granica wymaga
+   diff_legal_clean — mismatch bez klasyfikacji pola prawnego blokuje;
+   dekompozycja polowa diffu przekazana Legal Twin (część 20). (V2 F3.)
+2) Replay historyczny gotowy na PR (seed 2): input_hash + immutable baseline —
+   wystarczy trigger CI; zero zmian w silniku.
+3) Mutation coverage BLOKOWANY (seed 3): score>=85 i flaga blocking jako
+   niezmiennik wejścia — martwe asercje (tautologie) tracą kryjówkę. (V1 z8.)
+4) Chaos jako stały obowiązek (seed 4): >=5 eksperymentów i ZERO niewykrytych
+   awarii jako warunek CI_VALIDATED; naturalne miejsce — jdg-scheduled-drift
+   (CRON) po decyzji CI-ownera.
+5) Fuzz pod schemami KSeF/JPK (seed 5): schema_validated wymagane — fuzz
+   „w próżnię" przestaje się liczyć. (VAT art. 106na-106nq.)
+6) Auto-rejestracja regresji wersjonowana (seed 3/6): regression.auto_
+   registered + registry_versioned — każda naprawiona awaria wraca jako test.
+7) Jedno źródło progów CI: snapshot spójny z etap24 (85/10000/200/95) —
+   Declarative Change (V2 F5): zmiana progu = edycja snapshotu + evidence.
+8) CI Quality Certificate w łańcuchu werdyktu (poziom ENTERPRISE): wyniki CI
+   są dowodem p77 — „system, który nie przeszedł nocy chaosu, nie wydaje
+   werdyktów AUTO_CANDIDATE".
+9) Empty-suite semantics: puste suite'y = FAIL (dziedziczone z fail_on_empty
+   etap24) — niemożliwe „zielone CI bez testów".
+10) Workflow contract: 4 workflowy (ci, opa-ci, quality-gates-blocking,
+    scheduled-drift) jako wymagane dane snapshotu — usunięcie workflowu
+    blokuje granicę.
+11) Kompatybilność w przód łańcucha: kotwica regex p7[4-9] w bramkach — p78+
+    nie złamie regresji wcześniejszych części.
+
+Przeprowadź głębokie myślenie — przeprowadź głęboką analizę — zaawansowany
+poziom Enterprise — poziom ENTERPRISE — innowacyjne ulepszenia wyprzedzające
+profesjonalistów. [FRAZA 4/4]
+
+═══════════════════════════════════════════════════════════════════════════════
+F. TESTY — KOMUNIKATY I WYNIKI
+═══════════════════════════════════════════════════════════════════════════════
+
+Gate V3-17:
+$ python3 JDG/tools/tests_ci_quality_v3_17_gate.py --write
+Evidence: bundles/tests_ci_v3_audit_17.json (WDROZONY_100)
+V3-17 TESTY_CI gate: 8/8 PASS
+
+Regresja bramek sąsiadów:
+$ python3 JDG/tools/hyper_quality_v3_14_gate.py --write    → WDROZONY_100
+$ python3 JDG/tools/enterprise_quality_v3_15_gate.py --write → WDROZONY_100
+$ python3 JDG/tools/tools_quality_v3_16_gate.py --write     → WDROZONY_100
+
+pytest (kampanijny zestaw V3 09-17):
+$ python3 -m pytest JDG/tests/test_{ryczalt_v3_09,pcc_v3_10,ksef_jpk_v3_11,
+compliance_v3_12,micro_quality_v3_13,hyper_quality_v3_14,
+enterprise_quality_v3_15,tools_quality_v3_16,tests_ci_quality_v3_17}.py -q
+→ wszystkie PASS (63 testy zestawu V3)
+
+opa check -b / opa test: OPA CLI unavailable locally; CI gate required
+(artefakty natywne T01-T08 gotowe; zgodnie z częściami 01-16).
+
+Czas trwania: gate < 1 s; zestaw pytest < 60 s.
+
+═══════════════════════════════════════════════════════════════════════════════
+G. SPOJNOSC MIEDZYCZESCIOWA
+═══════════════════════════════════════════════════════════════════════════════
+
+- Część 01 (Fundamenty): p77 dokleja się po p76 przed runtime invariants;
+  łańcuch p54..p76 nietknięty; Golden Oracle (V2 F3) z części 01 dostaje
+  teraz warunek diff_legal_clean — spójna ewolucja, nie rozjazd.
+- Część 13 (MICRO): testy natywne micro (pit/vat) są we SCOPE bramki;
+  tautologie micro wykrywane przez tautology_guard (16) i mutation (17).
+- Część 15 (ENTERPRISE): kalibracja scoringu (accuracy/Brier) ma tu swój
+  krok CI (L-17-015) — kontrakt V3-15 konsumuje, V3-17 egzekwuje cykl.
+- Część 16 (NARZĘDZIA): progi CI czytane z tej samej rodziny snapshotów
+  (ADR-002); bramki V3-16/17 dzielą format evidence {tool,status}.
+- Część 18 (BUNDLES/mirror): evidence bundle 17 trafia do bundles/;
+  mirror policies nietknięty; migracje snapshotów temporalnych dalej w 18.
+- Część 20 (DOKUMENTACJA/Legal Twin): producent diffu prawnego dla Golden
+  v2 oraz lista pakietów krytycznych (seed 8) — przekazane do 20.
+Żadna zmiana nie łamie kontraktów sąsiednich części (regresja PASS).
+
+═══════════════════════════════════════════════════════════════════════════════
+H. DECYZJE CZLOWIEKA
+═══════════════════════════════════════════════════════════════════════════════
+
+1) Instalacja OPA CLI w obrazie CI (wymóg techniczny opa check/opa test) —
+   decyzja infrastrukturalna właściciela repo.
+2) Dopisanie bramek V3-14..17 do jdg-quality-gates-blocking.yml — kolejność
+   i czas wykonania (koszt minut CI) decyduje CI-owner.
+3) Flagę --blocking mutation_runnera włączyć od razu czy fazować (70→80→85)?
+   Ryzyko fali czerwonych mutantów na micro — decyzja właściciela.
+4) Chaos jako CRON: częstotliwość (nightly/weekly) i budżet awarii produkcyjnych
+   vs staging — decyzja właściciela środowiska.
+5) Replay historyczny na PR: koszt (pełny replay 12-miesięcznego baseline) —
+   wybór zakresu (tylko pakiety krytyczne) należy do CI-ownera.
+6) Otwarte kwestie prawne: diff prawny Golden v2 musi klasyfikować zmiany wg
+   aktów (docs/Bbb) — wymaga walidacji Law Radar i eksperta; system nie
+   zastępuje doradcy podatkowego.
+
+═══════════════════════════════════════════════════════════════════════════════
+I. REJESTR ZMIANY
+═══════════════════════════════════════════════════════════════════════════════
+
+Blok "17" dopisany do JDG/bundles/enterprise_v3_registry.json:
+stan=wdrozone, zgodnosc_v1v2=true, liczba_zmienionych_plikow=7,
+lista_glownych_zmian=[kontrakt rules/tests_ci/quality_v3_17.rego (CI Quality
+Certificate: suites/coverage/mutation blocking/fuzz schema/property/chaos/
+golden+diff prawny/workflows/regresja), snapshot thresholds tests-ci-v3-2026.08
+spójny z etap24, wiring p77 + kotwica POST-MERGE p77 (regex p7[4-9] — regresja
+14/15/16 PASS), bramka tests_ci_quality_v3_17_gate.py 8/8 PASS (SCOPE 13 plików
++ 4 workflowy repo), testy natywne T01-T08 + pytest 7 PASS (zestaw V3: 63 PASS),
+evidence bundles/tests_ci_v3_audit_17.json, raport 17_TESTY_CI.txt],
+luki_pozostale=[OPA CLI w CI → decyzja infra, bramki V3 w blocking.yml →
+CI-owner, diff prawny Golden → część 20, chaos CRON i replay na PR → decyzje H],
+raport_txt=raporty_enterprise_v3/17_TESTY_CI.txt, evidence=
+bundles/tests_ci_v3_audit_17.json.
+
+STATUS_KAMPANII_V3.txt: 17 = WDROŻONY_100 (2026-08-26), POSTĘP 18/20,
+NASTĘPNA CZĘŚĆ: 18_BUNDLES.txt (NEXT).
+
+═══════════════════════════════════════════════════════════════════════════════
+J. HASLO KONCOWE
+═══════════════════════════════════════════════════════════════════════════════
+V3-17_TESTY_CI_KOMPLETNE - SPOJNOSC ZAREJESTROWANA - CONTEXT_RESET_REQUIRED - wyczysc okno kontekstowe
