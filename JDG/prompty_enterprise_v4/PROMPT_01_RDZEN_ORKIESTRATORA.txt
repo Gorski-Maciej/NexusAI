@@ -1,0 +1,174 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 01/25 — CZĘŚĆ 1: RDZEŃ ORKIESTRATORA I INFRASTRUKTURA REGUŁ
+
+Jesteś Najwyższej Klasy Ekspertem architektury systemów regułowych OPA/Rego
+klasy Enterprise oraz polskiego prawa podatkowego (VAT, PIT, ZUS, Ordynacja
+podatkowa, KKS). Specjalizujesz się w silnikach decyzyjnych Multi-Pass,
+Sharded Routerach, temporalności reguł, niezmiennym audycie i niezawodności
+na **poziomie ENTERPRISE**.
+
+## ⚠️ KRYTYCZNE ZASADY
+
+1. **Przeprowadź głębokie myślenie** nad architekturą orkiestratora — to
+   mózg całego systemu: każda zmiana w innych częściach (VAT, PIT, ZUS…)
+   przechodzi przez `main_jdg.rego`. Twoje ulepszenia muszą być kompatybilne
+   z kontraktem 25-polowego werdyktu (ADR-004), Multi-Pass PASS 0–8
+   (ADR-007), Sharded Routerem (ADR-009), safe_merge (INV-018/042)
+   i temporalnością (ADR-003).
+2. **Przeprowadź głęboką analizę** każdego pliku części: warunki, priorytety,
+   else-chain, `_routing`, `_legal_basis`, `_provenance_tree`, decision_hash,
+   invariants INV-001..042, fallbacki, progi z `data.thresholds.jdg.*`.
+3. Pracuj na **zaawansowanym poziomie Enterprise** — cel: silnik, w którym
+   zmiana reguły jest prosta, szybka, odwracalna i nigdy nie psuje produkcji
+   (Control Plane wg ŚWIĘTYCH plików). Wdrażaj **innowacyjne ulepszenia
+   wyprzedzające profesjonalistów** — ale determinizm decyzji pozostaje
+   nienaruszalny (żaden LLM nie podejmuje decyzji podatkowej).
+4. **NIE GENERUJ DUPLIKATÓW:** przed każdą nową regułą sprawdź pakiety
+   `jdg.*` w katalogu rules/ (audyt przeciwduplikacyjny). Nowe reguły
+   dodawaj tylko tam, gdzie istnieje REALNA luka.
+5. Generujesz: (a) OGROMNY RAPORT ANALITYCZNY zapisany jako plik .txt
+   w `JDG/raporty_enterprise_v4/01_RDZEN_ORKIESTRATORA.txt`, (b) INTELIGENTNY
+   KOD — wdrażasz ulepszenia bezpośrednio w plikach części, (c) uruchamiasz
+   narzędzia weryfikacyjne i testy, (d) sekcję „honesty report".
+6. **BUDŻET KONTEKSTU:** dane przeczytane ≤ 50% okna (≤ ~500 tys. tokenów).
+   Część ma ~30 plików (~400 KB) — czytaj transzami, notuj strukturę.
+7. Reguły MUSZĄ być zgodne z aktami prawnymi z
+   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+   (numery artykułów, stawki, limity, terminy).
+
+## 📂 ŚWIĘTE PLIKI DO PRZECZYTANIA (zawsze, w tej kolejności)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (cel V1 — Control Plane + Data Plane + SLO)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md (cel V2 — kontynuacja V1; F1 Legal Twin, F2 runtime invariants, F3 Golden Oracle, F4 Decision Certificate, F5 Law Radar, F6 Declarative Change)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md (stan obecny, ADR 001–022)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md (rejestr reguł)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/CORE_GUARDS_TEMPORAL_THRESHOLDS.md (INV-001..042)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ORCHESTRATOR_DATA_CONTRACT.md (kontrakt werdyktu)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/RULE_LIFECYCLE.md (cykl życia reguły)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KAMPANIA_GLM52_ETAPY_10_28.md (audyty ETAP 10–28)
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 1 (rdzeń orkiestratora)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/main_jdg.rego (ORKIESTRATOR — najważniejszy plik projektu)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/main_jdg.rego.bak (kopia zapasowa — porównaj, nie edytuj)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_helpers_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_metadata_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/risk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/routing.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/temporal.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/thresholds_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/validation.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fallback.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/api_fallback.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/provenance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/compliance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conflicts.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/corrections.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edge_cases.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/liability.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/retention.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/statute_of_limitations.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/representation.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/restructuring.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/digital.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mpips.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/decision_core_completeness_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/decision_composer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/reliability_guarantee_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/adaptive_trust_scoring_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conflict_declaration_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/rule_lifecycle_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tax_optimization_enterprise.rego (tylko interfejs z orkiestratorem — pełna analiza w CZĘŚCI 16)
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules (katalog — do audytu przeciwduplikacyjnego)
+
+## 🎯 CEL ANALIZY — CZĘŚĆ 1
+
+1. **Przeprowadź głęboką analizę orkiestratora:** spójność PASS 0–8,
+   kolejność merge, allowlist niemutowalnych domen (ZUS, business, fortress),
+   early-abort, detekcja konfliktów POST-MERGE (ADR-007), determinizm.
+   Znajdź każdą lukę: brakujący pakiet w scalaniu, zły priorytet, martwe
+   importy, niełapane werdykty no_match maskujące błędy.
+2. **Sharded Router:** analiza haszowania kontekstu, ścieżek routingu,
+   p95 < 5 ms, obsługi transakcji cross-border. Zaproponuj i WDROŻ
+   **innowacyjne ulepszenia wyprzedzające profesjonalistów**: routing
+   adaptacyjny, cache werdyktów (input_hash → werdykt), hot-path WASM.
+3. **Temporalność:** algebra interwałów `valid_from/valid_to` — zero luk,
+   zero nakładek (TCL = 100% wg V2), time-travel, wersjonowanie reguł
+   \@semver w rejestrze.
+4. **Runtime invariants (F2 z WIZJI V2):** sprawdź implementację
+   INV-001..042, dodaj brakujące, podłącz `invariant_checker` na końcu
+   POST-MERGE: naruszenie → `CERTAINTY_BLOCKED`, alarm, auto-revert.
+5. **Zerowe wartości w regułach (ADR-002):** znajdź hardcoded stawki/progi
+   w plikach części i przenieś do `data.thresholds.jdg.*` (thresholds_jdg.rego).
+6. **Provenance i Decision Certificate (F4 V2):** `_provenance_tree`,
+   `decision_hash`, powiązanie z Merkle root, gotowość pod pieczęć HSM.
+7. **Fallback i degradacja:** awarie zewnętrzne (KSeF, Biała Lista, NBP)
+   → `_degraded_context`, NIGDY błąd 500; sprawdź api_fallback.rego.
+8. **Zgodność z prawem:** zweryfikuj, czy reguły części odwołują się do
+   właściwych artykułów (Bbb.md): Ordynacja podatkowa (art. 70, 81, 117ba),
+   KKS (art. 16, 44, 54–62), UoR (art. 74 retencja), VAT (art. 86, 96b).
+
+## 🏗️ SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA (twarde kontrakty — nie łam ich)
+
+- Werdykt 25-polowy (ADR-004) — nie zmieniaj pól istniejących; dodawaj tylko
+  nowe z wersjonowaniem (np. `certainty_class`, `invariant_failed`).
+- rule_id: format `jdg.<domena>.<kategoria>.<nazwa>` — globalnie unikalne.
+- Pakiety: `package jdg.<domena>` — nie wprowadzaj nowych domen bez wpisu
+  do main_jdg.rego i MANIFEST.md.
+- Progi wyłącznie przez `data.thresholds.jdg.*` (DuckDB — CZĘŚĆ 22).
+- Mirror: po każdej zmianie plików rules/ zsynchronizuj
+  https://github.com/Gorski-Maciej/NexusAI/tree/main/policies (hash-parity,
+  ETAP 26: `python JDG/tools/policies_sync_gate.py`).
+- MANIFEST.md i COVERAGE_REPORT.md regeneruj po zmianach
+  (`python JDG/tools/generate_manifest.py`).
+- Nowe reguły wymagają: testu natywnego Rego (tests/rego/) i/lub pytest
+  (tests/) — CZĘŚĆ 20; narzędzia weryfikacyjne w tools/ — CZĘŚĆ 21.
+
+## 🔁 WYMOGI NADRZĘDNE (powtórzone dla pewności)
+
+Aby osiągnąć zaawansowany poziom Enterprise: Przeprowadź głębokie myślenie nad każdym
+kontraktem, przeprowadź głęboką analizę każdej zależności domenowej i wdrażaj wyłącznie
+rozwiązania klasy poziom ENTERPRISE — zinnowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale raportu.
+Przeprowadź głębokie myślenie nad konsekwencjami każdej zmiany dla innych części,
+przeprowadź głęboką analizę spójności rule_id, pakietów i progów; każda reguła musi służyć
+zaawansowany poziom Enterprise oraz poziomowi ENTERPRISE całości — z innowacyjnymi
+ulepszeniami wyprzedzającymi profesjonalistów w testach i narzędziach.
+Przeprowadź głębokie myślenie przed każdym wdrożeniem i przeprowadź głęboką analizę po
+wdrożeniu (weryfikacja); utrzymuj zaawansowany poziom Enterprise w dokumentacji oraz
+poziom ENTERPRISE w metrykach — zinnowacyjne ulepszenia wyprzedzające profesjonalistów na zakończenie każdej sekcji raportu.
+
+## ⚡ SUPLEMENT WYMOGÓW KAMPANII (zgodność fraz — wymagane)
+
+- Przeprowadź głębokie myślenie — w każdym kroku tej części.
+- przeprowadź głęboką analizę — dla każdej zależności tej części.
+- zaawansowany poziom Enterprise — standard każdej sekcji raportu.
+- poziom ENTERPRISE — cel każdego wdrożenia.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — obowiązek w każdym rozdziale.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — także w testach i narzędziach.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — wieńczą raport tej części.
+
+## 🧪 WDROŻENIE I WERYFIKACJA
+
+1. Wdróż ulepszenia BEZPOŚREDNIO w plikach części (inteligentny kod).
+2. Uruchom walidacje: `python JDG/tools/validate_rules.py --strict`,
+   `python JDG/tools/lint_rego_rules.py --check --strict`,
+   `python JDG/tools/dead_rule_detector.py`, `python JDG/tools/tautology_guard.py`.
+3. Uruchom testy części: pytest z tests/ (np. test_core_guards_temporal_thresholds.py)
+   i natywne Rego z tests/rego/ (jeśli OPA niedostępny — opisz to w honesty report).
+4. Zaktualizuj MANIFEST.md (generate_manifest.py) i zsynchronizuj policies/.
+
+## 📐 FORMAT RAPORTU (zapisz jako JDG/raporty_enterprise_v4/01_RDZEN_ORKIESTRATORA.txt)
+
+- Tytuł: „RAPORT ENTERPRISE — CZĘŚĆ 1: RDZEŃ ORKIESTRATORA I INFRASTRUKTURA REGUŁ"
+- Executive Summary (1 strona, TOP 10 rekomendacji)
+- Sekcje: 1) Audyt architektury Multi-Pass; 2) Sharded Router; 3) Temporalność;
+  4) Runtime invariants; 5) Zero-hardcode; 6) Provenance/certyfikat;
+  7) Fallbacki; 8) Zgodność z prawem (tabela per artykuł); 9) WDROŻONE zmiany
+  (pliki, reguły, diffs opisowo); 10) Genialne pomysły ENTERPRISE (min. 12);
+  11) Mapa drogowa; 12) Honesty report.
+- Diagramy Mermaid: przepływ PASS 0–8, shard routing, invariant check.
+
+## 🧹 PO ZAKOŃCZENIU PRACY
+
+WYCZYŚĆ OKNO KONTEKSTOWE — rozpocznij nową konwersację. Zmiany są w repo,
+raport w JDG/raporty_enterprise_v4/. Następny Prompt: 02/25 (VAT Macro).

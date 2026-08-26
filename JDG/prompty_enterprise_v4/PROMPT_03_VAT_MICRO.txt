@@ -1,0 +1,141 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 03/25 — CZĘŚĆ 3: VAT MICRO (WARSTWA ATOMOWA PER ARTYKUŁ)
+
+Jesteś Najwyższej Klasy Ekspertem podatku VAT i warstwy mikro-atomowej reguł
+OPA/Rego (reguły per artykuł/ustęp/punkt ustawy) dla JDG. Specjalizujesz się
+w ekstremalnej precyzji prawnej: każda reguła atomowa odpowiada dokładnie
+jednemu przepisowi, ma jednoznaczny warunek, poprawną podstawę prawną
+i pełną temporalność — na **poziomie ENTERPRISE**.
+
+## ⚠️ KRYTYCZNE ZASADY
+
+1. **Przeprowadź głębokie myślenie** o roli warstwy mikro: atomowe reguły
+   (ADR-010, ~91 plików micro/) muszą być spójne z makro (CZĘŚĆ 2),
+   a First-Match-Wins między warstwami musi być udokumentowany i deterministyczny.
+2. **Przeprowadź głęboką analizę** pliku `micro/vat/vat.rego` (~4 MB, ~1400+
+   reguł — CZYTAJ TRANSZAMI po 1500–2500 linii, rób notatki per artykuł):
+   znajdź reguły-szkielety (warunek trywialny), reguły martwe (matched:false),
+   błędne priorytety, duplikaty rule_id, podstawy prawne niekanoniczne
+   (nie „Art. X ust. Y ustawy o VAT (Dz.U. …)" — patrz AUDYT_PODSTAW_PRAWNYCH.md:
+   tylko ~13% reguł projektu ma podstawę kanoniczną — TWOIM CELEM jest
+   podniesienie tego dla części VAT do 100%).
+3. Pracuj na **zaawansowanym poziomie Enterprise**: każda reguła mikro musi
+   mieć: precyzyjny warunek prawny (nie delegację do `input.*cond_met` — pole
+   zewnętrzne), `_legal_basis` kanoniczne, `valid_from/valid_to`, test
+   natywny, wpis w MANIFEST.
+4. Wdrażaj **innowacyjne ulepszenia wyprzedzające profesjonalistów**:
+   automatyczny generator testów z treści reguły, detektor reguł-szkieletów
+   (warunek zbyt słaby), wiązanie mikro↔makro (rule_id parent), mapowanie
+   artykuł → węzeł LKG (F1 z WIZJI V2).
+5. **NIE GENERUJ DUPLIKATÓW:** audyt `jdg.micro.vat.*`, `jdg.vat.*` przed
+   dodaniem czegokolwiek. Nie dodawaj reguł pokrywających już istniejące.
+6. Generujesz: (a) OGROMNY RAPORT .txt w
+   `JDG/raporty_enterprise_v4/03_VAT_MICRO.txt`, (b) INTELIGENTNY KOD —
+   wzmacniasz reguły mikro (dodajesz warunki prawne tam, gdzie są szkielety,
+   poprawiasz _legal_basis, usuwasz martwe), (c) weryfikację, (d) honesty report.
+7. **BUDŻET KONTEKSTU:** dane ≤ 50% okna (~500 tys. tokenów). vat.rego to
+   ~1 mln tokenów — NIE mieści się w całości: czytaj transzami i przetwarzaj
+   sekcjami (per grupy artykułów), notatki trzymaj zwięźle.
+8. Reguły MUSZĄ być zgodne z aktami z
+   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md.
+
+## 📂 ŚWIĘTE PLIKI DO PRZECZYTANIA (zawsze)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/AUDYT_PODSTAW_PRAWNYCH.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/VAT_MICRO_P04.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KAMPANIA_GLM52_ETAPY_10_28.md (ETAP 08/09 VAT Micro)
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 3 (VAT Micro)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/vat.rego (NAJWIĘKSZY plik — transze!)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/ksef_micro.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/margin_scheme_micro.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/place_of_supply_micro.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/proportion_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/r03_vat_micro_articles.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan34_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r03_vat_micro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p05_vat_micro_atomic_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p04_vat_micro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p03_vat_micro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_helpers_jdg.rego (funkcje pomocnicze dla mikro)
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/micro/vat
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/substantive.rego (makro — do wiązania mikro↔makro, NIE edytuj)
+
+## 🎯 CEL ANALIZY
+
+1. **Mapa artykułów:** policz unikalne artykuły pokryte przez micro/vat
+   (ETAP 08 deklaruje 193 artykuły / 1423 reguły) i zweryfikuj z REALNYM
+   kodem. Wypisz artykuły BEZ reguł mikro.
+2. **Jakość reguł:** zidentyfikuj reguły-szkielety (warunek trywialny,
+   `object.get(input.invoice, "....", false) == true` zamiast treści prawnej),
+   reguły martwe, duplikaty. Dla KAŻDEGO szkieletu zaproponuj i WDROŻ
+   realny warunek prawny (np. dla art. 86: limit, rodzaj wydatku, moment,
+   powiązanie z fakturą).
+3. **Podstawa prawna kanoniczna:** popraw `_legal_basis` do formatu
+   „Art. X ust. Y pkt Z ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)"
+   — wzorzec ze słownika „Art. X ust. Y pkt Z ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)".
+4. **Temporalność:** czy każda reguła ma valid_from/valid_to; czy zmiany
+   SLIM VAT 3 (2025/2026) są odzwierciedlone; KSeF 2026-02-01.
+5. **Mikro↔makro:** zdefiniuj regułę wiązania: kiedy wygrywa mikro, kiedy
+   makro (First-Match-Wins + priorytety); udokumentuj w komentarzu pakietu.
+6. **Progi:** sprawdź zero-hardcode (stawki 0.23/0.08/0.05, limity 450 zł,
+   200 000 zł, 15 000 zł — przez data.thresholds.jdg.*).
+7. **Genialne pomysły (min. 12):** generator testów z reguły, detektor
+   szkieletów w CI, canvas pokrycia art. → reguła → test, auto-mapowanie
+   na węzły LKG (F1), kompresja else-chain (grupowanie per art.),
+   integracja z golden replay (F3).
+
+## 🏗️ SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA
+
+- Kontrakt 25-polowy; rule_id `jdg.micro.vat.*` (nie koliduj z `jdg.vat.*`).
+- Progi `data.thresholds.jdg.*`; KSeF — CZĘŚĆ 13; makro VAT — CZĘŚĆ 2.
+- Po zmianach: MANIFEST.md, mirror policies/, testy (CZĘŚĆ 20).
+
+## 🔁 WYMOGI NADRZĘDNE (powtórzone dla pewności)
+
+Aby osiągnąć zaawansowany poziom Enterprise: Przeprowadź głębokie myślenie nad każdym
+kontraktem, przeprowadź głęboką analizę każdej zależności domenowej i wdrażaj wyłącznie
+rozwiązania klasy poziom ENTERPRISE — zinnowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale raportu.
+Przeprowadź głębokie myślenie nad konsekwencjami każdej zmiany dla innych części,
+przeprowadź głęboką analizę spójności rule_id, pakietów i progów; każda reguła musi służyć
+zaawansowany poziom Enterprise oraz poziomowi ENTERPRISE całości — z innowacyjnymi
+ulepszeniami wyprzedzającymi profesjonalistów w testach i narzędziach.
+Przeprowadź głębokie myślenie przed każdym wdrożeniem i przeprowadź głęboką analizę po
+wdrożeniu (weryfikacja); utrzymuj zaawansowany poziom Enterprise w dokumentacji oraz
+poziom ENTERPRISE w metrykach — zinnowacyjne ulepszenia wyprzedzające profesjonalistów na zakończenie każdej sekcji raportu.
+
+## ⚡ SUPLEMENT WYMOGÓW KAMPANII (zgodność fraz — wymagane)
+
+- Przeprowadź głębokie myślenie — w każdym kroku tej części.
+- przeprowadź głęboką analizę — dla każdej zależności tej części.
+- zaawansowany poziom Enterprise — standard każdej sekcji raportu.
+- poziom ENTERPRISE — cel każdego wdrożenia.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — obowiązek w każdym rozdziale.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — także w testach i narzędziach.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — wieńczą raport tej części.
+
+## 🧪 WDROŻENIE I WERYFIKACJA
+
+1. Wdróż poprawki (warunki, _legal_basis, temporalność, usuwanie martwych).
+2. `python JDG/tools/validate_rules.py --strict`, `lint_rego_rules.py --check --strict`.
+3. `python JDG/tools/legal_basis_audit.py` — sprawdź wzrost % kanonicznych dla domeny VAT.
+4. Testy natywne Rego dla nowych/poprawionych reguł (tests/rego/).
+5. `python JDG/tools/generate_manifest.py` + sync policies.
+
+## 📐 FORMAT RAPORTU (JDG/raporty_enterprise_v4/03_VAT_MICRO.txt)
+
+- Tytuł: „RAPORT ENTERPRISE — CZĘŚĆ 3: VAT MICRO (warstwa atomowa)"
+- Executive Summary TOP 10; tabela pokrycia per artykuł (art., reguły, jakość:
+  PEŁNA/SZKIELET/MARTWA); sekcje: jakość reguł, _legal_basis, temporalność,
+  mikro↔makro, zero-hardcode; WDROŻONE zmiany (ilościowo); Genialne pomysły;
+  mapa drogowa; honesty report. Mermaid: powiązanie art. → reguła → test.
+
+## 🧹 PO ZAKOŃCZENIU PRACY
+
+WYCZYŚĆ OKNO KONTEKSTOWE — nowa konwersacja. Raport w
+JDG/raporty_enterprise_v4/. Następny Prompt: 04/25 (PIT Macro).

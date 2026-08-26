@@ -1,0 +1,212 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 19/25 — CZĘŚĆ 19: FALE INNOWACJI V8/V9 + ETAPY 10–28 (CIĘCIE POPRZECZNE MIĘDZYDOMENOWE)
+
+Jesteś Najwyższej Klasy Ekspertem zarządzania jakością wielkich fal
+innowacyjnych w silnikach regułowych OPA/Rego: pliki `p*_innovations_v8/v9`,
+`r*_innovations_v9`, `*_etap*_v1.rego` oraz warstwy `quality_v3_*` —
+to CIĘCIE POPRZECZNE: te pliki obejmują wiele domen (VAT, PIT, ZUS,
+KKS, księgowość…) i muszą być spójne z regułami domenowymi (CZĘŚCI 1–18)
+— na **poziomie ENTERPRISE**.
+
+## ⚠️ KRYTYCZNE ZASADY
+
+1. **Przeprowadź głębokie myślenie** o roli fal innowacji: pliki
+   `p01..p24_*_innovations_v8/v9` i `r01..r17_*_innovations_v9` to
+   „nadbudowy" na warstwach domenowych. Ryzyko: DUPLIKACJA reguł już
+   istniejących w domenach (np. reguła VAT w p04_vat_micro_innovations
+   może dublować regułę w micro/vat/vat.rego). Twoim zadaniem: audyt
+   przeciwduplikacyjny, konsolidacja, usunięcie martwych no_match,
+   przywrócenie spójności priorytetów.
+2. **Przeprowadź głęboką analizę** warstwy `quality_v3_*` (rules/quality*,
+   rules/tools, rules/tests_ci, rules/api_ui, rules/bundles, rules/docs):
+   reguły audytujące jakość — sprawdź, czy działają jako kontrola WTÓRNA
+   (defense-in-depth) nie ZASTĘPCZA wobec infrastruktury CI/CD (zasada V1
+   §5: „bramki egzekwowane przez infrastrukturę, nie przez reguły
+   audytujące").
+3. Pracuj na **zaawansowanym poziomie Enterprise**: każda fala innowacji
+   musi mieć: deklarację celu (jaki problem rozwiązuje), mapę reguł
+   (które domeny dotyka), testy, wpis MANIFEST, brak duplikatów.
+4. Wdrażaj **innowacyjne ulepszenia wyprzedzające profesjonalistów**:
+   automatyczny detektor duplikatów między falami a domenami (hash treści
+   reguł), konsolidator fal (flagi wersji), generator raportu „co fala
+   wniosła", system śledzenia pochodzenia reguły (reguła → fala → domena).
+5. **NIE GENERUJ DUPLIKATÓW:** audit rule_id WSZYSTKICH plików części
+   przeciw domenom (CZĘŚCI 1–18). Usuń duplikaty (zostaw regułę domenową,
+   usuń kopię falową) — po weryfikacji, że semantyka jest identyczna.
+6. Generujesz: (a) OGROMNY RAPORT .txt w
+   `JDG/raporty_enterprise_v4/19_FALE_INNOWACJI.txt`, (b) INTELIGENTNY KOD,
+   (c) weryfikację, (d) honesty report.
+7. **BUDŻET KONTEKSTU:** dane ≤ 50% okna (~500 tys. tokenów). Jest ~60+
+   plików falowych — czytaj TRANSZAMI per domena (VAT → PIT → ZUS → KKS
+   → księgowość → cross-border → system).
+8. Reguły MUSZĄ być zgodne z aktami z
+   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md.
+
+## 📂 ŚWIĘTE PLIKI DO PRZECZYTANIA (zawsze)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KAMPANIA_GLM52_ETAPY_10_28.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/UNIFIED_PLAN.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/unified_plan_v8.yaml
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 19 (fale V8/V9 + ETAP 10–28) — katalog rules/ root
+
+Najpierw przejrzyj katalog:
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules
+
+Następnie analizuj TRANSZAMI, per grupa (kluczowe pliki):
+
+**Fale V8/V9 (p*) — innowacje domenowe:**
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p01_core_architecture_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p02_vat_macro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p02_decision_core_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p03_vat_macro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p03_orchestrator_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p04_vat_micro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p05_pit_macro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p06_pit_micro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p08_zus_micro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p10_kks_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p11_ordynacja_podatkowa_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p12_crossborder_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p13_ryczalt_cykl_zycia_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p14_pcc_lokalne_akcyza_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p15_srodowisko_bdo_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_rodo_aml_security_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p19_hr_swiadczenia_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p20_neural_mesh_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p21_opa_system_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p22_validation_tools_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p23_test_rego_ci_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p24_audyt_kompletny_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p00_legal_coverage_closure.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p3233_innovations.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p33_ordpu_kks_supplement.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p34_remaining_fixes.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p34_innovations_engine.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p35_cross_act_coherence.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p35_system_gaps.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p35_innovations_engine.rego
+
+**Fale r* — rdzeń/enterprise:**
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r01_orchestrator_core_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r02_vat_core_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r03_vat_micro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r04_pit_core_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r05_pit_enterprise_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r06_zus_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r07_kks_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r08_ordynacja_obrona_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r09_ksiegowosc_pkpir_uor_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r10_crossborder_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r11_pcc_lokalne_akcyza_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r12_ryczalt_cykl_zycia_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r13_hyper_konteksty_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r14_rodo_aml_bdo_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r15_ksef_jpk_edeklaracje_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r16_system_opa_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r17_enterprise_ai_innovations_v9.rego
+
+**ETAP 10–28 (v1):**
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit_macro_etap10_innovations_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit_micro_reliefs_etap11_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus_core_etap12_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus_micro_etap13_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pkpir_etap14_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor_etap15_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/kks_ord_etap16_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder_etap17_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business_lifecycle_etap18_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_excise_etap19_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_jpk_etap20_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/rodo_aml_bdo_hr_etap21_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/hyper_enterprise_contexts_etap22_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/enterprise_ai_neural_etap23_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tests_ci_quality_etap24_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tools_api_rulestore_bundles_etap25_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/policies_mirror_sync_etap26_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cross_domain_red_team_etap27_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/final_certification_etap28_v1.rego
+
+**Warstwy jakości (audyt wtórny):**
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/quality (jeśli istnieje — sprawdź)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/quality_v3_13.rego (jeśli istnieje — sprawdź nazwy w katalogu)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tools/quality_v3_15.rego (sprawdź)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tests_ci/quality_v3_17.rego (sprawdź)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/bundles/quality_v3_18.rego (sprawdź)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/api_ui/quality_v3_19.rego (sprawdź)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/docs/quality_v3_20.rego (sprawdź)
+
+## 🎯 CEL ANALIZY
+
+1. **Audyt przeciwduplikacyjny (najważniejsze):** dla każdego pliku falowego
+   porównaj rule_id z domenami (CZĘŚCI 1–18). Raport: „fala × domena ×
+   DUPLIKAT / NOWA WARTOŚĆ / MARTWA". Duplikaty — usuń z fali (zostaw
+   domenową). Nowe wartości — zostały. Martwe — usuń lub podepnij.
+2. **Spójność priorytetów:** czy reguły fal nie zmieniają kolejności
+   First-Match-Wins domen? Ustal hierarchię: domena (niski priorytet) →
+   fala (średni) → enterprise (wysoki) — zgodnie z dokumentacją, zweryfikuj
+   w kodzie.
+3. **Jakość etapów 10–28:** każdy *_etap*_v1.rego — czy reguły są realne,
+   podpięte do orkiestratora, mają testy? Sprawdź audit_state (bundles/*audit_state.json)
+   vs kod (raporty nie istnieją w repo — usunięte; weryfikujesz KOD).
+4. **Warstwy jakości:** czy reguły quality_v3_* działają jako kontrola
+   wtórna (nie zastępują CI)? Oceń i wdróż poprawki.
+5. **Braki fal:** porównaj deklaracje UNIFIED_PLAN.md z faktycznymi
+   plikami — wskaż fale zadeklarowane, a nieobecne.
+6. **Genialne pomysły (min. 12):** konsolidator fal (jeden manifest
+   pochodzenia reguły), detektor duplikatów w CI (hash-based) — bramka,
+   migrator priorytetów, raport „wartość fal", archiwizator martwych fal.
+
+## 🏗️ SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA
+
+- Kontrakt 25-polowy; rule_id — globalna unikalność (bramka CI).
+- Zmiany w falach MUSZĄ respektować spójność z: orkiestratorem (CZĘŚĆ 1),
+  domenami (2–18), testami (CZĘŚĆ 20), tools (CZĘŚĆ 21).
+- MANIFEST.md + mirror policies/ po każdych zmianach.
+
+## 🔁 WYMOGI NADRZĘDNE (powtórzone dla pewności)
+
+Aby osiągnąć zaawansowany poziom Enterprise: Przeprowadź głębokie myślenie nad każdym
+kontraktem, przeprowadź głęboką analizę każdej zależności domenowej i wdrażaj wyłącznie
+rozwiązania klasy poziom ENTERPRISE — zinnowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale raportu.
+Przeprowadź głębokie myślenie nad konsekwencjami każdej zmiany dla innych części,
+przeprowadź głęboką analizę spójności rule_id, pakietów i progów; każda reguła musi służyć
+zaawansowany poziom Enterprise oraz poziomowi ENTERPRISE całości — z innowacyjnymi
+ulepszeniami wyprzedzającymi profesjonalistów w testach i narzędziach.
+Przeprowadź głębokie myślenie przed każdym wdrożeniem i przeprowadź głęboką analizę po
+wdrożeniu (weryfikacja); utrzymuj zaawansowany poziom Enterprise w dokumentacji oraz
+poziom ENTERPRISE w metrykach — zinnowacyjne ulepszenia wyprzedzające profesjonalistów na zakończenie każdej sekcji raportu.
+
+## ⚡ SUPLEMENT WYMOGÓW KAMPANII (zgodność fraz — wymagane)
+
+- Przeprowadź głębokie myślenie — w każdym kroku tej części.
+- przeprowadź głęboką analizę — dla każdej zależności tej części.
+- zaawansowany poziom Enterprise — standard każdej sekcji raportu.
+- poziom ENTERPRISE — cel każdego wdrożenia.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — obowiązek w każdym rozdziale.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — także w testach i narzędziach.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — wieńczą raport tej części.
+
+## 🧪 WDROŻENIE I WERYFIKACJA
+
+1. Wdróż konsolidacje (usuń duplikaty, podepnij martwe, popraw priorytety).
+2. `python JDG/tools/validate_rules.py --strict`, `dead_rule_detector.py`,
+   `tautology_guard.py`, `cross_ref_validator.py` (jeśli istnieje).
+3. Testy pytest/natywne dotkniętych domen; generate_manifest.py; sync policies.
+
+## 📐 FORMAT RAPORTU (JDG/raporty_enterprise_v4/19_FALE_INNOWACJI.txt)
+
+- Tytuł: „RAPORT ENTERPRISE — CZĘŚĆ 19: FALE V8/V9 + ETAPY 10–28"
+- Executive Summary TOP 10; MACIERZ fala × domena × status (duplikat/
+  wartość/martwa); rozdziały: spójność priorytetów, etapy 10–28, warstwy
+  jakości, braki vs plan; WDROŻONE zmiany (ilościowo: usunięte duplikaty,
+  podpięte martwe); Genialne pomysły; mapa drogowa; honesty report.
+
+## 🧹 PO ZAKOŃCZENIU PRACY
+
+WYCZYŚĆ OKNO KONTEKSTOWE — nowa konwersacja. Raport w
+JDG/raporty_enterprise_v4/. Następny Prompt: 20/25 (Testy i CI).

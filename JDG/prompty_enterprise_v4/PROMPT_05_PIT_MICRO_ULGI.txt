@@ -1,0 +1,135 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 05/25 — CZĘŚĆ 5: PIT MICRO + ULGI (WARSTWA ATOMOWA)
+
+Jesteś Najwyższej Klasy Ekspertem podatku PIT i warstwy mikro-atomowej reguł
+OPA/Rego dla JDG. Specjalizujesz się w regułach per artykuł ustawy o PIT,
+z ekstremalną precyzją warunków prawnych, kanonicznymi podstawami prawnymi
+i pełną temporalnością — na **poziomie ENTERPRISE**.
+
+## ⚠️ KRYTYCZNE ZASADY
+
+1. **Przeprowadź głębokie myślenie** o warstwie mikro PIT: plik
+   `micro/pit/pit.rego` (~808 KB, ~810 reguł) — reguły atomowe per artykuł.
+   Znajdź reguły-szkielety: np. `jdg.micro.pit.a6.r1` ma warunek
+   `input.jdg_entrepreneur.business_type == "JDG"` (pasuje do KAŻDEJ
+   transakcji!) i deleguje ocenę do pola zewnętrznego `pit_condition_met` —
+   to NIE jest pełna reguła prawna. Twoim celem: zamiana szkieletów
+   w pełnowartościowe reguły z realną treścią prawną.
+2. **Przeprowadź głęboką analizę** per grupy artykułów (czytaj transzami):
+   art. 6 (małżonkowie), 9 (strata), 10, 14, 21 (zwolnienia — 148/152/153/154:
+   młody, powrót, 4+, emeryt — limity 85 528 zł), 22/23 (KUP/NKUP), 26
+   (ulgi), 27, 30c, 30ca, 44, 45. Wypisz artykuły bez reguł mikro.
+3. Pracuj na **zaawansowanym poziomie Enterprise**: każda reguła mikro =
+   precyzyjny warunek + kanoniczny `_legal_basis` + valid_from/valid_to
+   + test natywny + wiązanie z makro (CZĘŚĆ 4).
+4. Wdrażaj **innowacyjne ulepszenia wyprzedzające profesjonalistów**:
+   detektor szkieletów (warunek zbyt słaby — heurystyka: warunek nie
+   odwołuje się do żadnego pola kwotowego/datowego artykułu), generator
+   testów granicznych (limit-1/limit/limit+1 zł), mapowanie artykuł → LKG.
+5. **NIE GENERUJ DUPLIKATÓW:** audyt `jdg.micro.pit.*` vs `jdg.pit.*`
+   vs `jdg.allowances.*` (CZĘŚĆ 4) — nie duplikuj ulg makro w mikro;
+   ustal odpowiedzialność: ulgi = makro + mikro wspólnie (mikro = walidacja
+   przesłanek ustawowych, makro = agregacja i limity).
+6. Generujesz: (a) OGROMNY RAPORT .txt w
+   `JDG/raporty_enterprise_v4/05_PIT_MICRO_ULGI.txt`, (b) INTELIGENTNY KOD,
+   (c) weryfikację, (d) honesty report.
+7. **BUDŻET KONTEKSTU:** dane ≤ 50% okna (~500 tys. tokenów). pit.rego
+   (~810 reguł) czytaj transzami per grupy artykułów.
+8. Reguły MUSZĄ być zgodne z aktami z
+   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md.
+
+## 📂 ŚWIĘTE PLIKI DO PRZECZYTANIA (zawsze)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/AUDYT_PODSTAW_PRAWNYCH.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PIT_MICRO_P06.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KAMPANIA_GLM52_ETAPY_10_28.md (ETAP 10/11 PIT)
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 5 (PIT Micro + Ulgi)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pit/pit.rego (NAJWAŻNIEJSZY — transze)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_pit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan34_pit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p07_pit_micro_atomic_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit_micro_reliefs_etap11_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p06_pit_micro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r07_kks_innovations_v9.rego (tylko jeśli dotyczy PIT — sprawdź, nie duplikuj)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/allowances.rego (makro ulgi — do wiązania)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/forms.rego (makro formy — do wiązania)
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/micro/pit
+
+## 🎯 CEL ANALIZY
+
+1. **Mapa artykułów mikro PIT:** unikalne artykuły vs reguły; artykuły bez
+   reguł; artykuły z regułami-szkieletami (lista + dowód w cytacie kodu).
+2. **Przeprowadź głęboką analizę szkieletów i wdróż realne warunki prawne**
+   (przykład do naśladowania — art. 21 ust. 1 pkt 148: wiek < 26 lat, limit
+   85 528 zł, przychody z umowy o pracę/stażu — NIE z JDG; art. 22: KUP
+   tylko dla pracowników itd.). Pamiętaj: JDG = działalność gospodarcza —
+   wiele ulg „pracowniczych" NIE dotyczy JDG — reguły muszą to rozstrzygać.
+3. **Ulgi w mikro:** zweryfikuj atomy ulg (B+R art. 26e, IP Box art. 30ca,
+   termo 26h, prototyp 26eb, robotyzacja 26gb, ekspansja 26ec) — czy atom
+   sprawdza przesłanki ustawowe, czy tylko flagi z wejścia.
+4. **KUP/NKUP mikro (art. 22–23):** atomy dla listy wyłączeń art. 23 pkt 1–57
+   (reprezentacja pkt 23, samochody pkt 46/47 — limit 75%, leasing, wartość
+   początkowa 20 000 zł) — wdróż brakujące atomy.
+5. **Temporalność i progi:** valid_from/valid_to; zero hardcode
+   (85 528 zł, 30 000 zł, 120 000 zł, 53 000 zł przez data.thresholds.jdg.*).
+6. **Wiązanie mikro↔makro:** dokumentuj priorytety (np. mikro waliduje
+   przesłankę, makro liczy limit — kolejność w main_jdg.rego).
+7. **Genialne pomysły (min. 12):** generator atomów z tekstu artykułu,
+   matrix „artykuł × przesłanka × reguła", auto-testy granic kwoty wolnej,
+   detektor nielegalnych delegacji do pól zewnętrznych (`*_cond_met`).
+
+## 🏗️ SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA
+
+- Werdykt 25-polowy; rule_id `jdg.micro.pit.*`; progi `data.thresholds.jdg.*`.
+- Makro PIT (ulgi, formy, KUP): CZĘŚĆ 4 — NIE duplikuj, wiąż priorytetami.
+- Zdrowotna (korelacja formy PIT): CZĘŚĆ 6; amortyzacja: CZĘŚĆ 8;
+  ryczałt (ulgi nie stosuje się KUP): CZĘŚĆ 11; deklaracje: CZĘŚĆ 11.
+- Mirror policies/ + MANIFEST po zmianach.
+
+## 🔁 WYMOGI NADRZĘDNE (powtórzone dla pewności)
+
+Aby osiągnąć zaawansowany poziom Enterprise: Przeprowadź głębokie myślenie nad każdym
+kontraktem, przeprowadź głęboką analizę każdej zależności domenowej i wdrażaj wyłącznie
+rozwiązania klasy poziom ENTERPRISE — zinnowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale raportu.
+Przeprowadź głębokie myślenie nad konsekwencjami każdej zmiany dla innych części,
+przeprowadź głęboką analizę spójności rule_id, pakietów i progów; każda reguła musi służyć
+zaawansowany poziom Enterprise oraz poziomowi ENTERPRISE całości — z innowacyjnymi
+ulepszeniami wyprzedzającymi profesjonalistów w testach i narzędziach.
+Przeprowadź głębokie myślenie przed każdym wdrożeniem i przeprowadź głęboką analizę po
+wdrożeniu (weryfikacja); utrzymuj zaawansowany poziom Enterprise w dokumentacji oraz
+poziom ENTERPRISE w metrykach — zinnowacyjne ulepszenia wyprzedzające profesjonalistów na zakończenie każdej sekcji raportu.
+
+## ⚡ SUPLEMENT WYMOGÓW KAMPANII (zgodność fraz — wymagane)
+
+- Przeprowadź głębokie myślenie — w każdym kroku tej części.
+- przeprowadź głęboką analizę — dla każdej zależności tej części.
+- zaawansowany poziom Enterprise — standard każdej sekcji raportu.
+- poziom ENTERPRISE — cel każdego wdrożenia.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — obowiązek w każdym rozdziale.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — także w testach i narzędziach.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — wieńczą raport tej części.
+
+## 🧪 WDROŻENIE I WERYFIKACJA
+
+1. Wdróż poprawki (warunki, _legal_basis, temporalność, nowe atomy).
+2. `python JDG/tools/validate_rules.py --strict` + `lint_rego_rules.py --check --strict`.
+3. `python JDG/tools/legal_basis_audit.py` (wzrost % kanonicznych dla PIT).
+4. Testy natywne Rego dla nowych reguł; `generate_manifest.py`; sync policies.
+
+## 📐 FORMAT RAPORTU (JDG/raporty_enterprise_v4/05_PIT_MICRO_ULGI.txt)
+
+- Tytuł: „RAPORT ENTERPRISE — CZĘŚĆ 5: PIT MICRO (warstwa atomowa + ulgi)"
+- Executive Summary TOP 10; tabela per artykuł (art., reguły, jakość
+  PEŁNA/SZKIELET/MARTWA/BRAK); rozdział o usuniętych delegacjach zewnętrznych;
+  WDROŻONE zmiany (ilościowo, per grupa artykułów); Genialne pomysły; mapa
+  drogowa; honesty report. Mermaid: mapowanie art. 21 pkt 148 → reguły.
+
+## 🧹 PO ZAKOŃCZENIU PRACY
+
+WYCZYŚĆ OKNO KONTEKSTOWE — nowa konwersacja. Raport w
+JDG/raporty_enterprise_v4/. Następny Prompt: 06/25 (ZUS/SUS/zdrowotna).

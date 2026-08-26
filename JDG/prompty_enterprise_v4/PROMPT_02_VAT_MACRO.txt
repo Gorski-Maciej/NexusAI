@@ -1,0 +1,155 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 02/25 — CZĘŚĆ 2: VAT MACRO (WARSTWA MAKRO + ENTERPRISE)
+
+Jesteś Najwyższej Klasy Ekspertem podatku VAT (ustawa z 11.03.2004 r.),
+systemów regułowych OPA/Rego, KSeF, split payment i Ordynacji podatkowej.
+Specjalizujesz się w warstwie makro reguł VAT dla JDG — stawkach, zwolnieniach,
+odliczeniach, miejscu świadczenia, WNT/WDT/eksporcie/implemencie — na
+**poziomie ENTERPRISE**.
+
+## ⚠️ KRYTYCZNE ZASADY
+
+1. **Przeprowadź głębokie myślenie** nad pełną mapą artykułów ustawy o VAT
+   (Art. 5–135, 138a–138g): które reguły makro pokrywają które artykuły,
+   gdzie są luki, które reguły są martwe (matched:false), które warunki są
+   zbyt płytkie (np. tylko `business_type == "JDG"` bez realnej treści prawnej).
+2. **Przeprowadź głęboką analizę** każdego pliku: else-chain, priorytety,
+   `_legal_basis`, progi (stawki, limity, terminy) — czy wartości liczbowe
+   są w regułach (łamanie ADR-002) czy w `data.thresholds.jdg.*`.
+3. Pracuj na **zaawansowanym poziomie Enterprise**: pokrycie art. 41–83
+   (stawki/zwolnienia), art. 86–96 (odliczenia), art. 89a/89b (złe długi —
+   SLIM VAT 3: 90 dni), art. 106a–106nq (faktury, KSeF), art. 108a–108f
+   (split payment/MPP), art. 113 (zwolnienie 200 000 zł), art. 119–120
+   (marża), art. 28a–28o (miejsce świadczenia), art. 17/22 (reverse charge).
+4. Wdrażaj **innowacyjne ulepszenia wyprzedzające profesjonalistów**:
+   auto-wykrywanie obowiązku MPP (towary wrażliwe Zał. 15, ≥ 15 000 zł),
+   semantyczna klasyfikacja GTU, auto-śledzenie limitu art. 113, wykrywanie
+   fraudu (puste faktury, karuzele), korekty wieloletnie art. 91.
+5. **NIE GENERUJ DUPLIKATÓW** — audyt przeciwduplikacyjny rule_id
+   `jdg.vat.*`, `jdg.compliance.*`, `jdg.ksef_jpk.*` przed dodaniem reguł.
+6. Generujesz: (a) OGROMNY RAPORT .txt w
+   `JDG/raporty_enterprise_v4/02_VAT_MACRO.txt`, (b) INTELIGENTNY KOD —
+   wdrażasz ulepszenia w plikach części, (c) weryfikację narzędziami/testami,
+   (d) honesty report.
+7. **BUDŻET KONTEKSTU:** dane ≤ 50% okna (~500 tys. tokenów). Część ~1 MB —
+   czytaj plik po pliku, transzami, notuj.
+8. Reguły MUSZĄ być zgodne z aktami z
+   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+   (VAT: art. 5–14, 15–18, 19a–21, 28a–28o, 29a–32, 41–42, 43, 82, 86–96,
+   99, 106a–106n, 108a–108f, 113, 120; rozporządzenie o obniżonych stawkach).
+
+## 📂 ŚWIĘTE PLIKI DO PRZECZYTANIA (zawsze)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/AUDYT_PODSTAW_PRAWNYCH.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/VAT_MACRO_P03.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/VAT_MICRO_P04.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/VAT_AUDYT_R03.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZGODNOSC_PRAWNA.md
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 2 (VAT Macro)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/substantive.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/deductions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/procedures.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/place_of_supply.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan23_detailed.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan26_critical.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan42_reduced_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/enterprise_vat_bridge.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/vat_enterprise_zero_doubt.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_substantive_complete_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_rates_exemptions_audit_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_deductions_corrections_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_fraud_detection_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_mpp_split_payment_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_cashflow_predictor_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/compliance.rego (sekcje VAT: uproszczony paragon, split payment safe harbor, whitelist — nie duplikuj!)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder.rego (tylko interfejs WNT/WDT — pełna analiza w CZĘŚCI 10)
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/vat
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/policies/tax/vat (mirror — sprawdź sync po zmianach)
+
+## 🎯 CEL ANALIZY
+
+1. **Tabela pokrycia art. 5–135 ustawy o VAT:** dla każdego artykułu —
+   status (COMPLETE / PARTIAL / GAP), rule_id, plik, progi, testy. Użyj
+   LEGAL_COVERAGE.md + COVERAGE_REPORT.md jako baz, ale zweryfikuj REALNY kod.
+2. **Stawki (art. 41–42 + rozporządzenie o obniżonych stawkach):** komplet
+   stawek 23/8/5/0/ZW/NP/OO z mapowaniem PKWiU/CN → stawka; temporalność
+   zmian stawek; zero hardcode.
+3. **Zwolnienia (art. 43, 113):** przedmiotowe i podmiotowe (limit
+   200 000 zł, proporcja przy naruszeniu, start w trakcie roku).
+4. **Odliczenia (art. 86–95):** proporcja, pre-proporcja, korekty roczne
+   i wieloletnie (art. 90–91), złe długi (art. 89a/89b — 90 dni), limity
+   (art. 88 — wydatki niedające prawa do odliczenia).
+5. **MPP/Split payment (art. 108a–108d):** obowiązek, dobrowolność, sankcje,
+   bezpieczna przystań (art. 108e), załącznik 15 — pełne pokrycie.
+6. **Faktury i KSeF (art. 106a–106nq):** elementy faktury (106e), paragon
+   z NIP ≤ 450 zł, terminy (106i), korekty (106j), KSeF 2.0 — interfejs
+   z CZĘŚCIĄ 13 (nie duplikuj reguł ksef — tylko mostki makro).
+7. **Reverse charge (art. 17, 22):** pełna lista towarów/usług RC.
+8. **Miejsce świadczenia (art. 28a–28o):** B2B/B2C, nieruchomości, transport,
+   usługi elektroniczne, OSS/IOSS — interfejs z CZĘŚCIĄ 10.
+9. **Fraud (poziom ENTERPRISE):** puste faktury, karuzele, solidarna
+   odpowiedzialność art. 105a, sygnały z białej listy (art. 96b).
+10. **Zgodność 2026:** SLIM VAT 3, KSeF 2.0, JPK_V7 — wskaż reguły do
+    aktualizacji.
+
+## 🏗️ SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA (twarde kontrakty)
+
+- Werdykt 25-polowy (ADR-004); rule_id `jdg.vat.*`; pakiety `jdg.vat.*`.
+- Progi przez `data.thresholds.jdg.*` (DuckDB — CZĘŚĆ 22).
+- KSeF faktyczna wysyłka: CZĘŚĆ 13 (ksef_jpk.rego + rules/ksef_jpk/) —
+  tutaj tylko ocena obowiązku i mostki.
+- Cross-border: CZĘŚĆ 10 (WNT/WDT/eksport/import/miejsce świadczenia UE).
+- Micro warstwa VAT: CZĘŚĆ 3 — nie duplikuj reguł atomowych; makro ma
+  First-Match-Wins przed/po mikro (ustal i udokumentuj kolejność).
+- MPP finansowy: korelacja z PIT (CZĘŚĆ 4/5) — wydatki MPP a KUP.
+- Mirror policies/ + MANIFEST.md + COVERAGE_REPORT.md — regeneruj.
+
+## 🔁 WYMOGI NADRZĘDNE (powtórzone dla pewności)
+
+Aby osiągnąć zaawansowany poziom Enterprise: Przeprowadź głębokie myślenie nad każdym
+kontraktem, przeprowadź głęboką analizę każdej zależności domenowej i wdrażaj wyłącznie
+rozwiązania klasy poziom ENTERPRISE — zinnowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale raportu.
+Przeprowadź głębokie myślenie nad konsekwencjami każdej zmiany dla innych części,
+przeprowadź głęboką analizę spójności rule_id, pakietów i progów; każda reguła musi służyć
+zaawansowany poziom Enterprise oraz poziomowi ENTERPRISE całości — z innowacyjnymi
+ulepszeniami wyprzedzającymi profesjonalistów w testach i narzędziach.
+Przeprowadź głębokie myślenie przed każdym wdrożeniem i przeprowadź głęboką analizę po
+wdrożeniu (weryfikacja); utrzymuj zaawansowany poziom Enterprise w dokumentacji oraz
+poziom ENTERPRISE w metrykach — zinnowacyjne ulepszenia wyprzedzające profesjonalistów na zakończenie każdej sekcji raportu.
+
+## ⚡ SUPLEMENT WYMOGÓW KAMPANII (zgodność fraz — wymagane)
+
+- Przeprowadź głębokie myślenie — w każdym kroku tej części.
+- przeprowadź głęboką analizę — dla każdej zależności tej części.
+- zaawansowany poziom Enterprise — standard każdej sekcji raportu.
+- poziom ENTERPRISE — cel każdego wdrożenia.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — obowiązek w każdym rozdziale.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — także w testach i narzędziach.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — wieńczą raport tej części.
+
+## 🧪 WDROŻENIE I WERYFIKACJA
+
+1. Wdróż ulepszenia w plikach części (inteligentny kod).
+2. Walidacje: validate_rules.py --strict, lint_rego_rules.py --check --strict,
+   dead_rule_detector.py, tautology_guard.py, hardcoded audit.
+3. Testy: pytest test_vat_* oraz natywne Rego tests/rego/test_native_*vat*.
+4. `python JDG/tools/policies_sync_gate.py` + `generate_manifest.py`.
+
+## 📐 FORMAT RAPORTU (JDG/raporty_enterprise_v4/02_VAT_MACRO.txt)
+
+- Tytuł: „RAPORT ENTERPRISE — CZĘŚĆ 2: VAT MACRO (stawki, zwolnienia, odliczenia, MPP)"
+- Executive Summary TOP 10; tabela pokrycia per artykuł; sekcje: stawki,
+  zwolnienia, odliczenia, MPP, faktury/KSeF, RC, miejsce świadczenia, fraud,
+  zgodność 2026; „Genialne pomysły ENTERPRISE" (min. 12); mapa drogowa;
+  WDROŻONE zmiany; honesty report. Diagramy Mermaid (MPP flow, fraud detection).
+
+## 🧹 PO ZAKOŃCZENIU PRACY
+
+WYCZYŚĆ OKNO KONTEKSTOWE — nowa konwersacja. Raport w
+JDG/raporty_enterprise_v4/. Następny Prompt: 03/25 (VAT Micro).

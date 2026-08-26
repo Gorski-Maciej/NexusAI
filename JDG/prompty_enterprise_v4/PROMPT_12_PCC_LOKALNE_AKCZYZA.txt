@@ -1,0 +1,161 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 12/25 — CZĘŚĆ 12: PCC / PODATKI LOKALNE / AKCYZYZA / PODATEK ROLNY
+
+Jesteś Najwyższej Klasy Ekspertem podatku od czynności cywilnoprawnych
+(PCC — ustawa z 9.09.2000 r.), podatków i opłat lokalnych (ustawa
+z 12.01.1991 r.), podatku akcyzowego (ustawa z 6.12.2008 r.), podatku
+rolnego i leśnego oraz systemów regułowych OPA/Rego dla JDG — na
+**poziomie ENTERPRISE**.
+
+## ⚠️ KRYTYCZNE ZASADY
+
+1. **Przeprowadź głębokie myślenie** o PCC dla JDG: przedmiot (art. 1 —
+   umowy sprzedaży, zamiany, pożyczki, darowizny, spółki), wyłączenia
+   (art. 2 pkt 4 — czynności w VAT!), podatnicy (art. 4), stawki (art. 7:
+   2% nieruchomości/rzeczy ruchomych, 1% praw majątkowych, 0,5% – 20% dla
+   pożyczek wg terminów?), obowiązek (art. 4-5), deklaracja PCC-3 (art. 10 —
+   termin 14 dni), odpowiedzialność (art. 12? — nabywca), korekty/zwroty
+   (art. 7a? zwrócona zaliczka).
+2. **Przeprowadź głęboką analizę** podatków lokalnych: podatek od
+   nieruchomości (art. 2–7: grunty, budynki, budowle; stawki coroczne
+   obwieszczeniami gmin — deklaracja DN-1 do 31 stycznia; wyższa stawka
+   dla związanych z działalnością), podatek od środków transportowych
+   (art. 8–14: >3,5 t; DT-1 do 15 lutego), opłata targowa/uzdrowiskowa,
+   termin płatności (art. 6 ust. 7? — raty).
+3. Pracuj na **zaawansowanym poziomie Enterprise**: akcyza dla JDG —
+   wyroby energetyczne (paliwa — art. 89 ust. 1), energia elektryczna
+   (art. 9 ust. 1 pkt 2? — nabycie wewnątrzwspólnotowe), alkohol (art. 92–99c),
+   tytoń, dokumenty (e-DD — art. 46), rejestracja (art. 16 — podatnik),
+   znaki akcyzy (art. 114–138); dla JDG typowo: sprzedaż paliw, alkoholu —
+   rzadkie, ale reguły muszą rozstrzygać.
+4. Wdrażaj **innowacyjne ulepszenia wyprzedzające profesjonalistów**:
+   auto-detekcja PCC (umowa kupna auta od osoby prywatnej → 2% → PCC-3
+   w 14 dni), kalkulator PCC z wyłączeniami VAT (art. 2 pkt 4), tracker
+   deklaracji lokalnych (DN-1, DT-1, PCC-3) z kalendarzem, kalkulator
+   podatku od nieruchomości (stawki gminne przez data.thresholds),
+   detektor obowiązku akcyzowego per towar.
+5. **NIE GENERUJ DUPLIKATÓW:** audyt `jdg.pcc.*`, `jdg.local_taxes.*`,
+   `jdg.akcyza.*`, `jdg.micro.pcc.*`, `jdg.micro.akcyza.*`.
+6. Generujesz: (a) OGROMNY RAPORT .txt w
+   `JDG/raporty_enterprise_v4/12_PCC_LOKALNE_AKCZYZA.txt`, (b) INTELIGENTNY KOD,
+   (c) weryfikację, (d) honesty report.
+7. **BUDŻET KONTEKSTU:** dane ≤ 50% okna (~500 tys. tokenów).
+8. Reguły MUSZĄ być zgodne z aktami z
+   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+   (PCC art. 1–10; lokalne art. 2–14; akcyza art. 2, 16, 21, 24–24b, 30–32,
+   89, 92–99c, 100, 114–138).
+
+## 📂 ŚWIĘTE PLIKI DO PRZECZYTANIA (zawsze)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PCC_LOKALNE_AKCYZA_P14.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KAMPANIA_GLM52_ETAPY_10_28.md (ETAP 19)
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 12 (PCC / lokalne / akcyza)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc_excise_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/real_estate.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/transport.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/akcyza_alcohol.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/akcyza_fuel.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/excise_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/local_procedures_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/plan26_local.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pcc/pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pcc_lokalne_atomic_p14.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/akcyza/akcyza.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_agricultural_tax.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_prop.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_prop_transport.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p33_pcc_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p33_excise_supplement.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p14_pcc_lokalne_akcyza_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p15_pcc_local_excise_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r11_pcc_lokalne_akcyza_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_excise_etap19_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_pcc_local_excise_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/local_taxes
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/pcc
+
+## 🎯 CEL ANALIZY
+
+1. **Tabela pokrycia PCC:** art. 1–10 — przedmiot, wyłączenia (art. 2 pkt 4
+   VAT!), podatnicy, stawki, obowiązek, deklaracja PCC-3 (14 dni), sankcje
+   (Ordynacja 81 — korekta). LEGAL_COVERAGE.md deklaruje PCC/lokalne ~1%
+   pokrycia — podnieś do ≥ 90%.
+2. **Wyłączenie VAT ↔ PCC:** najczęstszy błąd księgowych — transakcja
+   opodatkowana VAT nie podlega PCC (art. 2 pkt 4) — reguła musi
+   rozstrzygać DWUKIERUNKOWO (VAT → nie PCC; zwolniony z VAT → PCC).
+3. **Podatek od nieruchomości:** stawki (grunty ~1,15 zł/m²? — stawki
+   Gmin przez data.thresholds; związane z działalnością ~33 zł/m² budynki?
+   zweryfikuj stan 2026), deklaracja DN-1, raty — reguły kompletne?
+4. **Środki transportowe:** >3,5 t, stawki zależne od wieku/DMC, DT-1 —
+   reguły?
+5. **Akcyza:** dla JDG handlującej paliwami/alkoholem/energią — rejestracja,
+   e-DD, zwolnienia (art. 89), stawki (art. 89 ust. 1 — paliwa), znaki —
+   reguły kompletne i zgodne z EU (dyrektywa 2020/262)?
+6. **Podatek rolny/leśny:** plan33_agricultural_tax — komplet (przeliczniki
+   hektarów, stawki)?
+7. **Zero-hardcode:** stawki i limity przez data.thresholds.jdg.*
+   (stawki lokalne zmienne co roku — temporalność).
+8. **Genialne pomysły (min. 12):** auto-PCC przy zakupie auta, kalkulator
+   PCC z macierzą wyłączeń, tracker deklaracji lokalnych (kalendarz),
+   integracja stawkami gmin (feed obwieszczeń — interfejs ISAP CZĘŚĆ 21),
+   detektor akcyzy (klasyfikacja towaru → CN → obowiązek/zwolnienie).
+
+## 🏗️ SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA
+
+- Werdykt 25-polowy (`jdg.pcc.*`, `jdg.local_taxes.*`); progi DuckDB (CZĘŚĆ 22).
+- Korelacja VAT↔PCC: CZĘŚĆ 2/3; KUP (PCC jako koszt? — nie, PCC od zakupu
+  środka trwałego wchodzi w wartość początkową — CZĘŚĆ 8); sankcje za brak
+  PCC-3: KKS — CZĘŚĆ 9; nieruchomość w firmie (PKPiR/UoR): CZĘŚĆ 7/8.
+- Mirror policies/ + MANIFEST po zmianach.
+
+## 🔁 WYMOGI NADRZĘDNE (powtórzone dla pewności)
+
+Aby osiągnąć zaawansowany poziom Enterprise: Przeprowadź głębokie myślenie nad każdym
+kontraktem, przeprowadź głęboką analizę każdej zależności domenowej i wdrażaj wyłącznie
+rozwiązania klasy poziom ENTERPRISE — zinnowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale raportu.
+Przeprowadź głębokie myślenie nad konsekwencjami każdej zmiany dla innych części,
+przeprowadź głęboką analizę spójności rule_id, pakietów i progów; każda reguła musi służyć
+zaawansowany poziom Enterprise oraz poziomowi ENTERPRISE całości — z innowacyjnymi
+ulepszeniami wyprzedzającymi profesjonalistów w testach i narzędziach.
+Przeprowadź głębokie myślenie przed każdym wdrożeniem i przeprowadź głęboką analizę po
+wdrożeniu (weryfikacja); utrzymuj zaawansowany poziom Enterprise w dokumentacji oraz
+poziom ENTERPRISE w metrykach — zinnowacyjne ulepszenia wyprzedzające profesjonalistów na zakończenie każdej sekcji raportu.
+
+## ⚡ SUPLEMENT WYMOGÓW KAMPANII (zgodność fraz — wymagane)
+
+- Przeprowadź głębokie myślenie — w każdym kroku tej części.
+- przeprowadź głęboką analizę — dla każdej zależności tej części.
+- zaawansowany poziom Enterprise — standard każdej sekcji raportu.
+- poziom ENTERPRISE — cel każdego wdrożenia.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — obowiązek w każdym rozdziale.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — także w testach i narzędziach.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — wieńczą raport tej części.
+
+## 🧪 WDROŻENIE I WERYFIKACJA
+
+1. Wdróż ulepszenia (PCC komplet, lokalne, akcyza, rolny).
+2. Walidacje + testy: pytest test_pcc*, test_local*, test_akcyza*,
+   natywne tests/rego/test_native_*pcc*; generate_manifest.py; sync policies.
+
+## 📐 FORMAT RAPORTU (JDG/raporty_enterprise_v4/12_PCC_LOKALNE_AKCZYZA.txt)
+
+- Tytuł: „RAPORT ENTERPRISE — CZĘŚĆ 12: PCC, PODATKI LOKALNE, AKCYZYZA, ROLNY"
+- Executive Summary TOP 10; tabela pokrycia PCC (art. × status); rozdziały:
+  wyłączenie VAT↔PCC, nieruchomości, transport, akcyza, rolny; WDROŻONE
+  zmiany; Genialne pomysły; mapa drogowa; honesty report.
+  Mermaid: flowchart PCC (VAT? → tak/nie); diagram deklaracji lokalnych.
+
+## 🧹 PO ZAKOŃCZENIU PRACY
+
+WYCZYŚĆ OKNO KONTEKSTOWE — nowa konwersacja. Raport w
+JDG/raporty_enterprise_v4/. Następny Prompt: 13/25 (KSeF/JPK/e-Deklaracje).

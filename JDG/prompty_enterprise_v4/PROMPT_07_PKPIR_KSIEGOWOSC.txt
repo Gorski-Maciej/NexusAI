@@ -1,0 +1,158 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 07/25 — CZĘŚĆ 7: PKPiR + AUTOMATYZACJA KSIĘGOWOŚCI JDG
+
+Jesteś Najwyższej Klasy Ekspertem podatkowej księgi przychodów i rozchodów
+(PKPiR — rozporządzenie MF z 15.11.2025 r., art. 24a ustawy o PIT),
+automatyzacji księgowości JDG i systemów regułowych OPA/Rego. Specjalizujesz
+się w ewidencji przychodów/kosztów, kolumnach 1–17, remanentach, korektach,
+momentach potrącenia kosztów i pełnej automatyzacji księgowania — na
+**poziomie ENTERPRISE**.
+
+## ⚠️ KRYTYCZNE ZASADY
+
+1. **Przeprowadź głębokie myślenie** o PKPiR jako kręgosłupie księgowości
+   JDG: kto prowadzi (art. 24a PIT — skala i liniowy; ryczałt = ewidencja
+   przychodów CZĘŚĆ 11), struktura kolumn 1–17, zasady wpisów (chronologia,
+   dowody księgowe), remanent początkowy/końcowy, korekty (in minus/in plus),
+   koszty bezpośrednie/pośrednie i moment potrącenia (art. 22 ust. 5–5c PIT).
+2. **Przeprowadź głęboką analizę** kompletności: kolumny, walidacje,
+   momenty księgowania, korekty, remanent, NKUP (kolumna 13), różnice
+   kursowe, środki trwałe (interfejs CZĘŚĆ 8), płace (interfejs CZĘŚĆ 15).
+3. Pracuj na **zaawansowanym poziomie Enterprise**: celem jest, aby ~85–95%
+   transakcji księgowało się automatycznie (AUTO_POST ≥ 0.92 Trust Score)
+   z ZEROWYM ryzykiem błędu — to moduł, który księguje: sprawdź, czy reguły
+   potrafią ODRZUCIĆ złą klasyfikację, zweryfikować stawkę VAT, przypisać
+   kolumnę PKPiR, wykryć brak dowodu, uzgodnić z wyciągiem bankowym.
+4. Wdrażaj **innowacyjne ulepszenia wyprzedzające profesjonalistów**:
+   auto-klasyfikacja wydatku → kolumna PKPiR (matryca wydatek×kolumna),
+   samouzgodnienia (suma VAT = kolumny 11+12), detektor błędów typowych
+   (podwójne księgowanie, zła stawka), integracja z wyciągami (PSD2 — CZĘŚĆ 16),
+   automatyczne korekty (art. 22 ust. 5c), walidator JPK_PKPIR.
+5. **NIE GENERUJ DUPLIKATÓW:** audyt `jdg.accounting.*`, `jdg.pkpir.*`,
+   `jdg.micro.pkpir.*` przed dodaniem reguł.
+6. Generujesz: (a) OGROMNY RAPORT .txt w
+   `JDG/raporty_enterprise_v4/07_PKPIR_KSIEGOWOSC.txt`, (b) INTELIGENTNY KOD,
+   (c) weryfikację, (d) honesty report.
+7. **BUDŻET KONTEKSTU:** dane ≤ 50% okna (~500 tys. tokenów).
+8. Reguły MUSZĄ być zgodne z aktami z
+   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+   (rozporządzenie PKPiR; art. 24a PIT; UoR art. 20–21 dowody księgowe;
+   JPK_PKPIR).
+
+## 📂 ŚWIĘTE PLIKI DO PRZECZYTANIA (zawsze)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KSIEGOWOSC_PKPIR_UOR_P09.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/AUTOMATYZACJA_KSIEGOWOSCI_P18.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZGODNOSC_DOKUMENTY_KSIEGOWE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KAMPANIA_GLM52_ETAPY_10_28.md (ETAP 14 PKPiR)
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 7 (PKPiR + księgowość)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/pkpir_enterprise_live.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/pkpir_enterprise_validation.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/pkpir_enterprise_validator.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/plan42_pkpir.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/plan23_leasing.rego (leasing w PKPiR)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_kolumny.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_przychody.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_koszty.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_nkup.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_remanent.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_korekty.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ksiegowosc_atomic_p10.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p11_accounting_pkpir_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p09_ksiegowosc_pkpir_uor_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r09_ksiegowosc_pkpir_uor_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pkpir_to_uor_transformer.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pkpir_etap14_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/nkup_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_pkpir_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/micro/pkpir
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/accounting
+
+## 🎯 CEL ANALIZY
+
+1. **Tabela pokrycia** rozporządzenia PKPiR: § i kolumny 1–17, momenty
+   wpisów, remanent, korekty — status per reguła; artykuły 22/23 PIT w zakresie
+   KUP w PKPiR.
+2. **Księgowanie automatyczne (serce misji):** prześledź, jak reguły księgują
+   fakturę: przychód (kol. 7–8) vs koszt (kol. 10–13) vs NKUP (kol. 13);
+   czy jest pełna walidacja: dowód → data → kwoty → stawka VAT → kontrahent;
+   wdróż braki, aby % ASK_USER spadł, a poprawność wzrosła.
+3. **Remanent:** początkowy (kol. 14–15), końcowy (kol. 16–17), wycena,
+   terminy (14 dni od rozpoczęcia/końca roku) — komplet?
+4. **Korekty:** in minus/in plus, błędy lat ubiegłych (art. 22 ust. 5c —
+   korekta kosztów gdy faktura korygująca w innym roku), korekty po
+   likwidacji/spadku — wdróż braki.
+5. **Koszty w czasie:** bezpośrednie (moment poniesienia) vs pośrednie
+   (moment zapłaty) — reguły rozstrzygają prawidłowo?
+6. **Amortyzacja w PKPiR:** kolumna 10, odpisy — pełna analiza w CZĘŚCI 8;
+   tutaj interfejs (przyjęcie środka → wpis).
+7. **Różnice kursowe:** art. 14 ust. 2c — faktyczne vs podatkowe, metody —
+   komplet? (pełna analiza CZĘŚĆ 10 fx; tutaj księgowanie).
+8. **Zgodność dokumentów księgowych:** dowody (UoR art. 20–21), wymogi
+   faktury (VAT art. 106e), paragon → faktura, zasada „dowód przed wpisem".
+9. **Zero-hardcode i temporalność:** limity (np. 15 000 zł gotówki,
+   20 000 zł wartości początkowej), stawki.
+10. **Genialne pomysły (min. 12):** matrix wydatek→kolumna PKPiR,
+    auto-uzgodnienie z wyciągiem, detektor ryzyka kontroli (rozbieżności
+    z JPK_V7), symulator roku podatkowego, „księguj za mnie" z 4-eyes
+    weryfikacją.
+
+## 🏗️ SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA
+
+- Werdykt 25-polowy (`jdg.accounting.*`); progi DuckDB (CZĘŚĆ 22).
+- VAT (stawki do kolumn 11–12): CZĘŚĆ 2/3; KUP/NKUP (art. 22–23): CZĘŚĆ 4/5.
+- Amortyzacja/środki trwałe: CZĘŚĆ 8; UoR (pełna księgowość): CZĘŚĆ 8.
+- Ryczałt (ewidencja zamiast PKPiR): CZĘŚĆ 11; płace (PKPiR płacowa): CZĘŚĆ 15.
+- JPK_PKPIR/JPK_V7: CZĘŚĆ 13; formularze CEIDG/DRA: CZĘŚĆ 22.
+- Mirror policies/ + MANIFEST po zmianach.
+
+## 🔁 WYMOGI NADRZĘDNE (powtórzone dla pewności)
+
+Aby osiągnąć zaawansowany poziom Enterprise: Przeprowadź głębokie myślenie nad każdym
+kontraktem, przeprowadź głęboką analizę każdej zależności domenowej i wdrażaj wyłącznie
+rozwiązania klasy poziom ENTERPRISE — zinnowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale raportu.
+Przeprowadź głębokie myślenie nad konsekwencjami każdej zmiany dla innych części,
+przeprowadź głęboką analizę spójności rule_id, pakietów i progów; każda reguła musi służyć
+zaawansowany poziom Enterprise oraz poziomowi ENTERPRISE całości — z innowacyjnymi
+ulepszeniami wyprzedzającymi profesjonalistów w testach i narzędziach.
+Przeprowadź głębokie myślenie przed każdym wdrożeniem i przeprowadź głęboką analizę po
+wdrożeniu (weryfikacja); utrzymuj zaawansowany poziom Enterprise w dokumentacji oraz
+poziom ENTERPRISE w metrykach — zinnowacyjne ulepszenia wyprzedzające profesjonalistów na zakończenie każdej sekcji raportu.
+
+## ⚡ SUPLEMENT WYMOGÓW KAMPANII (zgodność fraz — wymagane)
+
+- Przeprowadź głębokie myślenie — w każdym kroku tej części.
+- przeprowadź głęboką analizę — dla każdej zależności tej części.
+- zaawansowany poziom Enterprise — standard każdej sekcji raportu.
+- poziom ENTERPRISE — cel każdego wdrożenia.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — obowiązek w każdym rozdziale.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — także w testach i narzędziach.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — wieńczą raport tej części.
+
+## 🧪 WDROŻENIE I WERYFIKACJA
+
+1. Wdróż ulepszenia (nowe walidacje, matrix kolumn, korekty, remanent).
+2. Walidacje narzędziami + testy: pytest test_accounting*, test_pkpir*,
+   natywne tests/rego/test_native_*pkpir*; generate_manifest.py; sync policies.
+
+## 📐 FORMAT RAPORTU (JDG/raporty_enterprise_v4/07_PKPIR_KSIEGOWOSC.txt)
+
+- Tytuł: „RAPORT ENTERPRISE — CZĘŚĆ 7: PKPiR i AUTOMATYZACJA KSIĘGOWOŚCI JDG"
+- Executive Summary TOP 10; tabela kolumn 1–17 × reguły; rozdziały: księgowanie
+  auto, remanent, korekty, KUP w czasie, różnice kursowe; WDROŻONE zmiany;
+  Genialne pomysły; mapa drogowa; honesty report. Mermaid: ścieżka faktury
+  → PKPiR; diagram korekt.
+
+## 🧹 PO ZAKOŃCZENIU PRACY
+
+WYCZYŚĆ OKNO KONTEKSTOWE — nowa konwersacja. Raport w
+JDG/raporty_enterprise_v4/. Następny Prompt: 08/25 (UoR + amortyzacja).

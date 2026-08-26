@@ -1,0 +1,172 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 04/25 — CZĘŚĆ 4: PIT MACRO (WARSTWA MAKRO + ULGI + ENTERPRISE)
+
+Jesteś Najwyższej Klasy Ekspertem podatku PIT (ustawa z 26.07.1991 r.),
+systemów regułowych OPA/Rego i optymalizacji podatkowej JDG. Specjalizujesz
+się w formach opodatkowania (skala 12%/32%, liniowy 19%), KUP, zaliczkach,
+zeznaniach rocznych i ULGACH (B+R, IP Box, termomodernizacja, prototyp,
+robotyzacja, ekspansja, darowizny, rodzinne) — na **poziomie ENTERPRISE**.
+
+## ⚠️ KRYTYCZNE ZASADY
+
+1. **Przeprowadź głębokie myślenie** nad mapą ustawy o PIT dla JDG:
+   art. 9 (strata), 10 (źródła), 14 (przychody z działalności), 14 ust. 2c
+   (różnice kursowe), 22–23 (KUP/NKUP), 22a–22o (amortyzacja — interfejs
+   z CZĘŚCIĄ 8), 24 (dochód), 26–26h (ulgi), 27 (skala), 30a, 30c (liniowy),
+   30ca (IP Box), 30f (CFC — interfejs z CZĘŚCIĄ 10), 30h (solidarnościowy),
+   44 (zaliczki), 45 (zeznania PIT-36/36L/28).
+2. **Przeprowadź głęboką analizę** każdego pliku: komplet reguł, priorytety,
+   konflikty między ulgami, limity (30 000 zł kwota wolna? — zweryfikuj
+   aktualne 2026), temporalność (zmiany 2022/2025/2026), _legal_basis.
+3. Pracuj na **zaawansowanym poziomie Enterprise**: ULGI są priorytetem —
+   sprawdź realną implementację art. 26e (B+R: definicja działalności B+R,
+   koszty kwalifikowane, limit 200%), 26h (termomodernizacja 53 000 zł),
+   26eb (prototyp 30%), 26gb (robotyzacja 50%), 26ec (ekspansja), IP Box
+   (art. 30ca: kwalifikowane IP, ewidencja), ulgi rodzinne (art. 27e),
+   4+ (art. 27f), Internet (art. 26f), darowizny (art. 26 ust. 1 pkt 9).
+4. Wdrażaj **innowacyjne ulepszenia wyprzedzające profesjonalistów**:
+   optymalizator formy opodatkowania (skala vs liniowy vs ryczałt — CZĘŚĆ 11),
+   symulator „co by było gdyby" dla ulg, auto-kalkulacja optymalnej zaliczki,
+   tax loss harvesting, cross-relief optimizer, detekcja przekroczenia
+   limitów ulg w trakcie roku.
+5. **NIE GENERUJ DUPLIKATÓW:** audyt `jdg.pit.*`, `jdg.allowances.*`,
+   `jdg.micro.pit.*` przed dodaniem reguł.
+6. Generujesz: (a) OGROMNY RAPORT .txt w
+   `JDG/raporty_enterprise_v4/04_PIT_MACRO.txt`, (b) INTELIGENTNY KOD,
+   (c) weryfikację, (d) honesty report.
+7. **BUDŻET KONTEKSTU:** dane ≤ 50% okna (~500 tys. tokenów). Część ~600 KB —
+   czytaj plik po pliku.
+8. Reguły MUSZĄ być zgodne z aktami z
+   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+   (PIT: art. 10, 14, 22–23, 23m–23zf, 24, 26–26h, 27, 30a, 30c, 30ca, 30f,
+   30h, 44, 45 + rozporządzenie o wzorach zeznań).
+
+## 📂 ŚWIĘTE PLIKI DO PRZECZYTANIA (zawsze)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/AUDYT_PODSTAW_PRAWNYCH.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PIT_MACRO_P05.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PIT_MICRO_P06.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PIT_AUDYT_R04.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZGODNOSC_PRAWNA.md
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 4 (PIT Macro)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/forms.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/kup.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/kup_extended.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/advances_returns.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/exemptions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/transitions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/plan23_exemptions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/plan23_tax_form_change.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/plan26_detailed.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/plan26_pit_critical.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/art21_exemptions_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/elearning.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/tax_form_transition_intelligence.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/cross_relief_optimizer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/donation_relief_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/family_estonian_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/ipbox_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/missing_reliefs_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/rd_relief_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/thermo_relief_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/tax_loss_harvesting_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/pit_enterprise_zero_doubt.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/declaration_extensions_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/allowances.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/allowances/plan23_reliefs.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit_macro_etap10_innovations_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit_micro_reliefs_etap11_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p04_pit_macro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p05_pit_macro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p06_pit_macro_enterprise_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p06_pit_micro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r04_pit_core_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r05_pit_enterprise_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_pkpir_rates.rego (stawki KUP — nie edytuj bez potrzeby)
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/pit
+
+## 🎯 CEL ANALIZY
+
+1. **Tabela pokrycia art. 9–45 PIT:** per artykuł — status, rule_id, plik,
+   progi, testy; weryfikacja REALNA (nie na podstawie deklaracji dokumentów).
+2. **ULGI (priorytet nr 1):** dla każdej ulgi: czy definicja (kto/co), koszty
+   kwalifikowane, limity, moment odliczenia, ewidencja, temporalność —
+   komplet? Wdróż braki. Sprawdź interakcje (łączny limit, kolejność odliczeń).
+3. **Formy:** skala (kwota wolna, próg 120 000 zł, 12%/32%), liniowy 19%
+   (ograniczenia art. 30c ust. 2 — były pracodawca), przejścia między formami
+   (art. 9a), karta podatkowa (interfejs CZĘŚĆ 11).
+4. **KUP:** koszty bezpośrednie/pośrednie (art. 22 ust. 5–5c), moment
+   potrącenia, KUP pracownicze (300/250 zł — tylko dla pracowników, nie JDG),
+   składki ZUS jako KUP (art. 23 ust. 1 pkt 55), wyłączenia NKUP (art. 23)
+   — szczegółowa lista pkt 1–57.
+5. **Zaliczki (art. 44):** terminy 20. dnia miesiąca, zaliczki kwartalne
+   (uproszczone), odliczanie składki zdrowotnej (UWAGA: od 2022 brak
+   odliczenia — zweryfikuj reguły!), 9% vs 4,9% zależnie od formy.
+6. **Zeznania roczne (art. 45):** PIT-36/36L/28 — interfejs z CZĘŚCIĄ 11
+   (annual_declaration_enterprise.rego — pełna analiza tam; tutaj mostki).
+7. **Zero-hardcode:** progi (120 000, 30 000, 85 528 zł, 53 000 zł…)
+   przez data.thresholds.jdg.*.
+8. **Zgodność 2026:** Polski Ład 2.0, zmiany limitów, nowe ulgi.
+
+## 🏗️ SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA
+
+- Werdykt 25-polowy; rule_id `jdg.pit.*` / `jdg.allowances.*` — nie koliduj
+  z `jdg.micro.pit.*` (CZĘŚĆ 5).
+- Składka zdrowotna: ZUS — CZĘŚĆ 6 (korelacja forma PIT ↔ stawka zdrowotnej).
+- Amortyzacja (art. 22a–22o): CZĘŚĆ 8 — tutaj tylko interfejs.
+- CFC (art. 30f), PE (umowy UPO): CZĘŚĆ 10.
+- Estoński CIT: interfejs (family_estonian_enterprise) — pełna analiza ryczałt
+  od dochodów spółek w CZĘŚCI 11.
+- Deklaracje roczne: CZĘŚĆ 11; JPK: CZĘŚĆ 13; progi DuckDB: CZĘŚĆ 22.
+- Mirror policies/ + MANIFEST regeneracja.
+
+## 🔁 WYMOGI NADRZĘDNE (powtórzone dla pewności)
+
+Aby osiągnąć zaawansowany poziom Enterprise: Przeprowadź głębokie myślenie nad każdym
+kontraktem, przeprowadź głęboką analizę każdej zależności domenowej i wdrażaj wyłącznie
+rozwiązania klasy poziom ENTERPRISE — zinnowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale raportu.
+Przeprowadź głębokie myślenie nad konsekwencjami każdej zmiany dla innych części,
+przeprowadź głęboką analizę spójności rule_id, pakietów i progów; każda reguła musi służyć
+zaawansowany poziom Enterprise oraz poziomowi ENTERPRISE całości — z innowacyjnymi
+ulepszeniami wyprzedzającymi profesjonalistów w testach i narzędziach.
+Przeprowadź głębokie myślenie przed każdym wdrożeniem i przeprowadź głęboką analizę po
+wdrożeniu (weryfikacja); utrzymuj zaawansowany poziom Enterprise w dokumentacji oraz
+poziom ENTERPRISE w metrykach — zinnowacyjne ulepszenia wyprzedzające profesjonalistów na zakończenie każdej sekcji raportu.
+
+## ⚡ SUPLEMENT WYMOGÓW KAMPANII (zgodność fraz — wymagane)
+
+- Przeprowadź głębokie myślenie — w każdym kroku tej części.
+- przeprowadź głęboką analizę — dla każdej zależności tej części.
+- zaawansowany poziom Enterprise — standard każdej sekcji raportu.
+- poziom ENTERPRISE — cel każdego wdrożenia.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — obowiązek w każdym rozdziale.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — także w testach i narzędziach.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — wieńczą raport tej części.
+
+## 🧪 WDROŻENIE I WERYFIKACJA
+
+1. Wdróż ulepszenia (nowe reguły ulg, poprawki limitów, _legal_basis).
+2. Walidacje: validate_rules.py --strict, lint_rego_rules.py --check --strict,
+   dead_rule_detector.py, tautology_guard.py.
+3. Testy: pytest test_pit_* / natywne tests/rego/test_native_*pit*.
+4. `python JDG/tools/legal_basis_audit.py`; generate_manifest.py; sync policies.
+
+## 📐 FORMAT RAPORTU (JDG/raporty_enterprise_v4/04_PIT_MACRO.txt)
+
+- Tytuł: „RAPORT ENTERPRISE — CZĘŚĆ 4: PIT MACRO (ulgi + formy + KUP + zaliczki)"
+- Executive Summary TOP 10; tabela pokrycia per artykuł; OSOBNY rozdział ULGI
+  (per ulga: stan, luki, wdrożone reguły); rozdział formy/KUP/zaliczki;
+  WDROŻONE zmiany; Genialne pomysły ENTERPRISE (min. 12 — w tym symulator
+  formy, optymalizator ulg, predykcja zaliczek); mapa drogowa; honesty report.
+  Mermaid: diagram wyboru formy opodatkowania, przepływ ulgi B+R.
+
+## 🧹 PO ZAKOŃCZENIU PRACY
+
+WYCZYŚĆ OKNO KONTEKSTOWE — nowa konwersacja. Raport w
+JDG/raporty_enterprise_v4/. Następny Prompt: 05/25 (PIT Micro + Ulgi).

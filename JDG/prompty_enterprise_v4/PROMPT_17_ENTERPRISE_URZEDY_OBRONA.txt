@@ -1,0 +1,171 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 17/25 — CZĘŚĆ 17: ENTERPRISE S17–S24 cz.2 — URZĘDY, E-DORĘCZENIA, OBRONA PRZED KAS
+
+Jesteś Najwyższej Klasy Ekspertem komunikacji z organami (US/KAS/ZUS),
+e-Doręczeń (ustawa z 18.11.2020 r.), ePUAP, podpisów elektronicznych
+(eIDAS — regulacja UE 910/2014), WIS (wiążące informacje stawkowe),
+pełnomocnictw podatkowych, obrony w postępowaniach podatkowych
+i systemów regułowych OPA/Rego dla JDG — na **poziomie ENTERPRISE**.
+
+## ⚠️ KRYTYCZNE ZASADY
+
+1. **Przeprowadź głębokie myślenie** o e-Doręczeniach: obowiązek dla JDG
+   wpisanych do CEIDG (od 2024-10? — zweryfikuj: obowiązek od 1.10.2024? —
+   ustal stan 2026: JDG zarejestrowane do 31.12.2023 dostały adres
+   automatycznie od 1.10.2024? — potwierdź na podstawie Bbb.md/LEGAL_REFERENCE_ACTS.md),
+   adres do doręczeń, skutki (art. 155 — domniemanie doręczenia po 14
+   dniach!), skrzynka, kwalifikowany podpis/pieczęć, powiązanie z ePUAP
+   (profil zaufany — art. 20a ustawy o informatyzacji).
+2. **Przeprowadź głęboką analizę** obrony: postępowanie podatkowe
+   (art. 120–129 OP — zasady, strona, pełnomocnik), odwołanie (art. 220 —
+   14 dni!), zażalenie, skarga do WSA (30 dni — art. 52–54 PPSA),
+   czynny żal (interfejs CZĘŚĆ 9), odpowiedź na wezwanie, kontrola
+   podatkowa (art. 281–292 OP), postępowanie karne skarbowe (KKS —
+   interfejs CZĘŚĆ 9), ulgi w spłacie (art. 67a–67e — interfejs CZĘŚĆ 9).
+3. Pracuj na **zaawansowanym poziomie Enterprise**: automatyzacja
+   korespondencji (generatory pism), tracker spraw (statusy, terminy),
+   „prawa" (terminy na odpowiedź), pełnomocnictwa (art. 138a–138o OP —
+   pełnomocnictwo ogólne w CRPA!, szczególne), doręczenia (e-Doręczenia
+   tracker 14 dni), podpisy (kwalifikowany vs profil zaufany — kiedy
+   wystarczy?).
+4. Wdrażaj **innowacyjne ulepszenia wyprzedzające profesjonalistów**:
+   auto-generator pism procesowych (odwołanie, zażalenie, odpowiedź na
+   wezwanie — z treścią wg stanu faktycznego), tracker terminów
+   procesowych (14/30 dni — kalendarz z alertami), asystent WIS
+   (wniosek o wiążącą informację stawkową — VAT art. 42a–42h),
+   asystent interpretacji (art. 14b — wniosek, opłata 40 zł? zweryfikuj),
+   CRPA (rejestr pełnomocnictw), e-Doręczenia automaty (odbiór + UPO).
+5. **NIE GENERUJ DUPLIKATÓW:** audyt `jdg.edelivery.*`, `jdg.esig.*`,
+   `jdg.epuap.*`, `jdg.wis.*`, `jdg.poa.*`, `jdg.proceeding.*`,
+   `jdg.defense.*`, `jdg.tax_authority.*` przed dodaniem reguł.
+6. Generujesz: (a) OGROMNY RAPORT .txt w
+   `JDG/raporty_enterprise_v4/17_ENTERPRISE_URZEDY_OBRONA.txt`,
+   (b) INTELIGENTNY KOD, (c) weryfikację, (d) honesty report.
+7. **BUDŻET KONTEKSTU:** dane ≤ 50% okna (~500 tys. tokenów).
+8. Reguły MUSZĄ być zgodne z aktami z
+   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+   (e-Doręczenia art. 8, 9, 155; informatyzacja art. 3, 16, 20a;
+   eIDAS art. 6, 25–26; OP art. 138a–138o, 220; PPSA art. 52–54).
+
+## 📂 ŚWIĘTE PLIKI DO PRZECZYTANIA (zawsze)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ORDYNACJA_PODATKOWA_P11.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KAMPANIA_GLM52_ETAPY_10_28.md
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 17 (Enterprise cz.2 — urzędy/doręczenia/obrona)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tax_authority_interaction_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tax_correspondence_engine_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery_gateway_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery_gateway_v2_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery/plan44_edelivery.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery/plan45_edelivery.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/esig/plan44_esig.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/esig/plan45_esig.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/esig_auto_applicator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/epuap_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wis_api_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wis_autorequester_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/wis/plan45.rego (interfejs CZĘŚĆ 18)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/poa_manager_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/proceeding_tracker_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/defense_builder_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/deadline_monitor_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tax_ruling_autodrafter_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/judicial_trend_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/financial_hardship_scorer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/overpayment_auto_claimer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conviction_checker_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conviction/plan44_conviction.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conviction/plan45_conviction.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/insurance_tracker_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/calendar_notifier_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/sanctions_optimization_enterprise.rego (interfejs CZĘŚĆ 9)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/solidarity_auto_calc_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/edelivery
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/esig
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/conviction
+
+## 🎯 CEL ANALIZY
+
+1. **e-Doręczenia (priorytet):** obowiązek (kto/od kiedy — potwierdź
+   stan 2026 z Bbb.md), adres, skutki doręczenia (14 dni — domniemanie),
+   tracker przychodzących/wychodzących, powiązanie z ePUAP — wdróż braki.
+2. **Podpisy:** kiedy wymagany kwalifikowany (art. 126 § 5 OP?), kiedy
+   profil zaufany wystarczy (art. 20a), eIDAS — matryca dokument×podpis,
+   auto-aplikator podpisu — komplet?
+3. **WIS (art. 42a–42h VAT):** wniosek, opłata (zweryfikuj — 0 zł?),
+   termin wydania (3 miesiące), skutki — asystent + autorequest pełny?
+4. **Pełnomocnictwa (art. 138a–138o OP):** ogólne (CRPA), szczególne,
+   do doręczeń, oddzielne dla męża/żony? — pełny cykl (utworzenie,
+   odwołanie, CRPA) — wdróż braki.
+5. **Obrona:** generator odwołania (art. 220 — 14 dni), zażalenia,
+   skargi do WSA (30 dni), odpowiedzi na wezwanie US, wniosek o ulgi
+   (67a), nadpłatę (75), czynny żal (interfejs CZĘŚĆ 9) — każdy dokument
+   = reguła treści + tracker terminu.
+6. **Sprawy (proceeding_tracker):** statusy (wszczęte, wezwanie,
+   decyzja, odwołanie, WSA), terminy, pełnomocnicy — komplet stanów?
+7. **Skazania (conviction):** art. 41 KK (zakaz działalności), 108 PZP
+   (wykluczenie z zamówień) — reguły sprawdzające konsekwencje
+   (interfejs CZĘŚĆ 9/15) — komplet?
+8. **Zero-hardcode:** terminy (14/30 dni), opłaty przez data.thresholds.jdg.*.
+9. **Genialne pomysły (min. 12):** „sekretariat cyfrowy" (odbiera
+   e-Doręczenia, klasyfikuje, wgrywa do tracker spraw, przypomina),
+   auto-generator pism z szablonów prawnych, kalkulator ryzyka decyzji
+   (judicial_trend), mapa „jeden dzień przed terminem", asystent
+   negocjacji z US (raty/umorzenie), CRPA manager.
+
+## 🏗️ SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA
+
+- Werdykt 25-polowy (`jdg.edelivery.*`, `jdg.esig.*`, `jdg.poa.*`);
+  progi DuckDB (CZĘŚĆ 22).
+- KKS/Ordynacja (czynny żal, odwołania — treść prawna): CZĘŚĆ 9.
+- KSeF (UPO, e-faktury — e-Doręczenia interfejs): CZĘŚĆ 13.
+- CEIDG (obowiązek e-Doręczeń): CZĘŚĆ 14; terminy hyper (CZĘŚĆ 18).
+- Mirror policies/ + MANIFEST po zmianach.
+
+## 🔁 WYMOGI NADRZĘDNE (powtórzone dla pewności)
+
+Aby osiągnąć zaawansowany poziom Enterprise: Przeprowadź głębokie myślenie nad każdym
+kontraktem, przeprowadź głęboką analizę każdej zależności domenowej i wdrażaj wyłącznie
+rozwiązania klasy poziom ENTERPRISE — zinnowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale raportu.
+Przeprowadź głębokie myślenie nad konsekwencjami każdej zmiany dla innych części,
+przeprowadź głęboką analizę spójności rule_id, pakietów i progów; każda reguła musi służyć
+zaawansowany poziom Enterprise oraz poziomowi ENTERPRISE całości — z innowacyjnymi
+ulepszeniami wyprzedzającymi profesjonalistów w testach i narzędziach.
+Przeprowadź głębokie myślenie przed każdym wdrożeniem i przeprowadź głęboką analizę po
+wdrożeniu (weryfikacja); utrzymuj zaawansowany poziom Enterprise w dokumentacji oraz
+poziom ENTERPRISE w metrykach — zinnowacyjne ulepszenia wyprzedzające profesjonalistów na zakończenie każdej sekcji raportu.
+
+## ⚡ SUPLEMENT WYMOGÓW KAMPANII (zgodność fraz — wymagane)
+
+- Przeprowadź głębokie myślenie — w każdym kroku tej części.
+- przeprowadź głęboką analizę — dla każdej zależności tej części.
+- zaawansowany poziom Enterprise — standard każdej sekcji raportu.
+- poziom ENTERPRISE — cel każdego wdrożenia.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — obowiązek w każdym rozdziale.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — także w testach i narzędziach.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — wieńczą raport tej części.
+
+## 🧪 WDROŻENIE I WERYFIKACJA
+
+1. Wdróż ulepszenia (e-Doręczenia, pisma, WIS, poa, tracker).
+2. Walidacje + testy: pytest test_edelivery*, test_esig*, test_poa*,
+   natywne tests/rego/test_native_*edelivery*/*esig*/*conviction*;
+   generate_manifest.py; sync policies.
+
+## 📐 FORMAT RAPORTU (JDG/raporty_enterprise_v4/17_ENTERPRISE_URZEDY_OBRONA.txt)
+
+- Tytuł: „RAPORT ENTERPRISE — CZĘŚĆ 17: ENTERPRISE cz.2 — URZĘDY, E-DORĘCZENIA, OBRONA PRZED KAS"
+- Executive Summary TOP 10; rozdziały: e-Doręczenia, podpisy, WIS,
+  pełnomocnictwa, generator pism, tracker spraw, skazania; WDROŻONE
+  zmiany; Genialne pomysły; mapa drogowa; honesty report.
+  Mermaid: cykl sprawy (wezwanie → odwołanie → WSA); flowchart e-Doręczeń.
+
+## 🧹 PO ZAKOŃCZENIU PRACY
+
+WYCZYŚĆ OKNO KONTEKSTOWE — nowa konwersacja. Raport w
+JDG/raporty_enterprise_v4/. Następny Prompt: 18/25 (Hyper/Plan45 + konteksty specjalne).
