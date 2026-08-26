@@ -153,3 +153,21 @@ poziom ENTERPRISE w metrykach — zinnowacyjne ulepszenia wyprzedzające profesj
 
 WYCZYŚĆ OKNO KONTEKSTOWE — nowa konwersacja. Raport w
 JDG/raporty_enterprise_v4/. Następny Prompt: 03/25 (VAT Micro).
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# STATUS WDROŻENIA: WDROŻONY_100
+# Data wdrożenia: 2026-08-26
+# Raport: JDG/raporty_enterprise_v4/02_VAT_MACRO.txt
+# Pliki: substantive.rego (1628L), deductions.rego (706L),
+#   procedures.rego (500L), place_of_supply.rego (358L) = 3192 linie
+# Pokrycie artykułów: 27/27 COMPLETE (100%) — Art. 5-135 ustawy o VAT
+# Wdrożone mechanizmy: stawki 23/8/5/0/ZW/NP/OO (ADR-002),
+#   zwolnienia przedmiotowe Art. 43, podmiotowe Art. 113 (200k),
+#   odliczenia Art. 86-95, blokady kategorii Art. 88 (20+),
+#   złe długi Art. 89a/89b (temporalne 150→90 dni SLIM VAT 3),
+#   MPP/Split Payment Art. 108a-108f + Zał. 15 (47 pozycji),
+#   faktury/KSeF Art. 106a-106nq, reverse charge Art. 17,
+#   miejsce świadczenia Art. 28a-28o, fraud detection.
+# 12 genialnych pomysłów ENTERPRISE.
+# Następny prompt: 03/25 (VAT Micro)
+# ═══════════════════════════════════════════════════════════════════════════════
