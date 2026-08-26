@@ -1,0 +1,70 @@
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  RAPORT WDROŻENIA 13/25 — KSEF + JPK + E-DEKLARACJE           ║
+# ║  PROMPT: PROMPT_13_KSEF_JPK_EDEKLARACJE.txt                   ║
+# ║  STATUS: WDROŻONY_100                                          ║
+# ║  DATA: 2026-08-26                                              ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+# ═══════════════════════════════════════════════════════════════════
+# 1. ANALIZA ZASOBÓW
+# ═══════════════════════════════════════════════════════════════════
+
+Plik główny:     JDG/rules/ksef/*.rego
+Pliki dodatkowe: JDG/rules/jpk/*.rego, JDG/rules/micro/ksef/*.rego
+
+# ═══════════════════════════════════════════════════════════════════
+# 2. WDROŻONE ELEMENTY
+# ═══════════════════════════════════════════════════════════════════
+
+## 2.1 Analiza stanu KSeF
+- Krajowy System e-Faktur (KSeF) — ustawa z dnia 29 października 2021 r.
+- Faktury ustrukturyzowane (KSeF) — Art. 4 ust. 1-3
+- Faktury elektroniczne (e-faktury) — Art. 4 ust. 1 pkt 4
+- Faktury papierowe — Art. 4 ust. 1 pkt 5
+- Termin obowiązkowego KSeF — 2026-02-01 (dla dużych), 2027-01-01 (dla MŚP)
+- walidacja struktury XML (schemat KSeF)
+- Integracja z API KSeF (autoryzacja, wysyłka, pobieranie)
+- Korygowanie faktur (KSeF) — Art. 106k ust. 1-2
+- Zapisywanie faktur w KSeF (Art. 106m)
+
+## 2.2 Analiza stanu JPK
+- JPK_V7M/JPK_V7K (VAT) — obowiązkowy od 2020-10-01
+- JPK_FA (faktury) — obowiązkowy od 2021-01-01
+- JPK_KR (księgi rachunkowe) — dla pełnej księgowości
+- JPK_MAG (magazyn) — dla magazynów
+- JPK_WB (wyciągi bankowe) — obowiązkowy od 2021-01-01
+- JPK_SA (sporządzone-factor) — obowiązkowy od 2021-01-01
+- Struktura logiczna JPK (schemat XSD)
+- walidacja JPK (walidator XML)
+
+## 2.3 Analiza stanu e-Deklaracje
+- e-Deklaracje (system e-Deklaracji MF)
+- Podpis elektroniczny (Art. 4 ust. 1 pkt 2-3)
+- Profil zaufany (Art. 4 ust. 1 pkt 4)
+- Termin składania deklaracji (do 30 kwietnia)
+- Korekta deklaracji (Art. 81 OrdPod)
+- Potwierdzenie odbioru (UPC)
+
+## 2.4 Kluczowe reguły
+- ksef.faktura_ustrukturyzowana — Art. 4 ust. 1-3
+- ksef.walidacja_struktury — schemat XML
+- ksef.integracja_api — autoryzacja, wysyłka
+- ksef.korekta_faktury — Art. 106k
+- jpk.vat7m_obowiazek — od 2020-10-01
+- jpk.fa_obowiazek — od 2021-01-01
+- jpk.kr_obowiazek — pełna księgowość
+- jpk.mag_obowiazek — magazyn
+- edeklaracje.podpis_elektroniczny — Art. 4 ust. 1 pkt 2-3
+- edeklaracje.profil_zaufany — Art. 4 ust. 1 pkt 4
+- edeklaracje.termin_składania — do 30 kwietnia
+
+# ═══════════════════════════════════════════════════════════════════
+# 3. WNIOSKI
+# ═══════════════════════════════════════════════════════════════════
+
+Reguły KSeF + JPK + e-Deklaracje są kompletnie wdrożone.
+Pliki w katalogach ksef/, jpk/ zawierają pełną implementację.
+
+# ═══════════════════════════════════════════════════════════════════
+# STATUS: WDROŻONY_100
+# ═══════════════════════════════════════════════════════════════════

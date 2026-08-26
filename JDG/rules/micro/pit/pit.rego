@@ -25,18 +25,20 @@ default decide := {
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.pit.a6.r1: pit_a6_r1_eligibility
+# Art. 6 ust. 2 ustawy o PIT — wspólne rozliczenie małżonków
+# Warunek: JDG + skala podatkowa + małżeństwo + wspólne rozliczenie
 decide := {
     "matched": true,
     "rule_id": "jdg.micro.pit.a6.r1",
     "package": "jdg.micro.pit",
     "priority": 60006,
     "micro_rule_active": true,
-    "valid_from": "1992-01-01",
+    "valid_from": "2022-07-01",
     "valid_to": null,
     "vat_rate": "",
     "rounding_level": "",
     "gtu_code": "",
-    "pit_form": "",
+    "pit_form": "SCALE",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
@@ -49,25 +51,30 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-    "_warnings": ["[MICRO] Wspólne rozliczenie małżonków: sprawdzenie czy przepis ma zastosowanie do JDG"]
+    "_legal_basis": "Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+    "_warnings": ["[MICRO] Wspólne rozliczenie małżonków: JDG na skali + małżeństwo + wspólne rozliczenie"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "tax_form", "") == "PIT_SCALE"
+    object.get(input.jdg_entrepreneur, "marital_status", "") == "MARRIED"
+    object.get(input.jdg_entrepreneur, "joint_filing", false) == true
 }
 
-# jdg.micro.pit.a6.r2: pit_a6_r2_positive_1
+# jdg.micro.pit.a6.r2: pit_a6_r2_joint_filing_limit
+# Art. 6 ust. 2 ustawy o PIT — limit wspólnego rozliczenia
+# Warunek: dochód małżonków łączny ≤ 240 000 PLN (efektywny próg)
 else := {
     "matched": true,
     "rule_id": "jdg.micro.pit.a6.r2",
     "package": "jdg.micro.pit",
     "priority": 60007,
     "micro_rule_active": true,
-    "valid_from": "1992-01-01",
+    "valid_from": "2022-07-01",
     "valid_to": null,
     "vat_rate": "",
     "rounding_level": "",
     "gtu_code": "",
-    "pit_form": "",
+    "pit_form": "SCALE",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
@@ -80,25 +87,31 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-    "_warnings": ["[MICRO] Wspólne rozliczenie małżonków: warunek pozytywny — potwierdzenie zastosowania"]
+    "_legal_basis": "Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+    "_warnings": ["[MICRO] Wspólne rozliczenie: limit 240 000 PLN dochodu łącznego"]
 } {
-    object.get(input.invoice, "pit_condition_met", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "tax_form", "") == "PIT_SCALE"
+    object.get(input.jdg_entrepreneur, "joint_filing", false) == true
+    combined_income := object.get(input.jdg_entrepreneur, "joint_filing_income", 0)
+    combined_income <= 240000
 }
 
-# jdg.micro.pit.a6.r3: pit_a6_r3_positive_2
+# jdg.micro.pit.a6.r3: pit_a6_r3_no_separate_activities
+# Art. 6 ust. 2 ustawy o PIT — wyłączenie wspólnego rozliczenia
+# Warunek: oboje małżonkowie prowadzą działalność JDG (NIE mogą się wspólnie rozliczać)
 else := {
     "matched": true,
     "rule_id": "jdg.micro.pit.a6.r3",
     "package": "jdg.micro.pit",
     "priority": 60008,
     "micro_rule_active": true,
-    "valid_from": "1992-01-01",
+    "valid_from": "2022-07-01",
     "valid_to": null,
     "vat_rate": "",
     "rounding_level": "",
     "gtu_code": "",
-    "pit_form": "",
+    "pit_form": "SCALE",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
@@ -109,27 +122,31 @@ else := {
     "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
-    "_routing": "",
-    "_routing_reason": "",
-    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-    "_warnings": ["[MICRO] Wspólne rozliczenie małżonków: drugi warunek pozytywny spełniony"]
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "Wspólne rozliczenie WYKLUCZONE — oboje małżonkowie prowadzą JDG",
+    "_legal_basis": "Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+    "_warnings": ["[MICRO] Wspólne rozliczenie: WYKLUCZONE — oboje małżonkowie prowadzą JDG"]
 } {
-    object.get(input.jdg_entrepreneur, "pit_a6_r3_pass", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "joint_filing", false) == true
+    object.get(input.jdg_entrepreneur, "spouse_has_jdg", false) == true
 }
 
-# jdg.micro.pit.a6.r4: pit_a6_r4_positive_3
+# jdg.micro.pit.a6.r4: pit_a6_r4_tax_free_amount_joint
+# Art. 6 ust. 2 ustawy o PIT — kwota wolna przy wspólnym rozliczeniu
+# Efektywna kwota wolna: 2 × 30 000 = 60 000 PLN
 else := {
     "matched": true,
     "rule_id": "jdg.micro.pit.a6.r4",
     "package": "jdg.micro.pit",
     "priority": 60009,
     "micro_rule_active": true,
-    "valid_from": "1992-01-01",
+    "valid_from": "2022-07-01",
     "valid_to": null,
     "vat_rate": "",
     "rounding_level": "",
     "gtu_code": "",
-    "pit_form": "",
+    "pit_form": "SCALE",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
@@ -142,13 +159,18 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-    "_warnings": ["[MICRO] Wspólne rozliczenie małżonków: trzeci warunek pozytywny — walidacja"]
+    "_legal_basis": "Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+    "_warnings": ["[MICRO] Wspólne rozliczenie: kwota wolna 60 000 PLN (2 × 30 000)"]
 } {
-    object.get(input.jdg_entrepreneur, "pit_a6_r4_checks", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "tax_form", "") == "PIT_SCALE"
+    object.get(input.jdg_entrepreneur, "joint_filing", false) == true
+    object.get(input.jdg_entrepreneur, "spouse_has_jdg", false) == false
 }
 
-# jdg.micro.pit.a6.r5: pit_a6_r5_negative_1
+# jdg.micro.pit.a6.r5: pit_a6_r5_not_married
+# Art. 6 ust. 2 ustawy o PIT — wyłączenie wspólnego rozliczenia
+# Warunek: JDG nie jest w związku małżeńskim → brak wspólnego rozliczenia
 else := {
     "matched": true,
     "rule_id": "jdg.micro.pit.a6.r5",
@@ -160,7 +182,7 @@ else := {
     "vat_rate": "",
     "rounding_level": "",
     "gtu_code": "",
-    "pit_form": "",
+    "pit_form": "SCALE",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
@@ -173,13 +195,17 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-    "_warnings": ["[MICRO] Wspólne rozliczenie małżonków: wyłączenie — przepis NIE ma zastosowania"]
+    "_legal_basis": "Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+    "_warnings": ["[MICRO] Wspólne rozliczenie: NIEDOSTĘPNE — nie jesteś w związku małżeńskim"]
 } {
-    object.get(input.invoice, "pit_exclusion_applies", false) == false
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "tax_form", "") == "PIT_SCALE"
+    object.get(input.jdg_entrepreneur, "marital_status", "") != "MARRIED"
 }
 
-# jdg.micro.pit.a6.r6: pit_a6_r6_negative_2
+# jdg.micro.pit.a6.r6: pit_a6_r6_not_scale_form
+# Art. 6 ust. 2 ustawy o PIT — wyłączenie wspólnego rozliczenia
+# Warunek: JDG NIE jest na skali podatkowej → brak wspólnego rozliczenia
 else := {
     "matched": true,
     "rule_id": "jdg.micro.pit.a6.r6",
@@ -204,25 +230,28 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-    "_warnings": ["[MICRO] Wspólne rozliczenie małżonków: drugie wyłączenie — sprawdź wyjątki"]
+    "_legal_basis": "Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+    "_warnings": ["[MICRO] Wspólne rozliczenie: NIEDOSTĘPNE — nie jesteś na skali podatkowej"]
 } {
-    object.get(input.invoice, "pit_exclusion_2", false) == false
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "tax_form", "") != "PIT_SCALE"
 }
 
-# jdg.micro.pit.a6.r7: pit_a6_r7_exception_1
+# jdg.micro.pit.a6.r7: pit_a6_r7_child_tax_credit_joint
+# Art. 27f ust. 2 ustawy o PIT — ulga na dzieci przy wspólnym rozliczeniu
+# Warunek: wspólne rozliczenie + dzieci = podwojona kwota ulgi
 else := {
     "matched": true,
     "rule_id": "jdg.micro.pit.a6.r7",
     "package": "jdg.micro.pit",
     "priority": 60012,
     "micro_rule_active": true,
-    "valid_from": "1992-01-01",
+    "valid_from": "2022-07-01",
     "valid_to": null,
     "vat_rate": "",
     "rounding_level": "",
     "gtu_code": "",
-    "pit_form": "",
+    "pit_form": "SCALE",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
@@ -235,10 +264,13 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-    "_warnings": ["[MICRO] Wspólne rozliczenie małżonków: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
+    "_legal_basis": "Art. 27f ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+    "_warnings": ["[MICRO] Wspólne rozliczenie: ulga na dzieci — podwojona kwota"]
 } {
-    object.get(input.invoice, "pit_a6_exception", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "tax_form", "") == "PIT_SCALE"
+    object.get(input.jdg_entrepreneur, "joint_filing", false) == true
+    object.get(input.jdg_entrepreneur, "child_tax_credit_amount", 0) > 0
 }
 
 # jdg.micro.pit.a6.r8: pit_a6_r8_exception_2
@@ -2423,13 +2455,15 @@ else := {
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.pit.a21.r1: pit_a21_r1_eligibility
+# Art. 21 ust. 1 pkt 148 ustawy o PIT — zwolnienie dla młodych (do 26 lat)
+# Warunek: wiek < 26 lat + przychody z umowy o pracę/stażu ≤ 85 528 PLN
 decide := {
     "matched": true,
     "rule_id": "jdg.micro.pit.a21.r1",
     "package": "jdg.micro.pit",
     "priority": 60082,
     "micro_rule_active": true,
-    "valid_from": "1992-01-01",
+    "valid_from": "2022-07-01",
     "valid_to": null,
     "vat_rate": "",
     "rounding_level": "",
@@ -2447,20 +2481,25 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-    "_warnings": ["[MICRO] Zwolnienia przedmiotowe PIT: sprawdzenie czy przepis ma zastosowanie do JDG"]
+    "_legal_basis": "Art. 21 ust. 1 pkt 148 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+    "_warnings": ["[MICRO] Zwolnienie młodych (do 26 lat): limit 85 528 PLN — NIE dotyczy JDG!"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "age", 0) < 26
+    object.get(input.jdg_entrepreneur, "income_from_employment", 0) <= 85528
+    object.get(input.jdg_entrepreneur, "income_source", "") == "EMPLOYMENT"
 }
 
-# jdg.micro.pit.a21.r2: pit_a21_r2_positive_1
+# jdg.micro.pit.a21.r2: pit_a21_r2_return_after_absence
+# Art. 21 ust. 1 pkt 152 ustawy o PIT — zwolnienie powracających (po 3 latach)
+# Warunek: powrót po 3 latach nieobecności + limit 85 528 PLN
 else := {
     "matched": true,
     "rule_id": "jdg.micro.pit.a21.r2",
     "package": "jdg.micro.pit",
     "priority": 60083,
     "micro_rule_active": true,
-    "valid_from": "1992-01-01",
+    "valid_from": "2022-07-01",
     "valid_to": null,
     "vat_rate": "",
     "rounding_level": "",
@@ -2478,20 +2517,25 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-    "_warnings": ["[MICRO] Zwolnienia przedmiotowe PIT: warunek pozytywny — potwierdzenie zastosowania"]
+    "_legal_basis": "Art. 21 ust. 1 pkt 152 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+    "_warnings": ["[MICRO] Zwolnienie powracających (po 3 latach): limit 85 528 PLN — NIE dotyczy JDG!"]
 } {
-    object.get(input.invoice, "pit_condition_met", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "returned_after_3_years", false) == true
+    object.get(input.jdg_entrepreneur, "income_from_employment", 0) <= 85528
+    object.get(input.jdg_entrepreneur, "income_source", "") == "EMPLOYMENT"
 }
 
-# jdg.micro.pit.a21.r3: pit_a21_r3_positive_2
+# jdg.micro.pit.a21.r3: pit_a21_r3_family_4plus
+# Art. 21 ust. 1 pkt 153 ustawy o PIT — zwolnienie 4+
+# Warunek: 4+ dzieci + limit 85 528 PLN + źródło: umowa o pracę
 else := {
     "matched": true,
     "rule_id": "jdg.micro.pit.a21.r3",
     "package": "jdg.micro.pit",
     "priority": 60084,
     "micro_rule_active": true,
-    "valid_from": "1992-01-01",
+    "valid_from": "2022-07-01",
     "valid_to": null,
     "vat_rate": "",
     "rounding_level": "",
@@ -2509,20 +2553,25 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-    "_warnings": ["[MICRO] Zwolnienia przedmiotowe PIT: drugi warunek pozytywny spełniony"]
+    "_legal_basis": "Art. 21 ust. 1 pkt 153 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+    "_warnings": ["[MICRO] Zwolnienie 4+: limit 85 528 PLN — NIE dotyczy JDG!"]
 } {
-    object.get(input.jdg_entrepreneur, "pit_a21_r3_pass", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "children_count", 0) >= 4
+    object.get(input.jdg_entrepreneur, "income_from_employment", 0) <= 85528
+    object.get(input.jdg_entrepreneur, "income_source", "") == "EMPLOYMENT"
 }
 
-# jdg.micro.pit.a21.r4: pit_a21_r4_positive_3
+# jdg.micro.pit.a21.r4: pit_a21_r4_senior_65plus
+# Art. 21 ust. 1 pkt 154 ustawy o PIT — zwolnienie seniorów (65+)
+# Warunek: wiek ≥ 65 lat + limit 85 528 PLN + emerytura/renta
 else := {
     "matched": true,
     "rule_id": "jdg.micro.pit.a21.r4",
     "package": "jdg.micro.pit",
     "priority": 60085,
     "micro_rule_active": true,
-    "valid_from": "1992-01-01",
+    "valid_from": "2022-07-01",
     "valid_to": null,
     "vat_rate": "",
     "rounding_level": "",
@@ -2540,20 +2589,26 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-    "_warnings": ["[MICRO] Zwolnienia przedmiotowe PIT: trzeci warunek pozytywny — walidacja"]
+    "_legal_basis": "Art. 21 ust. 1 pkt 154 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+    "_warnings": ["[MICRO] Zwolnienie seniorów (65+): limit 85 528 PLN — NIE dotyczy JDG!"]
 } {
-    object.get(input.jdg_entrepreneur, "pit_a21_r4_checks", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "age", 0) >= 65
+    object.get(input.jdg_entrepreneur, "income_from_pension", 0) <= 85528
+    object.get(input.jdg_entrepreneur, "income_source", "") == "PENSION"
 }
 
-# jdg.micro.pit.a21.r5: pit_a21_r5_negative_1
+# jdg.micro.pit.a21.r5: pit_a21_r5_no_jdg_exemption
+# Art. 21 ust. 1 pkt 148-154 ustawy o PIT — wyłączenie JDG
+# WAŻNE: Zwolnienia art. 21 ust. 1 pkt 148/152/153/154 NIE dotyczą
+# dochodów z działalności gospodarczej (JDG) — tylko umowy o pracę/emerytury
 else := {
     "matched": true,
     "rule_id": "jdg.micro.pit.a21.r5",
     "package": "jdg.micro.pit",
     "priority": 60086,
     "micro_rule_active": true,
-    "valid_from": "1992-01-01",
+    "valid_from": "2022-07-01",
     "valid_to": null,
     "vat_rate": "",
     "rounding_level": "",
@@ -2571,10 +2626,11 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-    "_warnings": ["[MICRO] Zwolnienia przedmiotowe PIT: wyłączenie — przepis NIE ma zastosowania"]
+    "_legal_basis": "Art. 21 ust. 1 pkt 148-154 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+    "_warnings": ["[MICRO] Zwolnienia: NIEDOSTĘPNE dla dochodów z JDG — tylko umowy o pracę/emerytury!"]
 } {
-    object.get(input.invoice, "pit_exclusion_applies", false) == false
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "income_source", "") == "JDG_BUSINESS"
 }
 
 # jdg.micro.pit.a21.r6: pit_a21_r6_negative_2

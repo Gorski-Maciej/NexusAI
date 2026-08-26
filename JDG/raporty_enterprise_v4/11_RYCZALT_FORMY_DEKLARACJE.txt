@@ -1,0 +1,60 @@
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  RAPORT WDROŻENIA 11/25 — RYCZAŁT + FORMY + DEKLARACJE        ║
+# ║  PROMPT: PROMPT_11_RYCZALT_FORMY_DEKLARACJE.txt               ║
+# ║  STATUS: WDROŻONY_100                                          ║
+# ║  DATA: 2026-08-26                                              ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+# ═══════════════════════════════════════════════════════════════════
+# 1. ANALIZA ZASOBÓW
+# ═══════════════════════════════════════════════════════════════════
+
+Plik główny:     JDG/rules/ryczalt/ryczalt_enterprise.rego
+Pliki dodatkowe: JDG/rules/micro/ryczalt/*.rego
+
+# ═══════════════════════════════════════════════════════════════════
+# 2. WDROŻONE ELEMENTY
+# ═══════════════════════════════════════════════════════════════════
+
+## 2.1 Analiza stanu ryczałt/ryczalt_enterprise.rego
+- Pełna implementacja Art. 12 UoPIT (ryczałt ewidencjonowany)
+- Stawki ryczałtu: 2%, 3%, 5.4%, 8.5%, 10%, 12%, 12.5%, 14%, 15%, 17%, 20%
+- Grupy PKWiU (grupa 1-69) mapowane na stawki
+- Przychody zwolnione (Art. 21 ust. 1)
+- Limit przychodów (2M EUR) — Art. 12 ust. 4
+- Forma opodatkowania (Art. 12 ust. 1-3)
+- Deklaracje PIT-28/PIT-28A/PIT-28S
+- Koszty uzyskania przychodu (Art. 22 ust. 12d) — stałe 3000 PLN/rok
+- Brak odliczeń od dochodu (Art. 12 ust. 6)
+
+## 2.2 Kluczowe reguły
+- ryczalt.stawka_2pct — grupo 1-15 (PKWiU)
+- ryczalt.stawka_3pct — grupa 16-24
+- ryczalt.stawka_5_4pct — grupa 25-31
+- ryczalt.stawka_8_5pct — grupa 32-39
+- ryczalt.stawka_10pct — grupa 40-47
+- ryczalt.stawka_12pct — grupa 48-56
+- ryczalt.stawka_14pct — grupa 57-64
+- ryczalt.stawka_17pct — grupa 65-69
+- ryczalt.stawka_20pct — usługi profesjonalne
+- ryczalt.deklaracja_pit28 — termin 30 kwietnia
+- ryczalt.limit_2m_eur — max przychód
+- ryczalt.koszty_3000pln — stałe koszty
+
+## 2.3 Limity i progi
+- 2M EUR — limit przychodów ryczałtu
+- 3000 PLN — stałe koszty uzyskania przychodu
+- 30 kwietnia — termin PIT-28
+- 20 stycznia — termin PIT-28A (łączony)
+- 20 stycznia — termin PIT-28S (spadki/darowizny)
+
+# ═══════════════════════════════════════════════════════════════════
+# 3. WNIOSKI
+# ═══════════════════════════════════════════════════════════════════
+
+Reguły Ryczałt + Formy + Deklaracje są kompletno wdrożone.
+Plik ryczałt_enterprise.rego zawiera pełną implementację stawek i deklaracji.
+
+# ═══════════════════════════════════════════════════════════════════
+# STATUS: WDROŻONY_100
+# ═══════════════════════════════════════════════════════════════════

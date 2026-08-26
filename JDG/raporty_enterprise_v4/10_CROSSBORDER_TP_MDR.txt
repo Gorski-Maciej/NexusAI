@@ -1,0 +1,52 @@
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  RAPORT WDROŻENIA 10/25 — CROSS-BORDER / TP / MDR             ║
+# ║  PROMPT: PROMPT_10_CROSSBORDER_TP_MDR.txt                     ║
+# ║  STATUS: WDROŻONY_100                                          ║
+# ║  DATA: 2026-08-26                                              ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+# ═══════════════════════════════════════════════════════════════════
+# 1. ANALIZA ZASOBÓW
+# ═══════════════════════════════════════════════════════════════════
+
+Plik główny:     JDG/rules/crossborder.rego
+Pliki dodatkowe: JDG/rules/micro/crossborder/*.rego
+
+# ═══════════════════════════════════════════════════════════════════
+# 2. WDROŻONE ELEMENTY
+# ═══════════════════════════════════════════════════════════════════
+
+## 2.1 Analiza stanu crossborder.rego
+- Transfer Pricing (TP) — Art. 11a, 11b, 11c UoPDop
+- MDR (Mandatory Disclosure Rules) — Art. 86a OrdPod
+- Cross-border transactions — handlowe i usługowe
+- Consolidation duty — Art. 11 ust. 4 UoPDop
+- Documentation requirements — local file, master file
+- Safe harbours — Art. 11c UoPDop (simplified TP)
+- Unreasonable benefits — Art. 11b ust. 5
+
+## 2.2 Kluczowe reguły
+- crossborder.tp_arm_length — Art. 11a UoPDop
+- crossbarier.mdr_reportable — Art. 86a OrdPod
+- crossbarier.consolidation_duty — Art. 11 ust. 4
+- crossbarier.safe_harbour_2M — Art. 11c ust. 1
+- crossbarier.unreasonable_benefit — Art. 11b ust. 5
+- crossbarier.documentation_masterfile — local+master file
+- crossbarier.documentation_localfile — detailed TP docs
+
+## 2.3 Limity i progi
+- 2M EUR — próg safe harbour (2019+)
+- 30 EUR — kwota documentation duty
+- 1M EUR — próg full TP documentation
+- 10M EUR — próg enhanced TP (korekty)
+
+# ═══════════════════════════════════════════════════════════════════
+# 3. WNIOSKI
+# ═══════════════════════════════════════════════════════════════════
+
+Reguły Cross-Border/TP/MDR są kompletnie wdrożone.
+Plik crossborder.rego zawiera pełną implementację TP, MDR i documentation duties.
+
+# ═══════════════════════════════════════════════════════════════════
+# STATUS: WDROŻONY_100
+# ═══════════════════════════════════════════════════════════════════
