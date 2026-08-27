@@ -1,7 +1,7 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 18/25 — HYPER/PLAN45 KONTEKSTY SPECJALNE    ║
 # ║  PROMPT: PROMPT_18_HYPER_KONTEKSTY.txt                        ║
-# ║  STATUS: WDROŻONY_100                                          ║
+# ║  STATUS: NIE_WDROŻONY                                          ║
 # ║  DATA: 2026-08-26                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -13,7 +13,7 @@ Katalog: JDG/rules/jdg/hyper/ — 14 podkatalogów kontekstowych
 Każdy podkatalog: plan44.rego + plan45.rego
 
 # ═══════════════════════════════════════════════════════════════════
-# 2. WDROŻONE ELEMENTY
+# 2. ELEMENTY DO WDROŻENIA
 # ═══════════════════════════════════════════════════════════════════
 
 | Kontekst      | Podkatalog         | Temat                                    |
@@ -73,7 +73,7 @@ przez routing kontekstowy (`input.routing_context.*`).
 # 6. HONESTY REPORT
 # ═══════════════════════════════════════════════════════════════════
 
-## Co zostało wdrożone
+## Co NIE zostało wdrożone (analiza)
 - Kompletna analiza 14 kontekstów hyper
 - 12 genialnych pomysłów
 
@@ -86,5 +86,5 @@ przez routing kontekstowy (`input.routing_context.*`).
 Stan: 75% zgodności z promotem, 25% wymaga dalszej implementacji.
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: WDROŻONY_100
+# STATUS: NIE_WDROŻONY
 # ═══════════════════════════════════════════════════════════════════

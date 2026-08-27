@@ -12,6 +12,15 @@ import data.jdg.helpers
 import future.keywords.in
 default decide := {"matched":false,"rule_id":"jdg.temporal.no_match","package":"jdg.temporal","priority":1622}
 
+# ── ADR-002 (CZĘŚĆ 1): epoki czasowe externalizowane do data.thresholds.jdg.temporal_epochs ──
+epoch_2018 := data.thresholds.jdg.temporal_epochs.e2018
+epoch_2019 := data.thresholds.jdg.temporal_epochs.e2019
+epoch_2020 := data.thresholds.jdg.temporal_epochs.e2020
+epoch_2021 := data.thresholds.jdg.temporal_epochs.e2021
+epoch_2022 := data.thresholds.jdg.temporal_epochs.e2022
+epoch_2023 := data.thresholds.jdg.temporal_epochs.e2023
+epoch_2025 := data.thresholds.jdg.temporal_epochs.e2025
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # HELPERS TEMPORALNE (P03 GLM52 — naprawa składni P1614/P1616/P1618):
 # wartości warunkowe jako FUNKCJE (deterministyczne, testowalne) zamiast
@@ -150,12 +159,12 @@ else := {
     "pit_form":"","pit_rate":"0.17","pit_bracket":"0.32","pit_annual_return_type":"","pit_threshold_pln": data.thresholds.pit.pit_relief_shared_limit,
     "kus_qualification":"","kus_percent":0,
     "zus_social_base_type":"","zus_health_rate":"",
-    "business_status":"","temporal_year":2019,
+    "business_status":"","temporal_year":epoch_2019,
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 27 PIT (stan prawny na 2019 r.)",
     "_warnings":["Historyczna stawka PIT 2019: 17% + 32% powyżej 85 528 PLN. Stawki zmienione od 2022 do 12%/32% (Polski Ład)."]
 } {
-    input.temporal.effective_date_year == 2019
+    input.temporal.effective_date_year == epoch_2019
     input.temporal.pit_rate_lookup == true
 }
 
@@ -620,7 +629,7 @@ else := {
     "_warnings":["Ulga dla klasy średniej ZNIESIONA od 01.01.2023 — NIE odliczaj jej w 2026! Obowiązywała tylko w 2022 (Polski Ład). Korekty za 2022: nadal możliwe do 5 lat."]
 } {
     tax_year:=object.get(input.temporal,"effective_date_year",2026)
-    tax_year>=2023
+    tax_year>=epoch_2023
     object.get(input.temporal,"middle_class_relief_check",false)==true
 }
 
@@ -631,13 +640,13 @@ else := {
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",
     "kus_qualification":"","kus_percent":0,
     "zus_social_base_type":"","zus_health_rate":"",
-    "business_status":"","middle_class_relief_active":true,"middle_class_relief_year":2022,
+    "business_status":"","middle_class_relief_active":true,"middle_class_relief_year":epoch_2022,
     "_routing":"","_routing_reason":"",
     "_legal_basis":"Art. 26 ust. 1 pkt 2aa-2ab PIT (stan prawny 2022)",
     "_warnings":["Ulga dla klasy średniej AKTYWNA w 2022: dochody 30 000-120 000 zł (skala), wzór: (A*6.68%-380.50)/0.17 dla A≤100k, (A*7.24%-525.12)/0.17 dla A>100k. Od 2023 zniesiona."]
 } {
     tax_year:=object.get(input.temporal,"effective_date_year",2026)
-    tax_year==2022
+    tax_year==epoch_2022
     object.get(input.temporal,"middle_class_relief_check",false)==true
 }
 
@@ -724,7 +733,7 @@ else := {
     "_warnings":["Polski Ład przejściowy (01-06.2022): PIT 17%/32%, próg 85 528 PLN, kwota wolna 30k PLN od 01.01.2022. Ulga dla klasy średniej aktywna."]
 } {
     tax_year:=object.get(input.temporal,"effective_date_year",2026)
-    tax_year==2022
+    tax_year==epoch_2022
     object.get(input.temporal,"is_polish_lad_transition_period",false)==true
 }
 
@@ -778,8 +787,8 @@ else := {
     "_warnings":["COVID-19 legacy: przedłużone terminy ZUS (tarcza antykryzysowa), VAT (zwolnienie z odsetek), PIT (przedłużone zeznania roczne). Okres 03.2020-12.2021 — historyczne."]
 } {
     tax_year:=object.get(input.temporal,"effective_date_year",2026)
-    tax_year>=2020
-    tax_year<=2021
+    tax_year>=epoch_2020
+    tax_year<=epoch_2021
     object.get(input.temporal,"covid_legacy_applies",false)==true
 }
 

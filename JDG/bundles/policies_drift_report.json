@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-08-22T19:55:32.598739+00:00",
-  "rules_files": 472,
-  "policies_files": 546,
+  "generated_at": "2026-08-27T11:42:32.380809+00:00",
+  "rules_files": 490,
+  "policies_files": 564,
   "missing_in_policies": [],
   "extra_in_policies": [
     "data/thresholds_sc.rego",
@@ -79,12 +79,10 @@
     "tax/zus.rego",
     "tests/sc_main_test.rego"
   ],
-  "changed_checksum": [
-    "main_jdg.rego"
-  ],
-  "drift_files": 1,
-  "drift_pct": 0.21,
+  "changed_checksum": [],
+  "drift_files": 0,
+  "drift_pct": 0.0,
   "gate_threshold_pct": 0.0,
-  "gate_passed": false,
-  "conclusion": "DRIFT_EXCEEDS_GATE"
+  "gate_passed": true,
+  "conclusion": "SINGLE_SOURCE_OF_TRUTH"
 }

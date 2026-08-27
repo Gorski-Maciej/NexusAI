@@ -23,7 +23,7 @@ default decide := {
 # jdg.micro.amort_a22n.r1: register_mandatory — ewidencja ŚT obowiązkowa
 decide := {
     "matched": true, "rule_id": "jdg.micro.amort_a22n.r1",
-    "package": "jdg.micro.amort_a22n", "priority": 81301,
+    "package": "jdg.micro.amort_a22n", "priority": 81301,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -41,7 +41,7 @@ decide := {
 # jdg.micro.amort_a22n.r2: register_elements — elementy ewidencji
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22n.r2",
-    "package": "jdg.micro.amort_a22n", "priority": 81302,
+    "package": "jdg.micro.amort_a22n", "priority": 81302,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -60,7 +60,7 @@ else := {
 # jdg.micro.amort_a22n.r3: register_update_improvement — aktualizacja przy ulepszeniu
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22n.r3",
-    "package": "jdg.micro.amort_a22n", "priority": 81303,
+    "package": "jdg.micro.amort_a22n", "priority": 81303,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -81,7 +81,7 @@ else := {
 # jdg.micro.amort_a22n.r4: register_liquidation — likwidacja ŚT
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22n.r4",
-    "package": "jdg.micro.amort_a22n", "priority": 81304,
+    "package": "jdg.micro.amort_a22n", "priority": 81304,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,
@@ -101,7 +101,7 @@ else := {
 # jdg.micro.amort_a22n.r5: blocked_no_register — blokada: brak ewidencji
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22n.r5",
-    "package": "jdg.micro.amort_a22n", "priority": 81305,
+    "package": "jdg.micro.amort_a22n", "priority": 81305,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "NKUP", "kus_percent": 0,
@@ -121,7 +121,7 @@ else := {
 # jdg.micro.amort_a22n.r6: register_sale — sprzedaż ŚT w ewidencji
 else := {
     "matched": true, "rule_id": "jdg.micro.amort_a22n.r6",
-    "package": "jdg.micro.amort_a22n", "priority": 81306,
+    "package": "jdg.micro.amort_a22n", "priority": 81306,"micro_rule_active":true,"valid_from":"1992-01-01","valid_to":null,
     "vat_rate": "0.23", "rounding_level": "", "gtu_code": "",
     "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
     "kus_qualification": "", "kus_percent": 0,

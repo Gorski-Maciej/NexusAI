@@ -1,7 +1,7 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 10/25 — CROSS-BORDER / TP / MDR             ║
 # ║  PROMPT: PROMPT_10_CROSSBORDER_TP_MDR.txt                     ║
-# ║  STATUS: WDROŻONY_100                                          ║
+# ║  STATUS: NIE_WDROŻONY                                          ║
 # ║  DATA: 2026-08-26                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -13,7 +13,7 @@ Plik główny:     JDG/rules/crossborder.rego
 Pliki dodatkowe: JDG/rules/micro/crossborder/*.rego
 
 # ═══════════════════════════════════════════════════════════════════
-# 2. WDROŻONE ELEMENTY
+# 2. ELEMENTY DO WDROŻENIA
 # ═══════════════════════════════════════════════════════════════════
 
 ## 2.1 Analiza stanu crossborder.rego
@@ -44,9 +44,9 @@ Pliki dodatkowe: JDG/rules/micro/crossborder/*.rego
 # 3. WNIOSKI
 # ═══════════════════════════════════════════════════════════════════
 
-Reguły Cross-Border/TP/MDR są kompletnie wdrożone.
+Reguły Cross-Border/TP/MDR NIE są wdrożone w 100% (status: NIE_WDROŻONY).
 Plik crossborder.rego zawiera pełną implementację TP, MDR i documentation duties.
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: WDROŻONY_100
+# STATUS: NIE_WDROŻONY
 # ═══════════════════════════════════════════════════════════════════

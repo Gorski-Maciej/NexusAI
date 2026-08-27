@@ -1,7 +1,7 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 16/25 — ENTERPRISE INTELIGENCJA S1-S16      ║
 # ║  PROMPT: PROMPT_16_ENTERPRISE_INTELIGENCJA.txt                 ║
-# ║  STATUS: WDROŻONY_100                                          ║
+# ║  STATUS: NIE_WDROŻONY                                          ║
 # ║  DATA: 2026-08-26                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -13,7 +13,7 @@ Pliki enterprise w rules/: ~15 plików *enterprise*.rego
 Pliki innovations: p*_innovations_v8/v9, r*_innovations_v9
 
 # ═══════════════════════════════════════════════════════════════════
-# 2. WDROŻONE ELEMENTY (S1–S16)
+# 2. ELEMENTY DO WDROŻENIA (S1–S16)
 # ═══════════════════════════════════════════════════════════════════
 
 ## S1  tax_optimization       — Optymalizacja podatkowa
@@ -72,7 +72,7 @@ Pliki innovations: p*_innovations_v8/v9, r*_innovations_v9
 # 5. HONESTY REPORT
 # ═══════════════════════════════════════════════════════════════════
 
-## Co zostało wdrożone
+## Co NIE zostało wdrożone (analiza)
 - Kompletna analiza S1–S16
 - Zasada graniczna AI↔Rego
 - 12 genialnych pomysłów
@@ -87,5 +87,5 @@ Raport oparty o analizę plików enterprise w rules/.
 Stan: 75% zgodności z promotem, 25% wymaga dalszej implementacji.
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: WDROŻONY_100
+# STATUS: NIE_WDROŻONY
 # ═══════════════════════════════════════════════════════════════════

@@ -243,7 +243,7 @@ else := {
     "matched":true,"rule_id":"jdg.employer.small_mandate_flat_tax",
     "package":"jdg.employer","priority":1220,
     "vat_rate":"","rounding_level":"","gtu_code":"","vat_exemption":"","procedure":"",
-    "pit_form":"","pit_rate":"17%_RYCZAŁT","pit_bracket":"","pit_annual_return_type":"PIT-8AR",
+    "pit_form":"","pit_rate":"0.17","pit_bracket":"","pit_annual_return_type":"PIT-8AR",
     "kus_qualification":"","kus_percent":0,
     "zus_social_base_type":"","zus_health_rate":"",
     "business_status":"","employment_tax_obligation":"SMALL_MANDATE_FLAT",

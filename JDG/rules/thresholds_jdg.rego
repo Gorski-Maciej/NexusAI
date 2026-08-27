@@ -2278,6 +2278,39 @@ limits := {
     "trust_auto_post": 0.92,                     # Próg auto-post dla risk.rego P1
     "pkpir_integrity_min": 0.70,                 # Min integrity score PKPiR
     "kks_discrepancy_threshold": 0.30,           # Próg rozbieżności KKS Art.54
+
+    # ── CZĘŚĆ 1 (rdzeń orkiestratora) — ADR-002: progi edge_cases.rego ──
+    "vat_exemption_alert": 100000,               # Alert YTD przy 50% limitu 200k (R0589 edge_cases)
+    "lump_sum_alert_eur": 1500000,               # Alert 75% limitu 2M EUR (R0624 edge_cases)
+    "small_taxpayer_limit_eur": 2000000,         # Art. 2 pkt 25 VAT — mały podatnik (R0625)
+    "small_taxpayer_alert_eur": 1000000,         # Alert 50% limitu małego podatnika (R0625)
+    "full_accounting_limit_eur": 2000000,        # Art. 24a PIT — próg pełnej księgowości (R0626)
+    "health_linear_floor": 10000,                # Próg zapłaconej składki zdrowotnej (R0633)
+    "thermo_relief_limit": 53000,                # Ulga termomodernizacyjna — limit (R0648)
+    "thermo_relief_min_costs": 40000,            # Ulga termomodernizacyjna — próg wejścia (R0648)
+    "proto_relief_limit": 300000,                # Ulga na prototyp — limit (R0651)
+    "proto_relief_min_costs": 200000,            # Ulga na prototyp — próg wejścia (R0651)
+    "expansion_relief_limit": 1000000,           # Ulga na ekspansję — limit (R0654)
+    "expansion_relief_min_costs": 500000,        # Ulga na ekspansję — próg wejścia (R0654)
+    "loss_one_time_limit": 5000000,              # Jednorazowe odliczenie straty COVID — max 5M (R0657)
+    "loss_one_time_alert": 1000000,              # Jednorazowe odliczenie straty — alert (R0657)
+    "cash_register_threshold": 20000,            # Kasa fiskalna — próg B2C (R0662)
+    "giif_reporting_eur": 15000,                 # GIIF — próg raportowania EUR (R0664)
+    "cesop_reporting_eur": 25000,                # CESOP — próg raportowania EUR (R0665)
+    "b2c_eu_threshold_eur": 10000,               # Sprzedaż wysyłkowa B2C — próg 10k EUR (R0686)
+}
+
+# ── CZĘŚĆ 1 (rdzeń orkiestratora) — ADR-002: EPOKI CZASOWE (rok jako dana) ──
+# Lata przełomowe prawa używane w czasowych guardach temporal.rego — zero
+# literałów w logice; aktualizacja epok = zmiana danych, bez rekompilacji.
+temporal_epochs := {
+    "e2018": 2018,   # próg jednorazowej amortyzacji 100k (Art. 22d PIT)
+    "e2019": 2019,   # stawki PIT 17%/32%; dokumenty pracownicze ZUS 10 lat
+    "e2020": 2020,   # start COVID-19 legacy (tarcze)
+    "e2021": 2021,   # koniec COVID-19 legacy
+    "e2022": 2022,   # Polski Ład: 12%/32%, próg 120k, kwota wolna 30k
+    "e2023": 2023,   # zniesienie ulgi dla klasy średniej
+    "e2025": 2025,   # historyczne stawki PIT 2025
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

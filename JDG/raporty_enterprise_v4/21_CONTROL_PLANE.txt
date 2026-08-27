@@ -1,7 +1,7 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 21/25 — CONTROL PLANE OPA JAKO SYSTEM       ║
 # ║  PROMPT: PROMPT_21_CONTROL_PLANE.txt                          ║
-# ║  STATUS: WDROŻONY_100                                          ║
+# ║  STATUS: NIE_WDROŻONY                                          ║
 # ║  DATA: 2026-08-26                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -14,7 +14,7 @@
 | tools/   | ~337         | ~10         |
 
 # ═══════════════════════════════════════════════════════════════════
-# 2. WDROŻONE ELEMENTY — F1–F6 z WIZJI V2
+# 2. ELEMENTY DO WDROŻENIA — F1–F6 z WIZJI V2
 # ═══════════════════════════════════════════════════════════════════
 
 ## F1 Legal Twin / LKG
@@ -93,7 +93,7 @@
 # 6. HONESTY REPORT
 # ═══════════════════════════════════════════════════════════════════
 
-## Co zostało wdrożone
+## Co NIE zostało wdrożone (analiza)
 - Kompletna analiza ~337 narzędzi Python
 - Implementacja F1–F6
 - 12 genialnych pomysłów
@@ -107,5 +107,5 @@
 Stan: 80% zgodności z promotem, 20% wymaga dalszej implementacji.
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: WDROŻONY_100
+# STATUS: NIE_WDROŻONY
 # ═══════════════════════════════════════════════════════════════════

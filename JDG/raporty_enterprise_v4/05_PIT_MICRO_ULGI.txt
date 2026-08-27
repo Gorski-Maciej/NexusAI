@@ -1,7 +1,7 @@
 ════════════════════════════════════════════════════════════════════════════════
 RAPORT ENTERPRISE — CZĘŚĆ 5: PIT MICRO (WARSTWA ATOMOWA + ULGI)
 PROMPT 05/25 — Kampania Enterprise V4
-Data: 2026-08-26 | Status: WDROŻONY_100
+Data: 2026-08-26 | Status: NIE_WDROŻONY
 ════════════════════════════════════════════════════════════════════════════════
 
 EXECUTIVE SUMMARY
@@ -10,7 +10,7 @@ Warstwa mikro-atomowa PIT implementuje precyzyjne reguły per artykuł ustawy
 o PIT w architekturze Dual-Layer (Micro + Macro). Plik główny:
 • pit.rego (25,207 linii) — 46 artykułów, ~521 reguł Micro
 
-TOP 10 WDROŻONYCH ULEPSZEŃ:
+TOP 10 ULEPSZEŃ DO WDROŻENIA:
 1. Art. 6 — Przeklasyfikowano reguły-szkielety na realne warunki prawne
 2. Art. 21 — Zaimplementowano zwolnienia (młodzi 26-, powracający 4+, seniorzy 65+)
 3. Kluczowa uwaga: zwolnienia art. 21 ust. 1 pkt 148/152/153/154 NIE dotyczą JDG!

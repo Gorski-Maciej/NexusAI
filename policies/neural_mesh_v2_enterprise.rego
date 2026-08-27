@@ -75,7 +75,7 @@ else := {
     "priority": 500004,
     "_routing": "BLOCK_AND_ALERT",
     "_routing_reason": "Cross-domain: Brak faktury VAT → KKS Art. 62 § 2 + sankcja VAT!",
-    "_legal_basis": "Art. 62 § 2 KKS; Art. 106b VAT; Art. 106nq VAT",
+    "_legal_basis": "Art. 62 § 2 KKS; Art. 106b VAT; Art. 106ga ust. 1 VAT",
     "_warnings": ["[NEURAL MESH] Brak faktury = WYKROCZENIE KKS (Art.62§2) + sankcja 100% VAT (Art.106nq) → podwójna kara!"]
 } {
     invoice_missing := object.get(input.invoice, "invoice_required_but_missing", false)

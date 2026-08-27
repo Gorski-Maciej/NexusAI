@@ -1,7 +1,7 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 17/25 — ENTERPRISE URZEDY + E-DORECZENIA   ║
 # ║  PROMPT: PROMPT_17_ENTERPRISE_URZEDY_OBRONA.txt               ║
-# ║  STATUS: WDROŻONY_100                                          ║
+# ║  STATUS: NIE_WDROŻONY                                          ║
 # ║  DATA: 2026-08-26                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -16,7 +16,7 @@
 | conviction/ | ~2    | ~300   |
 
 # ═══════════════════════════════════════════════════════════════════
-# 2. WDROŻONE ELEMENTY
+# 2. ELEMENTY DO WDROŻENIA
 # ═══════════════════════════════════════════════════════════════════
 
 ## 2.1 e-Doręczenia (ustawa z 18.11.2020)
@@ -76,7 +76,7 @@
 # 5. HONESTY REPORT
 # ═══════════════════════════════════════════════════════════════════
 
-## Co zostało wdrożone
+## Co NIE zostało wdrożone (analiza)
 - Kompletna analiza e-Doręczeń, podpisów, obrony, WIS
 - 12 genialnych pomysłów
 
@@ -89,5 +89,5 @@
 Stan: 80% zgodności z promotem, 20% wymaga dalszej implementacji.
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: WDROŻONY_100
+# STATUS: NIE_WDROŻONY
 # ═══════════════════════════════════════════════════════════════════

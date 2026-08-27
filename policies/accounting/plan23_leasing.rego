@@ -6,7 +6,7 @@ package jdg.accounting
 import future.keywords.in
 import data.jdg.helpers
 
-default decide := {"matched":false,"rule_id":"jdg.accounting.no_match","package":"jdg.accounting","priority":99999}
+default decide := {"matched":false,"rule_id":"jdg.accounting.plan23.no_match","package":"jdg.accounting","priority":99999}
 
 # jdg.accounting.operating_lease_kup — Leasing operacyjny — cała rata KUP
 decide :=   {"matched":true,"rule_id":"jdg.accounting.operating_lease_kup","package":"jdg.accounting","priority":860,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Leasing operacyjny — cała rata KUP","_legal_basis":"Art. 23b PIT","_warnings":[]} {

@@ -42,6 +42,7 @@ _ths_ord := object.get(data.jdg.thresholds, "ord", {
     "wsa_appeal_days": 30,
     "interest_lombard_multiplier": 2.0,
     "jpk_request_days": 14,
+    "interpretation_days": 30,
 })
 
 _ths_kks := object.get(data.jdg.thresholds, "kks", {
@@ -55,6 +56,11 @@ _ths_kks := object.get(data.jdg.thresholds, "kks", {
     "lesser_weight_max_pln": 5000.0,
     "recidivism_days_window": 1825,
     "statute_limitation_kks_years": 5,
+    # Art. 45 KKS — okres zatarcia skazania (zależny od rodzaju kary)
+    "expungement_misdemeanor_years": 3,       # wykroczenie skarbowe — 3 lata
+    "expungement_crime_years": 5,             # przestępstwo skarbowe — 5 lat
+    # Art. 53 § 6 KKS — mała wartość: 500 × min. wynagrodzenie
+    "small_value_multiple": 500,
 })
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -341,6 +347,200 @@ else := {
     now := object.get(input.jdg_entrepreneur, "eval_date", "2026-01-01")
     years_elapsed := (time.parse_rfc3339(now) - time.parse_rfc3339(offense_date)) / 31557600000000000
     years_elapsed >= _ths_kks.statute_limitation_kks_years
+}
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  KKS ART. 45 / 53 — ZATARCIE SKAZANIA I MAŁA WARTOŚĆ                        ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.micro.kks.a45.expungement_tracker — zatarcie skazania (art. 45 KKS):
+# skazanie ulega zatarciu z mocy prawa po upływie okresu (wykroczenie 3 lata,
+# przestępstwo 5 lat; grzywna 1 rok przy dobrowolnym wykonaniu). Po zatarciu
+# skazanie uważa się za niebyłe — brak wpływu na kontrakty i pozwolenia.
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.kks.a45.expungement_tracker",
+    "package": "jdg.micro.kks_ord_atomic_p11",
+    "priority": 214501,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "ACTIVE",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "expungement_eligible": true,
+    "expungement_years": expungement_years,
+    "expungement_date": expungement_date,
+    "conviction_considered_expunged": true,
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "_routing": "OK",
+    "_routing_reason": "Zatarcie skazania (art. 45 KKS) — okres upłynął, skazanie uznane za niebyłe",
+    "_legal_basis": "Art. 45 § 1-2 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
+    "_warnings": ["[MICRO P11] OBRONA: zatarcie skazania — brak wpływu na kontrakty i pozwolenia"],
+    "_provenance_tree": {
+        "art": "45 § 1-2",
+        "years": expungement_years,
+        "expungement_date": expungement_date
+    }
+} {
+    object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"
+    object.get(input.jdg_entrepreneur, "kks_expungement_check", false) == true
+    conviction_type := object.get(input.jdg_entrepreneur, "conviction_type", "PRZESTĘPSTWO")
+    years := {
+        "WYKROCZENIE": _ths_kks.expungement_misdemeanor_years,
+        "PRZESTĘPSTWO": _ths_kks.expungement_crime_years,
+        "OGRANICZENIE_WOLNOŚCI": _ths_kks.expungement_misdemeanor_years,
+    }[conviction_type]
+    expungement_years := years
+    penalty_end := object.get(input.jdg_entrepreneur, "penalty_end_date", "2020-01-01")
+    expungement_date := time.add_date(time.parse_rfc3339(penalty_end), years, 0, 0)
+    now := object.get(input.jdg_entrepreneur, "eval_date", "2026-01-01")
+    time.parse_rfc3339(now) > expungement_date
+}
+
+# jdg.micro.kks.a53.small_value — mała wartość (art. 53 § 6 KKS): czyn o wartości
+# nieprzekraczającej 500× minimalnego wynagrodzenia jest przestępstwem o małej
+# wartości → łagodniejsza gradacja (wykroczenie) i niższa kara.
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.kks.a53.small_value_classifier",
+    "package": "jdg.micro.kks_ord_atomic_p11",
+    "priority": 215301,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "ACTIVE",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "small_value_class": "MAŁA WARTOŚĆ",
+    "small_value_threshold_pln": threshold,
+    "small_value_benefit_note": "łagodniejsza gradacja — wyłączenie odpowiedzialności za wykroczenie przy niskiej szkodliwości",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": "Czyn o małej wartości (art. 53 § 6 KKS) — łagodniejsza gradacja kary",
+    "_legal_basis": "Art. 53 § 6 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) w zw. z art. 115 § 5 KK",
+    "_warnings": ["[MICRO P11] Mała wartość (art. 53 § 6) — obniżony wymiar odpowiedzialności"],
+    "_provenance_tree": {
+        "art": "53 § 6",
+        "multiple": _ths_kks.small_value_multiple,
+        "min_wage_pln": min_wage,
+        "threshold_pln": threshold
+    }
+} {
+    object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"
+    object.get(input.jdg_entrepreneur, "kks_small_value_check", false) == true
+    amount := object.get(input.jdg_entrepreneur, "offense_value_pln", 0)
+    min_wage := object.get(input.jdg_entrepreneur, "min_wage_pln", 4800.0)
+    threshold := round((min_wage * _ths_kks.small_value_multiple) * 100) / 100
+    amount > 0
+    amount <= threshold
+}
+
+# ╔══════════════════════════════════════════════════════════════════════════════╗
+# ║  ORDYNACJA ART. 14a/14d — INTERPRETACJE INDYWIDUALNE (Legal Twin)          ║
+# ╚══════════════════════════════════════════════════════════════════════════════╝
+
+# jdg.micro.ord.a14a.interpretation_protection — interpretacja indywidualna
+# (art. 14a-14b OrdPU): wniosek o interpretację do Dyrektora KIS → ochrona,
+# o ile stan faktyczny zgodny z przedstawionym; termin wydania 30 dni
+# (art. 14d § 1).
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.ord.a14a.interpretation_protection",
+    "package": "jdg.micro.kks_ord_atomic_p11",
+    "priority": 211401,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "ACTIVE",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "interpretation_protection_applicable": true,
+    "interpretation_term_days": _ths_ord.interpretation_days,
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": "Wniosek o interpretację indywidualną (art. 14a OrdPU) — ochrona przy zgodności stanu faktycznego",
+    "_legal_basis": "Art. 14a-14b ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
+    "_warnings": ["[MICRO P11] Interpretacja indywidualna — ochrona prawna, o ile stan faktyczny zgodny z opisanym"],
+    "_provenance_tree": {
+        "art": "14a-14b",
+        "term_days": _ths_ord.interpretation_days
+    }
+} {
+    object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"
+    object.get(input.jdg_entrepreneur, "interpretation_requested", false) == true
+    facts_match := object.get(input.jdg_entrepreneur, "facts_match_interpretation", false)
+    facts_match == true
+}
+
+# jdg.micro.ord.a14d.interpretation_deadline — termin wydania interpretacji
+# (art. 14d § 1): 30 dni; milczenie organu → uznanie wniosku (art. 14d § 2)
+# i ochrona, chyba że sprawa jest oczywiście bezprzedmiotowa.
+else := {
+    "matched": true,
+    "rule_id": "jdg.micro.ord.a14d.interpretation_deadline",
+    "package": "jdg.micro.kks_ord_atomic_p11",
+    "priority": 211402,
+    "vat_rate": "",
+    "rounding_level": "",
+    "gtu_code": "",
+    "pit_form": "",
+    "pit_rate": "",
+    "pit_bracket": "",
+    "pit_annual_return_type": "",
+    "kus_qualification": "",
+    "kus_percent": 0,
+    "zus_social_base_type": "",
+    "zus_health_rate": "",
+    "business_status": "ACTIVE",
+    "ceidg_registration_required": false,
+    "micro_rule_active": true,
+    "interpretation_deadline_days": _ths_ord.interpretation_days,
+    "interpretation_deemed_issued": true,
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "_routing": "OK",
+    "_routing_reason": "Milczenie organu po 30 dniach = uznanie wniosku (art. 14d § 2 OrdPU)",
+    "_legal_basis": "Art. 14d § 1-2 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
+    "_warnings": ["[MICRO P11] Milczące załatwienie wniosku o interpretację po 30 dniach — ochrona"],
+    "_provenance_tree": {
+        "art": "14d § 1-2",
+        "days": _ths_ord.interpretation_days
+    }
+} {
+    object.get(input.jdg_entrepreneur, "business_status", "") == "ACTIVE"
+    object.get(input.jdg_entrepreneur, "interpretation_requested", false) == true
+    days_since := object.get(input.jdg_entrepreneur, "days_since_application", 0)
+    days_since >= _ths_ord.interpretation_days
+    obviously_unfounded := object.get(input.jdg_entrepreneur, "case_obviously_unfounded", false)
+    obviously_unfounded == false
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗

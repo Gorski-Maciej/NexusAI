@@ -108,6 +108,8 @@ vat := {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 ksef_jpk_edeklaracje := {
+    "threshold_version": "ksef-jpk-2026.08",      # Golden Oracle F3 (kampania V3, część 11)
+    "legal_basis_version": "vat-106na-2026-02-01; edor-1598-2026-01-01", # Legal Twin
     "ksef_mandatory_from": "2026-02-01",          # art. 106na-106nb VAT
     "ksef_offline_grace_days": 7,
     "ksef_sanction_max_pln": 500000,
@@ -634,6 +636,27 @@ pit := {
     # Art. 21 ust. 1 pkt 148-154 PIT — wspólny limit ulg PIT-0 (mlodzi, powrót, 4+, senior)
     "pit_relief_shared_limit": 85528,            # PLN — limit łączny ulg PIT-0 (2026)
 
+    # ── PROMPT_04 (2026-08-22) — Danina solidarnościowa (Art. 30h PIT) ──
+    "pit_solidarity_threshold": 1000000,         # PLN — nadwyżka ponad 1 000 000 zł (Art. 30h ust. 2)
+    "pit_solidarity_rate": 0.04,                 # 4% — danina solidarnościowa (Art. 30h ust. 1)
+    "pit_solidarity_due_day": "04-30",           # deklaracja + wpłata do 30 kwietnia (Art. 30h ust. 4)
+
+    # ── PROMPT_04 (2026-08-22) — Ceny transferowe (Art. 23w, 23za, 23zf PIT) ──
+    # Art. 23w ust. 2 — progi dokumentacyjne lokalnej dokumentacji TP
+    "tp_doc_threshold_goods": 10000000,          # PLN — transakcja towarowa
+    "tp_doc_threshold_financial": 10000000,      # PLN — transakcja finansowa
+    "tp_doc_threshold_services": 2000000,        # PLN — transakcja usługowa
+    "tp_doc_threshold_other": 2000000,           # PLN — inna transakcja
+    # Art. 23w ust. 2a / Art. 23za ust. 1 — raje podatkowe (szkodliwa konkurencja)
+    "tp_doc_threshold_haven_financial": 2500000, # PLN — transakcja finansowa
+    "tp_doc_threshold_haven_other": 500000,      # PLN — transakcja inna niż finansowa
+    # Art. 23w ust. 1 — termin sporządzenia dokumentacji lokalnej
+    "tp_local_docs_due_month": 10,               # do końca 10. miesiąca po zakończeniu roku podatkowego
+    # Art. 23zf ust. 1 — termin złożenia TP-R
+    "tp_information_due_month": 11,              # do końca 11. miesiąca po zakończeniu roku podatkowego
+    # Art. 23m ust. 2 pkt 1 — próg znaczącego wpływu (powiązania)
+    "tp_significant_influence_pct": 0.25,        # >=25% udziałów / praw głosu / zysków
+
     # ── P05 GLM52 — PIT MAKRO (RAPORT_GLM52_P05_PIT_MAKRO.txt) ──
     # Art. 44 PIT — termin zaliczek (20. dzień miesiąca)
     "advance_due_day": 20,
@@ -702,6 +725,13 @@ zus := {
     "accident_rate_min": 0.0067,                 # 0.67% — min. stopa wypadkowa (art. 22 ust. 4 pkt 2 SUS)
     "accident_rate_max": 0.0333,                 # 3.33% — max. stopa wypadkowa (art. 22 ust. 4 pkt 1 SUS)
     "labour_fund_rate": 0.0245,                  # 2.45% — Fundusz Pracy
+
+    # Suma składek społecznych płatnika (emerytalna + rentowa + wypadkowa +
+    # chorobowa + Fundusz Pracy) = 19.52 + 8 + 1.67 + 2.45 + 2.45 = 34.09%
+    "zus_social_total_rate": 0.3409,             # 34.09% — łączna stopa społeczna (P780)
+
+    # Art. 19 SUS — roczny limit podstawy emerytalno-rentowej
+    "zus_annual_base_cap_multiplier": 30,        # 30-krotność przeciętnego wynagrodzenia
 
     # ── GLM52 P09 — ZUS MIKRO (mikro-atomowe reguły sus/zdrowotna/zasilkowa) ──
     # Podstawy wymiaru składek (art. 18/18a/18c SUS, mikro)
@@ -991,6 +1021,15 @@ crossborder := {
     # Art. 30da PIT — Exit tax
     "exit_tax_threshold_pln": 4000000,          # próg 4 000 000 PLN
     "exit_tax_rate_pct": 0.19,                  # 19%
+    "exit_tax_deferral_years_eea": 5,           # art. 30da ust. 8 — odroczenie UE/EOG
+
+    # V3-08 (kampania) — WHT / DAC8 / UK post-Brexit (zero hardcode)
+    "wht_annual_threshold_pln": 2000000,        # art. 26 ust. 2e CIT — próg pay-and-refund
+    "wht_standard_rate_pct": 0.20,              # art. 26 ust. 1 CIT — stawka standardowa
+    "dac8_threshold_eur": 2000,                 # DAC8 Annex V — de minimis EUR/sprzedawcę
+    "dac8_threshold_tx": 30,                    # DAC8 Annex V — de minimis liczba transakcji
+    "dac8_deadline": "31_stycznia",             # termin raportu operatora platformy
+    "uk_vat_registration_threshold_gbp": 90000, # UK VAT Act 1994 s.3 — próg B2C GBP
 
     # GLM52 P12 — TP progi dokumentacyjne (art. 23zf PIT) — domknięcie pustyni pokrycia
     "tp_goods_transactions_pln": 10000000,      # transakcje towarowe: 10 000 000 zł
@@ -1047,8 +1086,10 @@ pcc_local_excise := {
 
     # Akcyza — alkohol (zł/hl, 2026)
     "excise_ethanol_per_hl": 6900,              # etanol 100%
-    "excise_beer_per_plato": 8.57,              # piwo za °Plato
-    "excise_wine_per_hl": 185,                  # wino
+    "excise_beer_per_plato": 8.57,              # piwo za °Plato    "excise_wine_per_hl": 185,                 # wino
+    # V3-10 (kampania) — wersjonowanie snapshotu dla Decision Certificates
+    "threshold_version": "pcc-local-2026.08",
+    "legal_basis_version": "isap-lkg-2026.08",
     "valid_from": "2026-01-01",
     "valid_to": null,
 }
@@ -1119,6 +1160,7 @@ ksef_jpk_etap20 := {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 rodo_aml_bdo_hr_etap21 := {
+    "threshold_version": "rodo-aml-bdo-2026.08",   # Golden Oracle F3 (kampania V3, część 12)
     "registry_version": "compliance-hr-etap21-2026.08",
     "source_registry": "data.jdg.legal_source_registry",
     "legal_basis_version": "isap-uodo-aml-bdo-kp-2026.08",
@@ -1277,8 +1319,12 @@ business_lifecycle := {
     "ryczalt_rate_3_pct": 0.03,                 # działalność wytwórcza 3%
     "ryczalt_rate_55_pct": 0.055,               # działalność wytwórcza/roboty budowlane 5,5%
     "ryczalt_rate_85_pct": 0.085,               # usługi 8,5%
-    "ryczalt_rate_125_pct": 0.125,              # wolne zawody 12,5%
-    "ryczalt_rate_17_pct": 0.17,                # najem/lekarze 17%
+    "ryczalt_rate_10_pct": 0.10,                 # wybrane usługi 10%
+    "ryczalt_rate_12_pct": 0.12,                 # wybrane usługi 12%
+    "ryczalt_rate_125_pct": 0.125,              # wybrane przychody 12,5%
+    "ryczalt_rate_14_pct": 0.14,                # wybrane usługi 14%
+    "ryczalt_rate_15_pct": 0.15,                # wybrane usługi 15%
+    "ryczalt_rate_17_pct": 0.17,                # wolne zawody 17%
     "ryczalt_rate_20_pct": 0.20,                # 20% (przychody z działów specjalnych)
     "ryczalt_rate_25_pct": 0.25,                # 25% (pozostałe usługi, art. 12 ust. 1 pkt 5)
 
@@ -2232,6 +2278,39 @@ limits := {
     "trust_auto_post": 0.92,                     # Próg auto-post dla risk.rego P1
     "pkpir_integrity_min": 0.70,                 # Min integrity score PKPiR
     "kks_discrepancy_threshold": 0.30,           # Próg rozbieżności KKS Art.54
+
+    # ── CZĘŚĆ 1 (rdzeń orkiestratora) — ADR-002: progi edge_cases.rego ──
+    "vat_exemption_alert": 100000,               # Alert YTD przy 50% limitu 200k (R0589 edge_cases)
+    "lump_sum_alert_eur": 1500000,               # Alert 75% limitu 2M EUR (R0624 edge_cases)
+    "small_taxpayer_limit_eur": 2000000,         # Art. 2 pkt 25 VAT — mały podatnik (R0625)
+    "small_taxpayer_alert_eur": 1000000,         # Alert 50% limitu małego podatnika (R0625)
+    "full_accounting_limit_eur": 2000000,        # Art. 24a PIT — próg pełnej księgowości (R0626)
+    "health_linear_floor": 10000,                # Próg zapłaconej składki zdrowotnej (R0633)
+    "thermo_relief_limit": 53000,                # Ulga termomodernizacyjna — limit (R0648)
+    "thermo_relief_min_costs": 40000,            # Ulga termomodernizacyjna — próg wejścia (R0648)
+    "proto_relief_limit": 300000,                # Ulga na prototyp — limit (R0651)
+    "proto_relief_min_costs": 200000,            # Ulga na prototyp — próg wejścia (R0651)
+    "expansion_relief_limit": 1000000,           # Ulga na ekspansję — limit (R0654)
+    "expansion_relief_min_costs": 500000,        # Ulga na ekspansję — próg wejścia (R0654)
+    "loss_one_time_limit": 5000000,              # Jednorazowe odliczenie straty COVID — max 5M (R0657)
+    "loss_one_time_alert": 1000000,              # Jednorazowe odliczenie straty — alert (R0657)
+    "cash_register_threshold": 20000,            # Kasa fiskalna — próg B2C (R0662)
+    "giif_reporting_eur": 15000,                 # GIIF — próg raportowania EUR (R0664)
+    "cesop_reporting_eur": 25000,                # CESOP — próg raportowania EUR (R0665)
+    "b2c_eu_threshold_eur": 10000,               # Sprzedaż wysyłkowa B2C — próg 10k EUR (R0686)
+}
+
+# ── CZĘŚĆ 1 (rdzeń orkiestratora) — ADR-002: EPOKI CZASOWE (rok jako dana) ──
+# Lata przełomowe prawa używane w czasowych guardach temporal.rego — zero
+# literałów w logice; aktualizacja epok = zmiana danych, bez rekompilacji.
+temporal_epochs := {
+    "e2018": 2018,   # próg jednorazowej amortyzacji 100k (Art. 22d PIT)
+    "e2019": 2019,   # stawki PIT 17%/32%; dokumenty pracownicze ZUS 10 lat
+    "e2020": 2020,   # start COVID-19 legacy (tarcze)
+    "e2021": 2021,   # koniec COVID-19 legacy
+    "e2022": 2022,   # Polski Ład: 12%/32%, próg 120k, kwota wolna 30k
+    "e2023": 2023,   # zniesienie ulgi dla klasy średniej
+    "e2025": 2025,   # historyczne stawki PIT 2025
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -2264,6 +2343,8 @@ rates := {
     "sickness_voluntary": zus.sickness_voluntary_rate,
     "accident": zus.accident_rate,
     "labour_fund": zus.labour_fund_rate,
+    "zus_social_total": zus.zus_social_total_rate,
+    "zus_annual_base_cap_multiplier": zus.zus_annual_base_cap_multiplier,
     "eur_pln": bounds.eur_pln,
     "mileage_rate": bounds.mileage_rate_per_km,
     "business_trip_diet": bounds.business_trip_diet,
@@ -2441,6 +2522,155 @@ unregistered_quarterly_multiplier(eval_date) = 2.25 {
     eval_date >= "2026-01-01"
 } else = 0.0 {
     true
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-13 — MICRO QUALITY / DECOUPLED BOUNDARY SNAPSHOT (ADR-002)
+# Legacy generated micro records are audited without rewriting their semantics.
+# Empty optional fields are normalized at the boundary; macro handoff requires
+# an explicit binding and golden input evidence.
+micro_quality_v3_13 := {
+    "threshold_version": "micro-quality-2026.08",
+    "legal_basis_version": "micro-quality-contract-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "mode": "DECOUPLED",
+    "no_auto_post": true,
+    "empty_field_policy": "EMPTY_OPTIONAL_TO_NULL_AT_BOUNDARY",
+    "binding_policy": "EXPLICIT_MICRO_RULE_TO_MACRO_RULE",
+    "golden_input_required": true,
+    "syntax_errors_block": true,
+    "duplicate_rule_ids_block": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-14 — HYPER CONTEXTS PLAN44/45 QUALITY SNAPSHOT (ADR-002)
+# Registry i progi są wersjonowane oraz konsumowane przez pakiet jakości.
+hyper_quality_v3_14 := {
+    "threshold_version": "hyper-quality-2026.08",
+    "legal_basis_version": "hyper-contexts-legal-2026.08",
+    "registry_version": "hyper-registry-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "context_catalog": ["GENERAL", "DEADLINES", "LIMITS", "SANCTIONS", "MDR", "FX", "AUDIT", "EDELIVERY", "FAMILY", "FORCE_MAJEURE", "PROCUREMENT", "SOLIDARITY", "WIS", "RESIDENCY", "TP", "ESIG"],
+    "allowed_deadline_statuses": ["OPEN", "DUE", "FILED", "OVERDUE", "SHIFTED", "BLOCKED"],
+    "allowed_sanction_maps": ["KKS", "ORD", "VAT", "BDO", "RODO", "AML"],
+    "working_day_policy": "NEXT_WORKING_DAY",
+    "alert_days": [7, 3, 1],
+    "no_auto_post": true,
+    "force_manual_review": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-15 — ENTERPRISE INITIATIVES / NEURAL MESH / SCORING SNAPSHOT (ADR-002)
+enterprise_quality_v3_15 := {
+    "threshold_version": "enterprise-quality-2026.08",
+    "registry_version": "enterprise-s1-s24-2026.08",
+    "legal_basis_version": "enterprise-legal-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "score_auto_post_min": 92,
+    "score_suggest_min": 75,
+    "score_abstain_max": 50,
+    "calibration_min_samples": 100,
+    "calibration_accuracy_min": 0.95,
+    "calibration_brier_max": 0.10,
+    "max_conflicts_for_suggest": 0,
+    "min_mesh_nodes": 13,
+    "min_mesh_edges": 12,
+    "min_red_team_scenarios": 10,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═════════════════════════════════════════════════════════════════════════
+# V3-16 — NARZĘDZIA + BRAMKI JAKOŚCI + GAP REPORTS SNAPSHOT (ADR-002)
+tools_quality_v3_16 := {
+    "threshold_version": "tools-quality-2026.08",
+    "registry_version": "quality-gates-2026.08",
+    "legal_basis_version": "quality-gates-legal-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "required_linters": ["lint_rego_rules", "validate_rules", "dead_rule_detector", "tautology_guard", "else_chain_dead_code_detector", "hardcoded_audit_gate"],
+    "required_validators": ["validate_legal_basis", "validate_enterprise_contract", "cross_ref_validator", "doc_consistency_validator", "inventory_reconciliation", "test_coverage_gate", "temporal_interval_gate", "manifest_v2", "legal_basis_audit"],
+    "required_gap_reports": ["legal_coverage_gap_report", "legal_coverage_heatmap", "traceability_matrix", "coverage_95_plan"],
+    "coverage_target_pct": 95,
+    "max_tautologies": 0,
+    "max_dead_criticals": 0,
+    "max_hardcode_findings": 0,
+    "manifest_diff_blocking": true,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═════════════════════════════════════════════════════════════════
+# V3-17 — TESTY + CI/CD + CHAOS + MUTATION + GOLDEN SNAPSHOT (ADR-002)
+# Progi spójne z tests_ci_quality_etap24 (mutation 85, fuzz 10000, property 200).
+tests_ci_quality_v3_17 := {
+    "threshold_version": "tests-ci-v3-2026.08",
+    "registry_version": "tests-ci-campaign-2026.08",
+    "legal_basis_version": "tests-ci-legal-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "coverage_target_pct": 95,
+    "min_mutation_score": 85,
+    "min_fuzz_cases": 10000,
+    "min_property_cases": 200,
+    "min_chaos_experiments": 5,
+    "golden_replay_required": true,
+    "required_workflows": ["ci.yml", "opa-ci.yml", "jdg-quality-gates-blocking.yml", "jdg-scheduled-drift.yml"],
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════
+# V3-18 — BUNDLES + POLICIES MIRROR + RULESTORE + MIGRACJE + DEPLOY SNAPSHOT (ADR-002)
+bundles_quality_v3_18 := {
+    "threshold_version": "bundles-v3-2026.08",
+    "registry_version": "bundles-campaign-2026.08",
+    "legal_basis_version": "bundles-legal-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "min_rulestore_migrations": 13,
+    "max_hot_reload_seconds": 60,
+    "max_rollback_mttr_min": 5,
+    "max_mirror_drift_pct": 0,
+    "max_rto_min": 15,
+    "max_rpo_min": 15,
+    "dr_game_day_max_days": 30,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════
+# V3-19 — API + CONTROL PLANE + UI / CENTRUM DECYZJI SNAPSHOT (ADR-002)
+# Progi spójne z ETAP 25 (17 ścieżek) i V2 F4 (centrum decyzji).
+api_ui_quality_v3_19 := {
+    "threshold_version": "api-ui-v3-2026.08",
+    "registry_version": "api-ui-campaign-2026.08",
+    "legal_basis_version": "api-ui-legal-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "min_api_endpoints": 17,
+    "max_documented_only_gaps": 0,
+    "min_soak_hours": 24,
+    "required_decision_modes": ["AUTO_POST", "SUGGEST", "ASK_USER"],
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════
+# V3-20 — DOKUMENTACJA + LEGAL TWIN + HARMONIZACJA SNAPSHOT (ADR-002)
+docs_quality_v3_20 := {
+    "threshold_version": "docs-v3-2026.08",
+    "registry_version": "docs-campaign-2026.08",
+    "legal_basis_version": "docs-legal-2026.08",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "campaign_total_parts": 20,
+    "min_v3_packages_in_manifest": 7,
+    "no_auto_post": true,
+    "manual_review_required": true,
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

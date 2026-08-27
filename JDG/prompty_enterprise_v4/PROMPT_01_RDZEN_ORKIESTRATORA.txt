@@ -175,15 +175,18 @@ raport w JDG/raporty_enterprise_v4/. Następny Prompt: 02/25 (VAT Macro).
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # STATUS WDROŻENIA: WDROŻONY_100
-# Data wdrożenia: 2026-08-26
+# Data wdrożenia: 2026-08-27
 # Raport: JDG/raporty_enterprise_v4/01_RDZEN_ORKIESTRATORA.txt
 # Walidacja: validate_rules.py — 0 błędów (439 plików, 11539 reguł)
 # Dead rule detector: 0 duplikatów rule_id
+# pytest Części 1: 155 testów zielonych; MANIFEST: 11855 bloków, score 92/100
+# policies mirror: hash-parity 100% / drift 0
 # Wdrożone mechanizmy: Multi-Pass PASS 0-8, Sharded Router v7.0,
 #   Temporalność (algebra interwałów, time-travel, 30+ detektorów),
 #   Runtime Invariants (INV-001..042), Decision Certificate (F4 V2),
 #   Provenance Tree (Merkle hash), Safe Merge (INV-018/042),
 #   80+ iteracji final_verdict (p01→p80), 200+ pakietów,
+#   ADR-002: zero hardcode w logice (temporal_epochs + 18 progów limits),
 #   12 genialnych pomysłów ENTERPRISE.
 # Następny prompt: 02/25 (VAT Macro)
 # ═══════════════════════════════════════════════════════════════════════════════

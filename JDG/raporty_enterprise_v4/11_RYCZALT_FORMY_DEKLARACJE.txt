@@ -1,7 +1,7 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 11/25 — RYCZAŁT + FORMY + DEKLARACJE        ║
 # ║  PROMPT: PROMPT_11_RYCZALT_FORMY_DEKLARACJE.txt               ║
-# ║  STATUS: WDROŻONY_100                                          ║
+# ║  STATUS: NIE_WDROŻONY                                          ║
 # ║  DATA: 2026-08-26                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -13,7 +13,7 @@ Plik główny:     JDG/rules/ryczalt/ryczalt_enterprise.rego
 Pliki dodatkowe: JDG/rules/micro/ryczalt/*.rego
 
 # ═══════════════════════════════════════════════════════════════════
-# 2. WDROŻONE ELEMENTY
+# 2. ELEMENTY DO WDROŻENIA
 # ═══════════════════════════════════════════════════════════════════
 
 ## 2.1 Analiza stanu ryczałt/ryczalt_enterprise.rego
@@ -56,5 +56,5 @@ Reguły Ryczałt + Formy + Deklaracje są kompletno wdrożone.
 Plik ryczałt_enterprise.rego zawiera pełną implementację stawek i deklaracji.
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: WDROŻONY_100
+# STATUS: NIE_WDROŻONY
 # ═══════════════════════════════════════════════════════════════════

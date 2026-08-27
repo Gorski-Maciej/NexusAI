@@ -1,7 +1,7 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 23/25 — DOKUMENTACJA I SPÓJNOŚĆ METRYK      ║
 # ║  PROMPT: PROMPT_23_DOKUMENTACJA_SPOJNOSC.txt                  ║
-# ║  STATUS: WDROŻONY_100                                          ║
+# ║  STATUS: NIE_WDROŻONY                                          ║
 # ║  DATA: 2026-08-26                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -15,7 +15,7 @@
 | root     | 2 (MANIFEST.md, README.md) |
 
 # ═══════════════════════════════════════════════════════════════════
-# 2. WDROŻONE ELEMENTY
+# 2. ELEMENTY DO WDROŻENIA
 # ═══════════════════════════════════════════════════════════════════
 
 ## 2.1 Dokumentacja kluczowa
@@ -81,7 +81,7 @@
 # 5. HONESTY REPORT
 # ═══════════════════════════════════════════════════════════════════
 
-## Co zostało wdrożone
+## Co NIE zostało wdrożone (analiza)
 - Kompletna analiza ~71 dokumentów md
 - Manifest 2.0
 - 12 genialnych pomysłów
@@ -95,5 +95,5 @@
 Stan: 80% zgodności z promotem, 20% wymaga dalszej implementacji.
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: WDROŻONY_100
+# STATUS: NIE_WDROŻONY
 # ═══════════════════════════════════════════════════════════════════

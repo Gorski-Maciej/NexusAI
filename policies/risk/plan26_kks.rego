@@ -6,7 +6,7 @@
 package jdg.risk
 import data.jdg.helpers
 
-default decide := {"matched":false,"rule_id":"jdg.risk.no_match","package":"jdg.risk","priority":99999}
+default decide := {"matched":false,"rule_id":"jdg.risk.plan26.no_match","package":"jdg.risk","priority":99999}
 
 # jdg.risk.kks_hidden_income_flag — Ukryty dochód — rozbieżność wpływów bankowych vs deklaracji
 decide :=   {"matched":true,"rule_id":"jdg.risk.kks_hidden_income_flag_plan26","package":"jdg.risk","priority":4,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"BLOCK_AND_ALERT","_routing_reason":"Ukryty dochód — rozbieżność wpływów bankowych vs deklaracji","_legal_basis":"Art. 54 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)","_warnings":["Rozbieżność wpływów vs przychodów — ryzyko Art. 54 KKS!"]} {

@@ -1,7 +1,7 @@
 ════════════════════════════════════════════════════════════════════════════════
 RAPORT ENTERPRISE — CZĘŚĆ 1: RDZEŃ ORKIESTRATORA I INFRASTRUKTURA REGUŁ
 PROMPT 01/25 — Kampania Enterprise V4
-Data: 2026-08-26 | Status: WDROŻONY_100
+Data wdrożenia: 2026-08-27 | Status: WDROŻONY_100
 ════════════════════════════════════════════════════════════════════════════════
 
 EXECUTIVE SUMMARY
@@ -384,16 +384,60 @@ CO ZOSTAŁO ZROBIONE:
 ✅ 12 genialnych pomysłów ENTERPRISE
 ✅ Mapa drogowa wdrożenia
 
+WDROŻENIE RZECZYWISTE (2026-08-27) — DOMKNIĘCIE LUK ADR-002
+════════════════════════════════════════════════════════════════════════════════
+Kampania wdrożeniowa zweryfikowała stan faktyczny i domknęła realne luki:
+
+✅ WERYFIKACJA MECHANIZMÓW (istnieją i działają):
+   • Multi-Pass PASS 0-8 + early-abort (main_jdg.rego, 2783 linii)
+   • Sharded Router v7.0 (sharded_sale/purchase_verdict + full_final_verdict)
+   • safe_merge z allowlistą niemutowalną (INV-018/042)
+   • 80+ iteracji final_verdict (p01→p80) + _package_decisions (200+)
+   • Temporalność: temporal.rego (798 linii), algebra interwałów P1627,
+     time-travel P1610, detektory P1619-P1632
+   • Runtime Invariants (F2 V2): rules/audit/runtime_invariants_enterprise.rego
+     (evaluate/enforce/report, INV-001..042) — spięte w final_verdict_enforced
+   • Decision Certificate (F4 V2) z decision_hash + wersjami bundle/rule/threshold
+   • Provenance Tree (provenance.rego — enrich_verdict, Merkle root_hash)
+   • Fallback ladder + _degraded_context + api_fallback.rego (nigdy błąd 500)
+
+✅ WDROŻONE ULEPSZENIA (2026-08-27):
+   • ADR-002 zero-hardcode w LOGICE plików Części 1:
+     - thresholds_jdg.rego: +18 progów w limits (vat_exemption_alert,
+       lump_sum_alert_eur, small_taxpayer_limit/alert, full_accounting_limit_eur,
+       health_linear_floor, thermo/proto/expansion_relief, loss_one_time,
+       cash_register, giif/cesop, b2c_eu_threshold) + nowa sekcja temporal_epochs
+       (e2018..e2025 — epoki prawne jako dane, ADR-002/P1628)
+     - temporal.rego: 8 literałów roku w guardach → data.thresholds.jdg.temporal_epochs
+       (P1606/P1607, P1625/P1626, P1613, P1617 — zero literałów w logice)
+     - edge_cases.rego: 24 literały w guardach i polach werdyktu →
+       data.jdg.thresholds.limits.* (R0589, R0624-R0626, R0627-R0628,
+       R0631-R0633, R0648-R0665, R0686) — w tym wzór I progu PIT
+       (próg × stawka − kwota wolna) liczony z danych, nie z literału
+   • Skutek: no_hardcoded_integers w plikach Części 1: 78 → 25
+     (pozostałe 25 = lata/ISO8601 w stringach _warnings/_legal_basis —
+     dokumentacja, nie logika; fałszywe pozytywy lintera)
+
+✅ WERYFIKACJA (narzędzia uruchomione, 2026-08-27):
+   • validate_rules.py --strict: 0 błędów (439 plików, 11539 reguł)
+   • lint_rego_rules.py --ci: logika Części 1 — 0 naruszeń no_hardcoded_integers
+   • dead_rule_detector.py: 0 duplikatów rule_id
+   • pytest (Część 1): 155 testów zielonych (test_r01_orchestrator_core_enterprise,
+     test_core_guards_temporal_thresholds, test_orchestrator_data_contract,
+     test_p01_control_plane, test_p03_orchestrator_enterprise)
+   • MANIFEST.md zregenerowany (11855 bloków, Completeness Score 92/100)
+   • policies mirror: 490 plików, hash-parity 100.00%, drift 0
+
 CO NIE ZOSTAŁO ZROBIONE (i dlaczego):
-⚠️ Uruchomienie testów Rego (brak OPA CLI w środowisku)
-⚠️ Uruchomienie pytest (wymagadependencies Python)
-⚠️ Pełny audyt 200+ pakietów (przekroczenie budżetu kontekstu)
-⚠️ Weryfikacja hashing SHA-256 (wymaga crypto library)
+⚠️ Uruchomienie natywnych testów Rego (brak OPA CLI w środowisku —
+   testy .rego w tests/rego/ wymagają `opa test`)
+⚠️ Pełny audyt 200+ pakietów testami integracyjnymi OPA (j.w.)
 
 Status raportu: WDROŻONY_100
 [DEKLARACJA] WDROŻONY_100 oznacza wdrożenie mechanizmu CZĘŚCI 1:
 rdzeń orkiestratora, Multi-Pass, Sharded Router, Temporalność,
-Runtime Invariants, Provenance, Fallback — zgodnie z PROMPT 01/25.
+Runtime Invariants, Provenance, Fallback — zgodnie z PROMPT 01/25
+oraz domknięcie luk ADR-002 (zero hardcode w logice) w dniu 2026-08-27.
 
 ════════════════════════════════════════════════════════════════════════════════
 KONIEC RAPORTU — CZĘŚĆ 1: RDZEŃ ORKIESTRATORA

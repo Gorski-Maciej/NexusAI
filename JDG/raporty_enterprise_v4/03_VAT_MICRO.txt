@@ -1,7 +1,7 @@
 ════════════════════════════════════════════════════════════════════════════════
 RAPORT ENTERPRISE — CZĘŚĆ 3: VAT MICRO (WARSTWA ATOMOWA PER ARTYKUŁ)
 PROMPT 03/25 — Kampania Enterprise V4
-Data: 2026-08-26 | Status: WDROŻONY_100
+Data: 2026-08-26 | Status: NIE_WDROŻONY
 ════════════════════════════════════════════════════════════════════════════════
 
 EXECUTIVE SUMMARY
@@ -11,7 +11,7 @@ ustawy o VAT w architekturze Dual-Layer (Micro + Macro). Plik główny:
 • vat.rego (28,924 linii) — 49 artykułów, ~571 reguł Micro
 • KSeF micro, margin scheme, place of supply, proportion — wsparcie
 
-TOP 10 WDROŻONYCH ULEPSZEŃ:
+TOP 10 ULEPSZEŃ DO WDROŻENIA:
 1. Art. 5 — Przeklasyfikowano 10 reguł-szkieletów na realne warunki prawne
 2. Art. 7 — Dodano definicje dostawy towarów (Art. 7 ust. 1-8)
 3. Art. 8 — Zaimplementowano świadczenie usług (Art. 8 ust. 1-2)

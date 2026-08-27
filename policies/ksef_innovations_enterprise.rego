@@ -12,7 +12,7 @@
 #   - LUKA-K18: KSeF Receipt Digest (odbiór faktur kosztowych)
 #   - LUKA-K16: UPO a odliczenie VAT w ewidencji zakupów
 # architecture: Enterprise Innovation Engine, First-Match-Wins else-chain
-# legal_basis: Art. 106na-106nq VAT; Art. 86 VAT (odliczenie); Art. 106ne VAT
+# legal_basis: Art. 106na-106ni VAT; Art. 86 VAT (odliczenie); Art. 106ne VAT
 # package: jdg.ksef_innovations
 # deprecated: false
 # priority_range: 1650-1699
@@ -119,7 +119,7 @@ else := {
     "ksef_sanction_first_violation": first_violation,
     "_routing": sanction_routing,
     "_routing_reason": sanction_reason,
-    "_legal_basis": "Art. 106nq VAT (dodatkowe zobowiązanie podatkowe)",
+    "_legal_basis": "Art. 106ga ust. 1 VAT (dodatkowe zobowiązanie podatkowe)",
     "_warnings": build_sanction_warnings(
         invoices_without_ksef, total_vat_exposed, sanction_100pct,
         sanction_70pct, sanction_50pct, sanction_max_cap, risk_level
@@ -193,7 +193,7 @@ else := {
     "ksef_receipt_next_digest_deadline": next_deadline,
     "_routing": digest_routing,
     "_routing_reason": digest_reason,
-    "_legal_basis": "Art. 106na-106nq VAT (KSeF); Art. 86 VAT (odliczenie)",
+    "_legal_basis": "Art. 106na-106ni VAT (KSeF); Art. 86 VAT (odliczenie)",
     "_warnings": build_digest_warnings(receipt_period, new_count, total_net, total_vat, last_digest)
 } {
     input.ksef_receipt_digest_check == true
@@ -245,7 +245,7 @@ else := {
     "ksef_outbox_delivery_strategy": delivery_strategy,
     "_routing": outbox_routing,
     "_routing_reason": outbox_reason,
-    "_legal_basis": "Art. 106na-106nq VAT; Specyfikacja API KSeF v3.0",
+    "_legal_basis": "Art. 106na-106ni VAT; Specyfikacja API KSeF v3.0",
     "_warnings": build_outbox_warnings(queue_size, oldest_hours, batch_ready, delivery_strategy)
 } {
     input.ksef_outbox_check == true

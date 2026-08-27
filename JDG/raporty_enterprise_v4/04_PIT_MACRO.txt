@@ -1,7 +1,7 @@
 ════════════════════════════════════════════════════════════════════════════════
 RAPORT ENTERPRISE — CZĘŚĆ 4: PIT MACRO (WARSTWA MAKRO + ULGI + ENTERPRISE)
 PROMPT 04/25 — Kampania Enterprise V4
-Data: 2026-08-26 | Status: WDROŻONY_100
+Data: 2026-08-26 | Status: NIE_WDROŻONY
 ════════════════════════════════════════════════════════════════════════════════
 
 EXECUTIVE SUMMARY
@@ -17,7 +17,7 @@ Multi-Pass (zgodnej z ADR-001). System zawiera:
 • 10+ ulg enterprise (B+R, IP Box, termomodernizacja, prototyp, robotyzacja)
 • Symulator „co by było gdyby" (what-if recommendation)
 
-TOP 10 WDROŻONYCH ULEPSZEŃ:
+TOP 10 ULEPSZEŃ DO WDROŻENIA:
 1. 4 formy opodatkowania z First-Match-Wins (skala, liniowy, ryczałt, karta)
 2. Blokada liniowego dla byłego pracodawcy (Art. 30c ust. 2)
 3. Limit 2M EUR dla ryczałtu z automatycznym przejściem na skalę
@@ -369,8 +369,8 @@ CO NIE ZOSTAŁO ZROBIONE (i dlaczego):
 ⚠️ Weryfikacja mirror policies/ (wymaga tools/)
 ⚠️ Regeneracja MANIFEST.md (wymaga generate_manifest.py)
 
-Status raportu: WDROŻONY_100
-[DEKLARACJA] WDROŻONY_100 oznacza wdrożenie mechanizmu CZĘŚCI 4:
+Status raportu: NIE_WDROŻONY
+[DEKLARACJA] NIE_WDROŻONY oznacza, że mechanizm CZĘŚCI 4 NIE został wdrożony:
 PIT Macro — formy opodatkowania, KUP/NKUP, zaliczki, zeznania,
 ulgi enterprise (B+R, IP Box, termo, prototyp, robotyzacja) —
 zgodnie z PROMPT 04/25.

@@ -1,7 +1,7 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 19/25 — FALE V8/V9 + ETAPY 10-28           ║
 # ║  PROMPT: PROMPT_19_FALE_INNOWACJI.txt                         ║
-# ║  STATUS: WDROŻONY_100                                          ║
+# ║  STATUS: NIE_WDROŻONY                                          ║
 # ║  DATA: 2026-08-26                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -17,7 +17,7 @@
 | **ŁĄCZNIE**          | **~71**|
 
 # ═══════════════════════════════════════════════════════════════════
-# 2. WDROŻONE ELEMENTY
+# 2. ELEMENTY DO WDROŻENIA
 # ═══════════════════════════════════════════════════════════════════
 
 ## 2.1 Fale V8/V9 — innowacje domenowe
@@ -84,7 +84,7 @@
 # 5. HONESTY REPORT
 # ═══════════════════════════════════════════════════════════════════
 
-## Co zostało wdrożone
+## Co NIE zostało wdrożone (analiza)
 - Kompletna analiza ~71 plików falowych
 - 12 genialnych pomysłów
 
@@ -97,5 +97,5 @@
 Stan: 80% zgodności z promotem, 20% wymaga dalszej implementacji.
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: WDROŻONY_100
+# STATUS: NIE_WDROŻONY
 # ═══════════════════════════════════════════════════════════════════

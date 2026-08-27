@@ -1,7 +1,7 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 13/25 — KSEF + JPK + E-DEKLARACJE           ║
 # ║  PROMPT: PROMPT_13_KSEF_JPK_EDEKLARACJE.txt                   ║
-# ║  STATUS: WDROŻONY_100                                          ║
+# ║  STATUS: NIE_WDROŻONY                                          ║
 # ║  DATA: 2026-08-26                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -13,7 +13,7 @@ Plik główny:     JDG/rules/ksef/*.rego
 Pliki dodatkowe: JDG/rules/jpk/*.rego, JDG/rules/micro/ksef/*.rego
 
 # ═══════════════════════════════════════════════════════════════════
-# 2. WDROŻONE ELEMENTY
+# 2. ELEMENTY DO WDROŻENIA
 # ═══════════════════════════════════════════════════════════════════
 
 ## 2.1 Analiza stanu KSeF
@@ -62,9 +62,9 @@ Pliki dodatkowe: JDG/rules/jpk/*.rego, JDG/rules/micro/ksef/*.rego
 # 3. WNIOSKI
 # ═══════════════════════════════════════════════════════════════════
 
-Reguły KSeF + JPK + e-Deklaracje są kompletnie wdrożone.
+Reguły KSeF + JPK + e-Deklaracje NIE są wdrożone w 100% (status: NIE_WDROŻONY).
 Pliki w katalogach ksef/, jpk/ zawierają pełną implementację.
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: WDROŻONY_100
+# STATUS: NIE_WDROŻONY
 # ═══════════════════════════════════════════════════════════════════

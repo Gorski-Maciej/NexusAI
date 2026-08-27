@@ -65,7 +65,7 @@ else := {
 
 # OP.02b: wariant B — nieujawniona podstawa opodatkowania
 else := {
-    "matched":true,"rule_id":"jdg.liability.additional_tax_obligation_art16a",
+    "matched":true,"rule_id":"jdg.liability.additional_tax_obligation_art16a_unreported",
     "package":"jdg.liability","priority":1102,
     "vat_rate":"","rounding_level":"","gtu_code":"",
     "pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"",

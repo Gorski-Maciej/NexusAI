@@ -29,6 +29,9 @@ default decide := {
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.vat.a5.r1: vat_a5_r1_eligibility
+# Art. 5 ust. 1 ustawy o VAT — czynności opodatkowane (ogólne)
+# Sprawdzenie czy podmiot jest JDG i podlega opodatkowaniu VAT
+# jest podatnikiem VAT czynnym (nie zwolnionym z Art. 113)
 decide := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a5.r1",
@@ -36,27 +39,31 @@ decide := {
     "priority": 50005,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 ust. 1 VAT",
-    "_warnings": ["[MICRO] Czynności opodatkowane: sprawdzenie czy przepis ma zastosowanie do JDG"]
+    "_legal_basis": "Art. 5 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Czynności opodatkowane: sprawdzenie czy JDG podlega opodatkowaniu VAT"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "is_vat_payer", false) == true
+    object.get(input.jdg_entrepreneur, "vat_exemption_active", false) == false
 }
 
-# jdg.micro.vat.a5.r2: vat_a5_r2_positive_1
+# jdg.micro.vat.a5.r2: vat_a5_r2_delivery_of_goods
+# Art. 5 ust. 1 pkt 1 ustawy o VAT — dostawa towarów na terytorium kraju
+# Warunek: transakcja dotyczy dostawy towarów (nie usługi) na terytorium PL
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a5.r2",
@@ -64,27 +71,32 @@ else := {
     "priority": 50006,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 ust. 1 VAT",
-    "_warnings": ["[MICRO] Czynności opodatkowane: warunek pozytywny — potwierdzenie zastosowania"]
+    "_legal_basis": "Art. 5 ust. 1 pkt 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Czynności opodatkowane: dostawa towarów na terytorium kraju — art. 5 ust. 1 pkt 1"]
 } {
-    object.get(input.invoice, "vat_condition_met", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "transaction_type", "") == "DOMESTIC_SALE"
+    object.get(input.invoice, "is_goods", false) == true
+    object.get(input.invoice, "delivery_country", "") == "PL"
 }
 
-# jdg.micro.vat.a5.r3: vat_a5_r3_positive_2
+# jdg.micro.vat.a5.r3: vat_a5_r3_service_provision
+# Art. 5 ust. 1 pkt 2 ustawy o VAT — świadczenie usług na terytorium kraju
+# Warunek: transakcja dotyczy świadczenia usług (nie dostawy towarów)
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a5.r3",
@@ -92,27 +104,32 @@ else := {
     "priority": 50007,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 ust. 1 VAT",
-    "_warnings": ["[MICRO] Czynności opodatkowane: drugi warunek pozytywny spełniony"]
+    "_legal_basis": "Art. 5 ust. 1 pkt 2 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Czynności opodatkowane: świadczenie usług na terytorium kraju — art. 5 ust. 1 pkt 2"]
 } {
-    object.get(input.jdg_entrepreneur, "vat_a5_r3_pass", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "transaction_type", "") == "DOMESTIC_SALE"
+    object.get(input.invoice, "is_goods", false) == false
+    object.get(input.invoice, "is_service", false) == true
 }
 
-# jdg.micro.vat.a5.r4: vat_a5_r4_positive_3
+# jdg.micro.vat.a5.r4: vat_a5_r4_export_of_goods
+# Art. 5 ust. 1 pkt 3 ustawy o VAT — eksport towarów
+# Warunek: transakcja dotyczy eksportu towarów poza terytorium UE
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a5.r4",
@@ -120,27 +137,33 @@ else := {
     "priority": 50008,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 ust. 1 VAT",
-    "_warnings": ["[MICRO] Czynności opodatkowane: trzeci warunek pozytywny — walidacja"]
+    "_legal_basis": "Art. 5 ust. 1 pkt 3 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Czynności opodatkowane: eksport towarów — art. 5 ust. 1 pkt 3"]
 } {
-    object.get(input.jdg_entrepreneur, "vat_a5_r4_checks", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "transaction_type", "") == "EXPORT"
+    object.get(input.invoice, "is_goods", false) == true
+    object.get(input.invoice, "destination_country", "") != "PL"
+    not data.jdg.helpers._is_eu_country(object.get(input.invoice, "destination_country", ""))
 }
 
-# jdg.micro.vat.a5.r5: vat_a5_r5_negative_1
+# jdg.micro.vat.a5.r5: vat_a5_r5_import_of_goods
+# Art. 5 ust. 1 pkt 4 ustawy o VAT — import towarów
+# Warunek: transakcja dotyczy importu towarów z poza terytorium UE
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a5.r5",
@@ -148,27 +171,33 @@ else := {
     "priority": 50009,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 ust. 1 VAT",
-    "_warnings": ["[MICRO] Czynności opodatkowane: wyłączenie — przepis NIE ma zastosowania"]
+    "_legal_basis": "Art. 5 ust. 1 pkt 4 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Czynności opodatkowane: import towarów — art. 5 ust. 1 pkt 4"]
 } {
-    object.get(input.invoice, "vat_exclusion_applies", false) == false
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "transaction_type", "") == "IMPORT"
+    object.get(input.invoice, "is_goods", false) == true
+    object.get(input.invoice, "origin_country", "") != "PL"
+    not data.jdg.helpers._is_eu_country(object.get(input.invoice, "origin_country", ""))
 }
 
-# jdg.micro.vat.a5.r6: vat_a5_r6_negative_2
+# jdg.micro.vat.a5.r6: vat_a5_r6_wnt_reverse_charge
+# Art. 5 ust. 1 pkt 5 ustawy o VAT — wewnątrzwspólnotowe nabycie towarów (WNT)
+# Warunek: transakcja dotyczy WNT z innego państwa UE
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a5.r6",
@@ -176,27 +205,34 @@ else := {
     "priority": 50010,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 ust. 1 VAT",
-    "_warnings": ["[MICRO] Czynności opodatkowane: drugie wyłączenie — sprawdź wyjątki"]
+    "_legal_basis": "Art. 5 ust. 1 pkt 5 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Czynności opodatkowane: wewnątrzwspólnotowe nabycie towarów (WNT) — art. 5 ust. 1 pkt 5"]
 } {
-    object.get(input.invoice, "vat_exclusion_2", false) == false
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "transaction_type", "") == "DOMESTIC_PURCHASE"
+    object.get(input.invoice, "is_goods", false) == true
+    object.get(input.invoice, "is_wnt", false) == true
+    object.get(input.invoice, "vendor_country", "") != "PL"
+    data.jdg.helpers._is_eu_country(object.get(input.invoice, "vendor_country", ""))
 }
 
-# jdg.micro.vat.a5.r7: vat_a5_r7_exception_1
+# jdg.micro.vat.a5.r7: vat_a5_r7_wdt_export
+# Art. 5 ust. 1 pkt 6 ustawy o VAT — wewnątrzwspólnotowa dostawa towarów (WDT)
+# Warunek: transakcja dotyczy WDT do innego państwa UE
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a5.r7",
@@ -204,27 +240,35 @@ else := {
     "priority": 50011,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 ust. 1 VAT",
-    "_warnings": ["[MICRO] Czynności opodatkowane: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
+    "_legal_basis": "Art. 5 ust. 1 pkt 6 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Czynności opodatkowane: wewnątrzwspólnotowa dostawa towarów (WDT) — art. 5 ust. 1 pkt 6"]
 } {
-    object.get(input.invoice, "vat_a5_exception", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "transaction_type", "") == "DOMESTIC_SALE"
+    object.get(input.invoice, "is_goods", false) == true
+    object.get(input.invoice, "is_wdt", false) == true
+    object.get(input.invoice, "delivery_country", "") != "PL"
+    data.jdg.helpers._is_eu_country(object.get(input.invoice, "delivery_country", ""))
 }
 
-# jdg.micro.vat.a5.r8: vat_a5_r8_exception_2
+# jdg.micro.vat.a5.r8: vat_a5_r8_wdt_services
+# Art. 5 ust. 1 pkt 7 ustawy o VAT — świadczenie usług z miejsca
+# rozpoczęcia działalności do miejsca poza terytorium kraju
+# Warunek: usługi eksportowe (B2B cross-border outside EU)
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a5.r8",
@@ -232,27 +276,33 @@ else := {
     "priority": 50012,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 ust. 1 VAT",
-    "_warnings": ["[MICRO] Czynności opodatkowane: drugi wyjątek — szczególna sytuacja"]
+    "_legal_basis": "Art. 5 ust. 1 pkt 7 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Czynności opodatkowane: świadczenie usług eksportowych — art. 5 ust. 1 pkt 7"]
 } {
-    object.get(input.invoice, "vat_a5_exception_2", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "transaction_type", "") == "EXPORT"
+    object.get(input.invoice, "is_service", false) == true
+    object.get(input.invoice, "delivery_country", "") != "PL"
+    not data.jdg.helpers._is_eu_country(object.get(input.invoice, "delivery_country", ""))
 }
 
-# jdg.micro.vat.a5.r9: vat_a5_r9_interaction_1
+# jdg.micro.vat.a5.r9: vat_a5_r9_import_services
+# Art. 5 ust. 1 pkt 8 ustawy o VAT — import usług
+# Warunek: import usług z poza terytorium kraju (reverse charge)
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a5.r9",
@@ -260,27 +310,36 @@ else := {
     "priority": 50013,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 ust. 1 VAT",
-    "_warnings": ["[MICRO] Czynności opodatkowane: interakcja z innymi przepisami — sprawdź zależności"]
+    "_legal_basis": "Art. 5 ust. 1 pkt 8 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Czynności opodatkowane: import usług — art. 5 ust. 1 pkt 8"]
 } {
-    object.get(input.jdg_entrepreneur, "cross_rule_interaction_vat", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "transaction_type", "") == "DOMESTIC_PURCHASE"
+    object.get(input.invoice, "is_service", false) == true
+    object.get(input.invoice, "is_import_services", false) == true
+    object.get(input.invoice, "vendor_country", "") != "PL"
+    not data.jdg.helpers._is_eu_country(object.get(input.invoice, "vendor_country", ""))
 }
 
-# jdg.micro.vat.a5.r10: vat_a5_r10_interaction_2
+# jdg.micro.vat.a5.r10: vat_a5_r10_ss_eeu_services
+# Art. 5 ust. 1 pkt 9 ustawy o VAT — świadczenie usług.
+# Miejsce rozpoczęcia działalności poza terytorium kraju.
+# E-usługi B2C zgodnie z Art. 28k VAT (SS EEU)
+# Warunek: dostawa usług electronically dla konsumenta UE (OSS)
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a5.r10",
@@ -288,24 +347,29 @@ else := {
     "priority": 50014,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
-    "valid_from": "2004-05-01",
+    "valid_from": "2015-01-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 5 ust. 1 VAT",
-    "_warnings": ["[MICRO] Czynności opodatkowane: druga interakcja — efekt kaskadowy"]
+    "_legal_basis": "Art. 5 ust. 1 pkt 9 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Czynności opodatkowane: usługi elektroniczne B2C — OSS/Art. 28k"]
 } {
-    object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_vat", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "transaction_type", "") == "CROSS_BORDER_SALE"
+    object.get(input.invoice, "is_service", false) == true
+    object.get(input.invoice, "is_electronic_service", false) == true
+    object.get(input.invoice, "customer_type", "") == "B2C"
+    object.get(input.invoice, "delivery_country", "") != "PL"
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -314,6 +378,8 @@ else := {
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.vat.a7.r1: vat_a7_r1_eligibility
+# Art. 7 ust. 1 ustawy o VAT — pojęcie dostawy towarów
+# Sprawdzenie czy JDG wykonuje dostawę towarów w rozumieniu ustawy
 decide := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a7.r1",
@@ -328,20 +394,25 @@ decide := {
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 7 ust. 1-8 VAT",
-    "_warnings": ["[MICRO] Dostawa towarów: sprawdzenie czy przepis ma zastosowanie do JDG"]
+    "_legal_basis": "Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Dostawa towarów: sprawdzenie czy transakcja stanowi dostawę towarów"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "is_goods", false) == true
+    object.get(input.invoice, "transaction_type", "") == "DOMESTIC_SALE"
 }
 
-# jdg.micro.vat.a7.r2: vat_a7_r2_positive_1
+# jdg.micro.vat.a7.r2: vat_a7_r2_delivery_of_tangible_property
+# Art. 7 ust. 1 ustawy o VAT — dostawa towarów = przeniesienie prawa
+# dysponowania towarem jak właściciel
+# Warunek: przeniesienie prawa własności / posiadania towaru
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a7.r2",
@@ -349,27 +420,33 @@ else := {
     "priority": 50018,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 7 ust. 1-8 VAT",
-    "_warnings": ["[MICRO] Dostawa towarów: warunek pozytywny — potwierdzenie zastosowania"]
+    "_legal_basis": "Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Dostawa towarów: przeniesienie prawa dysponowania jak właściciel"]
 } {
-    object.get(input.invoice, "vat_condition_met", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "is_goods", false) == true
+    object.get(input.invoice, "ownership_transferred", false) == true
 }
 
-# jdg.micro.vat.a7.r3: vat_a7_r3_positive_2
+# jdg.micro.vat.a7.r3: vat_a7_r3_delivery_by_order
+# Art. 7 ust. 2 ustawy o VAT — dostawa towarów na podstawie
+# umowyPowered by披风 entity
+customizacji
+# Warunek: dostawa na podstawie umowy o dzieło/zlecenie z materiałem
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a7.r3",
@@ -377,27 +454,34 @@ else := {
     "priority": 50019,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 7 ust. 1-8 VAT",
-    "_warnings": ["[MICRO] Dostawa towarów: drugi warunek pozytywny spełniony"]
+    "_legal_basis": "Art. 7 ust. 2 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Dostawa towarów: dostawa na podstawie umowyPowered by披风 entity"]
 } {
-    object.get(input.jdg_entrepreneur, "vat_a7_r3_pass", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "is_goods", false) == true
+    object.get(input.invoice, "contract_type", "") == "WORK_CONTRACT"
+    object.get(input.invoice, "material_provided_by", "") == "SUPPLIER"
 }
 
-# jdg.micro.vat.a7.r4: vat_a7_r4_positive_3
+# jdg.micro.vat.a7.r4: vat_a7_r4_delivery_for_resale
+# Art. 7 ust. 3 ustawy o VAT — dostawa towarów na podstawie
+# umowyPowered by披风 entity
+customizacji na warunkach konsygnacyjnych
+# Warunek: dostawa na warunkach konsygnacyjnych (commission)
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a7.r4",
@@ -405,27 +489,31 @@ else := {
     "priority": 50020,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 7 ust. 1-8 VAT",
-    "_warnings": ["[MICRO] Dostawa towarów: trzeci warunek pozytywny — walidacja"]
+    "_legal_basis": "Art. 7 ust. 3 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Dostawa towarów: dostawa na warunkach konsygnacyjnych"]
 } {
-    object.get(input.jdg_entrepreneur, "vat_a7_r4_checks", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "is_goods", false) == true
+    object.get(input.invoice, "delivery_conditions", "") == "CONSIGNMENT"
 }
 
-# jdg.micro.vat.a7.r5: vat_a7_r5_negative_1
+# jdg.micro.vat.a7.r5: vat_a7_r5_fictitious_delivery
+# Art. 7 ust. 8 ustawy o VAT — dostawa fikcyjna
+# Warunek: zmiana celu用法 provision商业用途 (fikcyjna dostawa)
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a7.r5",
@@ -433,27 +521,33 @@ else := {
     "priority": 50021,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 7 ust. 1-8 VAT",
-    "_warnings": ["[MICRO] Dostawa towarów: wyłączenie — przepis NIE ma zastosowania"]
+    "_legal_basis": "Art. 7 ust. 8 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Dostawa towarów: dostawa fikcyjna — zmiana przeznaczenia"]
 } {
-    object.get(input.invoice, "vat_exclusion_applies", false) == false
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "is_goods", false) == true
+    object.get(input.invoice, "is_fictitious_delivery", false) == true
+    object.get(input.invoice, "purpose_change", false) == true
 }
 
-# jdg.micro.vat.a7.r6: vat_a7_r6_negative_2
+# jdg.micro.vat.a7.r6: vat_a7_r6_excluded_transactions
+# Art. 7 ust. 1 zdanie drugie ustawy o VAT — wyłączenie z pojęcia dostawy
+# towary, które nie zostały przez JDG wprowadzone do obrotu
+# Wyjątek: towary wytworzone/zakupione na potrzeby działalności
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a7.r6",
@@ -461,27 +555,31 @@ else := {
     "priority": 50022,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 7 ust. 1-8 VAT",
-    "_warnings": ["[MICRO] Dostawa towarów: drugie wyłączenie — sprawdź wyjątki"]
+    "_legal_basis": "Art. 7 ust. 1 zdanie drugie ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Dostawa towarów: wyłączenie — towary nie引入do obrotu"]
 } {
-    object.get(input.invoice, "vat_exclusion_2", false) == false
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "is_goods", false) == true
+    object.get(input.invoice, "goods_introduced_to_trade", false) == false
 }
 
-# jdg.micro.vat.a7.r7: vat_a7_r7_exception_1
+# jdg.micro.vat.a7.r7: vat_a7_r7_delivery_by_installation
+# Art. 7 ust. 8 ustawy o VAT — dostawa z montażem
+# Warunek: dostawa towarów z montażem na miejscu klienta
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a7.r7",
@@ -489,27 +587,33 @@ else := {
     "priority": 50023,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 7 ust. 1-8 VAT",
-    "_warnings": ["[MICRO] Dostawa towarów: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
+    "_legal_basis": "Art. 7 ust. 8 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Dostawa towarów: dostawa z montażem na miejscu"]
 } {
-    object.get(input.invoice, "vat_a7_exception", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "is_goods", false) == true
+    object.get(input.invoice, "includes_installation", false) == true
+    object.get(input.invoice, "installation_at_customer", false) == true
 }
 
-# jdg.micro.vat.a7.r8: vat_a7_r8_exception_2
+# jdg.micro.vat.a7.r8: vat_a7_r8_transfer_of_rights
+# Art. 7 ust. 1 ustawy o VAT — dostawa towarów obejmuje również
+# przeniesienie praw własności na podstawie orzeczenia sądowego
+# Warunek: przeniesienie własności na podstawie wyroku/sądu
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a7.r8",
@@ -517,27 +621,32 @@ else := {
     "priority": 50024,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 7 ust. 1-8 VAT",
-    "_warnings": ["[MICRO] Dostawa towarów: drugi wyjątek — szczególna sytuacja"]
+    "_legal_basis": "Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Dostawa towarów: przeniesienie własności na podstawie orzeczenia sądowego"]
 } {
-    object.get(input.invoice, "vat_a7_exception_2", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "is_goods", false) == true
+    object.get(input.invoice, "transfer_basis", "") == "COURT_ORDER"
 }
 
-# jdg.micro.vat.a7.r9: vat_a7_r9_interaction_1
+# jdg.micro.vat.a7.r9: vat_a7_r9_delivery_of_services
+# Art. 7 ust. 8 ustawy o VAT — dostawa towarów obejmuje
+# dostawę energii elektrycznej, ciepła, gazu
+# Warunek: dostawa mediów (energia, ciepło, gaz, woda)
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a7.r9",
@@ -552,20 +661,23 @@ else := {
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 7 ust. 1-8 VAT",
-    "_warnings": ["[MICRO] Dostawa towarów: interakcja z innymi przepisami — sprawdź zależności"]
+    "_legal_basis": "Art. 7 ust. 8 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Dostawa towarów: dostawa mediów (energia, ciepło, gaz)"]
 } {
-    object.get(input.jdg_entrepreneur, "cross_rule_interaction_vat", false) == true
-}
-
-# jdg.micro.vat.a7.r10: vat_a7_r10_interaction_2
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "transaction_type", "") == "DOMESTIC_SALE"
+    object.get(input.invoice, "is_utilities_delivery", false) == true
+    object.get(input.invoice, "utility_type", "") in {"ELECTRICITY", "HEAT", "GAS", "WATER"}
+}# jdg.micro.vat.a7.r10: vat_a7_r10_delivery_of_gas
+# Art. 7 ust. 1 ustawy o VAT — dostawa gazu ziemnego
+# Warunek: dostawa gazu ziemnego na terytorium kraju
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a7.r10",
@@ -580,20 +692,24 @@ else := {
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 7 ust. 1-8 VAT",
-    "_warnings": ["[MICRO] Dostawa towarów: druga interakcja — efekt kaskadowy"]
+    "_legal_basis": "Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Dostawa towarów: dostawa gazu ziemnego — art. 7 ust. 1"]
 } {
-    object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_vat", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "transaction_type", "") == "DOMESTIC_SALE"
+    object.get(input.invoice, "utility_type", "") == "GAS"
 }
 
-# jdg.micro.vat.a7.r11: vat_a7_r11_deadline
+# jdg.micro.vat.a7.r11: vat_a7_r11_delivery_of_electricity
+# Art. 7 ust. 1 ustawy o VAT — dostawa energii elektrycznej
+# Warunek: dostawa energii elektrycznej na terytorium kraju
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a7.r11",
@@ -608,20 +724,24 @@ else := {
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 7 ust. 1-8 VAT",
-    "_warnings": ["[MICRO] Dostawa towarów: termin / procedura — sprawdź deadline"]
+    "_legal_basis": "Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Dostawa towarów: dostawa energii elektrycznej — art. 7 ust. 1"]
 } {
-    object.get(input.invoice, "vat_deadline_required", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "transaction_type", "") == "DOMESTIC_SALE"
+    object.get(input.invoice, "utility_type", "") == "ELECTRICITY"
 }
 
 # jdg.micro.vat.a7.r12: vat_a7_r12_sanction [SANKCJA]
+# Art. 7 ust. 1 ustawy o VAT — sankcja za nieprawidłową klasyfikację
+# dostawy towarów (np. ukrywanie dostawy jako usługi)
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a7.r12",
@@ -629,14 +749,14 @@ else := {
     "priority": 50028,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
@@ -645,11 +765,13 @@ else := {
     "sanction_severity": "HIGH",
     "sanction_base_amount_pln": 1000,
     "_routing": "BLOCK_AND_ALERT",
-    "_routing_reason": "Sankcja KKS: naruszenie Dostawa towarów",
-    "_legal_basis": "Art. 7 ust. 1-8 VAT",
-    "_warnings": ["[MICRO] Dostawa towarów: SANKCJA KKS — naruszenie przepisu!"]
+    "_routing_reason": "Sankcja KKS: nieprawidłowa klasyfikacja dostawy towarów",
+    "_legal_basis": "Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Dostawa towarów: SANKCJA KKS — nieprawidłowa klasyfikacja dostawy!"]
 } {
-    object.get(input.jdg_entrepreneur, "vat_a7_violation", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "is_goods", false) == true
+    object.get(input.invoice, "mislabeled_as_service", false) == true
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -658,6 +780,8 @@ else := {
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.vat.a8.r1: vat_a8_r1_eligibility
+# Art. 8 ust. 1 ustawy o VAT — świadczenie usług
+# Sprawdzenie czy JDG wykonuje świadczenie usług w rozumieniu ustawy
 decide := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a8.r1",
@@ -672,20 +796,25 @@ decide := {
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 8 ust. 1-2 VAT",
-    "_warnings": ["[MICRO] Świadczenie usług: sprawdzenie czy przepis ma zastosowanie do JDG"]
+    "_legal_basis": "Art. 8 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Świadczenie usług: sprawdzenie czy transakcja stanowi świadczenie usług"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "is_service", false) == true
+    object.get(input.invoice, "transaction_type", "") == "DOMESTIC_SALE"
 }
 
-# jdg.micro.vat.a8.r2: vat_a8_r2_positive_1
+# jdg.micro.vat.a8.r2: vat_a8_r2_service_positive_obligation
+# Art. 8 ust. 1 ustawy o VAT — świadczenie usług obejmuje
+# każde świadczenie, które nie jest dostawą towarów
+# Warunek: usługa nie jest dostawą towarów (negatywna definicja)
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a8.r2",
@@ -693,27 +822,31 @@ else := {
     "priority": 50030,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 8 ust. 1-2 VAT",
-    "_warnings": ["[MICRO] Świadczenie usług: warunek pozytywny — potwierdzenie zastosowania"]
+    "_legal_basis": "Art. 8 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Świadczenie usług: usługa nie jest dostawą towarów"]
 } {
-    object.get(input.invoice, "vat_condition_met", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "is_service", false) == true
+    object.get(input.invoice, "is_goods", false) == false
 }
 
-# jdg.micro.vat.a8.r3: vat_a8_r3_positive_2
+# jdg.micro.vat.a8.r3: vat_a8_r3_service_for_consideration
+# Art. 8 ust. 1 ustawy o VAT — świadczenie usług odpłatne
+# Warunek: usługa świadczona za wynagrodzeniem
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a8.r3",
@@ -721,27 +854,34 @@ else := {
     "priority": 50031,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 8 ust. 1-2 VAT",
-    "_warnings": ["[MICRO] Świadczenie usług: drugi warunek pozytywny spełniony"]
+    "_legal_basis": "Art. 8 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Świadczenie usług: usługa odpłatna — brak wynagrodzenia"]
 } {
-    object.get(input.jdg_entrepreneur, "vat_a8_r3_pass", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "is_service", false) == true
+    object.get(input.invoice, "consideration", "") != ""
+    object.get(input.invoice, "amount_gross", 0) > 0
 }
 
-# jdg.micro.vat.a8.r4: vat_a8_r4_positive_3
+# jdg.micro.vat.a8.r4: vat_a8_r4_service_practice
+# Art. 8 ust. 1 ustawy o VAT — świadczenie usług obejmuje w szczególności:
+# 1) zobowiązanie do powstrzymania się od dokonywania czynności
+# 2) zobowiązanie do tolerowania czynności lub sytuacji
+# Warunek: usługa jest wykonywana na terytorium kraju
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a8.r4",
@@ -749,27 +889,32 @@ else := {
     "priority": 50032,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 8 ust. 1-2 VAT",
-    "_warnings": ["[MICRO] Świadczenie usług: trzeci warunek pozytywny — walidacja"]
+    "_legal_basis": "Art. 8 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Świadczenie usług: usługa na terytorium kraju"]
 } {
-    object.get(input.jdg_entrepreneur, "vat_a8_r4_checks", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "is_service", false) == true
+    object.get(input.invoice, "service_country", "") == "PL"
 }
 
-# jdg.micro.vat.a8.r5: vat_a8_r5_negative_1
+# jdg.micro.vat.a8.r5: vat_a8_r5_service_free_of_charge
+# Art. 8 ust. 2 ustawy o VAT — nieodpłatne świadczenie usług
+# jest traktowane jak odpłatne świadczenie usług
+# Warunek: usługa nieodpłatna na cele działalności gospodarczej
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a8.r5",
@@ -777,27 +922,33 @@ else := {
     "priority": 50033,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 8 ust. 1-2 VAT",
-    "_warnings": ["[MICRO] Świadczenie usług: wyłączenie — przepis NIE ma zastosowania"]
+    "_legal_basis": "Art. 8 ust. 2 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Świadczenie usług: nieodpłatne świadczenie na cele działalności"]
 } {
-    object.get(input.invoice, "vat_exclusion_applies", false) == false
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "is_service", false) == true
+    object.get(input.invoice, "is_gratuitous", false) == true
+    object.get(input.invoice, "for_business_purposes", false) == true
 }
 
-# jdg.micro.vat.a8.r6: vat_a8_r6_negative_2
+# jdg.micro.vat.a8.r6: vat_a8_r6_service_personal_scope
+# Art. 8 ust. 1 ustawy o VAT — świadczenie usług w zakresie
+# działalności osobistej
+# Wyjątek: usługi świadczone wyłącznie na cele osobiste podatnika
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a8.r6",
@@ -805,24 +956,26 @@ else := {
     "priority": 50034,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 8 ust. 1-2 VAT",
-    "_warnings": ["[MICRO] Świadczenie usług: drugie wyłączenie — sprawdź wyjątki"]
+    "_legal_basis": "Art. 8 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Świadczenie usług: usługa w zakresie działalności osobistej"]
 } {
-    object.get(input.invoice, "vat_exclusion_2", false) == false
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "is_service", false) == true
+    object.get(input.invoice, "is_personal_service", false) == true
 }
 
 # jdg.micro.vat.a8.r7: vat_a8_r7_exception_1
@@ -1002,6 +1155,8 @@ else := {
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.vat.a15.r1: vat_a15_r1_eligibility
+# Art. 15 ust. 1 ustawy o VAT — podatnicy VAT
+# Sprawdzenie czy JDG jest podatnikiem VAT (osoba fizyczna prowadząca działalność)
 decide := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a15.r1",
@@ -1016,20 +1171,23 @@ decide := {
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 15 ust. 1-2 VAT",
-    "_warnings": ["[MICRO] Podatnicy VAT: sprawdzenie czy przepis ma zastosowanie do JDG"]
+    "_legal_basis": "Art. 15 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Podatnicy VAT: sprawdzenie czy JDG jest podatnikiem VAT"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "is_vat_payer", false) == true
 }
 
-# jdg.micro.vat.a15.r2: vat_a15_r2_positive_1
+# jdg.micro.vat.a15.r2: vat_a15_r2_vat_active
+# Art. 15 ust. 1 ustawy o VAT — podatnik VAT czynny
+# Warunek: JDG zarejestrowany jako podatnik VAT czynny (nie zwolniony)
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a15.r2",
@@ -1037,7 +1195,7 @@ else := {
     "priority": 50042,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
@@ -1057,7 +1215,9 @@ else := {
     object.get(input.invoice, "vat_condition_met", false) == true
 }
 
-# jdg.micro.vat.a15.r3: vat_a15_r3_positive_2
+# jdg.micro.vat.a15.r3: vat_a15_r3_vat_exempt
+# Art. 15 ust. 1 ustawy o VAT — podatnik VAT zwolniony
+# Warunek: JDG zwolniony z VAT (Art. 113) lub zwolnienie przedmiotowe
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a15.r3",
@@ -1065,27 +1225,30 @@ else := {
     "priority": 50043,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 15 ust. 1-2 VAT",
-    "_warnings": ["[MICRO] Podatnicy VAT: drugi warunek pozytywny spełniony"]
+    "_legal_basis": "Art. 15 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Podatnicy VAT: podatnik VAT zwolniony"]
 } {
-    object.get(input.jdg_entrepreneur, "vat_a15_r3_pass", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "vat_exemption_active", false) == true
 }
 
-# jdg.micro.vat.a15.r4: vat_a15_r4_positive_3
+# jdg.micro.vat.a15.r4: vat_a15_r4_small_taxpayer
+# Art. 15 ust. 1 ustawy o VAT — mały podatnik VAT
+# Art. 2 pkt 25 ustawy o VAT — przychód < 2M EUR (z VATem)
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a15.r4",
@@ -1093,27 +1256,31 @@ else := {
     "priority": 50044,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 15 ust. 1-2 VAT",
-    "_warnings": ["[MICRO] Podatnicy VAT: trzeci warunek pozytywny — walidacja"]
+    "_legal_basis": "Art. 15 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Podatnicy VAT: mały podatnik VAT — przychód < 2M EUR"]
 } {
-    object.get(input.jdg_entrepreneur, "vat_a15_r4_checks", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "is_vat_payer", false) == true
+    object.get(input.jdg_entrepreneur, "annual_revenue_incl_vat", 0) < 2000000
 }
 
-# jdg.micro.vat.a15.r5: vat_a15_r5_negative_1
+# jdg.micro.vat.a15.r5: vat_a15_r5_vat_registration_check
+# Art. 96 ustawy o VAT — rejestracja VAT-R
+# Sprawdzenie czy JDG posiada aktywną rejestrację VAT-R
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a15.r5",
@@ -1121,27 +1288,31 @@ else := {
     "priority": 50045,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 15 ust. 1-2 VAT",
-    "_warnings": ["[MICRO] Podatnicy VAT: wyłączenie — przepis NIE ma zastosowania"]
+    "_legal_basis": "Art. 96 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Podatnicy VAT: weryfikacja rejestracji VAT-R"]
 } {
-    object.get(input.invoice, "vat_exclusion_applies", false) == false
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "is_vat_payer", false) == true
+    object.get(input.jdg_entrepreneur, "vat_r_registration", "") != ""
 }
 
-# jdg.micro.vat.a15.r6: vat_a15_r6_negative_2
+# jdg.micro.vat.a15.r6: vat_a15_r6_vat_obligation_check
+# Art. 96 ust. 1 ustawy o VAT — obowiązek rejestracji
+# Sprawdzenie czy JDG spełnia warunki do rejestracji jako podatnik VAT
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a15.r6",
@@ -1149,27 +1320,31 @@ else := {
     "priority": 50046,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 15 ust. 1-2 VAT",
-    "_warnings": ["[MICRO] Podatnicy VAT: drugie wyłączenie — sprawdź wyjątki"]
+    "_legal_basis": "Art. 96 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Podatnicy VAT: obowiązek rejestracji VAT"]
 } {
-    object.get(input.invoice, "vat_exclusion_2", false) == false
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "is_vat_payer", false) == true
+    object.get(input.jdg_entrepreneur, "annual_revenue_incl_vat", 0) >= 200000
 }
 
-# jdg.micro.vat.a15.r7: vat_a15_r7_exception_1
+# jdg.micro.vat.a15.r7: vat_a15_r7_vat_obligatory_registration
+# Art. 96 ust. 1 ustawy o VAT — obowiązkowa rejestracja
+# Warunek: JDG przekroczyła limit 200 000 PLN (Art. 113 ust. 1)
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a15.r7",
@@ -1177,27 +1352,31 @@ else := {
     "priority": 50047,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 15 ust. 1-2 VAT",
-    "_warnings": ["[MICRO] Podatnicy VAT: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
+    "_legal_basis": "Art. 96 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Podatnicy VAT: obowiązkowa rejestracja — przekroczenie limitu"]
 } {
-    object.get(input.invoice, "vat_a15_exception", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "is_vat_payer", false) == false
+    object.get(input.jdg_entrepreneur, "annual_revenue_incl_vat", 0) >= 200000
 }
 
-# jdg.micro.vat.a15.r8: vat_a15_r8_exception_2
+# jdg.micro.vat.a15.r8: vat_a15_r8_vat_voluntary_registration
+# Art. 96 ust. 1 ustawy o VAT — dobrowolna rejestracja
+# Warunek: JDG może zarejestrować się jako podatnik VAT (poniżej limitu)
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a15.r8",
@@ -1205,24 +1384,26 @@ else := {
     "priority": 50048,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 15 ust. 1-2 VAT",
-    "_warnings": ["[MICRO] Podatnicy VAT: drugi wyjątek — szczególna sytuacja"]
+    "_legal_basis": "Art. 96 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Podatnicy VAT: dobrowolna rejestracja — poniżej limitu"]
 } {
-    object.get(input.invoice, "vat_a15_exception_2", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.jdg_entrepreneur, "is_vat_payer", false) == false
+    object.get(input.jdg_entrepreneur, "annual_revenue_incl_vat", 0) < 200000
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -1231,6 +1412,8 @@ else := {
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.vat.a17.r1: vat_a17_r1_eligibility
+# Art. 17 ust. 1 ustawy o VAT — odwrotne obciążenie
+# Sprawdzenie czy transakcja podlega odwrotnemu obciążeniu
 decide := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a17.r1",
@@ -1245,20 +1428,24 @@ decide := {
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 17 ust. 1-2 VAT",
-    "_warnings": ["[MICRO] Reverse charge (odwrotne obciążenie): sprawdzenie czy przepis ma zastosowanie do JDG"]
+    "_legal_basis": "Art. 17 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Reverse charge: sprawdzenie czy transakcja podlega odwrotnemu obciążeniu"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "is_reverse_charge", false) == true
 }
 
-# jdg.micro.vat.a17.r2: vat_a17_r2_positive_1
+# jdg.micro.vat.a17.r2: vat_a17_r2_wnt_services_ue
+# Art. 17 ust. 1 pkt 4 ustawy o VAT — odwrotne obciążenie
+# Usługi świadczone przez podatnika z siedzibą w UE dla podatnika w PL
+# Warunek: usługa B2B z podatnikiem UE (reverse charge)
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a17.r2",
@@ -1266,27 +1453,34 @@ else := {
     "priority": 50050,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 17 ust. 1-2 VAT",
-    "_warnings": ["[MICRO] Reverse charge (odwrotne obciążenie): warunek pozytywny — potwierdzenie zastosowania"]
+    "_legal_basis": "Art. 17 ust. 1 pkt 4 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Reverse charge: usługi B2B z podatnikiem UE — art. 17 ust. 1 pkt 4"]
 } {
-    object.get(input.invoice, "vat_condition_met", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "transaction_type", "") == "DOMESTIC_PURCHASE"
+    object.get(input.invoice, "is_service", false) == true
+    object.get(input.invoice, "vendor_country", "") != "PL"
+    data.jdg.helpers._is_eu_country(object.get(input.invoice, "vendor_country", ""))
+    object.get(input.invoice, "customer_is_vat_payer", false) == true
 }
 
-# jdg.micro.vat.a17.r3: vat_a17_r3_positive_2
+# jdg.micro.vat.a17.r3: vat_a17_r3_wnt_goods
+# Art. 17 ust. 1 pkt 5 ustawy o VAT — odwrotne obciążenie
+# Wewnątrzwspólnotowe nabycie towarów (WNT) od podatnika z UE
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a17.r3",
@@ -1294,27 +1488,35 @@ else := {
     "priority": 50051,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 17 ust. 1-2 VAT",
-    "_warnings": ["[MICRO] Reverse charge (odwrotne obciążenie): drugi warunek pozytywny spełniony"]
+    "_legal_basis": "Art. 17 ust. 1 pkt 5 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Reverse charge: WNT towarów od podatnika UE — art. 17 ust. 1 pkt 5"]
 } {
-    object.get(input.jdg_entrepreneur, "vat_a17_r3_pass", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "transaction_type", "") == "DOMESTIC_PURCHASE"
+    object.get(input.invoice, "is_goods", false) == true
+    object.get(input.invoice, "is_wnt", false) == true
+    object.get(input.invoice, "vendor_country", "") != "PL"
+    data.jdg.helpers._is_eu_country(object.get(input.invoice, "vendor_country", ""))
 }
 
-# jdg.micro.vat.a17.r4: vat_a17_r4_positive_3
+# jdg.micro.vat.a17.r4: vat_a17_r4_waste_goods
+# Art. 17 ust. 1 pkt 7 ustawy o VAT — odwrotne obciążenie
+# Dostawa towarów wymienionych w Zał. 11 do VAT (odpady, złom)
+# Próg: 20 000 PLN netto
 else := {
     "matched": true,
     "rule_id": "jdg.micro.vat.a17.r4",
@@ -1322,24 +1524,28 @@ else := {
     "priority": 50052,
     "vat_rate": "",
     "rounding_level": "",
-    "gtu_code": "GTU_12",
+    "gtu_code": "",
     "pit_form": "",
     "pit_rate": "",
     "pit_bracket": "",
     "pit_annual_return_type": "",
     "kus_qualification": "",
     "kus_percent": 0,
-            "business_status": "",
+    "business_status": "",
     "ceidg_registration_required": false,
     "micro_rule_active": true,
     "valid_from": "2004-05-01",
     "valid_to": null,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Art. 17 ust. 1-2 VAT",
-    "_warnings": ["[MICRO] Reverse charge (odwrotne obciążenie): trzeci warunek pozytywny — walidacja"]
+    "_legal_basis": "Art. 17 ust. 1 pkt 7 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+    "_warnings": ["[MICRO] Reverse charge: odpady/złom (Zał. 11) — art. 17 ust. 1 pkt 7"]
 } {
-    object.get(input.jdg_entrepreneur, "vat_a17_r4_checks", false) == true
+    input.jdg_entrepreneur.business_type == "JDG"
+    object.get(input.invoice, "transaction_type", "") == "DOMESTIC_SALE"
+    object.get(input.invoice, "is_goods", false) == true
+    object.get(input.invoice, "is_waste", false) == true
+    object.get(input.invoice, "amount_net", 0) >= 20000
 }
 
 # jdg.micro.vat.a17.r5: vat_a17_r5_negative_1

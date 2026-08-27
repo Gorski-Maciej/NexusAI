@@ -1,7 +1,7 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 20/25 — TESTY I CI — NIEZNISZCZALNA TARCZA  ║
 # ║  PROMPT: PROMPT_20_TESTY_CI.txt                               ║
-# ║  STATUS: WDROŻONY_100                                          ║
+# ║  STATUS: NIE_WDROŻONY                                          ║
 # ║  DATA: 2026-08-26                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -16,7 +16,7 @@
 | **ŁĄCZNIE**      | **~446**      |
 
 # ═══════════════════════════════════════════════════════════════════
-# 2. WDROŻONE ELEMENTY — Strategia L0–L9
+# 2. ELEMENTY DO WDROŻENIA — Strategia L0–L9
 # ═══════════════════════════════════════════════════════════════════
 
 | Poziom | Typ                    | Status    |
@@ -83,7 +83,7 @@
 # 6. HONESTY REPORT
 # ═══════════════════════════════════════════════════════════════════
 
-## Co zostało wdrożone
+## Co NIE zostało wdrożone (analiza)
 - Kompletna inwentaryzacja ~446 plików testowych
 - Strategia L0–L9
 - 11 bramek CI
@@ -98,5 +98,5 @@
 Stan: 85% zgodności z promotem, 15% wymaga dalszej implementacji.
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: WDROŻONY_100
+# STATUS: NIE_WDROŻONY
 # ═══════════════════════════════════════════════════════════════════

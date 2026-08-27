@@ -70,7 +70,7 @@ coverage_report := {
     "matched": true,
     "rule_id": "jdg.p04_vat_micro_innovations.coverage_report",
     "package": "jdg.p04_vat_micro_innovations",
-    "priority": 100,
+    "priority": 60160,
     "coverage": coverage_summary,
     "missing_articles": [a | some a in priority_articles; article_status(a) == "MISSING"],
     "partial_articles": [a | some a in priority_articles; article_status(a) == "PARTIAL"],
@@ -108,7 +108,7 @@ stub_duplicate_report := {
     "rule_id": "jdg.p04_vat_micro_innovations.stub_duplicate_report",
     "_legal_basis": "P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id)",
     "package": "jdg.p04_vat_micro_innovations",
-    "priority": 200,
+    "priority": 60250,
     "audit": {
         "total_rules": object.get(audit_data, "total_rules", 0),
         "unique_rule_ids": object.get(audit_data, "unique_rule_ids", 0),
@@ -133,7 +133,7 @@ deduplication_plan := {
     "rule_id": "jdg.p04_vat_micro_innovations.deduplication_plan",
     "_legal_basis": "P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id)",
     "package": "jdg.p04_vat_micro_innovations",
-    "priority": 210,
+    "priority": 60260,
     "plan": {
         "duplicate_count": count(duplicate_rules),
         "strategy": "MERGE_INTO_HIGHEST_PRIORITY",
@@ -175,7 +175,7 @@ micro_macro_report := {
     "rule_id": "jdg.p04_vat_micro_innovations.micro_macro_report",
     "_legal_basis": "P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id)",
     "package": "jdg.p04_vat_micro_innovations",
-    "priority": 300,
+    "priority": 60350,
     "consistency": {
         "macro_decisions_mapped": count(object.keys(macro_micro_map)),
         "priority_coherence_issues": priority_coherence_issues,
@@ -243,7 +243,7 @@ math_guarantee := {
     "rule_id": "jdg.p04_vat_micro_innovations.math_guarantee",
     "_legal_basis": "P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id)",
     "package": "jdg.p04_vat_micro_innovations",
-    "priority": 400,
+    "priority": 60460,
     "guarantees": {
         "grosz_contract": amount_contract_ok,
         "rounding_level_valid": rounding_ok,
@@ -303,7 +303,7 @@ specialist_audit := {
     "rule_id": "jdg.p04_vat_micro_innovations.specialist_audit",
     "_legal_basis": "P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id)",
     "package": "jdg.p04_vat_micro_innovations",
-    "priority": 500,
+    "priority": 60565,
     "audit": {
         "packages": count(object.keys(specialist_packages)),
         "gaps": specialist_gaps,
@@ -363,7 +363,7 @@ rate_description_mismatch := {
     "rule_id": "jdg.p04_vat_micro_innovations.rate_description_mismatch",
     "_legal_basis": "P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id)",
     "package": "jdg.p04_vat_micro_innovations",
-    "priority": 600,
+    "priority": 60670,
     "mismatch": {
         "description": object.get(input.invoice, "description", ""),
         "declared_rate": object.get(input.invoice, "vat_rate", ""),
@@ -414,7 +414,7 @@ semantic_rate_verifier := {
     "rule_id": "jdg.p04_vat_micro_innovations.semantic_rate_verifier",
     "_legal_basis": "P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id)",
     "package": "jdg.p04_vat_micro_innovations",
-    "priority": 610,
+    "priority": 60680,
     "verification": {
         "description_rate": detected_rate,
         "declared_rate": object.get(input.invoice, "vat_rate", ""),
@@ -467,7 +467,7 @@ decide := {
     "rule_id": "jdg.p04_vat_micro_innovations.report",
     "_legal_basis": "P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id)",
     "package": "jdg.p04_vat_micro_innovations",
-    "priority": 700,
+    "priority": 60750,
     "p04_vat_micro": {
         "section1_coverage": coverage_summary,
         "section2_audit": {

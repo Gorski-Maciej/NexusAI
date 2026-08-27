@@ -7,7 +7,7 @@ package jdg.allowances
 import data.jdg.helpers
 import future.keywords.in
 
-default decide := {"matched":false,"rule_id":"jdg.allowances.no_match","package":"jdg.allowances","priority":99999}
+default decide := {"matched":false,"rule_id":"jdg.allowances.plan23.no_match","package":"jdg.allowances","priority":99999}
 
 # jdg.allowances.prototype_relief — Ulga na prototyp — 30% kosztów produkcji próbnej
 decide :=   {"matched":true,"rule_id":"jdg.allowances.prototype_relief","package":"jdg.allowances","priority":601,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Ulga na prototyp — 30% kosztów produkcji próbnej","_legal_basis":"Art. 26eb PIT","_warnings":[]} {

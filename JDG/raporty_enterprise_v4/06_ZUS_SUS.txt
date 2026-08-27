@@ -1,7 +1,7 @@
 ════════════════════════════════════════════════════════════════════════════════
 RAPORT ENTERPRISE — CZĘŚĆ 6: ZUS/SUS (SKŁADKI SPOŁECZNE, ZDROWOTNA, ZASIŁKI)
 PROMPT 06/25 — Kampania Enterprise V4
-Data: 2026-08-26 | Status: WDROŻONY_100
+Data: 2026-08-26 | Status: NIE_WDROŻONY
 ════════════════════════════════════════════════════════════════════════════════
 
 EXECUTIVE SUMMARY
@@ -17,7 +17,7 @@ System zawiera:
 • Świadczenia długoterminowe: emerytury, renty, przedemerytalne
 • Zbiegi: etat+JDG (tylko zdrowotna z JDG)
 
-TOP 10 WDROŻONYCH ULEPSZEŃ:
+TOP 10 ULEPSZEŃ DO WDROŻENIA:
 1. Ulga na start — 6 miesięcy bez składek społecznych (Art. 18a SUS)
 2. Preferencyjny ZUS — 24 miesiące, podstawa 30% minimalnego wynagrodzenia
 3. Mały ZUS Plus — 36 miesięcy, podstawa 30% dochodu poprzedniego roku
@@ -302,8 +302,8 @@ CO NIE ZOSTAŁO ZROBIONE (i dlaczego):
 ⚠️ Weryfikacja mirror policies/ (wymaga tools/)
 ⚠️ Regeneracja MANIFEST.md (wymaga generate_manifest.py)
 
-Status raportu: WDROŻONY_100
-[DEKLARACJA] WDROŻONY_100 oznacza wdrożenie mechanizmu CZĘŚCI 6:
+Status raportu: NIE_WDROŻONY
+[DEKLARACJA] NIE_WDROŻONY oznacza, że mechanizm CZĘŚCI 6 NIE został wdrożony:
 ZUS/SUS — składki społeczne, zdrowotna, ulgi, zasiłki, świadczenia —
 zgodnie z PROMPT 06/25.
 

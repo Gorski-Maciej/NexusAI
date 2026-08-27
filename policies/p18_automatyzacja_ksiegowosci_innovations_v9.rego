@@ -926,6 +926,8 @@ decide := {
     "package": "jdg.p18_automatyzacja_ksiegowosci_innovations",
     "priority": 3257,
     "matched": true,
+    "decision_mode": "SUGGEST",
+    "no_auto_post": true,
     "banking": banking_audit,
     "edelivery_esig": edelivery_esig_audit,
     "forms": forms_declarations_audit,

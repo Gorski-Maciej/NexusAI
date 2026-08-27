@@ -371,7 +371,7 @@ else := {
     monthly_revenue := object.get(input.jdg_entrepreneur, "monthly_revenue_avg", 10000)
     # Standardowe składki ZUS 2026
     social_base := object.get(object.get(data.jdg.thresholds, "bounds", {}), "zus_social_base_standard", 4800)
-    social_amount := floor(social_base * 0.3409 * 100) / 100  # emerytalna 19.52% + rentowa 8% + wypadkowa 1.67% + chorobowa 2.45% + FP 2.45% = 34.09%
+    social_amount := floor(social_base * object.get(object.get(data.jdg.thresholds, "zus", {}), "zus_social_total_rate", 0.3409) * 100) / 100  # 34.09% = emerytalna 19.52 + rentowa 8 + wypadkowa 1.67 + chorobowa 2.45 + FP 2.45 (data.thresholds.zus.zus_social_total_rate)
     fp_amount := floor(social_base * 0.0245 * 100) / 100
     health_rate = "0.09" { pit_form == "PIT_SCALE" }
     health_rate = "0.09" { pit_form == "TAX_CARD" }

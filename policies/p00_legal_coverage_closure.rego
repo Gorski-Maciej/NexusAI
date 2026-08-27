@@ -36,7 +36,7 @@ jdg_vat_a113_r1 := {"matched": true, "rule_id": "jdg.vat.a113.r1", "package": "j
 }
 
 # jdg.pit.a30c.r1 — Podatek liniowy 19% (art. 30c ust. 1 ustawy o PIT)
-jdg_pit_a30c_r1 := {"matched": true, "rule_id": "jdg.pit.a30c.r1", "package": "jdg.p00.legal_coverage", "priority": 30001, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "PIT-36L", "pit_rate": "19", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "valid_from": "2026-01-01", "valid_to": null, "_routing": "", "_routing_reason": "Podatek liniowy 19% (art. 30c)", "_legal_basis": "Art. 30c ust. 1 ustawy o PIT", "_warnings": []} {
+jdg_pit_a30c_r1 := {"matched": true, "rule_id": "jdg.pit.a30c.r1", "package": "jdg.p00.legal_coverage", "priority": 30001, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "PIT-36L", "pit_rate": "0.19", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "valid_from": "2026-01-01", "valid_to": null, "_routing": "", "_routing_reason": "Podatek liniowy 19% (art. 30c)", "_legal_basis": "Art. 30c ust. 1 ustawy o PIT", "_warnings": []} {
     object.get(input.jdg_entrepreneur, "tax_form", "") == "PIT-36L"
 }
 

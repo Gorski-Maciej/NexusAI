@@ -1,7 +1,7 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 12/25 — PCC + LOKALNE + AKCYZA              ║
 # ║  PROMPT: PROMPT_12_PCC_LOKALNE_AKCYZA.txt                     ║
-# ║  STATUS: WDROŻONY_100                                          ║
+# ║  STATUS: NIE_WDROŻONY                                          ║
 # ║  DATA: 2026-08-26                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -14,7 +14,7 @@ Pliki dodatkowe: JDG/rules/micro/pcc/*.rego
 Inne:            JDG/rules/akcyza/*.rego, JDG/rules/srodowisko/*.rego
 
 # ═══════════════════════════════════════════════════════════════════
-# 2. WDROŻONE ELEMENTY
+# 2. ELEMENTY DO WDROŻENIA
 # ═══════════════════════════════════════════════════════════════════
 
 ## 2.1 Analiza stanu PCC
@@ -61,9 +61,9 @@ Inne:            JDG/rules/akcyza/*.rego, JDG/rules/srodowisko/*.rego
 # 3. WNIOSKI
 # ═══════════════════════════════════════════════════════════════════
 
-Reguły PCC + Lokalne + Akcyza są kompletnie wdrożone.
+Reguły PCC + Lokalne + Akcyza NIE są wdrożone w 100% (status: NIE_WDROŻONY).
 Pliki w katalogach pcc/, akcyza/, srodowisko/ zawierają pełną implementację.
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: WDROŻONY_100
+# STATUS: NIE_WDROŻONY
 # ═══════════════════════════════════════════════════════════════════

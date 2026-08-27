@@ -44,7 +44,7 @@ else := {
 
 # OP.04b (Doc 50): Zawieszenie: kontrola podatkowa
 else := {
-    "matched":true,"rule_id":"jdg.limitations.suspension_of_limitation_art21",
+    "matched":true,"rule_id":"jdg.limitations.suspension_of_limitation_art21_tax_audit",
     "package":"jdg.limitations","priority":421,
     "vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"",
     "statute_suspended":true,"suspension_reason":"Kontrola podatkowa w toku","max_extension_years":10,
@@ -57,7 +57,7 @@ else := {
 
 # OP.04c (Doc 50): Zawieszenie: postępowanie podatkowe
 else := {
-    "matched":true,"rule_id":"jdg.limitations.suspension_of_limitation_art21",
+    "matched":true,"rule_id":"jdg.limitations.suspension_of_limitation_art21_tax_proceedings",
     "package":"jdg.limitations","priority":421,
     "vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"",
     "statute_suspended":true,"suspension_reason":"Postępowanie podatkowe wszczęte","max_extension_years":10,

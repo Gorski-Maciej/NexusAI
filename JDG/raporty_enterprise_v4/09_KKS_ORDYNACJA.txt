@@ -1,7 +1,7 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 09/25 — KKS + ORDYNACJA PODATKOWA           ║
 # ║  PROMPT: PROMPT_09_KKS_ORDYNACJA.txt                          ║
-# ║  STATUS: WDROŻONY_100                                          ║
+# ║  STATUS: NIE_WDROŻONY                                          ║
 # ║  DATA: 2026-08-26                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -13,7 +13,7 @@ Plik główny:     JDG/rules/kks.rego (~5000 linii)
 Pliki dodatkowe: brak (rules/micro/kks/ nie istnieje)
 
 # ═══════════════════════════════════════════════════════════════════
-# 2. WDROŻONE ELEMENTY
+# 2. ELEMENTY DO WDROŻENIA
 # ═══════════════════════════════════════════════════════════════════
 
 ## 2.1 Analiza stanu kks.rego
@@ -53,9 +53,9 @@ Pliki dodatkowe: brak (rules/micro/kks/ nie istnieje)
 # 3. WNIOSKI
 # ═══════════════════════════════════════════════════════════════════
 
-Reguły KKS/Ordynacja Podatkowa są kompletnie wdrożone. Brak reguł-szkieletów.
+Reguły KKS/Ordynacja Podatkowa NIE są wdrożone w 100% (status: NIE_WDROŻONY).
 Plik kks.rego zawiera pełną implementację kluczowych artykułów.
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: WDROŻONY_100
+# STATUS: NIE_WDROŻONY
 # ═══════════════════════════════════════════════════════════════════

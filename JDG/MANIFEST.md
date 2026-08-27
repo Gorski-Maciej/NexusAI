@@ -1,15 +1,15 @@
 # 📋 JDG MANIFEST — Tracker Pokrycia Reguł vs Mapa Kanoniczna 38c
 
-> **Auto-generowane:** 2026-08-22 16:23:47
+> **Auto-generowane:** 2026-08-27 13:39:40
 > **Generator:** v8.0 (parser strukturalny, 100% plików)
-> **Completeness Score:** 🟡 **88/100**
->   - Plików w manifescie: 426/472 (90%)
->   - Aktualność: 86/100 | Sumy spójne: ✅ | Routing: 64%
-> **Plików Rego:** 472
-> **Plików z matched:true:** 426
-> **Bloków matched:true:** 11811
-> **Unikalnych rule_id:** 11808
-> **Duplikatów:** 3
+> **Completeness Score:** 🟢 **92/100**
+>   - Plików w manifescie: 444/490 (90%)
+>   - Aktualność: 100/100 | Sumy spójne: ✅ | Routing: 63%
+> **Plików Rego:** 490
+> **Plików z matched:true:** 444
+> **Bloków matched:true:** 11855
+> **Unikalnych rule_id:** 11855
+> **Duplikatów:** 0
 
 ---
 
@@ -23,22 +23,25 @@
 | `rules/accounting/pkpir_enterprise_live.rego` | 12 | 1 | 0 | 60a65d86612c6548 |
 | `rules/accounting/pkpir_enterprise_validation.rego` | 34 | 2 | 0 | 483b0838522cc3f6 |
 | `rules/accounting/pkpir_enterprise_validator.rego` | 21 | 1 | 3 | 9227f4b47318da19 |
-| `rules/accounting/plan23_leasing.rego` | 5 | 0 | 1 | 776c9f492d0f475c |
-| `rules/accounting/plan42_pkpir.rego` | 1 | 1 | 0 | d58c8b8d8a5f85b2 |
+| `rules/accounting/plan23_leasing.rego` | 5 | 0 | 1 | 0a9161fc03165add |
+| `rules/accounting/plan42_pkpir.rego` | 1 | 1 | 0 | b892a758e0e0c199 |
 | `rules/adaptive_trust_scoring_enterprise.rego` | 3 | 0 | 0 | e31564293a1f9da0 |
 | `rules/advertising/plan44_advertising.rego` | 9 | 0 | 0 | ccc5b3ce22472e73 |
 | `rules/advertising/plan45_advertising.rego` | 37 | 3 | 0 | 0d76f2f134753d29 |
 | `rules/allowances.rego` | 18 | 2 | 1 | 91f1098cadbc28ca |
-| `rules/allowances/plan23_reliefs.rego` | 9 | 0 | 0 | 4564ce5d5f5cde36 |
-| `rules/annual_declaration_enterprise.rego` | 6 | 0 | 0 | 1e9cf8f35a16b62b |
+| `rules/allowances/plan23_reliefs.rego` | 9 | 0 | 0 | 9b0fa65e9a5558f8 |
+| `rules/annual_declaration_enterprise.rego` | 6 | 0 | 0 | 1d0b0192c2d29f93 |
 | `rules/api_fallback.rego` | 6 | 1 | 1 | f89dfd4daa28e652 |
+| `rules/api_ui/quality_v3_19.rego` | 1 | 0 | 0 | 8c99376c34617ed0 |
 | `rules/audit/plan44_audit.rego` | 15 | 1 | 2 | 166aaaf02d77d330 |
 | `rules/audit/plan45_audit.rego` | 55 | 3 | 6 | 0016f227d516aea9 |
 | `rules/audit_defense_enterprise.rego` | 4 | 0 | 0 | 773ecbf2fdd10558 |
 | `rules/banking_automation_enterprise.rego` | 14 | 0 | 0 | a41d729d474d8daf |
+| `rules/bundles/quality_v3_18.rego` | 1 | 0 | 0 | e06a778c24da6dbc |
 | `rules/business.rego` | 23 | 8 | 5 | f856e084da38e22d |
 | `rules/business/gig_economy.rego` | 5 | 0 | 1 | 4fefd676c291ef24 |
 | `rules/business/plan26_suspension_succession.rego` | 5 | 3 | 1 | 9dab893c5c0dde48 |
+| `rules/business/v3_09_enterprise.rego` | 1 | 1 | 0 | a0cdb11aa9d44805 |
 | `rules/business_lifecycle_etap18_v1.rego` | 1 | 0 | 0 | 0d073f85023b9af9 |
 | `rules/calendar/plan44_calendar.rego` | 6 | 0 | 0 | 97afca8223372d0b |
 | `rules/calendar/plan45_calendar.rego` | 35 | 0 | 0 | ec34f22964bb2b98 |
@@ -46,6 +49,7 @@
 | `rules/cbam_full.rego` | 3 | 0 | 0 | 4f8e307dd6fb925e |
 | `rules/cfc_auto_classifier.rego` | 3 | 0 | 0 | 515d8c0591521b34 |
 | `rules/compliance.rego` | 10 | 4 | 0 | b18a78343a137b7b |
+| `rules/compliance/v3_12_enterprise.rego` | 1 | 1 | 0 | 2aa4ce103f2b8f6c |
 | `rules/conflict_declaration_enterprise.rego` | 4 | 1 | 0 | d43cb08e83909190 |
 | `rules/conflicts.rego` | 27 | 7 | 11 | cbf359a40805c71f |
 | `rules/conviction/plan44_conviction.rego` | 6 | 2 | 0 | 29f5650936a1717b |
@@ -56,13 +60,16 @@
 | `rules/crossborder/exit_tax_cfc_complete.rego` | 16 | 3 | 0 | 856fc17fabacf309 |
 | `rules/crossborder/plan23_ue.rego` | 8 | 1 | 2 | 09dd78f4f45b63d5 |
 | `rules/crossborder/post_brexit.rego` | 3 | 0 | 1 | 145f7f73001e316f |
+| `rules/crossborder/v3_08_enterprise.rego` | 1 | 1 | 0 | 73476a5e3dbf39ef |
 | `rules/crossborder_etap17_v1.rego` | 1 | 0 | 0 | 6a05de9a9556d9ad |
 | `rules/dac8_report_generator.rego` | 3 | 0 | 0 | 2d1b867d9d9c4ace |
 | `rules/decision_core_completeness_enterprise.rego` | 5 | 1 | 2 | 72b7e25371b65cee |
+| `rules/docs/quality_v3_20.rego` | 1 | 0 | 0 | 173aeb48784a5ea3 |
 | `rules/edelivery/plan44_edelivery.rego` | 8 | 1 | 0 | 12a2e7e4322c28f0 |
 | `rules/edelivery/plan45_edelivery.rego` | 41 | 5 | 4 | fcbf67c85a54b0d1 |
-| `rules/edge_cases.rego` | 187 | 44 | 54 | 06a0cbadf025b055 |
-| `rules/employer.rego` | 27 | 5 | 2 | 9d5ea3cc03fa1d20 |
+| `rules/edge_cases.rego` | 187 | 44 | 54 | ec8e422fcbe14eee |
+| `rules/employer.rego` | 27 | 5 | 2 | 8385b8e483170fd8 |
+| `rules/enterprise/quality_v3_15.rego` | 1 | 0 | 0 | d8602119d5076c7d |
 | `rules/enterprise_ai_neural_etap23_v1.rego` | 1 | 0 | 0 | 26df9f71460adf1f |
 | `rules/environmental.rego` | 14 | 3 | 2 | ebd04aff302927de |
 | `rules/environmental/bdo_enterprise.rego` | 22 | 11 | 10 | 908e3d635fbd2cfc |
@@ -83,9 +90,10 @@
 | `rules/fx/plan45_fx.rego` | 46 | 0 | 0 | f2dcd2df33efd817 |
 | `rules/gaar_shield_enterprise.rego` | 2 | 0 | 0 | 6f872e94cc614ba0 |
 | `rules/gtu_completeness_checker_enterprise.rego` | 3 | 0 | 1 | 5e0e2d1f98caab8b |
+| `rules/hyper/quality_v3_14.rego` | 1 | 0 | 0 | 4fa0ed03d327b6cb |
 | `rules/hyper_enterprise_contexts_etap22_v1.rego` | 1 | 0 | 0 | 5d5e80c21cb6593b |
 | `rules/hyper_plan45_meta_enterprise.rego` | 3 | 0 | 1 | 610630abf7a5459a |
-| `rules/insurance/plan44_insurance.rego` | 6 | 1 | 0 | 74e4f66b83fd8d01 |
+| `rules/insurance/plan44_insurance.rego` | 6 | 1 | 0 | 20d6a75281d041f0 |
 | `rules/insurance/plan45_insurance.rego` | 28 | 1 | 0 | 65e62827cf82d045 |
 | `rules/interest_calculator_enterprise.rego` | 3 | 0 | 0 | d904bc52d221bc19 |
 | `rules/international.rego` | 16 | 0 | 8 | 4eb3e1f20a295841 |
@@ -114,23 +122,24 @@
 | `rules/kks/enterprise_penalties.rego` | 21 | 12 | 0 | 6fbf79bee1882a84 |
 | `rules/kks/kks_extensions_enterprise.rego` | 4 | 0 | 1 | 35bc49ffd5816d65 |
 | `rules/kks/kks_innovations_v8.rego` | 13 | 4 | 0 | 481d15cfa37c19ba |
-| `rules/kks/plan42_detailed.rego` | 12 | 7 | 1 | d94e4532eb0e1286 |
-| `rules/kks/plan43_decomposition.rego` | 21 | 10 | 1 | dbc30481973c52a9 |
-| `rules/kks/plan44_kks_conviction.rego` | 2 | 1 | 0 | 310631a5c8c8ed85 |
+| `rules/kks/plan42_detailed.rego` | 12 | 7 | 1 | 10a6335b35e78eab |
+| `rules/kks/plan43_decomposition.rego` | 21 | 10 | 1 | c036589c1f0f8a85 |
+| `rules/kks/plan44_kks_conviction.rego` | 2 | 1 | 0 | b21497df85696e6f |
 | `rules/kks_ord_etap16_v1.rego` | 1 | 0 | 0 | d0a28cab2c748f48 |
 | `rules/ksef_firewall_enterprise.rego` | 3 | 0 | 0 | b0b4c36c5d849a05 |
-| `rules/ksef_innovations_enterprise.rego` | 5 | 0 | 0 | 9b28e94d01803fa5 |
+| `rules/ksef_innovations_enterprise.rego` | 5 | 0 | 0 | 6f33359920500ec9 |
 | `rules/ksef_jpk.rego` | 10 | 2 | 2 | 6678aa6f3e892273 |
+| `rules/ksef_jpk/v3_11_enterprise.rego` | 1 | 1 | 0 | 9a05c419e8705718 |
 | `rules/ksef_jpk_etap20_v1.rego` | 1 | 0 | 0 | 097f907c48d1ba12 |
 | `rules/ksef_offline_queue_enterprise.rego` | 3 | 0 | 0 | 65c76ba02f605c91 |
 | `rules/ksef_outbox_enterprise.rego` | 4 | 0 | 0 | 6f3dc0edb7bc86d9 |
 | `rules/ksef_receipt_digest_enterprise.rego` | 3 | 0 | 1 | 0d3d6d71c3abe41c |
 | `rules/ksef_resilience_enterprise.rego` | 7 | 1 | 3 | 1be6d15fecf1f9e9 |
-| `rules/ksef_sanction_monitor_enterprise.rego` | 2 | 0 | 0 | 221f476787cebead |
+| `rules/ksef_sanction_monitor_enterprise.rego` | 2 | 0 | 0 | 4dc688ce501c613c |
 | `rules/ksef_sandbox_harness_enterprise.rego` | 3 | 0 | 1 | 7b7d93c9bc408ef4 |
 | `rules/ksef_upo_tracker_enterprise.rego` | 3 | 0 | 0 | f8bd61a3544eb11c |
 | `rules/legislative_monitor_enterprise.rego` | 5 | 0 | 0 | 2e93fa2d1da19e21 |
-| `rules/liability.rego` | 15 | 2 | 2 | 788cae0eaf08ea40 |
+| `rules/liability.rego` | 15 | 2 | 2 | ee14825e441558cf |
 | `rules/lifecycle_manager_enterprise.rego` | 4 | 1 | 0 | f1aefbef6586dc98 |
 | `rules/local_excise_etap19_v1.rego` | 1 | 0 | 0 | 03a4e2b15823bcd0 |
 | `rules/local_taxes.rego` | 27 | 2 | 6 | 1e35767154b24e08 |
@@ -144,6 +153,7 @@
 | `rules/local_taxes/plan26_local.rego` | 6 | 0 | 1 | 5e43af6aec03f1cb |
 | `rules/local_taxes/real_estate.rego` | 2 | 0 | 2 | a3a2112a641c0a2e |
 | `rules/local_taxes/transport.rego` | 1 | 0 | 1 | 12c4c0b1494ce58e |
+| `rules/local_taxes/v3_10_enterprise.rego` | 1 | 1 | 0 | d226d284d060a4c7 |
 | `rules/mdr/mdr_enterprise.rego` | 16 | 4 | 12 | d4df30687512ce80 |
 | `rules/mdr/mdr_hallmarks.rego` | 20 | 17 | 0 | 76d998a773937527 |
 | `rules/mdr/plan44_mdr.rego` | 10 | 1 | 7 | 12e82419eac65364 |
@@ -156,13 +166,13 @@
 | `rules/micro/aml/aml_ryzyko.rego` | 7 | 3 | 3 | 41613d9882ee5969 |
 | `rules/micro/aml/aml_str_gif.rego` | 7 | 3 | 4 | f3d09fba094566a7 |
 | `rules/micro/aml/aml_transakcje.rego` | 6 | 3 | 2 | bbf5a1fefa264c20 |
-| `rules/micro/amortyzacja/pit_a22a.rego` | 9 | 2 | 0 | dc70591fc87f9bb1 |
-| `rules/micro/amortyzacja/pit_a22b.rego` | 6 | 1 | 0 | c07c7467c84f052b |
-| `rules/micro/amortyzacja/pit_a22c.rego` | 6 | 5 | 0 | 64606d724f2df0fa |
-| `rules/micro/amortyzacja/pit_a22h.rego` | 6 | 2 | 1 | 66d7acc5693752d4 |
+| `rules/micro/amortyzacja/pit_a22a.rego` | 9 | 2 | 0 | 9f00da0e8f0208f7 |
+| `rules/micro/amortyzacja/pit_a22b.rego` | 6 | 1 | 0 | e5fc2049a7bcdbcf |
+| `rules/micro/amortyzacja/pit_a22c.rego` | 6 | 5 | 0 | ac6482eca155185a |
+| `rules/micro/amortyzacja/pit_a22h.rego` | 6 | 2 | 1 | c7810137b41964fe |
 | `rules/micro/amortyzacja/pit_a22i.rego` | 8 | 1 | 0 | 6919aa91e0735093 |
 | `rules/micro/amortyzacja/pit_a22k.rego` | 6 | 2 | 0 | 550fbb350be52c7b |
-| `rules/micro/amortyzacja/pit_a22n.rego` | 6 | 1 | 0 | cccfda501bf86590 |
+| `rules/micro/amortyzacja/pit_a22n.rego` | 6 | 1 | 0 | 33e47d6e596af8ac |
 | `rules/micro/bdo/bdo_ewc.rego` | 8 | 2 | 2 | 9c62f8d6303aabd9 |
 | `rules/micro/bdo/bdo_ewidencja.rego` | 8 | 1 | 1 | 8507f279415be2ac |
 | `rules/micro/bdo/bdo_rejestracja.rego` | 8 | 3 | 2 | 29bac77629462408 |
@@ -175,14 +185,14 @@
 | `rules/micro/crossborder_atomic_p12.rego` | 9 | 5 | 3 | 59dcd7c04694a644 |
 | `rules/micro/jpk/jpk.rego` | 35 | 1 | 0 | f520af362478d53e |
 | `rules/micro/kks/kks.rego` | 473 | 8 | 0 | a29139b8a7b2195b |
-| `rules/micro/kks_ord_atomic_p11.rego` | 12 | 4 | 4 | 16c839ff90c1bf54 |
+| `rules/micro/kks_ord_atomic_p11.rego` | 16 | 4 | 6 | 9d56864055d91af1 |
 | `rules/micro/ksef/ksef.rego` | 79 | 2 | 0 | 44132c16d843ff82 |
 | `rules/micro/ksiegowosc_atomic_p10.rego` | 16 | 5 | 3 | 83d93847a4bffea6 |
 | `rules/micro/ord/ord.rego` | 423 | 3 | 0 | 5e500ff7d4d06e67 |
 | `rules/micro/p24_innovations_enterprise.rego` | 29 | 3 | 0 | 0c49c842b5a9269b |
 | `rules/micro/pcc/pcc.rego` | 89 | 1 | 0 | 9f73dbd4cb19eb69 |
 | `rules/micro/pcc_lokalne_atomic_p14.rego` | 18 | 0 | 0 | b5bab5a7422a2790 |
-| `rules/micro/pit/pit.rego` | 811 | 24 | 0 | 9a07d48293446f4a |
+| `rules/micro/pit/pit.rego` | 811 | 25 | 0 | 7c07864ecba2a151 |
 | `rules/micro/pkpir/pkpir.rego` | 11 | 1 | 0 | 835586dd96378bd0 |
 | `rules/micro/pkpir/pkpir_kolumny.rego` | 11 | 2 | 0 | 602ab1df36ef2a12 |
 | `rules/micro/pkpir/pkpir_korekty.rego` | 8 | 1 | 1 | 3266a8a9e60550f3 |
@@ -197,11 +207,11 @@
 | `rules/micro/plan33_health.rego` | 40 | 0 | 0 | 03e0148dd9561c59 |
 | `rules/micro/plan33_jpk.rego` | 70 | 0 | 0 | 8d5acd79dd8826bf |
 | `rules/micro/plan33_kks.rego` | 64 | 0 | 0 | 9cd2a39034a671a4 |
-| `rules/micro/plan33_ksef.rego` | 74 | 0 | 0 | d55a2fcff51a2c62 |
+| `rules/micro/plan33_ksef.rego` | 74 | 0 | 0 | fbc1c978fd2aaedd |
 | `rules/micro/plan33_mdr.rego` | 10 | 0 | 0 | c4753ab7bc637876 |
 | `rules/micro/plan33_ord.rego` | 1 | 0 | 0 | 2c6c4d2dcb827cd8 |
 | `rules/micro/plan33_pcc.rego` | 59 | 0 | 0 | 6948ffbe27d97cbb |
-| `rules/micro/plan33_pit.rego` | 86 | 0 | 0 | eb83f697ad513ea3 |
+| `rules/micro/plan33_pit.rego` | 86 | 0 | 0 | 966bacc3ec23c3fe |
 | `rules/micro/plan33_prop.rego` | 30 | 0 | 0 | f3c412ccb382f479 |
 | `rules/micro/plan33_prop_transport.rego` | 5 | 0 | 0 | 4676bdb51f0696c6 |
 | `rules/micro/plan33_rodo.rego` | 10 | 2 | 3 | ab8cea230220a012 |
@@ -213,9 +223,10 @@
 | `rules/micro/plan33_vat.rego` | 112 | 0 | 0 | 343ab82af8d3a559 |
 | `rules/micro/plan33_zus.rego` | 180 | 0 | 0 | 37435fc8384ebf06 |
 | `rules/micro/plan34_ord.rego` | 189 | 0 | 0 | 48afd725c492c787 |
-| `rules/micro/plan34_pit.rego` | 265 | 0 | 0 | 5c6da186989dc109 |
-| `rules/micro/plan34_vat.rego` | 179 | 0 | 0 | ada7cc696e777a78 |
+| `rules/micro/plan34_pit.rego` | 265 | 0 | 0 | 97e3648f2d68dda1 |
+| `rules/micro/plan34_vat.rego` | 179 | 0 | 0 | 3ec81da4cdacdd6b |
 | `rules/micro/pp/pp.rego` | 147 | 2 | 0 | 85f2167f2441d252 |
+| `rules/micro/quality_v3_13.rego` | 1 | 1 | 0 | cc84e7c555be6971 |
 | `rules/micro/rodo/rodo.rego` | 40 | 0 | 0 | 8e54380c2692ee0a |
 | `rules/micro/rodo/rodo_ai_marketing.rego` | 5 | 1 | 1 | 10b8a66fbc4c0dc2 |
 | `rules/micro/rodo/rodo_erasure.rego` | 4 | 0 | 4 | 36391c9ab30567f7 |
@@ -228,25 +239,27 @@
 | `rules/micro/srodowisko/srodowisko.rego` | 48 | 0 | 0 | a04b6dd8e5dced38 |
 | `rules/micro/sukcesja/sukcesja.rego` | 140 | 3 | 1 | 73dccfba540c5cc9 |
 | `rules/micro/sus/sus.rego` | 122 | 0 | 0 | 03bddeeb39170f47 |
+| `rules/micro/sus/sus_a19.rego` | 3 | 1 | 0 | 35492a1709dd9ce0 |
 | `rules/micro/transport/transport.rego` | 44 | 0 | 0 | 7723aaa8e6fd7425 |
 | `rules/micro/uor/uor.rego` | 148 | 34 | 26 | 12435ff40919a626 |
 | `rules/micro/vat/ksef_micro.rego` | 10 | 4 | 0 | ab1023bf2dfe0ef0 |
-| `rules/micro/vat/margin_scheme_micro.rego` | 10 | 0 | 5 | 9938f6c6e76e509d |
-| `rules/micro/vat/place_of_supply_micro.rego` | 11 | 0 | 3 | 78e39b2fbc1111d5 |
+| `rules/micro/vat/margin_scheme_micro.rego` | 10 | 0 | 5 | f17992accf739836 |
+| `rules/micro/vat/place_of_supply_micro.rego` | 12 | 0 | 3 | 4ca07119eb300cbe |
 | `rules/micro/vat/proportion_vat.rego` | 10 | 2 | 3 | 84e606f4fb71ae66 |
 | `rules/micro/vat/r03_vat_micro_articles.rego` | 13 | 0 | 0 | 5687e72810aefd57 |
-| `rules/micro/vat/vat.rego` | 1091 | 27 | 0 | 1d961f2a7e56bd38 |
-| `rules/micro/vat/wdt_export_import.rego` | 16 | 2 | 11 | 78b09539fbaf26a2 |
+| `rules/micro/vat/vat.rego` | 1091 | 27 | 0 | 8c849d0c0e6e4eee |
+| `rules/micro/vat/wdt_export_import.rego` | 16 | 2 | 11 | f953d4854ba58822 |
 | `rules/micro/zasilkowa/zasilkowa.rego` | 38 | 0 | 0 | 16a8fa7b2470d99f |
 | `rules/micro/zdrowotna/zdrowotna.rego` | 136 | 2 | 0 | 6b33cab64ad47425 |
+| `rules/micro/zdrowotna/zdrowotna_a79.rego` | 2 | 0 | 1 | 77b16c62211359f2 |
 | `rules/micro/zus_micro_atomic_p09.rego` | 16 | 0 | 2 | 38715f9a50466308 |
 | `rules/mpips.rego` | 12 | 0 | 5 | 678db203d465d969 |
-| `rules/neural_mesh_v2_enterprise.rego` | 15 | 4 | 3 | c2c98fbd3f69736b |
+| `rules/neural_mesh_v2_enterprise.rego` | 15 | 4 | 3 | c2f63b38384ecd8c |
 | `rules/neural_rule_mesh_enterprise.rego` | 19 | 0 | 1 | 88ba313b1aadb9a1 |
-| `rules/nkup_enterprise_complete.rego` | 59 | 10 | 16 | 4786c4b744a459e1 |
+| `rules/nkup_enterprise_complete.rego` | 59 | 10 | 16 | b2e2206ac4c35ca2 |
 | `rules/ord/ord_innovations_v8.rego` | 20 | 0 | 0 | af48654c62b611c5 |
 | `rules/overpayment_auto_claimer_enterprise.rego` | 2 | 0 | 0 | 806e9aeed78e3cc7 |
-| `rules/p00_legal_coverage_closure.rego` | 6 | 0 | 0 | d575cb5c47053c0c |
+| `rules/p00_legal_coverage_closure.rego` | 6 | 0 | 0 | cf48b7d3cf44750f |
 | `rules/p01_core_architecture_innovations_v8.rego` | 7 | 0 | 0 | ec3fe16ea35d8d60 |
 | `rules/p01_fundament_innovations_v9.rego` | 2 | 0 | 0 | 7a3ff17a1e718a84 |
 | `rules/p02_decision_core_innovations_v9.rego` | 1 | 0 | 0 | 4459562d82b2c084 |
@@ -256,12 +269,12 @@
 | `rules/p03_vat_micro_innovations_v8.rego` | 7 | 0 | 0 | 7be5f153714b2280 |
 | `rules/p04_pit_macro_innovations_v8.rego` | 7 | 0 | 0 | 08af58a45d4ee859 |
 | `rules/p04_vat_macro_enterprise_v9.rego` | 14 | 3 | 3 | ee4de1901814743d |
-| `rules/p04_vat_micro_innovations_v9.rego` | 9 | 0 | 2 | 6771c3e29146bfe1 |
+| `rules/p04_vat_micro_innovations_v9.rego` | 9 | 0 | 2 | b883f1d4c726a08c |
 | `rules/p05_pit_innovations_v8.rego` | 30 | 0 | 0 | 40bf15f525184f68 |
 | `rules/p05_pit_macro_innovations_v9.rego` | 14 | 0 | 1 | 600126ccd07d6fac |
 | `rules/p05_vat_micro_atomic_v9.rego` | 10 | 0 | 0 | 40b5fd3b81573a4d |
 | `rules/p06_pit_macro_enterprise_v9.rego` | 14 | 1 | 1 | 177f8610d438accb |
-| `rules/p06_pit_micro_innovations_v8.rego` | 34 | 0 | 0 | c89acc6856097d82 |
+| `rules/p06_pit_micro_innovations_v8.rego` | 34 | 0 | 0 | e283f34289667e17 |
 | `rules/p06_pit_micro_innovations_v9.rego` | 13 | 0 | 3 | df2e3f70c857d667 |
 | `rules/p07_pit_micro_atomic_v9.rego` | 20 | 0 | 0 | 7ad0235cf9066a1c |
 | `rules/p07_zus_macro_innovations_v8.rego` | 19 | 0 | 0 | ae22b210ad46a118 |
@@ -289,13 +302,13 @@
 | `rules/p16_entrepreneur_test_enterprise.rego` | 1 | 0 | 0 | d6f6a546405fbaf6 |
 | `rules/p16_estonian_cit_enterprise.rego` | 4 | 0 | 0 | fa42af3a94c172b7 |
 | `rules/p16_rodo_aml_security_innovations_v9.rego` | 33 | 2 | 0 | 1f1fa2b6e316b195 |
-| `rules/p17_edge_conflicts_innovations_v8.rego` | 12 | 0 | 0 | 8a6f7a58c41997e1 |
+| `rules/p17_edge_conflicts_innovations_v8.rego` | 12 | 0 | 0 | 5365fcb6ecc02407 |
 | `rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego` | 29 | 0 | 0 | fb9960c26332f5c0 |
-| `rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego` | 30 | 0 | 0 | 23b3cbf0a78e4e86 |
+| `rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego` | 30 | 0 | 0 | c9132b1508e7549e |
 | `rules/p19_hr_swiadczenia_innovations_v9.rego` | 26 | 0 | 0 | 7ef9ea38978e17e3 |
 | `rules/p20_neural_mesh_innovations_v9.rego` | 28 | 0 | 0 | d2b22f648fe7e350 |
 | `rules/p21_innovations_enterprise.rego` | 48 | 6 | 6 | 068449c739a8a4e4 |
-| `rules/p21_opa_system_innovations_v9.rego` | 1 | 0 | 0 | d164e99deadebe12 |
+| `rules/p21_opa_system_innovations_v9.rego` | 1 | 0 | 0 | b66f234768d2fbee |
 | `rules/p22_innovations_enterprise.rego` | 48 | 3 | 12 | a364f6201d9a852b |
 | `rules/p22_validation_tools_innovations_v9.rego` | 1 | 0 | 0 | 611c92208f568bc7 |
 | `rules/p23_innovations_enterprise.rego` | 20 | 1 | 5 | 76e05be6b3ce27f4 |
@@ -332,10 +345,11 @@
 | `rules/pit/kup.rego` | 15 | 1 | 0 | e306c4e75fb9e421 |
 | `rules/pit/kup_extended.rego` | 34 | 3 | 0 | 741a3fa7bfc035b7 |
 | `rules/pit/missing_reliefs_enterprise.rego` | 11 | 0 | 1 | 705a290827a0a8c9 |
+| `rules/pit/pit_enterprise_zero_doubt.rego` | 5 | 1 | 0 | f850a1b078bb114d |
 | `rules/pit/plan23_exemptions.rego` | 6 | 0 | 0 | edff09cbaeae3b59 |
 | `rules/pit/plan23_tax_form_change.rego` | 7 | 1 | 0 | 76dc148472efd428 |
 | `rules/pit/plan26_detailed.rego` | 8 | 0 | 0 | 82c3a8b3664c4f6e |
-| `rules/pit/plan26_pit_critical.rego` | 13 | 1 | 0 | 75e06462a05b0b3a |
+| `rules/pit/plan26_pit_critical.rego` | 13 | 1 | 0 | e37803cf2ff73a5a |
 | `rules/pit/rd_relief_enterprise.rego` | 12 | 0 | 1 | 44a622c04ecd7806 |
 | `rules/pit/tax_form_transition_intelligence.rego` | 11 | 2 | 4 | e827247eed372b63 |
 | `rules/pit/tax_loss_harvesting_enterprise.rego` | 5 | 1 | 0 | 243a3e3424a4e9d6 |
@@ -368,7 +382,7 @@
 | `rules/r15_ksef_jpk_edeklaracje_innovations_v9.rego` | 5 | 0 | 0 | ffe90da4f524b548 |
 | `rules/r16_system_opa_innovations_v9.rego` | 5 | 0 | 0 | 39c57a5d0431b1a7 |
 | `rules/r17_enterprise_ai_innovations_v9.rego` | 5 | 0 | 0 | 6478f8cedc90434d |
-| `rules/regulated/plan44_regulated.rego` | 8 | 0 | 0 | b265528760e54d47 |
+| `rules/regulated/plan44_regulated.rego` | 8 | 0 | 0 | 7f1c1ad525811dce |
 | `rules/regulated/plan45_regulated.rego` | 32 | 2 | 1 | 76c28e72ed87d545 |
 | `rules/reliability_guarantee_enterprise.rego` | 4 | 2 | 1 | 05e555fa1b96d25d |
 | `rules/representation.rego` | 9 | 4 | 0 | 96d1b978219e5084 |
@@ -378,7 +392,7 @@
 | `rules/restructuring.rego` | 12 | 8 | 2 | bc2a00a27ae7f5cd |
 | `rules/retention.rego` | 13 | 1 | 0 | e9e5571c4c1acfa2 |
 | `rules/risk.rego` | 17 | 9 | 6 | 870c035ae950de6a |
-| `rules/risk/plan26_kks.rego` | 4 | 2 | 2 | 24f2504e25bc0efc |
+| `rules/risk/plan26_kks.rego` | 4 | 2 | 2 | ebd82c606f824d19 |
 | `rules/rodo.rego` | 12 | 2 | 10 | f48cd5b0df125f33 |
 | `rules/rodo/plan42_rodo.rego` | 3 | 0 | 1 | d851bb7e918ece74 |
 | `rules/rodo_aml_bdo_hr_etap21_v1.rego` | 1 | 0 | 0 | c3933a0d14bda7b5 |
@@ -392,14 +406,16 @@
 | `rules/solidarity/plan44_solidarity.rego` | 5 | 1 | 0 | e9ddc96632c891ca |
 | `rules/solidarity/plan45_solidarity.rego` | 28 | 3 | 0 | e1d8a9b2fe617a72 |
 | `rules/statute/plan26_detailed.rego` | 9 | 1 | 1 | aa45004a09918f00 |
-| `rules/statute_of_limitations.rego` | 18 | 5 | 9 | 408bf07aa6542cea |
-| `rules/strategic_advisor_enterprise.rego` | 8 | 0 | 2 | 5fceaa002e2ddb41 |
+| `rules/statute_of_limitations.rego` | 18 | 5 | 9 | b5b8cb30ae6220d5 |
+| `rules/strategic_advisor_enterprise.rego` | 8 | 0 | 2 | 0594460044d5dcb8 |
 | `rules/tax_authority_interaction_enterprise.rego` | 6 | 1 | 4 | 248bab0dd0aa4fb3 |
 | `rules/tax_optimization_enterprise.rego` | 10 | 0 | 3 | c0234168b81907d4 |
 | `rules/taxfree/plan44_taxfree.rego` | 6 | 0 | 0 | 8e50b4902b4c50d8 |
 | `rules/taxfree/plan45_taxfree.rego` | 38 | 1 | 1 | 1cd9e2d03b03054c |
-| `rules/temporal.rego` | 29 | 3 | 3 | 8b0789abe0a9fc84 |
+| `rules/temporal.rego` | 29 | 3 | 3 | d2a3d75391694a10 |
+| `rules/tests_ci/quality_v3_17.rego` | 1 | 0 | 0 | 5a0d983db2e33a3d |
 | `rules/tests_ci_quality_etap24_v1.rego` | 1 | 0 | 0 | 348e51f006508042 |
+| `rules/tools/quality_v3_16.rego` | 1 | 0 | 0 | b55f630fac299488 |
 | `rules/tools_api_rulestore_bundles_etap25_v1.rego` | 1 | 0 | 0 | d15926e99c55a98a |
 | `rules/tp/plan44_tp.rego` | 9 | 2 | 3 | 1c977d94613b070e |
 | `rules/tp/plan45_tp.rego` | 52 | 9 | 11 | 95a7d1411ad32684 |
@@ -422,6 +438,7 @@
 | `rules/vat/plan42_reduced_rates.rego` | 13 | 3 | 2 | 953b607747ddb377 |
 | `rules/vat/procedures.rego` | 20 | 1 | 1 | 3320d6877ac7c6ae |
 | `rules/vat/substantive.rego` | 62 | 6 | 6 | a04082f2b6149f68 |
+| `rules/vat/vat_enterprise_zero_doubt.rego` | 14 | 3 | 0 | 611590e7a271a64c |
 | `rules/vat_cashflow_predictor_enterprise.rego` | 4 | 0 | 0 | 8d63448e8d3581b8 |
 | `rules/vat_deductions_corrections_enterprise.rego` | 7 | 2 | 1 | ee3f2165f0a6651c |
 | `rules/vat_fraud_detection_enterprise.rego` | 5 | 4 | 0 | afa42b5f9b28be1c |
@@ -435,15 +452,16 @@
 | `rules/wis_api_enterprise.rego` | 3 | 0 | 0 | 3cf10c048684ed81 |
 | `rules/zus.rego` | 23 | 0 | 4 | 153e78aa73da2e70 |
 | `rules/zus/cumulative_revenue_engine.rego` | 4 | 0 | 0 | 93234704d6ecd53d |
-| `rules/zus/enterprise_benefits.rego` | 11 | 1 | 3 | 984d1aadd06ee5a0 |
+| `rules/zus/enterprise_benefits.rego` | 11 | 1 | 3 | 35be674288ec4edb |
 | `rules/zus/health_contribution_enterprise.rego` | 16 | 1 | 0 | b4ec02f5e9026bf7 |
-| `rules/zus/plan23_interactions.rego` | 9 | 0 | 0 | 0874387d55a280fc |
-| `rules/zus/plan42_benefits.rego` | 8 | 1 | 1 | 1bc26b568ebc91ac |
+| `rules/zus/plan23_interactions.rego` | 9 | 0 | 0 | 6e51ebda0e4c795b |
+| `rules/zus/plan42_benefits.rego` | 8 | 1 | 1 | 49efd28eb4cb5658 |
 | `rules/zus/sickness_benefits_enterprise.rego` | 14 | 1 | 0 | 1ab4ea7debfd583e |
+| `rules/zus/zus_enterprise_zero_doubt.rego` | 2 | 0 | 0 | 68c3188ca2bae21c |
 | `rules/zus/zus_extensions_enterprise.rego` | 6 | 0 | 0 | 4600db0d99adf678 |
 | `rules/zus_core_etap12_v1.rego` | 1 | 0 | 0 | 0deafadceff840d8 |
 | `rules/zus_micro_etap13_v1.rego` | 1 | 0 | 0 | 35107838d81b4232 |
-| **RAZEM** | **11811** | **835** | **689** | — |
+| **RAZEM** | **11855** | **847** | **692** | — |
 
 ---
 
@@ -830,6 +848,12 @@
 | 1854 | `jdg.api_fallback.nbp_rate_fallback` |  | Art. 14 ust. 1c PIT (kursy walut — metoda podatkowa) |
 | 1855 | `jdg.api_fallback.multi_degradation` | 🔴 BLOCK | Procedura operacyjna — ciągłość działania |
 
+### `rules/api_ui/quality_v3_19.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 22007 | `jdg.api_ui.quality_v3_19.api_delivery_contract` |  | OrdPU art. 12 § 5, art. 193a; PIT art. 44-45; VAT art. 109 (... |
+
 ### `rules/audit/plan44_audit.rego` (15 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
@@ -938,6 +962,12 @@
 | 1880 | `jdg.banking.batch_payment_format` |  | ISO 20022 pain.001.001.03; PolishAPI premium batch; Regulami... |
 | 1885 | `jdg.banking.psd2_compliance_audit` |  | PSD2 RTS SCA (EU 2018/389); eIDAS (EU 910/2014); Ustawa o us... |
 
+### `rules/bundles/quality_v3_18.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 22006 | `jdg.bundles.quality_v3_18.delivery_contract` |  | OrdPU art. 12 § 5, art. 193a; PIT art. 44-45; VAT art. 109; ... |
+
 ### `rules/business.rego` (23 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
@@ -985,6 +1015,12 @@
 | 925 | `jdg.business.succession_manager_appointment` | 🔴 BLOCK | Art. 3-7 ustawy o zarządzie sukcesyjnym |
 | 926 | `jdg.business.succession_time_limit_expiry` | 🔴 BLOCK | Art. 12-13 ustawy o zarządzie sukcesyjnym |
 | 927 | `jdg.business.succession_termination_events` | 🔴 BLOCK | Art. 14-15 ustawy o zarządzie sukcesyjnym |
+
+### `rules/business/v3_09_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.business.v3_09.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
 
 ### `rules/business_lifecycle_etap18_v1.rego` (1 reguł)
 
@@ -1084,6 +1120,12 @@
 | 36 | `jdg.compliance.vat_simplified_receipt_over_limit` | 🔴 BLOCK | Art. 106e ust. 5 pkt 3 VAT |
 | 145 | `jdg.compliance.cash_register_b2c_exemption` |  | Rozporządzenie MF w sprawie zwolnień z kas rejestrujących |
 | 155 | `jdg.compliance.cesop_cross_border` |  | Rozporządzenie 2020/284 (CESOP) |
+
+### `rules/compliance/v3_12_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.compliance.v3_12.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
 
 ### `rules/conflict_declaration_enterprise.rego` (4 reguł)
 
@@ -1280,6 +1322,12 @@
 | 171 | `jdg.crossborder.post_brexit.uk_services_export_b2b` |  | Art. 28b VAT |
 | 172 | `jdg.crossborder.post_brexit.uk_vat_registration_b2c` |  | UK VAT Act 1994, Distance Selling Regulations |
 
+### `rules/crossborder/v3_08_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.crossborder.v3_08.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
 ### `rules/crossborder_etap17_v1.rego` (1 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
@@ -1303,6 +1351,12 @@
 | 120 | `jdg.decision_core_completeness.retention_non_compliant` | 🟡 TRIAGE | Art. 70 § 1-2 Ordynacja podatkowa (5/10 lat) |
 | 130 | `jdg.decision_core_completeness.edge_case_gap` | 🟡 TRIAGE | P02 Sekcja 3 — Edge Case Completeness |
 | 140 | `jdg.decision_core_completeness.ok` |  | Art. 70 § 1-2 Ordynacja podatkowa (5/10 lat) |
+
+### `rules/docs/quality_v3_20.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 22008 | `jdg.docs.quality_v3_20.documentation_certification_contract` |  | OrdPU art. 12 § 5, art. 193a; PIT art. 44-45; VAT art. 109; ... |
 
 ### `rules/edelivery/plan44_edelivery.rego` (8 reguł)
 
@@ -1469,7 +1523,7 @@
 | 644 | `jdg.edge_cases.limit_giif_15k_eur` | 🟡 TRIAGE | Art. 72 ustawy AML |
 | 645 | `jdg.edge_cases.limit_cesop_25k_eur` | 🟡 TRIAGE | Rozporządzenie 2020/284 (CESOP) |
 | 646 | `jdg.edge_cases.sanction_jpk_error_500` | 🔴 BLOCK | Art. 109 VAT |
-| 647 | `jdg.edge_cases.sanction_ksef_missing_100pct` | 🔴 BLOCK | Art. 106nq VAT |
+| 647 | `jdg.edge_cases.sanction_ksef_missing_100pct` | 🔴 BLOCK | Art. 106ga ust. 1 VAT |
 | 648 | `jdg.edge_cases.sanction_late_filing_vat_500_5000` | 🟡 TRIAGE | Art. 77-79 KKS |
 | 649 | `jdg.edge_cases.sanction_unregistered_activity` | 🔴 BLOCK | Art. 60¹ KKS |
 | 650 | `jdg.edge_cases.sanction_mpp_violation_30pct` | 🔴 BLOCK | Art. 108a VAT |
@@ -1586,6 +1640,12 @@
 | 1220 | `jdg.employer.small_mandate_flat_tax` |  | Art. 30 ust. 1 pkt 5a PIT |
 | 1222 | `jdg.employer.ohs_medical_exams_kup` |  | Art. 229 KP w zw. z Art. 22 ust. 1 PIT |
 | 1223 | `jdg.employer.obligations_checklist` | 🟡 TRIAGE | Art. 38, 39, 42 PIT + Art. 46-47 SUS + Art. 31-32 PPK + Art.... |
+
+### `rules/enterprise/quality_v3_15.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 22003 | `jdg.enterprise.quality_v3_15.enterprise_initiatives_contract` |  | PIT art. 27, 30c, 30ca; VAT art. 86, 113; OrdPU art. 70, 119... |
 
 ### `rules/enterprise_ai_neural_etap23_v1.rego` (1 reguł)
 
@@ -1955,6 +2015,12 @@
 | 2120 | `jdg.gtu_checker.completeness_audit` |  | § 10 rozporządzenia JPK_VAT; Załącznik nr 15 do ustawy o VAT |
 | 2125 | `jdg.gtu_checker.per_invoice_validation` |  | Art. 106e ust. 1 pkt 18a VAT; Załącznik nr 15 |
 | 2130 | `jdg.gtu_checker.correction_proposal` | 🟡 TRIAGE | Art. 106j VAT (faktura korygująca); Załącznik nr 15 do ustaw... |
+
+### `rules/hyper/quality_v3_14.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 22002 | `jdg.hyper.quality_v3_14.hyper_context_contract` |  | OrdPU art. 12 § 5, art. 70, art. 193a; PIT art. 44-45; VAT a... |
 
 ### `rules/hyper_enterprise_contexts_etap22_v1.rego` (1 reguł)
 
@@ -3066,9 +3132,9 @@
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
 | 1650 | `jdg.ksef_innovations.upo_tracker` |  | Art. 106nc VAT (UPO); Art. 106ne VAT (tryb awaryjny) |
-| 1660 | `jdg.ksef_innovations.sanction_exposure_calculator` |  | Art. 106nq VAT (dodatkowe zobowiązanie podatkowe) |
-| 1670 | `jdg.ksef_innovations.receipt_digest` |  | Art. 106na-106nq VAT (KSeF); Art. 86 VAT (odliczenie) |
-| 1680 | `jdg.ksef_innovations.outbox_buffer` |  | Art. 106na-106nq VAT; Specyfikacja API KSeF v3.0 |
+| 1660 | `jdg.ksef_innovations.sanction_exposure_calculator` |  | Art. 106ga ust. 1 VAT (dodatkowe zobowiązanie podatkowe) |
+| 1670 | `jdg.ksef_innovations.receipt_digest` |  | Art. 106na-106ni VAT (KSeF); Art. 86 VAT (odliczenie) |
+| 1680 | `jdg.ksef_innovations.outbox_buffer` |  | Art. 106na-106ni VAT; Specyfikacja API KSeF v3.0 |
 | 1690 | `jdg.ksef_innovations.upo_vat_deduction_link` |  | Art. 106nc ust. 3 VAT (UPO warunkiem odliczenia); Art. 86 us... |
 
 ### `rules/ksef_jpk.rego` (10 reguł)
@@ -3085,6 +3151,12 @@
 | 985 | `jdg.ksef_jpk.ksef_duplicate_detected` | 🔴 BLOCK | Art. 106na-106nq VAT (KSeF 2.0), Art. 22 UoR (zasada wierneg... |
 | 986 | `jdg.ksef_jpk.ksef_offline_pkpir` | 🟡 TRIAGE | Art. 106ne VAT (tryb awaryjny), Art. 24a PIT (PKPiR) |
 | 1790 | `jdg.ksef_jpk.token_stale` | 🔴 BLOCK | Specyfikacja techniczna KSeF v3.0 |
+
+### `rules/ksef_jpk/v3_11_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.ksef_jpk.v3_11.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
 
 ### `rules/ksef_jpk_etap20_v1.rego` (1 reguł)
 
@@ -3133,8 +3205,8 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 2030 | `jdg.ksef_sanction_monitor.exposure_calculator` |  | Art. 106nq ust. 1-3 VAT (Dz.U. 2023 poz. 1598) |
-| 2035 | `jdg.ksef_sanction_monitor.per_invoice_estimator` |  | Art. 106nq VAT |
+| 2030 | `jdg.ksef_sanction_monitor.exposure_calculator` |  | Art. 106ga ust. 1 ust. 1-3 VAT (Dz.U. 2023 poz. 1598) |
+| 2035 | `jdg.ksef_sanction_monitor.per_invoice_estimator` |  | Art. 106ga ust. 1 VAT |
 
 ### `rules/ksef_sandbox_harness_enterprise.rego` (3 reguł)
 
@@ -3168,7 +3240,7 @@
 |:---------:|---------|:-------:|----------------|
 | 1101 | `jdg.liability.tax_obligation_arises_art16` |  | Art. 16 § 1-4 OrdPU |
 | 1102 | `jdg.liability.additional_tax_obligation_art16a` | 🔴 BLOCK | Art. 16a OrdPU |
-| 1102 | `jdg.liability.additional_tax_obligation_art16a` | 🔴 BLOCK | Art. 16a OrdPU |
+| 1102 | `jdg.liability.additional_tax_obligation_art16a_unreported` | 🔴 BLOCK | Art. 16a OrdPU |
 | 1150 | `jdg.liability.statute_5_years` |  | Art. 70 § 1 Ordynacji podatkowej |
 | 1158 | `jdg.liability.personal_liability` |  | Art. 33 Ordynacji podatkowej, Art. 415 KC |
 | 1162 | `jdg.liability.statute_interruption_execution` | 🟡 TRIAGE | Art. 70 § 4 Ordynacji podatkowej |
@@ -3427,6 +3499,12 @@
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
 | 1320 | `jdg.local_taxes.transport.tax_applicable` | 🟡 TRIAGE | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
+
+### `rules/local_taxes/v3_10_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.local_taxes.v3_10.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
 
 ### `rules/mdr/mdr_enterprise.rego` (16 reguł)
 
@@ -4864,10 +4942,12 @@
 | 80389 | `jdg.micro.kks.a87.r7` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
 | 80390 | `jdg.micro.kks.a87.r8` |  | Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) |
 
-### `rules/micro/kks_ord_atomic_p11.rego` (12 reguł)
+### `rules/micro/kks_ord_atomic_p11.rego` (16 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
+| 211401 | `jdg.micro.ord.a14a.interpretation_protection` | 🟡 TRIAGE | Art. 14a-14b ustawy z dnia 29 sierpnia 1997 r. — Ordynacja p... |
+| 211402 | `jdg.micro.ord.a14d.interpretation_deadline` |  | Art. 14d § 1-2 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja... |
 | 211601 | `jdg.micro.kks.a16.active_remorse` |  | Art. 16 § 1 i 2 ustawy z dnia 10 września 1999 r. — Kodeks k... |
 | 211701 | `jdg.micro.kks.a17.voluntary_submission` |  | Art. 17 § 1 i 2 ustawy z dnia 10 września 1999 r. — Kodeks k... |
 | 211701 | `jdg.micro.ord.a117ba.whitelist_monitor` | 🔴 BLOCK | Art. 117ba § 4 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja... |
@@ -4875,6 +4955,8 @@
 | 212821 | `jdg.micro.ord.a282b.audit_defense_packet` | 🟡 TRIAGE | Art. 282b, 291, 223 ustawy z dnia 29 sierpnia 1997 r. — Ordy... |
 | 213701 | `jdg.micro.kks.a37.recidivism_monitor` | 🔴 BLOCK | Art. 37 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
 | 214401 | `jdg.micro.kks.a44.limitation` |  | Art. 44 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
+| 214501 | `jdg.micro.kks.a45.expungement_tracker` |  | Art. 45 § 1-2 ustawy z dnia 10 września 1999 r. — Kodeks kar... |
+| 215301 | `jdg.micro.kks.a53.small_value_classifier` | 🟡 TRIAGE | Art. 53 § 6 ustawy z dnia 10 września 1999 r. — Kodeks karny... |
 | 215401 | `jdg.micro.kks.a54.penalty_calculator.r1` | 🟡 TRIAGE | Art. 54 § 1 i 3 ustawy z dnia 10 września 1999 r. — Kodeks k... |
 | 215402 | `jdg.micro.kks.a54.penalty_calculator.r2` | 🟡 TRIAGE | Art. 54 § 1 i 3 ustawy z dnia 10 września 1999 r. — Kodeks k... |
 | 217001 | `jdg.micro.ord.a70.limitation` |  | Art. 70 § 1 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja po... |
@@ -5859,13 +5941,13 @@
 | 50287 | `jdg.pit.a99.u3.p2` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
 | 50288 | `jdg.pit.a99.u4.p3` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
 | 50289 | `jdg.pit.nkup.r46a` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
-| 60006 | `jdg.micro.pit.a6.r1` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
-| 60007 | `jdg.micro.pit.a6.r2` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
-| 60008 | `jdg.micro.pit.a6.r3` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
-| 60009 | `jdg.micro.pit.a6.r4` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
-| 60010 | `jdg.micro.pit.a6.r5` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
-| 60011 | `jdg.micro.pit.a6.r6` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
-| 60012 | `jdg.micro.pit.a6.r7` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
+| 60006 | `jdg.micro.pit.a6.r1` |  | Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.) |
+| 60007 | `jdg.micro.pit.a6.r2` |  | Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.) |
+| 60008 | `jdg.micro.pit.a6.r3` | 🔴 BLOCK | Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.) |
+| 60009 | `jdg.micro.pit.a6.r4` |  | Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.) |
+| 60010 | `jdg.micro.pit.a6.r5` |  | Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.) |
+| 60011 | `jdg.micro.pit.a6.r6` |  | Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.) |
+| 60012 | `jdg.micro.pit.a6.r7` |  | Art. 27f ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.) |
 | 60013 | `jdg.micro.pit.a6.r8` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
 | 60014 | `jdg.micro.pit.a6.r9` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
 | 60015 | `jdg.micro.pit.a6.r10` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
@@ -5935,11 +6017,11 @@
 | 60079 | `jdg.micro.pit.a14c.r10` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
 | 60080 | `jdg.micro.pit.a14c.r11` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
 | 60081 | `jdg.micro.pit.a14c.r12` | 🔴 BLOCK | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
-| 60082 | `jdg.micro.pit.a21.r1` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
-| 60083 | `jdg.micro.pit.a21.r2` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
-| 60084 | `jdg.micro.pit.a21.r3` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
-| 60085 | `jdg.micro.pit.a21.r4` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
-| 60086 | `jdg.micro.pit.a21.r5` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
+| 60082 | `jdg.micro.pit.a21.r1` |  | Art. 21 ust. 1 pkt 148 ustawy o PIT (Dz.U. 2024 poz. 284 ze ... |
+| 60083 | `jdg.micro.pit.a21.r2` |  | Art. 21 ust. 1 pkt 152 ustawy o PIT (Dz.U. 2024 poz. 284 ze ... |
+| 60084 | `jdg.micro.pit.a21.r3` |  | Art. 21 ust. 1 pkt 153 ustawy o PIT (Dz.U. 2024 poz. 284 ze ... |
+| 60085 | `jdg.micro.pit.a21.r4` |  | Art. 21 ust. 1 pkt 154 ustawy o PIT (Dz.U. 2024 poz. 284 ze ... |
+| 60086 | `jdg.micro.pit.a21.r5` |  | Art. 21 ust. 1 pkt 148-154 ustawy o PIT (Dz.U. 2024 poz. 284... |
 | 60087 | `jdg.micro.pit.a21.r6` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
 | 60088 | `jdg.micro.pit.a21.r7` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
 | 60089 | `jdg.micro.pit.a21.r8` |  | Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350) |
@@ -6798,9 +6880,9 @@
 | 5643 | `jdg.ksef.a106nh.r3` |  | Art. 106nh ust. 1 VAT |
 | 5644 | `jdg.ksef.a106nh.r4` |  | Art. 106nh ust. 2 VAT |
 | 5645 | `jdg.ksef.a106nh.r5` |  | Art. 106nh ust. 3 VAT |
-| 5646 | `jdg.ksef.a106nq.r2` |  | Art. 106nq ust. 1 VAT |
-| 5647 | `jdg.ksef.a106nq.r3` |  | Art. 106nq ust. 2 VAT |
-| 5648 | `jdg.ksef.a106nq.r4` |  | Art. 106nq ust. 3 VAT |
+| 5646 | `jdg.ksef.a106nq.r2` |  | Art. 106ga ust. 1 ust. 1 VAT |
+| 5647 | `jdg.ksef.a106nq.r3` |  | Art. 106ga ust. 1 ust. 2 VAT |
+| 5648 | `jdg.ksef.a106nq.r4` |  | Art. 106ga ust. 1 ust. 3 VAT |
 | 5649 | `jdg.ksef.r1` |  | Ustawa o KSeF z 16.06.2023 (Dz.U. 2023 poz. 1398) |
 | 5650 | `jdg.ksef.r10` |  | Ustawa o KSeF z 16.06.2023 (Dz.U. 2023 poz. 1398) |
 | 5651 | `jdg.ksef.r11` |  | Ustawa o KSeF z 16.06.2023 (Dz.U. 2023 poz. 1398) |
@@ -6810,7 +6892,7 @@
 | 5655 | `jdg.ksef.r15` |  | Ustawa o KSeF z 16.06.2023 (Dz.U. 2023 poz. 1398) |
 | 5656 | `jdg.ksef.r16` |  | Ustawa o KSeF z 16.06.2023 (Dz.U. 2023 poz. 1398) |
 | 5657 | `jdg.ksef.r17` |  | Ustawa o KSeF z 16.06.2023 (Dz.U. 2023 poz. 1398) |
-| 5658 | `jdg.ksef.r18` |  | Art. 106nq ust. 1 VAT (Dz.U. 2023 poz. 1598) |
+| 5658 | `jdg.ksef.r18` |  | Art. 106ga ust. 1 ust. 1 VAT (Dz.U. 2023 poz. 1598) |
 | 5659 | `jdg.ksef.r19` |  | Ustawa o KSeF z 16.06.2023 (Dz.U. 2023 poz. 1398) |
 | 5660 | `jdg.ksef.r2` |  | Ustawa o KSeF z 16.06.2023 (Dz.U. 2023 poz. 1398) |
 | 5661 | `jdg.ksef.r20` |  | Ustawa o KSeF z 16.06.2023 (Dz.U. 2023 poz. 1398) |
@@ -8091,185 +8173,185 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 501 | `jdg.vat.a5.r1` |  | Art. 5 ust. 1 pkt 1-3 VAT |
-| 502 | `jdg.vat.a5.r2` |  | Art. 5 ust. 1 pkt 1-3 VAT |
-| 503 | `jdg.vat.a5.r3` |  | Art. 5 ust. 1 pkt 1-3 VAT |
-| 504 | `jdg.vat.a5.r4` |  | Art. 5 ust. 1 pkt 1-3 VAT |
-| 505 | `jdg.vat.a5.r5` |  | Art. 5 ust. 1 pkt 1-3 VAT |
-| 506 | `jdg.vat.a5.r6` |  | Art. 5 ust. 1 pkt 1-3 VAT |
-| 507 | `jdg.vat.a5.r7` |  | Art. 5 ust. 1 pkt 1-3 VAT |
-| 508 | `jdg.vat.a5.r8` |  | Art. 5 ust. 1 pkt 1-3 VAT |
-| 509 | `jdg.vat.a5.r9` |  | Art. 5 ust. 1 pkt 1-3 VAT |
-| 510 | `jdg.vat.a5.r10` |  | Art. 5 ust. 1 pkt 1-3 VAT |
-| 701 | `jdg.vat.a7.r1` |  | Art. 7 ust. 1-8 VAT |
-| 702 | `jdg.vat.a7.r2` |  | Art. 7 ust. 1-8 VAT |
-| 703 | `jdg.vat.a7.r3` |  | Art. 7 ust. 1-8 VAT |
-| 704 | `jdg.vat.a7.r4` |  | Art. 7 ust. 1-8 VAT |
-| 705 | `jdg.vat.a7.r5` |  | Art. 7 ust. 1-8 VAT |
-| 706 | `jdg.vat.a7.r6` |  | Art. 7 ust. 1-8 VAT |
-| 707 | `jdg.vat.a7.r7` |  | Art. 7 ust. 1-8 VAT |
-| 708 | `jdg.vat.a7.r8` |  | Art. 7 ust. 1-8 VAT |
-| 709 | `jdg.vat.a7.r9` |  | Art. 7 ust. 1-8 VAT |
-| 710 | `jdg.vat.a7.r10` |  | Art. 7 ust. 1-8 VAT |
-| 711 | `jdg.vat.a7.r11` |  | Art. 7 ust. 1-8 VAT |
-| 712 | `jdg.vat.a7.r12` |  | Art. 7 ust. 1-8 VAT |
-| 1501 | `jdg.vat.a15.r1` |  | Art. 15 ust. 1-9 VAT |
-| 1502 | `jdg.vat.a15.r2` |  | Art. 15 ust. 1-9 VAT |
-| 1503 | `jdg.vat.a15.r3` |  | Art. 15 ust. 1-9 VAT |
-| 1504 | `jdg.vat.a15.r4` |  | Art. 15 ust. 1-9 VAT |
-| 1901 | `jdg.vat.a19a.r1` |  | Art. 19a ust. 1-8 VAT |
-| 1902 | `jdg.vat.a19a.r2` |  | Art. 19a ust. 1-8 VAT |
-| 1903 | `jdg.vat.a19a.r3` |  | Art. 19a ust. 1-8 VAT |
-| 1904 | `jdg.vat.a19a.r4` |  | Art. 19a ust. 1-8 VAT |
-| 1905 | `jdg.vat.a19a.r5` |  | Art. 19a ust. 1-8 VAT |
-| 1906 | `jdg.vat.a19a.r6` |  | Art. 19a ust. 1-8 VAT |
-| 1907 | `jdg.vat.a19a.r7` |  | Art. 19a ust. 1-8 VAT |
-| 1908 | `jdg.vat.a19a.r8` |  | Art. 19a ust. 1-8 VAT |
-| 1909 | `jdg.vat.a19a.r9` |  | Art. 19a ust. 1-8 VAT |
-| 1910 | `jdg.vat.a19a.r10` |  | Art. 19a ust. 1-8 VAT |
-| 1911 | `jdg.vat.a19a.r11` |  | Art. 19a ust. 1-8 VAT |
-| 1912 | `jdg.vat.a19a.r12` |  | Art. 19a ust. 1-8 VAT |
-| 1913 | `jdg.vat.a19a.r13` |  | Art. 19a ust. 1-8 VAT |
-| 1914 | `jdg.vat.a19a.r14` |  | Art. 19a ust. 1-8 VAT |
-| 1915 | `jdg.vat.a19a.r15` |  | Art. 19a ust. 1-8 VAT |
-| 2001 | `jdg.vat.a20.r1` |  | Art. 20 VAT |
-| 2002 | `jdg.vat.a20.r2` |  | Art. 20 VAT |
-| 2003 | `jdg.vat.a20.r3` |  | Art. 20 VAT |
-| 2004 | `jdg.vat.a20.r4` |  | Art. 20 VAT |
-| 2005 | `jdg.vat.a20.r5` |  | Art. 20 VAT |
-| 2101 | `jdg.vat.a21.r1` |  | Art. 21 VAT |
-| 2102 | `jdg.vat.a21.r2` |  | Art. 21 VAT |
-| 2103 | `jdg.vat.a21.r3` |  | Art. 21 VAT |
-| 2104 | `jdg.vat.a21.r4` |  | Art. 21 VAT |
-| 2105 | `jdg.vat.a21.r5` |  | Art. 21 VAT |
-| 2106 | `jdg.vat.a21.r6` |  | Art. 21 VAT |
-| 2107 | `jdg.vat.a21.r7` |  | Art. 21 VAT |
-| 2108 | `jdg.vat.a21.r8` |  | Art. 21 VAT |
-| 2109 | `jdg.vat.a21.r9` |  | Art. 21 VAT |
-| 2110 | `jdg.vat.a21.r10` |  | Art. 21 VAT |
-| 2901 | `jdg.vat.a29a.r1` |  | Art. 29a ust. 1-15 VAT |
-| 2902 | `jdg.vat.a29a.r2` |  | Art. 29a ust. 1-15 VAT |
-| 2903 | `jdg.vat.a29a.r3` |  | Art. 29a ust. 1-15 VAT |
-| 2904 | `jdg.vat.a29a.r4` |  | Art. 29a ust. 1-15 VAT |
-| 2905 | `jdg.vat.a29a.r5` |  | Art. 29a ust. 1-15 VAT |
-| 2906 | `jdg.vat.a29a.r6` |  | Art. 29a ust. 1-15 VAT |
-| 2907 | `jdg.vat.a29a.r7` |  | Art. 29a ust. 1-15 VAT |
-| 2908 | `jdg.vat.a29a.r8` |  | Art. 29a ust. 1-15 VAT |
-| 2909 | `jdg.vat.a29a.r9` |  | Art. 29a ust. 1-15 VAT |
-| 2910 | `jdg.vat.a29a.r10` |  | Art. 29a ust. 1-15 VAT |
-| 2911 | `jdg.vat.a29a.r11` |  | Art. 29a ust. 1-15 VAT |
-| 2912 | `jdg.vat.a29a.r12` |  | Art. 29a ust. 1-15 VAT |
-| 2913 | `jdg.vat.a29a.r13` |  | Art. 29a ust. 1-15 VAT |
-| 2914 | `jdg.vat.a29a.r14` |  | Art. 29a ust. 1-15 VAT |
-| 2915 | `jdg.vat.a29a.r15` |  | Art. 29a ust. 1-15 VAT |
-| 4101 | `jdg.vat.a41.r1` |  | Art. 41 ust. 1-15 VAT |
-| 4102 | `jdg.vat.a41.r2` |  | Art. 41 ust. 1-15 VAT |
-| 4103 | `jdg.vat.a41.r3` |  | Art. 41 ust. 1-15 VAT |
-| 4104 | `jdg.vat.a41.r4` |  | Art. 41 ust. 1-15 VAT |
-| 4105 | `jdg.vat.a41.r5` |  | Art. 41 ust. 1-15 VAT |
-| 4107 | `jdg.vat.a41.r7` |  | Art. 41 ust. 1-15 VAT |
-| 4112 | `jdg.vat.a41.r12` |  | Art. 41 ust. 1-15 VAT |
-| 4113 | `jdg.vat.a41.r13` |  | Art. 41 ust. 1-15 VAT |
-| 4116 | `jdg.vat.a41.r16` |  | Art. 41 ust. 1-15 VAT |
-| 4117 | `jdg.vat.a41.r17` |  | Art. 41 ust. 1-15 VAT |
-| 4118 | `jdg.vat.a41.r18` |  | Art. 41 ust. 1-15 VAT |
-| 4121 | `jdg.vat.a41.r21` |  | Art. 41 ust. 1-15 VAT |
-| 4123 | `jdg.vat.a41.r23` |  | Art. 41 ust. 1-15 VAT |
-| 4124 | `jdg.vat.a41.r24` |  | Art. 41 ust. 1-15 VAT |
-| 4126 | `jdg.vat.a41.r26` |  | Art. 41 ust. 1-15 VAT |
-| 4128 | `jdg.vat.a41.r28` |  | Art. 41 ust. 1-15 VAT |
-| 4129 | `jdg.vat.a41.r29` |  | Art. 41 ust. 1-15 VAT |
-| 4131 | `jdg.vat.a41.r31` |  | Art. 41 ust. 1-15 VAT |
-| 4136 | `jdg.vat.a41.r36` |  | Art. 41 ust. 1-15 VAT |
-| 4138 | `jdg.vat.a41.r38` |  | Art. 41 ust. 1-15 VAT |
-| 4142 | `jdg.vat.a41.r42` |  | Art. 41 ust. 1-15 VAT |
-| 4145 | `jdg.vat.a41.r45` |  | Art. 41 ust. 1-15 VAT |
-| 4146 | `jdg.vat.a41.r46` |  | Art. 41 ust. 1-15 VAT |
-| 4149 | `jdg.vat.a41.r49` |  | Art. 41 ust. 1-15 VAT |
-| 4301 | `jdg.vat.a43.r1` |  | Art. 43 ust. 1 pkt 1-38 VAT |
-| 4302 | `jdg.vat.a43.r2` |  | Art. 43 ust. 1 pkt 1-38 VAT |
-| 4303 | `jdg.vat.a43.r3` |  | Art. 43 ust. 1 pkt 1-38 VAT |
-| 4304 | `jdg.vat.a43.r4` |  | Art. 43 ust. 1 pkt 1-38 VAT |
-| 4306 | `jdg.vat.a43.r6` |  | Art. 43 ust. 1 pkt 1-38 VAT |
-| 4307 | `jdg.vat.a43.r7` |  | Art. 43 ust. 1 pkt 1-38 VAT |
-| 4308 | `jdg.vat.a43.r8` |  | Art. 43 ust. 1 pkt 1-38 VAT |
-| 4309 | `jdg.vat.a43.r9` |  | Art. 43 ust. 1 pkt 1-38 VAT |
-| 4310 | `jdg.vat.a43.r10` |  | Art. 43 ust. 1 pkt 1-38 VAT |
-| 4311 | `jdg.vat.a43.r11` |  | Art. 43 ust. 1 pkt 1-38 VAT |
-| 4315 | `jdg.vat.a43.r15` |  | Art. 43 ust. 1 pkt 1-38 VAT |
-| 4318 | `jdg.vat.a43.r18` |  | Art. 43 ust. 1 pkt 1-38 VAT |
-| 4319 | `jdg.vat.a43.r19` |  | Art. 43 ust. 1 pkt 1-38 VAT |
-| 4320 | `jdg.vat.a43.r20` |  | Art. 43 ust. 1 pkt 1-38 VAT |
-| 4335 | `jdg.vat.a43.r35` |  | Art. 43 ust. 1 pkt 1-38 VAT |
-| 4336 | `jdg.vat.a43.r36` |  | Art. 43 ust. 1 pkt 1-38 VAT |
-| 4339 | `jdg.vat.a43.r39` |  | Art. 43 ust. 1 pkt 1-38 VAT |
-| 8601 | `jdg.vat.a86.r1` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
-| 8601 | `jdg.vat.a86a.r1` |  | Art. 86a VAT (limit aut) |
-| 8602 | `jdg.vat.a86.r2` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
-| 8602 | `jdg.vat.a86a.r2` |  | Art. 86a VAT (limit aut) |
-| 8603 | `jdg.vat.a86.r3` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
-| 8603 | `jdg.vat.a86a.r3` |  | Art. 86a VAT (limit aut) |
-| 8604 | `jdg.vat.a86.r4` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
-| 8604 | `jdg.vat.a86a.r4` |  | Art. 86a VAT (limit aut) |
-| 8605 | `jdg.vat.a86.r5` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
-| 8605 | `jdg.vat.a86a.r5` |  | Art. 86a VAT (limit aut) |
-| 8606 | `jdg.vat.a86.r6` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
-| 8606 | `jdg.vat.a86a.r6` |  | Art. 86a VAT (limit aut) |
-| 8607 | `jdg.vat.a86.r7` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
-| 8607 | `jdg.vat.a86a.r7` |  | Art. 86a VAT (limit aut) |
-| 8608 | `jdg.vat.a86.r8` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
-| 8608 | `jdg.vat.a86a.r8` |  | Art. 86a VAT (limit aut) |
-| 8609 | `jdg.vat.a86.r9` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
-| 8610 | `jdg.vat.a86.r10` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
-| 8613 | `jdg.vat.a86.r13` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
-| 8615 | `jdg.vat.a86.r15` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
-| 8616 | `jdg.vat.a86.r16` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
-| 8801 | `jdg.vat.a88.r1` |  | Art. 88 VAT |
-| 8802 | `jdg.vat.a88.r2` |  | Art. 88 VAT |
-| 8803 | `jdg.vat.a88.r3` |  | Art. 88 VAT |
-| 8804 | `jdg.vat.a88.r4` |  | Art. 88 VAT |
-| 8805 | `jdg.vat.a88.r5` |  | Art. 88 VAT |
-| 8807 | `jdg.vat.a88.r7` |  | Art. 88 VAT |
-| 8808 | `jdg.vat.a88.r8` |  | Art. 88 VAT |
-| 8813 | `jdg.vat.a88.r13` |  | Art. 88 VAT |
-| 8901 | `jdg.vat.a89a.r1` |  | Art. 89a VAT (złe długi) |
-| 8901 | `jdg.vat.a89b.r1` |  | Art. 89b VAT |
-| 8902 | `jdg.vat.a89a.r2` |  | Art. 89a VAT (złe długi) |
-| 8902 | `jdg.vat.a89b.r2` |  | Art. 89b VAT |
-| 8903 | `jdg.vat.a89a.r3` |  | Art. 89a VAT (złe długi) |
-| 8904 | `jdg.vat.a89b.r4` |  | Art. 89b VAT |
-| 8905 | `jdg.vat.a89a.r5` |  | Art. 89a VAT (złe długi) |
-| 9601 | `jdg.vat.a96.r1` |  | Art. 96 VAT (rejestracja) |
-| 9602 | `jdg.vat.a96.r2` |  | Art. 96 VAT (rejestracja) |
-| 9603 | `jdg.vat.a96.r3` |  | Art. 96 VAT (rejestracja) |
-| 9604 | `jdg.vat.a96.r4` |  | Art. 96 VAT (rejestracja) |
-| 9605 | `jdg.vat.a96.r5` |  | Art. 96 VAT (rejestracja) |
-| 9606 | `jdg.vat.a96.r6` |  | Art. 96 VAT (rejestracja) |
-| 9607 | `jdg.vat.a96.r7` |  | Art. 96 VAT (rejestracja) |
-| 9608 | `jdg.vat.a96.r8` |  | Art. 96 VAT (rejestracja) |
-| 9609 | `jdg.vat.a96.r9` |  | Art. 96 VAT (rejestracja) |
-| 9610 | `jdg.vat.a96.r10` |  | Art. 96 VAT (rejestracja) |
-| 9611 | `jdg.vat.a96.r11` |  | Art. 96 VAT (rejestracja) |
-| 9901 | `jdg.vat.a99.r1` |  | Art. 99 ustawy o VAT |
-| 9902 | `jdg.vat.a99.r2` |  | Art. 99 ustawy o VAT |
-| 9904 | `jdg.vat.a99.r4` |  | Art. 99 ustawy o VAT |
-| 9905 | `jdg.vat.a99.r5` |  | Art. 99 ustawy o VAT |
-| 10601 | `jdg.vat.a106e.r1` |  | Art. 106e VAT (elementy faktury) |
-| 10601 | `jdg.vat.a106j.r1` |  | Art. 106j ustawy o VAT |
-| 10601 | `jdg.vat.a106na.r1` |  | Art. 106na ustawy o VAT |
-| 10601 | `jdg.vat.a106ne.r1` |  | Art. 106ne ustawy o VAT |
-| 10601 | `jdg.vat.a106ng.r1` |  | Art. 106ng ustawy o VAT |
-| 10601 | `jdg.vat.a106nh.r1` |  | Art. 106nh ustawy o VAT |
-| 10601 | `jdg.vat.a106nq.r1` |  | Art. 106nq ustawy o VAT |
-| 10602 | `jdg.vat.a106e.r2` |  | Art. 106e VAT (elementy faktury) |
-| 10603 | `jdg.vat.a106j.r3` |  | Art. 106j ustawy o VAT |
-| 10603 | `jdg.vat.a106na.r3` |  | Art. 106na ustawy o VAT |
-| 10604 | `jdg.vat.a106na.r4` |  | Art. 106na ustawy o VAT |
-| 10605 | `jdg.vat.a106e.r5` |  | Art. 106e VAT (elementy faktury) |
-| 10606 | `jdg.vat.a106e.r6` |  | Art. 106e VAT (elementy faktury) |
-| 10608 | `jdg.vat.a106j.r8` |  | Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
-| 10610 | `jdg.vat.a106e.r10` |  | Art. 106e VAT (elementy faktury) |
-| 10614 | `jdg.vat.a106e.r14` |  | Art. 106e VAT (elementy faktury) |
+| 60551 | `jdg.vat.a5.r1` |  | Art. 5 ust. 1 pkt 1-3 VAT |
+| 60552 | `jdg.vat.a5.r2` |  | Art. 5 ust. 1 pkt 1-3 VAT |
+| 60553 | `jdg.vat.a5.r3` |  | Art. 5 ust. 1 pkt 1-3 VAT |
+| 60554 | `jdg.vat.a5.r4` |  | Art. 5 ust. 1 pkt 1-3 VAT |
+| 60555 | `jdg.vat.a5.r5` |  | Art. 5 ust. 1 pkt 1-3 VAT |
+| 60556 | `jdg.vat.a5.r6` |  | Art. 5 ust. 1 pkt 1-3 VAT |
+| 60557 | `jdg.vat.a5.r7` |  | Art. 5 ust. 1 pkt 1-3 VAT |
+| 60558 | `jdg.vat.a5.r8` |  | Art. 5 ust. 1 pkt 1-3 VAT |
+| 60559 | `jdg.vat.a5.r9` |  | Art. 5 ust. 1 pkt 1-3 VAT |
+| 60560 | `jdg.vat.a5.r10` |  | Art. 5 ust. 1 pkt 1-3 VAT |
+| 60701 | `jdg.vat.a7.r1` |  | Art. 7 ust. 1-8 VAT |
+| 60702 | `jdg.vat.a7.r2` |  | Art. 7 ust. 1-8 VAT |
+| 60703 | `jdg.vat.a7.r3` |  | Art. 7 ust. 1-8 VAT |
+| 60704 | `jdg.vat.a7.r4` |  | Art. 7 ust. 1-8 VAT |
+| 60705 | `jdg.vat.a7.r5` |  | Art. 7 ust. 1-8 VAT |
+| 60706 | `jdg.vat.a7.r6` |  | Art. 7 ust. 1-8 VAT |
+| 60707 | `jdg.vat.a7.r7` |  | Art. 7 ust. 1-8 VAT |
+| 60708 | `jdg.vat.a7.r8` |  | Art. 7 ust. 1-8 VAT |
+| 60709 | `jdg.vat.a7.r9` |  | Art. 7 ust. 1-8 VAT |
+| 60710 | `jdg.vat.a7.r10` |  | Art. 7 ust. 1-8 VAT |
+| 60711 | `jdg.vat.a7.r11` |  | Art. 7 ust. 1-8 VAT |
+| 60712 | `jdg.vat.a7.r12` |  | Art. 7 ust. 1-8 VAT |
+| 61501 | `jdg.vat.a15.r1` |  | Art. 15 ust. 1-9 VAT |
+| 61502 | `jdg.vat.a15.r2` |  | Art. 15 ust. 1-9 VAT |
+| 61503 | `jdg.vat.a15.r3` |  | Art. 15 ust. 1-9 VAT |
+| 61504 | `jdg.vat.a15.r4` |  | Art. 15 ust. 1-9 VAT |
+| 61901 | `jdg.vat.a19a.r1` |  | Art. 19a ust. 1-8 VAT |
+| 61902 | `jdg.vat.a19a.r2` |  | Art. 19a ust. 1-8 VAT |
+| 61903 | `jdg.vat.a19a.r3` |  | Art. 19a ust. 1-8 VAT |
+| 61904 | `jdg.vat.a19a.r4` |  | Art. 19a ust. 1-8 VAT |
+| 61905 | `jdg.vat.a19a.r5` |  | Art. 19a ust. 1-8 VAT |
+| 61906 | `jdg.vat.a19a.r6` |  | Art. 19a ust. 1-8 VAT |
+| 61907 | `jdg.vat.a19a.r7` |  | Art. 19a ust. 1-8 VAT |
+| 61908 | `jdg.vat.a19a.r8` |  | Art. 19a ust. 1-8 VAT |
+| 61909 | `jdg.vat.a19a.r9` |  | Art. 19a ust. 1-8 VAT |
+| 61910 | `jdg.vat.a19a.r10` |  | Art. 19a ust. 1-8 VAT |
+| 61911 | `jdg.vat.a19a.r11` |  | Art. 19a ust. 1-8 VAT |
+| 61912 | `jdg.vat.a19a.r12` |  | Art. 19a ust. 1-8 VAT |
+| 61913 | `jdg.vat.a19a.r13` |  | Art. 19a ust. 1-8 VAT |
+| 61914 | `jdg.vat.a19a.r14` |  | Art. 19a ust. 1-8 VAT |
+| 61915 | `jdg.vat.a19a.r15` |  | Art. 19a ust. 1-8 VAT |
+| 62001 | `jdg.vat.a20.r1` |  | Art. 20 VAT |
+| 62002 | `jdg.vat.a20.r2` |  | Art. 20 VAT |
+| 62003 | `jdg.vat.a20.r3` |  | Art. 20 VAT |
+| 62004 | `jdg.vat.a20.r4` |  | Art. 20 VAT |
+| 62005 | `jdg.vat.a20.r5` |  | Art. 20 VAT |
+| 62101 | `jdg.vat.a21.r1` |  | Art. 21 VAT |
+| 62102 | `jdg.vat.a21.r2` |  | Art. 21 VAT |
+| 62103 | `jdg.vat.a21.r3` |  | Art. 21 VAT |
+| 62104 | `jdg.vat.a21.r4` |  | Art. 21 VAT |
+| 62105 | `jdg.vat.a21.r5` |  | Art. 21 VAT |
+| 62106 | `jdg.vat.a21.r6` |  | Art. 21 VAT |
+| 62107 | `jdg.vat.a21.r7` |  | Art. 21 VAT |
+| 62108 | `jdg.vat.a21.r8` |  | Art. 21 VAT |
+| 62109 | `jdg.vat.a21.r9` |  | Art. 21 VAT |
+| 62110 | `jdg.vat.a21.r10` |  | Art. 21 VAT |
+| 62901 | `jdg.vat.a29a.r1` |  | Art. 29a ust. 1-15 VAT |
+| 62902 | `jdg.vat.a29a.r2` |  | Art. 29a ust. 1-15 VAT |
+| 62903 | `jdg.vat.a29a.r3` |  | Art. 29a ust. 1-15 VAT |
+| 62904 | `jdg.vat.a29a.r4` |  | Art. 29a ust. 1-15 VAT |
+| 62905 | `jdg.vat.a29a.r5` |  | Art. 29a ust. 1-15 VAT |
+| 62906 | `jdg.vat.a29a.r6` |  | Art. 29a ust. 1-15 VAT |
+| 62907 | `jdg.vat.a29a.r7` |  | Art. 29a ust. 1-15 VAT |
+| 62908 | `jdg.vat.a29a.r8` |  | Art. 29a ust. 1-15 VAT |
+| 62909 | `jdg.vat.a29a.r9` |  | Art. 29a ust. 1-15 VAT |
+| 62910 | `jdg.vat.a29a.r10` |  | Art. 29a ust. 1-15 VAT |
+| 62911 | `jdg.vat.a29a.r11` |  | Art. 29a ust. 1-15 VAT |
+| 62912 | `jdg.vat.a29a.r12` |  | Art. 29a ust. 1-15 VAT |
+| 62913 | `jdg.vat.a29a.r13` |  | Art. 29a ust. 1-15 VAT |
+| 62914 | `jdg.vat.a29a.r14` |  | Art. 29a ust. 1-15 VAT |
+| 62915 | `jdg.vat.a29a.r15` |  | Art. 29a ust. 1-15 VAT |
+| 64101 | `jdg.vat.a41.r1` |  | Art. 41 ust. 1-15 VAT |
+| 64102 | `jdg.vat.a41.r2` |  | Art. 41 ust. 1-15 VAT |
+| 64103 | `jdg.vat.a41.r3` |  | Art. 41 ust. 1-15 VAT |
+| 64104 | `jdg.vat.a41.r4` |  | Art. 41 ust. 1-15 VAT |
+| 64105 | `jdg.vat.a41.r5` |  | Art. 41 ust. 1-15 VAT |
+| 64107 | `jdg.vat.a41.r7` |  | Art. 41 ust. 1-15 VAT |
+| 64112 | `jdg.vat.a41.r12` |  | Art. 41 ust. 1-15 VAT |
+| 64113 | `jdg.vat.a41.r13` |  | Art. 41 ust. 1-15 VAT |
+| 64116 | `jdg.vat.a41.r16` |  | Art. 41 ust. 1-15 VAT |
+| 64117 | `jdg.vat.a41.r17` |  | Art. 41 ust. 1-15 VAT |
+| 64118 | `jdg.vat.a41.r18` |  | Art. 41 ust. 1-15 VAT |
+| 64121 | `jdg.vat.a41.r21` |  | Art. 41 ust. 1-15 VAT |
+| 64123 | `jdg.vat.a41.r23` |  | Art. 41 ust. 1-15 VAT |
+| 64124 | `jdg.vat.a41.r24` |  | Art. 41 ust. 1-15 VAT |
+| 64126 | `jdg.vat.a41.r26` |  | Art. 41 ust. 1-15 VAT |
+| 64128 | `jdg.vat.a41.r28` |  | Art. 41 ust. 1-15 VAT |
+| 64129 | `jdg.vat.a41.r29` |  | Art. 41 ust. 1-15 VAT |
+| 64131 | `jdg.vat.a41.r31` |  | Art. 41 ust. 1-15 VAT |
+| 64136 | `jdg.vat.a41.r36` |  | Art. 41 ust. 1-15 VAT |
+| 64138 | `jdg.vat.a41.r38` |  | Art. 41 ust. 1-15 VAT |
+| 64142 | `jdg.vat.a41.r42` |  | Art. 41 ust. 1-15 VAT |
+| 64145 | `jdg.vat.a41.r45` |  | Art. 41 ust. 1-15 VAT |
+| 64146 | `jdg.vat.a41.r46` |  | Art. 41 ust. 1-15 VAT |
+| 64149 | `jdg.vat.a41.r49` |  | Art. 41 ust. 1-15 VAT |
+| 64301 | `jdg.vat.a43.r1` |  | Art. 43 ust. 1 pkt 1-38 VAT |
+| 64302 | `jdg.vat.a43.r2` |  | Art. 43 ust. 1 pkt 1-38 VAT |
+| 64303 | `jdg.vat.a43.r3` |  | Art. 43 ust. 1 pkt 1-38 VAT |
+| 64304 | `jdg.vat.a43.r4` |  | Art. 43 ust. 1 pkt 1-38 VAT |
+| 64306 | `jdg.vat.a43.r6` |  | Art. 43 ust. 1 pkt 1-38 VAT |
+| 64307 | `jdg.vat.a43.r7` |  | Art. 43 ust. 1 pkt 1-38 VAT |
+| 64308 | `jdg.vat.a43.r8` |  | Art. 43 ust. 1 pkt 1-38 VAT |
+| 64309 | `jdg.vat.a43.r9` |  | Art. 43 ust. 1 pkt 1-38 VAT |
+| 64310 | `jdg.vat.a43.r10` |  | Art. 43 ust. 1 pkt 1-38 VAT |
+| 64311 | `jdg.vat.a43.r11` |  | Art. 43 ust. 1 pkt 1-38 VAT |
+| 64315 | `jdg.vat.a43.r15` |  | Art. 43 ust. 1 pkt 1-38 VAT |
+| 64318 | `jdg.vat.a43.r18` |  | Art. 43 ust. 1 pkt 1-38 VAT |
+| 64319 | `jdg.vat.a43.r19` |  | Art. 43 ust. 1 pkt 1-38 VAT |
+| 64320 | `jdg.vat.a43.r20` |  | Art. 43 ust. 1 pkt 1-38 VAT |
+| 64335 | `jdg.vat.a43.r35` |  | Art. 43 ust. 1 pkt 1-38 VAT |
+| 64336 | `jdg.vat.a43.r36` |  | Art. 43 ust. 1 pkt 1-38 VAT |
+| 64339 | `jdg.vat.a43.r39` |  | Art. 43 ust. 1 pkt 1-38 VAT |
+| 68601 | `jdg.vat.a86.r1` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
+| 68601 | `jdg.vat.a86a.r1` |  | Art. 86a VAT (limit aut) |
+| 68602 | `jdg.vat.a86.r2` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
+| 68602 | `jdg.vat.a86a.r2` |  | Art. 86a VAT (limit aut) |
+| 68603 | `jdg.vat.a86.r3` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
+| 68603 | `jdg.vat.a86a.r3` |  | Art. 86a VAT (limit aut) |
+| 68604 | `jdg.vat.a86.r4` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
+| 68604 | `jdg.vat.a86a.r4` |  | Art. 86a VAT (limit aut) |
+| 68605 | `jdg.vat.a86.r5` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
+| 68605 | `jdg.vat.a86a.r5` |  | Art. 86a VAT (limit aut) |
+| 68606 | `jdg.vat.a86.r6` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
+| 68606 | `jdg.vat.a86a.r6` |  | Art. 86a VAT (limit aut) |
+| 68607 | `jdg.vat.a86.r7` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
+| 68607 | `jdg.vat.a86a.r7` |  | Art. 86a VAT (limit aut) |
+| 68608 | `jdg.vat.a86.r8` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
+| 68608 | `jdg.vat.a86a.r8` |  | Art. 86a VAT (limit aut) |
+| 68609 | `jdg.vat.a86.r9` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
+| 68610 | `jdg.vat.a86.r10` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
+| 68613 | `jdg.vat.a86.r13` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
+| 68615 | `jdg.vat.a86.r15` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
+| 68616 | `jdg.vat.a86.r16` |  | Art. 86 ust. 1-10 VAT (odliczenia) |
+| 68801 | `jdg.vat.a88.r1` |  | Art. 88 VAT |
+| 68802 | `jdg.vat.a88.r2` |  | Art. 88 VAT |
+| 68803 | `jdg.vat.a88.r3` |  | Art. 88 VAT |
+| 68804 | `jdg.vat.a88.r4` |  | Art. 88 VAT |
+| 68805 | `jdg.vat.a88.r5` |  | Art. 88 VAT |
+| 68807 | `jdg.vat.a88.r7` |  | Art. 88 VAT |
+| 68808 | `jdg.vat.a88.r8` |  | Art. 88 VAT |
+| 68813 | `jdg.vat.a88.r13` |  | Art. 88 VAT |
+| 68901 | `jdg.vat.a89a.r1` |  | Art. 89a VAT (złe długi) |
+| 68901 | `jdg.vat.a89b.r1` |  | Art. 89b VAT |
+| 68902 | `jdg.vat.a89a.r2` |  | Art. 89a VAT (złe długi) |
+| 68902 | `jdg.vat.a89b.r2` |  | Art. 89b VAT |
+| 68903 | `jdg.vat.a89a.r3` |  | Art. 89a VAT (złe długi) |
+| 68904 | `jdg.vat.a89b.r4` |  | Art. 89b VAT |
+| 68905 | `jdg.vat.a89a.r5` |  | Art. 89a VAT (złe długi) |
+| 69601 | `jdg.vat.a96.r1` |  | Art. 96 VAT (rejestracja) |
+| 69602 | `jdg.vat.a96.r2` |  | Art. 96 VAT (rejestracja) |
+| 69603 | `jdg.vat.a96.r3` |  | Art. 96 VAT (rejestracja) |
+| 69604 | `jdg.vat.a96.r4` |  | Art. 96 VAT (rejestracja) |
+| 69605 | `jdg.vat.a96.r5` |  | Art. 96 VAT (rejestracja) |
+| 69606 | `jdg.vat.a96.r6` |  | Art. 96 VAT (rejestracja) |
+| 69607 | `jdg.vat.a96.r7` |  | Art. 96 VAT (rejestracja) |
+| 69608 | `jdg.vat.a96.r8` |  | Art. 96 VAT (rejestracja) |
+| 69609 | `jdg.vat.a96.r9` |  | Art. 96 VAT (rejestracja) |
+| 69610 | `jdg.vat.a96.r10` |  | Art. 96 VAT (rejestracja) |
+| 69611 | `jdg.vat.a96.r11` |  | Art. 96 VAT (rejestracja) |
+| 69901 | `jdg.vat.a99.r1` |  | Art. 99 ustawy o VAT |
+| 69902 | `jdg.vat.a99.r2` |  | Art. 99 ustawy o VAT |
+| 69904 | `jdg.vat.a99.r4` |  | Art. 99 ustawy o VAT |
+| 69905 | `jdg.vat.a99.r5` |  | Art. 99 ustawy o VAT |
+| 70601 | `jdg.vat.a106e.r1` |  | Art. 106e VAT (elementy faktury) |
+| 70601 | `jdg.vat.a106j.r1` |  | Art. 106j ustawy o VAT |
+| 70601 | `jdg.vat.a106na.r1` |  | Art. 106na ustawy o VAT |
+| 70601 | `jdg.vat.a106ne.r1` |  | Art. 106ne ustawy o VAT |
+| 70601 | `jdg.vat.a106ng.r1` |  | Art. 106ng ustawy o VAT |
+| 70601 | `jdg.vat.a106nh.r1` |  | Art. 106nh ustawy o VAT |
+| 70601 | `jdg.vat.a106nq.r1` |  | Art. 106ga ust. 1 ustawy o VAT |
+| 70602 | `jdg.vat.a106e.r2` |  | Art. 106e VAT (elementy faktury) |
+| 70603 | `jdg.vat.a106j.r3` |  | Art. 106j ustawy o VAT |
+| 70603 | `jdg.vat.a106na.r3` |  | Art. 106na ustawy o VAT |
+| 70604 | `jdg.vat.a106na.r4` |  | Art. 106na ustawy o VAT |
+| 70605 | `jdg.vat.a106e.r5` |  | Art. 106e VAT (elementy faktury) |
+| 70606 | `jdg.vat.a106e.r6` |  | Art. 106e VAT (elementy faktury) |
+| 70608 | `jdg.vat.a106j.r8` |  | Ustawa o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
+| 70610 | `jdg.vat.a106e.r10` |  | Art. 106e VAT (elementy faktury) |
+| 70614 | `jdg.vat.a106e.r14` |  | Art. 106e VAT (elementy faktury) |
 
 ### `rules/micro/pp/pp.rego` (147 reguł)
 
@@ -8422,6 +8504,12 @@
 | 270502 | `jdg.micro.pp.a5index.r3` | 🔴 BLOCK | Art. 5 ust. 3 PP — utrata prawa do działalności nieewidencjo... |
 | 270503 | `jdg.micro.pp.a5index.r4` |  | Art. 5 PP + Obwieszczenie MRPiPS o minimalnym wynagrodzeniu ... |
 | 270504 | `jdg.micro.pp.a5index.r5` |  | Art. 5 ust. 2 PP — limit dotyczy łącznych przychodów |
+
+### `rules/micro/quality_v3_13.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.micro.quality_v3_13.thresholds_missing` | 🔴 BLOCK | ADR-002; V1 zasada 6 fail-closed |
 
 ### `rules/micro/rodo/rodo.rego` (40 reguł)
 
@@ -9047,6 +9135,14 @@
 | 90126 | `jdg.micro.sus.a47.r7` |  | Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o... |
 | 90127 | `jdg.micro.sus.a47.r8` |  | Art. 47 ust. 1 pkt 2 ustawy z dnia 13 października 1998 r. o... |
 
+### `rules/micro/sus/sus_a19.rego` (3 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 91901 | `jdg.micro.sus.a19.annual_cap_eligibility` |  | Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o syste... |
+| 91902 | `jdg.micro.sus.a19.annual_cap_calculation` |  | Art. 19 ust. 1, 3, 5 ustawy z dnia 13 października 1998 r. o... |
+| 91903 | `jdg.micro.sus.a19.multi_payer_notification` | 🔴 BLOCK | Art. 19 ust. 6 ustawy z dnia 13 października 1998 r. o syste... |
+
 ### `rules/micro/transport/transport.rego` (44 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
@@ -9279,11 +9375,12 @@
 | 120004 | `jdg.micro.vat.margin.mar_09` | 🟡 TRIAGE | Art. 119 VAT (usługi turystyki) |
 | 120005 | `jdg.micro.vat.margin.mar_10` |  | Art. 119 ust. 3 VAT, Art. 120 ust. 5-6 VAT |
 
-### `rules/micro/vat/place_of_supply_micro.rego` (11 reguł)
+### `rules/micro/vat/place_of_supply_micro.rego` (12 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
 | 28001 | `jdg.micro.vat.place_of_supply.pos_m01` |  | Art. 28d ust. 1 VAT |
+| 28001 | `jdg.micro.vat.place_of_supply.pos_definitions_28a` |  | Art. 28a pkt 1-2 VAT (Dz.U. 2025 poz. 456 ze zm.); art. 15 u... |
 | 28002 | `jdg.micro.vat.place_of_supply.pos_m02` | 🟡 TRIAGE | Art. 28d ust. 2 VAT |
 | 28003 | `jdg.micro.vat.place_of_supply.pos_m03` | 🟡 TRIAGE | Art. 28e VAT |
 | 28004 | `jdg.micro.vat.place_of_supply.pos_m04` |  | Art. 28f ust. 1 VAT |
@@ -9337,63 +9434,63 @@
 | 50002 | `jdg.final.a101.u3.p3` |  | Ustawa o VAT — przepisy końcowe |
 | 50003 | `jdg.final.a101.u4.p4` |  | Ustawa o VAT — przepisy końcowe |
 | 50004 | `jdg.final.a102.u1.p2` |  | Ustawa o VAT — przepisy końcowe |
-| 50005 | `jdg.micro.vat.a5.r1` |  | Art. 5 ust. 1 VAT |
+| 50005 | `jdg.micro.vat.a5.r1` |  | Art. 5 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50005 | `jdg.final.a102.u2.p3` |  | Ustawa o VAT — przepisy końcowe |
-| 50006 | `jdg.micro.vat.a5.r2` |  | Art. 5 ust. 1 VAT |
+| 50006 | `jdg.micro.vat.a5.r2` |  | Art. 5 ust. 1 pkt 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm... |
 | 50006 | `jdg.final.a102.u5.p1` |  | Ustawa o VAT — przepisy końcowe |
-| 50007 | `jdg.micro.vat.a5.r3` |  | Art. 5 ust. 1 VAT |
+| 50007 | `jdg.micro.vat.a5.r3` |  | Art. 5 ust. 1 pkt 2 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm... |
 | 50007 | `jdg.final.a103.u3.p4` |  | Ustawa o VAT — przepisy końcowe |
-| 50008 | `jdg.micro.vat.a5.r4` |  | Art. 5 ust. 1 VAT |
+| 50008 | `jdg.micro.vat.a5.r4` |  | Art. 5 ust. 1 pkt 3 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm... |
 | 50008 | `jdg.final.a103.u4.p1` |  | Ustawa o VAT — przepisy końcowe |
-| 50009 | `jdg.micro.vat.a5.r5` |  | Art. 5 ust. 1 VAT |
+| 50009 | `jdg.micro.vat.a5.r5` |  | Art. 5 ust. 1 pkt 4 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm... |
 | 50009 | `jdg.final.a103.u5.p2` |  | Ustawa o VAT — przepisy końcowe |
-| 50010 | `jdg.micro.vat.a5.r6` |  | Art. 5 ust. 1 VAT |
+| 50010 | `jdg.micro.vat.a5.r6` |  | Art. 5 ust. 1 pkt 5 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm... |
 | 50010 | `jdg.final.a104.u1.p3` |  | Ustawa o VAT — przepisy końcowe |
-| 50011 | `jdg.micro.vat.a5.r7` |  | Art. 5 ust. 1 VAT |
+| 50011 | `jdg.micro.vat.a5.r7` |  | Art. 5 ust. 1 pkt 6 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm... |
 | 50011 | `jdg.final.a104.u2.p4` |  | Ustawa o VAT — przepisy końcowe |
-| 50012 | `jdg.micro.vat.a5.r8` |  | Art. 5 ust. 1 VAT |
+| 50012 | `jdg.micro.vat.a5.r8` |  | Art. 5 ust. 1 pkt 7 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm... |
 | 50012 | `jdg.final.a104.u3.p1` |  | Ustawa o VAT — przepisy końcowe |
-| 50013 | `jdg.micro.vat.a5.r9` |  | Art. 5 ust. 1 VAT |
+| 50013 | `jdg.micro.vat.a5.r9` |  | Art. 5 ust. 1 pkt 8 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm... |
 | 50013 | `jdg.final.a105.u1.p4` |  | Ustawa o VAT — przepisy końcowe |
-| 50014 | `jdg.micro.vat.a5.r10` |  | Art. 5 ust. 1 VAT |
+| 50014 | `jdg.micro.vat.a5.r10` |  | Art. 5 ust. 1 pkt 9 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm... |
 | 50014 | `jdg.final.a105.u4.p2` |  | Ustawa o VAT — przepisy końcowe |
 | 50015 | `jdg.final.a105.u5.p3` |  | Ustawa o VAT — przepisy końcowe |
 | 50016 | `jdg.final.a106.u2.p1` |  | Ustawa o VAT — przepisy końcowe |
-| 50017 | `jdg.micro.vat.a7.r1` |  | Art. 7 ust. 1-8 VAT |
+| 50017 | `jdg.micro.vat.a7.r1` |  | Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50017 | `jdg.final.a106.u3.p2` |  | Ustawa o VAT — przepisy końcowe |
-| 50018 | `jdg.micro.vat.a7.r2` |  | Art. 7 ust. 1-8 VAT |
+| 50018 | `jdg.micro.vat.a7.r2` |  | Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50018 | `jdg.final.a106.u4.p3` |  | Ustawa o VAT — przepisy końcowe |
-| 50019 | `jdg.micro.vat.a7.r3` |  | Art. 7 ust. 1-8 VAT |
+| 50019 | `jdg.micro.vat.a7.r3` |  | Art. 7 ust. 2 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50019 | `jdg.final.a107.u1.p1` |  | Ustawa o VAT — przepisy końcowe |
-| 50020 | `jdg.micro.vat.a7.r4` |  | Art. 7 ust. 1-8 VAT |
+| 50020 | `jdg.micro.vat.a7.r4` |  | Art. 7 ust. 3 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50020 | `jdg.final.a107.u2.p2` |  | Ustawa o VAT — przepisy końcowe |
-| 50021 | `jdg.micro.vat.a7.r5` |  | Art. 7 ust. 1-8 VAT |
+| 50021 | `jdg.micro.vat.a7.r5` |  | Art. 7 ust. 8 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50021 | `jdg.final.a107.u5.p4` |  | Ustawa o VAT — przepisy końcowe |
-| 50022 | `jdg.micro.vat.a7.r6` |  | Art. 7 ust. 1-8 VAT |
+| 50022 | `jdg.micro.vat.a7.r6` |  | Art. 7 ust. 1 zdanie drugie ustawy o VAT (Dz.U. 2024 poz. 15... |
 | 50022 | `jdg.final.a108.u3.p3` |  | Ustawa o VAT — przepisy końcowe |
-| 50023 | `jdg.micro.vat.a7.r7` |  | Art. 7 ust. 1-8 VAT |
+| 50023 | `jdg.micro.vat.a7.r7` |  | Art. 7 ust. 8 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50023 | `jdg.final.a108.u4.p4` |  | Ustawa o VAT — przepisy końcowe |
-| 50024 | `jdg.micro.vat.a7.r8` |  | Art. 7 ust. 1-8 VAT |
+| 50024 | `jdg.micro.vat.a7.r8` |  | Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50024 | `jdg.final.a108.u5.p1` |  | Ustawa o VAT — przepisy końcowe |
-| 50025 | `jdg.micro.vat.a7.r9` |  | Art. 7 ust. 1-8 VAT |
+| 50025 | `jdg.micro.vat.a7.r9` |  | Art. 7 ust. 8 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50025 | `jdg.final.a109.u1.p2` |  | Ustawa o VAT — przepisy końcowe |
-| 50026 | `jdg.micro.vat.a7.r10` |  | Art. 7 ust. 1-8 VAT |
+| 50026 | `jdg.micro.vat.a7.r10` |  | Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50026 | `jdg.final.a109.u2.p3` |  | Ustawa o VAT — przepisy końcowe |
-| 50027 | `jdg.micro.vat.a7.r11` |  | Art. 7 ust. 1-8 VAT |
+| 50027 | `jdg.micro.vat.a7.r11` |  | Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50027 | `jdg.final.a109.u3.p4` |  | Ustawa o VAT — przepisy końcowe |
-| 50028 | `jdg.micro.vat.a7.r12` | 🔴 BLOCK | Art. 7 ust. 1-8 VAT |
+| 50028 | `jdg.micro.vat.a7.r12` | 🔴 BLOCK | Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50028 | `jdg.final.a110.u1.p3` |  | Ustawa o VAT — przepisy końcowe |
-| 50029 | `jdg.micro.vat.a8.r1` |  | Art. 8 ust. 1-2 VAT |
+| 50029 | `jdg.micro.vat.a8.r1` |  | Art. 8 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50029 | `jdg.final.a110.u4.p1` |  | Ustawa o VAT — przepisy końcowe |
-| 50030 | `jdg.micro.vat.a8.r2` |  | Art. 8 ust. 1-2 VAT |
+| 50030 | `jdg.micro.vat.a8.r2` |  | Art. 8 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50030 | `jdg.final.a110.u5.p2` |  | Ustawa o VAT — przepisy końcowe |
-| 50031 | `jdg.micro.vat.a8.r3` |  | Art. 8 ust. 1-2 VAT |
+| 50031 | `jdg.micro.vat.a8.r3` |  | Art. 8 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50031 | `jdg.final.a111.u2.p4` |  | Ustawa o VAT — przepisy końcowe |
-| 50032 | `jdg.micro.vat.a8.r4` |  | Art. 8 ust. 1-2 VAT |
+| 50032 | `jdg.micro.vat.a8.r4` |  | Art. 8 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50032 | `jdg.final.a111.u3.p1` |  | Ustawa o VAT — przepisy końcowe |
-| 50033 | `jdg.micro.vat.a8.r5` |  | Art. 8 ust. 1-2 VAT |
+| 50033 | `jdg.micro.vat.a8.r5` |  | Art. 8 ust. 2 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50033 | `jdg.final.a111.u4.p2` |  | Ustawa o VAT — przepisy końcowe |
-| 50034 | `jdg.micro.vat.a8.r6` |  | Art. 8 ust. 1-2 VAT |
+| 50034 | `jdg.micro.vat.a8.r6` |  | Art. 8 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50034 | `jdg.final.a112.u1.p4` |  | Ustawa o VAT — przepisy końcowe |
 | 50035 | `jdg.micro.vat.a8.r7` |  | Art. 8 ust. 1-2 VAT |
 | 50035 | `jdg.final.a112.u2.p1` |  | Ustawa o VAT — przepisy końcowe |
@@ -9407,29 +9504,29 @@
 | 50039 | `jdg.final.a113.u5.p4` |  | Ustawa o VAT — przepisy końcowe |
 | 50040 | `jdg.micro.vat.a8.r12` | 🔴 BLOCK | Art. 8 ust. 1-2 VAT |
 | 50040 | `jdg.final.a114.u1.p1` |  | Ustawa o VAT — przepisy końcowe |
-| 50041 | `jdg.micro.vat.a15.r1` |  | Art. 15 ust. 1-2 VAT |
+| 50041 | `jdg.micro.vat.a15.r1` |  | Art. 15 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50041 | `jdg.final.a114.u2.p2` |  | Ustawa o VAT — przepisy końcowe |
 | 50042 | `jdg.micro.vat.a15.r2` |  | Art. 15 ust. 1-2 VAT |
 | 50042 | `jdg.final.a114.u3.p3` |  | Ustawa o VAT — przepisy końcowe |
-| 50043 | `jdg.micro.vat.a15.r3` |  | Art. 15 ust. 1-2 VAT |
+| 50043 | `jdg.micro.vat.a15.r3` |  | Art. 15 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50043 | `jdg.final.a115.u1.p2` |  | Ustawa o VAT — przepisy końcowe |
-| 50044 | `jdg.micro.vat.a15.r4` |  | Art. 15 ust. 1-2 VAT |
+| 50044 | `jdg.micro.vat.a15.r4` |  | Art. 15 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50044 | `jdg.final.a115.u4.p4` |  | Ustawa o VAT — przepisy końcowe |
-| 50045 | `jdg.micro.vat.a15.r5` |  | Art. 15 ust. 1-2 VAT |
+| 50045 | `jdg.micro.vat.a15.r5` |  | Art. 96 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50045 | `jdg.final.a115.u5.p1` |  | Ustawa o VAT — przepisy końcowe |
-| 50046 | `jdg.micro.vat.a15.r6` |  | Art. 15 ust. 1-2 VAT |
+| 50046 | `jdg.micro.vat.a15.r6` |  | Art. 96 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50046 | `jdg.final.a116.u2.p3` |  | Ustawa o VAT — przepisy końcowe |
-| 50047 | `jdg.micro.vat.a15.r7` |  | Art. 15 ust. 1-2 VAT |
+| 50047 | `jdg.micro.vat.a15.r7` |  | Art. 96 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50047 | `jdg.final.a116.u3.p4` |  | Ustawa o VAT — przepisy końcowe |
-| 50048 | `jdg.micro.vat.a15.r8` |  | Art. 15 ust. 1-2 VAT |
+| 50048 | `jdg.micro.vat.a15.r8` |  | Art. 96 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50048 | `jdg.final.a116.u4.p1` |  | Ustawa o VAT — przepisy końcowe |
-| 50049 | `jdg.micro.vat.a17.r1` |  | Art. 17 ust. 1-2 VAT |
+| 50049 | `jdg.micro.vat.a17.r1` |  | Art. 17 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50049 | `jdg.final.a117.u1.p3` |  | Ustawa o VAT — przepisy końcowe |
-| 50050 | `jdg.micro.vat.a17.r2` |  | Art. 17 ust. 1-2 VAT |
+| 50050 | `jdg.micro.vat.a17.r2` |  | Art. 17 ust. 1 pkt 4 ustawy o VAT (Dz.U. 2024 poz. 1557 ze z... |
 | 50050 | `jdg.final.a117.u5.p2` |  | Ustawa o VAT — przepisy końcowe |
-| 50051 | `jdg.micro.vat.a17.r3` |  | Art. 17 ust. 1-2 VAT |
+| 50051 | `jdg.micro.vat.a17.r3` |  | Art. 17 ust. 1 pkt 5 ustawy o VAT (Dz.U. 2024 poz. 1557 ze z... |
 | 50051 | `jdg.gaar.r1` |  | Przepisy prawa polskiego |
-| 50052 | `jdg.micro.vat.a17.r4` |  | Art. 17 ust. 1-2 VAT |
+| 50052 | `jdg.micro.vat.a17.r4` |  | Art. 17 ust. 1 pkt 7 ustawy o VAT (Dz.U. 2024 poz. 1557 ze z... |
 | 50052 | `jdg.vat.a103.r3` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
 | 50053 | `jdg.micro.vat.a17.r5` |  | Art. 17 ust. 1-2 VAT |
 | 50053 | `jdg.vat.a11.u1.p1` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
@@ -10428,18 +10525,18 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 90001 | `jdg.micro.vat.wdt_export.wdt_01` | 🟡 TRIAGE | Art. 13 ust. 1-2 VAT |
-| 90002 | `jdg.micro.vat.wdt_export.wdt_02` |  | Art. 42 ust. 1-3 VAT |
-| 90003 | `jdg.micro.vat.wdt_export.wdt_03` | 🔴 BLOCK | Art. 42 ust. 12-13 VAT |
-| 90004 | `jdg.micro.vat.wdt_export.wdt_04` | 🟡 TRIAGE | Art. 13 ust. 2 pkt 2 VAT |
 | 91001 | `jdg.micro.vat.wdt_export.wnt_01` | 🟡 TRIAGE | Art. 9 ust. 1-2 VAT |
 | 91002 | `jdg.micro.vat.wdt_export.wnt_02` | 🟡 TRIAGE | Art. 17 ust. 1 pkt 3 VAT |
 | 91003 | `jdg.micro.vat.wdt_export.wnt_03` | 🟡 TRIAGE | Art. 9 ust. 2 pkt 2 VAT |
 | 91004 | `jdg.micro.vat.wdt_export.wnt_04` | 🟡 TRIAGE | Art. 9 ust. 2 pkt 3 VAT |
 | 91005 | `jdg.micro.vat.wdt_export.wnt_05` |  | Art. 10 ust. 1 pkt 2 VAT |
+| 92001 | `jdg.micro.vat.wdt_export.wdt_01` | 🟡 TRIAGE | Art. 13 ust. 1-2 VAT |
 | 92001 | `jdg.micro.vat.wdt_export.imp_01` | 🟡 TRIAGE | Art. 12 VAT w zw. z Art. 29a VAT |
+| 92002 | `jdg.micro.vat.wdt_export.wdt_02` |  | Art. 42 ust. 1-3 VAT |
 | 92002 | `jdg.micro.vat.wdt_export.imp_02` | 🟡 TRIAGE | Art. 33a ust. 1 VAT |
+| 92003 | `jdg.micro.vat.wdt_export.wdt_03` | 🔴 BLOCK | Art. 42 ust. 12-13 VAT |
 | 92003 | `jdg.micro.vat.wdt_export.imp_03` | 🟡 TRIAGE | Art. 33b-33c VAT (IOSS) |
+| 92004 | `jdg.micro.vat.wdt_export.wdt_04` | 🟡 TRIAGE | Art. 13 ust. 2 pkt 2 VAT |
 | 93001 | `jdg.micro.vat.wdt_export.exp_01` | 🟡 TRIAGE | Art. 13 ust. 1 VAT w zw. z Art. 41 ust. 4-11 VAT |
 | 93002 | `jdg.micro.vat.wdt_export.exp_02` |  | Art. 41 ust. 7-8 VAT |
 | 93003 | `jdg.micro.vat.wdt_export.exp_03` | 🔴 BLOCK | Art. 41 ust. 9a-11 VAT |
@@ -10629,6 +10726,13 @@
 | 110139 | `jdg.micro.zdrowotna.a82.r7` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
 | 110140 | `jdg.micro.zdrowotna.a82.r8` |  | Art. 82 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach op... |
 
+### `rules/micro/zdrowotna/zdrowotna_a79.rego` (2 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 97901 | `jdg.micro.zdrowotna.a79.scale_calculation` |  | Art. 79 ust. 1 w zw. z art. 81 ust. 1 ustawy z dnia 27 sierp... |
+| 97902 | `jdg.micro.zdrowotna.a79.annual_settlement_scale` | 🟡 TRIAGE | Art. 79 ust. 1, art. 81 ust. 1 ustawy z dnia 27 sierpnia 200... |
+
 ### `rules/micro/zus_micro_atomic_p09.rego` (16 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
@@ -10674,7 +10778,7 @@
 | 500001 | `jdg.neural_mesh_v2.domain.cross_tax_form_vat.r1` | 🟡 TRIAGE | Art. 86 ust. 1 VAT; Art. 30c PIT |
 | 500002 | `jdg.neural_mesh_v2.domain.cross_zus_health_form.r1` |  | Art. 81 ustawy o świadczeniach zdrowotnych; Polski Ład 2022 |
 | 500003 | `jdg.neural_mesh_v2.domain.cross_uor_pkpir_threshold.r1` | 🔴 BLOCK | Art. 2 ust. 1 pkt 2 UoR; Art. 24a PIT; Art. 18c SUS |
-| 500004 | `jdg.neural_mesh_v2.domain.cross_kks_vat_penalty.r1` | 🔴 BLOCK | Art. 62 § 2 KKS; Art. 106b VAT; Art. 106nq VAT |
+| 500004 | `jdg.neural_mesh_v2.domain.cross_kks_vat_penalty.r1` | 🔴 BLOCK | Art. 62 § 2 KKS; Art. 106b VAT; Art. 106ga ust. 1 VAT |
 | 500005 | `jdg.neural_mesh_v2.domain.cross_pit_zus_optimization.r1` |  | Art. 27 PIT; Art. 18a-18c SUS — cross-domain tax optimizatio... |
 | 500020 | `jdg.neural_mesh_v2.decision.trust_score_enhanced.r1` |  | ADR-004; Cross-domain trust aggregation |
 | 500021 | `jdg.neural_mesh_v2.decision.auto_post_override.r1` | 🔴 BLOCK | ADR-004; ADR-007 |
@@ -10921,15 +11025,15 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 100 | `jdg.p04_vat_micro_innovations.coverage_report` |  | P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id) |
-| 200 | `jdg.p04_vat_micro_innovations.stub_duplicate_report` |  | P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id) |
-| 210 | `jdg.p04_vat_micro_innovations.deduplication_plan` |  | P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id) |
-| 300 | `jdg.p04_vat_micro_innovations.micro_macro_report` |  | P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id) |
-| 400 | `jdg.p04_vat_micro_innovations.math_guarantee` | 🟡 TRIAGE | P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id) |
-| 500 | `jdg.p04_vat_micro_innovations.specialist_audit` |  | P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id) |
-| 600 | `jdg.p04_vat_micro_innovations.rate_description_mismatch` | 🟡 TRIAGE | P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id) |
-| 610 | `jdg.p04_vat_micro_innovations.semantic_rate_verifier` |  | P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id) |
-| 700 | `jdg.p04_vat_micro_innovations.report` |  | P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id) |
+| 60160 | `jdg.p04_vat_micro_innovations.coverage_report` |  | P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id) |
+| 60250 | `jdg.p04_vat_micro_innovations.stub_duplicate_report` |  | P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id) |
+| 60260 | `jdg.p04_vat_micro_innovations.deduplication_plan` |  | P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id) |
+| 60350 | `jdg.p04_vat_micro_innovations.micro_macro_report` |  | P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id) |
+| 60460 | `jdg.p04_vat_micro_innovations.math_guarantee` | 🟡 TRIAGE | P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id) |
+| 60565 | `jdg.p04_vat_micro_innovations.specialist_audit` |  | P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id) |
+| 60670 | `jdg.p04_vat_micro_innovations.rate_description_mismatch` | 🟡 TRIAGE | P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id) |
+| 60680 | `jdg.p04_vat_micro_innovations.semantic_rate_verifier` |  | P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id) |
+| 60750 | `jdg.p04_vat_micro_innovations.report` |  | P04 Sekcja 1 + MANIFEST.md (10 509 unikalnych rule_id) |
 
 ### `rules/p05_pit_innovations_v8.rego` (30 reguł)
 
@@ -12554,6 +12658,16 @@
 | 700 | `jdg.pit.missing_reliefs.robotization` |  | Art. 26gb PIT |
 | 999 | `jdg.pit.missing_reliefs.coverage_summary` |  | Art. 26 ust. 1 pkt 6a PIT |
 
+### `rules/pit/pit_enterprise_zero_doubt.rego` (5 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 327 | `jdg.pit.zero_doubt.tp_information_23zf` |  | Art. 23zf ust. 1-2 PIT (Dz.U. 2025 poz. 789 ze zm.); art. 23... |
+| 328 | `jdg.pit.zero_doubt.tp_local_documentation_23w` | 🔴 BLOCK | Art. 23w ust. 1-2, 2a PIT (Dz.U. 2025 poz. 789 ze zm.); art.... |
+| 329 | `jdg.pit.zero_doubt.tp_related_parties_23m` |  | Art. 23m ust. 1 pkt 4, ust. 2 PIT (Dz.U. 2025 poz. 789 ze zm... |
+| 329 | `jdg.pit.zero_doubt.tp_related_parties_family_23m` |  | Art. 23m ust. 1 pkt 4, ust. 2 pkt 2-3 PIT (Dz.U. 2025 poz. 7... |
+| 330 | `jdg.pit.zero_doubt.solidarity_danina_30h` |  | Art. 30h ust. 1-2, 4 PIT (Dz.U. 2025 poz. 789 ze zm.); art. ... |
+
 ### `rules/pit/plan23_exemptions.rego` (6 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
@@ -13381,8 +13495,8 @@
 |:---------:|---------|:-------:|----------------|
 | 420 | `jdg.limitations.statute_period_begins_art20` |  | Art. 20 § 1 OrdPU, Art. 70 § 1 OrdPU |
 | 421 | `jdg.limitations.suspension_of_limitation_art21` | 🟡 TRIAGE | Art. 21 § 1 pkt 1 OrdPU, Art. 70 § 4 OrdPU |
-| 421 | `jdg.limitations.suspension_of_limitation_art21` | 🟡 TRIAGE | Art. 21 § 1 pkt 1 OrdPU, Art. 70 § 4 OrdPU |
-| 421 | `jdg.limitations.suspension_of_limitation_art21` | 🟡 TRIAGE | Art. 21 § 1 pkt 1 OrdPU, Art. 70 § 4 OrdPU |
+| 421 | `jdg.limitations.suspension_of_limitation_art21_tax_audit` | 🟡 TRIAGE | Art. 21 § 1 pkt 1 OrdPU, Art. 70 § 4 OrdPU |
+| 421 | `jdg.limitations.suspension_of_limitation_art21_tax_proceedings` | 🟡 TRIAGE | Art. 21 § 1 pkt 1 OrdPU, Art. 70 § 4 OrdPU |
 | 436 | `jdg.limitations.statute_5_years` |  | Art. 70 § 1 OrdPU |
 | 437 | `jdg.limitations.statute_10_years` | 🟡 TRIAGE | Art. 70 § 4-6 OrdPU |
 | 438 | `jdg.limitations.suspension_event` | 🔴 BLOCK | Art. 70 § 4 OrdPU |
@@ -13525,11 +13639,23 @@
 | 1631 | `jdg.temporal.pinning_drift` |  | A2 Temporal Causality Chain + ADR-003 + P03 GLM52 §3 |
 | 1632 | `jdg.temporal.version_proof` |  | ADR-003 + A2 (deterministyczny wybór wersji) + P03 GLM52 §3 |
 
+### `rules/tests_ci/quality_v3_17.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 22005 | `jdg.tests_ci.quality_v3_17.ci_quality_contract` |  | OrdPU art. 12 § 5, art. 193a; PIT art. 44-45; VAT art. 106na... |
+
 ### `rules/tests_ci_quality_etap24_v1.rego` (1 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
 | 24001 | `jdg.tests_ci_quality_etap24.quality_release_verdict` |  | ADR-001; ADR-006; ADR-013; ADR-017; ADR-018; ADR-022; OPA te... |
+
+### `rules/tools/quality_v3_16.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 22004 | `jdg.tools.quality_v3_16.quality_gates_contract` |  | OrdPU art. 12 § 5, art. 193a; PIT art. 44-45; VAT art. 109; ... |
 
 ### `rules/tools_api_rulestore_bundles_etap25_v1.rego` (1 reguł)
 
@@ -14135,6 +14261,25 @@
 | 998 | `jdg.vat.substantive.a113_limit_monitor` |  | Art. 113 ust. 1, 5 i 9 VAT |
 | 999 | `jdg.vat.substantive.taxable_person_jdg_v04` |  | Art. 15 ust. 1 VAT |
 
+### `rules/vat/vat_enterprise_zero_doubt.rego` (14 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 130 | `jdg.vat.zero_doubt.ksef_penalty_106ni` | 🔴 BLOCK | Art. 106ni VAT (Dz.U. 2025 poz. 456 ze zm.); art. 106ga, 106... |
+| 131 | `jdg.vat.zero_doubt.invoice_duplicate_106l` |  | Art. 106l VAT; art. 106gb ust. 5 VAT (Dz.U. 2025 poz. 456 ze... |
+| 132 | `jdg.vat.zero_doubt.cash_register_invoice_106h` |  | Art. 106h ust. 1 i 3 VAT (Dz.U. 2025 poz. 456 ze zm.) |
+| 133 | `jdg.vat.zero_doubt.advance_invoice_106f` |  | Art. 106f VAT (Dz.U. 2025 poz. 456 ze zm.); art. 106e ust. 1... |
+| 134 | `jdg.vat.zero_doubt.enforcement_invoice_106c` |  | Art. 106c VAT; art. 18 VAT (Dz.U. 2025 poz. 456 ze zm.) |
+| 135 | `jdg.vat.zero_doubt.art88a_repealed_notice` |  | Art. 88a VAT (uchylony — stan na 2026); art. 86a VAT |
+| 136 | `jdg.vat.zero_doubt.mpp_cost_refund_nonresident_108f` |  | Art. 108f VAT (Dz.U. 2025 poz. 456 ze zm.) |
+| 137 | `jdg.vat.zero_doubt.mpp_account_obligation_108e` | 🔴 BLOCK | Art. 108e VAT (Dz.U. 2025 poz. 456 ze zm.); art. 49 ust. 1 p... |
+| 138 | `jdg.vat.zero_doubt.mpp_early_payment_discount_108d` |  | Art. 108d VAT (Dz.U. 2025 poz. 456 ze zm.); art. 63 § 1 OrdP... |
+| 139 | `jdg.vat.zero_doubt.mpp_protection_lost_fake_invoice_108c` | 🔴 BLOCK | Art. 108c ust. 3 VAT (Dz.U. 2025 poz. 456 ze zm.); art. 58, ... |
+| 140 | `jdg.vat.zero_doubt.mpp_protection_108c` |  | Art. 108c ust. 1-4 VAT (Dz.U. 2025 poz. 456 ze zm.); art. 56... |
+| 143 | `jdg.vat.zero_doubt.voucher_multi_purpose_distribution_taxable` |  | Art. 8b ust. 2 VAT (Dz.U. 2025 poz. 456 ze zm.) |
+| 144 | `jdg.vat.zero_doubt.voucher_multi_purpose_redemption_taxable` |  | Art. 8b ust. 1 VAT (Dz.U. 2025 poz. 456 ze zm.) |
+| 145 | `jdg.vat.zero_doubt.voucher_multi_purpose_transfer_notax` |  | Art. 8b ust. 1 VAT (Dz.U. 2025 poz. 456 ze zm.); art. 2 pkt ... |
+
 ### `rules/vat_cashflow_predictor_enterprise.rego` (4 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
@@ -14398,6 +14543,13 @@
 | 601 | `jdg.zus.benefits.no_vat` |  | Art. 5-6 VAT (zasiłki poza zakresem VAT) |
 | 999 | `jdg.zus.sickness.fallback` |  | Ustawa zasiłkowa + SUS |
 
+### `rules/zus/zus_enterprise_zero_doubt.rego` (2 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 929 | `jdg.zus.zero_doubt.remission_exclusion_art30` |  | Art. 30 SUS w zw. z art. 28 ust. 3 pkt 4c SUS (Dz.U. 2025 po... |
+| 930 | `jdg.zus.zero_doubt.annual_base_cap_30x_art19` |  | Art. 19 ust. 1, 3, 5 SUS (Dz.U. 2025 poz. 345 ze zm.); art. ... |
+
 ### `rules/zus/zus_extensions_enterprise.rego` (6 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
@@ -14421,26 +14573,6 @@
 |:---------:|---------|:-------:|----------------|
 | 570 | `jdg.zus_micro_etap13.report` |  | SUS art. 6-47; u.ś.o.z. art. 79-82; ustawa zasiłkowa art. 4-... |
 
-## 🧩 PAKIETY KAMPANII V3 — KONTRAKTY JAKOŚCIOWE (V3-14..V3-20)
-
-Rejestr pakietów granicznych kampanii V3 (Ufortyfikowana Forteca OPA).
-Każdy pakiet bramkuje wyniki swojej warstwy z evidence, fail-closed,
-DECOUPLED, no_auto_post=true; łańcuch: p74 → … → p80 (POST-MERGE anchor).
-
-| Pakiet | Plik | Rule ID kontraktu | Evidence |
-|--------|------|-------------------|----------|
-| V3-14 HYPER CTX | `rules/hyper/quality_v3_14.rego` | `jdg.hyper.quality_v3_14.*` | `bundles/hyper_v3_audit_14.json` |
-| V3-15 ENTERPRISE | `rules/enterprise/quality_v3_15.rego` | `jdg.enterprise.quality_v3_15.*` | `bundles/enterprise_v3_audit_15.json` |
-| V3-16 NARZĘDZIA | `rules/tools/quality_v3_16.rego` | `jdg.tools.quality_v3_16.*` | `bundles/quality_gates_v3_audit_16.json` |
-| V3-17 TESTY CI | `rules/tests_ci/quality_v3_17.rego` | `jdg.tests_ci.quality_v3_17.*` | `bundles/tests_ci_v3_audit_17.json` |
-| V3-18 BUNDLES | `rules/bundles/quality_v3_18.rego` | `jdg.bundles.quality_v3_18.*` | `bundles/bundles_v3_audit_18.json` |
-| V3-19 API/UI | `rules/api_ui/quality_v3_19.rego` | `jdg.api_ui.quality_v3_19.*` | `bundles/api_ui_v3_audit_19.json` |
-| V3-20 DOCS/Legal Twin | `rules/docs/quality_v3_20.rego` | `jdg.docs.quality_v3_20.*` | `bundles/docs_v3_audit_20.json` |
-
-Progi wszystkich pakietów: `rules/thresholds_jdg.rego` (snapshots
-*-v3-2026.08, ADR-002). Rejestr kampanii:
-`JDG/bundles/enterprise_v3_registry.json`; status: STATUS_KAMPANII_V3.txt.
-
 ---
-*Wygenerowano automatycznie — 2026-08-22 16:23:47*
+*Wygenerowano automatycznie — 2026-08-27 13:39:40*
 *Generator v8.0 — `python JDG/tools/generate_manifest.py`*

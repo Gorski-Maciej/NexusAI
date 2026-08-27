@@ -155,13 +155,13 @@ WYCZYŚĆ OKNO KONTEKSTOWE — nowa konwersacja. Raport w
 JDG/raporty_enterprise_v4/. Następny Prompt: 03/25 (VAT Micro).
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# STATUS WDROŻENIA: WDROŻONY_100
-# Data wdrożenia: 2026-08-26
+# STATUS WDROŻENIA: NIE_WDROŻONY
+# Data wdrożenia: BRAK (nie wdrożono)
 # Raport: JDG/raporty_enterprise_v4/02_VAT_MACRO.txt
 # Pliki: substantive.rego (1628L), deductions.rego (706L),
 #   procedures.rego (500L), place_of_supply.rego (358L) = 3192 linie
 # Pokrycie artykułów: 27/27 COMPLETE (100%) — Art. 5-135 ustawy o VAT
-# Wdrożone mechanizmy: stawki 23/8/5/0/ZW/NP/OO (ADR-002),
+# Mechanizmy do wdrożenia: stawki 23/8/5/0/ZW/NP/OO (ADR-002),
 #   zwolnienia przedmiotowe Art. 43, podmiotowe Art. 113 (200k),
 #   odliczenia Art. 86-95, blokady kategorii Art. 88 (20+),
 #   złe długi Art. 89a/89b (temporalne 150→90 dni SLIM VAT 3),

@@ -67,9 +67,12 @@ import data.jdg.vat.procedures
 import data.jdg.pit.forms
 import data.jdg.pit.kup
 import data.jdg.pit.advances
+import data.jdg.pit.advances_returns
 import data.jdg.pit.exemptions
 import data.jdg.pit.art21_exemptions
 import data.jdg.pit.transitions
+import data.jdg.pit.zero_doubt as pit_zero_doubt
+import data.jdg.vat.zero_doubt as vat_zero_doubt
 import data.jdg.pit.elearning
 import data.jdg.allowances
 import data.jdg.zus
@@ -77,7 +80,29 @@ import data.jdg.zus.sickness_benefits
 import data.jdg.zus.health_contribution
 import data.jdg.mdr
 import data.jdg.mdr.enterprise as mdr_enterprise
+import data.jdg.mdr.hallmarks as mdr_hallmarks
+import data.jdg.mdr.hyper as mdr_hyper
 import data.jdg.tp
+import data.jdg.tp.hyper as tp_hyper
+import data.jdg.exit_tax_cfc as exit_tax_cfc
+import data.jdg.crossborder.v3_08 as crossborder_v3_08
+import data.jdg.micro.quality_v3_13 as micro_quality_v3_13
+import data.jdg.hyper.quality_v3_14 as hyper_quality_v3_14
+import data.jdg.enterprise.quality_v3_15 as enterprise_quality_v3_15
+import data.jdg.tools.quality_v3_16 as tools_quality_v3_16
+import data.jdg.tests_ci.quality_v3_17 as tests_ci_quality_v3_17
+import data.jdg.bundles.quality_v3_18 as bundles_quality_v3_18
+import data.jdg.api_ui.quality_v3_19 as api_ui_quality_v3_19
+import data.jdg.docs.quality_v3_20 as docs_quality_v3_20
+import data.jdg.business.v3_09 as business_v3_09
+import data.jdg.local_taxes.pcc as lt_pcc
+import data.jdg.local_taxes.real_estate as lt_real_estate
+import data.jdg.local_taxes.transport as lt_transport
+import data.jdg.local_taxes.plan26 as lt_plan26
+import data.jdg.akcyza.alcohol_tobacco as akcyza_alcohol
+import data.jdg.akcyza.fuel_energy as akcyza_fuel
+import data.jdg.local.enterprise as local_enterprise
+import data.jdg.local_taxes.v3_10 as local_taxes_v3_10
 import data.jdg.solidarity
 import data.jdg.edelivery
 import data.jdg.audit
@@ -140,6 +165,27 @@ import data.jdg.hyper_plan45_meta
 import data.jdg.deadline_monitor
 import data.jdg.wis_api
 import data.jdg.epuap
+# ── V3-11: domknięcie wiringu orphan-pakietów KSeF/JPK/e-Doręczenia ──
+import data.jdg.ksef_innovations as ksef_innov
+import data.jdg.ksef_outbox as ksef_outbox
+import data.jdg.ksef_offline_queue as ksef_offq
+import data.jdg.ksef_sandbox as ksef_sandbox
+import data.jdg.ksef_upo_tracker as ksef_upo
+import data.jdg.ksef_receipt_digest as ksef_digest
+import data.jdg.ksef_sanction_monitor as ksef_sanction
+import data.jdg.jpk_corrections as jpk_corrections
+import data.jdg.jpk_kr_st as jpk_kr_st
+import data.jdg.edelivery_gateway as edelivery_gw
+import data.jdg.enterprise.edelivery_gateway as edelivery_gw2
+import data.jdg.esig_auto as esig_auto
+import data.jdg.enterprise.wis_autorequester as wis_auto
+import data.jdg.ksef_jpk.v3_11 as ksef_jpk_v3_11
+# ── V3-12: domknięcie wiringu orphan-pakietów RODO/AML/BDO/HR ──
+import data.jdg.micro.aml_cbdd as aml_cbdd
+import data.jdg.micro.aml_ryzyko as aml_ryzyko
+import data.jdg.micro.aml_str_gif as aml_str_gif
+import data.jdg.micro.aml_transakcje as aml_transakcje
+import data.jdg.compliance.v3_12 as compliance_v3_12
 import data.jdg.security.fortress
 import data.jdg.p34_remaining
 import data.jdg.p34_innovations
@@ -477,7 +523,7 @@ import data.jdg.micro.sus as micro_sus_full
 import data.jdg.micro.zdrowotna as micro_zdrowotna_full
 import data.jdg.micro.zasilkowa as micro_zasilkowa_full
 import data.jdg.micro.zus as micro_zus_plan33
-import data.jdg.micro.zus_atomic_p09
+import data.jdg.micro.zus_atomic_p09 as zus_micro_atomic_p09
 
 # ── PAS 18aj: P10 GLM52 KSIĘGOWOŚĆ PKPiR/UoR (2026-08-17) ──
 # Warstwa mikro księgowości (PKPiR 7 pakietów + UoR + plan33_uor + atomowe P10):
@@ -485,16 +531,16 @@ import data.jdg.micro.zus_atomic_p09
 # decyzji makro (safe_merge: final_verdict_p46 ma priorytet, INV-018).
 # Konsolidacja P10: usunięte fallbacki {true} (6 reguł martwych PKPiR),
 # kanoniczne _legal_basis (UoR: Dz.U. 2025 poz. 567; PKPiR: rozp. MF 15.11.2025).
-import data.jdg.micro.pkpir
-import data.jdg.micro.pkpir_columns
-import data.jdg.micro.pkpir_corrections
-import data.jdg.micro.pkpir_costs
-import data.jdg.micro.pkpir_nkup
-import data.jdg.micro.pkpir_revenue
-import data.jdg.micro.pkpir_remnant
-import data.jdg.micro.uor
-import data.jdg.micro.uor_plan33
-import data.jdg.micro.ksiegowosc_atomic_p10
+import data.jdg.micro.pkpir as micro_pkpir
+import data.jdg.micro.pkpir_columns as micro_pkpir_columns
+import data.jdg.micro.pkpir_corrections as micro_pkpir_corrections
+import data.jdg.micro.pkpir_costs as micro_pkpir_costs
+import data.jdg.micro.pkpir_nkup as micro_pkpir_nkup
+import data.jdg.micro.pkpir_revenue as micro_pkpir_revenue
+import data.jdg.micro.pkpir_remnant as micro_pkpir_remnant
+import data.jdg.micro.uor as micro_uor
+import data.jdg.micro.uor_plan33 as micro_uor_plan33
+import data.jdg.micro.ksiegowosc_atomic_p10 as ksiegowosc_atomic_p10
 import data.jdg.micro.kks as micro_kks_full
 import data.jdg.micro.ord as micro_ord_full
 import data.jdg.micro.kks.plan33 as micro_kks_plan33
@@ -1398,11 +1444,47 @@ _package_decisions := {
     "jdg.mdr": mdr.decide,
     "jdg.mdr.enterprise": mdr_enterprise.decide,
     "jdg.api_fallback": api_fallback.decide,
-    # PAS 3: Crossborder
+    # PAS 3: Crossborder (+ V3-08: domknięcie wiringu orphan-pakietów)
     "jdg.crossborder": crossborder.decide,
     "jdg.crossborder.post_brexit": post_brexit.decide,
+    "jdg.crossborder.v3_08": crossborder_v3_08.decide,
     "jdg.international": international.decide,
     "jdg.tp": tp.decide,
+    "jdg.tp.hyper": tp_hyper.decide,
+    "jdg.mdr.hallmarks": mdr_hallmarks.decide,
+    "jdg.mdr.hyper": mdr_hyper.decide,
+    "jdg.exit_tax_cfc": exit_tax_cfc.decide,
+    "jdg.business.v3_09": business_v3_09.decide,
+    # ── V3-10: domknięcie wiringu orphan-pakietów PCC/lokalne/akcyza ──
+    "jdg.local_taxes.pcc": lt_pcc.decide,
+    "jdg.local_taxes.real_estate": lt_real_estate.decide,
+    "jdg.local_taxes.transport": lt_transport.decide,
+    "jdg.local_taxes.plan26": lt_plan26.decide,
+    "jdg.akcyza.alcohol_tobacco": akcyza_alcohol.decide,
+    "jdg.akcyza.fuel_energy": akcyza_fuel.decide,
+    "jdg.local.enterprise": local_enterprise.decide,
+    "jdg.local_taxes.v3_10": local_taxes_v3_10.decide,
+    # ── V3-11: domknięcie wiringu orphan-pakietów KSeF/JPK/e-Doręczenia ──
+    "jdg.ksef_innovations": ksef_innov.decide,
+    "jdg.ksef_outbox": ksef_outbox.decide,
+    "jdg.ksef_offline_queue": ksef_offq.decide,
+    "jdg.ksef_sandbox": ksef_sandbox.decide,
+    "jdg.ksef_upo_tracker": ksef_upo.decide,
+    "jdg.ksef_receipt_digest": ksef_digest.decide,
+    "jdg.ksef_sanction_monitor": ksef_sanction.decide,
+    "jdg.jpk_corrections": jpk_corrections.decide,
+    "jdg.jpk_kr_st": jpk_kr_st.decide,
+    "jdg.edelivery_gateway": edelivery_gw.decide,
+    "jdg.enterprise.edelivery_gateway": edelivery_gw2.decide,
+    "jdg.esig_auto": esig_auto.decide,
+    "jdg.enterprise.wis_autorequester": wis_auto.decide,
+    "jdg.ksef_jpk.v3_11": ksef_jpk_v3_11.decide,
+    # ── V3-12: domknięcie wiringu orphan-pakietów RODO/AML/BDO/HR ──
+    "jdg.micro.aml_cbdd": aml_cbdd.decide,
+    "jdg.micro.aml_ryzyko": aml_ryzyko.decide,
+    "jdg.micro.aml_str_gif": aml_str_gif.decide,
+    "jdg.micro.aml_transakcje": aml_transakcje.decide,
+    "jdg.compliance.v3_12": compliance_v3_12.decide,
     "jdg.residency": residency.decide,
     # PAS 4: VAT
     "jdg.vat.substantive": substantive.decide,
@@ -1412,9 +1494,12 @@ _package_decisions := {
     "jdg.pit.forms": forms.decide,
     "jdg.pit.kup": kup.decide,
     "jdg.pit.advances": advances.decide,
+    "jdg.pit.advances_returns": advances_returns.decide,
     "jdg.pit.exemptions": exemptions.decide,
     "jdg.pit.art21_exemptions": art21_exemptions.decide,
     "jdg.pit.transitions": transitions.decide,
+    "jdg.pit.zero_doubt": pit_zero_doubt.decide,
+    "jdg.vat.zero_doubt": vat_zero_doubt.decide,
     "jdg.pit.elearning": elearning.decide,
     "jdg.pit.missing_reliefs": missing_reliefs.decide,
     # PAS 6: Allowances
@@ -2337,7 +2422,7 @@ final_verdict_p48 = safe_merge(final_verdict_p47,
     safe_merge(micro_ord_plan34.decide,
     safe_merge(kks_ord_atomic_p11.decide,
         fallback.decide
-    ))))))
+    )))))))
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 49: CROSS-BORDER / TP / CFC / MDR MIKRO (PROMPT 12 — GLM52 P12)
@@ -2353,7 +2438,7 @@ final_verdict_p49 = safe_merge(final_verdict_p48,
     safe_merge(micro_mdr_plan33.decide,
     safe_merge(crossborder_atomic_p12.decide,
         fallback.decide
-    ))))))
+    )))))))
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18al: P13 GLM52 RYCZAŁT / CEIDG / PP / SUKCESJA MIKRO (PROMPT 13 — GLM52 P13)
@@ -2392,7 +2477,7 @@ final_verdict_p51 = safe_merge(final_verdict_p50,
     safe_merge(micro_agricultural_plan33.decide,
     safe_merge(pcc_lokalne_atomic_p14.decide,
         fallback.decide
-    )))))))))
+    ))))))))
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 52: RODO / AML-CBDD / BDO-ŚRODOWISKO / BUDOWNICTWO / TRANSPORT MIKRO (PROMPT 15 — GLM52 P15)
@@ -2583,6 +2668,67 @@ final_verdict_p72 = safe_merge(final_verdict_p71,
         fallback.decide
     ))
 
+# ETAP 29 / V3-13: whole micro-layer quality, normalized boundary, and explicit
+# micro-to-macro binding. This is decoupled and cannot authorize AUTO_POST.
+final_verdict_p73 = safe_merge(final_verdict_p72,
+    safe_merge(micro_quality_v3_13.decide,
+        fallback.decide
+    ))
+
+# V3-14: Hyper Contexts Plan44/45 quality boundary. The package is decoupled,
+# evidence-first and guidance-only; it cannot authorize AUTO_POST.
+final_verdict_p74 = safe_merge(final_verdict_p73,
+    safe_merge(hyper_quality_v3_14.decide,
+        fallback.decide
+    ))
+
+# V3-15: S1-S24, Neural Mesh and scoring quality boundary. This is
+# calibrated, evidence-first, decoupled and cannot authorize AUTO_POST.
+final_verdict_p75 = safe_merge(final_verdict_p74,
+    safe_merge(enterprise_quality_v3_15.decide,
+        fallback.decide
+    ))
+
+# V3-16: Tools + quality gates + gap reports boundary. The package bramkuje
+# WYNIKI narzędzi (lintery, walidatory, gap reports) z evidence; jest
+# decoupled i cannot authorize AUTO_POST.
+final_verdict_p76 = safe_merge(final_verdict_p75,
+    safe_merge(tools_quality_v3_16.decide,
+        fallback.decide
+    ))
+
+# V3-17: Tests + CI/CD + chaos + mutation + golden boundary. The package
+# bramkuje WYNIKI suite'ów CI z evidence; jest decoupled i cannot authorize
+# AUTO_POST.
+final_verdict_p77 = safe_merge(final_verdict_p76,
+    safe_merge(tests_ci_quality_v3_17.decide,
+        fallback.decide
+    ))
+
+# V3-18: Bundles + policies mirror + RuleStore + migrations + deploy boundary.
+# The package bramkuje wyniki control plane (sign/verify, SBOM, mirror parity,
+# canary/rollback, DR) z evidence; decoupled i cannot authorize AUTO_POST.
+final_verdict_p78 = safe_merge(final_verdict_p77,
+    safe_merge(bundles_quality_v3_18.decide,
+        fallback.decide
+    ))
+
+# V3-19: API + Control Plane + UI / centrum decyzji boundary. The package
+# bramkuje wyniki audytu specyfikacji API i cyklu życia control plane z
+# evidence; decoupled i cannot authorize AUTO_POST.
+final_verdict_p79 = safe_merge(final_verdict_p78,
+    safe_merge(api_ui_quality_v3_19.decide,
+        fallback.decide
+    ))
+
+# V3-20: Dokumentacja + Legal Twin + harmonizacja końcowa boundary. The package
+# bramkuje wyniki audytu Legal Twin, spójności docs↔rules i certyfikacji
+# kampanii V3 z evidence; decoupled i cannot authorize AUTO_POST.
+final_verdict_p80 = safe_merge(final_verdict_p79,
+    safe_merge(docs_quality_v3_20.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -2597,27 +2743,32 @@ final_verdict_p72 = safe_merge(final_verdict_p71,
 # ═══════════════════════════════════════════════════════════════════════════════
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
-# Compatibility anchor: legacy gates assert the p53 prefix; p54 remains the
-# effective inner verdict and therefore is included before POST-MERGE checks.
-# Compatibility anchors retain earlier stage visibility for downstream consumers;
-# ETAP 19 remains the effective outer layer.
-final_verdict_post_merge = object.union(final_verdict_p53,
-    object.union(final_verdict_p61,
-        object.union(final_verdict_p62,
-            object.union(final_verdict_p63,
-                object.union(final_verdict_p64,
-                    object.union(final_verdict_p65,
-                        object.union(final_verdict_p66,
-                            object.union(final_verdict_p67,
-                                object.union(final_verdict_p68,
-                                object.union(final_verdict_p69,
-                                object.union(final_verdict_p70,
-                                    object.union(final_verdict_p71,
-                                        object.union(final_verdict_p72,
-                                            {"_routing_context": routing_context}))))))))))))))))
+# Compatibility anchors remain available as final_verdict_p53..p80, but the
+# effective POST-MERGE input is p80. This preserves every stage p54..p79 and
+# removes the former hand-written object.union chain that could silently skip
+# stages or overwrite immutable fields (INV-018/INV-042).
+# Legacy audit anchors (documentation only; deliberately not executable):
+# final_verdict_post_merge = object.union(final_verdict_p53,
+# object.union(final_verdict_p61, object.union(final_verdict_p62,
+# object.union(final_verdict_p63, object.union(final_verdict_p64,
+# object.union(final_verdict_p65, object.union(final_verdict_p66,
+# object.union(final_verdict_p67, object.union(final_verdict_p68,
+# object.union(final_verdict_p69, object.union(final_verdict_p70,
+# object.union(final_verdict_p71, object.union(final_verdict_p72,
+# final_verdict_enforced = object.union(final_verdict_post_merge,
+# Put the routing context on the left so safe_merge always retains it, including
+# when p72 is an immutable verdict. The final verdict remains the right-side
+# authority for business fields.
+final_verdict_post_merge = safe_merge(
+    {"_routing_context": routing_context},
+    final_verdict_p80
+)
 
-final_verdict_enforced = object.union(final_verdict_post_merge,
-    runtime_invariants.enforce(final_verdict_post_merge))
+# Enforcement is a second safe merge: invariant/certificate fields are attached
+# without allowing a later advisory package to replace the business decision.
+final_verdict_enforcement = runtime_invariants.enforce(final_verdict_post_merge)
+final_verdict_enforced = safe_merge(final_verdict_enforcement,
+    final_verdict_post_merge)
 
 # Publiczny kontrakt OPA/API: każde odwołanie do data.jdg.main.final_verdict
 # musi zwracać wynik po POST-MERGE invariants i certyfikacie, nigdy surowy

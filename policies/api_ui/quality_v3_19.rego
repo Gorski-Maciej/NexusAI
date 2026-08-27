@@ -1,0 +1,140 @@
+# NexusAI JDG — V3-19 API + CONTROL PLANE + UI / CENTRUM DECYZJI
+# Przeprowadź głębokie myślenie i przeprowadź głęboką analizę przed zmianą
+# progów API/UI. Warstwa bramkuje WYNIKI audytu specyfikacji i control plane
+# z evidence; jest deterministyczna, guidance-only i fail-closed
+# (brak dowodu = FAIL). Nie serwuje API ani nie obsługuje UI samodzielnie.
+
+package jdg.api_ui.quality_v3_19
+
+import future.keywords.if
+import future.keywords.in
+
+_snapshot := object.get(data.jdg.thresholds, "api_ui_quality_v3_19", {})
+threshold_version := object.get(_snapshot, "threshold_version", "")
+registry_version := object.get(_snapshot, "registry_version", "")
+legal_basis_version := object.get(_snapshot, "legal_basis_version", "")
+valid_from := object.get(_snapshot, "valid_from", "")
+valid_to := object.get(_snapshot, "valid_to", null)
+min_api_endpoints := object.get(_snapshot, "min_api_endpoints", 0)
+max_documented_only_gaps := object.get(_snapshot, "max_documented_only_gaps", 0)
+required_decision_modes := object.get(_snapshot, "required_decision_modes", [])
+min_soak_hours := object.get(_snapshot, "min_soak_hours", 0)
+
+ctx := object.get(input, "api_ui_quality_v3_19", {})
+source_refs := object.get(ctx, "source_refs", [])
+legal_nodes := object.get(ctx, "legal_nodes", [])
+facts_version := object.get(ctx, "facts_version", "")
+evaluation_date := object.get(ctx, "evaluation_date", "")
+input_hash := object.get(ctx, "input_hash", "")
+owner_approval := object.get(ctx, "owner_approval", false)
+manual_recipient := object.get(ctx, "manual_recipient", "")
+
+source_complete := count(source_refs) > 0 and count(legal_nodes) > 0 and
+    legal_basis_version != ""
+temporal_valid := evaluation_date != "" and facts_version != "" and
+    threshold_version != "" and valid_from != ""
+
+api := object.get(ctx, "api", {})
+endpoints_total := object.get(api, "endpoints_total", 0)
+jwt_security_required := object.get(api, "jwt_security_required", false)
+api_ok := object.get(api, "spec_present", false) and
+    endpoints_total >= min_api_endpoints and
+    jwt_security_required
+
+consistency := object.get(ctx, "consistency", {})
+consistency_ok := object.get(consistency, "audit_run", false) and
+    object.get(consistency, "markers_complete", false) and
+    object.get(consistency, "gap_count", 99999) <= max_documented_only_gaps
+
+authz := object.get(ctx, "authz", {})
+authz_ok := object.get(authz, "rbac_roles_defined", false) and
+    object.get(authz, "sod_enforced", false) and
+    object.get(authz, "authz_tests_present", false)
+
+decision_center := object.get(ctx, "decision_center", {})
+modes_covered := {mode | some mode in required_decision_modes;
+    mode in object.get(decision_center, "modes_supported", [])}
+decision_center_ok := count(modes_covered) == count(required_decision_modes) and
+    object.get(decision_center, "certainty_guard_required", false)
+
+lifecycle := object.get(ctx, "lifecycle", {})
+lifecycle_ok := object.get(lifecycle, "four_eyes_enforced", false) and
+    object.get(lifecycle, "canary_required", false) and
+    object.get(lifecycle, "soak_hours", 0) >= min_soak_hours
+
+declarative := object.get(ctx, "declarative_change", {})
+declarative_ok := object.get(declarative, "wizard_present", false) and
+    object.get(declarative, "dry_run_default", false) and
+    count(object.get(declarative, "never_automated", [])) > 0
+
+resilience := object.get(ctx, "resilience", {})
+resilience_ok := object.get(resilience, "idempotency_key_required", false) and
+    object.get(resilience, "rate_limit_defined", false) and
+    object.get(resilience, "health_ready_endpoints", false)
+
+versioning := object.get(ctx, "versioning", {})
+versioning_ok := object.get(versioning, "uri_path_versioning", false) and
+    object.get(versioning, "breaking_changes_rule", false)
+
+contract_complete := api_ok and consistency_ok and authz_ok and
+    decision_center_ok and lifecycle_ok and declarative_ok and
+    resilience_ok and versioning_ok and source_complete and
+    temporal_valid and input_hash != ""
+
+hard_block := not contract_complete or not owner_approval or manual_recipient == ""
+api_ui_state := "API_UI_VALIDATED" if {
+    contract_complete
+    not hard_block
+} else := "API_UI_BLOCKED" if {
+    true
+}
+routing := "BLOCK_AND_ALERT" if {
+    hard_block
+} else := "TRIAGE_QUEUE"
+
+# Publiczny wynik: API/UI Delivery Contract — nigdy czynność wdrożeniowa.
+decide := {
+    "matched": true,
+    "rule_id": "jdg.api_ui.quality_v3_19.api_delivery_contract",
+    "package": "jdg.api_ui.quality_v3_19",
+    "priority": 22007,
+    "stage": "V3-19",
+    "state": api_ui_state,
+    "decision_mode": "SUGGEST",
+    "mode": "DECOUPLED",
+    "no_auto_post": true,
+    "api_ok": api_ok,
+    "consistency_ok": consistency_ok,
+    "authz_ok": authz_ok,
+    "decision_center_ok": decision_center_ok,
+    "lifecycle_ok": lifecycle_ok,
+    "declarative_ok": declarative_ok,
+    "resilience_ok": resilience_ok,
+    "versioning_ok": versioning_ok,
+    "hard_block": hard_block,
+    "_routing": routing,
+    "_routing_reason": "API wymaga spójnej specyfikacji bez luk, JWT/RBAC/SoD, centrum decyzji AUTO_POST/SUGGEST/ASK_USER z certainty guard, cyklu życia 4-eyes z canary i SOAK, kreatora zmian deklaratywnych, idempotencji/rate-limit/health oraz wersjonowania URI.",
+    "_legal_basis": "OrdPU art. 12 § 5, art. 193a; PIT art. 44-45; VAT art. 109 (KSeF/e-Doręczenia); RODO art. 32 (bezpieczeństwo API); ADR-001/ADR-009/ADR-002; MANIFEST.md",
+    "_threshold_version": threshold_version,
+    "_registry_version": registry_version,
+    "_valid_from": valid_from,
+    "_valid_to": valid_to,
+    "owner_approval": owner_approval,
+    "manual_recipient": manual_recipient,
+    "_warnings": [
+        "V3-19 bramkuje wyniki audytu API/control plane — nie serwuje API ani UI.",
+        "Specyfikacja z lukami (DOCUMENTED_ONLY) albo bez RBAC/SoD blokuje wynik.",
+        "Centrum decyzji bez certainty guard (AUTO_POST dla nie-CERTAIN) blokuje wynik.",
+    ],
+} if {
+    object.get(input, "api_ui_quality_v3_19_check", false) == true
+}
+
+default decide := {
+    "matched": false,
+    "rule_id": "jdg.api_ui.quality_v3_19.no_match",
+    "package": "jdg.api_ui.quality_v3_19",
+    "priority": 999999,
+    "mode": "DECOUPLED",
+    "no_auto_post": true,
+}

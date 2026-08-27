@@ -6,7 +6,7 @@
 package jdg.kks
 import data.jdg.helpers
 
-default decide := {"matched":false,"rule_id":"jdg.kks.no_match","package":"jdg.kks","priority":99999}
+default decide := {"matched":false,"rule_id":"jdg.kks.plan43.no_match","package":"jdg.kks","priority":99999}
 
 # jdg.kks.vd_conditions_art16_p1 — Czynny żal — warunki formalne (zawiadomienie przed wykryciem)
 decide :=   {"matched":true,"rule_id":"jdg.kks.vd_conditions_art16_p1","package":"jdg.kks","priority":200,"vat_rate":"","rounding_level":"","gtu_code":"","pit_form":"","pit_rate":"","pit_bracket":"","pit_annual_return_type":"","kus_qualification":"","kus_percent":0,"zus_social_base_type":"","zus_health_rate":"","business_status":"","_routing":"","_routing_reason":"Czynny żal — warunki formalne (zawiadomienie przed wykryciem)","_legal_basis":"Art. 16 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)","_warnings":["Czynny żal — złóż zawiadomienie przed wszczęciem kontroli"]} {

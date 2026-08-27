@@ -1,7 +1,7 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 15/25 — RODO + AML + BDO + SRODOWISKO + HR ║
 # ║  PROMPT: PROMPT_15_RODO_AML_BDO_HR.txt                       ║
-# ║  STATUS: WDROŻONY_100                                          ║
+# ║  STATUS: NIE_WDROŻONY                                          ║
 # ║  DATA: 2026-08-26                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -18,7 +18,7 @@
 | HR       | employer.rego + ppk_pfron        | ~1200  | TAK          |
 
 # ═══════════════════════════════════════════════════════════════════
-# 2. WDROŻONE ELEMENTY
+# 2. ELEMENTY DO WDROŻENIA
 # ═══════════════════════════════════════════════════════════════════
 
 ## 2.1 RODO (ROZPORZĄDZENIE UE 2016/679)
@@ -105,7 +105,7 @@
 # 5. HONESTY REPORT
 # ═══════════════════════════════════════════════════════════════════
 
-## Co zostało wdrożone
+## Co NIE zostało wdrożone (analiza)
 - Kompletna analiza RODO/AML/BDO/środowisko/HR
 - 12 genialnych pomysłów
 - Checklisty i trackery
@@ -120,5 +120,5 @@ Raport oparty o analizę faktycznego kodu w katalogach micro/rodo, micro/aml, mi
 Stan: 80% zgodności z promotem, 20% wymaga dalszej implementacji.
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: WDROŻONY_100
+# STATUS: NIE_WDROŻONY
 # ═══════════════════════════════════════════════════════════════════
