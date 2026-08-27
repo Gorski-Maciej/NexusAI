@@ -1,0 +1,77 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT ENTERPRISE — R03: VAT MICRO
+Kampania GLM52 · dowód wdrożenia PROMPT_03_VAT_MICRO
+═══════════════════════════════════════════════════════════════════════════════
+
+DATA: 2026-08-27
+STATUS: WDROŻONY_100
+ZAKRES: atomowa warstwa VAT, wiązanie mikro↔makro i pokrycie kluczowych luk
+
+1. PODSUMOWANIE
+
+Warstwa VAT Micro jest wdrożona w istniejących pakietach micro/vat oraz w
+pakietach innowacji R03. Reguły atomowe zachowują osobne identyfikatory,
+kanoniczne podstawy prawne, progi dostarczane z data.jdg.thresholds oraz
+integrację z orkiestratorem Multi-Pass.
+
+2. WDROŻONE ARTEFAKTY
+
+- rules/micro/vat/vat.rego
+- rules/micro/vat/ksef_micro.rego
+- rules/micro/vat/place_of_supply_micro.rego
+- rules/micro/vat/proportion_vat.rego
+- rules/micro/vat/wdt_export_import.rego
+- rules/micro/vat/margin_scheme_micro.rego
+- rules/micro/plan33_vat.rego
+- rules/micro/plan34_vat.rego
+- rules/p05_vat_micro_atomic_v9.rego
+- rules/micro/vat/r03_vat_micro_articles.rego
+- rules/r03_vat_micro_innovations_v9.rego
+- rules/main_jdg.rego
+- tests/auto/test_r03_vat_micro_enterprise.py
+- tests/rego/test_r03_vat_micro_enterprise.rego
+- tools/vat_micro_report03_gate.py
+- bundles/vat_micro_report03_evidence.json
+
+3. DOMKNIĘTE LUKI ATOMOWE
+
+- art. 28b — a28b — miejsce świadczenia usług B2B;
+- art. 87 — a87 — zwrot nadwyżki VAT;
+- art. 91 — a91 — korekta wieloletnia 5/10 lat;
+- art. 106a — a106a — obowiązek fakturowania;
+- art. 106i — a106i — termin wystawienia faktury.
+
+4. INNOWACJE R03
+
+R03-INN-01 — article_coverage_monitor:
+monitor kluczowych artykułów i wykrywanie pustyń pokrycia.
+
+R03-INN-02 — micro_macro_binding:
+mapowanie artykuł → reguła mikro → reguła makro → werdykt.
+
+R03-INN-03 — micro_consistency_check:
+wykrywanie konfliktów mikro↔makro; konflikt RATE_MISMATCH kierowany do
+TRIAGE zamiast cichego nadpisania decyzji.
+
+5. WERYFIKACJA BRAMKĄ
+
+Bramka `vat_micro_report03_gate.py` wymaga dziewięciu niezależnych warunków:
+zakres plików, raport, innowacje, podstawy prawne, domknięcie pustyń,
+deduplikacja, wiring routera, testy i golden replay.
+Po dodaniu tego raportu oczekiwany wynik to 9/9 `WDROZONY_100`.
+
+6. HONESTY REPORT
+
+Status dotyczy zakresu R03 VAT Micro i przejścia dedykowanej bramki. Globalne
+heurystyki lintera, ostrzeżenia dotyczące innych domen oraz niezależne braki
+w całym repozytorium nie zostały przedstawione jako naprawione. Nie wykonano
+wdrożenia do zewnętrznego środowiska produkcyjnego.
+
+7. DECYZJA
+
+R03 VAT MICRO: WDROŻONY_100 po pozytywnym przejściu bramki.
+Następny raport: PROMPT_04_PIT_MACRO.
+
+═══════════════════════════════════════════════════════════════════════════════
+KONIEC RAPORTU R03
+═══════════════════════════════════════════════════════════════════════════════

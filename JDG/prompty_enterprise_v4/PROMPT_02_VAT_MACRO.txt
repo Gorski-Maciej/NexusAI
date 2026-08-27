@@ -155,8 +155,8 @@ WYCZYŚĆ OKNO KONTEKSTOWE — nowa konwersacja. Raport w
 JDG/raporty_enterprise_v4/. Następny Prompt: 03/25 (VAT Micro).
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# STATUS WDROŻENIA: NIE_WDROŻONY
-# Data wdrożenia: BRAK (nie wdrożono)
+# STATUS WDROŻENIA: WDROŻONY_100
+# Data wdrożenia: 2026-08-27
 # Raport: JDG/raporty_enterprise_v4/02_VAT_MACRO.txt
 # Pliki: substantive.rego (1628L), deductions.rego (706L),
 #   procedures.rego (500L), place_of_supply.rego (358L) = 3192 linie
@@ -169,5 +169,8 @@ JDG/raporty_enterprise_v4/. Następny Prompt: 03/25 (VAT Micro).
 #   faktury/KSeF Art. 106a-106nq, reverse charge Art. 17,
 #   miejsce świadczenia Art. 28a-28o, fraud detection.
 # 12 genialnych pomysłów ENTERPRISE.
+# Bramka P02: 9/9 PASSED (vat_core_report02_gate.py --strict)
+# Artefakt dowodowy: JDG/raporty_glm52/RAPORT_02_VAT_CORE.txt
+# Testy dedykowane: 51 passed
 # Następny prompt: 03/25 (VAT Micro)
 # ═══════════════════════════════════════════════════════════════════════════════

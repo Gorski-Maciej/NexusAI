@@ -68,12 +68,12 @@
     "missing_activation_flags": [],
     "missing_rule_ids": [],
     "deserts_closed": true,
-    "micro_rule_ids_total": 6,
+    "micro_rule_ids_total": 14,
     "thresholds_externalized": true
   },
   "duplicates": {
-    "rule_ids_total": 8,
-    "rule_ids_unique": 8,
+    "rule_ids_total": 16,
+    "rule_ids_unique": 16,
     "duplicates": [],
     "duplicate_count": 0
   },
@@ -107,11 +107,11 @@
     "native_test_functions": 19
   },
   "replay": {
-    "golden_verdicts_total": 17,
+    "golden_verdicts_total": 30,
     "vat_micro_verdicts": 1,
     "vat_micro_replays": 1,
     "uver_count": 0,
     "replay_verified": true
   },
-  "generated_at": "2026-08-14T19:52:53.948272+00:00"
+  "generated_at": "2026-08-27T12:41:50.941351+00:00"
 }

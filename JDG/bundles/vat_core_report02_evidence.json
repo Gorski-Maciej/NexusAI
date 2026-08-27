@@ -74,7 +74,7 @@
     "import_present": true,
     "package_decisions_entry": true,
     "final_verdict_p27": true,
-    "post_merge_p27": true,
+    "post_merge_present": true,
     "invariants_enforced": true,
     "final_verdict_public": true
   },
@@ -94,11 +94,11 @@
     "native_test_functions": 14
   },
   "replay": {
-    "golden_verdicts_total": 15,
+    "golden_verdicts_total": 30,
     "vat_core_verdicts": 1,
     "vat_core_replays": 1,
     "uver_count": 0,
     "replay_verified": true
   },
-  "generated_at": "2026-08-14T19:08:49.135435+00:00"
+  "generated_at": "2026-08-27T12:33:57.035777+00:00"
 }
