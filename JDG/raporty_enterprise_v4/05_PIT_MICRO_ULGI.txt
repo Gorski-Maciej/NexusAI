@@ -1,7 +1,14 @@
 ════════════════════════════════════════════════════════════════════════════════
 RAPORT ENTERPRISE — CZĘŚĆ 5: PIT MICRO (WARSTWA ATOMOWA + ULGI)
 PROMPT 05/25 — Kampania Enterprise V4
-Data: 2026-08-26 | Status: NIE_WDROŻONY
+Data: 2026-08-28 | Status: WDROŻONY_100
+
+WERYFIKACJA STATUSU (2026-08-28)
+---------------------------------
+Bramka: `python JDG/tools/pit_enterprise_report05_gate.py --strict`
+Wynik: 9/9 PASSED.
+Artefakt dowodowy: `JDG/raporty_glm52/RAPORT_05_PIT_ENTERPRISE.txt`.
+Zakres: R05 PIT Enterprise zweryfikowany przez istniejącą bramkę; status nie jest certyfikacją całego repozytorium ani wdrożeniem produkcyjnym.
 ════════════════════════════════════════════════════════════════════════════════
 
 EXECUTIVE SUMMARY

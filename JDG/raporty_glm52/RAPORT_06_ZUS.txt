@@ -1,0 +1,34 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT DOWODOWY — R06 ZUS/SUS
+Data: 2026-08-28
+Status: WDROŻONY_100 po przejściu bramki dedykowanej
+═══════════════════════════════════════════════════════════════════════════════
+
+Zakres wdrożenia:
+- składka zdrowotna dla czterech form;
+- tracker ulg ZUS i terminów;
+- obsługa atomu SUS art. 6a;
+- externalizacja progów i stawek;
+- deduplikacja, wiring orkiestratora, testy i golden replay.
+
+Artefakty:
+- JDG/rules/r06_zus_innovations_v9.rego
+- JDG/rules/main_jdg.rego
+- JDG/tests/auto/test_r06_zus_enterprise.py
+- JDG/tests/rego/test_r06_zus_enterprise.rego
+- JDG/tools/zus_report06_gate.py
+
+Weryfikacja:
+Bramka `python JDG/tools/zus_report06_gate.py --strict` musi zakończyć się
+wynikiem 9/9 PASSED. Sprawdza zakres źródeł ZUS, raport, innowacje, podstawy
+prawne, progi, brak duplikatów, wiring, testy i golden replay.
+
+Honesty report:
+Status dotyczy zakresu R06 sprawdzanego przez bramkę. Nie oznacza certyfikacji
+produkcyjnej, kompletności całego prawa ubezpieczeń ani aktualności danych bez
+zewnętrznej weryfikacji źródeł i właściwych obwieszczeń. Nie wykonano żadnego
+zewnętrznego zgłoszenia ani automatycznej płatności.
+
+Decyzja: WDROŻONY_100.
+Następny raport: PROMPT_07_PKPIR_KSIEGOWOSC.
+═══════════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,35 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT DOWODOWY — RYCZAŁT / FORMY / DEKLARACJE
+Data: 2026-08-28
+Status: WDROŻONY_100 po przejściu bramki dedykowanej
+═══════════════════════════════════════════════════════════════════════════════
+
+Zakres:
+- stawki ryczałtu i klasyfikator PKWiU;
+- monitoring limitu 2 mln EUR;
+- planowanie cyklu życia działalności;
+- terminy sukcesji i CEIDG;
+- arbiter formy opodatkowania;
+- thresholds, wiring, testy i golden replay.
+
+Artefakty:
+- JDG/rules/r12_ryczalt_cykl_zycia_innovations_v9.rego
+- JDG/rules/main_jdg.rego
+- JDG/rules/thresholds_jdg.rego
+- JDG/tests/auto/test_r12_ryczalt_cykl_zycia_enterprise.py
+- JDG/tests/rego/test_r12_ryczalt_cykl_zycia_enterprise.rego
+- JDG/tools/ryczalt_cykl_zycia_report12_gate.py
+
+Weryfikacja:
+Bramka `python JDG/tools/ryczalt_cykl_zycia_report12_gate.py --strict`
+wymaga 9/9 PASSED i sprawdza obecność artefaktów, innowacji, podstaw
+prawnych, progów, deduplikacji, wiring, testów oraz golden replay.
+
+Honesty report:
+Status obejmuje zakres sprawdzany przez bramkę. Nie jest certyfikacją
+produkcji, pełnej aktualności prawa ani automatycznym zgłoszeniem CEIDG,
+deklaracji lub płatności. Decyzje wymagają aktualnych źródeł i kontroli człowieka.
+
+Decyzja: WDROŻONY_100.
+Następny raport: PROMPT_12_PCC_LOKALNE_AKCZYZA.
+═══════════════════════════════════════════════════════════════════════════════

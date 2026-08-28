@@ -1,7 +1,15 @@
 ════════════════════════════════════════════════════════════════════════════════
 RAPORT ENTERPRISE — CZĘŚĆ 7: PKPiR + AUTOMATYZACJA KSIĘGOWOŚCI JDG
 PROMPT 07/25 — Kampania Enterprise V4
-Data: 2026-08-26 | Status: NIE_WDROŻONY
+Data: 2026-08-28 | Status: WDROŻONY_100
+
+WERYFIKACJA STATUSU (2026-08-28)
+---------------------------------
+Bramka: `python JDG/tools/pkpir_etap14_audit.py validate`
+Wynik: 15/15 PASSED.
+Testy dedykowane: `pytest -q tests/test_pkpir_etap14_audit.py` — 16 passed.
+Artefakt dowodowy: `JDG/raporty_glm52_enterprise/14_ACCOUNTING_PKPIR.txt`.
+Zakres statusu: ETAP 14 PKPiR zweryfikowany przez bramkę; nie jest to certyfikacja produkcyjna całego repozytorium.
 ════════════════════════════════════════════════════════════════════════════════
 
 EXECUTIVE SUMMARY
@@ -347,10 +355,8 @@ CO NIE ZOSTAŁO ZROBIONE (i dlaczego):
 ⚠️ Weryfikacja mirror policies/ (wymaga tools/)
 ⚠️ Regeneracja MANIFEST.md (wymaga generate_manifest.py)
 
-Status raportu: NIE_WDROŻONY
-[DEKLARACJA] NIE_WDROŻONY oznacza, że mechanizm CZĘŚCI 7 NIE został wdrożony:
-PKPiR + automatyzacja księgowości — kolumny, walidacje, amortyzacja,
-UoR — zgodnie z PROMPT 07/25.
+Status raportu: WDROŻONY_100
+[ZAKRES] Status oznacza przejście bramki ETAP 14 (15/15) oraz testów dedykowanych (16 passed). Nie oznacza certyfikacji produkcyjnej, pełnej aktualności prawnej ani aktywnego połączenia z zewnętrznymi systemami.
 
 ════════════════════════════════════════════════════════════════════════════════
 KONIEC RAPORTU — CZĘŚĆ 7: PKPiR + AUTOMATYZACJA KSIĘGOWOŚCI

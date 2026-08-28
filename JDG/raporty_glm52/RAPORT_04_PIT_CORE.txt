@@ -1,0 +1,37 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT DOWODOWY — R04 PIT CORE (MACRO) + ULGI
+Data: 2026-08-28
+Status: WDROŻONY_100 po przejściu bramki dedykowanej
+═══════════════════════════════════════════════════════════════════════════════
+
+Zakres wdrożenia:
+- cztery formy opodatkowania i porównanie kosztu PIT;
+- KUP/NKUP oraz bezpieczne kierowanie niepewności do triage;
+- symulator ulg B+R / IP Box / robotyzacja;
+- jednorazowa amortyzacja do limitu z thresholds;
+- niskocenne środki trwałe;
+- optymalizator składki zdrowotnej;
+- temporalność, provenance, wiring orchestratora i golden replay.
+
+Artefakty:
+- JDG/rules/r04_pit_core_innovations_v9.rego
+- JDG/rules/main_jdg.rego
+- JDG/tests/auto/test_r04_pit_core_enterprise.py
+- JDG/tests/rego/test_r04_pit_core_enterprise.rego
+- JDG/tools/pit_core_report04_gate.py
+
+Weryfikacja:
+Bramka `python JDG/tools/pit_core_report04_gate.py --strict` musi zakończyć się
+wynikiem 9/9 PASSED. Zakres bramki obejmuje obecność zadeklarowanych plików PIT,
+raportu, innowacji, podstaw prawnych, progów, deduplikacji, wiring, testów i
+golden replay.
+
+Honesty report:
+Status dotyczy raportu R04 PIT Core/Macro oraz zakresu sprawdzanego przez bramkę.
+Nie jest certyfikacją całego repozytorium, aktualności wszystkich przepisów,
+wdrożenia produkcyjnego ani poradą podatkową. Pełny test OPA i synchronizacja
+mirror wymagają dostępności odpowiednich narzędzi środowiskowych.
+
+Decyzja: WDROŻONY_100.
+Następny raport: PROMPT_05_PIT_MICRO_ULGI.
+═══════════════════════════════════════════════════════════════════════════════

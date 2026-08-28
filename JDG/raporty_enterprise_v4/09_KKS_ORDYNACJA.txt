@@ -1,7 +1,8 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 09/25 — KKS + ORDYNACJA PODATKOWA           ║
 # ║  PROMPT: PROMPT_09_KKS_ORDYNACJA.txt                          ║
-# ║  STATUS: NIE_WDROŻONY                                          ║
+# ║  STATUS: WDROŻONY_100                                        ║
+# ║  WERYFIKACJA: ETAP 16 — 15/15 PASSED                         ║
 # ║  DATA: 2026-08-26                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -57,5 +58,6 @@ Reguły KKS/Ordynacja Podatkowa NIE są wdrożone w 100% (status: NIE_WDROŻONY)
 Plik kks.rego zawiera pełną implementację kluczowych artykułów.
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: NIE_WDROŻONY
+# STATUS: WDROŻONY_100
+# Bramką ETAP 16 potwierdzono 15/15 kontraktów; zakres nie jest certyfikacją produkcyjną całego repozytorium.
 # ═══════════════════════════════════════════════════════════════════

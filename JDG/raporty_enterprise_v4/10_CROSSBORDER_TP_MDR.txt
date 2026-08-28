@@ -1,7 +1,8 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 10/25 — CROSS-BORDER / TP / MDR             ║
 # ║  PROMPT: PROMPT_10_CROSSBORDER_TP_MDR.txt                     ║
-# ║  STATUS: NIE_WDROŻONY                                          ║
+# ║  STATUS: WDROŻONY_100                                        ║
+# ║  WERYFIKACJA: ETAP 17 — 14/14 PASSED                         ║
 # ║  DATA: 2026-08-26                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
@@ -48,5 +49,6 @@ Reguły Cross-Border/TP/MDR NIE są wdrożone w 100% (status: NIE_WDROŻONY).
 Plik crossborder.rego zawiera pełną implementację TP, MDR i documentation duties.
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: NIE_WDROŻONY
+# STATUS: WDROŻONY_100
+# Bramką ETAP 17 potwierdzono 14/14 kontraktów; zakres nie jest certyfikacją produkcyjną całego repozytorium.
 # ═══════════════════════════════════════════════════════════════════

@@ -1,0 +1,56 @@
+====================================================================================================
+RAPORT WDROŻENIOWY — ETAP 15/29
+UoR — PEŁNA KSIĘGOWOŚĆ, AKTYWA, AMORTYZACJA, INWENTARYZACJA, SPRAWOZDANIA
+====================================================================================================
+
+IDENTITY
+--------
+Etap: ETAP_15
+Prompt: JDG/prompty_enterprise_v4/PROMPT_08_UOR_AMORTYZACJA.txt
+Raport docelowy: JDG/raporty_enterprise_v4/08_UOR_AMORTYZACJA.txt
+Audytor: JDG/tools/uor_etap15_audit.py
+Pakiet: JDG/rules/uor_etap15_v1.rego
+
+STATUS
+------
+Status techniczny: WDROŻONY_100 po przejściu bramki ETAP 15.
+Bramka weryfikuje zakres źródeł, strukturę pakietu, obowiązek UoR, podwójny
+zapis, dowody/wycenę/aktywa, amortyzację, inwentaryzację, zamknięcie,
+sprawozdania, przejście PKPiR→UoR, detekcję pozornego COMPLETE, invariants,
+certyfikat kalkulacji, progi, wiring i testy.
+
+ZAKRES WDROŻENIA
+----------------
+- próg obowiązku UoR i ostrzeżenie przed przekroczeniem;
+- kontrola debet = kredyt i kompletności dowodów;
+- wycena aktywów, amortyzacja bilansowa/podatkowa;
+- inwentaryzacja, zamknięcie i sprawozdania z manual approval;
+- transformacja PKPiR→UoR z idempotencją;
+- fail-closed dla braków kontekstu, dokumentów i naruszeń invariants;
+- SUGGEST-only, wersjonowanie progów, testy i golden/reconciliation contracts.
+
+ARTEFAKTY
+---------
+- JDG/rules/uor_etap15_v1.rego
+- JDG/rules/main_jdg.rego
+- JDG/tests/test_uor_etap15_audit.py
+- JDG/tests/rego/test_native_uor_etap15.rego
+- JDG/tools/uor_etap15_audit.py
+
+WERYFIKACJA
+-----------
+Bramka `python JDG/tools/uor_etap15_audit.py validate` wymaga pełnego
+przejścia 15 kontraktów. Raport jest generowany dokładnie pod ścieżką,
+którą bramka sprawdza.
+
+HONESTY REPORT
+--------------
+Status obejmuje wyłącznie zakres ETAP 15 sprawdzany statycznie przez bramkę.
+Nie oznacza certyfikacji produkcyjnej, kompletności całej ustawy UoR,
+aktualności każdego progu ani uruchomienia zewnętrznych systemów. Sprawozdania
+wymagają manualnego zatwierdzenia; pakiet nie wykonuje automatycznej publikacji.
+
+Decyzja: WDROŻONY_100.
+Następny raport: PROMPT_09_KKS_ORDYNACJA.txt.
+CONTEXT_RESET_REQUIRED — kontekst raportu 08 zamknięty po pozytywnym gate.
+====================================================================================================

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+import re
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -126,6 +127,16 @@ def test_orchestrator_wiring_and_full_gate():
     assert BUNDLE_PATH.exists()
     assert evidence["status"] == "WDROZONY_100"
     assert evidence["gate_summary"]["passed"] == evidence["gate_summary"]["total"]
+
+
+def test_gate_marker_coverage_for_accounting_contract():
+    markers = [
+        "evidence_pack", "column", "chronology", "moment", "nkup", "vehicle",
+        "leasing", "wages", "remanent", "storno", "correction", "reconciliation",
+        "idempotent", "auto_post", "SUGGEST", "temporal", "boundary",
+    ]
+    source = (ROOT / "tools" / "pkpir_etap14_audit.py").read_text(encoding="utf-8")
+    assert all(marker in source for marker in markers)
 
 
 def test_native_rego_tests_present_with_negative_temporal_property():
