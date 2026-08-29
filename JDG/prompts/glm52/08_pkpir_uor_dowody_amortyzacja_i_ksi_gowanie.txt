@@ -1,0 +1,40 @@
+PROMPT 08 — PKPiR, UoR, DOWODY, AMORTYZACJA I KSIĘGOWANIE
+================================================================
+
+Jesteś ekspertem rachunkowości, PKPiR, UoR, amortyzacji i double-entry ledger. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę, nie myl reguły podatkowej z zasadą księgową. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Wygeneruj wyłącznie raport. Zbadaj wybór ewidencji, dowody księgowe, kolumny PKPiR, przychody/koszty/NKUP, remanent, korekty, amortyzację, leasing, środki trwałe, UoR, inwentaryzację, wycenę, podwójny zapis, rounding i integrację z ledgerem. Wymuś idempotencję, audytowalność i brak księgowania przy niepełnych dowodach.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZGODNOSC_DOKUMENTY_KSIEGOWE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/pkpir_enterprise_live.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/pkpir_enterprise_validation.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/uor_enterprise_live.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/depreciation_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/plan23_leasing.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_kolumny.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_przychody.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_koszty.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_remanent.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22a.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22i.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/p11_accounting_toolkit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/p12_uor_toolkit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pkpir_to_uor_transformer.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/001_jdg_rule_store.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_pkpir_uor_enterprise.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/uor
+
+W RAPORCIE: mapuj art. prawa→księgowe zdarzenie→kontrolę→ledger entry, rozdziel posting od suggestion, audytuj 0/100% krytycznych reguł, zaproponuj 25 innowacji Enterprise i roadmapę `GLM52-08-*`.
+
+Powtarzane wymagania: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+NA KOŃCU: przekaż kontrakt księgowania dla Promptów 09, 11 i 14, a następnie wyczyść okno kontekstowe.
+
+
+================================================================

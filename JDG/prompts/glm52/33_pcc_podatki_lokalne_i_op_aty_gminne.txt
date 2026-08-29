@@ -1,0 +1,22 @@
+PROMPT 33 — PCC, PODATKI LOKALNE I OPŁATY GMINNE
+================================================================
+
+Zakres: PCC, nieruchomości, środki transportowe, opłaty lokalne i dane gminne.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc_excise_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/local_procedures_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/real_estate.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/transport.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pcc/pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/pcc
+
+Wymagaj rozdzielenia prawa krajowego od uchwał gminnych, wersjonowania lokalnych danych i fail-closed przy nieznanej gminie.
+
+
+================================================================

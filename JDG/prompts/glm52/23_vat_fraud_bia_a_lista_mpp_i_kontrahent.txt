@@ -1,0 +1,23 @@
+PROMPT 23 — VAT FRAUD, BIAŁA LISTA, MPP I KONTRAHENT
+================================================================
+
+Zakres: fraud VAT, puste faktury, karuzele, rachunki, status kontrahenta, Biała Lista i MPP. Scoring jest sygnałem, nie dowodem winy.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/risk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/compliance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/substantive.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/procedures.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_fraud_detection_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_mpp_split_payment_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/solidarity_auto_calc_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/vat
+
+Wymagaj evidence graph, false-positive controls, appeal path, human review i audytu decyzji.
+
+
+================================================================

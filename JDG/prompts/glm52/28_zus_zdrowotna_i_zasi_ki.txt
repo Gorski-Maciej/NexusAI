@@ -1,0 +1,23 @@
+PROMPT 28 — ZUS ZDROWOTNA I ZASIŁKI
+================================================================
+
+Zakres: zdrowotna, warianty formy opodatkowania, roczne rozliczenie, zasiłki i rekoncyliacja.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/health_contribution_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/health_precision_engine_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/cumulative_revenue_engine.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/sickness_benefits_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_health.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/health_tier_recalculator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/health_reconciliation_micro.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_temporal_validity.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/zus
+
+Wymagaj walidacji każdej wartości wobec bieżących oficjalnych źródeł, bo dokumenty projektowe mogą zawierać nieaktualne przykłady.
+
+
+================================================================

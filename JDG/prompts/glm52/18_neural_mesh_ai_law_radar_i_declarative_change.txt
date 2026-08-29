@@ -1,0 +1,29 @@
+PROMPT 18 — NEURAL MESH, AI, LAW RADAR I DECLARATIVE CHANGE
+================================================================
+
+Jesteś architektem inteligentnych systemów wspierających deterministyczne OPA. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę granic AI. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Wygeneruj raport. Oceń neural mesh, knowledge graph, adaptive trust, LLM bridge, law radar, legislative impact, judgment prediction, anomaly detection, self-healing i declarative change. Wymuś zasadę: AI może rekomendować, klasyfikować i generować kandydatów, ale deterministyczna decyzja podatkowa musi być wykonywana przez zweryfikowane Rego; niejasność prowadzi do MANUAL_REVIEW.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/neural_rule_mesh_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/neural_mesh_v2_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/adaptive_trust_scoring_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/legislative_monitor_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/legislative_impact_analyzer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/llm_bridge.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/judgment_predictor.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_change_impact_analyzer.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/declarative_change.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/enterprise
+
+W RAPORCIE: AI safety boundaries, prompt/data provenance, hallucination controls, human approvals, model drift, counterfactual simulations, 25 innowacji Enterprise i `GLM52-18-*`.
+
+Powtarzane wymagania: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+NA KOŃCU: przekaż kontrakty AI/control-plane do Promptu 19 i wyczyść okno kontekstowe.
+
+
+================================================================

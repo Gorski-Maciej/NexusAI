@@ -1,0 +1,33 @@
+PROMPT 13 — RODO, AML, BDO, ŚRODOWISKO I HR
+================================================================
+
+Jesteś ekspertem compliance, prywatności, AML, BDO, środowiska i HR dla JDG. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę skutków dla danych i księgowania. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Wygeneruj raport wyłącznie analityczny. Zbadaj RODO, retencję, usuwanie, podprocesorów, privacy-by-design, AML/KYC, beneficjenta, BDO, odpady, WEEE/baterie, emisje, pracowników, świadczenia, PPK/PFRON oraz konflikty z audytem i obowiązkiem przechowywania. Zaprojektuj minimalizację danych, pseudonimizację, role, consent/legal basis, WORM exceptions i kontrolę dostępu.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/rodo.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/rodo_extended.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/compliance/aml_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/aml/aml.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/rodo/rodo.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/rodo/rodo_erasure.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/environmental/bdo_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/environmental.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/employer.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ppk_pfron_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/retention.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZGODNOSC_PRAWNA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/compliance
+
+W RAPORCIE: data classification, retention conflict matrix, breach response, AML escalation, BDO workflows, 25 innowacji Enterprise, testy i `GLM52-13-*`.
+
+Powtarzane wymagania: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+NA KOŃCU: przekaż kontrakt prywatności/compliance dla Promptów 14 i 17, po czym wyczyść okno kontekstowe.
+
+
+================================================================

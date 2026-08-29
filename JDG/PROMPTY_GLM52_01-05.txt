@@ -1,0 +1,226 @@
+================================================================
+PROMPT 01 — FUNDAMENT, INWENTARYZACJA I KONTRAKT INTEGRACYJNY
+================================================================
+
+Jesteś głównym architektem systemów finansowych i policy-as-code dla polskiej JDG. Przeprować głębokie myślenie. Przeprować głęboką analizę. Pracuj na zaawansowany poziom Enterprise, poziom ENTERPRISE, stosuj innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę przed każdą rekomendacją. Celem jest zaawansowany poziom Enterprise i poziom ENTERPRISE oraz innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje, ale nie dopisuj fikcyjnych faktów.
+
+ZADANIE
+Wygeneruj wyłącznie ogromny raport analityczny TXT/Markdown, bez modyfikowania plików. Zbuduj kanoniczny baseline JDG: rzeczywisty stan plików, pakietów, rule_id, testów, migracji, API, bundle, polityk i dokumentacji. Wykryj sprzeczności między deklarowanym stanem a kodem. Zaprojektuj kontrakty integracyjne dla wszystkich późniejszych części tak, aby żadna zmiana domenowa nie łamała architektury V1/V2.
+
+PLIKI DO ODCZYTU — TYLKO TE LINKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/README.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/STRUKTURA_PROJEKTU.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/INWENTARYZACJA_PLIKOW.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/unified_plan_v8.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/prompts_status.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+
+W RAPORCIE MUSZĄ BYĆ
+1. Executive Summary i ocena gotowości produkcyjnej bez marketingowych deklaracji.
+2. Kanoniczna mapa artefaktów i zależności.
+3. Macierz: wymaganie V1/V2 → istniejący artefakt → dowód → luka → priorytet.
+4. Kontrakt standardowego werdyktu, błędów, provenance, certainty, invariants, temporalności i legal refs.
+5. Zasady source-of-truth dla `JDG/rules` i relacji z `policies/`.
+6. Rejestr konfliktów oraz pytań wymagających decyzji człowieka.
+7. Minimum 20 innowacyjnych rozwiązań Enterprise z kryteriami akceptacji.
+8. Plan wdrożenia bez duplikowania reguł i bez niszczenia istniejących zależności.
+9. Lista testów blokujących oraz dowodów, które muszą powstać.
+10. Każdą niezweryfikowaną deklarację oznacz `[NIEZWERYFIKOWANE]`.
+
+Powtarzane wymagania nadrzędne: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+FORMAT
+Raport ma zawierać identyfikatory `GLM52-01-*`, tabelę zależności wejściowych/wyjściowych i sekcję „Nie wolno wdrożyć bez”. Nie generuj kodu Rego ani zmian plików.
+
+NA KOŃCU: po zapisaniu kompletnego raportu potwierdź jego zakres, wypisz artefakty przekazane do Promptu 02, a następnie wyczyść okno kontekstowe i nie przenoś niejawnych założeń do następnego promptu.
+
+
+================================================================
+PROMPT 02 — ORKIESTRATOR, ROUTING, SAFE MERGE I WERDYKT
+================================================================
+
+Jesteś ekspertem OPA/Rego, architektem deterministycznych silników podatkowych i audytorem systemów klasy finansowej. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę w zakresie determinizmu, bezpieczeństwa i kompozycji. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje, bez tworzenia sprzeczności.
+
+ZADANIE
+Wygeneruj wyłącznie rozbudowany raport analityczny. Zbadaj orkiestrację Multi-Pass, sharded routing, First-Match-Wins, safe_merge, POST-MERGE, runtime invariants, provenance i 25-polowy kontrakt. Wskaż konkretne miejsca ryzyka nadpisania, nieokreśloności, kolizji pakietów, niedeterministycznych wyników, błędnych early-abortów oraz różnic między dokumentacją i implementacją. Zaprojektuj docelowy model kontraktów i testów; nie zakładaj, że status „production” oznacza działanie.
+
+PLIKI DO ODCZYTU
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/main_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/routing.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_helpers_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_metadata_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/validation.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/provenance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conflicts.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fallback.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/audit/runtime_invariants_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/decision_composer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/decision_core_completeness_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+W RAPORCIE
+1. Formalny przepływ danych PASS 0–8 i POST-MERGE.
+2. Tabela wszystkich wejść, wyjść, priorytetów i właścicieli pól.
+3. Dowód determinizmu i kompletności dla sale/purchase/cross-border/blocked.
+4. Audyt `safe_merge`: immutable allowlist, konflikty, precedence, monotonicity.
+5. Analiza 25 pól i rekomendacja kompatybilnego rozszerzenia bez łamania klientów.
+6. Specyfikacja invariantów: preconditions, postconditions, fail-closed i degradacja.
+7. Projekt testów property, metamorphic, differential i golden.
+8. Minimum 20 innowacji Enterprise z wpływem, ryzykiem i kryteriami akceptacji.
+9. Lista zmian do wdrożenia z identyfikatorami `GLM52-02-*` i zależnościami do Promptów 03–20.
+10. Nie generuj kodu; podawaj pseudokontrakty i przykładowe przypadki testowe.
+
+Powtarzane wymagania: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+NA KOŃCU: podsumuj artefakty dla Promptu 03, zapisz jawne założenia, wyczyść okno kontekstowe i przygotuj model do następnego promptu.
+
+
+================================================================
+PROMPT 03 — TEMPORALNOŚĆ, THRESHOLDS I CYKL ŻYCIA REGUŁ
+================================================================
+
+Jesteś ekspertem temporalnych systemów prawnych, wersjonowania i control plane OPA. Przeprować głębokie myślenie. Przeprować głęboką analizę. Pracuj na zaawansowany poziom Enterprise, poziom ENTERPRISE, proponuj innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę dla dat wejścia w życie, retroaktywności i odtwarzalności. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+ZADANIE
+Wygeneruj raport bez kodu. Zbadaj wersje reguł i parametrów, valid_from/valid_to, time-travel, overlap/gap detection, hot reload, SHADOW/CANDIDATE/ACTIVE/ROLLED_BACK, add/change/retire/purge, rollback i kalendarz prawa. Zaprojektuj gwarancję, że ta sama transakcja liczona ponownie z tym samym snapshotem da identyczny wynik, a zmiana prawa nie zmieni przeszłości.
+
+PLIKI DO ODCZYTU
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/RULE_LIFECYCLE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/temporal.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/thresholds_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/rule_lifecycle_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/rule_lifecycle_manager.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/isap_rule_update_pipeline.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/temporal_drift_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/001_jdg_rule_store.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/007_jdg_v12_control_plane_lifecycle.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/009_jdg_v14_core_guards.sql
+
+W RAPORCIE
+1. Algebra interwałów i dowód braku luk/nakładek.
+2. Macierz dat: transaction/evaluation/effective/publication/knowledge.
+3. Parametr jako dane vs logika jako kod; walidacja źródeł i zakresów.
+4. Bezpieczny lifecycle z 4-eyes, canary, shadow, rollback i kill-switch.
+5. Retroaktywność, korekty, przepisy przejściowe i niepewne daty.
+6. Model snapshotu: bundle, rule, threshold, legal node, input schema.
+7. SLO/SLA adaptacji prawa oraz alarmy stale/drift.
+8. Minimum 20 innowacji Enterprise i plan migracji bez przerw.
+9. Testy granic day-1/day-0/day+1, leap year, timezone, okresy rozliczeniowe.
+10. Każdą niepewność prawną oznacz i nie rekomenduj AUTO_POST.
+
+Powtarzane wymagania: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+NA KOŃCU: przekaż kontrakt dla Promptu 04, zapisz założenia i wyczyść okno kontekstowe.
+
+
+================================================================
+PROMPT 04 — LEGAL TWIN, LKG I DOWODOWA ZGODNOŚĆ Z PRAWEM
+================================================================
+
+Jesteś Legal Engineerem, architektem Legal Knowledge Graph i audytorem zgodności reguł Rego z polskim prawem. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę, lecz nie wymyślaj podstaw prawnych. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+ZADANIE
+Wygeneruj wyłącznie raport. Oceń Legal Twin: akt → jednostka redakcyjna → wersja → interpretacja/orzeczenie → reguła → test → werdykt → certyfikat. Zidentyfikuj niezweryfikowane lub potencjalnie błędne numery Dz.U., artykuły i daty. `JDG/docs/Bbb` jest wejściowym katalogiem twierdzeń, nie automatycznym dowodem; wymagaj weryfikacji w oficjalnym ISAP/RCL/MF.
+
+PLIKI DO ODCZYTU
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_TWIN_TRACEABILITY.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_SOURCE_REGISTRY.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/SLOWNIK_REFERENCJI_PRAWNYCH.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/provenance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/temporal.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_legal_basis.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_coverage_heatmap.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/traceability_matrix.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/003_jdg_v8_legal_twin.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/005_jdg_v10_legal_sources.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/006_jdg_v11_legal_traceability.sql
+
+W RAPORCIE
+1. Model danych LKG i identyfikatory kanoniczne.
+2. Dwukierunkowe coverage: prawo→reguła i reguła→prawo.
+3. LCI/TCL/RV/UVR oraz dowody ich obliczania.
+4. Rozdzielenie prawa powszechnego, interpretacji, orzecznictwa i rekomendacji.
+5. Wersjonowanie tekstu przepisu i cytowanie konkretnej jednostki redakcyjnej.
+6. Procedura weryfikacji Bbb, konfliktów i brakujących źródeł.
+7. Traceability do testów, bundle, nodów OPA i certyfikatu.
+8. Minimum 20 innowacji Enterprise, w tym legal diff, reverse coverage i provenance proof.
+9. Lista luk z priorytetem BLOCKER/HIGH/MEDIUM/LOW.
+10. Nie używaj stwierdzeń „100% zgodności”, jeśli brak dowodu.
+
+Powtarzane wymagania: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+NA KOŃCU: wylistuj wymagane wejścia dla Promptu 05, zapisz założenia i wyczyść okno kontekstowe.
+
+
+================================================================
+PROMPT 05 — VAT CORE, MICRO, STAWKI, ODLICZENIA I MPP
+================================================================
+
+Jesteś najwyższej klasy ekspertem VAT, KSeF/JPK i OPA/Rego. Przeprować głębokie myślenie. Przeprować głęboką analizę. Pracuj na zaawansowany poziom Enterprise, poziom ENTERPRISE, proponuj innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę dla każdej kategorii VAT. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+ZADANIE
+Wygeneruj ogromny raport bez kodu. Audytuj VAT macro/micro, stawki, zwolnienia, moment obowiązku, podstawę, faktury, odliczenia, proporcje, korekty, złe długi, MPP/split payment, WDT/WNT/import/eksport, GTU i WIS. Zestawiaj każdą tezę z oficjalną podstawą prawną; oznacz niezweryfikowane dane. Zachowaj kontrakty z Promptów 01–04 i wskaż wpływ na PIT, księgowość, KSeF, JPK, KKS, cross-border i audit.
+
+PLIKI DO ODCZYTU
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/substantive.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/deductions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/procedures.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan23_detailed.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan26_critical.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan42_reduced_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/vat_enterprise_zero_doubt.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_substantive_complete_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan34_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/corrections.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edge_cases.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conflicts.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/thresholds_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_vat_enterprise.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/vat
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/tests
+
+W RAPORCIE
+1. Macierz art./ustęp/punkt → reguła → test → status dowodu.
+2. MPP: warunki, towary/usługi, kwoty, rachunki, komunikaty i wyjątki.
+3. Stawki i zwolnienia jako wersjonowane dane, nie hardcode.
+4. Odliczenia, proporcje, korekty i wieloletnie rozliczenia.
+5. Temporalność VAT i scenariusze graniczne.
+6. Cross-domain contracts dla PIT/PKPiR/KSeF/JPK/KKS.
+7. Fraud signals bez zastępowania decyzji prawnej heurystyką.
+8. Minimum 25 innowacji Enterprise, optymalizacja wydajności i explainability.
+9. Test plan: golden, property, mutation, fuzz, differential, legal replay.
+10. Lista konkretnych braków i kolejność wdrożenia z `GLM52-05-*`.
+
+Powtarzane wymagania: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+NA KOŃCU: przekaż kontrakty VAT dla Promptów 06, 08, 11 i 12, potwierdź ograniczenia prawne i wyczyść okno kontekstowe.

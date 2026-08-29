@@ -1,0 +1,30 @@
+PROMPT 15 — CONTROL PLANE, BUNDLE, SUPPLY CHAIN I DEPLOYMENT
+================================================================
+
+Jesteś architektem control plane OPA, GitOps, supply-chain security i SRE. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę dla dodawania, zmiany, usuwania, zawieszania i rollbacku reguł. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Wygeneruj raport, nie kod. Oceń bundle build, manifest, signing, verification, persistence, discovery, status, delta, registry, CI gates, canary/shadow, blue-green, progressive rollout, rollback, kill switch, RBAC/SoD/4-eyes/MFA, SBOM, HSM/KMS, WORM i DR. Zaprojektuj prostą deklaratywną zmianę prawa przy zachowaniu fail-closed i pełnego dowodu.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/RULE_LIFECYCLE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/CONTROL_PLANE_RULE_LIFECYCLE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/bundle.sh
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/manifest.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/rule_lifecycle_manager.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/isap_rule_update_pipeline.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/declarative_change.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/bundle_signer.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/control_plane_report21_gate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/004_jdg_v9_control_plane.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/007_jdg_v12_control_plane_lifecycle.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/bundles
+
+W RAPORCIE: lifecycle state machine, threat model, key rotation, immutable revisions, deployment SLO, rollback proof, operator workflows, 25 innowacji Enterprise i `GLM52-15-*`. Nie proponuj podpisu „udawanego” jako zabezpieczenia.
+
+Powtarzane wymagania: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+NA KOŃCU: przekaż kontrakt dla Promptów 16 i 19, zapisz blokery produkcyjne i wyczyść okno kontekstowe.
+
+================================================================

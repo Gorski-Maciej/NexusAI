@@ -1,0 +1,468 @@
+NEXUSAI JDG — DODATKOWE PROMPTY 21–40
+========================================
+
+INSTRUKCJA WSPÓLNA DLA KAŻDEGO PROMPTU
+---------------------------------------
+Jesteś najwyższej klasy ekspertem odpowiedniego podobszaru polskiego prawa podatkowego, księgowości, OPA/Rego i systemów Enterprise. Przeprować głębokie myślenie. Przeprować głęboką analizę. Pracuj na zaawansowany poziom Enterprise. Pracuj na poziom ENTERPRISE. Zaproponuj innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zapewnij zaawansowany poziom Enterprise. Zapewnij poziom ENTERPRISE. Zaprojektuj innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę przed rekomendacjami. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Generuj wyłącznie raport TXT/Markdown, chyba że prompt wyraźnie mówi inaczej. Nie modyfikuj repozytorium. Nie traktuj deklaracji „production”, liczby rule_id ani oznaczenia COMPLETE jako dowodu. Każde twierdzenie musi mieć: artefakt, podstawę prawną lub techniczną, wersję/datę, dowód, poziom pewności i wpływ. Nie twórz fikcyjnych artykułów, numerów Dz.U., endpointów ani plików. `JDG/docs/Bbb` jest katalogiem twierdzeń do weryfikacji w oficjalnych źródłach ISAP/RCL/MF. Dokumenty `ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` i `WIZJA_OPA_ENTERPRISE_V2.md` są nadrzędne. Konflikt oznacz BLOCKER. Materiały wejściowe mają zajmować maksymalnie 50% kontekstu GLM; czytaj tylko linki z danego promptu. Nie analizuj całego repozytorium naraz.
+
+Każdy raport musi mieć: Executive Summary; zakres i ograniczenia; macierz plik→reguła→prawo→test; luki P0–P3; zależności z innymi promptami; co najmniej 12 rozbudowanych propozycji Enterprise; test plan; kryteria akceptacji; plan wdrożenia bez duplikacji; identyfikatory `GLM52-<numer>-*`; sekcję „czego nie wolno założyć”.
+
+Na końcu każdego promptu: zapisz kontrakty wyjściowe dla kolejnych części, podsumuj założenia, potwierdź że raport jest gotowy jako TXT, a następnie wyczyść okno kontekstowe. Nie przenoś niejawnych założeń.
+
+
+================================================================
+PROMPT 21 — VAT STAWKI, ZWOLNIENIA, WIS I KLASYFIKACJA
+================================================================
+
+Zakres: pełny audyt stawek, zwolnień, klasyfikacji towarów/usług i WIS, bez MPP oraz KSeF, które są osobnymi częściami.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/substantive.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan42_reduced_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan26_critical.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_rates_exemptions_audit_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wis_autorequester_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/wis/plan45_wis.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/thresholds_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/vat
+
+Wymagaj macierzy artykuł/ustęp/punkt→klasyfikacja→stawka→dowód→ważność→test. Zaprojektuj bezpieczny fallback przy niejednoznaczności i `NEEDS_ADVICE`.
+
+
+================================================================
+PROMPT 22 — VAT ODLICZENIA, PROPORCJE, ZŁE DŁUGI I KOREKTY
+================================================================
+
+Zakres: odliczenia, ograniczenia, proporcje, korekty wieloletnie, złe długi i momenty rozliczeń.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/deductions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/procedures.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_deductions_corrections_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/corrections.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edge_cases.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conflicts.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/temporal.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/vat
+
+Wymagaj dowodu braku podwójnego odliczenia, idempotentnej korekty, historycznego replay i kontraktu z PKPiR/PIT.
+
+
+================================================================
+PROMPT 23 — VAT FRAUD, BIAŁA LISTA, MPP I KONTRAHENT
+================================================================
+
+Zakres: fraud VAT, puste faktury, karuzele, rachunki, status kontrahenta, Biała Lista i MPP. Scoring jest sygnałem, nie dowodem winy.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/risk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/compliance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/substantive.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/procedures.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_fraud_detection_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_mpp_split_payment_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/solidarity_auto_calc_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/vat
+
+Wymagaj evidence graph, false-positive controls, appeal path, human review i audytu decyzji.
+
+
+================================================================
+PROMPT 24 — PIT PRZYCHODY, KUP/NKUP, SAMOCHODY I AMORTYZACJA
+================================================================
+
+Zakres: przychody, koszty, NKUP, samochody, środki trwałe i amortyzacja; ulgi są w Prompt 25.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/kup.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/advances_returns.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/nkup_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/depreciation_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22a.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22i.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22k.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZGODNOSC_DOKUMENTY_KSIEGOWE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/pit
+
+Wymagaj rozdziału kwalifikacji podatkowej, księgowej i dowodowej oraz kontroli zaokrągleń.
+
+
+================================================================
+PROMPT 25 — PIT ULGI, IP BOX, B+R I OPTYMALIZACJA
+================================================================
+
+Zakres: ulgi i optymalizacja legalna, bez automatycznego doradztwa wiążącego.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/allowances.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/allowances/plan23_reliefs.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/art21_exemptions_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/ipbox_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/rd_relief_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/thermo_relief_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/missing_reliefs_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/cross_relief_optimizer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pit_innovation_tools.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/pit
+
+Wymagaj kwalifikacji wydatku, ewidencji, nexus/IP, limitów temporalnych, anty-double-counting i `NEEDS_ADVICE` przy interpretacji.
+
+
+================================================================
+PROMPT 26 — PIT FORMULARZE, ZALICZKI, STRATY I PRZEJŚCIA
+================================================================
+
+Zakres: skala/liniowy/ryczałt, wybór formy, zaliczki, straty, deklaracje i zmiana formy.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/forms.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/transitions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/advances_returns.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/declaration_extensions_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/form_optimizer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/form_transition_simulator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/annual_declaration_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/pit
+
+Wymagaj scenariuszy what-if, wyjaśnienia założeń, ograniczeń doradztwa i spójności z ZUS/księgowością.
+
+
+================================================================
+PROMPT 27 — ZUS SPOŁECZNE, ULGA START, MAŁY ZUS I ZBIEGI
+================================================================
+
+Zakres: ubezpieczenia społeczne, ulgi, zawieszenie, zbiegi tytułów i terminy.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/plan23_interactions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/enterprise_benefits.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business/plan26_suspension_succession.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_zus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/contribution_base_validator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/policies_status.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/zus
+
+Wymagaj modelu zbiegu, statusu ubezpieczonego, miesięcy wykorzystania ulg, temporalności i korekt.
+
+
+================================================================
+PROMPT 28 — ZUS ZDROWOTNA I ZASIŁKI
+================================================================
+
+Zakres: zdrowotna, warianty formy opodatkowania, roczne rozliczenie, zasiłki i rekoncyliacja.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/health_contribution_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/health_precision_engine_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/cumulative_revenue_engine.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/sickness_benefits_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_health.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/health_tier_recalculator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/health_reconciliation_micro.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_temporal_validity.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/zus
+
+Wymagaj walidacji każdej wartości wobec bieżących oficjalnych źródeł, bo dokumenty projektowe mogą zawierać nieaktualne przykłady.
+
+
+================================================================
+PROMPT 29 — PKPiR DOWODY, KOLUMNY, PRZYCHODY I KOSZTY
+================================================================
+
+Zakres: PKPiR, dowody, kolumny, remanent, korekty i retencja.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_kolumny.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_przychody.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_koszty.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_remanent.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pkpir/pkpir_korekty.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZGODNOSC_DOKUMENTY_KSIEGOWE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_pkpir_uor_enterprise.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/pkpir
+
+Wymagaj dowodu dokumentowego, idempotentnego księgowania i kontroli kompletności.
+
+
+================================================================
+PROMPT 30 — UoR, PODWÓJNY ZAPIS, INWENTARYZACJA I SPRAWOZDAWCZOŚĆ
+================================================================
+
+Zakres: pełna rachunkowość, UoR, aktywa, koszty, przychody, zamknięcie, inwentaryzacja i sprawozdawczość.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/uor_enterprise_live.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/pkpir_enterprise_live.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/plan42_uor.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_books.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_assets.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_inventory.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/uor/uor_closing.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/p12_uor_toolkit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/uor
+
+Wymagaj bilansowania debet/credit, kontroli zamknięcia okresu, niezmienności i replay.
+
+
+================================================================
+PROMPT 31 — AMORTYZACJA, LEASING I ŚRODKI TRWAŁE
+================================================================
+
+Zakres: klasyfikacja aktywów, wartości początkowe, metody amortyzacji, leasing, ulepszenia i zbycie.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/depreciation_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/depreciation_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/plan23_leasing.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22a.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22b.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22c.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22h.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/amortyzacja/pit_a22n.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZGODNOSC_DOKUMENTY_KSIEGOWE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/accounting
+
+Wymagaj zgodności PIT/PKPiR/UoR, dowodu harmonogramu i kontroli zmian.
+
+
+================================================================
+PROMPT 32 — RYCZAŁT, PKWiU, STAWKI I PRZEJŚCIA
+================================================================
+
+Zakres: ryczałt od przychodów ewidencjonowanych, PKWiU, stawki, limity, wyłączenia i przejścia.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ryczalt/ryczalt.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_ryc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ryczalt_cykl_atomic_p13.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p13_ryczalt_cykl_zycia_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/thresholds_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/p13_crossborder_toolkit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/ryczalt
+
+Wymagaj źródłowej klasyfikacji PKWiU, kontroli mieszanych usług i symulacji formy.
+
+
+================================================================
+PROMPT 33 — PCC, PODATKI LOKALNE I OPŁATY GMINNE
+================================================================
+
+Zakres: PCC, nieruchomości, środki transportowe, opłaty lokalne i dane gminne.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/pcc_excise_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/local_procedures_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/real_estate.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/transport.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pcc/pcc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/pcc
+
+Wymagaj rozdzielenia prawa krajowego od uchwał gminnych, wersjonowania lokalnych danych i fail-closed przy nieznanej gminie.
+
+
+================================================================
+PROMPT 34 — AKCYZA, PALIWA, ALKOHOL I ENERGIA
+================================================================
+
+Zakres: akcyza, banderole, ewidencje, stawki, zwolnienia, paliwa, alkohol i energia.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/akcyza_alcohol.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/akcyza_fuel.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/local_taxes/excise_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p33_excise_supplement.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/p15_pcc_local_excise_toolkit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/local_taxes
+
+Wymagaj kontroli jednostek miary, partii, pochodzenia, ewidencji i temporalności.
+
+
+================================================================
+PROMPT 35 — CROSS-BORDER VAT, MIEJSCE ŚWIADCZENIA I DOWODY
+================================================================
+
+Zakres: miejsce świadczenia, B2B/B2C, WDT/WNT, import/export, reverse charge i dowody transportu.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/international.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/international_expanded.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/crossborder/crossborder.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/crossborder_atomic_p12.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/place_of_supply.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/place_of_supply_micro.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/crossborder
+
+Wymagaj country/residency/status evidence, walut, kursów, dat i fail-closed.
+
+
+================================================================
+PROMPT 36 — TP, MDR, CFC, EXIT TAX I WHT
+================================================================
+
+Zakres: ceny transferowe, schematy podatkowe, CFC, exit tax, WHT i dokumentacja.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/mdr_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/mdr_hallmarks.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr_dac6_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cfc_auto_classifier.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/exit_tax_mdr_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder/exit_tax_cfc_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tp/plan45_tp.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/cross_jurisdiction_harmonizer.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/tp
+
+Wymagaj rozdzielenia alertu od obowiązku, materiality, dokumentacji, terminów i oceny doradcy.
+
+
+================================================================
+PROMPT 37 — KSeF TECHNICZNY: XML, OUTBOX, OFFLINE I UPO
+================================================================
+
+Zakres: techniczny przepływ KSeF, schema, XML, podpisy, idempotencja, kolejki i UPO.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_jpk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_outbox_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_offline_queue_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_upo_tracker_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_receipt_digest_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_sandbox_harness_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_resilience_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_ksef_generator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/ksef_jpk
+
+Wymagaj exactly-once biznesowo, retry bez duplikatów, DLQ, obserwowalność i dowód wysłania.
+
+
+================================================================
+PROMPT 38 — JPK, DEKLARACJE, KOREKTY I WALIDACJA SCHEMATÓW
+================================================================
+
+Zakres: JPK_V7, JPK_KR/PKPiR w zakresie, deklaracje, korekty, GTU, procedury i walidacja XSD.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk_v7_autogen_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk_corrections_workflow_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk_kr_st_generator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/gtu_completeness_checker_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/jpk/jpk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_jpk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/jpk
+
+Wymagaj versioned schemas, reportowania błędów pól, korekt idempotentnych i legal evidence.
+
+
+================================================================
+PROMPT 39 — CEIDG, CYKL ŻYCIA JDG, SUKCESJA I REPREZENTACJA
+================================================================
+
+Zakres: rejestracja, zmiany, zawieszenie, wznowienie, wykreślenie, sukcesja i reprezentacja.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business/plan26_suspension_succession.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business_lifecycle_etap18_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/representation.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ceidg/ceidg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sukcesja/sukcesja.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/p16_business_lifecycle_toolkit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/business
+
+Wymagaj state machine, dat skutków, uprawnień, kontraktów z ZUS/VAT i ochrony reprezentacji.
+
+
+================================================================
+PROMPT 40 — AUDYT KONFLIKTÓW I SPÓJNOŚĆ CROSS-DOMAIN
+================================================================
+
+Zakres: wyłącznie wykrywanie konfliktów międzydomenowych i spójność wyników; nie zastępuj audytu końcowego z Promptu 20.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conflicts.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conflict_declaration_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cross_domain_intelligence_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cross_domain_red_team_etap27_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p35_cross_act_coherence.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p35_system_gaps.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/cross_package_conflict_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/cross_ref_validator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/traceability_matrix.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LOGIKA_BIZNESOWA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/policies
+
+Wymagaj grafu zależności, precedence, konfliktów temporalnych, safe_merge, evidence, monotonicity, cross-domain golden cases i `NEEDS_ADVICE` dla nierozstrzygniętych przypadków.

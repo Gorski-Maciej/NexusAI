@@ -1,0 +1,158 @@
+================================================================
+PROMPT 16 — TESTY, CI, MUTATION, FUZZ, GOLDEN I FORMAL VERIFICATION
+================================================================
+
+Jesteś liderem QA dla systemu podatkowego klasy finansowej i ekspertem OPA/Rego. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę dowodów jakości. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Wygeneruj wyłącznie raport. Zbadaj testy Rego/Python, coverage, mutation, fuzz, property, metamorphic, contract, integration, E2E, golden replay, differential evaluation, chaos i formalny model SMT. Oceń, czy testy realnie wykrywają błędy, czy tylko potwierdzają obecność plików/reguł. Zaprojektuj blokujące bramki CI, test datasets, quality metrics i evidence bundles.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/lint_rego_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/dead_rule_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/tautology_guard.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/zero_defect_certification.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/generate_test_suite.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/golden_replay.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/differential_evaluation.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/invariant_checker.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/tests
+
+W RAPORCIE: kryteria zero-defect, mutation thresholds per criticality, formal proof boundaries, false confidence traps, test plan, 25 innowacji Enterprise, `GLM52-16-*`.
+
+Powtarzane wymagania: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+NA KOŃCU: przekaż certyfikaty wejściowe dla Promptu 20 i wyczyść okno kontekstowe.
+
+
+================================================================
+PROMPT 17 — OBSERWOWALNOŚĆ, PROVENANCE, AUDYT I DECISION CERTIFICATE
+================================================================
+
+Jesteś ekspertem audytu, explainability, kryptografii i systemów rozliczalnych. Przeprować głębokie myślenie. Przeprować głęboką analizę. Pracuj na zaawansowany poziom Enterprise, poziom ENTERPRISE, stosuj innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę dla każdego dowodu. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Wygeneruj raport bez kodu. Oceń provenance tree, decision_hash, Merkle/HMAC, WORM, audit trail, Decision Certificate, certainty classes, traceability, monitoring jakości, feedback i eksport dowodowy dla przedsiębiorcy, księgowej, audytora i organu. Rozdziel integralność od poprawności prawnej: podpis potwierdza pochodzenie, nie prawdziwość przepisu.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/provenance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/audit/runtime_invariants_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/reliability_guarantee_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/rule_provenance_dna.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/blockchain_audit_trail.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/decision_certificate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/decision_quality_monitor.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/006_jdg_v11_legal_traceability.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/009_jdg_v14_core_guards.sql
+
+W RAPORCIE: certificate schema, verification model offline, key lifecycle, evidence retention, privacy, audit replay, SLO, 25 innowacji Enterprise i `GLM52-17-*`.
+
+Powtarzane wymagania: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+NA KOŃCU: przekaż model certyfikatu do Promptu 20 i wyczyść okno kontekstowe.
+
+
+================================================================
+PROMPT 18 — NEURAL MESH, AI, LAW RADAR I DECLARATIVE CHANGE
+================================================================
+
+Jesteś architektem inteligentnych systemów wspierających deterministyczne OPA. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę granic AI. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Wygeneruj raport. Oceń neural mesh, knowledge graph, adaptive trust, LLM bridge, law radar, legislative impact, judgment prediction, anomaly detection, self-healing i declarative change. Wymuś zasadę: AI może rekomendować, klasyfikować i generować kandydatów, ale deterministyczna decyzja podatkowa musi być wykonywana przez zweryfikowane Rego; niejasność prowadzi do MANUAL_REVIEW.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/neural_rule_mesh_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/neural_mesh_v2_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/adaptive_trust_scoring_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/legislative_monitor_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/legislative_impact_analyzer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/llm_bridge.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/judgment_predictor.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_change_impact_analyzer.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/declarative_change.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/enterprise
+
+W RAPORCIE: AI safety boundaries, prompt/data provenance, hallucination controls, human approvals, model drift, counterfactual simulations, 25 innowacji Enterprise i `GLM52-18-*`.
+
+Powtarzane wymagania: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+NA KOŃCU: przekaż kontrakty AI/control-plane do Promptu 19 i wyczyść okno kontekstowe.
+
+
+================================================================
+PROMPT 19 — WYDAJNOŚĆ, ODPORNOŚĆ, CHAOS, DR I BEZPIECZEŃSTWO
+================================================================
+
+Jesteś Principal SRE i security architectem systemu podatkowego. Przeprować głębokie myślenie. Przeprować głęboką analizę. Pracuj na zaawansowany poziom Enterprise, poziom ENTERPRISE, stosuj innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę także dla awarii skrajnych. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Wygeneruj raport bez kodu. Zbadaj latencję O(1), WASM/native fallback, cache, concurrency, HA, circuit breakers, external API outages, corrupted bundles, expired keys, replay attacks, tenant isolation, DoS, secrets, backup, restore, RTO/RPO, chaos, game days i self-healing. Zaprojektuj degradację, która nie prowadzi do cichego błędnego księgowania.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/main_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fallback.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/api_fallback.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_resilience_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/reliability_guarantee_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/chaos_engineering.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/self_healing_engine.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/quantum_safe_encryption.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/bundle.sh
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations
+
+W RAPORCIE: SLO/SLA, failure matrix, chaos scenarios, threat model, DR runbooks, capacity plan, benchmark plan, 25 innowacji Enterprise i `GLM52-19-*`.
+
+Powtarzane wymagania: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+NA KOŃCU: przekaż krytyczne ryzyka do Promptu 20 i wyczyść okno kontekstowe.
+
+
+================================================================
+PROMPT 20 — AUDYT KOŃCOWY, SPÓJNOŚĆ MIĘDZY CZĘŚCIAMI I CERTYFIKACJA
+================================================================
+
+Jesteś niezależnym audytorem końcowym i Chief Architectem platformy JDG OPA. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę całego łańcucha zależności, ale nie czytaj całego repozytorium naraz. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+ZADANIE
+Wygeneruj wyłącznie finalny raport certyfikacyjny. Nie zakładaj, że raporty częściowe są prawdziwe: zweryfikuj dowody i konflikty. Zbuduj cross-domain matrix: legal source → LKG → rule → test → bundle → deployment → verdict → ledger → certificate. Wykryj naruszenia nadrzędnej architektury V1/V2, luki w Bbb, niespójności API/schema, duplikaty, stuby, hardcode, brakujące testy, niebezpieczne AUTO_POST, brakujące migracje i dokumentację.
+
+PLIKI DO ODCZYTU
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/README.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZGODNOSC_DOKUMENTY_KSIEGOWE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_TWIN_TRACEABILITY.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/CONTROL_PLANE_RULE_LIFECYCLE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/prompts_status.yaml
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/reports/glm52
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/policies
+
+W RAPORCIE
+1. Executive Summary i certyfikacyjny werdykt: CERTIFIED / CONDITIONAL / BLOCKED.
+2. Macierz spójności wszystkich 19 wcześniejszych części.
+3. Lista blockerów, krytycznych luk i fałszywych deklaracji.
+4. Dowód kompletności legal traceability i temporalności.
+5. Dowód bezpieczeństwa AUTO_POST i poprawnego fail-closed.
+6. Priorytety wdrożenia P0–P3 z zależnościami i kryteriami akceptacji.
+7. Minimalny zestaw zmian, który daje największy wzrost niezawodności.
+8. Minimum 30 innowacji Enterprise wykraczających poza wcześniejsze propozycje.
+9. Plan certyfikacji etapowej, testy odbiorcze i evidence bundle.
+10. Jasna granica: raport nie jest opinią podatkową ani gwarancją zgodności bez weryfikacji przez uprawnionego specjalistę.
+
+Powtarzane wymagania: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+NA KOŃCU: utwórz listę finalnych decyzji, jawnych założeń, dowodów brakujących i kolejnych bezpiecznych kroków. Po zapisaniu raportu wyczyść okno kontekstowe. Nie przenoś żadnych niezweryfikowanych założeń do kolejnej sesji.

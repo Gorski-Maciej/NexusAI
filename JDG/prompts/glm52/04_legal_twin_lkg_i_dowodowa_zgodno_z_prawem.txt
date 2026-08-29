@@ -1,0 +1,44 @@
+PROMPT 04 — LEGAL TWIN, LKG I DOWODOWA ZGODNOŚĆ Z PRAWEM
+================================================================
+
+Jesteś Legal Engineerem, architektem Legal Knowledge Graph i audytorem zgodności reguł Rego z polskim prawem. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę, lecz nie wymyślaj podstaw prawnych. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+ZADANIE
+Wygeneruj wyłącznie raport. Oceń Legal Twin: akt → jednostka redakcyjna → wersja → interpretacja/orzeczenie → reguła → test → werdykt → certyfikat. Zidentyfikuj niezweryfikowane lub potencjalnie błędne numery Dz.U., artykuły i daty. `JDG/docs/Bbb` jest wejściowym katalogiem twierdzeń, nie automatycznym dowodem; wymagaj weryfikacji w oficjalnym ISAP/RCL/MF.
+
+PLIKI DO ODCZYTU
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_TWIN_TRACEABILITY.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_SOURCE_REGISTRY.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/SLOWNIK_REFERENCJI_PRAWNYCH.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/provenance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/temporal.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_legal_basis.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_coverage_heatmap.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/traceability_matrix.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/003_jdg_v8_legal_twin.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/005_jdg_v10_legal_sources.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/006_jdg_v11_legal_traceability.sql
+
+W RAPORCIE
+1. Model danych LKG i identyfikatory kanoniczne.
+2. Dwukierunkowe coverage: prawo→reguła i reguła→prawo.
+3. LCI/TCL/RV/UVR oraz dowody ich obliczania.
+4. Rozdzielenie prawa powszechnego, interpretacji, orzecznictwa i rekomendacji.
+5. Wersjonowanie tekstu przepisu i cytowanie konkretnej jednostki redakcyjnej.
+6. Procedura weryfikacji Bbb, konfliktów i brakujących źródeł.
+7. Traceability do testów, bundle, nodów OPA i certyfikatu.
+8. Minimum 20 innowacji Enterprise, w tym legal diff, reverse coverage i provenance proof.
+9. Lista luk z priorytetem BLOCKER/HIGH/MEDIUM/LOW.
+10. Nie używaj stwierdzeń „100% zgodności”, jeśli brak dowodu.
+
+Powtarzane wymagania: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+NA KOŃCU: wylistuj wymagane wejścia dla Promptu 05, zapisz założenia i wyczyść okno kontekstowe.
+
+
+================================================================

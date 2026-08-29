@@ -1,0 +1,56 @@
+PROMPT 20 — AUDYT KOŃCOWY, SPÓJNOŚĆ MIĘDZY CZĘŚCIAMI I CERTYFIKACJA
+================================================================
+
+Jesteś niezależnym audytorem końcowym i Chief Architectem platformy JDG OPA. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę całego łańcucha zależności, ale nie czytaj całego repozytorium naraz. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+ZADANIE
+Wygeneruj wyłącznie finalny raport certyfikacyjny. Nie zakładaj, że raporty częściowe są prawdziwe: zweryfikuj dowody i konflikty. Zbuduj cross-domain matrix: legal source → LKG → rule → test → bundle → deployment → verdict → ledger → certificate. Wykryj naruszenia nadrzędnej architektury V1/V2, luki w Bbb, niespójności API/schema, duplikaty, stuby, hardcode, brakujące testy, niebezpieczne AUTO_POST, brakujące migracje i dokumentację.
+
+PLIKI DO ODCZYTU
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/README.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZGODNOSC_DOKUMENTY_KSIEGOWE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_TWIN_TRACEABILITY.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/CONTROL_PLANE_RULE_LIFECYCLE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/prompts_status.yaml
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/reports/glm52
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/policies
+
+W RAPORCIE
+1. Executive Summary i certyfikacyjny werdykt: CERTIFIED / CONDITIONAL / BLOCKED.
+2. Macierz spójności wszystkich 19 wcześniejszych części.
+3. Lista blockerów, krytycznych luk i fałszywych deklaracji.
+4. Dowód kompletności legal traceability i temporalności.
+5. Dowód bezpieczeństwa AUTO_POST i poprawnego fail-closed.
+6. Priorytety wdrożenia P0–P3 z zależnościami i kryteriami akceptacji.
+7. Minimalny zestaw zmian, który daje największy wzrost niezawodności.
+8. Minimum 30 innowacji Enterprise wykraczających poza wcześniejsze propozycje.
+9. Plan certyfikacji etapowej, testy odbiorcze i evidence bundle.
+10. Jasna granica: raport nie jest opinią podatkową ani gwarancją zgodności bez weryfikacji przez uprawnionego specjalistę.
+
+Powtarzane wymagania: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+NA KOŃCU: utwórz listę finalnych decyzji, jawnych założeń, dowodów brakujących i kolejnych bezpiecznych kroków. Po zapisaniu raportu wyczyść okno kontekstowe. Nie przenoś żadnych niezweryfikowanych założeń do kolejnej sesji.
+
+NEXUSAI JDG — DODATKOWE PROMPTY 21–40
+========================================
+
+INSTRUKCJA WSPÓLNA DLA KAŻDEGO PROMPTU
+---------------------------------------
+Jesteś najwyższej klasy ekspertem odpowiedniego podobszaru polskiego prawa podatkowego, księgowości, OPA/Rego i systemów Enterprise. Przeprować głębokie myślenie. Przeprować głęboką analizę. Pracuj na zaawansowany poziom Enterprise. Pracuj na poziom ENTERPRISE. Zaproponuj innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zapewnij zaawansowany poziom Enterprise. Zapewnij poziom ENTERPRISE. Zaprojektuj innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę przed rekomendacjami. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Generuj wyłącznie raport TXT/Markdown, chyba że prompt wyraźnie mówi inaczej. Nie modyfikuj repozytorium. Nie traktuj deklaracji „production”, liczby rule_id ani oznaczenia COMPLETE jako dowodu. Każde twierdzenie musi mieć: artefakt, podstawę prawną lub techniczną, wersję/datę, dowód, poziom pewności i wpływ. Nie twórz fikcyjnych artykułów, numerów Dz.U., endpointów ani plików. `JDG/docs/Bbb` jest katalogiem twierdzeń do weryfikacji w oficjalnych źródłach ISAP/RCL/MF. Dokumenty `ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md` i `WIZJA_OPA_ENTERPRISE_V2.md` są nadrzędne. Konflikt oznacz BLOCKER. Materiały wejściowe mają zajmować maksymalnie 50% kontekstu GLM; czytaj tylko linki z danego promptu. Nie analizuj całego repozytorium naraz.
+
+Każdy raport musi mieć: Executive Summary; zakres i ograniczenia; macierz plik→reguła→prawo→test; luki P0–P3; zależności z innymi promptami; co najmniej 12 rozbudowanych propozycji Enterprise; test plan; kryteria akceptacji; plan wdrożenia bez duplikacji; identyfikatory `GLM52-<numer>-*`; sekcję „czego nie wolno założyć”.
+
+Na końcu każdego promptu: zapisz kontrakty wyjściowe dla kolejnych części, podsumuj założenia, potwierdź że raport jest gotowy jako TXT, a następnie wyczyść okno kontekstowe. Nie przenoś niejawnych założeń.
+
+
+================================================================

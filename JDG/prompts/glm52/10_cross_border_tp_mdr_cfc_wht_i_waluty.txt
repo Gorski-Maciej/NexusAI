@@ -1,0 +1,33 @@
+PROMPT 10 — CROSS-BORDER, TP, MDR, CFC, WHT I WALUTY
+================================================================
+
+Jesteś ekspertem międzynarodowego opodatkowania JDG, cen transferowych i OPA. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę dla każdej jurysdykcji i daty. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Wygeneruj tylko raport. Audytuj WDT/WNT/import/export, miejsce świadczenia, reverse charge, OSS/IOSS jeśli zakres obejmuje, Brexit, CFC, exit tax, WHT, TP, MDR/DAC6/DAC8, kursy walut, dokumentację i limity. Zaprojektuj fail-closed dla brakującego kraju, rezydencji, statusu VAT, certyfikatu lub dokumentu.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/international.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/international_expanded.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder/exit_tax_cfc_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder/plan23_ue.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/crossborder/post_brexit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/mdr_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr/mdr_hallmarks.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mdr_dac6_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tp/plan45_tp.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/p13_crossborder_toolkit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/cross_jurisdiction_harmonizer.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/crossborder_innovations_v9.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/crossborder
+
+W RAPORCIE: scenariusze państw/jurysdykcji, treaty-vs-domestic precedence, temporalność, dokumenty, kursy, raportowanie, 25 innowacji Enterprise i `GLM52-10-*`. Nie twierdź, że jedna reguła zastępuje poradę prawną.
+
+Powtarzane wymagania: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+NA KOŃCU: przekaż kontrakty dla Promptów 11–12 i wyczyść okno kontekstowe.
+
+================================================================

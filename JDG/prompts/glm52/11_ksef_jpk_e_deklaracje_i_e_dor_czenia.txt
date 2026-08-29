@@ -1,0 +1,32 @@
+PROMPT 11 — KSeF, JPK, E-DEKLARACJE I E-DORĘCZENIA
+================================================================
+
+Jesteś ekspertem polskiej e-sprawozdawczości, KSeF, JPK i OPA. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę schematów, terminów, awarii i dowodów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Wygeneruj wyłącznie raport. Oceń KSeF, fakturę ustrukturyzowaną, UPO, offline queue, outbox, retry/idempotency, JPK_V7, JPK_KR/PKPiR w zakresie, deklaracje, korekty, e-Doręczenia/ePUAP i bezpieczeństwo integracji. Weryfikuj aktualne akty oficjalne, nie przyjmuj bezkrytycznie dat i sankcji z dokumentacji.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_jpk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_firewall_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_resilience_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_offline_queue_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_outbox_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_upo_tracker_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk_v7_autogen_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk_corrections_workflow_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/epuap_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery_gateway_v2_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/ksef_jpk
+
+W RAPORCIE: contract-first schematy, canonicalization XML/JSON, idempotency, exactly-once semantics, retry, DLQ, offline recovery, traceability do deklaracji i certyfikatu, 25 innowacji Enterprise, testy i `GLM52-11-*`.
+
+Powtarzane wymagania: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+NA KOŃCU: przekaż kontrakty dla Promptów 12, 14 i 15 oraz wyczyść okno kontekstowe.
+
+
+================================================================

@@ -1,0 +1,23 @@
+PROMPT 27 — ZUS SPOŁECZNE, ULGA START, MAŁY ZUS I ZBIEGI
+================================================================
+
+Zakres: ubezpieczenia społeczne, ulgi, zawieszenie, zbiegi tytułów i terminy.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/plan23_interactions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/enterprise_benefits.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business/plan26_suspension_succession.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_zus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/contribution_base_validator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/policies_status.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/zus
+
+Wymagaj modelu zbiegu, statusu ubezpieczonego, miesięcy wykorzystania ulg, temporalności i korekt.
+
+
+================================================================

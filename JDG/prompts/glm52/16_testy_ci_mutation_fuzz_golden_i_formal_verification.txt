@@ -1,0 +1,31 @@
+PROMPT 16 — TESTY, CI, MUTATION, FUZZ, GOLDEN I FORMAL VERIFICATION
+================================================================
+
+Jesteś liderem QA dla systemu podatkowego klasy finansowej i ekspertem OPA/Rego. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę dowodów jakości. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Wygeneruj wyłącznie raport. Zbadaj testy Rego/Python, coverage, mutation, fuzz, property, metamorphic, contract, integration, E2E, golden replay, differential evaluation, chaos i formalny model SMT. Oceń, czy testy realnie wykrywają błędy, czy tylko potwierdzają obecność plików/reguł. Zaprojektuj blokujące bramki CI, test datasets, quality metrics i evidence bundles.
+
+PLIKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/lint_rego_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/dead_rule_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/tautology_guard.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/zero_defect_certification.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/generate_test_suite.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/golden_replay.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/differential_evaluation.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/invariant_checker.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/policies/tests
+
+W RAPORCIE: kryteria zero-defect, mutation thresholds per criticality, formal proof boundaries, false confidence traps, test plan, 25 innowacji Enterprise, `GLM52-16-*`.
+
+Powtarzane wymagania: Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+NA KOŃCU: przekaż certyfikaty wejściowe dla Promptu 20 i wyczyść okno kontekstowe.
+
+
+================================================================
