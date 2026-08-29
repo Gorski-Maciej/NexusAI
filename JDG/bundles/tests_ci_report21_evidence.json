@@ -31,9 +31,9 @@
     "rego_rules_present": 4,
     "docs_total": 7,
     "docs_present": 7,
-    "auto_pytest_files": 136,
-    "native_rego_files": 124,
-    "all_rego_test_files": 186,
+    "auto_pytest_files": 140,
+    "native_rego_files": 137,
+    "all_rego_test_files": 199,
     "micro_tests_dir": true,
     "missing_tools": [],
     "missing_test_files": [],
@@ -306,5 +306,5 @@
     "syntax_errors": [],
     "syntax_ok": true
   },
-  "generated_at": "2026-08-23T13:49:26.711309+00:00"
+  "generated_at": "2026-08-29T08:40:10.576079+00:00"
 }

@@ -22,7 +22,7 @@
         "path": "rules/decision_core_completeness_enterprise.rego",
         "exists": true,
         "rule_id_count": 6,
-        "legal_basis_count": 6,
+        "legal_basis_count": 8,
         "temporal": false,
         "package_declared": true
       },
@@ -38,7 +38,7 @@
         "path": "rules/p01_core_architecture_innovations_v8.rego",
         "exists": true,
         "rule_id_count": 8,
-        "legal_basis_count": 5,
+        "legal_basis_count": 12,
         "temporal": false,
         "package_declared": true
       },
@@ -46,7 +46,7 @@
         "path": "rules/p01_fundament_innovations_v9.rego",
         "exists": true,
         "rule_id_count": 3,
-        "legal_basis_count": 2,
+        "legal_basis_count": 4,
         "temporal": true,
         "package_declared": true
       },
@@ -54,7 +54,7 @@
         "path": "rules/p02_decision_core_innovations_v9.rego",
         "exists": true,
         "rule_id_count": 2,
-        "legal_basis_count": 1,
+        "legal_basis_count": 2,
         "temporal": false,
         "package_declared": true
       },
@@ -62,7 +62,7 @@
         "path": "rules/p03_orchestrator_innovations_v9.rego",
         "exists": true,
         "rule_id_count": 2,
-        "legal_basis_count": 1,
+        "legal_basis_count": 2,
         "temporal": false,
         "package_declared": true
       },
@@ -70,7 +70,7 @@
         "path": "rules/p14_compliance_innovations_v8.rego",
         "exists": true,
         "rule_id_count": 13,
-        "legal_basis_count": 12,
+        "legal_basis_count": 18,
         "temporal": false,
         "package_declared": true
       },
@@ -150,7 +150,7 @@
         "path": "rules/p24_innovations_enterprise.rego",
         "exists": true,
         "rule_id_count": 30,
-        "legal_basis_count": 28,
+        "legal_basis_count": 29,
         "temporal": false,
         "package_declared": true
       },
@@ -198,7 +198,7 @@
         "path": "rules/reliability_guarantee_enterprise.rego",
         "exists": true,
         "rule_id_count": 5,
-        "legal_basis_count": 4,
+        "legal_basis_count": 8,
         "temporal": true,
         "package_declared": true
       },
@@ -206,7 +206,7 @@
         "path": "rules/rule_lifecycle_enterprise.rego",
         "exists": true,
         "rule_id_count": 5,
-        "legal_basis_count": 4,
+        "legal_basis_count": 8,
         "temporal": true,
         "package_declared": true
       }
@@ -283,9 +283,9 @@
     "no_auto_post_mode": true
   },
   "replay": {
-    "golden_verdicts_total": 21,
-    "system_verdicts": 1,
-    "replays_total": 21,
+    "golden_verdicts_total": 30,
+    "system_verdicts": 2,
+    "replays_total": 30,
     "unmatched_replays": [],
     "unmatched_count": 0,
     "replay_verified": true
@@ -300,5 +300,5 @@
     "soak_completed_at": "2026-08-15T12:00:00+00:00",
     "active_version": "jdg-bundle-v8.0.0"
   },
-  "generated_at": "2026-08-15T11:31:55.437914+00:00"
+  "generated_at": "2026-08-29T08:11:07.267311+00:00"
 }

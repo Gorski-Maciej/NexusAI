@@ -22,7 +22,7 @@
         "path": "rules/adaptive_trust_scoring_enterprise.rego",
         "exists": true,
         "rule_id_count": 4,
-        "legal_basis_count": 3,
+        "legal_basis_count": 6,
         "temporal": true,
         "package_declared": true
       },
@@ -186,9 +186,9 @@
     "no_auto_post_mode": true
   },
   "replay": {
-    "golden_verdicts_total": 21,
-    "ai_verdicts": 1,
-    "replays_total": 21,
+    "golden_verdicts_total": 30,
+    "ai_verdicts": 2,
+    "replays_total": 30,
     "unmatched_replays": [],
     "unmatched_count": 0,
     "replay_verified": true
@@ -203,5 +203,5 @@
     "soak_completed_at": "2026-08-15T12:00:00+00:00",
     "active_version": "jdg-bundle-v8.0.0"
   },
-  "generated_at": "2026-08-15T11:45:58.103324+00:00"
+  "generated_at": "2026-08-29T08:14:44.564759+00:00"
 }

@@ -152,5 +152,5 @@
     "rollback_reason": "RAPORT_14 fail-closed: no production telemetry for RODO/AML/BDO; exercise rollback SLA boundary",
     "active_version": "jdg-bundle-v8.0.0"
   },
-  "generated_at": "2026-08-23T08:44:43.504810+00:00"
+  "generated_at": "2026-08-29T08:07:02.264105+00:00"
 }

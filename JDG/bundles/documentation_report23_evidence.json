@@ -59,13 +59,13 @@
     "findings": [
       {
         "metric": "Unique rule_ids (disk)",
-        "actual": 12374,
-        "active_files": 447,
-        "total_files": 478
+        "actual": 12439,
+        "active_files": 459,
+        "total_files": 490
       },
       {
         "metric": "Tools count",
-        "actual": 319,
+        "actual": 337,
         "ok": true
       }
     ],
@@ -134,5 +134,5 @@
     "valid": true,
     "verdicts": 30
   },
-  "generated_at": "2026-08-23T14:53:09.377261+00:00"
+  "generated_at": "2026-08-29T08:55:42.580901+00:00"
 }

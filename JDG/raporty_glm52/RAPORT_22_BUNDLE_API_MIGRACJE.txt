@@ -1,0 +1,31 @@
+# RAPORT WDROŻENIOWY GLM52 ENTERPRISE — RAPORT 22
+## BUNDLE / API / RULESTORE / MIGRACJE
+
+Status: WDROŻONY_100 w zakresie technicznym potwierdzonym przez:
+`python tools/bundle_api_report22_gate.py --strict`
+
+Dowód: `bundles/bundle_api_report22_evidence.json`
+
+Zakres wdrożenia:
+- OpenAPI 3.0.3 z autoryzacją JWT, rate limitingiem, błędami i readiness;
+- RuleStore DuckDB: progi, wersje reguł, audyt werdyktów i legal cartography;
+- migracje 001–003 oraz rozszerzenia V2 dla LKG, invariants, golden verdicts,
+  certyfikatów decyzji i Law Radar;
+- audyt WORM, Merkle/HMAC, manifest, podpis bundle, SBOM i weryfikacja hash;
+- threshold explorer, hot-reload, explain/provenance, idempotencja,
+  wersjonowanie, canary per tenant i bezpieczna degradacja;
+- golden replay i rollback fail-closed.
+
+Weryfikacja:
+- kompletność dokumentów, bundle, API, migracji i testów;
+- manifest zgodny ze stanem `rules/` po regeneracji;
+- RuleStore zawiera aktywne wpisy;
+- podpisywanie/weryfikacja bundle i SBOM są dostępne;
+- migracje zawierają tabele RuleStore i Legal Twin;
+- golden replay nie ma unmatched verdicts;
+- rollout pozostaje ROLLED_BACK przy braku telemetrii produkcyjnej.
+
+Ograniczenie: status techniczny nie oznacza certyfikacji produkcyjnej ani
+aktualności prawnej bez zewnętrznej weryfikacji.
+
+Następny raport: `23_DOKUMENTACJA_SPOJNOSC.txt`.

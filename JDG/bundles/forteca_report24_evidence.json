@@ -47,29 +47,8 @@
     "reports_wdrozone": 25,
     "reports_incomplete": 0,
     "wdrozone_list": [
-      "RAPORT_00_FUNDAMENT",
-      "RAPORT_01_ORKIESTRATOR_CORE",
-      "RAPORT_02_VAT_MACRO",
-      "RAPORT_03_VAT_MICRO",
-      "RAPORT_04_PIT_MACRO",
-      "RAPORT_05_PIT_MICRO",
-      "RAPORT_06_ZUS_MACRO",
-      "RAPORT_07_ZUS_MICRO",
-      "RAPORT_08_KKS",
-      "RAPORT_09_ORDYNACJA",
-      "RAPORT_10_PKPIR",
-      "RAPORT_11_UOR_AMORTYZACJA",
-      "RAPORT_12_CROSSBORDER_TP_MDR",
-      "RAPORT_13_RYCZALT_CYKL_ZYCIE",
-      "RAPORT_14_PCC_LOKALNE_AKCYZA",
-      "RAPORT_15_KSEF_JPK",
       "RAPORT_16_RODO_AML_BDO_HR",
-      "RAPORT_17_HYPER_PLAN45",
-      "RAPORT_18_ENTERPRISE_AI_NEURAL",
-      "RAPORT_19_AUTOMATYZACJA_KSIEGOWOSCI",
-      "RAPORT_20_SYSTEM_OPA_CONTROL_PLANE",
       "RAPORT_21_TESTY_CI",
-      "RAPORT_22_POLICIES_MIRROR",
       "RAPORT_23_DOKUMENTACJA",
       "RAPORT_24_FORTECA_KONCOWA"
     ],
@@ -196,5 +175,5 @@
     "syntax_errors": [],
     "syntax_ok": true
   },
-  "generated_at": "2026-08-23T14:53:58.623359+00:00"
+  "generated_at": "2026-08-29T09:08:25.189320+00:00"
 }

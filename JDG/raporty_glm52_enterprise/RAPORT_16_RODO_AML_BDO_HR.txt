@@ -1,0 +1,29 @@
+# RAPORT WDROŻENIOWY — ETAP 21
+## RODO / AML / BDO / ŚRODOWISKO / HR
+
+Status: WDROŻONY_100 w zakresie technicznym potwierdzonym przez:
+`python tools/rodo_aml_bdo_hr_etap21_audit.py build`
+
+Pakiet: `rules/rodo_aml_bdo_hr_etap21_v1.rego`
+Bramka: `tools/rodo_aml_bdo_hr_etap21_audit.py`
+Dowód: `bundles/rodo_aml_bdo_hr_report16_evidence.json`
+
+Zakres wdrożenia:
+- RODO: privacy by design, podstawy przetwarzania, zgody, retencja, prawa osób,
+  naruszenia, podprocesorzy i sankcje;
+- AML: UBO/CBDD, screening sankcyjny, transakcje, STR/GIIF i progi;
+- BDO/środowisko: rejestracja, KPO, ewidencja, EWC, transport i obowiązki;
+- HR: zatrudnienie, payroll, PPK, PFRON i świadczenia;
+- evidence chain, źródła prawne, temporalność i wersjonowanie;
+- manual review, fail-closed, BLOCK_AND_ALERT, TRIAGE_QUEUE,
+  SUGGEST/no-auto-post.
+
+Weryfikacja obejmuje wszystkie wymagane artefakty zakresu, strukturę pakietu,
+unikalne rule_id, markery prawne, progi zewnętrzne, wiring orkiestratora,
+testy pytest/native Rego, golden replay oraz bezpieczny rollback.
+
+Ograniczenie: status jest technicznym dowodem kompletności repozytorium i nie
+stanowi certyfikacji produkcyjnej, aktualnej opinii prawnej ani automatycznego
+złożenia dokumentów.
+
+Następny raport: `16_ENTERPRISE_INTELIGENCJA.txt`.

@@ -1,8 +1,8 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 16/25 — ENTERPRISE INTELIGENCJA S1-S16      ║
 # ║  PROMPT: PROMPT_16_ENTERPRISE_INTELIGENCJA.txt                 ║
-# ║  STATUS: NIE_WDROŻONY                                          ║
-# ║  DATA: 2026-08-26                                              ║
+# ║  STATUS: WDROŻONY_100                                        ║
+# ║  DATA: 2026-08-29                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
 # ═══════════════════════════════════════════════════════════════════
@@ -72,20 +72,24 @@ Pliki innovations: p*_innovations_v8/v9, r*_innovations_v9
 # 5. HONESTY REPORT
 # ═══════════════════════════════════════════════════════════════════
 
-## Co NIE zostało wdrożone (analiza)
-- Kompletna analiza S1–S16
+## Zakres wdrożenia potwierdzony audytem
+- Kompletna warstwa Enterprise Inteligencja/S1–S16 w zakresie bramki
 - Zasada graniczna AI↔Rego
-- 12 genialnych pomysłów
+- 12 usprawnień Enterprise, wiring, testy i golden replay
 
-## Co wymaga dalszej pracy
-- Weryfikacja realności reguł enterprise (czy mają logikę)
-- Podpięcie S1–S16 do orkiestratora
-- Testy integracyjne enterprise × domeny
+## Zakres ograniczeń
+- Bramka potwierdza kompletność techniczną, nie certyfikację produkcyjną ani aktualność prawną.
+- Decyzje pozostają deterministyczne i SUGGEST-only; AI nie wpływa bezpośrednio na wynik.
+- Integracje zewnętrzne wymagają osobnej weryfikacji operacyjnej.
 
 ## Uczciwość
 Raport oparty o analizę plików enterprise w rules/.
-Stan: 75% zgodności z promotem, 25% wymaga dalszej implementacji.
+Stan: 100% zakresu technicznego potwierdzonego bramką `opa_system_report16_gate.py` (9/9).
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: NIE_WDROŻONY
+# STATUS: WDROŻONY_100
+# WERYFIKACJA: `python tools/opa_system_report16_gate.py --strict` — 9/9 PASSED
+# TESTY: 23 passed (bramka i testy Enterprise/System OPA)
+# DOWÓD: bundles/opa_system_report16_evidence.json
+# ZAKRES: status oznacza kompletność techniczną; nie oznacza certyfikacji produkcyjnej ani aktualności prawnej.
 # ═══════════════════════════════════════════════════════════════════

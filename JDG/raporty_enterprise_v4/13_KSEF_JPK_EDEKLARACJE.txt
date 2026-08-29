@@ -1,8 +1,8 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 13/25 — KSEF + JPK + E-DEKLARACJE           ║
 # ║  PROMPT: PROMPT_13_KSEF_JPK_EDEKLARACJE.txt                   ║
-# ║  STATUS: NIE_WDROŻONY                                          ║
-# ║  DATA: 2026-08-26                                              ║
+# ║  STATUS: WDROŻONY_100                                        ║
+# ║  DATA: 2026-08-29                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
 # ═══════════════════════════════════════════════════════════════════
@@ -62,9 +62,12 @@ Pliki dodatkowe: JDG/rules/jpk/*.rego, JDG/rules/micro/ksef/*.rego
 # 3. WNIOSKI
 # ═══════════════════════════════════════════════════════════════════
 
-Reguły KSeF + JPK + e-Deklaracje NIE są wdrożone w 100% (status: NIE_WDROŻONY).
-Pliki w katalogach ksef/, jpk/ zawierają pełną implementację.
+Reguły KSeF + JPK + e-Deklaracje są wdrożone w zakresie potwierdzonym bramką `ksef_jpk_report15_gate.py` (9/9). Warstwa obejmuje KSeF, JPK, e-Deklaracje, GTU, WIS, e-Doręczenia, temporalność, Legal Twin, safety SUGGEST/no-auto-post, golden replay i canary rollback.
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: NIE_WDROŻONY
+# STATUS: WDROŻONY_100
+# WERYFIKACJA: `python tools/ksef_jpk_report15_gate.py --strict` — 9/9 PASSED
+# TESTY: 73 passed (dedykowane testy R15/P17 i spójność bramki)
+# DOWÓD: bundles/ksef_jpk_report15_evidence.json
+# ZAKRES: status oznacza przejście bramki technicznej; nie oznacza certyfikacji produkcyjnej ani aktualności prawnej bez zewnętrznej weryfikacji.
 # ═══════════════════════════════════════════════════════════════════

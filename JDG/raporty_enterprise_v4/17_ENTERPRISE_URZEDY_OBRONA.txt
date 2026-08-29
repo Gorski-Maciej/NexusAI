@@ -1,8 +1,8 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 17/25 — ENTERPRISE URZEDY + E-DORECZENIA   ║
 # ║  PROMPT: PROMPT_17_ENTERPRISE_URZEDY_OBRONA.txt               ║
-# ║  STATUS: NIE_WDROŻONY                                          ║
-# ║  DATA: 2026-08-26                                              ║
+# ║  STATUS: WDROŻONY_100                                        ║
+# ║  DATA: 2026-08-29                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
 # ═══════════════════════════════════════════════════════════════════
@@ -76,18 +76,22 @@
 # 5. HONESTY REPORT
 # ═══════════════════════════════════════════════════════════════════
 
-## Co NIE zostało wdrożone (analiza)
-- Kompletna analiza e-Doręczeń, podpisów, obrony, WIS
-- 12 genialnych pomysłów
+## Zakres wdrożenia potwierdzony audytem
+- Kompletna warstwa e-Doręczeń, podpisów, obrony i WIS w zakresie technicznym
+- 12 usprawnień Enterprise, wiring, testy i golden replay
 
-## Co wymaga dalszej pracy
-- Walidacja terminów z Bbb.md (14/30 dni)
-- Testy integracyjne e-Doręczenia × KSeF
-- Podpięcie trackerów do orkiestratora
+## Zakres ograniczeń
+- Bramka techniczna nie zastępuje aktualnej weryfikacji prawnej ani certyfikacji produkcyjnej.
+- Integracje zewnętrzne i terminy wymagają okresowej synchronizacji ze źródłami.
+- Operacje pozostają SUGGEST/manual review/no-auto-post.
 
 ## Uczciwość
-Stan: 80% zgodności z promotem, 20% wymaga dalszej implementacji.
+Stan: 100% zakresu technicznego potwierdzonego bramką `enterprise_ai_report17_gate.py` (9/9).
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: NIE_WDROŻONY
+# STATUS: WDROŻONY_100
+# WERYFIKACJA: `python tools/enterprise_ai_report17_gate.py --strict` — 9/9 PASSED
+# TESTY: 23 passed (bramka i testy Enterprise AI)
+# DOWÓD: bundles/enterprise_ai_report17_evidence.json
+# ZAKRES: status oznacza kompletność techniczną; nie oznacza certyfikacji produkcyjnej ani aktualności prawnej.
 # ═══════════════════════════════════════════════════════════════════

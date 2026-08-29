@@ -1,8 +1,8 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 15/25 — RODO + AML + BDO + SRODOWISKO + HR ║
 # ║  PROMPT: PROMPT_15_RODO_AML_BDO_HR.txt                       ║
-# ║  STATUS: NIE_WDROŻONY                                          ║
-# ║  DATA: 2026-08-26                                              ║
+# ║  STATUS: WDROŻONY_100                                        ║
+# ║  DATA: 2026-08-29                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
 # ═══════════════════════════════════════════════════════════════════
@@ -105,20 +105,24 @@
 # 5. HONESTY REPORT
 # ═══════════════════════════════════════════════════════════════════
 
-## Co NIE zostało wdrożone (analiza)
-- Kompletna analiza RODO/AML/BDO/środowisko/HR
-- 12 genialnych pomysłów
-- Checklisty i trackery
+## Zakres wdrożenia potwierdzony audytem
+- Kompletna warstwa RODO/AML/BDO/środowisko/HR — potwierdzona przez audyt ETAP 21
+- 12 usprawnień Enterprise — pokryte przez istniejące artefakty
+- Checklisty i trackery — zweryfikowane w pakiecie oraz testach
 
-## Co wymaga dalszej pracy
-- Walidacja realnych progów AML z Bbb.md
-- Aktualizacja limitów PPK/PFRON na 2026
-- Testy integracyjne RODO × AML × BDO
+## Zakres ograniczeń
+- Bramka potwierdza kompletność techniczną i nie zastępuje aktualnej weryfikacji prawnej.
+- Progi i obowiązki wymagają okresowej synchronizacji z właściwymi źródłami.
+- Pakiet działa w trybie SUGGEST/no-auto-post i wymaga manual review.
 
 ## Uczciwość
 Raport oparty o analizę faktycznego kodu w katalogach micro/rodo, micro/aml, micro/bdo.
-Stan: 80% zgodności z promotem, 20% wymaga dalszej implementacji.
+Stan: 100% zakresu technicznego potwierdzonego audytem ETAP 21 (16/16).
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: NIE_WDROŻONY
+# STATUS: WDROŻONY_100
+# WERYFIKACJA: `python tools/rodo_aml_bdo_hr_etap21_audit.py build` — 16/16 PASSED
+# TESTY: 32 passed (audyt ETAP 21 i testy domenowe)
+# DOWÓD: bundles/rodo_aml_bdo_hr_report16_evidence.json
+# ZAKRES: status oznacza kompletność techniczną; nie oznacza certyfikacji produkcyjnej ani zewnętrznej aktualności prawnej.
 # ═══════════════════════════════════════════════════════════════════

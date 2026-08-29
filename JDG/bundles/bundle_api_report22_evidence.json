@@ -29,16 +29,16 @@
   },
   "manifest": {
     "actual": {
-      "files_count": 451,
-      "rules_count": 12123,
-      "unique_rule_ids": 12070,
-      "files_with_matched_true": 390
+      "files_count": 490,
+      "rules_count": 12439,
+      "unique_rule_ids": 12439,
+      "files_with_matched_true": 454
     },
     "declared": {
-      "files_count": 451,
-      "rules_count": 12123,
-      "unique_rule_ids": 12070,
-      "files_with_matched_true": 390
+      "files_count": 490,
+      "rules_count": 12439,
+      "unique_rule_ids": 12439,
+      "files_with_matched_true": 454
     },
     "mismatches": {},
     "consistent": true
@@ -75,8 +75,8 @@
   },
   "replay": {
     "valid": true,
-    "verdicts": 13,
-    "replays": 13,
+    "verdicts": 30,
+    "replays": 30,
     "unmatched": [],
     "unmatched_count": 0
   },
@@ -88,5 +88,5 @@
     "rollback_sla_pass": true,
     "active_version": "jdg-bundle-v8.0.0"
   },
-  "generated_at": "2026-08-13T18:46:29.145697+00:00"
+  "generated_at": "2026-08-29T08:48:51.534731+00:00"
 }

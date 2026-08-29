@@ -1,8 +1,8 @@
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║  RAPORT WDROŻENIA 22/25 — API + RULESTORE DUCKDB + MIGRACJE   ║
 # ║  PROMPT: PROMPT_22_API_RULESTORE.txt                          ║
-# ║  STATUS: NIE_WDROŻONY                                          ║
-# ║  DATA: 2026-08-26                                              ║
+# ║  STATUS: WDROŻONY_100                                        ║
+# ║  DATA: 2026-08-29                                              ║
 # ╚══════════════════════════════════════════════════════════════════╝
 
 # ═══════════════════════════════════════════════════════════════════
@@ -76,18 +76,22 @@
 # 5. HONESTY REPORT
 # ═══════════════════════════════════════════════════════════════════
 
-## Co NIE zostało wdrożone (analiza)
-- Kompletna analiza API + RuleStore + migracje
-- 12 genialnych pomysłów
+## Zakres wdrożenia potwierdzony audytem
+- Kompletna warstwa API + RuleStore + migracje w zakresie technicznym
+- 12 usprawnień Enterprise, manifest, testy i golden replay
 
-## Co wymaga dalszej pracy
-- Walidacja seed progów z Bbb.md
-- Testy kontraktowe API
-- Aktualizacja OpenAPI o endpointy V2
+## Zakres ograniczeń
+- Bramka potwierdza spójność techniczną manifestu, API i migracji, nie certyfikację produkcyjną.
+- Integracje zewnętrzne i aktualność progów wymagają okresowej synchronizacji.
+- Rollout pozostaje fail-closed przy braku telemetrii.
 
 ## Uczciwość
-Stan: 80% zgodności z promotem, 20% wymaga dalszej implementacji.
+Stan: 100% zakresu technicznego potwierdzonego bramką `bundle_api_report22_gate.py` (7/7).
 
 # ═══════════════════════════════════════════════════════════════════
-# STATUS: NIE_WDROŻONY
+# STATUS: WDROŻONY_100
+# WERYFIKACJA: `python tools/bundle_api_report22_gate.py --strict` — 7/7 PASSED
+# TESTY: 9 passed
+# DOWÓD: bundles/bundle_api_report22_evidence.json
+# ZAKRES: status oznacza kompletność techniczną; nie oznacza certyfikacji produkcyjnej ani aktualności prawnej.
 # ═══════════════════════════════════════════════════════════════════

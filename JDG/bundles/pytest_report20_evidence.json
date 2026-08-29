@@ -26,7 +26,7 @@
   "syntax": {
     "syntax_errors": [],
     "syntax_ok": true,
-    "files_checked": 132
+    "files_checked": 220
   },
   "imports": {
     "broken_imports": [],
@@ -35,13 +35,13 @@
   "pytest": {
     "exit_code": 0,
     "passed": true,
-    "stdout_tail": "..................                                                       [100%]\n18 passed in 2.95s",
+    "stdout_tail": "..................                                                       [100%]\n18 passed in 3.14s",
     "stderr_tail": ""
   },
   "replay": {
     "valid": true,
-    "verdicts": 13,
-    "replays": 13,
+    "verdicts": 30,
+    "replays": 30,
     "unmatched": [],
     "unmatched_count": 0
   },
@@ -54,5 +54,5 @@
     "rollback_sla_pass": true,
     "active_version": "jdg-bundle-v8.0.0"
   },
-  "generated_at": "2026-08-13T18:08:45.656443+00:00"
+  "generated_at": "2026-08-29T08:33:08.923496+00:00"
 }
