@@ -1,9 +1,0 @@
-Wyczyść całe okno kontekstowe z poprzedniej części. Zachowaj wyłącznie następujący minimalny kontrakt przekazania:
-
-- nadrzędne dokumenty: ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md i WIZJA_OPA_ENTERPRISE_V2.md;
-- Bbb.md jako katalog aktów prawnych;
-- ostatni `CONTRACT_DELTA`;
-- jawne blokery i pytania otwarte;
-- listę plików następnej części.
-
-Nie przenoś pełnego raportu, kodu, historii rozumowania ani niepotrzebnych treści. Potwierdź gotowość do następnej części dopiero po skutecznym wyczyszczeniu kontekstu. Nie zmieniaj kodu. Zakończ dokładnie: `KONIEC RAPORTU — WYCZYŚĆ OKNO KONTEKSTOWE — KONTEKST WYCZYSZCZONY — GOTOWOŚĆ NA NASTĘPNĄ CZĘŚĆ`.
