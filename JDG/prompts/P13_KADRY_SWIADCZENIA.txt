@@ -1,0 +1,16 @@
+Zastosuj pełny kontrakt P00_ORCHESTRATOR.txt. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Działaj na zaawansowanym poziomie Enterprise, poziomie ENTERPRISE i dodaj innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+PLIKI:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/employer.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/mpips.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ppk_pfron_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/insurance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/insurance_tracker_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/family/plan45_family.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/rodo/rodo_zatrudnienie.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/HR_SWIADCZENIA_P19.md
+
+Przeanalizuj zatrudnienie, umowy, listę płac, składki, podatki, zasiłki, urlopy, PPK, PFRON, świadczenia, RODO pracownicze i wpływ na koszt księgowy. Nie generuj porad prawnych bez źródeł. Wygeneruj kontrakty, Rego, testy temporalne/kwotowe, dokumenty dowodowe, escalation i integrację z ZUS/PIT/księgowością. Co najmniej cztery razy wykonaj: przeprowadź głębokie myślenie, przeprowadź głęboką analizę, zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów, wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Dodaj CONTRACT_DELTA. Zakończ: `KONIEC RAPORTU — WYCZYŚĆ OKNO KONTEKSTOWE PRZED NASTĘPNYM PROMPTEM`.

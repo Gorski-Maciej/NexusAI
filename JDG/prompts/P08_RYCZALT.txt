@@ -1,0 +1,16 @@
+Zastosuj pełny kontrakt P00_ORCHESTRATOR.txt. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Pracuj na zaawansowanym poziomie Enterprise, poziomie ENTERPRISE i zaproponuj innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+PLIKI:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ryczalt/ryczalt.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/forms.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/transitions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/tax_form_transition_intelligence.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p13_ryczalt_cykl_zycia_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r12_ryczalt_cykl_zycia_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_ryc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/RYCZALT_CYKL_ZYCIE_P13.md
+
+Zbadaj PKD/PKWiU, rozdział przychodów według stawek, wyłączenia, limity, ewidencję przychodów, zdrowotną, terminy, przejścia między formami, korekty i niepewność klasyfikacji. Wymagaj dowodów prawnych i kieruj niejednoznaczne przypadki do człowieka. Wygeneruj Rego, dane progowe, testy temporalne, kontrakty i zależności z VAT/PIT/ZUS/księgowością. Cztery razy wykonaj: przeprowadź głębokie myślenie, przeprowadź głęboką analizę, zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów, wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Dodaj CONTRACT_DELTA. Zakończ: `KONIEC RAPORTU — WYCZYŚĆ OKNO KONTEKSTOWE PRZED NASTĘPNYM PROMPTEM`.

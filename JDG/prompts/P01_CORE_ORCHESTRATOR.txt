@@ -1,0 +1,18 @@
+Wykonaj zadanie zgodnie z pełnym kontraktem wspólnym z P00_ORCHESTRATOR.txt. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Pracuj na zaawansowanym poziomie Enterprise i poziomie ENTERPRISE. Zaprojektuj innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+ZAKRES PLIKÓW:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/main_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/routing.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/validation.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conflicts.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/provenance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_helpers_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_metadata_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ORCHESTRATOR_DATA_CONTRACT.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/DECISION_CORE_P02.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+
+Zbadaj Multi-Pass 0–8, Sharded Router, first-match-wins, safe_merge, immutable verdicts, 25-polowy kontrakt, provenance, Merkle/hash, certainty class, fail-closed oraz wszystkie wyjścia nieokreślone. Wygeneruj raport TXT według P00: macierz luk, proponowany kontrakt wersjonowany, kod Rego, testy deterministyczności i konfliktów, wpływ na wszystkie domeny, plan migracji i rollback. Przeprowadź głębokie myślenie, przeprowadź głęboką analizę, zastosuj zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów i wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje — każde polecenie wykonaj co najmniej cztery razy jako osobne kontrole jakości.
+
+Na samym końcu: `KONIEC RAPORTU — WYCZYŚĆ OKNO KONTEKSTOWE PRZED NASTĘPNYM PROMPTEM`.

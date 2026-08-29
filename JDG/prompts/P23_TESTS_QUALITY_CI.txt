@@ -1,0 +1,16 @@
+Zastosuj pełny kontrakt P00_ORCHESTRATOR.txt. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE i innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+PLIKI:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tests_ci/quality_v3_17.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p23_test_rego_ci_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tests_ci_quality_etap24_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/quality_pipeline.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_tax_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_p01_control_plane.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_final_certification_etap28_audit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/TESTY_REGO_CI_P23.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/NARZEDZIA_WALIDACJI_P22.md
+
+Oceń lint, compile, schema, rule_id, legal basis, tautology, dead rules, hardcode, coverage, mutation, property, fuzz, golden replay, temporal, contracts, integration, E2E, chaos, security, performance, test isolation i quality gates. Wygeneruj konkretne pipeline gates, testy i raporty dowodowe; nie akceptuj statusu na podstawie samych nazw. Cztery razy wykonaj: przeprowadź głębokie myślenie, przeprowadź głęboką analizę, zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów, wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Dodaj CONTRACT_DELTA. Zakończ: `KONIEC RAPORTU — WYCZYŚĆ OKNO KONTEKSTOWE PRZED NASTĘPNYM PROMPTEM`.

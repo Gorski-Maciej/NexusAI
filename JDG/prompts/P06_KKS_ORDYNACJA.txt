@@ -1,0 +1,23 @@
+Zastosuj pełny kontrakt P00_ORCHESTRATOR.txt. Przeprowadź głębokie myślenie i przeprowadź głęboką analizę. Pracuj na zaawansowanym poziomie Enterprise i poziomie ENTERPRISE. Zaproponuj innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+PLIKI:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/kks.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/kks/plan42_detailed.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/kks/plan43_decomposition.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/kks/plan44_kks_conviction.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/kks/enterprise_penalties.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/kks/kks_extensions_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ord/ord_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/kks/kks.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ord/ord.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/statute_of_limitations.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/interest_calculator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/penalty_ai_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/overpayment_auto_claimer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KKS_P10.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ORDYNACJA_PODATKOWA_P11.md
+
+Sprawdź przedawnienie, korekty, odsetki, sankcje, wykroczenia/przestępstwa, czynny żal, postępowania, interpretacje, obronę, ciężar dowodu, niepewność i zakaz automatycznego przesądzania winy. Wygeneruj fail-closed risk model, legal traceability, kod Rego, testy temporalne, audit i routing do człowieka. Powtórz co najmniej cztery razy i wykonaj: przeprowadź głębokie myślenie, przeprowadź głęboką analizę, zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów, wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Dodaj CONTRACT_DELTA. Zakończ: `KONIEC RAPORTU — WYCZYŚĆ OKNO KONTEKSTOWE PRZED NASTĘPNYM PROMPTEM`.

@@ -1,0 +1,31 @@
+Zastosuj pełny kontrakt P00_ORCHESTRATOR.txt. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Działaj na zaawansowanym poziomie Enterprise i poziomie ENTERPRISE. Wygeneruj innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+PRZECZYTAJ WYŁĄCZNIE TEN ZAKRES:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/substantive.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/deductions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/procedures.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/place_of_supply.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan23_detailed.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan26_critical.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan42_reduced_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/enterprise_vat_bridge.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/vat_enterprise_zero_doubt.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/wdt_export_import.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/place_of_supply_micro.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/proportion_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/margin_scheme_micro.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/ksef_micro.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/r03_vat_micro_articles.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_rates_exemptions_audit_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_deductions_corrections_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_mpp_split_payment_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat_fraud_detection_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/VAT_MACRO_P03.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/VAT_MICRO_P04.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+
+Sprawdź każdy artykuł i parametr przeciwko Bbb, temporalność, podstawę prawną, stawki, zwolnienia, faktury, MPP, WNT/WDT/import, marżę, korekty, JPK i zależności z PIT, księgowością, KSeF, ryzykiem i cross-border. Nie uznawaj deklaracji COMPLETE bez dowodu. Zaproponuj konkretne Rego, schematy, testy graniczne groszy/walut, golden replay, invariants i mapę Legal Twin. W raporcie powtórz i wykonaj co najmniej cztery razy: przeprowadź głębokie myślenie, przeprowadź głęboką analizę, zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów, wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Na końcu dodaj CONTRACT_DELTA i: `KONIEC RAPORTU — WYCZYŚĆ OKNO KONTEKSTOWE PRZED NASTĘPNYM PROMPTEM`.

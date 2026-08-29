@@ -1,0 +1,15 @@
+Zastosuj pełny kontrakt P00_ORCHESTRATOR.txt. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE oraz innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+PLIKI:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/bundle.sh
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/README.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/bundles/quality_v3_18.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/policies_mirror_sync_etap26_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/TOOLS_API_RULESTORE_BUNDLES_P25.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_tools_api_rulestore_bundles_etap25_audit.py
+
+Zbadaj reproducibility, manifest, hash, podpis, SBOM, supply chain, OPA persist, weryfikację przed aktywacją, delta/snapshot, ETag, long polling, canary, shadow, blue-green, health, quorum, HA, offline start, auto-rollback, RTO/RPO. Wygeneruj konkretne zmiany skryptów/konfiguracji, testy awarii i security. Powtórz minimum cztery razy: przeprowadź głębokie myślenie, przeprowadź głęboką analizę, zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów, wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Dodaj CONTRACT_DELTA. Zakończ: `KONIEC RAPORTU — WYCZYŚĆ OKNO KONTEKSTOWE PRZED NASTĘPNYM PROMPTEM`.
