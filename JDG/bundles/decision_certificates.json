@@ -1,0 +1,28 @@
+{
+  "certificates": {
+    "DC-2026-08-29-00000001": {
+      "certificate_id": "DC-2026-08-29-00000001",
+      "transaction_date": "2026-08-29",
+      "certainty_class": "NEEDS_ADVICE",
+      "decision": {
+        "rule_id": "jdg.vat.example.r1",
+        "matched": true,
+        "vat_rate": 0.23,
+        "legal_basis": [],
+        "legal_basis_refs": [],
+        "bundle_version": null,
+        "rule_version": null,
+        "invariant_violations": []
+      },
+      "seal": {
+        "version": "v1",
+        "payload_hash": "306b6f4d13281be7fb52d7e8a67103b1c33bae71168f9ef680a66613ef361d13",
+        "content_hash": "306b6f4d13281be7fb52d7e8a67103b1c33bae71168f9ef680a66613ef361d13",
+        "merkle_root": "306b6f4d13281be7fb52d7e8a67103b1c33bae71168f9ef680a66613ef361d13",
+        "hsm_signature": "HSM-ECDSA-e981fa7a78c63fd2e19c5913af218d1a",
+        "verification_url": "https://verify.nexusai.pl/cert/DC-2026-08-29-00000001"
+      },
+      "generated_at": "2026-08-29T15:53:50+00:00"
+    }
+  }
+}

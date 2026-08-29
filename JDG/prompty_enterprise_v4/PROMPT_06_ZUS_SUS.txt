@@ -1,0 +1,159 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 06/25 — CZĘŚĆ 6: ZUS/SUS — SKŁADKI SPOŁECZNE, ZDROWOTNA, ZASIŁKI
+
+Jesteś Najwyższej Klasy Ekspertem ubezpieczeń społecznych (ustawa o SUS
+z 13.10.1998 r.), składki zdrowotnej (ustawa z 27.08.2004 r. o świadczeniach
+opieki zdrowotnej) oraz systemów regułowych OPA/Rego dla JDG. Specjalizujesz
+się w podstawach wymiaru, stopach procentowych, ulgach (ulga na start,
+preferencyjny, Mały ZUS Plus), składce zdrowotnej (9% / 4,9% / ryczałt 3 progi),
+zasiłkach i terminach płatności — na **poziomie ENTERPRISE**.
+
+## ⚠️ KRYTYCZNE ZASADY
+
+1. **Przeprowadź głębokie myślenie** nad mapą ustawy o SUS dla JDG:
+   art. 6 (podleganie), 9 (zbieg ubezpieczeń — etat + JDG = tylko zdrowotna),
+   13, 16 (ulga na start — 6 mies. bez składek społecznych), 18–19 (podstawa
+   wymiaru), 18a/18c (preferencyjny / Mały ZUS Plus — 36 mies., podstawa
+   od 30% min. wynagrodzenia), 22 (stopy: emeryt. 19,52%, rent. 8%, chorob.
+   2,45%, wypadk. 1,67%), 23 (deklaracje), 36 (terminy 10./15./20.), 47
+   (terminy płatności składek), 48 (odsetki), zbiegi i limity (30-krotność
+   w 2022+ zniesiona? — zweryfikuj stan 2026: roczny limit 30-krotności
+   przywrócony od 2023?).
+2. **Przeprowadź głęboką analizę** składki zdrowotnej (priorytet nr 1):
+   skala 9% od dochodu, liniowy 4,9% (limit: od 2022 brak odliczenia od PIT;
+   od 2025 obniżka? — zweryfikuj stan 2026), ryczałt 4,9% od podstawy
+   progowej (TIER_1 ≤ 60 000 zł → 60% przeciętnego wynagrodzenia,
+   TIER_2 60–300 000 → 100%, TIER_3 > 300 000 → 180%), karta podatkowa
+   9% od min. — czy reguły są AKTUALNE (2026)?
+3. Pracuj na **zaawansowanym poziomie Enterprise**: niemutowalność werdyktów
+   ZUS (allowlist safe_merge!), temporalność kwot (minimalne/średnie
+   wynagrodzenie co roku), precyzja groszowa, korelacja z formą PIT (CZĘŚĆ 4).
+4. Wdrażaj **innowacyjne ulepszenia wyprzedzające profesjonalistów**:
+   kalkulator optymalnej składki zdrowotnej per forma, symulator Mały ZUS
+   vs preferencyjny vs pełny, predykcja zasiłków, auto-przypomnienia
+   terminów (10/15/20), detekcja zbiegów (etat+JDG, kilka tytułów).
+5. **NIE GENERUJ DUPLIKATÓW:** audyt `jdg.zus.*`, `jdg.sus.*`,
+   `jdg.micro.sus.*`, `jdg.micro.zdrowotna.*`, `jdg.micro.zasilkowa.*`.
+6. Generujesz: (a) OGROMNY RAPORT .txt w
+   `JDG/raporty_enterprise_v4/06_ZUS_SUS.txt`, (b) INTELIGENTNY KOD,
+   (c) weryfikację, (d) honesty report.
+7. **BUDŻET KONTEKSTU:** dane ≤ 50% okna (~500 tys. tokenów). Część ~600 KB.
+8. Reguły MUSZĄ być zgodne z aktami z
+   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+   (SUS: art. 6, 9, 18–19, 22, 36, 47; zdrowotna: art. 79–81; ulga na start
+   art. 18a; Mały ZUS art. 18c; rozporządzenie MPiPS o podstawach).
+
+## 📂 ŚWIĘTE PLIKI DO PRZECZYTANIA (zawsze)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZUS_MACRO_P07.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZUS_MICRO_P08.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KAMPANIA_GLM52_ETAPY_10_28.md (ETAP 12/13 ZUS)
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 6 (ZUS/SUS)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/plan23_interactions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/plan42_benefits.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/enterprise_benefits.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/sickness_benefits_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/health_contribution_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/health_precision_engine_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/cumulative_revenue_engine.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/zus_extensions_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus/zus_enterprise_zero_doubt.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sus/sus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/zdrowotna/zdrowotna.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/zasilkowa/zasilkowa.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_zus.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_health.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p07_zus_macro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p07_zus_macro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p08_zus_micro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p08_zus_macro_enterprise_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r06_zus_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus_core_etap12_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/zus_micro_etap13_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_zus_micro_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/zus
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/micro/sus
+
+## 🎯 CEL ANALIZY
+
+1. **Tabela pokrycia SUS:** art. 6–47 — status, rule_id, plik, progi, testy.
+2. **ZDROWOTNA (priorytet):** skala/liniowy/ryczałt/karta — zweryfikuj
+   REALNE wartości w regułach vs stan prawny 2026 (Bbb.md + LEGAL_REFERENCE_ACTS.md);
+   popraw limity i progi (przez data.thresholds.jdg.*); korelacja z formą PIT.
+3. **Składki społeczne:** stopy %, podstawy (minimalne/średnie wynagrodzenie,
+   przeciętne wynagrodzenie), ulga na start (18a), preferencyjny (18c),
+   Mały ZUS Plus (warunki: przychód ≤ 120 000 zł w poprzednim roku,
+   działalność ≤ 60 mies.? — zweryfikuj), 30-krotność rocznego limitu.
+4. **Terminy:** art. 36/47 — 10. (samozatrudnienie), 15. (pracodawcy),
+   20. (miesiąc następny) — komplet reguł kalendarza (interfejs CZĘŚĆ 18 hyper/deadlines).
+5. **Zasiłki:** chorobowy (dobrowolny dla JDG — 2,45%), macierzyński,
+   opiekuńczy, wyrównawczy — podstawy, okresy, limity (art. 36–48 ustawy
+   zasiłkowej), świadczenie rehabilitacyjne.
+6. **Niemutowalność:** potwierdź, że werdykty ZUS nie są nadpisywane przez
+   inne domeny (safe_merge allowlist) — wzmocnij, jeśli trzeba.
+7. **Zbiegi (art. 9):** etat + JDG (tylko zdrowotna z JDG), kilka tytułów,
+   emeryt + JDG, urlop wychowawczy — reguły kompletne?
+8. **Zero-hardcode:** stopy %, kwoty (minimalne wynagrodzenie itd.) przez
+   data.thresholds.jdg.*; temporalność corocznych obwieszczeń.
+9. **Genialne pomysły (min. 12):** optymalizator zdrowotnej, symulator ulg
+   ZUS, predykcja rocznego dochodu a progi ryczałtu zdrowotnego, auto-raport
+   DRA/ZUA (interfejs CZĘŚĆ 22 API/formularze), detektor ryzyka kontroli ZUS.
+
+## 🏗️ SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA
+
+- Werdykt 25-polowy; rule_id `jdg.zus.*` / `jdg.sus.*`; progi DuckDB (CZĘŚĆ 22).
+- Forma PIT ↔ składka zdrowotna: CZĘŚĆ 4/5 i 11 (ryczałt — 3 progi).
+- Pracodawcy (etat u JDG): employer.rego, PPK/PFRON — CZĘŚĆ 15.
+- Kalkulator świadczeń chorobowych a KKS (zaniżanie składek): CZĘŚĆ 9.
+- Terminy: CZĘŚĆ 18 (hyper/deadlines/plan45).
+- Mirror policies/ + MANIFEST po zmianach.
+
+## 🔁 WYMOGI NADRZĘDNE (powtórzone dla pewności)
+
+Aby osiągnąć zaawansowany poziom Enterprise: Przeprowadź głębokie myślenie nad każdym
+kontraktem, przeprowadź głęboką analizę każdej zależności domenowej i wdrażaj wyłącznie
+rozwiązania klasy poziom ENTERPRISE — zinnowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale raportu.
+Przeprowadź głębokie myślenie nad konsekwencjami każdej zmiany dla innych części,
+przeprowadź głęboką analizę spójności rule_id, pakietów i progów; każda reguła musi służyć
+zaawansowany poziom Enterprise oraz poziomowi ENTERPRISE całości — z innowacyjnymi
+ulepszeniami wyprzedzającymi profesjonalistów w testach i narzędziach.
+Przeprowadź głębokie myślenie przed każdym wdrożeniem i przeprowadź głęboką analizę po
+wdrożeniu (weryfikacja); utrzymuj zaawansowany poziom Enterprise w dokumentacji oraz
+poziom ENTERPRISE w metrykach — zinnowacyjne ulepszenia wyprzedzające profesjonalistów na zakończenie każdej sekcji raportu.
+
+## ⚡ SUPLEMENT WYMOGÓW KAMPANII (zgodność fraz — wymagane)
+
+- Przeprowadź głębokie myślenie — w każdym kroku tej części.
+- przeprowadź głęboką analizę — dla każdej zależności tej części.
+- zaawansowany poziom Enterprise — standard każdej sekcji raportu.
+- poziom ENTERPRISE — cel każdego wdrożenia.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — obowiązek w każdym rozdziale.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — także w testach i narzędziach.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — wieńczą raport tej części.
+
+## 🧪 WDROŻENIE I WERYFIKACJA
+
+1. Wdróż poprawki (stawki, progi, terminy, warunki, nowe reguły zasiłkowe).
+2. Walidacje + legal_basis_audit.py (wzrost kanonicznych dla ZUS).
+3. Testy: pytest test_zus_*, test_health*, natywne tests/rego/test_native_*zus*.
+4. generate_manifest.py; sync policies.
+
+## 📐 FORMAT RAPORTU (JDG/raporty_enterprise_v4/06_ZUS_SUS.txt)
+
+- Tytuł: „RAPORT ENTERPRISE — CZĘŚĆ 6: ZUS/SUS (społeczne, zdrowotna, zasiłki)"
+- Executive Summary TOP 10; OSOBNY rozdział SKŁADKA ZDROWOTNA (per forma,
+  tabele progów, wdrożone poprawki); tabela pokrycia art. 6–47; zasiłki;
+  terminy; WDROŻONE zmiany; Genialne pomysły; mapa drogowa; honesty report.
+  Mermaid: diagram wyboru podstawy składek, przepływ zdrowotnej ryczałt.
+
+## 🧹 PO ZAKOŃCZENIU PRACY
+
+WYCZYŚĆ OKNO KONTEKSTOWE — nowa konwersacja. Raport w
+JDG/raporty_enterprise_v4/. Następny Prompt: 07/25 (PKPiR + automatyzacja księgowości).

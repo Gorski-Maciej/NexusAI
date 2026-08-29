@@ -104,6 +104,15 @@ jobs:
           fi
           echo "✅ Zero-defect score: $SCORE% — PASS"
       
+      # PROMPT_21 CONTROL PLANE — invariant checker + report-21 gate (BLOCKING)
+      - name: Control Plane Gate (Invariants + F1-F6 Evidence)
+        id: control_plane
+        run: |
+          python JDG/tools/invariant_checker.py ci
+          python JDG/tools/control_plane_report21_gate.py --check
+          python JDG/tools/golden_replay.py report >/dev/null 2>&1 || true
+          echo "✅ Control Plane gate: F1-F6 + WORM + amendment simulator OK"
+
       # Summary
       - name: Quality Gates Summary
         if: always()

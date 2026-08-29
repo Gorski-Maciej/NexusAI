@@ -1,0 +1,19 @@
+{
+ "versions": {
+  "jdg-bundle-v9.1.0": {
+   "version": "jdg-bundle-v9.1.0",
+   "rules_count": 11855,
+   "published_at": "2026-08-29T15:52:05+00:00",
+   "sha256": "50fa2e719921de9392563a243e43985d4988fc14111c86e49ba757eecce5b153",
+   "signature": "HSM:50fa2e719921de9392563a243e43985d",
+   "sbom": "jdg-bundle-v9.1.0.sbom.json",
+   "status": "CANDIDATE",
+   "delivery": {
+    "supports_delta": true,
+    "delta_requires_signed_snapshot": true
+   }
+  }
+ },
+ "latest": "jdg-bundle-v9.1.0",
+ "updated_at": "2026-08-29T15:52:05+00:00"
+}

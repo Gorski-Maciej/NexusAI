@@ -1,0 +1,158 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 13/25 — CZĘŚĆ 13: KSeF / JPK / e-DEKLARACJE (E-FAKTURY I PLIKI KONTROLNE)
+
+Jesteś Najwyższej Klasy Ekspertem Krajowego Systemu e-Faktur (KSeF 2.0 —
+obowiązek od 01.02.2026 dla czynnych podatników VAT), Jednolitego Pliku
+Kontrolnego (JPK_V7M/V7K z deklaracją, JPK_PKPIR, JPK_KR, JPK_CIT),
+e-Deklaracji (VAT-7, PIT-36/36L/28, PCC-3) i systemów regułowych OPA/Rego
+dla JDG — na **poziomie ENTERPRISE**.
+
+## ⚠️ KRYTYCZNE ZASADY
+
+1. **Przeprowadź głębokie myślenie** o KSeF: art. 106na–106nq ustawy o VAT
+   (obowiązek wystawiania faktur ustrukturyzowanych od 2026-02-01 dla
+   czynnych; zwolnieni — dobrowolnie), struktura faktury (schemat XSD —
+   rozporządzenie MF z 5.10.2025), wysyłka online/offline (kolejka 7 dni —
+   rozporządzenie o trybie offline), UPO (potwierdzenie), korekty w KSeF,
+   sankcje (art. 106na § 3? — kara do 500 000 zł? zweryfikuj stan 2026:
+   od 2026 sankcje złagodzone — 40%? ustal!), wyłączenia B2C (paragony),
+   faktury w przypadkach awarii (art. 106nb?).
+2. **Przeprowadź głęboką analizę** JPK: JPK_V7M/V7K (struktura sprzedaży
+   i zakupów, oznaczenia GTU, procedury, kody — art. 99 ust. 10 VAT,
+   rozporządzenie z 15.07.2025), terminy (do 25. dnia miesiąca), JPK_PKPIR
+   (na żądanie — 21 dni), JPK_KR (na żądanie), JPK_CIT (dla JDG na CIT —
+   estoński), JPK na żądanie (art. 193a Ordynacji — 21 dni).
+3. Pracuj na **zaawansowanym poziomie Enterprise**: pełna maszyna stanów
+   KSeF (created → validated → sent → UPO → approved / failed → retry),
+   resilience (offline queue, retry z backoff, firewall, sandbox),
+   monitor UPO, spójność KSeF ↔ JPK_V7 (każda faktura KSeF = wpis JPK).
+4. Wdrażaj **innowacyjne ulepszenia wyprzedzające profesjonalistów**:
+   auto-generator XML KSeF z danych faktury (walidacja XSD), auto-uzupełnianie
+   GTU (semantyczne), krzyżowa walidacja KSeF↔JPK↔PKPiR (triplet dowodowy),
+   symulator sankcji, workflow korekt w KSeF (natywna korekta),
+   auto-deklaracje (VAT-7 z JPK, PIT z ewidencji — interfejs CZĘŚĆ 11).
+5. **NIE GENERUJ DUPLIKATÓW:** audyt `jdg.ksef.*`, `jdg.ksef_jpk.*`,
+   `jdg.jpk.*`, `jdg.micro.ksef.*`, `jdg.micro.jpk.*`, `jdg.validation.*`.
+6. Generujesz: (a) OGROMNY RAPORT .txt w
+   `JDG/raporty_enterprise_v4/13_KSEF_JPK_EDEKLARACJE.txt`, (b) INTELIGENTNY KOD,
+   (c) weryfikację, (d) honesty report.
+7. **BUDŻET KONTEKSTU:** dane ≤ 50% okna (~500 tys. tokenów).
+8. Reguły MUSZĄ być zgodne z aktami z
+   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+   (VAT art. 99, 106na–106nq; ustawa KSeF Dz.U. 2023 poz. 1598;
+   rozporządzenia: schemat XSD, JPK_VAT, e-Deklaracje).
+
+## 📂 ŚWIĘTE PLIKI DO PRZECZYTANIA (zawsze)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KSEF_JPK_EDEKLARACJE_P17.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZGODNOSC_PRAWNA.md (KSeF/JPK/deklaracje)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KAMPANIA_GLM52_ETAPY_10_28.md (ETAP 20)
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 13 (KSeF / JPK / e-Deklaracje)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_jpk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_jpk/ksef_jpk_enterprise_live.rego (jeśli istnieje — sprawdź)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ksef/ksef.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/jpk/jpk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_ksef.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_jpk.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk/plan26_deadlines.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_jpk_etap20_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk_v7_autogen_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk_cit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk_kr_st_generator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jpk_corrections_workflow_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_firewall_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_offline_queue_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_outbox_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_receipt_digest_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_resilience_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_sanction_monitor_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_sandbox_harness_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_upo_tracker_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ksef_innovations_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/gtu_completeness_checker_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r15_ksef_jpk_edeklaracje_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p15_ksef_jpk_edeklaracje_innovations_v8.rego (jeśli istnieje)
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/ksef_jpk
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/micro/ksef
+
+## 🎯 CEL ANALIZY
+
+1. **Maszyna stanów KSeF:** komplet stanów i przejść; błędy wysyłki;
+   kolejka offline (7 dni — terminy); UPO (tracker — brak UPO = alert);
+   korekty (natywne); anulowanie; sandbox — oceń i wzmocnij.
+2. **Zgodność 2026:** obowiązek od 01.02.2026 — zweryfikuj reguły
+   `vat_ksef_mandatory_from_2026`, wyłączenia (B2C paragony, zwolnieni
+   podmiotowo), sankcje (aktualne stawki 2026 — w data.thresholds).
+3. **JPK_V7:** struktura (sprzedaż VAT_S, zakupy VAT_R), oznaczenia
+   (GTU_01–12, SW, procedury, TPG?), kody krajów (KSeF), korekty
+   w JPK, uzgodnienie z deklaracją VAT-7 (triplet: KSeF ↔ JPK_V7 ↔
+   VAT-7/PKPiR) — wdróż walidator tripletowy.
+4. **Auto-generacja:** jpk_v7_autogen — czy generuje pełny plik z rejestrów?
+   jpk_cit/kr/st — komplet? Uzupełnij braki.
+5. **E-Deklaracje:** VAT-7/7K (z JPK), PIT (interfejs CZĘŚĆ 11), PCC-3
+   (interfejs CZĘŚĆ 12), ZUS DRA (interfejs CZĘŚĆ 6) — mostki regułowe.
+6. **Terminy:** 25. dzień miesiąca (JPK_V7), 21 dni (JPK na żądanie),
+   KSeF offline 7 dni — kalendarz (interfejs CZĘŚĆ 18).
+7. **Zero-hardcode:** limity, sankcje, terminy przez data.thresholds.jdg.*.
+8. **Genialne pomysły (min. 12):** triplet KSeF↔JPK↔PKPiR, auto-GTU
+   semantyczne, predykcja wykrycia rozbieżności przez KAS (scoring),
+   symulator sankcji KSeF, worker offline z priorytetami (faktury
+   krytyczne), auto-korekta KSeF z opisem powodu (KOR), dashboard
+   zgodności e-faktur.
+
+## 🏗️ SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA
+
+- Werdykt 25-polowy (`jdg.ksef_jpk.*`); progi DuckDB (CZĘŚĆ 22).
+- VAT (obowiązek KSeF zalezy od statusu VAT): CZĘŚĆ 2/3; PKPiR (triplet
+  dokumentowy): CZĘŚĆ 7; sankcje KKS (brak KSeF = wykroczenie?): CZĘŚĆ 9;
+  e-Doręczenia (UPO przez e-Doręczenia?): CZĘŚĆ 17; formularze API: CZĘŚĆ 22.
+- Mirror policies/ + MANIFEST po zmianach.
+
+## 🔁 WYMOGI NADRZĘDNE (powtórzone dla pewności)
+
+Aby osiągnąć zaawansowany poziom Enterprise: Przeprowadź głębokie myślenie nad każdym
+kontraktem, przeprowadź głęboką analizę każdej zależności domenowej i wdrażaj wyłącznie
+rozwiązania klasy poziom ENTERPRISE — zinnowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale raportu.
+Przeprowadź głębokie myślenie nad konsekwencjami każdej zmiany dla innych części,
+przeprowadź głęboką analizę spójności rule_id, pakietów i progów; każda reguła musi służyć
+zaawansowany poziom Enterprise oraz poziomowi ENTERPRISE całości — z innowacyjnymi
+ulepszeniami wyprzedzającymi profesjonalistów w testach i narzędziach.
+Przeprowadź głębokie myślenie przed każdym wdrożeniem i przeprowadź głęboką analizę po
+wdrożeniu (weryfikacja); utrzymuj zaawansowany poziom Enterprise w dokumentacji oraz
+poziom ENTERPRISE w metrykach — zinnowacyjne ulepszenia wyprzedzające profesjonalistów na zakończenie każdej sekcji raportu.
+
+## ⚡ SUPLEMENT WYMOGÓW KAMPANII (zgodność fraz — wymagane)
+
+- Przeprowadź głębokie myślenie — w każdym kroku tej części.
+- przeprowadź głęboką analizę — dla każdej zależności tej części.
+- zaawansowany poziom Enterprise — standard każdej sekcji raportu.
+- poziom ENTERPRISE — cel każdego wdrożenia.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — obowiązek w każdym rozdziale.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — także w testach i narzędziach.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — wieńczą raport tej części.
+
+## 🧪 WDROŻENIE I WERYFIKACJA
+
+1. Wdróż ulepszenia (maszyna stanów, triplet, auto-GTU, offline queue).
+2. Walidacje + testy: pytest test_ksef*, test_jpk*, natywne
+   tests/rego/test_native_*ksef*/*jpk*; generate_manifest.py; sync policies.
+
+## 📐 FORMAT RAPORTU (JDG/raporty_enterprise_v4/13_KSEF_JPK_EDEKLARACJE.txt)
+
+- Tytuł: „RAPORT ENTERPRISE — CZĘŚĆ 13: KSeF, JPK, e-DEKLARACJE"
+- Executive Summary TOP 10; rozdziały: maszyna stanów KSeF, zgodność 2026,
+  JPK_V7 (struktura/GTU), auto-generacja, e-Deklaracje, terminy; WDROŻONE
+  zmiany; Genialne pomysły; mapa drogowa; honesty report.
+  Mermaid: stan KSeF (state machine); triplet dokumentowy.
+
+## 🧹 PO ZAKOŃCZENIU PRACY
+
+WYCZYŚĆ OKNO KONTEKSTOWE — nowa konwersacja. Raport w
+JDG/raporty_enterprise_v4/. Następny Prompt: 14/25 (Prawo przedsiębiorców/CEIDG/sukcesja).

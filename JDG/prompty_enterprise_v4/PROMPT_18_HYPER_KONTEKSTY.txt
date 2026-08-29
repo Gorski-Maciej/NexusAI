@@ -1,0 +1,186 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 18/25 — CZĘŚĆ 18: HYPER / PLAN45 — KONTEKSTY SPECJALNE I KATALOG HIPER-SZCZEGÓŁOWYCH REGUŁ
+
+Jesteś Najwyższej Klasy Ekspertem hiper-szczegółowych reguł podatkowych
+(tzw. „hyper" — katalog kontekstów specjalnych: terminy, limity, sankcje,
+rodzina, FX, siła wyższa, e-Doręczenia, audyt, zakupy, sezonowość,
+ubezpieczenia, reklama, ryzyko skazań) oraz systemów regułowych OPA/Rego
+dla JDG — na **poziomie ENTERPRISE**. Ta część to katalog `rules/jdg/hyper/`
+i pokrewne katalogi tematyczne — reguły o ekstremalnej precyzji,
+uruchamiane w specyficznych kontekstach (routing kontekstowy).
+
+## ⚠️ KRYTYCZNE ZASADY
+
+1. **Przeprowadź głębokie myślenie** o architekturze hyper (ETAP 22:
+   „Hyper Enterprise Contexts"): katalog kontekstów, registry, kontrakty
+   wejścia/wyjścia, routing do hyper tylko gdy kontekst pasuje. Sprawdź,
+   czy reguły hyper są REALNIE podpinane pod orkiestrator (main_jdg.rego)
+   czy istnieją „obok" systemu (martwa warstwa) — to kluczowe pytanie
+   tej części.
+2. **Przeprowadź głęboką analizę** warstwy Kontekstów specjalnych:
+   rodzinne (ulgą rodzinna — art. 27e PIT, 4+), FX (różnice kursowe —
+   interfejs CZĘŚĆ 10), siła wyższa (art. 67a OP, art. 25 PP — interfejs
+   CZĘŚĆ 14), ubezpieczenia (odpowiedzialność cywilna, majątkowe —
+   składki jako KUP), sezonowe (turystyka, rolnictwo — VAT zwolnienia
+   sezonowe), tax free (graniczne? — sprawdź zawartość), reklama
+   (art. 23 ust. 1 pkt 23? — limit 0,25%? patrz niżej), regulowane
+   zawody (izby, składki członkowskie jako KUP), ochrona (security),
+   zakupy (procurement — zamówienia publiczne, faktury od rolników?),
+   ryzyko skazań (KKS/KK — interfejs CZĘŚĆ 9/17).
+3. Pracuj na **zaawansowanym poziomie Enterprise**: każda reguła hyper
+   musi mieć: precyzyjny kontekst wejścia (kiedy się uruchamia), pełny
+   warunek prawny, kanoniczną podstawę prawną, test natywny, wpis
+   w rejestrze kontekstów, wpięcie w orkiestrator.
+4. Wdrażaj **innowacyjne ulepszenia wyprzedzające profesjonalistów**:
+   detektor martwych reguł hyper (niepodpiętych do orkiestratora),
+   rejestr kontekstów z walidacją wzajemnych wykluczeń (dwa konteksty
+   nie mogą konkurować o tę samą transakcję bez reguły pierwszeństwa),
+   generator testów kontekstowych, mapę kontekst × domena.
+5. **NIE GENERUJ DUPLIKATÓW:** audyt `jdg.hyper.*`, `jdg.family.*`,
+   `jdg.fx.*`, `jdg.insurance.*`, `jdg.force_majeure.*`, `jdg.seasonal.*`,
+   `jdg.advertising.*`, `jdg.taxfree.*`, `jdg.regulated.*`,
+   `jdg.security.*`, `jdg.procurement.*`, `jdg.audit.*`, `jdg.calendar.*`
+   przed dodaniem reguł.
+6. Generujesz: (a) OGROMNY RAPORT .txt w
+   `JDG/raporty_enterprise_v4/18_HYPER_KONTEKSTY.txt`, (b) INTELIGENTNY KOD,
+   (c) weryfikację, (d) honesty report.
+7. **BUDŻET KONTEKSTU:** dane ≤ 50% okna (~500 tys. tokenów). Część ~500 KB —
+   czytaj katalog po katalogu.
+8. Reguły MUSZĄ być zgodne z aktami z
+   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+   i LEGAL_REFERENCE_ACTS.md (PIT art. 23 — reprezentacja, reklama;
+   OP art. 67a; PP art. 25; KC — ubezpieczenia).
+
+## 📂 ŚWIĘTE PLIKI DO PRZECZYTANIA (zawsze)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KAMPANIA_GLM52_ETAPY_10_28.md (ETAP 22)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/HYPER... (jeśli istnieje doc hyper — sprawdź katalog docs/)
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 18 (Hyper/Plan45 + konteksty)
+
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/jdg/hyper (CAŁY katalog — 14 podkatalogów)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/audit/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/deadlines/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/edelivery/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/family/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/force_majeure/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/fx/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/general/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/limits/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/mdr/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/misc/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/procurement/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/sanctions/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/solidarity/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/jdg/hyper/wis/plan45.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/family/plan44_family.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/family/plan45_family.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fx/plan44_fx.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fx/plan45_fx.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/force_majeure/plan44_force_majeure.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/force_majeure/plan45_force_majeure.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/insurance/plan44_insurance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/insurance/plan45_insurance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/advertising/plan44_advertising.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/advertising/plan45_advertising.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/audit/plan44_audit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/audit/plan45_audit.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/calendar/plan44_calendar.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/calendar/plan45_calendar.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conviction/plan44_conviction.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conviction/plan45_conviction.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery/plan44_edelivery.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edelivery/plan45_edelivery.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/esig/plan44_esig.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/esig/plan45_esig.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/seasonal/plan45_seasonal.rego (jeśli istnieje — sprawdź katalog rules/seasonal)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/taxfree/plan45_taxfree.rego (jeśli istnieje — sprawdź katalog rules/taxfree)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/regulated/plan45_regulated.rego (jeśli istnieje — sprawdź katalog rules/regulated)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/security/plan45_security.rego (jeśli istnieje — sprawdź katalog rules/security)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/procurement/plan45_procurement.rego (jeśli istnieje — sprawdź katalog rules/procurement)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/hyper_plan45_meta_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/hyper_enterprise_contexts_etap22_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p22_hyper... (sprawdź pliki p22_* w rules/)
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/seasonal
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/taxfree
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/regulated
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/security
+
+## 🎯 CEL ANALIZY
+
+1. **Podpięcie hyper do orkiestratora (KRYTYCZNE):** sprawdź w
+   main_jdg.rego, czy pakiety `jdg.hyper.*` są importowane i scalamy
+   w final_verdict. Dla każdego podkatalogu hyper: podpięty / niepodpięty.
+   Niepodpięte = martwa warstwa — PODEPNIJ je (z kontraktem wejścia).
+2. **Rejestr kontekstów:** zweryfikuj registry kontekstów (wejście/wyjście),
+   wzajemne wykluczenia, priorytety — uzupełnij braki.
+3. **Jakość reguł hyper:** per podkatalog — warunek wejścia (kontekst),
+   warunek prawny, _legal_basis kanoniczne, testy. Wypisz szkielety i martwe.
+4. **Terminy i limity (deadlines/limits):** komplety terminów podatkowych
+   (20./25. dnia, roczne) i limitów (art. 23 — reklama 0,25%? zweryfikuj
+   stan 2026: limit na reprezentację 0,25%? — patrz art. 23 ust. 1 pkt 23
+   PIT: reprezentacja NIE jest KUP; reklama od 2023 bez limitów? ustal!)
+   — zsynchronizuj z danymi w data.thresholds (CZĘŚĆ 22).
+5. **FX (różnice kursowe) hyper:** metody, kursy NBP, temporalność —
+   interfejs z CZĘŚCIĄ 10 (nie duplikuj — wiąż).
+6. **Rodzina:** ulgi rodzinne (27e, 4+, rehabilitacyjna) — interfejs
+   CZĘŚĆ 4/5 — spójność limitów łącznych.
+7. **Sanctions:** sankcje KKS/KK i zakazy — spójność z CZĘŚCIĄ 9/17.
+8. **Genialne pomysły (min. 12):** router kontekstów z regułami
+   pierwszeństwa (graf), auto-test „każdy kontekst ma przypadki testowe",
+   dashboard aktywności kontekstów (które konteksty faktycznie strzelają
+   w produkcji), generator kontekstu z szablonu (F6 V2 declarative change
+   dla kontekstów), detektor konfliktów kontekstów.
+
+## 🏗️ SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA
+
+- Werdykt 25-polowy (`jdg.hyper.*`); kontrakt: kontekst wejścia w
+  `input.routing_context.*` + `_routing` — spójny z CZĘŚCIĄ 1 (routing.rego).
+- Terminy/limity przez data.thresholds (CZĘŚĆ 22); rodzina/FX — CZĘŚĆ 4/10;
+  e-Doręczenia — CZĘŚĆ 17; siła wyższa — CZĘŚĆ 14; sankcje — CZĘŚĆ 9.
+- Mirror policies/ + MANIFEST po zmianach.
+
+## 🔁 WYMOGI NADRZĘDNE (powtórzone dla pewności)
+
+Aby osiągnąć zaawansowany poziom Enterprise: Przeprowadź głębokie myślenie nad każdym
+kontraktem, przeprowadź głęboką analizę każdej zależności domenowej i wdrażaj wyłącznie
+rozwiązania klasy poziom ENTERPRISE — zinnowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale raportu.
+Przeprowadź głębokie myślenie nad konsekwencjami każdej zmiany dla innych części,
+przeprowadź głęboką analizę spójności rule_id, pakietów i progów; każda reguła musi służyć
+zaawansowany poziom Enterprise oraz poziomowi ENTERPRISE całości — z innowacyjnymi
+ulepszeniami wyprzedzającymi profesjonalistów w testach i narzędziach.
+Przeprowadź głębokie myślenie przed każdym wdrożeniem i przeprowadź głęboką analizę po
+wdrożeniu (weryfikacja); utrzymuj zaawansowany poziom Enterprise w dokumentacji oraz
+poziom ENTERPRISE w metrykach — zinnowacyjne ulepszenia wyprzedzające profesjonalistów na zakończenie każdej sekcji raportu.
+
+## ⚡ SUPLEMENT WYMOGÓW KAMPANII (zgodność fraz — wymagane)
+
+- Przeprowadź głębokie myślenie — w każdym kroku tej części.
+- przeprowadź głęboką analizę — dla każdej zależności tej części.
+- zaawansowany poziom Enterprise — standard każdej sekcji raportu.
+- poziom ENTERPRISE — cel każdego wdrożenia.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — obowiązek w każdym rozdziale.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — także w testach i narzędziach.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — wieńczą raport tej części.
+
+## 🧪 WDROŻENIE I WERYFIKACJA
+
+1. Wdróż ulepszenia (podpięcia, registry, warunki, _legal_basis).
+2. Walidacje + testy: pytest test_hyper*, natywne tests/rego/
+   test_native_*hyper*; generate_manifest.py; sync policies.
+
+## 📐 FORMAT RAPORTU (JDG/raporty_enterprise_v4/18_HYPER_KONTEKSTY.txt)
+
+- Tytuł: „RAPORT ENTERPRISE — CZĘŚĆ 18: HYPER/PLAN45 — KONTEKSTY SPECJALNE"
+- Executive Summary TOP 10; TABELA PODPIĘĆ (kontekst × orkiestrator × status);
+  rozdziały per kontekst (terminy, limity, sankcje, rodzina, FX, siła
+  wyższa, e-Doręczenia, audyt, zakupy, sezonowość, ubezpieczenia, reklama,
+  regulowane, security, taxfree); WDROŻONE zmiany; Genialne pomysły; mapa
+  drogowa; honesty report. Mermaid: graf kontekstów i pierwszeństw.
+
+## 🧹 PO ZAKOŃCZENIU PRACY
+
+WYCZYŚĆ OKNO KONTEKSTOWE — nowa konwersacja. Raport w
+JDG/raporty_enterprise_v4/. Następny Prompt: 19/25 (Fale V8/V9 + ETAP 10–28).

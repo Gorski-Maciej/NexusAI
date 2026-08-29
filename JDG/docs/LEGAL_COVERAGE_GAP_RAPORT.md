@@ -1,71 +1,37 @@
-# 📊 LEGAL COVERAGE GAP REPORT — P02 (sekcja 3)
+# 📊 LEGAL COVERAGE GAP REPORT — reverse coverage (PROMPT 24)
 
-> Wygenerowano: 2026-08-12T14:42:26.155628+00:00 · generator: `legal_coverage_gap_report.py`
+> Wygenerowano: 2026-08-29T16:26:16+00:00 · generator: `reverse_coverage_detector.py`
 
-## Podsumowanie
+## Podsumowanie reverse coverage
 
-- Artykuły w LEGAL_COVERAGE.md: 27
-- Punkty prawne deklarowane: 18
-- COMPLETE: 27 · PARTIAL: 0 · GAP: 0
-- Rzeczywiste rule_id w rules/: 11998
+- Węzły materialne LKG: 70
+- Pokryte regułami: 50
+- Bez reguł (luki): 20
+- Pokrycie (LCI): 71.43%
 
-## Priorytety domknięcia luk
+## Luki — artykuły bez reguły (priorytety P1/P2)
 
-| Priorytet | Luk |
-|---|---|
-| P1_KKS | 0 |
-| P1_VAT_odliczenia | 0 |
-| P1_amortyzacja | 0 |
-| P2_UoR | 0 |
-| P2_PCC_lokalne_akcyza | 0 |
-
-### Szczegóły priorytetów
-
-**P1_KKS**
-- (brak)
-
-**P1_VAT_odliczenia**
-- (brak)
-
-**P1_amortyzacja**
-- (brak)
-
-**P2_UoR**
-- (brak)
-
-**P2_PCC_lokalne_akcyza**
-- (brak)
-
-## Tabela pokrycia (akt × artykuł × status)
-
-| Akt | Art. | Status deklarowany | Status faktyczny | Brakujące reguły |
+| legal_node_id | Akt | Art. | Domena | Priorytet |
 |---|---|---|---|---|
-| I. USTAWA O VAT | 5 — Definicja dostawy towarów i świadczenia usług | COMPLETE | **COMPLETE** | — |
-| I. USTAWA O VAT | 17 — Reverse charge (odwrotne obciążenie) | COMPLETE | **COMPLETE** | — |
-| I. USTAWA O VAT | 41 — Stawki VAT (23%, 8%, 5%, 0%, ZW) | COMPLETE | **COMPLETE** | — |
-| I. USTAWA O VAT | 86 — Odliczenie VAT naliczonego | COMPLETE | **COMPLETE** | — |
-| I. USTAWA O VAT | 89a — Ulga na złe długi — wierzyciel | COMPLETE | **COMPLETE** | — |
-| I. USTAWA O VAT | 89b — Złe długi — obowiązek korekty dłużnika | COMPLETE | **COMPLETE** | — |
-| I. USTAWA O VAT | 90 — Proporcja VAT | COMPLETE | **COMPLETE** | — |
-| I. USTAWA O VAT | 106e — Elementy faktury (paragon ≤450 zł z NIP) | COMPLETE | **COMPLETE** | — |
-| I. USTAWA O VAT | 113 — Zwolnienie podmiotowe do 200 000 PLN | COMPLETE | **COMPLETE** | — |
-| I. USTAWA O VAT | 106na-106nq — KSeF (obowiązkowe e-faktury od 01.02.2026) | COMPLETE | **COMPLETE** | — |
-| II. USTAWA O PIT | 9 — Strata podatkowa | COMPLETE | **COMPLETE** | — |
-| II. USTAWA O PIT | 14 — Przychody z działalności gospodarczej | COMPLETE | **COMPLETE** | — |
-| II. USTAWA O PIT | 22 — Koszty uzyskania przychodu | COMPLETE | **COMPLETE** | — |
-| II. USTAWA O PIT | 23 — Wydatki NKUP | PARTIAL | **COMPLETE** | — |
-| II. USTAWA O PIT | 27 — Skala podatkowa 12%/32% | COMPLETE | **COMPLETE** | — |
-| II. USTAWA O PIT | 30c — Podatek liniowy 19% | COMPLETE | **COMPLETE** | — |
-| II. USTAWA O PIT | 30ca — IP Box (5%) | COMPLETE | **COMPLETE** | — |
-| II. USTAWA O PIT | 30f — CFC (Zagraniczna Spółka Kontrolowana) | COMPLETE | **COMPLETE** | — |
-| III. ORDYNACJA PODATKOWA | 70 — Przedawnienie zobowiązań (5 lat) | COMPLETE | **COMPLETE** | — |
-| III. ORDYNACJA PODATKOWA | 81 — Korekty deklaracji | COMPLETE | **COMPLETE** | — |
-| III. ORDYNACJA PODATKOWA | 117ba — Biała Lista | COMPLETE | **COMPLETE** | — |
-| IV. KKS — KODEKS KARNY SKARBOWY | 16 — Czynny żal | COMPLETE | **COMPLETE** | — |
-| IV. KKS — KODEKS KARNY SKARBOWY | 44 — Przedawnienie karalności przestępstw (5 lat) | COMPLETE | **COMPLETE** | — |
-| IV. KKS — KODEKS KARNY SKARBOWY | 54 — Uchylanie się od opodatkowania | PARTIAL | **COMPLETE** | — |
-| IV. KKS — KODEKS KARNY SKARBOWY | 56 — Nierzetelne księgi/PKPiR | COMPLETE | **COMPLETE** | — |
-| IV. KKS — KODEKS KARNY SKARBOWY | 62 — Puste faktury | COMPLETE | **COMPLETE** | — |
-| IV. KKS — KODEKS KARNY SKARBOWY | 57 — Nierzetelna ewidencja VAT | COMPLETE | **COMPLETE** | — |
+| LKG-0197 | Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.) | 106a-106n | vat | P1 |
+| LKG-0198 | Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.) | 108a-108f | vat | P1 |
+| LKG-0221 | PIT, art. 21 ust. 1 pkt 148 | 21 | other | P2 |
+| LKG-0222 | PIT, art. 21 ust. 1 pkt 152 | 21 | other | P2 |
+| LKG-0223 | PIT, art. 21 ust. 1 pkt 153 | 21 | other | P2 |
+| LKG-0224 | PIT, art. 21 ust. 1 pkt 154 | 21 | other | P2 |
+| LKG-0220 | PIT, art. 26 | 26 | other | P2 |
+| LKG-0214 | PIT, art. 26e | 26e | other | P2 |
+| LKG-0215 | PIT, art. 26eb | 26eb | other | P2 |
+| LKG-0218 | PIT, art. 26ec | 26ec | other | P2 |
+| LKG-0216 | PIT, art. 26gb | 26gb | other | P2 |
+| LKG-0219 | PIT, art. 26h | 26h | other | P2 |
+| LKG-0217 | PIT, art. 30ca | 30ca | other | P2 |
+| LKG-0247 | Ustawa o PIT, art. 24a | 24a | other | P2 |
+| LKG-0257 | Ustawa o PIT, art. 44 | 44 | other | P2 |
+| LKG-0252 | Ustawa o PIT, art. 45 | 45 | other | P2 |
+| LKG-0249 | Ustawa o VAT, art. 109 | 109 | other | P2 |
+| LKG-0255 | Ustawa o VAT, art. 96b | 96b | other | P2 |
+| LKG-0250 | Ustawa o VAT, art. 99 | 99 | other | P2 |
+| LKG-0225 | Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm.) | 16-193a | ordpu | P2 |
 
-*Status faktyczny = weryfikacja istnienia deklarowanych rule_id oraz niepustej podstawy prawnej i statycznego evidence syntaktycznego (assert/call) dla każdego dopasowanego rule_id; evidence nie zastępuje dowodu wykonania runtime.*
+*Luki domykane przez F6 declarative_change (człowiek zatwierdza, maszyna wykonuje).*

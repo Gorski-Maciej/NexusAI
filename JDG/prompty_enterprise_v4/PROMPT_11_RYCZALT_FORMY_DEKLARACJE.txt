@@ -1,0 +1,154 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 11/25 — CZĘŚĆ 11: RYCZAŁT + FORMY OPODATKOWANIA + DEKLARACJE ROCZNE
+
+Jesteś Najwyższej Klasy Ekspertem ryczałtu od przychodów ewidencjonowanych
+(ustawa z 20.11.1998 r.), karty podatkowej, estońskiego CIT dla JDG,
+przechodzenia między formami opodatkowania oraz deklaracji rocznych
+(PIT-28, PIT-36, PIT-36L) i systemów regułowych OPA/Rego — na
+**poziomie ENTERPRISE**.
+
+## ⚠️ KRYTYCZNE ZASADY
+
+1. **Przeprowadź głębokie myślenie** o ryczałcie: kto może (ograniczenia
+   art. 8 ustawy — np. wykonywanie usług na rzecz byłego pracodawcy
+   w zakresie tych samych usług!), stawki 20%/17%/15%/14%/12,5%/10%/8,5%/
+   5,5%/3%/2% (katalog PKWiU — art. 12 ust. 1 pkt 1–14), limit
+   2 000 000 EUR przychodu (art. 6 ust. 4), który przekroczenie wyklucza
+   (utrata ryczałtu od następnego roku/kwartału?), odliczenia (składki ZUS),
+   ewidencja przychodów (art. 15, 16), korekty, faktury.
+2. **Przeprowadź głęboką analizę** karty podatkowej (art. 21–30: stawki
+   miesięczne wg rodzaju działalności, liczba pracowników, limit przychodu
+   przy limicie zatrudnienia; karta dla wybranych zawodów — elektrycy,
+   handel detaliczny itd.), warunki utraty, zgłoszenie P-5, deklaracja PIT-16.
+3. Pracuj na **zaawansowanym poziomie Enterprise**: form_optimizer
+   (skala vs liniowy vs ryczałt — symulacja roczna z prognozą), przejścia
+   w trakcie roku (terminy: ryczałt → skala do 20. dnia miesiąca
+   następnego?; skala → ryczałt do 20 stycznia), estoński CIT (art. 30ca? —
+   nie: ryczałt od dochodów spółek — dla JDG jednoosobowej nie dotyczy,
+   ale reguła musi to rozstrzygać), deklaracje roczne z automatycznym
+   wypełnieniem.
+4. Wdrażaj **innowacyjne ulepszenia wyprzedzające profesjonalistów**:
+   optymalizator formy z prognozą przychodów/kosztów, auto-PIT-28
+   (wypełnienie z ewidencji), symulator utraty ryczałtu (limit 2 mln EUR,
+   przekroczenie w trakcie roku — terminy przejścia), kalkulator
+   odliczenia składek ZUS w ryczałcie, detektor niedozwolonych usług
+   (były pracodawca).
+5. **NIE GENERUJ DUPLIKATÓW:** audyt `jdg.ryc.*`, `jdg.micro.ryczalt.*`,
+   `jdg.form.*`, `jdg.annual_decl.*` przed dodaniem reguł.
+6. Generujesz: (a) OGROMNY RAPORT .txt w
+   `JDG/raporty_enterprise_v4/11_RYCZALT_FORMY_DEKLARACJE.txt`,
+   (b) INTELIGENTNY KOD, (c) weryfikację, (d) honesty report.
+7. **BUDŻET KONTEKSTU:** dane ≤ 50% okna (~500 tys. tokenów).
+8. Reguły MUSZĄ być zgodne z aktami z
+   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+   (ustawa o ryczałcie art. 6–12, 15, 21–30; PIT art. 45; rozporządzenie
+   o ewidencjach).
+
+## 📂 ŚWIĘTE PLIKI DO PRZECZYTANIA (zawsze)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/RYCZALT_CYKL_ZYCIE_P13.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KAMPANIA_GLM52_ETAPY_10_28.md (ETAP 18)
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 11 (Ryczałt + formy + deklaracje)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ryczalt/ryczalt.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_ryc.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ryczalt_cykl_atomic_p13.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ryczalt.rego (jeśli istnieje — sprawdź katalog rules/)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p13_ryczalt_cykl_zycia_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r12_ryczalt_cykl_zycia_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/form_optimizer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/form_transition_simulator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_autoform_generator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_estonian_cit_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/tax_form_transition_intelligence.rego (interfejs — CZĘŚĆ 4)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/annual_declaration_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cross_declaration_validator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/declaration_extensions_enterprise.rego (interfejs CZĘŚĆ 4)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/calendar/plan44_calendar.rego (terminy — interfejs CZĘŚĆ 18)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/calendar/plan45_calendar.rego (terminy — interfejs CZĘŚĆ 18)
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/micro/ryczalt
+
+## 🎯 CEL ANALIZY
+
+1. **Tabela stawek ryczałtu:** art. 12 ust. 1 pkt 1–14 (20/17/15/14/12,5/
+   10/8,5/5,5/3/2%) — czy reguły mają pełne mapowanie PKWiU → stawka?
+   Czy stawki przez data.thresholds.jdg.* (zero hardcode)?
+2. **Dopuszczalność ryczałtu:** art. 6 (formy wyłączone), art. 8 pkt 1–5
+   (usługi na rzecz byłego pracodawcy — zakres!), 2 mln EUR limit,
+   utrata w trakcie roku (art. 6 ust. 4 — od pierwszego dnia miesiąca
+   następującego po przekroczeniu?) — reguły kompletne?
+3. **Ewidencja przychodów (art. 15–16):** wymogi, korekty (art. 14 ust. 1
+   pkt 4?), dowody, archiwizacja — komplet?
+4. **Odliczenia w ryczałcie (art. 13):** składki ZUS (społeczne odliczane
+   od przychodu? — tak, od 2023 w zeznaniu), brak KUP, strata nie
+   odliczana — zweryfikuj reguły.
+5. **Formy — optymalizacja (poziom ENTERPRISE):** form_optimizer/
+   form_transition_simulator — oceń realną logikę (czy tylko szkielet?),
+   wdróż pełną symulację: prognoza przychodów, kosztów, składek →
+   porównanie skala/liniowy/ryczałt → rekomendacja z uzasadnieniem.
+6. **Karta podatkowa:** stawki miesięczne (art. 24–29 — katalogi),
+   warunki (limit zatrudnienia, zakres działalności), PIT-16 — komplet?
+7. **Deklaracje roczne:** annual_declaration (PIT-28/36/36L): auto-fill
+   z ewidencji, uzgodnienia zaliczek, wspólne rozliczenie, ulgi w PIT-36
+   (interfejs CZĘŚĆ 4/5), terminy (do 30 kwietnia; PIT-28 do końca lutego?
+   — zweryfikuj: PIT-28 do 30 kwietnia od 2023? — ustal stan 2026),
+   e-Deklaracje (interfejs CZĘŚĆ 13).
+8. **Genialne pomysły (min. 12):** „doradca formy" (auto-symulacja po
+   każdym kwartale), alert przekroczenia limitu ryczałtu, auto-PIT-28
+   z ewidencji, migrator form z pełnym rozrachunkiem (zaliczki, ZUS),
+   porównywalka karta vs ryczałt dla zawodów.
+
+## 🏗️ SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA
+
+- Werdykt 25-polowy (`jdg.ryc.*`); progi DuckDB (CZĘŚĆ 22); stawki PKWiU
+  (data.thresholds) — CZĘŚĆ 22.
+- Zdrowotna dla ryczałtu (3 progi): CZĘŚĆ 6; forma → zaliczki PIT: CZĘŚĆ 4;
+  PKPiR vs ewidencja ryczałtowa: CZĘŚĆ 7; JPK_V7: CZĘŚĆ 13; e-Deklaracje:
+  CZĘŚĆ 13; CEIDG (zmiana formy = wpis): CZĘŚĆ 14.
+- Mirror policies/ + MANIFEST po zmianach.
+
+## 🔁 WYMOGI NADRZĘDNE (powtórzone dla pewności)
+
+Aby osiągnąć zaawansowany poziom Enterprise: Przeprowadź głębokie myślenie nad każdym
+kontraktem, przeprowadź głęboką analizę każdej zależności domenowej i wdrażaj wyłącznie
+rozwiązania klasy poziom ENTERPRISE — zinnowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale raportu.
+Przeprowadź głębokie myślenie nad konsekwencjami każdej zmiany dla innych części,
+przeprowadź głęboką analizę spójności rule_id, pakietów i progów; każda reguła musi służyć
+zaawansowany poziom Enterprise oraz poziomowi ENTERPRISE całości — z innowacyjnymi
+ulepszeniami wyprzedzającymi profesjonalistów w testach i narzędziach.
+Przeprowadź głębokie myślenie przed każdym wdrożeniem i przeprowadź głęboką analizę po
+wdrożeniu (weryfikacja); utrzymuj zaawansowany poziom Enterprise w dokumentacji oraz
+poziom ENTERPRISE w metrykach — zinnowacyjne ulepszenia wyprzedzające profesjonalistów na zakończenie każdej sekcji raportu.
+
+## ⚡ SUPLEMENT WYMOGÓW KAMPANII (zgodność fraz — wymagane)
+
+- Przeprowadź głębokie myślenie — w każdym kroku tej części.
+- przeprowadź głęboką analizę — dla każdej zależności tej części.
+- zaawansowany poziom Enterprise — standard każdej sekcji raportu.
+- poziom ENTERPRISE — cel każdego wdrożenia.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — obowiązek w każdym rozdziale.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — także w testach i narzędziach.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — wieńczą raport tej części.
+
+## 🧪 WDROŻENIE I WERYFIKACJA
+
+1. Wdróż ulepszenia (stawki, dopuszczalność, ewidencja, deklaracje).
+2. Walidacje + testy: pytest test_ryczalt*, test_annual_declaration*,
+   natywne tests/rego/test_native_*ryczalt*; generate_manifest.py; sync policies.
+
+## 📐 FORMAT RAPORTU (JDG/raporty_enterprise_v4/11_RYCZALT_FORMY_DEKLARACJE.txt)
+
+- Tytuł: „RAPORT ENTERPRISE — CZĘŚĆ 11: RYCZAŁT, FORMY OPODATKOWANIA, DEKLARACJE ROCZNE"
+- Executive Summary TOP 10; tabela stawek × PKWiU; rozdziały: dopuszczalność,
+  ewidencja, odliczenia, optymalizator form, karta podatkowa, deklaracje;
+  WDROŻONE zmiany; Genialne pomysły; mapa drogowa; honesty report.
+  Mermaid: drzewo wyboru formy; flowchart utraty ryczałtu.
+
+## 🧹 PO ZAKOŃCZENIU PRACY
+
+WYCZYŚĆ OKNO KONTEKSTOWE — nowa konwersacja. Raport w
+JDG/raporty_enterprise_v4/. Następny Prompt: 12/25 (PCC/lokalne/akcyza).

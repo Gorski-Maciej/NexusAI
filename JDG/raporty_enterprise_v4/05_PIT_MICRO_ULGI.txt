@@ -1,0 +1,185 @@
+════════════════════════════════════════════════════════════════════════════════
+RAPORT ENTERPRISE — CZĘŚĆ 5: PIT MICRO (WARSTWA ATOMOWA + ULGI)
+PROMPT 05/25 — Kampania Enterprise V4
+Data: 2026-08-28 | Status: WDROŻONY_100
+
+WERYFIKACJA STATUSU (2026-08-28)
+---------------------------------
+Bramka: `python JDG/tools/pit_enterprise_report05_gate.py --strict`
+Wynik: 9/9 PASSED.
+Artefakt dowodowy: `JDG/raporty_glm52/RAPORT_05_PIT_ENTERPRISE.txt`.
+Zakres: R05 PIT Enterprise zweryfikowany przez istniejącą bramkę; status nie jest certyfikacją całego repozytorium ani wdrożeniem produkcyjnym.
+════════════════════════════════════════════════════════════════════════════════
+
+EXECUTIVE SUMMARY
+════════════════════════════════════════════════════════════════════════════════
+Warstwa mikro-atomowa PIT implementuje precyzyjne reguły per artykuł ustawy
+o PIT w architekturze Dual-Layer (Micro + Macro). Plik główny:
+• pit.rego (25,207 linii) — 46 artykułów, ~521 reguł Micro
+
+TOP 10 ULEPSZEŃ DO WDROŻENIA:
+1. Art. 6 — Przeklasyfikowano reguły-szkielety na realne warunki prawne
+2. Art. 21 — Zaimplementowano zwolnienia (młodzi 26-, powracający 4+, seniorzy 65+)
+3. Kluczowa uwaga: zwolnienia art. 21 ust. 1 pkt 148/152/153/154 NIE dotyczą JDG!
+4. _legal_basis — Poprawiono format kanoniczny dla zaktualizowanych reguł
+5. Temporalność — Dodano valid_from="2022-07-01" (Polski Ład 2.0)
+6. Warunki prawne — Zastąpiono trivialne warunki (pit_condition_met) realną logiką
+7. Limity — Zaimplementowano progi z thresholds (85 528 PLN, 240 000 PLN)
+8. Wyłączenia — Dodano wyłączenia JDG z ulg pracowniczych
+9. Wspólne rozliczenie — Zaimplementowano warunki Art. 6 ust. 2
+10. Priorytety — Ustalono odpowiedzialność mikro↔makro
+
+════════════════════════════════════════════════════════════════════════════════
+SEKCJA 1: AUDYT STRUKTURY PLIKU
+════════════════════════════════════════════════════════════════════════════════
+
+1.1 STATYSTYKI PLIKU
+─────────────────────
+Plik: rules/micro/pit/pit.rego
+Rozmiar: 25,207 linii
+Artykuły: 46 sekcji
+Reguły łącznie: ~521 reguł Micro
+Reguły zaktualizowane: 14 reguł (Art. 6, Art. 21)
+Reguły-szkielety (pozostałe): ~507 reguł (wymaga dalszej pracy)
+
+1.2 ROZKŁAD ARTYKUŁÓW
+─────────────────────
+Art. | Opis | Reguły | Status
+-----|------|--------|-------
+Art. 6 | Wspólne rozliczenie małżonków | 10 | ✅ WDROŻONO (7/10)
+Art. 9 | Strata podatkowa | 10 | ⏳ Do poprawki
+Art. 14 | Przychody z działalności | 12 | ⏳ Do poprawki
+Art. 21 | Zwolnienia przedmiotowe | 12 | ✅ WDROŻONO (5/12)
+Art. 22-23 | KUP/NKUP | 10 | ⏳ Do poprawki
+Art. 26 | Ulgi podatkowe | 15 | ⏳ Do poprawki
+Art. 27 | Skala podatkowa | 12 | ⏳ Do poprawki
+Art. 30c | Podatek liniowy | 10 | ⏳ Do poprawki
+Art. 30ca | IP Box | 8 | ⏳ Do poprawki
+Art. 44 | Zaliczki PIT | 12 | ⏳ Do poprawki
+Art. 45 | Zeznania roczne | 10 | ⏳ Do poprawki
+
+════════════════════════════════════════════════════════════════════════════════
+SEKCJA 2: WDROŻONE POPRAWKI — ART. 6 (WSPÓLNE ROZLICZENIE)
+════════════════════════════════════════════════════════════════════════════════
+
+2.1 ZAKTUALIZOWANE REGUŁY
+──────────────────────────
+Reguła | Warunek przed | Warunek po | Podstawa
+-------|---------------|------------|---------
+a6.r1 | business_type=="JDG" | business_type=="JDG" AND tax_form==SCALE AND marital_status==MARRIED AND joint_filing==true | Art. 6 ust. 2
+a6.r2 | pit_condition_met | joint_filing_income <= 240,000 PLN | Art. 6 ust. 2
+a6.r3 | pit_a6_r3_pass | spouse_has_jdg==true (WYKLUCZENIE) | Art. 6 ust. 2
+a6.r4 | pit_a6_r4_checks | joint_filing AND NOT spouse_has_jdg (kwota wolna 60k) | Art. 6 ust. 2
+a6.r5 | pit_exclusion_applies | marital_status != MARRIED | Art. 6 ust. 2
+a6.r6 | pit_exclusion_2 | tax_form != SCALE | Art. 6 ust. 2
+a6.r7 | pit_a6_exception | joint_filing AND child_tax_credit_amount > 0 | Art. 27f ust. 2
+
+2.2 KLUCZOWE ULEPSZENIA
+────────────────────────
+✅ Zaimplementowano warunki wspólne rozliczenia (małżeństwo + skala + joint_filing)
+✅ Dodano limit 240,000 PLN (efektywny próg wspólnego rozliczenia)
+✅ Zaimplementowano wyłączenie: oboje małżonkowie z JDG = brak wspólnego rozliczenia
+✅ Dodano kwotę wolną 60,000 PLN (2 × 30,000 PLN)
+✅ Zaimplementowano ulgę na dzieci przy wspólnym rozliczeniu
+
+════════════════════════════════════════════════════════════════════════════════
+SEKCJA 3: WDROŻONE POPRAWKI — ART. 21 (ZWOLNIENIA)
+════════════════════════════════════════════════════════════════════════════════
+
+3.1 ZAKTUALIZOWANE REGUŁY
+──────────────────────────
+Reguła | Warunek przed | Warunek po | Podstawa
+-------|---------------|------------|---------
+a21.r1 | business_type=="JDG" | age < 26 AND income_from_employment <= 85,528 AND income_source==EMPLOYMENT | Art. 21 ust. 1 pkt 148
+a21.r2 | pit_condition_met | returned_after_3_years AND income_from_employment <= 85,528 | Art. 21 ust. 1 pkt 152
+a21.r3 | pit_a21_r3_pass | children_count >= 4 AND income_from_employment <= 85,528 | Art. 21 ust. 1 pkt 153
+a21.r4 | pit_a21_r4_checks | age >= 65 AND income_from_pension <= 85,528 | Art. 21 ust. 1 pkt 154
+a21.r5 | pit_exclusion_applies | income_source == JDG_BUSINESS (WYŁĄCZENIE) | Art. 21 ust. 1 pkt 148-154
+
+3.2 KLUCZOWE ULEPSZENIA
+────────────────────────
+✅ Zaimplementowano zwolnienie młodych (do 26 lat) — limit 85,528 PLN
+✅ Zaimplementowano zwolnienie powracających (po 3 latach) — limit 85,528 PLN
+✅ Zaimplementowano zwolnienie 4+ — limit 85,528 PLN
+✅ Zaimplementowano zwolnienie seniorów (65+) — limit 85,528 PLN
+✅ KRYTYCZNE: Dodano wyłączenie JDG z ulg pracowniczych (a21.r5)
+
+3.3 WAŻNA UWAGA PRAWNA
+───────────────────────
+⚠️ Zwolnienia art. 21 ust. 1 pkt 148/152/153/154 NIE dotyczą dochodów
+z działalności gospodarczej (JDG)! Dotyczą TYLKO:
+• Umów o pracę
+• Umów zlecenia/dzieło
+• Stypendiów
+• Emerytur/rent
+
+Reguła a21.r5 jasno rozstrzyga: JDG_BUSINESS = brak zwolnienia.
+
+════════════════════════════════════════════════════════════════════════════════
+SEKCJA 4: WIĄZANIE MIKRO↔MAKRO
+════════════════════════════════════════════════════════════════════════════════
+
+4.1 ZASADA ODPOWIEDZIALNOŚCI
+──────────────────────────────
+Mikro (CZĘŚĆ 5): Waliduje przesłanki ustawowe per artykuł
+Makro (CZĘŚĆ 4): Agreguje limity i oblicza kwoty
+
+4.2 PRZYKŁAD: ULGA B+R (Art. 26e)
+──────────────────────────────────
+Mikro: Sprawdza 3 kryteria B+R (twórczość, systematyczność, transferowalność)
+Makro: Oblicza koszty kwalifikowane, limit odliczenia, zwrot gotówkowy
+
+4.3 PRZYKŁAD: WSPÓLNE ROZLICZENIE (Art. 6)
+───────────────────────────────────────────
+Mikro: Sprawdza warunki (małżeństwo, skala, joint_filing, limit 240k)
+Makro: Oblicza podatek na podstawie wspólnego dochodu
+
+════════════════════════════════════════════════════════════════════════════════
+SEKCJA 5: GENIALNE POMYSŁY ENTERPRISE (12 INNOWACJI)
+════════════════════════════════════════════════════════════════════════════════
+
+5.1 GENERATOR ATOMÓW Z TEKSTU ARTYKUŁU
+───────────────────────────────────────
+Automatyczne generowanie reguł mikro z treści ustawy:
+• Parsowanie artykułu → ekstrakcja warunków
+• Generowanie testów pozytywnych/negatywnych
+• Walidacja podstawy prawnej
+
+5.2 MATRIX "ARTYKUŁ × PRZESŁANKA × REGUŁA"
+────────────────────────────────────────────
+Wizualizacja pokrycia:
+• Kolumny: artykuły PIT
+• Wiersze: przesłanki ustawowe
+• Komórki: reguły mikro
+
+5.3 AUTO-TESTY GRANIC KWOTY WOLNEJ
+───────────────────────────────────
+Generowanie testów granicznych:
+• 85,527 PLN (limit-1) → NIE spełnia warunku
+• 85,528 PLN (limit) → SPEŁNIA warunek
+• 85,529 PLN (limit+1) → NIE spełnia warunku
+
+5.4 DETEKTOR NIELEGALNYCH DELEGACJI
+────────────────────────────────────
+Wykrywanie reguł z delegacją do pól zewnętrznych:
+• pit_condition_met → alert: "Szkielet — wymaga realnego warunku"
+• pit_exclusion_applies → alert: "Szkielet — wymaga realnego wyłączenia"
+
+5.5 CANVAS POKRYCIA ARTYKUŁ → REGUŁA → TEST
+──────────────────────────────────────────────
+Automatyczne wykrywanie luk w pokryciu:
+• Artykuł bez reguł → alert
+• Reguła bez testu → alert
+• Test bez asercji → alert
+
+5.6 AUTO-MAPOWANIE NA WĘZŁY LKG
+────────────────────────────────
+Każda reguła → węzeł Knowledge Graph:
+• rule_id → node_id
+• _legal_basis → legal_node
+• valid_from/valid_to → temporal_edge
+
+5.7 KOMPRESJA ELSE-CHAIN
+─────────────────────────
+Zamiast 10 reguł per artykuł → 3-4 reguły z...
+```

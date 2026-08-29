@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "records": [
+    {
+      "record_id": 1,
+      "record_hash": "5cfb346f44828afe307237476a5a18fad3249b4d1e1e96f10853a150c9eef828",
+      "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+      "payload": {
+        "event": "test",
+        "change_id": "CHG-00000001"
+      },
+      "source": "cli",
+      "written_at": "2026-08-29T15:45:47+00:00"
+    }
+  ],
+  "policy": "APPEND_ONLY",
+  "merkle_root": "bed67e0acc71096492c7b77fb02a0109c298315fa6e2d349d0a8687e4715270a"
+}

@@ -1,34 +1,34 @@
 {
-  "generated_at": "2026-08-18T07:59:12.618338+00:00",
-  "rules_total": 12295,
+  "generated_at": "2026-08-29T16:05:38.744456+00:00",
+  "rules_total": 12439,
   "stats": {
-    "NON_CANONICAL": 10093,
-    "OK": 1608,
-    "MISSING": 39,
-    "UNKNOWN_ACT": 555
+    "NON_CANONICAL": 10133,
+    "OK": 1687,
+    "MISSING": 59,
+    "UNKNOWN_ACT": 560
   },
   "by_act": {
-    "ustawa o PIT": 1806,
+    "ustawa o PIT": 1835,
     "rozporządzenie PKPiR": 109,
-    "ustawa o VAT": 1641,
-    "Ordynacja podatkowa": 764,
-    "Kodeks karny skarbowy": 430,
+    "ustawa o VAT": 1678,
+    "Ordynacja podatkowa": 769,
+    "Kodeks karny skarbowy": 433,
     "ustawa o rachunkowości": 420,
-    "Prawo przedsiębiorców": 201,
-    "ustawa o SUS": 399,
-    "ustawa o ryczałcie": 279,
+    "Prawo przedsiębiorców": 204,
+    "ustawa o SUS": 411,
+    "ustawa o ryczałcie": 281,
     "ustawa o zarządzie sukcesyjnym": 146,
-    "ustawa o PCC": 175,
-    "ustawa o AML": 44,
+    "ustawa o świadczeniach opieki zdrowotnej": 182,
+    "ustawa o PCC": 177,
+    "RODO": 96,
+    "ustawa o AML": 46,
+    "ustawa o BDO": 66,
     "ustawa o CIT": 47,
     "ustawa o e-Doręczeniach": 1,
-    "ustawa o świadczeniach opieki zdrowotnej": 178,
     "ustawa o zasiłku pieniężnym": 84,
-    "RODO": 92,
     "ustawa o rehabilitacji zawodowej": 7,
-    "ustawa o BDO": 65,
     "ustawa o podatku akcyzowym": 98,
-    "ustawa o podatkach i opłatach lokalnych": 74,
+    "ustawa o podatkach i opłatach lokalnych": 76,
     "Prawo budowlane": 19,
     "Kodeks pracy": 3,
     "ustawa o CEIDG": 48,
@@ -822,7 +822,7 @@
       "canonical_act": null
     },
     {
-      "rule_id": "jdg.accounting.no_match",
+      "rule_id": "jdg.accounting.plan23.no_match",
       "file": "rules/accounting/plan23_leasing.rego",
       "legal_basis": "Art. 23b PIT",
       "class": "NON_CANONICAL",
@@ -864,7 +864,7 @@
       "canonical_act": "ustawa o PIT"
     },
     {
-      "rule_id": "jdg.accounting.no_match",
+      "rule_id": "jdg.accounting.plan42.no_match",
       "file": "rules/accounting/plan42_pkpir.rego",
       "legal_basis": "§ 27-28 Rozporządzenia ws. PKPiR",
       "class": "NON_CANONICAL",
@@ -1844,7 +1844,7 @@
       "canonical_act": "ustawa o VAT"
     },
     {
-      "rule_id": "jdg.allowances.no_match",
+      "rule_id": "jdg.allowances.plan23.no_match",
       "file": "rules/allowances/plan23_reliefs.rego",
       "legal_basis": "Art. 26eb PIT",
       "class": "NON_CANONICAL",
@@ -2163,6 +2163,20 @@
       "file": "rules/api_fallback.rego",
       "legal_basis": "Procedura operacyjna — ciągłość działania",
       "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.api_ui.quality_v3_19.api_delivery_contract",
+      "file": "rules/api_ui/quality_v3_19.rego",
+      "legal_basis": "OrdPU art. 12 § 5, art. 193a; PIT art. 44-45; VAT art. 109 (KSeF/e-Doręczenia); RODO art. 32 (bezpieczeństwo API); ADR-001/ADR-009/ADR-002; MANIFEST.md",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.api_ui.quality_v3_19.no_match",
+      "file": "rules/api_ui/quality_v3_19.rego",
+      "legal_basis": "",
+      "class": "MISSING",
       "canonical_act": null
     },
     {
@@ -2810,6 +2824,20 @@
       "canonical_act": null
     },
     {
+      "rule_id": "jdg.bundles.quality_v3_18.delivery_contract",
+      "file": "rules/bundles/quality_v3_18.rego",
+      "legal_basis": "OrdPU art. 12 § 5, art. 193a; PIT art. 44-45; VAT art. 109; obwieszczenia MF (RuleStore seed); eIDAS (podpis); ADR-002; MANIFEST.md",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.bundles.quality_v3_18.no_match",
+      "file": "rules/bundles/quality_v3_18.rego",
+      "legal_basis": "",
+      "class": "MISSING",
+      "canonical_act": null
+    },
+    {
       "rule_id": "jdg.business.gig_economy.no_match",
       "file": "rules/business/gig_economy.rego",
       "legal_basis": "Art. 41 ust. 2, Art. 113 VAT",
@@ -2940,6 +2968,83 @@
       "file": "rules/business/strategic_intelligence.rego",
       "legal_basis": "",
       "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.business.v3_09.no_match",
+      "file": "rules/business/v3_09_enterprise.rego",
+      "legal_basis": "ADR-002 zero-hardcode; V1 zasada 6 (fail-closed)",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.business.v3_09.thresholds_missing",
+      "file": "rules/business/v3_09_enterprise.rego",
+      "legal_basis": "ADR-002 zero-hardcode; V1 zasada 6 (fail-closed)",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.business.v3_09.ryczalt_limit_monitor",
+      "file": "rules/business/v3_09_enterprise.rego",
+      "legal_basis": "Art. 6 ust. 1 i 4 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o ryczałcie"
+    },
+    {
+      "rule_id": "jdg.business.v3_09.form_advisor_checkpoint",
+      "file": "rules/business/v3_09_enterprise.rego",
+      "legal_basis": "Art. 27 ustawy o PIT; Art. 30c ustawy o PIT; Art. 6 i 12 ustawy o zryczałtowanym podatku dochodowym; Art. 21-28 u.z.p.d. (karta)",
+      "class": "OK",
+      "canonical_act": "ustawa o PIT"
+    },
+    {
+      "rule_id": "jdg.business.v3_09.suspension_checklist",
+      "file": "rules/business/v3_09_enterprise.rego",
+      "legal_basis": "Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców; Art. 81b ust. 1a ustawy o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych",
+      "class": "OK",
+      "canonical_act": "ustawa o świadczeniach opieki zdrowotnej"
+    },
+    {
+      "rule_id": "jdg.business.v3_09.succession_planner",
+      "file": "rules/business/v3_09_enterprise.rego",
+      "legal_basis": "Art. 12-13 i art. 14 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym osobową przedsiębiorcą; Art. 52a ustawy o PIT",
+      "class": "OK",
+      "canonical_act": "ustawa o PIT"
+    },
+    {
+      "rule_id": "jdg.business.v3_09.ceidg_change_deadline",
+      "file": "rules/business/v3_09_enterprise.rego",
+      "legal_basis": "Art. 16 ust. 3 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Centralna Ewidencja i Informacja o Działalności Gospodarczej)",
+      "class": "OK",
+      "canonical_act": "Prawo przedsiębiorców"
+    },
+    {
+      "rule_id": "jdg.business.v3_09.unregistered_activity_gate",
+      "file": "rules/business/v3_09_enterprise.rego",
+      "legal_basis": "Art. 5 i art. 6 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców",
+      "class": "OK",
+      "canonical_act": "Prawo przedsiębiorców"
+    },
+    {
+      "rule_id": "jdg.business.v3_09.lifecycle_state_machine",
+      "file": "rules/business/v3_09_enterprise.rego",
+      "legal_basis": "Art. 22-25 i art. 29 PP; Ustawa o zarządzie sukcesyjnym (2018); Art. 43 Kodeksu cywilnego (śmierć przedsiębiorcy)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "Prawo przedsiębiorców"
+    },
+    {
+      "rule_id": "jdg.business.v3_09.karta_eligibility",
+      "file": "rules/business/v3_09_enterprise.rego",
+      "legal_basis": "Art. 21-23 ustawy z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym (Dz.U. 2025 poz. 134 ze zm.)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o ryczałcie"
+    },
+    {
+      "rule_id": "jdg.business.v3_09.lifecycle_decision_certificate",
+      "file": "rules/business/v3_09_enterprise.rego",
+      "legal_basis": "Kompleksowy certyfikat domeny ryczałt + cykl życia JDG (u.z.p.d./PP/u.z.s./CEIDG); zgodność z V1 zasada 9 i V2 filary F3-F4",
+      "class": "NON_CANONICAL",
       "canonical_act": null
     },
     {
@@ -3109,6 +3214,20 @@
       "legal_basis": "Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)",
       "class": "OK",
       "canonical_act": "Prawo przedsiębiorców"
+    },
+    {
+      "rule_id": "jdg.business_lifecycle_etap18.no_match",
+      "file": "rules/business_lifecycle_etap18_v1.rego",
+      "legal_basis": "CEIDG art. 5-7; SUS art. 43",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o SUS"
+    },
+    {
+      "rule_id": "jdg.business_lifecycle_etap18.state_machine_verdict",
+      "file": "rules/business_lifecycle_etap18_v1.rego",
+      "legal_basis": "CEIDG art. 5-15; Prawo przedsiębiorców art. 18, 22-25, 31-36; ustawa o ryczałcie art. 6, 8, 12, 15, 21-28; ustawa o zarządzie sukcesyjnym art. 3-15; PIT art. 9a, 24; VAT art. 14, 96, 113; SUS art. 18a/18c/43",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.calendar.no_match",
@@ -3521,6 +3640,69 @@
       "file": "rules/compliance/aml_enterprise.rego",
       "legal_basis": "",
       "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.compliance.v3_12.no_match",
+      "file": "rules/compliance/v3_12_enterprise.rego",
+      "legal_basis": "ADR-002 zero-hardcode; V1 zasada 6 (fail-closed)",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.compliance.v3_12.thresholds_missing",
+      "file": "rules/compliance/v3_12_enterprise.rego",
+      "legal_basis": "ADR-002 zero-hardcode; V1 zasada 6 (fail-closed)",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.compliance.v3_12.rodo_breach_guard",
+      "file": "rules/compliance/v3_12_enterprise.rego",
+      "legal_basis": "art. 33 RODO (UE 2016/679); kara do rodo_sanction_max_eur (art. 83 ust. 5)",
+      "class": "OK",
+      "canonical_act": "RODO"
+    },
+    {
+      "rule_id": "jdg.compliance.v3_12.erasure_engine_guard",
+      "file": "rules/compliance/v3_12_enterprise.rego",
+      "legal_basis": "art. 17 i 12 ust. 3 RODO (odpowiedź bez zbędnej zwłoki, max 30 dni)",
+      "class": "OK",
+      "canonical_act": "RODO"
+    },
+    {
+      "rule_id": "jdg.compliance.v3_12.aml_transaction_monitor",
+      "file": "rules/compliance/v3_12_enterprise.rego",
+      "legal_basis": "art. 34 i 74 ustawy AML (Dz.U. 2025 poz. 213); GIIF STR",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o AML"
+    },
+    {
+      "rule_id": "jdg.compliance.v3_12.aml_cbdd_guard",
+      "file": "rules/compliance/v3_12_enterprise.rego",
+      "legal_basis": "art. 2 pkt 1, art. 34-36, art. 153 ustawy AML (beneficjent rzeczywisty ≥25%)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o AML"
+    },
+    {
+      "rule_id": "jdg.compliance.v3_12.bdo_kpo_guard",
+      "file": "rules/compliance/v3_12_enterprise.rego",
+      "legal_basis": "art. 66-74 ustawy o odpadach (BDO); ewidencja KPO, ważność dokumentu 5 lat",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o BDO"
+    },
+    {
+      "rule_id": "jdg.compliance.v3_12.dpia_guard",
+      "file": "rules/compliance/v3_12_enterprise.rego",
+      "legal_basis": "art. 35 i 36 RODO; wytyczne EDPB WP248",
+      "class": "OK",
+      "canonical_act": "RODO"
+    },
+    {
+      "rule_id": "jdg.compliance.v3_12.domain_certificate",
+      "file": "rules/compliance/v3_12_enterprise.rego",
+      "legal_basis": "RODO (UE 2016/679); ustawa AML (Dz.U. 2025 poz. 213); ustawa o odpadach (BDO)",
+      "class": "NON_CANONICAL",
       "canonical_act": null
     },
     {
@@ -4399,6 +4581,20 @@
       "canonical_act": null
     },
     {
+      "rule_id": "jdg.cross_domain_red_team_etap27.no_match",
+      "file": "rules/cross_domain_red_team_etap27_v1.rego",
+      "legal_basis": "",
+      "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.cross_domain_red_team_etap27.red_team_governance",
+      "file": "rules/cross_domain_red_team_etap27_v1.rego",
+      "legal_basis": "V1 §3-6 security; ADR-011 (security_fortress); chaos_runner.py; cross_package_conflict_detector.py; predictive_audit_shield.py; fraud_graph_scanner.py; rule_impact_simulator.py; INV-006/035 (auto-post guard)",
+      "class": "UNKNOWN_ACT",
+      "canonical_act": null
+    },
+    {
       "rule_id": "jdg.exit_tax_cfc.no_match",
       "file": "rules/crossborder/exit_tax_cfc_complete.rego",
       "legal_basis": "Art. 30da ust. 1 PIT",
@@ -4605,6 +4801,76 @@
       "rule_id": "jdg.crossborder.post_brexit.uk_vat_registration_b2c",
       "file": "rules/crossborder/post_brexit.rego",
       "legal_basis": "UK VAT Act 1994, Distance Selling Regulations",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.crossborder.v3_08.no_match",
+      "file": "rules/crossborder/v3_08_enterprise.rego",
+      "legal_basis": "ADR-002 zero-hardcode; V1 zasada 6 (fail-closed)",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.crossborder.v3_08.thresholds_missing",
+      "file": "rules/crossborder/v3_08_enterprise.rego",
+      "legal_basis": "ADR-002 zero-hardcode; V1 zasada 6 (fail-closed)",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.crossborder.v3_08.exit_tax_calculator",
+      "file": "rules/crossborder/v3_08_enterprise.rego",
+      "legal_basis": "Art. 30da ust. 1-9 ustawy z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (Dz.U. 2024 poz. 1760 ze zm.); ATAD (UE) 2016/1164",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o PIT"
+    },
+    {
+      "rule_id": "jdg.crossborder.v3_08.cfc_monitor",
+      "file": "rules/crossborder/v3_08_enterprise.rego",
+      "legal_basis": "Art. 30f ust. 1-18 ustawy o PIT (Dz.U. 2024 poz. 1760 ze zm.); ATAD art. 7-8",
+      "class": "OK",
+      "canonical_act": "ustawa o PIT"
+    },
+    {
+      "rule_id": "jdg.crossborder.v3_08.wht_gate",
+      "file": "rules/crossborder/v3_08_enterprise.rego",
+      "legal_basis": "Art. 26 ust. 1 i 2e ustawy o CIT; Art. 30a-30b ustawy o PIT (Dz.U. 2024 poz. 1760 ze zm.)",
+      "class": "OK",
+      "canonical_act": "ustawa o PIT"
+    },
+    {
+      "rule_id": "jdg.crossborder.v3_08.dac8_engine",
+      "file": "rules/crossborder/v3_08_enterprise.rego",
+      "legal_basis": "Dyrektywa Rady (UE) 2021/514 (DAC8); art. 8ac dyrektywy Rady 2011/16/UE",
+      "class": "UNKNOWN_ACT",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.crossborder.v3_08.uk_vat_b2c_gate",
+      "file": "rules/crossborder/v3_08_enterprise.rego",
+      "legal_basis": "UK VAT Act 1994 s.3; TCA UE-UK (Trade and Cooperation Agreement)",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.crossborder.v3_08.tp_thresholds_current_law",
+      "file": "rules/crossborder/v3_08_enterprise.rego",
+      "legal_basis": "Art. 23zf ust. 1-5 ustawy o PIT (Dz.U. 2024 poz. 1760 ze zm.) wraz z aktualnym rozporządzeniem MF ws. progów dokumentacyjnych",
+      "class": "OK",
+      "canonical_act": "ustawa o PIT"
+    },
+    {
+      "rule_id": "jdg.crossborder.v3_08.mdr_deadline_guard",
+      "file": "rules/crossborder/v3_08_enterprise.rego",
+      "legal_basis": "Art. 86a § 1 pkt 1-2 i § 2 ustawy — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.); Dyrektywa Rady (UE) 2018/822 (DAC6)",
+      "class": "OK",
+      "canonical_act": "Ordynacja podatkowa"
+    },
+    {
+      "rule_id": "jdg.crossborder.v3_08.decision_certificate",
+      "file": "rules/crossborder/v3_08_enterprise.rego",
+      "legal_basis": "Kompleksowy certyfikat domeny transgranicznej (VAT/PIT/CIT/OrdPU/DAC8/ViDA); zgodność z V1 zasada 9 (obserwowalność) i V2 filary F3-F4",
       "class": "NON_CANONICAL",
       "canonical_act": null
     },
@@ -4833,6 +5099,20 @@
       "canonical_act": "ustawa o VAT"
     },
     {
+      "rule_id": "jdg.crossborder_etap17.no_match",
+      "file": "rules/crossborder_etap17_v1.rego",
+      "legal_basis": "",
+      "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.crossborder_etap17.evidence_first_verdict",
+      "file": "rules/crossborder_etap17_v1.rego",
+      "legal_basis": "VAT art. 9-13, 28a-28o, 41-42; PIT art. 3, 23m-23zf, 24c, 30da-30f; OrdPU art. 86a-86r; DAC6/DAC8; CBAM; ViDA",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
       "rule_id": "jdg.dac8_report_generator.no_match",
       "file": "rules/dac8_report_generator.rego",
       "legal_basis": "",
@@ -5019,6 +5299,20 @@
       "file": "rules/digital.rego",
       "legal_basis": "Art. 50 Rozporządzenia UE 2024/1689 (AI Act)",
       "class": "UNKNOWN_ACT",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.docs.quality_v3_20.documentation_certification_contract",
+      "file": "rules/docs/quality_v3_20.rego",
+      "legal_basis": "OrdPU art. 12 § 5, art. 193a; PIT art. 44-45; VAT art. 109; RODO art. 12-14 (przejrzystość informacji); ADR-002; MANIFEST.md",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.docs.quality_v3_20.no_match",
+      "file": "rules/docs/quality_v3_20.rego",
+      "legal_basis": "",
+      "class": "MISSING",
       "canonical_act": null
     },
     {
@@ -5983,7 +6277,7 @@
     {
       "rule_id": "jdg.edge_cases.sanction_ksef_missing_100pct",
       "file": "rules/edge_cases.rego",
-      "legal_basis": "Art. 106nq VAT",
+      "legal_basis": "Art. 106ga ust. 1 VAT",
       "class": "NON_CANONICAL",
       "canonical_act": "ustawa o VAT"
     },
@@ -6917,6 +7211,34 @@
       "legal_basis": "Art. 39 PIT",
       "class": "NON_CANONICAL",
       "canonical_act": "ustawa o PIT"
+    },
+    {
+      "rule_id": "jdg.enterprise.quality_v3_15.enterprise_initiatives_contract",
+      "file": "rules/enterprise/quality_v3_15.rego",
+      "legal_basis": "PIT art. 27, 30c, 30ca; VAT art. 86, 113; OrdPU art. 70, 119a; KKS art. 16, 54-62; SUS art. 18a-18c; UoR art. 2; AML; RODO; eIDAS",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.enterprise.quality_v3_15.no_match",
+      "file": "rules/enterprise/quality_v3_15.rego",
+      "legal_basis": "",
+      "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.enterprise_ai_neural_etap23.no_match",
+      "file": "rules/enterprise_ai_neural_etap23_v1.rego",
+      "legal_basis": "",
+      "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.enterprise_ai_neural_etap23.governance_verdict",
+      "file": "rules/enterprise_ai_neural_etap23_v1.rego",
+      "legal_basis": "RODO art. 5; RODO art. 22; RODO art. 25; AI governance/ADR-001; ADR-006; ADR-022; OrdPU art. 4; PIT art. 44; VAT art. 103; PSD2",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.environmental.bdo.no_match",
@@ -8109,6 +8431,20 @@
       "canonical_act": "ustawa o PIT"
     },
     {
+      "rule_id": "jdg.final_certification_etap28.no_match",
+      "file": "rules/final_certification_etap28_v1.rego",
+      "legal_basis": "",
+      "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.final_certification_etap28.system_certification",
+      "file": "rules/final_certification_etap28_v1.rego",
+      "legal_basis": "ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md; WIZJA_OPA_ENTERPRISE_V2.md; ADR-001..ADR-022; raporty etapów 00-27; NOT_CERTIFIED (brak dowodu produkcyjnego)",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
       "rule_id": "jdg.force_majeure.no_match",
       "file": "rules/force_majeure/plan44_force_majeure.rego",
       "legal_basis": "Art. 67a-67e Ordynacji podatkowej",
@@ -8932,6 +9268,34 @@
       "file": "rules/gtu_completeness_checker_enterprise.rego",
       "legal_basis": "Art. 106j VAT (faktura korygująca); Załącznik nr 15 do ustawy o VAT",
       "class": "OK",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.hyper.quality_v3_14.hyper_context_contract",
+      "file": "rules/hyper/quality_v3_14.rego",
+      "legal_basis": "OrdPU art. 12 § 5, art. 70, art. 193a; PIT art. 44-45; VAT art. 99, 109; SUS art. 47; MDR art. 86a-86o; RODO; eIDAS; ustawa o doręczeniach elektronicznych",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.hyper.quality_v3_14.no_match",
+      "file": "rules/hyper/quality_v3_14.rego",
+      "legal_basis": "",
+      "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.hyper_enterprise_contexts_etap22.no_match",
+      "file": "rules/hyper_enterprise_contexts_etap22_v1.rego",
+      "legal_basis": "",
+      "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.hyper_enterprise_contexts_etap22.hyper_meta_verdict",
+      "file": "rules/hyper_enterprise_contexts_etap22_v1.rego",
+      "legal_basis": "PIT art. 30ca, 30h, 45; OrdPU art. 12, 126, 193a; MDR art. 86a-86o; VAT art. 42a; eIDAS; ustawa o doręczeniach elektronicznych; KKS",
+      "class": "NON_CANONICAL",
       "canonical_act": "ustawa o VAT"
     },
     {
@@ -13548,7 +13912,7 @@
       "canonical_act": "ustawa o VAT"
     },
     {
-      "rule_id": "jdg.kks.no_match",
+      "rule_id": "jdg.kks.plan42.no_match",
       "file": "rules/kks/plan42_detailed.rego",
       "legal_basis": "Art. 56 § 1-4 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
       "class": "OK",
@@ -13639,7 +14003,7 @@
       "canonical_act": null
     },
     {
-      "rule_id": "jdg.kks.no_match",
+      "rule_id": "jdg.kks.plan43.no_match",
       "file": "rules/kks/plan43_decomposition.rego",
       "legal_basis": "Art. 16 § 1 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
       "class": "OK",
@@ -13793,7 +14157,7 @@
       "canonical_act": "Kodeks karny skarbowy"
     },
     {
-      "rule_id": "jdg.kks.no_match",
+      "rule_id": "jdg.kks.plan44.no_match",
       "file": "rules/kks/plan44_kks_conviction.rego",
       "legal_basis": "Art. 41 KK",
       "class": "UNKNOWN_ACT",
@@ -15606,6 +15970,20 @@
       "canonical_act": "Kodeks karny skarbowy"
     },
     {
+      "rule_id": "jdg.kks_ord_etap16.no_match",
+      "file": "rules/kks_ord_etap16_v1.rego",
+      "legal_basis": "KKS art. 16/37/44/53-83; OrdPU art. 14b/53-56/67a/70/72-77/80a-80d/81/119a/120-129",
+      "class": "NON_CANONICAL",
+      "canonical_act": "Ordynacja podatkowa"
+    },
+    {
+      "rule_id": "jdg.kks_ord_etap16.report",
+      "file": "rules/kks_ord_etap16_v1.rego",
+      "legal_basis": "KKS art. 16/37/44/53-83; OrdPU art. 14b/53-56/67a/70/72-77/80a-80d/81/119a/120-129",
+      "class": "NON_CANONICAL",
+      "canonical_act": "Ordynacja podatkowa"
+    },
+    {
       "rule_id": "jdg.ksef_firewall.no_match",
       "file": "rules/ksef_firewall_enterprise.rego",
       "legal_basis": "Enterprise SRE Framework; Art. 106na-106nq VAT",
@@ -15650,21 +16028,21 @@
     {
       "rule_id": "jdg.ksef_innovations.sanction_exposure_calculator",
       "file": "rules/ksef_innovations_enterprise.rego",
-      "legal_basis": "Art. 106nq VAT (dodatkowe zobowiązanie podatkowe)",
+      "legal_basis": "Art. 106ga ust. 1 VAT (dodatkowe zobowiązanie podatkowe)",
       "class": "NON_CANONICAL",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.ksef_innovations.receipt_digest",
       "file": "rules/ksef_innovations_enterprise.rego",
-      "legal_basis": "Art. 106na-106nq VAT (KSeF); Art. 86 VAT (odliczenie)",
+      "legal_basis": "Art. 106na-106ni VAT (KSeF); Art. 86 VAT (odliczenie)",
       "class": "NON_CANONICAL",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.ksef_innovations.outbox_buffer",
       "file": "rules/ksef_innovations_enterprise.rego",
-      "legal_basis": "Art. 106na-106nq VAT; Specyfikacja API KSeF v3.0",
+      "legal_basis": "Art. 106na-106ni VAT; Specyfikacja API KSeF v3.0",
       "class": "NON_CANONICAL",
       "canonical_act": "ustawa o VAT"
     },
@@ -15673,6 +16051,76 @@
       "file": "rules/ksef_innovations_enterprise.rego",
       "legal_basis": "Art. 106nc ust. 3 VAT (UPO warunkiem odliczenia); Art. 86 ust. 10 VAT",
       "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.ksef_jpk.v3_11.no_match",
+      "file": "rules/ksef_jpk/v3_11_enterprise.rego",
+      "legal_basis": "ADR-002 zero-hardcode; V1 zasada 6 (fail-closed)",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.ksef_jpk.v3_11.thresholds_missing",
+      "file": "rules/ksef_jpk/v3_11_enterprise.rego",
+      "legal_basis": "ADR-002 zero-hardcode; V1 zasada 6 (fail-closed)",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.ksef_jpk.v3_11.ksef_mandatory_gate",
+      "file": "rules/ksef_jpk/v3_11_enterprise.rego",
+      "legal_basis": "art. 106na-106nb ustawy o VAT; sankcja do ksef_sanction_max_pln (thresholds)",
+      "class": "OK",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.ksef_jpk.v3_11.offline_queue_guard",
+      "file": "rules/ksef_jpk/v3_11_enterprise.rego",
+      "legal_basis": "tryb awaryjny KSeF; okno ksef_offline_grace_days dni (thresholds)",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.ksef_jpk.v3_11.upo_validation_guard",
+      "file": "rules/ksef_jpk/v3_11_enterprise.rego",
+      "legal_basis": "art. 106nb ustawy o VAT (data wystawienia = data potwierdzenia); UPO tracker",
+      "class": "OK",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.ksef_jpk.v3_11.edelivery_address_guard",
+      "file": "rules/ksef_jpk/v3_11_enterprise.rego",
+      "legal_basis": "ustawa z 16.06.2023 o e-Doręczeniu (Dz.U. 2023 poz. 1598), art. 8-9",
+      "class": "UNKNOWN_ACT",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.ksef_jpk.v3_11.b2c_without_nip_handler",
+      "file": "rules/ksef_jpk/v3_11_enterprise.rego",
+      "legal_basis": "art. 106na ust. 2-3 ustawy o VAT; art. 106e (elementy faktury)",
+      "class": "OK",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.ksef_jpk.v3_11.jpk_ksef_reconcile",
+      "file": "rules/ksef_jpk/v3_11_enterprise.rego",
+      "legal_basis": "struktura JPK_V7M; art. 109 ust. 3 ustawy o VAT (ewidencja)",
+      "class": "OK",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.ksef_jpk.v3_11.wis_expiry_watcher",
+      "file": "rules/ksef_jpk/v3_11_enterprise.rego",
+      "legal_basis": "art. 42a-42h ustawy o VAT; opłata wis_application_fee_pln (thresholds)",
+      "class": "OK",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.ksef_jpk.v3_11.domain_certificate",
+      "file": "rules/ksef_jpk/v3_11_enterprise.rego",
+      "legal_basis": "ustawa o VAT (art. 106na-106nq, 42a-42h); e-Doręczenia 2023; eIDAS 910/2014",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
@@ -15749,6 +16197,20 @@
       "rule_id": "jdg.ksef_jpk.ksef_offline_pkpir",
       "file": "rules/ksef_jpk.rego",
       "legal_basis": "Art. 106ne VAT (tryb awaryjny), Art. 24a PIT (PKPiR)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.ksef_jpk_etap20.no_match",
+      "file": "rules/ksef_jpk_etap20_v1.rego",
+      "legal_basis": "",
+      "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.ksef_jpk_etap20.ksef_jpk_declaration_verdict",
+      "file": "rules/ksef_jpk_etap20_v1.rego",
+      "legal_basis": "VAT art. 106na-106nq, 106j, 42a; OrdPU art. 193a; rozporządzenie JPK; eIDAS; ustawa o doręczeniach elektronicznych",
       "class": "NON_CANONICAL",
       "canonical_act": "ustawa o VAT"
     },
@@ -15902,21 +16364,21 @@
     {
       "rule_id": "jdg.ksef_sanction_monitor.no_match",
       "file": "rules/ksef_sanction_monitor_enterprise.rego",
-      "legal_basis": "Art. 106nq ust. 1-3 VAT (Dz.U. 2023 poz. 1598)",
+      "legal_basis": "Art. 106ga ust. 1 ust. 1-3 VAT (Dz.U. 2023 poz. 1598)",
       "class": "NON_CANONICAL",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.ksef_sanction_monitor.exposure_calculator",
       "file": "rules/ksef_sanction_monitor_enterprise.rego",
-      "legal_basis": "Art. 106nq ust. 1-3 VAT (Dz.U. 2023 poz. 1598)",
+      "legal_basis": "Art. 106ga ust. 1 ust. 1-3 VAT (Dz.U. 2023 poz. 1598)",
       "class": "NON_CANONICAL",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.ksef_sanction_monitor.per_invoice_estimator",
       "file": "rules/ksef_sanction_monitor_enterprise.rego",
-      "legal_basis": "Art. 106nq VAT",
+      "legal_basis": "Art. 106ga ust. 1 VAT",
       "class": "NON_CANONICAL",
       "canonical_act": "ustawa o VAT"
     },
@@ -16040,7 +16502,7 @@
       "canonical_act": "Ordynacja podatkowa"
     },
     {
-      "rule_id": "jdg.liability.additional_tax_obligation_art16a",
+      "rule_id": "jdg.liability.additional_tax_obligation_art16a_unreported",
       "file": "rules/liability.rego",
       "legal_basis": "Art. 16a OrdPU",
       "class": "NON_CANONICAL",
@@ -16164,6 +16626,20 @@
       "legal_basis": "Prawo Przedsiębiorców Art. 31-36; Art. 24 PIT; Art. 14 VAT; Ustawa o zarządzie sukcesyjnym",
       "class": "NON_CANONICAL",
       "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.local_excise_etap19.no_match",
+      "file": "rules/local_excise_etap19_v1.rego",
+      "legal_basis": "",
+      "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.local_excise_etap19.pcc_local_excise_verdict",
+      "file": "rules/local_excise_etap19_v1.rego",
+      "legal_basis": "ustawa o PCC art. 1, 2 pkt 4, 6-10; ustawa o podatkach i opłatach lokalnych art. 2-9, 12; ustawa o podatku akcyzowym art. 8-11, 16, 30-32, 89, 93-100, 114-118; KKS art. 65",
+      "class": "NON_CANONICAL",
+      "canonical_act": "Kodeks karny skarbowy"
     },
     {
       "rule_id": "jdg.akcyza.alcohol_tobacco.no_match",
@@ -17277,6 +17753,69 @@
       "legal_basis": "ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (Dz.U. 2025 poz. 1234), Rozdział 3 (Art. 8-14)",
       "class": "NON_CANONICAL",
       "canonical_act": "ustawa o podatkach i opłatach lokalnych"
+    },
+    {
+      "rule_id": "jdg.local_taxes.v3_10.no_match",
+      "file": "rules/local_taxes/v3_10_enterprise.rego",
+      "legal_basis": "ADR-002 zero-hardcode; V1 zasada 6 (fail-closed)",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.local_taxes.v3_10.thresholds_missing",
+      "file": "rules/local_taxes/v3_10_enterprise.rego",
+      "legal_basis": "ADR-002 zero-hardcode; V1 zasada 6 (fail-closed)",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.local_taxes.v3_10.pcc_rate_engine",
+      "file": "rules/local_taxes/v3_10_enterprise.rego",
+      "legal_basis": "Art. 7 ust. 1, Art. 9 ust. 1 pkt 3 i Art. 9 pkt 9 ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o PCC"
+    },
+    {
+      "rule_id": "jdg.local_taxes.v3_10.pcc3_deadline_guard",
+      "file": "rules/local_taxes/v3_10_enterprise.rego",
+      "legal_basis": "Art. 14 ust. 1 ustawy z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych (Dz.U. 2025 poz. 789)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o PCC"
+    },
+    {
+      "rule_id": "jdg.local_taxes.v3_10.real_estate_max_rate_validator",
+      "file": "rules/local_taxes/v3_10_enterprise.rego",
+      "legal_basis": "Art. 2-7 ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych (stawki maksymalne corocznie obwieszczeniem Ministra Finansów)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o podatkach i opłatach lokalnych"
+    },
+    {
+      "rule_id": "jdg.local_taxes.v3_10.dn1_deadline_guard",
+      "file": "rules/local_taxes/v3_10_enterprise.rego",
+      "legal_basis": "Art. 66-67 ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym; Art. 8-12 pod. lokalnych (podatek od środków transportowych)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o podatkach i opłatach lokalnych"
+    },
+    {
+      "rule_id": "jdg.local_taxes.v3_10.excise_rate_check",
+      "file": "rules/local_taxes/v3_10_enterprise.rego",
+      "legal_basis": "Ustawa z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2024 poz. 1321 ze zm.) — załączniki nr 1-3 (stawki jednostkowe)",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.local_taxes.v3_10.excise_vat_shortcut",
+      "file": "rules/local_taxes/v3_10_enterprise.rego",
+      "legal_basis": "Art. 31a i Art. 109 ustawy o VAT; Art. 98-102 ustawy o podatku akcyzowym (skład podatkowy, zawieszenie poboru)",
+      "class": "OK",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.local_taxes.v3_10.local_taxes_certificate",
+      "file": "rules/local_taxes/v3_10_enterprise.rego",
+      "legal_basis": "Kompleksowy certyfikat domeny PCC + podatki lokalne + akcyza; zgodność z V1 zasada 9 i V2 filary F3-F4",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
     },
     {
       "rule_id": "jdg.local_taxes.no_match",
@@ -26715,6 +27254,34 @@
       "canonical_act": "Kodeks karny skarbowy"
     },
     {
+      "rule_id": "jdg.micro.kks.a45.expungement_tracker",
+      "file": "rules/micro/kks_ord_atomic_p11.rego",
+      "legal_basis": "Art. 45 § 1-2 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
+      "class": "OK",
+      "canonical_act": "Kodeks karny skarbowy"
+    },
+    {
+      "rule_id": "jdg.micro.kks.a53.small_value_classifier",
+      "file": "rules/micro/kks_ord_atomic_p11.rego",
+      "legal_basis": "Art. 53 § 6 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.) w zw. z art. 115 § 5 KK",
+      "class": "OK",
+      "canonical_act": "Kodeks karny skarbowy"
+    },
+    {
+      "rule_id": "jdg.micro.ord.a14a.interpretation_protection",
+      "file": "rules/micro/kks_ord_atomic_p11.rego",
+      "legal_basis": "Art. 14a-14b ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
+      "class": "OK",
+      "canonical_act": "Ordynacja podatkowa"
+    },
+    {
+      "rule_id": "jdg.micro.ord.a14d.interpretation_deadline",
+      "file": "rules/micro/kks_ord_atomic_p11.rego",
+      "legal_basis": "Art. 14d § 1-2 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
+      "class": "OK",
+      "canonical_act": "Ordynacja podatkowa"
+    },
+    {
       "rule_id": "jdg.micro.ord.a70.limitation",
       "file": "rules/micro/kks_ord_atomic_p11.rego",
       "legal_basis": "Art. 70 § 1 ustawy z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa (Dz.U. 2025 poz. 234, ze zm.)",
@@ -31379,58 +31946,58 @@
     {
       "rule_id": "jdg.micro.pit.no_match",
       "file": "rules/micro/pit/pit.rego",
-      "legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-      "class": "NON_CANONICAL",
-      "canonical_act": null
+      "legal_basis": "Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+      "class": "OK",
+      "canonical_act": "ustawa o PIT"
     },
     {
       "rule_id": "jdg.micro.pit.a6.r1",
       "file": "rules/micro/pit/pit.rego",
-      "legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-      "class": "NON_CANONICAL",
-      "canonical_act": null
+      "legal_basis": "Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+      "class": "OK",
+      "canonical_act": "ustawa o PIT"
     },
     {
       "rule_id": "jdg.micro.pit.a6.r2",
       "file": "rules/micro/pit/pit.rego",
-      "legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-      "class": "NON_CANONICAL",
-      "canonical_act": null
+      "legal_basis": "Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+      "class": "OK",
+      "canonical_act": "ustawa o PIT"
     },
     {
       "rule_id": "jdg.micro.pit.a6.r3",
       "file": "rules/micro/pit/pit.rego",
-      "legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-      "class": "NON_CANONICAL",
-      "canonical_act": null
+      "legal_basis": "Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+      "class": "OK",
+      "canonical_act": "ustawa o PIT"
     },
     {
       "rule_id": "jdg.micro.pit.a6.r4",
       "file": "rules/micro/pit/pit.rego",
-      "legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-      "class": "NON_CANONICAL",
-      "canonical_act": null
+      "legal_basis": "Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+      "class": "OK",
+      "canonical_act": "ustawa o PIT"
     },
     {
       "rule_id": "jdg.micro.pit.a6.r5",
       "file": "rules/micro/pit/pit.rego",
-      "legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-      "class": "NON_CANONICAL",
-      "canonical_act": null
+      "legal_basis": "Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+      "class": "OK",
+      "canonical_act": "ustawa o PIT"
     },
     {
       "rule_id": "jdg.micro.pit.a6.r6",
       "file": "rules/micro/pit/pit.rego",
-      "legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-      "class": "NON_CANONICAL",
-      "canonical_act": null
+      "legal_basis": "Art. 6 ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+      "class": "OK",
+      "canonical_act": "ustawa o PIT"
     },
     {
       "rule_id": "jdg.micro.pit.a6.r7",
       "file": "rules/micro/pit/pit.rego",
-      "legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-      "class": "NON_CANONICAL",
-      "canonical_act": null
+      "legal_basis": "Art. 27f ust. 2 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+      "class": "OK",
+      "canonical_act": "ustawa o PIT"
     },
     {
       "rule_id": "jdg.micro.pit.a6.r8",
@@ -31918,37 +32485,37 @@
     {
       "rule_id": "jdg.micro.pit.a21.r1",
       "file": "rules/micro/pit/pit.rego",
-      "legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-      "class": "NON_CANONICAL",
-      "canonical_act": null
+      "legal_basis": "Art. 21 ust. 1 pkt 148 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+      "class": "OK",
+      "canonical_act": "ustawa o PIT"
     },
     {
       "rule_id": "jdg.micro.pit.a21.r2",
       "file": "rules/micro/pit/pit.rego",
-      "legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-      "class": "NON_CANONICAL",
-      "canonical_act": null
+      "legal_basis": "Art. 21 ust. 1 pkt 152 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+      "class": "OK",
+      "canonical_act": "ustawa o PIT"
     },
     {
       "rule_id": "jdg.micro.pit.a21.r3",
       "file": "rules/micro/pit/pit.rego",
-      "legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-      "class": "NON_CANONICAL",
-      "canonical_act": null
+      "legal_basis": "Art. 21 ust. 1 pkt 153 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+      "class": "OK",
+      "canonical_act": "ustawa o PIT"
     },
     {
       "rule_id": "jdg.micro.pit.a21.r4",
       "file": "rules/micro/pit/pit.rego",
-      "legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-      "class": "NON_CANONICAL",
-      "canonical_act": null
+      "legal_basis": "Art. 21 ust. 1 pkt 154 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+      "class": "OK",
+      "canonical_act": "ustawa o PIT"
     },
     {
       "rule_id": "jdg.micro.pit.a21.r5",
       "file": "rules/micro/pit/pit.rego",
-      "legal_basis": "Ustawa o PIT z 26.07.1991 (Dz.U. 1991 nr 80 poz. 350)",
-      "class": "NON_CANONICAL",
-      "canonical_act": null
+      "legal_basis": "Art. 21 ust. 1 pkt 148-154 ustawy o PIT (Dz.U. 2024 poz. 284 ze zm.)",
+      "class": "OK",
+      "canonical_act": "ustawa o PIT"
     },
     {
       "rule_id": "jdg.micro.pit.a21.r6",
@@ -39569,21 +40136,21 @@
     {
       "rule_id": "jdg.ksef.a106nq.r2",
       "file": "rules/micro/plan33_ksef.rego",
-      "legal_basis": "Art. 106nq ust. 1 VAT",
+      "legal_basis": "Art. 106ga ust. 1 ust. 1 VAT",
       "class": "NON_CANONICAL",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.ksef.a106nq.r3",
       "file": "rules/micro/plan33_ksef.rego",
-      "legal_basis": "Art. 106nq ust. 2 VAT",
+      "legal_basis": "Art. 106ga ust. 1 ust. 2 VAT",
       "class": "NON_CANONICAL",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.ksef.a106nq.r4",
       "file": "rules/micro/plan33_ksef.rego",
-      "legal_basis": "Art. 106nq ust. 3 VAT",
+      "legal_basis": "Art. 106ga ust. 1 ust. 3 VAT",
       "class": "NON_CANONICAL",
       "canonical_act": "ustawa o VAT"
     },
@@ -39653,7 +40220,7 @@
     {
       "rule_id": "jdg.ksef.r18",
       "file": "rules/micro/plan33_ksef.rego",
-      "legal_basis": "Art. 106nq ust. 1 VAT (Dz.U. 2023 poz. 1598)",
+      "legal_basis": "Art. 106ga ust. 1 ust. 1 VAT (Dz.U. 2023 poz. 1598)",
       "class": "NON_CANONICAL",
       "canonical_act": "ustawa o VAT"
     },
@@ -40281,7 +40848,7 @@
       "canonical_act": "ustawa o PCC"
     },
     {
-      "rule_id": "jdg.micro.pit.no_match",
+      "rule_id": "jdg.micro.pit.plan33.no_match",
       "file": "rules/micro/plan33_pit.rego",
       "legal_basis": "Art. 14 PIT — Przychody z działalności gospodarczej",
       "class": "NON_CANONICAL",
@@ -46301,7 +46868,7 @@
       "canonical_act": null
     },
     {
-      "rule_id": "jdg.micro.pit.no_match",
+      "rule_id": "jdg.micro.pit.plan34.no_match",
       "file": "rules/micro/plan34_pit.rego",
       "legal_basis": "Art. 21 ust. 1 pkt 148 PIT — Ulga dla młodych (do 26 lat)",
       "class": "NON_CANONICAL",
@@ -49355,7 +49922,7 @@
     {
       "rule_id": "jdg.vat.a106nq.r1",
       "file": "rules/micro/plan34_vat.rego",
-      "legal_basis": "Art. 106nq ustawy o VAT",
+      "legal_basis": "Art. 106ga ust. 1 ustawy o VAT",
       "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
@@ -50456,6 +51023,55 @@
       "file": "rules/micro/pp/pp.rego",
       "legal_basis": "Art. 5 ust. 2 PP — limit dotyczy łącznych przychodów",
       "class": "UNKNOWN_ACT",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.micro.quality_v3_13.no_match",
+      "file": "rules/micro/quality_v3_13.rego",
+      "legal_basis": "ADR-002; V1 zasada 6 fail-closed",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.micro.quality_v3_13.thresholds_missing",
+      "file": "rules/micro/quality_v3_13.rego",
+      "legal_basis": "ADR-002; V1 zasada 6 fail-closed",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.micro.quality_v3_13.audit_contract",
+      "file": "rules/micro/quality_v3_13.rego",
+      "legal_basis": "JDG Micro V3-13 quality contract; MANIFEST rule_id registry",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.micro.quality_v3_13.micro_macro_binding",
+      "file": "rules/micro/quality_v3_13.rego",
+      "legal_basis": "V1 Control/Data Plane; V2 F2 Legal Twin",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.micro.quality_v3_13.normalized_boundary",
+      "file": "rules/micro/quality_v3_13.rego",
+      "legal_basis": "JDG Micro V3-13 boundary normalization contract",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.micro.quality_v3_13.golden_input",
+      "file": "rules/micro/quality_v3_13.rego",
+      "legal_basis": "V2 F3 Golden Oracle; V1 zasada 9 audytowalność",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.micro.quality_v3_13.domain_certificate",
+      "file": "rules/micro/quality_v3_13.rego",
+      "legal_basis": "JDG Micro V3-13; V1/V2 Control Plane and Legal Twin",
+      "class": "NON_CANONICAL",
       "canonical_act": null
     },
     {
@@ -54491,6 +55107,34 @@
       "canonical_act": "ustawa o SUS"
     },
     {
+      "rule_id": "jdg.micro.sus.a19.no_match",
+      "file": "rules/micro/sus/sus_a19.rego",
+      "legal_basis": "Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o SUS"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a19.annual_cap_eligibility",
+      "file": "rules/micro/sus/sus_a19.rego",
+      "legal_basis": "Art. 19 ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o SUS"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a19.annual_cap_calculation",
+      "file": "rules/micro/sus/sus_a19.rego",
+      "legal_basis": "Art. 19 ust. 1, 3, 5 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o SUS"
+    },
+    {
+      "rule_id": "jdg.micro.sus.a19.multi_payer_notification",
+      "file": "rules/micro/sus/sus_a19.rego",
+      "legal_basis": "Art. 19 ust. 6 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o SUS"
+    },
+    {
       "rule_id": "jdg.micro.transport.no_match",
       "file": "rules/micro/transport/transport.rego",
       "legal_basis": "Ustawa o transporcie drogowym",
@@ -56087,6 +56731,13 @@
       "canonical_act": "ustawa o VAT"
     },
     {
+      "rule_id": "jdg.micro.vat.place_of_supply.pos_definitions_28a",
+      "file": "rules/micro/vat/place_of_supply_micro.rego",
+      "legal_basis": "Art. 28a pkt 1-2 VAT (Dz.U. 2025 poz. 456 ze zm.); art. 15 ust. 2, art. 5 ust. 1 VAT",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
       "rule_id": "jdg.micro.vat.proportion.no_match",
       "file": "rules/micro/vat/proportion_vat.rego",
       "legal_basis": "Art. 90 ust. 1-2 VAT",
@@ -56264,204 +56915,204 @@
     {
       "rule_id": "jdg.micro.vat.no_match",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 5 ust. 1 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 5 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a5.r1",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 5 ust. 1 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 5 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a5.r2",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 5 ust. 1 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 5 ust. 1 pkt 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a5.r3",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 5 ust. 1 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 5 ust. 1 pkt 2 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a5.r4",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 5 ust. 1 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 5 ust. 1 pkt 3 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a5.r5",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 5 ust. 1 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 5 ust. 1 pkt 4 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a5.r6",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 5 ust. 1 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 5 ust. 1 pkt 5 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a5.r7",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 5 ust. 1 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 5 ust. 1 pkt 6 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a5.r8",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 5 ust. 1 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 5 ust. 1 pkt 7 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a5.r9",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 5 ust. 1 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 5 ust. 1 pkt 8 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a5.r10",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 5 ust. 1 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 5 ust. 1 pkt 9 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a7.r1",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 7 ust. 1-8 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a7.r2",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 7 ust. 1-8 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a7.r3",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 7 ust. 1-8 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 7 ust. 2 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a7.r4",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 7 ust. 1-8 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 7 ust. 3 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a7.r5",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 7 ust. 1-8 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 7 ust. 8 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a7.r6",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 7 ust. 1-8 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 7 ust. 1 zdanie drugie ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a7.r7",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 7 ust. 1-8 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 7 ust. 8 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a7.r8",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 7 ust. 1-8 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a7.r9",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 7 ust. 1-8 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 7 ust. 8 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a7.r10",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 7 ust. 1-8 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a7.r11",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 7 ust. 1-8 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a7.r12",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 7 ust. 1-8 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a8.r1",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 8 ust. 1-2 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 8 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a8.r2",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 8 ust. 1-2 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 8 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a8.r3",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 8 ust. 1-2 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 8 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a8.r4",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 8 ust. 1-2 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 8 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a8.r5",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 8 ust. 1-2 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 8 ust. 2 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a8.r6",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 8 ust. 1-2 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 8 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
@@ -56509,8 +57160,8 @@
     {
       "rule_id": "jdg.micro.vat.a15.r1",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 15 ust. 1-2 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 15 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
@@ -56523,71 +57174,71 @@
     {
       "rule_id": "jdg.micro.vat.a15.r3",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 15 ust. 1-2 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 15 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a15.r4",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 15 ust. 1-2 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 15 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a15.r5",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 15 ust. 1-2 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 96 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a15.r6",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 15 ust. 1-2 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 96 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a15.r7",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 15 ust. 1-2 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 96 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a15.r8",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 15 ust. 1-2 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 96 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a17.r1",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 17 ust. 1-2 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 17 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a17.r2",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 17 ust. 1-2 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 17 ust. 1 pkt 4 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a17.r3",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 17 ust. 1-2 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 17 ust. 1 pkt 5 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
       "rule_id": "jdg.micro.vat.a17.r4",
       "file": "rules/micro/vat/vat.rego",
-      "legal_basis": "Art. 17 ust. 1-2 VAT",
-      "class": "NON_CANONICAL",
+      "legal_basis": "Art. 17 ust. 1 pkt 7 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)",
+      "class": "OK",
       "canonical_act": "ustawa o VAT"
     },
     {
@@ -65257,6 +65908,27 @@
       "canonical_act": "ustawa o świadczeniach opieki zdrowotnej"
     },
     {
+      "rule_id": "jdg.micro.zdrowotna.a79.no_match",
+      "file": "rules/micro/zdrowotna/zdrowotna_a79.rego",
+      "legal_basis": "Art. 79 ust. 1 w zw. z art. 81 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o świadczeniach opieki zdrowotnej"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a79.scale_calculation",
+      "file": "rules/micro/zdrowotna/zdrowotna_a79.rego",
+      "legal_basis": "Art. 79 ust. 1 w zw. z art. 81 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o świadczeniach opieki zdrowotnej"
+    },
+    {
+      "rule_id": "jdg.micro.zdrowotna.a79.annual_settlement_scale",
+      "file": "rules/micro/zdrowotna/zdrowotna_a79.rego",
+      "legal_basis": "Art. 79 ust. 1, art. 81 ust. 1 ustawy z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (Dz.U. 2025 poz. 890)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o świadczeniach opieki zdrowotnej"
+    },
+    {
       "rule_id": "jdg.micro.zus_atomic_p09.no_match",
       "file": "rules/micro/zus_micro_atomic_p09.rego",
       "legal_basis": "Art. 18c ust. 1 ustawy z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (Dz.U. 2025 poz. 345, ze zm.)",
@@ -65497,7 +66169,7 @@
     {
       "rule_id": "jdg.neural_mesh_v2.domain.cross_kks_vat_penalty.r1",
       "file": "rules/neural_mesh_v2_enterprise.rego",
-      "legal_basis": "Art. 62 § 2 KKS; Art. 106b VAT; Art. 106nq VAT",
+      "legal_basis": "Art. 62 § 2 KKS; Art. 106b VAT; Art. 106ga ust. 1 VAT",
       "class": "NON_CANONICAL",
       "canonical_act": "ustawa o VAT"
     },
@@ -76177,6 +76849,48 @@
       "canonical_act": "ustawa o PIT"
     },
     {
+      "rule_id": "jdg.pit.zero_doubt.no_match",
+      "file": "rules/pit/pit_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 30h ust. 1-2, 4 PIT (Dz.U. 2025 poz. 789 ze zm.); art. 27, 30b, 30c, 30f PIT",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o PIT"
+    },
+    {
+      "rule_id": "jdg.pit.zero_doubt.solidarity_danina_30h",
+      "file": "rules/pit/pit_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 30h ust. 1-2, 4 PIT (Dz.U. 2025 poz. 789 ze zm.); art. 27, 30b, 30c, 30f PIT",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o PIT"
+    },
+    {
+      "rule_id": "jdg.pit.zero_doubt.tp_related_parties_23m",
+      "file": "rules/pit/pit_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 23m ust. 1 pkt 4, ust. 2 PIT (Dz.U. 2025 poz. 789 ze zm.)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o PIT"
+    },
+    {
+      "rule_id": "jdg.pit.zero_doubt.tp_related_parties_family_23m",
+      "file": "rules/pit/pit_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 23m ust. 1 pkt 4, ust. 2 pkt 2-3 PIT (Dz.U. 2025 poz. 789 ze zm.)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o PIT"
+    },
+    {
+      "rule_id": "jdg.pit.zero_doubt.tp_local_documentation_23w",
+      "file": "rules/pit/pit_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 23w ust. 1-2, 2a PIT (Dz.U. 2025 poz. 789 ze zm.); art. 23za ust. 1 PIT",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o PIT"
+    },
+    {
+      "rule_id": "jdg.pit.zero_doubt.tp_information_23zf",
+      "file": "rules/pit/pit_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 23zf ust. 1-2 PIT (Dz.U. 2025 poz. 789 ze zm.); art. 23z pkt 1-2, 9-11 PIT",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o PIT"
+    },
+    {
       "rule_id": "jdg.pit.exemption_interactions_shared_limit",
       "file": "rules/pit/plan23_exemptions.rego",
       "legal_basis": "Art. 21 ust. 1 pkt 148,152,153,154 PIT",
@@ -76814,6 +77528,48 @@
       "canonical_act": "ustawa o ryczałcie"
     },
     {
+      "rule_id": "jdg.pit_macro_etap10.no_match",
+      "file": "rules/pit_macro_etap10_innovations_v1.rego",
+      "legal_basis": "",
+      "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.pit_macro_etap10.pit_macro_audit",
+      "file": "rules/pit_macro_etap10_innovations_v1.rego",
+      "legal_basis": "Art. 27, 30c PIT; Art. 22-23 PIT; Art. 44, 45 PIT; Art. 21 PIT",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o PIT"
+    },
+    {
+      "rule_id": "jdg.pit_micro_reliefs_etap11.no_match",
+      "file": "rules/pit_micro_reliefs_etap11_v1.rego",
+      "legal_basis": "",
+      "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.pit_micro_reliefs_etap11.relief_evidence_audit",
+      "file": "rules/pit_micro_reliefs_etap11_v1.rego",
+      "legal_basis": "Art. 9, 21, 26, 26e, 26eb, 26ec, 26gb, 26h, 27f, 30ca-30cb PIT",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o PIT"
+    },
+    {
+      "rule_id": "jdg.pkpir_etap14.no_match",
+      "file": "rules/pkpir_etap14_v1.rego",
+      "legal_basis": "§10-12/§18-19 rozp. MF PKPiR; art. 14/22/23/23a/23b/23f/24 PIT; art. 109 ust. 3 VAT; JPK_PKPIR art. 193a OrdPU",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.pkpir_etap14.report",
+      "file": "rules/pkpir_etap14_v1.rego",
+      "legal_basis": "§10-12/§18-19 rozp. MF PKPiR; art. 14/22/23/23a/23b/23f/24 PIT; art. 109 ust. 3 VAT; JPK_PKPIR art. 193a OrdPU",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
       "rule_id": "jdg.pkpir_to_uor_transformer.no_match",
       "file": "rules/pkpir_to_uor_transformer.rego",
       "legal_basis": "Art. 2 ust. 1 pkt 2 UoR; Art. 24a PIT",
@@ -76882,6 +77638,20 @@
       "legal_basis": "Art. 138g OrdPU (wygaśnięcie pełnomocnictwa)",
       "class": "NON_CANONICAL",
       "canonical_act": "Ordynacja podatkowa"
+    },
+    {
+      "rule_id": "jdg.policies_mirror_sync_etap26.no_match",
+      "file": "rules/policies_mirror_sync_etap26_v1.rego",
+      "legal_basis": "",
+      "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.policies_mirror_sync_etap26.mirror_governance",
+      "file": "rules/policies_mirror_sync_etap26_v1.rego",
+      "legal_basis": "V1 §1 single source of truth; V1 §6.3 overlays; ADR-011; policies_sync_gate.py; overlay_engine.py; overlay_generator.py",
+      "class": "UNKNOWN_ACT",
+      "canonical_act": null
     },
     {
       "rule_id": "jdg.ppk_pfron.no_match",
@@ -78949,7 +79719,7 @@
       "canonical_act": "ustawa o rachunkowości"
     },
     {
-      "rule_id": "jdg.risk.no_match",
+      "rule_id": "jdg.risk.plan26.no_match",
       "file": "rules/risk/plan26_kks.rego",
       "legal_basis": "Art. 54 ustawy z dnia 10 września 1999 r. — Kodeks karny skarbowy (Dz.U. 2025 poz. 678, ze zm.)",
       "class": "OK",
@@ -79225,6 +79995,20 @@
       "rule_id": "jdg.rodo.processor_agreement",
       "file": "rules/rodo.rego",
       "legal_basis": "Art. 28 RODO",
+      "class": "OK",
+      "canonical_act": "RODO"
+    },
+    {
+      "rule_id": "jdg.rodo_aml_bdo_hr_etap21.no_match",
+      "file": "rules/rodo_aml_bdo_hr_etap21_v1.rego",
+      "legal_basis": "",
+      "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.rodo_aml_bdo_hr_etap21.compliance_hr_verdict",
+      "file": "rules/rodo_aml_bdo_hr_etap21_v1.rego",
+      "legal_basis": "RODO art. 5; RODO art. 17; RODO art. 22, 24, 28, 30, 32-34, 83; u.AML art. 2, 28-34, 41; u.AML art. 74-80; u.AML art. 153; UoO art. 49; UoO art. 66-70, 89, 194; KP art. 85, 148¹, 154-172; ustawa o PPK; ustawa o PFRON",
       "class": "OK",
       "canonical_act": "RODO"
     },
@@ -80195,14 +80979,14 @@
       "canonical_act": "Ordynacja podatkowa"
     },
     {
-      "rule_id": "jdg.limitations.suspension_of_limitation_art21",
+      "rule_id": "jdg.limitations.suspension_of_limitation_art21_tax_audit",
       "file": "rules/statute_of_limitations.rego",
       "legal_basis": "Art. 21 § 1 pkt 1 OrdPU, Art. 70 § 4 OrdPU",
       "class": "NON_CANONICAL",
       "canonical_act": "Ordynacja podatkowa"
     },
     {
-      "rule_id": "jdg.limitations.suspension_of_limitation_art21",
+      "rule_id": "jdg.limitations.suspension_of_limitation_art21_tax_proceedings",
       "file": "rules/statute_of_limitations.rego",
       "legal_basis": "Art. 21 § 1 pkt 1 OrdPU, Art. 70 § 4 OrdPU",
       "class": "NON_CANONICAL",
@@ -80307,7 +81091,7 @@
       "canonical_act": "Ordynacja podatkowa"
     },
     {
-      "rule_id": "jdg.strategic.no_match",
+      "rule_id": "jdg.strategic_advisor.no_match",
       "file": "rules/strategic_advisor_enterprise.rego",
       "legal_basis": "Art. 551-584 KSH (przekształcenie); Art. 19 CIT (19%/9%); Art. 30c PIT (19% liniowy)",
       "class": "NON_CANONICAL",
@@ -81025,6 +81809,62 @@
       "file": "rules/temporal.rego",
       "legal_basis": "Rozp. COVID (archiwalne 2020-2021)",
       "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.tests_ci.quality_v3_17.ci_quality_contract",
+      "file": "rules/tests_ci/quality_v3_17.rego",
+      "legal_basis": "OrdPU art. 12 § 5, art. 193a; PIT art. 44-45; VAT art. 106na-106nq (schematy KSeF/JPK dla fuzz); KKS art. 16; ADR-002; MANIFEST.md",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.tests_ci.quality_v3_17.no_match",
+      "file": "rules/tests_ci/quality_v3_17.rego",
+      "legal_basis": "",
+      "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.tests_ci_quality_etap24.no_match",
+      "file": "rules/tests_ci_quality_etap24_v1.rego",
+      "legal_basis": "",
+      "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.tests_ci_quality_etap24.quality_release_verdict",
+      "file": "rules/tests_ci_quality_etap24_v1.rego",
+      "legal_basis": "ADR-001; ADR-006; ADR-013; ADR-017; ADR-018; ADR-022; OPA test --fail-on-empty; pytest; property/mutation/fuzz/golden/chaos/security/DR controls",
+      "class": "NON_CANONICAL",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.tools.quality_v3_16.quality_gates_contract",
+      "file": "rules/tools/quality_v3_16.rego",
+      "legal_basis": "OrdPU art. 12 § 5, art. 193a; PIT art. 44-45; VAT art. 109; KKS art. 16; ADR-002 (zero-hardcode); MANIFEST.md (rejestr rule_id)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.tools.quality_v3_16.no_match",
+      "file": "rules/tools/quality_v3_16.rego",
+      "legal_basis": "",
+      "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.tools_api_rulestore_bundles_etap25.no_match",
+      "file": "rules/tools_api_rulestore_bundles_etap25_v1.rego",
+      "legal_basis": "",
+      "class": "MISSING",
+      "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.tools_api_rulestore_bundles_etap25.control_data_plane_governance",
+      "file": "rules/tools_api_rulestore_bundles_etap25_v1.rego",
+      "legal_basis": "V1 §9, V2 §8, V1 §12.2; ADR-001; ADR-006; ADR-022; OpenAPI 3.0.3; migracje 001-004+013; SEPARATION_OF_DUTIES; NOT_CERTIFIED",
+      "class": "UNKNOWN_ACT",
       "canonical_act": null
     },
     {
@@ -83240,6 +84080,20 @@
       "canonical_act": "ustawa o rachunkowości"
     },
     {
+      "rule_id": "jdg.uor_etap15.no_match",
+      "file": "rules/uor_etap15_v1.rego",
+      "legal_basis": "art. 2/3/4/12/15/21/26/28-32/45-49 UoR; art. 22a-22n PIT",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o PIT"
+    },
+    {
+      "rule_id": "jdg.uor_etap15.report",
+      "file": "rules/uor_etap15_v1.rego",
+      "legal_basis": "art. 2/3/4/12/15/21/26/28-32/45-49 UoR; art. 22a-22n PIT",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o PIT"
+    },
+    {
       "rule_id": "jdg.validation.no_match",
       "file": "rules/validation.rego",
       "legal_basis": "Art. 96 VAT (identyfikator podatkowy)",
@@ -84612,6 +85466,111 @@
       "canonical_act": "ustawa o VAT"
     },
     {
+      "rule_id": "jdg.vat.zero_doubt.no_match",
+      "file": "rules/vat/vat_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 8b ust. 1 VAT (Dz.U. 2025 poz. 456 ze zm.); art. 2 pkt 32a VAT",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.zero_doubt.voucher_multi_purpose_transfer_notax",
+      "file": "rules/vat/vat_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 8b ust. 1 VAT (Dz.U. 2025 poz. 456 ze zm.); art. 2 pkt 32a VAT",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.zero_doubt.voucher_multi_purpose_redemption_taxable",
+      "file": "rules/vat/vat_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 8b ust. 1 VAT (Dz.U. 2025 poz. 456 ze zm.)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.zero_doubt.voucher_multi_purpose_distribution_taxable",
+      "file": "rules/vat/vat_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 8b ust. 2 VAT (Dz.U. 2025 poz. 456 ze zm.)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.zero_doubt.mpp_protection_108c",
+      "file": "rules/vat/vat_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 108c ust. 1-4 VAT (Dz.U. 2025 poz. 456 ze zm.); art. 56b OrdPU; art. 112b-112c VAT",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.zero_doubt.mpp_protection_lost_fake_invoice_108c",
+      "file": "rules/vat/vat_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 108c ust. 3 VAT (Dz.U. 2025 poz. 456 ze zm.); art. 58, 83 KC",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.zero_doubt.mpp_early_payment_discount_108d",
+      "file": "rules/vat/vat_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 108d VAT (Dz.U. 2025 poz. 456 ze zm.); art. 63 § 1 OrdPU",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.zero_doubt.mpp_account_obligation_108e",
+      "file": "rules/vat/vat_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 108e VAT (Dz.U. 2025 poz. 456 ze zm.); art. 49 ust. 1 pkt 1 ustawy Prawo bankowe",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.zero_doubt.mpp_cost_refund_nonresident_108f",
+      "file": "rules/vat/vat_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 108f VAT (Dz.U. 2025 poz. 456 ze zm.)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.zero_doubt.enforcement_invoice_106c",
+      "file": "rules/vat/vat_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 106c VAT; art. 18 VAT (Dz.U. 2025 poz. 456 ze zm.)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.zero_doubt.advance_invoice_106f",
+      "file": "rules/vat/vat_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 106f VAT (Dz.U. 2025 poz. 456 ze zm.); art. 106e ust. 1 pkt 1-6 VAT",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.zero_doubt.cash_register_invoice_106h",
+      "file": "rules/vat/vat_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 106h ust. 1 i 3 VAT (Dz.U. 2025 poz. 456 ze zm.)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.zero_doubt.invoice_duplicate_106l",
+      "file": "rules/vat/vat_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 106l VAT; art. 106gb ust. 5 VAT (Dz.U. 2025 poz. 456 ze zm.)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.zero_doubt.ksef_penalty_106ni",
+      "file": "rules/vat/vat_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 106ni VAT (Dz.U. 2025 poz. 456 ze zm.); art. 106ga, 106nda, 106nf, 106nh VAT",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
+      "rule_id": "jdg.vat.zero_doubt.art88a_repealed_notice",
+      "file": "rules/vat/vat_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 88a VAT (uchylony — stan na 2026); art. 86a VAT",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o VAT"
+    },
+    {
       "rule_id": "jdg.vat_cashflow.no_match",
       "file": "rules/vat_cashflow_predictor_enterprise.rego",
       "legal_basis": "Art. 99, 103, 87 VAT",
@@ -85620,7 +86579,7 @@
       "canonical_act": "ustawa o zasiłku pieniężnym"
     },
     {
-      "rule_id": "jdg.zus.no_match",
+      "rule_id": "jdg.zus.plan23.no_match",
       "file": "rules/zus/plan23_interactions.rego",
       "legal_basis": "Art. 81 ustawy o świadczeniach zdrowotnych",
       "class": "NON_CANONICAL",
@@ -85690,7 +86649,7 @@
       "canonical_act": "ustawa o świadczeniach opieki zdrowotnej"
     },
     {
-      "rule_id": "jdg.zus.no_match",
+      "rule_id": "jdg.zus.plan42.no_match",
       "file": "rules/zus/plan42_benefits.rego",
       "legal_basis": "Art. 18 ust. 8 SUS",
       "class": "NON_CANONICAL",
@@ -85856,6 +86815,27 @@
       "legal_basis": "Ustawa zasiłkowa + SUS",
       "class": "NON_CANONICAL",
       "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.zus.zero_doubt.no_match",
+      "file": "rules/zus/zus_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 19 ust. 1, 3, 5 SUS (Dz.U. 2025 poz. 345 ze zm.); art. 24 ust. 6a-8 SUS",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o SUS"
+    },
+    {
+      "rule_id": "jdg.zus.zero_doubt.annual_base_cap_30x_art19",
+      "file": "rules/zus/zus_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 19 ust. 1, 3, 5 SUS (Dz.U. 2025 poz. 345 ze zm.); art. 24 ust. 6a-8 SUS",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o SUS"
+    },
+    {
+      "rule_id": "jdg.zus.zero_doubt.remission_exclusion_art30",
+      "file": "rules/zus/zus_enterprise_zero_doubt.rego",
+      "legal_basis": "Art. 30 SUS w zw. z art. 28 ust. 3 pkt 4c SUS (Dz.U. 2025 poz. 345 ze zm.)",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o SUS"
     },
     {
       "rule_id": "jdg.zus.extensions.no_match",
@@ -86101,8 +87081,36 @@
       "legal_basis": "Ustawa o IKE z dn. 20.04.2004, Ustawa o IKZE z dn. 12.05.2011",
       "class": "NON_CANONICAL",
       "canonical_act": null
+    },
+    {
+      "rule_id": "jdg.zus_core_etap12.no_match",
+      "file": "rules/zus_core_etap12_v1.rego",
+      "legal_basis": "Ustawa o SUS art. 6-22/47; u.ś.o.z. art. 81; ustawa zasiłkowa art. 4/11; ustawa o PPK; ustawa o rehabilitacji",
+      "class": "OK",
+      "canonical_act": "ustawa o SUS"
+    },
+    {
+      "rule_id": "jdg.zus_core_etap12.report",
+      "file": "rules/zus_core_etap12_v1.rego",
+      "legal_basis": "Ustawa o SUS art. 6-22/47; u.ś.o.z. art. 81; ustawa zasiłkowa art. 4/11; ustawa o PPK; ustawa o rehabilitacji",
+      "class": "OK",
+      "canonical_act": "ustawa o SUS"
+    },
+    {
+      "rule_id": "jdg.zus_micro_etap13.no_match",
+      "file": "rules/zus_micro_etap13_v1.rego",
+      "legal_basis": "SUS art. 6-47; u.ś.o.z. art. 79-82; ustawa zasiłkowa art. 4-33",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o SUS"
+    },
+    {
+      "rule_id": "jdg.zus_micro_etap13.report",
+      "file": "rules/zus_micro_etap13_v1.rego",
+      "legal_basis": "SUS art. 6-47; u.ś.o.z. art. 79-82; ustawa zasiłkowa art. 4-33",
+      "class": "NON_CANONICAL",
+      "canonical_act": "ustawa o SUS"
     }
   ],
-  "rv_metric": 13.08,
+  "rv_metric": 13.56,
   "canon_acts": 30
 }

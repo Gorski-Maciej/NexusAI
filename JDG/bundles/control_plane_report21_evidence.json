@@ -1,0 +1,240 @@
+{
+  "schema_version": "1.0.0",
+  "report": "RAPORT_21_CONTROL_PLANE",
+  "status": "WDROZONY_100",
+  "gates": {
+    "scope_files_present": true,
+    "rule_lifecycle_7_steps": true,
+    "bundle_pipeline_signed_delta": true,
+    "law_change_pipeline_f5": true,
+    "f1_legal_twin_lkg": true,
+    "f2_invariants_runtime": true,
+    "f3_golden_differential_smt": true,
+    "f4_decision_certificate": true,
+    "f6_declarative_change": true,
+    "worm_append_only": true,
+    "genius_ideas_12": true,
+    "tools_syntax_ok": true,
+    "tests_complete": true,
+    "report_present": true
+  },
+  "gate_summary": {
+    "passed": 14,
+    "total": 14
+  },
+  "scope": {
+    "declared": 67,
+    "present": 67,
+    "all_present": true,
+    "missing": [],
+    "files": {
+      "tools/control_plane_lifecycle.py": true,
+      "tools/rule_lifecycle_manager.py": true,
+      "tools/bundle_server.py": true,
+      "tools/deployment_orchestrator.py": true,
+      "tools/dr_orchestrator.py": true,
+      "tools/certificate_service.py": true,
+      "tools/decision_certificate.py": true,
+      "tools/decision_quality_monitor.py": true,
+      "tools/declarative_change.py": true,
+      "tools/invariant_checker.py": true,
+      "tools/golden_baseline_seed.py": true,
+      "tools/golden_replay.py": true,
+      "tools/golden_autojustify.py": true,
+      "tools/smt_z3_verification.py": true,
+      "tools/differential_evaluation.py": true,
+      "tools/law_radar.py": true,
+      "tools/isap_crawler.py": true,
+      "tools/isap_rule_update_pipeline.py": true,
+      "tools/isap_drift_alarm.py": true,
+      "tools/legal_basis_audit.py": true,
+      "tools/legal_source_registry.py": true,
+      "tools/legal_change_impact_analyzer.py": true,
+      "tools/legal_change_calendar.py": true,
+      "tools/legal_coverage_gap_report.py": true,
+      "tools/legal_coverage_heatmap.py": true,
+      "tools/law_impact_matrix.py": true,
+      "tools/worm_storage.py": true,
+      "tools/law_amendment_simulator.py": true,
+      "tools/confidence_dashboard.py": true,
+      "tools/validate_rules.py": true,
+      "tools/lint_rego_rules.py": true,
+      "tools/dead_rule_detector.py": true,
+      "tools/tautology_guard.py": true,
+      "tools/generate_manifest.py": true,
+      "tools/policies_sync_gate.py": true,
+      "tools/legal_twin_engine.py": true,
+      "docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md": true,
+      "docs/WIZJA_OPA_ENTERPRISE_V2.md": true,
+      "docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md": true,
+      "docs/RULE_LIFECYCLE.md": true,
+      "docs/CONTROL_PLANE_RULE_LIFECYCLE.md": true,
+      "docs/LEGAL_TWIN_RAPORT.md": true,
+      "docs/LEGAL_TWIN_TRACEABILITY.md": true,
+      "docs/LEGAL_SOURCE_REGISTRY.md": true,
+      "docs/PEWNOSC_DASHBOARD.md": true,
+      "docs/KAMPANIA_GLM52_ETAPY_10_28.md": true,
+      "bundles/bundle.sh": true,
+      "bundles/manifest.json": true,
+      "bundles/control_plane_state.json": true,
+      "bundles/deployments.json": true,
+      "bundles/healthy_versions.json": true,
+      "bundles/bundle_catalog.json": true,
+      "bundles/node_persistence.json": true,
+      "bundles/golden_verdicts.json": true,
+      "bundles/law_radar.json": true,
+      "bundles/legal_graph.json": true,
+      "bundles/policy_registry.json": true,
+      "bundles/thresholds_data.json": true,
+      "bundles/decision_certificates.json": true,
+      "bundles/worm_audit.json": true,
+      "tests/test_control_plane_lifecycle.py": true,
+      "tests/test_p01_control_plane.py": true,
+      "tests/test_legal_source_registry.py": true,
+      "tests/test_legal_twin_traceability.py": true,
+      "tests/test_control_plane_infrastructure.py": true,
+      "rules/audit/runtime_invariants_enterprise.rego": true,
+      "rules/main_jdg.rego": true
+    }
+  },
+  "lifecycle": {
+    "markers": {
+      "operations": true,
+      "statuses": true,
+      "rollout_stages": true,
+      "manifest_8_fields": true,
+      "four_eyes_sod": true,
+      "traceability_chain": true,
+      "auto_rollback": true,
+      "lifecycle_cli": true
+    },
+    "complete": true
+  },
+  "bundle_pipeline": {
+    "markers": {
+      "sign_hsm_ready": true,
+      "verify_key_node": true,
+      "persist": true,
+      "discovery": true,
+      "status": true,
+      "delta": true,
+      "sbom": true,
+      "canary_5": true,
+      "ramp_25_50_100": true,
+      "soak_24h": true,
+      "auto_rollback_5min": true,
+      "hot_reload_15min": true,
+      "fleet_status": true
+    },
+    "complete": true
+  },
+  "law_change_pipeline": {
+    "markers": {
+      "draft_law_radar": true,
+      "isap_crawler": true,
+      "rule_update_pipeline": true,
+      "drift_alarm": true,
+      "impact_matrix": true,
+      "amendment_simulator": true,
+      "slo_24h_4h": true
+    },
+    "complete": true
+  },
+  "f1_legal_twin": {
+    "markers": {
+      "lkg_nodes": true,
+      "legal_source_registry": true,
+      "lci_tcl_rv": true,
+      "rv_gate": true
+    },
+    "complete": true
+  },
+  "f2_invariants": {
+    "markers": {
+      "inv_catalog": true,
+      "inv_ci_gate": true,
+      "runtime_invariants_rego": true,
+      "runtime_check_wired": true,
+      "post_merge": true,
+      "fail_closed": true
+    },
+    "complete": true
+  },
+  "f3_golden": {
+    "markers": {
+      "golden_schema_v2": true,
+      "uver_gate": true,
+      "autojustify": true,
+      "differential_2nodes": true,
+      "smt_z3_skeleton": true,
+      "differential_sessions": true
+    },
+    "complete": true
+  },
+  "f4_certificate": {
+    "markers": {
+      "issue_verify_export": true,
+      "classes": true,
+      "xml_export": true,
+      "seal": true,
+      "service_layer": true
+    },
+    "complete": true
+  },
+  "f6_declarative": {
+    "markers": {
+      "plan_execute": true,
+      "human_describes": true,
+      "gates": true,
+      "param_change_1min": true
+    },
+    "complete": true
+  },
+  "worm": {
+    "markers": {
+      "append_only": true,
+      "hash_chain": true,
+      "tamper_evident": true,
+      "fail_closed": true
+    },
+    "complete": true
+  },
+  "genius_ideas": {
+    "markers": {
+      "dashboard_pewnosc": true,
+      "status_mode_floty": true,
+      "samouzdrowienie": true,
+      "symulator_nowelizacji": true,
+      "game_day": true,
+      "sbom_per_bundle": true,
+      "worm_storage": true,
+      "canary_5_100": true,
+      "delta_bundles": true,
+      "bundle_podpis_hsm": true,
+      "traceability_chain": true,
+      "four_eyes_automatyzacja": true
+    },
+    "implemented": 12,
+    "total": 12,
+    "complete": true
+  },
+  "syntax": {
+    "files_checked": 36,
+    "syntax_errors": [],
+    "syntax_ok": true
+  },
+  "tests": {
+    "files": {
+      "tests/test_control_plane_lifecycle.py": true,
+      "tests/test_p01_control_plane.py": true,
+      "tests/test_legal_source_registry.py": true,
+      "tests/test_legal_twin_traceability.py": true,
+      "tests/test_control_plane_infrastructure.py": true
+    },
+    "lifecycle_tests": true,
+    "infrastructure_tests": true,
+    "complete": true
+  },
+  "production_status": "NOT_CERTIFIED",
+  "generated_at": "2026-08-29T16:53:19.878029+00:00"
+}

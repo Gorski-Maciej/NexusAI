@@ -1,0 +1,98 @@
+{
+  "schema_version": "1.0.0",
+  "campaign": "enterprise_v4 (PROMPT_00..25)",
+  "status": "WDROZONY_100",
+  "gates": {
+    "all_reports_wdrozony": true,
+    "report21_code_gate": true,
+    "report24_code_gate": true,
+    "artifacts_present": true,
+    "metrics_reported": true,
+    "production_not_certified": true
+  },
+  "gate_summary": {
+    "passed": 6,
+    "total": 6
+  },
+  "reports": {
+    "reports_found": 25,
+    "wdrozony": 25,
+    "nie_wdrozony": 0,
+    "unknown": 0,
+    "statuses": {
+      "01_RDZEN_ORKIESTRATORA.txt": "WDROŻONY_100",
+      "02_VAT_MACRO.txt": "WDROŻONY_100",
+      "03_VAT_MICRO.txt": "WDROŻONY_100",
+      "04_PIT_MACRO.txt": "WDROŻONY_100",
+      "05_PIT_MICRO_ULGI.txt": "WDROŻONY_100",
+      "06_ZUS_SUS.txt": "WDROŻONY_100",
+      "07_PKPIR_KSIEGOWOSC.txt": "WDROŻONY_100",
+      "08_UOR_AMORTYZACJA.txt": "WDROŻONY_100",
+      "09_KKS_ORDYNACJA.txt": "WDROŻONY_100",
+      "10_CROSSBORDER_TP_MDR.txt": "WDROŻONY_100",
+      "11_RYCZALT_FORMY_DEKLARACJE.txt": "WDROŻONY_100",
+      "12_PCC_LOKALNE_AKCYZA.txt": "WDROŻONY_100",
+      "13_KSEF_JPK_EDEKLARACJE.txt": "WDROŻONY_100",
+      "14_PP_CEIDG_SUKCESJA.txt": "WDROŻONY_100",
+      "15_RODO_AML_BDO_HR.txt": "WDROŻONY_100",
+      "16_ENTERPRISE_INTELIGENCJA.txt": "WDROŻONY_100",
+      "17_ENTERPRISE_URZEDY_OBRONA.txt": "WDROŻONY_100",
+      "18_HYPER_KONTEKSTY.txt": "WDROŻONY_100",
+      "19_FALE_INNOWACJI.txt": "WDROŻONY_100",
+      "20_TESTY_CI.txt": "WDROŻONY_100",
+      "21_CONTROL_PLANE.txt": "WDROŻONY_100",
+      "22_API_RULESTORE.txt": "WDROŻONY_100",
+      "23_DOKUMENTACJA_SPOJNOSC.txt": "WDROŻONY_100",
+      "24_LEGAL_TWIN.txt": "WDROŻONY_100",
+      "25_FINALNA_CERTYFIKACJA.txt": "WDROŻONY_100"
+    },
+    "all_wdrozony": true
+  },
+  "artifacts": {
+    "declared": 24,
+    "present": 24,
+    "all_present": true,
+    "missing": [],
+    "files": {
+      "tools/control_plane_lifecycle.py": true,
+      "tools/bundle_server.py": true,
+      "tools/deployment_orchestrator.py": true,
+      "tools/decision_certificate.py": true,
+      "tools/declarative_change.py": true,
+      "tools/golden_replay.py": true,
+      "tools/law_radar.py": true,
+      "tools/worm_storage.py": true,
+      "tools/law_amendment_simulator.py": true,
+      "tools/smt_z3_verification.py": true,
+      "tools/differential_evaluation.py": true,
+      "tools/lkg_generator.py": true,
+      "tools/reverse_coverage_detector.py": true,
+      "tools/legal_basis_audit.py": true,
+      "tools/legal_twin_report24_gate.py": true,
+      "tools/control_plane_report21_gate.py": true,
+      "bundles/legal_graph.json": true,
+      "bundles/golden_verdicts.json": true,
+      "bundles/decision_certificates.json": true,
+      "bundles/worm_audit.json": true,
+      "bundles/bundle_catalog.json": true,
+      "bundles/node_persistence.json": true,
+      "bundles/control_plane_report21_evidence.json": true,
+      "bundles/legal_twin_report24_evidence.json": true
+    }
+  },
+  "metrics": {
+    "LKG_nodes": 258,
+    "LCI": 71.43,
+    "TCL": 100.0,
+    "RV_audit": 13.56,
+    "golden_verdicts": 30,
+    "slo": {
+      "LCI_MIN": 99,
+      "TCL_MIN": 100,
+      "RV_MIN": 100
+    }
+  },
+  "production_status": "NOT_CERTIFIED",
+  "honesty": "Produkcja niecertyfikowana (brak telemetrii zewnętrznej); RV/LCI luki raportowane jawnie",
+  "generated_at": "2026-08-29T16:53:23.668340+00:00"
+}

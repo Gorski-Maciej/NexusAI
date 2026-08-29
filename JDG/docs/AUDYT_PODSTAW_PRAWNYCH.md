@@ -1,33 +1,45 @@
 # ⚖️ AUDYT PODSTAW PRAWNYCH (_legal_basis) — P02 (sekcja 5)
 
-> Wygenerowano: 2026-08-18T07:59:12.618338+00:00 · generator: `legal_basis_audit.py`
+> Wygenerowano: 2026-08-29T16:05:38.744456+00:00 · generator: `legal_basis_audit.py`
 > Słownik kanoniczny: `bundles/legal_reference_canon.json` (30 aktów)
 
 ## Statystyki
 
-- Reguły ogółem: 12295
-- **OK** (kanoniczne): 1608
-- **MISSING** (brak podstawy): 39
-- **UNKNOWN_ACT** (akt nierozpoznany): 555
-- **NON_CANONICAL** (format poza kanonem): 10093
-- **RV** (reguły z podstawą kanoniczną): 13.08% (cel V2: 100%)
+- Reguły ogółem: 12439
+- **OK** (kanoniczne): 1687
+- **MISSING** (brak podstawy): 59
+- **UNKNOWN_ACT** (akt nierozpoznany): 560
+- **NON_CANONICAL** (format poza kanonem): 10133
+- **RV** (reguły z podstawą kanoniczną): 13.56% (cel V2: 100%)
 
 ## Reguły BEZ podstawy prawnej (MISSING) — pełna lista
 
 - `jdg.uor_live.no_match` (rules/accounting/uor_enterprise_live.rego)
 - `jdg.adaptive_trust.no_match` (rules/adaptive_trust_scoring_enterprise.rego)
 - `jdg.annual_decl.no_match` (rules/annual_declaration_enterprise.rego)
+- `jdg.api_ui.quality_v3_19.no_match` (rules/api_ui/quality_v3_19.rego)
+- `jdg.bundles.quality_v3_18.no_match` (rules/bundles/quality_v3_18.rego)
 - `jdg.strategic.no_match` (rules/business/strategic_intelligence.rego)
 - `jdg.business.no_match` (rules/business.rego)
 - `jdg.cbam_full.no_match` (rules/cbam_full.rego)
 - `jdg.cfc_auto_classifier.no_match` (rules/cfc_auto_classifier.rego)
 - `jdg.compliance.aml.no_match` (rules/compliance/aml_enterprise.rego)
 - `jdg.cross_domain.no_match` (rules/cross_domain_intelligence_enterprise.rego)
+- `jdg.cross_domain_red_team_etap27.no_match` (rules/cross_domain_red_team_etap27_v1.rego)
+- `jdg.crossborder_etap17.no_match` (rules/crossborder_etap17_v1.rego)
 - `jdg.dac8_report_generator.no_match` (rules/dac8_report_generator.rego)
 - `jdg.decision_core_completeness.no_match` (rules/decision_core_completeness_enterprise.rego)
+- `jdg.docs.quality_v3_20.no_match` (rules/docs/quality_v3_20.rego)
+- `jdg.enterprise.quality_v3_15.no_match` (rules/enterprise/quality_v3_15.rego)
+- `jdg.enterprise_ai_neural_etap23.no_match` (rules/enterprise_ai_neural_etap23_v1.rego)
 - `jdg.exit_tax_interest_calculator.no_match` (rules/exit_tax_interest_calculator.rego)
+- `jdg.final_certification_etap28.no_match` (rules/final_certification_etap28_v1.rego)
 - `jdg.form_transition.no_match` (rules/form_transition_simulator_enterprise.rego)
 - `jdg.gtu_checker.no_match` (rules/gtu_completeness_checker_enterprise.rego)
+- `jdg.hyper.quality_v3_14.no_match` (rules/hyper/quality_v3_14.rego)
+- `jdg.hyper_enterprise_contexts_etap22.no_match` (rules/hyper_enterprise_contexts_etap22_v1.rego)
+- `jdg.ksef_jpk_etap20.no_match` (rules/ksef_jpk_etap20_v1.rego)
+- `jdg.local_excise_etap19.no_match` (rules/local_excise_etap19_v1.rego)
 - `jdg.micro.plan33_ord.no_match_override` (rules/micro/plan33_ord.rego)
 - `jdg.p02_decision_core_innovations.no_match` (rules/p02_decision_core_innovations_v9.rego)
 - `jdg.p03_orchestrator_innovations.no_match` (rules/p03_orchestrator_innovations_v9.rego)
@@ -48,10 +60,18 @@
 - `jdg.p22_validation_tools_innovations.no_match` (rules/p22_validation_tools_innovations_v9.rego)
 - `jdg.p24_audyt_kompletny_innovations.no_match` (rules/p24_audyt_kompletny_innovations_v9.rego)
 - `jdg.p33_ordpu_kks_supplement.no_match` (rules/p33_ordpu_kks_supplement.rego)
+- `jdg.pit_macro_etap10.no_match` (rules/pit_macro_etap10_innovations_v1.rego)
+- `jdg.pit_micro_reliefs_etap11.no_match` (rules/pit_micro_reliefs_etap11_v1.rego)
+- `jdg.policies_mirror_sync_etap26.no_match` (rules/policies_mirror_sync_etap26_v1.rego)
 - `jdg.r01_orchestrator_core_innovations.no_match` (rules/r01_orchestrator_core_innovations_v9.rego)
 - `jdg.r03_vat_micro_innovations.no_match` (rules/r03_vat_micro_innovations_v9.rego)
 - `jdg.r11_pcc_lokalne_akcyza_innovations.no_match` (rules/r11_pcc_lokalne_akcyza_innovations_v9.rego)
+- `jdg.rodo_aml_bdo_hr_etap21.no_match` (rules/rodo_aml_bdo_hr_etap21_v1.rego)
 - `jdg.rule_lifecycle.no_match` (rules/rule_lifecycle_enterprise.rego)
+- `jdg.tests_ci.quality_v3_17.no_match` (rules/tests_ci/quality_v3_17.rego)
+- `jdg.tests_ci_quality_etap24.no_match` (rules/tests_ci_quality_etap24_v1.rego)
+- `jdg.tools.quality_v3_16.no_match` (rules/tools/quality_v3_16.rego)
+- `jdg.tools_api_rulestore_bundles_etap25.no_match` (rules/tools_api_rulestore_bundles_etap25_v1.rego)
 - `jdg.vat.reduced_rates.no_match` (rules/vat/plan42_reduced_rates.rego)
 
 ## Reguły z aktem nierozpoznanym (UNKNOWN_ACT)
@@ -75,6 +95,8 @@
 - `jdg.conviction.hyper.rehabilitation_business_ban_lift`: Art. 41 KK
 - `jdg.conviction.hyper.bank_account_seizure`: Art. 75-89 Ustawa o post. egz.
 - `jdg.conviction.hyper.insolvency_filing_obligation`: Art. 21 Prawa upadłościowego
+- `jdg.cross_domain_red_team_etap27.red_team_governance`: V1 §3-6 security; ADR-011 (security_fortress); chaos_runner.py; cross_package_conflict_det
+- `jdg.crossborder.v3_08.dac8_engine`: Dyrektywa Rady (UE) 2021/514 (DAC8); art. 8ac dyrektywy Rady 2011/16/UE
 - `jdg.crossborder.dac8_below_threshold`: DAC8 Art. 8ac ust. 2 — wyłączenie de minimis
 - `jdg.crossborder.dac8_deadline_reminder`: DAC8 — art. 8ac Dyrektywy 2011/16/UE
 - `jdg.decision_core_completeness.limitations_calendar_report`: Art. 70 OP + P02 Sekcja 4
@@ -154,33 +176,31 @@
 - `jdg.hyper.deadlines.insurance.mandatory.detection_construction`: Art. 4 ustawy z dnia 22 maja 2003 r. o ubezpieczeniach obowiązkowych, Ubezpieczeniowym Fun
 - `jdg.hyper.deadlines.payment.offset.mutual_agreement_required`: Art. 498-499 ustawy z dnia 23 kwietnia 1964 r. — Kodeks cywilny
 - `jdg.hyper.force_majeure.audit.right.wsa_complaint_30_days`: Art. 220 ustawy z dnia 30 sierpnia 2002 r. — Prawo o postępowaniu przed sądami administrac
-- `jdg.hyper.fx.epuap.profile.required`: Art. 20a ustawy z dnia 17 lutego 2005 r. o informatyzacji działalności podmiotów realizują
-- `jdg.hyper.fx.epuap.signature.profile_zaufany`: Art. 20a ustawy z dnia 17 lutego 2005 r. o informatyzacji działalności podmiotów realizują
 
 ## Pokrycie per akt kanoniczny
 
 | Akt | Reguły |
 |---|---|
-| ustawa o PIT | 1806 |
-| ustawa o VAT | 1641 |
-| Ordynacja podatkowa | 764 |
-| Kodeks karny skarbowy | 430 |
+| ustawa o PIT | 1835 |
+| ustawa o VAT | 1678 |
+| Ordynacja podatkowa | 769 |
+| Kodeks karny skarbowy | 433 |
 | ustawa o rachunkowości | 420 |
-| ustawa o SUS | 399 |
-| ustawa o ryczałcie | 279 |
-| Prawo przedsiębiorców | 201 |
-| ustawa o świadczeniach opieki zdrowotnej | 178 |
-| ustawa o PCC | 175 |
+| ustawa o SUS | 411 |
+| ustawa o ryczałcie | 281 |
+| Prawo przedsiębiorców | 204 |
+| ustawa o świadczeniach opieki zdrowotnej | 182 |
+| ustawa o PCC | 177 |
 | ustawa o zarządzie sukcesyjnym | 146 |
 | rozporządzenie PKPiR | 109 |
 | ustawa o podatku akcyzowym | 98 |
-| RODO | 92 |
+| RODO | 96 |
 | ustawa o zasiłku pieniężnym | 84 |
-| ustawa o podatkach i opłatach lokalnych | 74 |
-| ustawa o BDO | 65 |
+| ustawa o podatkach i opłatach lokalnych | 76 |
+| ustawa o BDO | 66 |
 | ustawa o CEIDG | 48 |
 | ustawa o CIT | 47 |
-| ustawa o AML | 44 |
+| ustawa o AML | 46 |
 | Prawo budowlane | 19 |
 | ustawa o rehabilitacji zawodowej | 7 |
 | ustawa o podatku rolnym | 4 |

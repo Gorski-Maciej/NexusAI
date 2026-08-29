@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0.0",
+  "proofs": {
+    "zus": {
+      "domain": "zus",
+      "verified": false,
+      "mode": "SKELETON",
+      "result": "UNVERIFIED — z3-solver niedostępny",
+      "lemmas": [
+        "ZUS-001: health ∈ [0, 0.09 × base]",
+        "ZUS-002: liniowy 4.9% ≤ limit odliczenia"
+      ]
+    },
+    "pit": {
+      "domain": "pit",
+      "verified": false,
+      "mode": "SKELETON",
+      "result": "UNVERIFIED — z3-solver niedostępny",
+      "lemmas": [
+        "PIT-001: advance ≥ 0",
+        "PIT-002: advance ≤ base × 0.32"
+      ]
+    },
+    "kks": {
+      "domain": "kks",
+      "verified": false,
+      "mode": "SKELETON",
+      "result": "UNVERIFIED — z3-solver niedostępny",
+      "lemmas": [
+        "KKS-001: fine ∈ [0, 500 000]"
+      ]
+    },
+    "vat": {
+      "domain": "vat",
+      "verified": false,
+      "mode": "SKELETON",
+      "result": "UNVERIFIED — z3-solver niedostępny",
+      "lemmas": [
+        "INV-001: stawka ∈ {0.05, 0.08, 0.23}",
+        "INV-003: brutto = netto × (1 + stawka)"
+      ]
+    }
+  },
+  "mode": "SKELETON",
+  "updated_at": "2026-08-29T15:45:47+00:00"
+}

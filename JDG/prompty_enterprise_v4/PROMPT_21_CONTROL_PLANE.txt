@@ -1,0 +1,192 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 21/25 — CZĘŚĆ 21: CONTROL PLANE — OPA JAKO SYSTEM (F1–F6 Z WIZJI V2 + V1 §1–5)
+
+Jesteś Najwyższej Klasy Ekspertem Policy-as-Code w klasie Enterprise:
+OPA bundles (sign, persist, discovery, status, delta), OPAL, Regal,
+Control Plane (Policy Registry, Rule Lifecycle, Deployment Orchestrator),
+Law-Change Pipeline (ISAP + Law Radar), Golden Oracle, runtime invariants,
+Decision Certificate, Declarative Change — dla modułu JDG na **poziomie ENTERPRISE**.
+
+## ⚠️ KRYTYCZNE ZASADY
+
+1. **Przeprowadź głębokie myślenie** o dwóch ŚWIĘTYCH plikach:
+   ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1: Control Plane + Data Plane,
+   cykl życia reguły 7 kroków, pipeline ISAP→produkcja ≤ 24 h / 4 h P0,
+   bramki CI 1–11, SLO: zmiana parametru ≤ 15 min, MTTR ≤ 15 min,
+   auto-rollback ≤ 5 min, dostępność 99,95%) oraz WIZJA_OPA_ENTERPRISE_V2.md
+   (V2: F1 Legal Twin/LKG, F2 runtime invariants, F3 Golden Oracle +
+   SMT, F4 Decision Certificate, F5 Law Radar, F6 Declarative Change).
+   Narzędzia w tools/ (rule_lifecycle_manager, bundle_server,
+   certificate_service, decision_certificate, decision_quality_monitor,
+   declarative_change, invariant_checker, golden_*, law_radar,
+   isap_*, legal_*, control_plane_lifecycle) to ZALĄŻKI V1/V2 —
+   Twoim celem: wznieść je na POZIOM INFRASTRUKTURY (nie reguł
+   audytujących) zgodnie z V1 §5.
+2. **Przeprowadź głęboką analizę** każdego narzędzia Control Plane:
+   czy działa (uruchamialne), czy jest podpięte (CI/workflows/API),
+   czy ma testy, czy pokrywa SLO z V1/V2. Dla każdego narzędzia:
+   stan + luki + wzmocnienie.
+3. Pracuj na **zaawansowanym poziomie Enterprise**: łańcuch traceability
+   „nowelizacja → issue → PR → bundle → węzeł → werdykt → certyfikat"
+   (jeden identyfikator), runtime invariants w main_jdg.rego (koniec
+   POST-MERGE), Golden Replay jako bramka CI, podpis bundle (HSM —
+   przynajmniej interfejs + weryfikacja kluczem), canary 5% → 100% +
+   auto-rollback, Law Radar (projekty ustaw RCL/Sejm — DRAFT_LAW),
+   Declarative Change („człowiek opisuje, maszyna wykonuje").
+4. Wdrażaj **innowacyjne ulepszenia wyprzedzające profesjonalistów**:
+   dashboard „Pewność" (LCI×TCL×RV — indeksy z V2 §2.3/§11.2),
+   samouzdrowienie (auto-rollback przy naruszeniu progu jakości),
+   status mode OPA (flota węzłów na jednej rewizji), delta-bundles.
+5. **NIE GENERUJ DUPLIKATÓW:** audyt tools/ (337 plików) — narzędzia
+   o tej samej roli (np. dwa golden_replay) konsoliduj; reguły Rego
+   audytujące (rules/tools, rules/tests_ci…) zostaw jako kontrolę WTÓRNĄ.
+6. Generujesz: (a) OGROMNY RAPORT .txt w
+   `JDG/raporty_enterprise_v4/21_CONTROL_PLANE.txt`, (b) INTELIGENTNY KOD
+   (wzmacniasz narzędzia, dodajesz brakujące ogniwa), (c) weryfikację
+   (uruchomienia), (d) honesty report.
+7. **BUDŻET KONTEKSTU:** dane ≤ 50% okna (~500 tys. tokenów). Część ~1 MB —
+   czytaj narzędzie po narzędziu (nie wszystkie 337 — kluczowe + próbki).
+8. Reguły MUSZĄ być zgodne z aktami z
+   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md.
+
+## 📂 ŚWIĘTE PLIKI DO PRZECZYTANIA (zawsze — W TEJ CZĘŚCI OBOWIĄZKOWO W CAŁOŚCI)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (CAŁY)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md (CAŁY)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (już wyżej — pamiętaj: V1 i V2 to DWA ŚWIĘTE pliki)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/RULE_LIFECYCLE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/CONTROL_PLANE_RULE_LIFECYCLE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_TWIN_RAPORT.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_TWIN_TRACEABILITY.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_SOURCE_REGISTRY.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PEWNOSC_DASHBOARD.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KAMPANIA_GLM52_ETAPY_10_28.md
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 21 (Control Plane) — narzędzia
+
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/tools (katalog — przegląd strukturalny)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/rule_lifecycle_manager.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/control_plane_lifecycle.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/bundle_server.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/bundle.sh (katalog bundles — sprawdź)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/bundle.sh
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/manifest.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/certificate_service.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/decision_certificate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/decision_quality_monitor.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/declarative_change.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/invariant_checker.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/golden_baseline_seed.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/golden_replay.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/golden_autojustify.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/law_radar.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/isap_crawler.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/isap_rule_update_pipeline.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/isap_drift_alarm.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_basis_audit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_source_registry.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_change_impact_analyzer.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_change_calendar.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_coverage_gap_report.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_coverage_heatmap.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/lint_rego_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/dead_rule_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/tautology_guard.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/generate_manifest.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/policies_sync_gate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/final_certification_etap28_audit.py (audyt samo-referencyjny — oceń krytycznie!)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tools/quality_v3_15.rego (sprawdź — kontrola wtórna)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/bundles/quality_v3_18.rego (sprawdź)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/001_init.sql (RuleStore — pełna analiza migracji w CZĘŚCI 22; tutaj interfejs)
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/bundles (audit_state.json — 22 pliki)
+
+## 🎯 CEL ANALIZY
+
+1. **Mapa Control Plane:** narysuj stan faktyczny (co działa, co jest
+   szkieletem) vs cel V1/V2. Wypisz luki L1–L12 (ANALIZA_STANU) i status.
+2. **Cykl życia reguły (V1 §3):** wdróż pełne 7 kroków (specyfikacja →
+   generacja → implementacja → auto-testy → bramki → 4-eyes → wdrożenie
+   SHADOW/CANDIDATE/ACTIVE/ROLLED_BACK) jako NARZĘDZIA (CLI + API).
+3. **Bundle pipeline (V1 §9):** bundle.sh → Bundle Server: podpis
+   (interfejs HSM), weryfikacja kluczem na węźle, persist, discovery,
+   status, delta; canary 5% → 100% z auto-rollbackiem ≤ 5 min —
+   wdróż brakujące ogniwa.
+4. **Law-Change Pipeline (V1 §4 + V2 F5):** ISAP crawler + Law Radar
+   (projekty RCL/Sejm/Senat — DRAFT_LAW), AI-reader (interfejs LLM),
+   impact matrix, golden replay przed wdrożeniem, SLO 24 h / 4 h P0
+   / parametr < 1 min — wdróż.
+5. **F1 Legal Twin:** legal_source_registry/legal_basis_audit →
+   LKG (węzły: akt→artykuł→ustęp→pkt, daty, wersje); metryki LCI, TCL,
+   RV; bramka RV (100% reguł krytycznych z referencjami).
+6. **F2 Invariants:** invariant_checker + runtime check w main_jdg.rego
+   (koniec POST-MERGE) — wdróż.
+7. **F3 Golden Oracle:** golden_replay jako bramka CI z auto-wyjaśnieniami
+   + ewaluacja różnicowa (≥ 2 węzły, hash werdyktów) + SMT/Z3 (szkielet
+   dla ZUS/PIT/KKS).
+8. **F4 Decision Certificate:** decision_certificate/certificate_service
+   → pełny certyfikat (PDF+XML, pieczęć, klasy CERTAIN/CONDITIONAL/
+   NEEDS_ADVICE, weryfikacja offline).
+9. **F6 Declarative Change:** declarative_change.py → interfejs
+   „człowiek opisuje, maszyna wykonuje" (zmiana parametru < 1 min,
+   zmiana reguły z bramkami).
+10. **Honesty:** oceń final_certification_etap28_audit.py KRYTYCZNIE
+    (grep na raportach, które usunięto z repo — certyfikacja obecnie
+    nieodtwarzalna); zaproponuj certyfikację opartą o KOD (bramki
+    uruchamialne lokalnie).
+11. **Genialne pomysły (min. 12):** dashboard „Pewność" (LCI×TCL×RV),
+     status mode floty, samouzdrowienie (auto-rollback), symulator
+     nowelizacji („co gdyby prawo weszło wczoraj"), game day automaty,
+     SBOM per bundle, WORM storage dla audytu (interfejs).
+
+## 🏗️ SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA
+
+- Control Plane obsługuje WSZYSTKIE części (reguły z 1–19) — kontrakty:
+  rule_id, manifest reguły (8 pól — V1 §3.1), werdykt 25-polowy.
+- RuleStore/migracje: CZĘŚĆ 22; testy/bramki: CZĘŚĆ 20; Legal Twin
+  zgodność aktów: CZĘŚĆ 24; mirror policies (ETAP 26) — utrzymaj.
+- MANIFEST.md regeneracja po zmianach.
+
+## 🔁 WYMOGI NADRZĘDNE (powtórzone dla pewności)
+
+Aby osiągnąć zaawansowany poziom Enterprise: Przeprowadź głębokie myślenie nad każdym
+kontraktem, przeprowadź głęboką analizę każdej zależności domenowej i wdrażaj wyłącznie
+rozwiązania klasy poziom ENTERPRISE — zinnowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale raportu.
+Przeprowadź głębokie myślenie nad konsekwencjami każdej zmiany dla innych części,
+przeprowadź głęboką analizę spójności rule_id, pakietów i progów; każda reguła musi służyć
+zaawansowany poziom Enterprise oraz poziomowi ENTERPRISE całości — z innowacyjnymi
+ulepszeniami wyprzedzającymi profesjonalistów w testach i narzędziach.
+Przeprowadź głębokie myślenie przed każdym wdrożeniem i przeprowadź głęboką analizę po
+wdrożeniu (weryfikacja); utrzymuj zaawansowany poziom Enterprise w dokumentacji oraz
+poziom ENTERPRISE w metrykach — zinnowacyjne ulepszenia wyprzedzające profesjonalistów na zakończenie każdej sekcji raportu.
+
+## ⚡ SUPLEMENT WYMOGÓW KAMPANII (zgodność fraz — wymagane)
+
+- Przeprowadź głębokie myślenie — w każdym kroku tej części.
+- przeprowadź głęboką analizę — dla każdej zależności tej części.
+- zaawansowany poziom Enterprise — standard każdej sekcji raportu.
+- poziom ENTERPRISE — cel każdego wdrożenia.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — obowiązek w każdym rozdziale.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — także w testach i narzędziach.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — wieńczą raport tej części.
+
+## 🧪 WDROŻENIE I WERYFIKACJA
+
+1. Wdróż wzmocnienia narzędzi (kod Python + ewentualne reguły).
+2. Uruchom kluczowe narzędzia (jeśli środowisko pozwala):
+   `python JDG/tools/rule_lifecycle_manager.py --check`,
+   `python JDG/tools/legal_basis_audit.py`, `validate_rules.py --strict` …
+3. Testy narzędzi: pytest tests/test_control_plane_lifecycle.py i pokrewne.
+
+## 📐 FORMAT RAPORTU (JDG/raporty_enterprise_v4/21_CONTROL_PLANE.txt)
+
+- Tytuł: „RAPORT ENTERPRISE — CZĘŚĆ 21: CONTROL PLANE — OPA JAKO SYSTEM (F1–F6)"
+- Executive Summary TOP 10; MAPA stan vs cel V1/V2 (tabela L1–L12);
+  rozdziały: cykl życia reguły, bundle pipeline, law-change, F1–F6;
+  WDROŻONE zmiany; Genialne pomysły; mapa drogowa; honesty report.
+  Mermaid: diagram Control Plane + Data Plane; pipeline nowelizacji.
+
+## 🧹 PO ZAKOŃCZENIU PRACY
+
+WYCZYŚĆ OKNO KONTEKSTOWE — nowa konwersacja. Raport w
+JDG/raporty_enterprise_v4/. Następny Prompt: 22/25 (API + RuleStore + migracje).

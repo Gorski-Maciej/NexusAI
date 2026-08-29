@@ -1,9 +1,10 @@
 {
-  "generated_at": "2026-08-12T14:42:26.155628+00:00",
+  "generated_at": "2026-08-29T16:26:16+00:00",
   "articles_total": 27,
   "declared_points": 18,
   "by_status": {
-    "COMPLETE": 27
+    "COVERED": 50,
+    "UNCOVERED": 20
   },
   "priorities": {
     "P1_KKS": 0,
@@ -195,7 +196,17 @@
         "jdg.ksef_jpk.ksef_offline_pkpir",
         "jdg.ksef_jpk.ksef_offline_recovery",
         "jdg.ksef_jpk.no_match",
-        "jdg.ksef_jpk.token_stale"
+        "jdg.ksef_jpk.token_stale",
+        "jdg.ksef_jpk.v3_11.b2c_without_nip_handler",
+        "jdg.ksef_jpk.v3_11.domain_certificate",
+        "jdg.ksef_jpk.v3_11.edelivery_address_guard",
+        "jdg.ksef_jpk.v3_11.jpk_ksef_reconcile",
+        "jdg.ksef_jpk.v3_11.ksef_mandatory_gate",
+        "jdg.ksef_jpk.v3_11.no_match",
+        "jdg.ksef_jpk.v3_11.offline_queue_guard",
+        "jdg.ksef_jpk.v3_11.thresholds_missing",
+        "jdg.ksef_jpk.v3_11.upo_validation_guard",
+        "jdg.ksef_jpk.v3_11.wis_expiry_watcher"
       ],
       "missing_rules": [],
       "evidence_missing_rules": []
@@ -513,9 +524,176 @@
       "evidence_missing_rules": []
     }
   ],
-  "actual_rule_ids": 11998,
+  "actual_rule_ids": 12439,
   "evidence_summary": {
-    "nonempty_legal_basis_rule_ids": 11761,
-    "tested_rule_ids": 1876
+    "nonempty_legal_basis_rule_ids": 12435,
+    "tested_rule_ids": 2365
+  },
+  "reverse_coverage": {
+    "material_nodes": 70,
+    "uncovered": 20,
+    "coverage_pct": 71.43,
+    "gaps": [
+      {
+        "legal_node_id": "LKG-0197",
+        "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.)",
+        "article": "106a-106n",
+        "domain": "vat",
+        "priority": "P1",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0198",
+        "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.)",
+        "article": "108a-108f",
+        "domain": "vat",
+        "priority": "P1",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0221",
+        "act": "PIT, art. 21 ust. 1 pkt 148",
+        "article": "21",
+        "domain": "other",
+        "priority": "P2",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0222",
+        "act": "PIT, art. 21 ust. 1 pkt 152",
+        "article": "21",
+        "domain": "other",
+        "priority": "P2",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0223",
+        "act": "PIT, art. 21 ust. 1 pkt 153",
+        "article": "21",
+        "domain": "other",
+        "priority": "P2",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0224",
+        "act": "PIT, art. 21 ust. 1 pkt 154",
+        "article": "21",
+        "domain": "other",
+        "priority": "P2",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0220",
+        "act": "PIT, art. 26",
+        "article": "26",
+        "domain": "other",
+        "priority": "P2",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0214",
+        "act": "PIT, art. 26e",
+        "article": "26e",
+        "domain": "other",
+        "priority": "P2",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0215",
+        "act": "PIT, art. 26eb",
+        "article": "26eb",
+        "domain": "other",
+        "priority": "P2",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0218",
+        "act": "PIT, art. 26ec",
+        "article": "26ec",
+        "domain": "other",
+        "priority": "P2",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0216",
+        "act": "PIT, art. 26gb",
+        "article": "26gb",
+        "domain": "other",
+        "priority": "P2",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0219",
+        "act": "PIT, art. 26h",
+        "article": "26h",
+        "domain": "other",
+        "priority": "P2",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0217",
+        "act": "PIT, art. 30ca",
+        "article": "30ca",
+        "domain": "other",
+        "priority": "P2",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0247",
+        "act": "Ustawa o PIT, art. 24a",
+        "article": "24a",
+        "domain": "other",
+        "priority": "P2",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0257",
+        "act": "Ustawa o PIT, art. 44",
+        "article": "44",
+        "domain": "other",
+        "priority": "P2",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0252",
+        "act": "Ustawa o PIT, art. 45",
+        "article": "45",
+        "domain": "other",
+        "priority": "P2",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0249",
+        "act": "Ustawa o VAT, art. 109",
+        "article": "109",
+        "domain": "other",
+        "priority": "P2",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0255",
+        "act": "Ustawa o VAT, art. 96b",
+        "article": "96b",
+        "domain": "other",
+        "priority": "P2",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0250",
+        "act": "Ustawa o VAT, art. 99",
+        "article": "99",
+        "domain": "other",
+        "priority": "P2",
+        "material": true
+      },
+      {
+        "legal_node_id": "LKG-0225",
+        "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm.)",
+        "article": "16-193a",
+        "domain": "ordpu",
+        "priority": "P2",
+        "material": true
+      }
+    ]
   }
 }

@@ -1,0 +1,156 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 14/25 — CZĘŚĆ 14: PRAWO PRZEDSIĘBIORCÓW / CEIDG / SUKCESJA / CYKL ŻYCIA JDG
+
+Jesteś Najwyższej Klasy Ekspertem Prawa przedsiębiorców (ustawa z 6.03.2018 r.),
+ustawy o CEIDG (z 6.03.2018 r.), ustawy o zarządzie sukcesyjnym
+(z 5.07.2018 r.), cyklu życia jednoosobowej działalności gospodarczej
+(otwarcie → prowadzenie → zawieszenie → wznowienie → likwidacja →
+sukcesja) oraz systemów regułowych OPA/Rego — na **poziomie ENTERPRISE**.
+
+## ⚠️ KRYTYCZNE ZASADY
+
+1. **Przeprowadź głębokie myślenie** o cyklu życia JDG: rejestracja
+   (CEIDG-1 — wpis do 7 dni; działalność nieewidencjonowana art. 5 —
+   przychód ≤ 50% minimalnego wynagrodzenia, brak ZUS), zmiany danych,
+   zawieszenie (art. 22–25 PP — min. 30 dni; skutki VAT/ZUS/PIT!),
+   wznowienie, likwidacja (art. 26? — wniosek CEIDG-1; likwidacja
+   a VAT-Z, PIT za okres), sukcesja (zarząd sukcesyjny — art. 3–15
+   ustawy: powołanie, 2 lata (przedłużenie do 5), kontynuacja umów,
+   odpowiedzialność podatkowa i składkowa zarządcy).
+2. **Przeprowadź głęboką analizę** skutków podatkowych każdego zdarzenia
+   cyklu: zawieszenie a VAT (korekty odliczeń art. 91!?), zawieszenie a ZUS
+   (składki — zdrowotna obowiązkowa nadal! — zweryfikuj: w zawieszeniu —
+   brak składek społecznych, zdrowotna dobrowolna? ustal stan 2026),
+   zawieszenie a PIT (zaliczki — nie wykazujesz przychodu), likwidacja
+   a remanent likwidacyjny (art. 24 ust. 3 PIT!), sukcesja a NIP/REGON
+   (ten sam NIP), sukcesja a ZUS (zgłoszenia).
+3. Pracuj na **zaawansowanym poziomie Enterprise**: maszyna stanów cyklu
+   życia (state machine: REGISTERED → ACTIVE → SUSPENDED → RESUMED →
+   CLOSED → SUCCESSION) z dostępami i niedozwolonymi przejściami,
+   kalendarz terminów per stan, checklisty obowiązków per zdarzenie.
+4. Wdrażaj **innowacyjne ulepszenia wyprzedzające profesjonalistów**:
+   symulator otwarcia JDG (koszty, składki, forma — interfejs CZĘŚĆ 11),
+   asystent zawieszenia (komplet skutków: VAT/PIT/ZUS + terminy),
+   asystent likwidacji (remanent likwidacyjny, VAT-Z, ostatnie deklaracje),
+   asystent sukcesji (zarządca, pełnomocnictwa, obowiązki spadkowe),
+   lifecycle scorecard (zdrowie firmy per obowiązki).
+5. **NIE GENERUJ DUPLIKATÓW:** audyt `jdg.business.*`, `jdg.ceidg.*`,
+   `jdg.micro.ceidg.*`, `jdg.micro.pp.*`, `jdg.sukcesja.*`,
+   `jdg.micro.sukcesja.*`, `jdg.lifecycle.*`.
+6. Generujesz: (a) OGROMNY RAPORT .txt w
+   `JDG/raporty_enterprise_v4/14_PP_CEIDG_SUKCESJA.txt`, (b) INTELIGENTNY KOD,
+   (c) weryfikację, (d) honesty report.
+7. **BUDŻET KONTEKSTU:** dane ≤ 50% okna (~500 tys. tokenów).
+8. Reguły MUSZĄ być zgodne z aktami z
+   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md
+   (PP art. 4–6, 14, 18, 22–25; CEIDG art. 5–7, 12–15; sukcesja art. 3–15).
+
+## 📂 ŚWIĘTE PLIKI DO PRZECZYTANIA (zawsze)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PRAWA_PRZEDSIEBIORCOW_AUDYT_R02.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KAMPANIA_GLM52_ETAPY_10_28.md (ETAP 18)
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 14 (PP / CEIDG / sukcesja / biznes)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business/gig_economy.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business/plan26_suspension_succession.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business/strategic_intelligence.rego (jeśli istnieje — sprawdź)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/business_lifecycle_etap18_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/lifecycle_manager_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_business_lifecycle_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ceidg/ceidg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_ceidg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/pp/pp.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/sukcesja/sukcesja.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_succ.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_business_lifecycle_innovations_v8.rego (jeśli istnieje)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/force_majeure/plan44_force_majeure.rego (zawieszenie z powodu siły wyższej — interfejs CZĘŚĆ 18)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/force_majeure/plan45_force_majeure.rego
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/business
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/micro/ceidg
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/rules/micro/sukcesja
+
+## 🎯 CEL ANALIZY
+
+1. **Maszyna stanów cyklu życia:** zdefiniuj komplet stanów i przejść,
+   zweryfikuj reguły lifecycle_manager/business_lifecycle; wdróż braki
+   (np. przejście SUSPENDED → RESUME po 24 mies.? — max zawieszenie
+   bez wznowienia: zawieszenie można przedłużać, ale łączny okres
+   zawieszenia... zweryfikuj art. 22 PP).
+2. **Rejestracja/CEIDG:** terminy (7 dni), dane (art. 12–15 CEIDG),
+   odpowiedzialność za aktualność danych, działalność nieewidencjonowana
+   (art. 5 PP: limit, skutki), gig economy (interfejs).
+3. **Zawieszenie (art. 22–25 PP):** wymogi (min. 30 dni, okresy), skutki:
+   VAT (art. 91 — korekta odliczeń przy zawieszeniu? zweryfikuj),
+   ZUS (składki w zawieszeniu — społeczne nie, zdrowotna? ustal),
+   PIT (zaliczki), rachunki (zawieszenie a wpis na Białą Listę),
+   pełnomocnictwa — wdróż checklistę per skutek.
+4. **Likwidacja:** remanent likwidacyjny (art. 24 ust. 3 PIT — dochód
+   z remanentu!), VAT-Z (termin 7 dni? zweryfikuj), ostatnie deklaracje,
+   ZUS wyrejestrowanie, archiwizacja dokumentów (art. 86 Ordynacji —
+   5 lat od końca roku) — komplet reguł?
+5. **Sukcesja:** zarząd sukcesyjny (art. 3–15): powołanie, 2 lata
+   (+ przedłużenie do 5), kontynuacja, odpowiedzialność zarządcy za
+   zobowiązania, NIP/REGON bez zmian, ZUS — spadkobiercy, PCT?
+   — wdróż pełną warstwę (sukcesja.rego 140 reguł — zweryfikuj jakość).
+6. **Genialne pomysły (min. 12):** „karta cyklu życia" (dashboard
+   obowiązków per stan), symulator „co jeśli zawieszę" (raport skutków),
+   auto-checklista likwidacji (krok po kroku z terminami), asystent
+   sukcesji dla rodziny (tryb laika), alert ryzyka „zapomniana firma"
+   (brak wpisów/wyciągów = sygnał).
+
+## 🏗️ SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA
+
+- Werdykt 25-polowy (`jdg.business.*`); progi DuckDB (CZĘŚĆ 22).
+- Zawieszenie a ZUS: CZĘŚĆ 6; zawieszenie a VAT (korekty 91): CZĘŚĆ 2;
+  likwidacja a remanent/PIT: CZĘŚĆ 4/7; sukcesja a podatki spadkowe/PP:
+  CZĘŚĆ 9; e-Doręczenia (obowiązek dla CEIDG): CZĘŚĆ 17; CEIDG-1 API:
+  CZĘŚĆ 22; siła wyższa (force majeure): CZĘŚĆ 18.
+- Mirror policies/ + MANIFEST po zmianach.
+
+## 🔁 WYMOGI NADRZĘDNE (powtórzone dla pewności)
+
+Aby osiągnąć zaawansowany poziom Enterprise: Przeprowadź głębokie myślenie nad każdym
+kontraktem, przeprowadź głęboką analizę każdej zależności domenowej i wdrażaj wyłącznie
+rozwiązania klasy poziom ENTERPRISE — zinnowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale raportu.
+Przeprowadź głębokie myślenie nad konsekwencjami każdej zmiany dla innych części,
+przeprowadź głęboką analizę spójności rule_id, pakietów i progów; każda reguła musi służyć
+zaawansowany poziom Enterprise oraz poziomowi ENTERPRISE całości — z innowacyjnymi
+ulepszeniami wyprzedzającymi profesjonalistów w testach i narzędziach.
+Przeprowadź głębokie myślenie przed każdym wdrożeniem i przeprowadź głęboką analizę po
+wdrożeniu (weryfikacja); utrzymuj zaawansowany poziom Enterprise w dokumentacji oraz
+poziom ENTERPRISE w metrykach — zinnowacyjne ulepszenia wyprzedzające profesjonalistów na zakończenie każdej sekcji raportu.
+
+## ⚡ SUPLEMENT WYMOGÓW KAMPANII (zgodność fraz — wymagane)
+
+- Przeprowadź głębokie myślenie — w każdym kroku tej części.
+- przeprowadź głęboką analizę — dla każdej zależności tej części.
+- zaawansowany poziom Enterprise — standard każdej sekcji raportu.
+- poziom ENTERPRISE — cel każdego wdrożenia.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — obowiązek w każdym rozdziale.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — także w testach i narzędziach.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — wieńczą raport tej części.
+
+## 🧪 WDROŻENIE I WERYFIKACJA
+
+1. Wdróż ulepszenia (maszyna stanów, checklisty, sukcesja, likwidacja).
+2. Walidacje + testy: pytest test_business*, test_lifecycle*,
+   test_sukcesja* (jeśli jest), natywne tests/rego/test_native_*business*;
+   generate_manifest.py; sync policies.
+
+## 📐 FORMAT RAPORTU (JDG/raporty_enterprise_v4/14_PP_CEIDG_SUKCESJA.txt)
+
+- Tytuł: „RAPORT ENTERPRISE — CZĘŚĆ 14: PRAWO PRZEDSIĘBIORCÓW, CEIDG, SUKCESJA, CYKL ŻYCIA"
+- Executive Summary TOP 10; rozdziały: maszyna stanów, rejestracja,
+  zawieszenie (skutki × podatek), likwidacja (remanent), sukcesja;
+  WDROŻONE zmiany; Genialne pomysły; mapa drogowa; honesty report.
+  Mermaid: state machine cyklu życia; diagram skutków zawieszenia.
+
+## 🧹 PO ZAKOŃCZENIU PRACY
+
+WYCZYŚĆ OKNO KONTEKSTOWE — nowa konwersacja. Raport w
+JDG/raporty_enterprise_v4/. Następny Prompt: 15/25 (RODO/AML/BDO/środowisko/HR).

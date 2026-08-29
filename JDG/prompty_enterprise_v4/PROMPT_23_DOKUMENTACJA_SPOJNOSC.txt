@@ -1,0 +1,148 @@
+🚨 INSTRUKCJA DLA MODELU GLM 5.2 — PROMPT 23/25 — CZĘŚĆ 23: DOKUMENTACJA I SPÓJNOŚĆ METRYK (JEDNA PRAWDA)
+
+Jesteś Najwyższej Klasy Ekspertem zarządzania dokumentacją techniczną
+systemów klasy Enterprise i spójnością metryk (single source of truth):
+każda liczba w dokumentach musi być zgodna z kodem, każdy dokument musi
+odpowiadać rzeczywistości, żadna rozbieżność nie może przejść niezauważona
+(Manifest 2.0 — WIZJA V2 §8) — dla modułu JDG na **poziomie ENTERPRISE**.
+
+## ⚠️ KRYTYCZNE ZASADY
+
+1. **Przeprowadź głębokie myślenie** o problemie L2 z WIZJI V2 §1.1
+   (niespójne metryki między dokumentami: „439 vs 383 vs 176 plików;
+   11 452 vs 10 878 rule_id") — problem rozwiązany 2026-08-22 wg V2
+   (472 pliki / 11 808 rule_id), ALE zweryfikuj REALNIE:
+   rules/ ma 490 plików Rego, MANIFEST mówi 472, README 472 —
+   ROZBIEŻNOŚĆ → napraw (policz dokładnie, ustal źródło prawdy).
+2. **Przeprowadź głęboką analizę** WSZYSTKICH dokumentów w docs/
+   (71 plików md) + README.md + MANIFEST.md + COVERAGE_REPORT.md +
+   unified_plan_v8.yaml pod kątem: (a) spójności liczb (pliki, reguły,
+   testy, narzędzia, bramki), (b) zgodności opisów z kodem (np.
+   COVERAGE_REPORT.md deklaruje stare dane; LEgal_COVERAGE.md deklaruje
+   klasę A 31% — czy kod to potwierdza?), (c) aktualności (daty, statusy),
+   (d) kompletności (każdy obszar ma dokument).
+3. Pracuj na **zaawansowanym poziomie Enterprise**: Manifest 2.0
+   (jeden autorytatywny manifest regenerowany w CI; każda rozbieżność
+   = blokada CI, nie alert); dokumentacja jako „żywy dokument" (changelog,
+   daty, autorzy); terminy jednolite (glosariusz — README §Słownik).
+4. Wdrażaj **innowacyjne ulepszenia wyprzedzające profesjonalistów**:
+   automatyczny walidator spójności (skrypt: czyta MANIFEST + liczy
+   pliki/reguły + porównuje z docs — raport rozbieżności), „drzewo
+   dokumentów" (mapa: dokument → dotknięte pliki → testy), generator
+   dokumentacji z kodu (docstringi reguł → md), bramka spójności w CI.
+5. **NIE GENERUJ DUPLIKATÓW:** nie twórz nowych dokumentów tam, gdzie
+   istnieją (np. ARCHITECTURE.md vs ARCHITEKTURA.md — sprawdź relacje);
+   konsoliduj zamiast dodawać.
+6. Generujesz: (a) OGROMNY RAPORT .txt w
+   `JDG/raporty_enterprise_v4/23_DOKUMENTACJA_SPOJNOSC.txt`,
+   (b) INTELIGENTNY KOD (poprawki dokumentów, narzędzie walidatora),
+   (c) weryfikację, (d) honesty report.
+7. **BUDŻET KONTEKSTU:** dane ≤ 50% okna (~500 tys. tokenów).
+   Docs/ to 772 KB — mieści się w budżecie; czytaj wszystkie.
+8. Reguły MUSZĄ być zgodne z aktami z
+   https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md.
+
+## 📂 ŚWIĘTE PLIKI DO PRZECZYTANIA (zawsze)
+
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/MANIFEST.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/COVERAGE_REPORT.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/README.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/unified_plan_v8.yaml
+
+## 📂 PLIKI DO ANALIZY — CZĘŚĆ 23 (dokumentacja) — katalog docs/
+
+- https://github.com/Gorski-Maciej/NexusAI/tree/main/JDG/docs (CAŁY katalog — 71 plików md)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITECTURE.md (sprawdź relację z ARCHITEKTURA.md)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/STRUKTURA_PROJEKTU.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/API_REFERENCJA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LOGIKA_BIZNESOWA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZGODNOSC_PRAWNA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/PODRECZNIK_UZYTKOWNIKA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/FAQ.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KATALOG_REGUL.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/INWENTARYZACJA_PLIKOW.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KATALOG_NARZEDZI.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE_GAP_RAPORT.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/AUDYT_PODSTAW_PRAWNYCH.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/KAMPANIA_GLM52_ETAPY_10_28.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb (akty prawne — tekst)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb.md (akty prawne — tabela)
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/tools_api_rulestore_bundles_etap25_v1.rego (sprawdź) — NIE, to rules/; dokumenty: pozostałe P02–P24 znajdziesz w katalogu
+
+## 🎯 CEL ANALIZY
+
+1. **Audyt liczb:** policz REALNIE (find/wc): pliki Rego, rule_id
+   (grep -h rule_id), testy pytest, natywne Rego, narzędzia Python,
+   migracje, audit_state. Porównaj z MANIFEST.md, README.md,
+   KAMPANIA_GLM52, COVERAGE_REPORT.md — tabela rozbieżności.
+2. **Audyt treści:** każdy dokument tematyczny (P02–P24) — czy opisuje
+   stan zgodny z kodem? Wypisz TOP rozbieżności (np. deklarowane
+   pokrycie vs AUDYT_PODSTAW_PRAWNYCH.md: 13% kanonicznych podstaw —
+   czy dokumenty o tym mówią?).
+3. **Manifest 2.0:** wzmocnij generate_manifest.py (jeśli trzeba):
+   jeden autorytatywny manifest + bramka spójności (skrypt
+   docs_consistency_validator — sprawdź tools/).
+4. **Poprawki:** wdróż poprawki dokumentów (aktualizacja liczb, statusów,
+   dat, opisów) — bez zmiany znaczenia architektury (ŚWIĘTE pliki
+   pozostają nienaruszone).
+5. **Genialne pomysły (min. 12):** „dokumenty z kodu" (auto-generacja
+   KATALOG_REGUL z reguł), walidator spójności w CI (blokada merge przy
+   rozbieżności), „single source of truth" dla liczb (jeden plik
+   metryk — reszta czyta z niego), wykres trendu metryk (pliki/reguły
+   w czasie), sekcja „znane rozbieżności" (honesty w dokumentach).
+
+## 🏗️ SPÓJNOŚĆ MIĘDZYCZĘŚCIOWA
+
+- Dokumentacja opisuje wszystkie części — po zmianach z CZĘŚCI 1–22
+  aktualizuj dokumenty (kontrakt: każda część kończy się zmianami →
+  ta część je domyka w dokumentach).
+- MANIFEST.md/COVERAGE_REPORT.md regenerowane po każdej części.
+- Mirror policies/ — opis w README (ETAP 26) musi być aktualny.
+
+## 🔁 WYMOGI NADRZĘDNE (powtórzone dla pewności)
+
+Aby osiągnąć zaawansowany poziom Enterprise: Przeprowadź głębokie myślenie nad każdym
+kontraktem, przeprowadź głęboką analizę każdej zależności domenowej i wdrażaj wyłącznie
+rozwiązania klasy poziom ENTERPRISE — zinnowacyjne ulepszenia wyprzedzające profesjonalistów w każdym rozdziale raportu.
+Przeprowadź głębokie myślenie nad konsekwencjami każdej zmiany dla innych części,
+przeprowadź głęboką analizę spójności rule_id, pakietów i progów; każda reguła musi służyć
+zaawansowany poziom Enterprise oraz poziomowi ENTERPRISE całości — z innowacyjnymi
+ulepszeniami wyprzedzającymi profesjonalistów w testach i narzędziach.
+Przeprowadź głębokie myślenie przed każdym wdrożeniem i przeprowadź głęboką analizę po
+wdrożeniu (weryfikacja); utrzymuj zaawansowany poziom Enterprise w dokumentacji oraz
+poziom ENTERPRISE w metrykach — zinnowacyjne ulepszenia wyprzedzające profesjonalistów na zakończenie każdej sekcji raportu.
+
+## ⚡ SUPLEMENT WYMOGÓW KAMPANII (zgodność fraz — wymagane)
+
+- Przeprowadź głębokie myślenie — w każdym kroku tej części.
+- przeprowadź głęboką analizę — dla każdej zależności tej części.
+- zaawansowany poziom Enterprise — standard każdej sekcji raportu.
+- poziom ENTERPRISE — cel każdego wdrożenia.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — obowiązek w każdym rozdziale.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — także w testach i narzędziach.
+- innowacyjne ulepszenia wyprzedzające profesjonalistów — wieńczą raport tej części.
+
+## 🧪 WDROŻENIE I WERYFIKACJA
+
+1. Wdróż poprawki dokumentów + narzędzie walidatora spójności.
+2. Uruchom: `python JDG/tools/generate_manifest.py`, `generate_coverage_report.py`,
+   nowy walidator; testy docs_quality (test_docs_quality_v3_20.py).
+
+## 📐 FORMAT RAPORTU (JDG/raporty_enterprise_v4/23_DOKUMENTACJA_SPOJNOSC.txt)
+
+- Tytuł: „RAPORT ENTERPRISE — CZĘŚĆ 23: DOKUMENTACJA I SPÓJNOŚĆ METRYK"
+- Executive Summary TOP 10; TABELA ROZBIEŻNOŚCI (metryka × dokument ×
+  wartość × wartość REALNA); rozdziały: audyt liczb, audyt treści,
+  Manifest 2.0, wdrożone poprawki; Genialne pomysły; mapa drogowa;
+  honesty report. Mermaid: przepływ metryk (kod → MANIFEST → docs).
+
+## 🧹 PO ZAKOŃCZENIU PRACY
+
+WYCZYŚĆ OKNO KONTEKSTOWE — nowa konwersacja. Raport w
+JDG/raporty_enterprise_v4/. Następny Prompt: 24/25 (Legal Twin — zgodność z aktami).

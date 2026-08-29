@@ -1,0 +1,10 @@
+{
+ "schema_version": "1.0.0",
+ "persist": true,
+ "active_version": "jdg-bundle-v9.1.0",
+ "healthy_versions": [
+  "jdg-bundle-v9.1.0"
+ ],
+ "verified_at": "2026-08-29T15:54:22+00:00",
+ "restart_policy": "START_LAST_VERIFIED_OR_FAIL_CLOSED"
+}

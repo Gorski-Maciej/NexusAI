@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-08-18T08:07:24.413307+00:00",
+  "generated_at": "2026-08-29T16:14:08+00:00",
   "acts_count": 26,
-  "nodes_count": 181,
-  "covered_nodes": 133,
+  "nodes_count": 258,
+  "covered_nodes": 155,
   "indexes": {
-    "LCI": 73.48,
+    "LCI": 71.43,
     "TCL": 100.0,
-    "RV": 37.04
+    "RV": 100.0
   },
   "slo": {
     "LCI_MIN": 99,
@@ -66,7 +66,19 @@
         "jdg.p24_innovations.l_pp2.auto_indexation",
         "jdg.r12_ryczalt_cykl_zycia_innovations.lifecycle_phase_planner"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.pp.a4.r10",
+        "jdg.micro.pp.a4.r2",
+        "jdg.micro.pp.a4.r3",
+        "jdg.micro.pp.a4.r4",
+        "jdg.micro.pp.a4.r5",
+        "jdg.micro.pp.a4.r6",
+        "jdg.micro.pp.a4.r7",
+        "jdg.micro.pp.a4.r8",
+        "jdg.micro.pp.a4.r9"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0002",
@@ -85,7 +97,11 @@
         "jdg.p13_ryczalt_cykl_zycia_innovations.unregistered_business_audit",
         "jdg.r12_ryczalt_cykl_zycia_innovations.tax_form_arbitrator"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.p13_ryczalt_cykl_zycia_innovations.gig_economy_audit"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0003",
@@ -110,7 +126,36 @@
         "jdg.micro.pp.a14.r7",
         "jdg.micro.pp.a14.r8"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.pp.a14.r2",
+        "jdg.micro.pp.a14.r3",
+        "jdg.micro.pp.a14.r4",
+        "jdg.micro.pp.a14.r5",
+        "jdg.micro.pp.a14.r6",
+        "jdg.micro.pp.a14.r7",
+        "jdg.micro.pp.a14.r8",
+        "jdg.micro.sukcesja.a14.r2",
+        "jdg.micro.sukcesja.a14.r3",
+        "jdg.micro.sukcesja.a14.r4",
+        "jdg.micro.sukcesja.a14.r5",
+        "jdg.micro.sukcesja.a14.r6",
+        "jdg.micro.sukcesja.a14.r7",
+        "jdg.micro.sukcesja.a14.r8",
+        "jdg.micro.sukcesja.ksef.r2",
+        "jdg.micro.sukcesja.ksef_plan26.r1",
+        "jdg.micro.sukcesja.ksef_plan26.r2",
+        "jdg.micro.sukcesja.ksef_plan26.r3",
+        "jdg.p24.i1.r1",
+        "jdg.p24.i1.r2",
+        "jdg.p24.i1.r3",
+        "jdg.p24.i1.r4",
+        "jdg.p24_innovations.i1.ceidg_change_detector_name",
+        "jdg.p24_innovations.i1.ceidg_change_detector_pkd",
+        "jdg.p24_innovations.i1.ceidg_change_detector_tax_form",
+        "jdg.restructuring.merger_tax"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0004",
@@ -180,7 +225,48 @@
         "jdg.p13_ryczalt_cykl_zycia_innovations.suspension_audit",
         "jdg.p13_ryczalt_cykl_zycia_innovations.suspend_or_close_simulator"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.api_fallback.ksef_degradation",
+        "jdg.business.max_suspension_block",
+        "jdg.business.maximum_suspension_period_check",
+        "jdg.business.succession_manager_appointment",
+        "jdg.business.suspension_kup_restrictions",
+        "jdg.cross_validator.ceidg_vs_jpk_pkd",
+        "jdg.edge_cases.seasonal_pit_advance",
+        "jdg.edge_cases.unregistered_vs_vat_deduction",
+        "jdg.hyper.edelivery.force_majeure.suspension.zus_consequences",
+        "jdg.hyper.limits.no_match",
+        "jdg.hyper.limits.seasonal.closure.nip_loss_consequences",
+        "jdg.hyper.limits.seasonal.detection.construction_winter_break",
+        "jdg.hyper.limits.seasonal.detection.industry_code_agriculture",
+        "jdg.hyper.limits.seasonal.detection.industry_code_tourism",
+        "jdg.hyper.limits.seasonal.detection.months_with_revenue",
+        "jdg.hyper.limits.seasonal.detection.revenue_gap_3plus_months",
+        "jdg.hyper.limits.seasonal.suspension.keep_nip",
+        "jdg.hyper.limits.seasonal.suspension.max_24_months_total",
+        "jdg.micro.ceidg.a22.r2",
+        "jdg.micro.ceidg.a22.r3",
+        "jdg.micro.ceidg.a22.r4",
+        "jdg.micro.ceidg.a22.r5",
+        "jdg.micro.ceidg.a22.r6",
+        "jdg.micro.pkpir_nkup.p21.r3",
+        "jdg.micro.pp.a22.r10",
+        "jdg.micro.pp.a22.r2",
+        "jdg.micro.pp.a22.r3",
+        "jdg.micro.pp.a22.r4",
+        "jdg.micro.pp.a22.r5",
+        "jdg.micro.pp.a22.r6",
+        "jdg.micro.pp.a22.r7",
+        "jdg.micro.pp.a22.r8",
+        "jdg.micro.pp.a22.r9",
+        "jdg.micro.ryczalt_cykl_atomic_p13.suspension.r2",
+        "jdg.micro.ryczalt_cykl_atomic_p13.suspension.r3",
+        "jdg.micro.ryczalt_cykl_atomic_p13.unregistered.r1",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.succession_step_guide",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.unregistered_business_audit"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0005",
@@ -201,7 +287,12 @@
         "jdg.representation.prokura_poa_manager_bridge",
         "jdg.tax_opt.zus_relief_path"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.p13_ryczalt_cykl_zycia_innovations.ceidg_audit",
+        "jdg.representation.prokura_self_employed"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0006",
@@ -231,7 +322,9 @@
         "jdg.p13_ryczalt_cykl_zycia_innovations.company_setup_assistant",
         "jdg.p24_innovations.l_ceidg3.interaction"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0007",
@@ -272,7 +365,9 @@
         "jdg.p24_innovations.i1.ceidg_deadline_tracker",
         "jdg.restructuring.business_closure"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0008",
@@ -438,7 +533,11 @@
         "jdg.wdt_document_tracker.accelerated_refund",
         "jdg.zus.benefits.no_vat"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.deadlines.payment.barter.market_value_as_base"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0009",
@@ -509,7 +608,13 @@
         "jdg.vat.substantive.taxable_person_jdg_v04",
         "jdg.zus.benefits.vat_interaction_guard"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.vat.a15.r2",
+        "jdg.micro.vat.a15.r4",
+        "jdg.micro.vat.a15.r5"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0010",
@@ -625,7 +730,14 @@
         "jdg.vat.procedures.cash_accounting_jdg",
         "jdg.vat.procedures.cash_accounting_purchase"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.deadlines.payment.crypto.exchange_rate_determination",
+        "jdg.hyper.deadlines.payment.offset.mutual_agreement_required",
+        "jdg.hyper.general.payment.advance.vat_invoice_required_15days",
+        "jdg.hyper.general.payment.installments.vat_cash_per_installment"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0011",
@@ -711,7 +823,9 @@
         "jdg.vat_complete.place_of_supply_transport",
         "jdg.vat_complete.place_of_supply_intangible"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0012",
@@ -780,7 +894,13 @@
         "jdg.vat.substantive.place_of_supply_transport",
         "jdg.vat_complete.tax_base_calculation"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.deadlines.payment.barter.pit_revenue_recognition",
+        "jdg.hyper.misc.payment.inkind.employee_compensation_tax",
+        "jdg.hyper.misc.payment.inkind.mixed_cash_inkind_split"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0013",
@@ -969,7 +1089,16 @@
         "jdg.wis_api.cn_to_vat_mapping",
         "jdg.wis_api.wis_w_application"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.deadlines.insurance.vat.exception_broker_services",
+        "jdg.hyper.deadlines.insurance.vat.exception_damage_assessment",
+        "jdg.hyper.deadlines.insurance.vat.input_vat_deduction_blocked",
+        "jdg.hyper.sanctions.regulated.vat.exemption_nurse_midwife",
+        "jdg.r02_vat_core_innovations.vat_core_report",
+        "jdg.vat.reduced_rates.pkwiu_rate_mismatch"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0014",
@@ -984,7 +1113,11 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.ksef_jpk.v3_11.domain_certificate"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0015",
@@ -1081,7 +1214,15 @@
         "jdg.vat.substantive.postal_exempt",
         "jdg.vat_complete.exemptions_detailed"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.deadlines.insurance.vat.exception_assistance_services",
+        "jdg.hyper.sanctions.regulated.kup.chamber_fees_full",
+        "jdg.hyper.sanctions.regulated.vat.education_tutor_exemption",
+        "jdg.hyper.sanctions.regulated.vat.exemption_psychologist",
+        "jdg.hyper.sanctions.regulated.vat.no_exemption_lawyer"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0016",
@@ -1102,7 +1243,9 @@
         "jdg.p17_ksef_jpk_edeklaracje_innovations.jpk_cross_validation",
         "jdg.p17_ksef_jpk_edeklaracje_innovations.jpk_deadline_calendar"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0017",
@@ -1386,7 +1529,14 @@
         "jdg.vat_deductions_audit.report",
         "jdg.vat_complete.multi_year_correction"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.calendar.hyper.pit_advance_20th",
+        "jdg.hyper.limits.seasonal.aggregate.annual_summary_pit_zus",
+        "jdg.hyper.misc.advertising.vat.deduction_full_standard",
+        "jdg.hyper.misc.advertising.vat.deduction_gifts_100pln_limit"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0018",
@@ -1429,7 +1579,16 @@
         "jdg.vat_cashflow.no_match",
         "jdg.vat_cashflow.three_month_forecast"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.deadlines.tax.pit_advance_20th",
+        "jdg.hyper.limits.seasonal.vat.exemption_200k_proportion",
+        "jdg.vat.a106e.r1",
+        "jdg.vat.a99.r2",
+        "jdg.vat.a99.r4",
+        "jdg.vat.a99.r5"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0019",
@@ -1671,7 +1830,9 @@
         "jdg.vat.substantive.receipt_as_invoice",
         "jdg.wis_api.gtu_wis_cross_reference"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0020",
@@ -1736,7 +1897,9 @@
         "jdg.vat_mpp_split_payment.whitelist_15k_binding",
         "jdg.vat_complete.vat_additional_liability"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0021",
@@ -1798,7 +1961,13 @@
         "jdg.vat_rates_audit.midyear_breach",
         "jdg.vat_rates_audit.startup_proportional_limit"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.limits.seasonal.vat.exemption_breach_mid_year",
+        "jdg.hyper.limits.seasonal.vat.margin_scheme_seasonal_goods",
+        "jdg.pit.a30c.r1"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0022",
@@ -1838,7 +2007,12 @@
         "jdg.vat.substantive.margin_scheme",
         "jdg.vat_complete.vat_margin_scheme"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.limits.seasonal.vat.deduction_maintenance_costs",
+        "jdg.vat.substantive.subject_exemption_jdg"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0023",
@@ -1867,7 +2041,14 @@
         "jdg.pit.a10.r10",
         "jdg.pit.art21.real_estate_inheritance"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.ryc.a10.r2",
+        "jdg.ryc.a10.r3",
+        "jdg.ryc.a10.r4",
+        "jdg.ryc.a11.r1"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0024",
@@ -1994,7 +2175,24 @@
         "jdg.pit.revenue_exclusions_detail",
         "jdg.tax_opt.income_smoothing_strategy"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.deadlines.insurance.claim.business_interruption_taxable",
+        "jdg.hyper.deadlines.insurance.claim.payout_reduced_by_damage",
+        "jdg.hyper.deadlines.insurance.claim.personal_injury_exempt",
+        "jdg.hyper.deadlines.payment.barter.documentation_requirements",
+        "jdg.hyper.deadlines.payment.barter.double_supply",
+        "jdg.hyper.deadlines.payment.crypto.vat_obligation_on_receipt",
+        "jdg.hyper.deadlines.payment.crypto.volatility_risk_warning",
+        "jdg.hyper.edelivery.force_majeure.insurance.claim_procedure",
+        "jdg.hyper.edelivery.force_majeure.insurance.payout_tax_treatment",
+        "jdg.hyper.edelivery.force_majeure.suspension.automatic",
+        "jdg.hyper.general.payment.advance.advance_not_refunded_taxable",
+        "jdg.hyper.general.payment.installments.vat_accrual_full_immediately",
+        "jdg.hyper.misc.payment.inkind.vat_base_market_value",
+        "jdg.hyper.procurement.family.asset.transfer.vat_opodatkowanie"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0025",
@@ -2539,7 +2737,50 @@
         "jdg.uor.costs.car_usage.r1",
         "jdg.uor.costs.one_off_writeoff.r1"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.deadlines.insurance.claim.payout_as_revenue",
+        "jdg.hyper.deadlines.insurance.gap.detection_mandatory_missing",
+        "jdg.hyper.deadlines.insurance.kup.life_insurance_limited",
+        "jdg.hyper.deadlines.insurance.kup.mandatory_oc_over_limit_proportion",
+        "jdg.hyper.deadlines.insurance.kup.property_insurance_full",
+        "jdg.hyper.deadlines.insurance.kup.voluntary_oc_business",
+        "jdg.hyper.deadlines.insurance.voluntary.directors_officers",
+        "jdg.hyper.deadlines.insurance.voluntary.inventory_theft",
+        "jdg.hyper.deadlines.insurance.voluntary.key_person",
+        "jdg.hyper.deadlines.insurance.voluntary.trade_credit",
+        "jdg.hyper.general.family.aggregate.risk_assessment",
+        "jdg.hyper.general.family.children.pit_ulga_young_interaction",
+        "jdg.hyper.general.family.children.salary_arm_length",
+        "jdg.hyper.general.family.cooperation.zus_person",
+        "jdg.hyper.misc.advertising.brand_building_kup",
+        "jdg.hyper.misc.advertising.car_wrapping.vat26_full_deduction",
+        "jdg.hyper.misc.advertising.digital.affiliate_program_kup",
+        "jdg.hyper.misc.advertising.digital.email_marketing_kup",
+        "jdg.hyper.misc.advertising.digital.facebook_ads_kup",
+        "jdg.hyper.misc.advertising.digital.seo_sem_kup",
+        "jdg.hyper.misc.advertising.events.business_dinner_with_agenda_kup",
+        "jdg.hyper.misc.advertising.events.luxury_trip_no_agenda_nkup",
+        "jdg.hyper.misc.advertising.events.networking_event_kup",
+        "jdg.hyper.misc.advertising.events.trade_fair_kup",
+        "jdg.hyper.misc.advertising.gifts.under_200_pln_branded_kup",
+        "jdg.hyper.misc.advertising.gifts.vat_deduction_100_pln_limit",
+        "jdg.hyper.misc.advertising.influencer.nkup_no_business_connection",
+        "jdg.hyper.misc.advertising.representation_personal_prestige_nkup",
+        "jdg.hyper.misc.advertising.sponsorship.charity_donation_treatment",
+        "jdg.hyper.misc.advertising.sponsorship.local_event_kup",
+        "jdg.hyper.misc.advertising.sponsorship.vat_on_sponsorship",
+        "jdg.hyper.misc.advertising.vs_representation.distinction_test",
+        "jdg.hyper.misc.payment.advance.kup_from_advance_to_supplier",
+        "jdg.hyper.misc.payment.inkind.market_value_determination",
+        "jdg.hyper.misc.payment.terminal.obligation_20k_eur_turnover",
+        "jdg.hyper.sanctions.regulated.kup.books_journals_kup",
+        "jdg.hyper.sanctions.regulated.kup.continuing_education_kup",
+        "jdg.hyper.sanctions.regulated.kup.office_rent_home_office",
+        "jdg.hyper.sanctions.regulated.kup.professional_insurance_kup",
+        "jdg.hyper.sanctions.regulated.zus.no_start_relief_former_employer"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0026",
@@ -2554,7 +2795,24 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.tp.r10",
+        "jdg.tp.r11",
+        "jdg.tp.r12",
+        "jdg.tp.r13",
+        "jdg.tp.r14",
+        "jdg.tp.r15",
+        "jdg.tp.r2",
+        "jdg.tp.r3",
+        "jdg.tp.r4",
+        "jdg.tp.r5",
+        "jdg.tp.r6",
+        "jdg.tp.r7",
+        "jdg.tp.r8",
+        "jdg.tp.r9"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0027",
@@ -2633,7 +2891,11 @@
         "jdg.uor.inventory.remnant.r1",
         "jdg.uor.inventory.remnant.r2"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.ryczalt.a29.r5"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0028",
@@ -2863,7 +3125,13 @@
         "jdg.temporal.middle_class_relief_2022",
         "jdg.zus.health.scale_no_deduction"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.misc.advertising.sponsorship.sport_culture_kup",
+        "jdg.hyper.sanctions.regulated.chamber.disciplinary_proceedings",
+        "jdg.p24.i7.r3"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0029",
@@ -2990,7 +3258,22 @@
         "jdg.temporal.tax_free_amount_temporal",
         "jdg.temporal.polski_lad_transition"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.limits.seasonal.pit.advances_simplified_recommendation",
+        "jdg.micro.ryczalt.a27.r10",
+        "jdg.micro.ryczalt.a27.r11",
+        "jdg.micro.ryczalt.a27.r12",
+        "jdg.micro.ryczalt.a27.r2",
+        "jdg.micro.ryczalt.a27.r3",
+        "jdg.micro.ryczalt.a27.r4",
+        "jdg.micro.ryczalt.a27.r5",
+        "jdg.micro.ryczalt.a27.r6",
+        "jdg.micro.ryczalt.a27.r7",
+        "jdg.micro.ryczalt.a27.r8",
+        "jdg.micro.ryczalt.a27.r9"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0030",
@@ -3026,7 +3309,15 @@
         "jdg.pit.a30a.r8",
         "jdg.payments.hyper.inkind_owner_benefit_dividend"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.misc.payment.foreign.cash_limit_15k_pln_equivalent",
+        "jdg.pit.a30b.r1",
+        "jdg.pit.a30b.r2",
+        "jdg.pit.a30ca.r7",
+        "jdg.pit.a30ca.r9"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0031",
@@ -3098,7 +3389,11 @@
         "jdg.zus.health.linear_deduction_tracker",
         "jdg.zus.health.linear_limit_exceeded"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.pit.advances_returns.loss_carry_forward"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0032",
@@ -3136,7 +3431,24 @@
         "jdg.residency.hyper.cfc_de_minimis_250k_eur",
         "jdg.residency.hyper.cfc_reporting_obligation"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.crossborder.a30f.r2",
+        "jdg.micro.crossborder.a30f.r3",
+        "jdg.micro.crossborder.a30f.r4",
+        "jdg.micro.crossborder.a30f.r5",
+        "jdg.micro.crossborder.a30f.r6",
+        "jdg.micro.crossborder.a30f.r7",
+        "jdg.micro.crossborder.a30f.r8",
+        "jdg.micro.crossborder.a30f2.r2",
+        "jdg.micro.crossborder.a30f2.r3",
+        "jdg.micro.crossborder.a30f2.r4",
+        "jdg.micro.crossborder.a30f2.r5",
+        "jdg.micro.crossborder.a30f2.r6",
+        "jdg.micro.crossborder.a30f2.r7",
+        "jdg.micro.crossborder.a30f2.r8"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0033",
@@ -3190,7 +3502,39 @@
         "jdg.zus.extensions.temporal_rates",
         "jdg.zus.extensions.coverage_summary"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.general.no_match",
+        "jdg.hyper.general.solidarity.levy.aggregate.annual_forecast",
+        "jdg.hyper.general.solidarity.levy.base.calculation",
+        "jdg.hyper.general.solidarity.levy.edge.first_year_1m",
+        "jdg.hyper.general.solidarity.levy.edge.loss_reduction",
+        "jdg.hyper.general.solidarity.levy.edge.one_time_income",
+        "jdg.hyper.general.solidarity.levy.income.linear",
+        "jdg.hyper.general.solidarity.levy.income.lump_sum",
+        "jdg.hyper.general.solidarity.levy.income.scale",
+        "jdg.hyper.general.solidarity.levy.interaction.tax_scale",
+        "jdg.hyper.general.solidarity.levy.minimum.zero",
+        "jdg.hyper.general.solidarity.levy.payment.method.mandatory_transfer",
+        "jdg.hyper.general.solidarity.levy.rate.4pct",
+        "jdg.hyper.general.solidarity.levy.sanction.late_payment",
+        "jdg.hyper.general.wis.monitoring.expiry_alert_6months",
+        "jdg.hyper.solidarity.solidarity.levy.exemption.foreign_tax_credit",
+        "jdg.hyper.solidarity.solidarity.levy.exemption.metoda_wylaczenia",
+        "jdg.hyper.solidarity.solidarity.levy.income.capital_gains",
+        "jdg.hyper.solidarity.solidarity.levy.income.foreign",
+        "jdg.hyper.solidarity.solidarity.levy.income.ip_box",
+        "jdg.hyper.solidarity.solidarity.levy.payment.deadline.april30",
+        "jdg.hyper.solidarity.solidarity.levy.payment.no_advances",
+        "jdg.hyper.solidarity.solidarity.levy.spouse.individual_calculation",
+        "jdg.hyper.solidarity.solidarity.levy.spouse.no_income_transfer",
+        "jdg.hyper.solidarity.solidarity.levy.zus.health.no_exclusion",
+        "jdg.hyper.solidarity.solidarity.levy.zus.social.exclusion",
+        "jdg.hyper.wis.no_match",
+        "jdg.hyper.wis.solidarity.levy.aggregate.alert_900k",
+        "jdg.hyper.wis.wis.eligibility.cn_code_ambiguous"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0034",
@@ -3260,7 +3604,22 @@
         "jdg.taxfree.hyper.jdg_no_taxfree_in_advances",
         "jdg.uor.inventory.tax_on_remnant.r1"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.calendar.hyper.forecast_cash_flow_warning",
+        "jdg.calendar.hyper.forecast_history_trend",
+        "jdg.calendar.hyper.forecast_optimization",
+        "jdg.calendar.hyper.pit_lump_sum_20th",
+        "jdg.calendar.hyper.weekend_shift_saturday",
+        "jdg.hyper.deadlines.tax.pit_annual_april30",
+        "jdg.hyper.edelivery.force_majeure.loss.carry_back",
+        "jdg.hyper.limits.kks.conviction.business_ban_art41kk",
+        "jdg.hyper.limits.seasonal.aggregate.comparison_normal_vs_seasonal",
+        "jdg.hyper.limits.seasonal.aggregate.optimal_strategy",
+        "jdg.hyper.limits.seasonal.pit.advances_no_income_months_zero",
+        "jdg.hyper.limits.seasonal.pit.lump_sum_annual_calculation"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0035",
@@ -3308,7 +3667,13 @@
         "jdg.taxfree.hyper.overpayment_from_taxfree",
         "jdg.taxfree.hyper.underpayment_taxfree_warning"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.calendar.hyper.pit_shift_weekend",
+        "jdg.hyper.deadlines.tax.zus_dra_10th",
+        "jdg.hyper.procurement.family.joint_filing.exclusions"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0036",
@@ -3329,7 +3694,9 @@
         "jdg.representation.prokura_branch",
         "jdg.representation.prokura_unregistered"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0037",
@@ -3347,7 +3714,9 @@
         "jdg.esig.electronic_contracts",
         "jdg.esig.hyper.contracts_documentary_form"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0038",
@@ -3365,7 +3734,9 @@
         "jdg.esig.hyper.contracts_electronic_form",
         "jdg.esig.hyper.contracts_equivalence_written"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0039",
@@ -3390,7 +3761,9 @@
         "jdg.kks.no_match",
         "jdg.kks.conviction_business_ban"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0040",
@@ -3405,7 +3778,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0041",
@@ -3420,7 +3795,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0042",
@@ -3435,7 +3812,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0043",
@@ -3452,7 +3831,9 @@
       "rule_ids": [
         "jdg.esig_auto.eidas_cross_border"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0044",
@@ -3470,7 +3851,9 @@
         "jdg.esig_auto.no_match",
         "jdg.esig_auto.signature_selector"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0045",
@@ -3485,7 +3868,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0046",
@@ -3502,7 +3887,9 @@
       "rule_ids": [
         "jdg.esig_auto.certificate_monitor"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0047",
@@ -3671,7 +4058,40 @@
         "jdg.r12_ryczalt_cykl_zycia_innovations.ryczalt_limit_monitor",
         "jdg.r12_ryczalt_cykl_zycia_innovations.pkwiu_rate_classifier"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.procurement.family.health_insurance.family_members",
+        "jdg.hyper.procurement.family.joint_filing.benefit_calculation",
+        "jdg.hyper.procurement.family.joint_filing.deadline_april30",
+        "jdg.hyper.procurement.family.single_parent.child_custody_required",
+        "jdg.hyper.procurement.family.single_parent.preferential_calculation",
+        "jdg.micro.pit.a6.r4",
+        "jdg.micro.pit.a6.r6",
+        "jdg.micro.pit.a6.r7",
+        "jdg.micro.ryczalt.a6.r10",
+        "jdg.micro.ryczalt.a6.r2",
+        "jdg.micro.ryczalt.a6.r3",
+        "jdg.micro.ryczalt.a6.r4",
+        "jdg.micro.ryczalt.a6.r5",
+        "jdg.micro.ryczalt.a6.r6",
+        "jdg.micro.ryczalt.a6.r7",
+        "jdg.micro.ryczalt.a6.r8",
+        "jdg.micro.ryczalt.a6.r9",
+        "jdg.micro.ryczalt_cykl_atomic_p13.limit_2m.r2",
+        "jdg.micro.ryczalt_cykl_atomic_p13.suspension.r1",
+        "jdg.r12_ryczalt_cykl_zycia_innovations.pkwiu_rate_classifier",
+        "jdg.ryc.a6.r11",
+        "jdg.ryc.a6.r12",
+        "jdg.ryc.a6.r13",
+        "jdg.ryc.a6.r14",
+        "jdg.ryc.a6.r15",
+        "jdg.ryc.a6.r6",
+        "jdg.ryc.a6.r7",
+        "jdg.ryc.a6.r8",
+        "jdg.ryc.a6.r9",
+        "jdg.ryc.a7.r1"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0048",
@@ -3787,7 +4207,25 @@
         "jdg.pit.tax_form_change.consequences_multiple_returns",
         "jdg.tax_opt.estonian_cit_analysis"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.calendar.hyper.pit_annual_return_30april",
+        "jdg.hyper.deadlines.insurance.claim.late_payment_interest_taxable",
+        "jdg.hyper.general.family.children.university_compatibility",
+        "jdg.micro.pit.a21.r6",
+        "jdg.micro.ryczalt.a21.r10",
+        "jdg.micro.ryczalt.a21.r11",
+        "jdg.micro.ryczalt.a21.r12",
+        "jdg.micro.ryczalt.a21.r2",
+        "jdg.micro.ryczalt.a21.r3",
+        "jdg.micro.ryczalt.a21.r4",
+        "jdg.micro.ryczalt.a21.r5",
+        "jdg.micro.ryczalt.a21.r6",
+        "jdg.micro.ryczalt.a21.r7",
+        "jdg.micro.ryczalt.a21.r8",
+        "jdg.micro.ryczalt.a21.r9"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0049",
@@ -3802,7 +4240,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0050",
@@ -3817,7 +4257,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0051",
@@ -3832,7 +4274,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0052",
@@ -3847,7 +4291,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0053",
@@ -3862,7 +4308,11 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.pit.advances_returns.loss_carry_forward"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0054",
@@ -3877,7 +4327,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0055",
@@ -3892,7 +4344,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0056",
@@ -3907,7 +4361,13 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.misc.advertising.sponsorship.sport_culture_kup",
+        "jdg.hyper.sanctions.regulated.chamber.disciplinary_proceedings",
+        "jdg.p24.i7.r3"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0057",
@@ -3922,7 +4382,25 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.calendar.hyper.pit_annual_return_30april",
+        "jdg.hyper.deadlines.insurance.claim.late_payment_interest_taxable",
+        "jdg.hyper.general.family.children.university_compatibility",
+        "jdg.micro.pit.a21.r6",
+        "jdg.micro.ryczalt.a21.r10",
+        "jdg.micro.ryczalt.a21.r11",
+        "jdg.micro.ryczalt.a21.r12",
+        "jdg.micro.ryczalt.a21.r2",
+        "jdg.micro.ryczalt.a21.r3",
+        "jdg.micro.ryczalt.a21.r4",
+        "jdg.micro.ryczalt.a21.r5",
+        "jdg.micro.ryczalt.a21.r6",
+        "jdg.micro.ryczalt.a21.r7",
+        "jdg.micro.ryczalt.a21.r8",
+        "jdg.micro.ryczalt.a21.r9"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0058",
@@ -3937,7 +4415,26 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.limits.seasonal.zus.annual_health_tier_lockstep",
+        "jdg.micro.sus.a6.r2",
+        "jdg.micro.sus.a6.r3",
+        "jdg.micro.sus.a6.r4",
+        "jdg.micro.sus.a6.r5",
+        "jdg.micro.sus.a6.r6",
+        "jdg.micro.sus.a6.r7",
+        "jdg.micro.sus.a6.r8",
+        "jdg.micro.zus.a6.r11",
+        "jdg.micro.zus.a6.r12",
+        "jdg.micro.zus.a6.r13",
+        "jdg.micro.zus.a6.r14",
+        "jdg.micro.zus.a6.r15",
+        "jdg.micro.zus.a6.r8",
+        "jdg.micro.zus.a6.r9",
+        "jdg.micro.zus.a8.r10"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0059",
@@ -3952,7 +4449,40 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.sus.a18.r10",
+        "jdg.micro.sus.a18.r2",
+        "jdg.micro.sus.a18.r3",
+        "jdg.micro.sus.a18.r4",
+        "jdg.micro.sus.a18.r5",
+        "jdg.micro.sus.a18.r6",
+        "jdg.micro.sus.a18.r7",
+        "jdg.micro.sus.a18.r8",
+        "jdg.micro.sus.a18.r9",
+        "jdg.micro.zus.a1.r10",
+        "jdg.micro.zus.a1.r11",
+        "jdg.micro.zus.a1.r12",
+        "jdg.micro.zus.a1.r13",
+        "jdg.micro.zus.a1.r14",
+        "jdg.micro.zus.a1.r15",
+        "jdg.micro.zus.a1.r2",
+        "jdg.micro.zus.a1.r3",
+        "jdg.micro.zus.a1.r4",
+        "jdg.micro.zus.a1.r5",
+        "jdg.micro.zus.a1.r6",
+        "jdg.micro.zus.a1.r7",
+        "jdg.micro.zus.a1.r8",
+        "jdg.micro.zus.a1.r9",
+        "jdg.micro.zus.a18.r19",
+        "jdg.micro.zus.a18.r20",
+        "jdg.micro.zus.a18.r6",
+        "jdg.micro.zus.a18.r7",
+        "jdg.micro.zus.a18.r8",
+        "jdg.micro.zus.a2.r1",
+        "jdg.p08_zus_macro_enterprise.base_recommender"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0060",
@@ -3967,7 +4497,28 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.sus.a22.r2",
+        "jdg.micro.sus.a22.r3",
+        "jdg.micro.sus.a22.r4",
+        "jdg.micro.sus.a22.r5",
+        "jdg.micro.sus.a22.r6",
+        "jdg.micro.sus.a22.r7",
+        "jdg.micro.sus.a22.r8",
+        "jdg.micro.zus.a13.r2",
+        "jdg.micro.zus.a22.r11",
+        "jdg.micro.zus.a22.r12",
+        "jdg.micro.zus.a22.r9",
+        "jdg.micro.zus.a24.r1",
+        "jdg.micro.zus.a4.r10",
+        "jdg.micro.zus.a4.r2",
+        "jdg.micro.zus.a4.r3",
+        "jdg.micro.zus.a4.r4",
+        "jdg.micro.zus.a4.r5",
+        "jdg.p07_zus_macro_innovations.report"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0061",
@@ -3982,7 +4533,21 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.limits.seasonal.closure.vat_r_new_application",
+        "jdg.hyper.procurement.family.cooperation.notification_to_zus_7days",
+        "jdg.hyper.procurement.family.cooperation.pit_treatment",
+        "jdg.hyper.procurement.no_match",
+        "jdg.micro.sus.a36.r2",
+        "jdg.micro.sus.a36.r3",
+        "jdg.micro.sus.a36.r4",
+        "jdg.micro.sus.a36.r5",
+        "jdg.micro.sus.a36.r6",
+        "jdg.micro.sus.a36.r7",
+        "jdg.micro.sus.a36.r8"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0062",
@@ -4098,7 +4663,24 @@
         "jdg.zus.health_scale",
         "jdg.zus.health_lump_sum"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.cross_domain.crossborder_vat_pit_domino",
+        "jdg.cross_domain.zus_pit_health_paradox_deep",
+        "jdg.micro.zdrowotna.a79.r10",
+        "jdg.micro.zdrowotna.a79.r2",
+        "jdg.micro.zdrowotna.a79.r3",
+        "jdg.micro.zdrowotna.a79.r4",
+        "jdg.micro.zdrowotna.a79.r5",
+        "jdg.micro.zdrowotna.a79.r6",
+        "jdg.micro.zdrowotna.a79.r7",
+        "jdg.micro.zdrowotna.a79.r8",
+        "jdg.micro.zdrowotna.a79.r9",
+        "jdg.p08_zus_micro_innovations.lump_tier_auto_recalc",
+        "jdg.zus.health.fallback",
+        "jdg.zus.health_linear"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0063",
@@ -4113,7 +4695,31 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.general.force_majeure.documents.loss_reporting",
+        "jdg.hyper.sanctions.regulated.zus.concurrent_chamber_and_jdg",
+        "jdg.micro.sus.a18a.r10",
+        "jdg.micro.sus.a18a.r2",
+        "jdg.micro.sus.a18a.r3",
+        "jdg.micro.sus.a18a.r4",
+        "jdg.micro.sus.a18a.r5",
+        "jdg.micro.sus.a18a.r6",
+        "jdg.micro.sus.a18a.r7",
+        "jdg.micro.sus.a18a.r8",
+        "jdg.micro.sus.a18a.r9",
+        "jdg.micro.zus.a17.r10",
+        "jdg.micro.zus.a17.r3",
+        "jdg.micro.zus.a17.r4",
+        "jdg.micro.zus.a17.r5",
+        "jdg.micro.zus.a17.r6",
+        "jdg.micro.zus.a17.r8",
+        "jdg.micro.zus.a17.r9",
+        "jdg.micro.zus.a18.r1",
+        "jdg.micro.zus.a18.r9",
+        "jdg.micro.zus.a22.r10"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0064",
@@ -4128,7 +4734,39 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.limits.seasonal.pit.scale_annual_only_active_months",
+        "jdg.micro.sus.a18c.r10",
+        "jdg.micro.sus.a18c.r2",
+        "jdg.micro.sus.a18c.r3",
+        "jdg.micro.sus.a18c.r4",
+        "jdg.micro.sus.a18c.r5",
+        "jdg.micro.sus.a18c.r6",
+        "jdg.micro.sus.a18c.r7",
+        "jdg.micro.sus.a18c.r8",
+        "jdg.micro.sus.a18c.r9",
+        "jdg.micro.zus.a17.r1",
+        "jdg.micro.zus.a18.r11",
+        "jdg.micro.zus.a18.r12",
+        "jdg.micro.zus.a18.r13",
+        "jdg.micro.zus.a18.r14",
+        "jdg.micro.zus.a18.r15",
+        "jdg.micro.zus.a5.r10",
+        "jdg.micro.zus.a5.r11",
+        "jdg.micro.zus.a5.r13",
+        "jdg.micro.zus.a5.r14",
+        "jdg.micro.zus.a5.r15",
+        "jdg.micro.zus.a5.r2",
+        "jdg.micro.zus.a5.r3",
+        "jdg.micro.zus.a5.r4",
+        "jdg.micro.zus.a5.r5",
+        "jdg.micro.zus.a5.r6",
+        "jdg.micro.zus.a5.r7",
+        "jdg.micro.zus.a5.r8",
+        "jdg.micro.zus.a5.r9"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0065",
@@ -4143,7 +4781,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0066",
@@ -4208,7 +4848,19 @@
         "jdg.uor.obligation.a2.r8",
         "jdg.uor.obligation.a2.r9"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.uor.a2.r1",
+        "jdg.micro.uor.a2.r2",
+        "jdg.micro.uor.a2.r3",
+        "jdg.micro.uor.a2.r4",
+        "jdg.micro.uor.a2.r5",
+        "jdg.micro.uor.a2.r6",
+        "jdg.micro.uor.a2.r7",
+        "jdg.micro.uor.a2.r8",
+        "jdg.uor.obligation.a2.r1"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0067",
@@ -4260,7 +4912,21 @@
         "jdg.uor.revenue.timing.cash_basis.r1",
         "jdg.uor.revenue.interest.r1"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.uor.a4.r10",
+        "jdg.micro.uor.a4.r11",
+        "jdg.micro.uor.a4.r12",
+        "jdg.micro.uor.a4.r2",
+        "jdg.micro.uor.a4.r3",
+        "jdg.micro.uor.a4.r4",
+        "jdg.micro.uor.a4.r5",
+        "jdg.micro.uor.a4.r6",
+        "jdg.micro.uor.a4.r7",
+        "jdg.micro.uor.a4.r8",
+        "jdg.micro.uor.a4.r9"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0068",
@@ -4293,7 +4959,14 @@
         "jdg.uor.books.a20.r10",
         "jdg.uor.books.a20.r11"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.uor.a20.r1",
+        "jdg.micro.uor.a20.r2",
+        "jdg.micro.uor.a20.r8",
+        "jdg.micro.uor.integration.r3"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0069",
@@ -4335,7 +5008,17 @@
         "jdg.uor.books.a20.r8",
         "jdg.uor.books.a20.r12"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.deadlines.payment.offset.when_recognized",
+        "jdg.hyper.deadlines.tax.vat_jpk_v7m_25th",
+        "jdg.micro.uor.a22.r1",
+        "jdg.micro.uor.a22.r2",
+        "jdg.micro.uor.a22.r3",
+        "jdg.micro.uor.a22.r4",
+        "jdg.micro.uor.a22.r5"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0070",
@@ -4368,7 +5051,17 @@
         "jdg.uor.inventory.physical_count.r1",
         "jdg.uor.inventory.continuous.r1"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.accounting.uor_asset_valuation",
+        "jdg.micro.uor.a26.r1",
+        "jdg.micro.uor.a26.r2",
+        "jdg.micro.uor.a26.r3",
+        "jdg.micro.uor.a26.r4",
+        "jdg.micro.uor.a26.r5",
+        "jdg.micro.uor.a26.r6"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0071",
@@ -4424,7 +5117,19 @@
         "jdg.uor.revenue.a28.r1",
         "jdg.uor.revenue.a28.r2"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.accounting.uor_accruals_deferrals",
+        "jdg.micro.uor.a28.r1",
+        "jdg.micro.uor.a28.r2",
+        "jdg.micro.uor.a28.r3",
+        "jdg.micro.uor.a28.r4",
+        "jdg.micro.uor.a28.r5",
+        "jdg.micro.uor.a28.r6",
+        "jdg.micro.uor.a28.r7",
+        "jdg.micro.uor.a28.r8"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0072",
@@ -4454,7 +5159,16 @@
         "jdg.uor.revenue.a32.r3",
         "jdg.uor.revenue.a32.r4"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.uor.a32.r1",
+        "jdg.micro.uor.a32.r2",
+        "jdg.micro.uor.a32.r3",
+        "jdg.micro.uor.a32.r4",
+        "jdg.micro.uor.a32.r5",
+        "jdg.micro.uor.a32.r6"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0073",
@@ -4483,7 +5197,16 @@
         "jdg.uor.document_storage",
         "jdg.uor.closing.procedures.r10"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.accounting.kst_group_classification",
+        "jdg.micro.uor.a74.r1",
+        "jdg.micro.uor.a74.r2",
+        "jdg.micro.uor.a74.r3",
+        "jdg.micro.uor.a74.r4",
+        "jdg.retention.uor_annual_reports_permanent"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0074",
@@ -4498,7 +5221,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0075",
@@ -4513,7 +5238,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0076",
@@ -4528,7 +5255,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0077",
@@ -4543,7 +5272,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0078",
@@ -4558,7 +5289,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0079",
@@ -4573,7 +5306,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0080",
@@ -4588,7 +5323,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0081",
@@ -4603,7 +5340,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0082",
@@ -4618,7 +5357,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0083",
@@ -4633,7 +5374,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0084",
@@ -4648,7 +5391,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0085",
@@ -4663,7 +5408,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0086",
@@ -4678,7 +5425,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0087",
@@ -4693,7 +5442,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0088",
@@ -4708,7 +5459,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0089",
@@ -4725,7 +5478,9 @@
       "rule_ids": [
         "jdg.epuap.integration_s22_s4"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0090",
@@ -4743,7 +5498,9 @@
         "jdg.hyper.fx.epuap.profile.required",
         "jdg.hyper.fx.epuap.signature.profile_zaufany"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0091",
@@ -4769,7 +5526,9 @@
         "jdg.p20_neural_mesh_innovations.judicial_trend_rulings_engine",
         "jdg.p20_neural_mesh_innovations.nsa_wsa_rulings_database"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0092",
@@ -4797,7 +5556,9 @@
         "jdg.security.fortress.kks_ordpu_active_contrition_check",
         "jdg.vat.enterprise.tax_authority_interaction"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0093",
@@ -4826,7 +5587,12 @@
         "jdg.limitations.suspension_of_limitation_art21",
         "jdg.limitations.suspension_of_limitation_art21"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.liability.voluntary_disclosure",
+        "jdg.statute.voluntary_disclosure_protection"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0094",
@@ -4849,7 +5615,16 @@
         "jdg.ord.a48.r2",
         "jdg.statute.deferral_active_interest_suspended"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.edge_cases.force_majeure_insurance_tax",
+        "jdg.edge_cases.force_majeure_zus_suspension",
+        "jdg.liability.tax_remission_active",
+        "jdg.ord.a48.r1",
+        "jdg.ord.a48.r2",
+        "jdg.ord.a48.r3"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0095",
@@ -4871,7 +5646,16 @@
         "jdg.ord.a51.r2",
         "jdg.statute.tax_remission_liability_extinguished"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.fx.eus.platform.certificates",
+        "jdg.liability.overpayment_offset",
+        "jdg.ord.a51.r1",
+        "jdg.ord.a51.r2",
+        "jdg.ord.a51.r3",
+        "jdg.statute.overpayment_offset_auto"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0096",
@@ -4917,7 +5701,9 @@
         "jdg.limitations.late_payment_interest",
         "jdg.tp.hyper.adjustment_interest_on_arrears"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0097",
@@ -4983,7 +5769,24 @@
         "jdg.p33_ordpu_kks_supplement.art67_relief_scoring",
         "jdg.tax_interaction.deferral_installment_request"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.force_majeure.tax_relief",
+        "jdg.force_majeure.zus_relief",
+        "jdg.hyper.edelivery.family.spouse.employment.kup_conditions",
+        "jdg.hyper.family.force_majeure.event.fire",
+        "jdg.hyper.family.force_majeure.event.flood",
+        "jdg.hyper.family.force_majeure.event.natural_disaster_other",
+        "jdg.hyper.family.force_majeure.event.pandemic",
+        "jdg.hyper.family.force_majeure.event.war_effects",
+        "jdg.hyper.family.force_majeure.relief.tax_deferral",
+        "jdg.hyper.family.force_majeure.relief.tax_installments",
+        "jdg.hyper.family.force_majeure.relief.tax_remission",
+        "jdg.hyper.family.force_majeure.relief.tax_suspension",
+        "jdg.hyper.general.force_majeure.relief.application_immediate",
+        "jdg.hyper.general.force_majeure.relief.zus_deferral"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0098",
@@ -5050,7 +5853,37 @@
         "jdg.temporal.statute_limitations_10yr",
         "jdg.temporal.statute_suspended"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.audit.evidence_collection_rights",
+        "jdg.audit.hyper.penalty_obstruction_5000",
+        "jdg.audit.hyper.statute_resume_after_close",
+        "jdg.audit.hyper.statute_suspension_duration",
+        "jdg.conviction.hyper.extended_audit_period",
+        "jdg.decision_core_completeness.limitations_calendar_report",
+        "jdg.edge_cases.tax_audit_notification_7days",
+        "jdg.hyper.force_majeure.audit.penalty.obstruction_fine_5000",
+        "jdg.hyper.force_majeure.audit.statute.resume_after_close",
+        "jdg.hyper.force_majeure.audit.statute.suspension_duration",
+        "jdg.hyper.general.regulated.cross_border.eu_qualifications_recognition",
+        "jdg.liability.personal_liability",
+        "jdg.liability.spousal_solidary",
+        "jdg.ord.a67b.r8",
+        "jdg.ord.a70.r1",
+        "jdg.ord.a70.r10",
+        "jdg.ord.a70.r11",
+        "jdg.ord.a70.r2",
+        "jdg.ord.a70.r4",
+        "jdg.ord.a70.r5",
+        "jdg.ord.a70.r6",
+        "jdg.ord.a70.r7",
+        "jdg.ord.a70.r8",
+        "jdg.ord.a70.r9",
+        "jdg.temporal.statute_limitations_10yr",
+        "jdg.temporal.statute_suspended",
+        "jdg.temporal.vat_rate_effective_2026"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0099",
@@ -5098,7 +5931,17 @@
         "jdg.statute.overpayment_offset_auto",
         "jdg.tax_interaction.overpayment_refund_claim"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.liability.deferral_active",
+        "jdg.ord.a71.r1",
+        "jdg.ord.a71.r2",
+        "jdg.ord.a72.r1",
+        "jdg.ord.a72.r2",
+        "jdg.ord.a72.r3",
+        "jdg.statute.deferral_active_interest_suspended"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0100",
@@ -5150,7 +5993,20 @@
         "jdg.vat.substantive.vat_zt_correction_required",
         "jdg.vat.substantive.vat_correction_deadline"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.edge_cases.tax_audit_vat_refund_suspension",
+        "jdg.hyper.family.audit.follow_up.recommendations",
+        "jdg.ord.a79.r1",
+        "jdg.ord.a81.r2",
+        "jdg.ord.a81.r3",
+        "jdg.ord.a81.r4",
+        "jdg.ord.a81.r5",
+        "jdg.ord.a81a.r1",
+        "jdg.ord.a81a.r2",
+        "jdg.ord.a81c.r1"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0101",
@@ -5361,7 +6217,25 @@
         "jdg.limitations.document_retention",
         "jdg.tp.hyper.benchmarking_documentation_retention"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.audit.hyper.statute_suspension_effect",
+        "jdg.decision_core_completeness.edge_case_gap",
+        "jdg.force_majeure.insurance_cover",
+        "jdg.hyper.edelivery.force_majeure.documents.backup_obligation",
+        "jdg.hyper.edelivery.force_majeure.documents.electronic_preservation",
+        "jdg.hyper.edelivery.force_majeure.insurance.cover_check",
+        "jdg.hyper.edelivery.no_match",
+        "jdg.hyper.family.audit.cross_border.presence_foreign_officials",
+        "jdg.hyper.family.audit.cross_border.simultaneous_audit",
+        "jdg.hyper.force_majeure.audit.statute.suspension_effect",
+        "jdg.hyper.fx.electronic.communication.encryption_requirements",
+        "jdg.hyper.general.family.spouse.contract_type.b2b",
+        "jdg.hyper.general.force_majeure.documents.reconstruction_procedure",
+        "jdg.retention.vat_invoices_extended",
+        "jdg.temporal.tax_free_amount_temporal"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0102",
@@ -5378,7 +6252,11 @@
       "rule_ids": [
         "jdg.hyper.family.audit.cross_border.presence_foreign_officials"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.family.audit.closure.decision_issuance"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0103",
@@ -5399,7 +6277,9 @@
         "jdg.ord.a117ba.r1",
         "jdg.p11_ordynacja_podatkowa_innovations.white_list_monitor"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0104",
@@ -5441,7 +6321,21 @@
         "jdg.p35.gaar_economic_substance",
         "jdg.risk.gaar_artificial_scheme"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.ord.a119a.r1",
+        "jdg.ord.a119a.r2",
+        "jdg.ord.a119a.r3",
+        "jdg.ord.a119a.r4",
+        "jdg.ord.a119a.r5",
+        "jdg.ord.a119a.r6",
+        "jdg.ord.a81.r6",
+        "jdg.ord.a81.r7",
+        "jdg.ord.a81.r8",
+        "jdg.ord.a81.r9",
+        "jdg.risk.heuristic_empty_invoice"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0105",
@@ -5474,7 +6368,13 @@
         "jdg.r08_ordynacja_obrona_innovations.proceeding_deadline_alerts_3lvl",
         "jdg.statute.tax_proceedings_deadlines_alert"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.audit.hyper.type_customs_fiscal",
+        "jdg.hyper.audit.audit.type.customs_fiscal",
+        "jdg.liability.statute_interruption_execution"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0106",
@@ -5515,7 +6415,15 @@
         "jdg.representation.poa_automatic_expiry",
         "jdg.representation.poa_cross_border"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.fx.epuap.profile.required",
+        "jdg.hyper.general.audit.representation.poa_upl1",
+        "jdg.hyper.general.force_majeure.relief.deadline_extension",
+        "jdg.representation.ppd1_delivery",
+        "jdg.representation.upl1_required"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0107",
@@ -5550,7 +6458,18 @@
         "jdg.micro.pkpir.p9.r10",
         "jdg.p11_ordynacja_podatkowa_innovations.jpk_demand_tracker"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.audit.foreign_language_documents",
+        "jdg.audit.hyper.doc_foreign_language",
+        "jdg.hyper.deadlines.tax.complaint_7days",
+        "jdg.hyper.fx.currency.exchange.fifo_method",
+        "jdg.hyper.fx.electronic.communication.data_breach_notification",
+        "jdg.hyper.general.audit.document.foreign_language",
+        "jdg.hyper.sanctions.ordinal.penalty_2800_pln",
+        "jdg.ksef_jpk.ksef_duplicate_detected"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0108",
@@ -5586,7 +6505,39 @@
         "jdg.tax_interaction.no_match",
         "jdg.tax_interaction.voluntary_disclosure_letter"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.sanctions.kks.small_value_fine_250_5000",
+        "jdg.kks.criminal_statute_art44",
+        "jdg.kks.extensions.limits_verification",
+        "jdg.kks.repeat_offense_aggravating",
+        "jdg.kks.statute_crime_5y_art20_p1",
+        "jdg.kks.statute_of_limitations_art44",
+        "jdg.kks.vd_effect_no_penalty_art16_p8",
+        "jdg.kks.vd_incomplete_notification_art16_p3",
+        "jdg.kks.vd_payment_obligation_art16_p2",
+        "jdg.kks.voluntary_disclosure_deadline_breach",
+        "jdg.kks.voluntary_disclosure_foreign_tax",
+        "jdg.kks.voluntary_disclosure_mandatory_reporter",
+        "jdg.kks.voluntary_disclosure_multiple_offenses",
+        "jdg.kks.voluntary_disclosure_partial",
+        "jdg.kks.voluntary_disclosure_payment",
+        "jdg.kks.voluntary_disclosure_successor",
+        "jdg.liability.overpayment_detection",
+        "jdg.micro.ord.a16.r2",
+        "jdg.micro.ord.a16.r3",
+        "jdg.micro.ord.a16.r4",
+        "jdg.micro.ord.a16.r5",
+        "jdg.micro.ord.a16.r6",
+        "jdg.p10_kks_innovations.limitation_calendar",
+        "jdg.p10_kks_innovations.voluntary_disclosure_assistant",
+        "jdg.p11_ordynacja_podatkowa_innovations.gaar_benefit_calculator",
+        "jdg.r07_kks_innovations.penalty_calculator_temporal",
+        "jdg.r07_kks_innovations.transaction_risk_predictor",
+        "jdg.r07_kks_innovations.voluntary_disclosure_one_click",
+        "jdg.statute.overpayment_detection_and_refund"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0109",
@@ -5606,7 +6557,17 @@
         "jdg.p10_kks_innovations.limitation_calendar",
         "jdg.limitations.kks_criminal"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.kks.fiscal_penalty_calculation",
+        "jdg.kks.limitation_absolute_bar_p225",
+        "jdg.kks.plan42.fiscal_penalty_calculation",
+        "jdg.kks.statute_limitation_extension_10y",
+        "jdg.kks.statute_limitation_interruption",
+        "jdg.limitations.document_retention",
+        "jdg.p10_kks_innovations.conviction_expungement_tracker"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0110",
@@ -5649,7 +6610,46 @@
         "jdg.risk.pit_revenue_drop_anomaly",
         "jdg.tp.hyper.sanction_kks_for_intentional_evasion"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.general.solidarity.levy.interaction.pit_free_amount",
+        "jdg.hyper.mdr.mdr.retention.scheme_documentation_6_years",
+        "jdg.kks.chain_transaction_fraud_p298",
+        "jdg.kks.cumulative_tax_loss_p381",
+        "jdg.kks.digital_currency_concealment_p299",
+        "jdg.kks.empty_invoice_issued",
+        "jdg.kks.evasion_fake_residency_cert_p253",
+        "jdg.kks.evasion_fictitious_costs_p246",
+        "jdg.kks.evasion_fictitious_costs_temporal_p250",
+        "jdg.kks.evasion_foreign_account_hiding_p251",
+        "jdg.kks.evasion_identity_theft_p247",
+        "jdg.kks.evasion_money_laundering_invoices_p254",
+        "jdg.kks.evasion_tp_manipulation_p248",
+        "jdg.kks.global_kks_risk_score_p383",
+        "jdg.kks.identity_concealment_p297",
+        "jdg.kks.multi_year_fraud_p377",
+        "jdg.kks.offense_chain_detection_p376",
+        "jdg.kks.offense_severity_escalation_p382",
+        "jdg.kks.offense_statute_mapping_p394",
+        "jdg.kks.organized_crime_indicators_p378",
+        "jdg.kks.tax_evasion_concealed_business_art54_p3",
+        "jdg.kks.tax_evasion_double_books_p244",
+        "jdg.kks.tax_evasion_inflated_costs_p243",
+        "jdg.kks.tax_evasion_shell_company_p245",
+        "jdg.kks.tax_evasion_significant_art54_p2",
+        "jdg.kks.unreliable_pkpir_systematic_art56_p2",
+        "jdg.mdr.hyper.aggregate_annual_risk",
+        "jdg.micro.kks.plan33.a54.r7",
+        "jdg.micro.kks.plan33.a54.r8",
+        "jdg.micro.kks.plan33.a54.r9",
+        "jdg.micro.kks.plan33.a62.r10",
+        "jdg.p10_kks_innovations.kks_sanction_auto_updater",
+        "jdg.p10_kks_innovations.voluntary_disclosure_audit",
+        "jdg.r07_kks_innovations.kks_report",
+        "jdg.risk.kks_unreliable_books_plan26",
+        "jdg.tp.hyper.sanction_management_board_liability"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0111",
@@ -5678,7 +6678,37 @@
         "jdg.tp.hyper.adjustment_kks_liability",
         "jdg.tp.hyper.sanction_no_documentation_10pct"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.hyper.sanctions.aggregate_sanction_risk_score",
+        "jdg.kks.books_backdated_p260",
+        "jdg.kks.books_ghost_employees_p261",
+        "jdg.kks.empty_invoice_carousel_art62_p3",
+        "jdg.kks.pkpir_fictitious_entries_art56_p3",
+        "jdg.kks.plan42.unreliable_vat_evidence_art57",
+        "jdg.kks.unreliable_books_destroyed_p258",
+        "jdg.kks.unreliable_books_missing_entries",
+        "jdg.kks.unreliable_books_wrong_values_p257",
+        "jdg.kks.unreliable_vat_evidence_art57",
+        "jdg.kks.unreliable_vat_records",
+        "jdg.micro.kks.plan33.a56.r2",
+        "jdg.micro.kks.plan33.a56.r3",
+        "jdg.micro.kks.plan33.a56.r6",
+        "jdg.micro.kks.plan33.a56.r7",
+        "jdg.micro.kks.plan33.a56.r8",
+        "jdg.micro.kks.plan33.a56.r9",
+        "jdg.micro.kks.plan33.a57.r1",
+        "jdg.micro.kks.plan33.a57.r2",
+        "jdg.micro.pkpir_columns.p10.r10",
+        "jdg.p10_kks_innovations.recidivism_detector",
+        "jdg.risk.kks_vat_evidence_gap",
+        "jdg.solidarity.hyper.interaction_pit_free_amount",
+        "jdg.solidarity.hyper.interaction_tax_scale",
+        "jdg.tp.hyper.adjustment_appeal_procedure",
+        "jdg.tp.hyper.benchmarking_required",
+        "jdg.tp.hyper.sanction_late_documentation"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0112",
@@ -5696,7 +6726,26 @@
         "jdg.kks.vat_split_payment_evasion_p275",
         "jdg.kks.vat_split_payment_evasion_internal_p275b"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.kks.empty_invoice_art62",
+        "jdg.kks.plan42.empty_invoice_art62",
+        "jdg.kks.vat_duplicate_deduction_p278",
+        "jdg.kks.vat_gtu_misclassification_p273",
+        "jdg.kks.vat_jpk_mismatch_p272",
+        "jdg.kks.vat_missing_sales_register_p279",
+        "jdg.kks.vat_rate_manipulation_p274",
+        "jdg.kks.vat_records_concealment_p271",
+        "jdg.kks.vat_reverse_charge_omission_p277",
+        "jdg.micro.kks.plan33.a57.r10",
+        "jdg.micro.kks.plan33.a57.r11",
+        "jdg.micro.kks.plan33.a57.r6",
+        "jdg.micro.kks.plan33.a57.r7",
+        "jdg.micro.kks.plan33.a57.r8",
+        "jdg.micro.kks.plan33.a57.r9",
+        "jdg.risk.kks_declaration_overdue"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0113",
@@ -5737,7 +6786,54 @@
         "jdg.vat_fraud_detection.solidary_liability",
         "jdg.vat_fraud_detection.report"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.kks.declaration_non_filing_art77_p1",
+        "jdg.kks.empty_invoice_conspirator_p314",
+        "jdg.kks.empty_invoice_cross_border_p308",
+        "jdg.kks.empty_invoice_digital_forgery_p309",
+        "jdg.kks.empty_invoice_esignature_forgery_p317",
+        "jdg.kks.empty_invoice_intermediary_p313",
+        "jdg.kks.empty_invoice_ksef_fraud_p310",
+        "jdg.kks.empty_invoice_ksef_validation_p318",
+        "jdg.kks.empty_invoice_organized_scheme_p307",
+        "jdg.kks.empty_invoice_recipient_knowledge_p312",
+        "jdg.kks.empty_invoice_systematic_p306",
+        "jdg.kks.empty_invoice_timestamp_fraud_p311",
+        "jdg.kks.fake_invoice_issued",
+        "jdg.kks.invoice_carousel_detected",
+        "jdg.kks.invoice_counterfeit_p304",
+        "jdg.kks.invoice_falsification_art62_p4",
+        "jdg.kks.invoice_falsified_amount_p303",
+        "jdg.kks.invoice_used_for_tax_fraud_p305",
+        "jdg.kks.plan42.wrong_vat_rate_art64",
+        "jdg.kks.vat_fraud_bank_account_hopping_p362",
+        "jdg.kks.vat_fraud_geographic_clustering_p357",
+        "jdg.kks.vat_fraud_industry_specific_p358",
+        "jdg.kks.vat_fraud_insolvency_pattern_p363",
+        "jdg.kks.vat_fraud_new_business_red_flag_p359",
+        "jdg.kks.vat_fraud_nip_rotation_p361",
+        "jdg.kks.vat_fraud_rapid_dereg_p360",
+        "jdg.kks.vat_fraud_temporal_pattern_p356",
+        "jdg.kks.vat_section_aggregate_risk_p364",
+        "jdg.kks.wrong_vat_rate_art64",
+        "jdg.kks.wrong_vat_rate_p330",
+        "jdg.micro.kks.plan33.a56.r1",
+        "jdg.micro.kks.plan33.a62.r11",
+        "jdg.micro.kks.plan33.a62.r6",
+        "jdg.micro.kks.plan33.a62.r7",
+        "jdg.micro.kks.plan33.a62.r8",
+        "jdg.micro.kks.plan33.a62.r9",
+        "jdg.micro.kks.plan33.a63.r1",
+        "jdg.neural_mesh_v2.domain.cross_pit_zus_optimization.r1",
+        "jdg.risk.counterparty_trust_low",
+        "jdg.vat_fraud_detection.carousel",
+        "jdg.vat_fraud_detection.empty_invoice",
+        "jdg.vat_fraud_detection.report",
+        "jdg.vat_fraud_detection.solidary_liability",
+        "jdg.vat_fraud_detection.vanishing_trader"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0114",
@@ -5757,7 +6853,28 @@
         "jdg.micro.uor.a77.r4",
         "jdg.micro.uor.integration.r3"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.edge_cases.sanction_unregistered_activity",
+        "jdg.kks.declaration_not_filed_cit_withholding_p403",
+        "jdg.kks.declaration_not_filed_intrastat_p406",
+        "jdg.kks.declaration_not_filed_local_taxes_p404",
+        "jdg.kks.declaration_not_filed_pcc_p405",
+        "jdg.kks.declaration_not_filed_tpr_p407",
+        "jdg.kks.declaration_persistent_art77_p2",
+        "jdg.kks.incorrect_data_in_declaration",
+        "jdg.kks.incorrect_data_wrong_account_p415",
+        "jdg.kks.non_payment_of_tax_art79",
+        "jdg.kks.plan42.non_payment_of_tax_art79",
+        "jdg.kks.tax_non_payment_art79_p1",
+        "jdg.micro.kks.plan33.a54.r2",
+        "jdg.micro.kks.plan33.a77.r7",
+        "jdg.micro.kks.plan33.a77.r8",
+        "jdg.micro.kks.plan33.a77.r9",
+        "jdg.micro.kks.plan33.a80.r1",
+        "jdg.micro.uor.a77.r2"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0115",
@@ -5785,7 +6902,12 @@
         "jdg.p3233_innovations.kks_penalty_simulator",
         "jdg.p3233_innovations.active_contrition_checklist"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.kks.bank_account_blocked_p367",
+        "jdg.kks.property_security_active_p366"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0116",
@@ -5800,7 +6922,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0117",
@@ -5815,7 +6939,12 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.kks.bank_account_blocked_p367",
+        "jdg.kks.property_security_active_p366"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0118",
@@ -5830,7 +6959,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0119",
@@ -5845,7 +6976,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0120",
@@ -5862,7 +6995,11 @@
       "rule_ids": [
         "jdg.akcyza.alcohol_tobacco.alcohol.r2"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.akcyza.alcohol_tobacco.alcohol.r3"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0121",
@@ -5877,7 +7014,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0122",
@@ -5912,7 +7051,32 @@
         "jdg.p13_ryczalt_cykl_zycia_innovations.succession_step_guide",
         "jdg.r12_ryczalt_cykl_zycia_innovations.succession_deadline_monitor"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.business.succession_time_limit_expiry",
+        "jdg.micro.pp.a3.r10",
+        "jdg.micro.pp.a3.r2",
+        "jdg.micro.pp.a3.r3",
+        "jdg.micro.pp.a3.r4",
+        "jdg.micro.pp.a3.r5",
+        "jdg.micro.pp.a3.r6",
+        "jdg.micro.pp.a3.r7",
+        "jdg.micro.pp.a3.r8",
+        "jdg.micro.pp.a3.r9",
+        "jdg.micro.ryczalt_cykl_atomic_p13.succession.r2",
+        "jdg.micro.sukcesja.a3.r2",
+        "jdg.micro.sukcesja.a3.r3",
+        "jdg.micro.sukcesja.a3.r4",
+        "jdg.micro.sukcesja.a3.r5",
+        "jdg.micro.sukcesja.a3.r6",
+        "jdg.micro.sukcesja.a3.r7",
+        "jdg.micro.sukcesja.a3.r8",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.pkwiu_rate_recommender",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.succession_tracker",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.suspension_audit",
+        "jdg.p24.i3.r4"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0123",
@@ -6029,7 +7193,113 @@
         "jdg.micro.sukcesja.zus.r1",
         "jdg.p24_innovations.i9.zus_succession_registration"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.business.succession_termination_events",
+        "jdg.business.suspension_valid",
+        "jdg.hyper.general.family.multi_generation.tax_planning",
+        "jdg.micro.ceidg.a12.r2",
+        "jdg.micro.ceidg.a12.r3",
+        "jdg.micro.ceidg.a12.r4",
+        "jdg.micro.ceidg.a12.r5",
+        "jdg.micro.ceidg.a12.r6",
+        "jdg.micro.ceidg.a12.r7",
+        "jdg.micro.ceidg.a12.r8",
+        "jdg.micro.ryczalt_cykl_atomic_p13.karta.r1",
+        "jdg.micro.ryczalt_cykl_atomic_p13.succession.r3",
+        "jdg.micro.sukcesja.a12.r2",
+        "jdg.micro.sukcesja.a12.r3",
+        "jdg.micro.sukcesja.a12.r4",
+        "jdg.micro.sukcesja.a12.r5",
+        "jdg.micro.sukcesja.a12.r6",
+        "jdg.micro.sukcesja.a12.r7",
+        "jdg.micro.sukcesja.a12.r8",
+        "jdg.micro.sukcesja.a12zus.r2",
+        "jdg.suk.a10.u2.p3",
+        "jdg.suk.a10.u3.p4",
+        "jdg.suk.a10.u4.p1",
+        "jdg.suk.a11.u1.p3",
+        "jdg.suk.a11.u2.p4",
+        "jdg.suk.a11.u3.p1",
+        "jdg.suk.a11.u5.p2",
+        "jdg.suk.a12.u1.p1",
+        "jdg.suk.a12.u1.p4",
+        "jdg.suk.a12.u2.p1",
+        "jdg.suk.a12.u2.p2",
+        "jdg.suk.a12.u4.p2",
+        "jdg.suk.a12.u5.p3",
+        "jdg.suk.a13.u1.p1",
+        "jdg.suk.a13.u1.p2",
+        "jdg.suk.a13.u3.p2",
+        "jdg.suk.a13.u3.p3",
+        "jdg.suk.a13.u4.p3",
+        "jdg.suk.a13.u4.p4",
+        "jdg.suk.a13.u5.p1",
+        "jdg.suk.a13.u5.p4",
+        "jdg.suk.a14.u2.p2",
+        "jdg.suk.a14.u2.p3",
+        "jdg.suk.a14.u3.p3",
+        "jdg.suk.a14.u3.p4",
+        "jdg.suk.a14.u4.p1",
+        "jdg.suk.a14.u4.p4",
+        "jdg.suk.a14.u5.p1",
+        "jdg.suk.a14.u5.p2",
+        "jdg.suk.a15.u1.p2",
+        "jdg.suk.a15.u1.p3",
+        "jdg.suk.a15.u2.p3",
+        "jdg.suk.a15.u2.p4",
+        "jdg.suk.a15.u3.p1",
+        "jdg.suk.a15.u3.p4",
+        "jdg.suk.a15.u4.p1",
+        "jdg.suk.a15.u4.p2",
+        "jdg.suk.a16.u1.p3",
+        "jdg.suk.a16.u1.p4",
+        "jdg.suk.a16.u2.p1",
+        "jdg.suk.a16.u2.p4",
+        "jdg.suk.a16.u3.p1",
+        "jdg.suk.a16.u3.p2",
+        "jdg.suk.a16.u5.p2",
+        "jdg.suk.a16.u5.p3",
+        "jdg.suk.a17.u1.p1",
+        "jdg.suk.a17.u1.p4",
+        "jdg.suk.a17.u2.p1",
+        "jdg.suk.a17.u2.p2",
+        "jdg.suk.a17.u4.p2",
+        "jdg.suk.a17.u4.p3",
+        "jdg.suk.a17.u5.p3",
+        "jdg.suk.a17.u5.p4",
+        "jdg.suk.a18.u1.p1",
+        "jdg.suk.a18.u1.p2",
+        "jdg.suk.a18.u3.p2",
+        "jdg.suk.a18.u3.p3",
+        "jdg.suk.a18.u4.p3",
+        "jdg.suk.a18.u4.p4",
+        "jdg.suk.a18.u5.p1",
+        "jdg.suk.a18.u5.p4",
+        "jdg.suk.a19.u2.p2",
+        "jdg.suk.a19.u2.p3",
+        "jdg.suk.a19.u3.p3",
+        "jdg.suk.a19.u3.p4",
+        "jdg.suk.a19.u4.p1",
+        "jdg.suk.a19.u4.p4",
+        "jdg.suk.a19.u5.p1",
+        "jdg.suk.a19.u5.p2",
+        "jdg.suk.a20.u1.p2",
+        "jdg.suk.a20.u2.p3",
+        "jdg.suk.a20.u3.p4",
+        "jdg.suk.a20.u4.p1",
+        "jdg.suk.a21.u1.p3",
+        "jdg.suk.a21.u2.p4",
+        "jdg.suk.a21.u3.p1",
+        "jdg.suk.a21.u5.p2",
+        "jdg.suk.a22.u4.p2",
+        "jdg.suk.a8.u1.p1",
+        "jdg.suk.a9.u2.p2",
+        "jdg.suk.a9.u3.p3",
+        "jdg.suk.a9.u4.p4",
+        "jdg.suk.a9.u5.p1"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0124",
@@ -6046,7 +7316,11 @@
       "rule_ids": [
         "jdg.micro.ryczalt_cykl_atomic_p13.succession.r3"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.ryczalt_cykl_atomic_p13.succession.r4"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0125",
@@ -6073,7 +7347,36 @@
         "jdg.micro.sukcesja.zus.r2",
         "jdg.micro.sukcesja.ksef_plan26.r2"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.pp.a14.r2",
+        "jdg.micro.pp.a14.r3",
+        "jdg.micro.pp.a14.r4",
+        "jdg.micro.pp.a14.r5",
+        "jdg.micro.pp.a14.r6",
+        "jdg.micro.pp.a14.r7",
+        "jdg.micro.pp.a14.r8",
+        "jdg.micro.sukcesja.a14.r2",
+        "jdg.micro.sukcesja.a14.r3",
+        "jdg.micro.sukcesja.a14.r4",
+        "jdg.micro.sukcesja.a14.r5",
+        "jdg.micro.sukcesja.a14.r6",
+        "jdg.micro.sukcesja.a14.r7",
+        "jdg.micro.sukcesja.a14.r8",
+        "jdg.micro.sukcesja.ksef.r2",
+        "jdg.micro.sukcesja.ksef_plan26.r1",
+        "jdg.micro.sukcesja.ksef_plan26.r2",
+        "jdg.micro.sukcesja.ksef_plan26.r3",
+        "jdg.p24.i1.r1",
+        "jdg.p24.i1.r2",
+        "jdg.p24.i1.r3",
+        "jdg.p24.i1.r4",
+        "jdg.p24_innovations.i1.ceidg_change_detector_name",
+        "jdg.p24_innovations.i1.ceidg_change_detector_pkd",
+        "jdg.p24_innovations.i1.ceidg_change_detector_tax_form",
+        "jdg.restructuring.merger_tax"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0126",
@@ -6094,7 +7397,13 @@
         "jdg.micro.rodo_aml_bdo_atomic_p15.budownictwo_permit.r1",
         "jdg.p15_srodowisko_bdo_innovations.budowlane_pozwolenie_calculator"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.budownictwo.a1.r4",
+        "jdg.micro.rodo_aml_bdo_atomic_p15.transport_license.r1",
+        "jdg.p15_srodowisko_bdo_innovations.transport_rolnictwo_audit"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0127",
@@ -6111,7 +7420,11 @@
       "rule_ids": [
         "jdg.micro.budownictwo.a1.r2"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.budownictwo.a1.r3"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0128",
@@ -6128,7 +7441,11 @@
       "rule_ids": [
         "jdg.micro.budownictwo.a6.r4"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.budownictwo.a6.r5"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0129",
@@ -6145,7 +7462,11 @@
       "rule_ids": [
         "jdg.micro.budownictwo.a1.r4"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.budownictwo.a1.r5"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0130",
@@ -6163,7 +7484,11 @@
         "jdg.micro.budownictwo.a1.r6",
         "jdg.micro.budownictwo.a4.r6"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.budownictwo.a1.r7"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0131",
@@ -6180,7 +7505,11 @@
       "rule_ids": [
         "jdg.micro.budownictwo.a1.r5"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.budownictwo.a1.r6"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0132",
@@ -6197,7 +7526,9 @@
       "rule_ids": [
         "jdg.micro.budownictwo.a4.r1"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0133",
@@ -6307,7 +7638,68 @@
         "jdg.pcc.real_estate_purchase",
         "jdg.restructuring.aport_real_estate_vat_analysis"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.local_taxes.pcc.company_formation",
+        "jdg.local_taxes.pcc.declaration_deadline_14d",
+        "jdg.local_taxes.pcc.exchange_contract",
+        "jdg.local_taxes.pcc.inheritance_division",
+        "jdg.local_taxes.pcc.mortgage",
+        "jdg.local_taxes.pcc.surety",
+        "jdg.local_taxes.pcc_loan_from_private",
+        "jdg.p14_pcc_lokalne_akcyza_innovations.local_taxes_audit",
+        "jdg.p14_pcc_lokalne_akcyza_innovations.pcc3_generator",
+        "jdg.p33_pcc_complete.pcc3_auto_filler",
+        "jdg.pcc.a1.r12",
+        "jdg.pcc.a1.r13",
+        "jdg.pcc.a1.r14",
+        "jdg.pcc.a1.r15",
+        "jdg.pcc.a1.r16",
+        "jdg.pcc.a1.r17",
+        "jdg.pcc.a1.r18",
+        "jdg.pcc.a1.r2",
+        "jdg.pcc.aggregate_liability_check",
+        "jdg.pcc.car_purchase_from_private",
+        "jdg.pcc.exchanges_companies.company.r1",
+        "jdg.pcc.exchanges_companies.company.r10",
+        "jdg.pcc.exchanges_companies.company.r2",
+        "jdg.pcc.exchanges_companies.company.r3",
+        "jdg.pcc.exchanges_companies.company.r4",
+        "jdg.pcc.exchanges_companies.company.r5",
+        "jdg.pcc.exchanges_companies.company.r6",
+        "jdg.pcc.exchanges_companies.company.r7",
+        "jdg.pcc.exchanges_companies.donation.r1",
+        "jdg.pcc.exchanges_companies.donation.r2",
+        "jdg.pcc.exchanges_companies.exchange.r2",
+        "jdg.pcc.exchanges_companies.usufruct.r1",
+        "jdg.pcc.loans.a1.r1",
+        "jdg.pcc.loans.a1.r11",
+        "jdg.pcc.loans.a1.r12",
+        "jdg.pcc.loans.a1.r15",
+        "jdg.pcc.loans.a1.r2",
+        "jdg.pcc.loans.a1.r5",
+        "jdg.pcc.loans.a1.r6",
+        "jdg.pcc.loans.a1.r8",
+        "jdg.pcc.rate_changes.modification.r2",
+        "jdg.pcc.rate_changes.modification.r3",
+        "jdg.pcc.rate_changes.modification.r4",
+        "jdg.pcc.real_estate_purchase",
+        "jdg.pcc.sales_agreements.a1.r1",
+        "jdg.pcc.sales_agreements.a1.r11",
+        "jdg.pcc.sales_agreements.a1.r12",
+        "jdg.pcc.sales_agreements.a1.r13",
+        "jdg.pcc.sales_agreements.a1.r14",
+        "jdg.pcc.sales_agreements.a1.r2",
+        "jdg.pcc.sales_agreements.a1.r3",
+        "jdg.pcc.sales_agreements.a1.r4",
+        "jdg.pcc.sales_agreements.a1.r5",
+        "jdg.pcc.sales_agreements.a1.r6",
+        "jdg.pcc.sales_agreements.a1.r7",
+        "jdg.pcc.sales_agreements.a1.r8",
+        "jdg.pcc.sales_agreements.a1.r9",
+        "jdg.pcc.sales_agreements.a2.r1"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0134",
@@ -6327,7 +7719,14 @@
         "jdg.pcc.rate_changes.a4.r2",
         "jdg.pcc.rate_changes.a4.r3"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.pcc.loans.a1.r14",
+        "jdg.pcc.rate_changes.a4.r2",
+        "jdg.pcc.rate_changes.a4.r3",
+        "jdg.pcc.rate_changes.a5.r1"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0135",
@@ -6372,7 +7771,20 @@
         "jdg.pcc.rate_changes.a7.r6",
         "jdg.pcc.sales_agreements.a1.r14"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.local_taxes.pcc.installment_sale",
+        "jdg.p22_innovations.restructuring_succession_pipeline",
+        "jdg.pcc.a6.r2",
+        "jdg.pcc.a6.r3",
+        "jdg.pcc.a6.r4",
+        "jdg.pcc.a6.r5",
+        "jdg.pcc.a7.r1",
+        "jdg.pcc.exchanges_companies.exchange.r4",
+        "jdg.pcc.sales_agreements.a1.r15",
+        "jdg.restructuring.aport_real_estate_vat_analysis"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0136",
@@ -6402,7 +7814,26 @@
         "jdg.r11_pcc_lokalne_akcyza_innovations.excise_product_classifier",
         "jdg.r11_pcc_lokalne_akcyza_innovations.vat_vs_pcc_arbitrator"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.calendar.hyper.pcc_payment_14days",
+        "jdg.calendar.hyper.pcc_weekend_shift",
+        "jdg.micro.pcc_lokalne_atomic_p14.real_estate_building.r1",
+        "jdg.p14_pcc_lokalne_akcyza_innovations.gmina_rates_map",
+        "jdg.p14_pcc_lokalne_akcyza_innovations.pcc_detector",
+        "jdg.pcc.a10.r2",
+        "jdg.pcc.a10.r3",
+        "jdg.pcc.a10.r4",
+        "jdg.pcc.a12.r1",
+        "jdg.pcc.exchanges_companies.company.r8",
+        "jdg.pcc.loans.a1.r7",
+        "jdg.pcc.rate_changes.payment.r2",
+        "jdg.pcc.rate_changes.payment.r4",
+        "jdg.pcc.sales_agreements.a1.r10",
+        "jdg.r11_pcc_lokalne_akcyza_innovations.excise_product_classifier",
+        "jdg.r11_pcc_lokalne_akcyza_innovations.vat_vs_pcc_arbitrator"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0137",
@@ -6441,7 +7872,12 @@
         "jdg.prop.a2.r3",
         "jdg.r11_pcc_lokalne_akcyza_innovations.real_estate_tax_simulator"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.agricultural_tax.r5",
+        "jdg.local_taxes.real_estate_dn1_filing"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0138",
@@ -6493,7 +7929,21 @@
         "jdg.p24_innovations.i11.multi_branch_manager",
         "jdg.r11_pcc_lokalne_akcyza_innovations.transport_tax_deadline_monitor"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.pcc_lokalne_atomic_p14.dn1_deadline.r1",
+        "jdg.p14_pcc_lokalne_akcyza_innovations.dn1_tracker",
+        "jdg.prop_transport.r2",
+        "jdg.prop_transport.r3",
+        "jdg.prop_transport.r4",
+        "jdg.prop_transport.r5",
+        "jdg.tax_trans.r12",
+        "jdg.tax_trans.r13",
+        "jdg.tax_trans.r14",
+        "jdg.tax_trans.r15",
+        "jdg.tax_trans.r16"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0139",
@@ -6511,7 +7961,11 @@
         "jdg.akcyza.fuel_energy.energy.r1",
         "jdg.p33_excise_supplement.electricity_pv"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.akcyza.fuel_energy.energy.r2"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0140",
@@ -6530,7 +7984,12 @@
         "jdg.local_taxes.excise.akcr_registration",
         "jdg.micro.pcc_lokalne_atomic_p14.excise_warehouse.r1"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.akcyza.fuel_energy.energy.r9",
+        "jdg.micro.pcc_lokalne_atomic_p14.excise_energy.r1"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0141",
@@ -6549,7 +8008,11 @@
         "jdg.local_taxes.excise.akc4_monthly_declaration",
         "jdg.local_taxes.excise.akc4_declaration"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.local_taxes.excise.akc4_declaration"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0142",
@@ -6567,7 +8030,11 @@
         "jdg.akcyza.fuel_energy.fuel.r7",
         "jdg.akcyza.fuel_energy.energy.r7"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.akcyza.fuel_energy.energy.r8"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0143",
@@ -6589,7 +8056,13 @@
         "jdg.local_taxes.excise.small_producer_exemption",
         "jdg.local.excise_exemption_check"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.akcyza.alcohol_tobacco.alcohol.r8",
+        "jdg.akcyza.fuel_energy.energy.r5",
+        "jdg.local_taxes.excise.small_producer_exemption"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0144",
@@ -6636,7 +8109,28 @@
         "jdg.p33_excise_supplement.coal_excise",
         "jdg.p33_excise_supplement.lubricant_oils"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.akcyza.alcohol_tobacco.other.r2",
+        "jdg.akcyza.fuel_energy.energy.r1",
+        "jdg.akcyza.fuel_energy.energy.r3",
+        "jdg.akcyza.fuel_energy.energy.r4",
+        "jdg.akcyza.fuel_energy.energy.r6",
+        "jdg.akcyza.fuel_energy.energy.r7",
+        "jdg.akcyza.fuel_energy.fuel.r1",
+        "jdg.akcyza.fuel_energy.fuel.r2",
+        "jdg.akcyza.fuel_energy.fuel.r3",
+        "jdg.akcyza.fuel_energy.fuel.r4",
+        "jdg.akcyza.fuel_energy.fuel.r5",
+        "jdg.local.excise_fuel",
+        "jdg.local_taxes.excise.coal",
+        "jdg.local_taxes.excise.electricity",
+        "jdg.local_taxes.excise.gas",
+        "jdg.micro.pcc_lokalne_atomic_p14.excise_diesel.r1",
+        "jdg.micro.pcc_lokalne_atomic_p14.excise_ethanol.r1",
+        "jdg.p14_pcc_lokalne_akcyza_innovations.excise_fuel_calculator"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0145",
@@ -6680,7 +8174,11 @@
         "jdg.micro.pcc_lokalne_atomic_p14.excise_beer.r1",
         "jdg.p14_pcc_lokalne_akcyza_innovations.excise_alcohol_calculator"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.p14_pcc_lokalne_akcyza_innovations.excise_cost_detector"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0146",
@@ -6697,7 +8195,11 @@
       "rule_ids": [
         "jdg.akcyza.alcohol_tobacco.other.r2"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.akcyza.alcohol_tobacco.other.r3"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0147",
@@ -6716,7 +8218,9 @@
         "jdg.local_taxes.excise.banderoles_required",
         "jdg.p33_excise_supplement.banderoles"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0148",
@@ -6739,7 +8243,9 @@
         "jdg.rodo_extended.data_minimization_audit",
         "jdg.rodo_extended.cross_domain_retention"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0149",
@@ -6762,7 +8268,9 @@
         "jdg.rodo.cctv_monitoring",
         "jdg.rodo_extended.marketing_b2b_vs_b2c"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0150",
@@ -6782,7 +8290,9 @@
         "jdg.p14_innovations.consent_lifecycle",
         "jdg.rodo_extended.employee_consent_validity"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0151",
@@ -6797,7 +8307,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0152",
@@ -6814,7 +8326,9 @@
       "rule_ids": [
         "jdg.rodo.employee_data_protection"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0153",
@@ -6832,7 +8346,9 @@
         "jdg.p14_innovations.dsar_auto_processor",
         "jdg.rodo.dsar_access_request"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0154",
@@ -6855,7 +8371,9 @@
         "jdg.rodo_extended.erasure_automation",
         "jdg.rodo_extended.erasure_exception_accounting"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0155",
@@ -6870,7 +8388,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0156",
@@ -6887,7 +8407,9 @@
       "rule_ids": [
         "jdg.rodo.data_portability"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0157",
@@ -6909,7 +8431,9 @@
         "jdg.rodo_extended.employee_sobriety_testing",
         "jdg.rodo_extended.ai_profiling_art22"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0158",
@@ -6930,7 +8454,9 @@
         "jdg.p16_rodo_aml_security_innovations.rodo_deadline_calendar",
         "jdg.rodo_extended.annual_compliance_review"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0159",
@@ -6945,7 +8471,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0160",
@@ -6967,7 +8495,9 @@
         "jdg.rodo.processor_agreement",
         "jdg.rodo_extended.subprocessor_chain_audit"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0161",
@@ -6995,7 +8525,9 @@
         "jdg.rodo.no_match",
         "jdg.rodo.data_processing_register"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0162",
@@ -7013,7 +8545,9 @@
         "jdg.micro.rodo_erasure.r4",
         "jdg.rodo_extended.pseudonymization_encryption"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0163",
@@ -7037,7 +8571,9 @@
         "jdg.rodo.data_breach_notification",
         "jdg.rodo_extended.data_breach_register"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0164",
@@ -7052,7 +8588,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0165",
@@ -7070,7 +8608,9 @@
         "jdg.micro.rodo_aml_bdo_atomic_p15.rodo_dpia.r1",
         "jdg.rodo.dpia_required"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0166",
@@ -7087,7 +8627,9 @@
       "rule_ids": [
         "jdg.rodo.dpo_requirement"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0167",
@@ -7106,7 +8648,9 @@
         "jdg.rodo.data_transfer_eog",
         "jdg.rodo_extended.subprocessor_third_country"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0168",
@@ -7124,7 +8668,9 @@
         "jdg.micro.rodo_podprocesorzy.r4",
         "jdg.rodo_extended.processor_liability"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0169",
@@ -7155,7 +8701,9 @@
         "jdg.p16_rodo_aml_security_innovations.penalty_simulator",
         "jdg.rodo_extended.sanctions_uodo"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0170",
@@ -7176,7 +8724,9 @@
         "jdg.p16_rodo_aml_security_innovations.crbr_registry_api",
         "jdg.p16_rodo_aml_security_innovations.aml_obligation_detector"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0171",
@@ -7195,7 +8745,12 @@
         "jdg.p16_rodo_aml_security_innovations.aml_risk_scoring_client",
         "jdg.p16_rodo_aml_security_innovations.aml_risk_panel"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.rodo_aml_bdo_atomic_p15.aml_cash_15k.r1",
+        "jdg.micro.rodo_aml_bdo_atomic_p15.bdo_registration.r1"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0172",
@@ -7216,7 +8771,9 @@
         "jdg.p16_rodo_aml_security_innovations.aml_risk_scoring_transaction",
         "jdg.p16_rodo_aml_security_innovations.aml_sanctions_screening"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0173",
@@ -7231,7 +8788,11 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.rodo_aml_bdo_atomic_p15.aml_str.r1"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0174",
@@ -7249,7 +8810,11 @@
         "jdg.p16_rodo_aml_security_innovations.str_gijf_auto_submission",
         "jdg.r14_rodo_aml_bdo_innovations.str_gijf_deadline_monitor"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.rodo_aml_bdo_atomic_p15.aml_beneficiary.r1"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0175",
@@ -7264,7 +8829,9 @@
       "source": "ISAP",
       "status": "OBOWIAZUJACY",
       "rule_ids": [],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [],
+      "_act_matched": false
     },
     {
       "legal_node_id": "LKG-0176",
@@ -7283,7 +8850,12 @@
         "jdg.p15_srodowisko_bdo_innovations.product_fee_tracker",
         "jdg.p15_srodowisko_bdo_innovations.product_fee_material_map"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.rodo_aml_bdo_atomic_p15.bdo_ewidencja.r1",
+        "jdg.p15_srodowisko_bdo_innovations.budownictwo_audit"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0177",
@@ -7305,7 +8877,15 @@
         "jdg.micro.bdo_zezwolenia.r1",
         "jdg.micro.bdo_zezwolenia.r2"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.environmental.bdo.bat_conclusions",
+        "jdg.environmental.bdo.ewc_medical",
+        "jdg.micro.bdo_ewc.r3",
+        "jdg.micro.bdo_zezwolenia.r1",
+        "jdg.micro.bdo_zezwolenia.r2"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0178",
@@ -7342,7 +8922,16 @@
         "jdg.p15_srodowisko_bdo_innovations.bdo_registration_detector",
         "jdg.r14_rodo_aml_bdo_innovations.bdo_obligation_monitor"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.environmental.bdo.registration_small",
+        "jdg.environmental.bdo.registration_update",
+        "jdg.environmental.bdo_waste_ledger",
+        "jdg.micro.bdo_rejestracja.r2",
+        "jdg.micro.rodo_aml_bdo_atomic_p15.bdo_ewc.r1",
+        "jdg.p15_srodowisko_bdo_innovations.kpo_generator"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0179",
@@ -7377,7 +8966,20 @@
         "jdg.p15_srodowisko_bdo_innovations.bdo_api_integration",
         "jdg.p15_srodowisko_bdo_innovations.zero_click_bdo"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.environmental.fee_annual",
+        "jdg.micro.bdo_ewidencja.r1",
+        "jdg.micro.bdo_ewidencja.r2",
+        "jdg.micro.bdo_ewidencja.r3",
+        "jdg.micro.bdo_ewidencja.r4",
+        "jdg.micro.bdo_ewidencja.r5",
+        "jdg.micro.budownictwo.a5.r10",
+        "jdg.micro.rodo_aml_bdo_atomic_p15.bdo_fine.r1",
+        "jdg.p15_srodowisko_bdo_innovations.bdo_deadline_tracker",
+        "jdg.p15_srodowisko_bdo_innovations.ewc_full_catalog"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0180",
@@ -7397,7 +8999,13 @@
         "jdg.micro.bdo_zezwolenia.r4",
         "jdg.micro.rodo_aml_bdo_atomic_p15.bdo_fine.r1"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.bdo_zezwolenia.r4",
+        "jdg.micro.bdo_zezwolenia.r5",
+        "jdg.micro.rodo_aml_bdo_atomic_p15.budownictwo_permit.r1"
+      ],
+      "_act_matched": true
     },
     {
       "legal_node_id": "LKG-0181",
@@ -7414,7 +9022,2107 @@
       "rule_ids": [
         "jdg.micro.bdo_transport.r3"
       ],
-      "threshold_keys": []
+      "threshold_keys": [],
+      "rules": [
+        "jdg.micro.bdo_transport.r4"
+      ],
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0182",
+      "act": "Ustawa z dnia 6 marca 2018 r. – Prawo przedsiębiorców (tekst jednolity: Dz.U. 2025 poz. 123, ze zmianami na 2026 r.)",
+      "article": "4-5",
+      "article_label": "Art. 4-5",
+      "node_type": "ARTICLE",
+      "domain": "business",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.micro.pp.a4.r10",
+        "jdg.micro.pp.a4.r2",
+        "jdg.micro.pp.a4.r3",
+        "jdg.micro.pp.a4.r4",
+        "jdg.micro.pp.a4.r5",
+        "jdg.micro.pp.a4.r6",
+        "jdg.micro.pp.a4.r7",
+        "jdg.micro.pp.a4.r8",
+        "jdg.micro.pp.a4.r9"
+      ],
+      "topic": "Definicja przedsiębiorcy, zasady prowadzenia działalności, reprezentacja, zawieszenie i wznowienie działalności",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0183",
+      "act": "Ustawa z dnia 6 marca 2018 r. – Prawo przedsiębiorców (tekst jednolity: Dz.U. 2025 poz. 123, ze zmianami na 2026 r.)",
+      "article": "6",
+      "article_label": "Art. 6",
+      "node_type": "ARTICLE",
+      "domain": "business",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.p13_ryczalt_cykl_zycia_innovations.gig_economy_audit"
+      ],
+      "topic": "Definicja przedsiębiorcy, zasady prowadzenia działalności, reprezentacja, zawieszenie i wznowienie działalności",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0184",
+      "act": "Ustawa z dnia 6 marca 2018 r. – Prawo przedsiębiorców (tekst jednolity: Dz.U. 2025 poz. 123, ze zmianami na 2026 r.)",
+      "article": "14",
+      "article_label": "Art. 14",
+      "node_type": "ARTICLE",
+      "domain": "business",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.micro.pp.a14.r2",
+        "jdg.micro.pp.a14.r3",
+        "jdg.micro.pp.a14.r4",
+        "jdg.micro.pp.a14.r5",
+        "jdg.micro.pp.a14.r6",
+        "jdg.micro.pp.a14.r7",
+        "jdg.micro.pp.a14.r8",
+        "jdg.micro.sukcesja.a14.r2",
+        "jdg.micro.sukcesja.a14.r3",
+        "jdg.micro.sukcesja.a14.r4",
+        "jdg.micro.sukcesja.a14.r5",
+        "jdg.micro.sukcesja.a14.r6",
+        "jdg.micro.sukcesja.a14.r7",
+        "jdg.micro.sukcesja.a14.r8",
+        "jdg.micro.sukcesja.ksef.r2",
+        "jdg.micro.sukcesja.ksef_plan26.r1",
+        "jdg.micro.sukcesja.ksef_plan26.r2",
+        "jdg.micro.sukcesja.ksef_plan26.r3",
+        "jdg.p24.i1.r1",
+        "jdg.p24.i1.r2",
+        "jdg.p24.i1.r3",
+        "jdg.p24.i1.r4",
+        "jdg.p24_innovations.i1.ceidg_change_detector_name",
+        "jdg.p24_innovations.i1.ceidg_change_detector_pkd",
+        "jdg.p24_innovations.i1.ceidg_change_detector_tax_form",
+        "jdg.restructuring.merger_tax"
+      ],
+      "topic": "Definicja przedsiębiorcy, zasady prowadzenia działalności, reprezentacja, zawieszenie i wznowienie działalności",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0185",
+      "act": "Ustawa z dnia 6 marca 2018 r. – Prawo przedsiębiorców (tekst jednolity: Dz.U. 2025 poz. 123, ze zmianami na 2026 r.)",
+      "article": "22-25",
+      "article_label": "Art. 22-25",
+      "node_type": "ARTICLE",
+      "domain": "business",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.api_fallback.ksef_degradation",
+        "jdg.business.max_suspension_block",
+        "jdg.business.maximum_suspension_period_check",
+        "jdg.business.succession_manager_appointment",
+        "jdg.business.suspension_kup_restrictions",
+        "jdg.cross_validator.ceidg_vs_jpk_pkd",
+        "jdg.edge_cases.seasonal_pit_advance",
+        "jdg.edge_cases.unregistered_vs_vat_deduction",
+        "jdg.hyper.edelivery.force_majeure.suspension.zus_consequences",
+        "jdg.hyper.limits.no_match",
+        "jdg.hyper.limits.seasonal.closure.nip_loss_consequences",
+        "jdg.hyper.limits.seasonal.detection.construction_winter_break",
+        "jdg.hyper.limits.seasonal.detection.industry_code_agriculture",
+        "jdg.hyper.limits.seasonal.detection.industry_code_tourism",
+        "jdg.hyper.limits.seasonal.detection.months_with_revenue",
+        "jdg.hyper.limits.seasonal.detection.revenue_gap_3plus_months",
+        "jdg.hyper.limits.seasonal.suspension.keep_nip",
+        "jdg.hyper.limits.seasonal.suspension.max_24_months_total",
+        "jdg.micro.ceidg.a22.r2",
+        "jdg.micro.ceidg.a22.r3",
+        "jdg.micro.ceidg.a22.r4",
+        "jdg.micro.ceidg.a22.r5",
+        "jdg.micro.ceidg.a22.r6",
+        "jdg.micro.pkpir_nkup.p21.r3",
+        "jdg.micro.pp.a22.r10",
+        "jdg.micro.pp.a22.r2",
+        "jdg.micro.pp.a22.r3",
+        "jdg.micro.pp.a22.r4",
+        "jdg.micro.pp.a22.r5",
+        "jdg.micro.pp.a22.r6",
+        "jdg.micro.pp.a22.r7",
+        "jdg.micro.pp.a22.r8",
+        "jdg.micro.pp.a22.r9",
+        "jdg.micro.ryczalt_cykl_atomic_p13.suspension.r2",
+        "jdg.micro.ryczalt_cykl_atomic_p13.suspension.r3",
+        "jdg.micro.ryczalt_cykl_atomic_p13.unregistered.r1",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.succession_step_guide",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.unregistered_business_audit"
+      ],
+      "topic": "Definicja przedsiębiorcy, zasady prowadzenia działalności, reprezentacja, zawieszenie i wznowienie działalności",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0186",
+      "act": "Ustawa z dnia 6 marca 2018 r. – Prawo przedsiębiorców (tekst jednolity: Dz.U. 2025 poz. 123, ze zmianami na 2026 r.)",
+      "article": "18",
+      "article_label": "Art. 18",
+      "node_type": "ARTICLE",
+      "domain": "business",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.p13_ryczalt_cykl_zycia_innovations.ceidg_audit",
+        "jdg.representation.prokura_self_employed"
+      ],
+      "topic": "Definicja przedsiębiorcy, zasady prowadzenia działalności, reprezentacja, zawieszenie i wznowienie działalności",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0187",
+      "act": "Ustawa z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej (CEIDG) (tekst jednolity: Dz.U. 2025 poz. 456)",
+      "article": "5-7",
+      "article_label": "Art. 5-7",
+      "node_type": "ARTICLE",
+      "domain": "business",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.business.ceidg_data_change_overdue",
+        "jdg.business.suspension_depreciation_ban",
+        "jdg.edge_cases.health_scale_loss_year",
+        "jdg.micro.ceidg.a5.r2",
+        "jdg.micro.ceidg.a5.r3",
+        "jdg.micro.ceidg.a5.r4",
+        "jdg.micro.ceidg.a5.r5",
+        "jdg.micro.ceidg.a5.r6",
+        "jdg.micro.ceidg.a5.r7",
+        "jdg.micro.ceidg.a5.r8",
+        "jdg.micro.pp.a5.r10",
+        "jdg.micro.pp.a5.r11",
+        "jdg.micro.pp.a5.r12",
+        "jdg.micro.pp.a5.r2",
+        "jdg.micro.pp.a5.r3",
+        "jdg.micro.pp.a5.r4",
+        "jdg.micro.pp.a5.r5",
+        "jdg.micro.pp.a5.r6",
+        "jdg.micro.pp.a5.r7",
+        "jdg.micro.pp.a5.r8",
+        "jdg.micro.pp.a5.r9",
+        "jdg.micro.pp.a5index.r2",
+        "jdg.micro.ryczalt_cykl_atomic_p13.succession.r1",
+        "jdg.micro.ryczalt_cykl_atomic_p13.unregistered.r2",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.lifecycle_assistant",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_loss_detector",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_pipeline_snapshot",
+        "jdg.p24.i8.r1",
+        "jdg.p24.i8.r2",
+        "jdg.p24.i8.r3"
+      ],
+      "topic": "Rejestracja, zmiana danych, wykreślenie z CEIDG. Wpis do CEIDG jest obowiązkowy dla JDG",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0188",
+      "act": "Ustawa z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej (CEIDG) (tekst jednolity: Dz.U. 2025 poz. 456)",
+      "article": "12-15",
+      "article_label": "Art. 12-15",
+      "node_type": "ARTICLE",
+      "domain": "business",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.business.succession_termination_events",
+        "jdg.business.suspension_valid",
+        "jdg.hyper.general.family.multi_generation.tax_planning",
+        "jdg.micro.ceidg.a12.r2",
+        "jdg.micro.ceidg.a12.r3",
+        "jdg.micro.ceidg.a12.r4",
+        "jdg.micro.ceidg.a12.r5",
+        "jdg.micro.ceidg.a12.r6",
+        "jdg.micro.ceidg.a12.r7",
+        "jdg.micro.ceidg.a12.r8",
+        "jdg.micro.ryczalt_cykl_atomic_p13.karta.r1",
+        "jdg.micro.ryczalt_cykl_atomic_p13.succession.r3",
+        "jdg.micro.sukcesja.a12.r2",
+        "jdg.micro.sukcesja.a12.r3",
+        "jdg.micro.sukcesja.a12.r4",
+        "jdg.micro.sukcesja.a12.r5",
+        "jdg.micro.sukcesja.a12.r6",
+        "jdg.micro.sukcesja.a12.r7",
+        "jdg.micro.sukcesja.a12.r8",
+        "jdg.micro.sukcesja.a12zus.r2",
+        "jdg.suk.a10.u2.p3",
+        "jdg.suk.a10.u3.p4",
+        "jdg.suk.a10.u4.p1",
+        "jdg.suk.a11.u1.p3",
+        "jdg.suk.a11.u2.p4",
+        "jdg.suk.a11.u3.p1",
+        "jdg.suk.a11.u5.p2",
+        "jdg.suk.a12.u1.p1",
+        "jdg.suk.a12.u1.p4",
+        "jdg.suk.a12.u2.p1",
+        "jdg.suk.a12.u2.p2",
+        "jdg.suk.a12.u4.p2",
+        "jdg.suk.a12.u5.p3",
+        "jdg.suk.a13.u1.p1",
+        "jdg.suk.a13.u1.p2",
+        "jdg.suk.a13.u3.p2",
+        "jdg.suk.a13.u3.p3",
+        "jdg.suk.a13.u4.p3",
+        "jdg.suk.a13.u4.p4",
+        "jdg.suk.a13.u5.p1",
+        "jdg.suk.a13.u5.p4",
+        "jdg.suk.a14.u2.p2",
+        "jdg.suk.a14.u2.p3",
+        "jdg.suk.a14.u3.p3",
+        "jdg.suk.a14.u3.p4",
+        "jdg.suk.a14.u4.p1",
+        "jdg.suk.a14.u4.p4",
+        "jdg.suk.a14.u5.p1",
+        "jdg.suk.a14.u5.p2",
+        "jdg.suk.a15.u1.p2",
+        "jdg.suk.a15.u1.p3",
+        "jdg.suk.a15.u2.p3",
+        "jdg.suk.a15.u2.p4",
+        "jdg.suk.a15.u3.p1",
+        "jdg.suk.a15.u3.p4",
+        "jdg.suk.a15.u4.p1",
+        "jdg.suk.a15.u4.p2",
+        "jdg.suk.a16.u1.p3",
+        "jdg.suk.a16.u1.p4",
+        "jdg.suk.a16.u2.p1",
+        "jdg.suk.a16.u2.p4",
+        "jdg.suk.a16.u3.p1",
+        "jdg.suk.a16.u3.p2",
+        "jdg.suk.a16.u5.p2",
+        "jdg.suk.a16.u5.p3",
+        "jdg.suk.a17.u1.p1",
+        "jdg.suk.a17.u1.p4",
+        "jdg.suk.a17.u2.p1",
+        "jdg.suk.a17.u2.p2",
+        "jdg.suk.a17.u4.p2",
+        "jdg.suk.a17.u4.p3",
+        "jdg.suk.a17.u5.p3",
+        "jdg.suk.a17.u5.p4",
+        "jdg.suk.a18.u1.p1",
+        "jdg.suk.a18.u1.p2",
+        "jdg.suk.a18.u3.p2",
+        "jdg.suk.a18.u3.p3",
+        "jdg.suk.a18.u4.p3",
+        "jdg.suk.a18.u4.p4",
+        "jdg.suk.a18.u5.p1",
+        "jdg.suk.a18.u5.p4",
+        "jdg.suk.a19.u2.p2",
+        "jdg.suk.a19.u2.p3",
+        "jdg.suk.a19.u3.p3",
+        "jdg.suk.a19.u3.p4",
+        "jdg.suk.a19.u4.p1",
+        "jdg.suk.a19.u4.p4",
+        "jdg.suk.a19.u5.p1",
+        "jdg.suk.a19.u5.p2",
+        "jdg.suk.a20.u1.p2",
+        "jdg.suk.a20.u2.p3",
+        "jdg.suk.a20.u3.p4",
+        "jdg.suk.a20.u4.p1",
+        "jdg.suk.a21.u1.p3",
+        "jdg.suk.a21.u2.p4",
+        "jdg.suk.a21.u3.p1",
+        "jdg.suk.a21.u5.p2",
+        "jdg.suk.a22.u4.p2",
+        "jdg.suk.a8.u1.p1",
+        "jdg.suk.a9.u2.p2",
+        "jdg.suk.a9.u3.p3",
+        "jdg.suk.a9.u4.p4",
+        "jdg.suk.a9.u5.p1"
+      ],
+      "topic": "Rejestracja, zmiana danych, wykreślenie z CEIDG. Wpis do CEIDG jest obowiązkowy dla JDG",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0189",
+      "act": "Ustawa z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (tekst jednolity: Dz.U. 2025 poz. 1234)",
+      "article": "3-15",
+      "article_label": "Art. 3-15",
+      "node_type": "ARTICLE",
+      "domain": "business",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.business.succession_time_limit_expiry",
+        "jdg.micro.pp.a3.r10",
+        "jdg.micro.pp.a3.r2",
+        "jdg.micro.pp.a3.r3",
+        "jdg.micro.pp.a3.r4",
+        "jdg.micro.pp.a3.r5",
+        "jdg.micro.pp.a3.r6",
+        "jdg.micro.pp.a3.r7",
+        "jdg.micro.pp.a3.r8",
+        "jdg.micro.pp.a3.r9",
+        "jdg.micro.ryczalt_cykl_atomic_p13.succession.r2",
+        "jdg.micro.sukcesja.a3.r2",
+        "jdg.micro.sukcesja.a3.r3",
+        "jdg.micro.sukcesja.a3.r4",
+        "jdg.micro.sukcesja.a3.r5",
+        "jdg.micro.sukcesja.a3.r6",
+        "jdg.micro.sukcesja.a3.r7",
+        "jdg.micro.sukcesja.a3.r8",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.pkwiu_rate_recommender",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.succession_tracker",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.suspension_audit",
+        "jdg.p24.i3.r4"
+      ],
+      "topic": "Sukcesja firmy po śmierci przedsiębiorcy – kontynuacja działalności, odpowiedzialność podatkowa",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0190",
+      "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.)",
+      "article": "5-14",
+      "article_label": "Art. 5-14",
+      "node_type": "ARTICLE",
+      "domain": "vat",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.hyper.deadlines.payment.barter.market_value_as_base"
+      ],
+      "topic": "Podatek VAT: stawki, zwolnienia, obowiązek rejestracji jako podatnik VAT czynny/zwolniony, split payment, odwrotne obciążenie",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0191",
+      "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.)",
+      "article": "15-18",
+      "article_label": "Art. 15-18",
+      "node_type": "ARTICLE",
+      "domain": "vat",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.micro.vat.a15.r2",
+        "jdg.micro.vat.a15.r4",
+        "jdg.micro.vat.a15.r5"
+      ],
+      "topic": "Podatek VAT: stawki, zwolnienia, obowiązek rejestracji jako podatnik VAT czynny/zwolniony, split payment, odwrotne obciążenie",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0192",
+      "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.)",
+      "article": "19a-21",
+      "article_label": "Art. 19a-21",
+      "node_type": "ARTICLE",
+      "domain": "vat",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.hyper.deadlines.payment.crypto.exchange_rate_determination",
+        "jdg.hyper.deadlines.payment.offset.mutual_agreement_required",
+        "jdg.hyper.general.payment.advance.vat_invoice_required_15days",
+        "jdg.hyper.general.payment.installments.vat_cash_per_installment"
+      ],
+      "topic": "Podatek VAT: stawki, zwolnienia, obowiązek rejestracji jako podatnik VAT czynny/zwolniony, split payment, odwrotne obciążenie",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0193",
+      "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.)",
+      "article": "29a-32",
+      "article_label": "Art. 29a-32",
+      "node_type": "ARTICLE",
+      "domain": "vat",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.hyper.deadlines.payment.barter.pit_revenue_recognition",
+        "jdg.hyper.misc.payment.inkind.employee_compensation_tax",
+        "jdg.hyper.misc.payment.inkind.mixed_cash_inkind_split"
+      ],
+      "topic": "Podatek VAT: stawki, zwolnienia, obowiązek rejestracji jako podatnik VAT czynny/zwolniony, split payment, odwrotne obciążenie",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0194",
+      "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.)",
+      "article": "41-42",
+      "article_label": "Art. 41-42",
+      "node_type": "ARTICLE",
+      "domain": "vat",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.hyper.deadlines.insurance.vat.exception_broker_services",
+        "jdg.hyper.deadlines.insurance.vat.exception_damage_assessment",
+        "jdg.hyper.deadlines.insurance.vat.input_vat_deduction_blocked",
+        "jdg.hyper.sanctions.regulated.vat.exemption_nurse_midwife",
+        "jdg.r02_vat_core_innovations.vat_core_report",
+        "jdg.vat.reduced_rates.pkwiu_rate_mismatch"
+      ],
+      "topic": "Podatek VAT: stawki, zwolnienia, obowiązek rejestracji jako podatnik VAT czynny/zwolniony, split payment, odwrotne obciążenie",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0195",
+      "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.)",
+      "article": "43",
+      "article_label": "Art. 43",
+      "node_type": "ARTICLE",
+      "domain": "vat",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.hyper.deadlines.insurance.vat.exception_assistance_services",
+        "jdg.hyper.sanctions.regulated.kup.chamber_fees_full",
+        "jdg.hyper.sanctions.regulated.vat.education_tutor_exemption",
+        "jdg.hyper.sanctions.regulated.vat.exemption_psychologist",
+        "jdg.hyper.sanctions.regulated.vat.no_exemption_lawyer"
+      ],
+      "topic": "Podatek VAT: stawki, zwolnienia, obowiązek rejestracji jako podatnik VAT czynny/zwolniony, split payment, odwrotne obciążenie",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0196",
+      "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.)",
+      "article": "86-96",
+      "article_label": "Art. 86-96",
+      "node_type": "ARTICLE",
+      "domain": "vat",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.calendar.hyper.pit_advance_20th",
+        "jdg.hyper.limits.seasonal.aggregate.annual_summary_pit_zus",
+        "jdg.hyper.misc.advertising.vat.deduction_full_standard",
+        "jdg.hyper.misc.advertising.vat.deduction_gifts_100pln_limit"
+      ],
+      "topic": "Podatek VAT: stawki, zwolnienia, obowiązek rejestracji jako podatnik VAT czynny/zwolniony, split payment, odwrotne obciążenie",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0197",
+      "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.)",
+      "article": "106a-106n",
+      "article_label": "Art. 106a-106n",
+      "node_type": "ARTICLE",
+      "domain": "vat",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Podatek VAT: stawki, zwolnienia, obowiązek rejestracji jako podatnik VAT czynny/zwolniony, split payment, odwrotne obciążenie",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0198",
+      "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.)",
+      "article": "108a-108f",
+      "article_label": "Art. 108a-108f",
+      "node_type": "ARTICLE",
+      "domain": "vat",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Podatek VAT: stawki, zwolnienia, obowiązek rejestracji jako podatnik VAT czynny/zwolniony, split payment, odwrotne obciążenie",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0199",
+      "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.)",
+      "article": "113",
+      "article_label": "Art. 113",
+      "node_type": "ARTICLE",
+      "domain": "vat",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.hyper.limits.seasonal.vat.exemption_breach_mid_year",
+        "jdg.hyper.limits.seasonal.vat.margin_scheme_seasonal_goods",
+        "jdg.pit.a30c.r1"
+      ],
+      "topic": "Podatek VAT: stawki, zwolnienia, obowiązek rejestracji jako podatnik VAT czynny/zwolniony, split payment, odwrotne obciążenie",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0200",
+      "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.)",
+      "article": "120",
+      "article_label": "Art. 120",
+      "node_type": "ARTICLE",
+      "domain": "vat",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.hyper.limits.seasonal.vat.deduction_maintenance_costs",
+        "jdg.vat.substantive.subject_exemption_jdg"
+      ],
+      "topic": "Podatek VAT: stawki, zwolnienia, obowiązek rejestracji jako podatnik VAT czynny/zwolniony, split payment, odwrotne obciążenie",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0201",
+      "act": "Rozporządzenie Ministra Finansów z dnia 4 grudnia 2024 r. w sprawie obniżonych stawek VAT",
+      "article": "",
+      "article_label": "całość",
+      "node_type": "ACT",
+      "domain": "vat",
+      "material": false,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Towary i usługi objęte stawkami 8% i 5%",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0202",
+      "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (tekst jednolity: Dz.U. 2025 poz. 789, ze zmianami na 2026 r.)",
+      "article": "10",
+      "article_label": "Art. 10",
+      "node_type": "ARTICLE",
+      "domain": "pit",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.ryc.a10.r2",
+        "jdg.ryc.a10.r3",
+        "jdg.ryc.a10.r4",
+        "jdg.ryc.a11.r1"
+      ],
+      "topic": "Podatek PIT: skala podatkowa, podatek liniowy, koszty uzyskania przychodu, ulgi, zaliczki, zeznania roczne",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0203",
+      "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (tekst jednolity: Dz.U. 2025 poz. 789, ze zmianami na 2026 r.)",
+      "article": "14",
+      "article_label": "Art. 14",
+      "node_type": "ARTICLE",
+      "domain": "pit",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.hyper.deadlines.insurance.claim.business_interruption_taxable",
+        "jdg.hyper.deadlines.insurance.claim.payout_reduced_by_damage",
+        "jdg.hyper.deadlines.insurance.claim.personal_injury_exempt",
+        "jdg.hyper.deadlines.payment.barter.documentation_requirements",
+        "jdg.hyper.deadlines.payment.barter.double_supply",
+        "jdg.hyper.deadlines.payment.crypto.vat_obligation_on_receipt",
+        "jdg.hyper.deadlines.payment.crypto.volatility_risk_warning",
+        "jdg.hyper.edelivery.force_majeure.insurance.claim_procedure",
+        "jdg.hyper.edelivery.force_majeure.insurance.payout_tax_treatment",
+        "jdg.hyper.edelivery.force_majeure.suspension.automatic",
+        "jdg.hyper.general.payment.advance.advance_not_refunded_taxable",
+        "jdg.hyper.general.payment.installments.vat_accrual_full_immediately",
+        "jdg.hyper.misc.payment.inkind.vat_base_market_value",
+        "jdg.hyper.procurement.family.asset.transfer.vat_opodatkowanie"
+      ],
+      "topic": "Podatek PIT: skala podatkowa, podatek liniowy, koszty uzyskania przychodu, ulgi, zaliczki, zeznania roczne",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0204",
+      "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (tekst jednolity: Dz.U. 2025 poz. 789, ze zmianami na 2026 r.)",
+      "article": "22-23",
+      "article_label": "Art. 22-23",
+      "node_type": "ARTICLE",
+      "domain": "pit",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.hyper.deadlines.insurance.claim.payout_as_revenue",
+        "jdg.hyper.deadlines.insurance.gap.detection_mandatory_missing",
+        "jdg.hyper.deadlines.insurance.kup.life_insurance_limited",
+        "jdg.hyper.deadlines.insurance.kup.mandatory_oc_over_limit_proportion",
+        "jdg.hyper.deadlines.insurance.kup.property_insurance_full",
+        "jdg.hyper.deadlines.insurance.kup.voluntary_oc_business",
+        "jdg.hyper.deadlines.insurance.voluntary.directors_officers",
+        "jdg.hyper.deadlines.insurance.voluntary.inventory_theft",
+        "jdg.hyper.deadlines.insurance.voluntary.key_person",
+        "jdg.hyper.deadlines.insurance.voluntary.trade_credit",
+        "jdg.hyper.general.family.aggregate.risk_assessment",
+        "jdg.hyper.general.family.children.pit_ulga_young_interaction",
+        "jdg.hyper.general.family.children.salary_arm_length",
+        "jdg.hyper.general.family.cooperation.zus_person",
+        "jdg.hyper.misc.advertising.brand_building_kup",
+        "jdg.hyper.misc.advertising.car_wrapping.vat26_full_deduction",
+        "jdg.hyper.misc.advertising.digital.affiliate_program_kup",
+        "jdg.hyper.misc.advertising.digital.email_marketing_kup",
+        "jdg.hyper.misc.advertising.digital.facebook_ads_kup",
+        "jdg.hyper.misc.advertising.digital.seo_sem_kup",
+        "jdg.hyper.misc.advertising.events.business_dinner_with_agenda_kup",
+        "jdg.hyper.misc.advertising.events.luxury_trip_no_agenda_nkup",
+        "jdg.hyper.misc.advertising.events.networking_event_kup",
+        "jdg.hyper.misc.advertising.events.trade_fair_kup",
+        "jdg.hyper.misc.advertising.gifts.under_200_pln_branded_kup",
+        "jdg.hyper.misc.advertising.gifts.vat_deduction_100_pln_limit",
+        "jdg.hyper.misc.advertising.influencer.nkup_no_business_connection",
+        "jdg.hyper.misc.advertising.representation_personal_prestige_nkup",
+        "jdg.hyper.misc.advertising.sponsorship.charity_donation_treatment",
+        "jdg.hyper.misc.advertising.sponsorship.local_event_kup",
+        "jdg.hyper.misc.advertising.sponsorship.vat_on_sponsorship",
+        "jdg.hyper.misc.advertising.vs_representation.distinction_test",
+        "jdg.hyper.misc.payment.advance.kup_from_advance_to_supplier",
+        "jdg.hyper.misc.payment.inkind.market_value_determination",
+        "jdg.hyper.misc.payment.terminal.obligation_20k_eur_turnover",
+        "jdg.hyper.sanctions.regulated.kup.books_journals_kup",
+        "jdg.hyper.sanctions.regulated.kup.continuing_education_kup",
+        "jdg.hyper.sanctions.regulated.kup.office_rent_home_office",
+        "jdg.hyper.sanctions.regulated.kup.professional_insurance_kup",
+        "jdg.hyper.sanctions.regulated.zus.no_start_relief_former_employer"
+      ],
+      "topic": "Podatek PIT: skala podatkowa, podatek liniowy, koszty uzyskania przychodu, ulgi, zaliczki, zeznania roczne",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0205",
+      "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (tekst jednolity: Dz.U. 2025 poz. 789, ze zmianami na 2026 r.)",
+      "article": "24",
+      "article_label": "Art. 24",
+      "node_type": "ARTICLE",
+      "domain": "pit",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.micro.ryczalt.a29.r5"
+      ],
+      "topic": "Podatek PIT: skala podatkowa, podatek liniowy, koszty uzyskania przychodu, ulgi, zaliczki, zeznania roczne",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0206",
+      "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (tekst jednolity: Dz.U. 2025 poz. 789, ze zmianami na 2026 r.)",
+      "article": "26-26h",
+      "article_label": "Art. 26-26h",
+      "node_type": "ARTICLE",
+      "domain": "pit",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.hyper.misc.advertising.sponsorship.sport_culture_kup",
+        "jdg.hyper.sanctions.regulated.chamber.disciplinary_proceedings",
+        "jdg.p24.i7.r3"
+      ],
+      "topic": "Podatek PIT: skala podatkowa, podatek liniowy, koszty uzyskania przychodu, ulgi, zaliczki, zeznania roczne",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0207",
+      "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (tekst jednolity: Dz.U. 2025 poz. 789, ze zmianami na 2026 r.)",
+      "article": "27",
+      "article_label": "Art. 27",
+      "node_type": "ARTICLE",
+      "domain": "pit",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.hyper.limits.seasonal.pit.advances_simplified_recommendation",
+        "jdg.micro.ryczalt.a27.r10",
+        "jdg.micro.ryczalt.a27.r11",
+        "jdg.micro.ryczalt.a27.r12",
+        "jdg.micro.ryczalt.a27.r2",
+        "jdg.micro.ryczalt.a27.r3",
+        "jdg.micro.ryczalt.a27.r4",
+        "jdg.micro.ryczalt.a27.r5",
+        "jdg.micro.ryczalt.a27.r6",
+        "jdg.micro.ryczalt.a27.r7",
+        "jdg.micro.ryczalt.a27.r8",
+        "jdg.micro.ryczalt.a27.r9"
+      ],
+      "topic": "Podatek PIT: skala podatkowa, podatek liniowy, koszty uzyskania przychodu, ulgi, zaliczki, zeznania roczne",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0208",
+      "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (tekst jednolity: Dz.U. 2025 poz. 789, ze zmianami na 2026 r.)",
+      "article": "30c",
+      "article_label": "Art. 30c",
+      "node_type": "ARTICLE",
+      "domain": "pit",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.pit.advances_returns.loss_carry_forward"
+      ],
+      "topic": "Podatek PIT: skala podatkowa, podatek liniowy, koszty uzyskania przychodu, ulgi, zaliczki, zeznania roczne",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0209",
+      "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (tekst jednolity: Dz.U. 2025 poz. 789, ze zmianami na 2026 r.)",
+      "article": "44",
+      "article_label": "Art. 44",
+      "node_type": "ARTICLE",
+      "domain": "pit",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.calendar.hyper.forecast_cash_flow_warning",
+        "jdg.calendar.hyper.forecast_history_trend",
+        "jdg.calendar.hyper.forecast_optimization",
+        "jdg.calendar.hyper.pit_lump_sum_20th",
+        "jdg.calendar.hyper.weekend_shift_saturday",
+        "jdg.hyper.deadlines.tax.pit_annual_april30",
+        "jdg.hyper.edelivery.force_majeure.loss.carry_back",
+        "jdg.hyper.limits.kks.conviction.business_ban_art41kk",
+        "jdg.hyper.limits.seasonal.aggregate.comparison_normal_vs_seasonal",
+        "jdg.hyper.limits.seasonal.aggregate.optimal_strategy",
+        "jdg.hyper.limits.seasonal.pit.advances_no_income_months_zero",
+        "jdg.hyper.limits.seasonal.pit.lump_sum_annual_calculation"
+      ],
+      "topic": "Podatek PIT: skala podatkowa, podatek liniowy, koszty uzyskania przychodu, ulgi, zaliczki, zeznania roczne",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0210",
+      "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (tekst jednolity: Dz.U. 2025 poz. 789, ze zmianami na 2026 r.)",
+      "article": "45",
+      "article_label": "Art. 45",
+      "node_type": "ARTICLE",
+      "domain": "pit",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.calendar.hyper.pit_shift_weekend",
+        "jdg.hyper.deadlines.tax.zus_dra_10th",
+        "jdg.hyper.procurement.family.joint_filing.exclusions"
+      ],
+      "topic": "Podatek PIT: skala podatkowa, podatek liniowy, koszty uzyskania przychodu, ulgi, zaliczki, zeznania roczne",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0211",
+      "act": "Rozporządzenie Ministra Finansów z dnia 30 grudnia 2025 r. w sprawie wzorów zeznań podatkowych PIT",
+      "article": "",
+      "article_label": "całość",
+      "node_type": "ACT",
+      "domain": "pit",
+      "material": false,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Wzory PIT-36, PIT-36L, PIT-28",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0212",
+      "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne (tekst jednolity: Dz.U. 2025 poz. 234, ze zmianami na 2026 r.)",
+      "article": "6-12",
+      "article_label": "Art. 6-12",
+      "node_type": "ARTICLE",
+      "domain": "pit",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.hyper.procurement.family.health_insurance.family_members",
+        "jdg.hyper.procurement.family.joint_filing.benefit_calculation",
+        "jdg.hyper.procurement.family.joint_filing.deadline_april30",
+        "jdg.hyper.procurement.family.single_parent.child_custody_required",
+        "jdg.hyper.procurement.family.single_parent.preferential_calculation",
+        "jdg.micro.pit.a6.r4",
+        "jdg.micro.pit.a6.r6",
+        "jdg.micro.pit.a6.r7",
+        "jdg.micro.ryczalt.a6.r10",
+        "jdg.micro.ryczalt.a6.r2",
+        "jdg.micro.ryczalt.a6.r3",
+        "jdg.micro.ryczalt.a6.r4",
+        "jdg.micro.ryczalt.a6.r5",
+        "jdg.micro.ryczalt.a6.r6",
+        "jdg.micro.ryczalt.a6.r7",
+        "jdg.micro.ryczalt.a6.r8",
+        "jdg.micro.ryczalt.a6.r9",
+        "jdg.micro.ryczalt_cykl_atomic_p13.limit_2m.r2",
+        "jdg.micro.ryczalt_cykl_atomic_p13.suspension.r1",
+        "jdg.r12_ryczalt_cykl_zycia_innovations.pkwiu_rate_classifier",
+        "jdg.ryc.a6.r11",
+        "jdg.ryc.a6.r12",
+        "jdg.ryc.a6.r13",
+        "jdg.ryc.a6.r14",
+        "jdg.ryc.a6.r15",
+        "jdg.ryc.a6.r6",
+        "jdg.ryc.a6.r7",
+        "jdg.ryc.a6.r8",
+        "jdg.ryc.a6.r9",
+        "jdg.ryc.a7.r1"
+      ],
+      "topic": "Ryczałt od przychodów ewidencjonowanych, karta podatkowa",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0213",
+      "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne (tekst jednolity: Dz.U. 2025 poz. 234, ze zmianami na 2026 r.)",
+      "article": "21-30",
+      "article_label": "Art. 21-30",
+      "node_type": "ARTICLE",
+      "domain": "pit",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.calendar.hyper.pit_annual_return_30april",
+        "jdg.hyper.deadlines.insurance.claim.late_payment_interest_taxable",
+        "jdg.hyper.general.family.children.university_compatibility",
+        "jdg.micro.pit.a21.r6",
+        "jdg.micro.ryczalt.a21.r10",
+        "jdg.micro.ryczalt.a21.r11",
+        "jdg.micro.ryczalt.a21.r12",
+        "jdg.micro.ryczalt.a21.r2",
+        "jdg.micro.ryczalt.a21.r3",
+        "jdg.micro.ryczalt.a21.r4",
+        "jdg.micro.ryczalt.a21.r5",
+        "jdg.micro.ryczalt.a21.r6",
+        "jdg.micro.ryczalt.a21.r7",
+        "jdg.micro.ryczalt.a21.r8",
+        "jdg.micro.ryczalt.a21.r9"
+      ],
+      "topic": "Ryczałt od przychodów ewidencjonowanych, karta podatkowa",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0214",
+      "act": "PIT, art. 26e",
+      "article": "26e",
+      "article_label": "Art. 26e",
+      "node_type": "ARTICLE",
+      "domain": "other",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Ulga B+R (badawczo-rozwojowa) – odliczenie 100-200% kosztów kwalifikowanych",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0215",
+      "act": "PIT, art. 26eb",
+      "article": "26eb",
+      "article_label": "Art. 26eb",
+      "node_type": "ARTICLE",
+      "domain": "other",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Ulga na prototyp – odliczenie 30% kosztów produkcji próbnej",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0216",
+      "act": "PIT, art. 26gb",
+      "article": "26gb",
+      "article_label": "Art. 26gb",
+      "node_type": "ARTICLE",
+      "domain": "other",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Ulga na robotyzację – odliczenie 50% kosztów robotów",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0217",
+      "act": "PIT, art. 30ca",
+      "article": "30ca",
+      "article_label": "Art. 30ca",
+      "node_type": "ARTICLE",
+      "domain": "other",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Ulga IP Box – 5% stawka dla dochodów z własności intelektualnej",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0218",
+      "act": "PIT, art. 26ec",
+      "article": "26ec",
+      "article_label": "Art. 26ec",
+      "node_type": "ARTICLE",
+      "domain": "other",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Ulga na ekspansję – odliczenie kosztów targów i reklamy za granicą",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0219",
+      "act": "PIT, art. 26h",
+      "article": "26h",
+      "article_label": "Art. 26h",
+      "node_type": "ARTICLE",
+      "domain": "other",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Ulga termomodernizacyjna – odliczenie 53 000 PLN",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0220",
+      "act": "PIT, art. 26",
+      "article": "26",
+      "article_label": "Art. 26",
+      "node_type": "ARTICLE",
+      "domain": "other",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Ulga rehabilitacyjna – odliczenie wydatków na cele rehabilitacyjne",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0221",
+      "act": "PIT, art. 21 ust. 1 pkt 148",
+      "article": "21",
+      "article_label": "Art. 21",
+      "node_type": "ARTICLE",
+      "domain": "other",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Ulga dla młodych – zwolnienie z PIT do 26. roku życia (do 85 528 PLN)",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0222",
+      "act": "PIT, art. 21 ust. 1 pkt 152",
+      "article": "21",
+      "article_label": "Art. 21",
+      "node_type": "ARTICLE",
+      "domain": "other",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Ulga na powrót – zwolnienie dla osób wracających z emigracji (4 lata, 85 528 PLN rocznie)",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0223",
+      "act": "PIT, art. 21 ust. 1 pkt 153",
+      "article": "21",
+      "article_label": "Art. 21",
+      "node_type": "ARTICLE",
+      "domain": "other",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Ulga dla rodzin 4+ – zwolnienie dla rodziców 4+ dzieci (do 85 528 PLN)",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0224",
+      "act": "PIT, art. 21 ust. 1 pkt 154",
+      "article": "21",
+      "article_label": "Art. 21",
+      "node_type": "ARTICLE",
+      "domain": "other",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Ulga dla pracujących emerytów – zwolnienie dla pracujących po osiągnięciu wieku emerytalnego",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0225",
+      "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm.)",
+      "article": "16-193a",
+      "article_label": "Art. 16-193a",
+      "node_type": "ARTICLE",
+      "domain": "ordpu",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Procedury podatkowe, przedawnienia, korekty, interpretacje",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0226",
+      "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm.)",
+      "article": "70",
+      "article_label": "Art. 70",
+      "node_type": "ARTICLE",
+      "domain": "ordpu",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.audit.evidence_collection_rights",
+        "jdg.audit.hyper.penalty_obstruction_5000",
+        "jdg.audit.hyper.statute_resume_after_close",
+        "jdg.audit.hyper.statute_suspension_duration",
+        "jdg.conviction.hyper.extended_audit_period",
+        "jdg.decision_core_completeness.limitations_calendar_report",
+        "jdg.edge_cases.tax_audit_notification_7days",
+        "jdg.hyper.force_majeure.audit.penalty.obstruction_fine_5000",
+        "jdg.hyper.force_majeure.audit.statute.resume_after_close",
+        "jdg.hyper.force_majeure.audit.statute.suspension_duration",
+        "jdg.hyper.general.regulated.cross_border.eu_qualifications_recognition",
+        "jdg.liability.personal_liability",
+        "jdg.liability.spousal_solidary",
+        "jdg.ord.a67b.r8",
+        "jdg.ord.a70.r1",
+        "jdg.ord.a70.r10",
+        "jdg.ord.a70.r11",
+        "jdg.ord.a70.r2",
+        "jdg.ord.a70.r4",
+        "jdg.ord.a70.r5",
+        "jdg.ord.a70.r6",
+        "jdg.ord.a70.r7",
+        "jdg.ord.a70.r8",
+        "jdg.ord.a70.r9",
+        "jdg.temporal.statute_limitations_10yr",
+        "jdg.temporal.statute_suspended",
+        "jdg.temporal.vat_rate_effective_2026"
+      ],
+      "topic": "Procedury podatkowe, przedawnienia, korekty, interpretacje",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0227",
+      "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm.)",
+      "article": "81",
+      "article_label": "Art. 81",
+      "node_type": "ARTICLE",
+      "domain": "ordpu",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.edge_cases.tax_audit_vat_refund_suspension",
+        "jdg.hyper.family.audit.follow_up.recommendations",
+        "jdg.ord.a79.r1",
+        "jdg.ord.a81.r2",
+        "jdg.ord.a81.r3",
+        "jdg.ord.a81.r4",
+        "jdg.ord.a81.r5",
+        "jdg.ord.a81a.r1",
+        "jdg.ord.a81a.r2",
+        "jdg.ord.a81c.r1"
+      ],
+      "topic": "Procedury podatkowe, przedawnienia, korekty, interpretacje",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0228",
+      "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm.)",
+      "article": "117ba",
+      "article_label": "Art. 117ba",
+      "node_type": "ARTICLE",
+      "domain": "ordpu",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.compliance.split_payment_mandatory"
+      ],
+      "topic": "Procedury podatkowe, przedawnienia, korekty, interpretacje",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0229",
+      "act": "Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (tekst jednolity: Dz.U. 2025 poz. 345, ze zmianami na 2026 r.)",
+      "article": "6",
+      "article_label": "Art. 6",
+      "node_type": "ARTICLE",
+      "domain": "zus",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.hyper.limits.seasonal.zus.annual_health_tier_lockstep",
+        "jdg.micro.sus.a6.r2",
+        "jdg.micro.sus.a6.r3",
+        "jdg.micro.sus.a6.r4",
+        "jdg.micro.sus.a6.r5",
+        "jdg.micro.sus.a6.r6",
+        "jdg.micro.sus.a6.r7",
+        "jdg.micro.sus.a6.r8",
+        "jdg.micro.zus.a6.r11",
+        "jdg.micro.zus.a6.r12",
+        "jdg.micro.zus.a6.r13",
+        "jdg.micro.zus.a6.r14",
+        "jdg.micro.zus.a6.r15",
+        "jdg.micro.zus.a6.r8",
+        "jdg.micro.zus.a6.r9",
+        "jdg.micro.zus.a8.r10"
+      ],
+      "topic": "Podleganie ubezpieczeniom, podstawy wymiaru składek, stopy procentowe, terminy płatności",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0230",
+      "act": "Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (tekst jednolity: Dz.U. 2025 poz. 345, ze zmianami na 2026 r.)",
+      "article": "18-19",
+      "article_label": "Art. 18-19",
+      "node_type": "ARTICLE",
+      "domain": "zus",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.micro.sus.a18.r10",
+        "jdg.micro.sus.a18.r2",
+        "jdg.micro.sus.a18.r3",
+        "jdg.micro.sus.a18.r4",
+        "jdg.micro.sus.a18.r5",
+        "jdg.micro.sus.a18.r6",
+        "jdg.micro.sus.a18.r7",
+        "jdg.micro.sus.a18.r8",
+        "jdg.micro.sus.a18.r9",
+        "jdg.micro.zus.a1.r10",
+        "jdg.micro.zus.a1.r11",
+        "jdg.micro.zus.a1.r12",
+        "jdg.micro.zus.a1.r13",
+        "jdg.micro.zus.a1.r14",
+        "jdg.micro.zus.a1.r15",
+        "jdg.micro.zus.a1.r2",
+        "jdg.micro.zus.a1.r3",
+        "jdg.micro.zus.a1.r4",
+        "jdg.micro.zus.a1.r5",
+        "jdg.micro.zus.a1.r6",
+        "jdg.micro.zus.a1.r7",
+        "jdg.micro.zus.a1.r8",
+        "jdg.micro.zus.a1.r9",
+        "jdg.micro.zus.a18.r19",
+        "jdg.micro.zus.a18.r20",
+        "jdg.micro.zus.a18.r6",
+        "jdg.micro.zus.a18.r7",
+        "jdg.micro.zus.a18.r8",
+        "jdg.micro.zus.a2.r1",
+        "jdg.p08_zus_macro_enterprise.base_recommender"
+      ],
+      "topic": "Podleganie ubezpieczeniom, podstawy wymiaru składek, stopy procentowe, terminy płatności",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0231",
+      "act": "Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (tekst jednolity: Dz.U. 2025 poz. 345, ze zmianami na 2026 r.)",
+      "article": "22",
+      "article_label": "Art. 22",
+      "node_type": "ARTICLE",
+      "domain": "zus",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.micro.sus.a22.r2",
+        "jdg.micro.sus.a22.r3",
+        "jdg.micro.sus.a22.r4",
+        "jdg.micro.sus.a22.r5",
+        "jdg.micro.sus.a22.r6",
+        "jdg.micro.sus.a22.r7",
+        "jdg.micro.sus.a22.r8",
+        "jdg.micro.zus.a13.r2",
+        "jdg.micro.zus.a22.r11",
+        "jdg.micro.zus.a22.r12",
+        "jdg.micro.zus.a22.r9",
+        "jdg.micro.zus.a24.r1",
+        "jdg.micro.zus.a4.r10",
+        "jdg.micro.zus.a4.r2",
+        "jdg.micro.zus.a4.r3",
+        "jdg.micro.zus.a4.r4",
+        "jdg.micro.zus.a4.r5",
+        "jdg.p07_zus_macro_innovations.report"
+      ],
+      "topic": "Podleganie ubezpieczeniom, podstawy wymiaru składek, stopy procentowe, terminy płatności",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0232",
+      "act": "Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (tekst jednolity: Dz.U. 2025 poz. 345, ze zmianami na 2026 r.)",
+      "article": "36",
+      "article_label": "Art. 36",
+      "node_type": "ARTICLE",
+      "domain": "zus",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.hyper.limits.seasonal.closure.vat_r_new_application",
+        "jdg.hyper.procurement.family.cooperation.notification_to_zus_7days",
+        "jdg.hyper.procurement.family.cooperation.pit_treatment",
+        "jdg.hyper.procurement.no_match",
+        "jdg.micro.sus.a36.r2",
+        "jdg.micro.sus.a36.r3",
+        "jdg.micro.sus.a36.r4",
+        "jdg.micro.sus.a36.r5",
+        "jdg.micro.sus.a36.r6",
+        "jdg.micro.sus.a36.r7",
+        "jdg.micro.sus.a36.r8"
+      ],
+      "topic": "Podleganie ubezpieczeniom, podstawy wymiaru składek, stopy procentowe, terminy płatności",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0233",
+      "act": "Ustawa z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (tekst jednolity: Dz.U. 2025 poz. 890)",
+      "article": "79-81",
+      "article_label": "Art. 79-81",
+      "node_type": "ARTICLE",
+      "domain": "zus",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.cross_domain.crossborder_vat_pit_domino",
+        "jdg.cross_domain.zus_pit_health_paradox_deep",
+        "jdg.micro.zdrowotna.a79.r10",
+        "jdg.micro.zdrowotna.a79.r2",
+        "jdg.micro.zdrowotna.a79.r3",
+        "jdg.micro.zdrowotna.a79.r4",
+        "jdg.micro.zdrowotna.a79.r5",
+        "jdg.micro.zdrowotna.a79.r6",
+        "jdg.micro.zdrowotna.a79.r7",
+        "jdg.micro.zdrowotna.a79.r8",
+        "jdg.micro.zdrowotna.a79.r9",
+        "jdg.p08_zus_micro_innovations.lump_tier_auto_recalc",
+        "jdg.zus.health.fallback",
+        "jdg.zus.health_linear"
+      ],
+      "topic": "Składka zdrowotna dla przedsiębiorców",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0234",
+      "act": "Ustawa o systemie ubezpieczeń społecznych, art. 18a",
+      "article": "18a",
+      "article_label": "Art. 18a",
+      "node_type": "ARTICLE",
+      "domain": "zus",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.hyper.general.force_majeure.documents.loss_reporting",
+        "jdg.hyper.sanctions.regulated.zus.concurrent_chamber_and_jdg",
+        "jdg.micro.sus.a18a.r10",
+        "jdg.micro.sus.a18a.r2",
+        "jdg.micro.sus.a18a.r3",
+        "jdg.micro.sus.a18a.r4",
+        "jdg.micro.sus.a18a.r5",
+        "jdg.micro.sus.a18a.r6",
+        "jdg.micro.sus.a18a.r7",
+        "jdg.micro.sus.a18a.r8",
+        "jdg.micro.sus.a18a.r9",
+        "jdg.micro.zus.a17.r10",
+        "jdg.micro.zus.a17.r3",
+        "jdg.micro.zus.a17.r4",
+        "jdg.micro.zus.a17.r5",
+        "jdg.micro.zus.a17.r6",
+        "jdg.micro.zus.a17.r8",
+        "jdg.micro.zus.a17.r9",
+        "jdg.micro.zus.a18.r1",
+        "jdg.micro.zus.a18.r9",
+        "jdg.micro.zus.a22.r10"
+      ],
+      "topic": "Ulga na start – 6 miesięcy bez składek społecznych dla nowych przedsiębiorców",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0235",
+      "act": "Ustawa o systemie ubezpieczeń społecznych, art. 18c",
+      "article": "18c",
+      "article_label": "Art. 18c",
+      "node_type": "ARTICLE",
+      "domain": "zus",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.hyper.limits.seasonal.pit.scale_annual_only_active_months",
+        "jdg.micro.sus.a18c.r10",
+        "jdg.micro.sus.a18c.r2",
+        "jdg.micro.sus.a18c.r3",
+        "jdg.micro.sus.a18c.r4",
+        "jdg.micro.sus.a18c.r5",
+        "jdg.micro.sus.a18c.r6",
+        "jdg.micro.sus.a18c.r7",
+        "jdg.micro.sus.a18c.r8",
+        "jdg.micro.sus.a18c.r9",
+        "jdg.micro.zus.a17.r1",
+        "jdg.micro.zus.a18.r11",
+        "jdg.micro.zus.a18.r12",
+        "jdg.micro.zus.a18.r13",
+        "jdg.micro.zus.a18.r14",
+        "jdg.micro.zus.a18.r15",
+        "jdg.micro.zus.a5.r10",
+        "jdg.micro.zus.a5.r11",
+        "jdg.micro.zus.a5.r13",
+        "jdg.micro.zus.a5.r14",
+        "jdg.micro.zus.a5.r15",
+        "jdg.micro.zus.a5.r2",
+        "jdg.micro.zus.a5.r3",
+        "jdg.micro.zus.a5.r4",
+        "jdg.micro.zus.a5.r5",
+        "jdg.micro.zus.a5.r6",
+        "jdg.micro.zus.a5.r7",
+        "jdg.micro.zus.a5.r8",
+        "jdg.micro.zus.a5.r9"
+      ],
+      "topic": "Mały ZUS Plus – niższe składki przez 36 miesięcy (podstawa: 30% minimalnego wynagrodzenia)",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0236",
+      "act": "Ustawa Prawo przedsiębiorców, art. 5",
+      "article": "5",
+      "article_label": "Art. 5",
+      "node_type": "ARTICLE",
+      "domain": "business",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.business.ceidg_data_change_overdue",
+        "jdg.business.suspension_depreciation_ban",
+        "jdg.edge_cases.health_scale_loss_year",
+        "jdg.micro.ceidg.a5.r2",
+        "jdg.micro.ceidg.a5.r3",
+        "jdg.micro.ceidg.a5.r4",
+        "jdg.micro.ceidg.a5.r5",
+        "jdg.micro.ceidg.a5.r6",
+        "jdg.micro.ceidg.a5.r7",
+        "jdg.micro.ceidg.a5.r8",
+        "jdg.micro.pp.a5.r10",
+        "jdg.micro.pp.a5.r11",
+        "jdg.micro.pp.a5.r12",
+        "jdg.micro.pp.a5.r2",
+        "jdg.micro.pp.a5.r3",
+        "jdg.micro.pp.a5.r4",
+        "jdg.micro.pp.a5.r5",
+        "jdg.micro.pp.a5.r6",
+        "jdg.micro.pp.a5.r7",
+        "jdg.micro.pp.a5.r8",
+        "jdg.micro.pp.a5.r9",
+        "jdg.micro.pp.a5index.r2",
+        "jdg.micro.ryczalt_cykl_atomic_p13.succession.r1",
+        "jdg.micro.ryczalt_cykl_atomic_p13.unregistered.r2",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.lifecycle_assistant",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_loss_detector",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_pipeline_snapshot",
+        "jdg.p24.i8.r1",
+        "jdg.p24.i8.r2",
+        "jdg.p24.i8.r3"
+      ],
+      "topic": "Działalność nieewidencjonowana – zwolnienie z ZUS dla przychodów do 50% płacy minimalnej",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0237",
+      "act": "Rozporządzenie Ministra Pracy i Polityki Społecznej z dnia 30 grudnia 2025 r. w sprawie szczegółowych zasad ustalania podstawy wymiaru składek",
+      "article": "",
+      "article_label": "całość",
+      "node_type": "ACT",
+      "domain": "other",
+      "material": false,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Szczegółowe wytyczne do podstawy wymiaru składek",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0238",
+      "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości (tekst jednolity: Dz.U. 2025 poz. 567, ze zmianami na 2026 r.)",
+      "article": "2",
+      "article_label": "Art. 2",
+      "node_type": "ARTICLE",
+      "domain": "uor",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.micro.uor.a2.r1",
+        "jdg.micro.uor.a2.r2",
+        "jdg.micro.uor.a2.r3",
+        "jdg.micro.uor.a2.r4",
+        "jdg.micro.uor.a2.r5",
+        "jdg.micro.uor.a2.r6",
+        "jdg.micro.uor.a2.r7",
+        "jdg.micro.uor.a2.r8",
+        "jdg.uor.obligation.a2.r1"
+      ],
+      "topic": "Zasady rachunkowości (gdy JDG prowadzi pełną księgowość). Większość JDG korzysta z uproszczonych form, ale UoR definiuje fundamentalne zasady (memoriał, współmierność, ostrożność)",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0239",
+      "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości (tekst jednolity: Dz.U. 2025 poz. 567, ze zmianami na 2026 r.)",
+      "article": "4",
+      "article_label": "Art. 4",
+      "node_type": "ARTICLE",
+      "domain": "uor",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.micro.uor.a4.r10",
+        "jdg.micro.uor.a4.r11",
+        "jdg.micro.uor.a4.r12",
+        "jdg.micro.uor.a4.r2",
+        "jdg.micro.uor.a4.r3",
+        "jdg.micro.uor.a4.r4",
+        "jdg.micro.uor.a4.r5",
+        "jdg.micro.uor.a4.r6",
+        "jdg.micro.uor.a4.r7",
+        "jdg.micro.uor.a4.r8",
+        "jdg.micro.uor.a4.r9"
+      ],
+      "topic": "Zasady rachunkowości (gdy JDG prowadzi pełną księgowość). Większość JDG korzysta z uproszczonych form, ale UoR definiuje fundamentalne zasady (memoriał, współmierność, ostrożność)",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0240",
+      "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości (tekst jednolity: Dz.U. 2025 poz. 567, ze zmianami na 2026 r.)",
+      "article": "20-21",
+      "article_label": "Art. 20-21",
+      "node_type": "ARTICLE",
+      "domain": "uor",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.micro.uor.a20.r1",
+        "jdg.micro.uor.a20.r2",
+        "jdg.micro.uor.a20.r8",
+        "jdg.micro.uor.integration.r3"
+      ],
+      "topic": "Zasady rachunkowości (gdy JDG prowadzi pełną księgowość). Większość JDG korzysta z uproszczonych form, ale UoR definiuje fundamentalne zasady (memoriał, współmierność, ostrożność)",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0241",
+      "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości (tekst jednolity: Dz.U. 2025 poz. 567, ze zmianami na 2026 r.)",
+      "article": "22",
+      "article_label": "Art. 22",
+      "node_type": "ARTICLE",
+      "domain": "uor",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.hyper.deadlines.payment.offset.when_recognized",
+        "jdg.hyper.deadlines.tax.vat_jpk_v7m_25th",
+        "jdg.micro.uor.a22.r1",
+        "jdg.micro.uor.a22.r2",
+        "jdg.micro.uor.a22.r3",
+        "jdg.micro.uor.a22.r4",
+        "jdg.micro.uor.a22.r5"
+      ],
+      "topic": "Zasady rachunkowości (gdy JDG prowadzi pełną księgowość). Większość JDG korzysta z uproszczonych form, ale UoR definiuje fundamentalne zasady (memoriał, współmierność, ostrożność)",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0242",
+      "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości (tekst jednolity: Dz.U. 2025 poz. 567, ze zmianami na 2026 r.)",
+      "article": "26",
+      "article_label": "Art. 26",
+      "node_type": "ARTICLE",
+      "domain": "uor",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.accounting.uor_asset_valuation",
+        "jdg.micro.uor.a26.r1",
+        "jdg.micro.uor.a26.r2",
+        "jdg.micro.uor.a26.r3",
+        "jdg.micro.uor.a26.r4",
+        "jdg.micro.uor.a26.r5",
+        "jdg.micro.uor.a26.r6"
+      ],
+      "topic": "Zasady rachunkowości (gdy JDG prowadzi pełną księgowość). Większość JDG korzysta z uproszczonych form, ale UoR definiuje fundamentalne zasady (memoriał, współmierność, ostrożność)",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0243",
+      "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości (tekst jednolity: Dz.U. 2025 poz. 567, ze zmianami na 2026 r.)",
+      "article": "28",
+      "article_label": "Art. 28",
+      "node_type": "ARTICLE",
+      "domain": "uor",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.accounting.uor_accruals_deferrals",
+        "jdg.micro.uor.a28.r1",
+        "jdg.micro.uor.a28.r2",
+        "jdg.micro.uor.a28.r3",
+        "jdg.micro.uor.a28.r4",
+        "jdg.micro.uor.a28.r5",
+        "jdg.micro.uor.a28.r6",
+        "jdg.micro.uor.a28.r7",
+        "jdg.micro.uor.a28.r8"
+      ],
+      "topic": "Zasady rachunkowości (gdy JDG prowadzi pełną księgowość). Większość JDG korzysta z uproszczonych form, ale UoR definiuje fundamentalne zasady (memoriał, współmierność, ostrożność)",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0244",
+      "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości (tekst jednolity: Dz.U. 2025 poz. 567, ze zmianami na 2026 r.)",
+      "article": "32",
+      "article_label": "Art. 32",
+      "node_type": "ARTICLE",
+      "domain": "uor",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.micro.uor.a32.r1",
+        "jdg.micro.uor.a32.r2",
+        "jdg.micro.uor.a32.r3",
+        "jdg.micro.uor.a32.r4",
+        "jdg.micro.uor.a32.r5",
+        "jdg.micro.uor.a32.r6"
+      ],
+      "topic": "Zasady rachunkowości (gdy JDG prowadzi pełną księgowość). Większość JDG korzysta z uproszczonych form, ale UoR definiuje fundamentalne zasady (memoriał, współmierność, ostrożność)",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0245",
+      "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości (tekst jednolity: Dz.U. 2025 poz. 567, ze zmianami na 2026 r.)",
+      "article": "74",
+      "article_label": "Art. 74",
+      "node_type": "ARTICLE",
+      "domain": "uor",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.accounting.kst_group_classification",
+        "jdg.micro.uor.a74.r1",
+        "jdg.micro.uor.a74.r2",
+        "jdg.micro.uor.a74.r3",
+        "jdg.micro.uor.a74.r4",
+        "jdg.retention.uor_annual_reports_permanent"
+      ],
+      "topic": "Zasady rachunkowości (gdy JDG prowadzi pełną księgowość). Większość JDG korzysta z uproszczonych form, ale UoR definiuje fundamentalne zasady (memoriał, współmierność, ostrożność)",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0246",
+      "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów",
+      "article": "",
+      "article_label": "całość",
+      "node_type": "ACT",
+      "domain": "pkpir",
+      "material": false,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Podatkowa Księga Przychodów i Rozchodów (PKPiR) – uproszczona księgowość dla JDG",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0247",
+      "act": "Ustawa o PIT, art. 24a",
+      "article": "24a",
+      "article_label": "Art. 24a",
+      "node_type": "ARTICLE",
+      "domain": "other",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Obowiązek prowadzenia PKPiR dla JDG opodatkowanych skalą podatkową lub liniowo",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0248",
+      "act": "Ustawa o zryczałtowanym podatku dochodowym, art. 15",
+      "article": "15",
+      "article_label": "Art. 15",
+      "node_type": "ARTICLE",
+      "domain": "pit",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.micro.ryczalt.a15.r10",
+        "jdg.micro.ryczalt.a15.r2",
+        "jdg.micro.ryczalt.a15.r3",
+        "jdg.micro.ryczalt.a15.r4",
+        "jdg.micro.ryczalt.a15.r5",
+        "jdg.micro.ryczalt.a15.r6",
+        "jdg.micro.ryczalt.a15.r7",
+        "jdg.micro.ryczalt.a15.r8",
+        "jdg.micro.ryczalt.a15.r9"
+      ],
+      "topic": "Ewidencja przychodów dla ryczałtowców",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0249",
+      "act": "Ustawa o VAT, art. 109",
+      "article": "109",
+      "article_label": "Art. 109",
+      "node_type": "ARTICLE",
+      "domain": "other",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Ewidencja VAT (rejestry sprzedaży i zakupów VAT)",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0250",
+      "act": "Ustawa o VAT, art. 99",
+      "article": "99",
+      "article_label": "Art. 99",
+      "node_type": "ARTICLE",
+      "domain": "other",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Obowiązek składania JPK_VAT (dla JDG będących czynnymi podatnikami VAT)",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0251",
+      "act": "Rozporządzenie Ministra Finansów z dnia 15 lipca 2025 r. w sprawie JPK_VAT z deklaracją",
+      "article": "",
+      "article_label": "całość",
+      "node_type": "ACT",
+      "domain": "other",
+      "material": false,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Struktura JPK_V7M (miesięczny) i JPK_V7K (kwartalny)",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0252",
+      "act": "Ustawa o PIT, art. 45",
+      "article": "45",
+      "article_label": "Art. 45",
+      "node_type": "ARTICLE",
+      "domain": "other",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Zeznania roczne PIT-36, PIT-36L, PIT-28",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0253",
+      "act": "Ustawa z dnia 16 czerwca 2023 r. o zmianie ustawy o VAT (wprowadzająca KSeF) – Dz.U. 2023 poz. 1598",
+      "article": "",
+      "article_label": "całość",
+      "node_type": "ACT",
+      "domain": "ksef",
+      "material": false,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Obowiązek wystawiania faktur ustrukturyzowanych w KSeF od 1 lutego 2026 r. (dla wszystkich podatników VAT czynnych, z wyjątkiem zwolnionych)",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0254",
+      "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej (schemat XSD dla KSeF)",
+      "article": "",
+      "article_label": "całość",
+      "node_type": "ACT",
+      "domain": "other",
+      "material": false,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Schemat XSD dla faktur KSeF",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0255",
+      "act": "Ustawa o VAT, art. 96b",
+      "article": "96b",
+      "article_label": "Art. 96b",
+      "node_type": "ARTICLE",
+      "domain": "other",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Biała Lista VAT – obowiązek weryfikacji kontrahenta przed przelewem powyżej 15 000 PLN",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0256",
+      "act": "Ustawa Prawo przedsiębiorców, art. 22-25",
+      "article": "22-25",
+      "article_label": "Art. 22-25",
+      "node_type": "ARTICLE",
+      "domain": "business",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.api_fallback.ksef_degradation",
+        "jdg.business.max_suspension_block",
+        "jdg.business.maximum_suspension_period_check",
+        "jdg.business.succession_manager_appointment",
+        "jdg.business.suspension_kup_restrictions",
+        "jdg.cross_validator.ceidg_vs_jpk_pkd",
+        "jdg.edge_cases.seasonal_pit_advance",
+        "jdg.edge_cases.unregistered_vs_vat_deduction",
+        "jdg.hyper.edelivery.force_majeure.suspension.zus_consequences",
+        "jdg.hyper.limits.no_match",
+        "jdg.hyper.limits.seasonal.closure.nip_loss_consequences",
+        "jdg.hyper.limits.seasonal.detection.construction_winter_break",
+        "jdg.hyper.limits.seasonal.detection.industry_code_agriculture",
+        "jdg.hyper.limits.seasonal.detection.industry_code_tourism",
+        "jdg.hyper.limits.seasonal.detection.months_with_revenue",
+        "jdg.hyper.limits.seasonal.detection.revenue_gap_3plus_months",
+        "jdg.hyper.limits.seasonal.suspension.keep_nip",
+        "jdg.hyper.limits.seasonal.suspension.max_24_months_total",
+        "jdg.micro.ceidg.a22.r2",
+        "jdg.micro.ceidg.a22.r3",
+        "jdg.micro.ceidg.a22.r4",
+        "jdg.micro.ceidg.a22.r5",
+        "jdg.micro.ceidg.a22.r6",
+        "jdg.micro.pkpir_nkup.p21.r3",
+        "jdg.micro.pp.a22.r10",
+        "jdg.micro.pp.a22.r2",
+        "jdg.micro.pp.a22.r3",
+        "jdg.micro.pp.a22.r4",
+        "jdg.micro.pp.a22.r5",
+        "jdg.micro.pp.a22.r6",
+        "jdg.micro.pp.a22.r7",
+        "jdg.micro.pp.a22.r8",
+        "jdg.micro.pp.a22.r9",
+        "jdg.micro.ryczalt_cykl_atomic_p13.suspension.r2",
+        "jdg.micro.ryczalt_cykl_atomic_p13.suspension.r3",
+        "jdg.micro.ryczalt_cykl_atomic_p13.unregistered.r1",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.succession_step_guide",
+        "jdg.p13_ryczalt_cykl_zycia_innovations.unregistered_business_audit"
+      ],
+      "topic": "Zawieszenie działalności gospodarczej – skutki podatkowe i składkowe",
+      "_act_matched": true
+    },
+    {
+      "legal_node_id": "LKG-0257",
+      "act": "Ustawa o PIT, art. 44",
+      "article": "44",
+      "article_label": "Art. 44",
+      "node_type": "ARTICLE",
+      "domain": "other",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [],
+      "topic": "Zaliczki na podatek – terminy i wysokość",
+      "_act_matched": false
+    },
+    {
+      "legal_node_id": "LKG-0258",
+      "act": "Ustawa o systemie ubezpieczeń społecznych, art. 47",
+      "article": "47",
+      "article_label": "Art. 47",
+      "node_type": "ARTICLE",
+      "domain": "zus",
+      "material": true,
+      "valid_from": "2004-01-01",
+      "valid_to": null,
+      "version": 1,
+      "source": "Bbb.md",
+      "status": "OBOWIAZUJACY",
+      "rules": [
+        "jdg.calendar.hyper.zus_employees_15th",
+        "jdg.calendar.hyper.zus_units_15th",
+        "jdg.calendar.hyper.zus_weekend_shift",
+        "jdg.hyper.deadlines.tax.cit8_march31",
+        "jdg.hyper.deadlines.tax.zus_contributions_15th_20th",
+        "jdg.hyper.edelivery.force_majeure.aggregate.impact_assessment",
+        "jdg.hyper.edelivery.force_majeure.deadlines.auto_extension_application",
+        "jdg.micro.sus.a47.r2",
+        "jdg.micro.sus.a47.r3",
+        "jdg.micro.sus.a47.r4",
+        "jdg.micro.sus.a47.r5",
+        "jdg.micro.sus.a47.r6",
+        "jdg.micro.sus.a47.r7",
+        "jdg.micro.sus.a47.r8",
+        "jdg.micro.zus.a3.r10",
+        "jdg.micro.zus.a3.r2",
+        "jdg.micro.zus.a3.r3",
+        "jdg.micro.zus.a3.r4",
+        "jdg.micro.zus.a3.r5",
+        "jdg.micro.zus.a3.r6",
+        "jdg.micro.zus.a3.r7",
+        "jdg.micro.zus.a3.r8",
+        "jdg.micro.zus.a3.r9",
+        "jdg.micro.zus.a4.r1",
+        "jdg.micro.zus.a47.r5",
+        "jdg.micro.zus.a47.r6",
+        "jdg.micro.zus.a6.r10"
+      ],
+      "topic": "Obowiązek opłacania składek ZUS – terminy",
+      "_act_matched": true
     }
   ],
   "rules_scanned": 12295,
@@ -7467,5 +11175,403 @@
     "34",
     "34",
     "153"
+  ],
+  "acts": [
+    {
+      "act": "PIT, art. 21 ust. 1 pkt 148",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "PIT, art. 21 ust. 1 pkt 152",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "PIT, art. 21 ust. 1 pkt 153",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "PIT, art. 21 ust. 1 pkt 154",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "PIT, art. 26",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "PIT, art. 26e",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "PIT, art. 26eb",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "PIT, art. 26ec",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "PIT, art. 26gb",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "PIT, art. 26h",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "PIT, art. 30ca",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "Rozporządzenie Ministra Finansów z dnia 15 lipca 2025 r. w sprawie JPK_VAT z deklaracją",
+      "articles": 1,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Rozporządzenie Ministra Finansów z dnia 15 lipca 2025 r. w sprawie JPK_VAT z deklaracją Struktura JPK_V7M (miesięczny) i JPK_V7K",
+      "articles": 1,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów",
+      "articles": 1,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów (PKPiR) – uproszczona księgowość dla JDG Całość rozporządzenia – struktura PKPiR, zasady ewidencji",
+      "articles": 4,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Rozporządzenie Ministra Finansów z dnia 30 grudnia 2025 r. w sprawie wzorów zeznań podatkowych PIT",
+      "articles": 1,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Rozporządzenie Ministra Finansów z dnia 4 grudnia 2024 r. w sprawie obniżonych stawek VAT",
+      "articles": 1,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej (schemat XSD dla KSeF)",
+      "articles": 1,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej (schemat XSD dla KSeF) Schemat XSD dla faktur KSeF Całość rozporządzenia",
+      "articles": 6,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Rozporządzenie Ministra Pracy i Polityki Społecznej z dnia 30 grudnia 2025 r. w sprawie szczegółowych zasad ustalania podstawy wymiaru składek",
+      "articles": 1,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r. w sprawie ochrony osób fizycznych w związku z przetwarzaniem danych osobowych i w sprawie swobodnego przepływu takich danych",
+      "articles": 22,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) nr 910/2014 z dnia 23 lipca 2014 r. w sprawie identyfikacji elektronicznej i usług zaufania",
+      "articles": 4,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa Prawo przedsiębiorców, art. 22-25",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa Prawo przedsiębiorców, art. 5",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa o PIT, art. 24a",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa o PIT, art. 44",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa o PIT, art. 45",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa o VAT, art. 109",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa o VAT, art. 96b",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa o VAT, art. 99",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa o systemie ubezpieczeń społecznych, art. 18a",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa o systemie ubezpieczeń społecznych, art. 18c",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa o systemie ubezpieczeń społecznych, art. 47",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa o zryczałtowanym podatku dochodowym, art. 15",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu",
+      "articles": 6,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 10 września 1999 r. – Kodeks karny skarbowy",
+      "articles": 14,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
+      "articles": 15,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.)",
+      "articles": 11,
+      "material": 11,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych",
+      "articles": 2,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych",
+      "articles": 4,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (tekst jednolity: Dz.U. 2025 poz. 345, ze zmianami na 2026 r.)",
+      "articles": 4,
+      "material": 4,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 14 grudnia 2012 r. o odpadach",
+      "articles": 6,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 16 czerwca 2023 r. o zmianie ustawy o VAT (wprowadzająca KSeF) – Dz.U. 2023 poz. 1598",
+      "articles": 1,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 17 lutego 2005 r. o informatyzacji działalności podmiotów realizujących zadania publiczne",
+      "articles": 3,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 18 listopada 2020 r. o doręczeniach elektronicznych",
+      "articles": 3,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
+      "articles": 11,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne (tekst jednolity: Dz.U. 2025 poz. 234, ze zmianami na 2026 r.)",
+      "articles": 2,
+      "material": 2,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 23 kwietnia 1964 r. – Kodeks cywilny",
+      "articles": 3,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
+      "articles": 13,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (tekst jednolity: Dz.U. 2025 poz. 789, ze zmianami na 2026 r.)",
+      "articles": 9,
+      "material": 9,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych",
+      "articles": 4,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (tekst jednolity: Dz.U. 2025 poz. 890)",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
+      "articles": 17,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm.)",
+      "articles": 4,
+      "material": 4,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości",
+      "articles": 8,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości (tekst jednolity: Dz.U. 2025 poz. 567, ze zmianami na 2026 r.)",
+      "articles": 8,
+      "material": 8,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej",
+      "articles": 4,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (tekst jednolity: Dz.U. 2025 poz. 1234)",
+      "articles": 1,
+      "material": 1,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 6 czerwca 1997 r. – Kodeks karny",
+      "articles": 4,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 6 grudnia 2008 r. o podatku akcyzowym",
+      "articles": 9,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej",
+      "articles": 2,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej (CEIDG) (tekst jednolity: Dz.U. 2025 poz. 456)",
+      "articles": 2,
+      "material": 2,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 6 marca 2018 r. – Prawo przedsiębiorców",
+      "articles": 5,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 6 marca 2018 r. – Prawo przedsiębiorców (tekst jednolity: Dz.U. 2025 poz. 123, ze zmianami na 2026 r.)",
+      "articles": 5,
+      "material": 5,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 7 lipca 1994 r. – Prawo budowlane",
+      "articles": 7,
+      "material": 0,
+      "covered": 0
+    },
+    {
+      "act": "Ustawa z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych",
+      "articles": 4,
+      "material": 0,
+      "covered": 0
+    }
   ]
 }

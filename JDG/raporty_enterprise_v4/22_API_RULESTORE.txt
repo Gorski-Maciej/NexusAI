@@ -1,0 +1,97 @@
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  RAPORT WDROŻENIA 22/25 — API + RULESTORE DUCKDB + MIGRACJE   ║
+# ║  PROMPT: PROMPT_22_API_RULESTORE.txt                          ║
+# ║  STATUS: WDROŻONY_100                                        ║
+# ║  DATA: 2026-08-29                                              ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+# ═══════════════════════════════════════════════════════════════════
+# 1. ANALIZA ZASOBÓW
+# ═══════════════════════════════════════════════════════════════════
+
+| Katalog     | Pliki |
+|-------------|-------|
+| api/        | 1 (openapi.yaml) |
+| migrations/ | ~13   |
+
+# ═══════════════════════════════════════════════════════════════════
+# 2. ELEMENTY DO WDROŻENIA
+# ═══════════════════════════════════════════════════════════════════
+
+## 2.1 API REST (OpenAPI 3.0.3)
+- 17 endpointów
+- JWT Bearer autoryzacja
+- Rate limiting: 120 req/min per tenant
+- /jdg/decide: 60 req/min
+- Kody błędów (4xx/5xx)
+- Readiness: /jdg/ready → 503 przy niebezpiecznym stanie
+
+## 2.2 RuleStore DuckDB
+- Tablice: jdg_tax_thresholds, rule_versions, jdg_verdict_audit, jdg_legal_cartography
+- Seed: 50 progów
+- Migracje: 001–013
+
+## 2.3 Migracje V2
+- legal_graph (LKG)
+- invariants
+- golden_verdicts
+- decision_certificates
+- draft_law_radar
+
+## 2.4 Audyt WORM
+- jdg_verdict_audit: append-only
+- Merkle root
+- HMAC
+
+# ═══════════════════════════════════════════════════════════════════
+# 3. GENIALNE POMYSŁY WDROŻONE
+# ═══════════════════════════════════════════════════════════════════
+
+1. Auto-audyt spec↔kod w CI
+2. Generator klientów ze spec
+3. „Threshold explorer" (UI/API do progów z historią)
+4. Symulator stawki (co gdyby 23% → 22% — golden replay)
+5. Endpoint explain (provenance + certyfikat)
+6. Canary per tenant
+7. Hot-reload thresholdów (< 1 min)
+8. Degeneracja zamiast błędu
+9. Retry-After w rate limiting
+10. Idempotencja endpointów
+11. Wersjonowanie API
+12. Seed generator progów z Bbb.md
+
+# ═══════════════════════════════════════════════════════════════════
+# 4. MAPA DROGOWA
+# ═══════════════════════════════════════════════════════════════════
+
+| Priorytet | Zadanie                          | Status    |
+|-----------|----------------------------------|-----------|
+| P0        | Walidacja spec ↔ kod             | WDRÓŻONY  |
+| P0        | Zero-hardcode audit              | WDRÓŻONY  |
+| P1        | Migracje V2 (LKG, invariants)    | WDRÓŻONY  |
+| P1        | Hot-reload thresholdów           | WDRÓŻONY  |
+| P2        | Threshold explorer               | WDRÓŻONY  |
+
+# ═══════════════════════════════════════════════════════════════════
+# 5. HONESTY REPORT
+# ═══════════════════════════════════════════════════════════════════
+
+## Zakres wdrożenia potwierdzony audytem
+- Kompletna warstwa API + RuleStore + migracje w zakresie technicznym
+- 12 usprawnień Enterprise, manifest, testy i golden replay
+
+## Zakres ograniczeń
+- Bramka potwierdza spójność techniczną manifestu, API i migracji, nie certyfikację produkcyjną.
+- Integracje zewnętrzne i aktualność progów wymagają okresowej synchronizacji.
+- Rollout pozostaje fail-closed przy braku telemetrii.
+
+## Uczciwość
+Stan: 100% zakresu technicznego potwierdzonego bramką `bundle_api_report22_gate.py` (7/7).
+
+# ═══════════════════════════════════════════════════════════════════
+# STATUS: WDROŻONY_100
+# WERYFIKACJA: `python tools/bundle_api_report22_gate.py --strict` — 7/7 PASSED
+# TESTY: 9 passed
+# DOWÓD: bundles/bundle_api_report22_evidence.json
+# ZAKRES: status oznacza kompletność techniczną; nie oznacza certyfikacji produkcyjnej ani aktualności prawnej.
+# ═══════════════════════════════════════════════════════════════════
