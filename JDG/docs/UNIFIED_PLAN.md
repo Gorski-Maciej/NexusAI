@@ -2,7 +2,7 @@
 
 > **Scalenie 67 dokumentów Plan OPA w jeden nurt**
 > **Data:** 2026-08-02 (aktualizacja: 2026-08-22) | **Generator:** auto z MANIFEST.md
-> **Stan faktyczny:** 472 pliki / 11 808 unikalnych rule_id / 426 plików z matched:true
+> **Stan faktyczny:** 490 plików / 11 855 unikalnych rule_id / 444 plików z matched:true
 > **Certyfikacja końcowa:** ETAP 28/29 — `WDROZONY_100` (2026-08-22, 14/14 bramek)
 
 ---
@@ -15,7 +15,7 @@ Plan OPA zawiera 67 dokumentów z wieloma konkurującymi strategiami:
 |---|----------|-----------|:------:|
 | 1 | `00_PLAN_STRUKTURA.md` | 240 reguł, 13 faz | 📐 Fundament |
 | 2 | `24_JDG_COMPLETE_INDEX.md` | 47 reguł ID | 🔴 DEPRECATED |
-| 3 | `38c_JDG_CANONICAL_MAP.md` | ~779 reguł | ⭐ ŹRÓDŁO PRAWDY (plan bazowy — PRZEKROCZONY: 11 808) |
+| 3 | `38c_JDG_CANONICAL_MAP.md` | ~779 reguł | ⭐ ŹRÓDŁO PRAWDY (plan bazowy — PRZEKROCZONY: 11 855) |
 | 4 | `41_JDG_MEGA_MATRIX_7000_RULES.md` | ~7000 Micro | 🎯 Horyzont 2027+ |
 | 5 | `45_JDG_HYPER_GRANULARITY.md` | ~700 atomowych | 🧪 Eksperyment |
 
@@ -23,14 +23,14 @@ Plan OPA zawiera 67 dokumentów z wieloma konkurującymi strategiami:
 
 ---
 
-## Stan Faktyczny (v8.0 — aktualizacja 2026-08-22)
+## Stan Faktyczny (v8.0 — aktualizacja 2026-08-30)
 
 ```
-STAN OBECNY:  472 plików Rego, 11 808 unikalnych rule_id
-              426 pliki z matched:true, 24 inicjatyw S1-S24
+STAN OBECNY:  490 plików Rego, 11 855 unikalnych rule_id
+              444 pliki z matched:true, 24 inicjatyw S1-S24
               298 narzędzi, 198 testów pytest, 207 testów natywnych Rego
               22 audit-state (ETAP 06-28), 13 migracji, 29/29 raportów GLM52 WDROZONY_100
-CEL:          779 reguł kanonicznych (mapa 38c) — PRZEKROCZONY (11 808)
+CEL:          779 reguł kanonicznych (mapa 38c) — PRZEKROCZONY (11 855)
 STATUS:       Fazy A/B/C wykonane lub przekroczone; ETAP 28/29 certyfikacja końcowa WDROZONY_100
 HORYZONT:     7000 reguł Micro (Dual-Layer — zrealizowane w rules/micro/, patrz ADR-010)
 ```
@@ -138,12 +138,12 @@ HORYZONT:     7000 reguł Micro (Dual-Layer — zrealizowane w rules/micro/, pat
 
 | Etap | Pliki Rego | Unikalne rule_id | Pokrycie Doc 50 |
 |------|:----------:|:----------------:|:---------------:|
-| **Stan obecny (v8.0, 2026-08-22)** ✅ | 472 | 11 808 | 100% raportów GLM52 WDROZONY_100 |
+| **Stan obecny (v8.0, 2026-08-30)** ✅ | 490 | 11 855 | 100% raportów GLM52 WDROZONY_100 |
 | Po Fazie 1 | 472 | ~11 900 | pełne mapowanie rule_id |
 | Po Fazie 2 | 472 | ~11 900 | klasyfikacja A/B/C aktualna |
 | Po Fazie 3 | 472 | ~11 805 | 0 duplikatów (obecnie 3) |
-| Po Fazie 4 | 472 | ~11 808 | 198 pytest + 207 testów Rego |
-| Po Fazie 5 | 472 | ~11 808 | bundle deployment weryfikowany |
+| Po Fazie 4 | 490 | ~11 855 | 198 pytest + 207 testów Rego |
+| Po Fazie 5 | 490 | ~11 855 | bundle deployment weryfikowany |
 
 ## Roadmap Czasowy Q3-Q4 2026
 

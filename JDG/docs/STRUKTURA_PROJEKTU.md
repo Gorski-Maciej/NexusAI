@@ -33,7 +33,7 @@ JDG/                                        ← KATALOG GŁÓWNY MODUŁU
 ├── unified_plan_v8.yaml                    Plan strategiczny v8 (24 inicjatywy)
 ├── unified_plan_progress.yaml              Postęp wdrożenia planu
 │
-├── rules/                                  ★ SERCE — 472 pliki Rego, ~11 808 rule_id
+├── rules/                                  ★ SERCE — 490 plików Rego, ~11 855 rule_id
 │   ├── main_jdg.rego                       Orkiestrator Multi-Pass + Sharded Router (1656 linii)
 │   ├── _helpers_jdg.rego                   Helpery: thresholds, FC, MPP
 │   ├── _metadata_jdg.rego                  Metadane reguł (severity, remediation, temporalność)
@@ -73,7 +73,7 @@ JDG/                                        ← KATALOG GŁÓWNY MODUŁU
 │
 ├── bundles/                                OPA Bundle
 │   ├── bundle.sh                           Budowa tar.gz z zachowaniem struktury (fix R1)
-│   └── manifest.json                       Manifest bundle (11 808 reguł, 472 pliki, serwis thresholds)
+│   └── manifest.json                       Manifest bundle (11 855 reguł, 490 plików, serwis thresholds)
 │
 ├── docs/                                   ★ Dokumentacja (ta rodzina plików)
 │   ├── ARCHITEKTURA.md · STRUKTURA_PROJEKTU.md (ten) · API_REFERENCJA.md

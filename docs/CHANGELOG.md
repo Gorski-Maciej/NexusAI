@@ -9,7 +9,7 @@
 
 ### 🏛️ Moduł JDG — certyfikacja końcowa ETAP 28/29
 
-- **472 pliki Rego** w `JDG/rules/` (~11 808 unikalnych `rule_id`, 88/100 Completeness Score)
+- **490 plików Rego** w `JDG/rules/` (~11 855 unikalnych `rule_id`, 91/100 Completeness Score)
 - **ETAP 06–28 wdrożony w 100%** — 29/29 raportów kampanii GLM 5.2 = `WDROZONY_100`, 22 audit-state, 14/14 bramek certyfikacji końcowej
 - **18 domen**: 13 CERTIFIED / 5 CONDITIONAL / 0 BLOCKED (VAT, PIT, ZUS, księgowość, KKS+Ordynacja, cross-border, PCC/lokalne, KSeF/JPK, RODO/AML/BDO, hyper-konteksty, AI/neural, mirror sync, disaster recovery)
 - **298 narzędzi Python** (`JDG/tools/`), **198 testów pytest + 207 testów natywnych Rego**, 13 migracji DuckDB

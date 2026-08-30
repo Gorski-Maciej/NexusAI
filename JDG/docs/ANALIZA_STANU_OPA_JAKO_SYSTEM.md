@@ -26,15 +26,15 @@ Analizę przeprowadzono wyłącznie na podstawie dokumentacji zawartej w katalog
 
 | Metryka | Wartość | Źródło |
 |---|---|---|
-| Pliki Rego | 472 (rules/) | README, MANIFEST (2026-08-22) |
-| Unikalne rule_id | 11 808 | README / MANIFEST |
-| Bloki `matched: true` | 11 811 | MANIFEST |
-| Duplikaty rule_id | 3 | MANIFEST |
+| Pliki Rego | 490 (rules/) | README, MANIFEST (2026-08-30) |
+| Unikalne rule_id | 11 855 | README / MANIFEST |
+| Bloki `matched: true` | 11 855 | MANIFEST |
+| Duplikaty rule_id | 0 | MANIFEST |
 | Stuby `{ true }` | 25 (dead_rule_detector, po kampanii P00) | P22 / P00 |
 | Akty prawne pokryte | 13 | README |
 | Inicjatywy strategiczne | 24 (A1–C3, S1–S24) | README |
 | Pakiety w orkiestratorze | ~60+ | OPA_REGO_DEVELOPER_GUIDE / ARCHITEKTURA |
-| Reguły w bundle | 11 808 (472 pliki) | MANIFEST / bundles |
+| Reguły w bundle | 11 855 (490 plików) | MANIFEST / bundles |
 | Narzędzia Python | 298 | KATALOG_NARZEDZI |
 | Natywne testy Rego | 207 plików `test_native_*.rego` (w tym mikro) | INWENTARYZACJA / ETAP 28 |
 | Testy pytest | 198 | ETAP 28 / INWENTARYZACJA |
@@ -70,7 +70,7 @@ Konwencje: rule_id `jdg.<domena>.<kategoria>` (ADR-008), CHECKPOINT-STUB dla reg
 
 ### 2.5. Bundle i deployment (ADR-011)
 
-- `bundle.sh` v8.0 buduje `jdg-bundle-{wersja}.tar.gz` z zachowaniem struktury katalogów (fix R1 — 8 kolizji nazw), weryfikacja licznika plików, manifest (11 808 reguł, 472 pliki, serwis thresholds, podpis SHA256).
+- `bundle.sh` v8.0 buduje `jdg-bundle-{wersja}.tar.gz` z zachowaniem struktury katalogów (fix R1 — 8 kolizji nazw), weryfikacja licznika plików, manifest (11 855 reguł, 490 plików, serwis thresholds, podpis SHA256).
 - Deployment: `curl -X PUT --data-binary @bundle.tar.gz http://opa-server:8181/v1/bundles/jdg`.
 - `policies/` — lżejszy mirror reguł (32 pakiety, v2026.07.10) z bundle overlays `v2026`/`v2027` (nakładki czasowe). **Zasada deklarowana:** `JDG/rules/` = źródło prawdy, `policies/` = eksperymenty/wersjonowanie. Zasada auto-sync co 24 h (P21 INN-04).
 - Rollback: wg PODRECZNIK_UZYTKOWNIKA.md — powrót do wcześniejszej wersji bundle („Aktualizacje → Historia → Wróć do vX.Y"), werdykty historyczne nienaruszone (time-travel).
@@ -138,7 +138,7 @@ Najważniejszy sygnał z analizy dokumentacji: **duża część „systemowości
 
 ### L2. Niespójność danych dokumentacyjnych (utrudnia niezawodne operacje)
 - Pliki Rego: 472 (README/INWENTARYZACJA/MANIFEST 2026-08-22) — spójne po kampanii GLM 5.2.
-- rule_id: 11 808 (README/MANIFEST 2026-08-22) — spójne; historyczne rozbieżności (10 878/10 827/10 509) rozwiązane przez regenerację MANIFEST.
+- rule_id: 11 855 (README/MANIFEST 2026-08-30) — spójne; historyczne rozbieżności (10 878/10 827/10 509) rozwiązane przez regenerację MANIFEST.
 - Testy natywne: UNIFIED_PLAN Faza 4 mówi „0 plików .rego w JDG/tests/" (ADR-013: ❌), a INWENTARYZACJA_PLIKOW raportuje 103+25 plików `test_native_*.rego`, zaś P23 — 98 testów rego w mapie pokrycia. **Wewnętrzna sprzeczność dokumentów.**
 - Narzędzia: 57 (README) vs 98 (P21) vs 130 (KATALOG_NARZEDZI).
 - Wniosek: brak jednego „single source of truth" dla metryk — konieczny autorytatywny rejestr (manifest 2.0 + API), regenerowany w CI i blokujący przy rozbieżności.

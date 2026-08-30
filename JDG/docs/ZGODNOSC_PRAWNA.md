@@ -1,6 +1,6 @@
 # ⚖️ NexusAI JDG — Zgodność z Przepisami (Compliance)
 
-> **Dokument:** ZGODNOSC_PRAWNA.md | **Pokrycie:** 13 aktów prawnych, ~11 808 reguł (472 pliki Rego)
+> **Dokument:** ZGODNOSC_PRAWNA.md | **Pokrycie:** 13 aktów prawnych, ~11 855 reguł (490 plików Rego)
 > **Cel:** Jak system zapewnia zgodność z przepisami księgowymi i podatkowymi, jak obsługuje KSeF/JPK/deklaracje, jak odtworzyć dowolną decyzję (ścieżka audytu) i jak długo przechowuje dane.
 
 > ⚠️ **Zastrzeżenie:** Ten dokument opisuje funkcje silnika reguł i ich podstawy prawne. Nie stanowi porady prawnej. Ostateczną interpretację przepisów zawsze weryfikuj z doradcą podatkowym.

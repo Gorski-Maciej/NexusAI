@@ -2,7 +2,7 @@
 
 > **Data:** 2026-08-22 (generator wymaga `Plan OPA/50_JDG_BRAKUJACE_PUNKTY_PRAWNE.md` — plik archiwalny; aktualny stan pokrycia w MANIFEST.md i KAMPANIA_GLM52_ETAPY_10_28.md)  
 > **Źródło:** `Plan OPA/50_JDG_BRAKUJACE_PUNKTY_PRAWNE.md`  
-> **Reguły Rego:** `JDG/rules/` (472 pliki, ~11 808 rule_id — w tym S1-S24 Enterprise v8 + ETAP 10–28)  
+> **Reguły Rego:** `JDG/rules/` (490 plików, ~11 855 rule_id — w tym S1-S24 Enterprise v8 + ETAP 10–28)  
 > **Status kampanii GLM 5.2 (2026-08-22):** 29/29 raportów WDROZONY_100; 18 domen (13 CERTIFIED / 5 CONDITIONAL / 0 BLOCKED); 12 273 referencje prawne
 
 ---

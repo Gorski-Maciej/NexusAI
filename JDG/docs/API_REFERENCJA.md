@@ -292,7 +292,7 @@ curl -X GET "https://api.nexusai.pl/v1/jdg/audit/550e8400-e29b-41d4-a716-4466554
     "nbp": "online"
   },
   "shard_count": 4,
-  "rules_count": 11808,
+  "rules_count": 11855,
   "uptime_seconds": 86400
 }
 ```

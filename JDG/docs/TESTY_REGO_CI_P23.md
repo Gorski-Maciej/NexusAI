@@ -1,6 +1,7 @@
 # P23 — TESTY REGO + PYTEST + CI (Niezniszczalna Tarcza Testowa)
 
-> **📌 Aktualizacja 2026-08-22:** dokument historyczny opisujący wdrożenie promptu GLM 5.2.
+> **📌 Aktualizacja 2026-08-30:** dokument historyczny opisujący wdrożenie promptu GLM 5.2.
+> **Metryki MANIFEST (2026-08-30):** 490 plików / 11 855 rule_id / 444 matched / Completeness 91/100 — patrz [MANIFEST.md](../MANIFEST.md).
 > Raporty źródłowe (`prompty_glm52/`, `raporty_glm52/`, `raporty_jdg_enterprise/`) zostały zarchiwizowane poza repo.
 > Aktualny stan wdrożenia: [`KAMPANIA_GLM52_ETAPY_10_28.md`](KAMPANIA_GLM52_ETAPY_10_28.md) + `JDG/bundles/*audit_state.json` (certyfikacja końcowa ETAP 28/29 — 2026-08-22, 14/14 bramek).
 
@@ -27,7 +28,7 @@ nie przejdzie do produkcji** przy zmianach prawa.
 | Reguła | Opis |
 |---|---|
 | `coverage_audit` | Mapa: 472 rego vs 207 testów rego + 198 pytest — pokrycie ≥ 90% (aktualizacja 2026-08-22) |
-| `test_generator` (INN-01) | Auto-generator testów z rule_id (11808 reguł, 500+ testów) |
+| `test_generator` (INN-01) | Auto-generator testów z rule_id (11855 reguł, 500+ testów) |
 | `mutation_analysis` (INN-02) | Analiza mutacji — wynik ≥ 70% (85/100 mutantów zabitych) |
 | `decision_fuzzer` (INN-03) | Fuzzer decyzyjny — 10000 wejść, zero crashy |
 

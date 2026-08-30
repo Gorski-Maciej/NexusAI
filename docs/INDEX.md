@@ -14,7 +14,7 @@ M1b Rozszerzenia    → SCRIPTS, INSTALLER, FRONTEND, EVENTS, PIPELINE, INFERENC
 M2 Architektura     → ARCHITECTURE, FOUNDATION, DOMAIN, PDFIUM, WORKFLOWS, DECISIONS, DATABASE, MODULES, BUILD_CONFIG, RUST_MODULE, MODELS_MANIFEST
 M2b Agenci AI       → AGENTS (5 agentów, Decision Engine, Cognitive Audit Trail)
 M2c Reguły SC       → SC_README (Spółka Cywilna OPA/Rego), canonical_rules_index, package_fusion_strategy
-M2d Moduł JDG       → JDG/README.md (472 pliki Rego, ~11 808 rule_id, ETAP 06–28, certyfikacja 2026-08-22)
+M2d Moduł JDG       → JDG/README.md (490 plików Rego, ~11 855 rule_id, ETAP 06–28, Certyfikacja 2026-08-22)
 M3 API              → API
 M4 Operacje         → INSTALLATION, TESTING, DEPLOYMENT, TROUBLESHOOTING
 M5 Bezpieczeństwo   → SECURITY, COMPLIANCE
@@ -199,7 +199,7 @@ M6 Ludzie i proces  → CONTRIBUTING, USER_GUIDE, GLOSSARY, FAQ, BIBLIOGRAPHY, R
 
 ### Sekcja 20i — Moduł JDG (Policy-as-Code dla jednoosobowych firm) (NOWY)
 - Plik: [`JDG/README.md`](../JDG/README.md) (NOWY)
-- Zawartość: **472 pliki Rego, ~11 808 unikalnych `rule_id`**, Multi-Pass PASS 0–8, Sharded Router O(1), Temporal Bundle Routing, Immutable Audit Trail, Decision Certificate F4, Legal Twin/LKG. Kampania GLM 5.2: **ETAP 06–28 — 29/29 raportów WDROZONY_100, 22 audit-state, certyfikacja końcowa (2026-08-22): 18 domen — 13 CERTIFIED / 5 CONDITIONAL / 0 BLOCKED**. 298 narzędzi, 198 testów pytest, 207 testów natywnych Rego.
+- Zawartość: **490 plików Rego, ~11 855 unikalnych `rule_id`** (Completeness 91/100), Multi-Pass PASS 0–8, Sharded Router O(1), Temporal Bundle Routing, Immutable Audit Trail, Decision Certificate F4, Legal Twin/LKG. Kampania GLM 5.2: **ETAP 06–28 — 29/29 raportów WDROZONY_100, 22 audit-state, certyfikacja końcowa (2026-08-22): 18 domen — 13 CERTIFIED / 5 CONDITIONAL / 0 BLOCKED**. 298 narzędzi, 198 testów pytest, 207 testów natywnych Rego.
 - Powiązane: [`JDG/docs/UNIFIED_PLAN.md`](../JDG/docs/UNIFIED_PLAN.md), [`JDG/MANIFEST.md`](../JDG/MANIFEST.md), [`JDG/docs/ARCHITECTURE.md`](../JDG/docs/ARCHITECTURE.md) (ADR 001–022), [`policies/README.md`](../policies/README.md) (mirror + overlays v2026/v2027).
 
 ---
@@ -388,7 +388,7 @@ Wszystkie ADR znajdują się w [`ARCHITECTURE.md`](ARCHITECTURE.md#5-kluczowe-de
 | 6l. Engine PDF | [`PDFIUM.md`](PDFIUM.md) | PDFium, renderowanie, ProgressivePDFLoader |
 | 6m. System Decyzyjny | [`DECISIONS.md`](DECISIONS.md) | DecisionLogger, DecisionQueue, TrustScore |
 | 6n. Build Config | [`BUILD_CONFIG.md`](BUILD_CONFIG.md) | pixi.toml, pyproject.toml, pre-commit |
-| **🆕 20i. Moduł JDG** | **[`JDG/README.md`](../JDG/README.md)** | **472 pliki Rego, ~11 808 rule_id, ETAP 06–28** |
+| **🆕 20i. Moduł JDG** | **[`JDG/README.md`](../JDG/README.md)** | **490 plików Rego, ~11 855 rule_id, Completeness 91/100, ETAP 06–28** |
 
 ---
 

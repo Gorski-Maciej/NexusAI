@@ -597,7 +597,7 @@
 
 > ⚠️ **Uwaga o metodzie:** wiersze **nie są rozłączne** — pliki plan44/45 w katalogach domenowych (np. `audit/`, `calendar/`) są uwzględnione zarówno w „rdzeń i domeny", jak i w „plan44/45 + hyper". Suma wierszy (~12 800) może więc przekraczać kanoniczne 11 821 bloków `matched:true` z MANIFEST — traktuj wiersze jako orientacyjne, a MANIFEST.md jako źródło prawdy.
 
-> **Uwaga metodyczna:** kolumny R/ID pochodzą z ekstrakcji statycznej (grep linii `matched…true` i `rule_id"`). Kanoniczne wartości M1/M2 (11 811 bloków, 11 808 unikalnych rule_id) — patrz [MANIFEST.md](../MANIFEST.md).
+> **Uwaga metodyczna:** kolumny R/ID pochodzą z ekstrakcji statycznej (grep linii `matched…true` i `rule_id"`). Kanoniczne wartości M1/M2 (11 811 bloków, 11 808 unikalnych rule_id na 2026-08-22) — patrz [MANIFEST.md](../MANIFEST.md). Aktualny stan (2026-08-30): 490 plików / 11 855 unique rule_id / 0 duplikatów.
 
 ---
 

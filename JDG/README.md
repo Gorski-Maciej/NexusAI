@@ -1,8 +1,8 @@
 # 🏛️ NexusAI JDG — Silnik Reguł Podatkowych dla Jednoosobowej Działalności Gospodarczej
 
 > **Status:** 🟢 PRODUCTION — ENTERPRISE v8.0 | 🏁 **Certyfikacja końcowa ETAP 28/29 — WDROŻONY_100 (2026-08-22)**
-> **Reguły:** ~11 808 unikalnych `rule_id` | **Pliki Rego:** 472 | **Akty prawne:** 13 | **Inicjatywy strategiczne:** 24 (A1–C3, S1–S24)
-> **Data wydania:** 2026-08-02 (aktualizacja: 2026-08-22) | **Licencja:** MIT
+> **Reguły:** ~11 855 unikalnych `rule_id` | **Pliki Rego:** 490 | **Akty prawne:** 13 | **Inicjatywy strategiczne:** 24 (A1–C3, S1–S24)
+> **Data wydania:** 2026-08-02 (aktualizacja: 2026-08-30) | **Licencja:** MIT
 
 ```
 ╔══════════════════════════════════════════════════════════════════╗
@@ -25,7 +25,7 @@ NexusAI JDG zamienia skomplikowane, wielokrotnie nowelizowane prawo podatkowe (V
 
 | Obszar | Status | Uwagi |
 |---|---|---|
-| **Silnik reguł Rego (JDG/rules)** | 🟢 **PRODUCTION** | 472 pliki, ~11 808 rule_id, First-Match-Wins |
+| **Silnik reguł Rego (JDG/rules)** | 🟢 **PRODUCTION** | 490 plików, ~11 855 rule_id, First-Match-Wins |
 | **API (JDG/api/openapi.yaml)** | 🟢 **PRODUCTION (spec 1.0.0)** | 17 endpointów, JWT Bearer |
 | **RuleStore DuckDB (JDG/migrations)** | 🟡 **BETA** | 9 tabel, 13 migracji (001–013), seed 50 progów |
 | **Bundle OPA (JDG/bundles)** | 🟢 **PRODUCTION** | bundle.sh v8.0, manifest, 22 audit-state |
@@ -203,7 +203,7 @@ flowchart LR
 
 | Warstwa | Odpowiedzialność | Artefakty |
 |---|---|---|
-| **Domain** | Reguły prawne i decyzyjne JDG | 472 pliki Rego (`JDG/rules/`), 459 pakietów |
+| **Domain** | Reguły prawne i decyzyjne JDG | 490 plików Rego (`JDG/rules/`), 459 pakietów |
 | **Application** | Orkiestracja, kontrakt werdyktu, use-case'y | `main_jdg.rego`, Decision API, Control Plane |
 | **Infrastructure** | RuleStore, OPA Data API, integracje zewnętrzne | DuckDB (001–013), threshold service, NATS |
 | **Presentation** | REST API + Flet UI | Litestar, `api/openapi.yaml` |
@@ -319,15 +319,15 @@ curl -X POST http://localhost:8000/v1/jdg/decide \
 
 | Metryka | Wartość |
 |---|---|
-| Pliki Rego | **472** |
-| Pliki z `matched: true` | **426** |
-| Bloki `matched: true` | **11 811** |
-| Unikalne `rule_id` | **11 808** |
-| Duplikaty `rule_id` | 3 |
+| Pliki Rego | **490** |
+| Pliki z `matched: true` | **444** |
+| Bloki `matched: true` | **11 855** |
+| Unikalne `rule_id` | **11 855** |
+| Duplikaty `rule_id` | 0 |
 | Akty prawne pokryte | **13** |
 | Inicjatywy strategiczne | 24 (A1–A3, B1–B3, C1–C3, S1–S24) |
 | Pakiety w orkiestratorze | ~60+ |
-| Completeness Score (MANIFEST) | 🟢 88/100 |
+| Completeness Score (MANIFEST) | 🟢 91/100 |
 | Narzędzia Python (JDG/tools) | **298** |
 | Testy pytest / natywne Rego | **198** / **207** |
 | Migracje DuckDB | **13** (001–013) |
@@ -357,7 +357,7 @@ curl -X POST http://localhost:8000/v1/jdg/decide \
 | **[docs/ZGODNOSC_PRAWNA.md](docs/ZGODNOSC_PRAWNA.md)** | UoR/IFRS/GAAP, KSeF, JPK, deklaracje VAT-7/CIT-8/PIT-36, ścieżka audytu, retencja | Compliance, księgowość |
 | **[docs/PODRECZNIK_UZYTKOWNIKA.md](docs/PODRECZNIK_UZYTKOWNIKA.md)** | Pierwsze uruchomienie, role RBAC, workflow AUTO_POST/ASK_USER, centrum decyzji, integracje | Użytkownicy końcowi |
 | **[docs/FAQ.md](docs/FAQ.md)** | Najczęściej zadawane pytania | Wszyscy |
-| **[docs/KATALOG_REGUL.md](docs/KATALOG_REGUL.md)** | Katalog **wszystkich 472 plików Rego** (JDG/rules) + pakiety policies — pakiety, reguły, rule_id | Developerzy, QA |
+| **[docs/KATALOG_REGUL.md](docs/KATALOG_REGUL.md)** | Katalog **wszystkich 490 plików Rego** (JDG/rules) + pakiety policies — pakiety, reguły, rule_id | Developerzy, QA |
 | **[docs/INWENTARYZACJA_PLIKOW.md](docs/INWENTARYZACJA_PLIKOW.md)** | Inwentaryzacja **wszystkich plików** JDG (1407) i policies (558) — statystyki per katalog | Wszyscy |
 | **[docs/KATALOG_NARZEDZI.md](docs/KATALOG_NARZEDZI.md)** | Katalog **wszystkich 298 narzędzi** Python z opisami | Developerzy, DevOps |
 | **[MANIFEST.md](MANIFEST.md)** | Tracker pokrycia reguł (auto-generowany) | QA, DevOps |
@@ -377,7 +377,7 @@ JDG/
 ├── MANIFEST.md                        # Tracker pokrycia reguł (auto)
 ├── COVERAGE_REPORT.md                 # Raport pokrycia prawnego (auto)
 ├── unified_plan_v8.yaml               # Plan strategiczny v8
-├── rules/                             # 472 plików Rego (~11 808 rule_id)
+├── rules/                             # 490 plików Rego (~11 855 rule_id)
 │   ├── main_jdg.rego                  # 🧠 orkiestrator Multi-Pass + Sharded Router
 │   ├── risk.rego / routing.rego / compliance.rego / kks.rego
 │   ├── vat/ pit/ zus/ kks/ accounting/ crossborder/ pcc/
@@ -400,7 +400,7 @@ Pełne drzewo i konwencje: **[docs/STRUKTURA_PROJEKTU.md](docs/STRUKTURA_PROJEKT
 
 | Dokument | Opis |
 |---|---|
-| `Plan OPA/38c_JDG_CANONICAL_MAP.md` | Mapa kanoniczna ~779 reguł (plan bazowy — przekroczony do 11 808) |
+| `Plan OPA/38c_JDG_CANONICAL_MAP.md` | Mapa kanoniczna ~779 reguł (plan bazowy — przekroczony do 11 855) |
 | `Plan OPA/41_JDG_MEGA_MATRIX_7000_RULES.md` | Dual-Layer Architecture (horyzont ~7000) |
 | `Plan OPA/52_AUDYT_JAKOSCI_REGUL.md` | Audyt jakości reguł |
 | `NexusAI_JDG_7000_MASTER_IMPLEMENTATION_PLAN.txt` | Master plan strategiczny |

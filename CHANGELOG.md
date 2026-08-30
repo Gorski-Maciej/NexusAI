@@ -1,5 +1,12 @@
 # CHANGELOG — NexusAI v8.0 (JDG OPA Enterprise + GLM 5.2)
 
+## [v8.0.1 Dokumentacja zsynchronizowana] — 2026-08-30
+
+### 📚 Synchronizacja dokumentacji ze stanem faktycznym reguł
+
+- Ponowna regeneracja `JDG/MANIFEST.md` — aktualny stan: **490 plików Rego / 11 855 unikalnych `rule_id` / 444 plików z `matched:true` / 0 duplikatów / Completeness Score 91/100**.
+- Zaktualizowano nieaktualne metryki (472 → 490 plików, 11 808 → 11 855 rule_id, 88/100 → 91/100) w `README.md`, `CHANGELOG.md`, `JDG/README.md`, `JDG/COVERAGE_REPORT.md`, `docs/INDEX.md`, `docs/CHANGELOG.md`, `policies/jdg/README.md` oraz dokumentacji `JDG/docs/`.
+
 ## [v8.0 JDG OPA Enterprise] — 2026-08-22
 
 ### 🎯 Kampania GLM 5.2 — ETAP 06–28 (29/29 raportów WDROZONY_100)
@@ -10,7 +17,7 @@ Silnik reguł podatkowych JDG osiągnął **certyfikację końcową ETAP 28/29**
 
 #### 📦 Artefakty (stan na 2026-08-22)
 
-- **472 pliki Rego** (`JDG/rules/`), **11 808 unikalnych `rule_id`** (426 plików z `matched:true`, 11 811 bloków, 3 duplikaty) — Completeness Score 88/100
+- **472 pliki Rego** (`JDG/rules/`), **11 808 unikalnych `rule_id`** (426 plików z `matched:true`, 11 811 bloków, 3 duplikaty) — Completeness Score 88/100 *(stan 2026-08-22; po 2026-08-30: 490 plików / 11 855 rule_id / 91/100 — patrz MANIFEST.md)*
 - **298 narzędzi Python** (`JDG/tools/`), **198 testów pytest + 207 testów natywnych Rego**
 - **13 migracji** DuckDB RuleStore (001–013), **22 audit-state** (`JDG/bundles/*audit_state.json`)
 - **policies/ mirror zsynchronizowany** (ETAP 26: hash-parity 0% drift) + overlays v2026/v2027
@@ -60,7 +67,7 @@ Silnik reguł podatkowych JDG osiągnął **certyfikację końcową ETAP 28/29**
 #### 🔧 Poprawki i porządki
 
 - Deduplikacja rule_id: 369 → **3** duplikaty; stub detector 487 → 25 (2026-08-12)
-- MANIFEST.md zaktualizowany (2026-08-22): 472 pliki / 11 808 rule_id / 88/100
+- MANIFEST.md zaktualizowany (2026-08-22): 472 pliki / 11 808 rule_id / 88/100 — **ponownie zregenerowany 2026-08-30: 490 pliki / 11 855 rule_id / 91/100**
 - Dokumenty INWENTARYZACJA_PLIKOW.md / KATALOG_REGUL.md / KATALOG_NARZEDZI.md zsynchronizowane ze stanem faktycznym
 
 ---

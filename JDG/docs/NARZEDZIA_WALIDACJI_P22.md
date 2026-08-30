@@ -1,6 +1,7 @@
 # P22 — NARZĘDZIA WALIDACJI I JAKOŚCI (Gwarancja Zero-Defect)
 
-> **📌 Aktualizacja 2026-08-22:** dokument historyczny opisujący wdrożenie promptu GLM 5.2.
+> **📌 Aktualizacja 2026-08-30:** dokument historyczny opisujący wdrożenie promptu GLM 5.2.
+> **Metryki MANIFEST (2026-08-30):** 490 plików / 11 855 rule_id / 444 matched / Completeness 91/100 — patrz [MANIFEST.md](../MANIFEST.md).
 > Raporty źródłowe (`prompty_glm52/`, `raporty_glm52/`, `raporty_jdg_enterprise/`) zostały zarchiwizowane poza repo.
 > Aktualny stan wdrożenia: [`KAMPANIA_GLM52_ETAPY_10_28.md`](KAMPANIA_GLM52_ETAPY_10_28.md) + `JDG/bundles/*audit_state.json` (certyfikacja końcowa ETAP 28/29 — 2026-08-22, 14/14 bramek).
 
@@ -26,7 +27,7 @@ zweryfikowana względem ISAP, żadna wadliwa reguła nie wejdzie do produkcji.
 ### Sekcja 1 — Audyt Manifestu i Pokrycia
 | Reguła | Opis |
 |---|---|
-| `manifest_audit` | generate_manifest.py (11811 bloków, 11808 unikalnych, 3 duplikaty, 472 pliki), Completeness 88/100, pokrycie 100% |
+| `manifest_audit` | generate_manifest.py (11855 bloków, 11855 unikalnych, 0 duplikatów, 490 plików), Completeness 91/100, pokrycie 100% |
 | `ci_gate_rules` (INN-01) | CI-gate na liczbę reguł — blokada deploy przy spadku < 10000 |
 | `real_time_manifest` (INN-02) | Manifest czasu rzeczywistego — auto-regeneracja w pre-commit + CI |
 

@@ -21,13 +21,13 @@
 ## 1. Ogólne
 
 ### Q1.1 Czym jest NexusAI JDG?
-Silnik reguł podatkowych (Policy-as-Code) dla polskich jednoosobowych działalności gospodarczych. Koduje 13 aktów prawnych jako ~11 808 reguł OPA/Rego (472 pliki), które automatycznie ewaluują faktury i podejmują decyzje księgowe. Szczegóły: [README.md](../README.md).
+Silnik reguł podatkowych (Policy-as-Code) dla polskich jednoosobowych działalności gospodarczych. Koduje 13 aktów prawnych jako ~11 855 reguł OPA/Rego (490 plików), które automatycznie ewaluują faktury i podejmują decyzje księgowe. Szczegóły: [README.md](../README.md).
 
 ### Q1.2 Jaki jest status produktu?
 Reguły i API: **PRODUCTION (ENTERPRISE v8.0)**. RuleStore DuckDB: BETA. Testy: BETA. Pełna tabela statusów: [README.md §Status](../README.md).
 
 ### Q1.3 Ile reguł pokrywa system?
-~11 808 unikalnych `rule_id` w 472 plikach Rego (MANIFEST.md, 2026-08-22). Uwaga: `bundles/manifest.json` bywa starszy — aktualizowany przy budowie bundle (`bundle.sh`).
+~11 855 unikalnych `rule_id` w 490 plikach Rego (MANIFEST.md, 2026-08-30). Uwaga: `bundles/manifest.json` bywa starszy — aktualizowany przy budowie bundle (`bundle.sh`).
 
 ### Q1.4 Czy to zastępuje księgowego?
 Nie w pełni. Automatyzuje ~85% transakcji (AUTO_POST), ale ~3–5% wymaga decyzji człowieka (ASK_USER), a doradca/księgowa nadzoruje strategię i obronę przed KAS.

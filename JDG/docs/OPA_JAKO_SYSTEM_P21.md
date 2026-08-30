@@ -1,6 +1,7 @@
 # P21 — OPA JAKO SYSTEM (Bundles, Policies, API, Migracje, Adaptacja do zmian prawa)
 
-> **📌 Aktualizacja 2026-08-22:** dokument historyczny opisujący wdrożenie promptu GLM 5.2.
+> **📌 Aktualizacja 2026-08-30:** dokument historyczny opisujący wdrożenie promptu GLM 5.2.
+> **Metryki MANIFEST (2026-08-30):** 490 plików / 11 855 rule_id / 444 matched / Completeness 91/100 — patrz [MANIFEST.md](../MANIFEST.md).
 > Raporty źródłowe (`prompty_glm52/`, `raporty_glm52/`, `raporty_jdg_enterprise/`) zostały zarchiwizowane poza repo.
 > Aktualny stan wdrożenia: [`KAMPANIA_GLM52_ETAPY_10_28.md`](KAMPANIA_GLM52_ETAPY_10_28.md) + `JDG/bundles/*audit_state.json` (certyfikacja końcowa ETAP 28/29 — 2026-08-22, 14/14 bramek).
 
@@ -27,7 +28,7 @@ zero-downtime, monitoring jakości decyzji.
 ### Sekcja 1 — Audyt Bundles i Deploymentu
 | Reguła | Opis |
 |---|---|
-| `bundle_audit` | bundle.sh (fix R1 — struktura katalogów, zero kolizji nazw), manifest.json (11808 reguł, 472 pliki), podpis SHA256 |
+| `bundle_audit` | bundle.sh (fix R1 — struktura katalogów, zero kolizji nazw), manifest.json (11855 reguł, 490 plików), podpis SHA256 |
 | `canary_deploy` (INN-01) | Kanary 5% ruchu, obserwacja 30 min, zero-downtime, auto-rollback (jakość < 95% lub błąd > 1%) |
 | `shadow_deployment` (INN-02) | Równoległa ewaluacja prod vs shadow, delta werdyktów ≤ 2% |
 | `bundle_signature` (INN-03) | Weryfikacja podpisu bundle (SHA256, manifest_hash, tamper detection) |
@@ -65,7 +66,7 @@ zero-downtime, monitoring jakości decyzji.
 |---|---|---|
 | INN-07 | `legal_adaptation_24h` | Auto-adaptacja do nowelizacji w 24 h (ISAP → reguły → testy → bundle) |
 | INN-08 | `legal_change_simulator` | Symulator wpływu zmiany prawa na portfel decyzji |
-| INN-09 | `rule_registry_api` | Registry reguł z API (/v1/rules, 11 808 reguł, searchable, versioned) |
+| INN-09 | `rule_registry_api` | Registry reguł z API (/v1/rules, 11 855 reguł, searchable, versioned) |
 | INN-10 | `rule_feature_flags` | Feature-flagi dla reguł (shadow mode, kill-switch) |
 | INN-11 | `rule_change_proof` | Blockchainowy proof zmian reguł (hash-chain, jdg_verdict_audit) |
 | INN-12 | `decision_quality_monitor` | Monitoring jakości decyzji (30 dni, jakość < 95% → alert) |
@@ -122,5 +123,5 @@ Brak kolizji ze starym pakietem `jdg.p21_innovations` (v7, 49 reguł — FX/TP/R
 - ✅ pytest P21: **37/37**
 - ✅ regresja P01–P21: **469/469 passed** (432 + 37)
 - ✅ py_compile OK, braces zbalansowane, smoke CLI
-- ✅ pokrycie realne infrastruktury OPA (bundle 472 pliki, policies mirror 546, migracje 13, narzędzia 298)
+- ✅ pokrycie realne infrastruktury OPA (bundle 490 plików, policies mirror 546, migracje 13, narzędzia 298)
 - ✅ Code review (2 rundy, bez blokerów)

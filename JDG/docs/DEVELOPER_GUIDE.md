@@ -11,7 +11,7 @@ Architektura 8-warstwowa "Forteca Niechybnej Śmierci":
 ```
 Warstwa 1 — WALIDACJA WEJŚCIA: schema + semantic_guard + firewall
 Warstwa 2 — EKSTRAKCJA AI: 5 agentów, 4-Eyes, trust score ≥0.92
-Warstwa 3 — REGUŁY KANONICZNE: 472 pliki Rego, 11 808+ reguł (MANIFEST 2026-08-22)
+Warstwa 3 — REGUŁY KANONICZNE: 490 plików Rego, 11 855+ reguł (MANIFEST 2026-08-30)
 Warstwa 4 — TEMPORALNOŚĆ: temporal.rego, valid_from/valid_to
 Warstwa 5 — MULTI-PASS SHARDED ROUTER: ADR-007
 Warstwa 6 — DECYZJA: decision_composer, AUTO_POST/SUGGEST/ASK_USER
@@ -23,7 +23,7 @@ Warstwa 8 — MONITORING: isap_crawler, telemetria, chaos engineering
 
 ```
 JDG/
-├── rules/                  # 472 pliki Rego
+├── rules/                  # 490 plików Rego
 │   ├── uor/                # NOWE Q3 2026: 8 plików jdg.uor.*
 │   ├── pcc/                # NOWE Q3 2026: 4 pliki jdg.pcc.*
 │   ├── local_taxes/        # NOWE Q3 2026: 2 pliki akcyza_*

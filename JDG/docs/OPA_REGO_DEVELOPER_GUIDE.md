@@ -2,7 +2,7 @@
 
 > **Status:** v8.3 | **Data:** 2026-08-02 (aktualizacja: 2026-08-22)
 > **Przewodnik po konwencjach, strukturze i workflow dla deweloperów reguł Rego w NexusAI JDG**
-> **Stan reguł:** 472 pliki / ~11 808 rule_id / 88/100 Completeness (MANIFEST 2026-08-22)
+> **Stan reguł:** 490 plików / ~11 855 rule_id / 91/100 Completeness (MANIFEST 2026-08-30)
 
 ---
 

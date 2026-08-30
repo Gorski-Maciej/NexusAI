@@ -38,7 +38,7 @@ Wizja V2 powstała z trzech źródeł:
 
 **Główne luki (za ANALIZA_STANU):**
 - **L1:** brak realnego control plane (podpis, delta, kanary jako infrastruktura — dziś głównie reguły audytujące);
-- **L2 (rozwiązane 2026-08-22):** niespójne metryki między dokumentami (439 vs 383 vs 176 plików; 11 452 vs 10 878 rule_id) — brak autorytatywnego rejestru; obecnie spójne: 472 pliki / 11 808 rule_id (MANIFEST regenerowany);
+- **L2 (rozwiązane 2026-08-30):** niespójne metryki między dokumentami (439 vs 383 vs 176 plików; 11 452 vs 10 878 rule_id) — brak autorytatywnego rejestru; obecnie spójne: 490 plików / 11 855 rule_id (MANIFEST regenerowany);
 - **L3 (rozwiązane 2026-08-22):** 369 duplikatów / 512 stubów — brak automatycznej blokady; obecnie 3 duplikaty / 25 stubów, blokada CI aktywna (dead_rule_detector, tautology_guard);
 - **L4:** zero-hardcode tylko ~60%;
 - **L6/L8/L9:** brak DR/BCP, modelu ról operatorów, łańcucha traceability;
@@ -264,7 +264,7 @@ V1 opisała control plane; V2 **konkretyzuje go w mechanizmach OPA** (z research
 | **Progressive delivery** | canary 5% → shadow-compare → ramped 25/50/100 → soak 24 h → auto-rollback ≤ 5 min | orchestrator rolloutów (nie reguła!) |
 | **Policy Registry API** | `/v1/rules` — katalog, wersje, metadane, owner, status; searchable; podpięty do rule_registry.json | rozbudowa `rule_lifecycle_manager.py` do usługi |
 
-**Manifest 2.0 (rozwiązanie L2):** jeden autorytatywny manifest (reguły, rule_id, testy, parametry, węzły LKG, metryki), regenerowany w CI; każda rozbieżność między dokumentami/artefaktami = **blokada CI** (nie alert). To usuwa klasę problemów „439 vs 383 vs 176" — aktualny stan: 472 pliki / 11 808 rule_id (MANIFEST 2026-08-22).
+**Manifest 2.0 (rozwiązanie L2):** jeden autorytatywny manifest (reguły, rule_id, testy, parametry, węzły LKG, metryki), regenerowany w CI; każda rozbieżność między dokumentami/artefaktami = **blokada CI** (nie alert). To usuwa klasę problemów „439 vs 383 vs 176" — aktualny stan: 490 plików / 11 855 rule_id (MANIFEST 2026-08-30).
 
 ---
 

@@ -178,7 +178,7 @@ temporal_validity := {
 | Metryka | Definicja | Wartość (2026-08-22) |
 |---------|-----------|----------------------|
 | **M1: Bloki matched:true** | Liczba wystąpień `"matched": true` we wszystkich plikach Rego | **11 811** |
-| **M2: Unikalne rule_id** | Liczba unikalnych identyfikatorów reguł (dedup) | **11 808** |
+| **M2: Unikalne rule_id** | Liczba unikalnych identyfikatorów reguł (dedup) | **11 855** |
 | **M3: Punkty Doc 50** | Liczba punktów prawnych z Doc 50 zmapowanych na rule_id | 29/29 raportów GLM52 WDROZONY_100 |
 
 **Źródło jednej prawdy:** MANIFEST.md (auto-generowany przez generate_manifest.py v8.0)
