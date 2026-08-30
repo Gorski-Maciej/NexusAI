@@ -1,0 +1,94 @@
+================================================================
+PROMPT AD-12 — TEMPORALNOŚĆ, THRESHOLDS, CORE GUARDS I INVARIANTS (HARDENING)
+================================================================
+
+Jesteś ekspertem temporalnych systemów prawnych, control plane OPA i inżynierem
+niezawodności klasy Enterprise. Przeprować głębokie myślenie. Przeprować głęboką
+analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne
+ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować
+głęboką analizę dat, odstępów czasowych, luki wiodące, hot reload i invariancy.
+Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których
+brakuje.
+
+ZADANIE — WZUOCODNIJ TEMPORALNOŚĆ I INVARIANTS OPA
+1. Temporalność reguł (valid_from/valid_to): algebra interwałów, brak luk/nakładek,
+   time-travel, snapshots (bundle, rule, threshold, legal node).
+2. Thresholds/data.jdg: progi/stawki/limity jako dane, walidacja zakresów, hot reload.
+3. Core Guards (INV-001..042): preconditions, postconditions, fail-closed,
+   degradacja, early abort.
+4. `temporal_drift_detector`, `limit_2m_monitor`, `limitations_calendar`, admin rule
+   lifecycle (SHADOW/CANDIDATE/ACTIVE/ROLLED_BACK, add/change/retire/purge).
+5. SLO/SLA adaptacji do zmian prawa i alarmy o stale/drift.
+6. Retroaktywność, przepisy przejściowe, niepewne daty.
+7. Polecenia dzienne graniczne: day-1, day-0, day+1; rok przestępny; strefy czasowe.
+Przeprować głębokie myślenie nad gwarancją: ta sama transakcja liczona ponownie z
+tym samym snapshotem da IDENTYCZNY wynik (determinizm temporalny).
+
+PLIKI DO ODCZYTU — TYLKO TE LINKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/RULE_LIFECYCLE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/thresholds_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/temporal.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/rule_lifecycle_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/core_guards_temporal_thresholds.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/runtime_invariants_check.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/limitations_calendar.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/limit_2m_monitor.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/rule_lifecycle_manager.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/temporal_drift_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/limit_2m_monitor.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/invariant_checker.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/007_jdg_v12_control_plane_lifecycle.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/009_jdg_v14_core_guards.sql
+
+W RAPORCIE MUSZĄ BYĆ
+1. Algebra interwałów i dowód braku luk/nakładek w wersjach reguł/progów.
+2. Model snapshotu i gwarancja determinizmu temporalnego (dowód).
+3. Audyt invariantów: pre/post, fail-closed, kill-switch, degradacja.
+4. Macierz dat: transaction/evaluation/effective/publication/knowledge.
+5. SLO/SLA i alarmy stale/drift + procedury rollback.
+6. Kod Rego (sekcja KOD) + testy dla toastów day-1/day-0/day+1, leap-year, timezone.
+7. Procedura zmiany prawa z 4-eyes, canary, shadow i rollback (kontrakt AD-16).
+8. Minimum 25 innowacyjnych rozwiązań Enterprise dla temporalności i slawingu.
+
+Powtarzane wymagania nadrzędne: Przeprować głębokie myślenie. Przeprować głęboką
+analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia
+wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej
+elementów i struktur których brakuje.
+
+
+POWTARZANE WYMAGANIA NADRZĘDNE — MUSZĄ być respektowane w CAŁYM raporcie:
+- Przeprować głębokie myślenie. Przeprować głęboką analizę.
+- Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów.
+- Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+- Przeprować głębokie myślenie i przeprować głęboką analizę przy każdej decyzji.
+- Zaawansowany poziom Enterprise i poziom ENTERPRISE są celem każdej rekomendacji.
+- Innowacyjne ulepszenia wyprzedzające profesjonalistów oraz wdrożenie największej liczby braków i elementów oraz struktur których brakuje są nadrzędne.
+- Przeprować głębokie myślenie i przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+- Przeprować głębokie myślenie i przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+BUDŻET KONTEKSTU:
+Do GLM przekazujesz WYŁĄCZNIE linki z sekcji PLIKI DO ODCZYTU oraz niezbędne krótkie
+raporty poprzednich części. Materiały wejściowe nie mogą przekroczyć 50% okna
+kontekstowego GLM. Nie wklejaj całego repozytorium. Jeżeli wskazane pliki są zbyt
+duże, analizuj je partiami według sekcji, a nie pomijaj treści. Podczas pracy
+zachowuj rezerwę kontekstu na analizę i sadzę rozwiązań.
+
+GENERUJ INTELIGENTNY KOD
+W sekcji KOD DO WDROŻENIA dostarcz reguły Rego, testy property/metamorphic/
+golden oraz procedury rollback. Oznacz `GLM52-AD12-*`. Nie modyfikuj plików —
+kod do przeglądu.
+
+================================================================
+MANDATORY RE-ITERATION (WPISY NADRZĄDNE — BEZWZGLĘDNIE OBOWIĄZKOWE)
+Nadrzędny imperatyw całego raportu (powielony dla pewności):
+1. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+2. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+3. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+4. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+Powtórzenia są celowe: każda z wymaganych fraz MUSI wystąpić co najmniej 4 razy w tym raporcie.
+
+NA KOŃCU: przekaż kontrakt temporalny dla AD-13 i AD-16, zapisz założenia snapshotu
+i wyczyść okno kontekstowe.

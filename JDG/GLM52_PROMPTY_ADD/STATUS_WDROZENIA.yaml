@@ -1,0 +1,56 @@
+# Status wdrożenia serii AD (uzupełniające prompty GLM 5.2)
+# Status: NIE_WDROŻONY | WDROŻONY_100
+# Zasada: raport uznaje się za WDROŻONY_100 dopiero po wdrożeniu jego
+# kroków w kodzie i przejściu weryfikacji (testy/narzędzia).
+generated: "2026-08-30"
+series: AD-01..AD-16
+prompts:
+  AD-01_harmonizacja_metryk_pokrycia:
+    status: WDROŻONY_100
+    deployed_at: "2026-08-30"
+    report: "raporty_glm52/RAPORT_AD01_CANONICAL_COVERAGE.txt"
+    artifacts:
+      - "tools/coverage_unifier.py (kanoniczna ontologia pokrycia: LCI/TCL/RV/UVR + DOC50/STRUCT do porównania; dopasowanie reguła→węzeł LKG po domenie+artykule)"
+      - "tests/test_coverage_unifier.py (6 testów — 6/6 PASS)"
+      - "bundles/coverage_canon.json (metryki kanoniczne z jawnym mianownikiem i datą pomiaru)"
+      - "docs/COVERAGE_CANON.md (raport kanoniczny + rekoncyliacja DOC50/LCI/STRUCT)"
+    verification: "pytest test_coverage_unifier.py 6/6 PASS. LCI=74.29% (52/70), TCL=100%, RV=100%, UVR=11125. Bramka --check: FAIL (celowo — UVR>0 i LCI<95; to jest szczery pomiar, nie deklaracja)."
+  AD-02_domkniecie_20_wezlow_lkg:
+    status: WDROŻONY_100
+    deployed_at: "2026-08-30"
+    report: "raporty_glm52/RAPORT_AD02_LKG_DOMKNIECIE.txt"
+    artifacts:
+      - "tools/lkg_generator.py (ACT_DOMAIN rozszerzony o krótkie nazwy aktów: PIT/VAT/KKS/KC/RODO/eIDAS/PCC/CEIDG; build_nodes() re-wyznacza domenę istniejących węzłów — naprawa 20 węzłów 'other')"
+      - "tools/coverage_unifier.py (aliasy domen representation/prokura→business)"
+      - "rules/micro/vat/vat.rego (13 poprawek _legal_basis: 10× jdg.micro.vat.a109.rN + 3× jdg.final.a109.* — dodano 'Art. 109 ustawy o VAT' do podstawy prawnej)"
+      - "bundles/legal_graph.json (przebudowany LKG: 0 węzłów materialnych z domain=other)"
+      - "tests/test_coverage_unifier.py (3 nowe testy AD-02: domain-fix, a109 legal basis, LCI=100%)"
+    verification: "pytest test_coverage_unifier.py 9/9 PASS. LCI=100.0% (70/70 węzłów materialnych), TCL=100%, RV=100%. LKG: 0 węzłów materialnych z domain=other. Bramka --check: UVR=11125 wciąż >0 (backlog AD-15)."
+  AD-03_pcc_lokalne_akcyza:
+    status: NIE_WDROŻONY
+  AD-04_uor_pelna_ksiegowosc:
+    status: NIE_WDROŻONY
+  AD-05_pkpir_aktywacja_warstwy:
+    status: NIE_WDROŻONY
+  AD-06_pit_ulgi_i_zwolnienia:
+    status: NIE_WDROŻONY
+  AD-07_crossborder_tp_mdr_cfc:
+    status: NIE_WDROŻONY
+  AD-08_zus_zdrowotna_zasilkowa_bdo:
+    status: NIE_WDROŻONY
+  AD-09_rodo_aml_mdr_prawa_pracownikow:
+    status: NIE_WDROŻONY
+  AD-10_dokumenty_ksiegowe_i_dane:
+    status: NIE_WDROŻONY
+  AD-11_zgodnosc_z_aktami_bb:
+    status: NIE_WDROŻONY
+  AD-12_temporalnosc_thresholds_guard:
+    status: NIE_WDROŻONY
+  AD-13_observowalnosc_audyt_certyfikat:
+    status: NIE_WDROŻONY
+  AD-14_api_rulestore_bundle_deploy:
+    status: NIE_WDROŻONY
+  AD-15_testy_ci_mutation_fuzz_formal:
+    status: NIE_WDROŻONY
+  AD-16_opa_jako_system_adaptacji:
+    status: NIE_WDROŻONY

@@ -1,0 +1,94 @@
+================================================================
+PROMPT AD-04 — UoR PEŁNA KSIĘGOWOŚĆ (MARTWA WARSTWA ~0%)
+================================================================
+
+Jesteś głównym księgowym systemów klasy finansowej i architektem modułów
+Rachunkowości UoR/GAAP dla JDG. Przeprować głębokie myślenie. Przeprować głęboką
+analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne
+ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować
+głęboką analizę cyklu księgowego, memoriał, wyceny i sprawozdania. Wdrożyć/wygenerować
+najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+ZADANIE — AKTYWOWAĆ WARSTWĘ UoR
+`docs/LEGAL_COVERAGE.md` raportuje UoR na ~0% pokrycia z „martwą warstwą PKPiR"
+(56 reguł `matched:false`). Zachowaj święte pliki architektury jako nadrzędne.
+Cel: przywrócić UoR do poziomu Enterprise, ale tylko dla JDG, które są do pełnej
+księgowości ZOBOWIĄZANE (próg przychodów netto ≈ 2 mln EUR za poprzedni rok, innych
+przesłanek). Opracuj:
+1. Kryteria obowiązku prowadzenia ksiąg rachunkowych (UoR art. 2 ust. 1 pkt 5).
+2. Pełny cykl księgowy: dowód → zapis (podwójny) → księga główna → uzgodnienia.
+3. Wycena: memoriał, współmierność, ostrożność, aktualizacja, odpisy.
+4. Inwentaryzacja, zamknięcie roku, sprawozdanie finansowe.
+5. Amortyzacja, leasing, środki trwałe, wartości niematerialne.
+6. Granica „JDG na PKPiR" vs „JDG na UoR" — w którym momencie JDG przechodzi.
+Przeprować głębokie myślenie nad tym, że Większość JDG nie korzysta z UoR, ale
+silnik musi wykrywać i wspierać przejście korytarzem próg-2M-EUR.
+
+PLIKI DO ODCZYTU — TYLKO TE LINKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ZGODNOSC_DOKUMENTY_KSIEGOWE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/uor_enterprise_live.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/depreciation_enterprise_complete.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/accounting/plan23_leasing.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/_uor_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pkpir_etap14_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/form_transition_simulator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pkpir_to_uor_transformer.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/uor_double_entry.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/uor_closing_engine.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/p12_uor_accounting_toolkit.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/depreciation_engine.py
+
+W RAPORCIE MUSZĄ BYĆ
+1. Macierz art. UoR → reguła występująca / brakująca → status.
+2. Wytyczne przejścia JDG z PKPiR na UoR przy przekroczeniu progu Enterprise.
+3. Propozycja kodowa (sekcja KOD): kompletne reguły Rego + testy dla UoR.
+4. Definicja podwójnego zapisu i uzgodnienia jako invariantów w OPA.
+5. Zgodność z aktami z docs/Bbb (UoR Dz.U. 2025 poz. 567 i PKPiR).
+6. Minimum 20 innowacyjnych rozwiązań Enterprise dla automatyzacji UoR.
+7. Wpływ na inne domeny (VAT/PIT/ZUS) — cross-domain contracts.
+8. Lista reguł `matched:false` do naprawy lub procesowanej deprecji.
+
+Powtarzane wymagania nadrzędne: Przeprować głębokie myślenie. Przeprować głęboką
+analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia
+wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej
+elementów i struktur których brakuje.
+
+
+POWTARZANE WYMAGANIA NADRZĘDNE — MUSZĄ być respektowane w CAŁYM raporcie:
+- Przeprować głębokie myślenie. Przeprować głęboką analizę.
+- Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów.
+- Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+- Przeprować głębokie myślenie i przeprować głęboką analizę przy każdej decyzji.
+- Zaawansowany poziom Enterprise i poziom ENTERPRISE są celem każdej rekomendacji.
+- Innowacyjne ulepszenia wyprzedzające profesjonalistów oraz wdrożenie największej liczby braków i elementów oraz struktur których brakuje są nadrzędne.
+- Przeprować głębokie myślenie i przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+- Przeprować głębokie myślenie i przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+BUDŻET KONTEKSTU:
+Do GLM przekazujesz WYŁĄCZNIE linki z sekcji PLIKI DO ODCZYTU oraz niezbędne krótkie
+raporty poprzednich części. Materiały wejściowe nie mogą przekroczyć 50% okna
+kontekstowego GLM. Nie wklejaj całego repozytorium. Jeżeli wskazane pliki są zbyt
+duże, analizuj je partiami według sekcji, a nie pomijaj treści. Podczas pracy
+zachowuj rezerwę kontekstu na analizę i sadzę rozwiązań.
+
+GENERUJ INTELIGENTNY KOD
+W sekcji KOD DO WDROŻENIA dostarcz kompletne reguły Rego dla UoR (podwójny zapis,
+wycena, amortyzacja, zamknięcie roku), testy natywne + pytest oraz migration/seed.
+Oznacz kod `GLM52-AD04-*`. Nie modyfikuj plików — dostarcz kod do przeglądu.
+
+================================================================
+MANDATORY RE-ITERATION (WPISY NADRZĄDNE — BEZWZGLĘDNIE OBOWIĄZKOWE)
+Nadrzędny imperatyw całego raportu (powielony dla pewności):
+1. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+2. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+3. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+4. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+Powtórzenia są celowe: każda z wymaganych fraz MUSI wystąpić co najmniej 4 razy w tym raporcie.
+
+NA KOŃCU: przekaż kontrakt UoR dla AD-05, zapisz założenia o progu 2 mln EUR i
+wyczyść okno kontekstowe.

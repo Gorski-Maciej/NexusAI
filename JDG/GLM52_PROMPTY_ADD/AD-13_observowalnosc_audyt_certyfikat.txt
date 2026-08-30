@@ -1,0 +1,87 @@
+================================================================
+PROMPT AD-13 — OBSERWOWALNOŚĆ, AUDYT, CERTYFIKATY I PROVENANCE (DOWODOWY SYSTEM)
+================================================================
+
+Jesteś architektem systemów audytowalnych klasy Enterprise i inżynierem
+obserwowalności dla silnika podatkowego OPA. Przeprować głębokie myślenie.
+Przeprować głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom
+ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprować
+głębokie myślenie i przeprować głęboką analizę niezmiennego audytu, Merkle,
+certyfikatów decyzji i pełnego provenance. Wdrożyć/wygenerować najwięcej braków i
+jak najwięcej elementów i struktur których brakuje.
+
+ZADANIE — NIEZAWODNY I DOWODOWY SYSTEM DECYZYJNY
+1. Niezmienny audit trail: input_hash, merkle_root, ecdsa_signature, time-travel.
+2. Provenance: pełne drzewo pakietów/reguł/warunków/podstaw prawnych dla każdego
+   werdyktu (kontrakt AD-02).
+3. Certyfikaty decyzji (F4): klasy pewności, pieczęć SHA-256 → Merkle, weryfikacja.
+4. Instrumenty: decision_certificate, verify_verdict_invariants, blockchain_audit_trail.
+5. Obserwowalność: werdykty, latencja, shard routing, liczba reguł, błędy, DR.
+6. Powiązanie z API (audyt GET /jdg/audit), raporty, eksport.
+7. Zgodność z RODO / retencją i wymogiem dokumentacji księgowej.
+Przeprować głębokie myślenie o tym, czy certyfikat decyzji jest WERYFIKOWALNY
+przez KAS i czy system spełnia wymagania dowodowe dla historycznych werdyktów.
+
+PLIKI DO ODCZYTU — TYLKO TE LINKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/main_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/provenance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/decision_certificate.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/audit_defense_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/decision_scoring_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/decision_certificate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/verify_verdict_invariants.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/blockchain_audit_trail.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/confidence_dashboard.py
+
+W RAPORCIE MUSZĄ BYĆ
+1. Model danych audytu i provenience (schemat, pola, przechowywanie).
+2. Protokół weryfikacji certyfikatu decyzji (kroki, algorytm Merkle).
+3. Specyfikacja niezmienności: co dokładnie jest podpisywane i jak się weryfikuje.
+4. Testy sprawdzające: odtworzenie historycznego werdyktu, manipulacja → wykrycie.
+5. Obserwowalność: definicja metryk, alarmów, dashboardów, DR i błędów.
+6. Kod (sekcja KOD): reguły Rego + narzędzia weryfikacji + testy.
+7. Minimum 20 innowacyjnych rozwiązań Enterprise (blokchainowy dowód, audyt dla KAS).
+8. Lista warunków, przy których nigdy nie można uznać rekordu za zgodny bez weryfikacji.
+
+Powtarzane wymagania nadrzędne: Przeprować głębokie myślenie. Przeprować głęboką
+analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia
+wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej
+elementów i struktur których brakuje.
+
+
+POWTARZANE WYMAGANIA NADRZĘDNE — MUSZĄ być respektowane w CAŁYM raporcie:
+- Przeprować głębokie myślenie. Przeprować głęboką analizę.
+- Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów.
+- Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+- Przeprować głębokie myślenie i przeprować głęboką analizę przy każdej decyzji.
+- Zaawansowany poziom Enterprise i poziom ENTERPRISE są celem każdej rekomendacji.
+- Innowacyjne ulepszenia wyprzedzające profesjonalistów oraz wdrożenie największej liczby braków i elementów oraz struktur których brakuje są nadrzędne.
+- Przeprować głębokie myślenie i przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+- Przeprować głębokie myślenie i przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+BUDŻET KONTEKSTU:
+Do GLM przekazujesz WYŁĄCZNIE linki z sekcji PLIKI DO ODCZYTU oraz niezbędne krótkie
+raporty poprzednich części. Materiały wejściowe nie mogą przekroczyć 50% okna
+kontekstowego GLM. Nie wklejaj całego repozytorium. Jeżeli wskazane pliki są zbyt
+duże, analizuj je partiami według sekcji, a nie pomijaj treści. Podczas pracy
+zachowuj rezerwę kontekstu na analizę i sadzę rozwiązań.
+
+GENERUJ INTELIGENTNY KOD
+W sekcji KOD DO WDROŻENIA dostarcz reguły Rego, protokoły certyfikacyjne, narzędzia
+weryfikacji i testy. Oznacz `GLM52-AD13-*`. Nie modyfikuj plików — kod do przeglądu.
+
+================================================================
+MANDATORY RE-ITERATION (WPISY NADRZĄDNE — BEZWZGLĘDNIE OBOWIĄZKOWE)
+Nadrzędny imperatyw całego raportu (powielony dla pewności):
+1. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+2. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+3. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+4. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+Powtórzenia są celowe: każda z wymaganych fraz MUSI wystąpić co najmniej 4 razy w tym raporcie.
+
+NA KOŃCU: przekaż kontrakt audytu dla AD-14 (API) i AD-15 (testy), zapisz założenia
+merkle/niezmienności i wyczyść okno kontekstowe.

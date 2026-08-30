@@ -1,0 +1,81 @@
+================================================================
+RAPORT WDROŻENIOWY — AD-02: DOMKNIĘCIE WĘZŁÓW LKG BEZ REGUŁY
+(REVERSE COVERAGE → LCI 100%)
+================================================================
+Status: WDROŻONY_100 (2026-08-30)
+Dowód: tests/test_coverage_unifier.py — 9/9 PASS
+Metryki: LCI 100,0% (70/70) · TCL 100% · RV 100% · UVR 11 125
+
+1. DIAGNOZA (co naprawdę było luką)
+-----------------------------------
+LEGAL_COVERAGE_GAP_RAPORT.md wymieniał 20 węzłów LKG „bez reguły":
+  • VAT: 96b, 99, 109 (Biała Lista, JPK_VAT, ewidencja VAT),
+  • PIT: art. 21.1.148/152/153/154, 26, 26e, 26eb, 26ec, 26gb, 26h,
+    30ca, 24a, 44, 45,
+  • PP: art. 18 (prokura), Ordynacja art. 16–193a.
+
+Głęboka analiza wykazała, że NIE była to luka reguł, lecz luka DANYCH:
+  1) LKG (legal_graph.json) nadawał węzłom 'PIT, art. 26e', 'Ustawa o VAT,
+     art. 99' domenę "other" — ACT_DOMAIN w lkg_generator.py nie znał
+     krótkich nazw aktów. Reguły istnieją, ale nie mogły być dopasowane.
+  2) Reguły jdg.micro.vat.a109.* (ewidencja VAT — art. 109) miały w
+     _legal_basis tylko "Ustawa o VAT z 11.03.2004..." — bez artykułu,
+     więc traceability węzeł→reguła nie działała. Trzy reguły
+     jdg.final.a109.* miały podstawę "przepisy końcowe" (błędną).
+  3) Reguły jdg.representation.* (prokura — art. 18 PP) nie były mapowane
+     na domenę business.
+
+2. WDROŻONE POPRAWKI
+---------------------
+  A. tools/lkg_generator.py
+     - ACT_DOMAIN rozszerzony o krótkie nazwy aktów: "ustawa o pit",
+       "pit, art.", "ustawa o vat", "vat, art.", "kodeks karny skarbowy",
+       "kodeks cywilny", "2016/679" (RODO), "910/2014" (eIDAS),
+       "doręczeniach elektronicznych", "informatyzacji działalności",
+       "podatku od czynności cywilnoprawnych", "centralnej ewidencji",
+       "działalności gospodarczej", "sukcesyjnym przedsiębiorstwem" itd.
+     - build_nodes() re-wyznacza domenę ISTNIEJĄCYCH węzłów (idempotentnie)
+       — naprawa historycznych węzłów "other".
+  B. tools/coverage_unifier.py
+     - aliasy domen reguł: representation/prokura → business.
+  C. rules/micro/vat/vat.rego — 13 chirurgicznych poprawek _legal_basis:
+     - 10× jdg.micro.vat.a109.rN: dodano "Art. 109 ustawy o VAT ... —
+       ewidencja VAT (rejestry sprzedaży i zakupów)",
+     - 3× jdg.final.a109.*: błędne "przepisy końcowe" → "Art. 109 ustawy
+       o VAT (ewidencja VAT)".
+  D. bundles/legal_graph.json — przebudowany: 0 węzłów materialnych
+     z domain=other; rozkład domen: pit 51, vat 30, rodo 22, business 21,
+     ordpu 21, zus 17, uor 16, kks 14, edelivery 10, ksef 10, excise 9,
+     construction 7, aml 6, bdo 6, pkpir 5, kk 4, pcc 4, kc 3, local 2.
+  E. tests/test_coverage_unifier.py — 3 nowe testy AD-02:
+     - test_ad02_lkg_domain_fix (węzły PIT/VAT/KKS nie są "other"),
+     - test_ad02_vat_a109_legal_basis (traceability art. 109),
+     - test_ad02_lci_closure_100 (LCI = 100%, 70/70).
+
+3. WYNIK
+--------
+  LCI  74,29%  →  100,0%   (52/70 → 70/70 węzłów materialnych)
+  LKG  "other" w węzłach materialnych: 20 → 0
+  Rozjazd metryk (8% / 71% / 91) rozwiązany w AD-01; AD-02 domknął luki
+  danych, przez które LCI zaniżało rzeczywisty stan.
+
+4. SZCZEROŚĆ (co pozostało — nie deklaracja)
+---------------------------------------------
+  • UVR = 11 125 — reguły dowodne bez natywnego testu Rego o tym samym
+    rule_id. To REALNY backlog dla AD-15 (testy natywne).
+  • Węzły niematerialne z domain=other (np. ACT-nodes RODO/KC/KK) są
+    świadomym wyborem — nie są liczone w LCI.
+  • Reguły jdg.final.a109.* pozostają punktami kontrolnymi z ostrzeżeniem
+    "[MICRO] ... wymaga walidacji z ISAP" — poprawa podstawy prawnej NIE
+    zmienia ich statusu merytorycznego.
+
+5. KONTRAKTY Z INNYMI CZĘŚCIAMI
+-------------------------------
+  • AD-01: coverage_canon.json zaktualizowany (LCI 100%).
+  • AD-03 (PCC/lokalne/akcyza): domena pcc 4 węzły, excise 9, local 2,
+    construction 7 — wejście do domknięcia reguł.
+  • AD-09 (RODO/AML): domena rodo 22 węzły, aml 6 — wejście.
+  • AD-15: UVR 11 125 jako backlog natywnych testów Rego.
+================================================================
+KONIEC RAPORTU AD-02 — WYCZYŚĆ OKNO KONTEKSTOWE przed AD-03.
+================================================================

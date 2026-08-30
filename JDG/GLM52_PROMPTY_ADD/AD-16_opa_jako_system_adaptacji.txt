@@ -1,0 +1,110 @@
+================================================================
+PROMPT AD-16 — OPA JAKO ADAPTACYJNY SYSTEM (REGUŁY ŻYJĄCEJ, ZMIENNEJ PRAWIWOŚCI)
+================================================================
+
+Jesteś głównym architektem systemu OPA jako żywego, samoadaptującego się systemu
+reguł podatkowych klasy Enterprise oraz liderem integracji wszystkich poprzednich
+części. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zapewnij
+zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia
+wyprzedzające profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką
+analizę wymogu "OPA musi być rozbudowanym SYSTEMEM, bo prawo jest zmienne" oraz
+sieci inteligentnych zależności już od jednej reguły. Wdrożyć/wygenerować najwięcej
+braków i jak najwięcej elementów i struktur których brakuje.
+
+ZADANIE — SILNIK, KTÓRY SZYBKO I PROFESJONALNIE ADAPTUJE SIĘ DO ZMIAN PRAWA
+To jest finalny, integracyjny prompt serii AD. Jego celem jest sklejenie wniosków
+AD-01..AD-15 w spójny projekt SYSTEMU (nie zbioru reguł), zgodny ze świętymi plikami
+ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md i WIZJA_OPA_ENTERPRISE_V2.md:
+1. Control Plane: cykl życia reguł (SHADOW/CANDIDATE/ACTIVE/ROLLED_BACK,
+   add/change/retire/purge) — zmiana reguły ma być prosta i niezawodna.
+2. Adaptacja do zmian prawa: ISAP crawler → analiza wpływu → shadow → canary →
+   aktywacja z 4-eyes i pełnym audytem (kontrakt AD-11, AD-12).
+3. Sieć zależności: każda reguła deklaruje legal_basis, zależności domenowe i
+   niezmienniki; OPA wykrywa konflikty cross-domain i luki (kontrakt AD-01, AD-02).
+4. Automatyzacja księgowości JDG do granic możliwości przy zachowaniu fail-closed
+   i polityki pewności (AUTO_POST tylko po bramkach — kontrakt AD-10).
+5. Samomatoweryzacja: jak system sam wykrywa, że reguła staje się nieaktualna
+   (legislative monitor, law radar, temporal drift) i proponuje aktualizację.
+6. Spójność dokumentacji/kodu/manifest — JDG/rules jako źródło prawdy, spójny
+   z policies/ i bundle, zero drift (kontrakt AD-01, AD-14).
+7. Dalsza droga: co wdrożyć w serii AD, a co do przeglądu eksperckiego przed
+   produkcją (jak uniknąć deklaracji "100% zgodności" bez dowodu).
+
+PLIKI DO ODCZYTU — TYLKO TE LINKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/RULE_LIFECYCLE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/CONTROL_PLANE_RULE_LIFECYCLE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/main_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/rule_lifecycle_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/legislative_monitor_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/law_radar.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/legislative_impact_analyzer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/self_healing_engine.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conflicts.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/isap_crawler.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/isap_rule_update_pipeline.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/law_radar.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/law_amendment_simulator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/control_plane_lifecycle.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/self_healing_engine.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/007_jdg_v12_control_plane_lifecycle.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/unified_plan_v8.yaml
+
+W RAPORCIE MUSZĄ BYĆ
+1. Architektura SYSTEMU: warstwy control plane, adaptacji, sieci zależności, pewności.
+2. Pełny cykl życia reguły od wykrycia zmiany prawa do wdrożenia (kroki + bramki).
+3. Definicja samomatometrażu i samoleczenia (jak system wykrywa nieaktualne reguły).
+4. Sieć zależności `legal_basis`→reguły, wykrywanie konfliktów i luk (panic → fail-closed).
+5. Plan integracji wszystkich AD-01..AD-15 z priorytetem i zależnościami.
+6. Kryteria gotowości produkcyjnej (lista bramek, których spełnienie jest konieczne,
+   zanim można nazwać system Production — bez "samego" 91/100).
+7. Kod (sekcja KOD): szkic reguł/systemu adaptacji + testy.
+8. Minimum 30 innowacyjnych rozwiązań Enterprise i roadmapa 6-12 miesięcy.
+9. Podsumowanie "Ufortyfikowana twierdza niechybnej Śmierci" — jak system staje się
+   odporny na wszelkie braki, błędy i niedopatrzenia, reprezentując wyłącznie
+   precyzję, profesjonalizm i zero nieporozumień.
+
+Powtarzane wymagania nadrzędne: Przeprować głębokie myślenie. Przeprować głęboką
+analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia
+wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej
+elementów i struktur których brakuje.
+
+
+POWTARZANE WYMAGANIA NADRZĘDNE — MUSZĄ być respektowane w CAŁYM raporcie:
+- Przeprować głębokie myślenie. Przeprować głęboką analizę.
+- Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów.
+- Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+- Przeprować głębokie myślenie i przeprować głęboką analizę przy każdej decyzji.
+- Zaawansowany poziom Enterprise i poziom ENTERPRISE są celem każdej rekomendacji.
+- Innowacyjne ulepszenia wyprzedzające profesjonalistów oraz wdrożenie największej liczby braków i elementów oraz struktur których brakuje są nadrzędne.
+- Przeprować głębokie myślenie i przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+- Przeprować głębokie myślenie i przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+BUDŻET KONTEKSTU:
+Do GLM przekazujesz WYŁĄCZNIE linki z sekcji PLIKI DO ODCZYTU oraz niezbędne krótkie
+raporty poprzednich części. Materiały wejściowe nie mogą przekroczyć 50% okna
+kontekstowego GLM. Nie wklejaj całego repozytorium. Jeżeli wskazane pliki są zbyt
+duże, analizuj je partiami według sekcji, a nie pomijaj treści. Podczas pracy
+zachowuj rezerwę kontekstu na analizę i sadzę rozwiązań.
+
+GENERUJ INTELIGENTNY KOD
+W sekcji KOD DO WDROŻENIA dostarcz szkic architektury adaptacyjnego SYSTEMU OPA,
+reguły control plane, narzędzia adaptacji, testy i procedury. Oznacz
+`GLM52-AD16-*`. Nie modyfikuj plików — kod do przeglądu.
+
+================================================================
+MANDATORY RE-ITERATION (WPISY NADRZĄDNE — BEZWZGLĘDNIE OBOWIĄZKOWE)
+Nadrzędny imperatyw całego raportu (powielony dla pewności):
+1. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+2. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+3. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+4. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+Powtórzenia są celowe: każda z wymaganych fraz MUSI wystąpić co najmniej 4 razy w tym raporcie.
+
+NA KOŃCU: podsumuj całą serię AD-01..AD-16, wskaż spójne rekomendacje, które
+razem tworzą plan wzmocnienia modułu JDG do zaawansowanego poziomu Enterprise,
+a następnie wyczyść okno kontekstowe i przygotuj się do wdrożenia uzgodnionych
+zmian w kolejnych iteracjach.

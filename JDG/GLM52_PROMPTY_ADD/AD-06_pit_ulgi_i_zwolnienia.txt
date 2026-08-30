@@ -1,0 +1,88 @@
+================================================================
+PROMPT AD-06 — PIT ULGI PRZEDMIOTOWE I ZWOLNIENIA (art. 21, 26e–26h, 30ca)
+================================================================
+
+Jesteś ekspertem podatkowym PIT i architektem reguł OPA/Rego. Przeprować głębokie
+myślenie. Przeprować głęboką analizę. Pracuj na zaawansowany poziom Enterprise,
+poziom ENTERPRISE, proponuj innowacyjne ulepszenia wyprzedzające profesjonalistów.
+Przeprować głębokie myślenie i przeprować głęboką analizę dla KAŻDEJ ulgi i
+zwolnienia. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i
+struktur których brakuje.
+
+ZADANIE — DOMKNIĘCIE ULG PIT (luki z LKG: art. 21.1.148/152/153/154, 26, 26e-26h, 30ca)
+Zamknij luki zwolnień przedmiotowych (art. 21) i ulg odliczeniowych (art. 26e–26h,
+30ca IP Box, ulga dla młodych, ulga na powrót, ulga dla rodzin 4+, ulga dla
+pracujących emerytów, ulga B+R, ulga na prototyp, ulga na robotyzację, ulga
+termomodernizacyjną, ulga rehabilitacyjną). Policz limity (85 528 PLN i inne),
+warunki, dokumentację i temporalność (zmiany na rok 2026). Uwaga: wiele z tych
+ulg dotyczy głównie pracowników, ale JDG może być uprawnione w wybranych
+przypadkach — rozdziel, które odnoszą się do JDG, a które NIE (bez wymyślania).
+
+PLIKI DO ODCZYTU — TYLKO TE LINKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE_GAP_RAPORT.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/art21_exemptions_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/missing_reliefs_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/ipbox_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/donation_relief_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/thermo_relief_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/rd_relief_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/elearning.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/pit_enterprise_zero_doubt.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/cross_relief_optimizer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/tax_form_transition_intelligence.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/thresholds_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/relief_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pit_reliefs_optimizer.py
+
+W RAPORCIE MUSZĄ BYĆ
+1. Kompletna macierz ulg: akt → artykuł → limit → warunek → czy dotyczy JDG.
+2. Rozdzielenie: "dotyczy JDG" vs "dotyczy pracownika/nie-dotyczy JDG" z podstawą.
+3. Walidacja limitów (85 528 PLN, termomodernizacja 53 000 PLN i inne).
+4. Kod Rego (sekcja KOD) dla brakujących ulg + testy.
+5. Temporalność: zmiany 2026 i wejście w życie poszczególnych ulg.
+6. Cross-domain z formami PIT (skala/linia/ryczałt) i KUP.
+7. Minimum 25 innowacyjnych rozwiązań Enterprise (np. optymalizator ulg).
+8. Lista ulg, o które JDG SIĘ nie kwalifikuje (ważne, by silnik NIE ich sugerował).
+
+Powtarzane wymagania nadrzędne: Przeprować głębokie myślenie. Przeprować głęboką
+analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia
+wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej
+elementów i struktur których brakuje.
+
+
+POWTARZANE WYMAGANIA NADRZĘDNE — MUSZĄ być respektowane w CAŁYM raporcie:
+- Przeprować głębokie myślenie. Przeprować głęboką analizę.
+- Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów.
+- Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+- Przeprować głębokie myślenie i przeprować głęboką analizę przy każdej decyzji.
+- Zaawansowany poziom Enterprise i poziom ENTERPRISE są celem każdej rekomendacji.
+- Innowacyjne ulepszenia wyprzedzające profesjonalistów oraz wdrożenie największej liczby braków i elementów oraz struktur których brakuje są nadrzędne.
+- Przeprować głębokie myślenie i przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+- Przeprować głębokie myślenie i przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+BUDŻET KONTEKSTU:
+Do GLM przekazujesz WYŁĄCZNIE linki z sekcji PLIKI DO ODCZYTU oraz niezbędne krótkie
+raporty poprzednich części. Materiały wejściowe nie mogą przekroczyć 50% okna
+kontekstowego GLM. Nie wklejaj całego repozytorium. Jeżeli wskazane pliki są zbyt
+duże, analizuj je partiami według sekcji, a nie pomijaj treści. Podczas pracy
+zachowuj rezerwę kontekstu na analizę i sadzę rozwiązań.
+
+GENERUJ INTELIGENTNY KOD
+W sekcji KOD DO WDROŻENIA dostarcz kompletne reguły Rego + testy natywne + pytest
+dla brakujących ulg/zwolnień, z pełnym _legal_basis i limitami z thresholds.
+Oznacz kod `GLM52-AD06-*`. Nie modyfikuj plików — kod do przeglądu.
+
+================================================================
+MANDATORY RE-ITERATION (WPISY NADRZĄDNE — BEZWZGLĘDNIE OBOWIĄZKOWE)
+Nadrzędny imperatyw całego raportu (powielony dla pewności):
+1. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+2. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+3. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+4. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+Powtórzenia są celowe: każda z wymaganych fraz MUSI wystąpić co najmniej 4 razy w tym raporcie.
+
+NA KOŃCU: przekaż status ulg (dotyczy/nie-dotyczy JDG) dla AD-07, zapisz jawne
+założenia limitów i wyczyść okno kontekstowe.

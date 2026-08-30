@@ -1,0 +1,78 @@
+================================================================
+RAPORT WDROŻENIOWY — AD-01: HARMONIZACJA METRYK POKRYCIA
+I POJEDYNCZE ŹRÓDŁO PRAWDY (CANONICAL COVERAGE UNIFIER)
+================================================================
+Status: WDROŻONY_100 (2026-08-30)
+Generator: tools/coverage_unifier.py
+Dowód: tests/test_coverage_unifier.py — 6/6 PASS
+
+1. PROBLEM (rozjazd metryk)
+---------------------------
+Trzy istniejące raporty mierzyły RÓŻNE byty i nie były porównywalne:
+  • COVERAGE_REPORT.md  — punkty prawne z planu Doc 50 (archiwalny): 8%
+  • reverse_coverage    — węzły materialne LKG: LCI 71,43% (stare, 20 luk)
+  • MANIFEST.md         — bloki matched:true (struktura, nie prawo): 91/100
+Rozjazd 8% vs 71% vs 91 był źródłem nieporozumień w całej dokumentacji.
+
+2. ROZWIĄZANIE (kanoniczna ontologia pokrycia)
+----------------------------------------------
+Nowe narzędzie JDG/tools/coverage_unifier.py definiuje JEDNO źródło prawdy:
+  • WĘZEŁ PRAWNY: (act, article, version) z legal_graph.json,
+  • POKRYCIE WĘZŁA: węzeł materialny ma ≥1 regułę DOWODNĄ (matched:true
+    + niepusty _legal_basis) w tej samej domenie i z pasującym artykułem,
+  • SZKIELET: matched:true bez _legal_basis — NIE liczy się jako pokrycie,
+  • fallback/no_match: nie liczy się jako pokrycie.
+
+Dopasowanie reguła → węzeł LKG odbywa się po DOMENIE rule_id (z aliasami:
+accounting→uor, sus→zus, pp/business, ksef/jpk...) + artykule z _legal_basis
+(obsługa zakresów "4-5", "22-25" itd.).
+
+3. METRYKI KANONICZNE (2026-08-30, jawne mianowniki)
+-----------------------------------------------------
+  LCI  = 74,29%  (52/70 węzłów materialnych pokrytych dowodną regułą)
+  TCL  = 100%    (11 127/11 127 reguł dowodnych ma _legal_basis)
+  RV   = 100%    (11 127/(11 127 + 0) — 0 szkieletów wg definicji)
+  UVR  = 11 125  (reguły dowodne bez natywnego testu Rego o tym rule_id)
+  DOC50= 8%      (archiwalny — porównanie, inny byt)
+  STRUCT= 91/100 (MANIFEST — porównanie, inny byt)
+
+4. REKONCYLIACJA (dlaczego liczby się różnią)
+---------------------------------------------
+DOC50, LCI i STRUCT mierzą różne byty: punkty planu, węzły LKG, bloki
+matched:true. LCI na węzłach LKG jest metryką kanoniczną — bezpośrednio
+odpowiada na pytanie „ile obowiązujących przepisów dla JDG ma działającą
+regułę?".
+
+5. CO ZOSTAŁO WDROŻONE
+----------------------
+  • tools/coverage_unifier.py         — nowe narzędzie (scan/report/check)
+  • tests/test_coverage_unifier.py    — 6 testów akceptacyjnych (6/6 PASS)
+  • bundles/coverage_canon.json       — dane kanoniczne (machine-readable)
+  • docs/COVERAGE_CANON.md            — raport kanoniczny (czytelny)
+  • GLM52_PROMPTY_ADD/STATUS_WDROZENIA.yaml — AD-01 oznaczony WDROŻONY_100
+
+6. SZCZERY POMIAR (co wciąż jest do zrobienia — nie deklaracja)
+---------------------------------------------------------------
+Bramka --check (LCI≥95, TCL=100, RV=100, UVR=0) NIE przechodzi celowo:
+  • LCI 74,29% — 18 węzłów materialnych LKG bez reguły dowodnej,
+  • UVR 11 125 — większość reguł dowodnych nie ma natywnego testu Rego
+    (testy istnieją głównie jako pytest; pokrycie natywne Rego jest wąskie).
+Te dwie liczby są REALNYM planem pracy dla AD-02 (domknięcie 20 węzłów LKG)
+oraz AD-15 (testy natywne Rego). AD-01 dostarczył pomiar, nie marketing.
+
+7. SPÓJNOŚĆ Z FILARAMI V1/V2
+----------------------------
+Zgodnie z ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md i WIZJA_OPA_ENTERPRISE_V2.md:
+kanoniczna ontologia pokrycia jest częścią Legal Twin / LKG (F1), a bramka
+CI --check egzekwuje wskaźniki pewności (LCI/TCL/RV/UVR) z jawnym mianownikiem.
+
+8. KONTRAKTY Z INNYMI CZĘŚCIAMI
+-------------------------------
+  • AD-02 (domknięcie 20 węzłów LKG): lista 18 węzłów bez reguły jest
+    wejściem — coverage_canon.json.uncovered_material_nodes.
+  • AD-15 (testy): UVR 11 125 to backlog natywnych testów Rego.
+  • AD-11 (zgodność z Bbb): dopasowanie po domenie+artykule jest
+    fundamentem mapy akt → reguła.
+================================================================
+KONIEC RAPORTU AD-01 — WYCZYŚĆ OKNO KONTEKSTOWE przed AD-02.
+================================================================

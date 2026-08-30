@@ -13124,7 +13124,7 @@ decide := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_legal_basis": "Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) — ewidencja VAT (rejestry sprzedaży i zakupów)",
     "_warnings": ["[MICRO] Ewidencja VAT: sprawdzenie czy przepis ma zastosowanie do JDG"]
 } {
     input.jdg_entrepreneur.business_type == "JDG"
@@ -13150,7 +13150,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_legal_basis": "Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) — ewidencja VAT (rejestry sprzedaży i zakupów)",
     "_warnings": ["[MICRO] Ewidencja VAT: warunek pozytywny — potwierdzenie zastosowania"]
 } {
     object.get(input.invoice, "vat_condition_met", false) == true
@@ -13176,7 +13176,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_legal_basis": "Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) — ewidencja VAT (rejestry sprzedaży i zakupów)",
     "_warnings": ["[MICRO] Ewidencja VAT: drugi warunek pozytywny spełniony"]
 } {
     object.get(input.jdg_entrepreneur, "vat_a109_r3_pass", false) == true
@@ -13202,7 +13202,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_legal_basis": "Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) — ewidencja VAT (rejestry sprzedaży i zakupów)",
     "_warnings": ["[MICRO] Ewidencja VAT: trzeci warunek pozytywny — walidacja"]
 } {
     object.get(input.jdg_entrepreneur, "vat_a109_r4_checks", false) == true
@@ -13228,7 +13228,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_legal_basis": "Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) — ewidencja VAT (rejestry sprzedaży i zakupów)",
     "_warnings": ["[MICRO] Ewidencja VAT: wyłączenie — przepis NIE ma zastosowania"]
 } {
     object.get(input.invoice, "vat_exclusion_applies", false) == false
@@ -13254,7 +13254,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_legal_basis": "Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) — ewidencja VAT (rejestry sprzedaży i zakupów)",
     "_warnings": ["[MICRO] Ewidencja VAT: drugie wyłączenie — sprawdź wyjątki"]
 } {
     object.get(input.invoice, "vat_exclusion_2", false) == false
@@ -13280,7 +13280,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_legal_basis": "Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) — ewidencja VAT (rejestry sprzedaży i zakupów)",
     "_warnings": ["[MICRO] Ewidencja VAT: wyjątek — przepis ma zastosowanie mimo wyłączenia"]
 } {
     object.get(input.invoice, "vat_a109_exception", false) == true
@@ -13306,7 +13306,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_legal_basis": "Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) — ewidencja VAT (rejestry sprzedaży i zakupów)",
     "_warnings": ["[MICRO] Ewidencja VAT: drugi wyjątek — szczególna sytuacja"]
 } {
     object.get(input.invoice, "vat_a109_exception_2", false) == true
@@ -13332,7 +13332,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_legal_basis": "Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) — ewidencja VAT (rejestry sprzedaży i zakupów)",
     "_warnings": ["[MICRO] Ewidencja VAT: interakcja z innymi przepisami — sprawdź zależności"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_vat", false) == true
@@ -13358,7 +13358,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "",
-    "_legal_basis": "Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535)",
+    "_legal_basis": "Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) — ewidencja VAT (rejestry sprzedaży i zakupów)",
     "_warnings": ["[MICRO] Ewidencja VAT: druga interakcja — efekt kaskadowy"]
 } {
     object.get(input.jdg_entrepreneur, "cross_rule_interaction_2_vat", false) == true
@@ -16567,7 +16567,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 109 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_legal_basis": "Art. 109 ustawy o VAT (ewidencja VAT) — patrz jdg.micro.vat.a109.*",
     "_warnings": ["[MICRO] Art. 109: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "final_a109_u1_p2_check", false) == true
@@ -16592,7 +16592,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 109 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_legal_basis": "Art. 109 ustawy o VAT (ewidencja VAT) — patrz jdg.micro.vat.a109.*",
     "_warnings": ["[MICRO] Art. 109: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "final_a109_u2_p3_check", false) == true
@@ -16617,7 +16617,7 @@ else := {
     "micro_rule_active": true,
     "_routing": "",
     "_routing_reason": "[MICRO] Art. 109 — walidacja szczegółowa dla JDG",
-    "_legal_basis": "Ustawa o VAT — przepisy końcowe",
+    "_legal_basis": "Art. 109 ustawy o VAT (ewidencja VAT) — patrz jdg.micro.vat.a109.*",
     "_warnings": ["[MICRO] Art. 109: punkt kontrolny — reguła wygenerowana z Plan OPA/50. Wymaga walidacji z ISAP."]
 } {
     object.get(input.jdg_entrepreneur, "final_a109_u3_p4_check", false) == true

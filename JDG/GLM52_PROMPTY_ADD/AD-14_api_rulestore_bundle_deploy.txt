@@ -1,0 +1,93 @@
+================================================================
+PROMPT AD-14 — API, RULESTORE DUCKDB, BUNDLE, DEPLOYMENT I ROLLBACK (INFRA RK)
+================================================================
+
+Jesteś architektem infrastruktury klasy Enterprise dla silnika reguł OPA + DuckDB.
+Przeprować głębokie myślenie. Przeprować głęboką analizę. Zapewnij zaawansowany
+poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające
+profesjonalistów. Przeprować głębokie myślenie i przeprować głęboką analizę API,
+RuleStore, bundle, deployment, rolling update i rollback. Wdrożyć/wygenerować
+najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+ZADANIE — ZA AWANSOWA INFRASTRUKTURA DECYZYJNA
+1. API (Litestar, OpenAPI): 17 endpointów, JWT, rate limiting (120/60 req/min),
+   readiness `/jdg/ready`, health, walidacja wejścia, kody błędów.
+2. RuleStore DuckDB: schematy, migracje 001–013, seed progów, hot reload
+   (OPA Data API), wersjonowanie.
+3. Bundle OPA: budowa (bundle.sh), manifest, sygnatura, verify-before-serve,
+   rollback, canary.
+4. Deployment: rolling update, zero-downtime, DR, chaos (kontrakt AD-15).
+5. Security: JWT, RBAC, szyfrowanie, audit, RODO.
+6. Spójność bundle vs `JDG/rules` vs `policies/` (synchronizacja, hash-parity).
+7. Obserwowalność deploymentu (health, ready, wersje).
+Przeprować głębokie myślenie o tym, jak bezpiecznie i sprawnie dodawać/usować
+reguły bez przestojów, przy zachowaniu kontroli wersji i możliwości natychmiastowego
+rollbacku (to jest serce wymogu "OPA jako SYSTEM").
+
+PLIKI DO ODCZYTU — TYLKO TE LINKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/api/openapi.yaml
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/API_REFERENCJA.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/001_jdg_rule_store.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/013_jdg_v18_tools_api_rulestore_bundles.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/bundle.sh
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/manifest.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/api_fallback.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/fallback.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/bundle_server.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/data_service.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/deployment_orchestrator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/rollout_orchestrator.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/certificate_service.py
+
+W RAPORCIE MUSZĄ BYĆ
+1. Specyfikacja API (endpointy, błedy, limity, readiness/health) z lukami.
+2. Schemat RuleStore, migracje i seed — audyt spójności.
+3. Tryb wydań bundle: canary, shadow, verify-before-serve, rollback, DR.
+4. Kontrakty pomiędzy API a silnikiem OPA (input/output verdict).
+5. Pilotaż: jak dodać nowy pakiet reguł przy zachowaniu zero przestojów.
+6. Testy integracyjne API i bundle (spójność, rollback, rate-limit).
+7. Minimum 20 innowacyjnych rozwiązań Enterprise (np. auto-canary, feature flags).
+8. Lista braków, które uniemożliwiają nazywanie systemu Production wg kryteriów RK.
+
+Powtarzane wymagania nadrzędne: Przeprować głębokie myślenie. Przeprować głęboką
+analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia
+wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej
+elementów i struktur których brakuje.
+
+
+POWTARZANE WYMAGANIA NADRZĘDNE — MUSZĄ być respektowane w CAŁYM raporcie:
+- Przeprować głębokie myślenie. Przeprować głęboką analizę.
+- Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów.
+- Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+- Przeprować głębokie myślenie i przeprować głęboką analizę przy każdej decyzji.
+- Zaawansowany poziom Enterprise i poziom ENTERPRISE są celem każdej rekomendacji.
+- Innowacyjne ulepszenia wyprzedzające profesjonalistów oraz wdrożenie największej liczby braków i elementów oraz struktur których brakuje są nadrzędne.
+- Przeprować głębokie myślenie i przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+- Przeprować głębokie myślenie i przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+BUDŻET KONTEKSTU:
+Do GLM przekazujesz WYŁĄCZNIE linki z sekcji PLIKI DO ODCZYTU oraz niezbędne krótkie
+raporty poprzednich części. Materiały wejściowe nie mogą przekroczyć 50% okna
+kontekstowego GLM. Nie wklejaj całego repozytorium. Jeżeli wskazane pliki są zbyt
+duże, analizuj je partiami według sekcji, a nie pomijaj treści. Podczas pracy
+zachowuj rezerwę kontekstu na analizę i sadzę rozwiązań.
+
+GENERUJ INTELIGENTNY KOD
+W sekcji KOD DO WDROŻENIA dostarcz reguły Rego (api_fallback, bundle guard),
+testy API/bundle, konfiguracja rollout/rollback. Oznacz `GLM52-AD14-*`. Nie
+modyfikuj plików — kod do przeglądu.
+
+================================================================
+MANDATORY RE-ITERATION (WPISY NADRZĄDNE — BEZWZGLĘDNIE OBOWIĄZKOWE)
+Nadrzędny imperatyw całego raportu (powielony dla pewności):
+1. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+2. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+3. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+4. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+Powtórzenia są celowe: każda z wymaganych fraz MUSI wystąpić co najmniej 4 razy w tym raporcie.
+
+NA KOŃCU: przekaż kontrakt infrastruktury dla AD-15 i AD-16, zapisz założenia
+o canary/rollback i wyczyść okno kontekstowe.

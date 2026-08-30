@@ -1,0 +1,1598 @@
+{
+  "generated_at": "2026-08-30T14:09:48+00:00",
+  "denominators": {
+    "rules_total": 11591,
+    "rules_no_match": 464,
+    "rules_actionable": 11127,
+    "rules_skeleton": 0,
+    "rules_evidence_backed": 11127,
+    "rules_with_legal_basis": 11127,
+    "rules_untested_by_native_rego": 11125,
+    "lkg_nodes": 258,
+    "lkg_material_nodes": 70,
+    "lkg_covered_material_nodes": 70
+  },
+  "metrics": {
+    "LCI": 100.0,
+    "TCL": 100.0,
+    "RV": 100.0,
+    "UVR": 11125,
+    "DOC50": null,
+    "STRUCT": 91
+  },
+  "by_domain": {
+    "adaptive_trust": {
+      "evidence": 3,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "advertising": {
+      "evidence": 46,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "agricultural_tax": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "akcyza": {
+      "evidence": 70,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "allowances": {
+      "evidence": 27,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "aml": {
+      "evidence": 45,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "aml_cbdd": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "aml_full": {
+      "evidence": 80,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "aml_ryzyko": {
+      "evidence": 7,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "aml_str_gif": {
+      "evidence": 7,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "aml_transakcje": {
+      "evidence": 6,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "amort_a22a": {
+      "evidence": 9,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "amort_a22b": {
+      "evidence": 6,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "amort_a22c": {
+      "evidence": 6,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "amort_a22h": {
+      "evidence": 6,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "amort_a22i": {
+      "evidence": 8,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "amort_a22k": {
+      "evidence": 6,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "amort_a22n": {
+      "evidence": 6,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "annual_decl": {
+      "evidence": 6,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "api_fallback": {
+      "evidence": 6,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "api_ui": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "audit": {
+      "evidence": 70,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "audit_defense": {
+      "evidence": 4,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "banking": {
+      "evidence": 14,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "bdo_ewc": {
+      "evidence": 7,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "bdo_ewidencja": {
+      "evidence": 8,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "bdo_rejestracja": {
+      "evidence": 8,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "bdo_transport": {
+      "evidence": 6,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "bdo_weee": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "bdo_zezwolenia": {
+      "evidence": 6,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "budownictwo": {
+      "evidence": 64,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "bundles": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "business": {
+      "evidence": 391,
+      "skeletons": 0,
+      "lkg_material": 10,
+      "lkg_covered": 10
+    },
+    "business_lifecycle_etap18": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "calendar": {
+      "evidence": 41,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "cb": {
+      "evidence": 140,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "cfc": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "compliance": {
+      "evidence": 10,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "conflict_declaration": {
+      "evidence": 3,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "conflicts": {
+      "evidence": 27,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "conviction": {
+      "evidence": 36,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "corrections": {
+      "evidence": 19,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "cross_domain_red_team_etap27": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "crossborder": {
+      "evidence": 114,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "crossborder_etap17": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "decision_core_completeness": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "docs": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "edelivery": {
+      "evidence": 49,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "edge_cases": {
+      "evidence": 187,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "employer": {
+      "evidence": 27,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "enterprise": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "enterprise_ai_neural_etap23": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "environmental": {
+      "evidence": 36,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "epuap": {
+      "evidence": 3,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "esig": {
+      "evidence": 43,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "esig_auto": {
+      "evidence": 4,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "est": {
+      "evidence": 15,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "exit_tax": {
+      "evidence": 8,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "exit_tax_cfc": {
+      "evidence": 16,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "family": {
+      "evidence": 61,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "final": {
+      "evidence": 51,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "final_certification_etap28": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "force_majeure": {
+      "evidence": 40,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "form_optimizer": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "form_transition": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "fx": {
+      "evidence": 56,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "gaar": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "gaar_shield": {
+      "evidence": 2,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "gtu_checker": {
+      "evidence": 3,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "health": {
+      "evidence": 40,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "hyper": {
+      "evidence": 490,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "hyper_enterprise_contexts_etap22": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "insurance": {
+      "evidence": 34,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "interest_calculator": {
+      "evidence": 3,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "international": {
+      "evidence": 39,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "jpk_cit": {
+      "evidence": 4,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "jpk_corrections": {
+      "evidence": 3,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "jpk_kr_st": {
+      "evidence": 4,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "jpk_v7": {
+      "evidence": 7,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "judicial": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "kks": {
+      "evidence": 873,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "kks_ord_etap16": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "ksef": {
+      "evidence": 269,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "ksef_firewall": {
+      "evidence": 3,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "ksef_innovations": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "ksef_jpk_etap20": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "ksef_offline_queue": {
+      "evidence": 3,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "ksef_outbox": {
+      "evidence": 4,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "ksef_receipt_digest": {
+      "evidence": 3,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "ksef_resilience": {
+      "evidence": 7,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "ksef_sanction_monitor": {
+      "evidence": 2,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "ksef_sandbox": {
+      "evidence": 3,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "ksef_upo_tracker": {
+      "evidence": 3,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "leasing": {
+      "evidence": 3,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "legislative": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "liability": {
+      "evidence": 15,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "lifecycle": {
+      "evidence": 4,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "limitations": {
+      "evidence": 18,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "local": {
+      "evidence": 45,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "local_excise_etap19": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "local_taxes": {
+      "evidence": 63,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "mdr": {
+      "evidence": 99,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "mdr_dac6": {
+      "evidence": 3,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "meta": {
+      "evidence": 3,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "mpips": {
+      "evidence": 12,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "neural_mesh": {
+      "evidence": 19,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "neural_mesh_v2": {
+      "evidence": 15,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "nkup": {
+      "evidence": 59,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "ordpu": {
+      "evidence": 640,
+      "skeletons": 0,
+      "lkg_material": 4,
+      "lkg_covered": 4
+    },
+    "overpayment_claimer": {
+      "evidence": 2,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p01_fundament_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p01_innovations": {
+      "evidence": 7,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p02_decision_core_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p02_innovations": {
+      "evidence": 7,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p03_innovations": {
+      "evidence": 7,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p03_orchestrator_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p03_vat_macro_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p04_innovations": {
+      "evidence": 7,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p04_vat_macro_enterprise": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p04_vat_micro_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p05": {
+      "evidence": 29,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p05_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p05_pit_macro_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p05_vat_micro_atomic": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p06_innovations": {
+      "evidence": 34,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p06_pit_macro_enterprise": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p06_pit_micro_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p07_innovations": {
+      "evidence": 19,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p07_pit_micro_atomic": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p07_zus_macro_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p08_innovations": {
+      "evidence": 15,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p08_zus_macro_enterprise": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p08_zus_micro_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p09_innovations": {
+      "evidence": 14,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p09_ksiegowosc_pkpir_uor_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p10_innovations": {
+      "evidence": 11,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p10_kks_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p11_innovations": {
+      "evidence": 13,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p11_ordynacja_podatkowa_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p12_crossborder_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p12_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p13_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p13_ryczalt_cykl_zycia_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p14_pcc_lokalne_akcyza_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p15_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p15_srodowisko_bdo_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p16_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p16_rodo_aml_security_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p17_ksef_jpk_edeklaracje_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p18_automatyzacja_ksiegowosci_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p19_hr_swiadczenia_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p20_neural_mesh_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p21_innovations": {
+      "evidence": 48,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p21_opa_system_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p22_innovations": {
+      "evidence": 48,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p22_validation_tools_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p23_innovations": {
+      "evidence": 20,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p23_test_rego_ci_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p24": {
+      "evidence": 29,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p24_audyt_kompletny_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p24_innovations": {
+      "evidence": 28,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p34": {
+      "evidence": 13,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p34_innovations": {
+      "evidence": 15,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p35": {
+      "evidence": 19,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "p35_innovations": {
+      "evidence": 15,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "payments": {
+      "evidence": 59,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "pcc": {
+      "evidence": 236,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "pcc_akc": {
+      "evidence": 100,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "pcc_lokalne_atomic_p14": {
+      "evidence": 18,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "pit": {
+      "evidence": 1448,
+      "skeletons": 0,
+      "lkg_material": 26,
+      "lkg_covered": 26
+    },
+    "pit_macro_etap10": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "pit_micro_reliefs_etap11": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "pkpir": {
+      "evidence": 13,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "pkpir_columns": {
+      "evidence": 11,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "pkpir_corrections": {
+      "evidence": 8,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "pkpir_costs": {
+      "evidence": 10,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "pkpir_etap14": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "pkpir_nkup": {
+      "evidence": 10,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "pkpir_remnant": {
+      "evidence": 8,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "pkpir_revenue": {
+      "evidence": 10,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "poa_manager": {
+      "evidence": 2,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "policies_mirror_sync_etap26": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "ppk_pfron": {
+      "evidence": 7,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "proceeding_tracker": {
+      "evidence": 2,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "procurement": {
+      "evidence": 45,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "prop": {
+      "evidence": 30,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "prop_transport": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "r01_orchestrator_core_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "r02_vat_core_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "r03_vat_micro_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "r04_pit_core_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "r05_pit_enterprise_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "r06_zus_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "r07_kks_innovations": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "r08_ordynacja_obrona_innovations": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "r09_ksiegowosc_pkpir_uor_innovations": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "r10_crossborder_innovations": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "r11_pcc_lokalne_akcyza_innovations": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "r12_ryczalt_cykl_zycia_innovations": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "r13_hyper_konteksty_innovations": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "r14_rodo_aml_bdo_innovations": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "r15_ksef_jpk_edeklaracje_innovations": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "r16_system_opa_innovations": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "r17_enterprise_ai_innovations": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "regulated": {
+      "evidence": 40,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "reliability_guarantee": {
+      "evidence": 4,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "residency": {
+      "evidence": 59,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "restructuring": {
+      "evidence": 12,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "retention": {
+      "evidence": 13,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "risk": {
+      "evidence": 21,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "rodo": {
+      "evidence": 65,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "rodo_ai_marketing": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "rodo_aml_bdo_atomic_p15": {
+      "evidence": 17,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "rodo_aml_bdo_hr_etap21": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "rodo_erasure": {
+      "evidence": 4,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "rodo_extended": {
+      "evidence": 16,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "rodo_podprocesorzy": {
+      "evidence": 4,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "rodo_sankcje": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "rodo_zatrudnienie": {
+      "evidence": 4,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "routing": {
+      "evidence": 5,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "rule_lifecycle": {
+      "evidence": 4,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "ryc": {
+      "evidence": 208,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "ryczalt": {
+      "evidence": 105,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "ryczalt_cykl_atomic_p13": {
+      "evidence": 20,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "sanctions": {
+      "evidence": 4,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "seasonal": {
+      "evidence": 35,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "security": {
+      "evidence": 19,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "solidarity": {
+      "evidence": 33,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "srodowisko": {
+      "evidence": 48,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "statute": {
+      "evidence": 9,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "strategic": {
+      "evidence": 8,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "succ": {
+      "evidence": 20,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "tax_interaction": {
+      "evidence": 6,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "tax_opt": {
+      "evidence": 10,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "tax_trans": {
+      "evidence": 15,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "taxfree": {
+      "evidence": 44,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "temporal": {
+      "evidence": 29,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "tests_ci": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "tests_ci_quality_etap24": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "tools": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "tools_api_rulestore_bundles_etap25": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "tp": {
+      "evidence": 79,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "transport": {
+      "evidence": 44,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "uor": {
+      "evidence": 572,
+      "skeletons": 0,
+      "lkg_material": 8,
+      "lkg_covered": 8
+    },
+    "uor_etap15": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "validation": {
+      "evidence": 8,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "vat": {
+      "evidence": 1581,
+      "skeletons": 0,
+      "lkg_material": 14,
+      "lkg_covered": 14
+    },
+    "vat_cashflow": {
+      "evidence": 4,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "vat_complete": {
+      "evidence": 11,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "vat_deductions_audit": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "vat_fraud_detection": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "vat_mpp_split_payment": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "vat_rates_audit": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "vida": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "wht": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "wis": {
+      "evidence": 43,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "wis_api": {
+      "evidence": 3,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "zasilkowa": {
+      "evidence": 42,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "zus": {
+      "evidence": 546,
+      "skeletons": 0,
+      "lkg_material": 8,
+      "lkg_covered": 8
+    },
+    "zus_core_etap12": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    },
+    "zus_micro_etap13": {
+      "evidence": 1,
+      "skeletons": 0,
+      "lkg_material": 0,
+      "lkg_covered": 0
+    }
+  },
+  "skeletons": [],
+  "uncovered_material_nodes": [],
+  "reconciliation": {
+    "explanation": "DOC50 (punkty Doc 50), LCI (węzły LKG) i STRUCT (bloki matched:true) mierzą RÓŻNE byty i nie są porównywalne wprost. LCI jest metryką kanoniczną: materialne węzły prawne pokryte dowodną regułą.",
+    "doc50_note": "COVERAGE_REPORT.md liczy punkty prawne z planu Doc 50 (archiwalny).",
+    "struct_note": "MANIFEST.md liczy bloki matched:true (struktura, nie prawo)."
+  }
+}

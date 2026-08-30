@@ -73,6 +73,34 @@ ACT_DOMAIN = {
     "rehabilitacji zawodowej": "hr",
     "świadczeniach pieniężnych": "zus",
     "PCC": "pcc",
+    # --- Krótkie nazwy aktów (AD-02: naprawa domeny węzłów LKG) ---
+    "ustawa o pit": "pit",
+    "pit, art.": "pit",
+    "ustawa o vat": "vat",
+    "vat, art.": "vat",
+    "jpk_vat": "ksef",
+    "wzoru faktury ustrukturyzowanej": "ksef",
+    "podstawy wymiaru składek": "zus",
+    "kodeks karny skarbowy": "kks",
+    "kodeksu karnego skarbowego": "kks",
+    "kodeks cywilny": "kc",
+    "kodeksu cywilnego": "kc",
+    "kodeks karny": "kk",
+    "kodeksu karnego": "kk",
+    "2016/679": "rodo",
+    "ochronie danych osobowych": "rodo",
+    "910/2014": "edelivery",
+    "podpisie elektronicznym": "edelivery",
+    "doręczeniach elektronicznych": "edelivery",
+    "informatyzacji działalności": "edelivery",
+    "podatku od czynności cywilnoprawnych": "pcc",
+    "czynności cywilnoprawnych": "pcc",
+    "kodeks pracy": "hr",
+    "rehabilitacji zawodowej": "hr",
+    "świadczeniach pieniężnych": "zus",
+    "centralnej ewidencji": "business",
+    "działalności gospodarczej": "business",
+    "sukcesyjnym przedsiębiorstwem": "business",
 }
 
 
@@ -116,8 +144,19 @@ def parse_bbb() -> list[dict]:
 
 
 def build_nodes() -> list[dict]:
-    """Zbuduj węzły LKG z Bbb.md (dedup po (act, article))."""
+    """Zbuduj węzły LKG z Bbb.md (dedup po (act, article)).
+
+    AD-02: ponownie wyznacza domenę dla ISTNIEJĄCYCH węzłów (naprawa
+    węzłów oznaczonych wcześniej jako 'other' — np. 'PIT, art. 26e',
+    'Ustawa o VAT, art. 109'). Domena jest pochodną nazwy aktu, więc
+    rekomputacja jest idempotentna i nie tworzy duplikatów.
+    """
     existing = _load_graph().get("nodes", [])
+    # naprawa domeny istniejących węzłów
+    for n in existing:
+        fixed = _domain_of(n.get("act", ""))
+        if n.get("domain") != fixed:
+            n["domain"] = fixed
     seen = {(n.get("act"), n.get("article")) for n in existing}
     next_id = max((int(n["legal_node_id"].split("-")[1]) for n in existing if n.get("legal_node_id", "").startswith("LKG-")), default=0) + 1
     nodes = list(existing)

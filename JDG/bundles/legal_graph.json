@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-29T16:14:08+00:00",
+  "generated_at": "2026-08-30T14:04:30+00:00",
   "acts_count": 26,
   "nodes_count": 258,
   "covered_nodes": 155,
@@ -78,7 +78,8 @@
         "jdg.micro.pp.a4.r8",
         "jdg.micro.pp.a4.r9"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "business"
     },
     {
       "legal_node_id": "LKG-0002",
@@ -101,7 +102,8 @@
       "rules": [
         "jdg.p13_ryczalt_cykl_zycia_innovations.gig_economy_audit"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "business"
     },
     {
       "legal_node_id": "LKG-0003",
@@ -155,7 +157,8 @@
         "jdg.p24_innovations.i1.ceidg_change_detector_tax_form",
         "jdg.restructuring.merger_tax"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "business"
     },
     {
       "legal_node_id": "LKG-0004",
@@ -266,7 +269,8 @@
         "jdg.p13_ryczalt_cykl_zycia_innovations.succession_step_guide",
         "jdg.p13_ryczalt_cykl_zycia_innovations.unregistered_business_audit"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "business"
     },
     {
       "legal_node_id": "LKG-0005",
@@ -292,7 +296,8 @@
         "jdg.p13_ryczalt_cykl_zycia_innovations.ceidg_audit",
         "jdg.representation.prokura_self_employed"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "business"
     },
     {
       "legal_node_id": "LKG-0006",
@@ -324,7 +329,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "business"
     },
     {
       "legal_node_id": "LKG-0007",
@@ -367,7 +373,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "business"
     },
     {
       "legal_node_id": "LKG-0008",
@@ -537,7 +544,8 @@
       "rules": [
         "jdg.hyper.deadlines.payment.barter.market_value_as_base"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "vat"
     },
     {
       "legal_node_id": "LKG-0009",
@@ -614,7 +622,8 @@
         "jdg.micro.vat.a15.r4",
         "jdg.micro.vat.a15.r5"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "vat"
     },
     {
       "legal_node_id": "LKG-0010",
@@ -737,7 +746,8 @@
         "jdg.hyper.general.payment.advance.vat_invoice_required_15days",
         "jdg.hyper.general.payment.installments.vat_cash_per_installment"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "vat"
     },
     {
       "legal_node_id": "LKG-0011",
@@ -825,7 +835,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "vat"
     },
     {
       "legal_node_id": "LKG-0012",
@@ -900,7 +911,8 @@
         "jdg.hyper.misc.payment.inkind.employee_compensation_tax",
         "jdg.hyper.misc.payment.inkind.mixed_cash_inkind_split"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "vat"
     },
     {
       "legal_node_id": "LKG-0013",
@@ -1098,7 +1110,8 @@
         "jdg.r02_vat_core_innovations.vat_core_report",
         "jdg.vat.reduced_rates.pkwiu_rate_mismatch"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "vat"
     },
     {
       "legal_node_id": "LKG-0014",
@@ -1117,7 +1130,8 @@
       "rules": [
         "jdg.ksef_jpk.v3_11.domain_certificate"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "vat"
     },
     {
       "legal_node_id": "LKG-0015",
@@ -1222,7 +1236,8 @@
         "jdg.hyper.sanctions.regulated.vat.exemption_psychologist",
         "jdg.hyper.sanctions.regulated.vat.no_exemption_lawyer"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "vat"
     },
     {
       "legal_node_id": "LKG-0016",
@@ -1245,7 +1260,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "vat"
     },
     {
       "legal_node_id": "LKG-0017",
@@ -1536,7 +1552,8 @@
         "jdg.hyper.misc.advertising.vat.deduction_full_standard",
         "jdg.hyper.misc.advertising.vat.deduction_gifts_100pln_limit"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "vat"
     },
     {
       "legal_node_id": "LKG-0018",
@@ -1588,7 +1605,8 @@
         "jdg.vat.a99.r4",
         "jdg.vat.a99.r5"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "vat"
     },
     {
       "legal_node_id": "LKG-0019",
@@ -1832,7 +1850,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "vat"
     },
     {
       "legal_node_id": "LKG-0020",
@@ -1899,7 +1918,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "vat"
     },
     {
       "legal_node_id": "LKG-0021",
@@ -1967,7 +1987,8 @@
         "jdg.hyper.limits.seasonal.vat.margin_scheme_seasonal_goods",
         "jdg.pit.a30c.r1"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "vat"
     },
     {
       "legal_node_id": "LKG-0022",
@@ -2012,7 +2033,8 @@
         "jdg.hyper.limits.seasonal.vat.deduction_maintenance_costs",
         "jdg.vat.substantive.subject_exemption_jdg"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "vat"
     },
     {
       "legal_node_id": "LKG-0023",
@@ -2048,7 +2070,8 @@
         "jdg.ryc.a10.r4",
         "jdg.ryc.a11.r1"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0024",
@@ -2192,7 +2215,8 @@
         "jdg.hyper.misc.payment.inkind.vat_base_market_value",
         "jdg.hyper.procurement.family.asset.transfer.vat_opodatkowanie"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0025",
@@ -2780,7 +2804,8 @@
         "jdg.hyper.sanctions.regulated.kup.professional_insurance_kup",
         "jdg.hyper.sanctions.regulated.zus.no_start_relief_former_employer"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0026",
@@ -2812,7 +2837,8 @@
         "jdg.tp.r8",
         "jdg.tp.r9"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0027",
@@ -2895,7 +2921,8 @@
       "rules": [
         "jdg.micro.ryczalt.a29.r5"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0028",
@@ -3131,7 +3158,8 @@
         "jdg.hyper.sanctions.regulated.chamber.disciplinary_proceedings",
         "jdg.p24.i7.r3"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0029",
@@ -3273,7 +3301,8 @@
         "jdg.micro.ryczalt.a27.r8",
         "jdg.micro.ryczalt.a27.r9"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0030",
@@ -3317,7 +3346,8 @@
         "jdg.pit.a30ca.r7",
         "jdg.pit.a30ca.r9"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0031",
@@ -3393,7 +3423,8 @@
       "rules": [
         "jdg.pit.advances_returns.loss_carry_forward"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0032",
@@ -3448,7 +3479,8 @@
         "jdg.micro.crossborder.a30f2.r7",
         "jdg.micro.crossborder.a30f2.r8"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0033",
@@ -3534,7 +3566,8 @@
         "jdg.hyper.wis.solidarity.levy.aggregate.alert_900k",
         "jdg.hyper.wis.wis.eligibility.cn_code_ambiguous"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0034",
@@ -3619,7 +3652,8 @@
         "jdg.hyper.limits.seasonal.pit.advances_no_income_months_zero",
         "jdg.hyper.limits.seasonal.pit.lump_sum_annual_calculation"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0035",
@@ -3673,7 +3707,8 @@
         "jdg.hyper.deadlines.tax.zus_dra_10th",
         "jdg.hyper.procurement.family.joint_filing.exclusions"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0036",
@@ -3696,7 +3731,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "kc"
     },
     {
       "legal_node_id": "LKG-0037",
@@ -3716,7 +3752,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "kc"
     },
     {
       "legal_node_id": "LKG-0038",
@@ -3736,7 +3773,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "kc"
     },
     {
       "legal_node_id": "LKG-0039",
@@ -3763,7 +3801,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "kk"
     },
     {
       "legal_node_id": "LKG-0040",
@@ -3780,7 +3819,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "kk"
     },
     {
       "legal_node_id": "LKG-0041",
@@ -3797,7 +3837,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "kk"
     },
     {
       "legal_node_id": "LKG-0042",
@@ -3814,7 +3855,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "kk"
     },
     {
       "legal_node_id": "LKG-0043",
@@ -3833,7 +3875,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "edelivery"
     },
     {
       "legal_node_id": "LKG-0044",
@@ -3853,7 +3896,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "edelivery"
     },
     {
       "legal_node_id": "LKG-0045",
@@ -3870,7 +3914,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "edelivery"
     },
     {
       "legal_node_id": "LKG-0046",
@@ -3889,7 +3934,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "edelivery"
     },
     {
       "legal_node_id": "LKG-0047",
@@ -4091,7 +4137,8 @@
         "jdg.ryc.a6.r9",
         "jdg.ryc.a7.r1"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0048",
@@ -4225,7 +4272,8 @@
         "jdg.micro.ryczalt.a21.r8",
         "jdg.micro.ryczalt.a21.r9"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0049",
@@ -4242,7 +4290,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0050",
@@ -4259,7 +4308,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0051",
@@ -4276,7 +4326,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0052",
@@ -4293,7 +4344,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0053",
@@ -4312,7 +4364,8 @@
       "rules": [
         "jdg.pit.advances_returns.loss_carry_forward"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0054",
@@ -4329,7 +4382,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0055",
@@ -4346,7 +4400,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0056",
@@ -4367,7 +4422,8 @@
         "jdg.hyper.sanctions.regulated.chamber.disciplinary_proceedings",
         "jdg.p24.i7.r3"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0057",
@@ -4400,7 +4456,8 @@
         "jdg.micro.ryczalt.a21.r8",
         "jdg.micro.ryczalt.a21.r9"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pit"
     },
     {
       "legal_node_id": "LKG-0058",
@@ -4434,7 +4491,8 @@
         "jdg.micro.zus.a6.r9",
         "jdg.micro.zus.a8.r10"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "zus"
     },
     {
       "legal_node_id": "LKG-0059",
@@ -4482,7 +4540,8 @@
         "jdg.micro.zus.a2.r1",
         "jdg.p08_zus_macro_enterprise.base_recommender"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "zus"
     },
     {
       "legal_node_id": "LKG-0060",
@@ -4518,7 +4577,8 @@
         "jdg.micro.zus.a4.r5",
         "jdg.p07_zus_macro_innovations.report"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "zus"
     },
     {
       "legal_node_id": "LKG-0061",
@@ -4547,7 +4607,8 @@
         "jdg.micro.sus.a36.r7",
         "jdg.micro.sus.a36.r8"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "zus"
     },
     {
       "legal_node_id": "LKG-0062",
@@ -4680,7 +4741,8 @@
         "jdg.zus.health.fallback",
         "jdg.zus.health_linear"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "zus"
     },
     {
       "legal_node_id": "LKG-0063",
@@ -4719,7 +4781,8 @@
         "jdg.micro.zus.a18.r9",
         "jdg.micro.zus.a22.r10"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "zus"
     },
     {
       "legal_node_id": "LKG-0064",
@@ -4766,7 +4829,8 @@
         "jdg.micro.zus.a5.r8",
         "jdg.micro.zus.a5.r9"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "zus"
     },
     {
       "legal_node_id": "LKG-0065",
@@ -4783,7 +4847,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "zus"
     },
     {
       "legal_node_id": "LKG-0066",
@@ -4860,7 +4925,8 @@
         "jdg.micro.uor.a2.r8",
         "jdg.uor.obligation.a2.r1"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "uor"
     },
     {
       "legal_node_id": "LKG-0067",
@@ -4926,7 +4992,8 @@
         "jdg.micro.uor.a4.r8",
         "jdg.micro.uor.a4.r9"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "uor"
     },
     {
       "legal_node_id": "LKG-0068",
@@ -4966,7 +5033,8 @@
         "jdg.micro.uor.a20.r8",
         "jdg.micro.uor.integration.r3"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "uor"
     },
     {
       "legal_node_id": "LKG-0069",
@@ -5018,7 +5086,8 @@
         "jdg.micro.uor.a22.r4",
         "jdg.micro.uor.a22.r5"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "uor"
     },
     {
       "legal_node_id": "LKG-0070",
@@ -5061,7 +5130,8 @@
         "jdg.micro.uor.a26.r5",
         "jdg.micro.uor.a26.r6"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "uor"
     },
     {
       "legal_node_id": "LKG-0071",
@@ -5129,7 +5199,8 @@
         "jdg.micro.uor.a28.r7",
         "jdg.micro.uor.a28.r8"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "uor"
     },
     {
       "legal_node_id": "LKG-0072",
@@ -5168,7 +5239,8 @@
         "jdg.micro.uor.a32.r5",
         "jdg.micro.uor.a32.r6"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "uor"
     },
     {
       "legal_node_id": "LKG-0073",
@@ -5206,7 +5278,8 @@
         "jdg.micro.uor.a74.r4",
         "jdg.retention.uor_annual_reports_permanent"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "uor"
     },
     {
       "legal_node_id": "LKG-0074",
@@ -5223,7 +5296,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "pkpir"
     },
     {
       "legal_node_id": "LKG-0075",
@@ -5240,7 +5314,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "pkpir"
     },
     {
       "legal_node_id": "LKG-0076",
@@ -5257,7 +5332,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "pkpir"
     },
     {
       "legal_node_id": "LKG-0077",
@@ -5274,7 +5350,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "pkpir"
     },
     {
       "legal_node_id": "LKG-0078",
@@ -5291,7 +5368,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "ksef"
     },
     {
       "legal_node_id": "LKG-0079",
@@ -5308,7 +5386,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "ksef"
     },
     {
       "legal_node_id": "LKG-0080",
@@ -5325,7 +5404,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "ksef"
     },
     {
       "legal_node_id": "LKG-0081",
@@ -5342,7 +5422,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "ksef"
     },
     {
       "legal_node_id": "LKG-0082",
@@ -5359,7 +5440,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "ksef"
     },
     {
       "legal_node_id": "LKG-0083",
@@ -5376,7 +5458,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "ksef"
     },
     {
       "legal_node_id": "LKG-0084",
@@ -5393,7 +5476,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "ksef"
     },
     {
       "legal_node_id": "LKG-0085",
@@ -5410,7 +5494,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "edelivery"
     },
     {
       "legal_node_id": "LKG-0086",
@@ -5427,7 +5512,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "edelivery"
     },
     {
       "legal_node_id": "LKG-0087",
@@ -5444,7 +5530,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "edelivery"
     },
     {
       "legal_node_id": "LKG-0088",
@@ -5461,7 +5548,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "edelivery"
     },
     {
       "legal_node_id": "LKG-0089",
@@ -5480,7 +5568,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "edelivery"
     },
     {
       "legal_node_id": "LKG-0090",
@@ -5500,7 +5589,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "edelivery"
     },
     {
       "legal_node_id": "LKG-0091",
@@ -5528,7 +5618,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "ordpu"
     },
     {
       "legal_node_id": "LKG-0092",
@@ -5558,7 +5649,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "ordpu"
     },
     {
       "legal_node_id": "LKG-0093",
@@ -5592,7 +5684,8 @@
         "jdg.liability.voluntary_disclosure",
         "jdg.statute.voluntary_disclosure_protection"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "ordpu"
     },
     {
       "legal_node_id": "LKG-0094",
@@ -5624,7 +5717,8 @@
         "jdg.ord.a48.r2",
         "jdg.ord.a48.r3"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "ordpu"
     },
     {
       "legal_node_id": "LKG-0095",
@@ -5655,7 +5749,8 @@
         "jdg.ord.a51.r3",
         "jdg.statute.overpayment_offset_auto"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "ordpu"
     },
     {
       "legal_node_id": "LKG-0096",
@@ -5703,7 +5798,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "ordpu"
     },
     {
       "legal_node_id": "LKG-0097",
@@ -5786,7 +5882,8 @@
         "jdg.hyper.general.force_majeure.relief.application_immediate",
         "jdg.hyper.general.force_majeure.relief.zus_deferral"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "ordpu"
     },
     {
       "legal_node_id": "LKG-0098",
@@ -5883,7 +5980,8 @@
         "jdg.temporal.statute_suspended",
         "jdg.temporal.vat_rate_effective_2026"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "ordpu"
     },
     {
       "legal_node_id": "LKG-0099",
@@ -5941,7 +6039,8 @@
         "jdg.ord.a72.r3",
         "jdg.statute.deferral_active_interest_suspended"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "ordpu"
     },
     {
       "legal_node_id": "LKG-0100",
@@ -6006,7 +6105,8 @@
         "jdg.ord.a81a.r2",
         "jdg.ord.a81c.r1"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "ordpu"
     },
     {
       "legal_node_id": "LKG-0101",
@@ -6235,7 +6335,8 @@
         "jdg.retention.vat_invoices_extended",
         "jdg.temporal.tax_free_amount_temporal"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "ordpu"
     },
     {
       "legal_node_id": "LKG-0102",
@@ -6256,7 +6357,8 @@
       "rules": [
         "jdg.hyper.family.audit.closure.decision_issuance"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "ordpu"
     },
     {
       "legal_node_id": "LKG-0103",
@@ -6279,7 +6381,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "ordpu"
     },
     {
       "legal_node_id": "LKG-0104",
@@ -6335,7 +6438,8 @@
         "jdg.ord.a81.r9",
         "jdg.risk.heuristic_empty_invoice"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "ordpu"
     },
     {
       "legal_node_id": "LKG-0105",
@@ -6374,7 +6478,8 @@
         "jdg.hyper.audit.audit.type.customs_fiscal",
         "jdg.liability.statute_interruption_execution"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "ordpu"
     },
     {
       "legal_node_id": "LKG-0106",
@@ -6423,7 +6528,8 @@
         "jdg.representation.ppd1_delivery",
         "jdg.representation.upl1_required"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "ordpu"
     },
     {
       "legal_node_id": "LKG-0107",
@@ -6469,7 +6575,8 @@
         "jdg.hyper.sanctions.ordinal.penalty_2800_pln",
         "jdg.ksef_jpk.ksef_duplicate_detected"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "ordpu"
     },
     {
       "legal_node_id": "LKG-0108",
@@ -6537,7 +6644,8 @@
         "jdg.r07_kks_innovations.voluntary_disclosure_one_click",
         "jdg.statute.overpayment_detection_and_refund"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "kks"
     },
     {
       "legal_node_id": "LKG-0109",
@@ -6567,7 +6675,8 @@
         "jdg.limitations.document_retention",
         "jdg.p10_kks_innovations.conviction_expungement_tracker"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "kks"
     },
     {
       "legal_node_id": "LKG-0110",
@@ -6649,7 +6758,8 @@
         "jdg.risk.kks_unreliable_books_plan26",
         "jdg.tp.hyper.sanction_management_board_liability"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "kks"
     },
     {
       "legal_node_id": "LKG-0111",
@@ -6708,7 +6818,8 @@
         "jdg.tp.hyper.benchmarking_required",
         "jdg.tp.hyper.sanction_late_documentation"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "kks"
     },
     {
       "legal_node_id": "LKG-0112",
@@ -6745,7 +6856,8 @@
         "jdg.micro.kks.plan33.a57.r9",
         "jdg.risk.kks_declaration_overdue"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "kks"
     },
     {
       "legal_node_id": "LKG-0113",
@@ -6833,7 +6945,8 @@
         "jdg.vat_fraud_detection.solidary_liability",
         "jdg.vat_fraud_detection.vanishing_trader"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "kks"
     },
     {
       "legal_node_id": "LKG-0114",
@@ -6874,7 +6987,8 @@
         "jdg.micro.kks.plan33.a80.r1",
         "jdg.micro.uor.a77.r2"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "kks"
     },
     {
       "legal_node_id": "LKG-0115",
@@ -6907,7 +7021,8 @@
         "jdg.kks.bank_account_blocked_p367",
         "jdg.kks.property_security_active_p366"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "kks"
     },
     {
       "legal_node_id": "LKG-0116",
@@ -6924,7 +7039,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "kks"
     },
     {
       "legal_node_id": "LKG-0117",
@@ -6944,7 +7060,8 @@
         "jdg.kks.bank_account_blocked_p367",
         "jdg.kks.property_security_active_p366"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "kks"
     },
     {
       "legal_node_id": "LKG-0118",
@@ -6961,7 +7078,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "kks"
     },
     {
       "legal_node_id": "LKG-0119",
@@ -6978,7 +7096,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "kks"
     },
     {
       "legal_node_id": "LKG-0120",
@@ -6999,7 +7118,8 @@
       "rules": [
         "jdg.akcyza.alcohol_tobacco.alcohol.r3"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "kks"
     },
     {
       "legal_node_id": "LKG-0121",
@@ -7016,7 +7136,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "kks"
     },
     {
       "legal_node_id": "LKG-0122",
@@ -7076,7 +7197,8 @@
         "jdg.p13_ryczalt_cykl_zycia_innovations.suspension_audit",
         "jdg.p24.i3.r4"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "business"
     },
     {
       "legal_node_id": "LKG-0123",
@@ -7299,7 +7421,8 @@
         "jdg.suk.a9.u4.p4",
         "jdg.suk.a9.u5.p1"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "business"
     },
     {
       "legal_node_id": "LKG-0124",
@@ -7320,7 +7443,8 @@
       "rules": [
         "jdg.micro.ryczalt_cykl_atomic_p13.succession.r4"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "business"
     },
     {
       "legal_node_id": "LKG-0125",
@@ -7376,7 +7500,8 @@
         "jdg.p24_innovations.i1.ceidg_change_detector_tax_form",
         "jdg.restructuring.merger_tax"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "business"
     },
     {
       "legal_node_id": "LKG-0126",
@@ -7403,7 +7528,8 @@
         "jdg.micro.rodo_aml_bdo_atomic_p15.transport_license.r1",
         "jdg.p15_srodowisko_bdo_innovations.transport_rolnictwo_audit"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "construction"
     },
     {
       "legal_node_id": "LKG-0127",
@@ -7424,7 +7550,8 @@
       "rules": [
         "jdg.micro.budownictwo.a1.r3"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "construction"
     },
     {
       "legal_node_id": "LKG-0128",
@@ -7445,7 +7572,8 @@
       "rules": [
         "jdg.micro.budownictwo.a6.r5"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "construction"
     },
     {
       "legal_node_id": "LKG-0129",
@@ -7466,7 +7594,8 @@
       "rules": [
         "jdg.micro.budownictwo.a1.r5"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "construction"
     },
     {
       "legal_node_id": "LKG-0130",
@@ -7488,7 +7617,8 @@
       "rules": [
         "jdg.micro.budownictwo.a1.r7"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "construction"
     },
     {
       "legal_node_id": "LKG-0131",
@@ -7509,7 +7639,8 @@
       "rules": [
         "jdg.micro.budownictwo.a1.r6"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "construction"
     },
     {
       "legal_node_id": "LKG-0132",
@@ -7528,7 +7659,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "construction"
     },
     {
       "legal_node_id": "LKG-0133",
@@ -7699,7 +7831,8 @@
         "jdg.pcc.sales_agreements.a1.r9",
         "jdg.pcc.sales_agreements.a2.r1"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pcc"
     },
     {
       "legal_node_id": "LKG-0134",
@@ -7726,7 +7859,8 @@
         "jdg.pcc.rate_changes.a4.r3",
         "jdg.pcc.rate_changes.a5.r1"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pcc"
     },
     {
       "legal_node_id": "LKG-0135",
@@ -7784,7 +7918,8 @@
         "jdg.pcc.sales_agreements.a1.r15",
         "jdg.restructuring.aport_real_estate_vat_analysis"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pcc"
     },
     {
       "legal_node_id": "LKG-0136",
@@ -7833,7 +7968,8 @@
         "jdg.r11_pcc_lokalne_akcyza_innovations.excise_product_classifier",
         "jdg.r11_pcc_lokalne_akcyza_innovations.vat_vs_pcc_arbitrator"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "pcc"
     },
     {
       "legal_node_id": "LKG-0137",
@@ -7877,7 +8013,8 @@
         "jdg.agricultural_tax.r5",
         "jdg.local_taxes.real_estate_dn1_filing"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "local"
     },
     {
       "legal_node_id": "LKG-0138",
@@ -7943,7 +8080,8 @@
         "jdg.tax_trans.r15",
         "jdg.tax_trans.r16"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "local"
     },
     {
       "legal_node_id": "LKG-0139",
@@ -7965,7 +8103,8 @@
       "rules": [
         "jdg.akcyza.fuel_energy.energy.r2"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "excise"
     },
     {
       "legal_node_id": "LKG-0140",
@@ -7989,7 +8128,8 @@
         "jdg.akcyza.fuel_energy.energy.r9",
         "jdg.micro.pcc_lokalne_atomic_p14.excise_energy.r1"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "excise"
     },
     {
       "legal_node_id": "LKG-0141",
@@ -8012,7 +8152,8 @@
       "rules": [
         "jdg.local_taxes.excise.akc4_declaration"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "excise"
     },
     {
       "legal_node_id": "LKG-0142",
@@ -8034,7 +8175,8 @@
       "rules": [
         "jdg.akcyza.fuel_energy.energy.r8"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "excise"
     },
     {
       "legal_node_id": "LKG-0143",
@@ -8062,7 +8204,8 @@
         "jdg.akcyza.fuel_energy.energy.r5",
         "jdg.local_taxes.excise.small_producer_exemption"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "excise"
     },
     {
       "legal_node_id": "LKG-0144",
@@ -8130,7 +8273,8 @@
         "jdg.micro.pcc_lokalne_atomic_p14.excise_ethanol.r1",
         "jdg.p14_pcc_lokalne_akcyza_innovations.excise_fuel_calculator"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "excise"
     },
     {
       "legal_node_id": "LKG-0145",
@@ -8178,7 +8322,8 @@
       "rules": [
         "jdg.p14_pcc_lokalne_akcyza_innovations.excise_cost_detector"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "excise"
     },
     {
       "legal_node_id": "LKG-0146",
@@ -8199,7 +8344,8 @@
       "rules": [
         "jdg.akcyza.alcohol_tobacco.other.r3"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "excise"
     },
     {
       "legal_node_id": "LKG-0147",
@@ -8220,7 +8366,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "excise"
     },
     {
       "legal_node_id": "LKG-0148",
@@ -8245,7 +8392,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0149",
@@ -8270,7 +8418,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0150",
@@ -8292,7 +8441,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0151",
@@ -8309,7 +8459,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0152",
@@ -8328,7 +8479,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0153",
@@ -8348,7 +8500,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0154",
@@ -8373,7 +8526,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0155",
@@ -8390,7 +8544,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0156",
@@ -8409,7 +8564,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0157",
@@ -8433,7 +8589,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0158",
@@ -8456,7 +8613,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0159",
@@ -8473,7 +8631,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0160",
@@ -8497,7 +8656,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0161",
@@ -8527,7 +8687,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0162",
@@ -8547,7 +8708,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0163",
@@ -8573,7 +8735,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0164",
@@ -8590,7 +8753,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0165",
@@ -8610,7 +8774,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0166",
@@ -8629,7 +8794,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0167",
@@ -8650,7 +8816,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0168",
@@ -8670,7 +8837,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0169",
@@ -8703,7 +8871,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "rodo"
     },
     {
       "legal_node_id": "LKG-0170",
@@ -8726,7 +8895,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "aml"
     },
     {
       "legal_node_id": "LKG-0171",
@@ -8750,7 +8920,8 @@
         "jdg.micro.rodo_aml_bdo_atomic_p15.aml_cash_15k.r1",
         "jdg.micro.rodo_aml_bdo_atomic_p15.bdo_registration.r1"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "aml"
     },
     {
       "legal_node_id": "LKG-0172",
@@ -8773,7 +8944,8 @@
       ],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "aml"
     },
     {
       "legal_node_id": "LKG-0173",
@@ -8792,7 +8964,8 @@
       "rules": [
         "jdg.micro.rodo_aml_bdo_atomic_p15.aml_str.r1"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "aml"
     },
     {
       "legal_node_id": "LKG-0174",
@@ -8814,7 +8987,8 @@
       "rules": [
         "jdg.micro.rodo_aml_bdo_atomic_p15.aml_beneficiary.r1"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "aml"
     },
     {
       "legal_node_id": "LKG-0175",
@@ -8831,7 +9005,8 @@
       "rule_ids": [],
       "threshold_keys": [],
       "rules": [],
-      "_act_matched": false
+      "_act_matched": false,
+      "domain": "aml"
     },
     {
       "legal_node_id": "LKG-0176",
@@ -8855,7 +9030,8 @@
         "jdg.micro.rodo_aml_bdo_atomic_p15.bdo_ewidencja.r1",
         "jdg.p15_srodowisko_bdo_innovations.budownictwo_audit"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "bdo"
     },
     {
       "legal_node_id": "LKG-0177",
@@ -8885,7 +9061,8 @@
         "jdg.micro.bdo_zezwolenia.r1",
         "jdg.micro.bdo_zezwolenia.r2"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "bdo"
     },
     {
       "legal_node_id": "LKG-0178",
@@ -8931,7 +9108,8 @@
         "jdg.micro.rodo_aml_bdo_atomic_p15.bdo_ewc.r1",
         "jdg.p15_srodowisko_bdo_innovations.kpo_generator"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "bdo"
     },
     {
       "legal_node_id": "LKG-0179",
@@ -8979,7 +9157,8 @@
         "jdg.p15_srodowisko_bdo_innovations.bdo_deadline_tracker",
         "jdg.p15_srodowisko_bdo_innovations.ewc_full_catalog"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "bdo"
     },
     {
       "legal_node_id": "LKG-0180",
@@ -9005,7 +9184,8 @@
         "jdg.micro.bdo_zezwolenia.r5",
         "jdg.micro.rodo_aml_bdo_atomic_p15.budownictwo_permit.r1"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "bdo"
     },
     {
       "legal_node_id": "LKG-0181",
@@ -9026,7 +9206,8 @@
       "rules": [
         "jdg.micro.bdo_transport.r4"
       ],
-      "_act_matched": true
+      "_act_matched": true,
+      "domain": "bdo"
     },
     {
       "legal_node_id": "LKG-0182",
@@ -10003,7 +10184,7 @@
       "article": "26e",
       "article_label": "Art. 26e",
       "node_type": "ARTICLE",
-      "domain": "other",
+      "domain": "pit",
       "material": true,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -10020,7 +10201,7 @@
       "article": "26eb",
       "article_label": "Art. 26eb",
       "node_type": "ARTICLE",
-      "domain": "other",
+      "domain": "pit",
       "material": true,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -10037,7 +10218,7 @@
       "article": "26gb",
       "article_label": "Art. 26gb",
       "node_type": "ARTICLE",
-      "domain": "other",
+      "domain": "pit",
       "material": true,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -10054,7 +10235,7 @@
       "article": "30ca",
       "article_label": "Art. 30ca",
       "node_type": "ARTICLE",
-      "domain": "other",
+      "domain": "pit",
       "material": true,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -10071,7 +10252,7 @@
       "article": "26ec",
       "article_label": "Art. 26ec",
       "node_type": "ARTICLE",
-      "domain": "other",
+      "domain": "pit",
       "material": true,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -10088,7 +10269,7 @@
       "article": "26h",
       "article_label": "Art. 26h",
       "node_type": "ARTICLE",
-      "domain": "other",
+      "domain": "pit",
       "material": true,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -10105,7 +10286,7 @@
       "article": "26",
       "article_label": "Art. 26",
       "node_type": "ARTICLE",
-      "domain": "other",
+      "domain": "pit",
       "material": true,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -10122,7 +10303,7 @@
       "article": "21",
       "article_label": "Art. 21",
       "node_type": "ARTICLE",
-      "domain": "other",
+      "domain": "pit",
       "material": true,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -10139,7 +10320,7 @@
       "article": "21",
       "article_label": "Art. 21",
       "node_type": "ARTICLE",
-      "domain": "other",
+      "domain": "pit",
       "material": true,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -10156,7 +10337,7 @@
       "article": "21",
       "article_label": "Art. 21",
       "node_type": "ARTICLE",
-      "domain": "other",
+      "domain": "pit",
       "material": true,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -10173,7 +10354,7 @@
       "article": "21",
       "article_label": "Art. 21",
       "node_type": "ARTICLE",
-      "domain": "other",
+      "domain": "pit",
       "material": true,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -10612,7 +10793,7 @@
       "article": "",
       "article_label": "całość",
       "node_type": "ACT",
-      "domain": "other",
+      "domain": "zus",
       "material": false,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -10849,7 +11030,7 @@
       "article": "24a",
       "article_label": "Art. 24a",
       "node_type": "ARTICLE",
-      "domain": "other",
+      "domain": "pit",
       "material": true,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -10893,7 +11074,7 @@
       "article": "109",
       "article_label": "Art. 109",
       "node_type": "ARTICLE",
-      "domain": "other",
+      "domain": "vat",
       "material": true,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -10910,7 +11091,7 @@
       "article": "99",
       "article_label": "Art. 99",
       "node_type": "ARTICLE",
-      "domain": "other",
+      "domain": "vat",
       "material": true,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -10927,7 +11108,7 @@
       "article": "",
       "article_label": "całość",
       "node_type": "ACT",
-      "domain": "other",
+      "domain": "ksef",
       "material": false,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -10944,7 +11125,7 @@
       "article": "45",
       "article_label": "Art. 45",
       "node_type": "ARTICLE",
-      "domain": "other",
+      "domain": "pit",
       "material": true,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -10978,7 +11159,7 @@
       "article": "",
       "article_label": "całość",
       "node_type": "ACT",
-      "domain": "other",
+      "domain": "ksef",
       "material": false,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -10995,7 +11176,7 @@
       "article": "96b",
       "article_label": "Art. 96b",
       "node_type": "ARTICLE",
-      "domain": "other",
+      "domain": "vat",
       "material": true,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -11068,7 +11249,7 @@
       "article": "44",
       "article_label": "Art. 44",
       "node_type": "ARTICLE",
-      "domain": "other",
+      "domain": "pit",
       "material": true,
       "valid_from": "2004-01-01",
       "valid_to": null,
@@ -11313,13 +11494,13 @@
       "act": "Ustawa Prawo przedsiębiorców, art. 22-25",
       "articles": 1,
       "material": 1,
-      "covered": 0
+      "covered": 1
     },
     {
       "act": "Ustawa Prawo przedsiębiorców, art. 5",
       "articles": 1,
       "material": 1,
-      "covered": 0
+      "covered": 1
     },
     {
       "act": "Ustawa o PIT, art. 24a",
@@ -11361,25 +11542,25 @@
       "act": "Ustawa o systemie ubezpieczeń społecznych, art. 18a",
       "articles": 1,
       "material": 1,
-      "covered": 0
+      "covered": 1
     },
     {
       "act": "Ustawa o systemie ubezpieczeń społecznych, art. 18c",
       "articles": 1,
       "material": 1,
-      "covered": 0
+      "covered": 1
     },
     {
       "act": "Ustawa o systemie ubezpieczeń społecznych, art. 47",
       "articles": 1,
       "material": 1,
-      "covered": 0
+      "covered": 1
     },
     {
       "act": "Ustawa o zryczałtowanym podatku dochodowym, art. 15",
       "articles": 1,
       "material": 1,
-      "covered": 0
+      "covered": 1
     },
     {
       "act": "Ustawa z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu",
@@ -11403,7 +11584,7 @@
       "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług (tekst jednolity: Dz.U. 2025 poz. 456, ze zmianami na 2026 r.)",
       "articles": 11,
       "material": 11,
-      "covered": 0
+      "covered": 9
     },
     {
       "act": "Ustawa z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych",
@@ -11421,7 +11602,7 @@
       "act": "Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych (tekst jednolity: Dz.U. 2025 poz. 345, ze zmianami na 2026 r.)",
       "articles": 4,
       "material": 4,
-      "covered": 0
+      "covered": 4
     },
     {
       "act": "Ustawa z dnia 14 grudnia 2012 r. o odpadach",
@@ -11457,7 +11638,7 @@
       "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne (tekst jednolity: Dz.U. 2025 poz. 234, ze zmianami na 2026 r.)",
       "articles": 2,
       "material": 2,
-      "covered": 0
+      "covered": 2
     },
     {
       "act": "Ustawa z dnia 23 kwietnia 1964 r. – Kodeks cywilny",
@@ -11475,7 +11656,7 @@
       "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych (tekst jednolity: Dz.U. 2025 poz. 789, ze zmianami na 2026 r.)",
       "articles": 9,
       "material": 9,
-      "covered": 0
+      "covered": 9
     },
     {
       "act": "Ustawa z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych",
@@ -11487,7 +11668,7 @@
       "act": "Ustawa z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych (tekst jednolity: Dz.U. 2025 poz. 890)",
       "articles": 1,
       "material": 1,
-      "covered": 0
+      "covered": 1
     },
     {
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
@@ -11499,7 +11680,7 @@
       "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm.)",
       "articles": 4,
       "material": 4,
-      "covered": 0
+      "covered": 3
     },
     {
       "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości",
@@ -11511,7 +11692,7 @@
       "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości (tekst jednolity: Dz.U. 2025 poz. 567, ze zmianami na 2026 r.)",
       "articles": 8,
       "material": 8,
-      "covered": 0
+      "covered": 8
     },
     {
       "act": "Ustawa z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej",
@@ -11523,7 +11704,7 @@
       "act": "Ustawa z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej (tekst jednolity: Dz.U. 2025 poz. 1234)",
       "articles": 1,
       "material": 1,
-      "covered": 0
+      "covered": 1
     },
     {
       "act": "Ustawa z dnia 6 czerwca 1997 r. – Kodeks karny",
@@ -11547,7 +11728,7 @@
       "act": "Ustawa z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej (CEIDG) (tekst jednolity: Dz.U. 2025 poz. 456)",
       "articles": 2,
       "material": 2,
-      "covered": 0
+      "covered": 2
     },
     {
       "act": "Ustawa z dnia 6 marca 2018 r. – Prawo przedsiębiorców",
@@ -11559,7 +11740,7 @@
       "act": "Ustawa z dnia 6 marca 2018 r. – Prawo przedsiębiorców (tekst jednolity: Dz.U. 2025 poz. 123, ze zmianami na 2026 r.)",
       "articles": 5,
       "material": 5,
-      "covered": 0
+      "covered": 5
     },
     {
       "act": "Ustawa z dnia 7 lipca 1994 r. – Prawo budowlane",

@@ -1,0 +1,93 @@
+================================================================
+PROMPT AD-02 — DOMKNIĘCIE 20 WĘZŁÓW LKG BEZ REGUŁY (REVERSE COVERAGE)
+================================================================
+
+Jesteś Legal Engineeren, architektem Legal Knowledge Graph i audytorem zgodności
+reguł Rego z polskim prawem JDG. Przeprować głębokie myślenie. Przeprować głęboką
+analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne
+ulepszenia wyprzedzające profesjonalistów. Przeprować głębokie myślenie i
+przeprować głęboką analizę, lecz nie wymyślaj podstaw prawnych. Wdrożyć/wygenerować
+najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+ZADANIE — LUKI LKG BEZ REGUŁY
+Raport `LEGAL_COVERAGE_GAP_RAPORT.md` wymienia 20 węzłów prawnych bez reguły, w tym:
+VAT art. 106a-106n, 108a-108f, 96b, 99, 109; PIT art. 21.1.148/152/153/154, art. 26,
+26e-26h, 30ca, 24a, 44, 45; Ordynacja art. 16-193a. Dla każdego z tych 20 węzłów:
+1. Zweryfikuj aktualny stan prawny wobec oficjalnego ISAP/RCL/MF (Bbb jest wejściem,
+   nie dowodem).
+2. Sprawdź, czy w `JDG/rules/` istnieje już reguła pod innym rule_id (artefakt
+   coverage), a jeśli tak — wskaż adres.
+3. Zaprojektuj i GOTOWY DO WDROŻENIA kod Rego domykający lukę z pełnym `_legal_basis`,
+   temporalnością i kontraktem 25 pól.
+Przeprować głębokie myślenie nad kolejnością zamykania luk wg priorytetu P1 (VAT) > P2.
+
+PLIKI DO ODCZYTU — TYLKO TE LINKI
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE_GAP_RAPORT.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_TWIN_TRACEABILITY.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/main_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/substantive.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/deductions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/art21_exemptions_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/missing_reliefs_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/kup.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/ord/ord_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/thresholds_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/provenance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/traceability_matrix.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_legal_basis.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/main_jdg.rego.bak
+
+W RAPORCIE MUSZĄ BYĆ
+1. Tabela 20 węzłów: status prawny, istniejąca reguła (jeśli jest), projekt reguły.
+2. Kod Rego do każdej nowej reguły (sekcja KOD, gotowy do review, z _legal_basis).
+3. Testy natywne Rego i pytest dla każdej nowej reguły (sekcja TESTY).
+4. Wpływ na macierz coverage i ryzyko nakładania się na istniejące reguły.
+5. Zależności do AD-12 (temporalność) i AD-01 (metryki).
+6. Oznacz każdą regułę identyfikatorem `GLM52-AD02-*` i wymaganym aktem/artykułem.
+7. Minimum 20 innowacyjnych rozwiązań Enterprise dla utrzymania "zero luk".
+8. Lista pytań wymagających decyzji człowieka (konflikty interpretacyjne).
+
+Powtarzane wymagania nadrzędne: Przeprować głębokie myślenie. Przeprować głęboką
+analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia
+wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej
+elementów i struktur których brakuje.
+
+
+POWTARZANE WYMAGANIA NADRZĘDNE — MUSZĄ być respektowane w CAŁYM raporcie:
+- Przeprować głębokie myślenie. Przeprować głęboką analizę.
+- Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów.
+- Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+- Przeprować głębokie myślenie i przeprować głęboką analizę przy każdej decyzji.
+- Zaawansowany poziom Enterprise i poziom ENTERPRISE są celem każdej rekomendacji.
+- Innowacyjne ulepszenia wyprzedzające profesjonalistów oraz wdrożenie największej liczby braków i elementów oraz struktur których brakuje są nadrzędne.
+- Przeprować głębokie myślenie i przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+- Przeprować głębokie myślenie i przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+BUDŻET KONTEKSTU:
+Do GLM przekazujesz WYŁĄCZNIE linki z sekcji PLIKI DO ODCZYTU oraz niezbędne krótkie
+raporty poprzednich części. Materiały wejściowe nie mogą przekroczyć 50% okna
+kontekstowego GLM. Nie wklejaj całego repozytorium. Jeżeli wskazane pliki są zbyt
+duże, analizuj je partiami według sekcji, a nie pomijaj treści. Podczas pracy
+zachowuj rezerwę kontekstu na analizę i sadzę rozwiązań.
+
+GENERUJ INTELIGENTNY KOD
+W sekcji KOD DO WDROŻENIA zaproponuj kompletną, inteligentną implementację Rego dla
+każdej luki, testy oraz wpisy do thresholds. Kod ma być deterministyczny (First-Match-
+Wins), temporalny, z pełną proweniencją i zgodny z kontraktem 25 pól. Nie modyfikuj
+plików bezpośrednio — dostarcz kod do przeglądu.
+
+================================================================
+MANDATORY RE-ITERATION (WPISY NADRZĄDNE — BEZWZGLĘDNIE OBOWIĄZKOWE)
+Nadrzędny imperatyw całego raportu (powielony dla pewności):
+1. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+2. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+3. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+4. Przeprować głębokie myślenie. Przeprować głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+Powtórzenia są celowe: każda z wymaganych fraz MUSI wystąpić co najmniej 4 razy w tym raporcie.
+
+NA KOŃCU: przekaż status 20 węzłów (zamknięte/otwarte/do-rozstrzygnięcia) dla
+AD-03, zapisz jawne założenia prawne i wyczyść okno kontekstowe.
