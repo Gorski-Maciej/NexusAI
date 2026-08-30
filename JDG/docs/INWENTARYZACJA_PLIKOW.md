@@ -18,7 +18,7 @@
 | Obszar | Pliki | Linie (w przybliżeniu) |
 |---|---:|---:|
 | **JDG/ (razem, bez __pycache__)** | ~1 407 | **~520 000+** |
-| `JDG/rules/` — reguły Rego (472 pliki) | 472 | **~370 000+** |
+| `JDG/rules/` — reguły Rego (490 plików) | 490 | **~375 000+** |
 | ├─ rdzeń i domeny (root + subkatalogi, bez mikro) | ~381 | ~128 000 |
 | ├─ mikro-atomy (`micro/` ze wszystkimi podkatalogami) | 91 | **~241 500** |
 | `JDG/tools/` (narzędzia Python) | 298 | ~80 000+ |

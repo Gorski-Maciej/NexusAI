@@ -43,7 +43,7 @@ z bramkami w przedziale 10–19/19 w zależności od domeny.
 | 23 | Enterprise AI / Neural Mesh | `WDROZONY_100` | 16/16 | 18 | predykcje AI oddzielone od decyzji, trust scoring, mesh v2 |
 | 24 | Testy + CI/CD jakość | `WDROZONY_100` | 16/16 | 20 | bramki statyczne, właściwości, mutacje, workflows CI |
 | 25 | Narzędzia / API / RuleStore / Bundle | `WDROZONY_100` | 18/18 | 21 | spójność schematu API, authN/Z, idempotencja, wersjonowanie, migracje |
-| 26 | policies mirror sync | `WDROZONY_100` | 14/14 | 17 | **hash-parity 0% drift**: 472 pliki źródłowe ↔ 546 w policies/, 0 missing |
+| 26 | policies mirror sync | `WDROZONY_100` | 14/14 | 17 | **hash-parity 0% drift**: 490 plików źródłowych ↔ 546 w policies/, 0 missing |
 | 27 | Cross-domain red team | `WDROZONY_100` | 15/15 | 18 | registry konfliktów, katalog ataków, macierz chaos (corrupt bundle, KSeF offline, missing thresholds) |
 | 28 | **Certyfikacja końcowa** | `WDROZONY_100` | **14/14** | — | 18 domen: 13 CERTIFIED / 5 CONDITIONAL / 0 BLOCKED; 29/29 raportów; 12 273 referencji prawnych |
 
@@ -54,7 +54,7 @@ z bramkami w przedziale 10–19/19 w zależności od domeny.
 | Bramka | Znaczenie |
 |--------|-----------|
 | `reconciliation_ok` | 29/29 raportów kampanii → `WDROZONY_100`, 0 incomplete, 0 unproven |
-| `matrix_complete` | 18 domen, 472 reguły, 405 testów, 22 bundlów, 12 273 referencji prawnych |
+| `matrix_complete` | 18 domen, 490 reguł, 405 testów, 22 bundlów, 12 273 referencji prawnych |
 | `domain_certification` | 13 CERTIFIED + 5 CONDITIONAL (VAT, orchestrator, legal_twin, control_plane, security) |
 | `production_blockers` | 0 blokerów: brak krytycznej luki prawnej, łańcuch temporalny kompletny |
 | `slo_sla_defined` | SLO/SLA zdefiniowane (canary→shadow→ramped→soak, MTTR ≤ 5 min) |
@@ -68,7 +68,7 @@ z bramkami w przedziale 10–19/19 w zależności od domeny.
 
 | Artefakt | Liczba |
 |----------|-------:|
-| Pliki Rego (`JDG/rules/`) | **472** |
+| Pliki Rego (`JDG/rules/`) | **490** |
 | Testy pytest | **198** |
 | Testy natywne Rego | **207** |
 | Narzędzia Python (`JDG/tools/`) | **298** |

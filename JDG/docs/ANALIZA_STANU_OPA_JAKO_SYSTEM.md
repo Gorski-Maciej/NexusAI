@@ -137,7 +137,7 @@ Najważniejszy sygnał z analizy dokumentacji: **duża część „systemowości
 - Brak opisanego modelu wdrażania: kto, kiedy, jak wypycha bundle do N instancji OPA.
 
 ### L2. Niespójność danych dokumentacyjnych (utrudnia niezawodne operacje)
-- Pliki Rego: 472 (README/INWENTARYZACJA/MANIFEST 2026-08-22) — spójne po kampanii GLM 5.2.
+- Pliki Rego: 490 (README/INWENTARYZACJA/MANIFEST 2026-08-30) — spójne po kampanii GLM 5.2.
 - rule_id: 11 855 (README/MANIFEST 2026-08-30) — spójne; historyczne rozbieżności (10 878/10 827/10 509) rozwiązane przez regenerację MANIFEST.
 - Testy natywne: UNIFIED_PLAN Faza 4 mówi „0 plików .rego w JDG/tests/" (ADR-013: ❌), a INWENTARYZACJA_PLIKOW raportuje 103+25 plików `test_native_*.rego`, zaś P23 — 98 testów rego w mapie pokrycia. **Wewnętrzna sprzeczność dokumentów.**
 - Narzędzia: 57 (README) vs 98 (P21) vs 130 (KATALOG_NARZEDZI).

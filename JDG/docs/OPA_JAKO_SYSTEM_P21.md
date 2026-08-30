@@ -36,7 +36,7 @@ zero-downtime, monitoring jakości decyzji.
 ### Sekcja 2 — Audyt Policies Produkcyjnych (PRIORYTET ★)
 | Reguła | Opis |
 |---|---|
-| `policies_drift_audit` | Dryf policies/jdg + policies/tax vs JDG/rules (472) — alert przy ≥ 10% (ETAP 26: 0% drift) |
+| `policies_drift_audit` | Dryf policies/jdg + policies/tax vs JDG/rules (490) — alert przy ≥ 10% (ETAP 26: 0% drift) |
 | `auto_sync_policies` (INN-04) | Single-source-of-truth (JDG/rules) + auto-sync co 24 h |
 
 ### Sekcja 3 — Audyt API i Migracji
