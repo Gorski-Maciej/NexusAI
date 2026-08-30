@@ -1,0 +1,81 @@
+================================================================
+PROMPT 04 — VAT MACRO: STAWKI, ZWOLNIENIA, ODLICZENIA, MPP, KSeF, WIS
+================================================================
+
+Jesteś Najwyższej Klasy Ekspertem VAT, KSeF/JPK i OPA/Rego dla polskiej JDG. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprowadź głębokie myślenie i przeprowadź głęboką analizę dla każdej kategorii VAT. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. NIE GENERUJ KODU REGO — generujesz wyłącznie ROZBUDOWANY RAPORT ANALITYCZNY TXT/Markdown
+2. NIE MODYFIKUJ PLIKÓW — analizujesz, nie tworzysz
+3. Nie traktuj „production"/COMPLETE jako dowodu. Każde twierdzenie: artefakt, podstawa prawna, wersja/data, dowód, pewność, wpływ.
+4. Nie twórz fikcyjnych artykułów/numerów Dz.U. Bbb = katalog do weryfikacji w ISAP.
+5. ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md i WIZJA_OPA_ENTERPRISE_V2.md są ŚWIĘTE i nadrzędne.
+6. Materiały wejściowe ≤50% okna. Czytaj TYLKO linki z tego promptu.
+
+## ZADANIE
+Wygeneruj ogromny raport (min. 20-28 stron). Audytuj VAT macro: stawki (23/8/5/0/ZW/NP), zwolnienia przedmiotowe (Art. 43), zwolnienie podmiotowe (Art. 113, limit 200 000 PLN), odliczenia (Art. 86-88), proporcje (Art. 90-91), korekty wieloletnie, złe długi (Art. 89a/89b), MPP/split payment (Art. 108a-108f), moment obowiązku podatkowego (Art. 19a-21), podstawę opodatkowania (Art. 29a-32), miejsce świadczenia (Art. 28a-28o), WDT/WNT/import/export, GTU, WIS (Art. 42a-42h), KSeF (Art. 106na-106nq), faktury (Art. 106a-106n). Zestawiaj każdą tezę z oficjalną podstawą prawną. Zachowaj kontrakty z Promptów 01-03.
+
+## 📂 PLIKI DO ODCZYTU — TYLKO TE LINKI:
+
+### Pliki święte (nadrzędne):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+
+### VAT macro (warstwa Macro):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/substantive.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/deductions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/procedures.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan23_detailed.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan26_critical.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/plan42_reduced_rates.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/place_of_supply.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/enterprise_vat_bridge.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/vat/vat_enterprise_zero_doubt.rego
+
+### VAT enterprise i cross-domain:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/corrections.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/edge_cases.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/conflicts.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/thresholds_jdg.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/temporal.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p02_vat_macro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p03_vat_macro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p04_vat_macro_enterprise_v9.rego
+
+### Narzędzia VAT:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/vat_audit_engine.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/vat_reconciliation_micro.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tests/test_vat_enterprise.py
+
+## W RAPORCIE MUSZĄ BYĆ:
+1. Executive Summary z TOP 10 rekomendacji VAT.
+2. Macierz art./ustęp/punkt → reguła → test → status dowodu (COMPLETE/PARTIAL/MISSING).
+3. MPP: warunki, towary wrażliwe (Zał. 15), kwota ≥15 000 PLN, rachunki split, komunikaty, wyjątki.
+4. Stawki i zwolnienia jako wersjonowane dane (zero hardcode), zgodność z obwieszczeniami MF.
+5. Odliczenia, proporcje, korekty wieloletnie (Art. 91), złe długi (SLIM VAT 3, 90 dni).
+6. Temporalność VAT: zmiany stawek w trakcie roku, moment powstania obowiązku podatkowego.
+7. Cross-domain contracts: wpływ VAT na PIT, PKPiR, KSeF, JPK, KKS, cross-border, audit.
+8. Fraud signals (sygnał, nie dowód): puste faktury, karuzele, solidarna odpowiedzialność.
+9. WIS: automatyczne żądania, klasyfikacja, basis, wygaśnięcie.
+10. KSeF: obowiązek od 2026-02-01, schemat XSD, UPO, offline queue, sankcje do 500 000 PLN.
+11. Minimum 25 innowacji Enterprise: MPP auto-detection, auto-GTU, limit 200K tracker, fraud real-time.
+12. Test plan: golden, property, mutation, fuzz, differential, legal replay.
+13. Lista konkretnych braków z `GLM52-V3-04-*` i kolejność wdrożenia.
+14. Sekcja „Czego nie wolno założyć". Oznacz niezweryfikowane [NIEZWERYFIKOWANE].
+
+## OPISY MAKSYMALIZACJI OPTYMALIZACJI I GENIALNYCH ROZWIĄZAŃ:
+- Opisz szczegółowo system „zero-defect" dla decyzji VAT z auto-rollback.
+- Opisz potężne rozwiązania: auto-uzupełnianie GTU z analizy semantycznej, MPP auto-detection.
+- Opisz innowacyjne ulepszenia: fraud pattern detection z ML, system korekt wieloletnich Art. 91.
+- Opisz niezawodność: temporal resilience na zmiany stawek, fail-closed przy niejednoznaczności.
+
+Powtarzane wymagania: Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+## FORMAT
+Raport z identyfikatorami GLM52-V3-04-*. Generuj wyłącznie raport TXT gotowy do zapisania.
+
+## NA KOŃCU:
+Przekaż kontrakty VAT dla Promptów 05 (VAT micro), 06 (fraud/MPP), 08 (PIT), 11 (KSeF/JPK), 12 (KKS), 18 (cross-border). Potwierdź ograniczenia prawne, a następnie WYCZYŚĆ OKNO KONTEKSTOWE. Przejdź płynnie do Promptu 05.

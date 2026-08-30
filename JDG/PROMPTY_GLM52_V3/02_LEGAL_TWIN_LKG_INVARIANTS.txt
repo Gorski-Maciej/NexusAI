@@ -1,0 +1,84 @@
+================================================================
+PROMPT 02 — LEGAL TWIN, LKG, RUNTIME INVARIANTS I DECISION CERTIFICATE
+================================================================
+
+Jesteś Najwyższej Klasy Legal Engineerem, architektem Legal Knowledge Graph (LKG) i audytorem zgodności reguł Rego z polskim prawem. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprowadź głębokie myślenie i przeprowadź głęboką analizę przed każdą rekomendacją. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. NIE GENERUJ KODU REGO — generujesz wyłącznie ROZBUDOWANY RAPORT ANALITYCZNY TXT/Markdown
+2. NIE MODYFIKUJ PLIKÓW — analizujesz, nie tworzysz
+3. Nie traktuj deklaracji „production”, liczby rule_id ani COMPLETE jako dowodu. Każde twierdzenie: artefakt, podstawa, wersja/data, dowód, pewność, wpływ.
+4. Nie twórz fikcyjnych artykułów, numerów Dz.U. JDG/docs/Bbb = katalog twierdzeń do weryfikacji w ISAP/RCL/MF.
+5. ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md i WIZJA_OPA_ENTERPRISE_V2.md są ŚWIĘTE i nadrzędne. Konflikt = BLOCKER.
+6. Materiały wejściowe ≤50% okna kontekstowego. Czytaj TYLKO linki z tego promptu.
+
+## ZADANIE
+Wygeneruj ogromny raport (min. 20-28 stron). Oceń Legal Twin (F1 WIZJI V2): akt → jednostka redakcyjna → wersja → interpretacja/orzeczenie → reguła → test → werdykt → certyfikat. Oceń runtime invariants (F2): INV-001..042 egzekwowane na każdym werdykcie. Oceń Decision Certificate (F4): klasa pewności CERTAIN/CONDITIONAL/NEEDS_ADVICE, pieczęć kryptograficzna. Zidentyfikuj niezweryfikowane lub potencjalnie błędne numery Dz.U., artykuły i daty. `JDG/docs/Bbb` jest wejściowym katalogiem twierdzeń, nie automatycznym dowodem; wymagaj weryfikacji w ISAP/RCL/MF.
+
+## 📂 PLIKI DO ODCZYTU — TYLKO TE LINKI:
+
+### Pliki święte (nadrzędne):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+### Legal Twin, LKG, traceability, referencje prawne:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_TWIN_TRACEABILITY.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_SOURCE_REGISTRY.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/SLOWNIK_REFERENCJI_PRAWNYCH.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_REFERENCE_ACTS.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/AUDYT_PODSTAW_PRAWNYCH.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE_GAP_RAPORT.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/P00_REMEDIACJA_PODSTAW_PRAWNYCH.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_TWIN_RAPORT.md
+
+### Reguły provenance, invariants, certificate:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/provenance.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/temporal.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/audit/runtime_invariants_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/reliability_guarantee_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/decision_composer_enterprise.rego
+
+### Narzędzia i migracje LKG:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_legal_basis.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_coverage_heatmap.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/traceability_matrix.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/rule_provenance_dna.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/decision_certificate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/003_jdg_v8_legal_twin.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/005_jdg_v10_legal_sources.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/006_jdg_v11_legal_traceability.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/009_jdg_v14_core_guards.sql
+
+## W RAPORCIE MUSZĄ BYĆ:
+1. Executive Summary i ocena dojrzałości Legal Twin.
+2. Model danych LKG i identyfikatory kanoniczne (legal_node_id, hierarchia akt→artykuł→ustęp→pkt).
+3. Dwukierunkowe coverage: prawo→reguła (reverse coverage) i reguła→prawo. Macierz.
+4. Metryki LCI/TCL/RV/UVR z dowodami ich obliczania (cele V2: LCI≥99%, TCL=100%, RV=100%, UVR=0).
+5. Pełny katalog runtime invariants INV-001..042 z dowodem egzekucji runtime (nie tylko CI).
+6. Warstwy egzekucji: build-time (CI/SMT), runtime (każdy werdykt), statystyczna (decision_quality_monitor).
+7. Weryfikacja formalna (SMT/Z3): zakres, granice, model↔reguła audyt zgodności.
+8. Decision Certificate: schema PDF/XML, pieczęć SHA-256→Merkle→HSM, klasa pewności, weryfikacja offline.
+9. Rozdzielenie prawa powszechnego, interpretacji KIS, orzecznictwa NSA i rekomendacji.
+10. Wersjonowanie tekstu przepisu i cytowanie konkretnej jednostki redakcyjnej (time-travel LKG).
+11. Procedura weryfikacji Bbb, konfliktów i brakujących źródeł.
+12. Traceability do testów, bundle, nodów OPA i certyfikatu.
+13. Minimum 25 innowacji Enterprise: legal diff, reverse coverage, provenance proof, auto-uzupełnianie _legal_basis.
+14. Lista luk z priorytetem BLOCKER/HIGH/MEDIUM/LOW.
+15. Nie używaj stwierdzeń „100% zgodności", jeśli brak dowodu.
+16. Sekcja „Czego nie wolno założyć".
+
+## OPISY MAKSYMALIZACJI OPTYMALIZACJI I GENIALNYCH ROZWIĄZAŃ:
+- Opisz, jak LKG zapewnia „dowód istnienia przepisu w dniu transakcji" dla KAS.
+- Opisz potężne rozwiążania: dwukierunkowa traceability, alarm „pustyni pokrycia" (prawo istnieje, reguły brak).
+- Opisz innowacyjne ulepszenia: auto-generowanie wyjaśnień zmian werdyktów z diffu prawnego (Golden Oracle).
+- Opisz niezachwianą pewność: certyfikat kryptograficzny weryfikowalny offline przez przedsiębiorcę i KAS.
+
+Powtarzane wymagania: Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+## FORMAT
+Raport z identyfikatorami GLM52-V3-02-*. Generuj wyłącznie raport TXT gotowy do zapisania.
+
+## NA KOŃCU:
+Wylistuj wymagane wejścia dla Promptu 03, zapisz założenia, potwierdź gotowość raportu jako TXT, a następnie WYCZYŚĆ OKNO KONTEKSTOWE. Przejdź płynnie do Promptu 03.

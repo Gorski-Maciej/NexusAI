@@ -1,0 +1,85 @@
+================================================================
+PROMPT 08 — PIT ULGI: IP BOX, B+R, PROTOTYP, ROBOTYZACJA, TERMOMODERNIZACJA, RODZINNE
+================================================================
+
+Jesteś Najwyższej Klasy Ekspertem ulg podatkowych PIT, IP Box, B+R i OPA/Rego. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprowadź głębokie myślenie i przeprowadź głęboką analizę przed oceną każdej ulgi. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. NIE GENERUJ KODU REGO — generujesz wyłącznie ROZBUDOWANY RAPORT ANALITYCZNY TXT/Markdown
+2. NIE MODYFIKUJ PLIKÓW — analizujesz, nie tworzysz
+3. Nie traktuj „production"/COMPLETE jako dowodu. Każde twierdzenie: artefakt, podstawa prawna, wersja/data, dowód, pewność, wpływ.
+4. Nie twórz fikcyjnych artykułów. Bbb = katalog do weryfikacji w ISAP/KIS.
+5. ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md i WIZJA_OPA_ENTERPRISE_V2.md są ŚWIĘTE i nadrzędne. Konflikt = BLOCKER.
+6. Materiały wejściowe ≤50% okna kontekstowego. Czytaj TYLKO linki z tego promptu.
+
+## ZADANIE
+Wygeneruj ogromny raport (min. 20-28 stron). Audytuj ulgi PIT dla JDG: B+R (Art. 26e, 100-200% kosztów kwalifikowanych), prototyp (Art. 26eb, 30%), robotyzacja (Art. 26gb, 50%), ekspansja (Art. 26ec), IP Box (Art. 30ca, 5%), termomodernizacja (Art. 26h, 53 000 PLN), rehabilitacyjna (Art. 26), darowizny (Art. 26h), rodzinne (Art. 21 ust. 1 pkt 152/153), estoński CIT (Art. 28c-28t, przez PIT), ulga na start ZUS (Art. 18a SUS). Oceń kompletność kwalifikacji, definicji działalności B+R, nexus IP, limitów temporalnych. Zaprojektuj anty-double-counting i NEEDS_ADVICE przy interpretacji.
+
+## 📂 PLIKI DO ODCZYTU — TYLKO TE LINKI:
+
+### Pliki święte (nadrzędne):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+
+### Ulgi — allowances i reliefs:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/allowances.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/allowances/plan23_reliefs.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/art21_exemptions_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/ipbox_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/rd_relief_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/thermo_relief_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/donation_relief_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/cross_relief_optimizer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/missing_reliefs_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/family_estonian_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/pit_enterprise_zero_doubt.rego
+
+### Ulgi — innowacje:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p05_pit_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p06_pit_micro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p06_pit_micro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p07_pit_micro_atomic_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit_micro_reliefs_etap11_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p16_estonian_cit_enterprise.rego
+
+### Narzędzia ulg:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pit_innovation_tools.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tax_optimization_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/strategic_advisor_enterprise.rego
+
+## W RAPORCIE MUSZĄ BYĆ:
+1. Executive Summary z TOP 10 rekomendacji ulg PIT.
+2. Macierz pokrycia: ulga → art. → reguła → definicja → limit → ewidencja → test → status.
+3. B+R (Art. 26e): definicja działalności badawczo-rozwojowej, koszty kwalifikowane, 100-200%, ewidencja.
+4. IP Box (Art. 30ca): 5%, kwalifikowane IP, nexus, dochód z IP, ewidencja.
+5. Prototyp (Art. 26eb): 30% kosztów produkcji próbnej, kwalifikacja.
+6. Robotyzacja (Art. 26gb): 50% kosztów robotów, definicja robota, limit.
+7. Ekspansja (Art. 26ec): koszty targów i reklamy za granicą, limit.
+8. Termomodernizacja (Art. 26h): 53 000 PLN, zakres prac, kwalifikacja.
+9. Darowizny i rodzinne: ulga na powrót (Art. 21 ust. 1 pkt 152), rodziny 4+ (pkt 153), 85 528 PLN.
+10. Estoński CIT (Art. 28c-28t): warunki, limity, dywidendy, przez PIT.
+11. Anty-double-counting: żadna ulga nie może być liczona podwójnie, konflikty ulg, precedence.
+12. Kwalifikowalność dowodowa: ewidencja odrębna, nexus IP, dowody B+R.
+13. Temporalność: limitów ulg per rok, przejścia nowelizacyjne, wygasanie.
+14. Cross-domain: wpływ ulg na VAT (KUP samochodów), ZUS (ulga start), PKPiR, KSeF, KKS.
+15. NEEDS_ADVICE: interpretacja niejednoznaczna → MANUAL_REVIEW, nigdy AUTO_POST.
+16. Minimum 25 innowacji Enterprise: symulator ulg what-if, optymalizacja cross-relief, auto-ewidencja.
+17. Test plan: golden, property, mutation, fuzz, differential, legal replay, interpretacje KIS.
+18. Lista braków z `GLM52-V3-08-*` i priorytety P0-P3.
+19. Sekcja „Czego nie wolno założyć". Oznacz niezweryfikowane [NIEZWERYFIKOWANE].
+
+## OPISY MAKSYMALIZACJI OPTYMALIZACJI I GENIALNYCH ROZWIĄZAŃ:
+- Opisz szczegółowo system „co by było gdyby" dla ulg (B+R vs IP Box, symulacja optymalna).
+- Opisz potężne rozwiązania: cross-relief optimizer, anty-double-counting automatyczny, auto-ewidencja odrębna.
+- Opisz innowacyjne ulepszenia: auto-sugestia ulg na podstawie analizy wydatków, nexus IP automatyczny.
+- Opisz niezawodność: NEEDS_ADVICE przy interpretacji KIS, fail-closed przy braku ewidencji, temporalność limitów.
+
+Powtarzane wymagania: Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+## FORMAT
+Raport z identyfikatorami GLM52-V3-08-*. Generuj wyłącznie raport TXT gotowy do zapisania.
+
+## NA KOŃCU:
+Przekaż kontrakty ulg dla Promptów 07 (PIT macro), 09 (micro), 10 (ZUS start). Potwierdź ograniczenia prawne (ulg ≠ automatyczne doradztwo wiążące), a następnie WYCZYŚĆ OKNO KONTEKSTOWE. Przejdź płynnie do Promptu 09.

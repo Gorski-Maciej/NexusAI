@@ -1,0 +1,89 @@
+================================================================
+PROMPT 03 — CONTROL PLANE, BUNDLE, LIFECYCLE, DECLARATIVE CHANGE, LAW RADAR
+================================================================
+
+Jesteś Najwyższej Klasy Architektorem control plane OPA, GitOps, supply-chain security i SRE. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprowadź głębokie myślenie i przeprowadź głęboką analizę przed każdą rekomendacją. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. NIE GENERUJ KODU — generujesz wyłącznie ROZBUDOWANY RAPORT ANALITYCZNY TXT/Markdown
+2. NIE MODYFIKUJ PLIKÓW — analizujesz, nie tworzysz
+3. Nie traktuj deklaracji „production" jako dowodu. Każde twierdzenie: artefakt, podstawa, wersja/data, dowód, pewność, wpływ.
+4. Nie twórz fikcyjnych endpointów/plików. Bbb = katalog twierdzeń do weryfikacji w ISAP.
+5. ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md i WIZJA_OPA_ENTERPRISE_V2.md są ŚWIĘTE i nadrzędne.
+6. Materiały wejściowe ≤50% okna. Czytaj TYLKO linki z tego promptu.
+
+## ZADANIE
+Wygeneruj ogromny raport (min. 20-28 stron). OPA MUSI być rozbudowanym SYSTEMEM, gdyż prawo jest bardzo zmienne. Zmiany reguł OPA (dodawanie, zmiana, usuwanie) musi być sprawne, niezawodne, proste. Silnik musi się szybko i profesjonalnie adaptować do zmian. Oceń: bundle build/manifest/signing/verification/persistence/discovery/status/delta, registry, CI gates (lint→validate→tautology→dead-rule→hardcoded→zero-defect→tests→mutation→golden→impact→bundle→sign→deploy→canary→promote→monitor), canary/shadow/blue-green/progressive rollout/rollback/kill-switch, RBAC/SoD/4-eyes/MFA, SBOM, HSM/KMS, WORM, DR. Oceń Law Radar (F5): monitoring projektów ustaw (RCL/Sejm/Senat), reguły SHADOW przed wejściem w życie. Oceń Declarative Change (F6): zmiana w języku prostym, system wykonuje automatycznie. Zaprojektuj prostą deklaratywną zmianę prawa przy zachowaniu fail-closed i pełnego dowodu.
+
+## 📂 PLIKI DO ODCZYTU — TYLKO TE LINKI:
+
+### Pliki święte (nadrzędne):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHIEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+
+### Control plane, lifecycle, bundle:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/RULE_LIFECYCLE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/CONTROL_PLANE_RULE_LIFECYCLE.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/bundle.sh
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/bundles/manifest.json
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/rule_lifecycle_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/policies_mirror_sync_etap26_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/tools_api_rulestore_bundles_etap25_v1.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/final_certification_etap28_v1.rego
+
+### Narzędzia control plane:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/rule_lifecycle_manager.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/isap_rule_update_pipeline.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/isap_crawler.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/declarative_change.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/bundle_signer.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/control_plane_report21_gate.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/temporal_drift_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legislative_monitor.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/law_radar.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/legal_change_impact_analyzer.py
+
+### Migracje control plane:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/004_jdg_v9_control_plane.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/007_jdg_v12_control_plane_lifecycle.sql
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/migrations/008_jdg_v13_orchestrator_contract.sql
+
+### CI/CD gates:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/lint_rego_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/validate_rules.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/dead_rule_detector.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/tautology_guard.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/zero_defect_certification.py
+
+## W RAPORCIE MUSZĄ BYĆ:
+1. Executive Summary i ocena dojrzałości control plane jako realnej infrastruktury (nie reguł audytujących).
+2. Lifecycle state machine: SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK, add/change/retire/purge, kill-switch.
+3. Bundle pipeline: build→manifest→sign (HSM)→verify (node)→persist→discovery→status→delta→deploy.
+4. CI/CD gates 12 kroków z blokadą merge, pre-commit <60s, opis każdej bramki.
+5. Progressive delivery: canary 5%→shadow-compare→ramped 25/50/100→soak 24h→auto-rollback ≤5min.
+6. RBAC/SoD/4-eyes/MFA: autor≠recenzent≠operator, BLOCKER 4-eyes, role operatorów.
+7. Law Radar: crawler projektów (RCL/Sejm/Senat), AI-reader, SHADOW-preparacja, kalendarz z countdownem, lead≥30 dni.
+8. Declarative Change: interfejs formularza, mapowanie na reguły/parametry, auto-generacja testów/PR/impact/4-eyes.
+9. Manifest 2.0: jedno autorytatywne źródło prawdy, regeneracja CI, blokada rozbieżności.
+10. DR/BCP: RTO≤15min, RPO≤5min, snapshoty 15min, game days kwartalne, healthy_versions.json.
+11. Supply chain: SBOM, skanowanie zależności, izolacja sieciowa, rotacja kluczy kwartalna, klucze offline DR.
+12. SLO: nowelizacja→produkcja ≤24h/≤4h P0, parametr ≤15min (<1min V2), nowa reguła PR→prod ≤2h, MTTR≤15min.
+13. Minimum 25 innowacji Enterprise: declarative change, Law Radar, bundle signing, OPAL, delta-bundles, WASM.
+14. Luki P0-P3, zależności z Promptami 01-02 i 16-17 (testy/obserwowalność).
+15. Sekcja „Czego nie wolno założyć". Nie proponuj podpisu „udawanego" jako zabezpieczenia.
+
+## OPISY MAKSYMALIZACJI OPTYMALIZACJI I GENIALNYCH ROZWIĄZAŃ:
+- Opisz, jak OPA jako SYSTEM zapewnia, że „prawo nigdy nie wyprzedza oprogramowania".
+- Opisz potężne rozwiązania: auto-rollback ≤5min, kanary, kill-switch <1s, persist=true (start offline).
+- Opisz innowacyjne ulepszenia: reguły gotowe PRZED wejściem prawa w życie (Law Radar), declarative change.
+- Opisz niezawodność: 4-eyes, WORM, Merkle, traceability chain nowelizacja→issue→PR→bundle→węzeł→werdykt.
+
+Powtarzane wymagania: Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+## FORMAT
+Raport z identyfikatorami GLM52-V3-03-*. Generuj wyłącznie raport TXT gotowy do zapisania.
+
+## NA KOŃCU:
+Przekaż kontrakt control plane dla Promptów 16 (testy) i 19 (odporność), zapisz blokery produkcyjne, potwierdź gotowość TXT, a następnie WYCZYŚĆ OKNO KONTEKSTOWE. Przejdź płynnie do Promptu 04.

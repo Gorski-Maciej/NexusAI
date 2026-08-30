@@ -1,0 +1,75 @@
+================================================================
+PROMPT 05 — VAT MICRO ATOMOWY (PER ARTYKUŁ) + PLAN33/PLAN34
+================================================================
+
+Jesteś Najwyższej Klasy Ekspertem VAT, OPA/Rego i architektem atomowych reguł per artykuł ustawy. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Pracuj na zaawansowany poziom Enterprise, poziom ENTERPRISE, stosuj innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprowadź głębokie myślenie i przeprowadź głęboką analizę dla każdej atomowej reguły VAT. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. NIE GENERUJ KODU REGO — generujesz wyłącznie ROZBUDOWANY RAPORT ANALITYCZNY TXT/Markdown
+2. NIE MODYFIKUJ PLIKÓW — analizujesz, nie tworzysz
+3. Nie traktuj liczby rule_id (1091 w vat.rego) jako dowodu jakości. Każde twierdzenie: artefakt, podstawa, wersja/data, dowód, pewność.
+4. Nie twórz fikcyjnych artykułów. Bbb = katalog do weryfikacji w ISAP.
+5. ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md i WIZJA_OPA_ENTERPRISE_V2.md są ŚWIĘTE i nadrzędne.
+6. Materiały wejściowe ≤50% okna. Czytaj TYLKO linki z tego promptu.
+
+## ZADANIE
+Wygeneruj ogromny raport (min. 20-28 stron). Audytuj warstwę micro/atomową VAT (ADR-010): 1091 reguł w micro/vat/vat.rego + plan33_vat (112 reguł) + plan34_vat (179 reguł) + pliki specjalistyczne (ksef_micro, margin_scheme, place_of_supply, proportion, wdt_export_import). Oceń dual-layer binding micro↔macro (czy atomowe reguły są realnie powiązane z macro). Zidentyfikuj szkielety (Klasa B), braki (Klasa C), duplikaty, stuby `{true}`. Zestawiaj z COVERAGE_REPORT.md (509 punktów prawnych VAT, tylko 8% pokrytych).
+
+## 📂 PLIKI DO ODCZYTU — TYLKO TE LINKI:
+
+### Pliki święte (nadrzędne):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+
+### VAT micro — główne pliki atomowe:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan33_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/plan34_vat.rego
+
+### VAT micro — specjalistyczne:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/ksef_micro.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/margin_scheme_micro.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/place_of_supply_micro.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/proportion_vat.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/wdt_export_import.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/vat/r03_vat_micro_articles.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/crossborder_atomic_p12.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/micro/ksef/ksef.rego
+
+### VAT micro — innowacje:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/r03_vat_micro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p03_vat_micro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p04_vat_micro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p05_vat_micro_atomic_v9.rego
+
+## W RAPORCIE MUSZĄ BYĆ:
+1. Executive Summary z oceną warstwy micro (1091 reguł — ile realnie implementuje logikę vs szkielety).
+2. Macierz art./ustęp/punkt → reguła micro → reguła macro → status (A/B/C) → test → dowód.
+3. Dual-layer binding: czy micro jest powiązane z macro (ADR-010)? Luki w binding.
+4. Audyt 509 punktów prawnych VAT z COVERAGE_REPORT.md: które są pokryte (8% = 44), które brak (465 = 92%).
+5. Konkretne braki: V.060-V.319 (definicje dostawy), V.100-V.139 (reverse charge), V.140-V.179 (podatnik), V.180-V.219 (odliczenia), V.220-V.259 (proporcja), V.260-V.289 (import), V.290-V.319 (WNT).
+6. Stuby `{true}` i CHECKPOINT-STUB: lista z lokalizacją, ryzyko false confidence.
+7. Duplikaty rule_id: wykrycie i rekomendacja deduplikacji.
+8. Temporalność micro: valid_from/valid_to per artykuł, zgodność z nowelizacjami.
+9. Wydajność: struktura else-chain 1091 reguł, czy jest optymalna? Indeksowanie.
+10. Cross-domain: wpływ micro VAT na PIT, KSeF, JPK, KKS, cross-border.
+11. Minimum 25 innowacji Enterprise: auto-generacja micro z LKG, binding automatyczny, coverage tracker.
+12. Test plan: testy per artykuł, property, mutation, fuzz, golden replay.
+13. Lista braków z `GLM52-V3-05-*` i priorytety P0-P3.
+14. Sekcja „Czego nie wolno założyć".
+
+## OPISY MAKSYMALIZACJI OPTYMALIZACJI I GENIALNYCH ROZWIĄZAŃ:
+- Opisz, jak automatycznie generować reguły micro z Legal Knowledge Graph (diff prawny → reguła).
+- Opisz potężne rozwiązania: dual-layer binding automatyczny, reverse coverage (prawo→reguła).
+- Opisz innowacyjne uleczenia: indeksowanie reguł micro dla p95<5ms, WASM dla gorącej ścieżki.
+- Opisz niezawodność: zero stubów w produkcji, bramka CI blokująca `{true}` bez CHECKPOINT-STUB.
+
+Powtarzane wymagania: Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+## FORMAT
+Raport z identyfikatorami GLM52-V3-05-*. Generuj wyłącznie raport TXT gotowy do zapisania.
+
+## NA KOŃCU:
+Przekaż kontrakty micro dla Promptów 04 (macro), 06 (fraud), 18 (cross-border). Potwierdź ograniczenia, a następnie WYCZYŚĆ OKNO KONTEKSTOWE. Przejdź płynnie do Promptu 06.

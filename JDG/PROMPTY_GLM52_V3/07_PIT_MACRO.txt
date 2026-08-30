@@ -1,0 +1,88 @@
+================================================================
+PROMPT 07 — PIT MACRO: FORMY, KUP, ZALICZKI, ZWOLNIENIA, PRZEJŚCIA
+================================================================
+
+Jesteś Najwyższej Klasy Ekspertem PIT dla JDG, legal engineerem i architektem OPA/Rego. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zapewnij zaawansowany poziom Enterprise, poziom ENTERPRISE, innowacyjne ulepszenia wyprzedzające profesjonalistów. Przeprowadź głębokie myślenie i przeprowadź głęboką analizę przed oceną każdej formy opodatkowania. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje. Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+## ⚠️ KRYTYCZNE ZASADY:
+1. NIE GENERUJ KODU REGO — generujesz wyłącznie ROZBUDOWANY RAPORT ANALITYCZNY TXT/Markdown
+2. NIE MODYFIKUJ PLIKÓW — analizujesz, nie tworzysz
+3. Nie traktuj „production"/COMPLETE jako dowodu. Każde twierdzenie: artefakt, podstawa prawna, wersja/data, dowód, pewność, wpływ.
+4. Nie zakładaj aktualności stawek ani limitów; weryfikuj je wobec źródeł oficjalnych (ISAP/MF). Bbb = katalog do weryfikacji.
+5. ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md i WIZJA_OPA_ENTERPRISE_V2.md są ŚWIĘTE i nadrzędne. Konflikt = BLOCKER.
+6. Materiały wejściowe ≤50% okna kontekstowego. Czytaj TYLKO linki z tego promptu.
+
+## ZADANIE
+Wygeneruj ogromny raport (min. 20-28 stron). Audytuj PIT macro: formy opodatkowania (skala 12%/32% Art. 27, liniowy 19% Art. 30c, ryczałt — odsyła do Promptu 15), przychody z działalności (Art. 14), koszty uzyskania przychodu KUP (Art. 22), wyłączenia z KUP/NKUP (Art. 23), zaliczki (Art. 44), straty (Art. 9), zwolnienia przedmiotowe (Art. 21), przejścia między formami, zeznania roczne (PIT-36/36L/28, Art. 45), współmałżonkowie. Zbadaj spójność z VAT (Prompt 04), ZUS (Prompt 10-11), PKPiR (Prompt 12), KSeF (Prompt 20) i decyzją AUTO_POST. Nie zakładaj aktualności stawek/limitów.
+
+## 📂 PLIKI DO ODCZYTU — TYLKO TE LINKI:
+
+### Pliki święte (nadrzędne):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/Bbb
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/docs/LEGAL_COVERAGE.md
+
+### PIT macro (warstwa Macro):
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/forms.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/kup.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/kup_extended.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/advances_returns.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/exemptions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/transitions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/plan23_exemptions.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/plan23_tax_form_change.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/plan26_detailed.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/plan26_pit_critical.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/tax_form_transition_intelligence.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/pit_enterprise_zero_doubt.rego
+
+### PIT enterprise — deklaracje i formularze:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/annual_declaration_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/form_optimizer_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/form_transition_simulator_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit/declaration_extensions_enterprise.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/cross_declaration_validator_enterprise.rego
+
+### PIT innowacje macro:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p04_pit_macro_innovations_v8.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p05_pit_macro_innovations_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/p06_pit_macro_enterprise_v9.rego
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/rules/pit_macro_etap10_innovations_v1.rego
+
+### Narzędzia PIT:
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pit_innovation_tools.py
+- https://github.com/Gorski-Maciej/NexusAI/blob/main/JDG/tools/pit_temporal_snapshot_engine.py
+
+## W RAPORCIE MUSZĄ BYĆ:
+1. Executive Summary z TOP 10 rekomendacji PIT macro.
+2. Macierz pokrycia: art./ustęp → reguła → test → status dowodu (COMPLETE/PARTIAL/MISSING).
+3. Formy opodatkowania: skala (12%/32%, próg 120 000, kwota wolna 30 000), liniowy 19%, ryczałt (odsyła do P15), karta.
+4. KUP (Art. 22): koszty bezpośrednie, pośrednie, materiały, wynagrodzenia, amortyzacja.
+5. NKUP (Art. 23): wyłączenia — reprezentacja, sankcje, kary, składki NKUP, samochody (75%).
+6. Zaliczki (Art. 44): terminy (do 20.), obliczenia, korekty, współmałżonkowie.
+7. Straty (Art. 9): przeniesienie 5 lat, limit 50%, consecutio.
+8. Zwolnienia przedmiotowe (Art. 21): ulga dla młodych (<26 r.ż., 85 528 PLN), powrót, rodziny 4+, emeryci.
+9. Przejścia form: skala→liniowy→ryczałt, zasada proporcjonalności, data zmiany, skutki ZUS.
+10. Zeznania roczne: PIT-36/36L/28, auto-fill, uzgodnienie zaliczek, korekty.
+11. Konflikty ulg: anty-double-counting, kwalifikowalność dowodowa, rozdzielenie optymalizacji legalnej od ryzyka.
+12. Temporalność PIT: zmiany stawek/limitów w trakcie roku (Polski Ład), przejścia nowelizacyjne.
+13. Cross-domain contracts: wpływ PIT na VAT, ZUS, PKPiR, KSeF, JPK, KKS, audit.
+14. Minimum 25 innowacji Enterprise: auto-optymalizacja formy, symulator what-if, predykcja zaliczek.
+15. Test plan: golden, property, mutation, fuzz, differential, legal replay.
+16. Lista braków z `GLM52-V3-07-*` i priorytety P0-P3.
+17. Sekcja „Czego nie wolno założyć". Oznacz niezweryfikowane [NIEZWERYFIKOWANE].
+
+## OPISY MAKSYMALIZACJI OPTYMALIZACJI I GENIALNYCH ROZWIĄZAŃ:
+- Opisz szczegółowo system automatycznej optymalizacji formy opodatkowania (what-if, symulacja).
+- Opisz potężne rozwiązania: auto-uzgadnianie zaliczek z deklaracją roczną, anty-double-counting ulg.
+- Opisz innowacyjne ulepszenia: predykcja zaliczek z ML na podstawie historii, form transition simulator.
+- Opisz niezawodność: temporalność stawek/limitów, fail-closed przy braku danych, NEEDS_ADVICE przy interpretacji.
+
+Powtarzane wymagania: Przeprowadź głębokie myślenie. Przeprowadź głęboką analizę. Zaawansowany poziom Enterprise. Poziom ENTERPRISE. Innowacyjne ulepszenia wyprzedzające profesjonalistów. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+## FORMAT
+Raport z identyfikatorami GLM52-V3-07-*. Generuj wyłącznie raport TXT gotowy do zapisania.
+
+## NA KOŃCU:
+Przekaż kontrakty PIT dla Promptów 08 (ulgi), 09 (micro), 10-11 (ZUS), 12 (PKPiR), 15 (ryczałt). Nie twierdź o pełnej zgodności bez dowodów, a następnie WYCZYŚĆ OKNO KONTEKSTOWE. Przejdź płynnie do Promptu 08.
