@@ -1,0 +1,767 @@
+==============================================================================
+PROMPT V3 P01 — LEGAL TWIN, LEGAL KNOWLEDGE GRAPH I ŚCIEŻKA DOWODOWA ZGODNOŚCI Z PRAWEM
+==============================================================================
+
+Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN dla GLM 5.2
+Plik promptu:           JDG/prompty_v3/V3_PROMPT_P01_LEGAL_TWIN_LKG.txt
+Docelowy plik raportu:  JDG/raporty_glm52_v3/RAPORT_V3_P01_LEGAL_TWIN_LKG.txt
+Wersja kampanii: V3.0   Data wygenerowania pakietu: 2026-09-02
+Skala części: 4 podanaliz, 40 plików do odczytu, min. 12 innowacji Enterprise.
+
+Jeden prompt = jeden plik TXT. Ten plik wklejasz do GLM 5.2 w CLEAN sesji (puste okno kontekstowe).
+
+SEKCJA 1 — ROLA I WYMAGANIA NADRZĘDNE
+------------------------------------------------------------------------------
+
+Jesteś Legal Engineerem i architektem Legal Knowledge Graph dla polskiego prawa podatkowego z doświadczeniem w traceability klasy finansowej.
+
+Wymagania nadrzędne tej części (obowiązuje KAŻDE z nich):
+
+  1. Przeprować głębokie myślenie.
+  2. Przeprować głęboką analizę.
+  3. zaawansowany poziom Enterprise.
+  4. poziom ENTERPRISE.
+  5. innowacyjne ulepszenia wyprzedzające profesjonalistów.
+  6. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Powtarzaj te wymagania przed każdą sekcją raportu, każdą rekomendacją i każdą decyzją projektową.
+
+Specjalizacja części P01: modelowanie aktów prawnych jako grafu, dwukierunkowe pokrycie prawo↔reguła, weryfikacja podstaw prawnych w ISAP/RCL, dowód istnienia przepisu na dzień transakcji.
+
+SEKCJA 2 — MISJA CZĘŚCI
+------------------------------------------------------------------------------
+
+Zbuduj pełny projekt Legal Twin (Filar V2/F1 z dokumentu świętego): AKT → ARTYKUŁ → USTĘP/PUNKT → WERSJA (valid_from/valid_to) → INTERPRETACJA/ORZECZENIE → REGUŁA → TEST → WERDYKT → CERTYFIKAT. Wszystkie reguły silnika mają być dwukierunkowo powiązane z węzłami prawa; pokrycie prawa ma być MIERZONE (LCI/TCL), nie deklarowane.
+
+Zweryfikuj katalog źródeł prawnych z JDG/docs/Bbb wobec oficjalnych publikatorów (ISAP/RCL/MF): numer Dz.U., tytuł, daty, treść artykułów. Wykryj wszystkie podstawy prawne w regułach, które są niezweryfikowane, podejrzane lub fikcyjne, i zaprojektuj pipeline ich mediacji. Zaprojektuj reverse coverage: każdy węzeł materialny (przepis z wartością/terminem/stawką) musi mieć ≥ 1 regułę — węzeł bez reguły to alarm „prawo istnieje, system go nie zna”.
+
+Cel nadrzędny całej serii V3: silnik reguł podatkowych OPA ma maksymalnie zautomatyzować księgowość JDG
+(CODZIENNE księgowanie: faktury → ewidencje → deklaracje → płatności → archiwum), pozostając systemem
+fail-closed: przy konflikcie, luce prawnej, niezweryfikowanym źródle lub naruszeniu invariantów decyzją
+jest NEEDS_ADVICE / MANUAL_REVIEW — nigdy ciche automatyczne AUTO_POST. Forteca = precyzja, nie odwaga.
+
+Uwaga o archiwum: poprzednie kampanie (JDG/PROMPTY_GLM52_01-05.txt … 21-40.txt, raporty w JDG/raporty_glm52
+oraz raporty P00–P30 wg JDG/prompts_status.yaml) są ARCHIWUM WEJŚCIOWYM. Seria V3 NIE kopiuje ich treści —
+weryfikuje stan REPOZYTORIUM PO ich wdrożeniu i domyka to, co wciąż jest luką. Zanim uznasz coś za brak,
+sprawdź w raporcie V3_P00 (mapa kanoniczna) oraz w samej strukturze repozytorium, czy element już istnieje.
+ZAKAZ duplikowania istniejących reguł, narzędzi, migracji i raportów — rozszerzaj, nie zdublikuj.
+
+SEKCJA 3 — BUDŻET KONTEKSTU (ZASADA 50% I CZYSTA SESJA)
+------------------------------------------------------------------------------
+
+1. Dane i informacje dostarczone do GLM 5.2 (pliki odczytane wg linków z tej części) mogą zająć MAKSYMALNIE
+   50% okna kontekstowego. Pozostałe ≥ 50% musi zostać na myślenie, analizę, dedukcję i generowanie raportu.
+2. Czytaj WYŁĄCZNIE linki z Sekcji 6 (oraz wymienione raporty-kontrakty z Sekcji 11.1). Nie surfuj po całym
+   repozytorium i nie wczytuj katalogów zbiorczo — to gwarancja, że budżet 50% zostanie dotrzymany.
+3. Jeśli którykolwiek plik okaże się zbyt duży, aby zmieścić go w budżecie 50%, czytaj go PARTIAMI wg sekcji
+   (nagłówki → sekcje krytyczne → reszta) i to zaznaczaj w raporcie. ZAKAZ cichego pomijania treści.
+4. Ten prompt + odczytane pliki + praca analityczna + generowany raport muszą się zmieścić w jednej sesji.
+   Jeśli którejkolwiek analizy zabraknie miejsca: skróć cytat, nie skróć myśli — każda teza musi mieć dowód.
+5. Po zakończeniu pracy (Sekcja 16) WYCZYŚĆ okno kontekstowe. Nie przenoś niejawnych założeń do następnej części.
+
+SEKCJA 4 — ŹRÓDŁA NADRZĘDNE (OBOWIĄZKOWE DLA KAŻDEJ CZĘŚCI)
+------------------------------------------------------------------------------
+
+4.1 Dokumenty święte — nadrzędna architektura docelowa (każdy konflikt z nimi = BLOCKER):
+
+   - DOKUMENT ŚWIĘTY nr 1 — architektura docelowa V1 (Control Plane + Data Plane, cykl życia reguł, pipeline ISAP→produkcja, bramki CI, SLO)
+     https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+
+   - DOKUMENT ŚWIĘTY nr 2 — Wizja V2 (Legal Twin/LKG, Warstwa Konstytucyjna, Golden Oracle, Decision Certificate, Law Radar, Declarative Change; kontynuacja dokumentu nr 1)
+     https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+
+   Prawo konfliktu: jeżeli jakikolwiek plik, dokument, README, manifest, wcześniejszy raport lub własny
+   wniosek jest sprzeczny z dokumentami świętymi — NIE ZGADYWAJ. Oznacz konflikt jako BLOCKER z cytatami
+   obu stron i zaproponuj rozstrzygnięcie zgodne z dokumentami świętymi.
+
+4.2 Źródła prawne:
+
+   - Dokument źródeł prawnych JDG — katalog aktów prawnych, na których opiera się silnik (twierdzenia do WERYFIKACJI w ISAP/RCL/MF, nie automatyczny dowód)
+     https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/Bbb
+
+   Zasada prawna: numer Dz.U., data, treść artykułu z dokumentu wyżej są TWIERDZENIEM, nie dowodem.
+   Każdą podstawę prawną zweryfikuj co do istnienia i treści w oficjalnym ISAP (isap.sejm.gov.pl), RCL
+   (legislacja.gov.pl) lub publikatorach MF. Niezweryfikowane oznaczaj tagiem [NIEZWERYFIKOWANE],
+   a podejrzane (np. dziwny numer pozycji, niemożliwa data) — tagiem [BŁĄD_PODSTAWY_PRAWNEJ?].
+   ZAKAZ tworzenia fikcyjnych artykułów, ustępów, numerów Dz.U., dat i stawek.
+
+4.3 Dokumenty bazowe architektury (kontekst stanu obecnego):
+
+   - Architektura obecna — stan istniejący (PL): https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/ARCHITEKTURA.md
+   - Architecture (EN mirror dokumentu PL): https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/ARCHITECTURE.md
+
+4.4 Indeks kampanii (mapa wszystkich części i konwencji):
+
+   - README serii V3: https://github.com/Gorski-Maciej/NexusAI/blob/JDG/prompty_v3/README_V3_KAMPANIA_GLM52.txt
+
+4.5 Rejestr źródeł zewnętrznych weryfikacji (używaj przy każdej podstawie prawnej):
+
+   - ISAP (isap.sejm.gov.pl) — teksty ujednolicone i Dz.U.; jedyne źródło twierdzeń o treści ustaw.
+   - legislacja.gov.pl (RCL) — proces legislacyjny: daty wejścia w życie, zmiany, projekty nowelizacji.
+   - podatki.gov.pl (MF/KIS) — interpretacje ogólne i indywidualne, objaśnienia, broszury, stawki.
+   - crd.gov.pl — KSeF: schematy XSD, dokumentacja API, harmonogram wdrożenia.
+   - zus.pl — stawki składek, limity (30-krotność), terminy, druki (DRA/RCA), ulgi.
+   - Klauzula: gdy źródło zewnętrzne jest w tej sesji niedostępne — tag [NIEZWERYFIKOWANE] + wpis
+     do rejestru mediacji (9.05). Zakaz cichego przyjmowania treści „z pamięci”.
+
+SEKCJA 5 — DEKOMPOZYCJA CZĘŚCI P01 NA PODANALIZY
+------------------------------------------------------------------------------
+
+Część P01 dzieli się na 4 podanaliz. Każdą podanalizę opracuj OSOBNO, z własnymi dowodami,
+własną tabelą luk i własnymi rekomendacjami — tak by raport był wewnętrznie spójną, ale kompletną całością.
+
+5.1 Model danych LKG i migracja z jdg_legal_cartography
+    Cel: ewolucja istniejącej cartografii do pełnego grafu prawnego zgodnie z V2/F1
+    Pytania audytowe (odpowiedz na KAŻDE, z dowodem z kodu/dokumentu):
+      * Jakie pola musi mieć węzeł legal_node (identyfikator, tekst, wersje, źródło, status, jednostka redakcyjna)?
+      * Czy migracje 003/005/006 pokrywają model z dokumentu świętego V2 — czego brakuje do legal_graph?
+      * Jak wersjonować tekst przepisu po nowelizacji, żeby time-travel werdyktu był dowodliwy?
+      * Jak odwzorować strukturę jednostek redakcyjnych (art./ust./pkt/lit.) w identyfikatorach węzłów?
+
+5.2 Dwukierunkowe pokrycie i metryki LCI/TCL/RV/UVR
+    Cel: mierzalność pewności prawnej zamiast deklaracji
+    Pytania audytowe (odpowiedz na KAŻDE, z dowodem z kodu/dokumentu):
+      * Jak dokładnie obliczać LCI (Legal Coverage Index) per domena — co jest licznikiem, co mianownikiem?
+      * Czy narzędzia reverse_coverage_detector i legal_coverage_heatmap liczą to samo? Rozbieżności?
+      * Czy coverage_deserts.json (pustynie pokrycia) jest aktualny względem realnych reguł? Jak to sprawdzić?
+      * Jaki próg LCI per domena jest osiągalny w 90 dni i jaki plan drogowy do ≥ 99%?
+
+5.3 Weryfikacja katalogu Bbb i podstaw prawnych w regułach
+    Cel: medycyna prawna katalogu źródeł i audyt _legal_basis w kodzie
+    Pytania audytowe (odpowiedz na KAŻDE, z dowodem z kodu/dokumentu):
+      * Które pozycje Bbb mają numery Dz.U. nie do zweryfikowania lub podejrzane (lista z tagiem [BŁĄD_PODSTAWY_PRAWNEJ?])?
+      * Które reguły mają _legal_basis wskazujące na przepisy nieobecne w Bbb i niezweryfikowane w ISAP?
+      * Jak wygląda procedura weryfikacji (kto, jakie źródło, jaki dowód, jaki status) i jak ją zautomatyzować?
+      * Jakie interpretacje KIS/orzeczenia NSA są cytowane w regułach i czy mają status wiążący czy tylko pomocniczy?
+
+5.4 Ścieżka dowodowa werdyktu: reguła→test→bundle→certyfikat
+    Cel: odtworzenie dowodu przepisu w wersji z dnia transakcji w każdej chwili
+    Pytania audytowe (odpowiedz na KAŻDE, z dowodem z kodu/dokumentu):
+      * Czy provenance.rego przenosi legal refs do werdyktu 25-polowego? Czego brakuje do `_legal_basis_refs` z wersjami węzłów?
+      * Jak certyfikat decyzji (V2/F4) ma weryfikować się offline wobec Merkle/HSM?
+      * Czy testy natywne Rego pokrywają legal_basis każdej reguły krytycznej? Jak wygenerować braki?
+      * Jak legal graph łączy się z golden replay (zmiana przepisu → uzasadniona zmiana werdyktu)?
+
+SEKCJA 6 — PLIKI DO ODCZYTU CZĘŚCI P01 — TYLKO TE LINKI
+------------------------------------------------------------------------------
+
+Nie szukaj plików po katalogach. Czytaj dokładnie te adresy, w tej kolejności grup. Każda grupa ma
+przypisaną rolę analityczną. Ścieżki zweryfikowano przeciw strukturze repozytorium.
+
+6.0 Instrukcja czytania:
+
+   a) Czytaj pliki grupami w podanej kolejności; po każdej grupie zapisz wnioski w notatce roboczej sesji.
+   b) Dla każdego pliku zanotuj co najmniej 1 fakt użyteczny dla raportu (liczba, reguła, kontrakt, luka).
+   c) Jeżeli plik nie istnieje pod adresem albo jest nieosiągalny — wpisz to do tabeli dowodów ze statusem
+      NIEZWERYFIKOWANO i potraktuj jako lukę dokumentacyjną V3-P01-Lxx. Nie zgaduj jego treści.
+   d) Nie czytaj plików spoza listy (wyjątek: Sekcja 11.1). Budżet 50% okna kontekstowego jest wiążący.
+
+6.1 Dokumenty Legal Twin i źródeł prawnych
+
+   - [Raport Legal Twin] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/LEGAL_TWIN_RAPORT.md
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Rejestr źródeł prawnych] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/LEGAL_SOURCE_REGISTRY.md
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Traceability Legal Twin] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/LEGAL_TWIN_TRACEABILITY.md
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Słownik referencji prawnych] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/SLOWNIK_REFERENCJI_PRAWNYCH.md
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Audyt podstaw prawnych] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/AUDYT_PODSTAW_PRAWNYCH.md
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Remediacja podstaw prawnych P00] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/P00_REMEDIACJA_PODSTAW_PRAWNYCH.md
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Raport luk pokrycia prawnego] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/LEGAL_COVERAGE_GAP_RAPORT.md
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Pokrycie prawne (dokument)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/LEGAL_COVERAGE.md
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Akty referencyjne (dokument)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/LEGAL_REFERENCE_ACTS.md
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Zgodność z prawem (dokument)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/ZGODNOSC_PRAWNA.md
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+
+6.2 Reguły i dane Legal Twin
+
+   - [Kanon domknięcia pokrycia prawnego] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/p00_legal_coverage_closure.rego
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Provenance werdyktów] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/provenance.rego
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Temporalność (wersje przepisów)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/temporal.rego
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Interpretacje sądowe jako reguły] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/judicial_interpretations_enterprise.rego
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Graf prawny (dane bundle)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/bundles/legal_graph.json
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Kanon referencji prawnych (dane)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/bundles/legal_reference_canon.json
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Audyt legal basis (dane)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/bundles/legal_basis_audit.json
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Luki pokrycia prawnego (dane)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/bundles/legal_coverage_gaps.json
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Pustynie pokrycia (dane)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/bundles/coverage_deserts.json
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+
+6.3 Narzędzia LKG, weryfikacji i traceability
+
+   - [Silnik Legal Twin] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/legal_twin_engine.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Narzędzie legal_twin] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/legal_twin.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Traceability Legal Twin] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/legal_twin_traceability.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Generator LKG] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/lkg_generator.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Walidator legal basis v1] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/validate_legal_basis.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Walidator legal basis v2] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/validate_legal_basis_v2.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Rejestr źródeł prawnych (narzędzie)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/legal_source_registry.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Audyt legal basis (narzędzie)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/legal_basis_audit.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Raport luk pokrycia (narzędzie)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/legal_coverage_gap_report.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Detector reverse coverage] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/reverse_coverage_detector.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Heatmapa pokrycia prawnego] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/legal_coverage_heatmap.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Kalendarz zmian prawnych (narzędzie)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/legal_change_calendar.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Kalendarz zmian prawnych (dane)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/bundles/legal_change_calendar.json
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Macierz traceability] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/traceability_matrix.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+
+6.4 Migracje i testy Legal Twin
+
+   - [Migracja 003 — legal twin] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/migrations/003_jdg_v8_legal_twin.sql
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Migracja 005 — legal sources] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/migrations/005_jdg_v10_legal_sources.sql
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Migracja 006 — legal traceability] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/migrations/006_jdg_v11_legal_traceability.sql
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Test rejestru źródeł prawnych] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tests/test_legal_source_registry.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Test traceability] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tests/test_legal_twin_traceability.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Test rekonsyliacji inwentarza] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tests/test_inventory_reconciliation.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Test infrastruktury Legal Twin] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tests/test_legal_twin_infrastructure.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+
+6.5 Mirror policies — obowiązkowy kontekst zgodności (porównuj implementacje z mirror):
+
+   - [Mirror jdg — katalog lustrzany pakietu JDG (porównuj implementacje domeny z mirror)] https://github.com/Gorski-Maciej/NexusAI/tree/policies/jdg
+   - [Mirror tax — katalog lustrzany warstwy podatkowej] https://github.com/Gorski-Maciej/NexusAI/tree/policies/tax
+   - [Mirror VAT — katalog lustrzany reguł VAT] https://github.com/Gorski-Maciej/NexusAI/tree/policies/tax/vat
+   - [Skrypt budowy bundle w mirrorze] https://github.com/Gorski-Maciej/NexusAI/blob/policies/jdg/bundles/bundle.sh
+   - [Manifest bazowy overlay w mirrorze] https://github.com/Gorski-Maciej/NexusAI/blob/policies/jdg/bundles/base/manifest.json
+   - [Overlay v2026 w mirrorze] https://github.com/Gorski-Maciej/NexusAI/blob/policies/jdg/bundles/overlays/v2026/manifest.json
+
+SEKCJA 7 — WYMAGANIA ANALITYCZNE CZĘŚCI P01
+------------------------------------------------------------------------------
+
+7.1 Osie obowiązkowe każdej podanalizy (zawsze, nawet jeśli nie wymienione w 7.2):
+
+   a) POPRAWNOŚĆ PRAWNA — każde twierdzenie podpięte pod akt/artykuł/ustęp/punkt + status weryfikacji (ISAP/RCL/MF) + daty obowiązywania (valid_from/valid_to);
+   b) POPRAWNOŚĆ KODU REGO — determinizm, kompletność else-chain, brak stubów {true}, brak martwych reguł, brak hardcode (ADR-002: parametry z data.thresholds.*), unikalność rule_id globalnie;
+   c) TEMPORALNOŚĆ — czy reguły/parametry mają okna ważności; testy day-1/day-0/day+1 na granicach nowelizacji; time-travel odtwarzalny;
+   d) FAIL-CLOSED — co się dzieje przy braku danych, konflikcie, niepewności; czy AUTO_POST jest możliwy tylko przy pełnym dowodzie;
+   e) TESTY — jakie istnieją (natywne Rego / pytest / golden), jakie brakują, jakie trzeba dodać (granice groszy, waluty, negatywne, fuzz);
+   f) INTEGRACJA MIĘDZYDOMENOWA — wpływy na inne części (Sekcja 11) i kontrakt werdyktu 25-polowy (ADR-004);
+   g) WYDAJNOŚĆ — koszty ewaluacji, struktura indeksowania, else-chain O(n) vs routing O(1), cache;
+   h) AUDYTOWALNOŚĆ — provenance, _legal_basis, traceability reguła→test→bundle→werdykt→certyfikat.
+
+7.2 Zagadnienia specyficzne tej części (oprócz osi obowiązkowych) — wywodzą się z celów podanaliz z Sekcji 5:
+
+   P01-AN01: Porównaj model z dokumentu świętego V2/F1 z realnymi migracjami i bundle — zbuduj plan ewolucji bez rewrite.
+   P01-AN02: Przeanalizuj KAŻDĄ regułę z `_legal_basis` w wybranych pakietach krytycznych i skategoryzuj status weryfikacji.
+   P01-AN03: Zaprojektuj schemat legal_node_id (kanoniczny format adresu przepisu) zgodny z jednostkami redakcyjnymi.
+   P01-AN04: Określ, jak w LKG reprezentować rozporządzenia wykonawcze (np. stawki VAT) i akty zmieniające (nowelizacje).
+   P01-AN05: Zaprojektuj procedurę 4-eyes dla weryfikacji podstaw prawnych (prawnik + engineer) z dowodem w rejestrze.
+   P01-AN06: Oceń, czy interpretacje KIS mogą być regułami ACTIVE, czy tylko NEEDS_ADVICE — granica prawa wiążącego.
+   P01-AN07: Zaprojektuj reverse coverage pipeline: diff akt → nowe węzły → brakujące reguły → issue automatyczne.
+   P01-AN08: Zaplanuj eksport dowodu przepisu (PDF/XML) dla Decision Certificate na dzień transakcji.
+   P01-AN09: Oceń spójność danych bundle (legal_graph.json) z realnym kodem — czy JSON jest generowany czy ręczny?
+   P01-AN10: Zaproponuj alert „pustynia pokrycia” jako bramkę CI: nowy przepis w Bbb bez reguły = fail.
+   P01-AN11: Określ, jak reprezentować prawo UE (dyrektywy, DAC6, CBAM) obok prawa krajowego w jednym grafie.
+   P01-AN12: Zaprojektuj test property: „każda reguła krytyczna ma ≥1 test cytujący ten sam legal_node_id”.
+
+7.3 Tabela dowodów (wygeneruj ją w raporcie — jeden wiersz na plik z Sekcji 6):
+
+   | # | Plik | Co z niego pobieramy (dowód/fakt/liczba) | Status: ZWERYFIKOWANO/NIEZWERYFIKOWANO |
+   |---|------|------------------------------------------|----------------------------------------|
+
+7.4 Pytania krzyżowe (obowiązkowe odpowiedzi w raporcie — identyfikatory V3-P01-Xxx):
+
+   X01. Które twierdzenia tej części są sprzeczne z dokumentami świętymi (cytat → cytat) i jak je rozstrzygnąć?
+   X02. Które reguły tej części łamią zasady parametrów-as-data (P06) i temporalności (P05) — lista z dowodami?
+   X03. Które ścieżki tej części nie są fail-closed (cichy AUTO_POST przy wątpliwości) — jak je domknąć?
+   X04. Które pola tej części kontraktują się z kontraktem werdyktu 25-polowym (P03) — zgodność typów i wymagalności?
+   X05. Które testy tej części są niezbędne jako bramki blokujące merge (P39) — lista z oczekiwanymi wynikami?
+   X06. Które elementy tej części są duplikatami innych części (P00 baseline, mapy domenowe) — plan konsolidacji?
+   X07. Które podstawy prawne tej części są niezweryfikowane (Bbb + ISAP) — rejestr mediacji z priorytetami?
+   X08. Które innowacje tej części wymagają decyzji człowieka przed wdrożeniem (4-eyes) — lista V3-{CODE}-Qxx?
+   X09. Które metryki tej części muszą trafić do obserwowalności (P37) — nazwy, progi alarmów, dashboardy?
+   X10. Które ryzyka tej części wymagają invariantów runtime (P04) — propozycje z uzasadnieniem prawnym?
+
+7.5 Anty-wzorce do wykrycia w tej części (każdy: sprawdź i wynik wpisz do rejestru luk):
+
+   AP01. Reguły typu stub (warunek zawsze prawdziwy, np. `true => "..."`) udające pokrycie prawne.
+   AP02. Hardcode stawek/limitów/dat w kodzie Rego zamiast data.thresholds.* (naruszenie ADR-002).
+   AP03. Brak else-chain / otwarte negatywy: reguła niezdefiniowana milcząco zamiast jawnego NEEDS_ADVICE.
+   AP04. Duplikaty tej samej reguły pod różnymi rule_id (macro vs micro vs enterprise bez rejestru źródła prawdy).
+   AP05. Podstawy prawne bez Dz.U./art./ust. lub z datami niemożliwymi (nowelizacja wcześniejsza niż ustawa).
+   AP06. Testy zawsze-zielone (brak asercji negatywnych), testy zależne od kolejności lub komunikatów.
+   AP07. Cichy AUTO_POST przy braku pola obowiązkowego (fail-open) — najsłabsze miejsce fortecy.
+   AP08. Zależności cykliczne między pakietami (import A→B→A) i reguły piszące do tych samych ścieżek.
+   AP09. Dane świata zewnętrznego (kursy, wskaźniki) wpisane na stałe zamiast input z wersją i provenance.
+   AP10. Brak okien temporalnych przy regułach z datami wejścia w życie / wygaśnięcia.
+   AP11. Mirror policies dryfujący względem canonical (ta sama reguła, inna treść) bez detekcji w CI.
+   AP12. Metryki/słowniki w dwóch miejscach (bundle vs SQL) z różnymi wartościami — brak jednego źródła prawdy.
+
+SEKCJA 8 — MAPA PRAWNA CZĘŚCI P01
+------------------------------------------------------------------------------
+
+Akty prawne w zakresie tej części (punkt wyjścia — zweryfikuj każdy w ISAP i rozszerz, jeśli luka):
+
+   01. Ordynacja podatkowa — art. 14a/14b (interpretacje ogólne i indywidualne jako źródła)
+       → Obowiązek: weryfikacja w ISAP/RCL + wskazanie artykułów implementowanych w części P01.
+   02. Ustawa o VAT — struktura artykułów implementowanych w regułach (art. 41, 43, 86, 108a, 113)
+       → Obowiązek: weryfikacja w ISAP/RCL + wskazanie artykułów implementowanych w części P01.
+   03. Ustawa o PIT — art. 26 (ulgi), art. 30c, art. 22–23 (KUP)
+       → Obowiązek: weryfikacja w ISAP/RCL + wskazanie artykułów implementowanych w części P01.
+   04. Ustawa o systemie ubezpieczeń społecznych — art. 18a/18c (ulgi ZUS), art. 22 (stopy)
+       → Obowiązek: weryfikacja w ISAP/RCL + wskazanie artykułów implementowanych w części P01.
+   05. Ustawa o rachunkowości — art. 4–5, 74 (retencja)
+       → Obowiązek: weryfikacja w ISAP/RCL + wskazanie artykułów implementowanych w części P01.
+   06. Ustawa – Prawo przedsiębiorców — art. 5, 14, 22–25
+       → Obowiązek: weryfikacja w ISAP/RCL + wskazanie artykułów implementowanych w części P01.
+   07. Ustawa o zryczałtowanym podatku dochodowym — art. 6–12 (stawki ryczałtu)
+       → Obowiązek: weryfikacja w ISAP/RCL + wskazanie artykułów implementowanych w części P01.
+   08. Rozporządzenia wykonawcze MF (JPK_VAT, wzory deklaracji, obniżone stawki VAT)
+       → Obowiązek: weryfikacja w ISAP/RCL + wskazanie artykułów implementowanych w części P01.
+
+Mini-makra macierzy akt→plik (uzupełnij w raporcie):
+
+   | Akt | Art./ust./pkt | Grupa plików (6.x) | Reguła | Test | Status |
+   |-----|---------------|--------------------|--------|------|--------|
+
+Uwaga: to NIE jest pełna lista — to mapa wejściowa. Jeśli w trakcie analizy odkryjesz przepis
+materiałny w zakresie części, którego tu brak — dodaj go do rejestru luk prawnych raportu z pełną
+identyfikacją (akt, artykuł, jednostka redakcyjna, Dz.U., data obowiązywania, status weryfikacji).
+
+SEKCJA 9 — STRUKTURA RAPORTU (WYMAGANA) — RAPORT_V3_P01_LEGAL_TWIN_LKG.txt
+------------------------------------------------------------------------------
+
+   9.01 EXECUTIVE SUMMARY — 1 strona: ocena dojrzałości części, TOP-10 rekomendacji, liczba luk wg krytyczności (P0/P1/P2/P3), deklaracja co udowodniono, a co pozostało [NIEZWERYFIKOWANE].
+   9.02 ZAKRES I OGRANICZENIA — co dokładnie przeanalizowano (lista plików), co pominięto i DLACZEGO (budżet 50% / brak związku), status weryfikacji źródeł prawnych.
+   9.03 STAN OBECNY CZĘŚCI P01 — mapa artefaktów: plik → pakiet Rego → rule_id → podstawa prawna → testy → status lifecycle (SHADOW/CANDIDATE/ACTIVE).
+   9.04 PODANALIZY 5.1–5.4 — każda osobno z tabelą dowodów i wnioskami.
+   9.05 MACIERZ PRAWO↔REGUŁA↔TEST — wiersz na przepis materiałny: przepis (zweryfikowany) → reguła(y) → test(y) → status (PEŁNE/CZĘŚCIOWE/BRAK/PRZECZYANE) → ryzyko.
+   9.06 REJESTR LUK — identyfikatory V3-P01-Lxx, krytyczność P0 (BLOCKER: złamanie dokumentów świętych/temporalności/fail-closed), P1 (wysokie ryzyko błędnej decyzji), P2, P3; dla każdej luki: dowód, wpływ, proponowane rozwiązanie, koszt wdrożenia, ryzyko regresji.
+   9.07 INNOWACJE ENTERPRISE (Sekcja 10) — min. 12 rozwiązań z ID V3-P01-Ixx, wpływem, ryzykiem i kryteriami akceptacji.
+   9.08 KONTRAKT WYJŚCIOWY (Sekcja 11.2) — decyzje i standardy wiążące kolejne części.
+   9.09 PLAN WDROŻENIA — kolejność prac bez duplikacji i bez niszczenia zależności; co wolno wdrożyć od razu, co wymaga testów, co wymaga decyzji człowieka (4-eyes).
+   9.10 PLAN TESTÓW — konkretne przypadki testowe (unit/property/fuzz/golden/temporal) z oczekiwanymi wynikami; testy które BLOKUJĄ merge.
+   9.11 SEKCJA PYTAŃ DO CZŁOWIEKA — wszystko, czego nie wolno rozstrzygać samodzielnie (prawo niepewne, decyzje biznesowe, konflikty BLOCKER).
+   9.12 ZAAŁOŻENIA JAWNE — lista założeń przyjętych przy braku dowodu, każde z tagiem [ZAŁOŻENIE].
+
+   9.13 KAŻDA podanaliza (5.1–5.N) dostaje w raporcie: własną tabelę dowodów, min. 3 wnioski
+   i własną listę luk — bez tego raport jest niekompletny i wraca do poprawy.
+   9.14 Wiersze macierzy PRAWO↔REGUŁA↔TEST z aktów Sekcji 8 są OBOWIĄZKOWE (każdy akt z listy)
+   plus każdy przepis odkryty w trakcie analizy.
+   9.15 Format identyfikatorów (przykłady): V3-P01-L01 (luka P0), V3-P01-I03 (innowacja),
+   V3-P01-C01 (konflikt), V3-P01-Q02 (pytanie do człowieka), V3-P01-X04 (pytanie krzyżowe).
+
+Format pliku: TXT/Markdown, nagłówki ASCII, tabele ASCII, diagramy Mermaid dopuszczalne w blokach ```.
+Zakaz stwierdzeń „100% zgodności”/„production-ready” bez dowodu. Każde twierdzenie: artefakt + podstawa
+(prawna lub techniczna) + wersja/data + poziom pewności. Raport jest kontraktem wdrożeniowym, nie esejem.
+
+   9.16 Obowiązkowe tabele raportu (każda musi istnieć i być wypełniona):
+       T1 tabela dowodów (7.3), T2 macierz PRAWO↔REGUŁA↔TEST (Sekcja 8 / 9.05), T3 rejestr luk (9.06),
+       T4 rejestr innowacji (9.07), T5 kontrakt wyjściowy (9.08), T6 plan wdrożenia (9.09),
+       T7 plan testów (9.10), T8 pytania do człowieka (9.11), T9 założenia jawne (9.12),
+       T10 przekazywane artefakty (11.4), T11 matryca podanaliza×grupa (APENDYKS B), T12 rejestr
+       konfliktów Cxx (jeśli wystąpiły). Brak którejkolwiek tabeli = raport niekompletny.
+
+SEKCJA 10 — WYMAGANE INNOWACJE ENTERPRISE CZĘŚCI P01 (MINIMUM 12)
+------------------------------------------------------------------------------
+
+Rozwiń każdy temat poniżej DO PEŁNEGO PROJEKTU, oraz dodaj własne — tak aby łącznie raport zawierał
+co najmniej 12 kompletnych innowacji tej części:
+
+   V3-P01-I01 — Legal Node Versioning Engine: wersjonowanie tekstów przepisów z diffem prawnym i dowodem time-travel na dzień transakcji
+   V3-P01-I02 — Reverse Coverage Sentinel: automat: nowy przepis w LKG bez reguły → issue z priorytetem per severity przepisu
+   V3-P01-I03 — ISAP Proof Snapshot: archiwizacja tekstu przepisu (PDF+hash) na dzień transakcji jako dowód niezależny od ISAP uptime
+   V3-P01-I04 — Legal Basis Health Score: scoring każdej reguły: zweryfikowana podstawa / niezweryfikowana / podejrzana z dashboardem trendu
+   V3-P01-I05 — Interpretation Layer Isolation: sztywna separacja prawa powszechnego od interpretacji/orzeczeń w regułach i werdyktach
+   V3-P01-I06 — Legal Diff → Rule Draft Pipeline: diff nowelizacji → automatyczny szkic zmian reguł (SHADOW) z 4-eyes
+   V3-P01-I07 — Coverage Desert Radar: mapa pustyn pokrycia per domena z planem zasiedlenia i alertem tygodniowym
+   V3-P01-I08 — Bidirectional Consistency Gate: bramka CI: reguła bez węzła prawnego = fail; węzeł materialny bez reguły = fail
+   V3-P01-I09 — Legal Graph Merkle Root: hash drzewa grafu prawnego w każdym werdykcie — dowód spójności zbioru podstaw
+   V3-P01-I10 — Retroactivity Auditor: audyt: czy zmiana reguł zmieniła historyczne werdykty bez zmiany przepisu (golden oracle hook)
+   V3-P01-I11 — Source Certification Workflow: pełny workflow certyfikacji źródła (ISAP → prawnik → wpis do rejestru → status CERTIFIED)
+   V3-P01-I12 — Legal Twin API: API /legal/nodes + /legal/proof z historią wersji dla UI księgowej i certyfikatów
+
+Szkielet opisu każdej innowacji (5 obowiązkowych punktów):
+
+   1) Problem/luka, którą domyka (odwołanie do rejestru luk V3-P01-Lxx lub zjawiska z kodu).
+   2) Mechanizm rozwiązania (dane, reguły, przepływ, interfejsy — konkretnie, bez marketingu).
+   3) Wpływ na bezpieczeństwo decyzji księgowych (co NOWE zgaduje/zamienia na dowód).
+   4) Ryzyko i mitygacja (co może pójść źle, jak to wykryć i cofnąć).
+   5) Kryterium akceptacji (testowalne) + zależności od innych części serii V3.
+
+Każda innowacja w raporcie musi mieć: (1) problem/lukę którą domyka, (2) mechanizm rozwiązania,
+(3) wpływ na bezpieczeństwo decyzji księgowych, (4) ryzyko i mitygację, (5) kryterium akceptacji
+(testowalne), (6) zależności od innych części serii V3.
+
+Katalog kierunków innowacji (inspiracja — nie limit; dobierz do specyfiki części):
+
+   K01. Detekcja dryfu prawo↔kod w czasie rzeczywistym; auto-zgłoszenia Law Radar z twardym dowodem diff.
+   K02. Symulacja scenariuszowa „co-jeśli” przy zmianie progu/stawki z pełnym wpływem na inne domeny.
+   K03. Auto-generowanie testów granicznych groszowych z tabeli aktów (daty, progi, waluty, zaokrąglenia).
+   K04. SMT/Z3 dowody równoważności starej i nowej wersji reguły przed przełączeniem CANDIDATE→ACTIVE.
+   K05. Kontraktowe snapshoty decision certificate: replay decyzji historycznych na nowej wersji reguł.
+   K06. Routing O(1) sharded z indeksem domen (zamiast skanowania else-chain O(n)).
+   K07. Samonaprawiające się bundle: canary, auto-rollback, checksum, podpis, WORM archiwum wersji.
+   K08. Inteligentne triage NEEDS_ADVICE: klaster przypadków, sugestia zasad, human-in-the-loop feedback.
+   K09. Proweniencja DNA każdej reguły (akt→nowela→art→reguła→test→bundle→certyfikat) jako zapytywalny graf.
+   K10. Chaos-testy prawne: losowe mutacje input/data z asercją fail-closed (nigdy cichy AUTO_POST).
+   K11. Walidacja krzyżowa mirror policies vs canonical z blokadą merge przy różnicy semantycznej.
+   K12. Mierzalna mapa pokrycia prawnego (heat mapy pustynii prawnych) z celami kwartalnymi i progami CI.
+
+SEKCJA 11 — KONTRAKTY MIĘDZYCZĘŚCIOWE (SPÓJNOŚĆ CAŁEJ SERII V3)
+------------------------------------------------------------------------------
+
+11.1 Kontrakty wejściowe — HONORUJ w tej części:
+
+   Z raportu V3_P00 (mapa kanoniczna): faktyczny stan plików, pakiety, rule_id, testy — przy ocenie
+   braków nie kwestionuj owych faktów, tylko je używaj; jeżeli stan się różni — BLOCKER do rejestru.
+   Z raportów V3_P00–V3_P00 (sekcja KONTRAKT WYJŚCIOWY każdego z nich): honoruj ustalone tam
+   standardy nazewnictwa, identyfikatorów, formatu luk i decyzji. Jeśli raport poprzedniej części
+   przekracza budżet — czytaj z niego WYŁĄCZNIE sekcje: EXECUTIVE SUMMARY, KONTRAKT WYJŚCIOWY,
+   REJESTR LUK (P0/P1).
+
+   Specyficzne dla P01: Honoruj baseline liczbowy i kanon identyfikatorów z raportu V3_P00 (sekcja KONTRAKT WYJŚCIOWY).
+   Specyficzne dla P01: Każdy wniosek o podstawie prawnej prowadź z pełnym cytatem i statusem weryfikacji (ZWERYFIKOWANO/NIEZWERYFIKOWANO/BŁĄD?).
+
+11.2 Kontrakt wyjściowy — TWÓJ raport musi go zawierać (sekcja 9.08), bo wiąże część P02 i dalsze:
+
+   - Schemat legal_node_id i model danych legal_graph — wiążący dla P05 (temporal), P08 (Law Radar), P11 (certyfikaty).
+   - Procedura weryfikacji podstaw prawnych — wiążąca dla wszystkich części domenowych P10–P36.
+   - Status listy pozycji Bbb (zweryfikowane/podejrzane) — wejście do remediacji dla części domenowych.
+   - Definicje i wzory metryk LCI/TCL/RV/UVR — P44 liczy je w certyfikacji finalnej.
+
+11.3 Rejestr zależności:
+
+   P01 otrzymuje z: V3_P00–V3_P00 → P01 przekazuje do: P02 i dalej aż do P68 (certyfikacja finalna).
+   Zmiana w tej części, która dotyka kontraktu wcześniejszego, musi być oznaczona jako KONFLIKT
+   KONTRAKTOWY z propozycją rozstrzygnięcia — nie zmieniaj po cichu standardów ustalonych wcześniej.
+
+11.4 Tabela przekazywanych artefaktów (uzupełnij w raporcie — co dokładnie przekazujesz dalej):
+
+   | Artefakt (standard/dana/lista) | Odbiorca (część) | Format | Kryterium użycia |
+   |-------------------------------|------------------|--------|------------------|
+
+11.5 Standardy nazewnicze wiążące (identyczne z P00 — nie wymyślaj własnych):
+
+   - Luki: V3-<KOD>-L01..L99, krytyczność P0 (BLOCKER) > P1 > P2 > P3; każda z dowodem i planem fix.
+   - Innowacje: V3-<KOD>-I01..I99 wg szkieletu 6-punktowego z Sekcji 10.
+   - Konflikty: V3-<KOD>-C01..C99 (dokument↔kod, mirror↔canonical, kontrakt↔kontrakt) z cytatami obu stron.
+   - Pytania do człowieka: V3-<KOD>-Q01..Q99 (sekcja 9.11); pytania krzyżowe: V3-<KOD>-X01..X10 (7.4).
+   - Raporty: RAPORT_V3_<KOD>_<SLUG>.txt; prompty: V3_PROMPT_<KOD>_<SLUG>.txt (JDG/prompty_v3/).
+   - Rego: pakiety jdg/<pakiet>/..., rule_id `jdg.<pakiet>.<reguła>`; parametry wyłącznie data.thresholds.*
+     (ADR-002); okna temporalne w data.thresholds.*.valid_from/valid_to (P05).
+
+SEKCJA 12 — PROTOKÓŁ PRAWY I BEZPIECZEŃSTWA (NIEPODLEGAJĄCY NEGOCJACJOM)
+------------------------------------------------------------------------------
+
+   01. Nie generujesz kodu produkcyjnego w tej sesji — generujesz RAPORT. Wyjątkiem są krótkie pseudokontrakty, schematy i przykłady testów w treści raportu (wyraźnie oznaczone jako szkice).
+   02. Nie modyfikujesz repozytorium. Wszystko trafia do raportu jako rekomendacja z planem wdrożenia.
+   03. Dokumenty święte (Sekcja 4.1) są nadrzędne; konflikt = BLOCKER z cytatami obu stron.
+   04. Dokument źródeł prawnych (Sekcja 4.2) to katalog twierdzeń — weryfikuj w ISAP/RCL/MF; fikcyjne podstawy prawne są ZAKAZANE.
+   05. Fail-closed: rekomendacja AUTO_POST tylko przy pełnym łańcuchu dowodów; wątpliwość = NEEDS_ADVICE / MANUAL_REVIEW.
+   06. Nie traktuj deklaracji „production”, liczby rule_id ani etykiet COMPLETE jako dowodu — dowodem jest kod, test, wynik uruchomienia.
+   07. Każda luka ma identyfikator V3-P01-Lxx; każda innowacja V3-P01-Ixx; konflikty V3-P01-Cx; pytania do człowieka V3-P01-Qxx.
+   08. Zakaz duplikacji: zanim zaproponujesz nowy element, sprawdź raport V3_P00 i repozytorium — istniejący element rozszerzaj, nie kopiuj.
+   09. Budżet kontekstu 50% (Sekcja 3) — czytanie linków spoza tej części tylko gdy Sekcja 11.1 wprost wskazuje raport-kontrakt.
+   10. Zero pomijania: jeśli analiza czegoś nie objęła, napisz tego wprost w sekcji 9.02 (ZAKRES I OGRANICZENIA).
+   11. Odporność na błędy: każda rekomendacja musi mieć ścieżkę detekcji błędu (test/alert) i ścieżkę cofnięcia (rollback).
+   12. Precyzja > pośpiech: lepiej mniejsza liczba twierdzeń z pełnym dowodem niż długa lista przypuszczeń.
+   13. Symetria dowodu: każde twierdzenie ma przeciwstawny test sprawdzalny (jak zafałszujesz własną tezę?).
+   14. Zakaz fantazjowania liczbami: jeśli czegoś nie policzyłeś — napisz „nie policzono”, nie podawaj wartości.
+   15. Każda rekomendacja zmiany reguły wskazuje: testy do zmiany, bundle do przebudowy, ścieżkę rollback.
+   16. Jeśli plik z listy jest nieczytelny lub pusty — to LUKA do rejestru, nie pretekst do pominięcia analizy.
+   17. Terminologia zgodna z glosariuszem dokumentów świętych (Legal Twin, Golden Oracle, Decision Certificate).
+   18. Po każdej podanalizie: min. 3 wnioski + min. 1 luka — pusta podanaliza jest niedopuszczalna.
+
+Przypomnienie wymagań nadrzędnych (obowiązują w tej części):
+   * Przeprować głębokie myślenie.
+   * Przeprować głęboką analizę.
+   * zaawansowany poziom Enterprise.
+   * poziom ENTERPRISE.
+   * innowacyjne ulepszenia wyprzedzające profesjonalistów.
+   * Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+SEKCJA 13 — KRYTERIA AKCEPTACJI RAPORTU
+------------------------------------------------------------------------------
+
+   [ ] 01. Raport zapisany jako jeden plik TXT: JDG/raporty_glm52_v3/RAPORT_V3_P01_LEGAL_TWIN_LKG.txt.
+   [ ] 02. Wszystkie sekcje 9.01–9.15 obecne i nietrywialne (brak pustych nagłówków).
+   [ ] 03. Każdy plik z Sekcji 6 ma wiersz w tabeli dowodów (7.3) albo jawną adnotację dlaczego nie był potrzebny.
+   [ ] 04. Macierz PRAWO↔REGUŁA↔TEST kompletna dla zakresu części, ze statusami i ryzykiem.
+   [ ] 05. Rejestr luk z krytycznością P0–P3 i identyfikatorami V3-P01-Lxx.
+   [ ] 06. Min. 12 innowacji Enterprise z pełnym projektem (6 elementów każda).
+   [ ] 07. Kontrakt wyjściowy gotowy (9.08) — konkretny, wiążący, testowalny.
+   [ ] 08. Plan testów z przypadkami blokującymi merge.
+   [ ] 09. Sekcja pytań do człowieka (9.11) — zawiera każde rozstrzygnięcie wykraczające poza dowody.
+   [ ] 10. Zero stwierdzeń bez dowodu; wszystkie założenia jawnie oznaczone [ZAŁOŻENIE]; niezweryfikowane prawo [NIEZWERYFIKOWANE].
+   [ ] 11. Odpowiedzi na wszystkie pytania krzyżowe (7.4) z identyfikatorami V3-P01-Xxx.
+   [ ] 12. Tabela przekazywanych artefaktów (11.4) wypełniona dla każdego kontraktu wyjściowego.
+   [ ] 13. Macierz podanaliza×grupa (APENDYKS B) ma wypełnione kolumny Grupy kluczowe i Wynik.
+   [ ] 14. Każdy anty-wzorzec z 7.5 ma wynik sprawdzenia (jest/nie ma) i wpis do rejestru luk.
+   [ ] 15. Instrukcja 6.0 wykonana: każdy plik ma przypisany fakt albo adnotację NIEZWERYFIKOWANO.
+   [ ] 16. Plan pracy krok po kroku (APENDYKS E) odznaczony w całości.
+   [ ] 17. Żadna sekcja nie jest skopiowana z poprzednich raportów (weryfikuj, nie parafrazuj).
+   [ ] 18. Deklaracja zgodności z dokumentami świętymi na końcu raportu z listą ewentualnych odstępstw.
+   [ ] 19. Każda pozycja Bbb wymieniona w raporcie ma status weryfikacji i uzasadnienie, nie ogólnik „do sprawdzenia”.
+   [ ] 20. Model LKG zawiera przykładową ścieżkę dowodową dla jednego przepisu end-to-end (akt→reguła→test→werdykt).
+
+SEKCJA 14 — CHECKLISTA ODCZYTU CZĘŚCI P01 (odznaczaj po przeczytaniu)
+------------------------------------------------------------------------------
+
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/LEGAL_TWIN_RAPORT.md  — Raport Legal Twin
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/LEGAL_SOURCE_REGISTRY.md  — Rejestr źródeł prawnych
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/LEGAL_TWIN_TRACEABILITY.md  — Traceability Legal Twin
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/SLOWNIK_REFERENCJI_PRAWNYCH.md  — Słownik referencji prawnych
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/AUDYT_PODSTAW_PRAWNYCH.md  — Audyt podstaw prawnych
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/P00_REMEDIACJA_PODSTAW_PRAWNYCH.md  — Remediacja podstaw prawnych P00
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/LEGAL_COVERAGE_GAP_RAPORT.md  — Raport luk pokrycia prawnego
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/LEGAL_COVERAGE.md  — Pokrycie prawne (dokument)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/LEGAL_REFERENCE_ACTS.md  — Akty referencyjne (dokument)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/ZGODNOSC_PRAWNA.md  — Zgodność z prawem (dokument)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/p00_legal_coverage_closure.rego  — Kanon domknięcia pokrycia prawnego
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/provenance.rego  — Provenance werdyktów
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/temporal.rego  — Temporalność (wersje przepisów)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/judicial_interpretations_enterprise.rego  — Interpretacje sądowe jako reguły
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/bundles/legal_graph.json  — Graf prawny (dane bundle)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/bundles/legal_reference_canon.json  — Kanon referencji prawnych (dane)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/bundles/legal_basis_audit.json  — Audyt legal basis (dane)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/bundles/legal_coverage_gaps.json  — Luki pokrycia prawnego (dane)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/bundles/coverage_deserts.json  — Pustynie pokrycia (dane)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/legal_twin_engine.py  — Silnik Legal Twin
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/legal_twin.py  — Narzędzie legal_twin
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/legal_twin_traceability.py  — Traceability Legal Twin
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/lkg_generator.py  — Generator LKG
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/validate_legal_basis.py  — Walidator legal basis v1
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/validate_legal_basis_v2.py  — Walidator legal basis v2
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/legal_source_registry.py  — Rejestr źródeł prawnych (narzędzie)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/legal_basis_audit.py  — Audyt legal basis (narzędzie)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/legal_coverage_gap_report.py  — Raport luk pokrycia (narzędzie)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/reverse_coverage_detector.py  — Detector reverse coverage
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/legal_coverage_heatmap.py  — Heatmapa pokrycia prawnego
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/legal_change_calendar.py  — Kalendarz zmian prawnych (narzędzie)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/bundles/legal_change_calendar.json  — Kalendarz zmian prawnych (dane)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/traceability_matrix.py  — Macierz traceability
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/migrations/003_jdg_v8_legal_twin.sql  — Migracja 003 — legal twin
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/migrations/005_jdg_v10_legal_sources.sql  — Migracja 005 — legal sources
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/migrations/006_jdg_v11_legal_traceability.sql  — Migracja 006 — legal traceability
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tests/test_legal_source_registry.py  — Test rejestru źródeł prawnych
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tests/test_legal_twin_traceability.py  — Test traceability
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tests/test_inventory_reconciliation.py  — Test rekonsyliacji inwentarza
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tests/test_legal_twin_infrastructure.py  — Test infrastruktury Legal Twin
+   --- Mirror policies (kontekst zgodności) ---
+   [ ] https://github.com/Gorski-Maciej/NexusAI/tree/policies/jdg  — Mirror jdg — katalog lustrzany pakietu JDG (porównuj implementacje domeny z mirror)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/tree/policies/tax  — Mirror tax — katalog lustrzany warstwy podatkowej
+   [ ] https://github.com/Gorski-Maciej/NexusAI/tree/policies/tax/vat  — Mirror VAT — katalog lustrzany reguł VAT
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/policies/jdg/bundles/bundle.sh  — Skrypt budowy bundle w mirrorze
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/policies/jdg/bundles/base/manifest.json  — Manifest bazowy overlay w mirrorze
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/policies/jdg/bundles/overlays/v2026/manifest.json  — Overlay v2026 w mirrorze
+
+SEKCJA 15 — POWTÓRZENIE WYMAGAŃ NADRZĘDNYCH (przypomnienie przed pracą):
+
+  1. Przeprować głębokie myślenie.
+  2. Przeprować głęboką analizę.
+  3. zaawansowany poziom Enterprise.
+  4. poziom ENTERPRISE.
+  5. innowacyjne ulepszenia wyprzedzające profesjonalistów.
+  6. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Powtarzaj te wymagania przed każdą sekcją raportu, każdą rekomendacją i każdą decyzją projektową.
+
+SEKCJA 16 — KOMENDA KOŃCOWA: CZYSZCZENIE OKNA KONTEKSTOWEGO
+------------------------------------------------------------------------------
+
+Po ZAKOŃCZENIU pracy nad tą częścią wykonaj DOKŁADNIE:
+
+   1. Zapisz kompletny raport do: JDG/raporty_glm52_v3/RAPORT_V3_P01_LEGAL_TWIN_LKG.txt
+      (jeden plik; jeśli raport wygenerowałeś w odpowiedzi — potwierdź zapis i podaj pełną ścieżkę).
+   2. Potwierdź krótkim komunikatem: zakres części P01, liczba luk P0/P1/P2/P3, liczba innowacji,
+      status kontraktu wyjściowego, lista artefaktów przekazanych dalej.
+   3. Wypisz pełną listę kontraktów wyjściowych przekazanych części P02.
+   4. NASTĘPNIE WYCZYŚĆ OKNO KONTEKSTOWE (cała treść: pliki, notatki robocze, cytaty, śródnotatki).
+      Do części P02 wchodzisz z PUSTĄ sesją — przenosisz się WYŁĄCZNIE poprzez zapisany raport
+      (sekcje: EXECUTIVE SUMMARY, KONTRAKT WYJŚCIOWY, REJESTR LUK P0/P1).
+   5. Nie utrzymuj żadnych niejawnych założeń, fragmentów kodu ani cytatów po czyszczeniu sesji.
+
+Kolejność serii V3: P00 → P01 → … → P02 → … → P68 (certyfikacja finalna).
+Pełny indeks: JDG/prompty_v3/README_V3_KAMPANIA_GLM52.txt
+
+APENDYKS A — MAPA GRUP PLIKÓW CZĘŚCI P01
+------------------------------------------------------------------------------
+
+   | Grupa | Nazwa | Liczba plików | Rola analityczna w tej części |
+   |-------|-------|---------------|-------------------------------|
+   | 6.1 | Dokumenty Legal Twin i źródeł prawnych | 10 | (uzupełnij: czego szukasz w tej grupie) |
+   | 6.2 | Reguły i dane Legal Twin | 9 | (uzupełnij: czego szukasz w tej grupie) |
+   | 6.3 | Narzędzia LKG, weryfikacji i traceability | 14 | (uzupełnij: czego szukasz w tej grupie) |
+   | 6.4 | Migracje i testy Legal Twin | 7 | (uzupełnij: czego szukasz w tej grupie) |
+   | 6.5 | Mirror policies | 6 | zgodność implementacji z mirror; dryf = konflikt Cxx |
+
+APENDYKS B — MACIERZ PODANALIZA × GRUPA (co sprawdzić — minimum)
+------------------------------------------------------------------------------
+
+   | Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik (sekcja raportu) |
+   |------------|----------------|-----------------|------------------------|
+   | 5.1 | (uzupełnij) | min. 3 twierdzenia z dowodem | 9.04 / 9.05 |
+   | 5.2 | (uzupełnij) | min. 3 twierdzenia z dowodem | 9.04 / 9.05 |
+   | 5.3 | (uzupełnij) | min. 3 twierdzenia z dowodem | 9.04 / 9.05 |
+   | 5.4 | (uzupełnij) | min. 3 twierdzenia z dowodem | 9.04 / 9.05 |
+
+APENDYKS C — SZKIELET PYTAŃ DO CZŁOWIEKA (V3-P01-Qxx)
+------------------------------------------------------------------------------
+
+   Q01. Które rozstrzygnięcia prawne w tej części są niepewne (dwie dopuszczalne interpretacje)? (odpowiedz w raporcie lub przenieś do sekcji 9.11)
+   Q02. Które decyzje architektoniczne wymagają zatwierdzenia właściciela (4-eyes)? (odpowiedz w raporcie lub przenieś do sekcji 9.11)
+   Q03. Które limity budżetowe/wdrożeniowe zmieniają priorytety planu wdrożenia? (odpowiedz w raporcie lub przenieś do sekcji 9.11)
+   Q04. Które konflikty BLOCKER wymagają eskalacji poza tę część? (odpowiedz w raporcie lub przenieś do sekcji 9.11)
+
+APENDYKS D — GLOSARIUSZ MINIMALNY CZĘŚCI P01
+------------------------------------------------------------------------------
+
+   Luka (Lxx):     stwierdzony brak/błąd z dowodem i krytycznością P0–P3.
+   Innowacja (Ixx): kompletny projekt rozwiązania Enterprise wg szkieletu z Sekcji 10.
+   Konflikt (Cxx):  sprzeczność dokument↔kod, kontrakt↔kontrakt, mirror↔canonical.
+   Pytanie (Qxx):   rozstrzygnięcie zarezerwowane dla człowieka (nigdy cisza).
+   Krzyżowe (Xxx):  odpowiedź na pytanie systemowe z Sekcji 7.4.
+   AUTO_POST:       automatyczne księgowanie — dopuszczalne wyłącznie przy pełnym dowodzie.
+   NEEDS_ADVICE:    decyzja wymaga człowieka — domyślny tryb fail-closed przy wątpliwości.
+   MANUAL_REVIEW:   pełny przegląd ręczny — tryb przy konflikcie/naruszeniu invariantów.
+
+APENDYKS E — PLAN PRACY KROK PO KROKU (wykonuj sekwencyjnie)
+------------------------------------------------------------------------------
+
+   ETAP 1 — PRZYGOTOWANIE:
+     K01. Przeczytaj dokumenty święte (Sekcja 4.1) i potwierdź w notatce roboczej kluczowe kontrakty
+          istotne dla tej części (kontrakt werdyktu, invarianty, temporalność, parametry-as-data).
+     K02. Przeczytaj JDG/docs/Bbb i wypisz akty istotne dla części P01 (Sekcja 8) do weryfikacji ISAP.
+     K03. Sprawdź budżet kontekstu (Sekcja 3): zaplanuj, ile miejsca zajmą grupy plików z Sekcji 6.
+
+   ETAP 2 — ODCZYT DOWODÓW (grupa po grupie):
+     K04. Grupa 6.1 (Dokumenty Legal Twin i źródeł prawnych): przeczytaj 10 plik(i); dla każdego zanotuj
+          min. 1 fakt do tabeli dowodów (7.3) i min. 1 wniosek analityczny.
+         - LEGAL_TWIN_RAPORT.md: Raport Legal Twin
+         - LEGAL_SOURCE_REGISTRY.md: Rejestr źródeł prawnych
+         - LEGAL_TWIN_TRACEABILITY.md: Traceability Legal Twin
+         - SLOWNIK_REFERENCJI_PRAWNYCH.md: Słownik referencji prawnych
+         - AUDYT_PODSTAW_PRAWNYCH.md: Audyt podstaw prawnych
+         - P00_REMEDIACJA_PODSTAW_PRAWNYCH.md: Remediacja podstaw prawnych P00
+         - LEGAL_COVERAGE_GAP_RAPORT.md: Raport luk pokrycia prawnego
+         - LEGAL_COVERAGE.md: Pokrycie prawne (dokument)
+         - LEGAL_REFERENCE_ACTS.md: Akty referencyjne (dokument)
+         - ZGODNOSC_PRAWNA.md: Zgodność z prawem (dokument)
+     K15. Grupa 6.2 (Reguły i dane Legal Twin): przeczytaj 9 plik(i); dla każdego zanotuj
+          min. 1 fakt do tabeli dowodów (7.3) i min. 1 wniosek analityczny.
+         - p00_legal_coverage_closure.rego: Kanon domknięcia pokrycia prawnego
+         - provenance.rego: Provenance werdyktów
+         - temporal.rego: Temporalność (wersje przepisów)
+         - judicial_interpretations_enterprise.rego: Interpretacje sądowe jako reguły
+         - legal_graph.json: Graf prawny (dane bundle)
+         - legal_reference_canon.json: Kanon referencji prawnych (dane)
+         - legal_basis_audit.json: Audyt legal basis (dane)
+         - legal_coverage_gaps.json: Luki pokrycia prawnego (dane)
+         - coverage_deserts.json: Pustynie pokrycia (dane)
+     K25. Grupa 6.3 (Narzędzia LKG, weryfikacji i traceability): przeczytaj 14 plik(i); dla każdego zanotuj
+          min. 1 fakt do tabeli dowodów (7.3) i min. 1 wniosek analityczny.
+         - legal_twin_engine.py: Silnik Legal Twin
+         - legal_twin.py: Narzędzie legal_twin
+         - legal_twin_traceability.py: Traceability Legal Twin
+         - lkg_generator.py: Generator LKG
+         - validate_legal_basis.py: Walidator legal basis v1
+         - validate_legal_basis_v2.py: Walidator legal basis v2
+         - legal_source_registry.py: Rejestr źródeł prawnych (narzędzie)
+         - legal_basis_audit.py: Audyt legal basis (narzędzie)
+         - legal_coverage_gap_report.py: Raport luk pokrycia (narzędzie)
+         - reverse_coverage_detector.py: Detector reverse coverage
+         - legal_coverage_heatmap.py: Heatmapa pokrycia prawnego
+         - legal_change_calendar.py: Kalendarz zmian prawnych (narzędzie)
+         - legal_change_calendar.json: Kalendarz zmian prawnych (dane)
+         - traceability_matrix.py: Macierz traceability
+     K40. Grupa 6.4 (Migracje i testy Legal Twin): przeczytaj 7 plik(i); dla każdego zanotuj
+          min. 1 fakt do tabeli dowodów (7.3) i min. 1 wniosek analityczny.
+         - 003_jdg_v8_legal_twin.sql: Migracja 003 — legal twin
+         - 005_jdg_v10_legal_sources.sql: Migracja 005 — legal sources
+         - 006_jdg_v11_legal_traceability.sql: Migracja 006 — legal traceability
+         - test_legal_source_registry.py: Test rejestru źródeł prawnych
+         - test_legal_twin_traceability.py: Test traceability
+         - test_inventory_reconciliation.py: Test rekonsyliacji inwentarza
+         - test_legal_twin_infrastructure.py: Test infrastruktury Legal Twin
+
+   ETAP 3 — PODANALIZY (5.1–5.4):
+     K48. Podanaliza 5.1 (Model danych LKG i migracja z jdg_legal_cartography): odpowiedz na WSZYSTKIE pytania audytowe
+          (min. 3 wnioski z dowodem, min. 1 luka Lxx, wpis do macierzy 9.05).
+     K49. Podanaliza 5.2 (Dwukierunkowe pokrycie i metryki LCI/TCL/RV/UVR): odpowiedz na WSZYSTKIE pytania audytowe
+          (min. 3 wnioski z dowodem, min. 1 luka Lxx, wpis do macierzy 9.05).
+     K50. Podanaliza 5.3 (Weryfikacja katalogu Bbb i podstaw prawnych w regułach): odpowiedz na WSZYSTKIE pytania audytowe
+          (min. 3 wnioski z dowodem, min. 1 luka Lxx, wpis do macierzy 9.05).
+     K51. Podanaliza 5.4 (Ścieżka dowodowa werdyktu: reguła→test→bundle→certyfikat): odpowiedz na WSZYSTKIE pytania audytowe
+          (min. 3 wnioski z dowodem, min. 1 luka Lxx, wpis do macierzy 9.05).
+
+   ETAP 4 — PRAWO I ZGODNOŚĆ:
+     K52. Zweryfikuj w ISAP/RCL: Ordynacja podatkowa — art. 14a/14b (interpretacje ogólne i indywidualne jako źródła)
+     K53. Zweryfikuj w ISAP/RCL: Ustawa o VAT — struktura artykułów implementowanych w regułach (art. 41, 43, 86, 108a, 113)
+     K54. Zweryfikuj w ISAP/RCL: Ustawa o PIT — art. 26 (ulgi), art. 30c, art. 22–23 (KUP)
+     K55. Zweryfikuj w ISAP/RCL: Ustawa o systemie ubezpieczeń społecznych — art. 18a/18c (ulgi ZUS), art. 22 (stopy)
+     K56. Zweryfikuj w ISAP/RCL: Ustawa o rachunkowości — art. 4–5, 74 (retencja)
+     K57. Zweryfikuj w ISAP/RCL: Ustawa – Prawo przedsiębiorców — art. 5, 14, 22–25
+     K58. Zweryfikuj w ISAP/RCL: Ustawa o zryczałtowanym podatku dochodowym — art. 6–12 (stawki ryczałtu)
+     K59. Zweryfikuj w ISAP/RCL: Rozporządzenia wykonawcze MF (JPK_VAT, wzory deklaracji, obniżone stawki VAT)
+
+   ETAP 5 — SYNTHEZA I RAPORT:
+     K60. Zbuduj T1–T12 (9.16), rejestr luk, macierz prawo↔reguła↔test i kontrakt wyjściowy.
+     K61. Opracuj innowację V3-P01-I01 wg 6-punktowego szkieletu (Sekcja 10).
+     K62. Opracuj innowację V3-P01-I02 wg 6-punktowego szkieletu (Sekcja 10).
+     K63. Opracuj innowację V3-P01-I03 wg 6-punktowego szkieletu (Sekcja 10).
+     K64. Opracuj innowację V3-P01-I04 wg 6-punktowego szkieletu (Sekcja 10).
+     K65. Opracuj innowację V3-P01-I05 wg 6-punktowego szkieletu (Sekcja 10).
+     K66. Opracuj innowację V3-P01-I06 wg 6-punktowego szkieletu (Sekcja 10).
+     K67. Opracuj innowację V3-P01-I07 wg 6-punktowego szkieletu (Sekcja 10).
+     K68. Opracuj innowację V3-P01-I08 wg 6-punktowego szkieletu (Sekcja 10).
+     K69. Opracuj innowację V3-P01-I09 wg 6-punktowego szkieletu (Sekcja 10).
+     K70. Opracuj innowację V3-P01-I10 wg 6-punktowego szkieletu (Sekcja 10).
+     K71. Opracuj innowację V3-P01-I11 wg 6-punktowego szkieletu (Sekcja 10).
+     K72. Opracuj innowację V3-P01-I12 wg 6-punktowego szkieletu (Sekcja 10).
+     K73. Odpowiedz na pytanie krzyżowe X01 (7.4) — identyfikator V3-P01-X01.
+     K74. Odpowiedz na pytanie krzyżowe X02 (7.4) — identyfikator V3-P01-X02.
+     K75. Odpowiedz na pytanie krzyżowe X03 (7.4) — identyfikator V3-P01-X03.
+     K76. Odpowiedz na pytanie krzyżowe X04 (7.4) — identyfikator V3-P01-X04.
+     K77. Odpowiedz na pytanie krzyżowe X05 (7.4) — identyfikator V3-P01-X05.
+     K78. Odpowiedz na pytanie krzyżowe X06 (7.4) — identyfikator V3-P01-X06.
+     K79. Odpowiedz na pytanie krzyżowe X07 (7.4) — identyfikator V3-P01-X07.
+     K80. Odpowiedz na pytanie krzyżowe X08 (7.4) — identyfikator V3-P01-X08.
+     K81. Odpowiedz na pytanie krzyżowe X09 (7.4) — identyfikator V3-P01-X09.
+     K82. Odpowiedz na pytanie krzyżowe X10 (7.4) — identyfikator V3-P01-X10.
+
+   ETAP 6 — DOMKNIĘCIE: zapis raportu → potwierdzenie → czyszczenie okna kontekstowego (Sekcja 16).
+
+Przypomnienie przed startem pracy (wszystkie 6 wymagań):
+   * Przeprować głębokie myślenie.
+   * Przeprować głęboką analizę.
+   * zaawansowany poziom Enterprise.
+   * poziom ENTERPRISE.
+   * innowacyjne ulepszenia wyprzedzające profesjonalistów.
+   * Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+==============================================================================
+KONIEC PROMPTU V3 P01 — LEGAL TWIN, LEGAL KNOWLEDGE GRAPH I ŚCIEŻKA DOWODOWA ZGODNOŚCI Z PRAWEM
+==============================================================================

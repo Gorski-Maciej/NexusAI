@@ -1,0 +1,692 @@
+==============================================================================
+PROMPT V3 P07 — CYKL ŻYCIA REGUŁ: SHADOW→CANDIDATE→ACTIVE→ROLLBACK I OPERACJE AWARYJNE
+==============================================================================
+
+Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN dla GLM 5.2
+Plik promptu:           JDG/prompty_v3/V3_PROMPT_P07_RULE_LIFECYCLE.txt
+Docelowy plik raportu:  JDG/raporty_glm52_v3/RAPORT_V3_P07_RULE_LIFECYCLE.txt
+Wersja kampanii: V3.0   Data wygenerowania pakietu: 2026-09-02
+Skala części: 4 podanaliz, 17 plików do odczytu, min. 12 innowacji Enterprise.
+
+Jeden prompt = jeden plik TXT. Ten plik wklejasz do GLM 5.2 w CLEAN sesji (puste okno kontekstowe).
+
+SEKCJA 1 — ROLA I WYMAGANIA NADRZĘDNE
+------------------------------------------------------------------------------
+
+Jesteś ekspertem release engineering i zarządzania cyklem życia polityk (control plane OPA).
+
+Wymagania nadrzędne tej części (obowiązuje KAŻDE z nich):
+
+  1. Przeprować głębokie myślenie.
+  2. Przeprować głęboką analizę.
+  3. zaawansowany poziom Enterprise.
+  4. poziom ENTERPRISE.
+  5. innowacyjne ulepszenia wyprzedzające profesjonalistów.
+  6. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Powtarzaj te wymagania przed każdą sekcją raportu, każdą rekomendacją i każdą decyzją projektową.
+
+Specjalizacja części P07: lifecycle reguł, awans z shadow, A/B canary, auto-rollback, kill-switch, hot-reload rejestru.
+
+SEKCJA 2 — MISJA CZĘŚCI
+------------------------------------------------------------------------------
+
+Przeanalizuj istniejący cykl życia reguł (rule_lifecycle_enterprise.rego, rule_lifecycle_manager.py) i podnieś go do poziomu dokumentu świętego V1 §3: DODANIE (7 kroków zautomatyzowanych), ZMIANA (nowa wersja + shadow + canary + auto-rollback — nigdy edycja na żywo), USUNIĘCIE (deprecate→retire→purge z karencją), KILL-SWITCH (pauza reguły/pakietu < 1 s).
+
+Zaprojektuj 4-eyes i separację obowiązków (autor ≠ recenzent ≠ operator), raport „reguły do usunięcia” tygodniowy, dowody ciągłości czasowej (algebra interwałów z P05) przy każdej operacji, oraz integrację z bundle deployment (P38) tak, aby zmiana prawa była prosta, szybka i niezawodna — sedno wymogu: OPA jako SYSTEM.
+
+Cel nadrzędny całej serii V3: silnik reguł podatkowych OPA ma maksymalnie zautomatyzować księgowość JDG
+(CODZIENNE księgowanie: faktury → ewidencje → deklaracje → płatności → archiwum), pozostając systemem
+fail-closed: przy konflikcie, luce prawnej, niezweryfikowanym źródle lub naruszeniu invariantów decyzją
+jest NEEDS_ADVICE / MANUAL_REVIEW — nigdy ciche automatyczne AUTO_POST. Forteca = precyzja, nie odwaga.
+
+Uwaga o archiwum: poprzednie kampanie (JDG/PROMPTY_GLM52_01-05.txt … 21-40.txt, raporty w JDG/raporty_glm52
+oraz raporty P00–P30 wg JDG/prompts_status.yaml) są ARCHIWUM WEJŚCIOWYM. Seria V3 NIE kopiuje ich treści —
+weryfikuje stan REPOZYTORIUM PO ich wdrożeniu i domyka to, co wciąż jest luką. Zanim uznasz coś za brak,
+sprawdź w raporcie V3_P00 (mapa kanoniczna) oraz w samej strukturze repozytorium, czy element już istnieje.
+ZAKAZ duplikowania istniejących reguł, narzędzi, migracji i raportów — rozszerzaj, nie zdublikuj.
+
+SEKCJA 3 — BUDŻET KONTEKSTU (ZASADA 50% I CZYSTA SESJA)
+------------------------------------------------------------------------------
+
+1. Dane i informacje dostarczone do GLM 5.2 (pliki odczytane wg linków z tej części) mogą zająć MAKSYMALNIE
+   50% okna kontekstowego. Pozostałe ≥ 50% musi zostać na myślenie, analizę, dedukcję i generowanie raportu.
+2. Czytaj WYŁĄCZNIE linki z Sekcji 6 (oraz wymienione raporty-kontrakty z Sekcji 11.1). Nie surfuj po całym
+   repozytorium i nie wczytuj katalogów zbiorczo — to gwarancja, że budżet 50% zostanie dotrzymany.
+3. Jeśli którykolwiek plik okaże się zbyt duży, aby zmieścić go w budżecie 50%, czytaj go PARTIAMI wg sekcji
+   (nagłówki → sekcje krytyczne → reszta) i to zaznaczaj w raporcie. ZAKAZ cichego pomijania treści.
+4. Ten prompt + odczytane pliki + praca analityczna + generowany raport muszą się zmieścić w jednej sesji.
+   Jeśli którejkolwiek analizy zabraknie miejsca: skróć cytat, nie skróć myśli — każda teza musi mieć dowód.
+5. Po zakończeniu pracy (Sekcja 16) WYCZYŚĆ okno kontekstowe. Nie przenoś niejawnych założeń do następnej części.
+
+SEKCJA 4 — ŹRÓDŁA NADRZĘDNE (OBOWIĄZKOWE DLA KAŻDEJ CZĘŚCI)
+------------------------------------------------------------------------------
+
+4.1 Dokumenty święte — nadrzędna architektura docelowa (każdy konflikt z nimi = BLOCKER):
+
+   - DOKUMENT ŚWIĘTY nr 1 — architektura docelowa V1 (Control Plane + Data Plane, cykl życia reguł, pipeline ISAP→produkcja, bramki CI, SLO)
+     https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+
+   - DOKUMENT ŚWIĘTY nr 2 — Wizja V2 (Legal Twin/LKG, Warstwa Konstytucyjna, Golden Oracle, Decision Certificate, Law Radar, Declarative Change; kontynuacja dokumentu nr 1)
+     https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+
+   Prawo konfliktu: jeżeli jakikolwiek plik, dokument, README, manifest, wcześniejszy raport lub własny
+   wniosek jest sprzeczny z dokumentami świętymi — NIE ZGADYWAJ. Oznacz konflikt jako BLOCKER z cytatami
+   obu stron i zaproponuj rozstrzygnięcie zgodne z dokumentami świętymi.
+
+4.2 Źródła prawne:
+
+   - Dokument źródeł prawnych JDG — katalog aktów prawnych, na których opiera się silnik (twierdzenia do WERYFIKACJI w ISAP/RCL/MF, nie automatyczny dowód)
+     https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/Bbb
+
+   Zasada prawna: numer Dz.U., data, treść artykułu z dokumentu wyżej są TWIERDZENIEM, nie dowodem.
+   Każdą podstawę prawną zweryfikuj co do istnienia i treści w oficjalnym ISAP (isap.sejm.gov.pl), RCL
+   (legislacja.gov.pl) lub publikatorach MF. Niezweryfikowane oznaczaj tagiem [NIEZWERYFIKOWANE],
+   a podejrzane (np. dziwny numer pozycji, niemożliwa data) — tagiem [BŁĄD_PODSTAWY_PRAWNEJ?].
+   ZAKAZ tworzenia fikcyjnych artykułów, ustępów, numerów Dz.U., dat i stawek.
+
+4.3 Dokumenty bazowe architektury (kontekst stanu obecnego):
+
+   - Architektura obecna — stan istniejący (PL): https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/ARCHITEKTURA.md
+   - Architecture (EN mirror dokumentu PL): https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/ARCHITECTURE.md
+
+4.4 Indeks kampanii (mapa wszystkich części i konwencji):
+
+   - README serii V3: https://github.com/Gorski-Maciej/NexusAI/blob/JDG/prompty_v3/README_V3_KAMPANIA_GLM52.txt
+
+4.5 Rejestr źródeł zewnętrznych weryfikacji (używaj przy każdej podstawie prawnej):
+
+   - ISAP (isap.sejm.gov.pl) — teksty ujednolicone i Dz.U.; jedyne źródło twierdzeń o treści ustaw.
+   - legislacja.gov.pl (RCL) — proces legislacyjny: daty wejścia w życie, zmiany, projekty nowelizacji.
+   - podatki.gov.pl (MF/KIS) — interpretacje ogólne i indywidualne, objaśnienia, broszury, stawki.
+   - crd.gov.pl — KSeF: schematy XSD, dokumentacja API, harmonogram wdrożenia.
+   - zus.pl — stawki składek, limity (30-krotność), terminy, druki (DRA/RCA), ulgi.
+   - Klauzula: gdy źródło zewnętrzne jest w tej sesji niedostępne — tag [NIEZWERYFIKOWANE] + wpis
+     do rejestru mediacji (9.05). Zakaz cichego przyjmowania treści „z pamięci”.
+
+SEKCJA 5 — DEKOMPOZYCJA CZĘŚCI P07 NA PODANALIZY
+------------------------------------------------------------------------------
+
+Część P07 dzieli się na 4 podanaliz. Każdą podanalizę opracuj OSOBNO, z własnymi dowodami,
+własną tabelą luk i własnymi rekomendacjami — tak by raport był wewnętrznie spójną, ale kompletną całością.
+
+5.1 Audyt istniejącego lifecycle
+    Cel: co działa, co jest deklaratywne, co brakuje
+    Pytania audytowe (odpowiedz na KAŻDE, z dowodem z kodu/dokumentu):
+      * Czy SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK działa na danych rejestru (rule_registry.json) z dowodami operacji?
+      * Czy awans wymaga kryteriów (testy, delta shadow ≤ 2%, metryki jakości) czy jest ręczny?
+      * Czy rollback jest automatyczny przy naruszeniu progów i czy zachowuje audyt?
+      * Czy operacje lifecycle są audytowalne (kto/kiedy/dlaczego) i odwracalne?
+
+5.2 Dodanie i zmiana reguły
+    Cel: prostota zmiany przy zachowaniu bramek
+    Pytania audytowe (odpowiedz na KAŻDE, z dowodem z kodu/dokumentu):
+      * Ile kroków dziś wymaga dodanie reguły — gdzie proces wypada z 7-krokowego celu V1 §3.2?
+      * Czy nowa wersja reguły pozostawia starą nietkniętą (immutable) z pełnym time-travel?
+      * Czy shadow compare liczony jest automatycznie (delta werdyktów) i alarmuje > 2%?
+      * Czy 4-eyes (autor ≠ recenzent ≠ operator) jest egzekwowane technicznie, nie tylko opisane?
+
+5.3 Usunięcie i karencja
+    Cel: bezpieczne wygaszanie bez łamania historii
+    Pytania audytowe (odpowiedz na KAŻDE, z dowodem z kodu/dokumentu):
+      * Czy deprecate→retire→purge jest zaimplementowane z okresami karencji (2 okresy rozliczeniowe)?
+      * Czy purge weryfikuje zero odwołań (werdykty, reguły, testy) przed usunięciem z bundle?
+      * Czy generowany jest tygodniowy raport „reguły do usunięcia” — czy ktoś go czyta (telemetria procesu)?
+      * Jak usuwanie współgra z golden replay (historia werdyktów nienaruszona)?
+
+5.4 Operacje awaryjne
+    Cel: kill-switch i szybkość reakcji
+    Pytania audytowe (odpowiedz na KAŻDE, z dowodem z kodu/dokumentu):
+      * Czy POST /rules/{id}/suspend działa w < 1 s (hot-reload) i czy jest audytowany z alertem?
+      * Czy można wstrzymać cały pakiet/domenę jednym ruchem — jak to przetestować?
+      * Czy istnieje lista zdrowych wersji (healthy_versions) i procedura przywrócenia — jak działa?
+      * Jakie SLO dla MTTR (≤ 15 min) i auto-rollback (≤ 5 min) jest dziś mierzone — co brakuje?
+
+SEKCJA 6 — PLIKI DO ODCZYTU CZĘŚCI P07 — TYLKO TE LINKI
+------------------------------------------------------------------------------
+
+Nie szukaj plików po katalogach. Czytaj dokładnie te adresy, w tej kolejności grup. Każda grupa ma
+przypisaną rolę analityczną. Ścieżki zweryfikowano przeciw strukturze repozytorium.
+
+6.0 Instrukcja czytania:
+
+   a) Czytaj pliki grupami w podanej kolejności; po każdej grupie zapisz wnioski w notatce roboczej sesji.
+   b) Dla każdego pliku zanotuj co najmniej 1 fakt użyteczny dla raportu (liczba, reguła, kontrakt, luka).
+   c) Jeżeli plik nie istnieje pod adresem albo jest nieosiągalny — wpisz to do tabeli dowodów ze statusem
+      NIEZWERYFIKOWANO i potraktuj jako lukę dokumentacyjną V3-P07-Lxx. Nie zgaduj jego treści.
+   d) Nie czytaj plików spoza listy (wyjątek: Sekcja 11.1). Budżet 50% okna kontekstowego jest wiążący.
+
+6.1 Reguły i narzędzia lifecycle
+
+   - [Lifecycle reguł (reguła)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/rule_lifecycle_enterprise.rego
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Manager lifecycle (reguła)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/lifecycle_manager_enterprise.rego
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Menedżer cyklu życia (narzędzie)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/rule_lifecycle_manager.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Control plane lifecycle (narzędzie)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/control_plane_lifecycle.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Orkiestrator deploymentu] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/deployment_orchestrator.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Orkiestrator rolloutu] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/rollout_orchestrator.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Silnik samonaprawy] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/self_healing_engine.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Silnik niezawodności] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/differential_evaluation.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+
+6.2 Dane rejestru
+
+   - [Rejestr reguł (bundle)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/bundles/rule_registry.json
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Zdrowe wersje (bundle)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/bundles/healthy_versions.json
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Deploymenty (bundle)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/bundles/deployments.json
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+
+6.3 Dokumenty i migracje
+
+   - [Cykl życia reguł (dokument)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/RULE_LIFECYCLE.md
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Control plane lifecycle (dokument)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/CONTROL_PLANE_RULE_LIFECYCLE.md
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Migracja 007 — control plane lifecycle] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/migrations/007_jdg_v12_control_plane_lifecycle.sql
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Migracja 004 — control plane] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/migrations/004_jdg_v9_control_plane.sql
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+
+6.4 Testy lifecycle
+
+   - [Test control plane lifecycle] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tests/test_control_plane_lifecycle.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Test infrastruktury control plane] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tests/test_control_plane_infrastructure.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+
+6.5 Mirror policies — obowiązkowy kontekst zgodności (porównuj implementacje z mirror):
+
+   - [Mirror jdg — katalog lustrzany pakietu JDG (porównuj implementacje domeny z mirror)] https://github.com/Gorski-Maciej/NexusAI/tree/policies/jdg
+   - [Mirror tax — katalog lustrzany warstwy podatkowej] https://github.com/Gorski-Maciej/NexusAI/tree/policies/tax
+   - [Mirror VAT — katalog lustrzany reguł VAT] https://github.com/Gorski-Maciej/NexusAI/tree/policies/tax/vat
+   - [Skrypt budowy bundle w mirrorze] https://github.com/Gorski-Maciej/NexusAI/blob/policies/jdg/bundles/bundle.sh
+   - [Manifest bazowy overlay w mirrorze] https://github.com/Gorski-Maciej/NexusAI/blob/policies/jdg/bundles/base/manifest.json
+   - [Overlay v2026 w mirrorze] https://github.com/Gorski-Maciej/NexusAI/blob/policies/jdg/bundles/overlays/v2026/manifest.json
+
+SEKCJA 7 — WYMAGANIA ANALITYCZNE CZĘŚCI P07
+------------------------------------------------------------------------------
+
+7.1 Osie obowiązkowe każdej podanalizy (zawsze, nawet jeśli nie wymienione w 7.2):
+
+   a) POPRAWNOŚĆ PRAWNA — każde twierdzenie podpięte pod akt/artykuł/ustęp/punkt + status weryfikacji (ISAP/RCL/MF) + daty obowiązywania (valid_from/valid_to);
+   b) POPRAWNOŚĆ KODU REGO — determinizm, kompletność else-chain, brak stubów {true}, brak martwych reguł, brak hardcode (ADR-002: parametry z data.thresholds.*), unikalność rule_id globalnie;
+   c) TEMPORALNOŚĆ — czy reguły/parametry mają okna ważności; testy day-1/day-0/day+1 na granicach nowelizacji; time-travel odtwarzalny;
+   d) FAIL-CLOSED — co się dzieje przy braku danych, konflikcie, niepewności; czy AUTO_POST jest możliwy tylko przy pełnym dowodzie;
+   e) TESTY — jakie istnieją (natywne Rego / pytest / golden), jakie brakują, jakie trzeba dodać (granice groszy, waluty, negatywne, fuzz);
+   f) INTEGRACJA MIĘDZYDOMENOWA — wpływy na inne części (Sekcja 11) i kontrakt werdyktu 25-polowy (ADR-004);
+   g) WYDAJNOŚĆ — koszty ewaluacji, struktura indeksowania, else-chain O(n) vs routing O(1), cache;
+   h) AUDYTOWALNOŚĆ — provenance, _legal_basis, traceability reguła→test→bundle→werdykt→certyfikat.
+
+7.2 Zagadnienia specyficzne tej części (oprócz osi obowiązkowych) — wywodzą się z celów podanaliz z Sekcji 5:
+
+   P07-AN01: Odtwórz ścieżkę zmiany reguły krok po kroku (kod, nie dokumentacja): kto generuje testy, kto liczy delta, kto awansuje.
+   P07-AN02: Zaprojektuj kryteria awansu jako zamkniętą listę (testy OK, delta ≤ 2%, jakość ≥ 95%, brak konfliktów) z automatem.
+   P07-AN03: Zaprojektuj immutable versions: nowa wersja = nowy wpis, stara nietykalna; edycja pliku na żywo = BLOCKER w CI.
+   P07-AN04: Zaprojektuj 4-eyes techniczne: podpisy PR, bramki GitHub/CI, audyt operacji z podpisami ról.
+   P07-AN05: Zaprojektuj kill-switch: pauza reguły/pakietu < 1 s, audyt, alert, automatyczny tryb NEEDS_ADVICE dla dotkniętych decyzji.
+   P07-AN06: Oceń integrację lifecycle z bundle (P38): czy awans reguły wyzwala build+sign+canary automatycznie?
+   P07-AN07: Zaprojektuj tygodniowy raport reguł do usunięcia (stubs, dead rules, deprecations) z telemetrią procesu.
+   P07-AN08: Oceń zgodność z Declarative Change (V2/F6) i wskaż, co przenieść do P09.
+   P07-AN09: Zaprojektuj „reguła roku podatkowego”: automatyczne wymuszanie wersji na granicy roku (valid_from 01.01).
+   P07-AN10: Sprawdź spójność rule_registry.json z kodem (rejestr vs rzeczywistość) — mechanizm rekonsyliacji.
+   P07-AN11: Zaprojektuj metryki lifecycle: MTTR, czas PR→produkcja, liczba rollbacków, delta shadow (dashboard SLO).
+   P07-AN12: Wskaż ryzyka simultanicznych zmian (dwie reguły w jednej domenie jednocześnie) i zaprojektuj kolejkowanie zmian.
+
+7.3 Tabela dowodów (wygeneruj ją w raporcie — jeden wiersz na plik z Sekcji 6):
+
+   | # | Plik | Co z niego pobieramy (dowód/fakt/liczba) | Status: ZWERYFIKOWANO/NIEZWERYFIKOWANO |
+   |---|------|------------------------------------------|----------------------------------------|
+
+7.4 Pytania krzyżowe (obowiązkowe odpowiedzi w raporcie — identyfikatory V3-P07-Xxx):
+
+   X01. Które twierdzenia tej części są sprzeczne z dokumentami świętymi (cytat → cytat) i jak je rozstrzygnąć?
+   X02. Które reguły tej części łamią zasady parametrów-as-data (P06) i temporalności (P05) — lista z dowodami?
+   X03. Które ścieżki tej części nie są fail-closed (cichy AUTO_POST przy wątpliwości) — jak je domknąć?
+   X04. Które pola tej części kontraktują się z kontraktem werdyktu 25-polowym (P03) — zgodność typów i wymagalności?
+   X05. Które testy tej części są niezbędne jako bramki blokujące merge (P39) — lista z oczekiwanymi wynikami?
+   X06. Które elementy tej części są duplikatami innych części (P00 baseline, mapy domenowe) — plan konsolidacji?
+   X07. Które podstawy prawne tej części są niezweryfikowane (Bbb + ISAP) — rejestr mediacji z priorytetami?
+   X08. Które innowacje tej części wymagają decyzji człowieka przed wdrożeniem (4-eyes) — lista V3-{CODE}-Qxx?
+   X09. Które metryki tej części muszą trafić do obserwowalności (P37) — nazwy, progi alarmów, dashboardy?
+   X10. Które ryzyka tej części wymagają invariantów runtime (P04) — propozycje z uzasadnieniem prawnym?
+
+7.5 Anty-wzorce do wykrycia w tej części (każdy: sprawdź i wynik wpisz do rejestru luk):
+
+   AP01. Reguły typu stub (warunek zawsze prawdziwy, np. `true => "..."`) udające pokrycie prawne.
+   AP02. Hardcode stawek/limitów/dat w kodzie Rego zamiast data.thresholds.* (naruszenie ADR-002).
+   AP03. Brak else-chain / otwarte negatywy: reguła niezdefiniowana milcząco zamiast jawnego NEEDS_ADVICE.
+   AP04. Duplikaty tej samej reguły pod różnymi rule_id (macro vs micro vs enterprise bez rejestru źródła prawdy).
+   AP05. Podstawy prawne bez Dz.U./art./ust. lub z datami niemożliwymi (nowelizacja wcześniejsza niż ustawa).
+   AP06. Testy zawsze-zielone (brak asercji negatywnych), testy zależne od kolejności lub komunikatów.
+   AP07. Cichy AUTO_POST przy braku pola obowiązkowego (fail-open) — najsłabsze miejsce fortecy.
+   AP08. Zależności cykliczne między pakietami (import A→B→A) i reguły piszące do tych samych ścieżek.
+   AP09. Dane świata zewnętrznego (kursy, wskaźniki) wpisane na stałe zamiast input z wersją i provenance.
+   AP10. Brak okien temporalnych przy regułach z datami wejścia w życie / wygaśnięcia.
+   AP11. Mirror policies dryfujący względem canonical (ta sama reguła, inna treść) bez detekcji w CI.
+   AP12. Metryki/słowniki w dwóch miejscach (bundle vs SQL) z różnymi wartościami — brak jednego źródła prawdy.
+
+SEKCJA 8 — MAPA PRAWNA CZĘŚCI P07
+------------------------------------------------------------------------------
+
+Akty prawne w zakresie tej części (punkt wyjścia — zweryfikuj każdy w ISAP i rozszerz, jeśli luka):
+
+   01. Ordynacja podatkowa — art. 241–241n (umowy/apelacje jako paradygmat wersjonowania i korekt wstecz)
+       → Obowiązek: weryfikacja w ISAP/RCL + wskazanie artykułów implementowanych w części P07.
+   02. Ustawa o VAT — art. 108 (samorzutne korekty stawek jako wzorzec „nowa wersja, stara nietykalna”)
+       → Obowiązek: weryfikacja w ISAP/RCL + wskazanie artykułów implementowanych w części P07.
+   03. Ustawa o PIT — art. 9 ust. 2 (wybór formy na cały rok podatkowy jako wzorzec granic wersji)
+       → Obowiązek: weryfikacja w ISAP/RCL + wskazanie artykułów implementowanych w części P07.
+   04. Ustawa o rachunkowości — art. 4 ust. 5 (stosowanie zasad niezmienionych w roku — paradygmat immutability)
+       → Obowiązek: weryfikacja w ISAP/RCL + wskazanie artykułów implementowanych w części P07.
+   05. Ustawa – Prawo przedsiębiorców — art. 22–25 (zawieszenie/wznowienie jako wzorzec suspend/resume reguły)
+       → Obowiązek: weryfikacja w ISAP/RCL + wskazanie artykułów implementowanych w części P07.
+
+Mini-makra macierzy akt→plik (uzupełnij w raporcie):
+
+   | Akt | Art./ust./pkt | Grupa plików (6.x) | Reguła | Test | Status |
+   |-----|---------------|--------------------|--------|------|--------|
+
+Uwaga: to NIE jest pełna lista — to mapa wejściowa. Jeśli w trakcie analizy odkryjesz przepis
+materiałny w zakresie części, którego tu brak — dodaj go do rejestru luk prawnych raportu z pełną
+identyfikacją (akt, artykuł, jednostka redakcyjna, Dz.U., data obowiązywania, status weryfikacji).
+
+SEKCJA 9 — STRUKTURA RAPORTU (WYMAGANA) — RAPORT_V3_P07_RULE_LIFECYCLE.txt
+------------------------------------------------------------------------------
+
+   9.01 EXECUTIVE SUMMARY — 1 strona: ocena dojrzałości części, TOP-10 rekomendacji, liczba luk wg krytyczności (P0/P1/P2/P3), deklaracja co udowodniono, a co pozostało [NIEZWERYFIKOWANE].
+   9.02 ZAKRES I OGRANICZENIA — co dokładnie przeanalizowano (lista plików), co pominięto i DLACZEGO (budżet 50% / brak związku), status weryfikacji źródeł prawnych.
+   9.03 STAN OBECNY CZĘŚCI P07 — mapa artefaktów: plik → pakiet Rego → rule_id → podstawa prawna → testy → status lifecycle (SHADOW/CANDIDATE/ACTIVE).
+   9.04 PODANALIZY 5.1–5.4 — każda osobno z tabelą dowodów i wnioskami.
+   9.05 MACIERZ PRAWO↔REGUŁA↔TEST — wiersz na przepis materiałny: przepis (zweryfikowany) → reguła(y) → test(y) → status (PEŁNE/CZĘŚCIOWE/BRAK/PRZECZYANE) → ryzyko.
+   9.06 REJESTR LUK — identyfikatory V3-P07-Lxx, krytyczność P0 (BLOCKER: złamanie dokumentów świętych/temporalności/fail-closed), P1 (wysokie ryzyko błędnej decyzji), P2, P3; dla każdej luki: dowód, wpływ, proponowane rozwiązanie, koszt wdrożenia, ryzyko regresji.
+   9.07 INNOWACJE ENTERPRISE (Sekcja 10) — min. 12 rozwiązań z ID V3-P07-Ixx, wpływem, ryzykiem i kryteriami akceptacji.
+   9.08 KONTRAKT WYJŚCIOWY (Sekcja 11.2) — decyzje i standardy wiążące kolejne części.
+   9.09 PLAN WDROŻENIA — kolejność prac bez duplikacji i bez niszczenia zależności; co wolno wdrożyć od razu, co wymaga testów, co wymaga decyzji człowieka (4-eyes).
+   9.10 PLAN TESTÓW — konkretne przypadki testowe (unit/property/fuzz/golden/temporal) z oczekiwanymi wynikami; testy które BLOKUJĄ merge.
+   9.11 SEKCJA PYTAŃ DO CZŁOWIEKA — wszystko, czego nie wolno rozstrzygać samodzielnie (prawo niepewne, decyzje biznesowe, konflikty BLOCKER).
+   9.12 ZAAŁOŻENIA JAWNE — lista założeń przyjętych przy braku dowodu, każde z tagiem [ZAŁOŻENIE].
+
+   9.13 KAŻDA podanaliza (5.1–5.N) dostaje w raporcie: własną tabelę dowodów, min. 3 wnioski
+   i własną listę luk — bez tego raport jest niekompletny i wraca do poprawy.
+   9.14 Wiersze macierzy PRAWO↔REGUŁA↔TEST z aktów Sekcji 8 są OBOWIĄZKOWE (każdy akt z listy)
+   plus każdy przepis odkryty w trakcie analizy.
+   9.15 Format identyfikatorów (przykłady): V3-P07-L01 (luka P0), V3-P07-I03 (innowacja),
+   V3-P07-C01 (konflikt), V3-P07-Q02 (pytanie do człowieka), V3-P07-X04 (pytanie krzyżowe).
+
+Format pliku: TXT/Markdown, nagłówki ASCII, tabele ASCII, diagramy Mermaid dopuszczalne w blokach ```.
+Zakaz stwierdzeń „100% zgodności”/„production-ready” bez dowodu. Każde twierdzenie: artefakt + podstawa
+(prawna lub techniczna) + wersja/data + poziom pewności. Raport jest kontraktem wdrożeniowym, nie esejem.
+
+   9.16 Obowiązkowe tabele raportu (każda musi istnieć i być wypełniona):
+       T1 tabela dowodów (7.3), T2 macierz PRAWO↔REGUŁA↔TEST (Sekcja 8 / 9.05), T3 rejestr luk (9.06),
+       T4 rejestr innowacji (9.07), T5 kontrakt wyjściowy (9.08), T6 plan wdrożenia (9.09),
+       T7 plan testów (9.10), T8 pytania do człowieka (9.11), T9 założenia jawne (9.12),
+       T10 przekazywane artefakty (11.4), T11 matryca podanaliza×grupa (APENDYKS B), T12 rejestr
+       konfliktów Cxx (jeśli wystąpiły). Brak którejkolwiek tabeli = raport niekompletny.
+
+SEKCJA 10 — WYMAGANE INNOWACJE ENTERPRISE CZĘŚCI P07 (MINIMUM 12)
+------------------------------------------------------------------------------
+
+Rozwiń każdy temat poniżej DO PEŁNEGO PROJEKTU, oraz dodaj własne — tak aby łącznie raport zawierał
+co najmniej 12 kompletnych innowacji tej części:
+
+   V3-P07-I01 — Promotion Contract Engine: automat oceny kryteriów awansu (testy/delta/jakość) z jawnym wyrokiem i audytem
+   V3-P07-I02 — Immutable Rule Vault: wersje reguł jako nietykalne artefakty (hash, podpis) z zakazem edycji w CI
+   V3-P07-I03 — Shadow Delta Automator: automatyczne porównanie shadow↔active na próbce transakcji z raportem różnic
+   V3-P07-I04 — Kill-Switch SLA: pauza reguły < 1 s z audytem i automatycznym NEEDS_ADVICE dla dotkniętych strumieni
+   V3-P07-I05 — 4-Eyes Enforcement Layer: techniczne wymuszenie separacji ról w pipeline (pr, review, deploy) z podpisami
+   V3-P07-I06 — Retirement Scheduler: automat: deprecate → karencja → retire → purge z weryfikacją zerowych odwołań
+   V3-P07-I07 — Change Queue & Locks: kolejkowanie zmian per domena z blokadami (zero symultanicznych zmian konfliktowych)
+   V3-P07-I08 — Fiscal-Year Version Boundary: automatyczne granice wersji na 01.01 z testami przejścia roku
+   V3-P07-I09 — Registry Reconciler: rekonsyliacja rule_registry.json ↔ kod (ryzyko dryfu rejestru) w CI
+   V3-P07-I10 — Lifecycle Telemetry: SLO dashboard: czas PR→produkcja, MTTR, rollbacki, delta shadow, wiek SHADOW
+   V3-P07-I11 — Emergency Runbook DSL: deklaratywne runbooki awaryjne (scenariusz → kroki → weryfikacja) z testami tabletop
+   V3-P07-I12 — Auto-Post Gate Lifecycle: reguła może być ACTIVE ale z flagą NO_AUTO_POST — granica zaufania zarządzana w lifecycle
+
+Szkielet opisu każdej innowacji (5 obowiązkowych punktów):
+
+   1) Problem/luka, którą domyka (odwołanie do rejestru luk V3-P07-Lxx lub zjawiska z kodu).
+   2) Mechanizm rozwiązania (dane, reguły, przepływ, interfejsy — konkretnie, bez marketingu).
+   3) Wpływ na bezpieczeństwo decyzji księgowych (co NOWE zgaduje/zamienia na dowód).
+   4) Ryzyko i mitygacja (co może pójść źle, jak to wykryć i cofnąć).
+   5) Kryterium akceptacji (testowalne) + zależności od innych części serii V3.
+
+Każda innowacja w raporcie musi mieć: (1) problem/lukę którą domyka, (2) mechanizm rozwiązania,
+(3) wpływ na bezpieczeństwo decyzji księgowych, (4) ryzyko i mitygację, (5) kryterium akceptacji
+(testowalne), (6) zależności od innych części serii V3.
+
+Katalog kierunków innowacji (inspiracja — nie limit; dobierz do specyfiki części):
+
+   K01. Detekcja dryfu prawo↔kod w czasie rzeczywistym; auto-zgłoszenia Law Radar z twardym dowodem diff.
+   K02. Symulacja scenariuszowa „co-jeśli” przy zmianie progu/stawki z pełnym wpływem na inne domeny.
+   K03. Auto-generowanie testów granicznych groszowych z tabeli aktów (daty, progi, waluty, zaokrąglenia).
+   K04. SMT/Z3 dowody równoważności starej i nowej wersji reguły przed przełączeniem CANDIDATE→ACTIVE.
+   K05. Kontraktowe snapshoty decision certificate: replay decyzji historycznych na nowej wersji reguł.
+   K06. Routing O(1) sharded z indeksem domen (zamiast skanowania else-chain O(n)).
+   K07. Samonaprawiające się bundle: canary, auto-rollback, checksum, podpis, WORM archiwum wersji.
+   K08. Inteligentne triage NEEDS_ADVICE: klaster przypadków, sugestia zasad, human-in-the-loop feedback.
+   K09. Proweniencja DNA każdej reguły (akt→nowela→art→reguła→test→bundle→certyfikat) jako zapytywalny graf.
+   K10. Chaos-testy prawne: losowe mutacje input/data z asercją fail-closed (nigdy cichy AUTO_POST).
+   K11. Walidacja krzyżowa mirror policies vs canonical z blokadą merge przy różnicy semantycznej.
+   K12. Mierzalna mapa pokrycia prawnego (heat mapy pustynii prawnych) z celami kwartalnymi i progami CI.
+
+SEKCJA 11 — KONTRAKTY MIĘDZYCZĘŚCIOWE (SPÓJNOŚĆ CAŁEJ SERII V3)
+------------------------------------------------------------------------------
+
+11.1 Kontrakty wejściowe — HONORUJ w tej części:
+
+   Z raportu V3_P00 (mapa kanoniczna): faktyczny stan plików, pakiety, rule_id, testy — przy ocenie
+   braków nie kwestionuj owych faktów, tylko je używaj; jeżeli stan się różni — BLOCKER do rejestru.
+   Z raportów V3_P00–V3_P06 (sekcja KONTRAKT WYJŚCIOWY każdego z nich): honoruj ustalone tam
+   standardy nazewnictwa, identyfikatorów, formatu luk i decyzji. Jeśli raport poprzedniej części
+   przekracza budżet — czytaj z niego WYŁĄCZNIE sekcje: EXECUTIVE SUMMARY, KONTRAKT WYJŚCIOWY,
+   REJESTR LUK (P0/P1).
+
+   Specyficzne dla P07: Honoruj okna temporalne i Snapshot ID z V3_P05 — operacje lifecycle muszą zachowywać ciągłość czasową (dowód P05).
+   Specyficzne dla P07: Honoruj kontrakt invariants z V3_P04 — naruszenie invariantu = automatyczny rollback wg protokołu P04.
+
+11.2 Kontrakt wyjściowy — TWÓJ raport musi go zawierać (sekcja 9.08), bo wiąże część P08 i dalsze:
+
+   - Kryteria awansu i protokół 4-eyes — wiąże P38 (deployment), P40 (jakość) i P44 (certyfikacja).
+   - Protokół kill-switch i SLO MTTR — wiąże P43 (security/DR).
+   - Proces deprecate→retire→purge — wiąże P39 (testy) i P44.
+   - Rejestr zmian jako źródło dla P09 (declarative change) i P08 (Law Radar pipeline).
+
+11.3 Rejestr zależności:
+
+   P07 otrzymuje z: V3_P00–V3_P06 → P07 przekazuje do: P08 i dalej aż do P68 (certyfikacja finalna).
+   Zmiana w tej części, która dotyka kontraktu wcześniejszego, musi być oznaczona jako KONFLIKT
+   KONTRAKTOWY z propozycją rozstrzygnięcia — nie zmieniaj po cichu standardów ustalonych wcześniej.
+
+11.4 Tabela przekazywanych artefaktów (uzupełnij w raporcie — co dokładnie przekazujesz dalej):
+
+   | Artefakt (standard/dana/lista) | Odbiorca (część) | Format | Kryterium użycia |
+   |-------------------------------|------------------|--------|------------------|
+
+11.5 Standardy nazewnicze wiążące (identyczne z P00 — nie wymyślaj własnych):
+
+   - Luki: V3-<KOD>-L01..L99, krytyczność P0 (BLOCKER) > P1 > P2 > P3; każda z dowodem i planem fix.
+   - Innowacje: V3-<KOD>-I01..I99 wg szkieletu 6-punktowego z Sekcji 10.
+   - Konflikty: V3-<KOD>-C01..C99 (dokument↔kod, mirror↔canonical, kontrakt↔kontrakt) z cytatami obu stron.
+   - Pytania do człowieka: V3-<KOD>-Q01..Q99 (sekcja 9.11); pytania krzyżowe: V3-<KOD>-X01..X10 (7.4).
+   - Raporty: RAPORT_V3_<KOD>_<SLUG>.txt; prompty: V3_PROMPT_<KOD>_<SLUG>.txt (JDG/prompty_v3/).
+   - Rego: pakiety jdg/<pakiet>/..., rule_id `jdg.<pakiet>.<reguła>`; parametry wyłącznie data.thresholds.*
+     (ADR-002); okna temporalne w data.thresholds.*.valid_from/valid_to (P05).
+
+SEKCJA 12 — PROTOKÓŁ PRAWY I BEZPIECZEŃSTWA (NIEPODLEGAJĄCY NEGOCJACJOM)
+------------------------------------------------------------------------------
+
+   01. Nie generujesz kodu produkcyjnego w tej sesji — generujesz RAPORT. Wyjątkiem są krótkie pseudokontrakty, schematy i przykłady testów w treści raportu (wyraźnie oznaczone jako szkice).
+   02. Nie modyfikujesz repozytorium. Wszystko trafia do raportu jako rekomendacja z planem wdrożenia.
+   03. Dokumenty święte (Sekcja 4.1) są nadrzędne; konflikt = BLOCKER z cytatami obu stron.
+   04. Dokument źródeł prawnych (Sekcja 4.2) to katalog twierdzeń — weryfikuj w ISAP/RCL/MF; fikcyjne podstawy prawne są ZAKAZANE.
+   05. Fail-closed: rekomendacja AUTO_POST tylko przy pełnym łańcuchu dowodów; wątpliwość = NEEDS_ADVICE / MANUAL_REVIEW.
+   06. Nie traktuj deklaracji „production”, liczby rule_id ani etykiet COMPLETE jako dowodu — dowodem jest kod, test, wynik uruchomienia.
+   07. Każda luka ma identyfikator V3-P07-Lxx; każda innowacja V3-P07-Ixx; konflikty V3-P07-Cx; pytania do człowieka V3-P07-Qxx.
+   08. Zakaz duplikacji: zanim zaproponujesz nowy element, sprawdź raport V3_P00 i repozytorium — istniejący element rozszerzaj, nie kopiuj.
+   09. Budżet kontekstu 50% (Sekcja 3) — czytanie linków spoza tej części tylko gdy Sekcja 11.1 wprost wskazuje raport-kontrakt.
+   10. Zero pomijania: jeśli analiza czegoś nie objęła, napisz tego wprost w sekcji 9.02 (ZAKRES I OGRANICZENIA).
+   11. Odporność na błędy: każda rekomendacja musi mieć ścieżkę detekcji błędu (test/alert) i ścieżkę cofnięcia (rollback).
+   12. Precyzja > pośpiech: lepiej mniejsza liczba twierdzeń z pełnym dowodem niż długa lista przypuszczeń.
+   13. Symetria dowodu: każde twierdzenie ma przeciwstawny test sprawdzalny (jak zafałszujesz własną tezę?).
+   14. Zakaz fantazjowania liczbami: jeśli czegoś nie policzyłeś — napisz „nie policzono”, nie podawaj wartości.
+   15. Każda rekomendacja zmiany reguły wskazuje: testy do zmiany, bundle do przebudowy, ścieżkę rollback.
+   16. Jeśli plik z listy jest nieczytelny lub pusty — to LUKA do rejestru, nie pretekst do pominięcia analizy.
+   17. Terminologia zgodna z glosariuszem dokumentów świętych (Legal Twin, Golden Oracle, Decision Certificate).
+   18. Po każdej podanalizie: min. 3 wnioski + min. 1 luka — pusta podanaliza jest niedopuszczalna.
+
+Przypomnienie wymagań nadrzędnych (obowiązują w tej części):
+   * Przeprować głębokie myślenie.
+   * Przeprować głęboką analizę.
+   * zaawansowany poziom Enterprise.
+   * poziom ENTERPRISE.
+   * innowacyjne ulepszenia wyprzedzające profesjonalistów.
+   * Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+SEKCJA 13 — KRYTERIA AKCEPTACJI RAPORTU
+------------------------------------------------------------------------------
+
+   [ ] 01. Raport zapisany jako jeden plik TXT: JDG/raporty_glm52_v3/RAPORT_V3_P07_RULE_LIFECYCLE.txt.
+   [ ] 02. Wszystkie sekcje 9.01–9.15 obecne i nietrywialne (brak pustych nagłówków).
+   [ ] 03. Każdy plik z Sekcji 6 ma wiersz w tabeli dowodów (7.3) albo jawną adnotację dlaczego nie był potrzebny.
+   [ ] 04. Macierz PRAWO↔REGUŁA↔TEST kompletna dla zakresu części, ze statusami i ryzykiem.
+   [ ] 05. Rejestr luk z krytycznością P0–P3 i identyfikatorami V3-P07-Lxx.
+   [ ] 06. Min. 12 innowacji Enterprise z pełnym projektem (6 elementów każda).
+   [ ] 07. Kontrakt wyjściowy gotowy (9.08) — konkretny, wiążący, testowalny.
+   [ ] 08. Plan testów z przypadkami blokującymi merge.
+   [ ] 09. Sekcja pytań do człowieka (9.11) — zawiera każde rozstrzygnięcie wykraczające poza dowody.
+   [ ] 10. Zero stwierdzeń bez dowodu; wszystkie założenia jawnie oznaczone [ZAŁOŻENIE]; niezweryfikowane prawo [NIEZWERYFIKOWANE].
+   [ ] 11. Odpowiedzi na wszystkie pytania krzyżowe (7.4) z identyfikatorami V3-P07-Xxx.
+   [ ] 12. Tabela przekazywanych artefaktów (11.4) wypełniona dla każdego kontraktu wyjściowego.
+   [ ] 13. Macierz podanaliza×grupa (APENDYKS B) ma wypełnione kolumny Grupy kluczowe i Wynik.
+   [ ] 14. Każdy anty-wzorzec z 7.5 ma wynik sprawdzenia (jest/nie ma) i wpis do rejestru luk.
+   [ ] 15. Instrukcja 6.0 wykonana: każdy plik ma przypisany fakt albo adnotację NIEZWERYFIKOWANO.
+   [ ] 16. Plan pracy krok po kroku (APENDYKS E) odznaczony w całości.
+   [ ] 17. Żadna sekcja nie jest skopiowana z poprzednich raportów (weryfikuj, nie parafrazuj).
+   [ ] 18. Deklaracja zgodności z dokumentami świętymi na końcu raportu z listą ewentualnych odstępstw.
+   [ ] 19. Raport zawiera odtworzoną z kodu (nie z dokumentacji) ścieżkę zmiany reguły krok po kroku z oceną każdego kroku.
+   [ ] 20. Projekt zawiera przynajmniej trzy scenariusze awaryjne z runbookiem i przewidywanym czasem reakcji.
+
+SEKCJA 14 — CHECKLISTA ODCZYTU CZĘŚCI P07 (odznaczaj po przeczytaniu)
+------------------------------------------------------------------------------
+
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/rule_lifecycle_enterprise.rego  — Lifecycle reguł (reguła)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/lifecycle_manager_enterprise.rego  — Manager lifecycle (reguła)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/rule_lifecycle_manager.py  — Menedżer cyklu życia (narzędzie)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/control_plane_lifecycle.py  — Control plane lifecycle (narzędzie)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/deployment_orchestrator.py  — Orkiestrator deploymentu
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/rollout_orchestrator.py  — Orkiestrator rolloutu
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/self_healing_engine.py  — Silnik samonaprawy
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/differential_evaluation.py  — Silnik niezawodności
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/bundles/rule_registry.json  — Rejestr reguł (bundle)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/bundles/healthy_versions.json  — Zdrowe wersje (bundle)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/bundles/deployments.json  — Deploymenty (bundle)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/RULE_LIFECYCLE.md  — Cykl życia reguł (dokument)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/CONTROL_PLANE_RULE_LIFECYCLE.md  — Control plane lifecycle (dokument)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/migrations/007_jdg_v12_control_plane_lifecycle.sql  — Migracja 007 — control plane lifecycle
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/migrations/004_jdg_v9_control_plane.sql  — Migracja 004 — control plane
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tests/test_control_plane_lifecycle.py  — Test control plane lifecycle
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tests/test_control_plane_infrastructure.py  — Test infrastruktury control plane
+   --- Mirror policies (kontekst zgodności) ---
+   [ ] https://github.com/Gorski-Maciej/NexusAI/tree/policies/jdg  — Mirror jdg — katalog lustrzany pakietu JDG (porównuj implementacje domeny z mirror)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/tree/policies/tax  — Mirror tax — katalog lustrzany warstwy podatkowej
+   [ ] https://github.com/Gorski-Maciej/NexusAI/tree/policies/tax/vat  — Mirror VAT — katalog lustrzany reguł VAT
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/policies/jdg/bundles/bundle.sh  — Skrypt budowy bundle w mirrorze
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/policies/jdg/bundles/base/manifest.json  — Manifest bazowy overlay w mirrorze
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/policies/jdg/bundles/overlays/v2026/manifest.json  — Overlay v2026 w mirrorze
+
+SEKCJA 15 — POWTÓRZENIE WYMAGAŃ NADRZĘDNYCH (przypomnienie przed pracą):
+
+  1. Przeprować głębokie myślenie.
+  2. Przeprować głęboką analizę.
+  3. zaawansowany poziom Enterprise.
+  4. poziom ENTERPRISE.
+  5. innowacyjne ulepszenia wyprzedzające profesjonalistów.
+  6. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Powtarzaj te wymagania przed każdą sekcją raportu, każdą rekomendacją i każdą decyzją projektową.
+
+SEKCJA 16 — KOMENDA KOŃCOWA: CZYSZCZENIE OKNA KONTEKSTOWEGO
+------------------------------------------------------------------------------
+
+Po ZAKOŃCZENIU pracy nad tą częścią wykonaj DOKŁADNIE:
+
+   1. Zapisz kompletny raport do: JDG/raporty_glm52_v3/RAPORT_V3_P07_RULE_LIFECYCLE.txt
+      (jeden plik; jeśli raport wygenerowałeś w odpowiedzi — potwierdź zapis i podaj pełną ścieżkę).
+   2. Potwierdź krótkim komunikatem: zakres części P07, liczba luk P0/P1/P2/P3, liczba innowacji,
+      status kontraktu wyjściowego, lista artefaktów przekazanych dalej.
+   3. Wypisz pełną listę kontraktów wyjściowych przekazanych części P08.
+   4. NASTĘPNIE WYCZYŚĆ OKNO KONTEKSTOWE (cała treść: pliki, notatki robocze, cytaty, śródnotatki).
+      Do części P08 wchodzisz z PUSTĄ sesją — przenosisz się WYŁĄCZNIE poprzez zapisany raport
+      (sekcje: EXECUTIVE SUMMARY, KONTRAKT WYJŚCIOWY, REJESTR LUK P0/P1).
+   5. Nie utrzymuj żadnych niejawnych założeń, fragmentów kodu ani cytatów po czyszczeniu sesji.
+
+Kolejność serii V3: P00 → P01 → … → P08 → … → P68 (certyfikacja finalna).
+Pełny indeks: JDG/prompty_v3/README_V3_KAMPANIA_GLM52.txt
+
+APENDYKS A — MAPA GRUP PLIKÓW CZĘŚCI P07
+------------------------------------------------------------------------------
+
+   | Grupa | Nazwa | Liczba plików | Rola analityczna w tej części |
+   |-------|-------|---------------|-------------------------------|
+   | 6.1 | Reguły i narzędzia lifecycle | 8 | (uzupełnij: czego szukasz w tej grupie) |
+   | 6.2 | Dane rejestru | 3 | (uzupełnij: czego szukasz w tej grupie) |
+   | 6.3 | Dokumenty i migracje | 4 | (uzupełnij: czego szukasz w tej grupie) |
+   | 6.4 | Testy lifecycle | 2 | (uzupełnij: czego szukasz w tej grupie) |
+   | 6.5 | Mirror policies | 6 | zgodność implementacji z mirror; dryf = konflikt Cxx |
+
+APENDYKS B — MACIERZ PODANALIZA × GRUPA (co sprawdzić — minimum)
+------------------------------------------------------------------------------
+
+   | Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik (sekcja raportu) |
+   |------------|----------------|-----------------|------------------------|
+   | 5.1 | (uzupełnij) | min. 3 twierdzenia z dowodem | 9.04 / 9.05 |
+   | 5.2 | (uzupełnij) | min. 3 twierdzenia z dowodem | 9.04 / 9.05 |
+   | 5.3 | (uzupełnij) | min. 3 twierdzenia z dowodem | 9.04 / 9.05 |
+   | 5.4 | (uzupełnij) | min. 3 twierdzenia z dowodem | 9.04 / 9.05 |
+
+APENDYKS C — SZKIELET PYTAŃ DO CZŁOWIEKA (V3-P07-Qxx)
+------------------------------------------------------------------------------
+
+   Q01. Które rozstrzygnięcia prawne w tej części są niepewne (dwie dopuszczalne interpretacje)? (odpowiedz w raporcie lub przenieś do sekcji 9.11)
+   Q02. Które decyzje architektoniczne wymagają zatwierdzenia właściciela (4-eyes)? (odpowiedz w raporcie lub przenieś do sekcji 9.11)
+   Q03. Które limity budżetowe/wdrożeniowe zmieniają priorytety planu wdrożenia? (odpowiedz w raporcie lub przenieś do sekcji 9.11)
+   Q04. Które konflikty BLOCKER wymagają eskalacji poza tę część? (odpowiedz w raporcie lub przenieś do sekcji 9.11)
+
+APENDYKS D — GLOSARIUSZ MINIMALNY CZĘŚCI P07
+------------------------------------------------------------------------------
+
+   Luka (Lxx):     stwierdzony brak/błąd z dowodem i krytycznością P0–P3.
+   Innowacja (Ixx): kompletny projekt rozwiązania Enterprise wg szkieletu z Sekcji 10.
+   Konflikt (Cxx):  sprzeczność dokument↔kod, kontrakt↔kontrakt, mirror↔canonical.
+   Pytanie (Qxx):   rozstrzygnięcie zarezerwowane dla człowieka (nigdy cisza).
+   Krzyżowe (Xxx):  odpowiedź na pytanie systemowe z Sekcji 7.4.
+   AUTO_POST:       automatyczne księgowanie — dopuszczalne wyłącznie przy pełnym dowodzie.
+   NEEDS_ADVICE:    decyzja wymaga człowieka — domyślny tryb fail-closed przy wątpliwości.
+   MANUAL_REVIEW:   pełny przegląd ręczny — tryb przy konflikcie/naruszeniu invariantów.
+
+APENDYKS E — PLAN PRACY KROK PO KROKU (wykonuj sekwencyjnie)
+------------------------------------------------------------------------------
+
+   ETAP 1 — PRZYGOTOWANIE:
+     K01. Przeczytaj dokumenty święte (Sekcja 4.1) i potwierdź w notatce roboczej kluczowe kontrakty
+          istotne dla tej części (kontrakt werdyktu, invarianty, temporalność, parametry-as-data).
+     K02. Przeczytaj JDG/docs/Bbb i wypisz akty istotne dla części P07 (Sekcja 8) do weryfikacji ISAP.
+     K03. Sprawdź budżet kontekstu (Sekcja 3): zaplanuj, ile miejsca zajmą grupy plików z Sekcji 6.
+
+   ETAP 2 — ODCZYT DOWODÓW (grupa po grupie):
+     K04. Grupa 6.1 (Reguły i narzędzia lifecycle): przeczytaj 8 plik(i); dla każdego zanotuj
+          min. 1 fakt do tabeli dowodów (7.3) i min. 1 wniosek analityczny.
+         - rule_lifecycle_enterprise.rego: Lifecycle reguł (reguła)
+         - lifecycle_manager_enterprise.rego: Manager lifecycle (reguła)
+         - rule_lifecycle_manager.py: Menedżer cyklu życia (narzędzie)
+         - control_plane_lifecycle.py: Control plane lifecycle (narzędzie)
+         - deployment_orchestrator.py: Orkiestrator deploymentu
+         - rollout_orchestrator.py: Orkiestrator rolloutu
+         - self_healing_engine.py: Silnik samonaprawy
+         - differential_evaluation.py: Silnik niezawodności
+     K13. Grupa 6.2 (Dane rejestru): przeczytaj 3 plik(i); dla każdego zanotuj
+          min. 1 fakt do tabeli dowodów (7.3) i min. 1 wniosek analityczny.
+         - rule_registry.json: Rejestr reguł (bundle)
+         - healthy_versions.json: Zdrowe wersje (bundle)
+         - deployments.json: Deploymenty (bundle)
+     K17. Grupa 6.3 (Dokumenty i migracje): przeczytaj 4 plik(i); dla każdego zanotuj
+          min. 1 fakt do tabeli dowodów (7.3) i min. 1 wniosek analityczny.
+         - RULE_LIFECYCLE.md: Cykl życia reguł (dokument)
+         - CONTROL_PLANE_RULE_LIFECYCLE.md: Control plane lifecycle (dokument)
+         - 007_jdg_v12_control_plane_lifecycle.sql: Migracja 007 — control plane lifecycle
+         - 004_jdg_v9_control_plane.sql: Migracja 004 — control plane
+     K22. Grupa 6.4 (Testy lifecycle): przeczytaj 2 plik(i); dla każdego zanotuj
+          min. 1 fakt do tabeli dowodów (7.3) i min. 1 wniosek analityczny.
+         - test_control_plane_lifecycle.py: Test control plane lifecycle
+         - test_control_plane_infrastructure.py: Test infrastruktury control plane
+
+   ETAP 3 — PODANALIZY (5.1–5.4):
+     K25. Podanaliza 5.1 (Audyt istniejącego lifecycle): odpowiedz na WSZYSTKIE pytania audytowe
+          (min. 3 wnioski z dowodem, min. 1 luka Lxx, wpis do macierzy 9.05).
+     K26. Podanaliza 5.2 (Dodanie i zmiana reguły): odpowiedz na WSZYSTKIE pytania audytowe
+          (min. 3 wnioski z dowodem, min. 1 luka Lxx, wpis do macierzy 9.05).
+     K27. Podanaliza 5.3 (Usunięcie i karencja): odpowiedz na WSZYSTKIE pytania audytowe
+          (min. 3 wnioski z dowodem, min. 1 luka Lxx, wpis do macierzy 9.05).
+     K28. Podanaliza 5.4 (Operacje awaryjne): odpowiedz na WSZYSTKIE pytania audytowe
+          (min. 3 wnioski z dowodem, min. 1 luka Lxx, wpis do macierzy 9.05).
+
+   ETAP 4 — PRAWO I ZGODNOŚĆ:
+     K29. Zweryfikuj w ISAP/RCL: Ordynacja podatkowa — art. 241–241n (umowy/apelacje jako paradygmat wersjonowania i korekt wstecz)
+     K30. Zweryfikuj w ISAP/RCL: Ustawa o VAT — art. 108 (samorzutne korekty stawek jako wzorzec „nowa wersja, stara nietykalna”)
+     K31. Zweryfikuj w ISAP/RCL: Ustawa o PIT — art. 9 ust. 2 (wybór formy na cały rok podatkowy jako wzorzec granic wersji)
+     K32. Zweryfikuj w ISAP/RCL: Ustawa o rachunkowości — art. 4 ust. 5 (stosowanie zasad niezmienionych w roku — paradygmat immutabi
+     K33. Zweryfikuj w ISAP/RCL: Ustawa – Prawo przedsiębiorców — art. 22–25 (zawieszenie/wznowienie jako wzorzec suspend/resume regu
+
+   ETAP 5 — SYNTHEZA I RAPORT:
+     K34. Zbuduj T1–T12 (9.16), rejestr luk, macierz prawo↔reguła↔test i kontrakt wyjściowy.
+     K35. Opracuj innowację V3-P07-I01 wg 6-punktowego szkieletu (Sekcja 10).
+     K36. Opracuj innowację V3-P07-I02 wg 6-punktowego szkieletu (Sekcja 10).
+     K37. Opracuj innowację V3-P07-I03 wg 6-punktowego szkieletu (Sekcja 10).
+     K38. Opracuj innowację V3-P07-I04 wg 6-punktowego szkieletu (Sekcja 10).
+     K39. Opracuj innowację V3-P07-I05 wg 6-punktowego szkieletu (Sekcja 10).
+     K40. Opracuj innowację V3-P07-I06 wg 6-punktowego szkieletu (Sekcja 10).
+     K41. Opracuj innowację V3-P07-I07 wg 6-punktowego szkieletu (Sekcja 10).
+     K42. Opracuj innowację V3-P07-I08 wg 6-punktowego szkieletu (Sekcja 10).
+     K43. Opracuj innowację V3-P07-I09 wg 6-punktowego szkieletu (Sekcja 10).
+     K44. Opracuj innowację V3-P07-I10 wg 6-punktowego szkieletu (Sekcja 10).
+     K45. Opracuj innowację V3-P07-I11 wg 6-punktowego szkieletu (Sekcja 10).
+     K46. Opracuj innowację V3-P07-I12 wg 6-punktowego szkieletu (Sekcja 10).
+     K47. Odpowiedz na pytanie krzyżowe X01 (7.4) — identyfikator V3-P07-X01.
+     K48. Odpowiedz na pytanie krzyżowe X02 (7.4) — identyfikator V3-P07-X02.
+     K49. Odpowiedz na pytanie krzyżowe X03 (7.4) — identyfikator V3-P07-X03.
+     K50. Odpowiedz na pytanie krzyżowe X04 (7.4) — identyfikator V3-P07-X04.
+     K51. Odpowiedz na pytanie krzyżowe X05 (7.4) — identyfikator V3-P07-X05.
+     K52. Odpowiedz na pytanie krzyżowe X06 (7.4) — identyfikator V3-P07-X06.
+     K53. Odpowiedz na pytanie krzyżowe X07 (7.4) — identyfikator V3-P07-X07.
+     K54. Odpowiedz na pytanie krzyżowe X08 (7.4) — identyfikator V3-P07-X08.
+     K55. Odpowiedz na pytanie krzyżowe X09 (7.4) — identyfikator V3-P07-X09.
+     K56. Odpowiedz na pytanie krzyżowe X10 (7.4) — identyfikator V3-P07-X10.
+
+   ETAP 6 — DOMKNIĘCIE: zapis raportu → potwierdzenie → czyszczenie okna kontekstowego (Sekcja 16).
+
+APENDYKS F — MINIMUM KWALIFIKACYJNE (lista kontrolna, odznaczaj przy pracy)
+------------------------------------------------------------------------------
+
+   [ ] F01. Sesja uruchomiona na CZYSTO (brak resztek poprzednich części w oknie kontekstowym).
+   [ ] F02. Dokumenty święte przeczytane w całości; kontrakty z nich wypisane w notatce roboczej.
+   [ ] F03. Budżet 50% okna kontekstowego obliczony i monitorowany podczas czytania plików.
+   [ ] F04. Każdy plik z Sekcji 6 ma fakt w tabeli dowodów albo adnotację NIEZWERYFIKOWANO.
+   [ ] F05. Mirror policies porównany z implementacją tej części; dryf zapisany jako konflikt Cxx.
+   [ ] F06. Każde pytanie audytowe podanaliz 5.x ma odpowiedź z dowodem (plik + cytat/liczba).
+   [ ] F07. Każdy anty-wzorzec APxx z 7.5 sprawdzony; wynik wpisanym do rejestru luk.
+   [ ] F08. Każdy akt prawny z Sekcji 8 zweryfikowany w ISAP albo oznaczony [NIEZWERYFIKOWANE].
+   [ ] F09. Macierz PRAWO↔REGUŁA↔TEST ma status i ryzyko dla każdego wiersza.
+   [ ] F10. Rejestr luk ma krytyczność P0–P3 oraz plan naprawy dla każdej pozycji.
+   [ ] F11. Min. 12 innowacji z pełnym 6-punktowym projektem (problem, mechanizm, wpływ, ryzyko, kryterium, zależności).
+   [ ] F12. Plan wdrożenia rozdziela prace: od razu / po testach / decyzja człowieka (4-eyes).
+   [ ] F13. Plan testów zawiera przypadki BLOKUJĄCE merge i granice groszowe.
+   [ ] F14. Pytania do człowieka nie zawierają odpowiedzi wymyślonych bez dowodu.
+   [ ] F15. Założenia jawne oznaczone [ZAŁOŻENIE]; brak ukrytych przypuszczeń.
+   [ ] F16. Kontrakt wyjściowy (9.08) gotowy i wiążący dla następnej części.
+   [ ] F17. Tabela przekazywanych artefaktów (11.4) kompletna.
+   [ ] F18. Identyfikatory zgodne ze standardem P00 (Lxx/Ixx/Cxx/Qxx/Xxx) — zero własnych schematów.
+   [ ] F19. Zero stwierdzeń bez dowodu; zero fikcyjnych podstaw prawnych; zero deklaracji bez uruchomienia.
+   [ ] F20. Fail-closed zachowany w każdej rekomendacji (AUTO_POST tylko przy pełnym łańcuchu dowodów).
+   [ ] F21. Raport zapisany pod dokładną nazwą wskazaną w Sekcji 0 i 9.
+   [ ] F22. Sekcja 16 wykonana: potwierdzenie zapisu + czyszczenie okna kontekstowego.
+
+Przypomnienie przed startem pracy (wszystkie 6 wymagań):
+   * Przeprować głębokie myślenie.
+   * Przeprować głęboką analizę.
+   * zaawansowany poziom Enterprise.
+   * poziom ENTERPRISE.
+   * innowacyjne ulepszenia wyprzedzające profesjonalistów.
+   * Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+==============================================================================
+KONIEC PROMPTU V3 P07 — CYKL ŻYCIA REGUŁ: SHADOW→CANDIDATE→ACTIVE→ROLLBACK I OPERACJE AWARYJNE
+==============================================================================

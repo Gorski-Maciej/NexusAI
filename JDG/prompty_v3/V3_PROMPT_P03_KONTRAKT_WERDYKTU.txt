@@ -1,0 +1,686 @@
+==============================================================================
+PROMPT V3 P03 — KONTRAKT WERDYKTU 25-POLOWY, KOMPOZYCJA DECYZJI I KLASA PEWNOŚCI
+==============================================================================
+
+Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN dla GLM 5.2
+Plik promptu:           JDG/prompty_v3/V3_PROMPT_P03_KONTRAKT_WERDYKTU.txt
+Docelowy plik raportu:  JDG/raporty_glm52_v3/RAPORT_V3_P03_KONTRAKT_WERDYKTU.txt
+Wersja kampanii: V3.0   Data wygenerowania pakietu: 2026-09-02
+Skala części: 4 podanaliz, 22 plików do odczytu, min. 12 innowacji Enterprise.
+
+Jeden prompt = jeden plik TXT. Ten plik wklejasz do GLM 5.2 w CLEAN sesji (puste okno kontekstowe).
+
+SEKCJA 1 — ROLA I WYMAGANIA NADRZĘDNE
+------------------------------------------------------------------------------
+
+Jesteś ekspertem kontraktów API w systemach finansowych i projektantem kontraktu decyzyjnego z klasą pewności.
+
+Wymagania nadrzędne tej części (obowiązuje KAŻDE z nich):
+
+  1. Przeprować głębokie myślenie.
+  2. Przeprować głęboką analizę.
+  3. zaawansowany poziom Enterprise.
+  4. poziom ENTERPRISE.
+  5. innowacyjne ulepszenia wyprzedzające profesjonalistów.
+  6. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Powtarzaj te wymagania przed każdą sekcją raportu, każdą rekomendacją i każdą decyzją projektową.
+
+Specjalizacja części P03: 25-polowy kontrakt werdyktu (ADR-004), kompozycja decyzji, scoring pewności, degradacja kontraktu, zgodność OpenAPI.
+
+SEKCJA 2 — MISJA CZĘŚCI
+------------------------------------------------------------------------------
+
+Zbadaj 25-polowy kontrakt werdyktu (ADR-004) w kodzie, OpenAPI i testach: kompletność pól, typy, walidacje, provenance, legal refs, klasa pewności. Zaprojektuj kompatybilne rozszerzenie kontraktu (certainty_class wg V2/F4, invariant refs, golden hash) bez łamania istniejących klientów — z planem migracji wersjonowanej.
+
+Zaprojektuj kompozycję decyzji: jak PARTIAL wyniki z wielu domen składają się w jeden werdykt klasy CERTAIN/CONDITIONAL/NEEDS_ADVICE; jaka jest semantyka każdego pola przy degradacji; jak scoring pewności wpływa na AUTO_POST. Granica jest twarda: fail-closed — wątpliwość nigdy nie księguje automatycznie.
+
+Cel nadrzędny całej serii V3: silnik reguł podatkowych OPA ma maksymalnie zautomatyzować księgowość JDG
+(CODZIENNE księgowanie: faktury → ewidencje → deklaracje → płatności → archiwum), pozostając systemem
+fail-closed: przy konflikcie, luce prawnej, niezweryfikowanym źródle lub naruszeniu invariantów decyzją
+jest NEEDS_ADVICE / MANUAL_REVIEW — nigdy ciche automatyczne AUTO_POST. Forteca = precyzja, nie odwaga.
+
+Uwaga o archiwum: poprzednie kampanie (JDG/PROMPTY_GLM52_01-05.txt … 21-40.txt, raporty w JDG/raporty_glm52
+oraz raporty P00–P30 wg JDG/prompts_status.yaml) są ARCHIWUM WEJŚCIOWYM. Seria V3 NIE kopiuje ich treści —
+weryfikuje stan REPOZYTORIUM PO ich wdrożeniu i domyka to, co wciąż jest luką. Zanim uznasz coś za brak,
+sprawdź w raporcie V3_P00 (mapa kanoniczna) oraz w samej strukturze repozytorium, czy element już istnieje.
+ZAKAZ duplikowania istniejących reguł, narzędzi, migracji i raportów — rozszerzaj, nie zdublikuj.
+
+SEKCJA 3 — BUDŻET KONTEKSTU (ZASADA 50% I CZYSTA SESJA)
+------------------------------------------------------------------------------
+
+1. Dane i informacje dostarczone do GLM 5.2 (pliki odczytane wg linków z tej części) mogą zająć MAKSYMALNIE
+   50% okna kontekstowego. Pozostałe ≥ 50% musi zostać na myślenie, analizę, dedukcję i generowanie raportu.
+2. Czytaj WYŁĄCZNIE linki z Sekcji 6 (oraz wymienione raporty-kontrakty z Sekcji 11.1). Nie surfuj po całym
+   repozytorium i nie wczytuj katalogów zbiorczo — to gwarancja, że budżet 50% zostanie dotrzymany.
+3. Jeśli którykolwiek plik okaże się zbyt duży, aby zmieścić go w budżecie 50%, czytaj go PARTIAMI wg sekcji
+   (nagłówki → sekcje krytyczne → reszta) i to zaznaczaj w raporcie. ZAKAZ cichego pomijania treści.
+4. Ten prompt + odczytane pliki + praca analityczna + generowany raport muszą się zmieścić w jednej sesji.
+   Jeśli którejkolwiek analizy zabraknie miejsca: skróć cytat, nie skróć myśli — każda teza musi mieć dowód.
+5. Po zakończeniu pracy (Sekcja 16) WYCZYŚĆ okno kontekstowe. Nie przenoś niejawnych założeń do następnej części.
+
+SEKCJA 4 — ŹRÓDŁA NADRZĘDNE (OBOWIĄZKOWE DLA KAŻDEJ CZĘŚCI)
+------------------------------------------------------------------------------
+
+4.1 Dokumenty święte — nadrzędna architektura docelowa (każdy konflikt z nimi = BLOCKER):
+
+   - DOKUMENT ŚWIĘTY nr 1 — architektura docelowa V1 (Control Plane + Data Plane, cykl życia reguł, pipeline ISAP→produkcja, bramki CI, SLO)
+     https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+
+   - DOKUMENT ŚWIĘTY nr 2 — Wizja V2 (Legal Twin/LKG, Warstwa Konstytucyjna, Golden Oracle, Decision Certificate, Law Radar, Declarative Change; kontynuacja dokumentu nr 1)
+     https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md
+
+   Prawo konfliktu: jeżeli jakikolwiek plik, dokument, README, manifest, wcześniejszy raport lub własny
+   wniosek jest sprzeczny z dokumentami świętymi — NIE ZGADYWAJ. Oznacz konflikt jako BLOCKER z cytatami
+   obu stron i zaproponuj rozstrzygnięcie zgodne z dokumentami świętymi.
+
+4.2 Źródła prawne:
+
+   - Dokument źródeł prawnych JDG — katalog aktów prawnych, na których opiera się silnik (twierdzenia do WERYFIKACJI w ISAP/RCL/MF, nie automatyczny dowód)
+     https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/Bbb
+
+   Zasada prawna: numer Dz.U., data, treść artykułu z dokumentu wyżej są TWIERDZENIEM, nie dowodem.
+   Każdą podstawę prawną zweryfikuj co do istnienia i treści w oficjalnym ISAP (isap.sejm.gov.pl), RCL
+   (legislacja.gov.pl) lub publikatorach MF. Niezweryfikowane oznaczaj tagiem [NIEZWERYFIKOWANE],
+   a podejrzane (np. dziwny numer pozycji, niemożliwa data) — tagiem [BŁĄD_PODSTAWY_PRAWNEJ?].
+   ZAKAZ tworzenia fikcyjnych artykułów, ustępów, numerów Dz.U., dat i stawek.
+
+4.3 Dokumenty bazowe architektury (kontekst stanu obecnego):
+
+   - Architektura obecna — stan istniejący (PL): https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/ARCHITEKTURA.md
+   - Architecture (EN mirror dokumentu PL): https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/ARCHITECTURE.md
+
+4.4 Indeks kampanii (mapa wszystkich części i konwencji):
+
+   - README serii V3: https://github.com/Gorski-Maciej/NexusAI/blob/JDG/prompty_v3/README_V3_KAMPANIA_GLM52.txt
+
+4.5 Rejestr źródeł zewnętrznych weryfikacji (używaj przy każdej podstawie prawnej):
+
+   - ISAP (isap.sejm.gov.pl) — teksty ujednolicone i Dz.U.; jedyne źródło twierdzeń o treści ustaw.
+   - legislacja.gov.pl (RCL) — proces legislacyjny: daty wejścia w życie, zmiany, projekty nowelizacji.
+   - podatki.gov.pl (MF/KIS) — interpretacje ogólne i indywidualne, objaśnienia, broszury, stawki.
+   - crd.gov.pl — KSeF: schematy XSD, dokumentacja API, harmonogram wdrożenia.
+   - zus.pl — stawki składek, limity (30-krotność), terminy, druki (DRA/RCA), ulgi.
+   - Klauzula: gdy źródło zewnętrzne jest w tej sesji niedostępne — tag [NIEZWERYFIKOWANE] + wpis
+     do rejestru mediacji (9.05). Zakaz cichego przyjmowania treści „z pamięci”.
+
+SEKCJA 5 — DEKOMPOZYCJA CZĘŚCI P03 NA PODANALIZY
+------------------------------------------------------------------------------
+
+Część P03 dzieli się na 4 podanaliz. Każdą podanalizę opracuj OSOBNO, z własnymi dowodami,
+własną tabelą luk i własnymi rekomendacjami — tak by raport był wewnętrznie spójną, ale kompletną całością.
+
+5.1 Audyt 25 pól w kodzie i OpenAPI
+    Cel: pełna zgodność specyfikacji z implementacją
+    Pytania audytowe (odpowiedz na KAŻDE, z dowodem z kodu/dokumentu):
+      * Czy wszystkie 25 pól jest produkowanych przez orkiestrator w każdej ścieżce (happy/fallback/error)?
+      * Czy OpenAPI (JDG/api/openapi.yaml) opisuje te same pola z tymi samymi typami i wymagalnością?
+      * Które pola są optionale bez uzasadnienia i niosą ryzyko ciszy (np. brak legal refs)?
+      * Jak testy (unit/contract) pilnują kontraktu — co testują braki?
+
+5.2 Klasa pewności i scoring
+    Cel: semantyka CERTAIN/CONDITIONAL/NEEDS_ADVICE i wpływ na AUTO_POST
+    Pytania audytowe (odpowiedz na KAŻDE, z dowodem z kodu/dokumentu):
+      * Czy decision_scoring/adaptive_trust produkuje wartości używane w kontrakcie, czy żyją osobno?
+      * Jakie warunki muszą być spełnione, by werdykt był CERTAIN — czy lista jest zamknięta i testowalna?
+      * Czy NEEDS_ADVICE zamyka AUTO_POST w każdej ścieżce (w tym fallback)?
+      * Jak pewność z różnych domen się komponuje (min/max/weighted) i kto to rozstrzyga?
+
+5.3 Degradacja kontraktu i błędy
+    Cel: co klient dostaje, gdy dane/usługi są niedostępne
+    Pytania audytowe (odpowiedz na KAŻDE, z dowodem z kodu/dokumentu):
+      * Czy degradacja zwraca pełny kontrakt z pustymi polami, czy skrócony — i co z tego wynika dla klienta?
+      * Jak są kodowane błędy (enum kody) i czy klient może je programowo rozróżnić?
+      * Czy „puste pole” jest rozróżnialne od „pole nie dotyczy” od „nie wiem” — czy kontrakt to wyraża?
+      * Jak wygląda wersjonowanie kontraktu (breaking vs additive) i kto pilnuje zgodności?
+
+5.4 Provenance i legal refs w werdykcie
+    Cel: kompletny łańcuch dowodowy w każdym werdykcie
+    Pytania audytowe (odpowiedz na KAŻDE, z dowodem z kodu/dokumentu):
+      * Czy werdykt niesie bundle_version, rule_version, threshold_version (determinizm odtworzenia)?
+      * Czy legal refs mają identyfikatory węzłów LKG z wersjami (wg kontraktu P01)?
+      * Czy merkle/hash provenance jest liczony i weryfikowalny offline?
+      * Czego brakuje do „dowodu dla KAS” w jednym obiekcie werdyktu?
+
+SEKCJA 6 — PLIKI DO ODCZYTU CZĘŚCI P03 — TYLKO TE LINKI
+------------------------------------------------------------------------------
+
+Nie szukaj plików po katalogach. Czytaj dokładnie te adresy, w tej kolejności grup. Każda grupa ma
+przypisaną rolę analityczną. Ścieżki zweryfikowano przeciw strukturze repozytorium.
+
+6.0 Instrukcja czytania:
+
+   a) Czytaj pliki grupami w podanej kolejności; po każdej grupie zapisz wnioski w notatce roboczej sesji.
+   b) Dla każdego pliku zanotuj co najmniej 1 fakt użyteczny dla raportu (liczba, reguła, kontrakt, luka).
+   c) Jeżeli plik nie istnieje pod adresem albo jest nieosiągalny — wpisz to do tabeli dowodów ze statusem
+      NIEZWERYFIKOWANO i potraktuj jako lukę dokumentacyjną V3-P03-Lxx. Nie zgaduj jego treści.
+   d) Nie czytaj plików spoza listy (wyjątek: Sekcja 11.1). Budżet 50% okna kontekstowego jest wiążący.
+
+6.1 Reguły kompozycji i kontraktu
+
+   - [Kompozytor decyzji] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/decision_composer_enterprise.rego
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Kompletność decision core] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/decision_core_completeness_enterprise.rego
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Scoring decyzji] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/decision_scoring_enterprise.rego
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Adaptive trust scoring] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/adaptive_trust_scoring_enterprise.rego
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Walidacja reguł] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/validation.rego
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Provenance] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/provenance.rego
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Fallback] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/fallback.rego
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+
+6.2 Dokumenty kontraktowe
+
+   - [Kontrakt danych orkiestratora] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/ORCHESTRATOR_DATA_CONTRACT.md
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Guardy rdzenia i progi temporalne] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/CORE_GUARDS_TEMPORAL_THRESHOLDS.md
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Dashboard pewności] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/PEWNOSC_DASHBOARD.md
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Referencja API] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/API_REFERENCJA.md
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+
+6.3 Specyfikacja API i narzędzia
+
+   - [OpenAPI] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/api/openapi.yaml
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Kontrakt danych orkiestratora (narzędzie)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/orchestrator_data_contract.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Weryfikacja invariantów werdyktu] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/verify_verdict_invariants.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Certyfikat decyzji (narzędzie)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/decision_certificate.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Dashboard pewności (narzędzie)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/confidence_dashboard.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Metryki pewności (narzędzie)] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/pewnosc_metrics.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Konsystencja specyfikacji API] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/api_spec_consistency.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+
+6.4 Testy kontraktu
+
+   - [Test operating contract] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tests/test_enterprise_operating_contract.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Test kontraktu danych orkiestratora] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tests/test_orchestrator_data_contract.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Test walidatora enterprise] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/validate_enterprise_contract.py
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+   - [Migracja 008 — kontrakt orkiestratora] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/migrations/008_jdg_v13_orchestrator_contract.sql
+       → Wynik do raportu: wiersz w tabeli dowodów (7.3) + wnioski w tej grupie analizy.
+
+6.5 Mirror policies — obowiązkowy kontekst zgodności (porównuj implementacje z mirror):
+
+   - [Mirror jdg — katalog lustrzany pakietu JDG (porównuj implementacje domeny z mirror)] https://github.com/Gorski-Maciej/NexusAI/tree/policies/jdg
+   - [Mirror tax — katalog lustrzany warstwy podatkowej] https://github.com/Gorski-Maciej/NexusAI/tree/policies/tax
+   - [Mirror VAT — katalog lustrzany reguł VAT] https://github.com/Gorski-Maciej/NexusAI/tree/policies/tax/vat
+   - [Skrypt budowy bundle w mirrorze] https://github.com/Gorski-Maciej/NexusAI/blob/policies/jdg/bundles/bundle.sh
+   - [Manifest bazowy overlay w mirrorze] https://github.com/Gorski-Maciej/NexusAI/blob/policies/jdg/bundles/base/manifest.json
+   - [Overlay v2026 w mirrorze] https://github.com/Gorski-Maciej/NexusAI/blob/policies/jdg/bundles/overlays/v2026/manifest.json
+
+SEKCJA 7 — WYMAGANIA ANALITYCZNE CZĘŚCI P03
+------------------------------------------------------------------------------
+
+7.1 Osie obowiązkowe każdej podanalizy (zawsze, nawet jeśli nie wymienione w 7.2):
+
+   a) POPRAWNOŚĆ PRAWNA — każde twierdzenie podpięte pod akt/artykuł/ustęp/punkt + status weryfikacji (ISAP/RCL/MF) + daty obowiązywania (valid_from/valid_to);
+   b) POPRAWNOŚĆ KODU REGO — determinizm, kompletność else-chain, brak stubów {true}, brak martwych reguł, brak hardcode (ADR-002: parametry z data.thresholds.*), unikalność rule_id globalnie;
+   c) TEMPORALNOŚĆ — czy reguły/parametry mają okna ważności; testy day-1/day-0/day+1 na granicach nowelizacji; time-travel odtwarzalny;
+   d) FAIL-CLOSED — co się dzieje przy braku danych, konflikcie, niepewności; czy AUTO_POST jest możliwy tylko przy pełnym dowodzie;
+   e) TESTY — jakie istnieją (natywne Rego / pytest / golden), jakie brakują, jakie trzeba dodać (granice groszy, waluty, negatywne, fuzz);
+   f) INTEGRACJA MIĘDZYDOMENOWA — wpływy na inne części (Sekcja 11) i kontrakt werdyktu 25-polowy (ADR-004);
+   g) WYDAJNOŚĆ — koszty ewaluacji, struktura indeksowania, else-chain O(n) vs routing O(1), cache;
+   h) AUDYTOWALNOŚĆ — provenance, _legal_basis, traceability reguła→test→bundle→werdykt→certyfikat.
+
+7.2 Zagadnienia specyficzne tej części (oprócz osi obowiązkowych) — wywodzą się z celów podanaliz z Sekcji 5:
+
+   P03-AN01: Zbuduj tabelę: pole → typ → producent (PASS) → walidacja → test → status (dowód per pole).
+   P03-AN02: Zaprojektuj rozszerzenie kontraktu o certainty_class, invariant_refs, legal_basis_refs, golden_hash — plan migracji additive.
+   P03-AN03: Zdefiniuj zamkniętą listę warunków CERTAIN (np. pełne dane, wszystkie reguły ACTIVE, invarianty OK, legal refs verified).
+   P03-AN04: Zaprojektuj semantykę pustych pól (null vs absent vs N/A) i walidator schematu w CI.
+   P03-AN05: Oceń, czy scoring pewności jest testowalny (deterministyczny) i jaka jest jego telemetria.
+   P03-AN06: Sprawdź zgodność testów contract z OpenAPI — mechanizm wykrywania dryfu specyfikacja↔kod.
+   P03-AN07: Zaprojektuj strategię wersjonowania kontraktu (major/minor) i okres współistnienia wersji.
+   P03-AN08: Zdefiniuj kontrakt błędów (kody, semantyka, retry-ability) — klient musi programowo rozróżniać.
+   P03-AN09: Zaproponuj „werdykt papierowy”: reprezentacja do PDF/certyfikatu z pełnym łańcuchem dowodów (F4).
+   P03-AN10: Oceń, czy pola audytowe wystarczą dla 50-letniej retencji — co dołożyć (retencja, podpisy, odtworzenie).
+   P03-AN11: Zaprojektuj test diffu kontraktu: zmiana OpenAPI bez zmiany testów = fail.
+   P03-AN12: Wskaż ścieżki degradacji, które zwracają skrócony kontrakt — każda to luka fail-closed.
+
+7.3 Tabela dowodów (wygeneruj ją w raporcie — jeden wiersz na plik z Sekcji 6):
+
+   | # | Plik | Co z niego pobieramy (dowód/fakt/liczba) | Status: ZWERYFIKOWANO/NIEZWERYFIKOWANO |
+   |---|------|------------------------------------------|----------------------------------------|
+
+7.4 Pytania krzyżowe (obowiązkowe odpowiedzi w raporcie — identyfikatory V3-P03-Xxx):
+
+   X01. Które twierdzenia tej części są sprzeczne z dokumentami świętymi (cytat → cytat) i jak je rozstrzygnąć?
+   X02. Które reguły tej części łamią zasady parametrów-as-data (P06) i temporalności (P05) — lista z dowodami?
+   X03. Które ścieżki tej części nie są fail-closed (cichy AUTO_POST przy wątpliwości) — jak je domknąć?
+   X04. Które pola tej części kontraktują się z kontraktem werdyktu 25-polowym (P03) — zgodność typów i wymagalności?
+   X05. Które testy tej części są niezbędne jako bramki blokujące merge (P39) — lista z oczekiwanymi wynikami?
+   X06. Które elementy tej części są duplikatami innych części (P00 baseline, mapy domenowe) — plan konsolidacji?
+   X07. Które podstawy prawne tej części są niezweryfikowane (Bbb + ISAP) — rejestr mediacji z priorytetami?
+   X08. Które innowacje tej części wymagają decyzji człowieka przed wdrożeniem (4-eyes) — lista V3-{CODE}-Qxx?
+   X09. Które metryki tej części muszą trafić do obserwowalności (P37) — nazwy, progi alarmów, dashboardy?
+   X10. Które ryzyka tej części wymagają invariantów runtime (P04) — propozycje z uzasadnieniem prawnym?
+
+7.5 Anty-wzorce do wykrycia w tej części (każdy: sprawdź i wynik wpisz do rejestru luk):
+
+   AP01. Reguły typu stub (warunek zawsze prawdziwy, np. `true => "..."`) udające pokrycie prawne.
+   AP02. Hardcode stawek/limitów/dat w kodzie Rego zamiast data.thresholds.* (naruszenie ADR-002).
+   AP03. Brak else-chain / otwarte negatywy: reguła niezdefiniowana milcząco zamiast jawnego NEEDS_ADVICE.
+   AP04. Duplikaty tej samej reguły pod różnymi rule_id (macro vs micro vs enterprise bez rejestru źródła prawdy).
+   AP05. Podstawy prawne bez Dz.U./art./ust. lub z datami niemożliwymi (nowelizacja wcześniejsza niż ustawa).
+   AP06. Testy zawsze-zielone (brak asercji negatywnych), testy zależne od kolejności lub komunikatów.
+   AP07. Cichy AUTO_POST przy braku pola obowiązkowego (fail-open) — najsłabsze miejsce fortecy.
+   AP08. Zależności cykliczne między pakietami (import A→B→A) i reguły piszące do tych samych ścieżek.
+   AP09. Dane świata zewnętrznego (kursy, wskaźniki) wpisane na stałe zamiast input z wersją i provenance.
+   AP10. Brak okien temporalnych przy regułach z datami wejścia w życie / wygaśnięcia.
+   AP11. Mirror policies dryfujący względem canonical (ta sama reguła, inna treść) bez detekcji w CI.
+   AP12. Metryki/słowniki w dwóch miejscach (bundle vs SQL) z różnymi wartościami — brak jednego źródła prawdy.
+
+SEKCJA 8 — MAPA PRAWNA CZĘŚCI P03
+------------------------------------------------------------------------------
+
+Akty prawne w zakresie tej części (punkt wyjścia — zweryfikuj każdy w ISAP i rozszerz, jeśli luka):
+
+   01. Ordynacja podatkowa — art. 189b (sposób ustalenia treści zobowiązania jako paradygmat uzasadnienia werdyktu)
+       → Obowiązek: weryfikacja w ISAP/RCL + wskazanie artykułów implementowanych w części P03.
+   02. Ustawa o VAT — art. 106b–106n (dane faktury jako wzór kompletności danych kontraktu)
+       → Obowiązek: weryfikacja w ISAP/RCL + wskazanie artykułów implementowanych w części P03.
+   03. Ustawa o PIT — art. 45 (zeznania: kompletność pól deklaracji jako wzór)
+       → Obowiązek: weryfikacja w ISAP/RCL + wskazanie artykułów implementowanych w części P03.
+   04. Ustawa o rachunkowości — art. 20–21 (dowody księgowe jako wzór kompletności dowodowej)
+       → Obowiązek: weryfikacja w ISAP/RCL + wskazanie artykułów implementowanych w części P03.
+   05. Ustawa o systemie ubezpieczeń społecznych — art. 47 (deklaracje ZUS DRA/RCA jako wzór pól kwotowych)
+       → Obowiązek: weryfikacja w ISAP/RCL + wskazanie artykułów implementowanych w części P03.
+
+Mini-makra macierzy akt→plik (uzupełnij w raporcie):
+
+   | Akt | Art./ust./pkt | Grupa plików (6.x) | Reguła | Test | Status |
+   |-----|---------------|--------------------|--------|------|--------|
+
+Uwaga: to NIE jest pełna lista — to mapa wejściowa. Jeśli w trakcie analizy odkryjesz przepis
+materiałny w zakresie części, którego tu brak — dodaj go do rejestru luk prawnych raportu z pełną
+identyfikacją (akt, artykuł, jednostka redakcyjna, Dz.U., data obowiązywania, status weryfikacji).
+
+SEKCJA 9 — STRUKTURA RAPORTU (WYMAGANA) — RAPORT_V3_P03_KONTRAKT_WERDYKTU.txt
+------------------------------------------------------------------------------
+
+   9.01 EXECUTIVE SUMMARY — 1 strona: ocena dojrzałości części, TOP-10 rekomendacji, liczba luk wg krytyczności (P0/P1/P2/P3), deklaracja co udowodniono, a co pozostało [NIEZWERYFIKOWANE].
+   9.02 ZAKRES I OGRANICZENIA — co dokładnie przeanalizowano (lista plików), co pominięto i DLACZEGO (budżet 50% / brak związku), status weryfikacji źródeł prawnych.
+   9.03 STAN OBECNY CZĘŚCI P03 — mapa artefaktów: plik → pakiet Rego → rule_id → podstawa prawna → testy → status lifecycle (SHADOW/CANDIDATE/ACTIVE).
+   9.04 PODANALIZY 5.1–5.4 — każda osobno z tabelą dowodów i wnioskami.
+   9.05 MACIERZ PRAWO↔REGUŁA↔TEST — wiersz na przepis materiałny: przepis (zweryfikowany) → reguła(y) → test(y) → status (PEŁNE/CZĘŚCIOWE/BRAK/PRZECZYANE) → ryzyko.
+   9.06 REJESTR LUK — identyfikatory V3-P03-Lxx, krytyczność P0 (BLOCKER: złamanie dokumentów świętych/temporalności/fail-closed), P1 (wysokie ryzyko błędnej decyzji), P2, P3; dla każdej luki: dowód, wpływ, proponowane rozwiązanie, koszt wdrożenia, ryzyko regresji.
+   9.07 INNOWACJE ENTERPRISE (Sekcja 10) — min. 12 rozwiązań z ID V3-P03-Ixx, wpływem, ryzykiem i kryteriami akceptacji.
+   9.08 KONTRAKT WYJŚCIOWY (Sekcja 11.2) — decyzje i standardy wiążące kolejne części.
+   9.09 PLAN WDROŻENIA — kolejność prac bez duplikacji i bez niszczenia zależności; co wolno wdrożyć od razu, co wymaga testów, co wymaga decyzji człowieka (4-eyes).
+   9.10 PLAN TESTÓW — konkretne przypadki testowe (unit/property/fuzz/golden/temporal) z oczekiwanymi wynikami; testy które BLOKUJĄ merge.
+   9.11 SEKCJA PYTAŃ DO CZŁOWIEKA — wszystko, czego nie wolno rozstrzygać samodzielnie (prawo niepewne, decyzje biznesowe, konflikty BLOCKER).
+   9.12 ZAAŁOŻENIA JAWNE — lista założeń przyjętych przy braku dowodu, każde z tagiem [ZAŁOŻENIE].
+
+   9.13 KAŻDA podanaliza (5.1–5.N) dostaje w raporcie: własną tabelę dowodów, min. 3 wnioski
+   i własną listę luk — bez tego raport jest niekompletny i wraca do poprawy.
+   9.14 Wiersze macierzy PRAWO↔REGUŁA↔TEST z aktów Sekcji 8 są OBOWIĄZKOWE (każdy akt z listy)
+   plus każdy przepis odkryty w trakcie analizy.
+   9.15 Format identyfikatorów (przykłady): V3-P03-L01 (luka P0), V3-P03-I03 (innowacja),
+   V3-P03-C01 (konflikt), V3-P03-Q02 (pytanie do człowieka), V3-P03-X04 (pytanie krzyżowe).
+
+Format pliku: TXT/Markdown, nagłówki ASCII, tabele ASCII, diagramy Mermaid dopuszczalne w blokach ```.
+Zakaz stwierdzeń „100% zgodności”/„production-ready” bez dowodu. Każde twierdzenie: artefakt + podstawa
+(prawna lub techniczna) + wersja/data + poziom pewności. Raport jest kontraktem wdrożeniowym, nie esejem.
+
+   9.16 Obowiązkowe tabele raportu (każda musi istnieć i być wypełniona):
+       T1 tabela dowodów (7.3), T2 macierz PRAWO↔REGUŁA↔TEST (Sekcja 8 / 9.05), T3 rejestr luk (9.06),
+       T4 rejestr innowacji (9.07), T5 kontrakt wyjściowy (9.08), T6 plan wdrożenia (9.09),
+       T7 plan testów (9.10), T8 pytania do człowieka (9.11), T9 założenia jawne (9.12),
+       T10 przekazywane artefakty (11.4), T11 matryca podanaliza×grupa (APENDYKS B), T12 rejestr
+       konfliktów Cxx (jeśli wystąpiły). Brak którejkolwiek tabeli = raport niekompletny.
+
+SEKCJA 10 — WYMAGANE INNOWACJE ENTERPRISE CZĘŚCI P03 (MINIMUM 12)
+------------------------------------------------------------------------------
+
+Rozwiń każdy temat poniżej DO PEŁNEGO PROJEKTU, oraz dodaj własne — tak aby łącznie raport zawierał
+co najmniej 12 kompletnych innowacji tej części:
+
+   V3-P03-I01 — Contract Version Matrix: macierz wersji kontraktu × pola × klienci z planem deprecation
+   V3-P03-I02 — Certainty Class Engine: deterministyczny silnik klasy pewności z zamkniętą listą warunków i testami granicznymi
+   V3-P03-I03 — Empty-Semantics Schema: rozróżnienie null/absent/NA z walidatorem i dokumentacją per pole
+   V3-P03-I04 — Golden Hash in Verdict: hash warunków ewaluacji w każdym werdykcie — odtworzenie 1:1 w golden replay
+   V3-P03-I05 — Contract Diff CI Gate: bramka: każdy diff OpenAPI wymaga diffu testów (korelacja zmian)
+   V3-P03-I06 — Legal Refs Completeness Guard: reguła BLOCKER: werdykt dotyczący decyzji materialnej bez legal refs = nie wyjście z silnika
+   V3-P03-I07 — Verdict as Evidence Object: werdykt jako samostatny obiekt dowodowy (podpis, merkle, retencja) gotowy do eksportu
+   V3-P03-I08 — Scoring Telemetry: pełna telemetria scoringu (rozkłady klas pewności) z alarmami dryfu
+   V3-P03-I09 — Client Compatibility Suite: testy zgodności dla głównych ścieżek klienta przy zmianie kontraktu
+   V3-P03-I10 — Degradation Contract Patterns: wzorce pełnego kontraktu przy degradacji (puste ≠ błędne) z testami per wzorzec
+   V3-P03-I11 — AUTO_POST Gate Contract: maszynowy warunek AUTO_POST w kontrakcie (pole + walidacja) — fail-closed z natury typu
+   V3-P03-I12 — Error Taxonomy DSL: deklaratywna taksonomia błędów generująca dokumentację i kody synchronicznie
+
+Szkielet opisu każdej innowacji (5 obowiązkowych punktów):
+
+   1) Problem/luka, którą domyka (odwołanie do rejestru luk V3-P03-Lxx lub zjawiska z kodu).
+   2) Mechanizm rozwiązania (dane, reguły, przepływ, interfejsy — konkretnie, bez marketingu).
+   3) Wpływ na bezpieczeństwo decyzji księgowych (co NOWE zgaduje/zamienia na dowód).
+   4) Ryzyko i mitygacja (co może pójść źle, jak to wykryć i cofnąć).
+   5) Kryterium akceptacji (testowalne) + zależności od innych części serii V3.
+
+Każda innowacja w raporcie musi mieć: (1) problem/lukę którą domyka, (2) mechanizm rozwiązania,
+(3) wpływ na bezpieczeństwo decyzji księgowych, (4) ryzyko i mitygację, (5) kryterium akceptacji
+(testowalne), (6) zależności od innych części serii V3.
+
+Katalog kierunków innowacji (inspiracja — nie limit; dobierz do specyfiki części):
+
+   K01. Detekcja dryfu prawo↔kod w czasie rzeczywistym; auto-zgłoszenia Law Radar z twardym dowodem diff.
+   K02. Symulacja scenariuszowa „co-jeśli” przy zmianie progu/stawki z pełnym wpływem na inne domeny.
+   K03. Auto-generowanie testów granicznych groszowych z tabeli aktów (daty, progi, waluty, zaokrąglenia).
+   K04. SMT/Z3 dowody równoważności starej i nowej wersji reguły przed przełączeniem CANDIDATE→ACTIVE.
+   K05. Kontraktowe snapshoty decision certificate: replay decyzji historycznych na nowej wersji reguł.
+   K06. Routing O(1) sharded z indeksem domen (zamiast skanowania else-chain O(n)).
+   K07. Samonaprawiające się bundle: canary, auto-rollback, checksum, podpis, WORM archiwum wersji.
+   K08. Inteligentne triage NEEDS_ADVICE: klaster przypadków, sugestia zasad, human-in-the-loop feedback.
+   K09. Proweniencja DNA każdej reguły (akt→nowela→art→reguła→test→bundle→certyfikat) jako zapytywalny graf.
+   K10. Chaos-testy prawne: losowe mutacje input/data z asercją fail-closed (nigdy cichy AUTO_POST).
+   K11. Walidacja krzyżowa mirror policies vs canonical z blokadą merge przy różnicy semantycznej.
+   K12. Mierzalna mapa pokrycia prawnego (heat mapy pustynii prawnych) z celami kwartalnymi i progami CI.
+
+SEKCJA 11 — KONTRAKTY MIĘDZYCZĘŚCIOWE (SPÓJNOŚĆ CAŁEJ SERII V3)
+------------------------------------------------------------------------------
+
+11.1 Kontrakty wejściowe — HONORUJ w tej części:
+
+   Z raportu V3_P00 (mapa kanoniczna): faktyczny stan plików, pakiety, rule_id, testy — przy ocenie
+   braków nie kwestionuj owych faktów, tylko je używaj; jeżeli stan się różni — BLOCKER do rejestru.
+   Z raportów V3_P00–V3_P02 (sekcja KONTRAKT WYJŚCIOWY każdego z nich): honoruj ustalone tam
+   standardy nazewnictwa, identyfikatorów, formatu luk i decyzji. Jeśli raport poprzedniej części
+   przekracza budżet — czytaj z niego WYŁĄCZNIE sekcje: EXECUTIVE SUMMARY, KONTRAKT WYJŚCIOWY,
+   REJESTR LUK (P0/P1).
+
+   Specyficzne dla P03: Honoruj kontrakt orkiestracji i allowlistę niemutowalnych pól z V3_P02.
+   Specyficzne dla P03: Honoruj model legal_node_id z V3_P01 przy projektowaniu legal refs w kontrakcie.
+
+11.2 Kontrakt wyjściowy — TWÓJ raport musi go zawierać (sekcja 9.08), bo wiąże część P04 i dalsze:
+
+   - Docelowy schemat werdyktu (25 pól + rozszerzenia) — wiąże P04 (invarianty), P11 (certyfikaty), P41 (API).
+   - Zamknięta lista warunków CERTAIN i ścieżek degradacji — wiąże P04 i P43.
+   - Taksonomia błędów — wiąże P41 (API/integracje).
+   - Lista pól audytowych dla retencji — wejście dla P43 (WORM/retencja).
+
+11.3 Rejestr zależności:
+
+   P03 otrzymuje z: V3_P00–V3_P02 → P03 przekazuje do: P04 i dalej aż do P68 (certyfikacja finalna).
+   Zmiana w tej części, która dotyka kontraktu wcześniejszego, musi być oznaczona jako KONFLIKT
+   KONTRAKTOWY z propozycją rozstrzygnięcia — nie zmieniaj po cichu standardów ustalonych wcześniej.
+
+11.4 Tabela przekazywanych artefaktów (uzupełnij w raporcie — co dokładnie przekazujesz dalej):
+
+   | Artefakt (standard/dana/lista) | Odbiorca (część) | Format | Kryterium użycia |
+   |-------------------------------|------------------|--------|------------------|
+
+11.5 Standardy nazewnicze wiążące (identyczne z P00 — nie wymyślaj własnych):
+
+   - Luki: V3-<KOD>-L01..L99, krytyczność P0 (BLOCKER) > P1 > P2 > P3; każda z dowodem i planem fix.
+   - Innowacje: V3-<KOD>-I01..I99 wg szkieletu 6-punktowego z Sekcji 10.
+   - Konflikty: V3-<KOD>-C01..C99 (dokument↔kod, mirror↔canonical, kontrakt↔kontrakt) z cytatami obu stron.
+   - Pytania do człowieka: V3-<KOD>-Q01..Q99 (sekcja 9.11); pytania krzyżowe: V3-<KOD>-X01..X10 (7.4).
+   - Raporty: RAPORT_V3_<KOD>_<SLUG>.txt; prompty: V3_PROMPT_<KOD>_<SLUG>.txt (JDG/prompty_v3/).
+   - Rego: pakiety jdg/<pakiet>/..., rule_id `jdg.<pakiet>.<reguła>`; parametry wyłącznie data.thresholds.*
+     (ADR-002); okna temporalne w data.thresholds.*.valid_from/valid_to (P05).
+
+SEKCJA 12 — PROTOKÓŁ PRAWY I BEZPIECZEŃSTWA (NIEPODLEGAJĄCY NEGOCJACJOM)
+------------------------------------------------------------------------------
+
+   01. Nie generujesz kodu produkcyjnego w tej sesji — generujesz RAPORT. Wyjątkiem są krótkie pseudokontrakty, schematy i przykłady testów w treści raportu (wyraźnie oznaczone jako szkice).
+   02. Nie modyfikujesz repozytorium. Wszystko trafia do raportu jako rekomendacja z planem wdrożenia.
+   03. Dokumenty święte (Sekcja 4.1) są nadrzędne; konflikt = BLOCKER z cytatami obu stron.
+   04. Dokument źródeł prawnych (Sekcja 4.2) to katalog twierdzeń — weryfikuj w ISAP/RCL/MF; fikcyjne podstawy prawne są ZAKAZANE.
+   05. Fail-closed: rekomendacja AUTO_POST tylko przy pełnym łańcuchu dowodów; wątpliwość = NEEDS_ADVICE / MANUAL_REVIEW.
+   06. Nie traktuj deklaracji „production”, liczby rule_id ani etykiet COMPLETE jako dowodu — dowodem jest kod, test, wynik uruchomienia.
+   07. Każda luka ma identyfikator V3-P03-Lxx; każda innowacja V3-P03-Ixx; konflikty V3-P03-Cx; pytania do człowieka V3-P03-Qxx.
+   08. Zakaz duplikacji: zanim zaproponujesz nowy element, sprawdź raport V3_P00 i repozytorium — istniejący element rozszerzaj, nie kopiuj.
+   09. Budżet kontekstu 50% (Sekcja 3) — czytanie linków spoza tej części tylko gdy Sekcja 11.1 wprost wskazuje raport-kontrakt.
+   10. Zero pomijania: jeśli analiza czegoś nie objęła, napisz tego wprost w sekcji 9.02 (ZAKRES I OGRANICZENIA).
+   11. Odporność na błędy: każda rekomendacja musi mieć ścieżkę detekcji błędu (test/alert) i ścieżkę cofnięcia (rollback).
+   12. Precyzja > pośpiech: lepiej mniejsza liczba twierdzeń z pełnym dowodem niż długa lista przypuszczeń.
+   13. Symetria dowodu: każde twierdzenie ma przeciwstawny test sprawdzalny (jak zafałszujesz własną tezę?).
+   14. Zakaz fantazjowania liczbami: jeśli czegoś nie policzyłeś — napisz „nie policzono”, nie podawaj wartości.
+   15. Każda rekomendacja zmiany reguły wskazuje: testy do zmiany, bundle do przebudowy, ścieżkę rollback.
+   16. Jeśli plik z listy jest nieczytelny lub pusty — to LUKA do rejestru, nie pretekst do pominięcia analizy.
+   17. Terminologia zgodna z glosariuszem dokumentów świętych (Legal Twin, Golden Oracle, Decision Certificate).
+   18. Po każdej podanalizie: min. 3 wnioski + min. 1 luka — pusta podanaliza jest niedopuszczalna.
+
+Przypomnienie wymagań nadrzędnych (obowiązują w tej części):
+   * Przeprować głębokie myślenie.
+   * Przeprować głęboką analizę.
+   * zaawansowany poziom Enterprise.
+   * poziom ENTERPRISE.
+   * innowacyjne ulepszenia wyprzedzające profesjonalistów.
+   * Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+SEKCJA 13 — KRYTERIA AKCEPTACJI RAPORTU
+------------------------------------------------------------------------------
+
+   [ ] 01. Raport zapisany jako jeden plik TXT: JDG/raporty_glm52_v3/RAPORT_V3_P03_KONTRAKT_WERDYKTU.txt.
+   [ ] 02. Wszystkie sekcje 9.01–9.15 obecne i nietrywialne (brak pustych nagłówków).
+   [ ] 03. Każdy plik z Sekcji 6 ma wiersz w tabeli dowodów (7.3) albo jawną adnotację dlaczego nie był potrzebny.
+   [ ] 04. Macierz PRAWO↔REGUŁA↔TEST kompletna dla zakresu części, ze statusami i ryzykiem.
+   [ ] 05. Rejestr luk z krytycznością P0–P3 i identyfikatorami V3-P03-Lxx.
+   [ ] 06. Min. 12 innowacji Enterprise z pełnym projektem (6 elementów każda).
+   [ ] 07. Kontrakt wyjściowy gotowy (9.08) — konkretny, wiążący, testowalny.
+   [ ] 08. Plan testów z przypadkami blokującymi merge.
+   [ ] 09. Sekcja pytań do człowieka (9.11) — zawiera każde rozstrzygnięcie wykraczające poza dowody.
+   [ ] 10. Zero stwierdzeń bez dowodu; wszystkie założenia jawnie oznaczone [ZAŁOŻENIE]; niezweryfikowane prawo [NIEZWERYFIKOWANE].
+   [ ] 11. Odpowiedzi na wszystkie pytania krzyżowe (7.4) z identyfikatorami V3-P03-Xxx.
+   [ ] 12. Tabela przekazywanych artefaktów (11.4) wypełniona dla każdego kontraktu wyjściowego.
+   [ ] 13. Macierz podanaliza×grupa (APENDYKS B) ma wypełnione kolumny Grupy kluczowe i Wynik.
+   [ ] 14. Każdy anty-wzorzec z 7.5 ma wynik sprawdzenia (jest/nie ma) i wpis do rejestru luk.
+   [ ] 15. Instrukcja 6.0 wykonana: każdy plik ma przypisany fakt albo adnotację NIEZWERYFIKOWANO.
+   [ ] 16. Plan pracy krok po kroku (APENDYKS E) odznaczony w całości.
+   [ ] 17. Żadna sekcja nie jest skopiowana z poprzednich raportów (weryfikuj, nie parafrazuj).
+   [ ] 18. Deklaracja zgodności z dokumentami świętymi na końcu raportu z listą ewentualnych odstępstw.
+   [ ] 19. Każde z 25 pól ma wiersz w macierzy: producent, walidacja, test, status dowodu.
+   [ ] 20. Rozszerzenie kontraktu zawiera przykładowy JSON przed/po (additive, bez breaking change).
+
+SEKCJA 14 — CHECKLISTA ODCZYTU CZĘŚCI P03 (odznaczaj po przeczytaniu)
+------------------------------------------------------------------------------
+
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/decision_composer_enterprise.rego  — Kompozytor decyzji
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/decision_core_completeness_enterprise.rego  — Kompletność decision core
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/decision_scoring_enterprise.rego  — Scoring decyzji
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/adaptive_trust_scoring_enterprise.rego  — Adaptive trust scoring
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/validation.rego  — Walidacja reguł
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/provenance.rego  — Provenance
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/rules/fallback.rego  — Fallback
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/ORCHESTRATOR_DATA_CONTRACT.md  — Kontrakt danych orkiestratora
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/CORE_GUARDS_TEMPORAL_THRESHOLDS.md  — Guardy rdzenia i progi temporalne
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/PEWNOSC_DASHBOARD.md  — Dashboard pewności
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/docs/API_REFERENCJA.md  — Referencja API
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/api/openapi.yaml  — OpenAPI
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/orchestrator_data_contract.py  — Kontrakt danych orkiestratora (narzędzie)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/verify_verdict_invariants.py  — Weryfikacja invariantów werdyktu
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/decision_certificate.py  — Certyfikat decyzji (narzędzie)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/confidence_dashboard.py  — Dashboard pewności (narzędzie)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/pewnosc_metrics.py  — Metryki pewności (narzędzie)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/api_spec_consistency.py  — Konsystencja specyfikacji API
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tests/test_enterprise_operating_contract.py  — Test operating contract
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tests/test_orchestrator_data_contract.py  — Test kontraktu danych orkiestratora
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/tools/validate_enterprise_contract.py  — Test walidatora enterprise
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/JDG/migrations/008_jdg_v13_orchestrator_contract.sql  — Migracja 008 — kontrakt orkiestratora
+   --- Mirror policies (kontekst zgodności) ---
+   [ ] https://github.com/Gorski-Maciej/NexusAI/tree/policies/jdg  — Mirror jdg — katalog lustrzany pakietu JDG (porównuj implementacje domeny z mirror)
+   [ ] https://github.com/Gorski-Maciej/NexusAI/tree/policies/tax  — Mirror tax — katalog lustrzany warstwy podatkowej
+   [ ] https://github.com/Gorski-Maciej/NexusAI/tree/policies/tax/vat  — Mirror VAT — katalog lustrzany reguł VAT
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/policies/jdg/bundles/bundle.sh  — Skrypt budowy bundle w mirrorze
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/policies/jdg/bundles/base/manifest.json  — Manifest bazowy overlay w mirrorze
+   [ ] https://github.com/Gorski-Maciej/NexusAI/blob/policies/jdg/bundles/overlays/v2026/manifest.json  — Overlay v2026 w mirrorze
+
+SEKCJA 15 — POWTÓRZENIE WYMAGAŃ NADRZĘDNYCH (przypomnienie przed pracą):
+
+  1. Przeprować głębokie myślenie.
+  2. Przeprować głęboką analizę.
+  3. zaawansowany poziom Enterprise.
+  4. poziom ENTERPRISE.
+  5. innowacyjne ulepszenia wyprzedzające profesjonalistów.
+  6. Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+Powtarzaj te wymagania przed każdą sekcją raportu, każdą rekomendacją i każdą decyzją projektową.
+
+SEKCJA 16 — KOMENDA KOŃCOWA: CZYSZCZENIE OKNA KONTEKSTOWEGO
+------------------------------------------------------------------------------
+
+Po ZAKOŃCZENIU pracy nad tą częścią wykonaj DOKŁADNIE:
+
+   1. Zapisz kompletny raport do: JDG/raporty_glm52_v3/RAPORT_V3_P03_KONTRAKT_WERDYKTU.txt
+      (jeden plik; jeśli raport wygenerowałeś w odpowiedzi — potwierdź zapis i podaj pełną ścieżkę).
+   2. Potwierdź krótkim komunikatem: zakres części P03, liczba luk P0/P1/P2/P3, liczba innowacji,
+      status kontraktu wyjściowego, lista artefaktów przekazanych dalej.
+   3. Wypisz pełną listę kontraktów wyjściowych przekazanych części P04.
+   4. NASTĘPNIE WYCZYŚĆ OKNO KONTEKSTOWE (cała treść: pliki, notatki robocze, cytaty, śródnotatki).
+      Do części P04 wchodzisz z PUSTĄ sesją — przenosisz się WYŁĄCZNIE poprzez zapisany raport
+      (sekcje: EXECUTIVE SUMMARY, KONTRAKT WYJŚCIOWY, REJESTR LUK P0/P1).
+   5. Nie utrzymuj żadnych niejawnych założeń, fragmentów kodu ani cytatów po czyszczeniu sesji.
+
+Kolejność serii V3: P00 → P01 → … → P04 → … → P68 (certyfikacja finalna).
+Pełny indeks: JDG/prompty_v3/README_V3_KAMPANIA_GLM52.txt
+
+APENDYKS A — MAPA GRUP PLIKÓW CZĘŚCI P03
+------------------------------------------------------------------------------
+
+   | Grupa | Nazwa | Liczba plików | Rola analityczna w tej części |
+   |-------|-------|---------------|-------------------------------|
+   | 6.1 | Reguły kompozycji i kontraktu | 7 | (uzupełnij: czego szukasz w tej grupie) |
+   | 6.2 | Dokumenty kontraktowe | 4 | (uzupełnij: czego szukasz w tej grupie) |
+   | 6.3 | Specyfikacja API i narzędzia | 7 | (uzupełnij: czego szukasz w tej grupie) |
+   | 6.4 | Testy kontraktu | 4 | (uzupełnij: czego szukasz w tej grupie) |
+   | 6.5 | Mirror policies | 6 | zgodność implementacji z mirror; dryf = konflikt Cxx |
+
+APENDYKS B — MACIERZ PODANALIZA × GRUPA (co sprawdzić — minimum)
+------------------------------------------------------------------------------
+
+   | Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik (sekcja raportu) |
+   |------------|----------------|-----------------|------------------------|
+   | 5.1 | (uzupełnij) | min. 3 twierdzenia z dowodem | 9.04 / 9.05 |
+   | 5.2 | (uzupełnij) | min. 3 twierdzenia z dowodem | 9.04 / 9.05 |
+   | 5.3 | (uzupełnij) | min. 3 twierdzenia z dowodem | 9.04 / 9.05 |
+   | 5.4 | (uzupełnij) | min. 3 twierdzenia z dowodem | 9.04 / 9.05 |
+
+APENDYKS C — SZKIELET PYTAŃ DO CZŁOWIEKA (V3-P03-Qxx)
+------------------------------------------------------------------------------
+
+   Q01. Które rozstrzygnięcia prawne w tej części są niepewne (dwie dopuszczalne interpretacje)? (odpowiedz w raporcie lub przenieś do sekcji 9.11)
+   Q02. Które decyzje architektoniczne wymagają zatwierdzenia właściciela (4-eyes)? (odpowiedz w raporcie lub przenieś do sekcji 9.11)
+   Q03. Które limity budżetowe/wdrożeniowe zmieniają priorytety planu wdrożenia? (odpowiedz w raporcie lub przenieś do sekcji 9.11)
+   Q04. Które konflikty BLOCKER wymagają eskalacji poza tę część? (odpowiedz w raporcie lub przenieś do sekcji 9.11)
+
+APENDYKS D — GLOSARIUSZ MINIMALNY CZĘŚCI P03
+------------------------------------------------------------------------------
+
+   Luka (Lxx):     stwierdzony brak/błąd z dowodem i krytycznością P0–P3.
+   Innowacja (Ixx): kompletny projekt rozwiązania Enterprise wg szkieletu z Sekcji 10.
+   Konflikt (Cxx):  sprzeczność dokument↔kod, kontrakt↔kontrakt, mirror↔canonical.
+   Pytanie (Qxx):   rozstrzygnięcie zarezerwowane dla człowieka (nigdy cisza).
+   Krzyżowe (Xxx):  odpowiedź na pytanie systemowe z Sekcji 7.4.
+   AUTO_POST:       automatyczne księgowanie — dopuszczalne wyłącznie przy pełnym dowodzie.
+   NEEDS_ADVICE:    decyzja wymaga człowieka — domyślny tryb fail-closed przy wątpliwości.
+   MANUAL_REVIEW:   pełny przegląd ręczny — tryb przy konflikcie/naruszeniu invariantów.
+
+APENDYKS E — PLAN PRACY KROK PO KROKU (wykonuj sekwencyjnie)
+------------------------------------------------------------------------------
+
+   ETAP 1 — PRZYGOTOWANIE:
+     K01. Przeczytaj dokumenty święte (Sekcja 4.1) i potwierdź w notatce roboczej kluczowe kontrakty
+          istotne dla tej części (kontrakt werdyktu, invarianty, temporalność, parametry-as-data).
+     K02. Przeczytaj JDG/docs/Bbb i wypisz akty istotne dla części P03 (Sekcja 8) do weryfikacji ISAP.
+     K03. Sprawdź budżet kontekstu (Sekcja 3): zaplanuj, ile miejsca zajmą grupy plików z Sekcji 6.
+
+   ETAP 2 — ODCZYT DOWODÓW (grupa po grupie):
+     K04. Grupa 6.1 (Reguły kompozycji i kontraktu): przeczytaj 7 plik(i); dla każdego zanotuj
+          min. 1 fakt do tabeli dowodów (7.3) i min. 1 wniosek analityczny.
+         - decision_composer_enterprise.rego: Kompozytor decyzji
+         - decision_core_completeness_enterprise.rego: Kompletność decision core
+         - decision_scoring_enterprise.rego: Scoring decyzji
+         - adaptive_trust_scoring_enterprise.rego: Adaptive trust scoring
+         - validation.rego: Walidacja reguł
+         - provenance.rego: Provenance
+         - fallback.rego: Fallback
+     K12. Grupa 6.2 (Dokumenty kontraktowe): przeczytaj 4 plik(i); dla każdego zanotuj
+          min. 1 fakt do tabeli dowodów (7.3) i min. 1 wniosek analityczny.
+         - ORCHESTRATOR_DATA_CONTRACT.md: Kontrakt danych orkiestratora
+         - CORE_GUARDS_TEMPORAL_THRESHOLDS.md: Guardy rdzenia i progi temporalne
+         - PEWNOSC_DASHBOARD.md: Dashboard pewności
+         - API_REFERENCJA.md: Referencja API
+     K17. Grupa 6.3 (Specyfikacja API i narzędzia): przeczytaj 7 plik(i); dla każdego zanotuj
+          min. 1 fakt do tabeli dowodów (7.3) i min. 1 wniosek analityczny.
+         - openapi.yaml: OpenAPI
+         - orchestrator_data_contract.py: Kontrakt danych orkiestratora (narzędzie)
+         - verify_verdict_invariants.py: Weryfikacja invariantów werdyktu
+         - decision_certificate.py: Certyfikat decyzji (narzędzie)
+         - confidence_dashboard.py: Dashboard pewności (narzędzie)
+         - pewnosc_metrics.py: Metryki pewności (narzędzie)
+         - api_spec_consistency.py: Konsystencja specyfikacji API
+     K25. Grupa 6.4 (Testy kontraktu): przeczytaj 4 plik(i); dla każdego zanotuj
+          min. 1 fakt do tabeli dowodów (7.3) i min. 1 wniosek analityczny.
+         - test_enterprise_operating_contract.py: Test operating contract
+         - test_orchestrator_data_contract.py: Test kontraktu danych orkiestratora
+         - validate_enterprise_contract.py: Test walidatora enterprise
+         - 008_jdg_v13_orchestrator_contract.sql: Migracja 008 — kontrakt orkiestratora
+
+   ETAP 3 — PODANALIZY (5.1–5.4):
+     K30. Podanaliza 5.1 (Audyt 25 pól w kodzie i OpenAPI): odpowiedz na WSZYSTKIE pytania audytowe
+          (min. 3 wnioski z dowodem, min. 1 luka Lxx, wpis do macierzy 9.05).
+     K31. Podanaliza 5.2 (Klasa pewności i scoring): odpowiedz na WSZYSTKIE pytania audytowe
+          (min. 3 wnioski z dowodem, min. 1 luka Lxx, wpis do macierzy 9.05).
+     K32. Podanaliza 5.3 (Degradacja kontraktu i błędy): odpowiedz na WSZYSTKIE pytania audytowe
+          (min. 3 wnioski z dowodem, min. 1 luka Lxx, wpis do macierzy 9.05).
+     K33. Podanaliza 5.4 (Provenance i legal refs w werdykcie): odpowiedz na WSZYSTKIE pytania audytowe
+          (min. 3 wnioski z dowodem, min. 1 luka Lxx, wpis do macierzy 9.05).
+
+   ETAP 4 — PRAWO I ZGODNOŚĆ:
+     K34. Zweryfikuj w ISAP/RCL: Ordynacja podatkowa — art. 189b (sposób ustalenia treści zobowiązania jako paradygmat uzasadnienia w
+     K35. Zweryfikuj w ISAP/RCL: Ustawa o VAT — art. 106b–106n (dane faktury jako wzór kompletności danych kontraktu)
+     K36. Zweryfikuj w ISAP/RCL: Ustawa o PIT — art. 45 (zeznania: kompletność pól deklaracji jako wzór)
+     K37. Zweryfikuj w ISAP/RCL: Ustawa o rachunkowości — art. 20–21 (dowody księgowe jako wzór kompletności dowodowej)
+     K38. Zweryfikuj w ISAP/RCL: Ustawa o systemie ubezpieczeń społecznych — art. 47 (deklaracje ZUS DRA/RCA jako wzór pól kwotowych)
+
+   ETAP 5 — SYNTHEZA I RAPORT:
+     K39. Zbuduj T1–T12 (9.16), rejestr luk, macierz prawo↔reguła↔test i kontrakt wyjściowy.
+     K40. Opracuj innowację V3-P03-I01 wg 6-punktowego szkieletu (Sekcja 10).
+     K41. Opracuj innowację V3-P03-I02 wg 6-punktowego szkieletu (Sekcja 10).
+     K42. Opracuj innowację V3-P03-I03 wg 6-punktowego szkieletu (Sekcja 10).
+     K43. Opracuj innowację V3-P03-I04 wg 6-punktowego szkieletu (Sekcja 10).
+     K44. Opracuj innowację V3-P03-I05 wg 6-punktowego szkieletu (Sekcja 10).
+     K45. Opracuj innowację V3-P03-I06 wg 6-punktowego szkieletu (Sekcja 10).
+     K46. Opracuj innowację V3-P03-I07 wg 6-punktowego szkieletu (Sekcja 10).
+     K47. Opracuj innowację V3-P03-I08 wg 6-punktowego szkieletu (Sekcja 10).
+     K48. Opracuj innowację V3-P03-I09 wg 6-punktowego szkieletu (Sekcja 10).
+     K49. Opracuj innowację V3-P03-I10 wg 6-punktowego szkieletu (Sekcja 10).
+     K50. Opracuj innowację V3-P03-I11 wg 6-punktowego szkieletu (Sekcja 10).
+     K51. Opracuj innowację V3-P03-I12 wg 6-punktowego szkieletu (Sekcja 10).
+     K52. Odpowiedz na pytanie krzyżowe X01 (7.4) — identyfikator V3-P03-X01.
+     K53. Odpowiedz na pytanie krzyżowe X02 (7.4) — identyfikator V3-P03-X02.
+     K54. Odpowiedz na pytanie krzyżowe X03 (7.4) — identyfikator V3-P03-X03.
+     K55. Odpowiedz na pytanie krzyżowe X04 (7.4) — identyfikator V3-P03-X04.
+     K56. Odpowiedz na pytanie krzyżowe X05 (7.4) — identyfikator V3-P03-X05.
+     K57. Odpowiedz na pytanie krzyżowe X06 (7.4) — identyfikator V3-P03-X06.
+     K58. Odpowiedz na pytanie krzyżowe X07 (7.4) — identyfikator V3-P03-X07.
+     K59. Odpowiedz na pytanie krzyżowe X08 (7.4) — identyfikator V3-P03-X08.
+     K60. Odpowiedz na pytanie krzyżowe X09 (7.4) — identyfikator V3-P03-X09.
+     K61. Odpowiedz na pytanie krzyżowe X10 (7.4) — identyfikator V3-P03-X10.
+
+   ETAP 6 — DOMKNIĘCIE: zapis raportu → potwierdzenie → czyszczenie okna kontekstowego (Sekcja 16).
+
+Przypomnienie przed startem pracy (wszystkie 6 wymagań):
+   * Przeprować głębokie myślenie.
+   * Przeprować głęboką analizę.
+   * zaawansowany poziom Enterprise.
+   * poziom ENTERPRISE.
+   * innowacyjne ulepszenia wyprzedzające profesjonalistów.
+   * Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur których brakuje.
+
+==============================================================================
+KONIEC PROMPTU V3 P03 — KONTRAKT WERDYKTU 25-POLOWY, KOMPOZYCJA DECYZJI I KLASA PEWNOŚCI
+==============================================================================
