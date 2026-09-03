@@ -1,0 +1,52 @@
+{
+  "innovation": "V3-P12-I10",
+  "name": "VAT Invariants Pack — rozszerzenie katalogu konstytucji P04 o niezmienniki VAT",
+  "extends": "V3-P04-I09 legal invariant registry (rozszerzenie, nie duplikat)",
+  "generated_at": "2026-09-03T00:00:00+00:00",
+  "invariants": [
+    {
+      "invariant": "INV-VAT-1",
+      "title": "Stawka VAT ∈ {0.00, 0.05, 0.08, 0.23, NP}",
+      "legal_node": "PL/vat/art/41",
+      "kind": "LEGAL",
+      "enforcement": "invariant_violation → verdict.routing = NEEDS_ADVICE (nigdy cichy wybór stawki)",
+      "runtime_test": "JDG/tests/auto/test_v3_p12_vat_stawki_zwolnienia.py::test_inv_vat_1_rate_in_set"
+    },
+    {
+      "invariant": "INV-VAT-2",
+      "title": "Kwota VAT ≥ 0 (grosze, Decimal)",
+      "legal_node": "PL/vat/art/41",
+      "kind": "LEGAL",
+      "enforcement": "vat_amount < 0 → MANUAL_REVIEW + wpis do rejestru anomalii",
+      "runtime_test": "JDG/tests/auto/test_v3_p12_vat_stawki_zwolnienia.py::test_inv_vat_2_non_negative"
+    },
+    {
+      "invariant": "INV-VAT-3",
+      "title": "Spójność JPK_V7: VAT należny − VAT naliczony = kwota do rozliczenia",
+      "legal_node": "PL/vat/art/106",
+      "kind": "LEGAL",
+      "enforcement": "rozjazd pól JPK → BLOCK + MANUAL_REVIEW przed AUTO_POST",
+      "runtime_test": "JDG/tests/auto/test_v3_p12_vat_stawki_zwolnienia.py::test_inv_vat_3_jpk_consistency"
+    },
+    {
+      "invariant": "INV-VAT-4",
+      "title": "netto × stawka = VAT (zaokrąglenie do grosza, half-up)",
+      "legal_node": "PL/vat/art/90",
+      "kind": "LEGAL",
+      "enforcement": "regresja o 1 grosz na złotym zbiorze → brama blokująca merge (P39)",
+      "runtime_test": "JDG/tests/auto/test_v3_p12_vat_stawki_zwolnienia.py::test_inv_vat_4_netto_times_rate"
+    },
+    {
+      "invariant": "INV-VAT-5",
+      "title": "Przekroczenie limitu art. 113 nigdy bez sygnału (VAT-R + zakaz 2 lata)",
+      "legal_node": "PL/vat/art/113",
+      "kind": "LEGAL",
+      "enforcement": "obrót > data.thresholds vat.limit_113 → VAT-R + suspended_years z parametru (nigdy cisza)",
+      "runtime_test": "JDG/tests/auto/test_v3_p12_vat_stawki_zwolnienia.py::test_inv_vat_5_limit113_signal"
+    }
+  ],
+  "contract": {
+    "binding": "P04 (katalog konstytucji), P03 (klasy pewności), P16 (JPK), P39 (bramki CI)",
+    "rule": "naruszony niezmiennik VAT = NEEDS_ADVICE / MANUAL_REVIEW, nigdy cichy AUTO_POST"
+  }
+}

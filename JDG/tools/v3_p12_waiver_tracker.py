@@ -96,7 +96,7 @@ def main() -> int:
                              "okresem zakazu; przekroczenie = warning + zakaz powrotu"}}
     (BUNDLES / "v3_p12_waiver_tracker.json").write_text(
         json.dumps(bundle, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"[V3-P12-I11] gate={gate} loss_rule={bool(loss_rule) or has_2y_loss} window_data={bool(window_param)}")
+    print(f"[V3-P12-I11] gate={gate} loss_rule={has_p141} window_data={bool(window_param or has_2y_as_data)}")
     return 1 if gate == "FAIL" else 0
 
 

@@ -1282,6 +1282,33 @@ else := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# P143: vat_voluntary_waiver_vatr — Dobrowolna rezygnacja ze zwolnienia (VAT-R) v7.0 R14
+# Art. 44 VAT: rezygnacja ze zwolnienia podmiotowego (art. 113) — podatnik staje się
+# czynnym podatnikiem od momentu rezygnacji. Ścieżka lifecycle V3-P12-I11:
+# rezygnacja → potwierdzenie VAT-R w US → powrót tylko decyzją człowieka (V3-P12-Q03).
+# Fail-closed: rezygnacja bez aktywnego VAT = TRIAGE_QUEUE (nigdy cicha zmiana statusu).
+# ═══════════════════════════════════════════════════════════════════════════════
+else := {
+    "matched": true, "rule_id": "jdg.vat.substantive.voluntary_waiver_vatr",
+    "package": "jdg.vat.substantive", "priority": 143,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "procedure": "VOLUNTARY_WAIVER_VATR",
+    "vat_exemption": "", "vat_waiver_active": true,
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "_routing": "TRIAGE_QUEUE",
+    "_routing_reason": sprintf("Rezygnacja ze zwolnienia (VAT-R, art. 44 VAT) złożona w roku %d — status czynnego podatnika od momentu rezygnacji; powrót do zwolnienia wymaga decyzji człowieka (V3-P12-Q03).", [waiver_year]),
+    "_legal_basis": "Art. 44 ustawy o VAT",
+    "_warnings": [sprintf("DOBROWOLNA REZYGNACJA ZE ZWOLNIENIA PODMIOTOWEGO (VAT-R): rok rezygnacji %d. Od momentu rezygnacji jesteś czynnym podatnikiem VAT. Okres obowiązkowego pozostania czynnym podatnikiem oraz dopuszczalny moment powrotu wymagają decyzji człowieka — najpierw zgłoś VAT-R do naczelnika urzędu skarbowego.", [waiver_year])]
+} {
+    input.jdg_entrepreneur.is_vat_payer == false
+    waiver_year := object.get(input.jdg_entrepreneur, "vat_waiver_year", 0)
+    waiver_year > 0
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # P142: vat_nkup_mpp_breach — NKUP przy braku MPP (Art. 108a ust. 7 VAT) ★★★ v7.0 R13
 # Jeżeli brak MPP przy obowiązku → wydatek netto stanowi NKUP w PIT/CIT.
 # Reguła flaguje transakcję jako NKUP-MPP.

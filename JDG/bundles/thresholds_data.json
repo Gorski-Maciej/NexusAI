@@ -17,6 +17,138 @@
         "max": "1",
         "type": "number"
       }
+    },
+    "vat.reduced_rate_8": {
+      "versions": [
+        {
+          "value": 0.08,
+          "type": "number",
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "source_act": "Art. 41 ust. 2 ustawy o VAT w zw. z zal. 10 (wykaz towarow/uslug 8%)",
+          "isap_status": "NIEZWERYFIKOWANE",
+          "changed_by": "v3_p12_rates_as_data",
+          "changed_at": "2026-09-03T00:00:00+00:00"
+        }
+      ],
+      "schema": {
+        "min": "0",
+        "max": "1",
+        "type": "number"
+      }
+    },
+    "vat.reduced_rate_5": {
+      "versions": [
+        {
+          "value": 0.05,
+          "type": "number",
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "source_act": "Art. 41 ust. 10 ustawy o VAT w zw. z zal. 10 (wykaz towarow/uslug 5%)",
+          "isap_status": "NIEZWERYFIKOWANE",
+          "changed_by": "v3_p12_rates_as_data",
+          "changed_at": "2026-09-03T00:00:00+00:00"
+        }
+      ],
+      "schema": {
+        "min": "0",
+        "max": "1",
+        "type": "number"
+      }
+    },
+    "vat.zero_rate": {
+      "versions": [
+        {
+          "value": 0.0,
+          "type": "number",
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "source_act": "Art. 41 ust. 2-13 ustawy o VAT (przypadki stawki 0%)",
+          "isap_status": "NIEZWERYFIKOWANE",
+          "changed_by": "v3_p12_rates_as_data",
+          "changed_at": "2026-09-03T00:00:00+00:00"
+        }
+      ],
+      "schema": {
+        "min": "0",
+        "max": "1",
+        "type": "number"
+      }
+    },
+    "vat.np_rate": {
+      "versions": [
+        {
+          "value": "NP",
+          "type": "string",
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "source_act": "Art. 41 ust. 1 ustawy o VAT (nie podlega opodatkowaniu); JPK_V7 pole P_NP",
+          "isap_status": "NIEZWERYFIKOWANE",
+          "changed_by": "v3_p12_rates_as_data",
+          "changed_at": "2026-09-03T00:00:00+00:00"
+        }
+      ],
+      "schema": {
+        "type": "string",
+        "allowed": ["NP"]
+      }
+    },
+    "vat.limit_113": {
+      "versions": [
+        {
+          "value": 200000,
+          "type": "number",
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "source_act": "Art. 113 ust. 1 ustawy o VAT (zwolnienie podmiotowe 200 000 PLN)",
+          "isap_status": "NIEZWERYFIKOWANE",
+          "changed_by": "v3_p12_limit113_sentinel",
+          "changed_at": "2026-09-03T00:00:00+00:00"
+        }
+      ],
+      "schema": {
+        "min": "0",
+        "max": "10000000",
+        "type": "number"
+      }
+    },
+    "vat.exemption_suspended_years": {
+      "versions": [
+        {
+          "value": 2,
+          "type": "number",
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "source_act": "Art. 113 ust. 14 ustawy o VAT (zakaz ponownego zwolnienia po utracie) [uwaga: raport V3_P12 Q01 - ust. 11 vs ust. 14 do weryfikacji ISAP]",
+          "isap_status": "NIEZWERYFIKOWANE",
+          "changed_by": "v3_p12_waiver_tracker",
+          "changed_at": "2026-09-03T00:00:00+00:00"
+        }
+      ],
+      "schema": {
+        "min": "0",
+        "max": "10",
+        "type": "number"
+      }
+    },
+    "vat.exemption_housing_area_m2_max": {
+      "versions": [
+        {
+          "value": 80,
+          "type": "number",
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "source_act": "Art. 43 ust. 1 pkt 7-8 ustawy o VAT (zwolnienie budownictwo mieszkaniowe, powierzchnia do 80 m2)",
+          "isap_status": "NIEZWERYFIKOWANE",
+          "changed_by": "v3_p12_exemption_matrix",
+          "changed_at": "2026-09-03T00:00:00+00:00"
+        }
+      ],
+      "schema": {
+        "min": "0",
+        "max": "1000",
+        "type": "number"
+      }
     }
   },
   "changed_by_audit": [
@@ -26,6 +158,55 @@
       "changed_by": "system",
       "at": "2026-08-08T11:34:34",
       "source_act": "Art. 41 ustawy o VAT"
+    },
+    {
+      "key": "vat.reduced_rate_8",
+      "value": 0.08,
+      "changed_by": "v3_p12_rates_as_data",
+      "at": "2026-09-03T00:00:00+00:00",
+      "source_act": "Art. 41 ust. 2 ustawy o VAT w zw. z zal. 10"
+    },
+    {
+      "key": "vat.reduced_rate_5",
+      "value": 0.05,
+      "changed_by": "v3_p12_rates_as_data",
+      "at": "2026-09-03T00:00:00+00:00",
+      "source_act": "Art. 41 ust. 10 ustawy o VAT w zw. z zal. 10"
+    },
+    {
+      "key": "vat.zero_rate",
+      "value": 0.0,
+      "changed_by": "v3_p12_rates_as_data",
+      "at": "2026-09-03T00:00:00+00:00",
+      "source_act": "Art. 41 ust. 2-13 ustawy o VAT"
+    },
+    {
+      "key": "vat.np_rate",
+      "value": "NP",
+      "changed_by": "v3_p12_rates_as_data",
+      "at": "2026-09-03T00:00:00+00:00",
+      "source_act": "Art. 41 ust. 1 ustawy o VAT"
+    },
+    {
+      "key": "vat.limit_113",
+      "value": 200000,
+      "changed_by": "v3_p12_limit113_sentinel",
+      "at": "2026-09-03T00:00:00+00:00",
+      "source_act": "Art. 113 ust. 1 ustawy o VAT"
+    },
+    {
+      "key": "vat.exemption_suspended_years",
+      "value": 2,
+      "changed_by": "v3_p12_waiver_tracker",
+      "at": "2026-09-03T00:00:00+00:00",
+      "source_act": "Art. 113 ust. 14 ustawy o VAT [Q01: do weryfikacji]"
+    },
+    {
+      "key": "vat.exemption_housing_area_m2_max",
+      "value": 80,
+      "changed_by": "v3_p12_exemption_matrix",
+      "at": "2026-09-03T00:00:00+00:00",
+      "source_act": "Art. 43 ust. 1 pkt 7-8 ustawy o VAT"
     }
   ]
 }
