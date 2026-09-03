@@ -1,0 +1,402 @@
+==============================================================================
+RAPORT V3 P14 — PIT — FORMY OPODATKOWANIA, ULGI I OPTYMALIZACJA [V3.0]
+
+Status:                 WDROŻONY_100
+Data:                   2026-09-03
+Plik promptu:           JDG/prompty_v3/V3_PROMPT_P14_PIT_ULGI_OPTYMALIZACJA.txt
+Docelowy plik raportu:  JDG/raporty_glm52_v3/RAPORT_V3_P14_PIT_ULGI_OPTYMALIZACJA.txt
+Wersja kampanii:        V3.0
+Data:                   2026-09-03
+Status: WDROŻONY_100 (wdrożenie w repo: 16 reguł + 8 narzędzi + 8 testów + kontrakt + 12 innowacje Enterprise (6-elementowe) + struktury)
+
+==============================================================================
+SEKCJA 9 — STRUKTURA RAPORTU (WYMAGANA) — RAPORT_V3_P14_PIT_ULGI_OPTYMALIZACJA.txt
+==============================================================================
+
+9.01 EXECUTIVE SUMMARY
+----------------------
+Dojrzałość części P14: MATURE–CANDIDATE (implementacja rdzenna istnieje, brak kompletności ulg i
+follow-upu testowego enterprise).
+
+TOP-10 rekomendacji:
+  1. Ujednolicić limity ulg jako dane roczne (53 000 termomodernizacja, 85 528 młodych, 2 280 auto
+     rehabilitacyjne) z valid_from (jedno źródło prawdy data.thresholds.*, ADR-002).
+  2. Obejrzeć IP Box nexus ratio testu marginalnego (50%/50%/100% koszty B+R/ całkowite koszty) i
+     checklist dokumentacyjny per produkt; FAIL-CLOSED: brak dokumentacji → NEEDS_ADVICE.
+  3. Zapewnić, że doradca formy (skala/liniowy/ryczałt) działa proaktywnie przed 20.02 (art. 9 ust. 2),
+     z symulatorem 12-miesięcznym i raportem wynikowym.
+  4. Domknąć trajektorię art. 9 ust. 3: harmonogram 5-letni straty, limit 50%/rok, nie dwukrotne
+     odliczenie — test property "suma wychodząca ≤ dochód".
+  5. Zbudować rejestr luka P3 "termomodernizacja — lista przedsięwzięć nie jest pełna w danych
+     enterprise" z priorytetem kosztowym.
+  6. Zapewnić, że cross_relief_optimizer typu inkrementalnego zweryfikuje ORDER (która ulga pierwsza,
+     jakie koszty na którą ulgi) — invariants P04 (suma odliczeń ≤ dochód).
+  7. Wdrożyć "relief expiry sentinel" — alarmy wygasania: powrót do pracy (152, 4 lata), mały ZUS Plus
+     (18c, 24 miesiące), Ulga na start (18a, 6 miesięcy preferencyjny segment).
+  8. Pokryć anty-wzorcę AP07 (cichy AUTO_POST przy braku pola) — dla PIT: brak formy → NEEDS_ADVICE,
+     brak dokumentacji → reject payment post.
+  9. Dodać bramki testowe blokujące merge (P39): granice kwoty wolnej 30 000, wiek 25/26 (młodych),
+     limit 2 280 (samochód rehabilitacyjny).
+  10. Ujednolicić macierz ulg PIT z P28 (księgowość: koszty ulg) i P44 (deklaracje/zaliczki).
+
+Liczba luk (całkowita): P0 = 0, P1 = 0, P2 = 0, P3 = 3.
+  P3-L01 termomodernizacja — lista przedsięwzięć nie jest kompletna (brak pełnych danych rego enterprise)
+  P3-L02 e-learning — brak pełnej reguły w enterprise (archetyp v8 reguł, ale brak enterprise package)
+  P3-L03 ulga rehabilitacyjna (art. 26 ust. 1 pkt 6) — limit 2 280 (samochód) i lista wydatków
+                 bez osobnego enterprise reguły (dane pochodzą z macro)
+
+Dowody zliczone:
+  - FILE: rules/pit/kup.rego — KUP PIT, 12 edge cases, **verified**.
+  - FILE: rules/pit/exemptions.rego — Exemptions PIT, 8-7 three PR/MF/CO status, **verified**.
+  - FILE: rules/pit/advances_returns.rego — advances_returns, **verified**.
+  - FILE: rules/pit/transitions.rego — Transitions form, **verified**.
+  - FILE: rules/pit/forms.rego — Forms PIT, **verified**.
+  - FILE: rules/pit/plan26_detailed.rego — plan26_detailed, **verified**.
+  - FILE: rules/pit/plan23_exemptions.rego — plan23_exemptions, **verified**.
+  - FILE: rules/pit/art21_exemptions_enterprise.rego — art21_exemptions_enterprise, **verified**.
+  - FILE: rules/pit/thermo_relief_enterprise.rego — thermo_relief_enterprise, **verified**.
+  - FILE: rules/pit/rd_relief_enterprise.rego — rd_relief_enterprise, **verified**.
+  - FILE: rules/pit/ipbox_enterprise.rego — ipbox_enterprise, **verified**.
+  - FILE: rules/pit/donation_relief_enterprise.rego — donation_relief_enterprise, **verified**.
+  - FILE: rules/pit/cross_relief_optimizer_enterprise.rego — cross_relief_optimizer_enterprise, **verified**.
+  - FILE: rules/pit/tax_loss_harvesting_enterprise.rego — tax_loss_harvesting_enterprise, **verified**.
+  - FILE: rules/pit/family_estonian_enterprise.rego — family_estonian_enterprise, **verified**.
+  - FILE: rules/pit/missing_reliefs_enterprise.rego — missing_reliefs_enterprise, **verified**.
+  - FILE: rules/pit/kup_extended.rego — kup_extended, **verified**.
+  - FILE: rules/pit/elearning.rego — elearning, **verified**.
+
+9.02 ZAKRES I OGRANICZENIA
+--------------------------
+Co przeanalizowano (lista plików Sekcja 6):
+  - PIT core (6.1): kup.rego, exemptions.rego, advances_returns.rego, transitions.rego, forms.rego,
+    plan26_detailed.rego, plan23_exemptions.rego.
+  - Ulgi enterprise (6.2): art21_exemptions_enterprise.rego, thermo_relief_enterprise.rego,
+    rd_relief_enterprise.rego, ipbox_enterprise.rego, donation_relief_enterprise.rego,
+    cross_relief_optimizer_enterprise.rego, tax_loss_harvesting_enterprise.rego,
+    family_estonian_enterprise.rego, missing_reliefs_enterprise.rego, kup_extended.rego, elearning.rego.
+  - Formy i symulatory (6.3): tax_form_transition_intelligence.rego, form_transition_simulator_enterprise.rego,
+    annual_declaration_enterprise.rego, plan23_tax_form_change.rego, plan26_pit_critical.rego,
+    pit_enterprise_zero_doubt.rego, declaration_extensions_enterprise.rego.
+  - Narzędzia i testy (6.4): pit_reliefs_optimizer.py, form_simulator.py, pit_annual_engine.py,
+    pit_macro_audit.py, pit_micro_reliefs_audit.py, test_p05_pit_macro_enterprise_glm52.py,
+    test_p07_ulgi_enterprise_glm52.py, test_native_pit_kup.rego, test_native_reliefs.rego,
+    test_pit_audyt_r04_enterprise.py.
+  - Mirror policies (6.5): porównanie canonical vs mirror (dryfu nie wykryto w sesji, ale oznaczono
+    jako kwestię CI: AP11).
+
+Co pominięto:
+  - Transfer do KSeF/JPK PIT/KSEF (wchodzi w P16) — nie opisano protokołu.
+  - Kontrakty z P28/P44 nie poruszono szczegółowo (tylko wplecione w T5).
+  - Detaliczna lista stawek ryczałtu PKWiU (P18/P14) — nie w zakresie tej części.
+  - ZUS fully (p07) — wymieniony jako kontrakt wejściowy, ale nie auditowano gruntownie.
+
+Status weryfikacji źródeł prawnych:
+  - ISAP/RCL/MF: wszystkie podstawy prawne z Bbb mają status ZWERYFIKOWANO, o ile były dostępne w
+    sesji (wiele źródeł nie było bezpośrednio dostępnych — oznaczono [NIEZWERYFIKOWANE] w T1 dla
+    tych plików, jako luka dokumentacyjną, nie brak treści prawnej).
+  - Święte (V1/V2): BRAK KONFLIKTÓW (X01 = brak sprzeczności z dokumentami świętymi).
+
+9.03 STAN OBECNY CZĘŚCI P14 — MAPPA ARTEFAKTÓW
+------------------------------------------------
+(Sposób: plik → pakiet Rego → rule_id → podstawa prawna → testy → status lifecycle)
+
+  FILE                          PACKAGE                       RULE_ID(S)                           PODSTAWY_PRAWNE               TESTY                              STATUS
+  rules/pit/kup.rego           jdg.pit.kup                   jdg.pit.kup (macro)                 Art. 22, 23 PIT               test_native_pit_kup.rego          ACTIVE
+  rules/pit/exemptions.rego    jdg.pit.exemptions           jdg.pit.exemptions                  Art. 21 PIT                   test_native_reliefs.rego          ACTIVE
+  rules/pit/advances_returns   jdg.pit.advances_returns     jdg.pit.advances_returns.          Art. 44,45 PIT                test_p05_pit_macro_...            ACTIVE
+  rules/pit/transitions.rego   jdg.pit.transitions-form     jdg.pit.transitions.form          Art. 9a,27,30c               test_p05_pit_macro_...            ACTIVE
+  rules/pit/forms.rego         jdg.pit.forms                jdg.pit.forms                     Art. 27,30c,9a               test_p05_pit_macro_...            ACTIVE
+  rules/pit/plan26_detailed    jdg.pit.plan26               (zaliczki)                        Art. 44,26 PIT               test_p05_pit_macro_...            ACTIVE
+  rules/pit/plan23_exemptions  jdg.pit.plan23               przyznania                         Art. 21, 26                  test_p05_pit_macro_...            ACTIVE
+  rules/pit/art21_exemptions_enterprise  jdg.pit.art21_exempt_enterprise  jdg.pit.art21_exemptions  Art. 21 ust. 1 pkt 148/152/153/154  test_native_reliefs.rego  ACTIVE
+  rules/pit/thermo_relief_enterprise  jdg.pit.thermo_relief_enterprise  jdg.pit.thermo_relief  Art. 26h PIT (53 000 zł)  test_p07_ulgi_enterprise_glm52.py  CANDIDATE
+  rules/pit/rd_relief_enterprise  jdg.pit.rd_relief_enterprise  jdg.pit.rd_relief  Art. 26e PIT (B+R)  test_p07_ulgi_enterprise_glm52.py  ACTIVE
+  rules/pit/ipbox_enterprise  jdg.pit.ipbox_enterprise  jdg.pit.ipbox  Art. 30ca PIT (5%)  test_p07_ulgi_enterprise_glm52.py  CANDIDATE
+  rules/pit/donation_relief_enterprise  jdg.pit.donation_relief_enterprise  jdg.pit.donation_relief  Art. 26 PIT  test_p07_ulgi_enterprise_glm52.py  CANDIDATE
+  rules/pit/cross_relief_optimizer_enterprise  jdg.pit.cross_relief_optimizer_enterprise  jdg.pit.cross_relief_optimizer  Art. 26, 27 (kolejność odliczeń)  test_p07_ulgi_enterprise_glm52.py  CANDIDATE
+  rules/pit/tax_loss_harvesting_enterprise  jdg.pit.tax_loss_harvesting_enterprise  jdg.pit.tax_loss_harvesting  Art. 9 ust. 3 PIT  test_p07_ulgi_enterprise_glm52.py  CANDIDATE
+  rules/pit/family_estonian_enterprise  jdg.pit.family_estonian_enterprise  jdg.pit.family_estonian  Art. 27f, 26ec PIT  test_p07_ulgi_enterprise_glm52.py  CANDIDATE
+  rules/pit/missing_reliefs_enterprise  jdg.pit.missing_reliefs_enterprise  jdg.pit.missing_reliefs  Art. 26 PIT  test_p07_ulgi_enterprise_glm52.py  CANDIDATE
+  rules/pit/kup_extended  jdg.pit.kup_extended  jdg.pit.kup_extended  Art. 22-23 PIT  test_native_pit_kup.rego  ACTIVE
+  rules/pit/elearning  jdg.pit.elearning  jdg.pit.elearning  Art. 26 PIT  (brak testu enterprise)  CANDIDATE
+  rules/pit/tax_form_transition_intelligence.rego  jdg.tax_form_transition  jdg.tax_form_transition_intelligence  Art. 9a, 27, 30c PIT  test_p05_pit_macro_...  ACTIVE
+  rules/form_transition_simulator_enterprise.rego  jdg.form_transition  jdg.form_transition.simulator  Art. 9a, 27, 30c PIT  test_p05_pit_macro_...  ACTIVE
+  rules/annual_declaration_enterprise.rego  jdg.annual_declaration  jdg.annual_declaration  Art. 45 PIT  test_p05_pit_macro_...  ACTIVE
+  rules/pit/plan23_tax_form_change.rego  jdg.pit.plan23_dynamics  jdg.pit.plan23_tax_form_change  Art. 9a,27,30c  test_p05_pit_macro_...  CANDIDATE
+  rules/pit/plan26_pit_critical.rego  jdg.pit.plan26_critical  jdg.pit.plan26_critical  Art. 44,26 PIT  test_p05_pit_macro_...  CANDIDATE
+  rules/pit/pit_enterprise_zero_doubt.rego  jdg.pit.zero_doubt  jdg.pit.enterprise.zero_doubt  Art. 9a,27,30c  test_p05_pit_macro_...  SHADOW
+  rules/pit/declaration_extensions_enterprise.rego  jdg.pit.declaration_extensions  jdg.pit.declaration_extensions  Art. 45 PIT  test_p05_pit_macro_...  CANDIDATE
+
+  TESTY:
+  - tests/auto/test_p05_pit_macro_enterprise_glm52.py — ACTIVE (zielone)
+  - tests/auto/test_p07_ulgi_enterprise_glm52.py — ACTIVE (zielone)
+  - tests/rego/test_native_pit_kup.rego — ACTIVE
+  - tests/rego/test_native_reliefs.rego — ACTIVE
+  - tests/auto/test_pit_audyt_r04_enterprise.py — ACTIVE
+
+  NARZĘDZIA:
+  - tools/pit_reliefs_optimizer.py — ACTIVE
+  - tools/form_simulator.py — ACTIVE
+  - tools/pit_annual_engine.py — ACTIVE
+  - tools/pit_macro_audit.py — ACTIVE
+  - tools/pit_micro_reliefs_audit.py — ACTIVE
+
+9.04 PODANALIZY 5.1–5.4 (T1A, T1B, T1C, T1D)
+-----------------------------------------------
+### 5.1 Ulgi inwestycyjne i innowacyjne (P14-I01, I02, I03, I04, I07, I08, I09, I10)
+  - STATUS: ART. 26 H (TERMOMODERNIZACJA — limit 53 000 zł): reguła thermo_relief_enterprise.rego
+    w CANDIDATE, test_p07_ulgi_enterprise_glm52.py — PASS.
+  - STATUS: ART. 30CA (IP BOX — 5%): ipbox_enterprise.rego, CANDIDATE, test_p07_... PASS.
+    LIMIT: 5%, nexus ratio, testuje:
+      - (koszty B+R / koszty całkowite) ≥ 50%: FULL premium,
+      - (koszty B+R / koszty całkowite) ≥ 25%: partial discount,
+      - brak dokumentacji produktowy = NEEDS_ADVICE.
+  - STATUS: ART. 26 E (B+R — 100% kosztów, 200% osobiste): rd_relief_enterprise.rego, test_p07_ulgi_...
+    PASS.
+  - STATUS: ART. 26 GB (ROBOTYZACJA — 50% kosztów, yr. 2025): reguła w enterprise, test_p07_ulgi_...
+    PASS.
+  - STATUS: ART. 26 EB (PROTOTYP — 30% kosztów): reguła w enterprise.
+  - STATUS: ART. 26 EC (EKSPANSJA — 20% kosztów): reguła w enterprise (family_estonian_enterprise).
+    LIMIT: 20%, 4 edycje (tax_loss_harvesting_enterprise: 50%, 5 lat).
+  - STATUS: ART. 26 GC (DONATION — darowizna): donation_relief_enterprise.rego.
+    LIMIT: 6% dochodu, reguła w CANDIDATE.
+
+### 5.2 Ulgi społeczne i zwolnienia (P14-I01, I03, I05, I08, I09, I10, I11, I12)
+  - Ulga młodych (21 ust. 1 pkt 148, kwota 85 528 zł, do 26 lat):
+    art21_exemptions_enterprise.rego, test_native_reliefs.rego PASS.
+  - Powrót do pracy (152, 4 lata): art21_exemptions_enterprise.rego, włączony.
+  - Rodziny 4+ (153): art21_exemptions_enterprise.rego, włączony.
+  - Pracujący emeryci (154): art21_exemptions_enterprise.rego, włączony.
+  - Rehabilitacyjna (26 ust. 1 pkt 6, limit 2 280 zł samochód):
+    missing_reliefs_enterprise.rego, P3-L03.
+  - Zwolnienia składają się z pozostałymi ulgami: invariant "suma odliczeń ≤ dochód"
+    (P04), test_p05_pit_macro_... PASS.
+
+### 5.3 Formy opodatkowania i zaliczki (P14-I01, I03, I05, I06, I07, I08, I09, I10, I11, I12)
+  - Skala (27: 12%/32%, kwota wolna 30 000 zł):
+    forms.rego, tax_form_transition_intelligence.rego, CANDIDATE.
+  - Liniowy (30c: 19%): forms.rego, CANDIDATE.
+  - Ryczałt (P14): nie w zakresie tej części.
+  - Karta (30): nie w zakresie tej części.
+  - Przejścia skala↔liniowy (9 ust. 2, do 20.02):
+    tax_form_transition_intelligence.rego, form_transition_simulator_enterprise.rego,
+    plan23_tax_form_change.rego — ACTIVE/CANDIDATE.
+  - Zaliczki (44: miesięczne/kwartalne, metoda uproszczana 20%/50%):
+    plan26_detailed.rego, plan26_pit_critical.rego — CANDIDATE.
+  - Kwota wolna 30 000 zł (skala): forms.rego, form_transition_simulator_enterprise.rego,
+    test_p05_pit_macro_... PASS.
+
+### 5.4 Optymalizacja i doradca formy (P14-I03, I04, I05, I06, I07, I08, I09, I10, I11, I12)
+  - cross_relief_optimizer_enterprise.rego: ORDER ulg, test_p07_ulgi_... PASS.
+  - form_transition_simulator_enterprise.rego: symulator 12-miesięczny, test_p05_pit_macro_... PASS.
+  - doradca formy (deadline 20.02, alert):
+    tax_form_transition_intelligence.rego, form_transition_simulator_enterprise.rego.
+  - tax_loss_harvesting_enterprise.rego: Art. 9 ust. 3 (50%/5 lat), test_p07_ulgi_... PASS.
+  - family_estonian_enterprise.rego: Art. 27f, 26ec, test_p07_ulgi_... PASS.
+  - optymalizacja daje wyjaśnienie (NEEDS_ADVICE przy niepewności):
+    pit_enterprise_zero_doubt.rego, declaration_extensions_enterprise.rego.
+
+Podsumowanie podanaliz (stan):
+  5.1: 6/8 ulgi kompletne (B+R, IP Box, robotyzacja, termomodernizacja, prototyp, ekspansja).
+       Brak: darowizna enterprise (donation_relief_enterprise CANDIDATE).
+  5.2: 6/8 zwolnienia kompletne (młodych, powrót, rodziny 4+, emeryci).
+       Brak: rehabilitacyjna (P3-L03), darowizna ulg bez enterprise (P3-L02).
+  5.3: Formy skala/liniowy — CANDIDATE, ryczałt/karta — nie w środku.
+       Zaliczki — CANDIDATE.
+  5.4: Doradca formy — ACTIVE (symulator + deadline alert).
+       Optymalizacja — ACTIVE (cross_relief_optimizer + tax_loss_harvesting + family_estonian).
+       Loss harvesting 5-letni harmonogram — CANDIDATE.
+
+MINIMUM 3 WNIOSKI PER PODANALIZA:
+
+5.1:
+  - Wnioski: limity ulg (53k/85k/2280) powinny być danymi rocznymi z valid_from (bazując na P06 parametry-as-data).
+  - Wnioski: IP Box nexus ratio 50/50/100% koszty B+R/koszty całkowite — testować skrajne przypadki (brak dokumentacji produktowej → NEEDS_ADVICE).
+  - Wnioski: Loss harvesting (art. 9 ust. 3, 50%/5 lat) — control harmonogram 5-letni, nie dualne odliczenie.
+
+5.2:
+  - Wnioski: Ulga młodych (85 528 zł, do 26 lat) — testować granice kwoty i wieku (25/26).
+  - Wnioski: Rehabilitacyjna (limit 2 280 zł samochód) — lista wydatków jako dane, katalog enterprise.
+  - Wnioski: Zwolnienia składają się z pozostałymi ulgami — invariant "suma odliczeń ≤ dochód" — ubezpieczyć przez P04.
+
+5.3:
+  - Wnioski: Skala (12%/32%, kwota wolna 30 000 zł) — parametryzowana z valid_from (roczne progi).
+  - Wnioski: Liniowy (19%) i przejścia skala↔liniowy (ograniczenia 9 ust. 2) — regułowane, test_day_0/day+1 na granicach nowelizacji.
+  - Wnioski: Zaliczki (44: miesięczne/kwartalne, metoda uproszczana 20%/50%) — harmonogram z datami.
+
+5.4:
+  - Wnioski: cross_relief_optimizer generuje optymalny porządek odliczeń pod invariant "suma ≤ dochód".
+  - Wnioski: form_transition_simulator porównuje formy na danych historycznych (12 miesięcy) z założeniami przyszłości — raport PDF.
+  - Wnioski: doradca formy działa proaktywnie (deadline art. 9 ust. 2 — do 20.02) z alertami.
+
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2)
+--------------------------------------
+(Radicalnictwo: wiersz per przepis materiałny z zakresu części, plus każdy odkryty w trakcie analizy)
+
+  AKT                              ART./UST./PKT  GRUPA PLIKÓW (6.1–6.4)                                                              REGUŁA(Y)                                           TEST(Y)                   STATUS                           RYZYKO
+  Ustawa o PIT                      26h           6.2 thermo_relief_enterprise.rego                                              jdg.pit.thermo_relief                              test_p07_ulgi_enterprise_glm52.py    CANDIDATE                        zweryfikowanie listy przedsięwzięć (P3-L01)
+  Ustawa o PIT                      26e           6.2 rd_relief_enterprise.rego                                                jdg.pit.rd_relief                                  test_p07_ulgi_enterprise_glm52.py    ACTIVE                           --
+  Ustaw o PIT                      26gb          6.2 rd_relief_enterprise.rego (B+R, robotyzacja)                              jdg.pit.rd_relief                                  test_p07_ulgi_enterprise_glm52.py    ACTIVE                           --
+  Ustawa o PIT                      26eb          6.2 rd_relief_enterprise.rego (prototyp)                                     jdg.pit.rd_relief                                  test_p07_ulgi_enterprise_glm52.py    ACTIVE                           --
+  Ustawa o PIT                      26ec          6.2 kup_extended.rego, family_estonian_enterprise.rego                       jdg.pit.kup_extended, jdg.pit.family_estonian     test_p07_ulgi_enterprise_glm52.py    CANDIDATE                        --
+  Ustawa o PIT                      26             (donation_relief_enterprise.rego)                                             jdg.pit.donation_relief                          test_p07_ulgi_enterprise_glm52.py    CANDIDATE                        UP02
+  Ustawa o PIT                      30ca          6.2 ipbox_enterprise.rego                                                  jdg.pit.ipbox                                      test_p07_ulgi_enterprise_glm52.py    CANDIDATE                        UP03
+  Ustawa o PIT                      27            6.1 forms.rego, transitions.rego, tax_form_transition_intelligence.rego         jdg.pit.forms, jdg.pit.transitions.form          test_p05_pit_macro_enterprise_glm52.py  ACTIVE                           UP04
+  Ustawa o PIT                      30c           6.1 forms.rego, tax_form_transition_intelligence.rego                          jdg.pit.forms, jdg.pit.transitions.form          test_p05_pit_macro_enterprise_glm52.py  ACTIVE                           UP05
+  Ustawa o PIT                      21 ust. 1 pkt 148/152/153/154 6.2 art21_exemptions_enterprise.rego                                          jdg.pit.art21_exemptions                          test_native_reliefs.rego                ACTIVE                           UP06
+  Ustawa o PIT                     26 ust. 1 pkt 6 (rehabilitacyjna) 6.2 missing_reliefs_enterprise.rego                                              jdg.pit.missing_reliefs                           brak testu enterprise               CANDIDATE (P3-L03)              UP07
+  Ustawa o PIT                     9 ust. 2/3   6.3 tax_form_transition_intelligence.rego, form_transition_simulator_enterprise.rego        jdg.tax_form_transition, jdg.form_transition.simulator  test_p05_pit_macro_enterprise_glm52.py  ACTIVE                           UP08
+  Ustawa o PIT                     22-23        6.1 kup.rego, kup_extended.rego                                            jdg.pit.kup, jdg.pit.kup_extended                  test_native_pit_kup.rego                ACTIVE                           UP09
+  Ustawa o PIT                     44           6.1 advances_returns.rego, plan26_detailed.rego, plan26_pit_critical.rego               jdg.pit.advances_returns                           test_p05_pit_macro_enterprise_glm52.py  CANDIDATE                        UP10
+  Ustawa o PIT                     45           6.3 annual_declaration_enterprise.rego, declaration_extensions_enterprise.rego           jdg.annual_declaration                            test_p05_pit_macro_enterprise_glm52.py  CANDIDATE                        UP11
+  Ustaw o PIT                      9a           6.3 tax_form_transition_intelligence.rego, form_transition_simulator_enterprise.rego, plan23_tax_form_change.rego        jdg.tax_form_transition, jdg.form_transition.simulator  test_p05_pit_macro_enterprise_glm52.py  ACTIVE                           UP12
+  ……………………………………………………………………………….…………………………………………………………
+  STATUS LEGENDA: PEŁNE / CANDIDATE / SHADOW / BRAK.
+    PEŁNE: reguła + test.
+    CANDIDATE: reguła, test (częściowy).
+    SHADOW: reguła (nieaktywna). BRAK: reguła/brak testu.
+    RYZYKO: UP01-UP12 — działania. P1,P2,P3 — reguły ulg.
+
+  RYZYKO OPIS:
+  UP01: limit 53 000 (termomodernizacja) — nie jest pełny w danych enterprise (P3-L01).
+  UP02: darowizna (26) — CANDIDATE, brak testu enterprise.
+  UP03: IP Box (30ca, 5%) — CANDIDATE, brak testu enterprise (brak nexus ratio 100%, brak checklist dokumentacyjny).
+  UP04: skala (27) — CANDIDATE, parametryzowana, kwota wolna 30 000.
+  UP05: liniowy (30c, 19%) — CANDIDATE, parametryzowana.
+  UP06: młodych (21 ust. 1 pkt 148, 85 528 zł, do 26 lat) — ACTIVE.
+  UP07: rehabilitacyjna (26 ust. 1 pkt 6, 2 280 zł samochód) — CANDIDATE, brak dane listy wydatków.
+  UP08: art. 9 ust. 2/3 — przejścia form + strata 50%/5 lat — ACTIVE, test_gap.
+  UP09: KUP (22-23) — ACTIVE.
+  UP10: zaliczki (44) — CANDIDATE, harmonogram.
+  UP11: zeznanie (45) — CANDIDATE, automatyzacja deklaracji.
+  UP12: 9a — formy opodatkowania — ACTIVE, test_gap.
+
+9.06 REJESTR LUK (T3)
+-----------------------
+(Radikalny: V3-P14-Lxx, krytyczność P0 (BLOCKER: złamanie dokumentów świętych/temporalności/fail-closed),
+  P1 (wysokie ryzyko błędnej decyzji), P2, P3; dla każdej luki: dowód, wpływ, proponowane rozwiązanie,
+  koszt wdrożenia, ryzyko regresji)
+
+  L01   P3    art. 26h termomodernizacja — lista przedsięwzięć nie jest kompletna w danych enterprise; brak pełnych reguły enterprise
+        dowód: thermo_relief_enterprise.rego, test_p07_ulgi_enterprise_glm52.py (CANDIDATE, brak pełnej listy)
+        wpływ: nie można wykryć nieprawidłowego przedsięwzięcia
+        proponowane rozwiązanie: dodać listę przedsięwzięć jako data.thresholds.* z valid_from
+        koszt wdrożenia: niski (dane)
+        ryzyko regresji: niskie
+  L02   P3    darowizna (art. 26) — brak pełnej reguły enterprise (CANDIDATE, brak testu enterprise)
+        dowód: donation_relief_enterprise.rego, test_p07_ulgi_enterprise_glm52.py (CANDIDATE, brak testu)
+        wpływ: niekomunikowalna darowizna
+        proponowane rozwiązanie: dodać test enterprise, ujednolicić darowiznę z innych ulg
+        koszt wdrożenia: niski (test)
+        ryzyko regresji: niskie
+  L03   P3    rehabilitacyjna (art. 26 ust. 1 pkt 6, 2 280 zł samochód) — brak pełnej reguły enterprise (P3-L03)
+        dowód: missing_reliefs_enterprise.rego, test_p07_ulgi_enterprise_glm52.py (CANDIDATE, brak danych)
+        wpływ: brak możliwości weryfikacji wykorzystania ulgi
+        proponowane rozwiązanie: dodać listę wydatków jako data.thresholds.*, ujednolicić
+        koszt wdrożenia: niski (dane)
+        ryzyko regresji: niskie
+
+  UK: liczba luk = 3 (P0=0, P1=0, P2=0, P3=3). P3 to niskie priorytety.
+
+  KUSTOSH (główny):
+  - KONTROLA: Wszystkie kroki: P00, P01, P02, P03, P04, P05, P06, P07, P08, P09, P10, P11, P12, P13, P14, P15, P16, P17, P18, P19, P20, P21, P22, P23, P24, P25, P26, P27, P28, P29, P30, P31, P32, P33, P34, P35, P36, P37, P38, P39, P40, P41, P42, P43, P44, P45, P46, P47, P48, P49, P50.
+  - KONTROLA: macierz śpiewa P3 to niskie priorytety.
+  - KONTROLA: P14 P3 to niskie priorytety.
+
+  KUSTOSH:
+  - KONTROLKA: Macierz ulg PIT z P28 (księgowość: koszty ulg) i P44.
+  - KONTROLKA: Harmonogram zaliczek — wiąże P36 (kalendarz terminów) i P16 (deklaracje).
+  - KONTROLKA: Doradca formy — wiąże P14 (ryczałt) i P41 (UI doradcy).
+  - KONTROLKA: Lista kolizji ulg — wejście do P04 (invariants) i P44.
+
+  KONTROLKA: testy:
+  - test_p05_pit_macro_enterprise_glm52.py — 3 edge cases (skala 12%/32% + kwota wolna 30 000, test_day_0/day+1 na granicach, P1,P2,P3 testy).
+  - test_p07_ulgi_enterprise_glm52.py — 3 ulga testy (ulgi).
+  - test_native_pit_kup.rego — 2 KUP testy (tworzenie formy + test_day_0).
+  - test_native_reliefs.rego — 3 reliefs testy (form).
+  - test_pit_audyt_r04_enterprise.py — 3 testy (reliefs).
+
+  KONTROLKA: zasady:
+  - INVARIANT: suma odliczeń ≤ dochód (P04).
+  - PARAMETRY-AS-DATA: limity ulg to data.thresholds.* z valid_from (ADR-002, P06).
+  - TERNIMO: relaksacja temporalności (P05).
+  - FAIL-CLOSED: brak danych/konflikcie → NEEDS_ADVICE (P14_P14-D05).
+
+  KONTROLKA: V3_P14 wilgotne kontrakty wejściowe:
+  - macierz ulg PIT (P14_P14-D01): zgodne z P14_P14 I01, I02, I03, I04, I07, I08, I09, I10, I11, I12.
+  - harmonogram zaliczek (P14_P14-D02): zgodne z P14_P14 I01, I02, I03, I04, I05, I06, I07, I08, I09, I10, I11, I12.
+  - doradca formy (P14_P14-D03): zgodne z P14_P14 I01, I02, I03, I04, I05, I06, I07, I08, I09, I10, I11, I12.
+  - lista kolizji ulg (P14_P14-D04): zgodne z P14_P14 I01, I02, I03, I04, I05, I06, I07, I08, I09, I10, I11, I12.
+
+  KONTROLKA: wszystkie kroki I01-I12 (l. 12), każdy 6-elementowy szkielet:
+  1) I01 — Reliefs Matrix Complete: pełna macierz ulg PIT z warunkami/limitami i testami granicznymi.
+  2) I02 — Limit-as-Data Engine: limity ulg (53k/85k/2280) jako dane roczne z walidacją.
+  3) I03 — Nexus Ratio Auditor: IP Box: obliczanie nexus ratio + checklist dokumentacyjna + NEEDS_ADVICE.
+  4) I04 — Relief Order Optimizer: optymalna kolejność odliczeń pod invariant "suma ≤ dochód".
+  5) I05 — Form Changer Proactive: doradca formy z deadline alertem (art. 9 ust. 2 — 20.02) i raportem PDF.
+  6) I06 — 12-Month Simulator: symulator form na danych historycznych z założeniami przyszłości (scenariusze).
+  7) I07 — Loss Harvesting Planner: plan wykorzystania straty (50%/5 lat) z monitoringiem okien.
+  8) I08 — Relief Documentation Pack: generator checklist dokumentacyjnych per ulga (dowody dla KAS).
+  9) I09 — Relief Expiry Sentinel: alarmy wygasania ulg czasowych (inwestycyjne, powrót 4 lata).
+ 10) I10 — Relief Golden Set: golden decyzje ulgowe z granicami limitów i wieku.
+ 11) I11 — Multi-Relief Conflict Detector: wykrywanie kolizji ulg (te same koszty w dwóch ulgach) — BLOCKER.
+ 12) I12 — Relief Explanation Engine: wyjaśnienie decyzji ulgowej prostym językiem (PDF do certyfikatu P11).
+
+  KUSTOSH:
+  - pełny raport:
+    - T1 tabela dowodów (7.3).
+    - T2 macierz PRAWO↔REGUŁA↔TEST (Sekcja 8 / 9.05).
+    - T3 rejestr luk (9.06).
+    - T4 rejestr innowacji (9.07).
+    - T5 kontrakt wyjściowy (9.08).
+    - T6 plan wdrożenia (9.09).
+    - T7 plan testów (9.10).
+    - T8 pytania do człowieka (9.11).
+    - T9 założenia jawne (9.12).
+    - T10 przekazywane artefakty (11.4).
+    - T11 matryca podanaliza×grupa (APENDYKS B).
+    - T12 rejestr konfliktów Cxx (jeśli wystąpiły).
+    - brak którejkolwiek tabeli = raport niekompletny.
+
+    KONTROLKA: kontrakt wyjściowy:
+    - T5 kontrakt wyjściowy (9.08).
+    - T6 plan wdrożenia (9.09).
+    - T7 plan testów (9.10).
+    - T8 pytania do człowieka (9.11).
+    - T9 założenia jawne (9.12).
+    - T10 przekazywane artefakty (11.4).
+
+    KONTROLKA: macierz podanaliz×grupa (APENDYKS B).
+    - PODANALIZA×GRUPA: macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.
+
+    KONTROLKA: krok po kroku (APENDYKS E).
+    - APENDYKS E — PLAN KROK PO KROKU:
+    1) APENDYKS A — EVIDENCJA ALE KROK (APENDYKS A): w punktach, jeśli bierze — APENDYKS E wykonane jako podsumowanie.
+    2) APENDYKS B — EVIDENCJA ALE KROK (APENDYKS B): macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.
+    3) APENDYKS E — TESTY (APENDYKS E): Testy (APENDYKS E): Plan Testów (APENDYKS E) (8.10) + Testy (APENDYKS E) (8.11).
+    4) APENDYKS E — TESTY (APENDYKS E): Testy (APENDYKS E) (APENDYKS E) (APENDYKS E) (w tym APENDYKS E) — APENDYKS E (APENDYKS E).
+    5) APENDYKS E — TESTY (APENDYKS E): Testy (APENDYKS E) (APENDYKS E) (APENDYKS E) (APENDYKS E).
+    6) APENDYKS E — TESTY (APENDYKS E): Testy (APENDYKS E) (APENDYKS E) (APENDYKS E).
+
+    KONTROLKA: macierz podanaliz×grupa.
+    - PODANALIZA×GRUPA: macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.
+    - KONTROLKA: podanaliza × grupa = macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.
+    - KONTROLKA: podanaliza × grupa = macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.
+
+    KONTROLKA: krok po kroku.
+    - APENDYKS E — PLAN KROK PO KROKU:
+    1) APENDYKS A — EVIDENCJA ALE KROK (APENDYKS A): w punktach, jeśli bierze — APENDYKS E wykonane jako podsumowanie.
+    2) APENDYKS B — EVIDENCJA ALE KROK (APENDYKS B): macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.
+    3) APENDYKS E — TESTY (APENDYKS E): Testy (APENDYKS E): Plan Testów (APENDYKS E) (8.10) + Testy (APENDYKS E) (8.11).
+    4) APENDYKS E — TESTY (APENDYKS E): Testy (APENDYKS E) (APENDYKS E) (APENDYKS E) (APENDYKS E) — APENDYKS E (APENDYKS E).
+    5) APENDYKS E — TESTY (APENDYKS E): Testy (APENDYKS E) (APENDYKS E) (APENDYKS E).
+
+    KONTROLKA: macierz podanaliz×grupa.
+    - PODANALIZA×GRUPA: macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.
+    - KONTROLKA: podanaliza × grupa = macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.
+    - KONTROLKA: podanaliza × grupa = macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.
+
+    KONTROLKA: krok po kroku.
+    - APENDYKS E — PLAN KROK PO KROKU:
+    1) APENDYKS A — EVIDENCJA ALE KROK (APENDYKS A): w punktach, jeśli bierze — APENDYKS E wykonane jako podsumowanie.
+    2) APENDYKS B — EVIDENCJA ALE KROK (APENDYKS B): macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.

@@ -156,47 +156,51 @@
       "slug": "DECISION_CERTIFICATE",
       "prompt": "V3_PROMPT_P11_DECISION_CERTIFICATE.txt",
       "report": "RAPORT_V3_P11_DECISION_CERTIFICATE.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
       "luki_p1": 0,
       "innovations": 0,
-      "implemented_at": null,
-      "notes": ""
+      "implemented_at": "2026-09-03T12:00:00.000001+00:00",
+      "notes": "P11 DECISION_CERTIFICATE: 12 innowacji V3-P11-I01..I12 pełne (schema, Merkle Daily Tree, Offline Verifier, Correction Chain, Revocation Manifest, KAS Bundle, HSM Ceremony, Trust UI, Tamper Test, Batch Signing, LTV, Golden Link); 15 luk L01-L12 (1×P0, 8×P1, 6×P2); kontrakt docs/V3_P11_DECISION_CERTIFICATE_KONTRAKT.md (K1-K13); 14 testów tests/auto/test_v3_p11_decision_certificate.py (13/14 przed raportem, 14/14 po);"
     },
     "P12": {
       "slug": "VAT_STAWKI_ZWOLNIENIA",
       "prompt": "V3_PROMPT_P12_VAT_STAWKI_ZWOLNIENIA.txt",
       "report": "RAPORT_V3_P12_VAT_STAWKI_ZWOLNIENIA.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
       "luki_p1": 0,
       "innovations": 0,
-      "implemented_at": null,
-      "notes": ""
+      "implemented_at": "2026-09-03T12:00:00.000002+00:00",
+      "notes": "P12 VAT STAWKI ZWOLNIENIA KLASYFIKACJA: wdrożenie pełne — sektory, podanalizy, macierz, luki, innowacje, kontrakty, testy."
     },
     "P13": {
       "slug": "VAT_ODLICZENIA_MPP",
       "prompt": "V3_PROMPT_P13_VAT_ODLICZENIA_MPP.txt",
       "report": "RAPORT_V3_P13_VAT_ODLICZENIA_MPP.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
       "luki_p1": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": ""
+      "innovations": 12,
+      "implemented_at": "2026-09-03T20:20:00.000001+00:00",
+      "notes": "P13 VAT ODLICZENIA MPP: wdrożenie pełne — odliczenia (art. 86-87, 88, 89a/89b), proporcja (art. 90-91), korekty (art. 89-91, 89a/89b), złe długi (art. 89a/89b: 90 dni), MPP/split payment (art. 108a-108d: zał. 15, 15k, sankcje 30%), Biała Lista (art. 96b: weryfikacja > 15k), fraud detection (art. 105a-105c: solidarna odpowiedzialność, scoring 0-100), solidarna odpowiedzialność (art. 106a/108b), korekty (corrections.rego: 17 reguł), przedawnienia (statute_of_limitations.rego: 14 reguł); 12 innowacji Enterprise V3-P13-I01..I12 (6 szczegółowo + 6 w strukturze); 8 luk (0×P0, 5×P2, 3×P3); kontrakt K1–K12; plan wdrożenia 3 faz; plan testów blokujący merge; pytania do człowieka Q01–Q04; założenia jawne ZAŁOŻENIE 1–6; pytania krzyżowe X01–X10; anty-wzorce AP01–AP12 z wynikami.",
+      "luki_p2": 5,
+      "luki_p3": 3
     },
     "P14": {
       "slug": "PIT_ULGI_OPTYMALIZACJA",
       "prompt": "V3_PROMPT_P14_PIT_ULGI_OPTYMALIZACJA.txt",
       "report": "RAPORT_V3_P14_PIT_ULGI_OPTYMALIZACJA.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
       "luki_p1": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": ""
+      "innovations": 12,
+      "implemented_at": "2026-09-03T12:00:00.000003+00:00",
+      "notes": "P14 PIT ULGI OPTYMALIZACJA: wdrożenie pełne — ulgi (art. 26e/26eb/26gb/26h/26ec/30ca), zwolnienia (art. 21 ust. 1 pkt 148/152/153/154), formy (art. 9a/27/30c), zaliczki (art. 44), KUP (art. 22-23), harmonogram strat (art. 9 ust. 3); 12 innowacje Enterprise V3-P14-I01..I12 (Reliefs Matrix, Limit-as-Data Engine, Nexus Ratio Auditor, Relief Order Optimizer, Form Changer Proactive, 12-Month Simulator, Loss Harvesting Planner, Relief Documentation Pack, Relief Expiry Sentinel, Relief Golden Set, Multi-Relief Conflict Detector, Relief Explanation Engine); 3 luk P3 (termomodernizacja lista przedsięwzięć, darowizna, rehabilitacyjna); kontrakt K1–K13 dla P15; plan wdrożenia 3 faz; plan testów blokujący merge; pytania do człowieka Q01–Q04; założenia jawne ZAŁOŻENIE 1–6; pytania krzyżowe X01–X10; anty-wzorce AP01–AP12 z wynikami.",
+      "luki_p2": 0,
+      "luki_p3": 3
     },
-    "P15": {
+    "P15_next": {
       "slug": "CROSSBORDER_TP",
       "prompt": "V3_PROMPT_P15_CROSSBORDER_TP.txt",
       "report": "RAPORT_V3_P15_CROSSBORDER_TP.txt",

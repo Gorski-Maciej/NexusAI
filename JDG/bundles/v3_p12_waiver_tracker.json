@@ -1,13 +1,71 @@
 {
   "innovation": "V3-P12-I11",
-  "generated_at": "2026-09-03T12:59:27+00:00",
-  "gate": "FAIL",
+  "generated_at": "2026-09-03T17:55:12+00:00",
+  "gate": "PASS",
   "metrics": {
     "loss_rule": true,
     "temporal_tracking": true,
     "window_as_data": true,
-    "window_params": {},
-    "voluntary_waiver": false,
+    "window_params": {
+      "vat.limit_113": {
+        "versions": [
+          {
+            "value": 200000,
+            "type": "number",
+            "valid_from": "2026-01-01",
+            "valid_to": null,
+            "source_act": "Art. 113 ust. 1 ustawy o VAT (zwolnienie podmiotowe 200 000 PLN)",
+            "isap_status": "NIEZWERYFIKOWANE",
+            "changed_by": "v3_p12_limit113_sentinel",
+            "changed_at": "2026-09-03T00:00:00+00:00"
+          }
+        ],
+        "schema": {
+          "min": "0",
+          "max": "10000000",
+          "type": "number"
+        }
+      },
+      "vat.exemption_suspended_years": {
+        "versions": [
+          {
+            "value": 2,
+            "type": "number",
+            "valid_from": "2026-01-01",
+            "valid_to": null,
+            "source_act": "Art. 113 ust. 14 ustawy o VAT (zakaz ponownego zwolnienia po utracie) [uwaga: raport V3_P12 Q01 - ust. 11 vs ust. 14 do weryfikacji ISAP]",
+            "isap_status": "NIEZWERYFIKOWANE",
+            "changed_by": "v3_p12_waiver_tracker",
+            "changed_at": "2026-09-03T00:00:00+00:00"
+          }
+        ],
+        "schema": {
+          "min": "0",
+          "max": "10",
+          "type": "number"
+        }
+      },
+      "vat.exemption_housing_area_m2_max": {
+        "versions": [
+          {
+            "value": 80,
+            "type": "number",
+            "valid_from": "2026-01-01",
+            "valid_to": null,
+            "source_act": "Art. 43 ust. 1 pkt 7-8 ustawy o VAT (zwolnienie budownictwo mieszkaniowe, powierzchnia do 80 m2)",
+            "isap_status": "NIEZWERYFIKOWANE",
+            "changed_by": "v3_p12_exemption_matrix",
+            "changed_at": "2026-09-03T00:00:00+00:00"
+          }
+        ],
+        "schema": {
+          "min": "0",
+          "max": "1000",
+          "type": "number"
+        }
+      }
+    },
+    "voluntary_waiver": true,
     "user_warning": true
   },
   "checks": [
@@ -24,22 +82,15 @@
     {
       "name": "window_as_data",
       "status": "OK",
-      "detail": "okno jako dane: True"
+      "detail": "okno jako dane: {'vat.limit_113': {'versions': [{'value': 200000, 'type': 'number', 'valid_from': '2026-01-01', 'valid_to': None, 'source_act': 'Art. 113 ust. 1 ustawy o VAT (zwolnienie podmiotowe 200 000 PLN)', 'isap_status': 'NIEZWERYFIKOWANE', 'changed_by': 'v3_p12_limit113_sentinel', 'changed_at': '2026-09-03T00:00:00+00:00'}], 'schema': {'min': '0', 'max': '10000000', 'type': 'number'}}, 'vat.exemption_suspended_years': {'versions': [{'value': 2, 'type': 'number', 'valid_from': '2026-01-01', 'valid_to': None, 'source_act': 'Art. 113 ust. 14 ustawy o VAT (zakaz ponownego zwolnienia po utracie) [uwaga: raport V3_P12 Q01 - ust. 11 vs ust. 14 do weryfikacji ISAP]', 'isap_status': 'NIEZWERYFIKOWANE', 'changed_by': 'v3_p12_waiver_tracker', 'changed_at': '2026-09-03T00:00:00+00:00'}], 'schema': {'min': '0', 'max': '10', 'type': 'number'}}, 'vat.exemption_housing_area_m2_max': {'versions': [{'value': 80, 'type': 'number', 'valid_from': '2026-01-01', 'valid_to': None, 'source_act': 'Art. 43 ust. 1 pkt 7-8 ustawy o VAT (zwolnienie budownictwo mieszkaniowe, powierzchnia do 80 m2)', 'isap_status': 'NIEZWERYFIKOWANE', 'changed_by': 'v3_p12_exemption_matrix', 'changed_at': '2026-09-03T00:00:00+00:00'}], 'schema': {'min': '0', 'max': '1000', 'type': 'number'}}}"
     },
     {
       "name": "voluntary_waiver",
-      "status": "FAIL",
-      "detail": "rezygnacja dobrowolna (VAT-R): False"
+      "status": "OK",
+      "detail": "rezygnacja dobrowolna (VAT-R): True"
     }
   ],
-  "findings": [
-    {
-      "id": "V3-P12-L11c",
-      "severity": "P3",
-      "evidence": "brak jawnej obsługi dobrowolnej rezygnacji (VAT-R) w plikach VAT — sprawdzić w P07 lifecycle",
-      "fix": "I11: śledzenie rezygnacji dobrowolnej z datą"
-    }
-  ],
+  "findings": [],
   "contract": {
     "binding": "P05 (temporalność), P07 (lifecycle), P44",
     "rule": "utrata zwolnienia (art. 113 ust. 11) śledzona temporalnie z okresem zakazu; przekroczenie = warning + zakaz powrotu"

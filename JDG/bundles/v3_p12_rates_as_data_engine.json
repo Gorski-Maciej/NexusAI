@@ -1,9 +1,9 @@
 {
   "innovation": "V3-P12-I01",
-  "generated_at": "2026-09-03T12:59:04+00:00",
+  "generated_at": "2026-09-03T17:55:07+00:00",
   "gate": "FAIL",
   "metrics": {
-    "vat_params": 1,
+    "vat_params": 8,
     "rates_as_data": true,
     "total_hardcode": 521,
     "top_hardcode_files": {
@@ -25,13 +25,13 @@
       "vat_rates_exemptions_audit_enterprise.rego": 34
     },
     "temporal_windows": false,
-    "source_link": false
+    "source_link": true
   },
   "checks": [
     {
       "name": "rates_as_data",
       "status": "OK",
-      "detail": "stawki jako parametry data.thresholds: {'vat.standard_rate': {'versions': [{'value': 0.23, 'type': 'number', 'valid_from': '2026-01-01', 'valid_to': None, 'source_act': 'Art. 41 ustawy o VAT', 'changed_by': 'system', 'changed_at': '2026-08-08T11:34:34'}], 'schema': {'min': '0', 'max': '1', 'type': 'number'}}}"
+      "detail": "stawki jako parametry data.thresholds: {'vat.standard_rate': {'versions': [{'value': 0.23, 'type': 'number', 'valid_from': '2026-01-01', 'valid_to': None, 'source_act': 'Art. 41 ustawy o VAT', 'changed_by': 'system', 'changed_at': '2026-08-08T11:34:34'}], 'schema': {'min': '0', 'max': '1', 'type': 'number'}}, 'vat.reduced_rate_8': {'versions': [{'value': 0.08, 'type': 'number', 'valid_from': '2026-01-01', 'valid_to': None, 'source_act': 'Art. 41 ust. 2 ustawy o VAT w zw. z zal. 10 (wykaz towarow/uslug 8%)', 'isap_status': 'NIEZWERYFIKOWANE', 'changed_by': 'v3_p12_rates_as_data', 'changed_at': '2026-09-03T00:00:00+00:00'}], 'schema': {'min': '0', 'max': '1', 'type': 'number'}}, 'vat.reduced_rate_5': {'versions': [{'value': 0.05, 'type': 'number', 'valid_from': '2026-01-01', 'valid_to': None, 'source_act': 'Art. 41 ust. 10 ustawy o VAT w zw. z zal. 10 (wykaz towarow/uslug 5%)', 'isap_status': 'NIEZWERYFIKOWANE', 'changed_by': 'v3_p12_rates_as_data', 'changed_at': '2026-09-03T00:00:00+00:00'}], 'schema': {'min': '0', 'max': '1', 'type': 'number'}}, 'vat.zero_rate': {'versions': [{'value': 0.0, 'type': 'number', 'valid_from': '2026-01-01', 'valid_to': None, 'source_act': 'Art. 41 ust. 2-13 ustawy o VAT (przypadki stawki 0%)', 'isap_status': 'NIEZWERYFIKOWANE', 'changed_by': 'v3_p12_rates_as_data', 'changed_at': '2026-09-03T00:00:00+00:00'}], 'schema': {'min': '0', 'max': '1', 'type': 'number'}}, 'vat.np_rate': {'versions': [{'value': 'NP', 'type': 'string', 'valid_from': '2026-01-01', 'valid_to': None, 'source_act': 'Art. 41 ust. 1 ustawy o VAT (nie podlega opodatkowaniu); JPK_V7 pole P_NP', 'isap_status': 'NIEZWERYFIKOWANE', 'changed_by': 'v3_p12_rates_as_data', 'changed_at': '2026-09-03T00:00:00+00:00'}], 'schema': {'type': 'string', 'allowed': ['NP']}}, 'vat.limit_113': {'versions': [{'value': 200000, 'type': 'number', 'valid_from': '2026-01-01', 'valid_to': None, 'source_act': 'Art. 113 ust. 1 ustawy o VAT (zwolnienie podmiotowe 200 000 PLN)', 'isap_status': 'NIEZWERYFIKOWANE', 'changed_by': 'v3_p12_limit113_sentinel', 'changed_at': '2026-09-03T00:00:00+00:00'}], 'schema': {'min': '0', 'max': '10000000', 'type': 'number'}}, 'vat.exemption_suspended_years': {'versions': [{'value': 2, 'type': 'number', 'valid_from': '2026-01-01', 'valid_to': None, 'source_act': 'Art. 113 ust. 14 ustawy o VAT (zakaz ponownego zwolnienia po utracie) [uwaga: raport V3_P12 Q01 - ust. 11 vs ust. 14 do weryfikacji ISAP]', 'isap_status': 'NIEZWERYFIKOWANE', 'changed_by': 'v3_p12_waiver_tracker', 'changed_at': '2026-09-03T00:00:00+00:00'}], 'schema': {'min': '0', 'max': '10', 'type': 'number'}}, 'vat.exemption_housing_area_m2_max': {'versions': [{'value': 80, 'type': 'number', 'valid_from': '2026-01-01', 'valid_to': None, 'source_act': 'Art. 43 ust. 1 pkt 7-8 ustawy o VAT (zwolnienie budownictwo mieszkaniowe, powierzchnia do 80 m2)', 'isap_status': 'NIEZWERYFIKOWANE', 'changed_by': 'v3_p12_exemption_matrix', 'changed_at': '2026-09-03T00:00:00+00:00'}], 'schema': {'min': '0', 'max': '1000', 'type': 'number'}}}"
     },
     {
       "name": "no_hardcode",
@@ -45,15 +45,15 @@
     },
     {
       "name": "source_link",
-      "status": "FAIL",
-      "detail": "źródło (ISAP/rozporządzenie) w danych: False"
+      "status": "OK",
+      "detail": "źródło (ISAP/rozporządzenie) w danych: True"
     }
   ],
   "findings": [
     {
       "id": "V3-P12-L01",
       "severity": "P1",
-      "evidence": "stawki hardcoded w regułach VAT: 521 wystąpień (np. plan42_reduced_rates.rego=217, substantive.rego=45); data.thresholds ma tylko 1 param(etrów) vat. ('vat.standard_rate') — brak 8%/5%/NP jako danych z oknami temporalnymi i źródłem (ADR-002/P06)",
+      "evidence": "stawki hardcoded w regułach VAT: 521 wystąpień (np. plan42_reduced_rates.rego=217, substantive.rego=45); data.thresholds ma tylko 8 param(etrów) vat. ('vat.standard_rate') — brak 8%/5%/NP jako danych z oknami temporalnymi i źródłem (ADR-002/P06)",
       "fix": "I01: Rates-as-Data — tabela stawek (23/8/5/0/NP) z valid_from/valid_to + źródłem ISAP w data.thresholds; reguły czytają wyłącznie parametry"
     }
   ],

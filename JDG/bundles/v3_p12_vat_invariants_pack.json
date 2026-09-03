@@ -1,11 +1,11 @@
 {
   "innovation": "V3-P12-I10",
-  "generated_at": "2026-09-03T12:59:26+00:00",
-  "gate": "FAIL",
+  "generated_at": "2026-09-03T17:55:09+00:00",
+  "gate": "PASS",
   "metrics": {
     "invariants_in_rules": 5,
     "invariants_total": 5,
-    "invariants_in_p04": 0,
+    "invariants_in_p04": 5,
     "p04_bundles": [
       "v3_p04_chaos_drill.json",
       "v3_p04_constitution_catalog.json",
@@ -17,29 +17,30 @@
       "v3_p04_mutation_testing.json",
       "v3_p04_negative_test_generator.json",
       "v3_p04_runtime_cost_ledger.json",
+      "v3_p04_vat_invariants_extension.json",
       "v3_p04_violation_autopsy.json",
       "v3_p04_zero_latency_index.json"
     ],
     "statuses": {
       "INV-VAT-1 rate ∈ {0,5,8,23,NP}": {
         "rules": true,
-        "p04_catalog": false
+        "p04_catalog": true
       },
       "INV-VAT-2 VAT amount ≥ 0": {
         "rules": true,
-        "p04_catalog": false
+        "p04_catalog": true
       },
       "INV-VAT-3 JPK consistency (należny−naliczony)": {
         "rules": true,
-        "p04_catalog": false
+        "p04_catalog": true
       },
       "INV-VAT-4 netto × rate = VAT (rounding)": {
         "rules": true,
-        "p04_catalog": false
+        "p04_catalog": true
       },
       "INV-VAT-5 limit 113 nieprzekroczony bez sygnału": {
         "rules": true,
-        "p04_catalog": false
+        "p04_catalog": true
       }
     }
   },
@@ -61,18 +62,11 @@
     },
     {
       "name": "p04_catalog_entries",
-      "status": "FAIL",
-      "detail": "inwarianty VAT w katalogu P04: 0/5 (bundle P04: 12)"
+      "status": "OK",
+      "detail": "inwarianty VAT w katalogu P04: 5/5 (bundle P04: 13)"
     }
   ],
-  "findings": [
-    {
-      "id": "V3-P12-L10",
-      "severity": "P2",
-      "evidence": "inwarianty VAT w regułach: 5/5, w katalogu P04: 0/5 — pack niekompletny; bez INV stawka∈set i spójności JPK ryzyko cichej błędnej deklaracji (np. ujemny VAT, stawka spoza setu)",
-      "fix": "I10: VAT Invariants Pack — 5 inwariantów (stawka∈set, VAT≥0, spójność JPK, netto×rate, limit 113) jako wpisy P04 z testami runtime"
-    }
-  ],
+  "findings": [],
   "contract": {
     "binding": "P04 (inwarianty runtime), P16 (JPK), P03 (werdykt)",
     "rule": "naruszony inwariant VAT = NEEDS_ADVICE/MANUAL_REVIEW, nigdy cichy AUTO_POST"

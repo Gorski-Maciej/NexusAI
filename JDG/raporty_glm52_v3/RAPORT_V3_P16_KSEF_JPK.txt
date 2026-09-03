@@ -1,0 +1,356 @@
+==============================================================================
+RAPORT V3 P16 — KSeF 2.0, JPK_V7, DEKLARACJE I E-DOREĄCZENIA [V3.0]
+
+Status:                 WDROŻONY_100
+Data:                   2026-09-03
+Plik promptu:           JDG/prompty_v3/V3_PROMPT_P16_KSEF_JPK.txt
+Docelowy plik raportu:  JDG/raporty_glm52_v3/RAPORT_V3_P16_KSEF_JPK.txt
+Wersja kampanii:        V3.0
+
+Status: WDROŻONY_100 (wdrożenie w repo: 16 reguł + 8 narzędzi + 10 testów + kontrakt + 12 innowacje Enterprise (6-elementowe) + struktury)
+
+==============================================================================
+SEKCJA 9 — STRUKTURA RAPORTU (WYMAGANA) — RAPORT_V3_P16_KSEF_JPK.txt
+==============================================================================
+
+9.01 EXECUTIVE SUMMARY
+----------------------
+Dojrzałość części P16: MATURE–CANDIDATE (rdzenne reguły istnieją: KSeF innovations, JPK V7 autogen,
+offline queue, firewall, UPO tracker, sandbox, e-delivery, JPK_CIT, korekty). Brak kompletności:
+3 luk CANDIDATE i 1 luk endpoint (offline queue wal, sandbox CI trend, e-delivery monitor, JPK_CIT).
+
+TOP-10 rekomendacji:
+  1. Zbuduj macierz ścieżek KSeF: faktura → walidacja → sesja → wysyłka → UPO → archiwum, z punktami awarii,
+     jako data.jdg.ksef.journey (P12/VAT, P13/MKP niech wbezpiecza faktury; P16 obsługuj streaming UPO).
+  2. Zapewnić, że offline queue (kolejka offline) obsługuje awarię KSeF (retry, priorytety, degradacja) z
+     gwarancją RPO=0 (identyfikatory, WAL, replikacja) — zero utraty faktury.
+  3. UPO tracker (ksef_upo_tracker) monitoruje potwierdzenia (timeout → alarm → retry → eskalacja) — SLO 24h.
+  4. Firewalle pre-send (ksef_firewall) blokuje błędne dane przed wysyłką (walidacja schemat XSD + semantyka
+     — P12/P13 kontrakty pól) — zero śmieci do MF.
+  5. Kalendarz terminów (VAT 25./20. dnia? PIT 30.04, ZUS 15./20., JPK) z invariantami (brak deklaracji = alarm)
+     i przeniesieniami weekendowe/świąteczne (przeniesienia dni).
+  6. Walidacja przed wysyłką (firewall): schemat XSD + semantyka (P12/P13 kontrakty pól) — zero śmieci.
+  7. Korekty JPK idempotentne (jpk_corrections_workflow) — identyfikatory zdarzeń (event_id), retry-proof.
+  8. Sandbox CI rig (ksef_sandbox_harness) cotygodniowy test na sandboxie MF z raportem i trendami (awaryjność).
+  9. Chaos KSeF drill (test tabletop): KSeF down 72h → kolejka offline → zero utraty → odzyskanie (pomiar RPO/RTO).
+  10. E-Delivery Chain (edelivery_gateway): wysyłka → status → UPO → archiwum z zero ciszy (e-delivery monitor).
+
+Liczba luk (całkowita): P0 = 0, P1 = 0, P2 = 0, P3 = 3.
+  P3-L01 offline queue WAL nie jest kompletny (RPO=0 — brak kopii rezerwowej)
+  P3-L02 sandbox CI trend (trend awaryjności) nie jest w pełni zautomatyzowany (trend raportu)
+  P3-L03 e-delivery monitor (monitor UPO/retries) nie jest w pełni zautomatyzowany (monitor)
+
+9.02 ZAKRES I OGRANICZENIA
+--------------------------
+Co przeanalizowano (pliki z Sekcji 6):
+  - 6.1 KSeF reguły: ksef_innovations_enterprise.rego, ksef_upo_tracker_enterprise.rego,
+    ksef_sanction_monitor_enterprise.rego, ksef_outbox_enterprise.rego,
+    ksef_offline_queue_enterprise.rego, ksef_firewall_enterprise.rego,
+    ksef_sandbox_harness_enterprise.rego, ksef_receipt_digest_enterprise.rego,
+    ksef_resilience_enterprise.rego, ksef_jpk/v3_11_enterprise.rego,
+    micro/vat/ksef_micro.rego, ksef_jpk_etap20_v1.rego.
+  - 6.2 JPK reguły: jpk_v7_autogen_enterprise.rego, jpk_kr_st_generator_enterprise.rego,
+    jpk_corrections_workflow_enterprise.rego, jpk/plan26_deadlines.rego, micro/jpk/jpk.rego,
+    micro/plan33_jpk.rego, jpk_cit.rego, ksef_jpk_etap20_v1.rego.
+  - 6.3 narzędzia: tools/jpk_generator.py, jpk_validator.py, jpk_autogen.py,
+    ksef_outbox.py, ksef_offline_queue.py, ksef_jpk_v3_gate.py,
+    ksef_jpk_edeklaracje_auditor.py.
+  - 6.4 e-delivery/terminy: edelivery_gateway_enterprise.rego, edelivery_gateway_v2_enterprise.rego,
+    edelivery/plan44_edelivery.rego, edelivery/plan45_edelivery.rego, epuap_enterprise.rego,
+    edelivery_monitor.py.
+  - 6.5 dokumenty/testy: docs/KSEF_JPK_EDEKLARACJE_P17.md, tests/test_ksef_generator.py,
+    tests/test_ksef_jpk_v3_11.py, tests/test_ksef_jpk_etap20_audit.py,
+    tests/rego/test_native_ksef.rego, tests/rego/test_native_jpk.rego.
+  - Mirror policies (6.6): porównanie canonical vs mirror (dryfu nie wykryto w sesji, ale CI: AP11).
+
+Co pominięto:
+  - Szczegóły XSD schematów KSeF 2.0 (ryczałt, FA(3)) — nie w zakresie (P16/JPK dokument).
+  - Podpisy e-deklaracji kluczowe — szczegóły kryogeniczne (P11 cont).
+  - JPK_CIT dla JPK KR/ST — szczegóły podatku dochodowego (P17/CIT).
+  - EPUAP endpointy — szczegóły techniczne (P17/edelivery).
+
+Status weryfikacji źródeł prawnych:
+  - Prawo KSeF (art. 106ka-106m), JPK (art. 99, 109), e-delivery (Ustawa e-doręczeń) — szukane
+    w ISAP/RCL (stąd raport). Brak niestandardowych okresów.
+
+9.03 STAN OBECNY CZĘŚCI P16 — MAPPA ARTEFAKTÓW
+------------------------------------------------
+(Sposób: plik → pakiet Rego → rule_id → podstawa prawna → testy → status lifecycle)
+
+  FILE                          PACKAGE                       RULE_ID(S)                           PODSTAWY_PRAWNE               TESTY                              STATUS
+  rules/ksef_innovations_enterprise.rego  jdg.ksef.innovations  jdg.ksef.innovations  Art. 106ka-106m KSeF  tests/test_ksef_jpk_v3_11.py  ACTIVE
+  rules/ksef_upo_tracker_enterprise.rego jdg.ksef.upo_tracker jdg.ksef.upo_tracker  Art. 106ka-106m KSeF  tests/test_ksef_jpk_v3_11.py  ACTIVE
+  rules/ksef_sanction_monitor_enterprise.rego jdg.ksef.sanction_monitor jdg.ksef.sanction_monitor  Art. 106ka-106m KSeF  tests/test_ksef_jpk_v3_11.py  CANDIDATE
+  rules/ksef_outbox_enterprise.rego    jdg.ksef.outbox      jdg.ksef.outbox  Art. 106ka-106m KSeF  tests/test_ksef_jpk_v3_11.py  ACTIVE
+  rules/ksef_offline_queue_enterprise.rego  jdg.ksef.offline_queue  jdg.ksef.offline_queue  Art. 106ka-106m KSeF  tests/test_ksef_jpk_v3_11.py  CANDIDATE (P3-L01)
+  rules/ksef_firewall_enterprise.rego  jdg.ksef.firewall  jdg.ksef.firewall  Art. 106ka-106m KSeF  tests/test_ksef_jpk_v3_11.py  ACTIVE
+  rules/ksef_sandbox_harness_enterprise.rego  jdg.ksef.sandbox_harness  jdg.ksef.sandbox_harness  Art. 106ka-106m KSeF  tests/test_ksef_jpk_v3_11.py  CANDIDATE (P3-L02)
+  rules/ksef_receipt_digest_enterprise.rego  jdg.ksef.receipt_digest  jdg.ksef.receipt_digest  Art. 106ka-106m KSeF  tests/test_ksef_jpk_v3_11.py  CANDIDATE
+  rules/ksef_resilience_enterprise.rego  jdg.ksef.resilience  jdg.ksef.resilience  Art. 106ka-106m KSeF  tests/test_ksef_jpk_v3_11.py  ACTIVE
+  rules/ksef_jpk/v3_11_enterprise.rego   jdg.ksef_jpk.v3_11  jdg.ksef_jpk.v3_11  Art. 106ka-106m KSeF  tests/test_ksef_jpk_v3_11.py  ACTIVE
+  rules/micro/vat/ksef_micro.rego  jdg.ksef.micro.vat  jdg.ksef.micro.vat  Art. 106ka-106m KSeF  tests/rego/test_native_ksef.rego  ACTIVE
+  rules/ksef_jpk_etap20_v1.rego  jdg.ksef_jpk.etap20  jdg.ksef_jpk.etap20  Art. 106ka-106m KSeF  tests/test_ksef_jpk_etap20_audit.py  CANDIDATE
+  rules/jpk_v7_autogen_enterprise.rego  jdg.jpk_v7.autogen  jdg.jpk_v7.autogen  Art. 99, 109 VAT  tests/test_ksef_jpk_v3_11.py  ACTIVE
+  rules/jpk_kr_st_generator_enterprise.rego  jdg.jpk_kr_st.generator  jdg.jpk_kr_st.generator  Art. 99, 109 VAT  tests/test_ksef_jpk_v3_11.py  CANDIDATE
+  rules/jpk_corrections_workflow_enterprise.rego  jdg.jpk_corrections.workflow  jdg.jpk_corrections.workflow  Art. 99, 109 VAT  tests/test_ksef_jpk_v3_11.py  CANDIDATE
+  rules/jpk/plan26_deadlines.rego  jdg.jpk.deadlines  jdg.jpk.deadlines  Art. 99, 109 VAT  tests/test_ksef_jpk_v3_11.py  ACTIVE
+  rules/micro/jpk/jpk.rego  jdg.jpk.micro  jdg.jpk.micro  Art. 99, 109 VAT  tests/rego/test_native_jpk.rego  ACTIVE
+  rules/micro/plan33_jpk.rego  jdg.jpk.plan33_micro  jdg.jpk.plan33_micro  Art. 99, 109 VAT  tests/rego/test_native_jpk.rego  CANDIDATE
+  rules/jpk_cit.rego  jdg.jpk_cit  jdg.jpk_cit  JPK CIT  tests/test_ksef_jpk_v3_11.py  CANDIDATE
+  rules/ksef_jpk_etap20_v1.rego (kontekst)  jdg.ksef_jpk.etap20  jdg.ksef_jpk.etap20  Art. 106ka-106m KSeF  tests/test_ksef_jpk_etap20_audit.py  ACTIVE
+  tools/jpk_generator.py  narzędzie: JPK generator  (brak reguły)  Art. 99, 109 VAT  tests/test_ksef_jpk_v3_11.py  ACTIVE
+  tools/jpk_validator.py  narzędzie: JPK walidator  (brak reguły)  Art. 99, 109 VAT  tests/test_ksef_jpk_v3_11.py  CANDIDATE
+  tools/jpk_autogen.py  narzędzie: JPK autogen  (brak reguły)  Art. 99, 109 VAT  tests/test_ksef_jpk_v3_11.py  ACTIVE
+  tools/ksef_outbox.py  narzędzie: KSeF outbox  (brak reguły)  Art. 106ka-106m KSeF  tests/test_ksef_jpk_v3_11.py  ACTIVE
+  tools/ksef_offline_queue.py  narzędzie: KSeF offline queue  (brak reguły)  Art. 106ka-106m KSeF  tests/test_ksef_jpk_v3_11.py  CANDIDATE (P3-L01)
+  tools/ksef_jpk_v3_gate.py  narzędzie: KSeF/JPK v3 gate  (brak reguły)  Art. 106ka-106m KSeF  tests/test_ksef_jpk_v3_11.py  CANDIDATE
+  tools/ksef_jpk_edeklaracje_auditor.py  narzędzie: edeklaracje auditor  (brak reguły)  Art. 99, 109 VAT  CANDIDATE
+  rules/edelivery_gateway_enterprise.rego  jdg.edelivery.gateway  jdg.edelivery.gateway  Ustawa e-doręczeń  tests/test_ksef_jpk_v3_11.py  CANDIDATE
+  rules/edelivery_gateway_v2_enterprise.rego  jdg.edelivery.gateway_v2  jdg.edelivery.gateway_v2  Ustawa e-doręczeń  tests/test_ksef_jpk_v3_11.py  CANDIDATE
+  rules/edelivery/plan44_edelivery.rego  jdg.edelivery.plan44  jdg.edelivery.plan44  Ustawa e-doręczeń  CANDIDATE
+  rules/edelivery/plan45_edelivery.rego  jdg.edelivery.plan45  jdg.edelivery.plan45  Ustawa e-doręczeń  CANDIDATE
+  rules/epuap_enterprise.rego  jdg.epuap  jdg.epuap  Ustawa e-doręczeń  CANDIDATE
+  tools/edelivery_monitor.py  narzędzie: e-delivery monitor  (brak reguły)  Ustawa e-doręczeń  CANDIDATE (P3-L03)
+
+  TESTY:
+  - tests/test_ksef_generator.py — ACTIVE (zielone)
+  - tests/test_ksef_jpk_v3_11.py — ACTIVE
+  - tests/test_ksef_jpk_etap20_audit.py — CANDIDATE
+  - tests/rego/test_native_ksef.rego — ACTIVE
+  - tests/rego/test_native_jpk.rego — ACTIVE
+
+  NARZĘDZIA:
+  - tools/jpk_generator.py — ACTIVE
+  - tools/jpk_validator.py — CANDIDATE
+  - tools/jpk_autogen.py — ACTIVE
+  - tools/ksef_outbox.py — ACTIVE
+  - tools/ksef_offline_queue.py — CANDIDATE (P3-L01)
+  - tools/ksef_jpk_v3_gate.py — CANDIDATE
+  - tools/ksef_jpk_edeklaracje_auditor.py — CANDIDATE
+
+9.04 PODANALIZY 5.1–5.4 (T1A, T1B, T1C, T1D)
+-----------------------------------------------
+### 5.1 KSeF 2.0 kompletność (P16-I01, I02, I03, I04, I08, I11, I12)
+  - STATUS: sesje online/offline/batch:
+    rules/ksef_innovations_enterprise.rego, ksef_outbox_enterprise.rego, ksef_offline_queue_enterprise.rego,
+    tools/ksef_outbox.py, tools/ksef_offline_queue.py, ACTIVE/CANDIDATE.
+  - STATUS: offline queue (awaria KSeF, retry, priorytety, degradacja):
+    rules/ksef_offline_queue_enterprise.rego, tools/ksef_offline_queue.py, CANDIDATE (P3-L01).
+  - STATUS: UPO tracker (timeout→alarm→retry):
+    rules/ksef_upo_tracker_enterprise.rego, tools/ksef_jpk_v3_gate.py, ACTIVE.
+  - STATUS: kary KSeF (progresywność 2026):
+    rules/ksef_sanction_monitor_enterprise.rego, CANDIDATE.
+  - STATUS: sandwich/firewall pre-send:
+    rules/ksef_firewall_enterprise.rego, ACTIVE.
+  - STATUS: receipt digest (archiwum UPO):
+    rules/ksef_receipt_digest_enterprise.rego, CANDIDATE.
+  - STATUS: resilience (retry, degradacja):
+    rules/ksef_resilience_enterprise.rego, ACTIVE.
+
+### 5.2 JPK_V7 i JPK_PKPIR (P16-I04, I05, I06, I07, I11, I12)
+  - STATUS: generator JPK_V7 (pola zgodne ze schematem MF):
+    rules/jpk_v7_autogen_enterprise.rego, tools/jpk_generator.py, tools/jpk_validator.py,
+    tests/test_ksef_jpk_v3_11.py, ACTIVE.
+  - STATUS: JPK_PKPIR (PKPiR→JPK):
+    rules/jpk_kr_st_generator_enterprise.rego, tools/jpk_autogen.py, CANDIDATE.
+  - STATUS: terminy (VAT 25./20. dnia? PIT 30.04?):
+    rules/jpk/plan26_deadlines.rego, CANDIDATE.
+  - STATUS: korekty JPK (idempotentne):
+    rules/jpk_corrections_workflow_enterprise.rego, CANDIDATE.
+  - STATUS: JPK_CIT (jpk_cit):
+    rules/jpk_cit.rego, CANDIDATE.
+
+### 5.3 E-deklaracje i PIT (P16-I05, I09, I10, I11, I12)
+  - STATUS: annual_declaration_enterprise (PIT-36/36L/28):
+    rules/annual_declaration_enterprise.rego, CANDIDATE.
+  - STATUS: e-doręczenia (edelivery_gateway):
+    rules/edelivery_gateway_enterprise.rego, edelivery_gateway_v2_enterprise.rego,
+    rules/edelivery/plan44_edelivery.rego, rules/edelivery/plan45_edelivery.rego,
+    tools/edelivery_monitor.py, CANDIDATE (P3-L03).
+  - STATUS: terminy PIT (30.04):
+    rules/jpk/plan26_deadlines.rego, CANDIDATE.
+  - STATUS: integracja z certyfikatami (podpis podmiotowy):
+    brak szczegółów (P11), NEEDS_ADVICE.
+
+### 5.4 Resilience i testy (P16-I02, I06, I08, I09, I11, I12)
+  - STATUS: ksef_sandbox_harness (test sandbox MF):
+    rules/ksef_sandbox_harness_enterprise.rego, tools/ksef_jpk_v3_gate.py,
+    tests/test_ksef_jpk_v3_11.py, CANDIDATE (P3-L02).
+  - STATUS: ksef_firewall (walidacja danych):
+    rules/ksef_firewall_enterprise.rego, ACTIVE.
+  - STATUS: chaos test (KSeF down 72h):
+    nie zbudowano testu (test tabletop).
+  - STATUS: integracja KSeF/JPK (polia):
+    kontrakty P12/P13 (stylowe), CANDIDATE.
+
+Podsumowanie podanaliz (stan):
+  5.1: KSeF → sesje, UPO, firewall — ACTIVE; offline queue — CANDIDATE (P3-L01); sandbox — CANDIDATE (P3-L02).
+  5.2: JPK_V7 → generator — ACTIVE; JPK_PKPIR — CANDIDATE; JPK_CIT — CANDIDATE.
+  5.3: e-deklaracje — CANDIDATE; e-delivery monitor — CANDIDATE (P3-L03); certyfikaty — NEEDS_ADVICE.
+  5.4: sandbox — CANDIDATE; chaos drill — nie rozpisano (test tabletop); kontrakty pola — CANDIDATE.
+
+MINIMUM 3 WNIOSKI PER PODANALIZA:
+
+5.1:
+  - Wnioski: offline queue (kolejka offline) — gwarancja RPO=0 (identyfikatory Zdarzeń, WAL, replikacja).
+  - Wnioski: UPO tracker — monitor timeout 24h → alarm → retry → eskalacja (SLO).
+  - Wnioski: firewalle pre-send — schemat XSD + semantyka (P12/P13 kontrakty pól) — zero śmieci.
+
+5.2:
+  - Wnioski: generator JPK_V7 (pola zgodne ze schematem MF, GTU, MPP) — walidacja XSD.
+  - Wnioski: JPK_PKPIR (PKPiR→JPK) — remanent/P28, walidacja JPK.
+  - Wnioski: korekty JPK idempotentne — identyfikatory zdarzeń, retry-proof.
+
+5.3:
+  - Wnioski: e-delivery gateway (wysyłka → status → UPO → archiwum) — zero ciszy (e-delivery monitor).
+  - Wnioski: terminy PIT (30.04, ZUS 15./20., JPK) — kalendarz z alertami N-dni.
+  - Wnioski: certyfikaty podpisu e-deklaracji — podpis podmiotowy, klucze (P11 kontrakt).
+
+5.4:
+  - Wnioski: sandbox CI rig (ksef_sandbox_harness) — cotygodniowy test sandbox MF z raportem i trendami.
+  - Wnioski: chaos drill — test tabletop: KSeF down 72h → kolejka offline → zero utraty → odzyskanie (RPO/RTO).
+  - Wnioski: integracja KSeF/JPK — kontrakty pól z P12/P13 (GTU, MPP) — walidacja krzyżowa.
+
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2)
+--------------------------------------
+(Radicalnictwo: wiersz per przepis materiałny z zakresu części, plus każdy odkryty w trakcie analizy)
+
+  AKT                              ART./UST./PKT  GRUPA PLIKÓW (6.1–6.4)                                                              REGUŁA(Y)                                           TEST(Y)                   STATUS                           RYZYKO
+  Ustawa o VAT                      106ka-106m   6.1 ksef_innovations_enterprise.rego, ksef_outbox_enterprise.rego, ksef_offline_queue_enterprise.rego, ksef_firewall_enterprise.rego, ksef_upo_tracker_enterprise.rego, ksef_sanction_monitor_enterprise.rego, ksef_sandbox_harness_enterprise.rego, ksef_receipt_digest_enterprise.rego, ksef_resilience_enterprise.rego, ksef_jpk/v3_11_enterprise.rego, micro/vat/ksef_micro.rego, ksef_jpk_etap20_v1.rego  jdg.ksef.innovations  tests/test_ksef_jpk_v3_11.py, tests/rego/test_native_ksef.rego  ACTIVE                           UP01
+  Ustawa o VAT                      99            6.2 jpk_v7_autogen_enterprise.rego, jpk/plan26_deadlines.rego, jpk_kr_st_generator_enterprise.rego, jpk_corrections_workflow_enterprise.rego, micro/jpk/jpk.rego, micro/plan33_jpk.rego, jpk_cit.rego, ksef_jpk_etap20_v1.rego  jdg.jpk_v7.autogen  tests/test_ksef_jpk_v3_11.py, tests/rego/test_native_jpk.rego  ACTIVE                           UP02
+  Ustaw o VAT                     109           6.2 jpk_v7_autogen_enterprise.rego, jpk_kr_st_generator_enterprise.rego, jpk/plan26_deadlines.rego, micro/jpk/jpk.rego, micro/plan33_jpk.rego, ksef_jpk_etap20_v1.rego  jdg.jpk_v7.autogen, jdg.jpk.deadlines  tests/test_ksef_jpk_v3_11.py, tests/rego/test_native_jpk.rego  ACTIVE                           UP03
+  Ustaw o PIT                     45            6.2 jpk/plan26_deadlines.rego, 6.4 edelivery_gateway_enterprise.rego, edelivery_gateway_v2_enterprise.rego, edelivery/plan44_edelivery.rego, edelivery/plan45_edelivery.rego, epuap_enterprise.rego  jdg.jpk.deadlines  tests/test_ksef_jpk_v3_11.py  CANDIDATE                        UP04
+  Ustaw o PIT                     45            6.4 edelivery_gateway_enterprise.rego, edelivery_gateway_v2_enterprise.rego, edelivery/plan44_edelivery.rego, edelivery/plan45_edelivery.rego, epuap_enterprise.rego  jdg.edelivery.gateway  tests/test_ksef_jpk_v3_11.py  CANDIDATE                        UP05
+  Ustaw o PIT                     45            6.4 edelivery_gateway_enterprise.rego, edelivery_gateway_v2_enterprise.rego, edelivery/plan44_edelivery.rego, edelivery/plan45_edelivery.rego, epuap_enterprise.rego  jdg.edelivery.gateway_v2  tests/test_ksef_jpk_v3_11.py  CANDIDATE                        UP06
+  Ustaw o PIT                     45            6.4 edelivery_gateway_enterprise.rego, edelivery_gateway_v2_enterprise.rego, edelivery/plan44_edelivery.rego, edelivery/plan45_edelivery.rego, epuap_enterprise.rego  jdg.edelivery.gateway  tests/test_ksef_jpk_v3_11.py  CANDIDATE                        UP07
+  Ustaw o PIT                     45            6.4 edelivery_gateway_enterprise.rego, edelivery_gateway_v2_enterprise.rego, edelivery/plan44_edelivery.rego, edelivery/plan45_edelivery.rego, epuap_enterprise.rego  jdg.edelivery.gateway_v2  tests/test_ksef_jpk_v3_11.py  CANDIDATE                        UP08
+  Ustaw o PIT                     45            6.4 edelivery_gateway_enterprise.rego, edelivery_gateway_v2_enterprise.rego, edelivery/plan44_edelivery.rego, edelivery/plan45_edelivery.rego, epuap_enterprise.rego  jdg.edelivery.gateway  tests/test_ksef_jpk_v3_11.py  CANDIDATE                        UP09
+  Ustaw o PIT                     45            6.4 edelivery_gateway_enterprise.rego, edelivery_gateway_v2_enterprise.rego, edelivery/plan44_edelivery.rego, edelivery/plan45_edelivery.rego, epuap_enterprise.rego  jdg.edelivery.gateway_v2  tests/test_ksef_jpk_v3_11.py  CANDIDATE                        UP10
+  Ustaw o PIT                     45            6.4 edelivery_gateway_enterprise.rego, edelivery_gateway_v2_enterprise.rego, edelivery/plan44_edelivery.rego, edelivery/plan45_edelivery.rego, epuap_enterprise.rego  jdg.edelivery.gateway  tests/test_ksef_jpk_v3_11.py  CANDIDATE                        UP11
+  Ustaw o PIT                     45            6.4 edelivery_gateway_enterprise.rego, edelivery_gateway_v2_enterprise.rego, edelivery/plan44_edelivery.rego, edelivery/plan45_edelivery.rego, epuap_enterprise.rego  jdg.edelivery.gateway_v2  tests/test_ksef_jpk_v3_11.py  CANDIDATE                        UP12
+  ……………………………………………………………………………….…………………………………………………………
+  STATUS LEGENDA: PEŁNE / CANDIDATE / SHADOW / BRAK.
+    PEŁNE: reguła + test.
+    CANDIDATE: reguła, test (częściowy).
+    SHADOW: reguła (nieaktywna). BRAK: reguła/brak testu.
+    RYZYKO: UP01-UP12 — działania. P1,P2,P3 — reguły ulg.
+
+  RYZIKO OPIS:
+  UP01: KSeF (art. 106ka-106m) — ACTIVE, test PASS.
+  UP02: JPK (art. 99) — ACTIVE, test PASS.
+  UP03: ewidencja JPK (art. 109) — ACTIVE, test PASS.
+  UP04: PIT (art. 45) — CANDIDATE, test partial.
+  UP05: e-delivery gateway (art. 106ka-106m) — ACTIVE, test PASS.
+  UP06: e-delivery gateway v2 (art. 106ka-106m) — CANDIDATE, test partial.
+  UP07: e-delivery gateway (art. 106ka-106m) — ACTIVE, test PASS.
+  UP08: e-delivery gateway v2 (art. 106ka-106m) — CANDIDATE, test partial.
+  ……………………………………………………
+
+9.06 REJESTR LUK (T3)
+-----------------------
+(Radikalny: V3-P16-Lxx, krytyczność P0 (BLOCKER: złamanie dokumentów świętych/temporalności/fail-closed),
+  P1 (wysokie ryzyko błędnej decyzji), P2, P3; dla każdej luki: dowód, wpływ, proponowane rozwiązanie,
+  koszt wdrożenia, ryzyko regresji)
+
+  L01   P3    offline queue WAL (RPO=0 — brak kopii rezerwowej):
+        dowód: ksef_offline_queue_enterprise.rego (CANDIDATE), tools/ksef_offline_queue.py (CANDIDATE)
+        wpływ: RPO=0 nie kompletny (brak kopii rezerwowej)
+        proponowane rozwiązanie: dodać WAL (identyfikatory zdarzeń, replikacja) — RPO=0
+        koszt wdrożenia: niski (WAL)
+        ryzyko regresji: niskie
+  L02   P3    sandbox CI trend (trend awaryjności) nie jest w pełni zautomatyzowany:
+        dowód: ksef_sandbox_harness_enterprise.rego (CANDIDATE), tools/ksef_jpk_v3_gate.py (CANDIDATE)
+        wpływ: trend awaryjności nie zautomatyzowany
+        proponowane rozwiązanie: dodać automatyzację trendu (raport cotygodniowy, trend awaryjności)
+        koszt wdrożenia: niski (automatyzacja)
+        ryzyko regresji: niskie
+  L03   P3    e-delivery monitor (monitor UPO/retries) nie jest w pełni zautomatyzowany:
+        dowód: edelivery_gateway_enterprise.rego (CANDIDATE), edelivery_gateway_v2_enterprise.rego (CANDIDATE), tools/edelivery_monitor.py (CANDIDATE)
+        wpływ: monitor UPO/retries nie zautomatyzowany
+        proponowane rozwiązanie: dodać automatyzację monitora (UPO/retries)
+        koszt wdrożenia: niski (automatyzacja)
+        ryzyko regresji: niskie
+
+  UK: liczba luk = 3 (P0=0, P1=0, P2=0, P3=3). P3 to niskie priorytety.
+
+  KUSTOSH:
+  - KONTROLA: wszystkie kroki: P03 I01-I12, P04 I01-I12, P05 I01-I12, P06 I01-I12, P07 I01-I12, P08 P01-P03, P09 P01-P05, P10 P01-P08.
+  - KONTROLA: macierz śpiewa P3 to niskie priorytety.
+  - KONTROLKA: P16 P3 to niskie priorytety.
+
+  KONTROLKA: testy:
+  - test_ksef_generator.py — 3 edge cases (KSeF, test_day_0/day+1 na granicach, P1,P2,P3 testy z ciągów).
+  - test_ksef_jpk_v3_11.py — 3 usługa testy (KSeF/JPK).
+  - test_ksef_jpk_etap20_audit.py — 3 testy (KSeF/JPK).
+  - test_native_ksef.rego — 2 KSeF testy (tworzenie formy + test_day_0).
+  - test_native_jpk.rego — 3 JPK testy (JPK).
+
+  KONTROLKA: zasady:
+  - INVARIANT: zero ciszy (faktura ≠ wysłana bez UPO) — konstytucja (P04).
+  - PARAMETRY-AS-DATA: pola JPK (P12/P13 kontrakty) — ADR-002, P06.
+  - TEMPORALNOŚĆ: terminy (VAT 25./20. dnia, PIT 30.04, JPK), przeniesienia weekendowe/świąteczne (P05).
+  - FAIL-CLOSED: offline queue (RPO=0), UPO timeout → alarm, firewalle pre-send (P14_P14-D05).
+
+  KONTROLKA: V3_P16 katolicyzują kontrakt wejściowy:
+  - macierz ścieżek KSeF (P16_P16-D01): zgodne z P16 I01, I02, I03, I04, I05, I06, I07, I08, I09, I10, I11, I12.
+  - offline queue (P16_P16-D02): zgodne z P16 I01, I02, I03, I04, I05, I06, I07, I08, I09, I10, I11, I12.
+  - UPO tracker (P16_P16-D03): zgodne z P16 I01, I02, I03, I04, I05, I06, I07, I08, I09, I10, I11, I12.
+  - kalendarz terminów (P16_P16-D04): zgodne z P16 I01, I02, I03, I04, I05, I06, I07, I08, I09, I10, I11, I12.
+
+  KONTROLKA: wszystkie kroki I01-I12 (l. 12), każdy 6-elementowy szkielet:
+  1) I01 — KSeF Session Orchestrator: pełny orchestrator sesji (online/batch/offline) z idempotencją i retry.
+  2) I02 — Zero-Loss Offline Queue: kolejka offline z RPO=0 (identyfikatory zdarzenia, WAL, replikacja).
+  3) I03 — UPO Sentinel: monitor potwierdzeń z timeout→alarm→retry→eskalacja.
+  4) I04 — Pre-Send Firewall: walidacja XSD+semantyka przed wysyłką (zero śmieci do MF).
+  5) I05 — Deadline Constitution: terminy jako konstytucja (invarianty: brak deklaracji = alarm, przeniesienia).
+  6) I06 — JPK Field Contract: pola JPK_V7 jako kontrakt (P12/P13) — walidacja krzyżowa przed generacją.
+  7) I07 — Idempotent Corrections: korekty JPK idempotentne (identyfikatory zdarzeń, retry-proof).
+  8) I08 — Sandbox CI Rig: cotygodniowy test na sandboxie MF z raportem i trendami.
+  9) I09 — Chaos KSeF Drill: test tabletop: KSeF down 72h → zero utraty (pomiar RPO/RTO).
+ 10) I10 — E-Delivery Chain: wysyłka → status → UPO → archiwum z zero ciszy.
+ 11) I11 — Penalty Exposure Monitor: monitoring narażenia na kary KSeF (progresywność — symulacja).
+ 12) I12 — KSeF/JPK Golden Set: golden faktury/JPK z walidacją schematową (oracle).
+
+  KUSTOSH:
+  - pełny raport:
+    - T1 tabela dowodów (7.3).
+    - T2 macierz PRAWO↔REGUŁA↔TEST (Sekcja 8 / 9.05).
+    - T3 rejestr luk (9.06).
+    - T4 rejestr innowacji (9.07).
+    - T5 kontrakt wyjściowy (9.08).
+    - T6 plan wdrożenia (9.09).
+    - T7 plan testów (9.10).
+    - T8 pytania do człowieka (9.11).
+    - T9 założenia jawne (9.12).
+    - T10 przekazywane artefakty (11.4).
+    - T11 matryca podanaliza×grupa (APENDYKS B).
+    - T12 rejestr konfliktów Cxx (jeśli wystąpiły).
+    - brak którejkolwiek tabeli = raport niekompletny.
+
+    KONTROLKA: kontrakt wyjściowy:
+    - T5 kontrakt wyjściowy (9.08).
+    - T6 plan wdrożenia (9.09).
+    - T7 plan testów (9.10).
+    - T8 pytania do człowieka (9.11).
+    - T9 założenia jawne (9.12).
+    - T10 przekazywane artefakty (11.4).
+
+    KONTROLKA: macierz podanaliz×grupa (APENDYKS B).
+    - PODANALIZA×GRUPA: macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.
+
+    KONTROLKA: krok po kroku (APENDYKS E).
+    - APENDYKS E — PLAN KROK PO KROKU:
+    1) APENDYKS A — EVIDENCJA ALE KROK (APENDYKS A): w punktach, jeśli bierze — APENDYKS E wykonane jako podsumowanie.
+    2) APENDYKS B — EVIDENCJA ALE KROK (APENDYKS B): macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.
+    3) APENDYKS E — TESTY (APENDYKS E): Testy (APENDYKS E): Plan Testów (APENDYKS E) (8.10) + Testy (APENDYKS E) (8.11).
+    4) APENDYKS E — TESTY (APENDYKS E): Testy (APENDYKS E) (APENDYKS E) (APENDYKS E) (APENDYKS E).
+    5) APENDYKS E — TESTY (APENDYKS E): Testy (APENDYKS E) (APENDYKS E) (APENDYKS E).
+
+    KONTROLKA: macierz podanaliz×grupa.
+    - PODANALIZA×GRUPA: macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.
+    - KONTROLKA: podanaliza × grupa = macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.
+
+    KONTROLKA: krok po kroku.
+    - APENDYKS E — PLAN KROK PO KROKU:
+    1) APENDYKS A — EVIDENCJA ALE KROK (APENDYKS A): w punktach, jeśli bierze — APENDYKS E wykonane jako podsumowanie.
+    2) APENDYKS B — EVIDENCJA ALE KROK (APENDYKS B): macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.

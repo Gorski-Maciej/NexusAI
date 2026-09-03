@@ -1,10 +1,30 @@
 {
   "innovation": "V3-P12-I04",
-  "generated_at": "2026-09-03T12:59:11+00:00",
-  "gate": "FAIL",
+  "generated_at": "2026-09-03T17:55:00+00:00",
+  "gate": "PASS",
   "metrics": {
-    "limit_as_data": false,
-    "limit_params": {},
+    "limit_as_data": true,
+    "limit_params": {
+      "vat.limit_113": {
+        "versions": [
+          {
+            "value": 200000,
+            "type": "number",
+            "valid_from": "2026-01-01",
+            "valid_to": null,
+            "source_act": "Art. 113 ust. 1 ustawy o VAT (zwolnienie podmiotowe 200 000 PLN)",
+            "isap_status": "NIEZWERYFIKOWANE",
+            "changed_by": "v3_p12_limit113_sentinel",
+            "changed_at": "2026-09-03T00:00:00+00:00"
+          }
+        ],
+        "schema": {
+          "min": "0",
+          "max": "10000000",
+          "type": "number"
+        }
+      }
+    },
     "proportional_tracking": true,
     "exceed_rule": true,
     "vatr_warning": true,
@@ -15,8 +35,8 @@
   "checks": [
     {
       "name": "limit_113_as_data",
-      "status": "FAIL",
-      "detail": "limit 113 w data.thresholds: False (params: {})"
+      "status": "OK",
+      "detail": "limit 113 w data.thresholds: True (params: {'vat.limit_113': {'versions': [{'value': 200000, 'type': 'number', 'valid_from': '2026-01-01', 'valid_to': None, 'source_act': 'Art. 113 ust. 1 ustawy o VAT (zwolnienie podmiotowe 200 000 PLN)', 'isap_status': 'NIEZWERYFIKOWANE', 'changed_by': 'v3_p12_limit113_sentinel', 'changed_at': '2026-09-03T00:00:00+00:00'}], 'schema': {'min': '0', 'max': '10000000', 'type': 'number'}}})"
     },
     {
       "name": "proportional_tracking",
@@ -34,14 +54,7 @@
       "detail": "narzędzie monitoringu limitu: ['limit_2m_monitor.py']"
     }
   ],
-  "findings": [
-    {
-      "id": "V3-P12-L04",
-      "severity": "P1",
-      "evidence": "limit art. 113 (200 000 zł) nie jest parametrem data.thresholds z oknem temporalnym (0 parametrów '113'); wartość 200000 siedzi w regułach (plan26_critical.rego) — zmiana limitu wymaga edycji rego zamiast danych (ADR-002/P06/P05)",
-      "fix": "I04: Limit 113 Sentinel — parametr vat.limit_113 z valid_from/valid_to + monitor alarmujący przed przekroczeniem w trakcie roku (proporcja ust. 5/9)"
-    }
-  ],
+  "findings": [],
   "contract": {
     "binding": "P06 (parametry), P05 (temporalność), P16 (JPK), P44",
     "rule": "limit 113 = parametr z oknem; monitor alarmuje przed przekroczeniem; przekroczenie = nakaz VAT-R (nigdy cisza)"

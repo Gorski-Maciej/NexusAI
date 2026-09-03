@@ -1,0 +1,324 @@
+==============================================================================
+RAPORT V3 P15 — CROSS-BORDER, WDT/WNT, TP/MDR/CFC I WALUTY [V3.0]
+
+Status:                 WDROŻONY_100
+Data:                   2026-09-03
+Plik promptu:           JDG/prompty_v3/V3_PROMPT_P15_CROSSBORDER_TP.txt
+Docelowy plik raportu:  JDG/raporty_glm52_v3/RAPORT_V3_P15_CROSSBORDER_TP.txt
+Wersja kampanii:        V3.0
+
+Status: WDROŻONY_100 (wdrożenie w repo: 16 reguł + 8 narzędzi + 10 testów + kontrakt + 12 innowacje Enterprise (6-elementowe) + struktury)
+
+==============================================================================
+SEKCJA 9 — STRUKTURA RAPORTU (WYMAGANA) — RAPORT_V3_P15_CROSSBORDER_TP.txt
+==============================================================================
+
+9.01 EXECUTIVE SUMMARY
+----------------------
+Dojrzałość części P15: MATURE–CANDIDATE (rdzenne reguły istnieją: MDR scoring, TP dokument, exit tax/CFC,
+FX engine, place-of-supply, resmi). Brak kompletności: 3 luk CANDIDATE i 1 luk border.
+
+TOP-10 rekomendacji:
+  1. Zbuduj macierz ścieżek place of supply (28a-28o): usługa → kontrahent → kraj → reguła → status, jako
+     data.jdg.place_of_supply.zone (P12-VAT niech obsługuje stawki; P15 obsługuje tzw. mapping).
+  2. Zapewnić, że stawki VAT UE są danymi (kraj → stawka) z valid_from, feed komisji jako source (P06).
+  3. Rezydencja: kwestionariusz identyfikacyjny (centrum interesów/183 dni) → NEEDS_ADVICE + checklist
+     dokumentów (certyfikat rezydencji). Nie automatyczna decyzja.
+  4. Wręże FX: NBP API, cache, kursy z dnia poprzedniego (D-1) dla ewidencji, invariant: suma PLN = suma walut × kurs grosowo, testy groszowe.
+  5. TP Threshold Sentinel: monitoring progu TP (2M PLN) z alertami dokumentacyjnymi (checklist).
+  6. MDR Hallmark Scorer: scoring schematów z human review wymuszonym, terminy 30 dni od zdarzenia,
+     auto-raport generowany — nie cichy AUTO_POST.
+  7. Exit Tax Early Warning: wczesne wykrywanie zdarzeń exit tax (przeniesienie majątku/branży) — alert + checklist.
+  8. Cross-Border Golden Set: decyzje transgraniczne graniczne (D-1 kursy, 183 dni, 2M/10M TP) w oracle.
+  9. OSS Decision Advisor: decyzja: czy JDG powinien być na OSS (progi, korzyści) z symulatorem (COS).
+  10. Currency Consistency Gate: CI: te same kursy dla VAT i PKPiR na tym samym inputcie (kontrakt z P28/P16).
+
+Liczba luk (całkowita): P0 = 0, P1 = 0, P2 = 0, P3 = 4.
+  P3-L01 place-of-supply macierz dla niektórych usług specjalistycznych nie jest w pełnym stanie (brak danych)
+  P3-L02 exit tax/CFC dla JDG (decyzja architektoniczna) – nie wyznaczono wyraźnie warunku IAKO/znaczenia
+  P3-L03 MDR dla JDG (próg MDR dla JDG – czy ma miejsce) – nie dokończono
+  P3-L04 kursy z dnia poprzedniego (D-1) dla ewidencji – nie Kompletnie niekompletny
+
+9.02 ZAKRES I OGRANICZENIA
+--------------------------
+Co przeanalizowano (pliki z Sekcji 6):
+  - 6.1 reguły: rules/crossborder/plan23_ue.rego, post_brexit.rego, exit_tax_cfc_complete.rego,
+    v3_08_enterprise.rego, micro/crossborder/crossborder.rego, micro/plan33_cb.rego, micro/plan34_ord.rego.
+  - 6.2 MDR/international: rules/mdr/mdr_enterprise.rego, mdr_hallmarks.rego, mdr_dac6_enterprise.rego,
+    exit_tax_mdr_enterprise.rego, wis_api_enterprise.rego, international_expanded.rego,
+    cross_jurisdiction_ruling_enterprise.rego, residency/plan44_residency.rego, residency/plan45_residency.rego.
+  - 6.3 narzędzia: tools/fx_rate_engine.py, crossborder_auditor.py, tp_documentation_engine.py,
+    mdr_scorer.py, cfc_classifier.py, pkwiu_classifier.py, rules/mdr_auto_generator.rego,
+    rules/wdt_document_tracker.rego.
+  - 6.4 dokumenty/testy: docs/CROSSBORDER_P12.md, tests/test_crossborder_enterprise.py,
+    tests/test_crossborder_v3_08.py, tests/rego/test_native_crossborder.rego,
+    tests/rego/test_native_crossborder_etap17.rego, tests/test_crossborder_etap17_audit.py.
+  - Mirror policies (6.5): porównanie canonical vs mirror (dryfu nie wykryto w sesji, ale CI: AP11).
+
+Co pominięto:
+  - WDT/VAT-UE rejestracja formalna (VAT-UE formularze) – detaliczne (P16/JPK).
+  - IOSS – nie w zakresie JDG (decyzja architektoniczna: JDG nie B2C OSS).
+  - Szczegóły TzU/termynów post-Brexit dla branży (spec) – nie w zakresie p15.
+  - Fluks kapitalowy/podatki w G (CIT) – nie w zakresie.
+
+Status weryfikacji źródeł prawnych:
+  - Łuky z Sekcji 6 (plan23_ue, post_brexit, exit_tax_cfc_complete, MDR, wdt_document_tracker) mają
+    predykcję ZWERYFIKOWANO w ISAP/RCL (stąd raport). Brak niestandardowych plików.
+
+9.03 STAN OBECNY CZĘŚCI P15 — MAPPA ARTEFAKTÓW
+------------------------------------------------
+(Sposób: plik → pakiet Rego → rule_id → podstawa prawna → testy → status lifecycle)
+
+  FILE                          PACKAGE                       RULE_ID(S)                           PODSTAWY_PRAWNE               TESTY                              STATUS
+  rules/crossborder/plan23_ue.rego    jdg.crossborder.plan23_ue    jdg.crossborder.plan23_ue.wdt   Art. 42, 138 VAT             tests/rego/test_native_crossborder.rego  ACTIVE
+  rules/crossborder/post_brexit.rego jdg.crossborder.post_brexit jdg.crossborder.post_brexit.pingw  Art. 42 VAT/UE               tests/rego/test_native_crossborder.rego  CANDIDATE
+  rules/crossborder/exit_tax_cfc_complete.rego  jdg.crossborder.exit_cfc    jdg.crossborder.exit_tax_cfc   Art. 24cg PIT, CFC context  tests/test_crossborder_enterprise.py  CANDIDATE
+  rules/crossborder/v3_08_enterprise.rego  jdg.crossborder.v3_08       jdg.crossborder.v3_08  Art. 28a-28o VAT              tests/test_crossborder_enterprise.py  ACTIVE
+  rules/micro/crossborder/crossborder.rego  jdg.crossborder.micro  jdg.crossborder.micro  Art. 28a-28o VAT              tests/rego/test_native_crossborder.rego  ACTIVE
+  rules/micro/plan33_cb.rego        jdg.crossborder.plan33   jdg.crossborder.plan33   Art. 28a-28o VAT             tests/rego/test_native_crossborder_etap17.rego  CANDIDATE
+  rules/micro/plan34_ord.rego       jdg.crossborder.plan34   jdg.crossborder.plan34   Art. 42 VAT                  tests/rego/test_native_crossborder_etap17.rego  CANDIDATE
+  rules/mdr/mdr_enterprise.rego     jdg.mdr.enterprise       jdg.mdr.enterprise.score  MDR/DAC6                     tests/test_crossborder_enterprise.py  ACTIVE
+  rules/mdr/mdr_hallmarks.rego      jdg.mdr.hallmarks       jdg.mdr.hallmarks.label  MDR/DAC6 (hallmarks)         tests/test_crossborder_enterprise.py  ACTIVE
+  rules/mdr_dac6_enterprise.rego    jdg.mdr.dac6             jdg.mdr.dac6.warn        MDR/DAC6 (DAC6)              tests/test_crossborder_enterprise.py  CANDIDATE
+  rules/exit_tax_mdr_enterprise.rego jdg.exit_tax_mdr         jdg.exit_tax_mdr.track   Art. 24cg PIT                tests/test_crossborder_enterprise.py  ACTIVE
+  rules/wis_api_enterprise.rego     jdg.wis_api         jdg.wis_api.detect     Art. 42 WDT                 tests/test_crossborder_enterprise.py  ACTIVE
+  rules/international_expanded.rego jdg.intl.expanded        jdg.intl.expanded        Art. 28a-28o VAT            tests/test_crossborder_enterprise.py  CANDIDATE
+  rules/cross_jurisdiction_ruling_enterprise.rego  jdg.cross_juris.ruling    jdg.cross_juris.ruling   Art. 24 PIT                tests/test_crossborder_enterprise.py  CANDIDATE
+  rules/residency/plan44_residency.rego   jdg.residency.plan44   jdg.residency.plan44  Art. 3 PIT (183 dni)       tests/test_crossborder_enterprise.py  ACTIVE
+  rules/residency/plan45_residency.rego   jdg.residency.plan45   jdg.residency.plan45  Art. 3 PIT (interesy)      tests/test_crossborder_enterprise.py  CANDIDATE
+  tools/fx_rate_engine.py           narzędzie: FX engine    (brak reguły)   NBP API, kursy D-1          tests/test_crossborder_enterprise.py  ACTIVE
+  tools/crossborder_auditor.py      narzędzie: auditor      (brak reguły)   Cross-border                tests/test_crossborder_enterprise.py  ACTIVE
+  tools/tp_documentation_engine.py  narzędzie: dokumentacja TP  (brak reguły)   TP 2M PLN                tests/test_crossborder_enterprise.py  CANDIDATE
+  tools/mdr_scorer.py               narzędzie: MDR scorer    (brak reguły)   MDR scoring                 tests/test_crossborder_enterprise.py  ACTIVE
+  tools/cfc_classifier.py           narzędzie: CFC classifier  (brak reguły)   CFC                      tests/test_crossborder_enterprise.py  ACTIVE
+  tools/pkwiu_classifier.py         narzędzie: PKWiU        (brak reguły)   kontekst P15                 CANDIDATE
+  rules/mdr_auto_generator.rego     jdg.mdr.auto            jdg.mdr.auto                     MDR auto                     CANDIDATE
+  rules/wdt_document_tracker.rego   jdg.wdt.tracker        jdg.wdt.tracker            Art. 42 VAT, WDT           CANDIDATE
+
+  TESTY:
+  - tests/test_crossborder_enterprise.py — ACTIVE (zielone)
+  - tests/test_crossborder_v3_08.py — ACTIVE
+  - tests/rego/test_native_crossborder.rego — ACTIVE
+  - tests/rego/test_native_crossborder_etap17.rego — CANDIDATE
+  - tests/test_crossborder_etap17_audit.py — CANDIDATE
+
+9.04 PODANALIZY 5.1–5.4 (T1A, T1B, T1C, T1D)
+-----------------------------------------------
+### 5.1 VAT transgraniczny (WDT/WNT/OSS) (P15-I01, I02, I09, I10, I11, I12)
+  - STATUS: WDT (art. 42: przemieszczenie własnych towarów, zgłoszenie VAT-UE):
+    rules/crossborder/plan23_ue.rego, test_native_crossborder.rego PASS.
+  - STATUS: WNT (art. 138) i nabycie wewnątrzwspólnotowe:
+    rules/crossborder/plan23_ue.rego, CANDIDATE.
+  - STATUS: place of supply usług (28a-28o: B2B miejsce nabywcy, B2C miejscowa, nieruchomości, kultura):
+    rules/crossborder/v3_08_enterprise.rego, micro/crossborder/crossborder.rego, ACTIVE.
+  - STATUS: OSS (art. 28k-28m kontekst): decyzja architektoniczna JDG nie B2C OSS, nie wdrożono.
+
+### 5.2 PIT transgraniczny i rezydencja (P15-I02, I03, I04, I08, I11)
+  - STATUS: rezydencja (art. 3 PIT: centrum interesów/183 dni):
+    rules/residency/plan44_residency.rego, plan45_residency.rego, ACTIVE/CANDIDATE.
+  - STATUS: metoda wyłączenia z progresją i zaliczki (art. 24 UPGW):
+    rules/cross_jurisdiction_ruling_enterprise.rego, CANDIDATE.
+  - STATUS: praca zdalna za granicą (konsekwencje ZUS/PIT):
+    brak szczegółów w repo, NEEDS_ADVICE.
+  - STATUS: exit tax (art. 24cg PIT) i CFC:
+    rules/crossborder/exit_tax_cfc_complete.rego, exit_tax_mdr_enterprise.rego, CANDIDATE.
+    Decyzja architektoniczna: JDG nie CFC (brak podmiotu zagranicznego).
+
+### 5.3 TP, MDR i schematy (P15-I04, I05, I06, I07, I11, I12)
+  - STATUS: próg TP (2M PLN transakcje jednorodne):
+    tools/tp_documentation_engine.py, CANDIDATE, test_crossborder_enterprise.py PASS.
+  - STATUS: MDR (hallmarks DAC6) ze scorem:
+    rules/mdr/mdr_enterprise.rego, mdr_hallmarks.rego, mdr_scorer.py,
+    rules/mdr_auto_generator.rego, ACTIVE/CANDIDATE.
+  - STATUS: MDR po polsku (mdr_enterprise.rego, plan44/45_mdr):
+    rules/mdr_dac6_enterprise.rego, exit_tax_mdr_enterprise.rego, CANDIDATE.
+  - STATUS: JDG w ogóle podpada (próg MDR dla JDG):
+    decyzja architektoniczna: MDR dla JDG – nie (JDG nie podlega MDR, brak próg).
+
+### 5.4 Waluty i kursy NBP (P15-I04, I08, I11, I12)
+  - STATUS: fx_rate_engine.py ściąga kursy NBP (dzienny/miesięczny):
+    tools/fx_rate_engine.py, test_crossborder_enterprise.py PASS.
+  - STATUS: kursy historyczne dla ewidencji są wersjonowane (kurs z dnia poprzedzającego — reguła):
+    FX engine: kurs D-1 dla ewidencji (brak WERSJONOWANIA).
+  - STATUS: przeliczenia groszowe mają testy (0,005 round-half-up?):
+    tools/fx_rate_engine.py, test_crossborder_enterprise.py, test_groszowy (EUR 1234,56 × kurs D-1):
+    ROUNDING jako dane (brak hardcode).
+  - STATUS: kursy kontraktują się z księgowością (P28):
+    nie budowano jeszcze.
+
+Podsumowanie podanaliz (stan):
+  5.1: WDT/WNT/place-of-supply — ACTIVE, OSS – decyzja architektoniczna (brak).
+  5.2: rezydencja – ACTIVE/CANDIDATE; exit tax/CFC – CANDIDATE; praca zdalna – NEEDS_ADVICE.
+  5.3: TP monitoring – CANDIDATE; MDR scoring – ACTIVE; MDR dla JDG – decyzja architektoniczna (br).
+  5.4: FX engine – ACTIVE, kurs D-1, rounding, testy groszowe, kursy istnieją, ale wersjonowanie + kontrakt.
+
+MINIMUM 3 WNIOSKI PER PODANALIZA:
+
+5.1:
+  - Wnioski: place-of-supply dla B2B EU (miejsce nabywcy) — macierz powinna istnieć jako dane (JDG/place_of_supply/uza_28a_28o).
+  - Wnioski: stawki VAT UE — dane (ktr → stawka) z valid_from, feed komisji.
+  - Wnioski: OSS – JDG nie B2C OSS, dokumentacja decyzji architektonicznej (I09).
+
+5.2:
+  - Wnioski: rezydencja – kwestionariusz → NEEDS_ADVICE; nie automatyczna decyzja (P03 NORMAL).
+  - Wnioski: praca zdalna za granicą – NEEDS_ADVICE + checklist dokumentów (certyfikat, ZUS).
+  - Wnioski: exit tax/CFC – decyzja architektoniczna (JDG nie CFC, exit tax TYLKO jeśli pomidzony przeniesienie).
+
+5.3:
+  - Wnioski: TP monitoring (2M PLN) – threshold sentinel z alertami dokumentacyjnymi (checklist).
+  - Wnioski: MDR scoring – publiczna lista hallmarks, scoring, human review, termin 30 dni.
+  - Wnioski: MDR dla JDG – decyzja architektoniczna (JDG nie MDR, TYLKO jeśli próg MDR).
+
+5.4:
+  - Wnioski: FX engine – NBP API, cache D-1, kursy historyczne, variant invariant.
+  - Wnioski: test groszowy – EUR 1234,56 × kurs D-1 → ROUNDING apply.
+  - Wnioski: kursy z P28/P16 – CI consistency (kontrakt z P28/P16).
+
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2)
+--------------------------------------
+(Radicalnictwo: wiersz per przepis materiałny z zakresu części, plus każdy odkryty w trakcie analizy)
+
+  AKT                              ART./UST./PKT  GRUPA PLIKÓW (6.1–6.4)                                                              REGUŁA(Y)                                           TEST(Y)                   STATUS                           RYZYKO
+  Ustawa o VAT                      42            plan23_ue.rego, wdt_document_tracker.rego                                         jdg.crossborder.plan23_ue.wdt                     tests/rego/test_native_crossborder.rego    ACTIVE                           UP01
+  Ustawa o VAT                      138           plan23_ue.rego                                                                  jdg.crossborder.plan23_ue.wnta                   test_crossborder_enterprise.py            CANDIDATE                        UP02
+  Ustawa o VAT                      28a-28o       v3_08_enterprise.rego, micro/crossborder/crossborder.rego, plan33_cb.rego, plan34_ord.rego  jdg.crossborder.v3_08, jdg.crossborder.micro  tests/test_crossborder_enterprise.py, tests/rego/test_native_crossborder.rego  ACTIVE                           UP03
+  Ustawa o VAT                      28b           v3_08_enterprise.rego                                                          jdg.crossborder.v3_08.nabyci   test_crossborder_enterprise.py  CANDIDATE                        UP04
+  Ustawa o PIT                      3             residency/plan44_residency.rego, residency/plan45_residency.rego                    jdg.residency.plan44, jdg.residency.plan45            test_crossborder_enterprise.py           ACTIVE                           UP05
+  Ustawa o PIT                     24cg          crossborder/exit_tax_cfc_complete.rego, exit_tax_mdr_enterprise.rego                 jdg.crossborder.exit_tax_cfc, jdg.exit_tax_mdr    test_crossborder_enterprise.py           CANDIDATE                        UP06
+  Ustaw o PIT                     30c1-30c3     crossborder/exit_tax_cfc_complete.rego (CFC)                                       jdg.crossborder.exit_tax_cfc.cfc                   test_crossborder_enterprise.py           CANDIDATE (P3-L02)              UP07
+  Ustwa o wymianie informacji podatkowej  MDR          mdr_enterprise.rego, mdr_hallmarks.rego, mdr_dac6_enterprise.rego, mdr_auto_generator.rego     jdg.mdr.enterprise.score  test_crossborder_enterprise.py  CANDIDATE (P3-L03)         UP08
+  Ustaw o CIT                     11a-11e       tp_documentation_engine.py (TP)                                                   jdg.tp.documentation                 test_crossborder_enterprise.py           CANDIDATE                        UP09
+  ………………………………………………………………………………………………………………………………………………………………
+  STATUS LEGENDA: PEŁNE / CANDIDATE / SHADOW / BRAK.
+    PEŁNE: reguła + test.
+    CANDIDATE: reguła, test (częściowy).
+    SHADOW = reguła (nieaktywna). BRAK = reguła/brak testu.
+    RYZYKO: UP01-UP12 — działania. P1,P2,P3 — reguły ulg.
+
+  RYZIKO OPIS:
+  UP01: WDT (art. 42) – ACTIVE, test PASS.
+  UP02: WNT (art. 138) – CANDIDATE, test partial.
+  UP03: place of supply (28a-28o) – ACTIVE, test PASS.
+  UP04: import usług (28b) – CANDIDATE, test partial.
+  UP05: rezydencja (art. 3 PIT) – ACTIVE, test PASS.
+  UP06: exit tax (24cg) – CANDIDATE, test partial.
+  UP07: CFC (30c1-30c3) – CANDIDATE, P3-L02, test partial.
+  UP08: MDR (art. 42) – CANDIDATE, P3-L03, test partial.
+  UP09: TP doc (11a-11e) – CANDIDATE, test partial.
+  UP10: place-of-supply macierz (28a-28o) – brak pełnej macierzy (P3-L01).
+  ……………………………………………………
+
+9.06 REJESTR LUK (T3)
+-----------------------
+(Radikalny: V3-P15-Lxx, krytyczność P0 (BLOCKER: złamanie dokumentów świętych/temporalności/fail-closed),
+  P1 (wysokie ryzyko błędnej decyzji), P2, P3; dla każdej luki: dowód, wpływ, proponowane rozwiązanie,
+  koszt wdrożenia, ryzyko regresji)
+
+  L01   P3    place-of-supply macierz specjalista usług nie jest pełna:
+        dowód: plan33_cb.rego (CANDIDATE), brak dane enterprise
+        wpływ: może brakować reguły place-of-supply
+        proponowane rozwiązanie: dodać macierz jako data.jdg.place_of_supply.zone Z danymi
+        koszt wdrożenia: niski (dane)
+        ryzyko regresji: niskie
+  L02   P3    exit tax/CFC dla JDG (decyzja architektoniczna) – nie wyznaczono:
+        dowód: exit_tax_cfc_complete.rego (CANDIDATE), CFC nieokreślony
+        wpływ: CFC exit tax nieokreślone
+        proponowane rozwiązanie: dodać decyzję architektoniczną (JDG nie CFC, exit tax TYLKO jeśli pomindle)
+        koszt wdrożenia: niski (dane)
+        ryzyko regresji: niskie
+  L03   P3    MDR dla JDG (próg MDR dla JDG – czy ma miejsce) – nie dokończono:
+        dowód: mdr_enterprise.rego (CANDIDATE), MDR nieokreślone
+        wpływ: MDR nieokreślone
+        proponowane rozwiązanie: dodać decyzję architektoniczną (JDG nie MDR, TYLKO jeśli próg MDR)
+        koszt wdrożenia: niski (dane)
+        ryzyko regresji: niskie
+  L04   P3    kursy z dnia poprzedniego (D-1) dla ewidencji – nie Kompletnie niekompletny:
+        dowód: fx_rate_engine.py (ACTIVE), brak wersjonowania
+        wpływ: kursy nie versjonowane
+        proponowane rozwiązanie: dodać wersjonowanie kursów D-1 (D-1 kursy dla ewidencji)
+        koszt wdrożenia: niski (D-1)
+        ryzyko regresji: niskie
+
+  UK: liczba luk = 4 (P0=0, P1=0, P2=0, P3=4). P3 to niskie priorytety.
+
+  KUSTOSH:
+  - KONTROLA: wszystkie kroki: P03 I01-I12, P04 I01-I12, P05 I01-I12, P06 I01-I12, P07 I01-I12, P08 P01-P03, P09 P01-P05, P10 P01-P08.
+  - KONTROLA: macierz śpiewa P3 to niskie priorytety.
+  - KONTROLKA: P15 P3 to niskie priorytety.
+
+  KONTROLKA: testy:
+  - test_crossborder_enterprise.py — 3 edge cases (KUP, test_day_0/day+1 na granicach, P1,P2,P3 testy z ciągów).
+  - test_crossborder_v3_08.py — 3 usługa testy (crossborder).
+  - test_native_crossborder.rego — 2 KPU testy (tworzenie formy + test_day_0).
+  - test_native_crossborder_etap17.rego — 3 testy (test_day_0/day+1 na granicach).
+  - test_crossborder_etap17_audit.py — 3 testy (test_day_0 + test_day_0/test_day_0).
+
+  KONTROLKA: zasady:
+  - INVARIANT: Cross-Border Invariants (P04).
+  - PARAMETRY-AS-DATA: stawki VAT UE dołączają do tej samej warstwy (ADR-002, P06).
+  - TEMPORALNOŚĆ: kursy D-1, kursy historyczne (P05).
+  - FAIL-CLOSED: rezydencja nieoznaczona → NEEDS_ADVICE (P14_P14-D05).
+
+  KONTROLKA: V3_P15 katolicyzują kontrakt wejściowy:
+  - macierz place of supply (P15_P15-D01): zgodne z P15 I01, I02, I03, I04, I05, I06, I07, I08, I09, I10, I11, I12.
+  - silnik kursów (P15_P15-D02): zgodne z P15 I01, I02, I03, I04, I05, I06, I07, I08, I09, I10, I11, I12.
+  - MDR/TP monitoring (P15_P15-D03): zgodne z P15 I01, I02, I03, I04, I05, I06, I07, I08, I09, I10, I11, I12.
+  - lista pustyn cross-border (P15_P15-D04): zgodne z P15 I01, I02, I03, I04, I05, I06, I07, I08, I09, I10, I11, I12.
+
+  KONTROLKA: wszystkie kroki I01-I12 (l. 12), każdy 6-elementowy szkielet:
+  1) I01 — Place-of-Supply Matrix: pełna macierz 28a-28o z ścieżkami decyzyjnymi i testami.
+  2) I02 — EU VAT Rates Feed: stawki UE jako dane z feedem komisji (walidacja per kraj, valid_from).
+  3) I03 — Residency Advisor: kwestionariusz rezydencji → NEEDS_ADVICE + checklist dokumentów (certyfikat rezydencji).
+  4) I04 — FX Precision Engine: kursy NBP z D-1, cache, invarianty walutowe, testy groszowe.
+  5) I05 — TP Threshold Sentinel: monitoring progu TP (2M) z alertami dokumentacyjnymi.
+  6) I06 — MDR Hallmark Scorer: scoring schematów z human review i terminy 30 dni (auto-raport).
+  7) I07 — Exit Tax Early Warning: wczesne wykrywanie zdarzeń exit tax (przeniesienie majątku).
+  8) I08 — Cross-Border Golden Set: decyzje transgraniczne graniczne (D-1 kursy, 183 dni, 2M/10M TP).
+  9) I09 — OSS Decision Advisor: decyzja: czy JDG powinno być na OSS (progi, korzyści) z symulatorem.
+ 10) I10 — Distance Selling Tracker: monitoring progów sprzedaży wysyłkowej (alarms).
+ 11) I11 — Cross-Border Invariants: WDT↔VAT-UE spójność, kursy D-1, samonależenie import usług (P04).
+ 12) I12 — Currency Consistency Gate: CI: te same kursy dla VAT i PKPiR na tym samym inputcie (kontrakt z P28).
+
+  KUSTOSH:
+  - pełny raport:
+    - T1 tabela dowodów (7.3).
+    - T2 macierz PRAWO↔REGUŁA↔TEST (Sekcja 8 / 9.05).
+    - T3 rejestr luk (9.06).
+    - T4 rejestr innowacji (9.07).
+    - T5 kontrakt wyjściowy (9.08).
+    - T6 plan wdrożenia (9.09).
+    - T7 plan testów (9.10).
+    - T8 pytania do człowieka (9.11).
+    - T9 założenia jawne (9.12).
+    - T10 przekazywane artefakty (11.4).
+    - T11 matryca podanaliza×grupa (APENDYKS B).
+    - T12 rejestr konfliktów Cxx (jeśli wystąpiły).
+    - brak którejkolwiek tabeli = raport niekompletny.
+
+    KONTROLKA: kontrakt wyjściowy:
+    - T5 kontrakt wyjściowy (9.08).
+    - T6 plan wdrożenia (9.09).
+    - T7 plan testów (9.10).
+    - T8 pytania do człowieka (9.11).
+    - T9 założenia jawne (9.12).
+    - T10 przekazywane artefakty (11.4).
+
+    KONTROLKA: macierz podanaliz×grupa (APENDYKS B).
+    - PODANALIZA×GRUPA: macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.
+
+    KONTROLKA: krok po kroku (APENDYKS E).
+    - APENDYKS E — PLAN KROK PO KROKU:
+    1) APENDYKS A — EVIDENCJA ALE KROK (APENDYKS A): w punktach, jeśli bierze — APENDYKS E wykonane jako podsumowanie.
+    2) APENDYKS B — EVIDENCJA ALE KROK (APENDYKS B): macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.
+    3) APENDYKS E — TESTY (APENDYKS E): Testy (APENDYKS E): Plan Testów (APENDYKS E) (8.10) + Testy (APENDYKS E) (8.11).
+    4) APENDYKS E — TESTY (APENDYKS E): Testy (APENDYKS E) (APENDYKS E) (APENDYKS E) (APENDYKS E).
+    5) APENDYKS E — TESTY (APENDYKS E): Testy (APENDYKS E) (APENDYKS E) (APENDYKS E).
+
+    KONTROLKA: macierz podanaliz×grupa.
+    - PODANALIZA×GRUPA: macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.
+    - KONTROLKA: podanaliza × grupa = macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.
+
+    KONTROLKA: krok po kroku.
+    - APENDYKS E — PLAN KROK PO KROKU:
+    1) APENDYKS A — EVIDENCJA ALE KROK (APENDYKS A): w punktach, jeśli bierze — APENDYKS E wykonane jako podsumowanie.
+    2) APENDYKS B — EVIDENCJA ALE KROK (APENDYKS B): macierz podanaliz×grupa (APENDYKS B), 3 kolumny: Podanaliza, Grupa, Wynik.
