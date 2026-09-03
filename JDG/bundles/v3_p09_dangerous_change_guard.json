@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P09-I07",
+  "generated_at": "2026-09-03T12:43:13.537744+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "never_declarative": 6,
+    "guard_results": {
+      "DEC-NO-BASIS": "BLOCK",
+      "DEC-NEW-DOMAIN": "MANUAL_REVIEW",
+      "DEC-VALID": "OK"
+    },
+    "wired_in_tool": false
+  },
+  "checks": [
+    {
+      "name": "guard_model",
+      "status": "OK",
+      "detail": "decyzje strażnika: {'DEC-NO-BASIS': 'BLOCK', 'DEC-NEW-DOMAIN': 'MANUAL_REVIEW', 'DEC-VALID': 'OK'} (BLOCK/MANUAL_REVIEW/OK)"
+    },
+    {
+      "name": "wired_in_tool",
+      "status": "FAIL",
+      "detail": "declarative_change.py nie woła invariant_checker (P04) ani legal_basis_audit przed wykonaniem"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P09-L07",
+      "severity": "P0",
+      "evidence": "declarative_change.py execute --execute-data zapisuje zmianę bez sprawdzenia podstawy prawnej i invariantów; invariant_checker.py (P04) i legal_basis_audit.py istnieją, ale nie są wywoływane na ścieżce deklaracji — deklaracja bez podstawy (DEC-NO-BASIS → BLOCK) przeszłaby dziś do zapisu (fail-open)",
+      "fix": "I07 Dangerous Change Guard: przed EXECUTE — legal_basis w LKG (P01) + invariant_checker CI (P04); BLOCK/MANUAL_REVIEW zamiast zapisu"
+    }
+  ],
+  "contract": {
+    "binding": "P04 (invarianty), P01 (LKG), P43 (RBAC), P03 (fail-closed)",
+    "rule": "bez podstawy prawnej = BLOCK; poza granicami deklaratywności = MANUAL_REVIEW; nigdy cichy zapis"
+  }
+}

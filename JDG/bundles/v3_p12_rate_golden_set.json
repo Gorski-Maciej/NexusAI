@@ -1,0 +1,48 @@
+{
+  "innovation": "V3-P12-I05",
+  "generated_at": "2026-09-03T12:59:13+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "boundary_199999_99": true,
+    "boundary_200000_01": true,
+    "grosz_boundaries": true,
+    "rate_set_complete": true,
+    "rate_23": true,
+    "rate_8": true,
+    "rate_5": true,
+    "np_handled": true,
+    "boundary_cases": {
+      "199999.99": true,
+      "200000.00": true,
+      "200000.01": true
+    },
+    "test_source": "test_vat_audyt_r03_enterprise.rego (rego)"
+  },
+  "checks": [
+    {
+      "name": "limit_boundaries_199999",
+      "status": "OK",
+      "detail": "test 199 999,99 (tuż pod limitem): True"
+    },
+    {
+      "name": "limit_boundaries_200001",
+      "status": "OK",
+      "detail": "test 200 000,01 (tuż nad limitem): True"
+    },
+    {
+      "name": "grosz_boundaries",
+      "status": "OK",
+      "detail": "testy/reguły granic groszy (rounding): True"
+    },
+    {
+      "name": "rate_set",
+      "status": "OK",
+      "detail": "stawki 23/8/5/NP w regułach: set=True NP=True"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P39 (bramki CI), P05 (temporalność), P44",
+    "rule": "granice limitu/groszy mają golden asercje; regresja o 1 grosz blokuje merge"
+  }
+}

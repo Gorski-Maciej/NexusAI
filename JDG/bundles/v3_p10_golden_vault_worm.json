@@ -1,0 +1,48 @@
+{
+  "innovation": "V3-P10-I01",
+  "name": "Golden Vault WORM — nietykalność golden set",
+  "generated_at": "2026-09-03T12:43:18+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "verdict_count": 30,
+    "schema_version": 2,
+    "multi_version": true,
+    "append_only_vault": false,
+    "oldest_recorded_at": "2026-08-12T14:36:10+00:00",
+    "newest_recorded_at": "2026-08-15T21:38:27.533544+00:00"
+  },
+  "checks": [
+    {
+      "name": "set_exists",
+      "status": "OK",
+      "detail": "golden_verdicts.json: 30 werdyktów, schema v2"
+    },
+    {
+      "name": "per_record_hash",
+      "status": "OK",
+      "detail": "każdy rekord ma verdict_hash=True"
+    },
+    {
+      "name": "multi_version",
+      "status": "OK",
+      "detail": "bundle_version w setcie: 28 unikalnych"
+    },
+    {
+      "name": "append_only_vault",
+      "status": "FAIL",
+      "detail": "artefakt WORM/append-only: []"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P10-L01",
+      "severity": "P1",
+      "evidence": "golden_verdicts.json to pojedynczy mutowalny plik (30 rekordów, 28 wersji bundle) — brak artefaktu WORM (append-only vault / hash chain / archiwum wersji)",
+      "fix": "I01: Golden Vault WORM — osobny append-only rejestr wersji setu (snapshot + hash chain + seal), golden_verdicts.json tylko do odczytu"
+    }
+  ],
+  "contract": {
+    "binding": "P10 (golden oracle) → P38 (deploy), P43 (WORM/DR), P44 (certyfikacja)",
+    "rule": "golden set jest niemodyfikowalny; zmiana = nowa wersja z nowym hashem i uzasadnieniem (V2/F3)"
+  }
+}

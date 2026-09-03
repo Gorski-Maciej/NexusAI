@@ -1,0 +1,35 @@
+{
+  "innovation": "V3-P06-I08",
+  "generated_at": "2026-09-03T10:11:11.793438+00:00",
+  "gate": "FAIL",
+  "mode": "DRY_RUN_READ_ONLY",
+  "metrics": {
+    "versions_available": 1,
+    "audit_entries": 1
+  },
+  "rollback": [],
+  "checks": [
+    {
+      "name": "rollback_target",
+      "status": "FAIL",
+      "detail": "brak wcześniejszej wersji (1 wersji) — rollback niemożliwy bez historii"
+    },
+    {
+      "name": "audit_trail",
+      "status": "OK",
+      "detail": "wpisów audytowych w store: 1"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P06-L13",
+      "severity": "P1",
+      "evidence": "vat.standard_rate ma 1 wersję(ów) w store — brak głębi historii dla rollbacku; złota zasada: zmiana bez możliwości cofnięcia = ryzyko operacyjne",
+      "fix": "każda zmiana parametru append-only + automatyczny snapshot poprzedniej wersji (I08); dowód w golden replay przed apply"
+    }
+  ],
+  "contract": {
+    "binding": "P38 (deployment), P09 (declarative change), P10 (golden replay), P06-I05 (SLO rollback < 1 min)",
+    "rule": "rollback wymaga 4-eyes + zielony golden dataset (I04) + nowy snapshot_id (P05-I02)"
+  }
+}

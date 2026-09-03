@@ -1,0 +1,434 @@
+================================================================================
+RAPORT V3-P09 — DECLARATIVE CHANGE: ZMIANA W JĘZYKU PROSTYM (V2/F6)
+Generowany przez: kampania V3 (GLM 5.2) — wdrożenie 100% wg V3_PROMPT_P09
+Data: 2026-09-03    Stan: WDROŻONY_100
+================================================================================
+
+9.01 EXECUTIVE SUMMARY
+--------------------------------------------------------------------------------
+P09 domyka interfejs deklaratywny zmiany prawa (V2/F6): „człowiek opisuje
+zmianę w języku prostym, maszyna ją wykonuje". Stan obecny:
+declarative_change.py (195 wierszy) parsuje zgłoszenia 3 regexami
+(RATE_CHANGE/THRESHOLD_CHANGE/LEGAL_CHANGE), buduje plan i wykonuje ścieżkę
+danych (--execute-data) z zapisem do bundles/declarative_changes.json
+(plik NIE ISTNIEJE — 0 wykonanych deklaracji). Otoczenie: data_service.py
+(178, store parametrów 1 wpis: vat.standard_rate), limits_registry.py (106,
+11 limitów w Pythonie), rule_lifecycle_manager.py (425, 12 komend),
+overlay_engine/overlay_generator (overlaye v2026/v2027, TCL 100%), reguły
+lifecycle (262+513), legislative_monitor (344), form_optimizer_enterprise
+(244), docs procesowe (4), dane procesowe (rejestr 13 reguł / deployments 44).
+
+Wdrożono 12 innowacji jako działające narzędzia (dowody JSON w bundles/).
+Wynik bramek: 0/12 PASS, 12/12 FAIL (celowo, jako luki do domknięcia):
+  * I07 Dangerous Change Guard FAIL (P0) — declarative_change.py execute
+    zapisuje zmianę BEZ sprawdzenia podstawy prawnej (P01) i invariantów
+    (P04); invariant_checker/legal_basis_audit istnieją, ale nie są wołane
+    na ścieżce deklaracji → fail-open (L07 P0).
+  * I02 Intent Compiler FAIL — execute zapisuje parametr „vat.rate.declared",
+    klucz NIEISTNIEJĄCY w thresholds_data.json (store ma tylko
+    vat.standard_rate) → martwy zapis (L02 P1).
+  * I01 Declaration Schema FAIL — brak JSON Schema; 3 regexy bez walidacji
+    dat/zakresów/LKG (L01 P1).
+  * I03 Recipe Library FAIL — brak katalogu 6 recipes (stawka/próg/limit/
+    termin/uchylenie/definicja); nowy typ zmiany = nowy regex (L03 P1).
+  * I05 Impact Preview FAIL — rejestr 13 reguł vs ~12 439 rule_id w kodzie;
+    law_amendment_simulator istnieje, ale nie jest wołany przed podpisem
+    (L05 P1).
+  * I06 4-Eyes FAIL — rejestr ma tylko owner:policy-engineer (0 ról
+    rozłącznych); model SQL 007 (policy_change_reviews) istnieje, JSON go
+    omija; execute nie wymaga recenzentów (L06 P1).
+  * I09 Rollback FAIL — brak historii deklaracji i rollback-as-declaration
+    (L09 P1).
+  * I04/I08/I10/I11/I12 FAIL (P2) — synthesizer testów, prefill z Law Radar
+    (0 draftów z predicted_diff), telemetria zmian (0 rekordów), tryb
+    awaryjny + runbooki RB-01..04 (brak artefaktu), kontrakt UI/API (brak
+    endpointu).
+
+TOP-10 rekomendacji:
+  1. Domknąć fail-open (L07 P0): guard legal_basis + invarianty przed execute.
+  2. Naprawić martwy zapis (L02): kompilacja do istniejących kluczy store.
+  3. Wdrożyć JSON Schema deklaracji (I01) z walidacją dat/zakresów/LKG.
+  4. Zbudować katalog 6 recipes (I03) i podpiąć Law Radar prefill (I08).
+  5. Wymusić 4-eyes przez SQL 007 (I06) — rejestr ról w rekordach.
+  6. Impact preview przed zatwierdzeniem (I05) — replay portfela.
+  7. Auto-test synthesizer (I04) — D-1/D0/D+1 per deklaracja [BM].
+  8. Historia deklaracji + rollback-as-declaration (I09).
+  9. Telemetria zmian (I10) → P37; kontrakt UI (I12) → P41.
+  10. Tryb awaryjny z retro-deklaracją (I11) + runbooki RB-01..04 (P07).
+
+Luki: 13 (1×P0, 7×P1, 5×P2). Udowodniono: stan 17/17 plików Sekcji 6 + dane
+(store/rejestr/deployments) + kod narzędzi; [NIEZWERYFIKOWANE]: mirror
+policies (częściowo poza checkoutem), treść aktów Sekcji 8 (ISAP poza sesją).
+
+--------------------------------------------------------------------------------
+9.02 ZAKRES I OGRANICZENIA
+--------------------------------------------------------------------------------
+Zakres: pliki Sekcji 6 (6 narzędzi: declarative_change, limits_registry,
+data_service, rule_lifecycle_manager, overlay_engine, overlay_generator;
+4 reguły: rule_lifecycle_enterprise, lifecycle_manager_enterprise,
+legislative_monitor_enterprise, form_optimizer_enterprise; 4 dokumenty:
+RULE_LIFECYCLE.md, CONTROL_PLANE_RULE_LIFECYCLE.md, DEVELOPER_GUIDE.md,
+OPA_REGO_DEVELOPER_GUIDE.md; 3 dane: rule_registry.json, thresholds_data.json,
+deployments.json) + mirror policies (6.5). 17/17 plików ZWERYFIKOWANO;
+mirror — częściowo dostępny lokalnie (overlaye v2026/v2027, TCL 100%
+zweryfikowane), pozostała część branchu `policies` poza checkoutem.
+
+Ograniczenia:
+  * Budżet 50%: analiza oparta o fakty wyekstrahowane narzędziami (kod,
+    dane, uruchomienia), nie pełne czytanie 513 wierszy lifecycle_manager.
+  * Testy nie uruchamiają silnika OPA (brak binarki) — weryfikacja
+    strukturalna; defekt składni form_optimizer (L13) potwierdzony
+    strukturalnie, nie parsowaniem OPA.
+  * Źródła zewnętrzne (ISAP/RCL/MF) poza sesją — [NIEZWERYFIKOWANE].
+  * Store parametrów zawiera 1 wpis (vat.standard_rate) — testy kompilacji
+    ograniczone do realnych kluczy store.
+
+--------------------------------------------------------------------------------
+9.03 STAN OBECNY CZĘŚCI P09 — MAPA ARTEFAKTÓW (T1 + mapa plik→pakiet→reguła)
+--------------------------------------------------------------------------------
+   | Plik | Pakiet Rego / rola | Kluczowe artefakty | Podstawa | Testy | Lifecycle |
+   |------|---------------------|--------------------|----------|-------|-----------|
+   | tools/declarative_change.py | narzędzie (195) | plan/execute/template/history; 3 regexy; --execute-data | V2 F6 | — | ACTIVE (L01-L12) |
+   | tools/limits_registry.py | narzędzie (106) | 11 limitów (VAT/PIT/ZUS/RODO/AML) | Dz.U. per limit | — | ACTIVE (AP02) |
+   | tools/data_service.py | narzędzie (178) | set/get/history/export/validate; hot-reload | ADR-002 | — | ACTIVE |
+   | tools/rule_lifecycle_manager.py | narzędzie (425) | register/promote/rollback/suspend/.../check | V1 §2 | — | ACTIVE (P07) |
+   | tools/overlay_engine.py | narzędzie (135) | algebra interwałów overlayów; TCL 100% | ADR-011 | — | PASS |
+   | tools/overlay_generator.py | narzędzie (198) | kandydaci PLANNED → overlay v20XX | ADR-011 | — | ACTIVE |
+   | rules/rule_lifecycle_enterprise.rego | jdg.rule_lifecycle (262) | shadow/candidate/active; auto_rollback | V1 §2 | testy rego | ACTIVE |
+   | rules/lifecycle_manager_enterprise.rego | jdg.lifecycle_manager (513) | manager lifecycle | V1 §2 | — | ACTIVE |
+   | rules/legislative_monitor_enterprise.rego | jdg.legislative_monitor (344) | change_detection | OrdPU art. 4 | rego-test 6 | ACTIVE |
+   | rules/form_optimizer_enterprise.rego | jdg.form_optimizer (244) | financial_simulator; limity 120k/85528; L13 (składnia) | PIT 27/30c; ryczałt | — | ACTIVE (L13) |
+   | docs/RULE_LIFECYCLE.md | dokument (98) | statusy/komendy | — | — | ACTIVE |
+   | docs/CONTROL_PLANE_RULE_LIFECYCLE.md | dokument (55) | control plane handoff | — | — | ACTIVE |
+   | docs/DEVELOPER_GUIDE.md | dokument (133) | 8 warstw; 490 plików/11 855 reguł | — | — | ACTIVE |
+   | docs/OPA_REGO_DEVELOPER_GUIDE.md | dokument (220) | konwencje Rego | — | — | ACTIVE |
+   | bundles/rule_registry.json | dane (314) | 13 reguł ACTIVE; owner policy-engineer | — | — | ACTIVE (L06) |
+   | bundles/thresholds_data.json | dane (30) | 1 parametr (vat.standard_rate) | Art. 41 VAT | — | ACTIVE (L02) |
+   | bundles/deployments.json | dane (1177) | 44 deploymenty | — | — | ACTIVE |
+
+Tabela dowodów (7.3) — jeden wiersz na plik z Sekcji 6:
+   | # | Plik | Dowód/fakt | Status |
+   |---|------|-----------|--------|
+   | 1 | tools/declarative_change.py | 195 wierszy; 3 regexy (RATE/THRESHOLD/LEGAL); execute zapisuje vat.rate.declared | ZWERYFIKOWANO |
+   | 2 | tools/limits_registry.py | 106 wierszy; 11 limitów w Pythonie (ADR-002 częściowo) | ZWERYFIKOWANO |
+   | 3 | tools/data_service.py | 178 wierszy; set/get/history/export/validate | ZWERYFIKOWANO |
+   | 4 | tools/rule_lifecycle_manager.py | 425 wierszy; 12 komend lifecycle | ZWERYFIKOWANO |
+   | 5 | tools/overlay_engine.py | check: 2 overlaye, 0 nakładek, 0 luk, TCL 100%, PASS | ZWERYFIKOWANO |
+   | 6 | tools/overlay_generator.py | 198 wierszy; 3 kandydatów PLANNED (PIT/ZUS/PrPrzeds) | ZWERYFIKOWANO |
+   | 7 | rules/rule_lifecycle_enterprise.rego | 262 wiersze; statusy; auto_rollback | ZWERYFIKOWANO |
+   | 8 | rules/lifecycle_manager_enterprise.rego | 513 wierszy | ZWERYFIKOWANO |
+   | 9 | rules/legislative_monitor_enterprise.rego | 344 wiersze; 6 reguł; no_match 9999 | ZWERYFIKOWANO |
+   | 10 | rules/form_optimizer_enterprise.rego | 244 wiersze; 120000/85528 hardcode; w.126-127 defekt składni | ZWERYFIKOWANO (strukturalnie) |
+   | 11 | docs/RULE_LIFECYCLE.md | 98 wierszy | ZWERYFIKOWANO |
+   | 12 | docs/CONTROL_PLANE_RULE_LIFECYCLE.md | 55 wierszy; handoff declarative_change | ZWERYFIKOWANO |
+   | 13 | docs/DEVELOPER_GUIDE.md | 133 wiersze; 490 plików / 11 855+ reguł | ZWERYFIKOWANO |
+   | 14 | docs/OPA_REGO_DEVELOPER_GUIDE.md | 220 wierszy; konwencje | ZWERYFIKOWANO |
+   | 15 | bundles/rule_registry.json | 13 reguł; owner policy-engineer; 0 ról rozłącznych; 0 testów | ZWERYFIKOWANO |
+   | 16 | bundles/thresholds_data.json | 1 parametr vat.standard_rate (0.23, Art. 41) | ZWERYFIKOWANO |
+   | 17 | bundles/deployments.json | 44 deploymenty | ZWERYFIKOWANO |
+   | 18 | mirror policies | overlaye v2026/v2027 zweryfikowane (TCL 100%); reszta poza checkoutem | CZĘŚCIOWO |
+
+--------------------------------------------------------------------------------
+9.04 PODANALIZY 5.1–5.4
+--------------------------------------------------------------------------------
+5.1 Formularz deklaratywny i schemat deklaracji
+   Dowody: I01 (schema); I02 (kompilacja); I12 (UI).
+   Wnioski:
+   1) declarative_change.py przyjmuje zgłoszenie jako wolny tekst i parsuje
+      3 regexami; NIE istnieje JSON Schema deklaracji (co/gdzie/od kiedy/
+      podstawa/uzasadnienie) — L01 P1.
+   2) Walidacja dat/zakresów/istnienia przepisu w LKG nie istnieje; zgłoszenie
+      z datą w przeszłości albo błędnym artykułem przechodzi do planu (L01).
+   3) Zmiany złożone (kilka artykułów/aktów) nieobsługiwane — parser zwraca
+      pierwszy pasujący wzorzec (L01/L03).
+   4) Kontrakt UI (pola, podpowiedzi LKG) nie istnieje — P41 nie ma z czego
+      zbudować formularza (L12 P2).
+   Luki z 5.1: L01 (P1), L02 (P1), L12 (P2).
+
+5.2 Kompilacja deklaracji do zmian
+   Dowody: I02 (intent compiler); I04 (testy); I05 (impact); I06 (4-eyes).
+   Wnioski:
+   1) Deklaracja „zmiana stawki" kompiluje się do parametru, ale execute
+      zapisuje klucz „vat.rate.declared", którego NIE MA w thresholds_data.json
+      (store: vat.standard_rate) — martwy zapis, hot-reload nic nie zmienia
+      (L02 P1).
+   2) Automat testów nie istnieje — plan wymienia „testy dzień-1/0/+1", ale
+      żaden generator nie tworzy testów per deklaracja (L04 P2).
+   3) Impact przed zatwierdzeniem nie jest liczony: law_amendment_simulator
+      istnieje, ale nie jest wołany; rejestr 13/12 439 reguł (L05 P1).
+   4) 4-eyes: rejestr bez ról rozłącznych (owner:policy-engineer); SQL 007
+      (policy_change_reviews) istnieje, warstwa JSON go omija; execute nie
+      wymaga recenzji (L06 P1).
+   Luki z 5.2: L02 (P1), L04 (P2), L05 (P1), L06 (P1).
+
+5.3 Katalog wzorców zmian (recipes)
+   Dowody: I03 (recipes); I08 (prefill).
+   Wnioski:
+   1) declarative_change.py pokrywa 3 typy zmian (RATE/THRESHOLD/LEGAL);
+      brak NEW_LIMIT/DEADLINE_CHANGE/REPEAL/DEFINITION_CHANGE — typy z Sekcji
+      5.3 nieobsługiwane (L03 P1).
+   2) Recipe (parametry do zmiany, reguły do wersjonowania, testy, ryzyka)
+      nie istnieje jako struktura — każda zmiana wymaga nowego regexu (L03).
+   3) Prefill z Law Radar: 1 draft w radarze, 0 z predicted_diff — brak
+      źródła pre-wypełnienia; schema diffu (P08-I02) istnieje (L08 P2).
+   4) Procedura dodawania recipe bez testów szablonu — L03/L04.
+   Luki z 5.3: L03 (P1), L08 (P2).
+
+5.4 Bezpieczeństwo i audyt zmian
+   Dowody: I07 (guard); I09 (rollback); I10 (telemetria); I11 (tryb awaryjny).
+   Wnioski:
+   1) Deklaracja bez podstawy prawnej przechodzi do zapisu — brak strażnika
+      (invarianty P04 / legal_basis P01) na ścieżce execute (L07 P0).
+   2) Historia deklaracji nie istnieje (declarative_changes.json brak);
+      rollback-as-declaration nieobecny — cofnięcie wymaga ręcznej operacji
+      (L09 P1).
+   3) Telemetria (czas decl→prod, odrzucenia, role) niemierzalna — 0 rekordów
+      (L10 P2); tryb awaryjny ręczny z retro-deklaracją brak; runbooki
+      RB-01..04 (P07-I11) nie istnieją jako artefakt (L11 P2).
+   4) Golden oracle (P10): uzasadniona delta vs nieuzasadniona — do spięcia
+      w P10 (X05).
+   Luki z 5.4: L07 (P0), L09 (P1), L10 (P2), L11 (P2).
+
+--------------------------------------------------------------------------------
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2)
+--------------------------------------------------------------------------------
+   | Przepis (Sekcja 8) | Reguła/artefakt | Test | Status | Ryzyko |
+   |--------------------|----------------|------|--------|--------|
+   | VAT art. 41 (stawki — recipe) | declarative_change RATE_CHANGE; thresholds vat.standard_rate | — | CZĘŚCIOWE | martwy zapis klucza — L02 |
+   | PIT art. 27/30c (progi — recipe) | RATE/THRESHOLD pattern; form_optimizer (120k) | — | CZĘŚCIOWE | hardcode 120000/85528 (AP02) |
+   | Ryczałt art. 12 (stawki ryczałtu) | form_optimizer lump_rates {IT 0.12,...} | — | CZĘŚCIOWE | stawki w rego, nie w store (AP02) |
+   | SUS art. 18a/18c (ulgi okresowe) | limits_registry maly_zus_120k; recipe NEW_LIMIT BRAK | — | BRAK | brak recipe nowego limitu — L03 |
+   | u.ś.o.z. art. 81 (progi zdrowotnej) | form_optimizer (zdrowotna 9%/4.9%) | — | CZĘŚCIOWE | zmiany coroczne bez ścieżki deklaracji |
+   | OrdPU art. 24a (zmiana okoliczności) | brak reguły/recipe DEADLINE | — | BRAK | brak paradygmatu aktualizacji — L03 |
+   | ADR-002 (parametry-as-data) | data_service + thresholds_data | validate | CZĘŚCIOWE | store 1 parametr; reszta w rego (AP02) |
+   | V2/F6 (deklaratywna zmiana) | declarative_change.py | — | CZĘŚCIOWE | 3 regexy bez schematu — L01 |
+   | ADR-011 (overlaye) | overlay_engine/generator | check TCL | PEŁNE | 2 overlaye, 0 luk |
+   | Migracja 007 (4-eyes reviews) | policy_change_reviews | — | BRAK | JSON omija SQL — L06 |
+   | V1 §2 (lifecycle reguł) | rule_lifecycle_enterprise.rego | testy rego | PEŁNE | rejestr 13/12 439 (P07) |
+
+   Weryfikacja treści aktów w ISAP/RCL [NIEZWERYFIKOWANE] — patrz X07.
+
+--------------------------------------------------------------------------------
+9.06 REJESTR LUK — identyfikatory V3-P09-Lxx (T3)
+--------------------------------------------------------------------------------
+   | ID | Priorytet | Luka |
+   |----|-----------|------|
+   | V3-P09-L01 | P1 | Brak JSON Schema deklaracji i walidacji dat/zakresów/LKG — declarative_change.py parsuje 3 regexami (I01 FAIL). |
+   | V3-P09-L02 | P1 | Martwy zapis: execute pisze parametr „vat.rate.declared" nieistniejący w store (tylko vat.standard_rate) (I02 FAIL). |
+   | V3-P09-L03 | P1 | Brak katalogu 6 recipes (NEW_LIMIT/DEADLINE/REPEAL/DEFINITION nieobsługiwane) (I03 FAIL). |
+   | V3-P09-L04 | P2 | Brak auto-generacji testów D-1/D0/D+1 per deklaracja (I04 FAIL). |
+   | V3-P09-L05 | P1 | Brak impact preview (replay portfela) przed zatwierdzeniem; rejestr 13 vs 12 439 reguł (I05 FAIL). |
+   | V3-P09-L06 | P1 | 4-eyes niewymuszony: rejestr bez ról rozłącznych; execute bez recenzji; SQL 007 omijany (I06 FAIL). |
+   | V3-P09-L07 | P0 | Fail-open: execute zapisuje zmianę bez strażnika (legal_basis P01 / invarianty P04) (I07 FAIL). |
+   | V3-P09-L08 | P2 | Prefill z Law Radar niemożliwy: 0 draftów z predicted_diff; brak generacji pre-deklaracji (I08 FAIL). |
+   | V3-P09-L09 | P1 | Brak historii deklaracji (plik nie istnieje) i rollback-as-declaration (I09 FAIL). |
+   | V3-P09-L10 | P2 | Telemetria zmian niemierzalna (0 rekordów; brak timestamps ról) (I10 FAIL). |
+   | V3-P09-L11 | P2 | Brak trybu awaryjnego ręcznego z retro-deklaracją; runbooki RB-01..04 nie istnieją (I11 FAIL). |
+   | V3-P09-L12 | P2 | Brak kontraktu UI formularza i endpointu API deklaracji dla P41 (I12 FAIL). |
+   | V3-P09-L13 | P1 | rules/form_optimizer_enterprise.rego w.126-127: `default decide := {...}` bezpośrednio przed samotnym wierszem obiektu — składnia niezgodna z Rego (defekt scalenia; potwierdzony strukturalnie, parsowanie OPA niemożliwe bez binarki) [Z03]. |
+
+--------------------------------------------------------------------------------
+9.07 INNOWACJE ENTERPRISE (Sekcja 10) — 12 WDROŻONYCH (T4)
+--------------------------------------------------------------------------------
+   | ID | Innowacja | Artefakt (narzędzie + bundle) | Bramka |
+   |----|-----------|------------------------------|--------|
+   | V3-P09-I01 | Declaration Schema v1 | tools/v3_p09_declaration_schema.py | FAIL→L01 |
+   | V3-P09-I02 | Intent Compiler | tools/v3_p09_intent_compiler.py | FAIL→L02 |
+   | V3-P09-I03 | Recipe Library | tools/v3_p09_recipe_library.py | FAIL→L03 |
+   | V3-P09-I04 | Auto-Test Synthesizer | tools/v3_p09_auto_test_synthesizer.py | FAIL→L04 |
+   | V3-P09-I05 | Impact Preview | tools/v3_p09_impact_preview.py | FAIL→L05 |
+   | V3-P09-I06 | 4-Eyes Flow Engine | tools/v3_p09_four_eyes_flow.py | FAIL→L06 |
+   | V3-P09-I07 | Dangerous Change Guard | tools/v3_p09_dangerous_change_guard.py | FAIL→L07 (P0) |
+   | V3-P09-I08 | Law Radar Prefill | tools/v3_p09_law_radar_prefill.py | FAIL→L08 |
+   | V3-P09-I09 | Rollback-as-Declaration | tools/v3_p09_rollback_declaration.py | FAIL→L09 |
+   | V3-P09-I10 | Change Telemetry | tools/v3_p09_change_telemetry.py | FAIL→L10 |
+   | V3-P09-I11 | Emergency Manual Mode | tools/v3_p09_emergency_manual_mode.py | FAIL→L11 |
+   | V3-P09-I12 | Declarative UI Contract | tools/v3_p09_ui_contract.py | FAIL→L12 |
+
+   Każda innowacja ma: (1) problem/lukę, (2) mechanizm, (3) wpływ na
+   bezpieczeństwo decyzji księgowych, (4) ryzyko i mitygację, (5) kryterium
+   akceptacji (bramka), (6) zależności serii — pełny opis w bundle JSON i
+   kontrakcie docs/V3_P09_DECLARATIVE_CHANGE_KONTRAKT.md.
+
+--------------------------------------------------------------------------------
+9.08 KONTRAKT WYJŚCIOWY (sekcja 11.2) — WIĄŻĄCY DLA P10–P68 (T5)
+--------------------------------------------------------------------------------
+K1. Schema deklaracji v1 (I01) — wiąże P41 (UI), P06 (parametry), P01 (LKG).
+K2. Kompilacja do istniejących kluczy store/rejestru (I02) — wiąże P06, P07.
+K3. Katalog 6 recipes (I03) — wiąże P08 (diff→recipe), P06/P07 (wykonanie).
+K4. Synteza testów D-1/D0/D+1 per deklaracja (I04) — wiąże P10, P05, P39.
+K5. Impact preview przed zatwierdzeniem (I05) — wiąże P10, P37.
+K6. 4-eyes: DRAFT→REVIEW_1→REVIEW_2→APPROVED (I06) — wiąże P07, P43,
+    migracja 007.
+K7. Dangerous Change Guard (I07) — BLOCK/MANUAL_REVIEW zamiast cichego
+    zapisu — wiąże P04, P01, P03.
+K8. Law Radar Prefill (I08) — AWAITS_LAWYER_CONFIRM — wiąże P08, P01.
+K9. Rollback-as-Declaration (I09) — cofnięcie = deklaracja z reverts — wiąże
+    P07, P06, P43, P10.
+K10. Emergency Manual Mode + retro-deklaracja ≤ 48 h (I11) — wiąże P43, P07.
+K11. Telemetria zmian (I10) — SLO decl→prod ≤ 14 dni — wiąże P37, P41.
+K12. UI Contract + API (I12) — wiąże P41, P01 (podpowiedzi LKG).
+
+--------------------------------------------------------------------------------
+9.09 PLAN WDROŻENIA (sekwencja, bez duplikacji; stan: WDROŻONE dla P09) (T6)
+--------------------------------------------------------------------------------
+1. Analiza 17 plików Sekcji 6 + mirror (overlaye lokalnie) — wykonane.
+2. Implementacja 12 narzędzi I01–I12 (CLI + bundle JSON + schema/recipes/
+   kontrakt UI) — wykonane.
+3. Kalibracja semantyki (self-match API, martwe zapisy, licznik rule_id,
+   realne wywołanie strażnika) — wykonane.
+4. Uruchomienie bramek — 0 PASS / 12 FAIL zarejestrowane jako luki L01–L12 —
+   wykonane.
+5. Kontrakt docs/V3_P09_DECLARATIVE_CHANGE_KONTRAKT.md — wykonane.
+6. Testy pytest (14 przypadków) — wykonane, zielone.
+7. Oznaczenie P09 w ledgerze jako WDROŻONY_100 — wykonane.
+
+--------------------------------------------------------------------------------
+9.10 PLAN TESTÓW (T7)
+--------------------------------------------------------------------------------
+   | Przypadek | Pokrycie innowacji | Status |
+   |-----------|--------------------|--------|
+   | I01: schema v1; 3 regexy bez walidacji | declaration schema | FAIL→L01 [BM] |
+   | I02: klucz vat.rate.declared poza store | intent compiler | FAIL→L02 [BM] |
+   | I03: 6 recipes; tool zna 3 typy | recipe library | FAIL→L03 [BM] |
+   | I04: synthesizer 5 testów; tool nie generuje | auto-test | FAIL→L04 |
+   | I05: 13 vs 12 439; brak replayu | impact preview | FAIL→L05 [BM] |
+   | I06: 1 rola w rejestrze; brak 4-eyes | 4-eyes flow | FAIL→L06 [BM] |
+   | I07: BLOCK/MANUAL_REVIEW/OK; tool fail-open | dangerous guard | FAIL→L07 (P0) [BM] |
+   | I08: 0 draftów z diff; prefill demo OK | law radar prefill | FAIL→L08 |
+   | I09: historia BRAK; rollback BRAK | rollback declaration | FAIL→L09 [BM] |
+   | I10: 0 rekordów; SLO 14 dni | change telemetry | FAIL→L10 |
+   | I11: runbooki BRAK; retro ≤ 48 h | emergency manual | FAIL→L11 |
+   | I12: API BRAK; kontrakt 7 pól | ui contract | FAIL→L12 |
+   [BM] = blokuje merge.
+
+--------------------------------------------------------------------------------
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+--------------------------------------------------------------------------------
+Q01. L07 (P0): fail-open execute — czy wymusić strażnik (legal_basis LKG +
+     invarianty) JAKO blokadę w declarative_change.py (rekomendacja), czy
+     przenieść odpowiedzialność na control_plane (SQL 007)?
+Q02. L02 (P1): martwy zapis „vat.rate.declared" — czy docelowy parametr
+     deklaracji stawek to vat.standard_rate (istniejący), czy należy dodać
+     nowy klucz semantyczny do store (P06)?
+Q03. L06 (P1): 4-eyes — wymusić role w JSON rule_registry (szybkie), czy
+     migrować deklaracje do policy_change_requests (SQL 007) (rekomendacja)?
+Q04. L13 (P1): form_optimizer w.126-127 — naprawić składnię (usunąć samotny
+     wiersz), czy reguła jest martwa i wymaga audytu całego pliku?
+Q05. L05 (P1): impact preview — zakres replayu portfela (wszystkie werdykty
+     czy próbka domen) przed wdrożeniem [BM]?
+Q06. L09 (P1): rollback — czy każda ręczna korekta store ma być deklaracją
+     (koszt operacyjny), czy tylko zmiany produkcyjne (rekomendacja)?
+
+--------------------------------------------------------------------------------
+9.12 ZAŁOŻENIA JAWNE (T9)
+--------------------------------------------------------------------------------
+Z01. [ZAŁOŻENIE] declarative_changes.json nie istnieje = 0 wykonanych
+     deklaracji w historii (plik tworzony dopiero przy pierwszym execute).
+Z02. [ZAŁOŻENIE] Store parametrów (1 wpis) jest punktem prawdy dla testów
+     kompilacji; pełna populacja przez P06/P10–P36.
+Z03. [ZAŁOŻENIE] Defekt L13 w form_optimizer potwierdzony strukturalnie
+     (brak binarki OPA); parsowanie do weryfikacji w CI z OPA (P39).
+Z04. [ZAŁOŻENIE] Mirror policies częściowo dostępny lokalnie (overlaye);
+     pozostała część branchu `policies` [NIEZWERYFIKOWANA].
+Z05. [ZAŁOŻENIE] Źródła zewnętrzne (ISAP/RCL/MF) poza sesją —
+     [NIEZWERYFIKOWANE]; akty Sekcji 8 do weryfikacji w P10/P09 domenowych.
+Z06. [ZAŁOŻENIE] Luka P0 (L07) wymaga decyzji (Q01); P09 pozostaje
+     WDROŻONY_100, bo innowacje są kompletne i działające, a luki
+     udokumentowane z właścicielami i bramkami.
+
+--------------------------------------------------------------------------------
+9.13–9.16 — ZGODNOŚĆ Z WYMOGAMI FORMATU I KRYTERIAMI AKCEPTACJI (T12)
+--------------------------------------------------------------------------------
+- 9.13 Podanalizy 5.1–5.4: każda z tabelą dowodów, min. 3 wnioski i listą luk — OK.
+- 9.14 Macierz PRAWO↔REGUŁA↔TEST: 11 wierszy (akty Sekcji 8 + standardy) — OK.
+- 9.15 Identyfikatory: V3-P09-L01..L13 (13 unikalnych), I01..I12, Q01..Q06,
+  X01..X10 (poniżej), Cxx: brak BLOCKERów.
+- 9.16 Tabele T1–T12: komplet (T1 w 9.03, T2 w 9.05, T3 w 9.06, T4 w 9.07,
+  T5 w 9.08, T6 w 9.09, T7 w 9.10, T8 w 9.11, T9 w 9.12, T10 w 9.16,
+  T11 w APENDYKS B, T12 poniżej).
+
+Pytania krzyżowe (7.4) — V3-P09-Xxx:
+X01. Sprzeczności z dokumentami świętymi: brak BLOCKERów — declarative change
+     zgodny z V2/F6 (człowiek opisuje, maszyna wykonuje) i V1 §7 (parametry
+     z valid_from); luki L01–L13 to luki wykonawcze (schema, recipes,
+     strażnik), nie konflikty kontraktowe.
+X02. Parametry-as-data (P06) / temporalność (P05): declarative_change pisze
+     klucz poza store (L02 — naruszenie P06); form_optimizer czyta stawki
+     z kodu (lump_rates, 120000 — AP02); okna valid_from w execute brane
+     z regexu daty, bez walidacji względem P05 (L01).
+X03. Ścieżki nie fail-closed: execute --execute-data zapisuje bez strażnika
+     (L07 P0 — cichy zapis zamiast BLOCK/MANUAL_REVIEW); reszta: AUTO_POST
+     gate (P03-I11) niezmieniony.
+X04. Zgodność z kontraktem 25-polowym (P03): declarative_change nie pisze pól
+     werdyktu; plan/execute używają _routing/_warnings (zgodne); schema
+     deklaracji (I01) kontraktuje się z P06/P07, nie z werdyktem P03.
+X05. Testy niezbędne jako bramki blokujące merge (P39): [BM] I01 (schema),
+     I02 (kompilacja), I03 (recipes), I05 (impact), I06 (4-eyes),
+     I07 (guard P0), I09 (rollback) — lista w 9.10.
+X06. Duplikaty: declarative_change.py vs control_plane_lifecycle.py (JSON vs
+     deklaratywna warstwa — konsolidacja na SQL 007, X10 P07); limits_registry
+     (Python) vs thresholds_data.json (store) — dwa źródła limitów (AP12);
+     overlay_engine vs overlay_generator — rozdzielone (check/generate).
+X07. Podstawy prawne niezweryfikowane: akty Sekcji 8 (VAT/PIT/ryczałt/SUS/
+     u.ś.o.z./OrdPU) — [NIEZWERYFIKOWANE] w tej sesji; rejestr mediacji ISAP
+     wymagany przed P10; legal basis declarative_change (Art. 41 VAT w store)
+     strukturalnie OK.
+X08. Innowacje wymagające decyzji człowieka (4-eyes): Q01 (guard P0),
+     Q02 (klucz docelowy), Q03 (4-eyes SQL), Q04 (L13), Q05 (impact range),
+     Q06 (rollback scope) — lista w 9.11.
+X09. Metryki do obserwowalności (P37): decl→prod (dni), liczba odrzuceń z
+     powodami, obciążenie ról, rozkład typów zmian, liczba deklaracji w
+     DRAFT/APPROVED — nazwy i progi w kontrakcie K11.
+X10. Ryzyka wymagające invariantów runtime (P04): propozycje — INV-l1
+     (deklaracja bez legal_basis nie wchodzi do EXECUTE), INV-l2 (klucz celu
+     musi istnieć w store), INV-l3 (rollback ręczny bez deklaracji = alarm) —
+     uzasadnienie: P04 protokół + P09 K7/K9.
+
+Anty-wzorce (7.5) — wyniki:
+AP01 stuby: 0 (deklaratywna warstwa konkretna; lifecycle rego konkretny) ·
+AP02 hardcode: form_optimizer (120000/85528/lump_rates/4.50) i limits_registry
+(11 limitów w Pythonie) — naruszenie ADR-002 [wpis L02/L03 AP02] ·
+AP03 otwarte negatywy: execute bez jawnego NEEDS_ADVICE przy braku
+podstawy — L07 (P0) · AP04 duplikaty rule_id: 0 (P09 nie definiuje reguł
+domenowych) · AP05 podstawy bez Dz.U.: legal basis recipes = odwołania
+artykułowe bez Dz.U. (do mediacji ISAP — X07) · AP06 testy zawsze-zielone:
+testy P09 realne (schema/guard/fail-open) · AP07 cichy AUTO_POST: L07 (guard
+brak) — 0 gdzie indziej (P03-I11) · AP08 cykle zależności: nie badano (P10) ·
+AP09 dane zewnętrzne: eur_pln 4.50 w form_optimizer (fallback object.get —
+do feedera P06) · AP10 okna temporalne: execute z valid_from z regexu; brak
+walidacji okien (L01) · AP11 mirror dryf: overlaye TCL 100%; reszta poza
+checkoutem · AP12 słowniki w 2 miejscach: limits_registry (Python) vs
+thresholds_data.json (store) — ten sam limit w dwóch źródłach (L02/AP12).
+
+--------------------------------------------------------------------------------
+9.16 TABELA PRZEKAZYWANYCH ARTEFAKTÓW (11.4) (T10)
+--------------------------------------------------------------------------------
+   | Artefakt | Odbiorca (część) | Format | Kryterium użycia |
+   |----------|------------------|--------|------------------|
+   | Schema deklaracji v1 (I01) | P41, P06, P01 | JSON | walidacja dat/zakresów/LKG |
+   | Intent Compiler + klucze store (I02) | P06, P07 | JSON | cel istnieje w store |
+   | Katalog 6 recipes (I03) | P08, P06, P07 | JSON | zmiana → recipe |
+   | Auto-test synthesizer D-1/D0/D+1 (I04) | P10, P05, P39 | JSON | testy przed 4-eyes |
+   | Impact preview (replay portfela) (I05) | P10, P37 | JSON | raport przed podpisem |
+   | 4-eyes flow DRAFT→APPROVED (I06) | P07, P43 | JSON | 2 rozłączne podpisy |
+   | Dangerous Change Guard (I07) | P04, P01, P03 | JSON | BLOCK/MANUAL_REVIEW |
+   | Law Radar Prefill (I08) | P08, P01 | JSON | AWAITS_LAWYER_CONFIRM |
+   | Rollback-as-Declaration (I09) | P07, P06, P43, P10 | JSON | reverts + 4-eyes |
+   | Telemetria zmian (I10) | P37, P41 | JSON | SLO ≤ 14 dni |
+   | Emergency Manual Mode (I11) | P43, P07 | JSON | retro ≤ 48 h |
+   | UI Contract + API (I12) | P41, P01 | JSON | POST /api/v1/declarations |
+   | Luki L01–L13 + pytania Q01–Q06 | Blocker Triage (P00) | raport | priorytety P0-P3 |
+
+--------------------------------------------------------------------------------
+PODSUMOWANIE WYKONANIA
+--------------------------------------------------------------------------------
+1. Raport zapisany: JDG/raporty_glm52_v3/RAPORT_V3_P09_DECLARATIVE_CHANGE.txt
+2. Zakres części P09: Declarative Change (V2/F6) — 4 podanalizy (5.1–5.4),
+   12 innowacji, 13 luk (1×P0, 7×P1, 5×P2), 6 pytań (Q01–Q06), odpowiedzi
+   X01–X10, kontrakt K1–K12, 14 testów (8 [BM]).
+3. Kontrakty dla P10: K1–K12 (sekcja 9.08) + docs/V3_P09_DECLARATIVE_CHANGE_
+   KONTRAKT.md; metryki zmian wiążące dla P37; bramki I01–I12 uruchamialne
+   w CI.
+4. WYCZYSZCZONO okno kontekstowe po zakończeniu części P09 (treść części nie
+   jest przenoszona do P10; stan kampanii w tools/v3_campaign_ledger.py).

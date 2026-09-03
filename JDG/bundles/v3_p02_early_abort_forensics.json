@@ -1,0 +1,170 @@
+{
+  "innovation": "V3-P02-I10",
+  "name": "Early-Abort Forensics — zero cichych braków werdyktów",
+  "generated_at": "2026-09-03T07:59:36+00:00",
+  "abort_points_total": 19,
+  "abort_points_by_file": {
+    "main_jdg": 0,
+    "risk": 9,
+    "routing": 2,
+    "conflicts": 7,
+    "api_fallback": 1
+  },
+  "abort_points": [
+    {
+      "file": "rules/risk.rego",
+      "line": 46,
+      "rule_id": "jdg.risk.no_match",
+      "reason_prefix": "Kontrahent w sieci fraudowej VAT",
+      "class": "domain_block"
+    },
+    {
+      "file": "rules/risk.rego",
+      "line": 64,
+      "rule_id": "jdg.risk.kks_empty_invoice_fraud",
+      "reason_prefix": "Kontrahent w sieci fraudowej VAT",
+      "class": "domain_block"
+    },
+    {
+      "file": "rules/risk.rego",
+      "line": 113,
+      "rule_id": "jdg.risk.anomaly_amount",
+      "reason_prefix": "Anomalia kwotowa — wartość >3σ od średniej kategorii",
+      "class": "domain_block"
+    },
+    {
+      "file": "rules/risk.rego",
+      "line": 176,
+      "rule_id": "jdg.risk.semantic_guard_disallowed",
+      "reason_prefix": "Wydatek niezwiązany z działalnością",
+      "class": "domain_block"
+    },
+    {
+      "file": "rules/risk.rego",
+      "line": 197,
+      "rule_id": "jdg.risk.kks_unreliable_books",
+      "reason_prefix": "Wydatek niezwiązany z działalnością",
+      "class": "domain_block"
+    },
+    {
+      "file": "rules/risk.rego",
+      "line": 222,
+      "rule_id": "jdg.risk.ceidg_vendor_suspended",
+      "reason_prefix": "Kontrahent z zawieszoną działalnością CEIDG",
+      "class": "domain_block"
+    },
+    {
+      "file": "rules/risk.rego",
+      "line": 241,
+      "rule_id": "jdg.risk.gaar_artificial_scheme",
+      "reason_prefix": "Kontrahent z zawieszoną działalnością CEIDG",
+      "class": "domain_block"
+    },
+    {
+      "file": "rules/risk.rego",
+      "line": 357,
+      "rule_id": "jdg.risk.pit_counterparty_ghost",
+      "reason_prefix": "",
+      "class": "domain_block"
+    },
+    {
+      "file": "rules/risk.rego",
+      "line": 445,
+      "rule_id": "jdg.risk.vat_carousel_detected",
+      "reason_prefix": "",
+      "class": "domain_block"
+    },
+    {
+      "file": "rules/routing.rego",
+      "line": 46,
+      "rule_id": "jdg.routing.no_match",
+      "reason_prefix": "",
+      "class": "domain_block"
+    },
+    {
+      "file": "rules/routing.rego",
+      "line": 68,
+      "rule_id": "jdg.routing.fc_vendor_nip_low",
+      "reason_prefix": "Niska pewność OCR NIP — ryzyko błędnej weryfikacji Białej Listy",
+      "class": "domain_block"
+    },
+    {
+      "file": "rules/conflicts.rego",
+      "line": 63,
+      "rule_id": "jdg.conflicts.ip_box_vs_rd_same_income",
+      "reason_prefix": "Konflikt IP Box vs B+R — ten sam dochód objęty dwiema ulgami",
+      "class": "domain_block"
+    },
+    {
+      "file": "rules/conflicts.rego",
+      "line": 89,
+      "rule_id": "jdg.conflicts.ip_box_no_nexus_indicator",
+      "reason_prefix": "Konflikt IP Box vs B+R — ten sam dochód objęty dwiema ulgami",
+      "class": "domain_block"
+    },
+    {
+      "file": "rules/conflicts.rego",
+      "line": 110,
+      "rule_id": "jdg.conflicts.ip_box_no_separate_records",
+      "reason_prefix": "IP Box — brak obowiązkowego wskaźnika Nexus",
+      "class": "domain_block"
+    },
+    {
+      "file": "rules/conflicts.rego",
+      "line": 197,
+      "rule_id": "jdg.conflicts.ip_box_qualification_failed",
+      "reason_prefix": "Konflikt ulg na tym samym składniku IP",
+      "class": "domain_block"
+    },
+    {
+      "file": "rules/conflicts.rego",
+      "line": 416,
+      "rule_id": "jdg.conflicts.car_no_mileage_log_100pct_vat_blocked",
+      "reason_prefix": "",
+      "class": "domain_block"
+    },
+    {
+      "file": "rules/conflicts.rego",
+      "line": 560,
+      "rule_id": "jdg.conflicts.bad_debt_sold_to_collector",
+      "reason_prefix": "Dłużnik złych długów — sprawdź obie korekty (VAT i PIT)",
+      "class": "domain_block"
+    },
+    {
+      "file": "rules/conflicts.rego",
+      "line": 647,
+      "rule_id": "jdg.conflicts.allowances_vs_loss",
+      "reason_prefix": "Strata JDG — ulgi osobiste zablokowane",
+      "class": "domain_block"
+    },
+    {
+      "file": "rules/api_fallback.rego",
+      "line": 156,
+      "rule_id": "jdg.api_fallback.multi_degradation",
+      "reason_prefix": "",
+      "class": "domain_block"
+    }
+  ],
+  "gated_abort": {
+    "definition_present": true,
+    "condition_risk_block": true,
+    "condition_routing_block": true,
+    "verdict_guaranteed_min_chain": true
+  },
+  "silent_paths": [],
+  "forensics_contract": {
+    "each_abort_logs": [
+      "timestamp",
+      "pass",
+      "rule_id",
+      "reason",
+      "verdict_issued"
+    ],
+    "slo": "0 abortów bez werdyktu (cisza = P1, metryka jdg_orchestrator_abort_no_verdict_total)"
+  },
+  "gate": {
+    "pass": true,
+    "rule": "każda ścieżka early-abort kończy się werdyktem z _routing; żadna nie jest cichym undefined (fail-closed)"
+  },
+  "note": "BLOCK_AND_ALERT w PASS 0/1 → gated_abort_verdict (32 pakiety) — werdykt zawsze istnieje; INV-006/035 blokują AUTO_POST."
+}

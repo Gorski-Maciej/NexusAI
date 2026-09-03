@@ -1,0 +1,56 @@
+{
+  "innovation": "V3-P03-I08",
+  "name": "Scoring Telemetry — rozkłady klas pewności + alarmy dryfu",
+  "generated_at": "2026-09-03T08:39:39.978762+00:00",
+  "distribution": {
+    "CERTAIN": 620,
+    "CONDITIONAL": 180,
+    "NEEDS_ADVICE": 200
+  },
+  "percent": {
+    "CERTAIN": 62.0,
+    "CONDITIONAL": 18.0,
+    "NEEDS_ADVICE": 20.0
+  },
+  "total_verdicts": 1000,
+  "alarms": [
+    {
+      "metric": "jdg_verdict_needs_advice_pct",
+      "value": 20.0,
+      "threshold": 15.0,
+      "severity": "ALERT",
+      "message": "udział NEEDS_ADVICE powyżej progu — sprawdź dryf pokrycia reguł"
+    }
+  ],
+  "alarm_count": 1,
+  "metrics_to_p37": [
+    {
+      "name": "jdg_verdict_certain_pct",
+      "type": "gauge",
+      "threshold": ">= 50%"
+    },
+    {
+      "name": "jdg_verdict_needs_advice_pct",
+      "type": "gauge",
+      "threshold": "<= 15%"
+    },
+    {
+      "name": "jdg_verdict_non_certain_pct",
+      "type": "gauge",
+      "threshold": "<= 40%"
+    },
+    {
+      "name": "jdg_verdict_certain_class_total",
+      "type": "counter",
+      "tags": [
+        "certainty_class",
+        "package"
+      ]
+    }
+  ],
+  "gate": {
+    "pass": false,
+    "rule": "alarmy dryfu klas pewności (P03-AN05): NEEDS_ADVICE<=15%, non-certain<=40%, CERTAIN>=50%; przekroczenie = alert do P37"
+  },
+  "note": "Rozkład MODELOWY (próbka reprezentatywna do demonstracji mechanizmu alarmów — nie pomiar runtime); wartości runtime z P37. Alarm=1 pokazuje mechanizm: NEEDS_ADVICE 20% > próg 15%. Dashboard PEWNOSC pokazuje CERTAIN=0.0% dla certyfikatów F4 — rozbieżność definicji do uzgodnienia (Q04). Bramka FAIL = dokumentacja progu, nie błąd implementacji."
+}

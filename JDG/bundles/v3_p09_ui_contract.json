@@ -1,0 +1,98 @@
+{
+  "innovation": "V3-P09-I12",
+  "generated_at": "2026-09-03T12:43:17.483266+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "fields": 7,
+    "api_files": [],
+    "form_context": true
+  },
+  "ui_contract": {
+    "form": {
+      "fields": [
+        {
+          "name": "change_type",
+          "type": "select",
+          "options": [
+            "RATE_CHANGE",
+            "THRESHOLD_CHANGE",
+            "NEW_LIMIT",
+            "DEADLINE_CHANGE",
+            "REPEAL",
+            "DEFINITION_CHANGE"
+          ]
+        },
+        {
+          "name": "target_key",
+          "type": "autocomplete",
+          "source": "data.thresholds (P06) / rule_registry (P07)",
+          "validation": "klucz musi istnieć w store"
+        },
+        {
+          "name": "new_value",
+          "type": "number",
+          "validation": "zakres wg schema P06"
+        },
+        {
+          "name": "valid_from",
+          "type": "date",
+          "validation": ">= dziś; <= valid_to"
+        },
+        {
+          "name": "legal_basis.act",
+          "type": "autocomplete",
+          "source": "LKG (P01)"
+        },
+        {
+          "name": "legal_basis.article",
+          "type": "autocomplete",
+          "source": "węzły LKG aktu"
+        },
+        {
+          "name": "justification",
+          "type": "textarea",
+          "minLength": 10
+        }
+      ],
+      "state_machine": [
+        "DRAFT",
+        "REVIEW_1",
+        "REVIEW_2",
+        "APPROVED",
+        "EXECUTED",
+        "ROLLED_BACK"
+      ]
+    },
+    "lkg_hints": "podpowiedzi: akt → artykuł → parametr/reguła (legal_node_id)",
+    "api": "POST /api/v1/declarations (I12 P09) — walidacja po stronie API"
+  },
+  "checks": [
+    {
+      "name": "ui_contract",
+      "status": "OK",
+      "detail": "kontrakt formularza: 7 pól, autocomplete LKG"
+    },
+    {
+      "name": "declarations_api",
+      "status": "FAIL",
+      "detail": "API deklaracji: BRAK — brak endpointu dla UI"
+    },
+    {
+      "name": "form_context",
+      "status": "OK",
+      "detail": "form_optimizer_enterprise.rego istnieje (kontekst formularza)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P09-L12",
+      "severity": "P2",
+      "evidence": "brak kontraktu UI formularza deklaracji i endpointu API — formularz (P41) nie ma z czego zbudować pól/podpowiedzi LKG; declarative_change.py template to tylko JSON CLI, nie kontrakt UI",
+      "fix": "I12 Declarative UI Contract (ten artefakt): pola + walidacje + autocomplete LKG + state machine; API POST /api/v1/declarations dla P41"
+    }
+  ],
+  "contract": {
+    "binding": "P41 (UI), P09-I01 (schema), P09-I06 (stany), P06 (store)",
+    "rule": "UI renderuje wyłącznie pola z kontraktu; walidacja serwerowa zgodna z SCHEMA_V1; podpowiedzi z LKG"
+  }
+}

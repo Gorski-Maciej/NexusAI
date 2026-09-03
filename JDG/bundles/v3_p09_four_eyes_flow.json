@@ -1,0 +1,48 @@
+{
+  "innovation": "V3-P09-I06",
+  "generated_at": "2026-09-03T12:43:12.992153+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "flow_states": [
+      "DRAFT",
+      "REVIEW_1",
+      "REVIEW_2",
+      "APPROVED",
+      "EXECUTED",
+      "ROLLED_BACK"
+    ],
+    "enforced_in_tool": false,
+    "registry_roles": [
+      "owner:policy-engineer"
+    ]
+  },
+  "checks": [
+    {
+      "name": "flow_states",
+      "status": "OK",
+      "detail": "model przepływu: DRAFT → REVIEW_1 → REVIEW_2 → APPROVED → EXECUTED → ROLLED_BACK"
+    },
+    {
+      "name": "enforced_in_tool",
+      "status": "FAIL",
+      "detail": "declarative_change.py nie wymusza ról (brak author/reviewer w przepływie execute)"
+    },
+    {
+      "name": "registry_roles",
+      "status": "FAIL",
+      "detail": "role w rejestrze: {'owner:policy-engineer'} — model SQL 007 (policy_change_reviews) istnieje, JSON go omija"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P09-L06",
+      "severity": "P1",
+      "evidence": "rejestr: role={'owner:policy-engineer'}; declarative_change.py execute zapisuje zmianę bez bramki 4-eyes (flaga --execute-data wystarcza); migracja 007 ma policy_change_reviews — warstwa JSON jej nie używa",
+      "fix": "I06 4-Eyes Flow Engine: DRAFT→REVIEW_1→REVIEW_2→APPROVED z rozłącznymi rolami i podpisami (hash); EXECUTE tylko po APPROVED"
+    }
+  ],
+  "contract": {
+    "binding": "P07 (4-eyes awansu), P43 (RBAC), P39 (bramki CI), migracja 007",
+    "rule": "żadna deklaracja nie przechodzi do EXECUTE bez 2 rozłącznych podpisów; autor ≠ obaj recenzenci"
+  }
+}

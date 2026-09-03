@@ -1,0 +1,69 @@
+{
+  "innovation": "V3-P10-I11",
+  "name": "Oracle Export & Seal",
+  "generated_at": "2026-09-03T12:43:25+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "verdict_count": 30,
+    "bundle_versions": 28,
+    "seal_length": 64
+  },
+  "export": {
+    "export_version": 1,
+    "generated_at": "2026-09-03T12:43:25+00:00",
+    "purpose": "audyt zewnętrzny golden oracle (V2/F3) — nietykalność przeszłości",
+    "verdict_count": 30,
+    "schema_version": 2,
+    "merkle_root": "df3cec8a59c917ee414056b8ebdf91440456eb75009a4ae594d162095037233e",
+    "seal": "cbceb459d38309d86277872541acde1f35636dc0addc1aab691177316fdc9382",
+    "seal_algorithm": "sha256-merkle-v1",
+    "bundle_versions": [
+      "jdg-acc2-bundle-v9.0.0",
+      "jdg-bundle-p00-baseline-2026-08-12",
+      "jdg-bundle-p09-acc-baseline-2026-08-13",
+      "jdg-bundle-p11-ord-baseline-2026-08-13",
+      "jdg-eai-bundle-v9.0.0",
+      "jdg-eai2-bundle-v9.0.0",
+      "jdg-hp-bundle-v9.0.0",
+      "jdg-hp2-bundle-v9.0.0",
+      "jdg-kjp-bundle-v9.0.0",
+      "jdg-kjp2-bundle-v9.0.0",
+      "jdg-kks-bundle-v9.0.0",
+      "jdg-lc-bundle-v9.0.0",
+      "jdg-lc2-bundle-v9.0.0",
+      "jdg-orc-bundle-v9.0.0",
+      "jdg-pitc-bundle-v9.0.0",
+      "jdg-pite-bundle-v9.0.0",
+      "jdg-plb-bundle-v9.0.0",
+      "jdg-ple-bundle-v9.0.0",
+      "jdg-rab-bundle-v9.0.0",
+      "jdg-rab2-bundle-v9.0.0",
+      "jdg-sop-bundle-v9.0.0",
+      "jdg-sop2-bundle-v9.0.0",
+      "jdg-vatc-bundle-v9.0.0",
+      "jdg-vatm-bundle-v9.0.0",
+      "jdg-xb-bundle-v9.0.0",
+      "jdg-xb2-bundle-v9.0.0",
+      "jdg-zus-bundle-v9.0.0",
+      "unknown"
+    ],
+    "note": "pieczęć weryfikowalna: golden_verdicts.json → canonical(record) → merkle → seal"
+  },
+  "checks": [
+    {
+      "name": "export_built",
+      "status": "OK",
+      "detail": "eksport: 30 werdyktów, merkle_root=df3cec8a59c917ee…"
+    },
+    {
+      "name": "seal_verifiable",
+      "status": "OK",
+      "detail": "pieczęć: cbceb459d38309d8… (sha256-merkle-v1)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P44 (audyt/certyfikacja), P43 (WORM), P41 (API)",
+    "rule": "eksport oracle do audytu zewnętrznego z pieczęcią kryptograficzną; każda zmiana setu zmienia seal"
+  }
+}

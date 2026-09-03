@@ -1,0 +1,32 @@
+{
+  "innovation": "V3-P05-I02",
+  "generated_at": "2026-09-03T12:42:53+00:00",
+  "gate": "PASS",
+  "snapshot_id": "acab5f9259a013abd309bf2d1cf5aa7d02aa46aa550d3e7b1c3de21e8e258c7d",
+  "components": {
+    "rules_files": 490,
+    "thresholds_data_sha1": "901d287df0f6dcbf24e4f4c3dac55550a1eaec07",
+    "legal_graph_sha1": "748d25733d79381e89280d457be2ca3fa73d27fe",
+    "migrations_count": 13,
+    "git_head": "c4ec8b58"
+  },
+  "checks": [
+    {
+      "name": "golden_reconstructibility",
+      "status": "OK",
+      "detail": "verdicts=30, wpisy bez hasha/wer. bundle: 0"
+    },
+    {
+      "name": "vault_worm",
+      "status": "OK",
+      "detail": "identyczny snapshot (repo niezmienione)"
+    }
+  ],
+  "findings": [],
+  "vault_written": "bundles/v3_p05_snapshot_vault.json",
+  "contract": {
+    "binding": "P06 parametry / P10 golden oracle / P38 bundle / P11 certyfikaty",
+    "snapshot_composition": "rules_rego + thresholds_data + legal_graph + golden_verdicts + migrations",
+    "zasada": "werdykt = f(snapshot_id, input); zmiana składnika = nowy snapshot_id (stary zostaje w vault jako niezmienny)"
+  }
+}

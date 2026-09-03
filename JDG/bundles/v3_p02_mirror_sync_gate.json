@@ -1,0 +1,87 @@
+{
+  "innovation": "V3-P02-I11",
+  "name": "Mirror Sync Gate — mirror bit-do-bit zgodny z canonical",
+  "generated_at": "2026-09-03T07:59:37+00:00",
+  "mirror_available_locally": true,
+  "checks": [
+    {
+      "file": "main_jdg.rego",
+      "canonical": "OK",
+      "mirror": "OK",
+      "bit_exact": false,
+      "state": "DRYF_BIT_EXACT"
+    },
+    {
+      "file": "routing.rego",
+      "canonical": "OK",
+      "mirror": "OK",
+      "bit_exact": false,
+      "state": "DRYF_BIT_EXACT"
+    },
+    {
+      "file": "fallback.rego",
+      "canonical": "OK",
+      "mirror": "OK",
+      "bit_exact": false,
+      "state": "DRYF_BIT_EXACT"
+    },
+    {
+      "file": "conflicts.rego",
+      "canonical": "OK",
+      "mirror": "OK",
+      "bit_exact": false,
+      "state": "DRYF_BIT_EXACT"
+    }
+  ],
+  "last_mirror_delta_p00": {
+    "canonical_rego": 470,
+    "mirror_rego": 492,
+    "files_content_diff": 36,
+    "status": "DRYF_MIRROR",
+    "orchestrator_files_diff": [
+      "main_jdg.rego",
+      "routing.rego",
+      "fallback.rego",
+      "conflicts.rego"
+    ]
+  },
+  "states": [
+    "DRYF_BIT_EXACT"
+  ],
+  "drifts": [
+    {
+      "file": "main_jdg.rego",
+      "canonical": "OK",
+      "mirror": "OK",
+      "bit_exact": false,
+      "state": "DRYF_BIT_EXACT"
+    },
+    {
+      "file": "routing.rego",
+      "canonical": "OK",
+      "mirror": "OK",
+      "bit_exact": false,
+      "state": "DRYF_BIT_EXACT"
+    },
+    {
+      "file": "fallback.rego",
+      "canonical": "OK",
+      "mirror": "OK",
+      "bit_exact": false,
+      "state": "DRYF_BIT_EXACT"
+    },
+    {
+      "file": "conflicts.rego",
+      "canonical": "OK",
+      "mirror": "OK",
+      "bit_exact": false,
+      "state": "DRYF_BIT_EXACT"
+    }
+  ],
+  "unverified": [],
+  "gate": {
+    "pass": false,
+    "rule": "K6 P00: mirror policies/jdg musi być bit-exact z canonical; dryf semantyczny blokuje merge (P39); sync tylko przez bundle.sh po zatwierdzeniu diff (I05 P00)"
+  },
+  "note": "lokalnie mirror niedostępny (branch policies) → NIEZWERYFIKOWANO z odwołaniem do ostatniego pomiaru v3_mirror_delta.json (P00): 4 pliki orkiestratora w content_diff — wymagany sync przed P38/P40."
+}

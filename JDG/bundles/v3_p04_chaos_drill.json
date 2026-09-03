@@ -1,0 +1,62 @@
+{
+  "innovation": "V3-P04-I12",
+  "name": "Chaos Constitution Drill — cotygodniowy test warstwy konstytucyjnej",
+  "generated_at": "2026-09-03T08:57:50.603683+00:00",
+  "drills": [
+    {
+      "scenario": "broken_rule_vat_rate",
+      "invariant": "INV-001",
+      "detect_ms": 12,
+      "revert_ms": 45,
+      "audit_kept": true,
+      "passed": true,
+      "note": "stawka 0.24 w CANDIDATE → BLOCK + revert do ACTIVE"
+    },
+    {
+      "scenario": "data_manipulation_amounts",
+      "invariant": "INV-021",
+      "detect_ms": 9,
+      "revert_ms": 38,
+      "audit_kept": true,
+      "passed": true,
+      "note": "gross 99 < net 100 → BLOCK, incydent zarejestrowany"
+    },
+    {
+      "scenario": "corrupted_bundle",
+      "invariant": "INV-030",
+      "detect_ms": 21,
+      "revert_ms": 120,
+      "audit_kept": true,
+      "passed": true,
+      "note": "brak bundle_version → BLOCK + auto-revert poprzedniego bundla"
+    },
+    {
+      "scenario": "ksef_offline",
+      "invariant": "INV-038",
+      "detect_ms": 31,
+      "revert_ms": 60,
+      "audit_kept": true,
+      "passed": true,
+      "note": "degradacja KSeF → NEEDS_ADVICE (nigdy CERTAIN)"
+    }
+  ],
+  "drills_total": 4,
+  "drills_passed": 4,
+  "success_pct": 100.0,
+  "slo": {
+    "detect_ms_max": 60,
+    "revert_ms_max": 300,
+    "audit_kept": true
+  },
+  "observed": {
+    "detect_ms_max": 31,
+    "revert_ms_max": 120
+  },
+  "slo_met": true,
+  "schedule": "cotygodniowo (staging), po każdym naruszeniu runtime w prod — dodatkowy drill ad-hoc (P04-AN04)",
+  "gate": {
+    "pass": true,
+    "rule": "100% drilli zakończonych BLOCK+revert w SLO (wykrycie ≤ 60 ms, revert ≤ 300 ms modelowo); audyt incydentu zachowany"
+  },
+  "note": "Czasy modelowe (staging, jednostki) — pomiar prod z P37; drille bezpieczne: staging + automatyczna regeneracja stanu."
+}

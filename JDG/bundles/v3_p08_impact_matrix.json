@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P08-I05",
+  "generated_at": "2026-09-03T10:42:21.642978+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "auto_wired": false,
+    "manual_cli": true,
+    "has_effort_estimate": false,
+    "affected_rules": null
+  },
+  "checks": [
+    {
+      "name": "auto_build_from_detection",
+      "status": "FAIL",
+      "detail": "macierz budowana ręcznie przez CLI, brak auto-wywołania z crawlera/driftu"
+    },
+    {
+      "name": "impact_matrix_exists",
+      "status": "OK",
+      "detail": "law_impact_matrix.py z analizą diff (CLI manualne)"
+    },
+    {
+      "name": "effort_estimate",
+      "status": "FAIL",
+      "detail": "brak szacunku pracy (osobogodzin) per dotknięta reguła"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P08-L05",
+      "severity": "P1",
+      "evidence": "law_impact_matrix.py działa tylko przez ręczne CLI (analyze --diff); isap_crawler/isap_rule_update_pipeline nie wywołują macierzy automatycznie; brak szacunku pracy; drift alarm: ? dotkniętych reguł bez automatycznej macierzy",
+      "fix": "I05 Impact Matrix Auto-Builder: hook po detekcji zmiany → macierz (reguła×priorytet×osobogodziny) do kalendarza i P10"
+    }
+  ],
+  "contract": {
+    "binding": "P08-I04 (lead time na bazie macierzy), P10 (golden na bazie macierzy), P07 (SHADOW z macierzy), P06 (parametry z macierzy)",
+    "rule": "każda zmiana → macierz z priorytetem i szacunkiem przed planowaniem SHADOW"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "innovation": "V3-P03-I05",
+  "name": "Contract Diff CI Gate — spec↔testy korelacja (P03-AN11)",
+  "generated_at": "2026-09-03T08:28:22.117542+00:00",
+  "spec_hash": "sha256:15da05c80164a27d9949eb39dc4dea77962840cecc9aff861b66bff050657009",
+  "tests_hash": "sha256:aa6a66f983365c5b790cc483aef6b699c802ba4148ee895e6e9ec0ed9787d6d9",
+  "previous": {},
+  "state": "BASELINE_REGISTERED",
+  "correlation_rule": "diff OpenAPI (VerdictResponse) bez diffu testów = fail merge; testy obejmują: test_orchestrator_data_contract.py, test_enterprise_operating_contract.py, validate_enterprise_contract.py",
+  "gate": {
+    "pass": true,
+    "rule": "pierwsze uruchomienie — zarejestrowano baseline (spec+testy)"
+  },
+  "note": "Bramka dwufazowa: (1) baseline, (2) korelacja. Stan w bundles/v3_p03_contract_diff_state.json — bramka w CI wołana po każdym diffie OpenAPI; parę (spec,tests) można wymusić przez --force-baseline."
+}

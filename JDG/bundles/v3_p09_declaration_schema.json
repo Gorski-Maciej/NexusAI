@@ -1,0 +1,145 @@
+{
+  "innovation": "V3-P09-I01",
+  "generated_at": "2026-09-03T12:43:08.959398+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "schema_validation_in_tool": false,
+    "only_regex": true,
+    "required_fields": 9
+  },
+  "schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "JDG Declaration of Legal Change v1",
+    "type": "object",
+    "required": [
+      "declaration_id",
+      "change_type",
+      "domain",
+      "target",
+      "new_value",
+      "valid_from",
+      "legal_basis",
+      "justification",
+      "declared_by"
+    ],
+    "properties": {
+      "declaration_id": {
+        "type": "string",
+        "pattern": "^DEC-[0-9]{6}-[A-Z0-9]{4}$"
+      },
+      "change_type": {
+        "enum": [
+          "RATE_CHANGE",
+          "THRESHOLD_CHANGE",
+          "NEW_LIMIT",
+          "DEADLINE_CHANGE",
+          "REPEAL",
+          "DEFINITION_CHANGE"
+        ]
+      },
+      "domain": {
+        "enum": [
+          "vat",
+          "pit",
+          "zus",
+          "ryczalt",
+          "ord",
+          "ksef",
+          "business"
+        ]
+      },
+      "target": {
+        "type": "object",
+        "required": [
+          "kind",
+          "key"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "parameter",
+              "rule",
+              "limit"
+            ]
+          },
+          "key": {
+            "type": "string"
+          }
+        }
+      },
+      "new_value": {},
+      "old_value": {},
+      "valid_from": {
+        "type": "string",
+        "format": "date"
+      },
+      "valid_to": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "date"
+      },
+      "legal_basis": {
+        "type": "object",
+        "required": [
+          "act",
+          "article"
+        ],
+        "properties": {
+          "act": {
+            "type": "string"
+          },
+          "article": {
+            "type": "string"
+          },
+          "dz_u": {
+            "type": "string"
+          }
+        }
+      },
+      "justification": {
+        "type": "string",
+        "minLength": 10
+      },
+      "declared_by": {
+        "type": "string"
+      },
+      "reviewers": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "checks": [
+    {
+      "name": "schema_validation_in_tool",
+      "status": "FAIL",
+      "detail": "declarative_change.py waliduje wyłącznie regexem — brak walidacji wg JSON Schema v1"
+    },
+    {
+      "name": "date_range_validation",
+      "status": "FAIL",
+      "detail": "brak walidacji valid_from<=valid_to i spójności dat"
+    },
+    {
+      "name": "lkg_legal_basis_check",
+      "status": "FAIL",
+      "detail": "brak weryfikacji istnienia przepisu w LKG (P01)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P09-L01",
+      "severity": "P1",
+      "evidence": "declarative_change.py parsuje zgłoszenia wyłącznie 3 regexami (RATE_CHANGE/THRESHOLD_CHANGE/LEGAL_CHANGE); nie istnieje JSON Schema deklaracji ani walidacja dat/zakresów/istnienia przepisu — zmiana niepełna przechodzi do planu",
+      "fix": "I01 Declaration Schema v1 (ten artefakt): JSON Schema z polami co/gdzie/od kiedy/podstawa/uzasadnienie + walidacja dat, zakresów i podstawy w LKG"
+    }
+  ],
+  "contract": {
+    "binding": "P09-I02 (intent compiler wg schematu), P41 (UI formularza), P06 (parametry), P01 (LKG legal basis)",
+    "rule": "każda deklaracja przed kompilacją walidowana wg SCHEMA_V1; brak pola wymaganego = odrzucenie (fail-closed)"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "innovation": "V3-P09-I10",
+  "generated_at": "2026-09-03T12:43:15.328345+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "slo": {
+      "decl_to_prod_days": 14,
+      "rejection_rate_max_pct": 20,
+      "reviewer_pool_min": 2
+    },
+    "recorded_declarations": 0
+  },
+  "checks": [
+    {
+      "name": "slo_defined",
+      "status": "OK",
+      "detail": "SLO: decl→prod ≤ 14 dni, odrzucenia ≤ 20%"
+    },
+    {
+      "name": "telemetry_recorded",
+      "status": "FAIL",
+      "detail": "zapisane deklaracje: 0 — brak danych do pomiaru SLO (czas/odrzucenia/role)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P09-L10",
+      "severity": "P2",
+      "evidence": "bundles/declarative_changes.json nie zawiera wykonanych deklaracji; brak pól timestamps (declared_at/approved_at/executed_at), rejection_reason i ról — SLO deklaracja→produkcja i wskaźnik odrzuceń niemierzalne",
+      "fix": "I10 Change Telemetry: każda deklaracja z timestamps roli i statusu; raport SLO (czas, odrzucenia z powodami, obciążenie ról) do P37"
+    }
+  ],
+  "contract": {
+    "binding": "P37 (metryki), P41 (UI), P43 (role)",
+    "rule": "każda deklaracja rejestruje declared_at/approved_at/executed_at + rejection_reason; SLO decl→prod ≤ 14 dni"
+  }
+}

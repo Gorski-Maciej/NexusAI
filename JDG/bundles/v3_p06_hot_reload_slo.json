@@ -1,0 +1,57 @@
+{
+  "innovation": "V3-P06-I05",
+  "generated_at": "2026-09-03T10:11:07.339538+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "model_total_s": 0.89,
+    "step_ms": {
+      "write_json": 1.61,
+      "validate": 385.24
+    },
+    "slo_soft_s": 60,
+    "slo_hard_s": 900,
+    "steps": [
+      "approve",
+      "write_json",
+      "validate",
+      "export",
+      "data_api_push",
+      "eval_active"
+    ]
+  },
+  "checks": [
+    {
+      "name": "slo_soft_1min",
+      "status": "OK",
+      "detail": "modelowy czas łańcucha: 0.89 s (SLO < 60 s)"
+    },
+    {
+      "name": "validate_gate",
+      "status": "FAIL",
+      "detail": "data_service validate rc=1 — TypeError schema string vs float (L05)"
+    },
+    {
+      "name": "export_artifact",
+      "status": "FAIL",
+      "detail": "thresholds_export.json BRAK (export rc=1)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P06-L05",
+      "severity": "P1",
+      "evidence": "hot-reload SLO mierzalny, ale walidacja danych pęka (TypeError schema string vs float) — łańcuch nie może być zielony",
+      "fix": "naprawa typów schema (number) — patrz I01"
+    },
+    {
+      "id": "V3-P06-L10",
+      "severity": "P1",
+      "evidence": "brak artefaktu thresholds_export.json w repo — eksport OPA Data API nie jest częścią pipeline'u; hot-reload nieaktywny end-to-end (SLO niemierzalne w runtime)",
+      "fix": "podpięcie export do CI/pipeline (P38 deployment) + pomiar SLO z zegara wstrzykiwanego (P05-I08)"
+    }
+  ],
+  "contract": {
+    "binding": "P38 (deployment — pomiar SLO), P09 (declarative change), P39 (CI)",
+    "rule": "hot-reload SLO < 1 min od zatwierdzenia; przekroczenie = alarm (P37); rollback = I08"
+  }
+}

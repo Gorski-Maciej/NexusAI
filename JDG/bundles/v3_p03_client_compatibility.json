@@ -1,0 +1,83 @@
+{
+  "innovation": "V3-P03-I09",
+  "name": "Client Compatibility Suite — golden replay + UVR (F3 V2)",
+  "generated_at": "2026-09-03T08:25:33.583075+00:00",
+  "golden_cases": [
+    {
+      "id": "G001",
+      "client_path": "/jdg/decide",
+      "input_fingerprint": "sha256:9e38d2bc08353b93c3c96a7265d08761669caa26ee3b32019c5b2e382b445ba6",
+      "expected": {
+        "rule_id": "jdg.vat.rate_23",
+        "_routing": "ALLOW",
+        "vat_rate": "0.23"
+      },
+      "replay_result": {
+        "rule_id": "jdg.vat.rate_23",
+        "_routing": "ALLOW",
+        "vat_rate": "0.23"
+      }
+    },
+    {
+      "id": "G002",
+      "client_path": "/jdg/decide",
+      "input_fingerprint": "sha256:cc041cec60f952178346b5ba43bdeb02f57e9c4422f53cd3ff226b4d11fe2392",
+      "expected": {
+        "rule_id": "jdg.vat.rate_23",
+        "_routing": "ALLOW",
+        "vat_rate": "0.23"
+      },
+      "replay_result": {
+        "rule_id": "jdg.vat.rate_23",
+        "_routing": "ALLOW",
+        "vat_rate": "0.23"
+      }
+    },
+    {
+      "id": "G003",
+      "client_path": "/jdg/simulate",
+      "input_fingerprint": "sha256:1dfd4b35641b29e4a014e0684f1947c7a7be4500afdea29f92712f426c5f14f2",
+      "expected": {
+        "rule_id": "jdg.vat.rate_08",
+        "_routing": "ALLOW",
+        "vat_rate": "0.08"
+      },
+      "replay_result": {
+        "rule_id": "jdg.vat.rate_08",
+        "_routing": "ALLOW",
+        "vat_rate": "0.08"
+      }
+    }
+  ],
+  "replay_results": [
+    {
+      "id": "G001",
+      "path": "/jdg/decide",
+      "compatible": true
+    },
+    {
+      "id": "G002",
+      "path": "/jdg/decide",
+      "compatible": true
+    },
+    {
+      "id": "G003",
+      "path": "/jdg/simulate",
+      "compatible": true
+    }
+  ],
+  "compatible_count": 3,
+  "uvr_changes": [],
+  "uvr_count": 0,
+  "client_paths_in_openapi": {
+    "/jdg/decide": true,
+    "/jdg/simulate": true,
+    "/jdg/audit/{verdict_id}": true,
+    "/jdg/explain": true
+  },
+  "gate": {
+    "pass": true,
+    "rule": "golden replay bez UVR + wszystkie ścieżki klienta obecne w OpenAPI (P03-AN07); zmiana kontraktu bez migracji klientów = fail"
+  },
+  "note": "Golden replay wykonuje decision_certificate.py (replay) + verify_verdict_invariants.py w CI; UVR=0 wymagany (dashboard PEWNOSC cel)."
+}

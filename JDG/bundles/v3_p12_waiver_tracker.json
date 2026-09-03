@@ -1,0 +1,47 @@
+{
+  "innovation": "V3-P12-I11",
+  "generated_at": "2026-09-03T12:59:27+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "loss_rule": true,
+    "temporal_tracking": true,
+    "window_as_data": true,
+    "window_params": {},
+    "voluntary_waiver": false,
+    "user_warning": true
+  },
+  "checks": [
+    {
+      "name": "loss_rule",
+      "status": "OK",
+      "detail": "reguła utraty zwolnienia (P141 exemption_loss_2_years): True"
+    },
+    {
+      "name": "temporal_tracking",
+      "status": "OK",
+      "detail": "temporalność utraty (suspended_until/suspended_years): True"
+    },
+    {
+      "name": "window_as_data",
+      "status": "OK",
+      "detail": "okno jako dane: True"
+    },
+    {
+      "name": "voluntary_waiver",
+      "status": "FAIL",
+      "detail": "rezygnacja dobrowolna (VAT-R): False"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P12-L11c",
+      "severity": "P3",
+      "evidence": "brak jawnej obsługi dobrowolnej rezygnacji (VAT-R) w plikach VAT — sprawdzić w P07 lifecycle",
+      "fix": "I11: śledzenie rezygnacji dobrowolnej z datą"
+    }
+  ],
+  "contract": {
+    "binding": "P05 (temporalność), P07 (lifecycle), P44",
+    "rule": "utrata zwolnienia (art. 113 ust. 11) śledzona temporalnie z okresem zakazu; przekroczenie = warning + zakaz powrotu"
+  }
+}

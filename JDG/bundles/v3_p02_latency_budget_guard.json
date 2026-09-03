@@ -1,0 +1,59 @@
+{
+  "innovation": "V3-P02-I06",
+  "name": "Latency Budget Guard — budżet ms per PASS + auto-tuning",
+  "generated_at": "2026-09-03T07:59:35+00:00",
+  "baseline_rules_total": 12439,
+  "budgets_model": {
+    "gated_abort_verdict": 100,
+    "sharded_sale_verdict": 2000,
+    "sharded_purchase_verdict": 1500,
+    "full_final_verdict": 1500
+  },
+  "per_pass": [
+    {
+      "pass": "gated_abort_verdict",
+      "packages": 32,
+      "cost_model": 64.0,
+      "budget_model": 100,
+      "status": "OK"
+    },
+    {
+      "pass": "sharded_sale_verdict",
+      "packages": 69,
+      "cost_model": 160.9,
+      "budget_model": 2000,
+      "status": "OK"
+    },
+    {
+      "pass": "sharded_purchase_verdict",
+      "packages": 67,
+      "cost_model": 155.3,
+      "budget_model": 1500,
+      "status": "OK"
+    },
+    {
+      "pass": "full_final_verdict",
+      "packages": 104,
+      "cost_model": 263.3,
+      "budget_model": 1500,
+      "status": "OK"
+    }
+  ],
+  "violations": [],
+  "auto_tuning_suggestions": [
+    {
+      "pass": "full_final_verdict",
+      "packages": 104
+    },
+    {
+      "pass": "sharded_sale_verdict",
+      "packages": 69
+    }
+  ],
+  "measurement_note": "[MODEL] koszt strukturalny (pakiety^1.2), nie pomiar zegarowy — brak OPA w sesji CI; rzeczywisty pomiar w P37.",
+  "gate": {
+    "pass": true,
+    "rule": "żaden PASS nie przekracza budżetu modelowego; przekroczenie → alarm + propozycja deklaratywnego shardu (V3-P02-I09)"
+  },
+  "note": "sharded_sale 275 pakietów vs gated_abort 32 — router O(1) już skraca ścieżkę fraudową ~9x (zgodnie z deklaracją PASS-0 Gate)."
+}

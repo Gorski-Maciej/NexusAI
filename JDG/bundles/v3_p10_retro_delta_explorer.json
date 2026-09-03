@@ -1,0 +1,65 @@
+{
+  "innovation": "V3-P10-I10",
+  "name": "Retro-Delta Explorer — historia delt z uzasadnieniami",
+  "generated_at": "2026-09-03T12:43:24+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "history_artifacts": [],
+    "annotated_records": 0,
+    "bundle_versions_in_set": [
+      "jdg-bundle-p00-baseline-2026-08-12",
+      "jdg-bundle-p11-ord-baseline-2026-08-13",
+      "jdg-bundle-p09-acc-baseline-2026-08-13",
+      "jdg-xb-bundle-v9.0.0",
+      "jdg-plb-bundle-v9.0.0",
+      "jdg-lc-bundle-v9.0.0",
+      "jdg-hp-bundle-v9.0.0",
+      "jdg-rab-bundle-v9.0.0",
+      "jdg-kjp-bundle-v9.0.0",
+      "jdg-sop-bundle-v9.0.0",
+      "jdg-eai-bundle-v9.0.0",
+      "jdg-orc-bundle-v9.0.0",
+      "jdg-vatc-bundle-v9.0.0",
+      "jdg-vatm-bundle-v9.0.0",
+      "jdg-pitc-bundle-v9.0.0",
+      "jdg-pite-bundle-v9.0.0",
+      "jdg-zus-bundle-v9.0.0",
+      "jdg-kks-bundle-v9.0.0",
+      "unknown",
+      "jdg-acc2-bundle-v9.0.0",
+      "jdg-xb2-bundle-v9.0.0",
+      "jdg-ple-bundle-v9.0.0",
+      "jdg-lc2-bundle-v9.0.0",
+      "jdg-hp2-bundle-v9.0.0",
+      "jdg-rab2-bundle-v9.0.0",
+      "jdg-kjp2-bundle-v9.0.0",
+      "jdg-sop2-bundle-v9.0.0",
+      "jdg-eai2-bundle-v9.0.0"
+    ],
+    "version_count": 28
+  },
+  "checks": [
+    {
+      "name": "history_artifacts",
+      "status": "FAIL",
+      "detail": "artefakty historii GOLDEN w bundles/: [] | rekordy z adnotacją: 0"
+    },
+    {
+      "name": "versioned_history",
+      "status": "OK",
+      "detail": "rekordy w 28 wersjach bundle — podstawa przeglądania delt między wersjami"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P10-L10",
+      "severity": "P2",
+      "evidence": "brak artefaktu historii delt (annotacje golden_replay / delta log / sesje) — delta między wersjami bundle nie jest przeglądalna ani ucząca (P10-AN09, P67 self-learning)",
+      "fix": "I10: retro-delta explorer — zapis delt przy każdym replay + przeglądarka z uzasadnieniami (web/JSON) i eksportem do P67"
+    }
+  ],
+  "contract": {
+    "binding": "P67 (self-learning), P37, P44",
+    "rule": "każda delta historyczna ma wpis: stary hash, nowy hash, uzasadnienie, wyrok, wersje bundle"
+  }
+}

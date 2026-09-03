@@ -1,0 +1,401 @@
+{
+  "innovation": "V3-P05-I12",
+  "generated_at": "2026-09-03T09:55:50+00:00",
+  "gate": "FAIL",
+  "heatmap": [
+    "mapa pokrycia per domena (procent reguł temporalnych z pokryciem):",
+    "  accounting pytest=  0%  boundary=  0%  golden=  0%  (n=1)",
+    "  allowances pytest= 33%  boundary=  0%  golden=  0%  (n=3)",
+    "  business   pytest=100%  boundary=100%  golden=  0%  (n=1)",
+    "  edge_cases pytest=100%  boundary=100%  golden=  0%  (n=7)",
+    "  mdr        pytest=  0%  boundary=  0%  golden=  0%  (n=1)",
+    "  pit        pytest=  0%  boundary=  0%  golden=  0%  (n=8)",
+    "  temporal   pytest=  0%  boundary=  0%  golden=  0%  (n=1)",
+    "  validation pytest=100%  boundary=100%  golden=  0%  (n=1)",
+    "  vat        pytest=  0%  boundary=  0%  golden=  0%  (n=3)",
+    "  zus        pytest=100%  boundary= 50%  golden=  0%  (n=6)"
+  ],
+  "rows": [
+    {
+      "rule_id": "jdg.business.suspension_zus",
+      "anchor": "2022-04-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": true,
+      "boundary": true,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.edge_cases.zus_declaration_zero_on_suspension",
+      "anchor": "2022-04-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": true,
+      "boundary": true,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.zus.health_scale",
+      "anchor": "2022-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": true,
+      "boundary": true,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.zus.health_linear",
+      "anchor": "2022-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": true,
+      "boundary": true,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.zus.health_lump_sum",
+      "anchor": "2022-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": true,
+      "boundary": true,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.edge_cases.pit_health_contrib_scale_9pct_no_deduction",
+      "anchor": "2022-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": true,
+      "boundary": true,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.edge_cases.pit_linear_health_underpayment",
+      "anchor": "2022-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": true,
+      "boundary": true,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.edge_cases.pit_lump_sum_health_progressive",
+      "anchor": "2022-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": true,
+      "boundary": true,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.validation.ksef_upo_required",
+      "anchor": "2026-02-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": true,
+      "boundary": true,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.edge_cases.sanction_ksef_missing_100pct",
+      "anchor": "2026-02-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": true,
+      "boundary": true,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.edge_cases.deadline_ksef_offline_7_days",
+      "anchor": "2026-02-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": true,
+      "boundary": true,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.zus.start_relief",
+      "anchor": "2018-04-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": true,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.zus.maly_plus",
+      "anchor": "2019-04-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": true,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.zus.preferential",
+      "anchor": "2018-04-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": true,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.edge_cases.sanction_bad_debt_debtor_30pct",
+      "anchor": "2023-07-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": true,
+      "boundary": true,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.allowances.relief_rd_standard",
+      "anchor": "2018-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": false,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.allowances.relief_rd_centrum",
+      "anchor": "2022-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": false,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.allowances.relief_ip_box",
+      "anchor": "2019-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": true,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.pit.exit_tax",
+      "anchor": "2019-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": false,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.mdr.dac6_reporting",
+      "anchor": "2021-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": false,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.temporal.covid_legacy",
+      "anchor": "2020-03-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": false,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.vat.receipt_nip_limit_450",
+      "anchor": "2022-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": false,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.vat.slim_vat_2",
+      "anchor": "2022-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": false,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.vat.slim_vat_3",
+      "anchor": "2023-07-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": false,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.pit.estonian_cit",
+      "anchor": "2022-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": false,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.pit.tax_free_amount_30k",
+      "anchor": "2022-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": false,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.pit.scale_threshold_120k",
+      "anchor": "2022-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": false,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.pit.lump_sum_2m_eur",
+      "anchor": "2022-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": false,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.pit.scale_rates_2019",
+      "anchor": "2019-10-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": false,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.pit.tax_free_30k_scale_12_32",
+      "anchor": "2022-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": false,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.pit.relief_shared_limit_85528",
+      "anchor": "2022-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": false,
+      "boundary": false,
+      "golden": false
+    },
+    {
+      "rule_id": "jdg.accounting.depreciation_one_off_100k",
+      "anchor": "2022-01-01",
+      "registry": true,
+      "doc38c": false,
+      "pytest": false,
+      "boundary": false,
+      "golden": false
+    }
+  ],
+  "rollup": {
+    "business": {
+      "total": 1,
+      "pytest": 1,
+      "boundary": 1,
+      "golden": 0
+    },
+    "edge_cases": {
+      "total": 7,
+      "pytest": 7,
+      "boundary": 7,
+      "golden": 0
+    },
+    "zus": {
+      "total": 6,
+      "pytest": 6,
+      "boundary": 3,
+      "golden": 0
+    },
+    "validation": {
+      "total": 1,
+      "pytest": 1,
+      "boundary": 1,
+      "golden": 0
+    },
+    "allowances": {
+      "total": 3,
+      "pytest": 1,
+      "boundary": 0,
+      "golden": 0
+    },
+    "pit": {
+      "total": 8,
+      "pytest": 0,
+      "boundary": 0,
+      "golden": 0
+    },
+    "mdr": {
+      "total": 1,
+      "pytest": 0,
+      "boundary": 0,
+      "golden": 0
+    },
+    "temporal": {
+      "total": 1,
+      "pytest": 0,
+      "boundary": 0,
+      "golden": 0
+    },
+    "vat": {
+      "total": 3,
+      "pytest": 0,
+      "boundary": 0,
+      "golden": 0
+    },
+    "accounting": {
+      "total": 1,
+      "pytest": 0,
+      "boundary": 0,
+      "golden": 0
+    }
+  },
+  "metrics": {
+    "anchors_total": 32,
+    "anchors_pytest": 16,
+    "anchors_boundary": 12,
+    "anchors_golden": 0,
+    "domains": 10
+  },
+  "checks": [
+    {
+      "name": "no_test_anchors",
+      "status": "FAIL",
+      "detail": "kotwic bez pokrycia testowego (pytest/boundary): 16"
+    },
+    {
+      "name": "heatmap_built",
+      "status": "OK",
+      "detail": "wierszy macierzy: 32, domen: 10"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P05-L14",
+      "severity": "P2",
+      "evidence": "kotwice bez testów: ['jdg.allowances.relief_rd_standard@2018-01-01', 'jdg.allowances.relief_rd_centrum@2022-01-01', 'jdg.pit.exit_tax@2019-01-01', 'jdg.mdr.dac6_reporting@2021-01-01', 'jdg.temporal.covid_legacy@2020-03-01', 'jdg.vat.receipt_nip_limit_450@2022-01-01', 'jdg.vat.slim_vat_2@2022-01-01', 'jdg.vat.slim_vat_3@2023-07-01', 'jdg.pit.estonian_cit@2022-01-01', 'jdg.pit.tax_free_amount_30k@2022-01-01']",
+      "fix": "testy day-1/0/+1 per kotwica (I05 Time Gate) + reper golden (I06)"
+    }
+  ],
+  "contract": {
+    "binding": "P37 heatmapa pokrycia / P39 CI / P12 cele kwartalne",
+    "plan": "domknięcie luk: każda nowelizacja bez testów granicznych = P2; cel: 100% kotwic z parą day-1/day0 (bramka I05)"
+  }
+}

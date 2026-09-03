@@ -1,0 +1,60 @@
+{
+  "innovation": "V3-P06-I01",
+  "generated_at": "2026-09-03T10:10:58.156636+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "params_in_json": 1,
+    "leaf_params_in_code": 617,
+    "top_level_maps": 63,
+    "maps_referenced": 10,
+    "ghost_refs": 0,
+    "audit_entries": 1
+  },
+  "schema_v2": [
+    "key",
+    "value",
+    "unit",
+    "valid_from",
+    "valid_to",
+    "source_act",
+    "article",
+    "changed_by",
+    "changed_at",
+    "scope"
+  ],
+  "checks": [
+    {
+      "name": "json_store_coverage",
+      "status": "FAIL",
+      "detail": "parametry w JSON store: 1, w warstwie danych kodu: 617 (liściowe) — pokrycie 0.16%"
+    },
+    {
+      "name": "schema_v2_fields",
+      "status": "FAIL",
+      "detail": "wpisów wg schema v2: 0/1; problemy: 1"
+    },
+    {
+      "name": "ghost_references",
+      "status": "OK",
+      "detail": "referencje do niezdefiniowanych map: []"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P06-L01",
+      "severity": "P0",
+      "evidence": "thresholds_data.json wersjonuje 1 parametr(ów), a warstwa danych kodu definiuje 617 liściowych wartości w 63 mapach — reguły czytają defaulty z kodu, hot-reload danych nie obejmuje zdecydowanej większości progów",
+      "fix": "migracja wartości do JSON store wg schema v2 (P06-I03 lineage) + eksport OPA Data API"
+    },
+    {
+      "id": "V3-P06-L05",
+      "severity": "P1",
+      "evidence": "data_service.validate TypeError (schema min/max jako string): ['vat.standard_rate: schema min/max typ STRING vs value float (TypeError w data_service.validate)']",
+      "fix": "schema min/max przechowywane jako number (typ zgodny z value); walidacja typów przy zapisie"
+    }
+  ],
+  "contract": {
+    "binding": "P07–P36 domenowe (migracja wartości), P38 (hot-reload), P39 (CI)",
+    "rule": "parametr bez source_act/article/valid_from = odrzucenie zapisu"
+  }
+}

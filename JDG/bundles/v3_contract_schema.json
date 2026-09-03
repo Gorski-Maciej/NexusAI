@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.0.0",
+  "report": "V3_CONTRACT_SCHEMA",
+  "generated_at": "2026-09-03T03:21:46.601833+00:00",
+  "schema": {
+    "schema_version": "1.0.0",
+    "contract": "RAPORT_V3_CONTRACT",
+    "required_sections": [
+      "EXECUTIVE SUMMARY",
+      "ZAKRES I OGRANICZENIA",
+      "STAN OBECNY",
+      "PODANALIZY",
+      "MACIERZ PRAWO",
+      "REJESTR LUK",
+      "INNOWACJE ENTERPRISE",
+      "KONTRAKT WYJŚCIOWY",
+      "PLAN WDROŻENIA",
+      "PLAN TESTÓW",
+      "PYTAŃ DO CZŁOWIEKA",
+      "ZAAŁOŻENIA JAWNE"
+    ],
+    "required_tables": [
+      "T1 tabela dowodów",
+      "T2 macierz PRAWO",
+      "T3 rejestr luk",
+      "T4 rejestr innowacji",
+      "T5 kontrakt wyjściowy",
+      "T6 plan wdrożenia",
+      "T7 plan testów",
+      "T8 pytania do człowieka",
+      "T9 założenia jawne",
+      "T10 przekazywane artefakty",
+      "T11 matryca podanaliza",
+      "T12 rejestr konfliktów"
+    ],
+    "id_patterns": {
+      "luka": "V3-P\\d\\d-L\\d{2}",
+      "innowacja": "V3-P\\d\\d-I\\d{2}",
+      "konflikt": "V3-P\\d\\d-C\\d{2}",
+      "pytanie": "V3-P\\d\\d-Q\\d{2}",
+      "krzyżowe": "V3-P\\d\\d-X\\d{2}"
+    },
+    "status_markers": [
+      "WDROŻONY_100",
+      "NIE_WDROŻONY"
+    ],
+    "file_naming": "RAPORT_V3_<KOD>_<SLUG>.txt",
+    "min_innovations": 12,
+    "binding": "P00-I03: schemat kontraktu międzyczęściowego — wiążący dla P01–P68"
+  },
+  "validated_reports": [],
+  "reports_valid": true,
+  "status": "ZGODNE_Z_KONTRAKTEM"
+}

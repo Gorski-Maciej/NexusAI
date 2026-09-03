@@ -1,0 +1,74 @@
+{
+  "innovation": "V3-P04-I03",
+  "name": "Violation Autopsy — automatyczny post-mortem naruszeń (P04-AN04)",
+  "generated_at": "2026-09-03T08:57:46.895606+00:00",
+  "protocol": [
+    "BLOCK",
+    "ALARM",
+    "AUTO_REVERT",
+    "INCIDENT",
+    "POST_MORTEM_AUTO"
+  ],
+  "autopsies": [
+    {
+      "incident_id": "INC-DEMO-001",
+      "invariant_id": "INV-001",
+      "detected_at": "2026-09-03T08:57:46.895478+00:00",
+      "verdict_rule_id": "jdg.vat.rate_bad",
+      "field_involved": "vat_rate",
+      "likely_cause": "stawka spoza zbioru",
+      "responsible_component": "reguła VAT",
+      "recommended_action": "BLOCK werdyktu; korekta mapowania stawki",
+      "auto_revert": true,
+      "evidence": {
+        "input": {
+          "vendor": {
+            "country": "PL"
+          }
+        }
+      },
+      "severity": "P0"
+    },
+    {
+      "incident_id": "INC-DEMO-002",
+      "invariant_id": "INV-021",
+      "detected_at": "2026-09-03T08:57:46.895580+00:00",
+      "verdict_rule_id": "jdg.vat.amount_bad",
+      "field_involved": "gross_amount",
+      "likely_cause": "brutto < netto",
+      "responsible_component": "reguła kwotowa",
+      "recommended_action": "BLOCK; korekta kwot",
+      "auto_revert": false,
+      "evidence": {
+        "invoice": {
+          "amount_net": 100,
+          "amount_gross": 99
+        }
+      },
+      "severity": "P1"
+    },
+    {
+      "incident_id": "INC-DEMO-003",
+      "invariant_id": "INV-038",
+      "detected_at": "2026-09-03T08:57:46.895595+00:00",
+      "verdict_rule_id": "jdg.api_fallback.no_match",
+      "field_involved": "_degraded_context",
+      "likely_cause": "degradacja z klasą CERTAIN",
+      "responsible_component": "runtime_invariants",
+      "recommended_action": "BLOCK; degradacja klasy",
+      "auto_revert": true,
+      "evidence": {
+        "api": {
+          "status": "OFFLINE"
+        }
+      },
+      "severity": "P0"
+    }
+  ],
+  "incident_registry": "append-only, WORM-ready (wzorzec differential_sessions.json)",
+  "gate": {
+    "pass": true,
+    "rule": "każde naruszenie ma post-mortem: przyczyna, reguła, dane, akcja, revert — P04-AN04; rejestr incydentów nieusuwalny"
+  },
+  "note": "Autopsy modelowe (3 przykładowe incydenty) — runtime z P37/monitoringu; auto_revert=true → P0, wymaga incydentu 4-eyes."
+}

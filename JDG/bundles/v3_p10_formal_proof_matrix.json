@@ -1,0 +1,198 @@
+{
+  "innovation": "V3-P10-I04",
+  "name": "Formal Proof Matrix — niezmiennik → metoda → status",
+  "generated_at": "2026-09-03T12:43:20+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "inv_total": 42,
+    "levels": {
+      "BUILD": 10,
+      "RUNTIME": 29,
+      "STATISTICAL": 3
+    },
+    "smt_proof_attempts": 2,
+    "z3_available": false,
+    "matrix_size": 25
+  },
+  "matrix": [
+    {
+      "invariant": "INV-001",
+      "method": "SMT",
+      "status": "UNVERIFIED",
+      "ci_hook": "smt_z3_verification.py prove"
+    },
+    {
+      "invariant": "INV-002",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-003",
+      "method": "SMT",
+      "status": "UNVERIFIED",
+      "ci_hook": "smt_z3_verification.py prove"
+    },
+    {
+      "invariant": "INV-004",
+      "method": "PROPERTY",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-005",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-006",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-007",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-008",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-009",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-010",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-011",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-012",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-013",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-014",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-015",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-016",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-017",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-018",
+      "method": "PROPERTY",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-019",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-020",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-021",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-022",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-023",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-024",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    },
+    {
+      "invariant": "INV-025",
+      "method": "FUZZ",
+      "status": "UNVERIFIED",
+      "ci_hook": "—"
+    }
+  ],
+  "checks": [
+    {
+      "name": "inv_catalog",
+      "status": "OK",
+      "detail": "katalog INV: 42 (42 poziomów)"
+    },
+    {
+      "name": "smt_harness",
+      "status": "OK",
+      "detail": "smt_z3_verification.py: domeny ['all', 'pit', 'zus'], próby INV 2"
+    },
+    {
+      "name": "z3_runtime",
+      "status": "FAIL",
+      "detail": "biblioteka z3-solver dostępna: False (bez Z3 dowód = UNVERIFIED)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P10-L04",
+      "severity": "P1",
+      "evidence": "smt_z3_verification.py działa w trybie skeleton — brak z3-solver w środowisku; żaden INV nie ma statusu PROVEN (fail-open z jawnym UNVERIFIED)",
+      "fix": "I04/I05: dodać z3-solver do CI (P39), macierz formalizowalności z hookiem prove per INV; UNVERIFIED nie blokuje, ale jest widoczny"
+    }
+  ],
+  "contract": {
+    "binding": "P04 (invarianty), P39 (CI), P44 (certyfikacja)",
+    "rule": "każdy INV ma przypisaną metodę dowodu; status PROVEN tylko z realnym dowodem (Z3/property), nigdy z deklaracji"
+  }
+}

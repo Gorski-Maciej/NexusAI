@@ -1,0 +1,56 @@
+{
+  "innovation": "V3-P08-I04",
+  "generated_at": "2026-09-03T10:42:21.284170+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "changes": 1,
+    "sla_buckets": [
+      30,
+      14,
+      7
+    ],
+    "lead_time_avg_days": 26595.0,
+    "target_lead_days": 30
+  },
+  "per_change": [
+    {
+      "id": "DRL-0001",
+      "countdown_days": 26569,
+      "buckets_ok": {
+        "30": true,
+        "14": true,
+        "7": true
+      },
+      "rules_prepared": 0
+    }
+  ],
+  "checks": [
+    {
+      "name": "sla_bucket_30_14_7",
+      "status": "OK",
+      "detail": "zmiany: 1; niespełniające progu 7 dni: brak"
+    },
+    {
+      "name": "lead_kpi_target",
+      "status": "OK",
+      "detail": "kpi lead_time_avg_days=26595.0 vs target=30"
+    },
+    {
+      "name": "dashboard_artifact",
+      "status": "FAIL",
+      "detail": "brak artefaktu dashboardu per-nowelizacja (30/14/7)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P08-L04",
+      "severity": "P1",
+      "evidence": "law_radar.json KPI: lead_time_avg_days=26595 (draft testowy 2099) — brak pomiaru lead time per nowelizacja; kalendarz: 1 zmiana(y) bez ścieżki 30→14→7 w CI",
+      "fix": "I04 Lead-Time SLA Dashboard: buckets 30/14/7 per zmiana z alertem i blokadą; KPI lead per akt (nie globalna średnia)"
+    }
+  ],
+  "contract": {
+    "binding": "P08-I05 (impact na brak gotowości), P07 (SHADOW przed wejściem), P38 (bundle z datą wejścia), P37 (SLO)",
+    "rule": "każda zmiana: SHADOW gotowy ≥ 30 dni, CANDIDATE ≥ 14, ACTIVE ≥ 7 dni przed wejściem; inaczej alert P1"
+  }
+}

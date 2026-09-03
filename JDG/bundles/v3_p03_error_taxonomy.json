@@ -1,0 +1,130 @@
+{
+  "innovation": "V3-P03-I12",
+  "name": "Error Taxonomy DSL — kody + dokumentacja synchronicznie (P03-AN08)",
+  "generated_at": "2026-09-03T08:25:35.963163+00:00",
+  "errors": [
+    {
+      "code": "JDG-ERROR-VALIDATION-001",
+      "severity": "ERROR",
+      "domain": "validation",
+      "http_status": 422,
+      "retryable": false,
+      "temporary": false,
+      "description": "Nieprawidłowy identyfikator (NIP/REGON checksum)",
+      "resolution": "Popraw identyfikator przed ponownym wysłaniem"
+    },
+    {
+      "code": "JDG-ERROR-VALIDATION-002",
+      "severity": "ERROR",
+      "domain": "validation",
+      "http_status": 422,
+      "retryable": false,
+      "temporary": false,
+      "description": "Niezgodność kwot netto+VAT vs brutto",
+      "resolution": "Popraw kwoty faktury"
+    },
+    {
+      "code": "JDG-ERROR-VALIDATION-003",
+      "severity": "ERROR",
+      "domain": "validation",
+      "http_status": 422,
+      "retryable": false,
+      "temporary": false,
+      "description": "Data faktury w przyszłości",
+      "resolution": "Popraw datę wystawienia"
+    },
+    {
+      "code": "JDG-ERROR-CONTRACT-001",
+      "severity": "ERROR",
+      "domain": "contract",
+      "http_status": 500,
+      "retryable": true,
+      "temporary": true,
+      "description": "Werdykt niekompletny — naruszenie kontraktu 25-polowego (INV-043)",
+      "resolution": "Ponów po aktualizacji bundla; zgłoś do P03-I05 jeśli utrzymuje się"
+    },
+    {
+      "code": "JDG-ERROR-CONTRACT-002",
+      "severity": "ERROR",
+      "domain": "contract",
+      "http_status": 500,
+      "retryable": true,
+      "temporary": true,
+      "description": "Invariant BLOCK w POST-MERGE (INV-001..042)",
+      "resolution": "Nie księguj; prześlij werdykt do weryfikacji manualnej"
+    },
+    {
+      "code": "JDG-ERROR-DEGRADED-001",
+      "severity": "WARNING",
+      "domain": "degradation",
+      "http_status": 200,
+      "retryable": true,
+      "temporary": true,
+      "description": "DEGRADED_API — usługa zewnętrzna niedostępna, werdykt TRIAGE",
+      "resolution": "Ponów po przywróceniu usługi; werdykt nie księgowany (INV-038)"
+    },
+    {
+      "code": "JDG-ERROR-DEGRADED-002",
+      "severity": "WARNING",
+      "domain": "degradation",
+      "http_status": 200,
+      "retryable": false,
+      "temporary": false,
+      "description": "PARTIAL — brak danych domeny, werdykt wymaga weryfikacji",
+      "resolution": "Uzupełnij dane; werdykt nie księgowany"
+    },
+    {
+      "code": "JDG-ERROR-BLOCKED-001",
+      "severity": "ERROR",
+      "domain": "risk",
+      "http_status": 409,
+      "retryable": false,
+      "temporary": false,
+      "description": "BLOCK_AND_ALERT — ryzyko fraud/sankcje (risk.rego)",
+      "resolution": "Eskalacja do weryfikacji manualnej; nigdy AUTO_POST"
+    },
+    {
+      "code": "JDG-ERROR-AUTH-001",
+      "severity": "ERROR",
+      "domain": "auth",
+      "http_status": 401,
+      "retryable": false,
+      "temporary": false,
+      "description": "Brak/nieprawidłowa autoryzacja",
+      "resolution": "Popraw token"
+    },
+    {
+      "code": "JDG-ERROR-TIMEOUT-001",
+      "severity": "ERROR",
+      "domain": "infra",
+      "http_status": 504,
+      "retryable": true,
+      "temporary": true,
+      "description": "Przekroczono budżet latencji ewaluacji",
+      "resolution": "Ponów z backoff; alarm do P37 (pass_duration_ms)"
+    }
+  ],
+  "error_count": 10,
+  "retryable_codes": [
+    "JDG-ERROR-CONTRACT-001",
+    "JDG-ERROR-CONTRACT-002",
+    "JDG-ERROR-DEGRADED-001",
+    "JDG-ERROR-TIMEOUT-001"
+  ],
+  "temporary_codes": [
+    "JDG-ERROR-CONTRACT-001",
+    "JDG-ERROR-CONTRACT-002",
+    "JDG-ERROR-DEGRADED-001",
+    "JDG-ERROR-TIMEOUT-001"
+  ],
+  "semantics": {
+    "retryable": "klient może ponowić z backoff (tymczasowe) — NIGDY dla BLOCK",
+    "http_status": "mapowanie na protokół — programowe rozróżnienie",
+    "severity": "ERROR vs WARNING (degradacja to WARNING z pełnym kontraktem)"
+  },
+  "gate": {
+    "pass": true,
+    "rule": "kody unikalne; taksonomia deklaratywna — dokumentacja generowana z definicji (jedno źródło prawdy, AP12); wiąże P41 (API)"
+  },
+  "note": "docs/V3_P03_ERROR_TAXONOMY.md generowany z tej samej definicji co bundle — zmiana kodu wymaga zmiany definicji (I05 analogia dla błędów)."
+}

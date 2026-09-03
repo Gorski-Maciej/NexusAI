@@ -1,0 +1,92 @@
+{
+  "innovation": "V3-P07-I03",
+  "generated_at": "2026-09-03T10:27:22.606083+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "deployments": 44,
+    "phases": {
+      "FULL_SOAK": 2,
+      "ROLLED_BACK": 25,
+      "COMPLETE_SOAK": 17
+    },
+    "delta_recorded": 25,
+    "delta_over_2pct": 0,
+    "rollbacks": 25,
+    "rollback_pct": 56.8,
+    "active_version": "jdg-bundle-v8.0.0"
+  },
+  "delta_samples": [
+    [
+      "jdg-kks-bundle-v9.0.0",
+      1.0
+    ],
+    [
+      "jdg-ord-bundle-v9.0.0",
+      1.0
+    ],
+    [
+      "jdg-acc-bundle-v9.0.0",
+      1.0
+    ],
+    [
+      "jdg-xb-bundle-v9.0.0",
+      1.0
+    ],
+    [
+      "jdg-plb-bundle-v9.0.0",
+      1.0
+    ],
+    [
+      "jdg-lc-bundle-v9.0.0",
+      1.0
+    ],
+    [
+      "jdg-hp-bundle-v9.0.0",
+      1.0
+    ],
+    [
+      "jdg-rab-bundle-v9.0.0",
+      1.0
+    ]
+  ],
+  "checks": [
+    {
+      "name": "delta_recorded",
+      "status": "OK",
+      "detail": "deploymenty z zapisaną deltą: 25/44"
+    },
+    {
+      "name": "delta_gate_enforced",
+      "status": "FAIL",
+      "detail": "fazy przejściowe z bramką delta (SHADOW/RAMP/CANARY): BRAK — delta ≤ 2.0% nie egzekwowana na ścieżce awansu"
+    },
+    {
+      "name": "rollback_health",
+      "status": "WARN",
+      "detail": "rollbacki: 25/44 (57%) — wysoki wskaźnik wymaga analizy (L07)"
+    },
+    {
+      "name": "active_version_fresh",
+      "status": "OK",
+      "detail": "active_version=jdg-bundle-v8.0.0 w healthy/deployments: True"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P07-L06",
+      "severity": "P1",
+      "evidence": "cmd_shadow_compare istnieje (próg ≤ 2%), ale żaden deployment nie ma fazy SHADOW_COMPARE/RAMPED w historii (rozkład: {'FULL_SOAK': 2, 'ROLLED_BACK': 25, 'COMPLETE_SOAK': 17}) — automatyzacja porównania shadow nie jest wpięta w proces",
+      "fix": "Shadow Delta Automator (I03): faza obowiązkowa przed awansem + raport różnic do PR [BM]"
+    },
+    {
+      "id": "V3-P07-L07",
+      "severity": "P2",
+      "evidence": "wskaźnik rollbacków 57% (25/44) — proces wdrożeniowy generuje ponad 2× więcej wycofań niż udanych pełnych soaków",
+      "fix": "analiza przyczyn rollbacków (I10 telemetry) + bramki jakości przed soakiem (I01)"
+    }
+  ],
+  "contract": {
+    "binding": "P38 (rollout), P39 (CI), P37 (metryki delta), P07-I01 (awans)",
+    "rule": "awans bez zapisanej delty ≤ 2% w fazie SHADOW_COMPARE = blokada [BM]"
+  }
+}

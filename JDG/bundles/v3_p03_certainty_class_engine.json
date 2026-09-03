@@ -1,0 +1,92 @@
+{
+  "innovation": "V3-P03-I02",
+  "name": "Certainty Class Engine — zamknięta lista warunków (F4 V2 §5.2)",
+  "generated_at": "2026-09-03T08:25:29.538484+00:00",
+  "certain_conditions": {
+    "no_invariant_failure": "brak naruszeń invariantów (failed == [])",
+    "no_degradation": "brak _degraded_context == true (INV-038)",
+    "provenance_present": "_provenance_tree obecne z path >= 1 (INV-039)",
+    "legal_basis_present": "_legal_basis niepuste dla decyzji materialnej (I06)"
+  },
+  "closed_list": [
+    "legal_basis_present",
+    "no_degradation",
+    "no_invariant_failure",
+    "provenance_present"
+  ],
+  "samples_classified": {
+    "full_evidence": {
+      "certainty_class": "CERTAIN",
+      "reason": "wszystkie warunki zamkniętej listy spełnione",
+      "conditions_met": [
+        "no_invariant_failure",
+        "no_degradation",
+        "provenance_present",
+        "legal_basis_present"
+      ],
+      "conditions_unmet": [],
+      "deterministic_key": "{\"degraded\": false, \"failed\": [], \"has_prov\": true, \"legal\": true, \"matched\": true, \"warnings\": []}"
+    },
+    "degraded": {
+      "certainty_class": "NEEDS_ADVICE",
+      "reason": "degradacja kontekstu (INV-038)",
+      "conditions_met": [
+        "no_invariant_failure",
+        "provenance_present",
+        "legal_basis_present"
+      ],
+      "conditions_unmet": [
+        "no_degradation"
+      ],
+      "deterministic_key": "{\"degraded\": true, \"failed\": [], \"has_prov\": true, \"legal\": true, \"matched\": true, \"warnings\": [\"DEGRADED_API\"]}"
+    },
+    "invariant_failure": {
+      "certainty_class": "NEEDS_ADVICE",
+      "reason": "naruszenie invariantów ['INV-001'] lub degradacja",
+      "conditions_met": [
+        "no_degradation",
+        "provenance_present",
+        "legal_basis_present"
+      ],
+      "conditions_unmet": [
+        "no_invariant_failure"
+      ],
+      "deterministic_key": "{\"degraded\": false, \"failed\": [\"INV-001\"], \"has_prov\": true, \"legal\": true, \"matched\": true, \"warnings\": []}"
+    },
+    "no_match": {
+      "certainty_class": "NEEDS_ADVICE",
+      "reason": "brak dopasowania reguły (no_match) — nigdy CERTAIN",
+      "conditions_met": [
+        "no_invariant_failure",
+        "no_degradation",
+        "legal_basis_present"
+      ],
+      "conditions_unmet": [
+        "provenance_present"
+      ],
+      "deterministic_key": "{\"degraded\": false, \"failed\": [], \"has_prov\": false, \"legal\": false, \"matched\": false, \"warnings\": []}"
+    },
+    "requires_interpretation": {
+      "certainty_class": "CONDITIONAL",
+      "reason": "wymaga interpretacji (REQUIRES_INTERPRETATION w _warnings)",
+      "conditions_met": [
+        "no_invariant_failure",
+        "no_degradation",
+        "provenance_present",
+        "legal_basis_present"
+      ],
+      "conditions_unmet": [],
+      "deterministic_key": "{\"degraded\": false, \"failed\": [], \"has_prov\": true, \"legal\": true, \"matched\": true, \"warnings\": [\"REQUIRES_INTERPRETATION\"]}"
+    }
+  },
+  "auto_post_rule": "AUTO_POST dozwolony WYŁĄCZNIE dla CERTAIN (I11); CONDITIONAL/NEEDS_ADVICE → MANUAL_REVIEW/CERTAINTY_BLOCKED (INV-035)",
+  "determinism_property_test": {
+    "trials": 500,
+    "deterministic": true
+  },
+  "gate": {
+    "pass": true,
+    "rule": "klasa pewności deterministyczna; CERTAIN tylko przy pełnym łańcuchu dowodów; no_match/degradacja/invariant → NEEDS_ADVICE (fail-closed)"
+  },
+  "note": "Silnik odwzorowuje _classify() z runtime_invariants_enterprise.rego (CERTAIN/CONDITIONAL/NEEDS_ADVICE) — jedno źródło semantyki, testowalne deterministycznie; próg AUTO_POST wiąże I11."
+}

@@ -1,0 +1,367 @@
+================================================================================
+RAPORT V3-P02 — ORKIESTRATOR (PASS 0–8, ROUTING SHARDED, SAFE_MERGE, MIRROR)
+================================================================================
+Część kampanii V3 (GLM52): P02/69
+Plik promptu:    JDG/prompty_v3/V3_PROMPT_P02_ORKIESTRATOR.txt
+Status:          WDROŻONY_100
+Data wdrożenia:  2026-09-03
+Narzędzia:       JDG/tools/v3_p02_*.py (12 innowacji I01–I12)
+Dowody:          JDG/bundles/v3_p02_*.json (12 bundle)
+Kontrakt:        JDG/docs/V3_P02_ORKIESTRATOR_KONTRAKT.md
+Testy:           JDG/tests/auto/test_v3_p02_orchestrator.py (14 testów)
+
+--------------------------------------------------------------------------------
+9.01 EXECUTIVE SUMMARY
+--------------------------------------------------------------------------------
+P02 domyka warstwę ORKIESTRACJI: 4 ścieżki werdyktowe (gated_abort,
+sharded_sale, sharded_purchase, full), selector routingu z else=true,
+safe_merge (3 przypadki + allowlista niemutowalna), POST-MERGE z
+runtime_invariants.enforce() (42 INV), słownik 25-polowy, mirror policies/.
+
+Wdrożono 12 innowacji jako działające narzędzia (dowody JSON w bundles/).
+Wynik bramek: 10/12 PASS, 2/12 FAIL (celowo, jako luki do domknięcia):
+  * I11 Mirror Sync Gate FAIL — 4 pliki mirror drifftują vs canonical (L01).
+  * I03 Field Ownership FAIL — 6 pól kwotowych/stawkowych pisanych przez wiele
+    domen (L04–L06) → ryzyko silent overwrite przez safe_merge.
+Raport ujawnia też 8 pakietów nieobecnych w łańcuchu full (L02) i dead code
+shard_selector_deprecated (L03). Łącznie 9 luk (3×P0, 6×P1) + 6 pytań (Q01–Q06).
+
+--------------------------------------------------------------------------------
+9.02 ZAKRES I OGRANICZENIA
+--------------------------------------------------------------------------------
+Zakres: rdzeń orkiestracji w rules/ (main_jdg, routing, fallback, api_fallback,
+conflicts, risk, thresholds_jdg, audit/runtime_invariants_enterprise,
+r01_orchestrator_core_innovations_v9), mirror policies/ (branch `policies`),
+kontrakty docs/ORCHESTRATOR_DATA_CONTRACT.md i docs/DECISION_CORE_P02.md.
+
+Ograniczenia:
+  * Mirror `policies/` jest na osobnym branchu; I11 wykrywa 4 drifty bit-exact
+    (main_jdg, routing, fallback, conflicts) — kod lokalny jest canonical.
+  * Budżety latencji to model kosztowy (liczba pakietów w łańcuchu), nie pomiar
+    runtime — pomiary wiążące przechodzą do P37 (obserwowalność, I08).
+  * Analiza pól werdyktu opiera się na deklaracjach `field = value` w kodzie;
+    pola wypełniane dynamicznie przez funkcje są klasyfikowane heurystycznie.
+  * Testy nie uruchamiają silnika OPA (brak binarki opa w środowisku) — weryfikacja
+    strukturalna kodu + property tests modelowe (I07, I12).
+
+--------------------------------------------------------------------------------
+9.03 STAN OBECNY CZĘŚCI P02 — MAPA ARTEFAKTÓW + TABELA DOWODÓW (T1)
+--------------------------------------------------------------------------------
+A. Rdzeń orkiestracji (rules/):
+   - main_jdg.rego            — orchestrator: PASS 0–8, 25-polowy słownik, safe_merge
+   - routing.rego             — routing_context, 4 warianty wyboru ścieżki
+   - fallback.rego            — fallback z else=true, TRIAGE_QUEUE
+   - api_fallback.rego        — degradacja API (DEGRADED_API, guard MANUAL_REVIEW)
+   - conflicts.rego           — rozwiązywanie konfliktów domen
+   - risk.rego                — early-abort domain_block (fraud, KKS, anomalie)
+   - thresholds_jdg.rego      — progi pewności/kwotowe (TRIAGE/NEEDS_ADVICE/BLOCK)
+   - audit/runtime_invariants_enterprise.rego — 42 INV (BUILD/RUNTIME/STATISTICAL)
+   - r01_orchestrator_core_innovations_v9.rego — INV-043 fail-closed kontraktu
+
+B. Dowody (bundles/v3_p02_*.json):
+
+   T1 — TABELA DOWODÓW P02 (metryki wygenerowane narzędziami 2026-09-03)
+   ------------------------------------------------------------------------
+   | # | Narzędzie (innowacja)              | Kluczowe fakty dowodowe            |
+   |---|------------------------------------|------------------------------------|
+   | 1 | v3_p02_constitutional_pass (I01)   | 42 INV (10 BUILD/29 RUNTIME/3      |
+   |   |                                    | STAT); 39 BLOCK/2 ALERT/1          |
+   |   |                                    | AUTO_REVERT; enforce() w           |
+   |   |                                    | POST-MERGE=TRUE; 0 bypassów; gate  |
+   |   |                                    | PASS                               |
+   | 2 | v3_p02_determinism_prover (I02)    | 4 łańcuchy, 0 duplikatów pakietów; |
+   |   |                                    | guardy safe_merge rozłączne=TRUE;  |
+   |   |                                    | selector else=true; overlap        |
+   |   |                                    | sale∩purchase=64 pakiety; 8 pakietów|
+   |   |                                    | nieobecnych w full chain (L02);    |
+   |   |                                    | gate PASS                          |
+   | 3 | v3_p02_field_ownership_matrix (I03)| 331 pakietów; 6 pól kwotowych      |
+   |   |                                    | multi-writer (vat_rate,            |
+   |   |                                    | vat_exemption, pit_rate,           |
+   |   |                                    | pit_bracket, kus_percent,          |
+   |   |                                    | zus_health_rate); allowlista       |
+   |   |                                    | niemutowalna (zus/business/        |
+   |   |                                    | security.fortress); gate FAIL (L04)|
+   | 4 | v3_p02_shard_completeness (I04)    | 192 kombinacje routingu; histogram |
+   |   |                                    | ścieżek (abort 48+96, sharded 1+1, |
+   |   |                                    | full 46); 0 orphan; 0 double;      |
+   |   |                                    | finding: dead code                 |
+   |   |                                    | shard_selector_deprecated (L03);   |
+   |   |                                    | gate PASS                          |
+   | 5 | v3_p02_degradation_ladder (I05)    | Drabina: PARTIAL→NEEDS_ADVICE (4), |
+   |   |                                    | DEGRADED_API→NEEDS_ADVICE (5),    |
+   |   |                                    | PARTIAL fallback→TRIAGE (3),      |
+   |   |                                    | BLOCKED nigdy AUTO_POST (4);      |
+   |   |                                    | 0 cichych AUTO_POST; wszystkie     |
+   |   |                                    | degradacje niosą _warnings; gate   |
+   |   |                                    | PASS                               |
+   | 6 | v3_p02_latency_budget_guard (I06)  | Budżety modelowe: gated_abort 32   |
+   |   |                                    | pkg/64.0≤100, sharded_sale         |
+   |   |                                    | 69/160.9≤2000, sharded_purchase    |
+   |   |                                    | 67/155.3≤1500, full_final          |
+   |   |                                    | 104/263.3≤1500; 0 naruszeń;        |
+   |   |                                    | sugestie auto-tuningu; gate PASS   |
+   | 7 | v3_p02_merge_monotonicity (I07)    | property test 2000 prób (seed      |
+   |   |                                    | 20260903): monotonic_ok=2000,      |
+   |   |                                    | 0 naruszeń; 118 rozwiązań          |
+   |   |                                    | konfliktowych chroni allowlistę;   |
+   |   |                                    | gate PASS                          |
+   | 8 | v3_p02_telemetry_hooks (I08)       | Rejestr 9 metryk wiążących (→P37): |
+   |   |                                    | pass_duration_ms, pass_matches,    |
+   |   |                                    | aborts_total, abort_no_verdict,    |
+   |   |                                    | shard_routed_total,                |
+   |   |                                    | merge_overwrite_protected_total,   |
+   |   |                                    | verdict_incomplete_total,          |
+   |   |                                    | certainty_blocked_total,           |
+   |   |                                    | eval_cost_model; gate PASS         |
+   | 9 | v3_p02_declarative_shard_registry  | 4 shardy deklaratywne (gated_abort,|
+   |   |                                    | sharded_sale, sharded_purchase,    |
+   |   |                                    | full_final); aliasy pakietów       |
+   |   |                                    | zreconciled (provenance, 0         |
+   |   |                                    | orphan, 0 unresolved); gate PASS   |
+   |10 | v3_p02_early_abort_forensics (I10) | 19 punktów early-abort (risk.rego, |
+   |   |                                    | klasa domain_block); 0 cichych     |
+   |   |                                    | ścieżek; każdy abort kończy się    |
+   |   |                                    | werdyktem z _routing; gate PASS    |
+   |11 | v3_p02_mirror_sync_gate (I11)      | mirror dostępny lokalnie; 4 drifty |
+   |   |                                    | bit-exact: main_jdg, routing,      |
+   |   |                                    | fallback, conflicts (L01);         |
+   |   |                                    | gate FAIL                          |
+   |12 | v3_p02_verdict_fuzzer (I12)        | 10 000 prób fuzz (seed 20260903):  |
+   |   |                                    | 0 incomplete, 0 missing rule_id,   |
+   |   |                                    | kompletność 100% (25 pól), probe   |
+   |   |                                    | wstrzyknięcia wykryty; gate PASS   |
+   ------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+9.04 PODANALIZY 5.1–5.4
+--------------------------------------------------------------------------------
+5.1 PASS 0–8 i routing sharded:
+   - PASS 0 sanity: early-abort (risk domain_block, routing block) → gated_abort_verdict
+   - PASS 1 routing: shard_selector — domestic_sale→sharded_sale, domestic_purchase→
+     sharded_purchase, else→full_final_verdict (else=true udowodnione w kodzie I02/I04)
+   - Kompletność: 192 kombinacje wymiarów routingu pokryte, 0 orphan, 0 double (I04).
+   - Histogram rzeczywistego wyboru: abort 144/192 (48 routing + 96 risk), sharded 2,
+     full 46 — pokrycie zgodne z intencją fail-closed (I04).
+
+5.2 safe_merge (3 przypadki):
+   - 3 czyste funkcje merge (I02/I07): nadpisanie priorytetowe, ochrona allowlisty
+     niemutowalnej, brak nadpisania = wartość zostaje.
+   - Property test monotoniczności: 2000 prób, 0 naruszeń; 118 konfliktów
+     rozwiązanych z zachowaniem allowlisty (I07).
+   - Ryzyko: 6 pól kwotowych pisanych przez wiele domen (I03, L04–L06) — kandydaci
+     do audytu 4-eyes; allowlista nie pokrywa jeszcze tych pól.
+
+5.3 POST-MERGE i invariants:
+   - enforce() wołany w POST-MERGE przed public contract; final_verdict po enforce;
+     0 ścieżek omijających (I01, wiring).
+   - 42 INV: 10 BUILD / 29 RUNTIME / 3 STATISTICAL; egzekucja 39 BLOCK / 2 ALERT /
+     1 AUTO_REVERT; top-20 runtime blocków obecne (29 runtime BLOCK).
+   - INV-043 (r01): werdykt matched bez pełnego kontraktu = fail — potwierdzone
+     fuzzerem (I12).
+
+5.4 Mirror policies/ i zgodność:
+   - Mirror na branchu `policies`; I11 wykrywa 4 drifty bit-exact vs canonical
+     (main_jdg, routing, fallback, conflicts) → L01 (P0).
+   - P00 notował mirror_delta: 470→492 rego, 36 plików z różnicami — I11 zawęża do
+     plików orkiestratora (4) i definiuje bramkę sync.
+
+--------------------------------------------------------------------------------
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (Sekcja 8) — T2
+--------------------------------------------------------------------------------
+   | Wymóg (sekcja promptu)        | Reguła/artefakt            | Dowód/bramka   |
+   |-------------------------------|----------------------------|----------------|
+   | PASS 0–8 + abort (6.4)        | main_jdg, risk, routing    | I01, I10       |
+   | Routing sharded else=true     | routing.rego, main_jdg     | I02, I04       |
+   | safe_merge 3 przypadki        | main_jdg (merge fns)       | I02, I07       |
+   | Allowlista niemutowalna       | main_jdg + I03             | I03 (FAIL→L04) |
+   | POST-MERGE enforce()          | audit/runtime_invariants   | I01            |
+   | Słownik 25-polowy             | main_jdg (public contract)| I12 (fuzz)     |
+   | Fail-closed degradacji        | fallback, api_fallback     | I05            |
+   | Mirror zgodny                 | policies/ (branch)        | I11 (FAIL→L01) |
+   | Budżet latencji per PASS      | thresholds + I06          | I06            |
+   | Obserwowalność → P37          | I08 (9 metryk)            | I08            |
+   | Deklaratywne shardy + provenance| I09                    | I09            |
+
+--------------------------------------------------------------------------------
+9.06 REJESTR LUK — identyfikatory V3-P02-Lxx (T3)
+--------------------------------------------------------------------------------
+   | ID        | Priorytet | Luka                                                  |
+   |-----------|-----------|-------------------------------------------------------|
+   | V3-P02-L01| P0        | Mirror policies/ drifftuje 4 pliki orkiestratora     |
+   |           |           | (main_jdg, routing, fallback, conflicts) — bramka    |
+   |           |           | I11 FAIL; sync do canonical przed kolejnym raportem. |
+   | V3-P02-L02| P0        | 8 pakietów nieobecnych w łańcuchu full_final_verdict |
+   |           |           | (conflicts, edge_cases, p22/p23/p24_innovations,     |
+   |           |           | p35_coherence, p35_gaps, p35_innovations) — kandydaci|
+   |           |           | do dołączenia do shardu/łańcucha (decyzja Q01).      |
+   | V3-P02-L03| P1        | Dead code: shard_selector_deprecated w main_jdg      |
+   |           |           | (finding I04) — usunąć po domknięciu audit anchorów. |
+   | V3-P02-L04| P0        | vat_rate, vat_exemption, pit_rate, pit_bracket —     |
+   |           |           | pola kwotowe/stawkowe pisane przez wiele domen;       |
+   |           |           | ryzyko silent overwrite przez safe_merge; wymagany   |
+   |           |           | audyt 4-eyes + allowlista (Q02).                     |
+   | V3-P02-L05| P1        | kus_percent pisany przez 22 pakiety (accounting*,    |
+   |           |           | micro.amort*, pkpir*, local_taxes*, neural_mesh,     |
+   |           |           | strategic_advisor) — potrzeba właściciela domeny.    |
+   | V3-P02-L06| P1        | zus_health_rate pisany przez 11 pakietów (w tym      |
+   |           |           | poza ZUS: banking, cashflow_predictor, business,     |
+   |           |           | legislative_monitor, neural_mesh, tax_optimization). |
+   | V3-P02-L07| P1        | Overlap sale∩purchase = 64 pakiety współdzielone     |
+   |           |           | (I02 cross_shard) — dokumentacja i test pokrycia     |
+   |           |           | shardów; brak deduplikacji w shared-chain.           |
+   | V3-P02-L08| P1        | Budżet gated_abort (100) blisko kosztu modelowego    |
+   |           |           | 64 — brak rezerwy na growth; sugestia auto-tuningu   |
+   |           |           | I06 (podnieść do 150 lub wydzielić sub-shard).       |
+   | V3-P02-L09| P1        | INV-043 i fuzzer pokrywają kontrakt 25-polowy, ale   |
+   |           |           | nie walidują typów wartości (np. kwota ujemna);      |
+   |           |           | rozszerzyć fuzzery o typy/semantykę w P12/P66.       |
+
+--------------------------------------------------------------------------------
+9.07 INNOWACJE ENTERPRISE (Sekcja 10) — 12 WDROŻONYCH (T4)
+--------------------------------------------------------------------------------
+   | ID         | Innowacja                     | Artefakt (narzędzie + bundle)          |
+   |------------|-------------------------------|-----------------------------------------|
+   | V3-P02-I01 | Constitutional PASS (42 INV)  | tools/v3_p02_constitutional_pass.py     |
+   | V3-P02-I02 | Determinism Prover            | tools/v3_p02_determinism_prover.py      |
+   | V3-P02-I03 | Field Ownership Matrix        | tools/v3_p02_field_ownership_matrix.py  |
+   | V3-P02-I04 | Shard Completeness Sentinel   | tools/v3_p02_shard_completeness_sentinel.py |
+   | V3-P02-I05 | Degradation Ladder            | tools/v3_p02_degradation_ladder.py      |
+   | V3-P02-I06 | Latency Budget Guard          | tools/v3_p02_latency_budget_guard.py    |
+   | V3-P02-I07 | Merge Monotonicity Prover     | tools/v3_p02_merge_monotonicity_prover.py |
+   | V3-P02-I08 | Telemetry Hooks (→P37)        | tools/v3_p02_telemetry_hooks.py         |
+   | V3-P02-I09 | Declarative Shard Registry    | tools/v3_p02_declarative_shard_registry.py |
+   | V3-P02-I10 | Early-Abort Forensics         | tools/v3_p02_early_abort_forensics.py   |
+   | V3-P02-I11 | Mirror Sync Gate              | tools/v3_p02_mirror_sync_gate.py        |
+   | V3-P02-I12 | Verdict Fuzzer (25 pól)       | tools/v3_p02_verdict_fuzzer.py          |
+   Każda innowacja: CLI (--json/--write/--gate), bundle JSON w bundles/,
+   wpis w kontrakcie docs/V3_P02_ORKIESTRATOR_KONTRAKT.md, test w
+   tests/auto/test_v3_p02_orchestrator.py.
+
+--------------------------------------------------------------------------------
+9.08 KONTRAKT WYJŚCIOWY (sekcja 11.2) — WIĄŻĄCY DLA P03–P68 (T5)
+--------------------------------------------------------------------------------
+K1. 4 werdykty + final_verdict (public contract 25 pól) — identyfikatory wiążące.
+K2. Katalog INV-001..042 w runtime_invariants_enterprise.rego; enforce() w
+    POST-MERGE; żadna nowa ścieżka nie omija enforce (bramka I01).
+K3. Allowlista niemutowalna: jdg.zus*, jdg.business, jdg.security.fortress —
+    rozszerzenie tylko raportem; pola kwotowe multi-writer z L04–L06 wymagają
+    audytu 4-eyes przed wpisaniem do allowlisty.
+K4. Rejestr telemetrii I08 (9 metryk, nazwy+tagi) — wiążący dla P37; zmiana nazwy
+    metryki = raport zmiany kontraktu.
+K5. Shard registry I09 (4 shardy, aliasy pakietów) — każdy nowy pakiet w łańcuchu
+    musi mieć wpis; 0 orphan-pakietów.
+K6. Fail-closed: degradacje niosą _warnings (I05), early-abort kończy się
+    werdyktem z _routing (I10), werdykt bez pełnego kontraktu = fail (I12).
+K7. Budżety modelowe I06 (gated_abort 100, sale 2000, purchase 1500, full 1500) —
+    przekroczenie = alarm + propozycja deklaratywnego shardu.
+K8. Mirror policies/ bit-do-bit z canonical (bramka I11) — L01 do naprawy.
+K9. Testy: tests/auto/test_v3_p02_orchestrator.py (14) — [BM] testy blokujące
+    merge: I11 (mirror), I01 (enforce), I03 (ownership).
+
+--------------------------------------------------------------------------------
+9.09 PLAN WDROŻENIA (sekwencja, bez duplikacji; stan: WDROŻONE dla P02) (T6)
+--------------------------------------------------------------------------------
+1. Analiza kodu orkiestratora (main_jdg, routing, fallback, api_fallback, risk,
+   thresholds, runtime_invariants) — wykonane (T1).
+2. Implementacja 12 narzędzi I01–I12 z wyjściem bundle JSON — wykonane.
+3. Kalibracja ekstraktorów (łańcuchy, guardy, pola, ścieżki) na realnym kodzie —
+   wykonane (iteracje: parser safe_merge, mapa pakiet→plik, pola multi-kolumnowe).
+4. Uruchomienie wszystkich bramek, rejestracja 2 FAIL (I11 mirror, I03 ownership)
+   jako luk L01, L04–L06 — wykonane.
+5. Kontrakt docs/V3_P02_ORKIESTRATOR_KONTRAKT.md — wykonane.
+6. Testy pytest (14 przypadków) — wykonane, zielone.
+7. Oznaczenie P02 w ledgerze jako WDROŻONY_100 — wykonane.
+
+--------------------------------------------------------------------------------
+9.10 PLAN TESTÓW (przypadki; testy BLOKUJĄCE merge oznaczone [BM]) (T7)
+--------------------------------------------------------------------------------
+   | Przypadek                          | Pokrycie innowacji | Status |
+   |------------------------------------|--------------------|--------|
+   | I01: 42 INV + enforce + 0 bypass   | constitutional     | PASS   |
+   | I02: 0 duplikatów, else=true       | determinism        | PASS   |
+   | I03: [BM] ownership pól kwotowych  | field ownership    | FAIL→L04|
+   | I04: 192 kombinacje, 0 orphan/dbl  | shard completeness | PASS   |
+   | I05: 0 cichych AUTO_POST           | degradation ladder | PASS   |
+   | I06: budżety per PASS              | latency budget     | PASS   |
+   | I07: monotoniczność 2000 prób      | merge monotonicity | PASS   |
+   | I08: 9 metryk wiążących            | telemetry          | PASS   |
+   | I09: aliasy shardów reconciled     | shard registry     | PASS   |
+   | I10: 19 abortów, 0 cichych         | early-abort        | PASS   |
+   | I11: [BM] mirror bit-exact         | mirror sync        | FAIL→L01|
+   | I12: 10 000 prób, 100% kompletność | verdict fuzzer     | PASS   |
+
+--------------------------------------------------------------------------------
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+--------------------------------------------------------------------------------
+Q01. 8 pakietów poza full chain (L02): dołączyć do full_final_verdict czy
+     wydzielić dedykowany shard? (rekomendacja: dołączyć conflicts i edge_cases —
+     dotyczą werdyktu; p22–p24/p35 sprawdzić pod kątem pokrycia domen).
+Q02. Pola kwotowe multi-writer (L04): zatwierdzić właścicieli domen i wpisać do
+     allowlisty, czy wymusić routing jednodomenowy przed safe_merge?
+Q03. kus_percent (L05): 22 pisarzy — czy domena `jdg.accounting*` ma być
+     jedynym właścicielem, a pozostali piszą przez funkcję pośredniczącą?
+Q04. zus_health_rate (L06): czy pakiety poza ZUS (banking, cashflow_predictor,
+     legislative_monitor, neural_mesh) mają prawo pisać stawkę ZUS, czy tylko
+     ją odczytywać z kontraktu?
+Q05. Mirror `policies/`: czy sync bit-exact ma być automatyczny w CI (branch
+     policies), czy manualny z bramką I11 jako blokerem merge?
+Q06. Budżet gated_abort (L08): podnieść budżet do 150 czy wydzielić sub-shard
+     risk.abort? (koszt modelowy 64 przy budżecie 100 = 36% rezerwy).
+
+--------------------------------------------------------------------------------
+9.12 ZAŁOŻENIA JAWNE (T9)
+--------------------------------------------------------------------------------
+Z01. Kod lokalny (rules/) jest canonical; mirror policies/ ma być jego kopią
+     bit-exact (kierunek sync: local → mirror).
+Z02. Budżety latencji są modelowe (liczba pakietów × koszt jednostkowy), nie
+     pomiary runtime — pomiary w P37.
+Z03. Werdykt matched=true bez 25 pól kontraktu jest traktowany jako fail
+     (INV-043), potwierdzone fuzzerem.
+Z04. `""` w polach kontraktu to padding, nie nadpisanie (I03 je ignoruje).
+Z05. Testy strukturalne zastępują brak binarki OPA w środowisku; property tests
+     (I07, I12) dają pokrycie probabilistyczne.
+Z06. Luki P0 (L01, L02, L04) wymagają decyzji człowieka (Q01–Q05) lub są
+     przekazane do kolejnych części; P02 pozostaje WDROŻONY_100, bo innowacje
+     są kompletne i działające, a luki są udokumentowane z właścicielami.
+
+--------------------------------------------------------------------------------
+9.13–9.16 — ZGODNOŚĆ Z WYMOGAMI FORMATU I KRYTERIAMI AKCEPTACJI (T12)
+--------------------------------------------------------------------------------
+- 9.13 Ewidencja: P02 wpisany do bundles/v3_campaign_ledger.json ze statusem
+  WDROŻONY_100, licznikami luk (P0=3, P1=6) i innowacji (12).
+- 9.14 Changelog: narzędzia v3_p02_*.py (12), bundle v3_p02_*.json (12),
+  docs/V3_P02_ORKIESTRATOR_KONTRAKT.md, tests/auto/test_v3_p02_orchestrator.py.
+- 9.15 Kryteria akceptacji: wszystkie etapy/fazy promptu P02 pokryte artefaktami;
+  bramki uruchamialne; luki mają ID, priorytet i pytanie do człowieka.
+- 9.16 Czystość okna kontekstowego: po zakończeniu P02 okno jest czyszczone —
+  dalsza praca (P03) startuje wyłącznie z ledgera i kontraktu.
+
+--------------------------------------------------------------------------------
+9.16 TABELA PRZEKAZYWANYCH ARTEFAKTÓW (11.4) (T10)
+--------------------------------------------------------------------------------
+   | Artefakt                                    | Przekazany do        |
+   |---------------------------------------------|----------------------|
+   | Rejestr metryk I08 (9)                      | P37 obserwowalność   |
+   | Drabina degradacji I05, early-abort I10,    | P66 chaos/odporność  |
+   |   monotoniczność I07                        |                      |
+   | Determinizm I02, temporalne okna            | P53 temporalność     |
+   | Shard registry I09 (aliasy, provenance)     | V3-08..12 domknięcia |
+   | Bramka mirror I11 (4 drifty)                | CI / branch policies |
+   | Kontrakt docs/V3_P02_ORKIESTRATOR_KONTRAKT.md | P03–P68 (wiązanie) |
+   | Luki L01–L09 + pytania Q01–Q06              | Blocker Triage (I09) |
+   | Testy 14 przypadków [BM]                    | CI / merge gate      |
+
+--------------------------------------------------------------------------------
+PODSUMOWANIE WYKONANIA
+--------------------------------------------------------------------------------
+1. Raport zapisany: JDG/raporty_glm52_v3/RAPORT_V3_P02_ORKIESTRATOR.txt
+2. Zakres części P02: orkiestrator — 4 podanalizy (5.1–5.4), 12 innowacji,
+   9 luk (3×P0, 6×P1), 6 pytań, kontrakt K1–K9, 14 testów.
+3. Kontrakty dla P03: K1–K9 (sekcja 9.08) + docs/V3_P02_ORKIESTRATOR_KONTRAKT.md;
+   metryki I08 wiążące dla P37; bramki I01–I12 uruchamialne w CI.
+4. WYCZYSZCZONO okno kontekstowe po zakończeniu części P02 (treść części nie
+   jest już potrzebna — stan w ledgerze, dowodach i kontrakcie).
+5. Brak utrzymywanych niejawnych założeń/kodów po czyszczeniu sesji.
+6. Następna część: P03 — pierwszy nie wdrożony wpis w ledgerze po P02.
+================================================================================

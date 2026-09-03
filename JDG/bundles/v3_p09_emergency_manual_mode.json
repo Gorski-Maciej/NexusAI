@@ -1,0 +1,39 @@
+{
+  "innovation": "V3-P09-I11",
+  "generated_at": "2026-09-03T12:43:15.879960+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "retro_deadline_hours": 48,
+    "emergency_in_tool": false,
+    "runbooks": []
+  },
+  "checks": [
+    {
+      "name": "emergency_protocol",
+      "status": "FAIL",
+      "detail": "declarative_change.py nie ma trybu awaryjnego z retro-deklaracją"
+    },
+    {
+      "name": "runbooks_exist",
+      "status": "FAIL",
+      "detail": "runbooki RB: BRAK (RB-01..04 z P07 nie istnieją jako artefakt)"
+    },
+    {
+      "name": "retro_deadline",
+      "status": "OK",
+      "detail": "retro-deklaracja ≤ 48 h (model I11)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P09-L11",
+      "severity": "P2",
+      "evidence": "declarative_change.py nie ma trybu awaryjnego ręcznego (P09-AN08); runbooki RB-01..04 (P07-I11) nie istnieją jako artefakt — zmiana awaryjna musiałaby być ręczna i nieśledzona, bez obowiązku retro-deklaracji",
+      "fix": "I11 Emergency Manual Mode: zmiana ręczna tylko z flagą EMERGENCY + retro-deklaracja ≤ 48 h + audyt; brak retro-deklaracji w terminie = naruszenie fail-closed"
+    }
+  ],
+  "contract": {
+    "binding": "P07-I11 (runbooki), P43 (DR), P04 (invarianty awaryjne)",
+    "rule": "ręczna zmiana bez EMERGENCY + retro-deklaracji = naruszenie; retro-deklaracja przechodzi normalny 4-eyes"
+  }
+}

@@ -1,0 +1,258 @@
+{
+  "schema_version": "1.0.0",
+  "report": "V3_DRIFT_WATCHDOG",
+  "generated_at": "2026-09-03T05:37:48.801771+00:00",
+  "actual_state": {
+    "rego_files": 490,
+    "rule_ids": 12439,
+    "tools": 369,
+    "pytest": 225
+  },
+  "documents": [
+    {
+      "doc": "JDG/README.md",
+      "label": "README modułu JDG",
+      "declarations": {
+        "rego_files": [
+          490,
+          490,
+          490
+        ],
+        "rule_ids": [
+          855,
+          855
+        ],
+        "tools": [
+          298,
+          298,
+          298,
+          298,
+          298
+        ]
+      },
+      "conflicts": [
+        {
+          "metric": "rule_ids",
+          "declared": [
+            855,
+            855
+          ],
+          "actual": 12439
+        },
+        {
+          "metric": "tools",
+          "declared": [
+            298,
+            298,
+            298,
+            298,
+            298
+          ],
+          "actual": 369
+        }
+      ]
+    },
+    {
+      "doc": "JDG/MANIFEST.md",
+      "label": "MANIFEST (auto-generowany)",
+      "declarations": {
+        "rule_ids": [
+          509,
+          509,
+          509,
+          509,
+          509,
+          509,
+          509,
+          509,
+          509
+        ]
+      },
+      "conflicts": [
+        {
+          "metric": "rule_ids",
+          "declared": [
+            509,
+            509,
+            509,
+            509,
+            509,
+            509,
+            509,
+            509,
+            509
+          ],
+          "actual": 12439
+        }
+      ]
+    },
+    {
+      "doc": "JDG/COVERAGE_REPORT.md",
+      "label": "Raport pokrycia",
+      "declarations": {
+        "rule_ids": [
+          855
+        ]
+      },
+      "conflicts": [
+        {
+          "metric": "rule_ids",
+          "declared": [
+            855
+          ],
+          "actual": 12439
+        }
+      ]
+    },
+    {
+      "doc": "JDG/docs/MANIFEST_2_0.md",
+      "label": "MANIFEST 2.0",
+      "declarations": {},
+      "conflicts": []
+    },
+    {
+      "doc": "JDG/docs/INWENTARYZACJA_PLIKOW.md",
+      "label": "Inwentaryzacja plików",
+      "declarations": {
+        "rego_files": [
+          231
+        ]
+      },
+      "conflicts": [
+        {
+          "metric": "rego_files",
+          "declared": [
+            231
+          ],
+          "actual": 490
+        }
+      ]
+    },
+    {
+      "doc": "JDG/docs/KATALOG_REGUL.md",
+      "label": "Katalog reguł",
+      "declarations": {
+        "rule_ids": [
+          808
+        ]
+      },
+      "conflicts": [
+        {
+          "metric": "rule_ids",
+          "declared": [
+            808
+          ],
+          "actual": 12439
+        }
+      ]
+    },
+    {
+      "doc": "JDG/docs/KATALOG_NARZEDZI.md",
+      "label": "Katalog narzędzi",
+      "declarations": {
+        "tools": [
+          170,
+          298
+        ]
+      },
+      "conflicts": [
+        {
+          "metric": "tools",
+          "declared": [
+            170,
+            298
+          ],
+          "actual": 369
+        }
+      ]
+    }
+  ],
+  "conflicts": [
+    {
+      "kind": "DRYF_DOKUMENTACJA",
+      "doc": "JDG/README.md",
+      "metric": "rule_ids",
+      "declared": [
+        855,
+        855
+      ],
+      "actual": 12439,
+      "message": "README modułu JDG deklaruje [855, 855] dla rule_ids, stan faktyczny: 12439."
+    },
+    {
+      "kind": "DRYF_DOKUMENTACJA",
+      "doc": "JDG/README.md",
+      "metric": "tools",
+      "declared": [
+        298,
+        298,
+        298,
+        298,
+        298
+      ],
+      "actual": 369,
+      "message": "README modułu JDG deklaruje [298, 298, 298, 298, 298] dla tools, stan faktyczny: 369."
+    },
+    {
+      "kind": "DRYF_DOKUMENTACJA",
+      "doc": "JDG/MANIFEST.md",
+      "metric": "rule_ids",
+      "declared": [
+        509,
+        509,
+        509,
+        509,
+        509,
+        509,
+        509,
+        509,
+        509
+      ],
+      "actual": 12439,
+      "message": "MANIFEST (auto-generowany) deklaruje [509, 509, 509, 509, 509, 509, 509, 509, 509] dla rule_ids, stan faktyczny: 12439."
+    },
+    {
+      "kind": "DRYF_DOKUMENTACJA",
+      "doc": "JDG/COVERAGE_REPORT.md",
+      "metric": "rule_ids",
+      "declared": [
+        855
+      ],
+      "actual": 12439,
+      "message": "Raport pokrycia deklaruje [855] dla rule_ids, stan faktyczny: 12439."
+    },
+    {
+      "kind": "DRYF_DOKUMENTACJA",
+      "doc": "JDG/docs/INWENTARYZACJA_PLIKOW.md",
+      "metric": "rego_files",
+      "declared": [
+        231
+      ],
+      "actual": 490,
+      "message": "Inwentaryzacja plików deklaruje [231] dla rego_files, stan faktyczny: 490."
+    },
+    {
+      "kind": "DRYF_DOKUMENTACJA",
+      "doc": "JDG/docs/KATALOG_REGUL.md",
+      "metric": "rule_ids",
+      "declared": [
+        808
+      ],
+      "actual": 12439,
+      "message": "Katalog reguł deklaruje [808] dla rule_ids, stan faktyczny: 12439."
+    },
+    {
+      "kind": "DRYF_DOKUMENTACJA",
+      "doc": "JDG/docs/KATALOG_NARZEDZI.md",
+      "metric": "tools",
+      "declared": [
+        170,
+        298
+      ],
+      "actual": 369,
+      "message": "Katalog narzędzi deklaruje [170, 298] dla tools, stan faktyczny: 369."
+    }
+  ],
+  "conflict_count": 7,
+  "status": "DRYF_WYKRYTO"
+}

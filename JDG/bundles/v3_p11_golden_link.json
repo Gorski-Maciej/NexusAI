@@ -1,0 +1,36 @@
+{
+  "innovation": "V3-P11-I12",
+  "generated_at": "2026-09-03T12:19:34+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "golden_verdicts": 30,
+    "certificates": 1,
+    "golden_linked": 0,
+    "coverage": 0.0,
+    "oracle_reference": false
+  },
+  "checks": [
+    {
+      "name": "golden_link",
+      "status": "FAIL",
+      "detail": "werdykty golden z certyfikatem (hash spójny): 0/30 (0%)"
+    },
+    {
+      "name": "oracle_reference",
+      "status": "FAIL",
+      "detail": "certyfikat odwołuje się do golden/oracle: False"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P11-L12",
+      "severity": "P1",
+      "evidence": "tylko 1 certyfikat(ów) w decision_certificates.json wobec 30 werdyktów golden (P10); brak łańcucha dowodowego golden_verdict → certyfikat (hash/verdict_id) — decyzje golden setu nie mają swoich certyfikatów",
+      "fix": "I12: Certificate Golden Link — każdy werdykt golden ma certyfikat z golden_verdict_id + verdict_hash w decision; bramka spójności oracle↔certyfikat w CI"
+    }
+  ],
+  "contract": {
+    "binding": "P10 (golden oracle), P44, P03 (werdykt)",
+    "rule": "decyzja na golden secie MA certyfikat; spójność hash werdyktu weryfikowana w CI (zero cichych rozjazdów)"
+  }
+}

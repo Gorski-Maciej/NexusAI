@@ -1,0 +1,56 @@
+{
+  "innovation": "V3-P07-I10",
+  "generated_at": "2026-09-03T10:26:18.567258+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "deployments_total": 44,
+    "rollbacks_total": 25,
+    "rollback_rate_pct": 56.8,
+    "shadow_delta_evidence_pct": 56.8,
+    "quality_gte95_pct": 100.0,
+    "shadow_candidate_age_max_days": 0,
+    "registry_rules": 13,
+    "pr_to_prod_hours": "NOT_RECORDED",
+    "mttr_minutes": "NOT_RECORDED",
+    "auto_rollback_minutes": "NOT_RECORDED"
+  },
+  "rollback_rate_note": "rollbacki: 25/44 (57%) — patrz I03 (L07)",
+  "checks": [
+    {
+      "name": "dashboard_emitted",
+      "status": "OK",
+      "detail": "metryki: {\"deployments_total\": 44, \"rollbacks_total\": 25, \"rollback_rate_pct\": 56.8, \"shadow_delta_evidence_pct\": 56.8, \"quality_gte95_pct\": 100.0, \"shadow_can"
+    },
+    {
+      "name": "runtime_slo_recorded",
+      "status": "FAIL",
+      "detail": "PR→produkcja, MTTR, auto-rollback NIE są rejestrowane w danych — pomiar wymaga znaczników czasowych operacji (P37/P38)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P07-L15",
+      "severity": "P2",
+      "evidence": "SLO lifecycle (PR→prod, MTTR ≤ 15 min, auto-rollback ≤ 5 min) niewymierne — brak znaczników czasowych operacji w rejestrze i deploymentach",
+      "fix": "Lifecycle Telemetry (I10): rejestracja timestampów operacji (register→promote→active) + pomiar runtime z P37"
+    },
+    {
+      "id": "V3-P07-L16",
+      "severity": "P3",
+      "evidence": "telemetria pierwsza emisja — dashboard bez połączenia z P37",
+      "fix": "podpięcie metryk do P37 (nazwy poniżej)"
+    }
+  ],
+  "metric_names": [
+    "lifecycle_pr_to_prod_hours",
+    "lifecycle_mttr_minutes",
+    "lifecycle_auto_rollback_minutes",
+    "lifecycle_rollback_count",
+    "lifecycle_shadow_delta_pct",
+    "lifecycle_shadow_age_days"
+  ],
+  "contract": {
+    "binding": "P37 (dashboard SLO), P38 (deployment), P43 (DR — MTTR), P07-I01/I03 (bramki)",
+    "rule": "SLO: PR→prod < 24 h, MTTR ≤ 15 min, auto-rollback ≤ 5 min — alarm przy przekroczeniu (P37)"
+  }
+}

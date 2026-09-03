@@ -1,0 +1,14 @@
+{
+  "innovation": "V3-P03-I06",
+  "name": "Legal Refs Completeness Guard — BLOCKER przy braku refs",
+  "generated_at": "2026-09-03T08:36:47.477106+00:00",
+  "rule": "werdykt matched=true z decyzją materialną (ALLOW/AUTO_POST/BLOCK/TRIAGE/SUGGEST) bez _legal_basis = nie wyjście z silnika; legal_basis_refs wg P01 (legal_node_id)",
+  "legal_node_ref_format": "PL/<akt>/art/<art>[/ust/<ust>][/pkt/<pkt>] — kontrakt P01",
+  "findings": [],
+  "findings_count": 0,
+  "gate": {
+    "pass": true,
+    "rule": "zero werdyktów materialnych bez podstawy prawnej (P03-AN02, INV-032/INV-043)"
+  },
+  "note": "Skan kodu (rules/**/*.rego) — pełny audyt werdyktów matched=true z routingiem materialnym; każdy finding to kandydat do uzupełnienia _legal_basis + legal_basis_refs (węzły LKG P01)."
+}

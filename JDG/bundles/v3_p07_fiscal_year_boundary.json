@@ -1,0 +1,93 @@
+{
+  "innovation": "V3-P07-I08",
+  "generated_at": "2026-09-03T12:43:07.263688+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "versions_total": 13,
+    "aligned_0101": 0,
+    "not_aligned": 13,
+    "year_boundary_tests": 21
+  },
+  "not_aligned": [
+    {
+      "rule": "jdg.adaptive_trust.auto_post_gate",
+      "version": "1.0.0",
+      "valid_from": "2026-08-13"
+    },
+    {
+      "rule": "jdg.kks.statute_of_limitations_art44",
+      "version": "1.0.0",
+      "valid_from": "2026-08-13"
+    },
+    {
+      "rule": "jdg.ksef_jpk.ksef_mandatory",
+      "version": "1.0.0",
+      "valid_from": "2026-08-13"
+    },
+    {
+      "rule": "jdg.local_taxes.pcc.sale_detection",
+      "version": "1.0.0",
+      "valid_from": "2026-08-13"
+    },
+    {
+      "rule": "jdg.p11_ordynacja_podatkowa_innovations.limitation_engine",
+      "version": "1.0.0",
+      "valid_from": "2026-08-13"
+    },
+    {
+      "rule": "jdg.p12_crossborder_innovations.cfc_calculator",
+      "version": "1.0.0",
+      "valid_from": "2026-08-13"
+    },
+    {
+      "rule": "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_rate_calculator",
+      "version": "1.0.0",
+      "valid_from": "2026-08-13"
+    },
+    {
+      "rule": "jdg.p16_rodo_aml_security_innovations.rodo_sanctions_calculator",
+      "version": "1.0.0",
+      "valid_from": "2026-08-13"
+    },
+    {
+      "rule": "jdg.pit.a30c.r1",
+      "version": "1.0.0",
+      "valid_from": "2026-08-13"
+    },
+    {
+      "rule": "jdg.pit.advances_returns.loss_carry_forward",
+      "version": "1.0.0",
+      "valid_from": "2026-08-13"
+    }
+  ],
+  "checks": [
+    {
+      "name": "registry_alignment_0101",
+      "status": "WARN",
+      "detail": "wersje z valid_from=01.01: 0/13 (wymóg dotyczy wersji ROCZNYCH; seed mid-year dopuszczalny)"
+    },
+    {
+      "name": "year_boundary_tests",
+      "status": "OK",
+      "detail": "testy przejścia roku w tests/: 21"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P07-L12",
+      "severity": "P2",
+      "evidence": "wersje rejestru z valid_from ≠ 01.01 (granica roku niewymuszona): [{'rule': 'jdg.adaptive_trust.auto_post_gate', 'version': '1.0.0', 'valid_from': '2026-08-13'}, {'rule': 'jdg.kks.statute_of_limitations_art44', 'version': '1.0.0', 'valid_from': '2026-08-13'}, {'rule': 'jdg.ksef_jpk.ksef_mandatory', 'version': '1.0.0', 'valid_from': '2026-08-13'}, {'rule': 'jdg.local_taxes.pcc.sale_detection', 'version': '1.0.0', 'valid_from': '2026-08-13'}, {'rule': 'jdg.p11_ordynacja_podatkowa_innovations.limitation_engine', 'version': '1.0.0', 'valid_from': '2026-08-13'}, {'rule': 'jdg.p12_crossborder_innovations.cfc_calculator', 'version': '1.0.0', 'valid_from': '2026-08-13'}]",
+      "fix": "Fiscal-Year Boundary (I08): zmiany roczne wchodzą tylko z valid_from=01.01 + test day-1/day0 (P05-I05) [BM]"
+    },
+    {
+      "id": "V3-P07-L13",
+      "severity": "P2",
+      "evidence": "brak testów przejścia roku dla reguł rejestru (day-1/day0 na 31.12→01.01) — time-travel na granicy roku nieudowodniony",
+      "fix": "testy granicy roku per wersja roczna (P05-I05 bramka) [BM]"
+    }
+  ],
+  "contract": {
+    "binding": "P05 (okna temporalne, day-1/0/+1), P39 (testy), P06 (parametry roczne), P07-I06 (retirement roczny)",
+    "rule": "wersja roczna bez valid_from=01.01 i testów granicy = blokada [BM]"
+  }
+}

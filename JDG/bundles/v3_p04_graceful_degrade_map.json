@@ -1,0 +1,306 @@
+{
+  "innovation": "V3-P04-I06",
+  "name": "Graceful Degrade Map — naruszenie → NEEDS_ADVICE (P04-AN05)",
+  "generated_at": "2026-09-03T09:01:05.695009+00:00",
+  "rows": [
+    {
+      "invariant": "INV-001",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    },
+    {
+      "invariant": "INV-002",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    },
+    {
+      "invariant": "INV-003",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    },
+    {
+      "invariant": "INV-004",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": "UNIFORM_BLOCK"
+    },
+    {
+      "invariant": "INV-005",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    },
+    {
+      "invariant": "INV-006",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    },
+    {
+      "invariant": "INV-007",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    },
+    {
+      "invariant": "INV-008",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    },
+    {
+      "invariant": "INV-009",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    },
+    {
+      "invariant": "INV-011",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": "UNIFORM_BLOCK"
+    },
+    {
+      "invariant": "INV-012",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    },
+    {
+      "invariant": "INV-014",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": "UNIFORM_BLOCK"
+    },
+    {
+      "invariant": "INV-018",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    },
+    {
+      "invariant": "INV-020",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    },
+    {
+      "invariant": "INV-021",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    },
+    {
+      "invariant": "INV-022",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": "UNIFORM_BLOCK"
+    },
+    {
+      "invariant": "INV-024",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": "UNIFORM_BLOCK"
+    },
+    {
+      "invariant": "INV-028",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": "UNIFORM_BLOCK"
+    },
+    {
+      "invariant": "INV-029",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": "UNIFORM_BLOCK"
+    },
+    {
+      "invariant": "INV-030",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    },
+    {
+      "invariant": "INV-031",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": "UNIFORM_BLOCK"
+    },
+    {
+      "invariant": "INV-032",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    },
+    {
+      "invariant": "INV-033",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": "UNIFORM_BLOCK"
+    },
+    {
+      "invariant": "INV-034",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": "UNIFORM_BLOCK"
+    },
+    {
+      "invariant": "INV-035",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    },
+    {
+      "invariant": "INV-036",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    },
+    {
+      "invariant": "INV-038",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    },
+    {
+      "invariant": "INV-039",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    },
+    {
+      "invariant": "INV-042",
+      "enforcement": "BLOCK",
+      "resulting_class": "NEEDS_ADVICE",
+      "resulting_guard": "CERTAINTY_BLOCKED",
+      "auto_post_possible": false,
+      "degrade_source": [
+        "NEEDS_ADVICE",
+        "CERTAINTY_BLOCKED"
+      ]
+    }
+  ],
+  "runtime_invariants_count": 29,
+  "silent_transitions": [],
+  "explicit_map_entries": 20,
+  "classify_consistency": true,
+  "fail_closed": "naruszenie invariantu BLOCK = NEEDS_ADVICE + CERTAINTY_BLOCKED; AUTO_POST niemożliwy (INV-006/035); nigdy ciche przejście",
+  "gate": {
+    "pass": true,
+    "rule": "każdy INV runtime ma mapę degradacji z katalogu (kanon); _classify zgadza się z mapą (failed>0 ⇒ NEEDS_ADVICE); zero cichych przejść — P04-AN05"
+  },
+  "note": "Mapa spójna z P03-I02 (Certainty Class Engine) — jedno źródło semantyki degradacji; wpisy BLOCK zawsze CERTAINTY_BLOCKED; ALERT → MANUAL_REVIEW."
+}

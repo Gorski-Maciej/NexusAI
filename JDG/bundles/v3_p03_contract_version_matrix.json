@@ -1,0 +1,311 @@
+{
+  "innovation": "V3-P03-I01",
+  "name": "Contract Version Matrix — wersje kontraktu × pola × klienci",
+  "generated_at": "2026-09-03T08:28:21.644670+00:00",
+  "canonical_version": "1.0",
+  "canonical_field_count": 25,
+  "openapi_field_count": 19,
+  "tool_contract_field_count": 75,
+  "rows": [
+    {
+      "field": "matched",
+      "version_added": "1.0",
+      "in_openapi": true,
+      "in_tool_contract": true,
+      "state": "SYNC"
+    },
+    {
+      "field": "rule_id",
+      "version_added": "1.0",
+      "in_openapi": true,
+      "in_tool_contract": true,
+      "state": "SYNC"
+    },
+    {
+      "field": "package",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": true,
+      "state": "DRYF_OAS"
+    },
+    {
+      "field": "priority",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": true,
+      "state": "DRYF_OAS"
+    },
+    {
+      "field": "vat_rate",
+      "version_added": "1.0",
+      "in_openapi": true,
+      "in_tool_contract": true,
+      "state": "SYNC"
+    },
+    {
+      "field": "rounding_level",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": true,
+      "state": "DRYF_OAS"
+    },
+    {
+      "field": "gtu_code",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": true,
+      "state": "DRYF_OAS"
+    },
+    {
+      "field": "vat_exemption",
+      "version_added": "1.0",
+      "in_openapi": true,
+      "in_tool_contract": true,
+      "state": "SYNC"
+    },
+    {
+      "field": "procedure",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": false,
+      "state": "DRYF_BOTH"
+    },
+    {
+      "field": "pit_form",
+      "version_added": "1.0",
+      "in_openapi": true,
+      "in_tool_contract": true,
+      "state": "SYNC"
+    },
+    {
+      "field": "pit_rate",
+      "version_added": "1.0",
+      "in_openapi": true,
+      "in_tool_contract": true,
+      "state": "SYNC"
+    },
+    {
+      "field": "pit_bracket",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": true,
+      "state": "DRYF_OAS"
+    },
+    {
+      "field": "pit_annual_return_type",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": true,
+      "state": "DRYF_OAS"
+    },
+    {
+      "field": "kus_qualification",
+      "version_added": "1.0",
+      "in_openapi": true,
+      "in_tool_contract": true,
+      "state": "SYNC"
+    },
+    {
+      "field": "kus_percent",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": true,
+      "state": "DRYF_OAS"
+    },
+    {
+      "field": "zus_social_base_type",
+      "version_added": "1.0",
+      "in_openapi": true,
+      "in_tool_contract": true,
+      "state": "SYNC"
+    },
+    {
+      "field": "zus_health_rate",
+      "version_added": "1.0",
+      "in_openapi": true,
+      "in_tool_contract": true,
+      "state": "SYNC"
+    },
+    {
+      "field": "business_status",
+      "version_added": "1.0",
+      "in_openapi": true,
+      "in_tool_contract": true,
+      "state": "SYNC"
+    },
+    {
+      "field": "ceidg_registration_required",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": true,
+      "state": "DRYF_OAS"
+    },
+    {
+      "field": "valid_from",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": false,
+      "state": "DRYF_BOTH"
+    },
+    {
+      "field": "valid_to",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": false,
+      "state": "DRYF_BOTH"
+    },
+    {
+      "field": "_routing",
+      "version_added": "1.0",
+      "in_openapi": true,
+      "in_tool_contract": true,
+      "state": "SYNC"
+    },
+    {
+      "field": "_routing_reason",
+      "version_added": "1.0",
+      "in_openapi": true,
+      "in_tool_contract": true,
+      "state": "SYNC"
+    },
+    {
+      "field": "_legal_basis",
+      "version_added": "1.0",
+      "in_openapi": true,
+      "in_tool_contract": true,
+      "state": "SYNC"
+    },
+    {
+      "field": "_warnings",
+      "version_added": "1.0",
+      "in_openapi": true,
+      "in_tool_contract": true,
+      "state": "SYNC"
+    }
+  ],
+  "additive_extensions_1_1": [
+    {
+      "field": "certainty_class",
+      "version_added": "1.1",
+      "source": "F4 V2 §5.2 / runtime_invariants",
+      "breaking": false
+    },
+    {
+      "field": "certainty_guard",
+      "version_added": "1.1",
+      "source": "F4 V2 §5.2 / runtime_invariants",
+      "breaking": false
+    },
+    {
+      "field": "invariant_refs",
+      "version_added": "1.1",
+      "source": "P03-I06 / INV-032",
+      "breaking": false
+    },
+    {
+      "field": "legal_basis_refs",
+      "version_added": "1.1",
+      "source": "P03-I06 / P01 legal_node_id",
+      "breaking": false
+    },
+    {
+      "field": "golden_hash",
+      "version_added": "1.1",
+      "source": "P03-I04 / F3 V2",
+      "breaking": false
+    }
+  ],
+  "drift_fields": [
+    {
+      "field": "package",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": true,
+      "state": "DRYF_OAS"
+    },
+    {
+      "field": "priority",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": true,
+      "state": "DRYF_OAS"
+    },
+    {
+      "field": "rounding_level",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": true,
+      "state": "DRYF_OAS"
+    },
+    {
+      "field": "gtu_code",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": true,
+      "state": "DRYF_OAS"
+    },
+    {
+      "field": "procedure",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": false,
+      "state": "DRYF_BOTH"
+    },
+    {
+      "field": "pit_bracket",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": true,
+      "state": "DRYF_OAS"
+    },
+    {
+      "field": "pit_annual_return_type",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": true,
+      "state": "DRYF_OAS"
+    },
+    {
+      "field": "kus_percent",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": true,
+      "state": "DRYF_OAS"
+    },
+    {
+      "field": "ceidg_registration_required",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": true,
+      "state": "DRYF_OAS"
+    },
+    {
+      "field": "valid_from",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": false,
+      "state": "DRYF_BOTH"
+    },
+    {
+      "field": "valid_to",
+      "version_added": "1.0",
+      "in_openapi": false,
+      "in_tool_contract": false,
+      "state": "DRYF_BOTH"
+    }
+  ],
+  "drift_count": 11,
+  "deprecation_plan": {
+    "rule": "pole usuwane wyłącznie w major 2.0; minor (1.x) tylko additive; okres współistnienia >= 2 minor; klient nieznany = nie usuwaj",
+    "periods": [
+      "1.0 (bazowy)",
+      "1.1 (additive: certainty/golden/refs)",
+      "2.0 (major: usunięcia)"
+    ]
+  },
+  "gate": {
+    "pass": false,
+    "rule": "każde pole kanoniczne obecne w OpenAPI i kontrakcie narzędzia; dryf spec↔kod = luka P0 (P03-AN06, AP11)"
+  },
+  "note": "Realny dryf: 11 pól kanonicznych brakuje w VerdictResponse OpenAPI (package, priority, rounding_level, gtu_code, procedure, pit_bracket, pit_annual_return_type, kus_percent, ceidg_registration_required, valid_from, valid_to) — bramka FAIL do domknięcia w P41."
+}

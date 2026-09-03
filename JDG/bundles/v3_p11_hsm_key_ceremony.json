@@ -1,0 +1,52 @@
+{
+  "innovation": "V3-P11-I07",
+  "generated_at": "2026-09-03T12:19:29+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "real_signing_key": false,
+    "placeholder": true,
+    "key_rotation": false,
+    "dr_keys": true,
+    "ceremony_audit": true
+  },
+  "checks": [
+    {
+      "name": "real_signing_key",
+      "status": "FAIL",
+      "detail": "podpis prawdziwym kluczem (crypto/KMS): False | placeholder HSM-ECDSA-<hash>: True"
+    },
+    {
+      "name": "key_rotation",
+      "status": "FAIL",
+      "detail": "rotacja kluczy (kid/key_version): False"
+    },
+    {
+      "name": "ceremony_audit",
+      "status": "OK",
+      "detail": "ceremonia/audyt kluczy: ['v3_p11_hsm_key_ceremony.py']"
+    },
+    {
+      "name": "dr_keys",
+      "status": "OK",
+      "detail": "klucze offline DR: True"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P11-L07",
+      "severity": "P0",
+      "evidence": "hsm_signature w certificate_service.py i decision_certificate.py to placeholder 'HSM-ECDSA-' + sha256(rule_id+cert_id)[:32] — NIE jest to podpis kryptograficzny kluczem; verify() akceptuje dowolny string z prefiksem HSM-ECDSA- (fail-open dowodu podpisu)",
+      "fix": "I07: HSM Key Ceremony — prawdziwy klucz (KMS/HSM), podpis ECDSA/RSA payload_hash, kid + key_version w seal, rotacja kwartalna, klucze offline DR, audyt ceremonii 4-eyes"
+    },
+    {
+      "id": "V3-P11-L07b",
+      "severity": "P1",
+      "evidence": "brak rotacji kluczy i wersjonowania (kid) — nie da się wymienić klucza bez unieważnienia wszystkich starych certyfikatów; weryfikacja starych podpisów po rotacji niemożliwa",
+      "fix": "I07: kid/key_version w seal; weryfikacja używa klucza wskazanego przez kid (stare certyfikaty weryfikowalne)"
+    }
+  ],
+  "contract": {
+    "binding": "P43 (security/DR), P38 (deploy), P07 (4-eyes)",
+    "rule": "podpis = prawdziwy klucz HSM/KMS z kid; rotacja nie łamie weryfikowalności starych certyfikatów (klucz wg kid)"
+  }
+}

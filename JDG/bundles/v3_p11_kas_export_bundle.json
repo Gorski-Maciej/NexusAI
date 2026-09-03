@@ -1,0 +1,59 @@
+{
+  "innovation": "V3-P11-I06",
+  "generated_at": "2026-09-03T12:19:28+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "certificate_count": 1,
+    "export_command": true,
+    "export_is_bundle": false,
+    "legal_snapshots": [
+      "v3_canonical_snapshot.json",
+      "v3_p01_isap_proof_snapshot.json",
+      "v3_p01_legal_merkle.json",
+      "v3_p01_source_certification.json",
+      "v3_p05_snapshot_id_vault.json",
+      "v3_p05_snapshot_vault.json"
+    ],
+    "merkle_roots": []
+  },
+  "checks": [
+    {
+      "name": "export_command",
+      "status": "OK",
+      "detail": "eksport KAS w decision_certificate: True"
+    },
+    {
+      "name": "export_bundle_structure",
+      "status": "FAIL",
+      "detail": "eksport jako paczka (komplet plików): False"
+    },
+    {
+      "name": "legal_snapshots_available",
+      "status": "OK",
+      "detail": "snapshoty przepisów P01/P05 w bundles: ['v3_canonical_snapshot.json', 'v3_p01_isap_proof_snapshot.json', 'v3_p01_legal_merkle.json', 'v3_p01_source_certification.json', 'v3_p05_snapshot_id_vault.json', 'v3_p05_snapshot_vault.json']"
+    },
+    {
+      "name": "merkle_roots_available",
+      "status": "FAIL",
+      "detail": "rejestr rootów merkle: BRAK"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P11-L06",
+      "severity": "P1",
+      "evidence": "cmd_export w decision_certificate.py generuje pojedynczy XML certyfikatu, a nie paczkę KAS: brak pakietu (certyfikaty + merkle root + legal snapshots z P01/P05 + manifest) z podpisem całości",
+      "fix": "I06: KAS Export Bundle — katalog/zip: certyfikaty.json, merkle_root.json, legal_snapshots (P01/P05), manifest z hashami i podpisem całości"
+    },
+    {
+      "id": "V3-P11-L06b",
+      "severity": "P2",
+      "evidence": "brak rejestru rootów merkle (transparencja) — paczka KAS nie ma czego załączyć jako dowód spójności okresu",
+      "fix": "I06 + I02: publikacja roota miesięcznego w bundles"
+    }
+  ],
+  "contract": {
+    "binding": "P44 (definicja sukcesu: dowód dla organów), P01/P05 (legal refs)",
+    "rule": "paczka KAS = certyfikaty + root merkle + snapshoty przepisów + manifest; weryfikowalna offline w całości"
+  }
+}

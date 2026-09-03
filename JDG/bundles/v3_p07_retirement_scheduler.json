@@ -1,0 +1,52 @@
+{
+  "innovation": "V3-P07-I06",
+  "generated_at": "2026-09-03T10:26:15.511681+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "deprecated": 0,
+    "retired": 0,
+    "grace_enforced": false,
+    "purge_checks_refs": false,
+    "code_rule_ids": 12439
+  },
+  "model": {
+    "deprecate": "status DEPRECATED + deprecation_note",
+    "grace": "2 okresy rozliczeniowe (od deprecation date)",
+    "retire": "status RETIRED (przestaje ewaluować)",
+    "purge": "tylko po dowodzie zerowych odwołań (werdykty/reguły/testy) + golden replay (P10)"
+  },
+  "checks": [
+    {
+      "name": "deprecate_retire_flow",
+      "status": "OK",
+      "detail": "cmd_deprecate/retire/migrate istnieją; DEPRECATED dziś: 0, RETIRED: 0"
+    },
+    {
+      "name": "grace_period_enforced",
+      "status": "FAIL",
+      "detail": "karencja (2 okresy) w narzędziu: False — przejścia natychmiastowe"
+    },
+    {
+      "name": "purge_zero_references",
+      "status": "FAIL",
+      "detail": "purge z weryfikacją zerowych odwołań w narzędziu JSON: False"
+    },
+    {
+      "name": "weekly_report",
+      "status": "FAIL",
+      "detail": "tygodniowy raport „reguły do usunięcia” nie istnieje jako artefakt (brak telemetrii procesu)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P07-L10",
+      "severity": "P1",
+      "evidence": "deprecate→retire→purge bez wymiaru karencji (2 okresy) i bez weryfikacji zerowych odwołań w operacyjnym narzędziu — ryzyko usunięcia reguły z żywymi referencjami; brak tygodniowego raportu do usunięcia",
+      "fix": "Retirement Scheduler (I06): stan CARENCJA z datą końca + check referencji (kod/testy/werdykty) przed purge + raport tygodniowy [BM dla purge bez dowodu]"
+    }
+  ],
+  "contract": {
+    "binding": "P39 (testy), P44 (certyfikacja), P10 (golden — historia nienaruszona), P37 (telemetria procesu)",
+    "rule": "purge bez dowodu zerowych odwołań i zielonego golden = blokada [BM]"
+  }
+}

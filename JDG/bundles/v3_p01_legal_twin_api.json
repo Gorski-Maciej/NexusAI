@@ -1,0 +1,51 @@
+{
+  "innovation": "V3-P01-I12",
+  "generated_at": "2026-09-03T06:44:15+00:00",
+  "api_version": "v1",
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/legal/nodes",
+      "params": {
+        "act": "string",
+        "article": "string",
+        "date": "YYYY-MM-DD (time-travel)"
+      },
+      "sample_response": {
+        "legal_node_id": "LKG-0001",
+        "act": "Ustawa z dnia 6 marca 2018 r. – Prawo przedsiębiorców",
+        "article": "4-5",
+        "node_text": null,
+        "valid_from": "2004-01-01",
+        "valid_to": null,
+        "source": "ISAP",
+        "status": "OBOWIAZUJACY",
+        "rule_ids": [
+          "jdg.business.ceidg_registration_check",
+          "jdg.business.unregistered_activity_limit_exceeded",
+          "jdg.business.unregistered_zus_exemption"
+        ]
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/legal/proof",
+      "params": {
+        "legal_node_id": "LKG-xxxx",
+        "date": "YYYY-MM-DD"
+      },
+      "sample_response": {
+        "legal_node_id": "LKG-0001",
+        "merkle_leaf_sha256": "1045b0da2e2c17f0298d4b481127c626ae5054d5682950085715d26d7ebadcfd",
+        "isap_snapshot_ref": "ISAP-PROOF-xxx (V3-P01-I03)",
+        "certification_state": "PENDING_ISAP (V3-P01-I11)",
+        "decision_eligibility": "NEEDS_ADVICE do czasu CERTIFIED"
+      }
+    }
+  ],
+  "sample_date": "2026-02-01",
+  "active_nodes_on_sample_date": 258,
+  "index_note": "offline index — dane z bundles/legal_graph.json; produkcyjny serwer wystawia te same kontrakty z cache i kontrolą dostępu",
+  "ui_consumer": "ekran księgowy pokazuje podstawę prawną decyzji z linkiem proof",
+  "certificate_consumer": "Decision Certificate (V2/F4) cytuje /legal/proof na dzień transakcji"
+}

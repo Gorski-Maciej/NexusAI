@@ -1,0 +1,64 @@
+{
+  "innovation": "V3-P12-I01",
+  "generated_at": "2026-09-03T12:59:04+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "vat_params": 1,
+    "rates_as_data": true,
+    "total_hardcode": 521,
+    "top_hardcode_files": {
+      "deductions.rego": 10,
+      "procedures.rego": 16,
+      "substantive.rego": 45,
+      "plan42_reduced_rates.rego": 217,
+      "plan23_detailed.rego": 4,
+      "place_of_supply.rego": 7,
+      "enterprise_vat_bridge.rego": 11,
+      "plan26_critical.rego": 19,
+      "vat_enterprise_zero_doubt.rego": 9,
+      "vat.rego": 101,
+      "wdt_export_import.rego": 2,
+      "margin_scheme_micro.rego": 4,
+      "ksef_micro.rego": 5,
+      "r03_vat_micro_articles.rego": 20,
+      "vat_substantive_complete_enterprise.rego": 17,
+      "vat_rates_exemptions_audit_enterprise.rego": 34
+    },
+    "temporal_windows": false,
+    "source_link": false
+  },
+  "checks": [
+    {
+      "name": "rates_as_data",
+      "status": "OK",
+      "detail": "stawki jako parametry data.thresholds: {'vat.standard_rate': {'versions': [{'value': 0.23, 'type': 'number', 'valid_from': '2026-01-01', 'valid_to': None, 'source_act': 'Art. 41 ustawy o VAT', 'changed_by': 'system', 'changed_at': '2026-08-08T11:34:34'}], 'schema': {'min': '0', 'max': '1', 'type': 'number'}}}"
+    },
+    {
+      "name": "no_hardcode",
+      "status": "FAIL",
+      "detail": "wystąpienia stawek hardcoded w regułach: 521 (top: {'plan42_reduced_rates.rego': 217, 'vat.rego': 101, 'substantive.rego': 45})"
+    },
+    {
+      "name": "temporal_windows",
+      "status": "FAIL",
+      "detail": "okna valid_from/valid_to przy stawkach: False"
+    },
+    {
+      "name": "source_link",
+      "status": "FAIL",
+      "detail": "źródło (ISAP/rozporządzenie) w danych: False"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P12-L01",
+      "severity": "P1",
+      "evidence": "stawki hardcoded w regułach VAT: 521 wystąpień (np. plan42_reduced_rates.rego=217, substantive.rego=45); data.thresholds ma tylko 1 param(etrów) vat. ('vat.standard_rate') — brak 8%/5%/NP jako danych z oknami temporalnymi i źródłem (ADR-002/P06)",
+      "fix": "I01: Rates-as-Data — tabela stawek (23/8/5/0/NP) z valid_from/valid_to + źródłem ISAP w data.thresholds; reguły czytają wyłącznie parametry"
+    }
+  ],
+  "contract": {
+    "binding": "P06 (parametry-as-data), P05 (temporalność), P44",
+    "rule": "stawki/zwolnienia wyłącznie jako dane wersjonowane z oknami i źródłem; zero hardcode w regułach (ADR-002)"
+  }
+}

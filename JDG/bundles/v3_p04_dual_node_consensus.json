@@ -1,0 +1,39 @@
+{
+  "innovation": "V3-P04-I04",
+  "name": "Dual-Node Consensus — ewaluacja różnicowa ≥2 węzłów (V2/F3 §4.4)",
+  "generated_at": "2026-09-03T08:57:47.345977+00:00",
+  "reference_hash": "e4ba231aea21c2fa",
+  "nodes": [
+    {
+      "node": "node-a",
+      "hash": "e4ba231aea21c2fa",
+      "match": true,
+      "bundle_version": "v2026.09.03"
+    },
+    {
+      "node": "node-b",
+      "hash": "3e047b89fe9fc595",
+      "match": false,
+      "bundle_version": "v2026.09.03"
+    },
+    {
+      "node": "node-c",
+      "hash": "e4ba231aea21c2fa",
+      "match": true,
+      "bundle_version": "v2026.09.03"
+    }
+  ],
+  "nodes_total": 3,
+  "nodes_matched": 2,
+  "agreement_pct": 66.67,
+  "quorum_ok": true,
+  "deterministic": false,
+  "divergence_detected": true,
+  "fail_closed": "węzeł bez danych = nieuczestniczący; quorum < 2/3 = brak decyzji",
+  "auto_revert_rule": "divergence → alarm + auto-revert do wyniku węzła większościowego (P04-AN04); rejestr sesji w differential_sessions.json",
+  "gate": {
+    "pass": true,
+    "rule": "krytyczne domeny ewaluowane na ≥2 węzłach; quorum ≥ 2/3; determinizm wymagany (V2/F3) — divergence = alarm (P04-AN07)"
+  },
+  "note": "Scenariusz modelowy: node-b z dryfem (0.08 vs 0.23) — demonstracja wykrycia divergence; runtime z P38 (deployment)."
+}

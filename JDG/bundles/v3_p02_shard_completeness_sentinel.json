@@ -1,0 +1,35 @@
+{
+  "innovation": "V3-P02-I04",
+  "name": "Shard Completeness Sentinel — każde wejście => dokładnie 1 shard",
+  "generated_at": "2026-09-03T07:59:34+00:00",
+  "selector_code_evidence": {
+    "gated_risk_block": true,
+    "gated_routing_block": true,
+    "shard_domestic_sale": true,
+    "shard_domestic_purchase": true,
+    "full_chain_else_true": true,
+    "deprecated_shard_selector_still_present": true,
+    "shard_sale_used_in_selector": true
+  },
+  "completeness_model": {
+    "combinations_total": 192,
+    "path_histogram": {
+      "sharded_sale_verdict": 1,
+      "gated_abort_verdict (routing)": 48,
+      "gated_abort_verdict (risk)": 96,
+      "full_final_verdict": 46,
+      "sharded_purchase_verdict": 1
+    },
+    "orphan_combinations": [],
+    "double_assignments": []
+  },
+  "issues": [],
+  "hygiene_findings": [
+    "shard_selector_deprecated obecny w kodzie (dead code — do usunięcia po domknięciu audit anchorów; nie wpływa na runtime)"
+  ],
+  "gate": {
+    "pass": true,
+    "rule": "selector pokrywa wszystkie wymiary routingu else=true; 0 orphan, 0 double (test property w pytest)"
+  },
+  "note": "model tabeli prawdy = odwzorowanie warunków kodu; rzeczywisty test permutacyjny w test_v3_p02_orchestrator.py (10k wejść => 100% ścieżek)."
+}

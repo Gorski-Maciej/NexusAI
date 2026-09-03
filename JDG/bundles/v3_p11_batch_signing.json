@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P11-I10",
+  "generated_at": "2026-09-03T12:20:32+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "batch_signing": false,
+    "latency_slo": true,
+    "latency_metrics": false,
+    "certificate_count": 1
+  },
+  "checks": [
+    {
+      "name": "batch_signing",
+      "status": "FAIL",
+      "detail": "mechanizm batch/agregacji podpisu: False"
+    },
+    {
+      "name": "latency_slo",
+      "status": "OK",
+      "detail": "budżet latencji/SLO: ['v3_p02_latency_budget_guard.py']"
+    },
+    {
+      "name": "latency_metrics",
+      "status": "FAIL",
+      "detail": "metryki czasu podpisu (P37): False"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P11-L10",
+      "severity": "P2",
+      "evidence": "każdy certyfikat podpisywany indywidualnie (issue() per werdykt) — brak batch signing: przy skali dziennej (setki werdyktów → certyfikatów) koszt podpisu rośnie liniowo i nie ma budżetu latencji SLO ani metryk",
+      "fix": "I10: Batch Signing — merkle nad grupą dzienną + jeden podpis agregujący (root), per-werdykt proof ścieżki; budżet latencji SLO i metryki do P37"
+    }
+  ],
+  "contract": {
+    "binding": "P02 (latency budget/SLO), P37 (observability), P44",
+    "rule": "podpis batchowy z budżetem latencji; metryki czasu podpisu w obserwowalności; zero degeneracji SLO przy skali"
+  }
+}

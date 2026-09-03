@@ -1,0 +1,47 @@
+{
+  "innovation": "V3-P10-I06",
+  "name": "Dual-Node Consensus — hash werdyktu na ≥2 węzłach",
+  "generated_at": "2026-09-03T12:43:21+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "differential_tool": true,
+    "quorum_logic": true,
+    "degradation_on_divergence": false,
+    "sessions_recorded": 0,
+    "nodes_known": 0
+  },
+  "checks": [
+    {
+      "name": "differential_tool",
+      "status": "OK",
+      "detail": "differential_evaluation.py istnieje: True (compare/check/record)"
+    },
+    {
+      "name": "quorum_logic",
+      "status": "OK",
+      "detail": "logika quorum/konsensusu: True"
+    },
+    {
+      "name": "degradation_on_divergence",
+      "status": "FAIL",
+      "detail": "auto-degradacja/alarm przy rozbieżności: False"
+    },
+    {
+      "name": "sessions_recorded",
+      "status": "FAIL",
+      "detail": "sesje różnicowe zarejestrowane: 0"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P10-L06",
+      "severity": "P1",
+      "evidence": "differential_evaluation.py istnieje (compare/check/record), ale brak zarejestrowanych sesji różnicowych i brak dowodu uruchomienia na ≥2 węzłach w CI/deploy",
+      "fix": "I06: sesja dual-node w CI (P39) + auto-degradacja certainty do NEEDS_ADVICE przy rozbieżności hashów (P03) + alarm do P37"
+    }
+  ],
+  "contract": {
+    "binding": "P38 (deploy), P43 (DR), P03 (certainty_class), P37",
+    "rule": "rozbieżność hashów między węzłami = NEEDS_ADVICE (nigdy AUTO_POST) dopóki nie ma konsensusu"
+  }
+}

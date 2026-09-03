@@ -1,0 +1,70 @@
+{
+  "innovation": "V3-P01-I05",
+  "generated_at": "2026-09-03T06:44:12+00:00",
+  "rules_total": 12439,
+  "layer_stats": {
+    "STATUTE": 12356,
+    "NONE": 59,
+    "INTERP": 24
+  },
+  "isolation_contract": {
+    "STATUTE": "może być jedyną podstawą AUTO_POST",
+    "INTERP": "wspiera decyzję; samodzielnie = NEEDS_ADVICE/MANUAL_REVIEW",
+    "NONE": "fail-closed: brak podstawy = brak AUTO_POST"
+  },
+  "interp_examples": [
+    {
+      "rule_id": "jdg.audit_defense.appeal_procedure",
+      "file": "rules/audit_defense_enterprise.rego",
+      "legal_basis": "Art. 220-247 OrdPU (odwołania); Art. 52-54 PPSA (skarga do WSA); Art. 479 PPSA (kasacja do NSA)"
+    },
+    {
+      "rule_id": "jdg.conflicts.borderline_expense_event",
+      "file": "rules/conflicts.rego",
+      "legal_basis": "Art. 23 ust. 1 pkt 23 PIT, wyrok NSA II FSK 2345/17"
+    },
+    {
+      "rule_id": "jdg.conflicts.representation_with_business_purpose",
+      "file": "rules/conflicts.rego",
+      "legal_basis": "Interpretacja ogólna MF z 25.11.2019, wyroki NSA"
+    },
+    {
+      "rule_id": "jdg.digital.crypto_mining_business",
+      "file": "rules/digital.rego",
+      "legal_basis": "Art. 22d PIT + interpretacje KIS"
+    },
+    {
+      "rule_id": "jdg.judicial.no_match",
+      "file": "rules/judicial_interpretations_enterprise.rego",
+      "legal_basis": "Art. 14a-14h OrdPU (interpretacje); Art. 42a VAT (WIS); Art. 7d KKS"
+    },
+    {
+      "rule_id": "jdg.judicial.nsa_ruling_impact",
+      "file": "rules/judicial_interpretations_enterprise.rego",
+      "legal_basis": "Art. 14a-14h OrdPU (interpretacje); Art. 42a VAT (WIS); Art. 7d KKS"
+    },
+    {
+      "rule_id": "jdg.judicial.kis_interpretation_precedent",
+      "file": "rules/judicial_interpretations_enterprise.rego",
+      "legal_basis": "Art. 14b-14s Ordynacji podatkowej (interpretacje indywidualne)"
+    },
+    {
+      "rule_id": "jdg.judicial.wis_wia_binding_information",
+      "file": "rules/judicial_interpretations_enterprise.rego",
+      "legal_basis": "Art. 42a-42g VAT (WIS); Art. 7d KKS; Rozporządzenie MF ws. WIS"
+    },
+    {
+      "rule_id": "jdg.judicial.mf_general_interpretation",
+      "file": "rules/judicial_interpretations_enterprise.rego",
+      "legal_basis": "Art. 14a § 1 OrdPU (interpretacje ogólne MF); Art. 23 ust. 1 pkt 23 PIT"
+    },
+    {
+      "rule_id": "jdg.judicial.tsue_preliminary_ruling",
+      "file": "rules/judicial_interpretations_enterprise.rego",
+      "legal_basis": "Art. 267 TFUE; Dyrektywa VAT 2006/112/WE; Orzecznictwo TSUE"
+    }
+  ],
+  "interp_total": 24,
+  "none_total": 59,
+  "verdict_field": "_legal_layers: [STATUTE|INTERP|NONE] — pole kontraktu werdyktu (P03)"
+}

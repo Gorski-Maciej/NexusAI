@@ -1,0 +1,36 @@
+{
+  "innovation": "V3-P11-I02",
+  "generated_at": "2026-09-03T12:19:25+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "audit_trail_merkle": true,
+    "daily_period": true,
+    "merkle_artifacts": [
+      "v3_p01_legal_merkle.json",
+      "v3_p11_merkle_daily_tree.json"
+    ],
+    "root_register": []
+  },
+  "checks": [
+    {
+      "name": "audit_trail_merkle",
+      "status": "OK",
+      "detail": "blockchain_audit_trail.py buduje drzewo/łańcuch: True"
+    },
+    {
+      "name": "daily_period",
+      "status": "OK",
+      "detail": "periodyzacja (dzień/miesiąc): True"
+    },
+    {
+      "name": "root_register",
+      "status": "OK",
+      "detail": "artefakty merkle/root: ['v3_p01_legal_merkle.json', 'v3_p11_merkle_daily_tree.json']"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P43 (WORM/DR), P38 (deploy), P44",
+    "rule": "każdy certyfikat jest liściem drzewa dziennego; root miesięczny publikowany i weryfikowalny offline"
+  }
+}

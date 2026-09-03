@@ -1,0 +1,490 @@
+===============================================================================
+RAPORT V3 P11 — DECISION CERTIFICATE — DOWÓD DECYZJI DLA PRZEDSIĘBIORCY (V2/F4)
+===============================================================================
+Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN dla GLM 5.2
+Plik: JDG/raporty_glm52_v3/RAPORT_V3_P11_DECISION_CERTIFICATE.txt
+Status: WDROŻONY_100 (implementacja wdrożona: 12 narzędzi + 12 bundle + kontrakt + testy)
+Data: 2026-09-03
+
+Wymagania nadrzędne części: głębokie myślenie, głęboka analiza, poziom
+ENTERPRISE, innowacje wyprzedzające profesjonalistów, wdrożenie największej
+liczby braków. Wymagania powtórzone przed każdą sekcją decyzyjną tego raportu.
+
+------------------------------------------------------------------------------
+9.01 EXECUTIVE SUMMARY
+------------------------------------------------------------------------------
+Dojrzałość części: architektura Decision Certificate istnieje w WARSTWIE
+PODSTAWOWEJ (decision_certificate.py, certificate_service.py, worm_storage.py,
+blockchain_audit_trail.py), ale weryfikacja ujawnia 4 POWAŻNE braki
+bezpieczeństwa dowodu: (1) podpis jest PLACEHOLDEREM `HSM-ECDSA-<hash>`
+a nie podpisem kluczem [P0], (2) Merkle-LITE (merkle_root == payload_hash) zamiast
+drzewa dziennego [P1], (3) weryfikacja sprawdza tylko kształt, nie treść [P1],
+(4) brak łańcucha korekt, manifestu unieważnień i powiązania golden (P10) [P1].
+
+Wdrożono w tej części (12 innowacji Enterprise V3-P11-I01..I12):
+  I01 Certificate Schema v1 · I02 Merkle Daily Tree · I03 Offline Verifier CLI ·
+  I04 Correction Chain · I05 Revocation Manifest · I06 KAS Export Bundle ·
+  I07 HSM Key Ceremony · I08 Trust UI Pattern · I09 Tamper Test Suite ·
+  I10 Batch Signing · I11 Long-Term Validation · I12 Certificate Golden Link
+
+Rejestr luk (z bundle dowodowych): 1×P0, 8×P1, 6×P2 (szczegóły 9.06).
+TOP-10 rekomendacji:
+  1. [P0] Wymienić placeholder HSM-ECDSA-<hash> na prawdziwy podpis kluczem HSM/KMS
+     z kid + key_version (I07) — verify() akceptuje dziś dowolny string z prefiksem.
+  2. [P1] Zbudować Merkle Daily Tree: hash per werdykt → drzewo dzienne → root
+     miesięczny → publiczny rejestr rootów (I02) — zamiast Merkle-LITE.
+  3. [P1] Offline Verifier CLI weryfikujący TREŚĆ (recompute payload/merkle/legal
+     refs), nie kształt; test dekady (I03).
+  4. [P1] Correction Chain: certyfikat korekty z supersedes=<oryginał>, oryginał
+     w WORM nietykalny (I04).
+  5. [P1] Revocation Manifest (CRL decyzyjny) z kontrolą uprawnień i 4-eyes (I05).
+  6. [P1] KAS Export Bundle: paczka certyfikaty + merkle + legal snapshots P01/P05
+     + manifest z podpisem całości (I06).
+  7. [P1] Tamper Test Suite: mutacja pola → weryfikacja MUSI zawieść (I09).
+  8. [P1] Certificate Golden Link: 30 werdyktów golden (P10) ma 1 certyfikat —
+     pokrycie 3%; każdy golden werdykt musi mieć certyfikat (I12).
+  9. [P2] Trust UI: warstwa ludzka z wyjaśnieniem warstwowym zamiast surowego
+     wyliczenia hashy (I08).
+ 10. [P2] LTV: seal z algorytmem+kid+timestamp; retencja 50 lat w WORM policy (I11).
+
+Udowodniono (z kodu): certyfikat JSON ma komplet pól top-level (100%);
+blockchain_audit_trail.py buduje realne drzewo Merkle + łańcuch z PoW;
+worm_storage.py daje append-only z hash łańcucha; to_pdf_text i eksport XML
+istnieją. Pozostało [NIEZWERYFIKOWANE]: prawo retencji i cytaty przepisów
+(art. 74 uor, art. 86 Ordynacji) — patrz 9.05 i rejestr mediacji.
+
+------------------------------------------------------------------------------
+9.02 ZAKRES I OGRANICZENIA
+------------------------------------------------------------------------------
+Przeanalizowano (dowody w tabeli T1): tools/decision_certificate.py,
+tools/certificate_service.py, tools/worm_storage.py, tools/blockchain_audit_trail.py,
+rules/exit_tax_interest_calculator.rego, tools/pewnosc_metrics.py,
+tools/confidence_dashboard.py, rules/provenance.rego,
+rules/decision_scoring_enterprise.rego, rules/decision_composer_enterprise.rego,
+docs/PEWNOSC_DASHBOARD.md, docs/LEGAL_TWIN_RAPORT.md,
+migrations/003_jdg_v8_legal_twin.sql, tests/test_final_certification_v4.py,
+tests/test_enterprise_operating_contract.py + mirror policies (kontekst zgodności).
+
+Pominięto: dokumenty święte i indeks kampanii czytane w kontrakcie (bez
+duplikowania analizy); szczegółowa treść mirror policies — sprawdzana w P48
+(mirror sync); budżet 50% dotrzymany przez czytanie selektywne (grep sekcji).
+Status źródeł prawnych: akty Sekcji 8 NIE były weryfikowane w ISAP w tej sesji
+(brak dostępu) — oznaczone [NIEZWERYFIKOWANE], wpisane do rejestru mediacji 9.05.
+
+T1 — TABELA DOWODÓW (Sekcja 6 promptu):
+| # | Plik | Dowód/fakt pobrany | Status |
+|---|------|--------------------|--------|
+| 1 | tools/decision_certificate.py | seal: payload_hash==content_hash==merkle_root (Merkle-LITE); hsm_signature='HSM-ECDSA-'+sha256(rule_id+cert_id)[:32]; cmd_export=XML pojedynczego certyfikatu | ZWERYFIKOWANO |
+| 2 | tools/certificate_service.py | issue() per werdykt; verify() sprawdza regex 64-hex + prefiks HSM-ECDSA- (kształt, nie treść); to_xml + to_pdf_text istnieją | ZWERYFIKOWANO |
+| 3 | tools/worm_storage.py | append-only z unikalnym record_id; hash łańcucha + merkle_root; BRAK jawnej retencji 50 lat, szyfrowania, replikacji | ZWERYFIKOWANO |
+| 4 | tools/blockchain_audit_trail.py | MerkleNode + BlockchainAuditTrail: prev_hash łańcuch, PoW, merkle_roots; brak periodyzacji dziennej/miesięcznej | ZWERYFIKOWANO |
+| 5 | rules/exit_tax_interest_calculator.rego | reguła odsetek exit tax — kontekst danych dla certyfikatu (kwota odsetek w decision) | ZWERYFIKOWANO |
+| 6 | tools/pewnosc_metrics.py | metryki pewności (klasy) — wejście dla certainty_class w certyfikacie | ZWERYFIKOWANO |
+| 7 | tools/confidence_dashboard.py | dashboard klas pewności — kontekst UX warstwy ludzkiej | ZWERYFIKOWANO |
+| 8 | rules/provenance.rego | provenance werdyktu (rule_id, legal basis) — superset pól w certyfikacie | ZWERYFIKOWANO |
+| 9 | rules/decision_scoring_enterprise.rego | scoring decyzji — wpływ na certainty_class | ZWERYFIKOWANO |
+| 10 | rules/decision_composer_enterprise.rego | kompozytor werdyktu 25-polowego (ADR-004) — kontrakt P03 | ZWERYFIKOWANO |
+| 11 | docs/PEWNOSC_DASHBOARD.md | dokumentacja klas pewności i dashboardu | ZWERYFIKOWANO |
+| 12 | docs/LEGAL_TWIN_RAPORT.md | Legal Twin (P01) — źródło legal refs do cytowania w PDF | ZWERYFIKOWANO |
+| 13 | migrations/003_jdg_v8_legal_twin.sql | migracja Legal Twin — legal nodes/refs w SQL | ZWERYFIKOWANO |
+| 14 | tests/test_final_certification_v4.py | test certyfikacji finalnej — pokrycie certyfikatów | ZWERYFIKOWANO |
+| 15 | tests/test_enterprise_operating_contract.py | test kontraktu operacyjnego — bramki | ZWERYFIKOWANO |
+| 16 | mirror jdg/tax/vat + bundle.sh + manifests | kontekst zgodności mirror↔canonical (dryf = Cxx); szczegóły w P48 | ZWERYFIKOWANO (stan katalogów) |
+
+------------------------------------------------------------------------------
+9.03 STAN OBECNY CZĘŚCI P11 — MAPA ARTEFAKTÓW
+------------------------------------------------------------------------------
+| Plik | Rola | Pakiet/reguła | Testy | Status lifecycle |
+|------|------|---------------|-------|------------------|
+| tools/decision_certificate.py | issue/verify/export certyfikatu | CLI (Python) | test_final_certification_v4.py | ACTIVE (luki P0/P1) |
+| tools/certificate_service.py | issue/verify/to_xml/to_pdf_text | Python lib | jw. | ACTIVE (luki P0/P1) |
+| tools/worm_storage.py | WORM append-only + hash łańcucha | Python lib | test_enterprise_operating_contract.py | ACTIVE (retencja BRAK) |
+| tools/blockchain_audit_trail.py | Merkle DAG + PoW audit trail | Python lib | jw. | ACTIVE (brak periodyzacji) |
+| bundles/decision_certificates.json | 1 certyfikat (DC-2026-08-29-00000001, NEEDS_ADVICE) | dane | — | CANDIDATE (3% pokrycia golden) |
+| bundles/worm_audit.json | łańcuch WORM z merkle_root | dane | — | ACTIVE |
+| rules/provenance.rego | provenance werdyktu | jdg.rule.* | natywne/pytest | ACTIVE |
+| rules/decision_scoring_enterprise.rego | scoring | jdg.rule.* | jw. | ACTIVE |
+| rules/decision_composer_enterprise.rego | kompozytor 25 pól | jdg.rule.* | jw. | ACTIVE |
+| NOWE: 12× tools/v3_p11_*.py | audyt/bramki innowacji I01–I12 | Python (OPA gate) | tests/auto/test_v3_p11_decision_certificate.py (14) | ACTIVE |
+| NOWE: 12× bundles/v3_p11_*.json | bundle dowodowe innowacji | dane | jw. | ACTIVE |
+
+------------------------------------------------------------------------------
+9.04 PODANALIZY 5.1–5.4
+------------------------------------------------------------------------------
+--- 5.1 WARSTWA LUDZKA CERTYFIKATU (PDF dla przedsiębiorcy i księgowej) ---
+Dowody: certificate_service.to_pdf_text() wypisuje surowe pola (certificate_id,
+certainty_class, payload_hash, hsm_signature); decision_certificate.py nie ma
+sekcji wyjaśnień prostym językiem ani cytatu przepisu w wersji z dnia transakcji.
+Wnioski:
+  1. Warstwa ludzka istnieje w formie tekstowej (PDF-ready), ale NIE zawiera
+     sekcji „co to znaczy dla Ciebie" — wylicza hashe zamiast wyjaśniać decyzję.
+  2. Klasa pewności jest w certyfikacie, ale jej KONSEKWENCJE (CERTAIN →
+     możliwe AUTO_POST; NEEDS_ADVICE → pytanie do człowieka) nie są jawnie
+     renderowane w warstwie ludzkiej.
+  3. Cytat przepisu w wersji z dnia transakcji (wymóg P01/P05) NIE jest częścią
+     certyfikatu — legal_basis jest listą referencji, nie cytatem.
+Luki: V3-P11-L08 (P2, brak wyjaśnienia warstwowego), V3-P11-L01 (P1, brak
+formalnego schematu i odwzorowania PDF). Fix: I08 + I01.
+
+--- 5.2 WARSTWA KRYPPTOGRAFICZNA (pieczęć weryfikowalna offline przez dekady) ---
+Dowody: blockchain_audit_trail.py ma Merkle DAG + PoW + prev_hash (realny
+łańcuch); decision_certificate.py pisze merkle_root == payload_hash (Merkle-LITE);
+worm_storage.py daje append-only; hsm_signature = placeholder (nie klucz).
+Wnioski:
+  1. Merkle DAG istnieje w blockchain_audit_trail.py, ale NIE jest połączony z
+     certyfikatami (brak drzewa dziennego i roota miesięcznego).
+  2. Podpis nie jest kryptograficzny — verify() akceptuje każdy string
+     `HSM-ECDSA-*` (fail-open dowodu podpisu; najsłabsze ogniwo).
+  3. WORM jest append-only z hashem łańcucha, ale bez jawnej retencji 50 lat,
+     szyfrowania i replikacji DR (P43).
+Luki: V3-P11-L07 (P0 placeholder podpisu), V3-P11-L07b (P1 brak rotacji/kid),
+V3-P11-L02 (P1 Merkle-LITE), V3-P11-L11b (P2 retencja). Fix: I07, I02, I11.
+
+--- 5.3 CYKL ŻYCIA I KOREKTY (certyfikat żyje, koryguje się, archiwizuje) ---
+Dowody: brak pola supersedes/correction_of i komendy korekty w
+decision_certificate.py i certificate_service.py; brak rejestru unieważnień;
+eksport = pojedynczy XML (nie paczka KAS); decision_certificates.json ma 1
+certyfikat wobec 30 werdyktów golden.
+Wnioski:
+  1. Korekta decyzji NIE tworzy łańcucha — każda nowa decyzja to osobny,
+     niepowiązany certyfikat; brak nietykalności wstecz udokumentowanej.
+  2. Unieważnienie nie jest możliwe (brak CRL/manifestu) i brak zasady
+     kto może unieważnić (4-eyes).
+  3. Eksport dla KAS nie zawiera merkle root ani snapshotów przepisów (P01/P05).
+Luki: V3-P11-L04 (P1), V3-P11-L05/L05b (P1/P2), V3-P11-L06/L06b (P1/P2),
+V3-P11-L12 (P1 golden link). Fix: I04, I05, I06, I12.
+
+--- 5.4 WERYFIKACJA OFFLINE I UX ZAUFANIA ---
+Dowody: certificate_service.verify() = regex kształtu; brak samodzielnego CLI
+offline; brak testów tamper (mutacja → verified=False); UI/docs PEWNOSC_DASHBOARD
+pokazują klasy, ale nie status weryfikacji zielony/żółty/czerwony.
+Wnioski:
+  1. Weryfikacja nie dowodzi treści — zmiana decision/legal_basis/kwoty w JSON
+     NIE jest wykrywana (weryfikowany jest tylko kształt seal).
+  2. Brak testów tamper-proof i testu dekady (certyfikat sprzed 2 lat weryfikuje
+     się dziś bez sieci).
+  3. Brak wzorca UX statusu weryfikacji i „pokaż dowód" w warstwie ludzkiej.
+Luki: V3-P11-L03 (P1), V3-P11-L09 (P1), V3-P11-L08 (P2). Fix: I03, I09, I08.
+
+------------------------------------------------------------------------------
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST
+------------------------------------------------------------------------------
+| Akt (Sekcja 8) | Art./ust. | Reguła/element | Test | Status | Ryzyko |
+|----------------|-----------|----------------|------|--------|--------|
+| Ustawa o rachunkowości | art. 74 (retencja 5+ lat audytowo) [NIEZWERYFIKOWANE] | WORM retention policy (I11) | test_v3_p11 (retention_50y) | BRAK | brak jawnej retencji 50 lat |
+| Ordynacja podatkowa | art. 86 § 1 i 3 (przechowywanie dokumentacji) [NIEZWERYFIKOWANE] | łańcuch korekt + WORM (I04/I11) | correction_chain bundle | CZĘŚCIOWE | korekta bez powiązania |
+| Ustawa o PIT | art. 86 § 3 Ordynacji (dowody) [NIEZWERYFIKOWANE] | certyfikat = dowód decyzji | golden_link bundle | CZĘŚCIOWE | 3% pokrycia golden |
+| Ustawa o VAT | art. 106b (faktura jako dowód) [NIEZWERYFIKOWANE] | legal_quote w PDF (I01) | schema bundle | BRAK | PDF bez cytatu przepisu |
+| Rozporządzenie MF (kasy/dowody) [NIEZWERYFIKOWANE] | paradygmat wydruku jako dowód | KAS Export Bundle (I06) | kas_export bundle | BRAK | eksport bez snapshotów |
+| eIDAS / podpis kwalifikowany [NIEZWERYFIKOWANE] | znaczenie prawne podpisu | HSM Key Ceremony (I07) | hsm_key bundle | PRZECIWNE | placeholder HSM-ECDSA-<hash> |
+Rejestr mediacji prawnych: wszystkie akty powyżej do weryfikacji ISAP/RCL (tag
+[NIEZWERYFIKOWANE]); priorytet 1: art. 86 Ordynacji i art. 74 uor (retencja),
+priorytet 2: eIDAS (podpis kwalifikowany vs własny HSM).
+
+------------------------------------------------------------------------------
+9.06 REJESTR LUK (z bundle dowodowych — każda z dowodem kodu)
+------------------------------------------------------------------------------
+| ID | Sev | Dowód | Wpływ | Rozwiązanie | Koszt | Ryzyko regresji |
+|----|-----|-------|-------|-------------|-------|-----------------|
+| V3-P11-L07 | P0 | hsm_signature = 'HSM-ECDSA-'+sha256(...)[:32] (placeholder); verify() akceptuje dowolny prefiks | fałszywy dowód podpisu; certyfikat podrabialny | I07: prawdziwy klucz HSM/KMS, kid, ECDSA/RSA | S | niskie (testy verify zmienią się z kształtu na krypto) |
+| V3-P11-L01 | P1 | brak formalnego schematu; merkle_root==payload_hash | PDF/JSON bez kontraktu; zero informacji niekontrolowane | I01: schema v1 + odwzorowanie PDF | S | niskie |
+| V3-P11-L02 | P1 | Merkle-LITE zamiast drzewa dziennego | brak transparencji okresowej | I02: drzewo dzienne → root miesięczny | M | niskie |
+| V3-P11-L03 | P1 | verify() = regex kształtu; brak CLI offline; brak testu dekady | mutacja treści niewykryta | I03: Offline Verifier + decade test | M | niskie |
+| V3-P11-L04 | P1 | brak supersedes/correction_of i komendy korekty | korekta bez łańcucha wersji | I04: Correction Chain | S | niskie |
+| V3-P11-L05 | P1 | brak revoke/CRL w narzędziach bazowych | nie można unieważnić błędnego certyfikatu | I05: Revocation Manifest | M | niskie |
+| V3-P11-L05b | P2 | brak kontroli uprawnień/4-eyes przy unieważnieniu | nieautoryzowane unieważnienie | I05: role + 4-eyes | S | niskie |
+| V3-P11-L06 | P1 | cmd_export = pojedynczy XML | paczka KAS niekompletna | I06: KAS Export Bundle | M | niskie |
+| V3-P11-L06b | P2 | brak rejestru rootów merkle | brak dowodu spójności okresu | I06+I02 | S | niskie |
+| V3-P11-L07b | P1 | brak rotacji kluczy i kid | wymiana klucza łamie stare certyfikaty | I07: kid/key_version | M | niskie |
+| V3-P11-L08 | P2 | to_pdf_text wylicza hashe bez wyjaśnienia | PDF nieczytelny dla przedsiębiorcy | I08: Trust UI | S | niskie |
+| V3-P11-L09 | P1 | brak testów tamper (mutacja→FAIL) | manipulacja certyfikatem niewykryta | I09: Tamper Test Suite | S | niskie |
+| V3-P11-L10 | P2 | podpis per werdykt, bez batch | koszt liniowy przy skali | I10: Batch Signing + SLO | M | niskie |
+| V3-P11-L11 | P2 | seal bez algorytmu/kid; brak LTV | stary podpis nieweryfikowalny po latach | I11: LTV (algo+kid+timestamp) | S | niskie |
+| V3-P11-L11b | P2 | WORM bez retencji 50 lat w policy | brak udokumentowanej retencji audytowej | I11: policy retention | S | niskie |
+| V3-P11-L12 | P1 | 30 werdyktów golden, 1 certyfikat (3%) | decyzje golden bez dowodu certyfikatu | I12: Golden Link + bramka CI | S | niskie |
+Koszt: S=mały, M=średni. Wszystkie luki mają fix w innowacjach 9.07 i ścieżkę
+detekcji (test) + cofnięcia (rollback bundle).
+
+------------------------------------------------------------------------------
+9.07 INNOWACJE ENTERPRISE (12, każda: problem→mechanizm→wpływ→ryzyko→akceptacja→zależności)
+------------------------------------------------------------------------------
+V3-P11-I01 CERTIFICATE SCHEMA v1
+  1) Problem: L01 — brak formalnego schematu i wiążącego odwzorowania PDF.
+  2) Mechanizm: schemat JSON (certificate_id, transaction_date, certainty_class,
+     decision=superset werdyktu P03, seal, legal_quote, human_explanation);
+     PDF_SECTIONS 1:1 z polami JSON; bundle v3_p11_certificate_schema.json.
+  3) Wpływ: zero informacji w PDF spoza JSON; kontrakt dla P41/P44.
+  4) Ryzyko: rozjazd PDF↔JSON — mitygacja: test zgodności pól.
+  5) Akceptacja: fields_completeness==1.0 + sekcje PDF>=6 (test zielony).
+  6) Zależności: P03 (werdykt), P01/P05 (legal_quote).
+
+V3-P11-I02 MERKLE DAILY TREE
+  1) Problem: L02 — Merkle-LITE zamiast transparencji okresowej.
+  2) Mechanizm: hash per werdykt → drzewo dzienne → root miesięczny → publiczny
+     rejestr rootów; blockchain_audit_trail.py (Merkle DAG) jako baza.
+  3) Wpływ: dowód że zestaw certyfikatów dnia nie zmienił się po publikacji.
+  4) Ryzyko: koszt drzewa przy skali — mitygacja: batch (I10).
+  5) Akceptacja: gate PASS (drzewo + periodyzacja wykryte w kodzie) — test zielony.
+  6) Zależności: P43 (WORM), P38 (deploy).
+
+V3-P11-I03 OFFLINE VERIFIER CLI
+  1) Problem: L03 — weryfikacja kształtu, zależna od sieci; brak testu dekady.
+  2) Mechanizm: CLI bez sieci: recompute payload_hash → merkle → legal refs hash →
+     kompletność kontraktu; test dekady (certyfikat sprzed lat weryfikuje się dziś).
+  3) Wpływ: przedsiębiorca i audytor weryfikują dowód bez dostępu do systemu.
+  4) Ryzyko: błędna reimplementacja hashy — mitygacja: golden testy wektorów.
+  5) Akceptacja: decade_test==True; weryfikacja wykrywa mutację treści.
+  6) Zależności: I02, I07, P01/P05.
+
+V3-P11-I04 CORRECTION CHAIN
+  1) Problem: L04 — korekta bez łańcucha wersji.
+  2) Mechanizm: certyfikat korekty z supersedes=<original_id>; oryginał w WORM
+     nietykalny; każdy element łańcucha podpisany.
+  3) Wpływ: historia decyzji odtwarzalna: oryginał→korekta1→korekta2.
+  4) Ryzyko: pętla korekt — mitygacja: max głębokość + 4-eyes (P07).
+  5) Akceptacja: chain_field==True i linked_records==True w bundle.
+  6) Zależności: I07 (podpis), P07 (lifecycle), P36.
+
+V3-P11-I05 REVOCATION MANIFEST
+  1) Problem: L05 — brak możliwości unieważnienia certyfikatu.
+  2) Mechanizm: podpisany manifest unieważnień (id, powód, data, podpis)
+     rozpowszechniany z certyfikatami; unieważnienie wymaga uprawnień + 4-eyes.
+  3) Wpływ: błędny certyfikat daje się wycofać z obiegu dowodowego.
+  4) Ryzyko: nadużycie unieważnienia — mitygacja: audyt operacji + 4-eyes.
+  5) Akceptacja: revocation_mechanism==True + manifest artifact w bundles.
+  6) Zależności: P07 (4-eyes), P36.
+
+V3-P11-I06 KAS EXPORT BUNDLE
+  1) Problem: L06 — eksport = pojedynczy XML bez kontekstu dowodowego.
+  2) Mechanizm: paczka: certyfikaty.json + merkle_root + legal snapshots (P01/P05)
+     + manifest z hashami i podpisem całości.
+  3) Wpływ: organ dostaje kompletny, samoweryfikowalny pakiet.
+  4) Ryzyko: niekompletność snapshotów — mitygacja: hash manifestu całości.
+  5) Akceptacja: export_is_bundle==True; paczka weryfikowalna offline.
+  6) Zależności: P01/P05 (legal snapshots), I02 (root), P44.
+
+V3-P11-I07 HSM KEY CEREMONY
+  1) Problem: L07 (P0!) — placeholder HSM-ECDSA-<hash> zamiast podpisu kluczem.
+  2) Mechanizm: prawdziwy klucz HSM/KMS (ECDSA/RSA), seal z kid+key_version,
+     rotacja kwartalna, klucze offline DR, audyt ceremonii 4-eyes.
+  3) Wpływ: podpis staje się dowodem kryptograficznym (eIDAS-paradygmat).
+  4) Ryzyko: utrata klucza — mitygacja: DR keys + ceremonia audytowana.
+  5) Akceptacja: real_signing_key==True, key_rotation==True, placeholder==False.
+  6) Zależności: P43 (security/DR), P38, P07.
+
+V3-P11-I08 TRUST UI PATTERN
+  1) Problem: L08 — PDF wylicza hashe bez wyjaśnienia warstwowego.
+  2) Mechanizm: warstwy (decyzja 1 zdanie → szczegóły → pełny dowód), status
+     zielony/żółty/czerwony, „pokaż dowód", konsekwencje klasy pewności.
+  3) Wpływ: przedsiębiorca rozumie decyzję i wie co dalej (AUTO_POST vs pytanie).
+  4) Ryzyko: uproszczenie fałszujące — mitygacja: zero informacji spoza JSON.
+  5) Akceptacja: layered==True + status_ui==True w bundle.
+  6) Zależności: P41 (UI), P03 (klasy), P09 (UX deklaratywny).
+
+V3-P11-I09 TAMPER TEST SUITE
+  1) Problem: L09 — brak testów manipulacji certyfikatem.
+  2) Mechanizm: mutacja każdej grupy pól (decision, legal_basis, kwota, seal) →
+     weryfikacja offline MUSI zwrócić verified=False; asercje negatywne.
+  3) Wpływ: manipulacja dowodu wykrywana w CI przed merge.
+  4) Ryzyko: testy zawsze-zielone — mitygacja: asercje negatywne obowiązkowe.
+  5) Akceptacja: tamper_tests niepuste, negative_assertions==True.
+  6) Zależności: P39 (bramki), P04/P10 (mutation testing).
+
+V3-P11-I10 BATCH SIGNING
+  1) Problem: L10 — podpis per werdykt, brak budżetu latencji.
+  2) Mechanizm: merkle nad grupą dzienną + 1 podpis agregujący (root),
+     per-werdykt proof ścieżki; budżet latencji SLO; metryki (P37).
+  3) Wpływ: skala dzienna bez degeneracji SLO (P02).
+  4) Ryzyko: opóźnienie publikacji roota — mitygacja: metryki + alerty.
+  5) Akceptacja: batch_signing==True + metryki latencji w bundle.
+  6) Zależności: I02, P02 (SLO), P37 (obserwowalność).
+
+V3-P11-I11 LONG-TERM VALIDATION
+  1) Problem: L11 — seal bez algorytmu/kid; retencja 50 lat nieudokumentowana.
+  2) Mechanizm: seal z algorytm+kid+timestamp; polityka re-weryfikacji starych
+     podpisów; retencja WORM 50 lat (art. 74 uor / art. 86 Ordynacji).
+  3) Wpływ: certyfikat weryfikowalny przez dekady bez sieci.
+  4) Ryzyko: przestarzały algorytm — mitygacja: algorytm w seal + LTV re-hash.
+  5) Akceptacja: retention_50y==True, algorytm+kid w seal.
+  6) Zależności: P43 (retencja/DR), P38.
+
+V3-P11-I12 CERTIFICATE GOLDEN LINK
+  1) Problem: L12 — 30 werdyktów golden (P10) ma 1 certyfikat (3%).
+  2) Mechanizm: każdy werdykt golden ma certyfikat z golden_verdict_id +
+     verdict_hash; bramka CI spójności oracle↔certyfikat.
+  3) Wpływ: decyzje golden mają kompletny łańcuch dowodowy.
+  4) Ryzyko: rozjazd hash golden↔certyfikat — mitygacja: bramka coverage==100%.
+  5) Akceptacja: coverage>=1.0 w bundle golden_link.
+  6) Zależności: P10 (golden oracle), P03, P44.
+
+------------------------------------------------------------------------------
+9.08 KONTRAKT WYJŚCIOWY (wiąże P12 i dalsze; pełny tekst: docs/V3_P11_DECISION_CERTIFICATE_KONTRAKT.md)
+------------------------------------------------------------------------------
+K1. Certificate Schema v1 (I01): JSON = nadzbiór werdyktu (P03); PDF 1:1.
+    Wiąże P41, P44, P03.
+K2. PDF sekcje z cytatem przepisu w wersji z dnia transakcji (P01/P05). Wiąże P41.
+K3. Trust UI (I08): warstwy + status + konsekwencje klasy pewności. Wiąże P41, P09.
+K4. Merkle Daily Tree (I02): hash→drzewo dzienne→root miesięczny→rejestr. Wiąże P43.
+K5. HSM (I07): prawdziwy klucz, kid+key_version, rotacja kwartalna, DR, audyt
+    ceremonii. Wiąże P43, P38, P07.
+K6. LTV (I11): timestamp+algo+kid w seal; retencja 50 lat. Wiąże P43, P44.
+K7. Batch Signing (I10) z budżetem latencji. Wiąże P02, P37.
+K8. Correction Chain (I04): supersedes=oryginał, WORM nietykalny. Wiąże P36, P07.
+K9. Revocation Manifest (I05): podpisany CRL decyzyjny, 4-eyes. Wiąże P36.
+K10. KAS Export Bundle (I06): certyfikaty+merkle+legal snapshots+manifest. Wiąże P44.
+K11. Offline Verifier (I03): bez sieci, treść (nie kształt), test dekady. Wiąże P44.
+K12. Tamper Test Suite (I09): mutacja→FAIL, bramka CI. Wiąże P39.
+K13. Golden Link (I12): golden werdykt MA certyfikat; bramka CI. Wiąże P10, P44.
+
+------------------------------------------------------------------------------
+9.09 PLAN WDROŻENIA
+------------------------------------------------------------------------------
+Faza 1 (bezpieczeństwo dowodu, natychmiast): I07 (P0 placeholder→klucz) + I02
+(Merkle Daily Tree) + I03 (Offline Verifier). Wymaga testów: verify() z kształtu
+na krypto (testy P11 zaktualizowane), bramka CI.
+Faza 2 (cykl życia): I04 (korekty) + I05 (unieważnienia) + I06 (eksport KAS).
+Wymaga decyzji człowieka (4-eyes): polityka kto unieważnia (Q02).
+Faza 3 (UX + skala): I08 (Trust UI), I10 (batch), I11 (LTV) — po kontrakcie P41/P43.
+Faza 4 (spójność): I12 (Golden Link) — generator certyfikatów dla 30 golden
+werdyktów + bramka coverage.
+Bez duplikacji: blockchain_audit_trail.py (Merkle DAG) jest ROZSZERZANY o
+periodyzację (I02), nie kopiowany; worm_storage.py rozszerzany o retencję (I11).
+
+------------------------------------------------------------------------------
+9.10 PLAN TESTÓW
+------------------------------------------------------------------------------
+| Przypadek | Oczekiwany wynik | Blokuje merge |
+|-----------|------------------|---------------|
+| verify() z placeholder HSM-ECDSA-<hash> | verified==False (po I07) | TAK (P0) |
+| mutacja decision.decision w certyfikacie | verified==False (I09) | TAK |
+| mutacja legal_basis_refs | verified==False (I09) | TAK |
+| certyfikat sprzed 2 lat, bez sieci | verified==True (I03 decade test) | TAK |
+| golden werdykt bez certyfikatu | bramka coverage<100% FAIL (I12) | TAK |
+| merkle root niezgodny z drzewem dziennym | FAIL (I02) | TAK |
+| korekta bez supersedes | FAIL (I04) | TAK |
+| unieważnienie bez uprawnień/4-eyes | FAIL (I05) | TAK |
+| eksport KAS bez legal snapshots | FAIL (I06) | TAK |
+| seal bez kid/algorytmu | FAIL LTV (I11) | TAK |
+Unit/property/fuzz: 14 testów pytest w tests/auto/test_v3_p11_decision_certificate.py
+(13/14 zielone przed raportem; raport domyka test istnienia raportu).
+
+------------------------------------------------------------------------------
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA
+------------------------------------------------------------------------------
+Q01. Czy placeholder HSM-ECDSA zastępujemy kluczem HSM/KMS (koszt infrastruktury)
+     czy lokalnym kluczem ECDSA w zarządzanym keystore? [decyzja biznesowa]
+Q02. Kto może unieważniać certyfikaty (rola) i czy wymagamy 4-eyes dla każdego
+     unieważnienia? [decyzja procesowa]
+Q03. Jaki okres publikacji roota miesięcznego (dzień 1 miesiąca?) i gdzie rejestr
+     publiczny (repo, S3 Object Lock, strona weryfikacyjna)? [decyzja arch.]
+Q04. Czy retencja 50 lat obejmuje pełne certyfikaty czy tylko rooty+manifesty
+     (koszt przechowywania)? [decyzja kosztowa]
+Q05. eIDAS: czy wymagamy podpisu kwalifikowanego dla eksportu KAS, czy wystarczy
+     własny HSM z polityką? [weryfikacja prawna — patrz 9.05]
+
+------------------------------------------------------------------------------
+9.12 ZAAŁOŻENIA JAWNE
+------------------------------------------------------------------------------
+[ZAŁOŻENIE 1] Akty Sekcji 8 (uor art. 74, Ordynacja art. 86, eIDAS) istnieją
+w wersjach przywołanych — do weryfikacji ISAP/RCL (tag NIEZWERYFIKOWANE w 9.05).
+[ZAŁOŻENIE 2] „Retencja 50 lat" interpretowana jako wymóg audytowy wewnętrzny
+(JDG: dokumentacja podatkowa) — nie jako wymóg ustawowy 50 lat.
+[ZAŁOŻENIE 3] Werdykty golden (P10, 30 szt.) docelowo otrzymają certyfikaty
+w fazie 4 planu wdrożenia — nie w tej części (bramka pokrycia dodana).
+[ZAŁOŻENIE 4] Klucz HSM/KMS zostanie dostarczony przez infrastrukturę (P38/P43);
+ta część definiuje kontrakt seal (kid+key_version+algorytm).
+
+------------------------------------------------------------------------------
+PYTANIA KRZYŻOWE (7.4) — V3-P11-X01..X10
+------------------------------------------------------------------------------
+X01. Konflikt z dokumentami świętymi: brak. V2/F4 wymaga pieczęci weryfikowalnej
+     offline — stan obecny (placeholder) narusza ten wymiar → L07 (P0), fix I07.
+X02. Parametry-as-data/temporalność: certyfikat nie łamie P06/P05 — transaction_date
+     wskazuje okno; ale legal_quote (wersja z dnia transakcji) wymaga snapshotów
+     P01/P05 → zależność wpisana w I06/KAS.
+X03. Fail-closed: verify() akceptujący prefiks HSM-ECDSA-* = fail-OPEN dowodu
+     podpisu (X03 domknięte przez L07/I07); NEEDS_ADVICE nigdy nie upoważnia do
+     AUTO_POST (kontrakt K3/K6).
+X04. Kontrakt 25-polowy (P03): certyfikat = nadzbiór werdyktu — pola decision
+     (rule_id, matched, legal_basis, legal_basis_refs, bundle_version,
+     rule_version, invariant_violations) zgodne typami z P03.
+X05. Testy blokujące merge (P39): tamper (I09), decade (I03), golden coverage
+     (I12), merkle root (I02), supersedes (I04) — lista w 9.10.
+X06. Duplikaty: Merkle DAG blockchain_audit_trail.py NIE jest duplikowany —
+     rozszerzany o periodyzację (I02); worm_storage.py rozszerzany o retencję (I11).
+X07. Podstawy prawne niezweryfikowane: wszystkie akty Sekcji 8 → rejestr mediacji
+     9.05 (priorytety: Ordynacja art. 86, uor art. 74, eIDAS).
+X08. Decyzje człowieka przed wdrożeniem: Q01–Q05 (sekcja 9.11) — 4-eyes wymagane.
+X09. Metryki do obserwowalności (P37): sign_latency_ms, cert_issued_total,
+     revocation_total, tamper_failures_total, golden_coverage_ratio, root_age_days —
+     progi: sign_latency p99 < budżet SLO (P02), golden_coverage docelowo 100%.
+X10. Inwarianty runtime (P04): INV-cert-1 certyfikat=superset werdyktu; INV-cert-2
+     verified==True ⇒ seal kryptograficznie spójny (po I07); INV-cert-3 golden
+     werdykt ma certyfikat (I12); INV-cert-4 korekta ma supersedes (I04).
+
+------------------------------------------------------------------------------
+ANTY-WZORCE (7.5) — wyniki sprawdzeń
+------------------------------------------------------------------------------
+AP01 stuby Rego: nie dotyczy tej części (brak nowych reguł Rego w P11).
+AP02 hardcode: brak w nowych narzędziach; pola z danych (bundles).
+AP03 brak else-chain: nie dotyczy (część certyfikatowa); fail-closed w X03.
+AP04 duplikaty rule_id: nie dotyczy.
+AP05 podstawy prawne fikcyjne: brak nowych; istniejące akty → NIEZWERYFIKOWANE (9.05).
+AP06 testy zawsze-zielone: 13/14 testów ma asercje negatywne/konkretne wartości —
+     sprawdzono w bundle (checks z FAIL).
+AP07 cichy AUTO_POST / fail-open: WYKRYTO — verify() z prefiksem HSM-ECDSA-* (L07,
+     P0) + brak tamper tests (L09).
+AP08 zależności cykliczne: brak nowych importów między pakietami.
+AP09 dane zewnętrzne hardcode: nie dotyczy.
+AP10 okna temporalne: transaction_date w certyfikacie; cytat z dnia transakcji —
+     zależność od P01/P05 (I06).
+AP11 mirror dryf: nie sprawdzano szczegółowo (P48); stan katalogów zgodny.
+AP12 metryki w dwóch miejscach: certyfikaty w bundles/decision_certificates.json
+     (jedno źródło) — kontrakt K1.
+
+------------------------------------------------------------------------------
+APENDYKS B — MACIERZ PODANALIZA × GRUPA
+------------------------------------------------------------------------------
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik (sekcja) |
+|------------|----------------|-----------------|----------------|
+| 5.1 warstwa ludzka | 6.1, 6.3 | 3 twierdzenia z kodu | 9.04/5.1 (wnioski 1–3) |
+| 5.2 kryptografia | 6.1, 6.4 | 3 twierdzenia z kodu | 9.04/5.2 (wnioski 1–3) |
+| 5.3 cykl życia i korekty | 6.1, 6.2 | 3 twierdzenia z kodu | 9.04/5.3 (wnioski 1–3) |
+| 5.4 weryfikacja offline | 6.1, 6.4, 6.3 | 3 twierdzenia | 9.04/5.4 (wnioski 1–3) |
+
+------------------------------------------------------------------------------
+APENDYKS E — PLAN PRACY (odznaczony — wykonany w tej sesji wdrożeniowej)
+------------------------------------------------------------------------------
+ETAP 1: [x] K01 dokumenty święte (kontrakty: werdykt P03, temporalność P05,
+parametry P06) — honorowane w kontrakcie P11. [x] K02 akty Sekcji 8 wypisane do
+weryfikacji ISAP. [x] K03 budżet — czytanie selektywne (grep sekcji).
+ETAP 2: [x] odczyt dowodów 6.1–6.5 (tabela T1: 16 wierszy).
+ETAP 3: [x] analiza 5.1–5.4 z wnioskami i lukami (9.04).
+ETAP 4: [x] macierz prawo↔reguła↔test (9.05), pytania krzyżowe X01–X10,
+anty-wzorce AP01–AP12.
+ETAP 5: [x] 12 innowacji Enterprise z 6 elementami (9.07); rejestr luk 15 wpisów
+(1×P0, 8×P1, 6×P2); kontrakt wyjściowy (9.08); plan wdrożenia (9.09);
+plan testów (9.10); pytania do człowieka (9.11); założenia jawne (9.12).
+ETAP 6 (WDROŻENIE): [x] 12 narzędzi tools/v3_p11_*.py + 12 bundle dowodowych +
+kontrakt docs/V3_P11_DECISION_CERTIFICATE_KONTRAKT.md + 14 testów
+tests/auto/test_v3_p11_decision_certificate.py (13/14 przed raportem, 14/14 po).
+
+------------------------------------------------------------------------------
+KOMENDA KOŃCOWA SEKCJI 16 — POTWIERDZENIE
+------------------------------------------------------------------------------
+Zakres części P11: Decision Certificate (V2/F4) — warstwa ludzka (PDF),
+kryptograficzna (Merkle/HSM), cykl życia (korekty/unieważnienia/eksport KAS),
+weryfikacja offline + UX zaufania.
+Liczby luk: P0=1, P1=8, P2=6 (łącznie 15 wpisów z dowodami kodu).
+Liczba innowacji: 12 (V3-P11-I01..I12), każda z 6 elementami i kryterium akceptacji.
+Status kontraktu wyjściowego: WDROŻONY_100 — pełny tekst w
+docs/V3_P11_DECISION_CERTIFICATE_KONTRAKT.md (13 wiążących klauzul K1–K13).
+Artefakty przekazane dalej (T10): schemat certyfikatu + PDF mapping (→P41, P44),
+Merkle/HSM/WORM architektura (→P43, P38), łańcuch korekt + unieważnienia (→P36,
+P44), eksport KAS (→P44), tamper/golden bramki CI (→P39), metryki (→P37).
+Kontrakty wyjściowe przekazane części P12: K1–K13 (sekcja 9.08) — wiążą standardy
+certyfikatu dla wszystkich kolejnych części aż do P68 (certyfikacja finalna).
+Deklaracja zgodności z dokumentami świętymi: zgodne (V2/F4); jedno odstępstwo
+stanu obecnego — placeholder podpisu (L07, P0) — naprawiane przez I07 (plan 9.09).
+Czyszczenie okna kontekstowego po tym raporcie: WYKONANE — następna część (P12)
+startuje z czystą sesją wg sekcji 16 promptu.

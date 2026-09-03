@@ -1,0 +1,45 @@
+{
+  "innovation": "V3-P11-I05",
+  "generated_at": "2026-09-03T12:20:31+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "revocation_mechanism": false,
+    "revocation_artifacts": [],
+    "authorization_4eyes": false
+  },
+  "checks": [
+    {
+      "name": "revocation_mechanism",
+      "status": "FAIL",
+      "detail": "mechanizm unieważnień w narzędziach certyfikatów: False"
+    },
+    {
+      "name": "revocation_manifest_artifact",
+      "status": "FAIL",
+      "detail": "artefakt manifestu unieważnień: BRAK"
+    },
+    {
+      "name": "authorization_4eyes",
+      "status": "FAIL",
+      "detail": "kontrola uprawnień/4-eyes przy unieważnieniu: False"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P11-L05",
+      "severity": "P1",
+      "evidence": "brak manifestu unieważnień (CRL decyzyjny): żadne narzędzie certyfikatów nie implementuje revoke/CRL; brak artefaktu manifestu i zasady kto może unieważnić (4-eyes, uprawnienia)",
+      "fix": "I05: Revocation Manifest — podpisany rejestr unieważnionych certyfikatów (id, powód, data, podpis), rozpowszechniany z certyfikatami; unieważnienie wymaga 4-eyes"
+    },
+    {
+      "id": "V3-P11-L05b",
+      "severity": "P2",
+      "evidence": "brak jawnej kontroli uprawnień przy unieważnianiu certyfikatów — ryzyko nieautoryzowanego unieważnienia",
+      "fix": "I05: role i 4-eyes dla operacji revoke (P07/P09)"
+    }
+  ],
+  "contract": {
+    "binding": "P36 (procesy), P44, P07 (4-eyes)",
+    "rule": "unieważnienie = wpis w podpisanym manifeście; weryfikacja offline sprawdza certyfikat przeciw manifestowi"
+  }
+}

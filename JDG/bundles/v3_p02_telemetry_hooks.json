@@ -1,0 +1,144 @@
+{
+  "innovation": "V3-P02-I08",
+  "name": "Orchestrator Telemetry Hooks — metryki per PASS do SLO",
+  "generated_at": "2026-09-03T07:59:36+00:00",
+  "code_evidence": {
+    "cost_ms_field": false,
+    "shard_routed_field": false,
+    "provenance_evaluation_ms": true
+  },
+  "metric_registry": [
+    {
+      "name": "jdg_orchestrator_pass_duration_ms",
+      "type": "histogram",
+      "unit": "ms",
+      "tags": [
+        "pass",
+        "shard",
+        "transaction_type"
+      ],
+      "alert_threshold": {
+        "p95_ms": 5,
+        "comment": "per shard (deklaracja p95<5ms/shard)"
+      },
+      "owner": "P02-I08",
+      "slo_target": "p95 <= 5000ms full chain"
+    },
+    {
+      "name": "jdg_orchestrator_pass_matches",
+      "type": "counter",
+      "unit": "integer",
+      "tags": [
+        "pass",
+        "rule_id",
+        "package"
+      ],
+      "alert_threshold": {
+        "rule": "match_count == 0 dla domeny aktywnej"
+      },
+      "owner": "P02-I08"
+    },
+    {
+      "name": "jdg_orchestrator_aborts_total",
+      "type": "counter",
+      "unit": "integer",
+      "tags": [
+        "pass",
+        "reason",
+        "routing"
+      ],
+      "alert_threshold": {
+        "rule": "abort bez werdyktu = P1 (cisza)"
+      },
+      "owner": "P02-I10"
+    },
+    {
+      "name": "jdg_orchestrator_abort_no_verdict_total",
+      "type": "counter",
+      "unit": "integer",
+      "tags": [
+        "reason"
+      ],
+      "alert_threshold": {
+        "gte": 1,
+        "severity": "P1"
+      },
+      "owner": "P02-I10",
+      "slo_target": "0 (zero cichych braków werdyktu)"
+    },
+    {
+      "name": "jdg_orchestrator_shard_routed_total",
+      "type": "counter",
+      "unit": "integer",
+      "tags": [
+        "shard",
+        "transaction_type",
+        "entity_status"
+      ],
+      "alert_threshold": {
+        "rule": "dystrybucja shardów"
+      },
+      "owner": "P02-I04"
+    },
+    {
+      "name": "jdg_orchestrator_merge_overwrite_protected_total",
+      "type": "counter",
+      "unit": "integer",
+      "tags": [
+        "package",
+        "field"
+      ],
+      "alert_threshold": {
+        "gte": 1,
+        "severity": "P0"
+      },
+      "owner": "P02-I07",
+      "slo_target": "0 (INV-018/042)"
+    },
+    {
+      "name": "jdg_orchestrator_verdict_incomplete_total",
+      "type": "counter",
+      "unit": "integer",
+      "tags": [
+        "package",
+        "missing_fields"
+      ],
+      "alert_threshold": {
+        "gte": 1,
+        "severity": "P1"
+      },
+      "owner": "P02-I12",
+      "slo_target": "0"
+    },
+    {
+      "name": "jdg_orchestrator_certainty_blocked_total",
+      "type": "counter",
+      "unit": "integer",
+      "tags": [
+        "certainty_class"
+      ],
+      "alert_threshold": {
+        "rule": "monitor"
+      },
+      "owner": "P02-I01"
+    },
+    {
+      "name": "jdg_orchestrator_eval_cost_model",
+      "type": "gauge",
+      "unit": "pakiety",
+      "tags": [
+        "shard"
+      ],
+      "alert_threshold": {
+        "rule": "koszt modelowy > budzet (I06)"
+      },
+      "owner": "P02-I06"
+    }
+  ],
+  "metric_count": 9,
+  "gate": {
+    "pass": true,
+    "rule": "rejestr metryk per PASS przekazany do P37 (obserwowalność) — nazwy i tagi wiążące od tej części"
+  },
+  "note": "hooki emitują metryki na końcu każdego PASS (POST-MERGE); progi alarmów: P0=0 naruszeń invariantów, P1=każdy abort bez werdyktu."
+}

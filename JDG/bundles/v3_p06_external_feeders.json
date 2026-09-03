@@ -1,0 +1,69 @@
+{
+  "innovation": "V3-P06-I06",
+  "generated_at": "2026-09-03T10:11:10.075762+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "external_leafs": 6,
+    "rule_hits": 138
+  },
+  "external_leafs": [
+    {
+      "key": "eur_pln_rate_default",
+      "value": "4.50"
+    },
+    {
+      "key": "minimum_wage_gross",
+      "value": "4800"
+    },
+    {
+      "key": "eur_pln",
+      "value": "4.50"
+    },
+    {
+      "key": "eur_pln_reference",
+      "value": "4.5"
+    },
+    {
+      "key": "eur_pln_reference",
+      "value": "4.3"
+    },
+    {
+      "key": "max_population_stability_index",
+      "value": "0.20"
+    }
+  ],
+  "checks": [
+    {
+      "name": "external_params_registry",
+      "status": "OK",
+      "detail": "kandydujące parametry zewnętrzne: 6 liści w warstwie danych + 138 trafień w regułach"
+    },
+    {
+      "name": "feeder_path",
+      "status": "FAIL",
+      "detail": "brak mechanizmu feedu (żadnego importera NBP/MRPiPS/ZUS w tools/) — wartości wprowadzane ręcznie/systemowo"
+    },
+    {
+      "name": "source_verification",
+      "status": "WARN",
+      "detail": "źródła zewnętrzne [NIEZWERYFIKOWANE] — poza sesją (klauzula promptu)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P06-L11",
+      "severity": "P2",
+      "evidence": "parametry zależne od źródeł zewnętrznych bez feedera: ['eur_pln_rate_default', 'minimum_wage_gross', 'eur_pln', 'eur_pln_reference', 'eur_pln_reference', 'max_population_stability_index']... (wartości ręczne, ryzyko dezaktualizacji)",
+      "fix": "feedery NBP (kursy), MRPiPS (minimalne/przeciętne), ZUS (limity) z walidacją zakresu i audytem zmiany (P06-I06 kontrakt), status źródła w I09"
+    }
+  ],
+  "contract": {
+    "binding": "P08 (Law Radar — publikacje), P12–P36 domenowe, P37 (metryki świeżości), P06-I09 (freshness)",
+    "feeders": {
+      "nbp": "kursy walut (EUR/PLN) — codziennie",
+      "mrpiPS": "minimalne wynagrodzenie — corocznie (obwieszczenie)",
+      "zus": "limit 30-krotności, prognozowane przeciętne — corocznie"
+    },
+    "rule": "wartość z feedera bez wpisu audytowego = odrzucenie (fail-closed)"
+  }
+}

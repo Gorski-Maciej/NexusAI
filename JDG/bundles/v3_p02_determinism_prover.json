@@ -1,0 +1,96 @@
+{
+  "innovation": "V3-P02-I02",
+  "name": "Determinism Prover — permutacje wejść i kolejności reguł",
+  "generated_at": "2026-09-03T07:59:34+00:00",
+  "chains": {
+    "gated_abort_verdict": {
+      "packages": 32,
+      "first": [
+        "kks",
+        "enterprise_penalties",
+        "routing",
+        "validation",
+        "p33_uor_supplement"
+      ]
+    },
+    "sharded_sale_verdict": {
+      "packages": 69,
+      "first": [
+        "kks",
+        "routing",
+        "compliance",
+        "validation",
+        "edge_cases"
+      ]
+    },
+    "sharded_purchase_verdict": {
+      "packages": 67,
+      "first": [
+        "kks",
+        "routing",
+        "compliance",
+        "validation",
+        "edge_cases"
+      ]
+    },
+    "full_final_verdict": {
+      "packages": 104,
+      "first": [
+        "kks",
+        "enterprise_penalties",
+        "routing",
+        "compliance",
+        "aml"
+      ]
+    }
+  },
+  "duplicates_in_chain": {
+    "gated_abort_verdict": [],
+    "sharded_sale_verdict": [],
+    "sharded_purchase_verdict": [],
+    "full_final_verdict": []
+  },
+  "cross_shard": {
+    "overlap_sale_purchase": [
+      "accounting",
+      "aml",
+      "api_fallback",
+      "autoform",
+      "banking_sca",
+      "compliance",
+      "conflicts",
+      "edge_cases",
+      "entrepreneur_test",
+      "estonian_cit"
+    ],
+    "overlap_count": 64,
+    "packages_missing_in_full_chain": [
+      "conflicts",
+      "edge_cases",
+      "p22_innovations",
+      "p23_innovations",
+      "p24_innovations",
+      "p35_coherence",
+      "p35_gaps",
+      "p35_innovations"
+    ],
+    "missing_count": 8
+  },
+  "safe_merge": {
+    "pure_functions": 3,
+    "disjoint_guards": true,
+    "immutable_allowlist_guard": true
+  },
+  "path_selection": {
+    "selector_ends_with_else_true_full": true,
+    "fallback_else_true": true,
+    "routing_default_no_match": true,
+    "fallback_default_no_match": true
+  },
+  "issues": [],
+  "gate": {
+    "pass": true,
+    "rule": "zero duplikatów pakietów w łańcuchu + rozłączne guardy safe_merge + selector z else=true (każde wejście dostaje werdykt)"
+  },
+  "note": "Property test permutacyjny uruchamiany w pytest (test_v3_p02_orchestrator.py): permutacja listy pakietów nie zmienia wyniku safe_merge-union; tu dowód statyczny."
+}

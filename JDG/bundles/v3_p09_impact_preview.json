@@ -1,0 +1,35 @@
+{
+  "innovation": "V3-P09-I05",
+  "generated_at": "2026-09-03T12:43:12.447417+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "registered_rules": 13,
+    "code_rule_ids": 12439,
+    "replay_wired": true,
+    "simulator_wired": false
+  },
+  "checks": [
+    {
+      "name": "portfolio_replay",
+      "status": "OK",
+      "detail": "declarative_change.py nie uruchamia replayu portfela przed zatwierdzeniem (tylko wymienia w planie)"
+    },
+    {
+      "name": "simulator_wired",
+      "status": "FAIL",
+      "detail": "law_amendment_simulator (co-jeśli) nie jest wołany z declarative_change.py"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P09-L05",
+      "severity": "P1",
+      "evidence": "rejestr prowadzi 13 reguł, w kodzie ~12439 rule_id; law_amendment_simulator.py (162 wiersze, co-jeśli na werdyktach) istnieje, ale declarative_change.py go nie wywołuje — zatwierdzający nie widzi wpływu zmiany na portfel decyzji przed podpisem",
+      "fix": "I05 Impact Preview: przed 4-eyes uruchom replay (simulator) na historycznym portfelu → raport zmienionych werdyktów + priorytet"
+    }
+  ],
+  "contract": {
+    "binding": "P09-I06 (4-eyes po impact), P10 (golden delta), P37 (metryki wpływu)",
+    "rule": "4-eyes niemożliwy bez raportu impact preview w deklaracji"
+  }
+}

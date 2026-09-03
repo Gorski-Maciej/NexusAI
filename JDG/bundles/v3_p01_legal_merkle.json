@@ -1,0 +1,12 @@
+{
+  "innovation": "V3-P01-I09",
+  "generated_at": "2026-09-03T06:44:14+00:00",
+  "nodes_hashed": 258,
+  "root_hash": "951f62dfdba48e5721036bb35cb61ec19bf3ed6f94e7208fda53394dfe2f5008",
+  "algorithm": "sha256 Merkle commit: leaf(legal_node_id|act|article|node_text|valid_from|valid_to) → root",
+  "commit": {
+    "verdict_field": "_legal_graph_merkle_root",
+    "purpose": "dowód spójności zbioru podstaw prawnych w certyfikacie (P11) — zmiana grafu = inny root = werdykt do ponownej weryfikacji",
+    "offline_check": "root liczony lokalnie z bundles/legal_graph.json — niezależny od ISAP uptime"
+  }
+}

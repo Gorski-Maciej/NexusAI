@@ -1,0 +1,49 @@
+{
+  "innovation": "V3-P08-I01",
+  "generated_at": "2026-09-03T10:42:20.366278+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "sources_required": 4,
+    "sources_covered": 2,
+    "drafts": 1,
+    "drafts_without_diff": 1
+  },
+  "confidence_stages": {
+    "PRACUJE_RCL": 0.25,
+    "PIERWSZE_CZYTANIE": 0.4,
+    "KOMISJE": 0.55,
+    "DRUGIE_CZYTANIE": 0.7,
+    "SENAT": 0.85,
+    "PODPIS": 0.95,
+    "ENACTED": 1.0
+  },
+  "checks": [
+    {
+      "name": "source_coverage",
+      "status": "FAIL",
+      "detail": "pokryte źródła: ['ISAP_ACT', 'SEJM_API']; brak: ['RCL_DRAFT', 'SENAT']"
+    },
+    {
+      "name": "enactment_scoring",
+      "status": "OK",
+      "detail": "model scoringu: [] etapy PRACUJE_RCL..ENACTED (0.25..1.0)"
+    },
+    {
+      "name": "draft_records",
+      "status": "FAIL",
+      "detail": "drafty w radarze: 1; bez predicted_diff: 1"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P08-L01",
+      "severity": "P1",
+      "evidence": "isap_crawler pokrywa wyłącznie OPUBLIKOWANE akty (5 aktów, daemon 60 min, sejm_api+rcl PDF) — projekty RCL/Sejm/Senat bez kanału; radar zawiera 1 draft testowy (DRL-0001, 2099) bez predicted_diff",
+      "fix": "Draft Law Radar Feed (I01): kanał wykazu RCL + procesu sejmowego z scoringiem etapu (model powyżej) i alertem lead < 30 dni"
+    }
+  ],
+  "contract": {
+    "binding": "P08-I05 (impact), P07 (SHADOW z lead time), P38 (bundle), P37 (SLO detekcji < 1 h)",
+    "rule": "draft z scoringiem ≥ 0.7 i lead < 30 dni = alert; każdy draft = wpis w law_radar.json"
+  }
+}

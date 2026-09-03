@@ -1,0 +1,78 @@
+{
+  "innovation": "V3-P02-I05",
+  "name": "Degradation Ladder — pełny → częściowy → NEEDS_ADVICE",
+  "generated_at": "2026-09-03T07:59:35+00:00",
+  "files": {
+    "fallback": "rules/fallback.rego",
+    "api_fallback": "rules/api_fallback.rego",
+    "routing": "rules/routing.rego"
+  },
+  "verdicts_per_file": {
+    "fallback": 3,
+    "api_fallback": 7,
+    "routing": 6
+  },
+  "ladder": {
+    "PARTIAL -> NEEDS_ADVICE": 4,
+    "DEGRADED_API -> NEEDS_ADVICE (guard MANUAL_REVIEW)": 5,
+    "PARTIAL (fallback pól, TRIAGE)": 3,
+    "BLOCKED (nigdy AUTO_POST)": 4
+  },
+  "api_degraded_verdicts": [
+    {
+      "file": "rules/api_fallback.rego",
+      "rule_id": "jdg.api_fallback.no_match",
+      "routing": "TRIAGE_QUEUE",
+      "matched": "true",
+      "has_warnings": true,
+      "degradation_class": "DEGRADED_API -> NEEDS_ADVICE (guard MANUAL_REVIEW)"
+    },
+    {
+      "file": "rules/api_fallback.rego",
+      "rule_id": "jdg.api_fallback.whitelist_degradation",
+      "routing": "TRIAGE_QUEUE",
+      "matched": "true",
+      "has_warnings": true,
+      "degradation_class": "DEGRADED_API -> NEEDS_ADVICE (guard MANUAL_REVIEW)"
+    },
+    {
+      "file": "rules/api_fallback.rego",
+      "rule_id": "jdg.api_fallback.ksef_degradation",
+      "routing": "FALLBACK_ACTIVE",
+      "matched": "true",
+      "has_warnings": true,
+      "degradation_class": "DEGRADED_API -> NEEDS_ADVICE (guard MANUAL_REVIEW)"
+    },
+    {
+      "file": "rules/routing.rego",
+      "rule_id": "jdg.routing.fc_linear_minimum",
+      "routing": "TRIAGE_QUEUE",
+      "matched": "true",
+      "has_warnings": true,
+      "degradation_class": "DEGRADED_API -> NEEDS_ADVICE (guard MANUAL_REVIEW)"
+    },
+    {
+      "file": "rules/routing.rego",
+      "rule_id": "jdg.routing.fc_lump_sum_vat_rate",
+      "routing": "TRIAGE_QUEUE",
+      "matched": "true",
+      "has_warnings": true,
+      "degradation_class": "DEGRADED_API -> NEEDS_ADVICE (guard MANUAL_REVIEW)"
+    }
+  ],
+  "fallback_auto_post_candidates": [],
+  "all_degraded_carry_warnings": true,
+  "ladder_definition": {
+    "FULL": "pełny dowód -> AUTO_POST_ALLOWED (CERTAIN)",
+    "PARTIAL": "część pól -> MANUAL_REVIEW (CONDITIONAL)",
+    "DEGRADED_API": "API offline -> TRIAGE_QUEUE/FALLBACK_ACTIVE + _warnings",
+    "BLOCKED": "BLOCK_AND_ALERT -> CERTAINTY_BLOCKED",
+    "NEEDS_ADVICE": "brak dowodu -> CERTAINTY_BLOCKED (nigdy AUTO_POST)"
+  },
+  "issues": [],
+  "gate": {
+    "pass": true,
+    "rule": "żadna ścieżka fallback/degradacji nie jest cichym AUTO_POST; każda degradacja niesie _warnings (fail-closed, INV-006/035)"
+  },
+  "note": "fallback P1000/P1099 ustawia matched:false (v7.0 FIX) — domyślne stawki wymagają ręcznej weryfikacji."
+}

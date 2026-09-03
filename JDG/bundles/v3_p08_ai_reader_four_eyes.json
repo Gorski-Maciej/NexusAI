@@ -1,0 +1,54 @@
+{
+  "innovation": "V3-P08-I02",
+  "generated_at": "2026-09-03T10:47:08.229459+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "bridge_role_explain": true,
+    "ai_reader_diff": false,
+    "second_model": false
+  },
+  "diff_fields": [
+    "act",
+    "legal_unit",
+    "change_type",
+    "old_text",
+    "new_text",
+    "effective_from",
+    "certainty",
+    "legal_node_id"
+  ],
+  "certainty_gates": {
+    "gte_0.95": "AUTO",
+    "0.8-0.95": "REVIEW_1",
+    "lt_0.8": "MANUAL"
+  },
+  "checks": [
+    {
+      "name": "llm_bridge_role",
+      "status": "FAIL",
+      "detail": "llm_bridge: explain/simulate (wyjaśnienia) = True; AI-Reader diff: False"
+    },
+    {
+      "name": "four_eyes_validation",
+      "status": "FAIL",
+      "detail": "walidacja drugim modelem: BRAK w llm_bridge (4-eyes: model2 + prawnik niezaimplementowane)"
+    },
+    {
+      "name": "diff_schema_lkg",
+      "status": "OK",
+      "detail": "schema diffa (LKG): ['act', 'legal_unit', 'change_type', 'old_text', 'new_text', 'effective_from', 'certainty', 'legal_node_id'] — sample zapisany w v3_p08_legal_diff_schema.json"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P08-L02",
+      "severity": "P1",
+      "evidence": "llm_bridge.py (799 wierszy) to silnik WYJAŚNIEŃ werdyktów — brak roli AI-Readera: parsowania nowelizacji na diff, drugiego modelu weryfikującego i cytowania jednostek LKG (legal_node_id)",
+      "fix": "AI-Reader 4-Eyes (I02): prompt do diffu wg schema LKG + walidacja drugim modelem (rozbieżność = MANUAL) + pewność per diff (pewność < 0.8 = człowiek)"
+    }
+  ],
+  "contract": {
+    "binding": "P01 (LKG legal_node_id), P05 (daty wejścia), P08-I05 (impact), P39 (testy diffu)",
+    "rule": "diff bez pewności ≥ 0.8 = MANUAL (człowiek); rozbieżność modeli = alert 4-eyes"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "innovation": "V3-P10-I08",
+  "name": "Independent Oracle Validator — anti self-fulfilling oracle",
+  "generated_at": "2026-09-03T12:43:22+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "verdict_count": 30,
+    "with_legal_basis_refs": 17,
+    "expert_ratio": 0.567,
+    "has_mirror": true,
+    "has_expert_gate": true
+  },
+  "checks": [
+    {
+      "name": "golden_present",
+      "status": "OK",
+      "detail": "golden set: 30 werdyktów"
+    },
+    {
+      "name": "legal_basis_refs",
+      "status": "OK",
+      "detail": "rekordy z legal_basis_refs: 17/30 (podstawa do niezależnej mediacji)"
+    },
+    {
+      "name": "independent_mechanism",
+      "status": "OK",
+      "detail": "niezależny mechanizm: mirror=True, ekspert/audyt=True"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P01 (LKG), P48 (mirror sync), P44",
+    "rule": "golden set nigdy nie jest jedynym dowodem sam dla siebie; walidacja niezależna przy każdej re-generacji"
+  }
+}

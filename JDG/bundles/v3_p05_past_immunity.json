@@ -1,0 +1,42 @@
+{
+  "innovation": "V3-P05-I06",
+  "generated_at": "2026-09-03T09:55:42+00:00",
+  "gate": "FAIL",
+  "method": "reper golden_verdicts: determinizm hasha + integralność łańcucha replay + stabilność snapshotu (WORM) — uruchamiany po KAŻDEJ zmianie bundle",
+  "metrics": {
+    "golden_verdicts": 30,
+    "replay_rows": 30,
+    "hash_mismatches": 4,
+    "chain_breaks": 0,
+    "snapshot_status": "stable"
+  },
+  "checks": [
+    {
+      "name": "verdict_hash_determinism",
+      "status": "FAIL",
+      "detail": "werdyktów: 30, rozjazdów hash: 4"
+    },
+    {
+      "name": "golden_chain_integrity",
+      "status": "OK",
+      "detail": "wierszy replay: 30, przerwanych ogniw: 0"
+    },
+    {
+      "name": "snapshot_stability",
+      "status": "OK",
+      "detail": "vault snapshot: stable"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P05-L08",
+      "severity": "P1",
+      "evidence": "zapisane verdict_hash nie są deterministyczną funkcją werdyktu: [{'input_hash': 'c4a1b2d3e4f5a6b7c8d9e0f1a2b3c4d5', 'stored': '9f8e7d6c5b4a3928', 'recomputed': '741575ecc91f289c'}, {'input_hash': 'a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1', 'stored': '1b2c3d4e5f6a7b8c', 'recomputed': 'e4bfffa39d2eed4f'}, {'input_hash': 'c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2', 'stored': '2c3d4e5f6a7b8c9d', 'recomputed': '1e9ffc132f4aa50c'}, {'input_hash': 'e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3', 'stored': '3d4e5f6a7b8c9d0e', 'recomputed': '2f3c3d2b531ba745'}]",
+      "fix": "jednolity algorytm hashowania werdyktu (P03 — golden hash, I04)"
+    }
+  ],
+  "contract": {
+    "binding": "P10 golden oracle / P11 certyfikaty / P39 CI / P38 bundle",
+    "zasada": "immunitet przeszłości: identyczny snapshot_id = identyczny werdykt; zmiana = tylko z uzasadnieniem prawnym (I04)"
+  }
+}

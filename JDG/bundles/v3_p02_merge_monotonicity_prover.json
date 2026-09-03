@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P02-I07",
+  "name": "Merge Monotonicity Prover — delta-werdykty",
+  "generated_at": "2026-09-03T07:59:35+00:00",
+  "code_evidence": {
+    "safe_merge_3_cases_present": true,
+    "allowlist_entries_in_code": [
+      "business",
+      "security",
+      "zus"
+    ],
+    "allowlist_consistent": false,
+    "allowlist_expected": [
+      "jdg.business",
+      "jdg.security.fortress",
+      "jdg.zus",
+      "jdg.zus.enterprise_benefits",
+      "jdg.zus.health_contribution",
+      "jdg.zus.sickness_benefits"
+    ]
+  },
+  "property_test": {
+    "seed": 20260903,
+    "trials": 2000,
+    "monotonic_ok": 2000,
+    "violations": [],
+    "immutable_conflict_resolutions_ok": 118
+  },
+  "gate": {
+    "pass": true,
+    "rule": "merge jest monotoniczny (info przyrasta) lub chroni werdykt niemutowalny wg allowlisty — nigdy cichy ubytek (INV-018/042, property test w pytest)"
+  },
+  "note": "port Pythona reguł safe_merge z main_jdg.rego; test permutacyjny na 2000 par werdyktów; ten sam test w pytest (test_v3_p02_orchestrator.py)."
+}

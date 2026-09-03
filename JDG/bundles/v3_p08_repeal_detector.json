@@ -1,0 +1,48 @@
+{
+  "innovation": "V3-P08-I08",
+  "generated_at": "2026-09-03T10:42:24.574585+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "rule_files_with_repeal_mentions": 17,
+    "repeal_feed_signal": false,
+    "lifecycle_link": true
+  },
+  "rule_files": [
+    "_kks_micro_rates.rego",
+    "enterprise_penalties.rego",
+    "judicial_trend_enterprise.rego",
+    "kks.rego",
+    "kks_ord_atomic_p11.rego",
+    "ord_supplements_enterprise.rego",
+    "p10_kks_innovations_v9.rego",
+    "p11_ordynacja_podatkowa_innovations_v9.rego",
+    "pit_enterprise_zero_doubt.rego",
+    "plan43_decomposition.rego",
+    "plan45_conviction.rego",
+    "r03_vat_micro_articles.rego"
+  ],
+  "checks": [
+    {
+      "name": "repeal_feed_signal",
+      "status": "FAIL",
+      "detail": "isap_crawler/law_radar nie mają statusu REPEALED (tylko DRAFT_LAW/ENACTED/WITHDRAWN)"
+    },
+    {
+      "name": "repeal_to_deprecate_link",
+      "status": "OK",
+      "detail": "retirement_scheduler (P07) istnieje, ale brak wywołania z detektora uchyleń"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P08-L08",
+      "severity": "P1",
+      "evidence": "17 plików reguł zawiera wzmianki o uchyleniach (m.in. ['_kks_micro_rates.rego', 'enterprise_penalties.rego', 'judicial_trend_enterprise.rego', 'kks.rego', 'kks_ord_atomic_p11.rego']), ale radar/feed nie sygnalizuje REPEALED; brak automatycznego wniosku deprecate do lifecycle P07 — uchylony przepis może zasilać regułę ACTIVE bez ostrzeżenia",
+      "fix": "I08 Repeal Detector: status REPEALED w feedzie → mapa reguł z podstawą w uchylanym przepisie → wniosek deprecate do P07 z karencją"
+    }
+  ],
+  "contract": {
+    "binding": "P07 (deprecate/retire), P05 (okno ważności uchylonego przepisu), P01 (węzeł LKG uchylony)",
+    "rule": "REPEALED w feedzie → wniosek deprecate < 1 dzień; reguła ACTIVE z uchyloną podstawą = P1"
+  }
+}

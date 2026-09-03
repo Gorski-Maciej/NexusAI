@@ -1,25 +1,37 @@
 {
-  "generated_at": "2026-08-08T14:49:16.162216",
+  "generated_at": "2026-09-03T10:04:20.913545",
   "tool": "hardcoded_audit_gate.py (P03 GLM52)",
-  "total_hardcoded": 9485,
-  "files_affected": 322,
+  "total_hardcoded": 13595,
+  "files_affected": 362,
   "categories": {
-    "large_integer": 7151,
-    "decimal_rate": 1919,
-    "time_period": 415
+    "large_integer": 10780,
+    "decimal_rate": 2275,
+    "time_period": 540
   },
   "top_files": [
     {
       "file": "micro/pit/pit.rego",
-      "hardcoded": 835
+      "hardcoded": 892
     },
     {
       "file": "micro/vat/vat.rego",
-      "hardcoded": 790
+      "hardcoded": 873
+    },
+    {
+      "file": "micro/crossborder/crossborder.rego",
+      "hardcoded": 558
+    },
+    {
+      "file": "micro/akcyza/akcyza.rego",
+      "hardcoded": 496
     },
     {
       "file": "micro/kks/kks.rego",
       "hardcoded": 481
+    },
+    {
+      "file": "thresholds_jdg.rego",
+      "hardcoded": 436
     },
     {
       "file": "micro/ord/ord.rego",
@@ -27,771 +39,759 @@
     },
     {
       "file": "micro/sukcesja/sukcesja.rego",
-      "hardcoded": 245
+      "hardcoded": 367
+    },
+    {
+      "file": "micro/uor/uor.rego",
+      "hardcoded": 333
+    },
+    {
+      "file": "micro/ryczalt/ryczalt.rego",
+      "hardcoded": 319
+    },
+    {
+      "file": "micro/zdrowotna/zdrowotna.rego",
+      "hardcoded": 274
+    },
+    {
+      "file": "micro/pp/pp.rego",
+      "hardcoded": 254
+    },
+    {
+      "file": "micro/sus/sus.rego",
+      "hardcoded": 244
     },
     {
       "file": "p05_pit_innovations_v8.rego",
       "hardcoded": 197
     },
     {
-      "file": "thresholds_jdg.rego",
-      "hardcoded": 195
+      "file": "kks.rego",
+      "hardcoded": 192
     },
     {
-      "file": "micro/pp/pp.rego",
-      "hardcoded": 161
+      "file": "local_taxes/pcc_enterprise_complete.rego",
+      "hardcoded": 187
+    },
+    {
+      "file": "micro/pcc/pcc.rego",
+      "hardcoded": 179
     },
     {
       "file": "micro/ksef/ksef.rego",
       "hardcoded": 160
     },
     {
-      "file": "micro/ryczalt/ryczalt.rego",
-      "hardcoded": 156
-    },
-    {
       "file": "neural_rule_mesh_enterprise.rego",
       "hardcoded": 133
     },
     {
-      "file": "micro/zdrowotna/zdrowotna.rego",
-      "hardcoded": 126
-    },
-    {
-      "file": "micro/sus/sus.rego",
-      "hardcoded": 122
-    },
-    {
-      "file": "tax_optimization_enterprise.rego",
-      "hardcoded": 103
-    },
-    {
-      "file": "vat/plan42_reduced_rates.rego",
-      "hardcoded": 102
-    },
-    {
-      "file": "micro/akcyza/akcyza.rego",
-      "hardcoded": 100
-    },
-    {
       "file": "p16_business_lifecycle_innovations_v8.rego",
-      "hardcoded": 94
-    },
-    {
-      "file": "micro/pcc/pcc.rego",
-      "hardcoded": 90
-    },
-    {
-      "file": "form_transition_simulator_enterprise.rego",
-      "hardcoded": 88
-    },
-    {
-      "file": "local_taxes/pcc_enterprise_complete.rego",
-      "hardcoded": 78
+      "hardcoded": 124
     }
   ],
   "migration_target": "data.thresholds (thresholds_jdg.rego / DuckDB — hot-reload < 1 min, V1 §7; V2 §8)",
-  "gate": 100000,
+  "gate": null,
   "findings": [
+    {
+      "file": "accounting.rego",
+      "value": "5000",
+      "category": "large_integer",
+      "line": 118,
+      "context": "amount > object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, \"transport_damage_limit\", 5000)"
+    },
+    {
+      "file": "accounting.rego",
+      "value": "5000",
+      "category": "large_integer",
+      "line": 120,
+      "context": "amount <= object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, \"transport_damage_limit\", 5000)"
+    },
     {
       "file": "accounting.rego",
       "value": "10000",
       "category": "large_integer",
-      "line": 345,
-      "context": "input.invoice.amount_net > 10000"
+      "line": 457,
+      "context": "input.invoice.amount_net > object.get(data.thresholds.jdg.depreciation, \"one_off_low_value_limit\", 10000)"
     },
     {
       "file": "accounting.rego",
       "value": "100000",
       "category": "large_integer",
-      "line": 601,
-      "context": "input.invoice.amount_net <= 100000"
+      "line": 713,
+      "context": "input.invoice.amount_net <= object.get(data.thresholds.jdg.depreciation, \"one_off_annual_limit\", 100000)"
     },
     {
       "file": "accounting.rego",
       "value": "2000000",
       "category": "large_integer",
-      "line": 801,
-      "context": "input.jdg_entrepreneur.annual_revenue_eur > 2000000"
+      "line": 893,
+      "context": "input.jdg_entrepreneur.annual_revenue_eur > object.get(data.thresholds.jdg.depreciation, \"uor_books_threshold_"
     },
     {
       "file": "accounting.rego",
       "value": "10000",
       "category": "large_integer",
-      "line": 937,
-      "context": "asset_value <= 10000"
+      "line": 1005,
+      "context": "asset_value <= object.get(data.thresholds.jdg.depreciation, \"one_off_low_value_limit\", 10000)"
     },
     {
       "file": "accounting.rego",
       "value": "10000",
       "category": "large_integer",
-      "line": 958,
+      "line": 1026,
       "context": "improvement_cost > 10000"
     },
     {
       "file": "accounting.rego",
       "value": "2025",
       "category": "large_integer",
-      "line": 1484,
+      "line": 1547,
       "context": "\"_warnings\":[\"REMAMENT ELEKTRONICZNY — od 2025 obowiązek prowadzenia w formie elektronicznej. Zgodność z JPK_P"
     },
     {
       "file": "accounting.rego",
-      "value": "5000",
+      "value": "10000",
       "category": "large_integer",
-      "line": 1537,
-      "context": "routing_val = \"TRIAGE_QUEUE\" { damage_val > 5000 }"
+      "line": 1661,
+      "context": "asset_value <= object.get(data.thresholds.jdg.depreciation, \"one_off_low_value_limit\", 10000)"
     },
     {
       "file": "accounting.rego",
-      "value": "5000",
+      "value": "10000",
       "category": "large_integer",
-      "line": 1538,
-      "context": "routing_val = \"\" { damage_val <= 5000 }"
-    },
-    {
-      "file": "accounting.rego",
-      "value": "5000",
-      "category": "large_integer",
-      "line": 1539,
-      "context": "routing_reason = \"Szkoda transportowa > 5000 PLN — wymagany protokół przewoźnika\" { damage_val > 5000 }"
-    },
-    {
-      "file": "accounting.rego",
-      "value": "5000",
-      "category": "large_integer",
-      "line": 1539,
-      "context": "routing_reason = \"Szkoda transportowa > 5000 PLN — wymagany protokół przewoźnika\" { damage_val > 5000 }"
-    },
-    {
-      "file": "accounting.rego",
-      "value": "5000",
-      "category": "large_integer",
-      "line": 1540,
-      "context": "routing_reason = \"\" { damage_val <= 5000 }"
+      "line": 1672,
+      "context": "improvement_amount > 10000"
     },
     {
       "file": "accounting.rego",
       "value": "0.00",
       "category": "decimal_rate",
-      "line": 551,
+      "line": 663,
       "context": "\"0_0\":0.00,   # Grunty — bez amortyzacji"
     },
     {
       "file": "accounting.rego",
       "value": "0.025",
       "category": "decimal_rate",
-      "line": 552,
+      "line": 664,
       "context": "\"1_1\":0.025,  # Budynki mieszkalne (ZAKAZ amortyzacji — P847)"
     },
     {
       "file": "accounting.rego",
       "value": "0.025",
       "category": "decimal_rate",
-      "line": 553,
+      "line": 665,
       "context": "\"1_2\":0.025,  # Budynki niemieszkalne (biura, magazyny)"
     },
     {
       "file": "accounting.rego",
       "value": "0.025",
       "category": "decimal_rate",
-      "line": 554,
+      "line": 666,
       "context": "\"1_3\":0.025,  # Lokale mieszkalne"
     },
     {
       "file": "accounting.rego",
       "value": "0.025",
       "category": "decimal_rate",
-      "line": 555,
+      "line": 667,
       "context": "\"1_4\":0.025,  # Lokale użytkowe"
     },
     {
       "file": "accounting.rego",
       "value": "0.045",
       "category": "decimal_rate",
-      "line": 556,
+      "line": 668,
       "context": "\"2_1\":0.045,  # Budowle przemysłowe"
     },
     {
       "file": "accounting.rego",
       "value": "0.025",
       "category": "decimal_rate",
-      "line": 557,
+      "line": 669,
       "context": "\"2_2\":0.025,  # Budowle pozostałe"
     },
     {
       "file": "accounting.rego",
       "value": "0.07",
       "category": "decimal_rate",
-      "line": 558,
+      "line": 670,
       "context": "\"3_1\":0.07,   # Kotły i maszyny energetyczne"
     },
     {
       "file": "accounting.rego",
       "value": "0.14",
       "category": "decimal_rate",
-      "line": 559,
+      "line": 671,
       "context": "\"4_1\":0.14,   # Maszyny ogólne — obróbka metali"
     },
     {
       "file": "accounting.rego",
       "value": "0.18",
       "category": "decimal_rate",
-      "line": 560,
+      "line": 672,
       "context": "\"4_2\":0.18,   # Maszyny ogólne — obróbka drewna"
     },
     {
       "file": "accounting.rego",
       "value": "0.20",
       "category": "decimal_rate",
-      "line": 561,
+      "line": 673,
       "context": "\"4_3\":0.20,   # Maszyny ogólne — pakowanie"
     },
     {
       "file": "accounting.rego",
       "value": "0.10",
       "category": "decimal_rate",
-      "line": 562,
+      "line": 674,
       "context": "\"4_4\":0.10,   # Urządzenia biurowe"
     },
     {
       "file": "accounting.rego",
       "value": "0.30",
       "category": "decimal_rate",
-      "line": 563,
+      "line": 675,
       "context": "\"4_5\":0.30,   # Komputery i serwery"
     },
     {
       "file": "accounting.rego",
       "value": "0.20",
       "category": "decimal_rate",
-      "line": 564,
+      "line": 676,
       "context": "\"4_6\":0.20,   # Sprzęt telekomunikacyjny"
     },
     {
       "file": "accounting.rego",
       "value": "0.30",
       "category": "decimal_rate",
-      "line": 565,
+      "line": 677,
       "context": "\"4_7\":0.30,   # Oprogramowanie (licencje wieczyste)"
     },
     {
       "file": "accounting.rego",
       "value": "0.14",
       "category": "decimal_rate",
-      "line": 566,
+      "line": 678,
       "context": "\"5_1\":0.14,   # Maszyny specjalne — budowlane"
     },
     {
       "file": "accounting.rego",
       "value": "0.20",
       "category": "decimal_rate",
-      "line": 567,
+      "line": 679,
       "context": "\"5_2\":0.20,   # Maszyny specjalne — rolnicze"
     },
     {
       "file": "accounting.rego",
       "value": "0.10",
       "category": "decimal_rate",
-      "line": 568,
+      "line": 680,
       "context": "\"6_1\":0.10,   # Urządzenia techniczne — kotły grzewcze"
     },
     {
       "file": "accounting.rego",
       "value": "0.20",
       "category": "decimal_rate",
-      "line": 569,
+      "line": 681,
       "context": "\"6_2\":0.20,   # Urządzenia techniczne — klimatyzacja"
     },
     {
       "file": "accounting.rego",
       "value": "0.20",
       "category": "decimal_rate",
-      "line": 570,
+      "line": 682,
       "context": "\"7_1\":0.20,   # Samochody osobowe (limit 150k/225k EV)"
     },
     {
       "file": "accounting.rego",
       "value": "0.14",
       "category": "decimal_rate",
-      "line": 571,
+      "line": 683,
       "context": "\"7_2\":0.14,   # Samochody ciężarowe"
     },
     {
       "file": "accounting.rego",
       "value": "0.20",
       "category": "decimal_rate",
-      "line": 572,
+      "line": 684,
       "context": "\"7_3\":0.20,   # Motocykle, skutery"
     },
     {
       "file": "accounting.rego",
       "value": "0.14",
       "category": "decimal_rate",
-      "line": 573,
+      "line": 685,
       "context": "\"7_4\":0.14,   # Przyczepy i naczepy"
     },
     {
       "file": "accounting.rego",
       "value": "0.20",
       "category": "decimal_rate",
-      "line": 574,
+      "line": 686,
       "context": "\"8_1\":0.20,   # Narzędzia i przyrządy"
     },
     {
       "file": "accounting.rego",
       "value": "0.20",
       "category": "decimal_rate",
-      "line": 575,
+      "line": 687,
       "context": "\"8_2\":0.20,   # Wyposażenie biurowe (meble)"
     },
     {
       "file": "accounting.rego",
       "value": "0.20",
       "category": "decimal_rate",
-      "line": 576,
+      "line": 688,
       "context": "\"10_1\":0.20,  # WNiP — programy komputerowe"
     },
     {
       "file": "accounting.rego",
       "value": "0.20",
       "category": "decimal_rate",
-      "line": 577,
+      "line": 689,
       "context": "\"10_2\":0.20,  # WNiP — patenty, licencje"
     },
     {
       "file": "accounting.rego",
       "value": "0.10",
       "category": "decimal_rate",
-      "line": 578,
+      "line": 690,
       "context": "\"10_3\":0.10,  # WNiP — know-how"
     },
     {
       "file": "accounting.rego",
       "value": "0.20",
       "category": "decimal_rate",
-      "line": 582,
+      "line": 694,
       "context": "depreciation_rate := object.get(depreciation_rates,key,0.20)"
     },
     {
       "file": "accounting.rego",
       "value": "0.20",
       "category": "decimal_rate",
-      "line": 887,
+      "line": 961,
       "context": "rate := object.get(input.invoice,\"depreciation_rate\",0.20)"
     },
     {
       "file": "allowances.rego",
       "value": "2025",
       "category": "large_integer",
-      "line": 208,
+      "line": 45,
       "context": "tax_year := object.get(input.invoice, \"tax_year\", 2025)"
     },
     {
       "file": "allowances.rego",
       "value": "2024",
       "category": "large_integer",
-      "line": 209,
+      "line": 46,
       "context": "tax_year == 2024"
     },
     {
       "file": "allowances.rego",
       "value": "2025",
       "category": "large_integer",
-      "line": 212,
+      "line": 49,
       "context": "tax_year := object.get(input.invoice, \"tax_year\", 2025)"
     },
     {
       "file": "allowances.rego",
       "value": "2025",
       "category": "large_integer",
-      "line": 213,
+      "line": 50,
       "context": "tax_year == 2025"
     },
     {
       "file": "allowances.rego",
       "value": "2025",
       "category": "large_integer",
-      "line": 216,
+      "line": 53,
       "context": "tax_year := object.get(input.invoice, \"tax_year\", 2025)"
     },
     {
       "file": "allowances.rego",
       "value": "2026",
       "category": "large_integer",
-      "line": 217,
+      "line": 54,
       "context": "tax_year == 2026"
     },
     {
       "file": "allowances.rego",
       "value": "2500",
       "category": "large_integer",
-      "line": 436,
+      "line": 84,
       "context": "limit := 2500"
     },
     {
       "file": "allowances.rego",
       "value": "1000",
       "category": "large_integer",
-      "line": 438,
+      "line": 86,
       "context": "limit := 1000"
+    },
+    {
+      "file": "allowances.rego",
+      "value": "1360",
+      "category": "large_integer",
+      "line": 117,
+      "context": "abolition_limit = 1360 { not abolition_is_maritime }"
     },
     {
       "file": "allowances.rego",
       "value": "2500",
       "category": "large_integer",
-      "line": 462,
+      "line": 547,
       "context": "\"_warnings\": [\"Ulga na terminal platniczy — 200%% wydatkow, carry-forward 6 lat (lacznie 7). Limit: 2500 PLN ("
     },
     {
       "file": "allowances.rego",
       "value": "1000",
       "category": "large_integer",
-      "line": 462,
-      "context": "\"_warnings\": [\"Ulga na terminal platniczy — 200%% wydatkow, carry-forward 6 lat (lacznie 7). Limit: 2500 PLN ("
-    },
-    {
-      "file": "allowances.rego",
-      "value": "1360",
-      "category": "large_integer",
       "line": 547,
-      "context": "abolition_limit = 1360 { not abolition_is_maritime }"
+      "context": "\"_warnings\": [\"Ulga na terminal platniczy — 200%% wydatkow, carry-forward 6 lat (lacznie 7). Limit: 2500 PLN ("
     },
     {
       "file": "allowances.rego",
       "value": "0.05",
       "category": "decimal_rate",
-      "line": 317,
+      "line": 417,
       "context": "\"pit_rate\": \"0.05\","
     },
     {
       "file": "allowances.rego",
       "value": "0.00",
       "category": "decimal_rate",
-      "line": 694,
+      "line": 713,
       "context": "\"pit_rate\": \"0.00\","
     },
     {
       "file": "allowances.rego",
       "value": "0.00",
       "category": "decimal_rate",
-      "line": 726,
+      "line": 746,
       "context": "\"pit_rate\": \"0.00\","
     },
     {
       "file": "allowances.rego",
       "value": "0.19",
       "category": "decimal_rate",
-      "line": 804,
+      "line": 820,
       "context": "\"pit_rate\": \"0.19\","
     },
     {
       "file": "allowances.rego",
       "value": "90 dni",
       "category": "time_period",
-      "line": 513,
+      "line": 586,
       "context": "\"_warnings\": [sprintf(\"Zle dlugi PIT — wierzyciel: pomniejszenie dochodu o %.2f PLN (niezaplacone >90 dni). Pr"
+    },
+    {
+      "file": "business.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 158,
+      "context": "\"_legal_basis\":\"Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)\","
+    },
+    {
+      "file": "business.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 158,
+      "context": "\"_legal_basis\":\"Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)\","
+    },
+    {
+      "file": "business.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 181,
+      "context": "\"_legal_basis\":\"Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)\","
+    },
+    {
+      "file": "business.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 181,
+      "context": "\"_legal_basis\":\"Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)\","
+    },
+    {
+      "file": "business.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 208,
+      "context": "\"_routing_reason\":\"Brak zarządcy sukcesyjnego — pozostało okno 2 mies. na powołanie (art. 3 ustawy z dnia 5 li"
+    },
+    {
+      "file": "business.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 208,
+      "context": "\"_routing_reason\":\"Brak zarządcy sukcesyjnego — pozostało okno 2 mies. na powołanie (art. 3 ustawy z dnia 5 li"
+    },
+    {
+      "file": "business.rego",
+      "value": "1234",
+      "category": "large_integer",
+      "line": 208,
+      "context": "\"_routing_reason\":\"Brak zarządcy sukcesyjnego — pozostało okno 2 mies. na powołanie (art. 3 ustawy z dnia 5 li"
+    },
+    {
+      "file": "business.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 209,
+      "context": "\"_legal_basis\":\"Art. 3, 14-15 ustawy o zarządzie sukcesyjnym; art. 30 ust. 2 ustawy z dnia 6 marca 2018 r. o C"
+    },
+    {
+      "file": "business.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 209,
+      "context": "\"_legal_basis\":\"Art. 3, 14-15 ustawy o zarządzie sukcesyjnym; art. 30 ust. 2 ustawy z dnia 6 marca 2018 r. o C"
+    },
+    {
+      "file": "business.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 210,
+      "context": "\"_warnings\":[sprintf(\"Brak zarządcy sukcesyjnego — %d dni po śmierci. Spadkobiercy mogą powołać zarządcę w cią"
+    },
+    {
+      "file": "business.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 210,
+      "context": "\"_warnings\":[sprintf(\"Brak zarządcy sukcesyjnego — %d dni po śmierci. Spadkobiercy mogą powołać zarządcę w cią"
+    },
+    {
+      "file": "business.rego",
+      "value": "1234",
+      "category": "large_integer",
+      "line": 210,
+      "context": "\"_warnings\":[sprintf(\"Brak zarządcy sukcesyjnego — %d dni po śmierci. Spadkobiercy mogą powołać zarządcę w cią"
+    },
+    {
+      "file": "business.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 235,
+      "context": "\"_legal_basis\":\"Art. 3, 14-15 ustawy o zarządzie sukcesyjnym; art. 30 ust. 2 ustawy z dnia 6 marca 2018 r. o C"
+    },
+    {
+      "file": "business.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 235,
+      "context": "\"_legal_basis\":\"Art. 3, 14-15 ustawy o zarządzie sukcesyjnym; art. 30 ust. 2 ustawy z dnia 6 marca 2018 r. o C"
+    },
+    {
+      "file": "business.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 266,
+      "context": "\"_legal_basis\":\"Art. 3-4 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizyczn"
+    },
+    {
+      "file": "business.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 266,
+      "context": "\"_legal_basis\":\"Art. 3-4 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizyczn"
+    },
+    {
+      "file": "business.rego",
+      "value": "1234",
+      "category": "large_integer",
+      "line": 266,
+      "context": "\"_legal_basis\":\"Art. 3-4 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizyczn"
+    },
+    {
+      "file": "business.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 292,
+      "context": "\"_legal_basis\":\"Art. 12-15 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizyc"
+    },
+    {
+      "file": "business.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 292,
+      "context": "\"_legal_basis\":\"Art. 12-15 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizyc"
+    },
+    {
+      "file": "business.rego",
+      "value": "1234",
+      "category": "large_integer",
+      "line": 292,
+      "context": "\"_legal_basis\":\"Art. 12-15 ustawy z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizyc"
+    },
+    {
+      "file": "business.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 321,
+      "context": "\"_legal_basis\":\"Art. 5-7 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gosp"
+    },
+    {
+      "file": "business.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 321,
+      "context": "\"_legal_basis\":\"Art. 5-7 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gosp"
+    },
+    {
+      "file": "business.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 338,
+      "context": "\"_legal_basis\":\"Art. 12-15 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Go"
+    },
+    {
+      "file": "business.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 338,
+      "context": "\"_legal_basis\":\"Art. 12-15 ustawy z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Go"
+    },
+    {
+      "file": "business.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 358,
+      "context": "\"_legal_basis\":\"Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123), Art. 4"
+    },
+    {
+      "file": "business.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 358,
+      "context": "\"_legal_basis\":\"Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123), Art. 4"
+    },
+    {
+      "file": "business.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 375,
+      "context": "\"_legal_basis\":\"Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)\","
+    },
+    {
+      "file": "business.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 375,
+      "context": "\"_legal_basis\":\"Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)\","
+    },
+    {
+      "file": "business.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 454,
+      "context": "\"_legal_basis\":\"Art. 5 ust. 1 pkt 1 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123"
+    },
+    {
+      "file": "business.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 454,
+      "context": "\"_legal_basis\":\"Art. 5 ust. 1 pkt 1 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123"
     },
     {
       "file": "business.rego",
       "value": "2026",
       "category": "large_integer",
-      "line": 341,
+      "line": 455,
       "context": "\"_warnings\":[\"Przekroczony limit dział. nieewidencjonowanej (75% min. wynagrodzenia; kwartalnie 225% od 2026 —"
     },
     {
       "file": "business.rego",
       "value": "4800",
       "category": "large_integer",
-      "line": 345,
+      "line": 459,
       "context": "min_wage := to_number(object.get(object.get(object.get(data.thresholds,\"jdg\",{}),\"bounds\",{}),\"minimum_wage_gr"
+    },
+    {
+      "file": "business.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 476,
+      "context": "\"_legal_basis\":\"Art. 5 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)\","
+    },
+    {
+      "file": "business.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 476,
+      "context": "\"_legal_basis\":\"Art. 5 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)\","
+    },
+    {
+      "file": "business.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 588,
+      "context": "\"_legal_basis\":\"Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)\","
+    },
+    {
+      "file": "business.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 588,
+      "context": "\"_legal_basis\":\"Art. 22 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)\","
+    },
+    {
+      "file": "business.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 660,
+      "context": "\"_legal_basis\":\"Art. 5 ust. 1 pkt 1 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123"
+    },
+    {
+      "file": "business.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 660,
+      "context": "\"_legal_basis\":\"Art. 5 ust. 1 pkt 1 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123"
     },
     {
       "file": "business.rego",
       "value": "4800",
       "category": "large_integer",
-      "line": 551,
+      "line": 664,
       "context": "min_wage := to_number(object.get(object.get(object.get(data.thresholds,\"jdg\",{}),\"bounds\",{}),\"minimum_wage_gr"
     },
     {
       "file": "business.rego",
       "value": "2026",
       "category": "large_integer",
-      "line": 570,
+      "line": 680,
       "context": "warn_msg := sprintf(\"Działalność nieewidencjonowana: limit %.2f PLN/mies. (%.0f%% płacy min. %.0f PLN; kwartal"
+    },
+    {
+      "file": "business.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 700,
+      "context": "\"_legal_basis\":\"Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)\","
+    },
+    {
+      "file": "business.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 700,
+      "context": "\"_legal_basis\":\"Art. 22-25 ustawy z dnia 6 marca 2018 r. — Prawo przedsiębiorców (Dz.U. 2025 poz. 123)\","
     },
     {
       "file": "business.rego",
       "value": "0.00",
       "category": "decimal_rate",
-      "line": 359,
+      "line": 473,
       "context": "\"zus_social_base_type\":\"UNREGISTERED\",\"zus_health_rate\":\"0.00\","
     },
     {
       "file": "business.rego",
       "value": "0.10",
       "category": "decimal_rate",
-      "line": 432,
+      "line": 546,
       "context": "\"remnant_tax_rate\":0.10,"
-    },
-    {
-      "file": "compliance.rego",
-      "value": "2024",
-      "category": "large_integer",
-      "line": 34,
-      "context": "\"_legal_basis\":\"Ustawa z 14.06.2024 o ochronie sygnalistów (Dz.U. 2024 poz. 928)\","
-    },
-    {
-      "file": "compliance.rego",
-      "value": "2025",
-      "category": "large_integer",
-      "line": 50,
-      "context": "\"_legal_basis\":\"Ustawa AML z 01.03.2018 (Dz.U. 2025 poz. 567)\","
-    },
-    {
-      "file": "compliance.rego",
-      "value": "20000",
-      "category": "large_integer",
-      "line": 234,
-      "context": "b2c_turnover < 20000"
-    },
-    {
-      "file": "compliance.rego",
-      "value": "2020",
-      "category": "large_integer",
-      "line": 249,
-      "context": "\"_legal_basis\":\"Rozporządzenie 2020/284 (CESOP)\","
-    },
-    {
-      "file": "compliance.rego",
-      "value": "25000",
-      "category": "large_integer",
-      "line": 255,
-      "context": "cross_border > 25000"
-    },
-    {
-      "file": "conflicts.rego",
-      "value": "2345",
-      "category": "large_integer",
-      "line": 270,
-      "context": "\"_legal_basis\": \"Art. 23 ust. 1 pkt 23 PIT, wyrok NSA II FSK 2345/17\","
-    },
-    {
-      "file": "conflicts.rego",
-      "value": "0.25",
-      "category": "decimal_rate",
-      "line": 332,
-      "context": "\"conflict_message\": \"Koszty reprezentacji > 0.25% przychodu — ryzyko kontroli\","
-    },
-    {
-      "file": "conflicts.rego",
-      "value": "0.25",
-      "category": "decimal_rate",
-      "line": 336,
-      "context": "\"_warnings\": [sprintf(\"REPREZENTACJA LIMIT: %.2f PLN (%.2f%% przychodu) — powyżej typowego progu 0.25%%. US mo"
-    },
-    {
-      "file": "conflicts.rego",
-      "value": "0.25",
-      "category": "decimal_rate",
-      "line": 342,
-      "context": "repr_pct > 0.25"
-    },
-    {
-      "file": "conflicts.rego",
-      "value": "90 dni",
-      "category": "time_period",
-      "line": 512,
-      "context": "\"_warnings\": [sprintf(\"NIESPÓJNOŚĆ ZŁE DŁUGI: wierzyciel skorygował VAT (%.2f PLN) ale nie PIT. Jeśli >90 dni "
-    },
-    {
-      "file": "conflicts.rego",
-      "value": "90 dni",
-      "category": "time_period",
-      "line": 535,
-      "context": "\"_warnings\": [sprintf(\"DŁUŻNIK ZŁE DŁUGI: %.2f PLN niezapłacone >90 dni. OBOWIĄZEK: (1) korekta VAT naliczoneg"
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "2022",
-      "category": "large_integer",
-      "line": 284,
-      "context": "\"_legal_basis\":\"ViDA (EU 2022/890) — Digital Reporting Requirements\","
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "2021",
-      "category": "large_integer",
-      "line": 307,
-      "context": "\"_legal_basis\":\"ICS2 (EU 2021/348) — Import Control System 2\","
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "2013",
-      "category": "large_integer",
-      "line": 327,
-      "context": "\"_legal_basis\":\"Art. 33-33a VAT + UKC (EU 952/2013)\","
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "500000",
-      "category": "large_integer",
-      "line": 353,
-      "context": "threshold_exceeded := tp_annual > 500000"
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "2000",
-      "category": "large_integer",
-      "line": 454,
-      "context": "\"_routing_reason\":sprintf(\"DAC8 — platforma %s: %.0f EUR / %d transakcji (próg: 2000 EUR lub 30 tx)\", [platfor"
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "2021",
-      "category": "large_integer",
-      "line": 455,
-      "context": "\"_legal_basis\":\"Dyrektywa DAC8 (EU 2021/514 z późn. zm.) — automatyczna wymiana informacji o sprzedawcach na p"
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "2000",
-      "category": "large_integer",
-      "line": 462,
-      "context": "threshold_amount := 2000"
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "2000",
-      "category": "large_integer",
-      "line": 476,
-      "context": "\"dac8_threshold_eur\":2000,"
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "2000",
-      "category": "large_integer",
-      "line": 492,
-      "context": "exceeds := total_eur >= 2000 or total_tx >= 30"
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "2000",
-      "category": "large_integer",
-      "line": 504,
-      "context": "\"dac8_threshold_eur\":2000,"
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "2000",
-      "category": "large_integer",
-      "line": 529,
-      "context": "\"dac8_threshold_eur\":2000,"
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "2000",
-      "category": "large_integer",
-      "line": 554,
-      "context": "\"dac8_threshold_eur\":2000,"
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "2000",
-      "category": "large_integer",
-      "line": 579,
-      "context": "\"dac8_threshold_eur\":2000,"
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "2000",
-      "category": "large_integer",
-      "line": 610,
-      "context": "\"_routing_reason\":\"DAC8 — poniżej progu 2000 EUR i 30 transakcji\","
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "2000",
-      "category": "large_integer",
-      "line": 612,
-      "context": "\"_warnings\":[\"DAC8 — platforma poniżej progu raportowania (<2000 EUR i <30 transakcji per sprzedawca). Raporto"
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "2000",
-      "category": "large_integer",
-      "line": 617,
-      "context": "total_eur < 2000"
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "5000000",
-      "category": "large_integer",
-      "line": 629,
-      "context": "\"dac8_penalty_for_missing\":5000000,"
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "2011",
-      "category": "large_integer",
-      "line": 636,
-      "context": "\"_legal_basis\":\"DAC8 — art. 8ac Dyrektywy 2011/16/UE\","
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "0.00",
-      "category": "decimal_rate",
-      "line": 32,
-      "context": "\"vat_rate\":\"0.00\",\"rounding_level\":\"total\",\"gtu_code\":\"GTU_12\","
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "0.23",
-      "category": "decimal_rate",
-      "line": 53,
-      "context": "\"vat_rate\":\"0.23\",\"rounding_level\":\"position\",\"gtu_code\":\"\","
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "0.00",
-      "category": "decimal_rate",
-      "line": 74,
-      "context": "\"vat_rate\":\"0.00\",\"rounding_level\":\"total\",\"gtu_code\":\"\","
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "0.00",
-      "category": "decimal_rate",
-      "line": 99,
-      "context": "\"vat_rate\":\"0.00\",\"rounding_level\":\"total\",\"gtu_code\":\"\","
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "0.00",
-      "category": "decimal_rate",
-      "line": 128,
-      "context": "\"vat_rate\":\"0.00\",\"rounding_level\":\"total\",\"gtu_code\":\"\","
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "0.23",
-      "category": "decimal_rate",
-      "line": 148,
-      "context": "\"vat_rate\":\"0.23\",\"rounding_level\":\"position\",\"gtu_code\":\"\","
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "0.00",
-      "category": "decimal_rate",
-      "line": 166,
-      "context": "\"vat_rate\":\"0.00\",\"rounding_level\":\"total\",\"gtu_code\":\"\","
-    },
-    {
-      "file": "crossborder.rego",
-      "value": "0.00",
-      "category": "decimal_rate",
-      "line": 187,
-      "context": "\"vat_rate\":\"0.00\",\"rounding_level\":\"total\",\"gtu_code\":\"\","
     }
   ]
 }

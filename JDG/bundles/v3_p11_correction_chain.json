@@ -1,0 +1,46 @@
+{
+  "innovation": "V3-P11-I04",
+  "generated_at": "2026-09-03T12:19:27+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "chain_field": false,
+    "correction_api": false,
+    "worm_append_only": true,
+    "linked_records": false,
+    "certificate_count": 1
+  },
+  "checks": [
+    {
+      "name": "chain_field",
+      "status": "FAIL",
+      "detail": "pole powiązania korekty→oryginał w kodzie: False"
+    },
+    {
+      "name": "correction_api",
+      "status": "OK",
+      "detail": "API/komenda korekty: ['law_amendment_simulator.py', 'v3_p11_correction_chain.py']"
+    },
+    {
+      "name": "original_immutable",
+      "status": "OK",
+      "detail": "oryginał w WORM append-only (nietykalny): True"
+    },
+    {
+      "name": "linked_records",
+      "status": "FAIL",
+      "detail": "rekordy z powiązaniem korekty: False"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P11-L04",
+      "severity": "P1",
+      "evidence": "brak łańcucha korekt: decision_certificate.py i certificate_service.py nie mają pola supersedes/correction_of ani komendy korekty; korekta decyzji wymaga nowego certyfikatu powiązanego z oryginałem (łańcuch wersji) — obecnie brak",
+      "fix": "I04: Correction Chain — certyfikat korekty z polem supersedes=<original_id>, każdy element łańcucha podpisany, oryginał w WORM nietykalny"
+    }
+  ],
+  "contract": {
+    "binding": "P36 (kalendarz/procesy), P44 (certyfikacja), P07 (korekta reguł)",
+    "rule": "korekta = nowy podpisany certyfikat z supersedes=oryginał; oryginał nigdy nie jest modyfikowany (WORM)"
+  }
+}

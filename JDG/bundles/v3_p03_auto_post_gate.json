@@ -1,0 +1,61 @@
+{
+  "innovation": "V3-P03-I11",
+  "name": "AUTO_POST Gate Contract — fail-closed z natury typu",
+  "generated_at": "2026-09-03T08:25:35.590021+00:00",
+  "auto_post_conditions": {
+    "certainty_class_CERTAIN": "I02 — pełny łańcuch dowodów",
+    "guard_AUTO_POST_ALLOWED": "INV-006/035 — certyfikat nie blokuje",
+    "routing_ALLOW_or_AUTO_POST": "nigdy TRIAGE/BLOCK",
+    "no_degradation": "INV-038 — brak _degraded_context",
+    "contract_25_complete": "INV-043 — kompletny słownik",
+    "matched_true": "decyzja materialna dopasowana"
+  },
+  "results": {
+    "AUTO": {
+      "allowed": true,
+      "blockers": []
+    },
+    "needs_advice_class": {
+      "allowed": false,
+      "blockers": [
+        "certainty_class != CERTAIN"
+      ]
+    },
+    "guard_manual": {
+      "allowed": false,
+      "blockers": [
+        "_certainty_guard != AUTO_POST_ALLOWED"
+      ]
+    },
+    "routing_triage": {
+      "allowed": false,
+      "blockers": [
+        "_routing spoza {ALLOW, AUTO_POST}"
+      ]
+    },
+    "degraded": {
+      "allowed": false,
+      "blockers": [
+        "_degraded_context == true (INV-038)"
+      ]
+    },
+    "incomplete_contract": {
+      "allowed": false,
+      "blockers": [
+        "kontrakt 25-polowy niekompletny (INV-043)"
+      ]
+    },
+    "no_match": {
+      "allowed": false,
+      "blockers": [
+        "matched != true"
+      ]
+    }
+  },
+  "fail_closed": true,
+  "gate": {
+    "pass": true,
+    "rule": "AUTO_POST tylko przy 6 warunkach jednocześnie; każde odstępstwo = MANUAL_REVIEW/CERTAINTY_BLOCKED (INV-006/035, P03-AN03)"
+  },
+  "note": "Warunek maszynowy w kontrakcie — pole _certainty_guard + walidacja; host nigdy nie księguje bez guarda (main_jdg PAS 18n, INV-006/035)."
+}

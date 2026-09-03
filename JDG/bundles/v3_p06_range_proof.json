@@ -1,0 +1,65 @@
+{
+  "innovation": "V3-P06-I11",
+  "generated_at": "2026-09-03T12:43:03.601879+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "leafs_checked": 670,
+    "finite_ok": true,
+    "negative_values": 0,
+    "legal_violations": 0,
+    "boundary_rejections": 12,
+    "ambiguous_units": 42
+  },
+  "violations": [],
+  "legal_sets": {
+    "vat": [
+      0.0,
+      0.05,
+      0.08,
+      0.23
+    ],
+    "pit_scale": [
+      0.12,
+      0.32
+    ]
+  },
+  "checks": [
+    {
+      "name": "finite_values",
+      "status": "OK",
+      "detail": "wszystkie wartości skończone: 670 (NaN/Inf: 0)"
+    },
+    {
+      "name": "non_negative_values",
+      "status": "OK",
+      "detail": "ujemne wartości: 0"
+    },
+    {
+      "name": "legal_set_membership",
+      "status": "OK",
+      "detail": "klucze ustawowe poza zbiorem aktu: 0"
+    },
+    {
+      "name": "boundary_rejection",
+      "status": "OK",
+      "detail": "mutacje ±grosz odrzucone przez zbiory ustawowe: 12/12"
+    },
+    {
+      "name": "unit_convention_report",
+      "status": "WARN",
+      "detail": "klucze z niejednoznaczną jednostką (nazwa vs wartość): 42"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P06-L19",
+      "severity": "P2",
+      "evidence": "niejednolita konwencja jednostek w warstwie danych (ułamek vs procent całościowy vs kwota): [{'key': 'solidarity_donation_pct', 'value': 0.5, 'note': 'procent w nazwie, ułamek w wartości'}, {'key': 'reklama_limit_pct', 'value': 0.25, 'note': 'procent w nazwie, ułamek w wartości'}, {'key': 'scale_threshold', 'value': 120000.0, 'note': 'ułamek w nazwie, procent/kwota w wartości'}, {'key': 'representation_limit_pct', 'value': 0.0025, 'note': 'procent w nazwie, ułamek w wartości'}, {'key': 'donation_limit_pct', 'value': 0.06, 'note': 'procent w nazwie, ułamek w wartości'}, {'key': 'loss_carry_forward_max_pct', 'value': 0.5, 'note': 'procent w nazwie, ułamek w wartości'}]",
+      "fix": "jawne pole unit w schema v2 (I01); jedna konwencja przy migracji do JSON store"
+    }
+  ],
+  "contract": {
+    "binding": "P39 (property tests w CI), P06-I01 (schema z zakresem), P06-I04 (golden dataset graniczny), P06-I10 (walidacja formularza)",
+    "rule": "parametr poza zbiorem ustawowym = FAIL [BM] (nigdy cichy fallback)"
+  }
+}

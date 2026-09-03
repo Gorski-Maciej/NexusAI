@@ -1,0 +1,49 @@
+{
+  "innovation": "V3-P07-I09",
+  "generated_at": "2026-09-03T10:26:18.219546+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "code_rule_ids": 12439,
+    "registered": 13,
+    "unmanaged": 12426,
+    "ghosts": 0,
+    "coverage_pct": 0.1
+  },
+  "ghost_entries": [],
+  "unmanaged_sample": [
+    "jdg.accounting.car_lease_limit_150k",
+    "jdg.accounting.consumer_lease_kup",
+    "jdg.accounting.depreciation.asset_definition",
+    "jdg.accounting.depreciation.asset_sale",
+    "jdg.accounting.depreciation.car_limit",
+    "jdg.accounting.depreciation.degressive",
+    "jdg.accounting.depreciation.fallback",
+    "jdg.accounting.depreciation.improvement",
+    "jdg.accounting.depreciation.intangible",
+    "jdg.accounting.depreciation.linear"
+  ],
+  "checks": [
+    {
+      "name": "registry_coverage",
+      "status": "FAIL",
+      "detail": "pokrycie rejestru: 13/12439 (0.10%)"
+    },
+    {
+      "name": "ghost_entries",
+      "status": "OK",
+      "detail": "wpisy rejestru bez reguły w kodzie: brak"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P07-L01",
+      "severity": "P0",
+      "evidence": "rule_registry.json zarządza 13 z 12439 reguł w kodzie (pokrycie 0.10%) — 12426 reguł poza cyklem życia (brak shadow/candidate/rollback dla nich)",
+      "fix": "Registry Reconciler (I09): automatyczna rejestracja nowych rule_id w CI (CANDIDATE) + alert na dryf > 1%; docelowo pełne pokrycie przez P07–P36"
+    }
+  ],
+  "contract": {
+    "binding": "P07–P36 (rejestracja reguł domenowych), P39 (CI — rekonsyliacja [BM]), P00 (mapa kanoniczna rule_id)",
+    "rule": "nowy rule_id w kodzie bez wpisu rejestru = alert; po P09 — blokada merge [BM]"
+  }
+}

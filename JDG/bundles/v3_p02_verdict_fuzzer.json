@@ -1,0 +1,49 @@
+{
+  "innovation": "V3-P02-I12",
+  "name": "Verdict Completeness Fuzzer — 10k wejść, zero braków kontraktu",
+  "generated_at": "2026-09-03T07:59:39+00:00",
+  "trials": 10000,
+  "seed": 20260903,
+  "canonical_field_count": 25,
+  "canonical_fields": [
+    "matched",
+    "rule_id",
+    "package",
+    "priority",
+    "vat_rate",
+    "rounding_level",
+    "gtu_code",
+    "vat_exemption",
+    "procedure",
+    "pit_form",
+    "pit_rate",
+    "pit_bracket",
+    "pit_annual_return_type",
+    "kus_qualification",
+    "kus_percent",
+    "zus_social_base_type",
+    "zus_health_rate",
+    "business_status",
+    "ceidg_registration_required",
+    "valid_from",
+    "valid_to",
+    "_routing",
+    "_routing_reason",
+    "_legal_basis",
+    "_warnings"
+  ],
+  "incomplete_verdicts": [],
+  "incomplete_count": 0,
+  "missing_rule_id_count": 0,
+  "completeness_pct": 100.0,
+  "injection_probe": {
+    "injected_dropouts": 500,
+    "detected": 500,
+    "detection_rate_pct": 100.0
+  },
+  "gate": {
+    "pass": true,
+    "rule": "0 werdyktów matched=true bez pełnego 25-polowego kontraktu (INV-043 r01); model wykrywa 100% wstrzykniętych braków (fail-closed)"
+  },
+  "note": "fuzzer modelowy (port safe_merge) — bez OPA w sesji; kompletność 25 pól weryfikowana także statycznie przez r01 verdict_completeness_report."
+}

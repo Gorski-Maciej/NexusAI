@@ -1,0 +1,47 @@
+{
+  "innovation": "V3-P12-I02",
+  "generated_at": "2026-09-03T12:59:06+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "exemption_rule_ids": 66,
+    "art43_mentions": 9,
+    "exemption_params": {},
+    "known_areas": {
+      "rolnictwo (43 ust.1 pkt f)": true,
+      "finanse/ubezpieczenia (pkt g-h)": true,
+      "medycyna/leki": true,
+      "edukacja": true,
+      "nieruchomości (pkt 7/8)": true
+    },
+    "exemption_tests": true
+  },
+  "checks": [
+    {
+      "name": "art43_rules",
+      "status": "OK",
+      "detail": "rule_id zwolnień w plikach VAT: 66 (wzmianki art.43+zwolnienie: 9)"
+    },
+    {
+      "name": "conditions_as_data",
+      "status": "FAIL",
+      "detail": "warunki zwolnień jako parametry data.thresholds: BRAK"
+    },
+    {
+      "name": "exemption_tests",
+      "status": "OK",
+      "detail": "testy zwolnień w pytest: True"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P12-L02",
+      "severity": "P1",
+      "evidence": "macierz zwolnień art. 43 niekompletna jako struktura: 66 rule_id zwolnień w plikach VAT (macro+micro), 0 warunków zwolnień w data.thresholds (ADR-002/P06) — warunki (limity, powierzchnie, kwoty) siedzą w treści reguł; testy zwolnień: True; obszary w regułach: {'rolnictwo (43 ust.1 pkt f)': True, 'finanse/ubezpieczenia (pkt g-h)': True, 'medycyna/leki': True, 'edukacja': True, 'nieruchomości (pkt 7/8)': True}",
+      "fix": "I02: Exemption Matrix — macierz art. 43: zwolnienie → warunki jako parametry → reguła → test; brak parametryzacji = hardcode do migracji (I01)"
+    }
+  ],
+  "contract": {
+    "binding": "P06 (parametry), P12→P44, P03 (werdykt)",
+    "rule": "każde zwolnienie art. 43 = wiersz macierzy z parametrami, regułą i testem; brak parametryzacji = luka P1"
+  }
+}

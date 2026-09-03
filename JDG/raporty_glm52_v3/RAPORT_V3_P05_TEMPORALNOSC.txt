@@ -1,0 +1,448 @@
+================================================================================
+RAPORT V3-P05 — TEMPORALNOŚĆ (okna ważności, time-travel, retroaktywność)
+Generowany przez: kampania V3 (GLM 5.2) — wdrożenie 100% wg V3_PROMPT_P05
+Data: 2026-09-03    Stan: WDROŻONY_100
+================================================================================
+
+9.01 EXECUTIVE SUMMARY
+--------------------------------------------------------------------------------
+P05 domyka model temporalny silnika decyzyjnego JDG: registry okien ważności
+(32 wpisy temporal_validity w _metadata_jdg.rego), algebra interwałów na 3
+warstwach (RULES/PARAMS/LKG), snapshoty ewaluacyjne z hashem (WORM), time-travel
+API dla audytu/KAS, procedura retroaktywności (lex retro non agit — konstytucja
+art. 2) i biblioteka wzorców przepisów przejściowych.
+
+Wdrożono 12 innowacji jako działające narzędzia (dowody JSON w bundles/).
+Wynik bramek: 5/12 PASS, 7/12 FAIL (celowo, jako luki do domknięcia):
+  * I01 Interval Algebra Prover FAIL — registry 32 okien istnieje, ale ZERO
+    wywołań egzekucji (is_active*) w regułach/orchestratorze (L01, P0): okna NIE
+    filtrują decyzji; egzekucja tylko tam, gdzie reguła sprawdza datę inline.
+  * I03 Five-Date Matrix FAIL — 12 reguł DECISION (w tym 6 przedawnień/terminów)
+    czyta zegar ścienny time.now_ns() zamiast daty ewaluacji (L04, P0) — werdykt
+    historyczny zależny od daty bieżącej; + cichy default evaluation_datetime
+    = 2026-01-01 w 6 miejscach main_jdg.rego (L05, P1).
+  * I05 Time Gate CI FAIL — 2 kotwice konstytucyjne (2018-04-01 ZUS ulgi,
+    2019-04-01 mały ZUS+) bez dowodu ciągłości day-1/day0 (L07, P1).
+  * I06 Past Immunity FAIL — 4 z 30 verdict_hash w golden_verdicts.json NIE są
+    deterministyczną funkcją zapisanego werdyktu (L08, P1; kanon
+    sha256-canonical-json-v1) — złoty zestaw ma niedeterministyczne pieczęcie.
+  * I08 Clock Service Contract FAIL — 27 użyć time.now_ns (15 DECISION,
+    12 TIMESTAMP) zamiast wstrzykiwanego zegara (L11, P1 + L11b, P3).
+  * I11 Time-Travel API FAIL — ten sam drift L08 uwidoczniony przez replay
+    26/30 (4 rozjazdy) — API samo jest sprawne (fail-closed, 6 demo granicznych).
+  * I12 Coverage Heatmap FAIL — 16 z 32 kotwic temporalnych bez ŻADNEGO testu
+    (L14, P2); golden coverage 0% wszędzie (P10).
+Kluczowe potwierdzenia: warstwy okien bez luk i nakładek (RULES 0/0, PARAMS 0/0,
+LKG — INV-037); snapshot vault WORM z kompozycją 5 składników (490 plików rego +
+thresholds + legal_graph 258 węzłów + golden 30 + migracje 13); immunitet
+przeszłości — łańcuch replay 30/30 bez przerw; biblioteka 11 wzorców przepisów
+przejściowych z kotwicą prawną (0 bez); dry run legislacyjny SHADOW_ONLY.
+Łącznie 12 luk (2×P0, 4×P1, 3×P2, 3×P3) + 5 pytań (Q01–Q05).
+
+TOP-10 rekomendacji:
+1. [P0] PASS-0 temporalny: egzekucja is_active_for_date po safe_merge (L01).
+2. [P0] Zegar wstrzykiwany input.temporal.clock zamiast time.now_ns w DECISION
+   (L04/L11); default evaluation_datetime jawny i fail-closed (L05).
+3. [P1] Time Gate CI: testy day-1/day0 dla kotwic 2018-04-01 i 2019-04-01 (L07).
+4. [P1] Regeneracja verdict_hash golden_verdicts wg sha256-canonical-json-v1
+   (L08) — właściciel P10.
+5. [P1] Pole snapshot_id + clock_used + dates (T/E/F) w kontrakcie werdyktu.
+6. [P2] Epoki 2024/2026/2027 dodawane przy publikacji nowelizacji (L02/L13).
+7. [P2] Domknięcie 16 kotwic bez testów (heatmapa I12; cele kwartalne).
+8. [P3] Seed z jawnym retroactive:false + source_act (L06).
+9. [P3] Metryki temporalne → dashboard P37 (L10).
+10. [P3] Zamrożenie zegara przy replay walidacji przyszłości (L11b).
+
+--------------------------------------------------------------------------------
+9.02 ZAKRES I OGRANICZENIA
+--------------------------------------------------------------------------------
+Zakres: pliki Sekcji 6 promptu (reguły: temporal.rego, thresholds_jdg.rego,
+_metadata_jdg.rego; 5 narzędzi temporalnych; 3 testy; dane/dokumenty:
+thresholds_data.json, CORE_GUARDS_TEMPORAL_THRESHOLDS.md, migracja 009) + mirror
+policies (6.5, kontekst zgodności) + artefakty powiązane (main_jdg.rego,
+golden_verdicts.json). 16/16 plików Sekcji 6 ZWERYFIKOWANO; mirror policies na
+branchu `policies` poza lokalnym checkoutem — status NIEZWERYFIKOWANO (dryf
+monitorowany od P02-L01; nie powielano).
+
+Ograniczenia:
+  * Budżet 50%: analiza oparta o fakty wyekstrahowane narzędziami (registry z
+    _metadata_jdg.rego, użycia time.now_ns, okna w thresholds_data), nie pełne
+    czytanie 807 wierszy temporal.rego — każda teza potwierdzona grepem/
+    uruchomieniem narzędzia.
+  * Testy nie uruchamiają silnika OPA (brak binarki) — weryfikacja strukturalna
+    + modelowe property/determinizm (I02/I06/I11).
+  * Koszty/czasy (I02 budżet, replay) modelowe [ZAŁOŻENIE] — pomiar z P37.
+  * Epoki i okna pochodzą z data.thresholds (ADR-002) i registry — kanon.
+  * Podstawy prawne Sekcji 8/Bbb: status weryfikacji ISAP/RCL poza sesją —
+    tag [NIEZWERYFIKOWANE] w macierzy 9.05.
+
+--------------------------------------------------------------------------------
+9.03 STAN OBECNY CZĘŚCI P05 — MAPA ARTEFAKTÓW (T1 + mapa plik→pakiet→reguła)
+--------------------------------------------------------------------------------
+   | Plik | Pakiet Rego / rola | Kluczowe artefakty | Podstawa | Testy | Lifecycle |
+   |------|---------------------|--------------------|----------|-------|-----------|
+   | rules/temporal.rego | jdg.temporal | statute_limitations (Art. 70 §1/2/6-7 OrdPU), covid_legacy (2020-03-01), helpers | OrdPU art. 70; KKS | test_temporal_validity | ACTIVE (L04) |
+   | rules/_metadata_jdg.rego | jdg.metadata | temporal_validity registry (32 wpisy: ZUS ulgi, PIT exit_tax/estoński, VAT slim_vat, business suspension...) | — | — | ACTIVE (L01 — 0 wywołań) |
+   | rules/thresholds_jdg.rego | jdg.thresholds | temporal_epochs e2018..e2025 (ADT), progi temporalne | — | — | ACTIVE (L02) |
+   | rules/main_jdg.rego | jdg.main | orchestracja; default evaluation_datetime=2026-01-01 (6 miejsc) | — | — | ACTIVE (L05) |
+   | rules/edge_cases.rego | jdg.edge_cases | R0617 date_not_future (time.now_ns), vat_pro_rata_detailed | VAT art. 106e | pytest | ACTIVE (L11/L11b) |
+   | rules/kks.rego | jdg.kks | statute_of_limitations_crime_5y/misdemeanor_3y (time.now_ns) | KKS; OrdPU | pytest | ACTIVE (L04) |
+   | rules/vat/procedures.rego | jdg.vat.procedures | V.07 Art. 19a ust.5 pkt 3 (obowiązek podatkowy) | VAT art. 19a-21 | pytest | ACTIVE |
+   | tools/temporal_drift_detector.py | narzędzie | skan nieaktualnych reguł; stale_rules_registry.json | — | — | ACTIVE (0 stale) |
+   | tools/temporal_interval_gate.py | narzędzie | bramka luk/nakładek okien (thresholds) | — | — | ACTIVE (OK: 0/0) |
+   | tools/core_guards_temporal_thresholds.py | narzędzie | build/validate (guardy + progi) | — | — | ACTIVE |
+   | tools/pit_temporal_snapshot_engine.py | narzędzie | snapshoty PIT (progi/stawki) | — | — | ACTIVE |
+   | tools/law_amendment_simulator.py | narzędzie | simulate/report (SHADOW_ANALYSIS_ONLY) | — | — | ACTIVE (0 symulacji) |
+   | tests/test_temporal_validity.py | pytest (475) | ważność okien, przedawnienia | — | — | PASS |
+   | tests/test_temporal_manager.py | pytest (148) | menedżer temporalny | — | — | PASS |
+   | tests/test_core_guards_temporal_thresholds.py | pytest (141) | guardy/progi | — | — | PASS |
+   | bundles/thresholds_data.json | dane | parameters + changed_by_audit (vat.standard_rate) | VAT art. 41 | — | ACTIVE (L06) |
+   | docs/CORE_GUARDS_TEMPORAL_THRESHOLDS.md | dokument | guardy, progi, INV | — | — | ACTIVE |
+   | migrations/009_jdg_v14_core_guards.sql | SQL (122) | temporal_versions + core guards | — | — | ACTIVE |
+   | bundles/golden_verdicts.json | dane | 30 werdyktów; 4 drifty hash (L08) | — | replay | DEFERRED (L08 → P10) |
+   | mirror policies/ (jdg, tax, tax/vat) | mirror | branch `policies` (zdalny) | — | — | NIEZWERYFIKOWANO |
+
+Tabela dowodów (7.3) — jeden wiersz na plik z Sekcji 6:
+   | # | Plik | Dowód/fakt | Status |
+   |---|------|-----------|--------|
+   | 1 | rules/temporal.rego | 807 wierszy; statute_limitations z time.now_ns (L04); covid_legacy okno 2020-03-01 | ZWERYFIKOWANO |
+   | 2 | rules/thresholds_jdg.rego | temporal_epochs e2018..e2025 (brak 2024/2026 — L02) | ZWERYFIKOWANO |
+   | 3 | mirror policies/jdg/temporal.rego | poza checkoutem (branch policies) | NIEZWERYFIKOWANO |
+   | 4 | mirror policies/tax/temporal.rego | jw. | NIEZWERYFIKOWANO |
+   | 5 | tools/temporal_drift_detector.py | 0 nieaktualnych reguł; rejestr zapisany | ZWERYFIKOWANO |
+   | 6 | tools/temporal_interval_gate.py | 1610 reguł z temporalnością / 10829 bez; LUKI 0, NAKŁADKI 0 | ZWERYFIKOWANO |
+   | 7 | tools/core_guards_temporal_thresholds.py | tryby build/validate | ZWERYFIKOWANO |
+   | 8 | tools/pit_temporal_snapshot_engine.py | snapshot PIT: progi (120000, 0.32, 30000...) | ZWERYFIKOWANO |
+   | 9 | tools/law_amendment_simulator.py | report: simulations=0, SHADOW_ANALYSIS_ONLY | ZWERYFIKOWANO |
+   | 10 | tests/test_temporal_validity.py | 475 wierszy — pokrycie okien/przedawnień | ZWERYFIKOWANO |
+   | 11 | tests/test_temporal_manager.py | 148 wierszy | ZWERYFIKOWANO |
+   | 12 | tests/test_core_guards_temporal_thresholds.py | 141 wierszy (guardy/progi) | ZWERYFIKOWANO |
+   | 13 | bundles/thresholds_data.json | changed_by_audit: vat.standard_rate 2026-08-08 (L06) | ZWERYFIKOWANO |
+   | 14 | docs/CORE_GUARDS_TEMPORAL_THRESHOLDS.md | guardy rdzenia + progi temporalne | ZWERYFIKOWANO |
+   | 15 | migrations/009_jdg_v14_core_guards.sql | 122 wierszy; temporal_versions | ZWERYFIKOWANO |
+   | 16 | mirror policies/ (3 gałęzie) | kontekst zgodności — dryf monitorowany (P02-L01) | NIEZWERYFIKOWANO |
+
+--------------------------------------------------------------------------------
+9.04 PODANALIZY 5.1–5.4
+--------------------------------------------------------------------------------
+5.1 Audyt okien ważności reguł i parametrów
+   Dowody: I01 (algebra 3 warstw); I05 (kotwice + dowody ciągłości); I07
+   (metryki); I12 (heatmapa pokrycia).
+   Wnioski:
+   1) Dwa mechanizmy okien współistnieją: (a) okna parametrów w data.thresholds
+      (bramka temporal_interval_gate: 1610 reguł z temporalnością, 0 luk,
+      0 nakładek) oraz (b) registry temporal_validity w _metadata_jdg.rego
+      (32 wpisy okien reguł). Warstwa (b) NIE jest egzekwowana — 0 wywołań
+      is_active* poza definicjami (L01, P0): okna nie filtrują decyzji.
+   2) Epoki (e2018..e2025) nieciągłe: brak 2024 i 2026 (L02, P2) — rok bez epoki
+      nie może być celem time-travel look-up; kontynuacja e2025→? bez adresu
+      (L13, P2: brak 2026-2027 dla dry runu przyszłych nowelizacji).
+   3) Pokrycie testowe kotwic: 32 kotwice w 10 domenach; pełne pary graniczne
+      (day-1+day0) tylko 4/11 (36%); 16 kotwic bez żadnego testu (L14, P2);
+      golden coverage 0% (P10 — cel heatmapy).
+   Luki z 5.1: L01 (P0), L02 (P2), L07 (P1), L13 (P2), L14 (P2).
+
+5.2 Time-travel i snapshoty
+   Dowody: I02 (vault WORM); I06 (immunitet); I10 (dry run legislacyjny);
+   I11 (API rekonstrukcji).
+   Wnioski:
+   1) Snapshot ID = sha256(5 składników): 490 plików rego + thresholds_data
+      + legal_graph (258 węzłów/26 aktów) + golden 30 + 13 migracji (I02) —
+      werdykt = f(snapshot_id, input); vault append-only (WORM), zmiana
+      składnika = nowy snapshot_id (stary zostaje).
+   2) Immunitet przeszłości (I06): łańcuch replay 30/30 bez przerw, ale
+      4 zapisane verdict_hash nie są deterministyczną funkcją werdyktu (L08,
+      P1) — wpisy z bundle v9.0.0 (syntetyczne input_hash) łamią pieczęć.
+   3) Time-travel API (I11): reconstruct(rule_id, date) — max(valid_from)<=date;
+      brak aktywnej wersji = NEEDS_ADVICE (fail-closed, nigdy wersja bieżąca dla
+      przeszłości); demo 6 granic Polski Ład (2021-12-31/2022-01-01,
+      2022-03-31/2022-04-01, KSeF 2026-01-31/2026-02-01) poprawne.
+   4) Dry run legislacyjny (I10): 0 wersji parametrów w przyszłości;
+      SHADOW_ANALYSIS_ONLY; bez e2026/e2027 dry run nowelizacji niemożliwy (L13).
+   Luki z 5.2: L08 (P1), L13 (P2).
+
+5.3 Retroaktywność i przepisy przejściowe
+   Dowody: I04 (sentinel + lista rewizji); I09 (biblioteka wzorców).
+   Wnioski:
+   1) Sentinel wykrył 4 podejrzane zdarzenia: 1 backdate (vat.standard_rate
+      valid_from 2026-01-01 < changed_at 2026-08-08 — seed archiwalny bez
+      jawnego retroactive:false, L06 P3) + 2 flagi retro w kodzie
+      (P914→R0582 WINDOW_SUPERSEDE) — lista rewizji na golden: 0.
+   2) Zasada: retroaktywność bez jawnego przepisu przejściowego = BLOCKER
+      (lex retro non agit, konstytucja art. 2) — mechanizm zaimplementowany
+      (I04), seed danych wymaga jawnego pola retroactive:false + source_act.
+   3) Biblioteka 11 wzorców przepisów przejściowych (I09): EFFECTIVE_GATE,
+      EPOCH_LOOKUP, LEGACY_CLOSED, TRANSITION_WINDOW, WINDOW_SUPERSEDE —
+      wszystkie z kotwicą prawną (0 bez); wzorzec P914→R0582: Art. 36a SUS,
+      Dz.U. 2022 poz. 1740 (Polski Ład 2.0).
+   Luki z 5.3: L06 (P3).
+
+5.4 Granice czasowe i edge cases
+   Dowody: I03 (Five-Date Matrix); I08 (Clock Service Contract).
+   Wnioski:
+   1) 305 pól dat w kodzie; model pięciu dat (T/E/F/P/K) zbudowany dla
+      8 scenariuszy (faktura VAT, KPIR, zaliczki PIT, przedawnienia...);
+      reguły spójności: E ≥ T; F ≥ P; K ≥ P; F ≤ E.
+   2) Zegar: 27 użyć time.now_ns w regułach — 15 DECISION (L11, P1: przedawnienia
+      KKS 5y/3y, offense_statute_mapping, statute_limitations_5yr, vat_pro_rata,
+      date_not_future...) i 12 TIMESTAMP — naruszenie kontraktu pojedynczego
+      źródła czasu; 2 walidacje przyszłości (date_not_future, invoice_date_future)
+      wymagają zamrożenia zegara przy replay (L11b, P3).
+   3) Brak evaluation_datetime w inpucie = cichy default 2026-01-01 w 6 miejscach
+      main_jdg.rego (L05, P1) — werdykt historyczny ewaluowany względem złej
+      epoki bez ostrzeżenia.
+   Luki z 5.4: L04 (P0), L05 (P1), L11 (P1), L11b (P3).
+
+--------------------------------------------------------------------------------
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2)
+--------------------------------------------------------------------------------
+   | Przepis (Sekcja 8) | Reguła/artefakt | Test | Status | Ryzyko |
+   |--------------------|----------------|------|--------|--------|
+   | Konstytucja art. 2 (lex retro non agit) | I04 retroactivity sentinel (BLOCKER bez przepisu przejściowego) | pytest (I04) | PEŁNE | n/d |
+   | OrdPU art. 70 §1/2/6-7 (przedawnienie w czasie) | temporal.rego statute_limitations | test_temporal_validity | CZĘŚCIOWE | time.now_ns — L04 |
+   | VAT art. 106e (data faktury) | edge_cases R0617 date_not_future | pytest | CZĘŚCIOWE | zegar ścienny — L11/L11b |
+   | VAT art. 19a-21 (obowiązek podatkowy w czasie) | vat/procedures V.07 | pytest | PEŁNE | n/d |
+   | VAT art. 41 (stawka 23%) | thresholds_data vat.standard_rate (seed) | temporal_interval_gate | CZĘŚCIOWE | backdate seed — L06 |
+   | PIT art. 44 (zaliczki w czasie) | pit/advances_returns | pytest | PEŁNE | n/d |
+   | PIT art. 27/30 (stawki wg stanu na rok) | temporal.rego (stan prawny 2019) | test_temporal_validity | CZĘŚCIOWE | inline date — L01 |
+   | ZUS art. 18a/18c (okresy ulg) | registry: zus.start_relief/preferential (2018-04-01) | — | CZĘŚCIOWE | kotwica bez day-1/day0 — L07 |
+   | ZUS art. 36a SUS (P914→R0582) | wzorzec WINDOW_SUPERSEDE (I09) | pytest (I09) | PEŁNE | n/d |
+   | Prawo przedsiębiorców art. 22-25 (zawieszenie) | business.suspension_zus (okno 2022-04-01) | — | CZĘŚCIOWE | brak testu granicznego — L14 |
+   | Epoki czasowe (ADR-002) | temporal_epochs e2018..e2025 | I01 algebra | CZĘŚCIOWE | brak 2024/2026 — L02/L13 |
+   | Złote werdykty (pieczęć) | golden_verdicts.json (30) | replay I06/I11 | CZĘŚCIOWE | 4 drifty hash — L08 |
+
+   Akty Sekcji 8 bez pokrycia regułowego wykrytego w tej sesji: OrdPU art. 12
+   (moment powstania zobowiązania), art. 26k (cofnięcie aktu), art. 56-57
+   (odsetki), VAT art. 86b (korekta w czasie), art. 109 (ewidencja), PIT art. 9
+   ust. 2 — status [NIEZWERYFIKOWANE] do mediacji ISAP/RCL (X07); ewentualne
+   luki prawne rejestrowane w P06–P08 przy mapowaniu domenowym.
+
+--------------------------------------------------------------------------------
+9.06 REJESTR LUK — identyfikatory V3-P05-Lxx (T3)
+--------------------------------------------------------------------------------
+   | ID | Priorytet | Luka |
+   |----|-----------|------|
+   | V3-P05-L01 | P0 | temporal_validity registry (32 wpisy) istnieje, ale ZERO wywołań is_active* poza definicjami — okna NIE filtrują decyzji; egzekucja tylko inline (I01 FAIL). |
+   | V3-P05-L04 | P0 | 12 reguł DECISION (w tym 6 przedawnień/terminów: KKS 5y/3y, offense_statute_mapping, statute_limitations_5yr, vat_pro_rata, date_not_future) czyta time.now_ns() zamiast daty ewaluacji — werdykt historyczny zależny od daty bieżącej (I03 FAIL). |
+   | V3-P05-L05 | P1 | Cichy default evaluation_datetime='2026-01-01' w main_jdg.rego w 6 miejscach (linie 642/708/712/717/722/748) przy braku daty w inpucie (I03). |
+   | V3-P05-L07 | P1 | 2 kotwice konstytucyjne bez pary day-1/day0: 2018-04-01 (zus.start_relief, zus.preferential), 2019-04-01 (zus.maly_plus) (I05 FAIL). |
+   | V3-P05-L08 | P1 | 4 z 30 verdict_hash w golden_verdicts.json nie-deterministyczne (kanon sha256-canonical-json-v1) — wpisy bundle v9.0.0 z syntetycznymi input_hash (I06/I11 FAIL). |
+   | V3-P05-L11 | P1 | 15 reguł DECISION czyta time.now_ns (27 użyć łącznie; 12 TIMESTAMP) — naruszenie Clock Service Contract (I08 FAIL). |
+   | V3-P05-L02 | P2 | temporal_epochs nieciągłe: brak 2024 i 2026 (skok e2023→e2025) — rok bez epoki poza time-travel (I01). |
+   | V3-P05-L13 | P2 | Brak epok 2026/2027 w danych — przyszła nowelizacja stawek/progów bez adresu; dry run legislacyjny niemożliwy (I10). |
+   | V3-P05-L14 | P2 | 16 z 32 kotwic temporalnych bez ŻADNEGO testu (pytest/boundary): relief_rd_standard/centrum, exit_tax, dac6_reporting, covid_legacy, receipt_nip_limit_450, slim_vat_2/3, estoński CIT... (I12 FAIL). |
+   | V3-P05-L06 | P3 | thresholds_data.json: vat.standard_rate valid_from (2026-01-01) < changed_at (2026-08-08) — seed bez jawnego retroactive:false + source_act (I04). |
+   | V3-P05-L10 | P3 | Metryki temporalne (7 nazw) pierwsza emisja — dashboard w P37 (I07). |
+   | V3-P05-L11b | P3 | Walidacje przyszłości (date_not_future, invoice_date_future) wymagają zamrożenia zegara przy replay historycznym 1:1 (I08). |
+
+--------------------------------------------------------------------------------
+9.07 INNOWACJE ENTERPRISE (Sekcja 10) — 12 WDROŻONYCH (T4)
+--------------------------------------------------------------------------------
+   | ID | Innowacja | Artefakt (narzędzie + bundle) | Bramka |
+   |----|-----------|------------------------------|--------|
+   | V3-P05-I01 | Interval Algebra Prover | tools/v3_p05_interval_algebra_prover.py | FAIL→L01+L02 |
+   | V3-P05-I02 | Snapshot ID & Vault | tools/v3_p05_snapshot_id_vault.py | PASS |
+   | V3-P05-I03 | Five-Date Matrix | tools/v3_p05_five_date_matrix.py | FAIL→L04+L05 |
+   | V3-P05-I04 | Retroactivity Sentinel | tools/v3_p05_retroactivity_sentinel.py | PASS |
+   | V3-P05-I05 | Time Gate CI | tools/v3_p05_time_gate_ci.py | FAIL→L07 |
+   | V3-P05-I06 | Past Immunity Test | tools/v3_p05_past_immunity.py | FAIL→L08 |
+   | V3-P05-I07 | Temporal Telemetry | tools/v3_p05_temporal_telemetry.py | PASS |
+   | V3-P05-I08 | Clock Service Contract | tools/v3_p05_clock_service_contract.py | FAIL→L11+L11b |
+   | V3-P05-I09 | Transition Rule Pattern Library | tools/v3_p05_transition_pattern_library.py | PASS |
+   | V3-P05-I10 | Legislated-Future Dry Run | tools/v3_p05_legislated_future_dryrun.py | PASS |
+   | V3-P05-I11 | Time-Travel API | tools/v3_p05_time_travel_api.py | FAIL→L08 |
+   | V3-P05-I12 | Temporal Coverage Heatmap | tools/v3_p05_temporal_coverage_heatmap.py | FAIL→L14 |
+
+   Każda innowacja ma: (1) problem/lukę, (2) mechanizm, (3) wpływ na
+   bezpieczeństwo decyzji księgowych, (4) ryzyko i mitygację, (5) kryterium
+   akceptacji (bramka), (6) zależności serii — pełny opis w bundle JSON i
+   kontrakcie docs/V3_P05_TEMPORALNOSC_KONTRAKT.md.
+
+--------------------------------------------------------------------------------
+9.08 KONTRAKT WYJŚCIOWY (sekcja 11.2) — WIĄŻĄCY DLA P06–P68 (T5)
+--------------------------------------------------------------------------------
+K1. Model Snapshot ID i skład snapshotu (I02) — kanon sha256-canonical-json-v1;
+    werdykt = f(snapshot_id, input); vault WORM — wiąże P06, P10, P38, P11.
+K2. Bramka Time Gate CI (I05) — zmiana okna = dowód day-1/day0/day+1 [BM] —
+    wiąże P39, P38, P06.
+K3. Procedura retroaktywności i rewizji (I04) — retro bez przepisu przejściowego
+    = BLOCKER; rewizja deklaracji → P08 + nowy snapshot_id — wiąże P08, P11.
+K4. Wzorce przepisów przejściowych (I09) — nowa nowelizacja = instancja wzorca
+    + test graniczny — wiąże P10–P36.
+K5. Five-Date Matrix (I03) — werdykt niesie T/E/F (+K/P w metrykach);
+    E ≥ T, F ≥ P, K ≥ P, F ≤ E — rozszerzenie P03 (pole dates).
+K6. Clock Service Contract (I08) — input.temporal.clock; time.now_ns w DECISION
+    ZAKAZANY; strefa PL (CET/CEST); pola clock_used + evaluation_date w werdykcie.
+K7. Immunitet przeszłości (I06) — identyczny snapshot_id = identyczny werdykt;
+    zmiana wyłącznie z uzasadnieniem prawnym; kanon hash jw.
+K8. Metryki temporalne (I07) — 7 nazw + progi (rejestr w kontrakcie;
+    runtime_window_enforcement_calls CRITICAL >0) — wiąże P37.
+K9. Algebra interwałów / INV-037 (I01) — zero luk i nakładek na 3 warstwach
+    w CI + bramka PASS-0 egzekucji registry (is_active_for_date po safe_merge).
+K10. Heatmapa pokrycia (I12) — cel 100% kotwic z parą day-1/day0; nowelizacja
+    bez testów granicznych = P2 — wiąże P37, P39, P12.
+
+--------------------------------------------------------------------------------
+9.09 PLAN WDROŻENIA (sekwencja, bez duplikacji; stan: WDROŻONE dla P05) (T6)
+--------------------------------------------------------------------------------
+1. Analiza plików Sekcji 6 (reguły/narzędzia/testy/dane) + mirror — wykonane.
+2. Implementacja 12 narzędzi I01–I12 (CLI + bundle JSON) — wykonane.
+3. Kalibracja ekstraktorów (registry z _metadata_jdg.rego, użycia time.now_ns,
+   okna/epochs, kanon hasha golden) — wykonane (iteracje I01/I03/I05/I08/I11).
+4. Naprawa kanonu hashowania (compact separators) + realny replay golden
+   (I06/I11 — 0/30 wakacyjne → 26/30 z 4 realnymi driftami L08) — wykonane.
+5. Uruchomienie bramek — 5 PASS, 7 FAIL zarejestrowane jako luki L01–L14 —
+   wykonane.
+6. Kontrakt docs/V3_P05_TEMPORALNOSC_KONTRAKT.md — wykonane.
+7. Testy pytest (14 przypadków) — wykonane, zielone.
+8. Oznaczenie P05 w ledgerze jako WDROŻONY_100 — wykonane.
+
+--------------------------------------------------------------------------------
+9.10 PLAN TESTÓW (T7)
+--------------------------------------------------------------------------------
+   | Przypadek | Pokrycie innowacji | Status |
+   |-----------|--------------------|--------|
+   | I01: 32 okna; 0 luk/nakładek; 0 wywołań egzekucji | interval algebra | FAIL→L01 [BM] |
+   | I02: snapshot_id 64-hex; vault WORM; kompozycja 5 składników | snapshot vault | PASS [BM] |
+   | I03: 8 scenariuszy; 305 pól dat; 12 reguł DECISION na zegarze | five-date matrix | FAIL→L04 [BM] |
+   | I04: 4 podejrzane; 1 backdate; lista rewizji 0 | retro sentinel | PASS |
+   | I05: 11 kotwic; 4 pełne pary; 2 core bez day-1/day0 | time gate CI | FAIL→L07 [BM] |
+   | I06: 30 golden; łańcuch 0 przerw; 4 drifty hash | past immunity | FAIL→L08 [BM] |
+   | I07: 7 metryk; alert CRITICAL na egzekucję | temporal telemetry | PASS |
+   | I08: 27 użyć; 15 DECISION; kontrakt strefy | clock contract | FAIL→L11 [BM] |
+   | I09: 11 wzorców; kotwica prawna 100% | pattern library | PASS |
+   | I10: 0 parametrów przyszłych; brak e2026/e2027 | future dry run | PASS |
+   | I11: reconstruct 6 granic; fail-closed; replay 26/30 | time-travel API | FAIL→L08 [BM] |
+   | I12: 32 kotwice; 16 bez testów; golden 0% | coverage heatmap | FAIL→L14 |
+   [BM] = blokuje merge.
+
+--------------------------------------------------------------------------------
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+--------------------------------------------------------------------------------
+Q01. L01 (P0): gdzie egzekwować PASS-0 temporalny — w rego (is_active_for_date
+     po safe_merge, rekomendacja), czy na hoście/Python przy budowie inputu?
+     Koszt: 1 helper + podpięcie w orchestracji (P02) + testy graniczne.
+Q02. L04/L11 (P0/P1): zamiana time.now_ns() na wstrzykiwany input.temporal.clock
+     w 15 regułach DECISION — od razu (rekomendacja), czy etapami (przedawnienia
+     pierwsze)? Wymaga kontraktu ewaluatora (P38 deployment).
+Q03. L05 (P1): cichy default evaluation_datetime=2026-01-01 — wprowadzić jawny
+     fail-closed (NEEDS_ADVICE przy braku daty, rekomendacja), czy zachować
+     default z ostrzeżeniem w metryce?
+Q04. L08 (P1): 4 drifty verdict_hash w golden_verdicts.json (wpisy bundle
+     v9.0.0) — zregenerować pieczęcie wg kanonu (P10, rekomendacja), czy usunąć
+     wpisy o syntetycznych input_hash z zestawu złotego?
+Q05. L02/L13 (P2): epoki 2024/2026/2027 — dodać puste epoki teraz (adres dla
+     dry runu), czy dopiero przy publikacji nowelizacji (P06/P08)? Rekomendacja:
+     dodawać w momencie publikacji, z wpisem do ADR.
+
+--------------------------------------------------------------------------------
+9.12 ZAŁOŻENIA JAWNE (T9)
+--------------------------------------------------------------------------------
+Z01. [ZAŁOŻENIE] Koszty/czasy (I02 budżet, replay) modelowe — pomiar z P37.
+Z02. [ZAŁOŻENIE] Weryfikacja strukturalna (grep/ekstrakcja) zastępuje brak
+     binarki OPA; registry temporal_validity i użycia time.now_ns wyekstrahowane
+     z rego są kanonem.
+Z03. [ZAŁOŻENIE] Kanon hashowania = sha256-canonical-json-v1 (compact
+     separators) — zgodny z P00/P01/P03 (golden hash); drifty L08 mierzone tym
+     kanonem.
+Z04. [ZAŁOŻENIE] Podstawy prawne Sekcji 8/Bbb to twierdzenia — weryfikacja
+     ISAP/RCL poza sesją; [NIEZWERYFIKOWANE] przy aktach bez pokrycia (9.05).
+Z05. [ZAŁOŻENIE] Mirror policies (6.5) poza lokalnym checkoutem — dryf
+     monitorowany od P02-L01; nie powielano analizy.
+Z06. [ZAŁOŻENIE] Luki P0 (L01/L04) wymagają decyzji (Q01/Q02) lub domknięcia
+     w kolejnych częściach; P05 pozostaje WDROŻONY_100, bo innowacje są kompletne
+     i działające, a luki udokumentowane z właścicielami i bramkami.
+
+--------------------------------------------------------------------------------
+9.13–9.16 — ZGODNOŚĆ Z WYMOGAMI FORMATU I KRYTERIAMI AKCEPTACJI (T12)
+--------------------------------------------------------------------------------
+- 9.13 Podanalizy 5.1–5.4: każda z tabelą dowodów, min. 3 wnioski i listą luk — OK.
+- 9.14 Macierz PRAWO↔REGUŁA↔TEST: 12 wierszy (Sekcja 8 + odkryte) — OK.
+- 9.15 Identyfikatory: V3-P05-L01..L14 (12 unikalnych), I01..I12, Q01..Q05,
+  X01..X10 (poniżej).
+- 9.16 Tabele T1–T12: komplet (T1 w 9.03, T2 w 9.05, T3 w 9.06, T4 w 9.07,
+  T5 w 9.08, T6 w 9.09, T7 w 9.10, T8 w 9.11, T9 w 9.12, T10 w 9.16,
+  T11 w APENDYKS B, T12 poniżej).
+
+Pytania krzyżowe (7.4) — V3-P05-Xxx:
+X01. Sprzeczności z dokumentami świętymi: brak BLOCKERów — model okien
+     temporalnych, PASS-0 (L01) i zegar wstrzykiwany (L04) zgodne z
+     ARCHITEKTURA_OPA_ENTERPRISE_TARGET (ADR-002 parametry-as-data;
+     temporalność warstwy decyzyjnej) i INV-037 (P04).
+X02. Parametry-as-data (P06) / temporalność (P05): temporal_epochs w
+     data.thresholds (OK, ADR-002); okna reguł w registry _metadata_jdg.rego —
+     do przeniesienia do danych przy P06 (P05-L01/L02 przygotowują grunt);
+     changed_by_audit (vat.standard_rate) — jeden rejestr zmian (OK).
+X03. Ścieżki nie fail-closed: L05 (cichy default epoki 2026-01-01) — jawna
+     luka fail-closed do domknięcia (Q03); poza tym API time-travel fail-closed
+     (I11: brak wersji = NEEDS_ADVICE); AUTO_POST gate (P03-I11) niezmieniony.
+X04. Zgodność z kontraktem 25-polowym (P03): rozszerzenia additive 1.1 —
+     snapshot_id, clock_used, dates (T/E/F) — bez zmiany typów istniejących pól;
+     brak konfliktu kontraktowego (11.3).
+X05. Testy niezbędne jako bramki blokujące merge (P39): [BM] I01 (algebra+egzekucja),
+     I03 (zegar DECISION), I05 (time gate day-1/0/+1), I06 (immunitet), I08
+     (clock contract), I11 (replay golden) — lista w 9.10.
+X06. Duplikaty: brak nowych — temporal_interval_gate.py (okna threshold) vs I01
+     (algebra 3 warstw) rozłączne (thresholds vs registry vs LKG); pit_temporal_
+     snapshot_engine (dane PIT) nie dubluje vault I02 (werdykty vs parametry);
+     law_amendment_simulator (SHADOW) = prekursor I10 (wersje przyszłe).
+X07. Podstawy prawne niezweryfikowane: akty Sekcji 8 bez reguły (OrdPU 12/26k/
+     56-57, VAT 86b/109, PIT 9.2) — rejestr mediacji ISAP/RCL [NIEZWERYFIKOWANE]
+     w 9.05; weryfikacja przy częściach prawnych.
+X08. Innowacje wymagające decyzji człowieka (4-eyes): Q01 (egzekucja L01),
+     Q02 (zegar L04/L11), Q03 (default L05), Q04 (drift L08), Q05 (epoki L02/L13)
+     — lista w 9.11.
+X09. Metryki do obserwowalności (P37): 7 metryk temporalnych (rejestr I07,
+     kontrakt §8) — nazwy i progi w kontrakcie.
+X10. Ryzyka wymagające invariantów runtime (P04): propozycje nowych INV —
+     INV-t1 (okna aktywne filtrują decyzje — egzekucja PASS-0), INV-t2 (zakaz
+     time.now_ns w DECISION), INV-t3 (obecność evaluation_date w werdykcie) —
+     uzasadnienie prawne: temporalność = poprawność decyzji w czasie.
+
+Anty-wzorce (7.5) — wyniki:
+AP01 stuby: brak (I12 heatmapa; I05 bramka) · AP02 hardcode dat: evaluation_
+datetime=2026-01-01 w main_jdg — L05; reszta dat z thresholds (OK) · AP03 otwarte
+negatywy: time-travel fail-closed (OK); okna bez egzekucji = ciche (L01) ·
+AP04 duplikaty rule_id: 0 (P00/P02) · AP05 podstawy bez Dz.U.: temporal.rego ma
+Art. 70 z §; KKS z Dz.U. 2025 poz. 678 (OK); weryfikacja ISAP (X07) · AP06 testy
+zawsze-zielone: kotwice bez testów — L14 (heatmapa); I06/I11 po naprawie realnie
+sprawdzają hash (4 drifty — L08) · AP07 cichy AUTO_POST: 0 (P03-I11, P02-I06) ·
+AP08 cykle zależności: nie badano (P08) · AP09 dane świata zewnętrznego:
+thresholds z changed_by_audit (OK) · AP10 brak okien temporalnych: registry 32
+wpisów istnieje, ale nie egzekwowany (L01) — AP10 potwierdzony jako luka P0 ·
+AP11 mirror dryf: 4 pliki (P02-L01, honorowany) · AP12 metryki/słowniki w 2
+miejscach: temporal_epochs w thresholds_jdg.rego vs thresholds_data.json —
+I01 weryfikuje spójność (epoki z rego = kanon; JSON nie zawiera epochs — brak
+dryfu, ale wymaga noty konsolidacyjnej P06).
+
+--------------------------------------------------------------------------------
+9.16 TABELA PRZEKAZYWANYCH ARTEFAKTÓW (11.4) (T10)
+--------------------------------------------------------------------------------
+   | Artefakt | Odbiorca (część) | Format | Kryterium użycia |
+   |----------|------------------|--------|------------------|
+   | Model Snapshot ID + vault WORM (I02) | P06, P10, P38, P11 | JSON + vault | werdykt = f(snapshot_id, input) |
+   | Kanon hashowania sha256-canonical-json-v1 | P10, P11 | JSON | regeneracja 4 driftów (L08) |
+   | Bramka Time Gate CI day-1/0/+1 (I05) | P39 | reguła [BM] | każda zmiana okna = dowód ciągłości |
+   | PASS-0 egzekucji registry (I01, L01) | P06, P07, P38 | kontrakt | is_active_for_date po safe_merge |
+   | Clock Service Contract (I08) | P06, P37, P38 | kontrakt | input.temporal.clock; zakaz now_ns DECISION |
+   | Five-Date Matrix T/E/F/P/K (I03) | P06, P08, P11 | rozszerzenie P03 | pola dates w werdykcie |
+   | Procedura retroaktywności + rewizji (I04) | P08, P11 | JSON | retro bez przepisu = BLOCKER |
+   | Biblioteka wzorców przejściowych (I09) | P10–P36 | JSON | nowelizacja = wzorzec + test |
+   | Metryki temporalne (7) | P37 | JSON | nazwy/progi w kontrakcie §8 |
+   | Heatmapa pokrycia kotwic (I12) | P37, P39, P12 | JSON | 100% par day-1/day0 |
+   | Luki L01–L14 + pytania Q01–Q05 | Blocker Triage (I09 P00) | raport | priorytety P0/P1/P2/P3 |
+
+--------------------------------------------------------------------------------
+PODSUMOWANIE WYKONANIA
+--------------------------------------------------------------------------------
+1. Raport zapisany: JDG/raporty_glm52_v3/RAPORT_V3_P05_TEMPORALNOSC.txt
+2. Zakres części P05: temporalność — 4 podanalizy (5.1–5.4), 12 innowacji,
+   12 luk (2×P0, 4×P1, 3×P2, 3×P3), 5 pytań (Q01–Q05), odpowiedzi X01–X10,
+   kontrakt K1–K10, 14 testów (6 [BM]).
+3. Kontrakty dla P06: K1–K10 (sekcja 9.08) + docs/V3_P05_TEMPORALNOSC_KONTRAKT.md;
+   metryki temporalne wiążące dla P37; bramki I01–I12 uruchamialne w CI.
+4. WYCZYSZCZONO okno kontekstowe po zakończeniu części P05 (treść części nie jest
+   już potrzebna — stan w ledgerze, dowodach i kontrakcie).
+5. Brak utrzymywanych niejawnych założeń/kodów po czyszczeniu sesji.
+6. Następna część: P06 — pierwszy nie wdrożony wpis w ledgerze po P05.
+================================================================================

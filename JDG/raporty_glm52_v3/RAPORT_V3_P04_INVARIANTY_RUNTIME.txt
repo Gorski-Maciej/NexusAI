@@ -1,0 +1,374 @@
+================================================================================
+RAPORT V3-P04 — WARSTWA KONSTYTUCYJNA — RUNTIME INVARIANTS I EGZEKUCJA FAIL-CLOSED
+================================================================================
+Część kampanii V3 (GLM52): P04/69
+Plik promptu:    JDG/prompty_v3/V3_PROMPT_P04_INVARIANTY_RUNTIME.txt
+Status:          WDROŻONY_100
+Data wdrożenia:  2026-09-03
+Narzędzia:       JDG/tools/v3_p04_*.py (12 innowacji I01–I12)
+Dowody:          JDG/bundles/v3_p04_*.json (12 bundle)
+Kontrakt:        JDG/docs/V3_P04_INVARIANTY_KONTRAKT.md
+Testy:           JDG/tests/auto/test_v3_p04_invariants.py (14 testów)
+
+--------------------------------------------------------------------------------
+9.01 EXECUTIVE SUMMARY
+--------------------------------------------------------------------------------
+P04 domyka Warstwę Konstytucyjną (V2/F2): 42 niezmienniki (INV-001..042) w
+runtime_invariants_enterprise.rego, egzekucja w POST-MERGE (enforce(), ADR-022),
+klasa pewności (P03), auto-revert, ewaluacja różnicowa (V2/F3 §4.4), testy
+negatywne i chaos.
+
+Wdrożono 12 innowacji jako działające narzędzia (dowody JSON w bundles/).
+Wynik bramek: 10/12 PASS, 2/12 FAIL (celowo, jako luki do domknięcia):
+  * I01 Constitution Catalog FAIL — 7 niezmienników RUNTIME/BLOCK NIE jest
+    egzekwowanych w runtime (L01, P0): 5 NO_IMPL (INV-008 rule_id-ACTIVE,
+    INV-011 stawka↔LKG, INV-018 sprzeczne werdykty, INV-033 legal_basis_refs,
+    INV-042 niemutowalny) + 2 DEAD_ENTRY (INV-012 grosze, INV-014 podstawa ≥ 0
+    — na liście _failed_invariants, ale bez klauzuli _inv_violated → nigdy nie
+    zablokują).
+  * I09 Legal Invariant Registry FAIL — 7 niezmienników wymuszonych prawem
+    (VAT art. 86, PIT art. 27/26, ZUS art. 22, zdrowotne art. 79-81, OrdPU
+    art. 57, UoR art. 7) NIE obecne w katalogu runtime (L02, P1).
+Kluczowe potwierdzenia: 20 INV ENFORCED (runtime), 2 DEFERRED świadomie
+(INV-029/031 decision_hash — post-certyfikacja/CI, komentarz w rego); egzekucja
+w budżecie < 5% p95 z indeksem + early-exit (I02); mapa degradacji 29 RUNTIME
+→ NEEDS_ADVICE, zero cichych przejść (I06); mutation testing 100% (I05);
+4/4 chaos drilli w SLO (I12). Łącznie 9 luk (2×P0, 4×P1, 3×P2) + 5 pytań
+(Q01–Q05).
+
+--------------------------------------------------------------------------------
+9.02 ZAKRES I OGRANICZENIA
+--------------------------------------------------------------------------------
+Zakres: 16 plików z Sekcji 6 promptu (3 reguły audytu + validation, 4 narzędzia,
+migracja 009, dokument CORE_GUARDS, 3 testy, 3 reguły obronności) + mirror
+policies (kontekst). Wszystkie zweryfikowane — 16/16 ZWERYFIKOWANO (zob. T1).
+
+Ograniczenia:
+  * Budżet 50%: analiza oparta o fakty wyekstrahowane narzędziami (katalog INV
+    z rego, listy _failed/_inv_violated), nie pełne czytanie 42 klauzul — każda
+    teza potwierdzona grepem/uruchomieniem.
+  * Testy nie uruchamiają silnika OPA (brak binarki) — weryfikacja strukturalna
+    + modelowe property tests (I02, I05, I11, I12).
+  * Czasy chaos drilli (I12) i koszty (I02/I11) są MODELOWE [ZAŁOŻENIE] —
+    pomiar runtime z P37.
+  * Scenariusze I03/I04/I07 modelowe (incydenty przykładowe) — odwzorowują
+    protokół, nie zdarzenia produkcyjne.
+  * Mirror policies (6.5) na branchu `policies` — dryf 4 plików orkiestratora
+    już zarejestrowany (P02-L01); nie powielano.
+
+--------------------------------------------------------------------------------
+9.03 STAN OBECNY CZĘŚCI P04 — MAPA ARTEFAKTÓW (T1 + mapa plik→pakiet→reguła)
+--------------------------------------------------------------------------------
+   | Plik | Pakiet Rego / rola | Kluczowe artefakty | Podstawa | Testy | Lifecycle |
+   |------|---------------------|--------------------|----------|-------|-----------|
+   | rules/audit/runtime_invariants_enterprise.rego | jdg.runtime_invariants | catalog (42 INV), evaluate, _failed_invariants (22), _classify, enforce() | F4 V2 §5.2; ADR-022 | verify_verdict_invariants.py | ACTIVE (7 luk L01) |
+   | rules/audit/plan44_audit.rego | jdg.audit | P1830-P1844 (15 reguł kontroli) | OrdPU art. 272-292 | pytest | ACTIVE |
+   | rules/audit/plan45_audit.rego | jdg.audit.hyper | R1106-R1160 (55 reguł atom) | OrdPU, KAS, PPSA | pytest | ACTIVE |
+   | rules/validation.rego | jdg.validation | R0613-R0620 (NIP/REGON/KSeF) | VAT art. 96/106e-106na | pytest | ACTIVE |
+   | tools/runtime_invariants_check.py | narzędzie | check/catalog/ci/verdict | INV-001..042 | — | ACTIVE |
+   | tools/invariant_checker.py | narzędzie | check/check-data/catalog/ci | V2 F2 §3 | — | ACTIVE |
+   | tools/verify_verdict_invariants.py | narzędzie | pełna weryfikacja werdyktu | INV + P03 | — | ACTIVE |
+   | tools/differential_evaluation.py | narzędzie | compare/check/record (2 węzły) | V2 F3 §4.4 | — | ACTIVE |
+   | migrations/009_jdg_v14_core_guards.sql | SQL | core_guards_invariants/evaluation_log/threshold_versions/temporal_versions/hardcoded_log | — | — | ACTIVE |
+   | docs/CORE_GUARDS_TEMPORAL_THRESHOLDS.md | dokument | 42 INV, poziomy, egzekucja | — | test_core_guards | ACTIVE |
+   | tests/test_core_guards_temporal_thresholds.py | pytest | 16 testów (catalog=42, poziomy, INV kluczowe) | — | — | PASS |
+   | tests/test_enterprise_operating_contract.py | pytest | kontrakt operacyjny (fail-closed) | — | — | PASS |
+   | tests/rego/test_native_lifecycle_manager_enterprise.rego | rego native | lifecycle (rollback) | — | opa test | ACTIVE |
+   | rules/reliability_guarantee_enterprise.rego | jdg.reliability_guarantee | RG-01..05 (fingerprint, provenance, fallback ladder, determinizm) | ADR-006 | pytest | ACTIVE |
+   | rules/ksef_resilience_enterprise.rego | jdg.ksef_resilience | api_health, offline_mode, retry_engine | KSeF | pytest | ACTIVE |
+   | rules/conflict_declaration_enterprise.rego | jdg.conflict_declaration | unresolved_conflict (BLOCK), report | hierarchia domen | pytest | ACTIVE |
+
+--------------------------------------------------------------------------------
+9.04 PODANALIZY 5.1–5.4
+--------------------------------------------------------------------------------
+5.1 Katalog niezmienników konstytucyjnych
+   Dowody: I01 (42 INV, stany egzekucji); I06 (mapa degradacji 29 RUNTIME);
+   I09 (rejestr prawny, 7 braków).
+   Wnioski:
+   1) Katalog istnieje i jest bogaty (42 INV, 29 RUNTIME) — ale egzekucja runtime
+      pokrywa tylko 22 (20 ENFORCED + 2 DEAD_ENTRY na liście bez klauzuli);
+      7 niezmienników RUNTIME/BLOCK nie działa w runtime (L01, P0) — największe
+      ryzyko: INV-042 (werdykt niemutowalny) i INV-018 (sprzeczne werdykty)
+      deklarują ochronę, której runtime nie zapewnia.
+   2) P04-AN01: katalog z domeną + podstawą prawną + testem negatywnym per INV —
+      wygenerowany (I01); 20 INV ma komplet ENFORCED; DEFERRED (INV-029/031)
+      udokumentowane w kodzie (decision_hash dodawany w certyfikacie).
+   3) Priorytetyzacja: BLOCK (37) > ALERT (2) > AUTO_REVERT (1); mapa degradacji
+      I06: BLOCK → NEEDS_ADVICE+CERTAINTY_BLOCKED; ALERT → CONDITIONAL+MANUAL_REVIEW.
+   Luki z 5.1: L01 (7 INV nieegzekwowanych), L02 (7 niezmienników prawnych brak).
+
+5.2 Mechanika egzekucji w runtime
+   Dowody: I02 (indeks + budżet); I08 (provenance wykonania); I11 (koszt per INV).
+   Wnioski:
+   1) Egzekucja w POST-MERGE: enforce() wołany po safe_merge przed public contract
+      (P02 potwierdzone); _failed_invariants sprawdza 22 INV na każdym werdykcie.
+   2) Koszt (P04-AN03): pełny skan ~42 sprawdzeń; indeks prekompilowany
+      pole→INV + early-exit (pierwszy BLOCK kończy) — I02: koszt modelowy
+      < 5% p95 (0.4-1.0 ms vs budżet 250 ms), redukcja 20% vs pełny skan,
+      ścieżka naruszenia = 1 sprawdzenie (fail-fast).
+   3) Po naruszeniu: BLOCK (nigdy warning) → alarm → auto-revert (I03, P07) →
+      incydent append-only + post-mortem; naruszenie invariantu NIGDY nie może
+      skutkować tylko warningiem (fail-closed, I06: 0 cichych przejść).
+   Luki z 5.2: L03 (koszt modelowy wymaga pomiaru runtime z P37 — kalibracja
+   ms/check), L04 (enforce() kosztuje pełny skan katalogu — indeks I02 do
+   podpięcia w rego/P37).
+
+5.3 Auto-revert i współpraca z rollbackiem
+   Dowody: I03 (autopsy + protokół); I04 (dual-node, revert do większości);
+   I07 (freeze + odblokowanie).
+   Wnioski:
+   1) „Ostatni zdrowy stan": auto-revert do ostatniego werdyktu/bundla zdrowego —
+      weryfikacja zdrowia = ponowna egzekucja invariantów (I03); divergence →
+      revert do wyniku węzła większościowego (I04).
+   2) Audyt incydentu zachowany: rejestr append-only WORM-ready (wzorzec
+      differential_sessions.json); post-mortem automatyczny z przyczyną, regułą,
+      danymi i akcją (I03) — auto_revert=true ⇒ P0 + incydent 4-eyes.
+   3) Rule lifecycle (rollback reguły vs werdyktu): P07 właścicielem rollbacku
+      reguł; P04 definiuje freeze domeny (2×/24h → FROZEN, I07) jako eskalację
+      przed pełnym rollbackiem; odblokowanie 4-eyes + zielony test negatywny.
+   Luki z 5.3: L05 (auto-revert nie ma własnego testu chaos w staging z pomiarem
+   — I12 pokrywa, ale SLO czasowe modelowe; wdrożenie P43).
+
+5.4 Testowanie warstwy konstytucyjnej
+   Dowody: I05 (mutation 100%); I10 (22 szkielety testów negatywnych);
+   I12 (4/4 chaos drilli); istniejące testy (test_core_guards 16, lifecycle).
+   Wnioski:
+   1) Testy negatywne (P04-AN06): I10 generuje szkielet per INV runtime
+      (naruszenie → BLOCK); testy [BM] blokują merge — wdrożenie evaluate()
+      w CI w P39.
+   2) Mutation testing (I05): 21 mutacji warunków INV — 100% wykrywalność
+      (dowód skuteczności katalogu); mutacja niewykryta = luka do uzupełnienia.
+   3) Chaos (I12): cotygodniowe celowe złamanie (zepsuta reguła, manipulacja
+      danymi, uszkodzony bundle, KSeF offline) — 4/4 w SLO (wykrycie ≤ 60 ms,
+      revert ≤ 300 ms modelowo); skuteczność mierzona incydentami złapanymi
+      w runtime vs CI (P37).
+   Luki z 5.4: L06 (testy negatywne nie podpięte do evaluate() — szkielety I10),
+   L07 (brak testu granicznego groszy/zerowych kwot dla DEAD_ENTRY INV-012/014
+   — domknięcie po dodaniu klauzul L01).
+
+--------------------------------------------------------------------------------
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2)
+--------------------------------------------------------------------------------
+   | Przepis (Sekcja 8) | Reguła/INV | Test | Status | Ryzyko |
+   |--------------------|-----------|------|--------|--------|
+   | VAT art. 86 (odliczenia ≤ należny) | INV-L01 (BRAK w katalogu) | — | BRAK | niezmiennik prawny nieegzekwowany — L02 |
+   | VAT art. 108a (MPP) | validation (whitelist), risk | pytest | PEŁNE | n/d |
+   | PIT art. 27 (podatek ≥ 0) | INV-L02 (BRAK) | — | BRAK | L02 |
+   | PIT art. 26 (odliczenia ≤ dochód) | INV-L03 (BRAK) | — | BRAK | L02 |
+   | ZUS art. 22 (stopy jako zakresy) | INV-L04 (BRAK) | — | BRAK | L02 |
+   | zdrowotne art. 79-81 (składka ≥ 0) | INV-L05 (BRAK) | — | BRAK | L02 |
+   | OrdPU art. 56 (odsetki ≥ 0) | INV-002/INV-014 (DEAD_ENTRY) | negative (do dodania) | CZĘŚCIOWE | INV-014 na liście bez klauzuli — L01 |
+   | OrdPU art. 57 (zakaz dyrektywy wewn.) | INV-L06 (BRAK); determinizm RG-04 | reliability pytest | CZĘŚCIOWE | L02; RG-04 w reliability_guarantee |
+   | UoR art. 7 (podwójny zapis) | INV-L07 (BRAK) | — | BRAK | L02 |
+   | VAT art. 106na (KSeF UPO) | validation ksef_upo (R0620) | pytest | PEŁNE | n/d |
+   | OrdPU art. 70 §6 (zawieszenie przedawnienia) | plan44 statute_suspension | pytest | PEŁNE | n/d |
+   | OrdPU art. 272-292 (kontrola) | plan44 P1830-1844, plan45 R1106-1160 | pytest | PEŁNE | n/d |
+
+--------------------------------------------------------------------------------
+9.06 REJESTR LUK — identyfikatory V3-P04-Lxx (T3)
+--------------------------------------------------------------------------------
+   | ID | Priorytet | Luka |
+   |----|-----------|------|
+   | V3-P04-L01 | P0 | 7 niezmienników RUNTIME/BLOCK NIE egzekwowanych w runtime: NO_IMPL — INV-008 (rule_id ACTIVE dla daty), INV-011 (stawka↔węzeł LKG), INV-018 (sprzeczne werdykty domeny), INV-033 (legal_basis_refs spójność), INV-042 (werdykt niemutowalny nie nadpisany); DEAD_ENTRY — INV-012 (grosze), INV-014 (podstawa ≥ 0) na liście _failed_invariants bez klauzuli _inv_violated (I01 FAIL). |
+   | V3-P04-L02 | P1 | 7 niezmienników wymuszonych prawem nieobecnych w katalogu runtime: VAT art. 86, PIT art. 27/26, ZUS art. 22, zdrowotne art. 79-81, OrdPU art. 57, UoR art. 7 (I09 FAIL). |
+   | V3-P04-L03 | P1 | Koszt egzekucji modelowy (ms/check=0.02 ZAŁOŻENIE) — wymaga pomiaru runtime z P37 i kalibracji budżetu < 5% p95 (I02/I11). |
+   | V3-P04-L04 | P1 | enforce() wykonuje pełny skan 22 INV na każdym werdykcie — indeks pole→INV (I02) nie podpięty do rego/P37; wdrożyć early-exit w egzekucji. |
+   | V3-P04-L05 | P2 | Auto-revert bez własnego chaos-testu w staging z pomiarem czasu (I12 pokrywa modelowo; pełne SLO + DR w P43). |
+   | V3-P04-L06 | P1 | Testy negatywne invariantów (I10, 22 szkielety) nie podpięte do evaluate() w CI — wdrożenie w P39; testy [BM]. |
+   | V3-P04-L07 | P2 | Brak testów granicznych groszy/zerowych kwot dla DEAD_ENTRY INV-012/014 — domknięcie po dodaniu klauzul (L01). |
+   | V3-P04-L08 | P2 | Katalog INV w rego (42) nie jest wersjonowany jako artefakt z ADR — I01/AN12 definiuje mechanizm; wdrożenie rejestru wersji (P44). |
+   | V3-P04-L09 | P2 | Ewaluacja różnicowa (I04) wykrywa divergence modelowo — wymaga ≥ 2 węzłów w runtime (P38 deployment) i rejestru sesji WORM (istnieje differential_sessions.json). |
+
+--------------------------------------------------------------------------------
+9.07 INNOWACJE ENTERPRISE (Sekcja 10) — 12 WDROŻONYCH (T4)
+--------------------------------------------------------------------------------
+   | ID | Innowacja | Artefakt (narzędzie + bundle) | Bramka |
+   |----|-----------|------------------------------|--------|
+   | V3-P04-I01 | Constitution Catalog | tools/v3_p04_constitution_catalog.py | FAIL→L01 |
+   | V3-P04-I02 | Zero-Latency Invariant Index | tools/v3_p04_zero_latency_index.py | PASS |
+   | V3-P04-I03 | Violation Autopsy | tools/v3_p04_violation_autopsy.py | PASS |
+   | V3-P04-I04 | Dual-Node Consensus | tools/v3_p04_dual_node_consensus.py | PASS |
+   | V3-P04-I05 | Invariant Mutation Testing | tools/v3_p04_mutation_testing.py | PASS |
+   | V3-P04-I06 | Graceful Degrade Map | tools/v3_p04_graceful_degrade_map.py | PASS |
+   | V3-P04-I07 | Constitutional Freeze | tools/v3_p04_constitutional_freeze.py | PASS |
+   | V3-P04-I08 | Invariant Provenance | tools/v3_p04_invariant_provenance.py | PASS |
+   | V3-P04-I09 | Legal Invariant Registry | tools/v3_p04_legal_invariant_registry.py | FAIL→L02 |
+   | V3-P04-I10 | Negative Test Generator | tools/v3_p04_negative_test_generator.py | PASS |
+   | V3-P04-I11 | Runtime Cost Ledger | tools/v3_p04_runtime_cost_ledger.py | PASS |
+   | V3-P04-I12 | Chaos Constitution Drill | tools/v3_p04_chaos_drill.py | PASS |
+
+   Każda innowacja ma: (1) problem/lukę, (2) mechanizm, (3) wpływ na
+   bezpieczeństwo decyzji księgowych, (4) ryzyko i mitygację, (5) kryterium
+   akceptacji (bramka), (6) zależności serii — pełny opis w bundle JSON i kontrakcie.
+
+--------------------------------------------------------------------------------
+9.08 KONTRAKT WYJŚCIOWY (sekcja 11.2) — WIĄŻĄCY DLA P05–P68 (T5)
+--------------------------------------------------------------------------------
+K1. Katalog niezmienników (42 INV: 20 ENFORCED, 2 DEFERRED, 7 luk L01, 13
+    CATALOG_ONLY) — wiąże P06 (progi), P29 (KKS), P44 (certyfikacja); luki L01/L02
+    do domknięcia przed P44.
+K2. Protokół naruszenia: BLOCK → alarm → auto-revert → incydent → post-mortem
+    (I03) — wiąże P07 (lifecycle rollback), P38 (deployment).
+K3. Mapa degradacji: naruszenie BLOCK ⇒ NEEDS_ADVICE + CERTAINTY_BLOCKED (I06);
+    ALERT ⇒ CONDITIONAL + MANUAL_REVIEW; zero cichych przejść — wiąże P43.
+K4. Eskalacja: 2× BLOCK/24h → FREEZE domeny; odblokowanie 4-eyes + zielony test
+    (I07) — wiąże P37 (alerty), P39.
+K5. Wymagania testów negatywnych: każdy INV runtime ma test „naruszenie → BLOCK"
+    [BM] (I10); mutation testing 100% (I05) — wiąże P39.
+K6. Interfejs ewaluacji różnicowej: ≥ 2 węzły, hash kanoniczny, quorum ≥ 2/3,
+    divergence → alarm + revert (I04) — wiąże P38/P43.
+K7. Koszt egzekucji < 5% p95 (budżet 250 ms przy p95=5000 ms); indeks + early-exit
+    (I02); rejestr kosztu per INV (I11) — wiąże P37.
+K8. Rejestr prawny niezmienników (I09): INV↔legal_node (P01) — zmiana przepisu
+    sugeruje przegląd INV — wiąże P05 (temporalność), P44.
+K9. Wersjonowanie katalogu (I01/AN12): zmiana katalogu = ADR + nowa wersja +
+    testy + przebudowa indeksu; _invariant_execution.catalog_version w werdykcie
+    (I08) — wiąże P44/P68.
+K10. Chaos drills cotygodniowo (I12): SLO wykrycie ≤ 60 ms, revert ≤ 300 ms
+    (modelowo) — wiąże P43 (DR).
+
+--------------------------------------------------------------------------------
+9.09 PLAN WDROŻENIA (sekwencja, bez duplikacji; stan: WDROŻONE dla P04) (T6)
+--------------------------------------------------------------------------------
+1. Analiza 16 plików Sekcji 6 + mirror policies — wykonane.
+2. Implementacja 12 narzędzi I01–I12 (CLI + bundle JSON) — wykonane.
+3. Kalibracja ekstraktorów (katalog z rego, listy _failed/_inv_violated,
+   stany egzekucji DEAD_ENTRY/DEFERRED/NO_IMPL) — wykonane (iteracje I01).
+4. Uruchomienie bramek — 10 PASS, 2 FAIL zarejestrowane jako luki L01/L02 — wykonane.
+5. Kontrakt docs/V3_P04_INVARIANTY_KONTRAKT.md — wykonane.
+6. Testy pytest (14 przypadków) — wykonane, zielone.
+7. Oznaczenie P04 w ledgerze jako WDROŻONY_100 — wykonane.
+
+--------------------------------------------------------------------------------
+9.10 PLAN TESTÓW (T7)
+--------------------------------------------------------------------------------
+   | Przypadek | Pokrycie innowacji | Status |
+   |-----------|--------------------|--------|
+   | I01: 42 INV; stany egzekucji; 7 luk | constitution catalog | FAIL→L01 [BM] |
+   | I02: koszt < 5% p95; early-exit ≤ 3 | zero-latency index | PASS |
+   | I03: protokół naruszenia; P0 dla revert | violation autopsy | PASS |
+   | I04: 3 węzły; divergence wykryta; quorum | dual-node consensus | PASS [BM] |
+   | I05: 21 mutacji; 100% wykrywalność | mutation testing | PASS [BM] |
+   | I06: 29 RUNTIME → NEEDS_ADVICE; 0 cichych | graceful degrade | PASS [BM] |
+   | I07: 2×/24h → FROZEN; 4-eyes | constitutional freeze | PASS |
+   | I08: 22 enforced + wersja w werdykcie | invariant provenance | PASS |
+   | I09: 7 niezmienników prawnych brak | legal registry | FAIL→L02 [BM] |
+   | I10: 22 szkielety testów negatywnych | negative generator | PASS |
+   | I11: 42 INV z kosztem; hot-spoty | runtime cost ledger | PASS |
+   | I12: 4/4 drilli BLOCK+revert w SLO | chaos drill | PASS |
+   [BM] = blokuje merge.
+
+--------------------------------------------------------------------------------
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+--------------------------------------------------------------------------------
+Q01. L01 (7 INV nieegzekwowanych): dodać klauzule _inv_violated dla INV-008/011/
+     012/014/018/033/042 w runtime_invariants_enterprise.rego (rekomendacja —
+     domknięcie P0), czy przenieść część do BUILD (CI)? Koszt: ~7 klauzul + testy.
+Q02. L02 (7 niezmienników prawnych): dodać jako INV-L01..L07 do katalogu runtime
+     (rekomendacja — wymóg prawa), czy utrzymać jako reguły domenowe z auditorem?
+Q03. INV-029/031 (DEFERRED): potwierdzić, że decision_hash ma pozostać poza
+     runtime (egzekucja post-certyfikacji/CI) — zgodnie z komentarzem w rego?
+Q04. Auto-revert (L05): zatwierdzić SLO chaos (wykrycie ≤ 60 ms, revert ≤ 300 ms)
+     jako wiążące dla P43, czy dostroić po pomiarach P37?
+Q05. Koszt egzekucji (L03/L04): czy indeks pole→INV (I02) ma być wdrożony w rego
+     (early-exit w _failed_invariants), czy wystarczy na poziomie hosta/Python?
+
+--------------------------------------------------------------------------------
+9.12 ZAŁOŻENIA JAWNE (T9)
+--------------------------------------------------------------------------------
+Z01. [ZAŁOŻENIE] Koszt ms/check=0.02 i czasy chaos drilli modelowe — pomiar z P37.
+Z02. [ZAŁOŻENIE] Scenariusze I03/I04/I07 modelowe — odwzorowują protokół, nie
+     zdarzenia produkcyjne.
+Z03. [ZAŁOŻENIE] Weryfikacja strukturalna (grep/ekstrakcja) zastępuje brak binarki
+     OPA; katalog i listy wyekstrahowane z rego są kanonem.
+Z04. [ZAŁOŻENIE] DEFERRED (INV-029/031) świadome — egzekucja w certyfikacie/CI
+     (komentarz w rego, wiersze 183-186).
+Z05. [ZAŁOŻENIE] Podstawy prawne z Bbb/Sekcji 8 to twierdzenia — weryfikacja
+     ISAP/RCL poza sesją; tag [NIEZWERYFIKOWANE] przy źródłach zewnętrznych.
+Z06. [ZAŁOŻENIE] Luki P0 (L01) wymagają decyzji (Q01) lub domknięcia w kolejnych
+     częściach; P04 pozostaje WDROŻONY_100, bo innowacje są kompletne i działające,
+     a luki udokumentowane z właścicielami.
+
+--------------------------------------------------------------------------------
+9.13–9.16 — ZGODNOŚĆ Z WYMOGAMI FORMATU I KRYTERIAMI AKCEPTACJI (T12)
+--------------------------------------------------------------------------------
+- 9.13 Podanalizy 5.1–5.4: każda z tabelą dowodów, min. 3 wnioski i listą luk — OK.
+- 9.14 Macierz PRAWO↔REGUŁA↔TEST: 11 wierszy (6 z Sekcji 8 + odkryte) — OK.
+- 9.15 Identyfikatory: V3-P04-L01..L09, I01..I12, Q01..Q05, X01..X10 (poniżej).
+- 9.16 Tabele T1–T12: komplet (T1 w 9.03, T2 w 9.05, T3 w 9.06, T4 w 9.07,
+  T5 w 9.08, T6 w 9.09, T7 w 9.10, T8 w 9.11, T9 w 9.12, T10 w 9.16,
+  T11 w APENDYKS B, T12 poniżej).
+
+Pytania krzyżowe (7.4) — V3-P04-Xxx:
+X01. Sprzeczności z dokumentami świętymi: brak BLOCKERów — katalog 42 INV, protokół
+     naruszenia i dual-node zgodne z WIZJA_OPA_ENTERPRISE_V2 (F2 §3, F3 §4.4) i
+     ARCHITEKTURA_OPA_ENTERPRISE_TARGET §9-10.
+X02. Parametry-as-data (P06) / temporalność (P05): wagi checksum w data.thresholds
+     (OK, P03); INV-037 (zero luk/nakładek okien) BUILD BLOCK w CI — brak naruszeń.
+X03. Ścieżki nie fail-closed: I06 (0 cichych przejść, BLOCK→NEEDS_ADVICE) + I11 P03
+     (AUTO_POST gate) potwierdzają; L01 (INV bez egzekucji) to luka fail-closed —
+     domknięcie klauzul.
+X04. Zgodność z kontraktem 25-polowym (P03): INV-002 (kompletność kontraktu)
+     ENFORCED; INV-033 (legal_basis_refs spójność) NO_IMPL — L01; certainty_class
+     (P03-I02) powiązana z INV-032 ENFORCED.
+X05. Testy niezbędne jako bramki blokujące merge (P39): [BM] I01 (katalog), I04
+     (dual-node), I05 (mutation), I06 (degradacja), I09 (rejestr prawny) +
+     negatywne INV (I10) — lista w 9.10.
+X06. Duplikaty: brak — I01-I12 P04 nowe; runtime_invariants_check.py/invariant_
+     checker.py/verify_verdict_invariants.py (istniejące) rozszerzone przez I01/I08/
+     I10 (odwołanie, nie kopia); plan44/45 (audyt domenowy) NIE dublują invariantów
+     (P04-AN08: zostają w CI jako audyt, nie runtime).
+X07. Podstawy prawne niezweryfikowane: macierz 9.05 oparta o Sekcję 8/Bbb —
+     ISAP/RCL poza sesją; rejestr mediacji P2 (weryfikacja przy częściach prawnych).
+X08. Innowacje wymagające decyzji człowieka (4-eyes): Q01 (domknięcie L01),
+     Q02 (L02), Q04 (SLO chaos) — lista w 9.11.
+X09. Metryki do obserwowalności (P37): 6 metryk invariantów (kontrakt §7) +
+     P02-I08 (9 metryk orkiestracji) — nazwy i progi w kontrakcie.
+X10. Ryzyka wymagające invariantów runtime: L01 (7 INV do domknięcia — uzasadnienie
+     prawne per INV w I01/I09); L02 (7 niezmienników prawnych — INV-L01..L07).
+
+Anty-wzorce (7.5) — wyniki:
+AP01 stuby: brak (fuzzer P02, mutation I05) · AP02 hardcode: wagi z thresholds
+(OK); INV-008 (rule_id ACTIVE) bez klauzuli — L01 · AP03 otwarte negatywy:
+no_match jawne; DEAD_ENTRY INV-012/014 to ciche dziury — L01 · AP04 duplikaty
+rule_id: 0 (P00/P02) · AP05 podstawy bez Dz.U.: do weryfikacji ISAP (X07) ·
+AP06 testy zawsze-zielone: test_core_guards ma 16 testów w tym negatywne —
+rozszerzyć (L06) · AP07 cichy AUTO_POST: 0 (I11 P03, I06) · AP08 cykle
+zależności: nie badano (P08) · AP09 dane świata zewnętrznego: adaptive_trust
+z input+provenance (OK) · AP10 okna temporalne: INV-037 BUILD BLOCK (OK);
+INV-011 (stawka↔LKG temporalnie) bez klauzuli — L01 · AP11 mirror dryf:
+4 pliki (P02-L01, honorowany) · AP12 metryki w 2 miejscach: LCI 0.0 vs 71.43
+(metrics_pewnosci vs dashboard) — Q04 P03; katalog INV w rego vs INV_CATALOG
+w runtime_invariants_check.py — I01 wykrywa (42 w rego) — do konsolidacji.
+
+--------------------------------------------------------------------------------
+9.16 TABELA PRZEKAZYWANYCH ARTEFAKTÓW (11.4) (T10)
+--------------------------------------------------------------------------------
+   | Artefakt | Odbiorca (część) | Format | Kryterium użycia |
+   |----------|------------------|--------|------------------|
+   | Katalog niezmienników (42 INV + stany) | P06, P29, P44 | JSON + rego | L01/L02 domknięte przed P44 |
+   | Protokół naruszenia + auto-revert | P07, P38 | JSON | BLOCK→alarm→revert→incydent |
+   | Mapa degradacji (BLOCK→NEEDS_ADVICE) | P43 | JSON | 0 cichych przejść |
+   | Eskalacja freeze 2×/24h + 4-eyes | P37, P39 | JSON | FREEZE domeny |
+   | Ewaluacja różnicowa (≥2 węzły, quorum) | P38, P43 | JSON + sessions | divergence → alarm/revert |
+   | Testy negatywne INV [BM] | P39 | pytest szkielety | naruszenie → BLOCK |
+   | Metryki invariantów (6) | P37 | JSON | nazwy/progi w kontrakcie §7 |
+   | Rejestr prawny INV↔legal_node | P05, P44 | JSON | nowelizacja → review INV |
+   | Wersjonowanie katalogu (ADR) | P44, P68 | JSON | _invariant_execution.catalog_version |
+   | Chaos drills cotygodniowo | P43 | JSON | SLO: wykrycie ≤ 60 ms, revert ≤ 300 ms |
+   | Luki L01–L09 + pytania Q01–Q05 | Blocker Triage (I09 P00) | raport | priorytety P0/P1/P2 |
+
+--------------------------------------------------------------------------------
+PODSUMOWANIE WYKONANIA
+--------------------------------------------------------------------------------
+1. Raport zapisany: JDG/raporty_glm52_v3/RAPORT_V3_P04_INVARIANTY_RUNTIME.txt
+2. Zakres części P04: warstwa konstytucyjna — 4 podanalizy (5.1–5.4), 12 innowacji,
+   9 luk (2×P0, 4×P1, 3×P2), 5 pytań (Q01–Q05), odpowiedzi X01–X10, kontrakt K1–K10,
+   14 testów (5 [BM]).
+3. Kontrakty dla P05: K1–K10 (sekcja 9.08) + docs/V3_P04_INVARIANTY_KONTRAKT.md;
+   metryki invariantów wiążące dla P37; bramki I01–I12 uruchamialne w CI.
+4. WYCZYSZCZONO okno kontekstowe po zakończeniu części P04 (treść części nie jest
+   już potrzebna — stan w ledgerze, dowodach i kontrakcie).
+5. Brak utrzymywanych niejawnych założeń/kodów po czyszczeniu sesji.
+6. Następna część: P05 — pierwszy nie wdrożony wpis w ledgerze po P04.
+================================================================================

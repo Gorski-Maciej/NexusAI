@@ -1,0 +1,146 @@
+{
+  "innovation": "V3-P06-I03",
+  "generated_at": "2026-09-03T10:11:06.154509+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "maps_defined": 63,
+    "maps_used": 10,
+    "orphan_maps": 53,
+    "ghost_maps": 0,
+    "silent_defaults": 84,
+    "leaf_params": 670
+  },
+  "usage_top": [
+    [
+      "depreciation",
+      12
+    ],
+    [
+      "automatyzacja_ksiegowosci",
+      8
+    ],
+    [
+      "pit",
+      5
+    ],
+    [
+      "bounds",
+      1
+    ],
+    [
+      "local_taxes",
+      1
+    ],
+    [
+      "pcc_local_excise",
+      1
+    ],
+    [
+      "rodo_aml_bdo",
+      1
+    ],
+    [
+      "business_lifecycle",
+      1
+    ],
+    [
+      "opa_system",
+      1
+    ],
+    [
+      "temporal_epochs",
+      1
+    ]
+  ],
+  "orphan": [
+    "accounting",
+    "aml",
+    "api_fallback",
+    "api_ui_quality_v3_19",
+    "audyt_kompletny",
+    "bdo_environment",
+    "bundles_quality_v3_18",
+    "business",
+    "checksum_weights",
+    "compliance_aml_rodo",
+    "cross_domain_red_team_etap27",
+    "crossborder",
+    "default_threshold_versions",
+    "docs_quality_v3_20",
+    "early_warning",
+    "enterprise_ai",
+    "enterprise_ai_neural_etap23",
+    "enterprise_quality_v3_15",
+    "environmental",
+    "fc_thresholds",
+    "final_certification_etap28",
+    "hr_swiadczenia",
+    "hyper",
+    "hyper_contexts",
+    "hyper_enterprise_contexts_etap22",
+    "hyper_quality_v3_14",
+    "kks",
+    "ksef_jpk",
+    "ksef_jpk_edeklaracje",
+    "ksef_jpk_etap20",
+    "ksiegowosc",
+    "limits",
+    "local_excise_etap19",
+    "lump_sum",
+    "mdr",
+    "micro_quality_v3_13",
+    "misc",
+    "narzedzia_walidacji",
+    "neural_mesh",
+    "ord",
+    "policies_mirror_sync_etap26",
+    "rates",
+    "rodo_aml_bdo_hr_etap21",
+    "routing_confidence",
+    "system_opa",
+    "temporal_thresholds",
+    "tests_ci_quality_etap24",
+    "tests_ci_quality_v3_17",
+    "testy_rego_ci",
+    "tools_api_rulestore_bundles_etap25",
+    "tools_quality_v3_16",
+    "vat",
+    "zus"
+  ],
+  "ghost": [],
+  "checks": [
+    {
+      "name": "orphan_maps",
+      "status": "FAIL",
+      "detail": "mapy zdefiniowane a nieużywane: 53 z 63"
+    },
+    {
+      "name": "ghost_maps",
+      "status": "OK",
+      "detail": "referencje do niezdefiniowanych map: []"
+    },
+    {
+      "name": "silent_defaults",
+      "status": "WARN",
+      "detail": "object.get z fallbackiem: 84 wystąpień w 4 mapach"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P06-L03",
+      "severity": "P1",
+      "evidence": "mapy ORPHAN (dane martwe, 617 liści w 53 mapach): ['accounting', 'aml', 'api_fallback', 'api_ui_quality_v3_19', 'audyt_kompletny', 'bdo_environment', 'bundles_quality_v3_18', 'business', 'checksum_weights', 'compliance_aml_rodo', 'cross_domain_red_team_etap27', 'crossborder']... — koszt utrzymania i ryzyko rozjazdu",
+      "fix": "przegląd i usunięcie/przeniesienie do JSON store tylko używanych; rejestr deklaratywny map (P06-I07)"
+    },
+    {
+      "id": "V3-P06-L07",
+      "severity": "P2",
+      "evidence": "84 cichych fallbacków object.get (top: [('depreciation', 49), ('automatyzacja_ksiegowosci', 23), ('pit', 11), ('opa_system', 1)]) — wartość z kodu zamiast danych; brak sygnału przy braku parametru",
+      "fix": "fail-closed: brak parametru = NEEDS_ADVICE zamiast defaultu; fallback tylko dla pól niekrytycznych"
+    }
+  ],
+  "contract": {
+    "binding": "P06-I03 → analiza wpływu nowelizacji (P08 Law Radar), P07 lifecycle, P10 golden",
+    "rule": "każda zmiana parametru = lista dotkniętych reguł z lineage (mapa→reguły) + testy [BM]"
+  }
+}

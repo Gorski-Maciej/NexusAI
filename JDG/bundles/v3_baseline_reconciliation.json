@@ -1,0 +1,179 @@
+{
+  "schema_version": "1.0.0",
+  "report": "V3_BASELINE_RECONCILIATION",
+  "generated_at": "2026-09-03T03:21:46.209037+00:00",
+  "old_baseline": {
+    "document": "docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md",
+    "dated": "2026-08-07",
+    "declared_ranges": {
+      "rego_files": "439 vs 383 vs 176 (rozbieżne deklaracje)",
+      "rule_ids": "11452 vs 10878 vs 10827",
+      "tools": "57 vs 98 vs 130"
+    },
+    "luki_L1_L12": {
+      "L1": "Brak realnego control plane",
+      "L2": "Niespójność danych dokumentacyjnych",
+      "L3": "Niesfinalizowana deduplikacja i higiena reguł",
+      "L4": "Zero-Hardcoded tylko częściowo",
+      "L5": "Dwuwładztwo rules/ vs policies/",
+      "L6": "Brak opisanego cyklu awaryjnego i DR/BCP",
+      "L7": "Testy natywne — luka między deklaracją a planem",
+      "L8": "Brak opisanego modelu uprawnień operacyjnych",
+      "L9": "Brak pełnej obserwowalności procesu zmiany",
+      "L10": "Brak metryk SLA/SLO i jakości w czasie",
+      "L11": "Bezpieczeństwo łańcucha dostaw",
+      "L12": "Proces dodania reguły — dokumentowany, ale z lukami"
+    }
+  },
+  "new_baseline": {
+    "source": "bundles/v3_canonical_snapshot.json (P00-I01)",
+    "rego_files": 490,
+    "rule_id_unique": 12439,
+    "tools_py": 369,
+    "pytest_files": 224,
+    "native_rego_tests": 226
+  },
+  "luki_L1_L12": [
+    {
+      "luka": "L1",
+      "description": "Brak realnego control plane",
+      "evidence_checked": 3,
+      "evidence_found": 3,
+      "evidence_list": [
+        "JDG/tools/control_plane_lifecycle.py",
+        "JDG/rules/rule_lifecycle_enterprise.rego",
+        "JDG/docs/CONTROL_PLANE_RULE_LIFECYCLE.md"
+      ],
+      "status": "DOMKNIĘTA"
+    },
+    {
+      "luka": "L2",
+      "description": "Niespójność danych dokumentacyjnych",
+      "evidence_checked": 3,
+      "evidence_found": 3,
+      "evidence_list": [
+        "JDG/tools/manifest_v2.py",
+        "JDG/bundles/manifest_v2.json",
+        "JDG/docs/MANIFEST_2_0.md"
+      ],
+      "status": "DOMKNIĘTA"
+    },
+    {
+      "luka": "L3",
+      "description": "Niesfinalizowana deduplikacja i higiena reguł",
+      "evidence_checked": 3,
+      "evidence_found": 3,
+      "evidence_list": [
+        "JDG/tools/fix_p00_duplicates.py",
+        "JDG/tools/dedup_micro_plan33.py",
+        "JDG/tools/dead_rule_detector.py"
+      ],
+      "status": "DOMKNIĘTA"
+    },
+    {
+      "luka": "L4",
+      "description": "Zero-Hardcoded tylko częściowo",
+      "evidence_checked": 3,
+      "evidence_found": 3,
+      "evidence_list": [
+        "JDG/tools/hardcoded_audit.py",
+        "JDG/tools/hardcoded_audit_gate.py",
+        "JDG/bundles/thresholds_data.json"
+      ],
+      "status": "DOMKNIĘTA"
+    },
+    {
+      "luka": "L5",
+      "description": "Dwuwładztwo rules/ vs policies/",
+      "evidence_checked": 3,
+      "evidence_found": 3,
+      "evidence_list": [
+        "JDG/tools/policies_sync_gate.py",
+        "JDG/tools/v3_mirror_delta.py",
+        "JDG/rules/policies_mirror_sync_etap26_v1.rego"
+      ],
+      "status": "DOMKNIĘTA"
+    },
+    {
+      "luka": "L6",
+      "description": "Brak opisanego cyklu awaryjnego i DR/BCP",
+      "evidence_checked": 2,
+      "evidence_found": 2,
+      "evidence_list": [
+        "JDG/tools/dr_orchestrator.py",
+        "JDG/tools/worm_storage.py"
+      ],
+      "status": "DOMKNIĘTA"
+    },
+    {
+      "luka": "L7",
+      "description": "Testy natywne — luka między deklaracją a planem",
+      "evidence_checked": 2,
+      "evidence_found": 2,
+      "evidence_list": [
+        "JDG/tests/rego",
+        "JDG/tools/generate_test_suite.py"
+      ],
+      "status": "DOMKNIĘTA"
+    },
+    {
+      "luka": "L8",
+      "description": "Brak opisanego modelu uprawnień operacyjnych",
+      "evidence_checked": 2,
+      "evidence_found": 2,
+      "evidence_list": [
+        "JDG/tools/policy_registry_api.py",
+        "JDG/rules/security"
+      ],
+      "status": "DOMKNIĘTA"
+    },
+    {
+      "luka": "L9",
+      "description": "Brak pełnej obserwowalności procesu zmiany",
+      "evidence_checked": 2,
+      "evidence_found": 2,
+      "evidence_list": [
+        "JDG/tools/enterprise_dashboard.py",
+        "JDG/tools/confidence_dashboard.py"
+      ],
+      "status": "DOMKNIĘTA"
+    },
+    {
+      "luka": "L10",
+      "description": "Brak metryk SLA/SLO i jakości w czasie",
+      "evidence_checked": 2,
+      "evidence_found": 2,
+      "evidence_list": [
+        "JDG/tools/metrics_generator.py",
+        "JDG/bundles/metrics_pewnosci.json"
+      ],
+      "status": "DOMKNIĘTA"
+    },
+    {
+      "luka": "L11",
+      "description": "Bezpieczeństwo łańcucha dostaw",
+      "evidence_checked": 2,
+      "evidence_found": 2,
+      "evidence_list": [
+        "JDG/tools/quantum_safe_encryption.py",
+        "JDG/tools/blockchain_audit_trail.py"
+      ],
+      "status": "DOMKNIĘTA"
+    },
+    {
+      "luka": "L12",
+      "description": "Proces dodania reguły — dokumentowany, ale z lukami",
+      "evidence_checked": 3,
+      "evidence_found": 3,
+      "evidence_list": [
+        "JDG/docs/DEVELOPER_GUIDE.md",
+        "JDG/docs/OPA_REGO_DEVELOPER_GUIDE.md",
+        "JDG/tools/rule_lifecycle_manager.py"
+      ],
+      "status": "DOMKNIĘTA"
+    }
+  ],
+  "domkniete": 12,
+  "otwarte": 0,
+  "status": "REKONCYLACJA_OK"
+}

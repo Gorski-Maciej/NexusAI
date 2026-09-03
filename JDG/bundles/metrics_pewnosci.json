@@ -1,102 +1,28 @@
 {
   "generated_at": null,
-  "lci": 55.56,
-  "tcl": 5.33,
-  "rv": 5.88,
-  "uvr": 1138,
-  "duplikaty": 396,
-  "stuby": 432,
+  "lci": 0.0,
+  "tcl": 13.56,
+  "rv": 14.27,
+  "uvr": 619,
+  "duplikaty": 0,
+  "stuby": 466,
   "szczegoly": {
     "lci": {
-      "lci": 55.56,
+      "lci": 0.0,
       "punkty_prawne_calosc": 1935,
-      "punkty_pokryte_szac": 1075,
-      "proba_art": 27
+      "punkty_pokryte_szac": 0,
+      "proba_art": 0
     },
     "legal_basis": {
-      "rv": 5.88,
-      "tcl": 5.33,
-      "ok": 655,
-      "non_canonical": 10493,
-      "missing": 268,
-      "unknown_act": 870,
-      "rules_total": 12286
+      "rv": 14.27,
+      "tcl": 13.56,
+      "ok": 1687,
+      "non_canonical": 10133,
+      "missing": 59,
+      "unknown_act": 560,
+      "rules_total": 12439
     },
-    "duplikaty_szczegoly": [
-      [
-        "jdg.accounting.no_match",
-        [
-          "rules/accounting.rego",
-          "rules/accounting/plan42_pkpir.rego",
-          "rules/accounting/plan23_leasing.rego"
-        ]
-      ],
-      [
-        "jdg.accounting.pkpir_col1_sequential",
-        [
-          "rules/accounting.rego",
-          "rules/accounting/pkpir_enterprise_validation.rego"
-        ]
-      ],
-      [
-        "jdg.accounting.pkpir_col8_other_revenue",
-        [
-          "rules/accounting.rego",
-          "rules/accounting/pkpir_enterprise_validation.rego"
-        ]
-      ],
-      [
-        "jdg.allowances.no_match",
-        [
-          "rules/allowances.rego",
-          "rules/allowances/plan23_reliefs.rego"
-        ]
-      ],
-      [
-        "jdg.crossborder.no_match",
-        [
-          "rules/crossborder.rego",
-          "rules/crossborder/plan23_ue.rego"
-        ]
-      ],
-      [
-        "jdg.employer.ppk_auto_enrollment",
-        [
-          "rules/employer.rego",
-          "rules/employer.rego"
-        ]
-      ],
-      [
-        "jdg.employer.peron_contribution",
-        [
-          "rules/employer.rego",
-          "rules/employer.rego"
-        ]
-      ],
-      [
-        "jdg.international.no_match",
-        [
-          "rules/international.rego",
-          "rules/international_expanded.rego"
-        ]
-      ],
-      [
-        "jdg.kks.no_match",
-        [
-          "rules/kks.rego",
-          "rules/kks/plan42_detailed.rego",
-          "rules/kks/plan44_kks_conviction.rego",
-          "rules/kks/plan43_decomposition.rego"
-        ]
-      ],
-      [
-        "jdg.kks.unreliable_pkpir_art56",
-        [
-          "rules/kks.rego",
-          "rules/kks/plan42_detailed.rego"
-        ]
-      ]
-    ],
+    "duplikaty_szczegoly": [],
     "stuby_szczegoly": [
       [
         "rules/allowances.rego",
@@ -203,8 +129,8 @@
     },
     {
       "wskaźnik": "duplikaty = 0",
-      "ok": false,
-      "prog": "NIESPEŁNIONY"
+      "ok": true,
+      "prog": "spełniony"
     },
     {
       "wskaźnik": "stuby = 0",

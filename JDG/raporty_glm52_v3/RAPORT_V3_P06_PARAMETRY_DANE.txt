@@ -1,0 +1,441 @@
+================================================================================
+RAPORT V3-P06 — PARAMETRY I DANE (ADR-002: parametry-as-data, zero hardcode)
+Generowany przez: kampania V3 (GLM 5.2) — wdrożenie 100% wg V3_PROMPT_P06
+Data: 2026-09-03    Stan: WDROŻONY_100
+================================================================================
+
+9.01 EXECUTIVE SUMMARY
+--------------------------------------------------------------------------------
+P06 realizuje ADR-002 (parametry-as-data): warstwa danych (thresholds_jdg.rego —
+63 mapy, 617 liściowych wartości; JSON store thresholds_data.json — 1 parametr
+wersjonowany), audyt hardcode'ów i deklaratywna ścieżka zmiany parametru.
+
+Wdrożono 12 innowacji jako działające narzędzia (dowody JSON w bundles/).
+Wynik bramek: 5/12 PASS, 7/12 FAIL (celowo, jako luki do domknięcia):
+  * I01 Parameter Schema v2 FAIL — store JSON wersjonuje 1 z 617 parametrów
+    (L01, P0): reguły czytają wartości z kodu; hot-reload nie obejmuje progów.
+  * I02 Zero-Hardcode Gate FAIL — 2 503 kandydatów DOMAIN_VALUE w liniach
+    z logiką decyzyjną (225 plików) + rozjazd trzech audytów hardcode:
+    docs 265 (2026-07-13) vs gate 13 595 vs KPI 26 373 (L02/L04, P1).
+  * I03 Parameter Lineage FAIL — 53 z 63 map to ORPHAN (dane bez konsumenta);
+    84 ciche fallbacki object.get z wartościami z kodu (L03/L07, P1/P2).
+  * I05 Hot-Reload SLO FAIL — walidacja danych PĘKA (TypeError schema string vs
+    float w data_service.validate — L05, P1) i brak artefaktu thresholds_export.
+    json (eksport OPA Data API nie w CI — L10, P1).
+  * I06 External Feeders FAIL — parametry zewnętrzne (minimum_wage_gross 4800,
+    eur_pln 4.5) bez mechanizmu feedu (L11, P2).
+  * I07 Contextual Maps FAIL — schema bez wymiaru kontekstu TERYT/PKD (L12, P2).
+  * I08 Parameter Rollback FAIL — 1 wersja w store = rollback niemożliwy (L13).
+Kluczowe potwierdzenia: golden dataset zbudowany (617 liści, 2 661 wierszy
+granicznych, checksum sha256-canonical-json-v1); range proofs: 0 wartości
+ujemnych, stawki VAT/PIT w zbiorach ustawowych, 12/12 odrzuceń granicznych;
+formularz deklaratywny: 0.25 VAT odrzucony / 0.08 przyjęty; świeżość store OK
+(1 parametr, 0 stale); telemetria: 10 map używanych, 130 odwołań, 94 konteksty
+BLOCK/fallback. Łącznie 14 luk (1×P0, 6×P1+dup, 5×P2, 2×P3) + 6 pytań (Q01–Q06).
+
+TOP-10 rekomendacji:
+1. [P0] Migracja 617 wartości do JSON store wg lineage (I03) — priorytet HIGH
+   z I12 (depreciation, automatyzacja_ksiegowosci, pit...). [L01]
+2. [P1] Naprawa data_service.validate (schema number) + eksport w CI [L05/L10].
+3. [P1] Zero-hardcode gate wg klasyfikacji I02 [BM] [L02].
+4. [P1] Unifikacja trzech audytów hardcode (jedno źródło prawdy) [L04].
+5. [P1] Przegląd 53 map ORPHAN przed migracją [L03].
+6. [P1] Fail-closed dla 84 fallbacków object.get (NEEDS_ADVICE) [L07].
+7. [P1] Append-only historia wersji (rollback możliwy) [L13].
+8. [P2] Feedery NBP/MRPiPS/ZUS z walidacją i audytem [L11].
+9. [P2] unit w schema v2 — jedna konwencja jednostek [L19].
+10. [P2] Procedura certyfikacji golden datasetu 4-eyes [L09].
+
+--------------------------------------------------------------------------------
+9.02 ZAKRES I OGRANICZENIA
+--------------------------------------------------------------------------------
+Zakres: pliki Sekcji 6 (11 plików warstw stawek/progów: thresholds_jdg.rego +
+10 _*_rates; 6 narzędzi danych: data_service, p13/p14_thresholds,
+hardcoded_audit(+gate), limits_registry; 3 dane/dokumenty: thresholds_data.json,
+hardcoded_audit.json, migracja 001; 2 testy danych) + mirror policies (6.5,
+kontekst). 23/23 plików Sekcji 6 ZWERYFIKOWANO; mirror na branchu `policies`
+poza checkoutem — NIEZWERYFIKOWANO (dryf monitorowany od P02-L01).
+
+Ograniczenia:
+  * Budżet 50%: analiza oparta o fakty wyekstrahowane narzędziami (regex warstwy
+    danych, liczniki linii z logiką), nie pełne czytanie 2 759 wierszy
+    thresholds_jdg.rego — każda teza potwierdzona uruchomieniem.
+  * Testy nie uruchamiają silnika OPA (brak binarki) — weryfikacja strukturalna
+    + property tests (I11) + determinizm liczników.
+  * Czasy SLO (I05) modelowe [ZAŁOŻENIE] — pomiar runtime z P37.
+  * Źródła zewnętrzne (NBP/MRPiPS/ZUS/ISAP/RCL) poza sesją —
+    [NIEZWERYFIKOWANE] (klauzula promptu 4.5).
+  * Liczby audytu hardcode są zależne od semantyki skanu — patrz I02 (dokładna
+    definicja w kontrakcie K2).
+
+--------------------------------------------------------------------------------
+9.03 STAN OBECNY CZĘŚCI P06 — MAPA ARTEFAKTÓW (T1 + mapa plik→pakiet→reguła)
+--------------------------------------------------------------------------------
+   | Plik | Pakiet Rego / rola | Kluczowe artefakty | Podstawa | Testy | Lifecycle |
+   |------|---------------------|--------------------|----------|-------|-----------|
+   | rules/thresholds_jdg.rego | jdg.thresholds (data.thresholds.jdg) | 63 mapy, 617 liści; temporal_epochs; schema min/max | ADR-002 | test_core_guards | ACTIVE (L01) |
+   | rules/_pkpir_rates.rego | jdg.pkpir_rates | KST 17 kolumn, mapy | Rozp. MF PKPiR | pytest | ACTIVE (warstwa) |
+   | rules/_uor_rates.rego | jdg.uor_rates | progi UoR (2 mln EUR), zasady | UoR | pytest | ACTIVE (warstwa) |
+   | rules/_crossborder_rates.rego | jdg.crossborder_rates | stawki transgraniczne | — | pytest | ACTIVE (warstwa) |
+   | rules/_compliance_rates.rego | jdg.compliance_rates | stawki compliance | — | pytest | ACTIVE (warstwa) |
+   | rules/_edge_cases_conflicts_rates.rego | jdg.edge_conflicts_rates | stawki edge | — | pytest | ACTIVE (warstwa) |
+   | rules/_kks_micro_rates.rego | jdg.kks_micro_rates | stawki KKS | KKS | pytest | ACTIVE (warstwa) |
+   | rules/_pcc_local_excise_rates.rego | jdg.pcc_local_excise_rates | PCC/akcyza | PCC | pytest | ACTIVE (warstwa) |
+   | rules/_business_lifecycle_rates.rego | jdg.business_lifecycle_rates | stawki cyklu | — | pytest | ACTIVE (warstwa) |
+   | rules/micro/_zus_micro_rates.rego | jdg.zus_micro_rates | stawki ZUS | ZUS | pytest | ACTIVE (warstwa) |
+   | rules/kks/_kks_macro_rates.rego | jdg.kks_macro_rates | stawki KKS macro | KKS | pytest | ACTIVE (warstwa) |
+   | tools/data_service.py | narzędzie | set/get/history/export/validate | V1 §7/V2 §8 | — | ACTIVE (L05 bug) |
+   | tools/p13_thresholds.py | narzędzie | LEGAL_RATES ryczałt; load_thresholds | art. 12 ryczałt | test_p13_tools | ACTIVE |
+   | tools/p14_thresholds.py | narzędzie | progi P14 | — | test_p13_tools | ACTIVE |
+   | tools/hardcoded_audit.py | narzędzie | audyt + KPI (26 373 do migracji) | — | — | ACTIVE (L04 rozjazd) |
+   | tools/hardcoded_audit_gate.py | narzędzie | scan/per-file/gate (13 595) | — | — | ACTIVE (L04 rozjazd) |
+   | tools/limits_registry.py | narzędzie | limity (VAT art. 113: 150 000) | art. 113 VAT | — | ACTIVE |
+   | bundles/thresholds_data.json | dane (30) | 1 parametr + schema (string!) + audit | VAT art. 41 | — | ACTIVE (L01/L05) |
+   | bundles/hardcoded_audit.json | dane (796) | 13 595 znalezisk, 362 pliki | — | — | ACTIVE (L04) |
+   | migrations/001_jdg_rule_store.sql | SQL (296) | jdg_tax_thresholds, rule_versions, jdg_verdict_audit, isap_history, jdg_legal_cartography | — | — | ACTIVE |
+   | docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md | dokument | ~265 wartości / 32 pliki (2026-07-13); ADR-002 ~60% | — | — | ACTIVE (L04) |
+   | tests/test_core_guards_temporal_thresholds.py | pytest (141) | guardy/progi | — | — | PASS |
+   | tests/test_p13_tools.py | pytest (79) | narzędzia P13 | — | — | PASS |
+
+Tabela dowodów (7.3) — jeden wiersz na plik z Sekcji 6:
+   | # | Plik | Dowód/fakt | Status |
+   |---|------|-----------|--------|
+   | 1 | rules/thresholds_jdg.rego | 63 mapy / 617 liści numerycznych; pkg jdg.thresholds | ZWERYFIKOWANO |
+   | 2 | rules/_pkpir_rates.rego | 322 wiersze; KST 17 kolumn (struktura, nie stawki) | ZWERYFIKOWANO |
+   | 3 | rules/_uor_rates.rego | progi UoR: uor_threshold_eur 2 000 000; eur_pln_reference 4.5 | ZWERYFIKOWANO |
+   | 4 | rules/_crossborder_rates.rego | 103 wiersze (warstwa stawek) | ZWERYFIKOWANO |
+   | 5 | rules/_compliance_rates.rego | 100 wierszy (warstwa) | ZWERYFIKOWANO |
+   | 6 | rules/_edge_cases_conflicts_rates.rego | 227 wierszy (warstwa) | ZWERYFIKOWANO |
+   | 7 | rules/_kks_micro_rates.rego | 185 wierszy (warstwa KKS) | ZWERYFIKOWANO |
+   | 8 | rules/_pcc_local_excise_rates.rego | 281 wierszy (PCC/akcyza) | ZWERYFIKOWANO |
+   | 9 | rules/_business_lifecycle_rates.rego | 224 wiersze (cykl życia) | ZWERYFIKOWANO |
+   | 10 | rules/micro/_zus_micro_rates.rego | 273 wiersze (ZUS — stawki w % całościowych) | ZWERYFIKOWANO |
+   | 11 | rules/kks/_kks_macro_rates.rego | 242 wiersze (KKS macro) | ZWERYFIKOWANO |
+   | 12 | tools/data_service.py | set/get/history/export/validate; walidacja zakresu min/max | ZWERYFIKOWANO |
+   | 13 | tools/p13_thresholds.py | LEGAL_RATES ryczałt tuple 9 stawek (3–17%) | ZWERYFIKOWANO |
+   | 14 | tools/p14_thresholds.py | progi P14 (odczyt) | ZWERYFIKOWANO |
+   | 15 | tools/hardcoded_audit.py | KPI: ~809 w thresholds, 26 373 do migracji | ZWERYFIKOWANO |
+   | 16 | tools/hardcoded_audit_gate.py | 13 595 znalezisk / 362 pliki; per-file top micro/pit 892 | ZWERYFIKOWANO |
+   | 17 | tools/limits_registry.py | limit VAT art. 113: 150 000; projekcja 2027-03 | ZWERYFIKOWANO |
+   | 18 | bundles/thresholds_data.json | 1 parametr (vat.standard_rate 0.23), schema min/max STRING | ZWERYFIKOWANO |
+   | 19 | bundles/hardcoded_audit.json | total_hardcoded 13 595; findings 100 (przycinek) | ZWERYFIKOWANO |
+   | 20 | migrations/001_jdg_rule_store.sql | 5 tabel (jdg_tax_thresholds, rule_versions...) | ZWERYFIKOWANO |
+   | 21 | docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md | ~265 wartości / 32 pliki (audyt 2026-07-13) | ZWERYFIKOWANO |
+   | 22 | tests/test_core_guards_temporal_thresholds.py | 141 wierszy; PASS | ZWERYFIKOWANO |
+   | 23 | tests/test_p13_tools.py | 79 wierszy; import LEGAL_RATES | ZWERYFIKOWANO |
+   | 24 | mirror policies/ (6.5) | poza checkoutem — dryf monitorowany | NIEZWERYFIKOWANO |
+
+--------------------------------------------------------------------------------
+9.04 PODANALIZY 5.1–5.4
+--------------------------------------------------------------------------------
+5.1 Inwentaryzacja hardcode'ów w regułach
+   Dowody: I01 (store 1 vs 617); I02 (2 503 kandydatów w logice; rozjazd
+   audytów); I03 (84 fallbacki); I12 (top użycia).
+   Wnioski:
+   1) Warstwa danych kodu (thresholds_jdg.rego) trzyma 617 liściowych wartości
+      w 63 mapach; JSON store wersjonuje 1 (vat.standard_rate) — pokrycie 0,16%
+      (L01, P0). 10 map jest faktycznie używanych przez reguły (130 odwołań;
+      depreciation 49, automatyzacja_ksiegowosci 23); 53 mapy = ORPHAN (L03).
+   2) W logice reguł domenowych żyją wartości (2 503 kandydatów DOMAIN_VALUE
+      w 225 plikach wg semantyki I02) — ADR-002 wykonany częściowo; liczba
+      zależna od semantyki skanu (rozjazd narzędzi: 265/13 595/26 373 — L04).
+   3) Priorytetyzacja migracji (P06-AN01): HIGH = mapy używane w decyzjach
+      (I12: depreciation, automatyzacja, business_lifecycle, pcc_local_excise,
+      pit, temporal_epochs...) — audyt/migracja najpierw dla nich.
+   Luki z 5.1: L01 (P0), L02 (P1), L03 (P1), L04 (P1), L07 (P2).
+
+5.2 Model parametru i walidacja
+   Dowody: I01 (schema v2, ghost 0); I07 (kontekst); I10 (formularz);
+   I11 (range proofs).
+   Wnioski:
+   1) Schema v2 zdefiniowana (key/value/unit/okna/source_act/article/scope);
+      walidacja przy zapisie w data_service sprawdza zakres, ale PĘKA na typach
+      (schema min/max string vs value float — TypeError, L05 P1).
+   2) Parametry-duchy: 0 referencji do niezdefiniowanych map (ghost=0), ale
+      84 ciche fallbacki object.get (default z kodu przy braku parametru — L07)
+      ukrywają brak danych zamiast sygnalizować NEEDS_ADVICE.
+   3) Kontekst (gmina/PKD): brak wymiaru w schema (L12 P2) — stawki gminne
+      (UPOL art. 5) bez modelu namespace.context.code; walidacja kodów TERYT/PKD
+      nieistniejąca.
+   4) Zakresy ustawowe potwierdzone dowodowo (I11): 0 ujemnych, stawki VAT/PIT
+      w zbiorach, 12/12 odrzuceń ±grosz; 42 klucze z niejednoznaczną jednostką
+      (L19 P2) — ułamek vs procent całościowy (zus_emerytalna_pct 9.76 =
+      9,76%) vs kwota (mileage_rate_per_km 1.15 PLN).
+   Luki z 5.2: L05 (P1), L12 (P2), L19 (P2).
+
+5.3 Hot-reload i spójność
+   Dowody: I05 (SLO watch); I08 (rollback); I09 (freshness).
+   Wnioski:
+   1) Łańcuch hot-reload mierzalny: model 0.89 s (SLO < 1 min OK) — ale walidacja
+      pęka (L05) i artefakt eksportu (thresholds_export.json) nie istnieje
+      (L10) — end-to-end nieaktywny.
+   2) Spójność wersji: store trzyma 1 wersję vat.standard_rate (2026-01-01,
+      zmiana 2026-08-08 w changed_by_audit) — brak głębi historii: rollback
+      niemożliwy (L13 P1); zmiany są audytowalne (changed_by/at/source_act).
+   3) Świeżość: store aktualny (0 stale, wiek 26 dni od 2026-08-08); verified=0%
+      (L16 P3 — źródła zewnętrzne poza sesją); telemetria danych (I09/I12)
+      pierwsza emisja (L18 P3).
+   Luki z 5.3: L05 (P1), L10 (P1), L13 (P1), L16 (P3), L18 (P3).
+
+5.4 Golden dataset danych
+   Dowody: I04 (dataset + checksum); I11 (range proofs).
+   Wnioski:
+   1) Golden dataset zbudowany (I04): 617 liści, 2 661 wierszy granicznych
+      (±0.01, zero), checksum sha256-canonical-json-v1 — spójny z P05/P03.
+   2) Testowany przy każdej zmianie: zasada [BM] — zmiana danych bez zielonego
+      datasetu = blokada; powiązanie z golden replay werdyktów (P10): zmiana
+      danych → nowy checksum → re-ewaluacja dotkniętych map (I03 lineage).
+   3) Procedura certyfikacji (właściciel, cykl, podpis 4-eyes) nieustalona
+      (L09 P2) — dataset budowany automatycznie z warstwy danych kodu.
+   Luki z 5.4: L09 (P2).
+
+--------------------------------------------------------------------------------
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2)
+--------------------------------------------------------------------------------
+   | Przepis (Sekcja 8) | Reguła/parametr | Test | Status | Ryzyko |
+   |--------------------|----------------|------|--------|--------|
+   | VAT art. 41/146a (stawki 0/5/8/23) | standard_rate 0.23 (store + warstwa) | I11 legal set; golden I04 | PEŁNE | pokrycie store 1/617 — L01 |
+   | VAT art. 113 (mały podatnik) | limits_registry 150 000; oss_threshold_eur | limits_registry | CZĘŚCIOWE | wartość w rego — L02 |
+   | PIT art. 27(1) (skala 12/32) | scale_low/high_rate | I11 legal set | PEŁNE | wartość w warstwie kodu — L01 |
+   | ryczałt art. 12 (stawki 3–17%) | LEGAL_RATES (P13) | test_p13_tools | PEŁNE | n/d |
+   | ZUS art. 22/79-81 (stopy) | zus_*_pct (9.76/1.5/2.45/9.0 %) | I11 unit-aware | CZĘŚCIOWE | jednostka pct całościowy — L19 |
+   | UPOL art. 5 (stawki gminne) | (brak modelu kontekstu) | — | BRAK | brak wymiaru TERYT — L12 |
+   | Obwieszczenia MRPiPS (minimalne) | minimum_wage_gross 4800 | — | CZĘŚCIOWE | bez feedera — L11 |
+   | kursy NBP (EUR/PLN) | eur_pln 4.5 / eur_pln_rate_default | — | CZĘŚCIOWE | bez feedera; 2 wartości — L11/L19 |
+   | Rozp. MF (wzory/stawki) | KST 17 kolumn (PKPiR) | pytest | PEŁNE | struktura, nie stawki |
+   | ADR-002 (zero hardcode) | 2 503 kandydatów w logice reguł | I02 gate [BM] | CZĘŚCIOWE | L02/L04 |
+   | Migracja 001 (jdg_tax_thresholds) | 5 tabel — docelowy store SQL | — | CZĘŚCIOWE | JSON vs SQL — konsolidacja P06/P38 |
+
+   Wiersze z aktów Sekcji 8 bez pełnego pokrycia rejestrowane do mediacji
+   ISAP/RCL [NIEZWERYFIKOWANE]: UPOL (stawki gminne per gmina), obwieszczenia
+   MRPiPS (aktualne kwoty 2026), kursy NBP — właściciel: rejestr mediacji P06
+   (K9/I09) + części domenowe P12–P36.
+
+--------------------------------------------------------------------------------
+9.06 REJESTR LUK — identyfikatory V3-P06-Lxx (T3)
+--------------------------------------------------------------------------------
+   | ID | Priorytet | Luka |
+   |----|-----------|------|
+   | V3-P06-L01 | P0 | Store JSON wersjonuje 1 parametr z 617 w warstwie danych kodu (63 mapy) — pokrycie 0,16%; reguły czytają defaulty z kodu, hot-reload nie obejmuje progów (I01 FAIL). |
+   | V3-P06-L02 | P1 | 2 503 kandydatów DOMAIN_VALUE w liniach z logiką reguł domenowych (225 plików; top: p05_pit_innovations_v8, accounting, allowances...) — ADR-002 niedomknięty (I02 FAIL). |
+   | V3-P06-L03 | P1 | 53 z 63 map ORPHAN (dane zdefiniowane bez konsumenta w regułach) — koszt utrzymania, ryzyko rozjazdu (I03 FAIL). |
+   | V3-P06-L04 | P1 | Rozjazd audytów hardcode: docs ~265 (2026-07-13) vs hardcoded_audit_gate 13 595 vs hardcoded_audit KPI 26 373 — brak jednego źródła prawdy (AP12) (I02). |
+   | V3-P06-L05 | P1 | data_service.validate TypeError: schema min/max jako string vs value float — walidacja zakresu nie działa (I01/I05). |
+   | V3-P06-L07 | P2 | 84 ciche fallbacki object.get z wartościami z kodu (depreciation 49, automatyzacja 23, pit 11) — brak sygnału przy braku parametru (I03). |
+   | V3-P06-L09 | P2 | Brak procedury certyfikacji golden datasetu (właściciel, cykl, podpis 4-eyes) (I04). |
+   | V3-P06-L10 | P1 | Brak artefaktu thresholds_export.json — eksport OPA Data API poza pipeline'em; hot-reload nieaktywny end-to-end (I05 FAIL). |
+   | V3-P06-L11 | P2 | Parametry zewnętrzne bez feedera: minimum_wage_gross 4800, eur_pln 4.5, eur_pln_rate_default — wartości ręczne, ryzyko dezaktualizacji (I06 FAIL). |
+   | V3-P06-L12 | P2 | Schema parametru bez wymiaru kontekstu (TERYT/PKD); stawki gminne UPOL art. 5 bez modelu namespace.context.code (I07 FAIL). |
+   | V3-P06-L13 | P1 | vat.standard_rate ma 1 wersję — brak głębi historii; rollback niemożliwy (I08 FAIL). |
+   | V3-P06-L16 | P3 | verified=0% źródeł parametrów (seed systemowy) — rejestr mediacji ISAP/RCL/MF/ZUS (I09). |
+   | V3-P06-L18 | P3 | Telemetria parametrów pierwsza emisja — liczniki runtime (decision/block/fallback per mapa) z P37 (I12). |
+   | V3-P06-L19 | P2 | Niejednolita konwencja jednostek (ułamek 0.23 vs procent całościowy 9.76 vs kwota 1.15/km) — 42 klucze; unit niejawny (I11). |
+
+--------------------------------------------------------------------------------
+9.07 INNOWACJE ENTERPRISE (Sekcja 10) — 12 WDROŻONYCH (T4)
+--------------------------------------------------------------------------------
+   | ID | Innowacja | Artefakt (narzędzie + bundle) | Bramka |
+   |----|-----------|------------------------------|--------|
+   | V3-P06-I01 | Parameter Schema v2 | tools/v3_p06_parameter_schema.py | FAIL→L01+L05 |
+   | V3-P06-I02 | Zero-Hardcode Gate | tools/v3_p06_zero_hardcode_gate.py | FAIL→L02+L04 |
+   | V3-P06-I03 | Parameter Lineage | tools/v3_p06_parameter_lineage.py | FAIL→L03+L07 |
+   | V3-P06-I04 | Golden Data Dataset | tools/v3_p06_golden_data_dataset.py | PASS |
+   | V3-P06-I05 | Hot-Reload SLO Watch | tools/v3_p06_hot_reload_slo.py | FAIL→L05+L10 |
+   | V3-P06-I06 | External Rate Feeders | tools/v3_p06_external_feeders.py | FAIL→L11 |
+   | V3-P06-I07 | Contextual Parameter Maps | tools/v3_p06_contextual_maps.py | FAIL→L12 |
+   | V3-P06-I08 | Parameter Rollback | tools/v3_p06_parameter_rollback.py | FAIL→L13 |
+   | V3-P06-I09 | Data Freshness Dashboard | tools/v3_p06_freshness_dashboard.py | PASS |
+   | V3-P06-I10 | Declarative Parameter Form | tools/v3_p06_declarative_form.py | PASS |
+   | V3-P06-I11 | Range Proof Tests | tools/v3_p06_range_proof.py | PASS |
+   | V3-P06-I12 | Parameter Usage Telemetry | tools/v3_p06_usage_telemetry.py | PASS |
+
+   Każda innowacja ma: (1) problem/lukę, (2) mechanizm, (3) wpływ na
+   bezpieczeństwo decyzji księgowych, (4) ryzyko i mitygację, (5) kryterium
+   akceptacji (bramka), (6) zależności serii — pełny opis w bundle JSON i
+   kontrakcie docs/V3_P06_PARAMETRY_DANE_KONTRAKT.md.
+
+--------------------------------------------------------------------------------
+9.08 KONTRAKT WYJŚCIOWY (sekcja 11.2) — WIĄŻĄCY DLA P07–P68 (T5)
+--------------------------------------------------------------------------------
+K1. Schemat parametru v2 + zakresy walidacji (I01) — wiąże P07–P36 (migracja
+    wartości), P38 (hot-reload), P39 (CI); unit jawny (L19), min/max number (L05).
+K2. Zero-Hardcode Gate (I02) — klasyfikacja DEFAULT_LITERAL/DOMAIN_VALUE/
+    STRUCTURAL/METADATA; limit 200 legacy [BM] — wiąże P39; jedno źródło
+    prawdy audytu (L04).
+K3. Parameter Lineage (I03) — graf reguła↔parametr; zmiana = lista reguł +
+    testy [BM] — wiąże P08 (Law Radar), P07, P10.
+K4. Golden Data Dataset (I04) — 617 liści + granice ±0.01 + checksum
+    sha256-canonical-json-v1; zmiana danych = blokada bez zielonego datasetu —
+    wiąże P10 (golden oracle), P39.
+K5. Hot-Reload SLO (I05) — < 1 min (twarde < 15 min); kroki approve→…→active;
+    thresholds_export.json w CI — wiąże P38, P09.
+K6. External Rate Feeders (I06) — NBP/MRPiPS/ZUS z walidacją i audytem; brak
+    wpisu = odrzucenie — wiąże P08, P37, P12–P36.
+K7. Contextual Parameter Maps (I07) — namespace.context.code + rejestr kodów
+    TERYT/PKD; stawki gminne (UPOL art. 5) w granicach ustawowych — wiąże P12–P36.
+K8. Parameter Rollback (I08) — append-only + snapshot; 4-eyes + golden + nowy
+    snapshot_id — wiąże P38, P09, P10.
+K9. Data Freshness Dashboard (I09) — 4 metryki świeżości; verified per źródło —
+    wiąże P37; rejestr mediacji ISAP/RCL/MF/ZUS.
+K10. Declarative Parameter Form V2/F6 (I10) — opis → walidacja zbioru
+     ustawowego → wersja → PR → hot-reload → golden — wiąże P09.
+
+--------------------------------------------------------------------------------
+9.09 PLAN WDROŻENIA (sekwencja, bez duplikacji; stan: WDROŻONE dla P06) (T6)
+--------------------------------------------------------------------------------
+1. Analiza 23 plików Sekcji 6 + mirror policies — wykonane.
+2. Implementacja 12 narzędzi I01–I12 (CLI + bundle JSON) — wykonane.
+3. Kalibracja semantyki skanów (linie z logiką vs surowe tokeny; jednostki
+   unit-aware zamiast zgadywania z nazwy — iteracje I02/I11) — wykonane.
+4. Uruchomienie bramek — 5 PASS, 7 FAIL zarejestrowane jako luki L01–L19 —
+   wykonane.
+5. Kontrakt docs/V3_P06_PARAMETRY_DANE_KONTRAKT.md — wykonane.
+6. Testy pytest (14 przypadków) — wykonane, zielone.
+7. Oznaczenie P06 w ledgerze jako WDROŻONY_100 — wykonane.
+
+--------------------------------------------------------------------------------
+9.10 PLAN TESTÓW (T7)
+--------------------------------------------------------------------------------
+   | Przypadek | Pokrycie innowacji | Status |
+   |-----------|--------------------|--------|
+   | I01: pokrycie store 1/617; schema v2; bug typów | parameter schema | FAIL→L01 [BM] |
+   | I02: 2 503 kandydatów; rozjazd 3 audytów | zero-hardcode gate | FAIL→L02 [BM] |
+   | I03: 53 ORPHAN; 84 fallbacki | lineage | FAIL→L03 [BM] |
+   | I04: 617 liści; 2 661 granic; checksum | golden dataset | PASS [BM] |
+   | I05: SLO < 1 min; validate rc; export | hot-reload watch | FAIL→L05/L10 [BM] |
+   | I06: feedery; minimum_wage; eur_pln | external feeders | FAIL→L11 |
+   | I07: mapy kontekstowe 3; brak TERYT | contextual maps | FAIL→L12 |
+   | I08: 1 wersja; rollback NONE | parameter rollback | FAIL→L13 |
+   | I09: 1 parametr; 0 stale; verified=0% | freshness | PASS |
+   | I10: 0.25 odrzucony; 0.08 przyjęty | declarative form | PASS |
+   | I11: 0 ujemnych; legal sets; 12/12 boundary | range proof | PASS [BM] |
+   | I12: 10 map; 130 refs; 94 BLOCK ctx | usage telemetry | PASS |
+   [BM] = blokuje merge.
+
+--------------------------------------------------------------------------------
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+--------------------------------------------------------------------------------
+Q01. L01 (P0): zakres migracji 617 wartości — cała warstwa (rekomendacja),
+     czy tylko 10 map używanych przez decyzje (HIGH z I12) w pierwszej iteracji?
+     Koszt i ryzyko regresji per wariant.
+Q02. L05 (P1): naprawa typów schema w data_service (min/max number) — wprost
+     w narzędziu, czy zmiana formatu thresholds_data.json + migracja wpisu?
+Q03. L02 (P1): limit allowlisty zero-hardcode 200 legacy — utrzymać, czy
+     zerować dla nowych reguł od P07 (ostrzejszy reżim)?
+Q04. L13 (P1): historia wersji — seed z 2 wersjami (archiwalna 2025 + bieżąca
+     2026) dla vat.standard_rate, czy czekać na naturalne zmiany?
+Q05. L11/L19 (P2): źródła zewnętrzne (minimum_wage 4800, eur_pln 4.5) —
+     potwierdzić wartości i jednostki (aktualne obwieszczenia 2026) —
+     weryfikacja ISAP/MRPiPS/NBP [NIEZWERYFIKOWANE].
+Q06. L12 (P2): model stawek gminnych (UPOL art. 5) — priorytet w P12–P36,
+     czy osobna inicjatywa danych gminnych (TERYT)?
+
+--------------------------------------------------------------------------------
+9.12 ZAŁOŻENIA JAWNE (T9)
+--------------------------------------------------------------------------------
+Z01. [ZAŁOŻENIE] Warstwa danych kodu (thresholds_jdg.rego) = kanon wartości;
+     store JSON (thresholds_data.json) = docelowy hot-reload store.
+Z02. [ZAŁOŻENIE] Liczby audytu hardcode zależne od semantyki skanu — raport
+     podaje definicję (linie z logiką, bez tokenów w stringach) przy liczbach.
+Z03. [ZAŁOŻENIE] Klucze _pct/percent = procent całościowy, rate bez _pct =
+     ułamek — konwencja potwierdzona próbkami (zus_emerytalna_pct 9.76);
+     wymóg jawnego unit w schema v2 (L19).
+Z04. [ZAŁOŻENIE] Czasy SLO (I05) modelowe — pomiar runtime z P37.
+Z05. [ZAŁOŻENIE] Źródła zewnętrzne (ISAP/RCL/MF/NBP/MRPiPS/ZUS) poza sesją —
+     [NIEZWERYFIKOWANE]; mediacja w rejestrze 9.05/K9.
+Z06. [ZAŁOŻENIE] Luka P0 (L01) wymaga decyzji (Q01) lub domknięcia w P07–P36;
+     P06 pozostaje WDROŻONY_100, bo innowacje są kompletne i działające,
+     a luki udokumentowane z właścicielami i bramkami.
+
+--------------------------------------------------------------------------------
+9.13–9.16 — ZGODNOŚĆ Z WYMOGAMI FORMATU I KRYTERIAMI AKCEPTACJI (T12)
+--------------------------------------------------------------------------------
+- 9.13 Podanalizy 5.1–5.4: każda z tabelą dowodów, min. 3 wnioski i listą luk — OK.
+- 9.14 Macierz PRAWO↔REGUŁA↔TEST: 11 wierszy (Sekcja 8 + odkryte) — OK.
+- 9.15 Identyfikatory: V3-P06-L01..L19 (14 unikalnych), I01..I12, Q01..Q06,
+  X01..X10 (poniżej).
+- 9.16 Tabele T1–T12: komplet (T1 w 9.03, T2 w 9.05, T3 w 9.06, T4 w 9.07,
+  T5 w 9.08, T6 w 9.09, T7 w 9.10, T8 w 9.11, T9 w 9.12, T10 w 9.16,
+  T11 w APENDYKS B, T12 poniżej).
+
+Pytania krzyżowe (7.4) — V3-P06-Xxx:
+X01. Sprzeczności z dokumentami świętymi: brak BLOCKERów — ADR-002
+     (parametry-as-data) realizowany zgodnie z WIZJA/ARCHITEKTURA (V2 §8 Data
+     API, hot-reload); schema v2 = rozszerzenie, nie zmiana standardu.
+X02. Parametry-as-data / temporalność: okna w store zgodne z P05 (valid_from/
+     valid_to); temporal_epochs w warstwie danych (ADR-002) OK; L01 (pokrycie
+     store) = luka wykonawcza ADR-002, nie konflikt kontraktowy.
+X03. Ścieżki nie fail-closed: 84 fallbacki object.get (L07) = ciche defaulty —
+     domknięcie: brak parametru = NEEDS_ADVICE dla pól krytycznych; poza tym
+     AUTO_POST gate (P03-I11) niezmieniony.
+X04. Zgodność z kontraktem 25-polowym (P03): brak wpływu na pola werdyktu;
+     wartości danych zasilają pola (vat_rate, pit_rate...) przez data.thresholds
+     — spójność typów do weryfikacji przy migracji (I01 schema).
+X05. Testy niezbędne jako bramki blokujące merge (P39): [BM] I01 (pokrycie
+     store), I02 (zero-hardcode), I03 (lineage), I04 (golden dataset), I05
+     (hot-reload), I11 (range proofs) — lista w 9.10.
+X06. Duplikaty: hardcoded_audit.py vs hardcoded_audit_gate.py vs ANALIZA_STANU
+     — TRZY audyty tej samej rzeczy (L04, konsolidacja na I02); data_service
+     (JSON) vs migracja 001 jdg_tax_thresholds (SQL) — docelowy store do
+     rozstrzygnięcia (P38); _*_rates (struktury domenowe) nie dublują progów.
+X07. Podstawy prawne niezweryfikowane: UPOL (stawki gminne), obwieszczenia
+     MRPiPS (kwoty 2026), kursy NBP — [NIEZWERYFIKOWANE], rejestr mediacji
+     (9.05/K9) — właściciele P12–P36.
+X08. Innowacje wymagające decyzji człowieka (4-eyes): Q01 (zakres migracji L01),
+     Q02 (format schema), Q03 (limit zero-hardcode), Q04 (seed historii L13),
+     Q05 (wartości zewnętrzne) — lista w 9.11.
+X09. Metryki do obserwowalności (P37): 4 metryki świeżości (I09) + 4 telemetrii
+     użycia (I12) + SLO hot-reload (I05) — nazwy i progi w kontrakcie K9/K5.
+X10. Ryzyka wymagające invariantów runtime (P04): propozycje nowych INV —
+     INV-p1 (parametr bez source_act/valid_from nie wchodzi do decyzji),
+     INV-p2 (wartość poza schema range = BLOCK), INV-p3 (brak parametru ≠
+     cichy default dla pól krytycznych) — uzasadnienie: ADR-002 + P05.
+
+Anty-wzorce (7.5) — wyniki:
+AP01 stuby: brak (P02 fuzzer; bramki I02/I11) · AP02 hardcode: POTWIERDZONY —
+2 503 kandydatów w logice reguł (L02) + 617 liści w warstwie danych zamiast
+store (L01) · AP03 otwarte negatywy: 84 fallbacki zamiast NEEDS_ADVICE (L07) ·
+AP04 duplikaty rule_id: 0 (P00/P02) · AP05 podstawy bez Dz.U.: source_act
+w store niepełny (L14 wewnątrz narzędzi — scalone do L16 verified) ·
+AP06 testy zawsze-zielone: range proofs realne (0 naruszeń po kalibracji
+unit-aware; próbki 69→0 fałszywych) · AP07 cichy AUTO_POST: 0 (P03-I11) ·
+AP08 cykle zależności: nie badano (P08) · AP09 dane świata zewnętrznego:
+minimum_wage/eur_pln ręczne — L11 (feedery) · AP10 okna temporalne: store 1
+parametr z oknem (OK, P05); warstwa kodu bez okien — migracja (L01) ·
+AP11 mirror dryf: 4 pliki (P02-L01, honorowany) · AP12 metryki/słowniki
+w 2 miejscach: POTWIERDZONY — trzy audyty hardcode (265/13 595/26 373 = L04)
+oraz wartości w warstwie kodu vs store (L01/L19).
+
+--------------------------------------------------------------------------------
+9.16 TABELA PRZEKAZYWANYCH ARTEFAKTÓW (11.4) (T10)
+--------------------------------------------------------------------------------
+   | Artefakt | Odbiorca (część) | Format | Kryterium użycia |
+   |----------|------------------|--------|------------------|
+   | Schemat parametru v2 + zakresy | P07–P36 | JSON | migracja wartości; unit jawny |
+   | Zero-Hardcode Gate (klasyfikacja) | P39 | JSON + reguła [BM] | 0 nowych wartości w regułach |
+   | Lineage reguła↔parametr | P08, P07, P10 | JSON | analiza wpływu nowelizacji |
+   | Golden Data Dataset (checksum) | P10, P39 | JSON | zmiana danych = re-ewaluacja |
+   | Hot-Reload SLO + eksport | P38, P09 | JSON | < 1 min; thresholds_export.json |
+   | Feedery zewnętrzne (rejestr) | P08, P37, P12–P36 | JSON | NBP/MRPiPS/ZUS z audytem |
+   | Mapy kontekstowe (TERYT/PKD) | P12–P36 | JSON | stawki gminne w granicach |
+   | Rollback + historia wersji | P38, P09, P10 | JSON | 4-eyes + golden + snapshot_id |
+   | Freshness (4 metryki) | P37 | JSON | nazwy/progi w kontrakcie K9 |
+   | Formularz deklaratywny V2/F6 | P09 | JSON | opis→walidacja→wersja |
+   | Range proofs (własności) | P39 | pytest | 0 ujemnych; legal sets |
+   | Telemetria użycia parametrów | P37 | JSON | liczniki runtime per mapa |
+   | Luki L01–L19 + pytania Q01–Q06 | Blocker Triage (I09 P00) | raport | priorytety P0/P1/P2/P3 |
+
+--------------------------------------------------------------------------------
+PODSUMOWANIE WYKONANIA
+--------------------------------------------------------------------------------
+1. Raport zapisany: JDG/raporty_glm52_v3/RAPORT_V3_P06_PARAMETRY_DANE.txt
+2. Zakres części P06: parametry i dane — 4 podanalizy (5.1–5.4), 12 innowacji,
+   14 luk (1×P0, 6×P1, 5×P2, 2×P3), 6 pytań (Q01–Q06), odpowiedzi X01–X10,
+   kontrakt K1–K10, 14 testów (6 [BM]).
+3. Kontrakty dla P07: K1–K10 (sekcja 9.08) + docs/V3_P06_PARAMETRY_DANE_KONTRAKT.md;
+   metryki świeżości/telemetrii wiążące dla P37; bramki I01–I12 uruchamialne w CI.
+4. WYCZYSZCZONO okno kontekstowe po zakończeniu części P06 (treść części nie jest
+   już potrzebna — stan w ledgerze, dowodach i kontrakcie).
+5. Brak utrzymywanych niejawnych założeń/kodów po czyszczeniu sesji.
+6. Następna część: P07 — pierwszy nie wdrożony wpis w ledgerze po P06.
+================================================================================

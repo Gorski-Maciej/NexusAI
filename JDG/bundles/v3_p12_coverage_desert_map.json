@@ -1,0 +1,64 @@
+{
+  "innovation": "V3-P12-I07",
+  "generated_at": "2026-09-03T12:59:19+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "coverage": {
+      "art. 41 (stawki)": true,
+      "art. 43 ust. 1 (zwolnienia przedmiotowe)": true,
+      "art. 113 (limit podmiotowy)": true,
+      "art. 106b (faktura)": true,
+      "art. 90/91 (korekty/proporcja)": true,
+      "zał. 10 (obniżone stawki)": true,
+      "zał. 15 (MPP/GTU)": true,
+      "art. 44 (rezygnacja ze zwolnienia)": true,
+      "art. 86 (odliczenie)": true,
+      "art. 119 (marża)": true
+    },
+    "deserts": [],
+    "coverage_tools": [
+      "coverage_95_plan.py",
+      "coverage_unifier.py",
+      "generate_coverage_report.py",
+      "legal_coverage_gap_report.py",
+      "legal_coverage_heatmap.py",
+      "reverse_coverage_detector.py",
+      "test_coverage_gate.py",
+      "v3_p01_coverage_desert_radar.py",
+      "v3_p01_reverse_coverage_sentinel.py",
+      "v3_p05_temporal_coverage_heatmap.py",
+      "v3_p10_golden_coverage_planner.py",
+      "v3_p12_coverage_desert_map.py",
+      "vat_gap_detector.py"
+    ],
+    "coverage_docs": [
+      "COVERAGE_CANON.md",
+      "LEGAL_COVERAGE.md",
+      "LEGAL_COVERAGE_GAP_RAPORT.md",
+      "VAT_AUDYT_R03.md"
+    ],
+    "settlement_plan": true
+  },
+  "checks": [
+    {
+      "name": "coverage_matrix",
+      "status": "OK",
+      "detail": "przepisy bez reguł (pustynie): BRAK"
+    },
+    {
+      "name": "coverage_tools",
+      "status": "OK",
+      "detail": "narzędzia mapy pokrycia: ['coverage_95_plan.py', 'coverage_unifier.py', 'generate_coverage_report.py', 'legal_coverage_gap_report.py', 'legal_coverage_heatmap.py', 'reverse_coverage_detector.py', 'test_coverage_gate.py', 'v3_p01_coverage_desert_radar.py', 'v3_p01_reverse_coverage_sentinel.py', 'v3_p05_temporal_coverage_heatmap.py', 'v3_p10_golden_coverage_planner.py', 'v3_p12_coverage_desert_map.py', 'vat_gap_detector.py']"
+    },
+    {
+      "name": "settlement_plan",
+      "status": "OK",
+      "detail": "plan zasiedlenia pustyń: True"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P44, P39, P01 (coverage legal), P12→domeny",
+    "rule": "każdy przepis materialny VAT ma regułę i test; pustynia = jawny wpis z priorytetem i planem (nigdy cicha)"
+  }
+}

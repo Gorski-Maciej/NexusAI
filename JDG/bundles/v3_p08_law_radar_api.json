@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P08-I12",
+  "generated_at": "2026-09-03T10:43:19.100112+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "http_services": [],
+    "calendar_changes": 1
+  },
+  "status_model": {
+    "GOTOWE": "reguły ACTIVE zaktualizowane i przetestowane",
+    "W_PRZYGOTOWANIU": "SHADOW/CANDIDATE istnieje, brak ACTIVE",
+    "WYMAGA_UWAGI": "zmiana wykryta, brak przygotowanych reguł"
+  },
+  "checks": [
+    {
+      "name": "api_endpoint",
+      "status": "FAIL",
+      "detail": "serwisy HTTP w tools/: brak — radar dostępny tylko przez CLI"
+    },
+    {
+      "name": "status_model",
+      "status": "OK",
+      "detail": "model statusów: ['GOTOWE', 'W_PRZYGOTOWANIU', 'WYMAGA_UWAGI'] (definiowany w I12)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P08-L12",
+      "severity": "P2",
+      "evidence": "brak endpointu API dla UI — law_radar.py/legal_change_calendar.py to CLI; UI księgowe nie ma skąd pobrać „prawo X: gotowe / w przygotowaniu”; kalendarz zawiera 1 zmian(y)",
+      "fix": "I12 Law Radar API: GET /api/v1/law-radar → per ustawa status GOTOWE/W_PRZYGOTOWANIU/WYMAGA_UWAGI z datą wejścia i listą reguł"
+    }
+  ],
+  "contract": {
+    "binding": "P08-I10 (raport gotowości jako źródło API), UI księgowe, P37 (metryki)",
+    "rule": "endpoint zwraca per ustawa: status, effective_date, rule_ids, updated_at; fallback NEEDS_ADVICE przy braku danych"
+  }
+}

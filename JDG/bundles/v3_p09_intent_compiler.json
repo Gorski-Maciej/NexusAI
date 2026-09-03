@@ -1,0 +1,54 @@
+{
+  "innovation": "V3-P09-I02",
+  "generated_at": "2026-09-03T12:43:09.550879+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "samples": 3,
+    "targets_missing": 2,
+    "store_params": [
+      "vat.standard_rate"
+    ],
+    "hardcoded_target_key": "vat.rate.declared"
+  },
+  "resolution": [
+    {
+      "sample": "Stawka VAT na usługi IT od 2027-01-01: 23% -> 8%",
+      "expected_key": "vat.standard_rate",
+      "in_store": true
+    },
+    {
+      "sample": "Próg skali podatkowej od 2026-01-01: 120000 -> 130000",
+      "expected_key": "pit.scale_threshold",
+      "in_store": false
+    },
+    {
+      "sample": "Nowelizacja ustawy o VAT: art. 113 ust. 1 — limit obrotu",
+      "expected_key": "vat.art113_limit",
+      "in_store": false
+    }
+  ],
+  "checks": [
+    {
+      "name": "target_exists_in_store",
+      "status": "FAIL",
+      "detail": "klucze spoza store: ['pit.scale_threshold', 'vat.art113_limit']"
+    },
+    {
+      "name": "compiler_precision",
+      "status": "FAIL",
+      "detail": "parser regex nie mapuje na istniejące klucze — zwraca tylko kind/groups"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P09-L02",
+      "severity": "P1",
+      "evidence": "declarative_change.py execute zapisuje parametr 'vat.rate.declared' — klucz NIEISTNIEJĄCY w thresholds_data.json (store zawiera tylko ['vat.standard_rate']); kompilacja nie weryfikuje celu → zmiana danych nie dociera do decyzji (dead write)",
+      "fix": "I02 Intent Compiler: parser → plan z kluczem zweryfikowanym w store/rejestrze + verdict pewności; brak klucza = odrzucenie"
+    }
+  ],
+  "contract": {
+    "binding": "P09-I01 (schema), P06 (store parametrów), P07 (rejestr reguł)",
+    "rule": "cel kompilacji musi istnieć w store/rejestrze; inaczej FAIL przed planem"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "innovation": "V3-P02-I01",
+  "name": "Constitutional PASS — POST-MERGE invariant enforcement",
+  "generated_at": "2026-09-03T07:59:33+00:00",
+  "catalog": {
+    "file": "rules/audit/runtime_invariants_enterprise.rego",
+    "invariant_ids": 42,
+    "count_ok": true,
+    "levels": {
+      "BUILD": 10,
+      "RUNTIME": 29,
+      "STATISTICAL": 3
+    },
+    "enforcement": {
+      "BLOCK": 39,
+      "ALERT": 2,
+      "AUTO_REVERT": 1
+    },
+    "runtime_block_top20_count": 29,
+    "runtime_block_ids": [
+      "INV-001",
+      "INV-002",
+      "INV-003",
+      "INV-004",
+      "INV-005",
+      "INV-006",
+      "INV-007",
+      "INV-008",
+      "INV-009",
+      "INV-011",
+      "INV-012",
+      "INV-014",
+      "INV-018",
+      "INV-020",
+      "INV-021",
+      "INV-022",
+      "INV-024",
+      "INV-028",
+      "INV-029",
+      "INV-030"
+    ],
+    "evaluate_and_enforce_defined": true
+  },
+  "wiring": {
+    "file": "rules/main_jdg.rego",
+    "enforce_called_in_post_merge": true,
+    "final_verdict_enforcement_assignment": true,
+    "public_contract_after_enforce": true,
+    "verdict_bypass_candidates": []
+  },
+  "gate": {
+    "pass": true,
+    "rule": "katalog >= 40 INV + enforce() w POST-MERGE + final_verdict po enforce + zero ścieżek omijających (invariant V2/F2, ADR-022)"
+  },
+  "note": "PASS konstytucyjny jest wykonywany przez runtime_invariants.enforce na końcu POST-MERGE (KRYTYCZNE dla P04 — invariant checker)."
+}

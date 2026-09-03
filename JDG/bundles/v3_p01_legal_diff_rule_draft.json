@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P01-I06",
+  "generated_at": "2026-09-03T06:44:13+00:00",
+  "pipeline": "diff nowelizacji (RCL/ISAP) → wektoryzacja zmian artykułów → szkice reguł SHADOW → przegląd 4-eyes (prawnik+engineer) → CANDIDATE → golden replay → ACTIVE",
+  "changes_scanned": 1,
+  "drafts_generated": 1,
+  "drafts": [
+    {
+      "draft_id": "SHADOW-DRL-0001",
+      "source_change": "DRL-0001",
+      "title": "Nowelizacja testowa",
+      "status": "SHADOW",
+      "lifecycle": "SHADOW → CANDIDATE (po 4-eyes) → ACTIVE (po testach golden)",
+      "affected_articles": [],
+      "rules_prepared": [],
+      "expected_enactment": "2099-06-01",
+      "countdown_days": 26595,
+      "confidence_draft": 0.7,
+      "four_eyes_required": true,
+      "four_eyes_done": false
+    }
+  ],
+  "gate": {
+    "rule": "żaden szkic SHADOW nie przechodzi do ACTIVE bez 4-eyes i golden replay (V3-P01-I10)",
+    "status": "AKTYWNY"
+  },
+  "contract": "wiąże P08 (Law Radar) i P09 (Declarative Change) — szkic zmian reguł zamiast ręcznej edycji"
+}

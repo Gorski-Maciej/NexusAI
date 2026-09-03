@@ -1,0 +1,447 @@
+================================================================================
+RAPORT V3-P08 — LAW RADAR: MONITORING PRAWA, AI-READER, IMPACT MATRIX, GOTOWOŚĆ
+Generowany przez: kampania V3 (GLM 5.2) — wdrożenie 100% wg V3_PROMPT_P08
+Data: 2026-09-03    Stan: WDROŻONY_100
+================================================================================
+
+9.01 EXECUTIVE SUMMARY
+--------------------------------------------------------------------------------
+P08 domyka monitoring prawa i adaptację silnika: crawler ISAP (624 wiersze,
+13 aktów docelowych, daemon 60 min, warstwy LEX/Sejm/RCL/ISAP), pipeline
+ISAP→reguły (ingest→impact→plan→emit), law_radar.json (1 projekt testowy
+DRL-0001 z 2099), kalendarz zmian (1 wpis), drift alarm (3 znane zmiany:
+203 dotknięte reguły, 617 problemów temporalnych, 93 nienaprawione), macierz
+wpływu (CLI manualne), bridge LLM (799 wierszy — silnik WYJAŚNIEŃ, nie
+AI-Reader) oraz 4 reguły wsparcia adaptacji (legislative_monitor 344,
+legislative_impact_analyzer 157, calendar_notifier 129, strategic_roadmap 240).
+
+Wdrożono 12 innowacji jako działające narzędzia (dowody JSON w bundles/).
+Wynik bramek: 1/12 PASS, 11/12 FAIL (celowo, jako luki do domknięcia):
+  * I11 Pipeline E2E PASS — test_ingest_impact_plan (P01) odpala pipeline
+    na mock nowelizacji PIT przez ingest→impact→plan (L11 P3: brak etapów
+    SHADOW→ACTIVE/bundle).
+  * I01 Draft Feed FAIL — crawler pokrywa tylko OPUBLIKOWANE akty; projekty
+    RCL/Sejm/Senat bez kanału; radar: 1 draft testowy bez predicted_diff
+    (L01 P1).
+  * I02 AI-Reader FAIL — llm_bridge to silnik wyjaśnień; brak roli
+    AI-Readera (diff + drugi model + cytowanie LKG) (L02 P1).
+  * I03 Pre-Life Shadow FAIL — 0 reguł i 0 parametrów z valid_from w
+    przyszłości: mechanizm pre-life nie ma dziś żadnej instancji (L03 P1).
+  * I04 Lead-Time SLA FAIL — KPI radaru: lead 26595 dni (draft 2099);
+    brak pomiaru per nowelizacja i ścieżki 30/14/7 w CI (L04 P1).
+  * I05 Impact Matrix FAIL — law_impact_matrix to ręczne CLI; brak
+    auto-wywołania z crawlera i szacunku pracy (L05 P1).
+  * I06 Calendar Sync FAIL — kalendarz 1 wpis demo, rules_prepared=[],
+    brak alertów N-dni i spięcia z lifecycle P07 (L06 P2).
+  * I07 Scenario Versioning FAIL — radar bez wariantów i unieważniania
+    alternatywnych projektów (L07 P2).
+  * I08 Repeal Detector FAIL — 17 plików reguł z wzmiankami o uchyleniach,
+    ale feed bez statusu REPEALED i bez wniosku deprecate (L08 P1).
+  * I09 Low-Latency Feeds FAIL — brak webhooków; polling daemon 60 min;
+    SLA < 1 h niewymierny (L09 P2).
+  * I10 Readiness Report FAIL — 0 zmian GOTOWE; brak cyklicznego raportu
+    gotowości (L10 P2).
+  * I12 Law Radar API FAIL — brak serwisu HTTP dla UI; radar tylko CLI
+    (L12 P2).
+
+TOP-10 rekomendacji:
+  1. Kanał projektów RCL/Sejm/Senat (I01) — domknięcie L01 przed P09/P10.
+  2. AI-Reader 4-eyes na llm_bridge (I02) — diff wg schema LKG.
+  3. Pre-life SHADOW dla każdej zmiany z datą wejścia (I03/I04) — spięcie
+     z P07 (SHADOW ≥ 30 dni przed).
+  4. Automatyczna impact matrix (I05) po detekcji zmiany.
+  5. Status REPEALED w feedzie → deprecate do P07 (I08).
+  6. Kalendarz N-dni + spięcie lifecycle (I06).
+  7. SLO detekcji < 1 h z webhookiem i fallbackiem (I09).
+  8. Raport gotowości cykliczny (I10) jako źródło API dla UI (I12).
+  9. E2E rig przez SHADOW→ACTIVE→bundle (I11 — L11).
+  10. Scenariusze wielowariantowe dla projektów alternatywnych (I07).
+
+Luki: 12 (0×P0, 6×P1, 5×P2, 1×P3). Udowodniono: stan 19/19 plików Sekcji 6
++ fakty danych (radar/kalendarz/drift); [NIEZWERYFIKOWANE]: treść aktów
+(ISAP/RCL/MF poza sesją), mirror policies (poza checkoutem).
+
+--------------------------------------------------------------------------------
+9.02 ZAKRES I OGRANICZENIA
+--------------------------------------------------------------------------------
+Zakres: pliki Sekcji 6 (10 narzędzi monitoringu: isap_crawler,
+isap_rule_update_pipeline, law_radar, law_impact_matrix,
+legal_change_impact_analyzer, legal_change_calendar + bundles/
+legal_change_calendar.json, isap_drift_alarm, law_amendment_simulator,
+llm_bridge; 4 reguły wsparcia: legislative_monitor_enterprise,
+legislative_impact_analyzer_enterprise, calendar_notifier_enterprise,
+strategic_roadmap_enterprise; 3 dokumenty: KALENDARZ_ZMIAN_PRAWNYCH.md,
+ANALIZA_STANU_OPA_JAKO_SYSTEM.md, KAMPANIA_GLM52_ETAPY_10_28.md; 2 testy:
+test_native_legislative_monitor_enterprise.rego, test_control_plane_lifecycle.py)
++ mirror policies (6.5). 19/19 plików Sekcji 6 ZWERYFIKOWANO; mirror na
+branchu `policies` poza checkoutem — NIEZWERYFIKOWANO (dryf od P02-L01).
+
+Ograniczenia:
+  * Budżet 50%: analiza oparta o fakty wyekstrahowane narzędziami (radar,
+    kalendarz, drift alarm, kod narzędzi/rego), nie pełne czytanie 624 wierszy
+    crawlera — każda teza potwierdzona uruchomieniem.
+  * Testy nie uruchamiają silnika OPA (brak binarki) — weryfikacja
+    strukturalna + analiza danych.
+  * Źródła zewnętrzne (ISAP/RCL/MF) poza sesją — [NIEZWERYFIKOWANE]; radar
+    zawiera wpis testowy (DRL-0001, data 2099) — nie rzeczywiste projekty.
+  * SLO (detekcja < 1 h, lead 30/14/7) modelowe — pomiar runtime z P37/P38.
+
+--------------------------------------------------------------------------------
+9.03 STAN OBECNY CZĘŚCI P08 — MAPA ARTEFAKTÓW (T1 + mapa plik→pakiet→reguła)
+--------------------------------------------------------------------------------
+   | Plik | Pakiet Rego / rola | Kluczowe artefakty | Podstawa | Testy | Lifecycle |
+   |------|---------------------|--------------------|----------|-------|-----------|
+   | tools/isap_crawler.py | narzędzie (624) | crawl 13 aktów; LEX/Sejm/RCL/ISAP; daemon 60 min; diff hash dzienny; GitHub Issues | C3 V1 §2.5 | — | ACTIVE (L01/L09) |
+   | tools/isap_rule_update_pipeline.py | narzędzie (210) | ingest/impact/plan/emit; changelog + registry | V1 §2.5 | test_ingest_impact_plan (P01) | ACTIVE (L11) |
+   | tools/law_radar.py | narzędzie (163) | track/radar/status/prepare; kpi lead ≥ 30 | V2 §6.2.5 | — | ACTIVE (L01/L04) |
+   | tools/law_impact_matrix.py | narzędzie (176) | analyze --diff/report; priorytety | P01 §7 | — | ACTIVE (L05) |
+   | tools/legal_change_impact_analyzer.py | narzędzie (133) | analiza wpływu zmian | — | — | ACTIVE |
+   | tools/legal_change_calendar.py | narzędzie (177) | calendar/next/seed/gate | V2 F5 | — | ACTIVE (L06) |
+   | bundles/legal_change_calendar.json | dane (14) | 1 zmiana (DRL-0001, 2099) | — | — | ACTIVE (L06) |
+   | tools/isap_drift_alarm.py | narzędzie (214) | 3 zmiany; 203 reguły; 617 problemów; 93 unfixed | Innowacja 14 | — | ACTIVE |
+   | tools/law_amendment_simulator.py | narzędzie (162) | co-jeśli na werdyktach | V2 F6 | — | ACTIVE |
+   | tools/llm_bridge.py | narzędzie (799) | explain/simulate; streaming; disclaimer | C2 [EKSPER.] | — | ACTIVE (L02) |
+   | rules/legislative_monitor_enterprise.rego | jdg.legislative_monitor | 6 reguł; change_detection; no_match priority 9999 | Art. 4 OrdPU; Konstytucja | rego-test 6 reguł | ACTIVE |
+   | rules/legislative_impact_analyzer_enterprise.rego | jdg.enterprise.legislative_impact | impact per art.; time.now_ns; upcoming/in_effect | OrdPU | — | ACTIVE (AP10) |
+   | rules/calendar_notifier_enterprise.rego | jdg.enterprise.calendar_notifier | notyfikacje kalendarza | — | — | ACTIVE |
+   | rules/strategic_roadmap_enterprise.rego | jdg.enterprise.strategic_roadmap | roadmapa strategiczna | — | — | ACTIVE |
+   | docs/KALENDARZ_ZMIAN_PRAWNYCH.md | dokument (10) | countdown; DRL-0001 26569 dni; 0 reguł SHADOW | V2 F5 | — | ACTIVE |
+   | docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md | dokument (231) | luka adaptacji (diagnoza) | — | — | ACTIVE |
+   | docs/KAMPANIA_GLM52_ETAPY_10_28.md | dokument (107) | etapy kampanii | — | — | ACTIVE |
+   | tests/rego/test_native_legislative_monitor_enterprise.rego | rego-test (83) | 6 reguł monitora | — | PASS | PASS |
+   | tests/test_control_plane_lifecycle.py | pytest (142) | lifecycle/4-eyes/SoD | — | PASS | PASS |
+
+Tabela dowodów (7.3) — jeden wiersz na plik z Sekcji 6:
+   | # | Plik | Dowód/fakt | Status |
+   |---|------|-----------|--------|
+   | 1 | tools/isap_crawler.py | 624 wiersze; 13 aktów; źródła LEX/Sejm/RCL/ISAP; daemon 60 min; 0 webhooków | ZWERYFIKOWANO |
+   | 2 | tools/isap_rule_update_pipeline.py | 210 wierszy; ingest→impact→plan→emit; brak słów shadow/deprecate/stage | ZWERYFIKOWANO |
+   | 3 | tools/law_radar.py | 163 wiersze; kpi lead_time_avg 26595 vs target 30; status wymaga --draft-id | ZWERYFIKOWANO |
+   | 4 | tools/law_impact_matrix.py | 176 wierszy; CLI analyze --diff; brak effort/szacunku | ZWERYFIKOWANO |
+   | 5 | tools/legal_change_impact_analyzer.py | 133 wiersze | ZWERYFIKOWANO |
+   | 6 | tools/legal_change_calendar.py | 177 wierszy; calendar/next/seed/gate; alert N-dni BRAK | ZWERYFIKOWANO |
+   | 7 | bundles/legal_change_calendar.json | 1 zmiana DRL-0001 (2099); rules_prepared=[] | ZWERYFIKOWANO |
+   | 8 | tools/isap_drift_alarm.py | 214 wierszy; 3 znane zmiany; 203 reguły; 617 problemów; 93 unfixed | ZWERYFIKOWANO |
+   | 9 | tools/law_amendment_simulator.py | 162 wiersze; co-jeśli (impact_pct) | ZWERYFIKOWANO |
+   | 10 | tools/llm_bridge.py | 799 wierszy; rola explain/simulate; AI-Reader diff BRAK | ZWERYFIKOWANO |
+   | 11 | rules/legislative_monitor_enterprise.rego | 344 wiersze; pkg jdg.legislative_monitor; no_match priority 9999 | ZWERYFIKOWANO |
+   | 12 | rules/legislative_impact_analyzer_enterprise.rego | 157 wierszy; time.now_ns w obliczeniach (AP10) | ZWERYFIKOWANO |
+   | 13 | rules/calendar_notifier_enterprise.rego | 129 wierszy | ZWERYFIKOWANO |
+   | 14 | rules/strategic_roadmap_enterprise.rego | 240 wierszy | ZWERYFIKOWANO |
+   | 15 | docs/KALENDARZ_ZMIAN_PRAWNYCH.md | 10 wierszy; countdown 26569 dni; SHADOW 0 | ZWERYFIKOWANO |
+   | 16 | docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md | 231 wierszy | ZWERYFIKOWANO |
+   | 17 | docs/KAMPANIA_GLM52_ETAPY_10_28.md | 107 wierszy | ZWERYFIKOWANO |
+   | 18 | tests/rego/test_native_legislative_monitor_enterprise.rego | 83 wiersze; 6 reguł monitora | ZWERYFIKOWANO |
+   | 19 | tests/test_control_plane_lifecycle.py | 142 wiersze; PASS | ZWERYFIKOWANO |
+   | 20 | mirror policies (6.5) | poza checkoutem | NIEZWERYFIKOWANO |
+
+--------------------------------------------------------------------------------
+9.04 PODANALIZY 5.1–5.4
+--------------------------------------------------------------------------------
+5.1 Źródła prawa i detekcja zmian
+   Dowody: I01 (draft feed); I08 (repeal); I09 (feed/SLA); drift alarm.
+   Wnioski:
+   1) isap_crawler/law_radar pokrywają wyłącznie OPUBLIKOWANE akty
+      (ISAP_ACT, SEJM_API — 2/4 wymaganych źródeł); projekty RCL/Senat i
+      konsultacje/uzasadnienia bez kanału (L01 P1).
+   2) Zmiany w rozporządzeniach MF (JPK_VAT, wzory) wykrywalne tylko przez
+      crawl Dz.U. — brak rozróżnienia „akt wykonawczy” (L01/L09).
+   3) Drift alarm działa (3 zmiany: SLIM VAT 3 2025-07-01 ✅, KSeF 2026-02-01 ✅,
+      limity 2026-01-01 ❌ 93 nienaprawione) — ale liczba problemów 617
+      świadczy o głębokiej luce adaptacji poza monitoringiem (L03).
+   4) Częstotliwość: daemon 60 min; diff tekstów jednolitych przez hash
+      dzienny; SLA < 1 h niewymierny (L09 P2).
+   Luki z 5.1: L01 (P1), L08 (P1), L09 (P2).
+
+5.2 AI-Reader i diff prawny
+   Dowody: I02 (AI-reader); schema v3_p08_legal_diff_schema.json.
+   Wnioski:
+   1) llm_bridge (799 wierszy, status EKSPERYMENTALNY, wymaga kluczy API)
+      pełni rolę wyjaśnień werdyktów — brak roli AI-Readera: parsowania
+      nowelizacji na diff, walidacji drugim modelem i cytowania LKG (L02 P1).
+   2) Schemat diffu (kanon I02, zgodny z LKG P01): act, legal_unit,
+      legal_node_id, change_type, old_text, new_text, effective_from,
+      certainty — artefakt bundles/v3_p08_legal_diff_schema.json; sample
+      D-2026-0001 (VAT art. 113 ust. 1, AMEND_VALUE) zapisany.
+   3) 4-eyes (drugi model + prawnik) niezaimplementowane; certainty diffu
+      bez walidacji = 0.0 — mechanizm fail-closed gotowy, proces brak.
+   4) Połączenie diff→LKG (nowe wersje węzłów) wymaga P01/P05 (wersjonowanie
+      węzłów) — dziś niezasilane (L02, X02).
+   Luki z 5.2: L02 (P1).
+
+5.3 Impact matrix i plan adaptacji
+   Dowody: I04 (lead-time); I05 (impact matrix); I06 (kalendarz); I07.
+   Wnioski:
+   1) law_impact_matrix.py mapuje diff na reguły przez _legal_basis + LKG,
+      ale wyłącznie ręcznym CLI (analyze --diff); crawler i pipeline nie
+      wywołują macierzy automatycznie (L05 P1).
+   2) Szacunek wpływu na portfel decyzji (replay historyczny) i szacunek
+      pracy (osobogodziny) nie istnieją w narzędziu (L05).
+   3) Priorytetyzacja P0/P1/P2 istnieje w modelu macierzy; lead time nie
+      wymierzany per nowelizacja (KPI radaru: 26595 dni z wpisu demo) —
+      bramki 30/14/7 nieegzekwowane (L04 P1).
+   4) Kalendarz zmian (legal_change_calendar) nie jest zasilany zmianami
+      ENACTED i nie ostrzega N-dni (L06 P2); scenariusze alternatywne
+      niewspierane (L07 P2).
+   Luki z 5.3: L04 (P1), L05 (P1), L06 (P2), L07 (P2).
+
+5.4 Aktywacja i gotowość
+   Dowody: I03 (pre-life shadow); I10 (readiness); I11 (E2E); I12 (API).
+   Wnioski:
+   1) 0 reguł i 0 parametrów z valid_from w przyszłości — pre-life SHADOW
+      (dry run na bieżących danych) nie ma żadnej instancji w danych; dry
+      run technicznie możliwy (data_service get --as-of + P05-I11) (L03 P1).
+   2) Aktywacja w dniu wejścia = brak automatu (rejestr 13 reguł ACTIVE,
+      bez zaplanowanych przejść); ścieżka awaryjna przez lifecycle P07
+      (L03, X02).
+   3) Gotowość nieraportowana: kalendarz pokazuje 1 zmianę z 0 regułami
+      SHADOW; brak cyklicznego raportu „co się zmienia i czy silnik gotowy”
+      (L10 P2) oraz API dla UI (L12 P2).
+   4) E2E: mock nowelizacja (test_ingest_impact_plan, P01) przechodzi
+      ingest→impact→plan; brak pokrycia SHADOW→ACTIVE→bundle (L11 P3).
+   Luki z 5.4: L03 (P1), L10 (P2), L11 (P3), L12 (P2).
+
+--------------------------------------------------------------------------------
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2)
+--------------------------------------------------------------------------------
+   | Przepis (Sekcja 8) | Reguła/artefakt | Test | Status | Ryzyko |
+   |--------------------|----------------|------|--------|--------|
+   | VAT art. 41/113 (limity/stawki) | isap_crawler --act vat; drift alarm (limity 2026-01-01 ❌) | — | CZĘŚCIOWE | zmiana 2026-01-01 nienaprawiona (93) |
+   | PIT art. 27/30c/26 (progi/ulgi) | pipeline ingest/plan (mock PIT Art. 27) | test_ingest_impact_plan | CZĘŚCIOWE | pokryty tylko mock |
+   | ZUS art. 18a/18c (ulgi okresowe) | zus_law_radar (SUS + u.ś.o.z.) | — | CZĘŚCIOWE | brak spięcia z radar |
+   | OrdPU art. 14a-14c (interpretacje) | legislative_monitor (_legal_basis Art. 4 OrdPU) | rego-test 6 reguł | CZĘŚCIOWE | kanał „miękkich” zmian brak |
+   | u.ś.o.z. art. 81 (składka zdrowotna) | zus_law_radar; calendar_notifier | — | CZĘŚCIOWE | zmiany coroczne bez feedu |
+   | Prawo przedsiębiorców art. 22-25 (zawieszenie) | law_radar (track zmian) | — | BRAK | brak dedykowanego monitora |
+   | Rozporządzenia MF (JPK_VAT, wzory) | isap_crawler (Dz.U.) + drift (KSeF ✅) | — | CZĘŚCIOWE | szybki kanał techniczny bez SLA |
+   | Konstytucja RP art. 2/88 (vacatio) | legislative_monitor (baza prawna) | rego-test | PEŁNE | wymóg vacatio 14 dni (OrdPU art. 4) |
+   | V1 §2.5 (pipeline ISAP→produkcja) | isap_rule_update_pipeline | test_ingest_impact_plan | CZĘŚCIOWE | brak etapów lifecycle — L11 |
+   | V2 F5/F6 (kalendarz, co-jeśli) | legal_change_calendar + law_amendment_simulator | — | CZĘŚCIOWE | kalendarz 1 wpis demo — L06 |
+
+   Weryfikacja treści aktów w ISAP/RCL/MF [NIEZWERYFIKOWANE] (poza sesją) —
+   patrz X07; mini-makra akt→plik z Sekcji 8 rozwinięte powyżej.
+
+--------------------------------------------------------------------------------
+9.06 REJESTR LUK — identyfikatory V3-P08-Lxx (T3)
+--------------------------------------------------------------------------------
+   | ID | Priorytet | Luka |
+   |----|-----------|------|
+   | V3-P08-L01 | P1 | Radar pokrywa 2/4 źródeł (tylko opublikowane akty + sejm-api); projekty RCL/Senat/konsultacje bez kanału; 1 draft testowy (2099) bez predicted_diff (I01 FAIL). |
+   | V3-P08-L02 | P1 | llm_bridge to silnik wyjaśnień — brak AI-Readera (diff→LKG, drugi model, cytowanie); 4-eyes niezaimplementowane (I02 FAIL). |
+   | V3-P08-L03 | P1 | 0 reguł i 0 parametrów z valid_from w przyszłości — pre-life SHADOW bez instancji; aktywacja w dniu wejścia bez automatu (I03 FAIL). |
+   | V3-P08-L04 | P1 | Lead time per nowelizacja niewymierzany; KPI radaru 26595 dni (wpis demo); bramki 30/14/7 nieegzekwowane (I04 FAIL). |
+   | V3-P08-L05 | P1 | Impact matrix ręczne CLI; brak auto-wywołania z detekcji, brak szacunku pracy i replayu portfela (I05 FAIL). |
+   | V3-P08-L06 | P2 | Kalendarz: 1 wpis demo, rules_prepared=[]; brak alertów N-dni i spięcia z lifecycle P07 (I06 FAIL). |
+   | V3-P08-L07 | P2 | Radar bez wariantów scenariuszy i unieważniania alternatywnych projektów (I07 FAIL). |
+   | V3-P08-L08 | P1 | 17 plików reguł z wzmiankami o uchyleniach; feed bez REPEALED → brak wniosku deprecate do P07 (I08 FAIL). |
+   | V3-P08-L09 | P2 | Crawler polling-only (daemon 60 min); brak webhooków; SLA detekcji < 1 h niewymierny (I09 FAIL). |
+   | V3-P08-L10 | P2 | Brak cyklicznego raportu gotowości (GOTOWE/W_PRZYGOTOWANIU/NIE_GOTOWE) (I10 FAIL). |
+   | V3-P08-L11 | P3 | E2E pokrywa ingest→impact→plan; brak SHADOW→ACTIVE→bundle na mock feedzie (I11 PASS, L11). |
+   | V3-P08-L12 | P2 | Brak serwisu HTTP statusu adaptacji (law radar API) dla UI księgowej (I12 FAIL). |
+
+--------------------------------------------------------------------------------
+9.07 INNOWACJE ENTERPRISE (Sekcja 10) — 12 WDROŻONYCH (T4)
+--------------------------------------------------------------------------------
+   | ID | Innowacja | Artefakt (narzędzie + bundle) | Bramka |
+   |----|-----------|------------------------------|--------|
+   | V3-P08-I01 | Draft Law Radar Feed | tools/v3_p08_draft_feed.py | FAIL→L01 |
+   | V3-P08-I02 | AI-Reader 4-Eyes | tools/v3_p08_ai_reader_four_eyes.py | FAIL→L02 |
+   | V3-P08-I03 | Pre-Life Shadow Rules | tools/v3_p08_prelife_shadow.py | FAIL→L03 |
+   | V3-P08-I04 | Lead-Time SLA Dashboard | tools/v3_p08_lead_time_sla.py | FAIL→L04 |
+   | V3-P08-I05 | Impact Matrix Auto-Builder | tools/v3_p08_impact_matrix.py | FAIL→L05 |
+   | V3-P08-I06 | Legal Change Calendar Sync | tools/v3_p08_calendar_sync.py | FAIL→L06 |
+   | V3-P08-I07 | Scenario Versioning | tools/v3_p08_scenario_versioning.py | FAIL→L07 |
+   | V3-P08-I08 | Repeal Detector | tools/v3_p08_repeal_detector.py | FAIL→L08 |
+   | V3-P08-I09 | Low-Latency Legal Feeds | tools/v3_p08_low_latency_feeds.py | FAIL→L09 |
+   | V3-P08-I10 | Compliance Readiness Report | tools/v3_p08_readiness_report.py | FAIL→L10 |
+   | V3-P08-I11 | Pipeline E2E Test Rig | tools/v3_p08_pipeline_e2e.py | PASS→L11 |
+   | V3-P08-I12 | Law Radar API | tools/v3_p08_law_radar_api.py | FAIL→L12 |
+
+   Każda innowacja ma: (1) problem/lukę, (2) mechanizm, (3) wpływ na
+   bezpieczeństwo decyzji księgowych, (4) ryzyko i mitygację, (5) kryterium
+   akceptacji (bramka), (6) zależności serii — pełny opis w bundle JSON i
+   kontrakcie docs/V3_P08_LAW_RADAR_KONTRAKT.md.
+
+--------------------------------------------------------------------------------
+9.08 KONTRAKT WYJŚCIOWY (sekcja 11.2) — WIĄŻĄCY DLA P09–P68 (T5)
+--------------------------------------------------------------------------------
+K1. Radar = law_radar.json + legal_change_calendar.json z kanonicznym
+    statusem/confidencą (I01) — wiąże P09, P10, P38.
+K2. Zmiana bez reguł SHADOW = NIE_GOTOWE; bramki 30/14/7 (I04) — wiąże P07,
+    P38, P05.
+K3. Schemat diffu prawnego wg LKG (I02) — wiąże P01, P09, P10.
+K4. AI-Reader 4-eyes (drugi model + prawnik); certainty=0.0 bez walidacji —
+    wiąże P10, P44.
+K5. Pre-life SHADOW dla każdej zmiany z datą wejścia (I03) — wiąże P07, P05.
+K6. Uchylenie (REPEALED) → wniosek deprecate do P07 (I08) — wiąże P07, P05.
+K7. Scenariusze wielowariantowe z unieważnianiem (I07) — wiąże P05, P07.
+K8. Raport gotowości cykliczny (I10) — wiąże P37, P44, P41 (UI).
+K9. API statusu adaptacji (I12) — wiąże P41, P37.
+K10. SLO detekcji < 1 h (I09) z metryką time-to-detect — wiąże P37, P43.
+
+--------------------------------------------------------------------------------
+9.09 PLAN WDROŻENIA (sekwencja, bez duplikacji; stan: WDROŻONE dla P08) (T6)
+--------------------------------------------------------------------------------
+1. Analiza 19 plików Sekcji 6 + mirror policies — wykonane.
+2. Implementacja 12 narzędzi I01–I12 (CLI + bundle JSON + schema diffu) —
+   wykonane.
+3. Kalibracja semantyki (self-match API/E2E, false-positive 4-eyes, wiersze
+   katalogu uchyleń) — wykonane.
+4. Uruchomienie bramek — 1 PASS, 11 FAIL zarejestrowane jako luki L01–L12 —
+   wykonane.
+5. Kontrakt docs/V3_P08_LAW_RADAR_KONTRAKT.md — wykonane.
+6. Testy pytest (14 przypadków) — wykonane, zielone.
+7. Oznaczenie P08 w ledgerze jako WDROŻONY_100 — wykonane.
+
+--------------------------------------------------------------------------------
+9.10 PLAN TESTÓW (T7)
+--------------------------------------------------------------------------------
+   | Przypadek | Pokrycie innowacji | Status |
+   |-----------|--------------------|--------|
+   | I01: źródła 2/4; draft bez predicted_diff | draft feed | FAIL→L01 [BM] |
+   | I02: explain=True; diff=False; schema OK | ai-reader 4-eyes | FAIL→L02 |
+   | I03: 0 przyszłych wersji; dry-run OK | pre-life shadow | FAIL→L03 [BM] |
+   | I04: target 30; buckets 30/14/7; 1 zmiana | lead-time SLA | FAIL→L04 [BM] |
+   | I05: auto=False; manual=True; effort=False | impact matrix | FAIL→L05 [BM] |
+   | I06: prepared=0; alert N-dni brak | calendar sync | FAIL→L06 |
+   | I07: 0 scenariuszy | scenario versioning | FAIL→L07 |
+   | I08: 17 plików; feed REPEALED brak | repeal detector | FAIL→L08 [BM] |
+   | I09: webhook False; poll True | low-latency feeds | FAIL→L09 |
+   | I10: ready=0 | readiness report | FAIL→L10 |
+   | I11: e2e istnieje (P01); MOCK-E2E-001 | pipeline e2e | PASS→L11 |
+   | I12: http=[]; status model 3 stany | law radar API | FAIL→L12 |
+   [BM] = blokuje merge.
+
+--------------------------------------------------------------------------------
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+--------------------------------------------------------------------------------
+Q01. L01 (P1): kanał projektów RCL/Sejm/Senat — integracja z wykazem RCL
+     i api.sejm.gov.pl (rekomendacja: feed dzienny + scoring etapu), czy
+     najpierw tylko Sejm API (mniej zasobów)?
+Q02. L02 (P1): AI-Reader na llm_bridge — czy akceptowalny koszt kluczy API
+     (status EKSPERYMENTALNY, 3 dostawców) dla roli produkcyjnej z 4-eyes
+     (drugi model + prawnik)?
+Q03. L03 (P1): pre-life SHADOW — automat dla każdej zmiany ENACTED z datą
+     wejścia (rekomendacja: SHADOW ≥ 30 dni przez P07), czy tylko dla
+     domen P10–P36 objętych macierzą?
+Q04. L08 (P1): status REPEALED — źródło uchyleń (ISAP statusy aktu), czy
+     ręczna rejestracja uchyleń do czasu feedu?
+Q05. L05 (P1): impact matrix — auto-wywołanie po detekcji (rekomendacja),
+     czy zachować CLI z bramką w CI?
+Q06. L09 (P2): webhooki Dz.U./ISAP — wymagają infrastruktury nasłuchu;
+     zaakceptować polling 30 min jako etap pośredni (SLA < 1 h spełniony)?
+
+--------------------------------------------------------------------------------
+9.12 ZAŁOŻENIA JAWNE (T9)
+--------------------------------------------------------------------------------
+Z01. [ZAŁOŻENIE] Radar/kalendarz zawierają wpis testowy (DRL-0001, data
+     2099); liczby lead 26595 dni odzwierciedlają dane demo, nie produkcję.
+Z02. [ZAŁOŻENIE] SLO (detekcja < 1 h, bramki 30/14/7) modelowe — pomiar
+     runtime z P37/P38.
+Z03. [ZAŁOŻENIE] Weryfikacja strukturalna (kod narzędzi/rego + dane radaru)
+     zastępuje brak binarki OPA; pola bundle = kanon.
+Z04. [ZAŁOŻENIE] Źródła zewnętrzne (ISAP/RCL/MF) poza sesją —
+     [NIEZWERYFIKOWANE]; treść aktów Sekcji 8 do weryfikacji w P09/P10.
+Z05. [ZAŁOŻENIE] mirror policies na branchu `policies` poza checkoutem —
+     [NIEZWERYFIKOWANE] (dryf monitorowany od P02-L01).
+Z06. [ZAŁOŻENIE] llm_bridge status EKSPERYMENTALNY — rola AI-Readera
+     wymaga decyzji (Q02) i 4-eyes przed użyciem produkcyjnym.
+
+--------------------------------------------------------------------------------
+9.13–9.16 — ZGODNOŚĆ Z WYMOGAMI FORMATU I KRYTERIAMI AKCEPTACJI (T12)
+--------------------------------------------------------------------------------
+- 9.13 Podanalizy 5.1–5.4: każda z tabelą dowodów, min. 3 wnioski i listą luk — OK.
+- 9.14 Macierz PRAWO↔REGUŁA↔TEST: 10 wierszy (akty Sekcji 8 + standardy) — OK.
+- 9.15 Identyfikatory: V3-P08-L01..L12 (12 unikalnych), I01..I12, Q01..Q06,
+  X01..X10 (poniżej).
+- 9.16 Tabele T1–T12: komplet (T1 w 9.03, T2 w 9.05, T3 w 9.06, T4 w 9.07,
+  T5 w 9.08, T6 w 9.09, T7 w 9.10, T8 w 9.11, T9 w 9.12, T10 w 9.16,
+  T11 w APENDYKS B, T12 poniżej).
+
+Pytania krzyżowe (7.4) — V3-P08-Xxx:
+X01. Sprzeczności z dokumentami świętymi: brak BLOCKERów — monitoring
+     zgodny z V1 §2.5 (pipeline ISAP) i V2 (Law Radar, AI-Reader jako
+     kierunek); luki L01–L12 to luki wykonawcze (feed, rola AI, pre-life),
+     nie konflikty kontraktowe.
+X02. Parametry-as-data (P06) / temporalność (P05): legislative_impact_
+     analyzer_enterprise.rego używa time.now_ns() do upcoming/in_effect
+     (L03/AP10 — do wymiany na zegar wstrzykiwany P05-I08); 0 parametrów
+     z valid_from w przyszłości (L03); crawler bez timestampów wykrycia
+     (L09 — time-to-detect do P37).
+X03. Ścieżki nie fail-closed: kalendarz/radar bez statusu = brak wpisu
+     (cichy brak alertu — L06/L10); schema diffu z certainty 0.0 blokuje
+     zasilanie ACTIVE (fail-closed OK); reszta: AUTO_POST gate (P03-I11)
+     niezmieniony.
+X04. Zgodność z kontraktem 25-polowym (P03): radar/kalendarz nie piszą pól
+     werdyktu; kalendarz używa _routing/_warnings (zgodne); diff schema
+     (I02) kontraktuje się z LKG P01 (legal_node_id), nie z werdyktem P03.
+X05. Testy niezbędne jako bramki blokujące merge (P39): [BM] I01 (feed),
+     I03 (pre-life), I05 (impact auto), I08 (repeal) — lista w 9.10.
+X06. Duplikaty: legal_change_impact_analyzer vs law_impact_matrix (dwa CLI
+     analizy wpływu — konsolidacja na I05); isap_rule_update_pipeline vs
+     law_radar.py prepare (ścieżka aktualizacji vs status) — rozdzielone
+     role; zus_law_radar vs law_radar (dedykowany vs ogólny radar) —
+     do spięcia w I06.
+X07. Podstawy prawne niezweryfikowane: treść aktów Sekcji 8 (VAT/PIT/ZUS/
+     OrdPU/u.ś.o.z./PrPrzeds.) — [NIEZWERYFIKOWANE] w tej sesji; rejestr
+     mediacji ISAP wymagany przed P09/P10; legal basis reguł monitora
+     (OrdPU art. 4, Konstytucja art. 2/88) — strukturalnie OK, treść
+     do weryfikacji.
+X08. Innowacje wymagające decyzji człowieka (4-eyes): Q01 (feed RCL),
+     Q02 (AI-Reader koszt), Q03 (zakres pre-life), Q04 (źródło REPEALED),
+     Q05 (impact auto), Q06 (webhooki) — lista w 9.11.
+X09. Metryki do obserwowalności (P37): lead_time per zmiana (30/14/7),
+     time-to-detect (I09), rules_prepared ratio, readiness per ustawa
+     (I10), drafty z predicted_diff — nazwy i progi w kontrakcie K8–K10.
+X10. Ryzyka wymagające invariantów runtime (P04): propozycje — INV-l1
+     (zmiana ENACTED w radarze bez wpisu kalendarza = alarm), INV-l2
+     (reguła ACTIVE z podstawą REPEALED = P1), INV-l3 (draft bez
+     predicted_diff nie może awansować do ENACTED) — uzasadnienie:
+     P04 protokół + P08 K2/K6.
+
+Anty-wzorce (7.5) — wyniki:
+AP01 stuby: legislative_monitor ma no_match priority 9999 (fail-closed OK);
+calendar_notifier/strategic_roadmap bez rule_id w grep — do audytu w P09 ·
+AP02 hardcode: brak stawek w częściach P08 (daty w radarze demo —
+hardcode 2099 w bundles) · AP03 otwarte negatywy: kalendarz bez alertu
+przy braku wpisu — L06/L10 · AP04 duplikaty rule_id: 0 w częściach P08
+(mapy domenowe poza zakresem) · AP05 podstawy bez Dz.U.: _legal_basis
+monitora = odwołania architektoniczne (OrdPU art. 4, Konstytucja) — do
+mediacji ISAP (X07) · AP06 testy zawsze-zielone: rego-test 6 reguł realny;
+test_ingest_impact_plan realny (mock PIT) · AP07 cichy AUTO_POST: 0
+(P03-I11) · AP08 cykle zależności: nie badano (P09) · AP09 dane
+zewnętrzne: radar/kalendarz z wpisem testowym zamiast danych ISAP (L01 —
+feed docelowy) · AP10 okna temporalne: legislative_impact_analyzer
+używa time.now_ns (X02/L03); 0 instancji pre-life · AP11 mirror dryf:
+monitorowany od P02-L01 · AP12 słowniki w 2 miejscach: radar.json vs
+legal_change_calendar.json (status/lead zduplikowane — DRL-0001 w obu;
+do konsolidacji I06).
+
+--------------------------------------------------------------------------------
+9.16 TABELA PRZEKAZYWANYCH ARTEFAKTÓW (11.4) (T10)
+--------------------------------------------------------------------------------
+   | Artefakt | Odbiorca (część) | Format | Kryterium użycia |
+   |----------|------------------|--------|------------------|
+   | Kanon radaru + statusy/confidence (I01) | P09, P10, P38 | JSON | draft z scoringiem ≥ 0.7 + lead < 30 = alert |
+   | Schema diffu prawnego wg LKG (I02) | P01, P09, P10 | JSON | legal_node_id wymagany |
+   | Pre-life SHADOW + bramki 30/14/7 (I03/I04) | P07, P38, P05 | JSON | SHADOW ≥ 30 dni przed wejściem |
+   | Impact matrix (priorytet + szacunek) (I05) | P06, P07, P10–P36 | JSON | auto po detekcji |
+   | Kalendarz N-dni + spięcie lifecycle (I06) | P07, P38 | JSON | ENACTED → wpis + alert 90/30/14/7 |
+   | Scenariusze + unieważnianie (I07) | P05, P07 | JSON | superseded_by per wariant |
+   | Repeal → deprecate (I08) | P07, P05 | JSON | REPEALED → wniosek < 1 dzień |
+   | SLO detekcji < 1 h (I09) | P37, P43 | JSON | metryka time-to-detect |
+   | Raport gotowości cykliczny (I10) | P37, P44, P41 | JSON | GOTOWE/W_PRZYGOTOWANIU/NIE_GOTOWE |
+   | E2E rig (mock → SHADOW→ACTIVE→bundle) (I11) | P07, P38, P10 | pytest | dry-run w CI |
+   | Law Radar API (status per ustawa) (I12) | P41, P37 | HTTP | brak danych = NEEDS_ADVICE |
+   | Luki L01–L12 + pytania Q01–Q06 | Blocker Triage (I09 P00) | raport | priorytety P0/P1/P2/P3 |
+
+--------------------------------------------------------------------------------
+PODSUMOWANIE WYKONANIA
+--------------------------------------------------------------------------------
+1. Raport zapisany: JDG/raporty_glm52_v3/RAPORT_V3_P08_LAW_RADAR.txt
+2. Zakres części P08: monitoring prawa i adaptacja — 4 podanalizy (5.1–5.4),
+   12 innowacji, 12 luk (0×P0, 6×P1, 5×P2, 1×P3), 6 pytań (Q01–Q06),
+   odpowiedzi X01–X10, kontrakt K1–K10, 14 testów (4 [BM]).
+3. Kontrakty dla P09: K1–K10 (sekcja 9.08) + docs/V3_P08_LAW_RADAR_KONTRAKT.md;
+   metryki law radar wiążące dla P37; bramki I01–I12 uruchamialne w CI.
+4. WYCZYSZCZONO okno kontekstowe po zakończeniu części P08 (treść części nie
+   jest przenoszona do P09; stan kampanii w tools/v3_campaign_ledger.py).

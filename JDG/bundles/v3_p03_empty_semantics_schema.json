@@ -1,0 +1,261 @@
+{
+  "innovation": "V3-P03-I03",
+  "name": "Empty-Semantics Schema — null vs absent vs N/A",
+  "generated_at": "2026-09-03T08:25:29.904204+00:00",
+  "enum_semantics": {
+    "null": "pole wymagane, wartość niedostępna (błąd/degradacja)",
+    "absent": "pole nieprodukowane przez ścieżkę (dryf kontraktu)",
+    "NA": "pole świadomie puste — nie dotyczy transakcji"
+  },
+  "fields": [
+    {
+      "field": "matched",
+      "category": "BOOLEAN",
+      "empty_allowed": false,
+      "empty_meaning": "RISK (cisza)",
+      "documentation": "pole zawsze obecne"
+    },
+    {
+      "field": "rule_id",
+      "category": "STRING",
+      "empty_allowed": false,
+      "empty_meaning": "RISK (cisza)",
+      "documentation": "zawsze obecne — identyfikator decyzji"
+    },
+    {
+      "field": "package",
+      "category": "STRING",
+      "empty_allowed": false,
+      "empty_meaning": "RISK (cisza)",
+      "documentation": "zawsze obecne"
+    },
+    {
+      "field": "priority",
+      "category": "INTEGER",
+      "empty_allowed": false,
+      "empty_meaning": "RISK (cisza)",
+      "documentation": "zawsze obecne"
+    },
+    {
+      "field": "vat_rate",
+      "category": "STRING",
+      "empty_allowed": false,
+      "empty_meaning": "RISK (cisza)",
+      "documentation": "stawka VAT; ZW/NP/OO to wartości, nie pustka"
+    },
+    {
+      "field": "rounding_level",
+      "category": "STRING",
+      "empty_allowed": true,
+      "empty_meaning": "N/A",
+      "documentation": "position/invoice — puste = brak zaokrąglenia specjalnego (N/A)"
+    },
+    {
+      "field": "gtu_code",
+      "category": "STRING",
+      "empty_allowed": true,
+      "empty_meaning": "N/A",
+      "documentation": "kod GTU gdy dotyczy; puste = N/A"
+    },
+    {
+      "field": "vat_exemption",
+      "category": "STRING",
+      "empty_allowed": true,
+      "empty_meaning": "N/A",
+      "documentation": "typ zwolnienia gdy dotyczy; puste = N/A"
+    },
+    {
+      "field": "procedure",
+      "category": "STRING",
+      "empty_allowed": true,
+      "empty_meaning": "N/A",
+      "documentation": "procedura szczególna gdy dotyczy; puste = N/A"
+    },
+    {
+      "field": "pit_form",
+      "category": "STRING",
+      "empty_allowed": false,
+      "empty_meaning": "RISK (cisza)",
+      "documentation": "forma opodatkowania — zawsze rozstrzygnięta"
+    },
+    {
+      "field": "pit_rate",
+      "category": "STRING",
+      "empty_allowed": false,
+      "empty_meaning": "RISK (cisza)",
+      "documentation": "stawka PIT — zawsze rozstrzygnięta"
+    },
+    {
+      "field": "pit_bracket",
+      "category": "STRING",
+      "empty_allowed": true,
+      "empty_meaning": "N/A",
+      "documentation": "próg podatkowy gdy skala; puste = N/A dla ryczałtu"
+    },
+    {
+      "field": "pit_annual_return_type",
+      "category": "STRING",
+      "empty_allowed": false,
+      "empty_meaning": "RISK (cisza)",
+      "documentation": "typ rocznej deklaracji — zawsze rozstrzygnięty"
+    },
+    {
+      "field": "kus_qualification",
+      "category": "STRING",
+      "empty_allowed": false,
+      "empty_meaning": "RISK (cisza)",
+      "documentation": "kwalifikacja KUP — zawsze rozstrzygnięta"
+    },
+    {
+      "field": "kus_percent",
+      "category": "NUMBER",
+      "empty_allowed": true,
+      "empty_meaning": "N/A",
+      "documentation": "procent KUP; 0 = legalne N/A (pełny KUP wyrażony inaczej)"
+    },
+    {
+      "field": "zus_social_base_type",
+      "category": "STRING",
+      "empty_allowed": false,
+      "empty_meaning": "RISK (cisza)",
+      "documentation": "typ podstawy ZUS — zawsze rozstrzygnięty"
+    },
+    {
+      "field": "zus_health_rate",
+      "category": "STRING",
+      "empty_allowed": false,
+      "empty_meaning": "RISK (cisza)",
+      "documentation": "stawka zdrowotna — zawsze rozstrzygnięta"
+    },
+    {
+      "field": "business_status",
+      "category": "STRING",
+      "empty_allowed": false,
+      "empty_meaning": "RISK (cisza)",
+      "documentation": "status działalności — zawsze rozstrzygnięty"
+    },
+    {
+      "field": "ceidg_registration_required",
+      "category": "BOOLEAN",
+      "empty_allowed": false,
+      "empty_meaning": "RISK (cisza)",
+      "documentation": "zawsze rozstrzygnięte"
+    },
+    {
+      "field": "valid_from",
+      "category": "STRING",
+      "empty_allowed": true,
+      "empty_meaning": "N/A",
+      "documentation": "okno temporalne reguły; brak = nie dotyczy"
+    },
+    {
+      "field": "valid_to",
+      "category": "STRING",
+      "empty_allowed": true,
+      "empty_meaning": "N/A",
+      "documentation": "okno temporalne; null = bezterminowo (N/A)"
+    },
+    {
+      "field": "_routing",
+      "category": "STRING",
+      "empty_allowed": false,
+      "empty_meaning": "RISK (cisza)",
+      "documentation": "zawsze obecne"
+    },
+    {
+      "field": "_routing_reason",
+      "category": "STRING",
+      "empty_allowed": false,
+      "empty_meaning": "RISK (cisza)",
+      "documentation": "zawsze obecne"
+    },
+    {
+      "field": "_legal_basis",
+      "category": "STRING",
+      "empty_allowed": false,
+      "empty_meaning": "RISK (cisza)",
+      "documentation": "zawsze obecne dla decyzji materialnej"
+    },
+    {
+      "field": "_warnings",
+      "category": "ARRAY",
+      "empty_allowed": true,
+      "empty_meaning": "N/A",
+      "documentation": "puste = brak ostrzeżeń (legalne)"
+    }
+  ],
+  "required_non_empty": [
+    {
+      "field": "matched",
+      "risk": "puste pole = cisza kontraktowa — klient nie odróżnia od N/A; wymaga walidatora BLOCK (INV-043)"
+    },
+    {
+      "field": "rule_id",
+      "risk": "puste pole = cisza kontraktowa — klient nie odróżnia od N/A; wymaga walidatora BLOCK (INV-043)"
+    },
+    {
+      "field": "package",
+      "risk": "puste pole = cisza kontraktowa — klient nie odróżnia od N/A; wymaga walidatora BLOCK (INV-043)"
+    },
+    {
+      "field": "priority",
+      "risk": "puste pole = cisza kontraktowa — klient nie odróżnia od N/A; wymaga walidatora BLOCK (INV-043)"
+    },
+    {
+      "field": "vat_rate",
+      "risk": "puste pole = cisza kontraktowa — klient nie odróżnia od N/A; wymaga walidatora BLOCK (INV-043)"
+    },
+    {
+      "field": "pit_form",
+      "risk": "puste pole = cisza kontraktowa — klient nie odróżnia od N/A; wymaga walidatora BLOCK (INV-043)"
+    },
+    {
+      "field": "pit_rate",
+      "risk": "puste pole = cisza kontraktowa — klient nie odróżnia od N/A; wymaga walidatora BLOCK (INV-043)"
+    },
+    {
+      "field": "pit_annual_return_type",
+      "risk": "puste pole = cisza kontraktowa — klient nie odróżnia od N/A; wymaga walidatora BLOCK (INV-043)"
+    },
+    {
+      "field": "kus_qualification",
+      "risk": "puste pole = cisza kontraktowa — klient nie odróżnia od N/A; wymaga walidatora BLOCK (INV-043)"
+    },
+    {
+      "field": "zus_social_base_type",
+      "risk": "puste pole = cisza kontraktowa — klient nie odróżnia od N/A; wymaga walidatora BLOCK (INV-043)"
+    },
+    {
+      "field": "zus_health_rate",
+      "risk": "puste pole = cisza kontraktowa — klient nie odróżnia od N/A; wymaga walidatora BLOCK (INV-043)"
+    },
+    {
+      "field": "business_status",
+      "risk": "puste pole = cisza kontraktowa — klient nie odróżnia od N/A; wymaga walidatora BLOCK (INV-043)"
+    },
+    {
+      "field": "ceidg_registration_required",
+      "risk": "puste pole = cisza kontraktowa — klient nie odróżnia od N/A; wymaga walidatora BLOCK (INV-043)"
+    },
+    {
+      "field": "_routing",
+      "risk": "puste pole = cisza kontraktowa — klient nie odróżnia od N/A; wymaga walidatora BLOCK (INV-043)"
+    },
+    {
+      "field": "_routing_reason",
+      "risk": "puste pole = cisza kontraktowa — klient nie odróżnia od N/A; wymaga walidatora BLOCK (INV-043)"
+    },
+    {
+      "field": "_legal_basis",
+      "risk": "puste pole = cisza kontraktowa — klient nie odróżnia od N/A; wymaga walidatora BLOCK (INV-043)"
+    }
+  ],
+  "required_non_empty_count": 16,
+  "fields_without_docs": [],
+  "validator_rule": "w CI: pole wymagane puste (null/absent) w werdykcie matched=true = fail INV-043; N/A tylko dla pól z empty_allowed=true",
+  "gate": {
+    "pass": true,
+    "rule": "każde z 25 pól ma udokumentowaną semantykę pustki (P03-AN04); brak dokumentacji = luka kontraktowa"
+  },
+  "note": "Semantyka wiążąca dla P41 (API): klient programowo rozróżnia null/absent/N/A; obecnie OpenAPI nie wyraża tej różnicy — pole absent w VerdictResponse jest nieodróżnialne od null (luka L04)."
+}

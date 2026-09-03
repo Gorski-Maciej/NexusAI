@@ -1,0 +1,76 @@
+{
+  "innovation": "V3-P10-I07",
+  "name": "Oracle Health Dashboard — metryki pokrycia, wieku, uzasadnień",
+  "generated_at": "2026-09-03T12:43:21+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "verdict_count": 30,
+    "domain_count": 29,
+    "set_age_days": 21,
+    "uvr": 619,
+    "regen_frequency_days": null
+  },
+  "health": {
+    "score_0_100": 60.0,
+    "coverage_domains": [
+      "jdg.adaptive_trust",
+      "jdg.kks",
+      "jdg.ksef_jpk",
+      "jdg.local_taxes.pcc_enterprise",
+      "jdg.p00.legal_coverage",
+      "jdg.p11_ordynacja_podatkowa_innovations",
+      "jdg.p12_crossborder_innovations",
+      "jdg.p13_ryczalt_cykl_zycia_innovations",
+      "jdg.p16_rodo_aml_security_innovations",
+      "jdg.r01_orchestrator_core_innovations",
+      "jdg.r02_vat_core_innovations",
+      "jdg.r03_vat_micro_innovations",
+      "jdg.r04_pit_core_innovations",
+      "jdg.r05_pit_enterprise_innovations",
+      "jdg.r06_zus_innovations",
+      "jdg.r07_kks_innovations",
+      "jdg.r08_ordynacja_obrona_innovations",
+      "jdg.r09_ksiegowosc_pkpir_uor_innovations",
+      "jdg.r10_crossborder_innovations",
+      "jdg.r11_pcc_lokalne_akcyza_innovations",
+      "jdg.r12_ryczalt_cykl_zycia_innovations",
+      "jdg.r13_hyper_konteksty_innovations",
+      "jdg.r14_rodo_aml_bdo_innovations",
+      "jdg.r15_ksef_jpk_edeklaracje_innovations",
+      "jdg.r16_system_opa_innovations",
+      "jdg.r17_enterprise_ai_innovations",
+      "jdg.rule_lifecycle",
+      "jdg.solidarity.hyper",
+      "jdg.uor_live"
+    ]
+  },
+  "checks": [
+    {
+      "name": "golden_present",
+      "status": "OK",
+      "detail": "golden set: 30 werdyktów / 29 pakietów"
+    },
+    {
+      "name": "age_computed",
+      "status": "OK",
+      "detail": "wiek setu (od pierwszego recorded_at): 21 dni"
+    },
+    {
+      "name": "metrics_pewnosci",
+      "status": "OK",
+      "detail": "metrics_pewnosci.json: uvr=619"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P10-L07",
+      "severity": "P2",
+      "evidence": "golden set ma 30 werdyktów w 29 pakietach — poniżej progu reprezentatywności (50) dla ~12k rule_id; brak dashboardu zdrowia oracle (pokrycie, % uzasadnionych, wiek) jako artefaktu",
+      "fix": "I07/I09: dashboard oracle health (JSON+md) w CI + plan domykania pokrycia per domena (priorytety ryzyka)"
+    }
+  ],
+  "contract": {
+    "binding": "P37 (obserwowalność), P44 (certyfikacja)",
+    "rule": "zdrowie oracle jest mierzone i raportowane przy każdej re-generacji; spadek % uzasadnionych delt = alarm"
+  }
+}

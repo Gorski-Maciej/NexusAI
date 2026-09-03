@@ -1,0 +1,101 @@
+{
+  "innovation": "V3-P12-I12",
+  "generated_at": "2026-09-03T12:59:28+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "confidence_mechanism": true,
+    "confidence_fields": [
+      "gtu_confidence",
+      "mpp_auto_confidence",
+      "vat_rate_ai_confidence",
+      "gtu_semantic_confidence",
+      "vat_cashflow_confidence",
+      "rd_auto_classification_confidence",
+      "ipbox_nexus_estimation_confidence",
+      "classification_confidence",
+      "confidence_min_pct",
+      "confidence_pct",
+      "min_confidence_propagate",
+      "source_confidence",
+      "propagated_confidence",
+      "min_confidence",
+      "full_graph_confidence_propagation",
+      "legal_basis_confidence_min",
+      "confidence",
+      "confidence_min",
+      "nm_confidence",
+      "nm_effective_confidence",
+      "nm_confidence_min",
+      "confidence",
+      "confidence",
+      "confidence",
+      "confidence",
+      "confidence",
+      "confidence",
+      "confidence",
+      "confidence",
+      "confidence",
+      "confidence_pct",
+      "judg_confidence",
+      "mdr_confidence"
+    ],
+    "non_gtu_confidence": [
+      "mpp_auto_confidence",
+      "vat_rate_ai_confidence",
+      "vat_cashflow_confidence",
+      "rd_auto_classification_confidence",
+      "ipbox_nexus_estimation_confidence",
+      "classification_confidence",
+      "confidence_min_pct",
+      "confidence_pct",
+      "min_confidence_propagate",
+      "source_confidence",
+      "propagated_confidence",
+      "min_confidence",
+      "full_graph_confidence_propagation",
+      "legal_basis_confidence_min",
+      "confidence",
+      "confidence_min",
+      "nm_confidence",
+      "nm_effective_confidence",
+      "nm_confidence_min",
+      "confidence",
+      "confidence",
+      "confidence",
+      "confidence",
+      "confidence",
+      "confidence",
+      "confidence",
+      "confidence",
+      "confidence",
+      "confidence_pct",
+      "judg_confidence",
+      "mdr_confidence"
+    ],
+    "threshold_detected": true,
+    "low_confidence_routing": true,
+    "rate_selected_silently": true
+  },
+  "checks": [
+    {
+      "name": "confidence_mechanism",
+      "status": "OK",
+      "detail": "confidence w klasyfikacji VAT (gtu_confidence): True (pola: ['gtu_confidence', 'mpp_auto_confidence', 'vat_rate_ai_confidence', 'gtu_semantic_confidence', 'vat_cashflow_confidence', 'rd_auto_classification_confidence', 'ipbox_nexus_estimation_confidence', 'classification_confidence', 'confidence_min_pct', 'confidence_pct', 'min_confidence_propagate', 'source_confidence', 'propagated_confidence', 'min_confidence', 'full_graph_confidence_propagation', 'legal_basis_confidence_min', 'confidence', 'confidence_min', 'nm_confidence', 'nm_effective_confidence', 'nm_confidence_min', 'confidence', 'confidence', 'confidence', 'confidence', 'confidence', 'confidence', 'confidence', 'confidence', 'confidence', 'confidence_pct', 'judg_confidence', 'mdr_confidence'])"
+    },
+    {
+      "name": "low_confidence_routing",
+      "status": "OK",
+      "detail": "niska pewność → TRIAGE/manual review: True (próg 0.70)"
+    },
+    {
+      "name": "confidence_beyond_gtu",
+      "status": "OK",
+      "detail": "confidence poza GTU (stawka/zwolnienie): ['mpp_auto_confidence', 'vat_rate_ai_confidence', 'vat_cashflow_confidence', 'rd_auto_classification_confidence', 'ipbox_nexus_estimation_confidence', 'classification_confidence', 'confidence_min_pct', 'confidence_pct', 'min_confidence_propagate', 'source_confidence', 'propagated_confidence', 'min_confidence', 'full_graph_confidence_propagation', 'legal_basis_confidence_min', 'confidence', 'confidence_min', 'nm_confidence', 'nm_effective_confidence', 'nm_confidence_min', 'confidence', 'confidence', 'confidence', 'confidence', 'confidence', 'confidence', 'confidence', 'confidence', 'confidence', 'confidence_pct', 'judg_confidence', 'mdr_confidence']"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P03 (klasy pewności), P44, P04 (inwarianty)",
+    "rule": "każda klasyfikacja (stawka/GTU/zwolnienie) niesie confidence; poniżej progu = TRIAGE/NEEDS_ADVICE z kandydatami"
+  }
+}

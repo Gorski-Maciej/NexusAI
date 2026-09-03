@@ -1,0 +1,47 @@
+{
+  "innovation": "V3-P05-I10",
+  "generated_at": "2026-09-03T12:43:00+00:00",
+  "gate": "PASS",
+  "mode": "SHADOW_ANALYSIS_ONLY",
+  "horizon": "2026-09-03",
+  "future_parameters": [],
+  "missing_epochs": [
+    2026,
+    2027
+  ],
+  "impacted_golden_verdicts": [],
+  "metrics": {
+    "future_params": 0,
+    "missing_future_epochs": 2,
+    "impacted_golden": 0
+  },
+  "checks": [
+    {
+      "name": "future_parameter_versions",
+      "status": "OK",
+      "detail": "wersji parametrów z valid_from > 2026-09-03: 0"
+    },
+    {
+      "name": "next_epoch_planned",
+      "status": "WARN",
+      "detail": "epoki: [2018, 2019, 2020, 2021, 2022, 2023, 2025]; brak przyszłych lat (2026-2027): [2026, 2027]"
+    },
+    {
+      "name": "golden_impact_projection",
+      "status": "OK",
+      "detail": "złotych werdyktów w zasięgu przyszłych zmian: 0"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P05-L13",
+      "severity": "P2",
+      "evidence": "brak epoki [2026, 2027] — przyszła zmiana stawek/progów nie ma adresu w danych (dry run niemożliwy bez e2026)",
+      "fix": "dodać e2026/e2027 do temporal_epochs w momencie publikacji nowelizacji (P06/P08)"
+    }
+  ],
+  "contract": {
+    "binding": "P06 parametry / P08 Law Radar (lead >= 30 dni) / P38 bundle",
+    "rule": "wdrożenie przyszłej wersji = CANDIDATE→SHADOW→dry run→ACTIVE z nowym snapshot_id (I02) i dowodem ciągłości (I05)"
+  }
+}

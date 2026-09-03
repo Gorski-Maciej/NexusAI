@@ -1,0 +1,26 @@
+{
+  "current": {
+    "git_head": "c4ec8b58",
+    "built_at": "2026-09-03T12:42:53+00:00",
+    "components": {
+      "rules_rego": {
+        "count": 490,
+        "sha1": "9923e373bfdd1dabc399206d3f0c0f50841f0cd3"
+      },
+      "bundles/thresholds_data.json": "901d287df0f6dcbf24e4f4c3dac55550a1eaec07",
+      "bundles/legal_graph.json": "748d25733d79381e89280d457be2ca3fa73d27fe",
+      "bundles/golden_verdicts.json": "a994c9fa877451d2aad251cccf2af48868489595",
+      "migrations": {
+        "count": 13,
+        "sha1": "6051bc055032e8386a1d8397cda4bff20cf51351"
+      },
+      "golden_verdicts": {
+        "verdicts": 30,
+        "bundle_version": 2,
+        "replay_rows": 30
+      }
+    },
+    "snapshot_id": "acab5f9259a013abd309bf2d1cf5aa7d02aa46aa550d3e7b1c3de21e8e258c7d"
+  },
+  "history": []
+}

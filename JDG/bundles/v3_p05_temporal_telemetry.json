@@ -1,0 +1,104 @@
+{
+  "innovation": "V3-P05-I07",
+  "generated_at": "2026-09-03T12:42:59+00:00",
+  "gate": "PASS",
+  "dashboard": {
+    "title": "Temporal Windows Telemetry",
+    "owner": "P37 obserwowalność",
+    "refresh": "per CI / per bundle change"
+  },
+  "metrics": [
+    {
+      "metric": "temporal_rules_registry",
+      "value": 32,
+      "prog": ">=32",
+      "alert": "none",
+      "opis": "reguły z oknem ważności w registry"
+    },
+    {
+      "metric": "open_windows_valid_to_null",
+      "value": 30,
+      "prog": "100%",
+      "alert": "none",
+      "opis": "okna otwarte (semantyka: obowiązują do odwołania)"
+    },
+    {
+      "metric": "runtime_window_enforcement_calls",
+      "value": 0,
+      "prog": ">0",
+      "alert": "CRITICAL",
+      "opis": "wywołania bramki is_active* w ścieżce decyzyjnej — 0 = registry nie egzekwowany"
+    },
+    {
+      "metric": "wall_clock_decisional_rules",
+      "value": 1,
+      "prog": "0",
+      "alert": "WARN",
+      "opis": "reguły decyzyjne z time.now_ns() (replay zależny od zegara)"
+    },
+    {
+      "metric": "boundary_test_coverage_anchors",
+      "value": 4,
+      "total": 11,
+      "prog": "100%",
+      "alert": "WARN",
+      "opis": "kotwice z testem day-1+day0"
+    },
+    {
+      "metric": "temporal_epochs_missing_years",
+      "value": 2,
+      "years": [
+        2024,
+        2026
+      ],
+      "prog": "0",
+      "alert": "WARN",
+      "opis": "lata bez epoki w data.thresholds.jdg.temporal_epochs"
+    },
+    {
+      "metric": "versioned_parameters",
+      "value": 1,
+      "prog": ">=1",
+      "alert": "none",
+      "opis": "parametry z wersjonowaniem w thresholds_data.json"
+    }
+  ],
+  "rollup_by_domain": {
+    "business": 1,
+    "edge_cases": 7,
+    "zus": 6,
+    "validation": 1,
+    "allowances": 3,
+    "pit": 8,
+    "mdr": 1,
+    "temporal": 1,
+    "vat": 3,
+    "accounting": 1
+  },
+  "alerts": [
+    "runtime_window_enforcement_calls",
+    "wall_clock_decisional_rules",
+    "boundary_test_coverage_anchors",
+    "temporal_epochs_missing_years"
+  ],
+  "findings": [
+    {
+      "id": "V3-P05-L10",
+      "severity": "P3",
+      "evidence": "metryki temporalne nie mają jeszcze dashboardu — pierwsza emisja",
+      "fix": "podpięcie do P37 (nazwy metryk wg rejestru powyżej)"
+    }
+  ],
+  "contract": {
+    "binding": "P37 obserwowalność (nazwy metryk + progi alarmów)",
+    "metric_names": [
+      "temporal_rules_registry",
+      "open_windows_valid_to_null",
+      "runtime_window_enforcement_calls",
+      "wall_clock_decisional_rules",
+      "boundary_test_coverage_anchors",
+      "temporal_epochs_missing_years",
+      "versioned_parameters"
+    ]
+  }
+}

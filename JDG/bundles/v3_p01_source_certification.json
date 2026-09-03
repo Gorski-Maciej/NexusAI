@@ -1,0 +1,416 @@
+{
+  "innovation": "V3-P01-I11",
+  "generated_at": "2026-09-03T06:45:37+00:00",
+  "state_machine": [
+    "PENDING_ISAP",
+    "REVIEW_1",
+    "REVIEW_2",
+    "CERTIFIED",
+    "PUBLISHED"
+  ],
+  "reviews_required": 2,
+  "records_total": 30,
+  "state_counts": {
+    "PENDING_ISAP": 30
+  },
+  "records": [
+    {
+      "record_id": "SRC-001",
+      "snapshot_id": "ISAP-PROOF-001",
+      "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-002",
+      "snapshot_id": "ISAP-PROOF-002",
+      "act": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osób fizycznych",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-003",
+      "snapshot_id": "ISAP-PROOF-003",
+      "act": "Ustawa z dnia 15 lutego 1992 r. o podatku dochodowym od osób prawnych",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-004",
+      "snapshot_id": "ISAP-PROOF-004",
+      "act": "Ustawa z dnia 20 listopada 1998 r. o zryczałtowanym podatku dochodowym od niektórych przychodów osiąganych przez osoby fizyczne",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-005",
+      "snapshot_id": "ISAP-PROOF-005",
+      "act": "Ustawa z dnia 29 sierpnia 1997 r. — Ordynacja podatkowa",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-006",
+      "snapshot_id": "ISAP-PROOF-006",
+      "act": "Ustawa z dnia 10 września 1999 r. — Kodeks karny skarbowy",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-007",
+      "snapshot_id": "ISAP-PROOF-007",
+      "act": "Ustawa z dnia 13 października 1998 r. o systemie ubezpieczeń społecznych",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-008",
+      "snapshot_id": "ISAP-PROOF-008",
+      "act": "Ustawa z dnia 27 sierpnia 2004 r. o świadczeniach opieki zdrowotnej finansowanych ze środków publicznych",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-009",
+      "snapshot_id": "ISAP-PROOF-009",
+      "act": "Ustawa z dnia 25 czerwca 1999 r. o świadczeniach pieniężnych z ubezpieczenia społecznego w razie choroby i macierzyństwa",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-010",
+      "snapshot_id": "ISAP-PROOF-010",
+      "act": "Ustawa z dnia 29 września 1994 r. o rachunkowości",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-011",
+      "snapshot_id": "ISAP-PROOF-011",
+      "act": "Rozporządzenie Ministra Finansów z dnia 23 grudnia 2019 r. w sprawie prowadzenia podatkowej księgi przychodów i rozchodów",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-012",
+      "snapshot_id": "ISAP-PROOF-012",
+      "act": "Ustawa z dnia 6 marca 2018 r. — Prawo przedsiębiorców",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-013",
+      "snapshot_id": "ISAP-PROOF-013",
+      "act": "Ustawa z dnia 6 marca 2018 r. o Centralnej Ewidencji i Informacji o Działalności Gospodarczej i Punkcie Informacji dla Przedsiębiorcy",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-014",
+      "snapshot_id": "ISAP-PROOF-014",
+      "act": "Ustawa z dnia 5 lipca 2018 r. o zarządzie sukcesyjnym przedsiębiorstwem osoby fizycznej",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-015",
+      "snapshot_id": "ISAP-PROOF-015",
+      "act": "Ustawa z dnia 9 września 2000 r. o podatku od czynności cywilnoprawnych",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-016",
+      "snapshot_id": "ISAP-PROOF-016",
+      "act": "Ustawa z dnia 12 stycznia 1991 r. o podatkach i opłatach lokalnych",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-017",
+      "snapshot_id": "ISAP-PROOF-017",
+      "act": "Ustawa z dnia 6 grudnia 2008 r. o podatku akcyzowym",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-018",
+      "snapshot_id": "ISAP-PROOF-018",
+      "act": "Ustawa z dnia 15 listopada 1984 r. o podatku rolnym",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-019",
+      "snapshot_id": "ISAP-PROOF-019",
+      "act": "Ustawa o podatkach i opłatach lokalnych — podatek od środków transportowych",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-020",
+      "snapshot_id": "ISAP-PROOF-020",
+      "act": "Ustawa z dnia 14 grudnia 2012 r. o odpadach",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-021",
+      "snapshot_id": "ISAP-PROOF-021",
+      "act": "Rozporządzenie Parlamentu Europejskiego i Rady (UE) 2016/679 z dnia 27 kwietnia 2016 r.",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-022",
+      "snapshot_id": "ISAP-PROOF-022",
+      "act": "Ustawa z dnia 1 marca 2018 r. o przeciwdziałaniu praniu pieniędzy oraz finansowaniu terroryzmu",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-023",
+      "snapshot_id": "ISAP-PROOF-023",
+      "act": "Ustawa o Krajowym Systemie e-Faktur (nowelizacja ustawy o VAT)",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-024",
+      "snapshot_id": "ISAP-PROOF-024",
+      "act": "Ustawa z dnia 18 listopada 2020 r. o doręczeniach elektronicznych",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-025",
+      "snapshot_id": "ISAP-PROOF-025",
+      "act": "Ustawa z dnia 26 czerwca 1974 r. — Kodeks pracy",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-026",
+      "snapshot_id": "ISAP-PROOF-026",
+      "act": "Ustawa z dnia 27 sierpnia 1997 r. o rehabilitacji zawodowej i społecznej oraz zatrudnianiu osób niepełnosprawnych",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-027",
+      "snapshot_id": "ISAP-PROOF-027",
+      "act": "Ustawa z dnia 7 lipca 1994 r. — Prawo budowlane",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-028",
+      "snapshot_id": "ISAP-PROOF-028",
+      "act": "Ustawa z dnia 6 września 2001 r. o transporcie drogowym",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-029",
+      "snapshot_id": "ISAP-PROOF-029",
+      "act": "Ustawa z dnia 27 lipca 2002 r. — Prawo dewizowe",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    },
+    {
+      "record_id": "SRC-030",
+      "snapshot_id": "ISAP-PROOF-030",
+      "act": "Ustawa z dnia 10 kwietnia 1997 r. — Prawo energetyczne",
+      "state": "PENDING_ISAP",
+      "transitions_available": [
+        "REVIEW_1"
+      ],
+      "reviewers": [],
+      "source_hash_verified": false,
+      "effective_interval_approved": false,
+      "can_publish": false
+    }
+  ],
+  "rules": {
+    "REVIEW_1": "prawnik weryfikuje treść art. w ISAP (hash snapshotu, diff prawny)",
+    "REVIEW_2": "niezależny engineer weryfikuje odwzorowanie akt→reguła (4-eyes)",
+    "CERTIFIED": "wpis do rejestru źródeł z podpisanym hashem i interwałem",
+    "PUBLISHED": "źródło dostępne jako podstawa ACTIVE; wcześniej = tylko SHADOW"
+  },
+  "fail_closed": "bez 2 recenzentów + hash ISAP żadne źródło nie ma statusu CERTIFIED/PUBLISHED",
+  "source_registry_doc": "docs/LEGAL_SOURCE_REGISTRY.md"
+}

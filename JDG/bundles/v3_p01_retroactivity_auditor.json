@@ -1,0 +1,12 @@
+{
+  "innovation": "V3-P01-I10",
+  "generated_at": "2026-09-03T06:44:14+00:00",
+  "method": "porównanie okien temporalnych reguła↔węzeł + hook golden oracle (replay)",
+  "rules_mapped": 4550,
+  "retroactivity_suspects": 0,
+  "suspects": [],
+  "golden_hook": {
+    "rule": "zmiana reguły bez zmiany przepisu (diff prawny pusty) = rerun golden_verdicts; różnica w werdykcie = BLOCKER/regresja",
+    "bundle_ref": "golden_verdicts (migracja 003, F3)"
+  }
+}

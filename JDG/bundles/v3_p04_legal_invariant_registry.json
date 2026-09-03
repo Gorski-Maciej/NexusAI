@@ -1,0 +1,218 @@
+{
+  "innovation": "V3-P04-I09",
+  "name": "Legal Invariant Registry — INV podpięte pod legal_node (P01)",
+  "generated_at": "2026-09-03T08:59:31.886636+00:00",
+  "registry": [
+    {
+      "invariant": "INV-001",
+      "legal_node": "PL/vat/art/41",
+      "kind": "LEGAL"
+    },
+    {
+      "invariant": "INV-002",
+      "legal_node": "STRUKTURALNY",
+      "kind": "STRUCTURAL"
+    },
+    {
+      "invariant": "INV-003",
+      "legal_node": "STRUKTURALNY",
+      "kind": "STRUCTURAL"
+    },
+    {
+      "invariant": "INV-005",
+      "legal_node": "STRUKTURALNY",
+      "kind": "STRUCTURAL"
+    },
+    {
+      "invariant": "INV-006",
+      "legal_node": "STRUKTURALNY",
+      "kind": "STRUCTURAL"
+    },
+    {
+      "invariant": "INV-007",
+      "legal_node": "STRUKTURALNY",
+      "kind": "STRUCTURAL"
+    },
+    {
+      "invariant": "INV-008",
+      "legal_node": "STRUKTURALNY",
+      "kind": "STRUCTURAL"
+    },
+    {
+      "invariant": "INV-009",
+      "legal_node": "STRUKTURALNY",
+      "kind": "STRUCTURAL"
+    },
+    {
+      "invariant": "INV-012",
+      "legal_node": "PL/ord/art/56",
+      "kind": "LEGAL"
+    },
+    {
+      "invariant": "INV-018",
+      "legal_node": "STRUKTURALNY",
+      "kind": "STRUCTURAL"
+    },
+    {
+      "invariant": "INV-020",
+      "legal_node": "STRUKTURALNY",
+      "kind": "STRUCTURAL"
+    },
+    {
+      "invariant": "INV-021",
+      "legal_node": "PL/ord/art/56",
+      "kind": "LEGAL"
+    },
+    {
+      "invariant": "INV-030",
+      "legal_node": "STRUKTURALNY",
+      "kind": "STRUCTURAL"
+    },
+    {
+      "invariant": "INV-032",
+      "legal_node": "STRUKTURALNY",
+      "kind": "STRUCTURAL"
+    },
+    {
+      "invariant": "INV-035",
+      "legal_node": "STRUKTURALNY",
+      "kind": "STRUCTURAL"
+    },
+    {
+      "invariant": "INV-036",
+      "legal_node": "STRUKTURALNY",
+      "kind": "STRUCTURAL"
+    },
+    {
+      "invariant": "INV-037",
+      "legal_node": "PL/vat/art/106na",
+      "kind": "LEGAL"
+    },
+    {
+      "invariant": "INV-038",
+      "legal_node": "STRUKTURALNY",
+      "kind": "STRUCTURAL"
+    },
+    {
+      "invariant": "INV-039",
+      "legal_node": "STRUKTURALNY",
+      "kind": "STRUCTURAL"
+    },
+    {
+      "invariant": "INV-042",
+      "legal_node": "STRUKTURALNY",
+      "kind": "STRUCTURAL"
+    }
+  ],
+  "legal_linked_count": 4,
+  "structural_count": 16,
+  "legal_invariants_required_by_law": [
+    {
+      "invariant": "INV-L01",
+      "domain": "VAT",
+      "legal_node": "PL/vat/art/86",
+      "description": "odliczenia ≤ podatek należny (VAT art. 86)",
+      "present": false
+    },
+    {
+      "invariant": "INV-L02",
+      "domain": "PIT",
+      "legal_node": "PL/pit/art/27",
+      "description": "podatek ≥ 0 (PIT art. 27)",
+      "present": false
+    },
+    {
+      "invariant": "INV-L03",
+      "domain": "PIT",
+      "legal_node": "PL/pit/art/26",
+      "description": "odliczenia ≤ dochód (PIT art. 26)",
+      "present": false
+    },
+    {
+      "invariant": "INV-L04",
+      "domain": "ZUS",
+      "legal_node": "PL/zus/art/22",
+      "description": "stopy składkowe jako zakresy (ZUS art. 22)",
+      "present": false
+    },
+    {
+      "invariant": "INV-L05",
+      "domain": "ZUS",
+      "legal_node": "PL/zdrowotne/art/79",
+      "description": "składka zdrowotna ≥ 0 i progi (art. 79-81)",
+      "present": false
+    },
+    {
+      "invariant": "INV-L06",
+      "domain": "ORD",
+      "legal_node": "PL/ord/art/57",
+      "description": "zakaz dyrektywy wewnętrznej — determinizm (art. 57)",
+      "present": false
+    },
+    {
+      "invariant": "INV-L07",
+      "domain": "UOR",
+      "legal_node": "PL/uor/art/7",
+      "description": "zasada podwójnego zapisu — niezmiennik bilansowy (art. 7)",
+      "present": false
+    }
+  ],
+  "missing_legal_invariants": [
+    {
+      "invariant": "INV-L01",
+      "domain": "VAT",
+      "legal_node": "PL/vat/art/86",
+      "description": "odliczenia ≤ podatek należny (VAT art. 86)",
+      "present": false
+    },
+    {
+      "invariant": "INV-L02",
+      "domain": "PIT",
+      "legal_node": "PL/pit/art/27",
+      "description": "podatek ≥ 0 (PIT art. 27)",
+      "present": false
+    },
+    {
+      "invariant": "INV-L03",
+      "domain": "PIT",
+      "legal_node": "PL/pit/art/26",
+      "description": "odliczenia ≤ dochód (PIT art. 26)",
+      "present": false
+    },
+    {
+      "invariant": "INV-L04",
+      "domain": "ZUS",
+      "legal_node": "PL/zus/art/22",
+      "description": "stopy składkowe jako zakresy (ZUS art. 22)",
+      "present": false
+    },
+    {
+      "invariant": "INV-L05",
+      "domain": "ZUS",
+      "legal_node": "PL/zdrowotne/art/79",
+      "description": "składka zdrowotna ≥ 0 i progi (art. 79-81)",
+      "present": false
+    },
+    {
+      "invariant": "INV-L06",
+      "domain": "ORD",
+      "legal_node": "PL/ord/art/57",
+      "description": "zakaz dyrektywy wewnętrznej — determinizm (art. 57)",
+      "present": false
+    },
+    {
+      "invariant": "INV-L07",
+      "domain": "UOR",
+      "legal_node": "PL/uor/art/7",
+      "description": "zasada podwójnego zapisu — niezmiennik bilansowy (art. 7)",
+      "present": false
+    }
+  ],
+  "missing_legal_count": 7,
+  "review_rule": "zmiana węzła prawnego (nowelizacja, P01 Law Radar) → sugerowany przegląd powiązanego INV (P04-AN09/I09)",
+  "gate": {
+    "pass": false,
+    "rule": "wszystkie niezmienniki wymuszone prawem (Sekcja 8 P04) obecne w katalogu — P04-AN10; brak = luka prawna"
+  },
+  "note": "Realna luka: 7 niezmienników prawnych (VAT art. 86, PIT art. 27/26, ZUS art. 22, zdrowotne art. 79-81, OrdPU art. 57, UoR art. 7) NIE są jeszcze w katalogu runtime (L02) — do dodania z testami negatywnymi."
+}

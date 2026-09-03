@@ -1,0 +1,138 @@
+{
+  "innovation": "V3-P09-I03",
+  "generated_at": "2026-09-03T12:43:10.104539+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "recipes": 6,
+    "types_in_tool": [
+      "RATE_CHANGE",
+      "THRESHOLD_CHANGE"
+    ],
+    "recipe_artifact": true
+  },
+  "recipes": {
+    "RATE_CHANGE": {
+      "desc": "Zmiana stawki (VAT/ryczałt/składka)",
+      "params": [
+        "vat.standard_rate",
+        "vat.reduced_rate_8",
+        "vat.reduced_rate_5",
+        "vat.reduced_rate_0",
+        "zus.health_rate"
+      ],
+      "rule_ids": [],
+      "tests": [
+        "day-1/0/+1 boundary",
+        "groszowe granice"
+      ],
+      "risks": [
+        "zła data wejścia",
+        "błędna stawka"
+      ],
+      "legal": "VAT art. 41; ryczałt art. 12; zdrowotna art. 79-81"
+    },
+    "THRESHOLD_CHANGE": {
+      "desc": "Zmiana progu (PIT skala, limity)",
+      "params": [
+        "pit.scale_threshold",
+        "pit.tax_free_amount"
+      ],
+      "rule_ids": [
+        "jdg.form_optimizer.financial_simulator"
+      ],
+      "tests": [
+        "wartość graniczna progu",
+        "przekroczenie o 1 zł"
+      ],
+      "risks": [
+        "zaokrąglenia",
+        "retroaktywność"
+      ],
+      "legal": "PIT art. 27, 30c; ryczałt art. 6"
+    },
+    "NEW_LIMIT": {
+      "desc": "Nowy limit czasowy (ulga okresowa)",
+      "params": [
+        "zus.limit_maly_zus",
+        "zdrowotne.limit_roczny"
+      ],
+      "rule_ids": [],
+      "tests": [
+        "początek/koniec okna",
+        "przekroczenie limitu"
+      ],
+      "risks": [
+        "brak okna valid_to"
+      ],
+      "legal": "SUS art. 18a/18c; u.ś.o.z. art. 81"
+    },
+    "DEADLINE_CHANGE": {
+      "desc": "Zmiana terminu (składania/opłat)",
+      "params": [
+        "ord.term_rozliczen",
+        "vat.term_platnosci"
+      ],
+      "rule_ids": [],
+      "tests": [
+        "day przed/po terminie"
+      ],
+      "risks": [
+        "konflikt z innymi terminami"
+      ],
+      "legal": "OrdPU art. 24a; VAT art. 103"
+    },
+    "REPEAL": {
+      "desc": "Uchylenie przepisu",
+      "params": [],
+      "rule_ids": [
+        "deprecate w P07"
+      ],
+      "tests": [
+        "reguła nie odpala po dacie",
+        "zero referencji"
+      ],
+      "risks": [
+        "reguła ACTIVE z uchyloną podstawą = P1"
+      ],
+      "legal": "P08-I08 (REPEALED → deprecate)"
+    },
+    "DEFINITION_CHANGE": {
+      "desc": "Zmiana definicji (pojęcia)",
+      "params": [],
+      "rule_ids": [
+        "wersjonowanie reguł P07"
+      ],
+      "tests": [
+        "klasyfikacja przed/po zmianie"
+      ],
+      "risks": [
+        "wpływ na wiele domen"
+      ],
+      "legal": "właściwa ustawa domenowa"
+    }
+  },
+  "checks": [
+    {
+      "name": "six_recipes",
+      "status": "OK",
+      "detail": "katalog recipes: 6 (RATE/THRESHOLD/NEW_LIMIT/DEADLINE/REPEAL/DEFINITION)"
+    },
+    {
+      "name": "recipes_in_tool",
+      "status": "FAIL",
+      "detail": "declarative_change.py rozpoznaje tylko: RATE_CHANGE, THRESHOLD_CHANGE — bez REPEAL/DEADLINE/DEFINITION/NEW_LIMIT"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P09-L03",
+      "severity": "P1",
+      "evidence": "declarative_change.py ma 3 wzorce regex (RATE_CHANGE, THRESHOLD_CHANGE, LEGAL_CHANGE); brak katalogu 6 recipes z parametrami/testami/ryzykami — zmiany typu uchylenie, termin, definicja, nowy limit czasowy nie mają szablonu generacji",
+      "fix": "I03 Recipe Library (ten artefakt): 6 recipes z mapą param→test→ryzyko→podstawa; nowy typ zmiany = nowy recipe, nie nowy regex"
+    }
+  ],
+  "contract": {
+    "binding": "P09-I04 (testy z recipes), P09-I02 (kompilacja wg recipes), P08 (Law Radar diff → recipe), P06/P07 (wykonanie)",
+    "rule": "zmiana mapowana do recipe; recipe bez pokrycia testowego nie może produkować AUTO_POST"
+  }
+}

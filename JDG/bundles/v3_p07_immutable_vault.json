@@ -1,0 +1,41 @@
+{
+  "innovation": "V3-P07-I02",
+  "generated_at": "2026-09-03T10:26:12.668757+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "versions_total": 13,
+    "versions_unsigned": 13,
+    "in_place_mutators": 1
+  },
+  "demo_canonical_hash": "8663b3b7671c22f031968399",
+  "checks": [
+    {
+      "name": "versions_signed",
+      "status": "FAIL",
+      "detail": "wersje bez version_hash: 13/13"
+    },
+    {
+      "name": "worm_storage",
+      "status": "FAIL",
+      "detail": "narzędzia z zapisem w miejscu (mutacja): ['rule_lifecycle_manager.py'] — brak append-only/WORM dla rejestru"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P07-L05",
+      "severity": "P1",
+      "evidence": "0 z 13 wersji ma version_hash — integralność rejestru nieweryfikowalna; edycja w miejscu przez rule_lifecycle_manager (save_registry) bez śladu WORM",
+      "fix": "Immutable Rule Vault (I02): hash kanoniczny per wersja + append-only log operacji; edycja istniejącej wersji = BLOCKER CI [BM]"
+    }
+  ],
+  "vault_model": {
+    "version": "append-only",
+    "hash": "sha256-canonical-json-v1",
+    "signature": "roles: author/reviewer/operator",
+    "edit_of_existing": "BLOCKER [BM]"
+  },
+  "contract": {
+    "binding": "P38 (bundle WORM), P39 (CI), P05 (snapshot_id), P44 (certyfikacja)",
+    "rule": "nowa wersja = nowy wpis z hashem; zmiana ACTIVE tylko przez awans (I01)"
+  }
+}

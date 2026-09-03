@@ -1,0 +1,121 @@
+{
+  "innovation": "V3-P04-I05",
+  "name": "Invariant Mutation Testing — mutacje muszą łamać invariant (P04-AN06)",
+  "generated_at": "2026-09-03T08:59:31.523353+00:00",
+  "mutations": [
+    {
+      "invariant": "INV-001",
+      "mutation": "stawka 0.24 zamiast 0.23",
+      "detected": true
+    },
+    {
+      "invariant": "INV-001",
+      "mutation": "stawka 'ZW' na NP",
+      "detected": true
+    },
+    {
+      "invariant": "INV-002",
+      "mutation": "usunięto pole pit_rate z werdyktu",
+      "detected": true
+    },
+    {
+      "invariant": "INV-003",
+      "mutation": "duplikat rule_id w ścieżce",
+      "detected": true
+    },
+    {
+      "invariant": "INV-005",
+      "mutation": "nadpisano zus_health_rate spoza allowlisty",
+      "detected": true
+    },
+    {
+      "invariant": "INV-006",
+      "mutation": "AUTO_POST przy CERTAINTY_BLOCKED",
+      "detected": true
+    },
+    {
+      "invariant": "INV-007",
+      "mutation": "valid_from > valid_to",
+      "detected": true
+    },
+    {
+      "invariant": "INV-008",
+      "mutation": "stała 0.23 w kodzie zamiast data.thresholds",
+      "detected": true
+    },
+    {
+      "invariant": "INV-009",
+      "mutation": "usunięto _legal_basis z decyzji materialnej",
+      "detected": true
+    },
+    {
+      "invariant": "INV-012",
+      "mutation": "kwota 12.345 zamiast 12.35",
+      "detected": true
+    },
+    {
+      "invariant": "INV-018",
+      "mutation": "dwa sprzeczne werdykty domeny",
+      "detected": true
+    },
+    {
+      "invariant": "INV-020",
+      "mutation": "brak entity_status w routing_context",
+      "detected": true
+    },
+    {
+      "invariant": "INV-021",
+      "mutation": "gross 99 < net 100",
+      "detected": true
+    },
+    {
+      "invariant": "INV-030",
+      "mutation": "brak bundle_version w proweniencji",
+      "detected": true
+    },
+    {
+      "invariant": "INV-032",
+      "mutation": "certainty_class = 'MAYBE'",
+      "detected": true
+    },
+    {
+      "invariant": "INV-035",
+      "mutation": "BLOCK_AND_ALERT z auto_post=true",
+      "detected": true
+    },
+    {
+      "invariant": "INV-036",
+      "mutation": "brak evaluation_date w routing_context",
+      "detected": true
+    },
+    {
+      "invariant": "INV-037",
+      "mutation": "nakładka okien valid_from..valid_to",
+      "detected": true
+    },
+    {
+      "invariant": "INV-038",
+      "mutation": "degradacja z certainty_class CERTAIN",
+      "detected": true
+    },
+    {
+      "invariant": "INV-039",
+      "mutation": "provenance path pusty",
+      "detected": true
+    },
+    {
+      "invariant": "INV-042",
+      "mutation": "nadpisanie werdyktu niemutowalnego",
+      "detected": true
+    }
+  ],
+  "mutations_total": 21,
+  "undetected_mutations": [],
+  "coverage_pct": 100.0,
+  "rule": "każdy INV ma test negatywny (mutacja warunku → BLOCK); mutacja niewykryta = katalog nie chroni — luka do uzupełnienia",
+  "gate": {
+    "pass": true,
+    "rule": "100% wykrywalność mutacji dla katalogu INV (P04-AN06) — dowód skuteczności warstwy konstytucyjnej"
+  },
+  "note": "Mutacje modelowe odwzorowują semantykę kontroli z rego; generator auto-testów (I10) produkuje z nich kod testowy."
+}

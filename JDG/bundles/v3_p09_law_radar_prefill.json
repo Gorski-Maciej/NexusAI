@@ -1,0 +1,56 @@
+{
+  "innovation": "V3-P09-I08",
+  "generated_at": "2026-09-03T12:43:14.111755+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "drafts": 1,
+    "with_diff": 0,
+    "diff_schema_exists": true
+  },
+  "prefill_demo": {
+    "prefilled": true,
+    "change_type": "AMEND_VALUE",
+    "target": {
+      "kind": "parameter",
+      "key": "<key z recipes>"
+    },
+    "legal_basis": {
+      "act": "Ustawa o VAT",
+      "article": "art. 113 ust. 1"
+    },
+    "source_diff": "D-2026-0001",
+    "old_text": "1 200 000 EUR",
+    "new_text": "2 000 000 EUR",
+    "effective_from": "2027-01-01",
+    "status": "AWAITS_LAWYER_CONFIRM"
+  },
+  "checks": [
+    {
+      "name": "diff_source",
+      "status": "FAIL",
+      "detail": "drafty z predicted_diff: 0/1 — brak źródła do prefillu"
+    },
+    {
+      "name": "prefill_demo",
+      "status": "OK",
+      "detail": "prefill z diffa działa (demo D-2026-0001 → pre-deklaracja)"
+    },
+    {
+      "name": "wired_pipeline",
+      "status": "FAIL",
+      "detail": "brak automatycznego prefillu deklaracji z pipeline'u prawa (P08)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P09-L08",
+      "severity": "P2",
+      "evidence": "law_radar.json zawiera 1 draft (DRL-0001) bez predicted_diff; schema diffu (P08-I02) istnieje, ale żaden krok nie generuje pre-deklaracji z diffa — prawnik pisze deklarację od zera, zamiast potwierdzać prefill",
+      "fix": "I08 Law Radar Prefill: diff (P08) → pre-deklaracja wg recipes → status AWAITS_LAWYER_CONFIRM; potwierdzenie = deklaracja oficjalna"
+    }
+  ],
+  "contract": {
+    "binding": "P08 (Law Radar diff), P09-I02 (kompilacja prefillu), P01 (LKG)",
+    "rule": "ENACTED z diffem → pre-deklaracja w < 1 dzień; prefill bez potwierdzenia prawnika nie wykonuje"
+  }
+}

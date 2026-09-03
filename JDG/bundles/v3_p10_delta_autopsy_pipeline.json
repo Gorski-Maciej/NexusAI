@@ -1,0 +1,53 @@
+{
+  "innovation": "V3-P10-I02",
+  "name": "Delta Autopsy Pipeline — klasyfikacja + uzasadnienie + wyrok",
+  "generated_at": "2026-09-03T12:43:18+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "classifier": true,
+    "legal_basis": true,
+    "diff_p08_source": true,
+    "diff_p08_read": false,
+    "audit_record": true,
+    "replay_engine": true
+  },
+  "checks": [
+    {
+      "name": "autojustify_classifier",
+      "status": "OK",
+      "detail": "autojustify klasyfikuje delty (UZASADNIONA/REGRESJA): True"
+    },
+    {
+      "name": "legal_basis_linking",
+      "status": "OK",
+      "detail": "uzasadnienie łączy się z legal_basis: True"
+    },
+    {
+      "name": "diff_source_p08",
+      "status": "OK",
+      "detail": "źródło diffu prawnego P08 istnieje (v3_p08_legal_diff_schema.json): True"
+    },
+    {
+      "name": "diff_link_p08",
+      "status": "FAIL",
+      "detail": "autojustify CZYTA diff prawny P08 (predicted_diff/schema): False (legal_diff przyjmowany tylko jako parametr ręczny --legal-diff)"
+    },
+    {
+      "name": "audit_record",
+      "status": "OK",
+      "detail": "wpis audytowy po wyroku: True"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P10-L02",
+      "severity": "P1",
+      "evidence": "golden_autojustify.py uzasadnia zmiany przez porównanie pól (legal_basis/rule_id/threshold) i przyjmuje legal_diff jako parametr ręczny (--legal-diff), ale NIE czyta automatycznie diffu prawnego P08 (predicted_diff / v3_p08_legal_diff_schema) — delta wynikająca z nowelizacji nie ma dowodu w postaci diffu akt→reguła bez ręcznego podania",
+      "fix": "I02: podpiąć diff P08 (v3_p08_legal_diff_schema.json) jako źródło uzasadnienia; klasyfikacja 3-drogowa + wyrok + wpis audytowy"
+    }
+  ],
+  "contract": {
+    "binding": "P08 (diff prawny), P07 (awans), P39 (CI), P44",
+    "rule": "każda delta ma wyrok: UZASADNIONA (z diffem prawnym) lub NIEUZASADNIONA (= REGRESJA, blokada)"
+  }
+}

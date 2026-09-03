@@ -1,0 +1,185 @@
+{
+  "innovation": "V3-P07-I01",
+  "generated_at": "2026-09-03T10:26:12.269604+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "registry_rules": 13,
+    "versions_evaluated": 13,
+    "verdict_hold": 13,
+    "shadow_delta_documented": 27,
+    "deployments_total": 44
+  },
+  "criteria": [
+    "tests_ok",
+    "delta_shadow_le_2pct",
+    "quality_ge_95",
+    "no_temporal_conflict",
+    "four_eyes",
+    "error_rate_ok"
+  ],
+  "verdicts": [
+    {
+      "rule_id": "jdg.adaptive_trust.auto_post_gate",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "tests_ok": false,
+      "four_eyes": false,
+      "error_rate_ok": true,
+      "verdict": "HOLD"
+    },
+    {
+      "rule_id": "jdg.kks.statute_of_limitations_art44",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "tests_ok": false,
+      "four_eyes": false,
+      "error_rate_ok": true,
+      "verdict": "HOLD"
+    },
+    {
+      "rule_id": "jdg.ksef_jpk.ksef_mandatory",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "tests_ok": false,
+      "four_eyes": false,
+      "error_rate_ok": true,
+      "verdict": "HOLD"
+    },
+    {
+      "rule_id": "jdg.local_taxes.pcc.sale_detection",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "tests_ok": false,
+      "four_eyes": false,
+      "error_rate_ok": true,
+      "verdict": "HOLD"
+    },
+    {
+      "rule_id": "jdg.p11_ordynacja_podatkowa_innovations.limitation_engine",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "tests_ok": false,
+      "four_eyes": false,
+      "error_rate_ok": true,
+      "verdict": "HOLD"
+    },
+    {
+      "rule_id": "jdg.p12_crossborder_innovations.cfc_calculator",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "tests_ok": false,
+      "four_eyes": false,
+      "error_rate_ok": true,
+      "verdict": "HOLD"
+    },
+    {
+      "rule_id": "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_rate_calculator",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "tests_ok": false,
+      "four_eyes": false,
+      "error_rate_ok": true,
+      "verdict": "HOLD"
+    },
+    {
+      "rule_id": "jdg.p16_rodo_aml_security_innovations.rodo_sanctions_calculator",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "tests_ok": false,
+      "four_eyes": false,
+      "error_rate_ok": true,
+      "verdict": "HOLD"
+    },
+    {
+      "rule_id": "jdg.pit.a30c.r1",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "tests_ok": false,
+      "four_eyes": false,
+      "error_rate_ok": true,
+      "verdict": "HOLD"
+    },
+    {
+      "rule_id": "jdg.pit.advances_returns.loss_carry_forward",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "tests_ok": false,
+      "four_eyes": false,
+      "error_rate_ok": true,
+      "verdict": "HOLD"
+    },
+    {
+      "rule_id": "jdg.rule_lifecycle.auto_rollback",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "tests_ok": false,
+      "four_eyes": false,
+      "error_rate_ok": true,
+      "verdict": "HOLD"
+    },
+    {
+      "rule_id": "jdg.solidarity.hyper.threshold_1m",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "tests_ok": false,
+      "four_eyes": false,
+      "error_rate_ok": true,
+      "verdict": "HOLD"
+    },
+    {
+      "rule_id": "jdg.uor_live.full_accounting_obligation_check",
+      "version": "1.0.0",
+      "status": "ACTIVE",
+      "tests_ok": false,
+      "four_eyes": false,
+      "error_rate_ok": true,
+      "verdict": "HOLD"
+    }
+  ],
+  "checks": [
+    {
+      "name": "criteria_closed_list",
+      "status": "OK",
+      "detail": "zamknięta lista: ['tests_ok', 'delta_shadow_le_2pct', 'quality_ge_95', 'no_temporal_conflict', 'four_eyes', 'error_rate_ok']"
+    },
+    {
+      "name": "registry_four_eyes",
+      "status": "FAIL",
+      "detail": "wersje bez pól 4-eyes (owner/reviewed_by): 13"
+    },
+    {
+      "name": "shadow_delta_evidence",
+      "status": "FAIL",
+      "detail": "fazy przejściowe (SHADOW/RAMP/CANARY) w historii deploymentów: BRAK — ścieżka awansu bez dowodu delta ≤ 2%"
+    },
+    {
+      "name": "quality_gate",
+      "status": "OK",
+      "detail": "deploymenty soak z quality < 95: []"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P07-L02",
+      "severity": "P1",
+      "evidence": "cmd_promote (rule_lifecycle_manager) NIE egzekwuje kryteriów zdrowia — komentarz w kodzie: 'awans nie wymaga tu jawnego pomiaru zdrowia'; kryteria (tests/delta/jakość/4-eyes) nie są zautomatyzowane",
+      "fix": "Promotion Contract Engine jako bramka przed zapisem statusu ACTIVE (I01); wyrok HOLD z listą niespełnionych kryteriów [BM]"
+    },
+    {
+      "id": "V3-P07-L03",
+      "severity": "P1",
+      "evidence": "żaden z 44 deploymentów nie przeszedł fazy SHADOW_COMPARE/RAMPED/CANARY (rozkład faz: {'FULL_SOAK': 2, 'ROLLED_BACK': 25, 'COMPLETE_SOAK': 17}) — delta ≤ 2% nie była egzekwowana na ścieżce awansu",
+      "fix": "Shadow Delta Automator (I03) — faza SHADOW_COMPARE z zapisem delta przed każdym awansem [BM]"
+    },
+    {
+      "id": "V3-P07-L04",
+      "severity": "P1",
+      "evidence": "żadna z 13 zarejestrowanych reguł nie ma pól 4-eyes (owner jest, reviewed_by/operator brak)",
+      "fix": "4-Eyes Enforcement Layer (I05) — podpisy ról w rekordzie i bramka CI"
+    }
+  ],
+  "contract": {
+    "binding": "P38 (deployment — bramka przed ACTIVE), P40 (jakość), P44 (certyfikacja), P39 (CI)",
+    "rule": "awans bez wyroku PASS = blokada [BM]; wyrok HOLD wymaga 4-eyes"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "certified_at": "2026-09-03T12:43:01.804159+00:00",
+  "checksum_sha256": "37a4a76eb11d4ce4f13d92ea91c3b38dc681f2eeee50fac8272258d28fa8d26e",
+  "leaf_count": 617,
+  "boundary_rows": 2661,
+  "legal_sets": {
+    "vat": [
+      0.0,
+      0.05,
+      0.08,
+      0.23
+    ],
+    "pit_scale": [
+      0.12,
+      0.32
+    ],
+    "zus_rate_band": [
+      0.0,
+      1.0
+    ]
+  }
+}

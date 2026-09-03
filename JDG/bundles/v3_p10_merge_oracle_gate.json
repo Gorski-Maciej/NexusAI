@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P10-I03",
+  "name": "Merge Oracle Gate — zero nieuzasadnionych delt przed merge",
+  "generated_at": "2026-09-03T12:43:19+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "golden_in_ci": true,
+    "blocking": false
+  },
+  "checks": [
+    {
+      "name": "golden_in_ci",
+      "status": "OK",
+      "detail": "golden oracle obecny w CI: True"
+    },
+    {
+      "name": "blocking_gate",
+      "status": "FAIL",
+      "detail": "bramka blokująca merge (bez || true): NIE — wywołanie z || true (miękkie)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P10-L03",
+      "severity": "P0",
+      "evidence": "jdg-quality-gates-blocking.yml woła 'golden_replay.py report >/dev/null 2>&1 || true' — bramka miękka: UVR>0 nie blokuje merge (fail-open na poziomie CI)",
+      "fix": "I03: zamienić na twardą bramkę 'golden_replay.py gate' (exit 1 przy UVR>0 lub delcie bez wyroku) w jdg-quality-gates-blocking.yml"
+    }
+  ],
+  "contract": {
+    "binding": "P39 (testy/CI), P38 (deploy), P07 (awans reguł)",
+    "rule": "merge zablokowany, dopóki UVR > 0 lub delta bez wyroku (P10-I02)"
+  }
+}

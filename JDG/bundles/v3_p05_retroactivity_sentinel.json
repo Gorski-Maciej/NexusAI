@@ -1,0 +1,65 @@
+{
+  "innovation": "V3-P05-I04",
+  "generated_at": "2026-09-03T12:42:55+00:00",
+  "gate": "PASS",
+  "method": "wykrywanie valid_from < changed_at/published (dane) + flagi retro (kod) + rzutowanie na złote werdykty (lista rewizji) — alert do Law Radar P08",
+  "suspects": [
+    {
+      "type": "BACKDATED_EFFECTIVE",
+      "key": "vat.standard_rate",
+      "valid_from": "2026-01-01",
+      "changed_at": "2026-08-08T11:34:34",
+      "source_act": "Art. 41 ustawy o VAT",
+      "note": "seed archiwalny czy retroaktywność? do weryfikacji 4-eyes"
+    },
+    {
+      "type": "AUDIT_CHANGE_BEFORE_EFFECTIVE",
+      "key": "vat.standard_rate",
+      "at": "2026-08-08T11:34:34",
+      "valid_from": "2026-01-01"
+    },
+    {
+      "type": "CODE_FLAG",
+      "file": "rules/edge_cases.rego",
+      "line": 227,
+      "rule_id": "jdg.edge_cases.vat_exempt_breach_retroactive"
+    },
+    {
+      "type": "CODE_FLAG",
+      "file": "rules/temporal.rego",
+      "line": 312,
+      "rule_id": "jdg.temporal.retroactive_change"
+    }
+  ],
+  "revision_list": [],
+  "metrics": {
+    "suspects_total": 4,
+    "backdated_effective": 1,
+    "code_retro_flags": 2,
+    "revisions_needed": 0
+  },
+  "checks": [
+    {
+      "name": "retroactive_suspects",
+      "status": "WARN",
+      "detail": "podejrzanych zdarzeń: 4 (backdate: 1, code_flags: 2)"
+    },
+    {
+      "name": "revision_list",
+      "status": "OK",
+      "detail": "deklaracji do rewizji (golden ∩ okno retro): 0"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P05-L06",
+      "severity": "P3",
+      "evidence": "thresholds_data.json: vat.standard_rate ma valid_from (2026-01-01) wcześniejszy niż changed_at (2026-08-08) — seed archiwalny wartości faktycznie obowiązującej, ale bez jawnego wpisu 'retroactive:false' + „source_act”",
+      "fix": "seed z jawnym polem retroactive=false i refem do Dz.U. (P06 — parametry jako dane)"
+    }
+  ],
+  "contract": {
+    "binding": "P08 Law Radar / P11 certyfikaty / P10 golden replay / P39 CI",
+    "zasada": "retroaktywność bez jawnego przepisu przejściowego = BLOCKER; rewizja deklaracji = powiadomienie (P08) + korekta z nowym snapshot_id"
+  }
+}

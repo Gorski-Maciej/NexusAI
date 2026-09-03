@@ -1,0 +1,273 @@
+{
+  "innovation": "V3-P04-I11",
+  "name": "Runtime Cost Ledger — koszt egzekucji per INV (P04-AN03)",
+  "generated_at": "2026-09-03T08:57:50.189109+00:00",
+  "rows": [
+    {
+      "invariant": "INV-001",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-002",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 3
+    },
+    {
+      "invariant": "INV-003",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-004",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-005",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 2
+    },
+    {
+      "invariant": "INV-006",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-007",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-008",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-009",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 2
+    },
+    {
+      "invariant": "INV-010",
+      "level": "STATISTICAL",
+      "enforcement": "ALERT",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-011",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-012",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-013",
+      "level": "BUILD",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-014",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-015",
+      "level": "BUILD",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-016",
+      "level": "BUILD",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-017",
+      "level": "BUILD",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-018",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-019",
+      "level": "BUILD",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-020",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-021",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-022",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-023",
+      "level": "BUILD",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-024",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-025",
+      "level": "STATISTICAL",
+      "enforcement": "AUTO_REVERT",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-026",
+      "level": "BUILD",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-027",
+      "level": "BUILD",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-028",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-029",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-030",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 2
+    },
+    {
+      "invariant": "INV-031",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-032",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-033",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-034",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-035",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-036",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-037",
+      "level": "BUILD",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-038",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-039",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 2
+    },
+    {
+      "invariant": "INV-040",
+      "level": "STATISTICAL",
+      "enforcement": "ALERT",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-041",
+      "level": "BUILD",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    },
+    {
+      "invariant": "INV-042",
+      "level": "RUNTIME",
+      "enforcement": "BLOCK",
+      "cost_model": 1
+    }
+  ],
+  "total_cost_model": 48,
+  "runtime_cost_model": 35,
+  "hotspots": [
+    {
+      "invariant": "INV-002",
+      "cost": 3
+    }
+  ],
+  "optimization_rule": "INV powyżej progu kosztu → indeksowanie/early-exit (I02); pomiar ms runtime z P37; budżet < 5% p95",
+  "gate": {
+    "pass": true,
+    "rule": "rejestr kosztu istnieje i wskazuje hot-spoty do optymalizacji (P04-AN03) — podstawa decyzji indeksowania"
+  },
+  "note": "Koszt modelowy (jednostki względne) — nie ms; pomiar z P37 (telemetria P02-I08 pass_duration_ms + I08 P03 klasy)."
+}

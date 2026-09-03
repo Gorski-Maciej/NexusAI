@@ -1,0 +1,45 @@
+{
+  "innovation": "V3-P08-I06",
+  "generated_at": "2026-09-03T10:42:21.943513+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "changes": 1,
+    "with_prepared_rules": 0,
+    "alert_ndays": [
+      90,
+      30,
+      14,
+      7
+    ],
+    "nday_alerts_impl": true
+  },
+  "checks": [
+    {
+      "name": "calendar_entries",
+      "status": "OK",
+      "detail": "zmiany w kalendarzu: 1"
+    },
+    {
+      "name": "nday_alerts",
+      "status": "OK",
+      "detail": "alerty N-dni ([90, 30, 14, 7]) w legal_change_calendar.py: alert=True"
+    },
+    {
+      "name": "lifecycle_sync",
+      "status": "FAIL",
+      "detail": "zmiany z przygotowanymi regułami SHADOW: 0/1 — brak integracji z P07"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P08-L06",
+      "severity": "P2",
+      "evidence": "legal_change_calendar.json zawiera 1 zmianę demo (DRL-0001, 2099) z rules_prepared=[] — kalendarz nie jest zasilany realnymi zmianami ani nie ostrzega N-dni przed wejściem; alerty N-dni: True",
+      "fix": "I06 Legal Change Calendar Sync: sync z radar (każdy ENACTED → wpis kalendarza), alerty 90/30/14/7, status reguł SHADOW per wpis"
+    }
+  ],
+  "contract": {
+    "binding": "P07 (status lifecycle per zmiana), P38 (bundle per zmiana), P37 (metryki lead)",
+    "rule": "ENACTED w radarze → wpis kalendarza tego samego dnia; countdown < 90 → alert; reguły SHADOW wymagane ≥ 30 dni przed"
+  }
+}

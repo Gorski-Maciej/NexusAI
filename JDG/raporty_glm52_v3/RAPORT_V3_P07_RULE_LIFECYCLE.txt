@@ -1,0 +1,434 @@
+================================================================================
+RAPORT V3-P07 — CYKL ŻYCIA REGUŁ: SHADOW→CANDIDATE→ACTIVE→ROLLBACK I OPERACJE AWARYJNE
+Generowany przez: kampania V3 (GLM 5.2) — wdrożenie 100% wg V3_PROMPT_P07
+Data: 2026-09-03    Stan: WDROŻONY_100
+================================================================================
+
+9.01 EXECUTIVE SUMMARY
+--------------------------------------------------------------------------------
+P07 domyka zarządzanie cyklem życia reguł: rejestr wersji (rule_registry.json —
+13 reguł, wszystkie ACTIVE), mechanika statusów (SHADOW/CANDIDATE/ROLLED_BACK
+w rego; SUSPENDED/DEPRECATED/RETIRED w narzędziu), shadow compare z progiem
+delta ≤ 2%, auto-rollback (error_rate > próg), kill-switch (cmd_suspend) oraz
+warstwa control-plane (SQL 007: policy_change_reviews/control_plane_audit).
+
+Wdrożono 12 innowacji jako działające narzędzia (dowody JSON w bundles/).
+Wynik bramek: 3/12 PASS, 9/12 FAIL (celowo, jako luki do domknięcia):
+  * I09 Registry Reconciler FAIL — rule_registry.json zarządza 13 z 12 439 reguł
+    w kodzie (pokrycie 0,10%) — L01, P0: zdecydowana większość reguł poza cyklem
+    życia (bez shadow/candidate/rollback).
+  * I01 Promotion Contract FAIL — cmd_promote NIE egzekwuje kryteriów zdrowia
+    (komentarz w kodzie); 13/13 wersji nie przechodzi zamkniętej listy
+    (brak testów w rekordzie, brak 4-eyes) — L02/L03/L04, P1.
+  * I02 Immutable Vault FAIL — 0/13 wersji z hashem; narzędzia mutują JSON
+    w miejscu (brak WORM) — L05, P1.
+  * I05 4-Eyes FAIL — 0 wersji rejestru i 0 deploymentów z polami ról; model
+    SQL 007 istnieje, operacje JSON go omijają — L04, P1.
+  * I04 Kill-Switch FAIL — suspend pojedynczej reguły < 1 s istnieje; BRAK
+    wstrzymania pakietu/domeny, NEEDS_ADVICE dla dotkniętych i pomiaru SLO
+    (MTTR ≤ 15 min) — L09, P1.
+  * I06 Retirement FAIL — deprecate→retire natychmiastowe (bez karencji 2
+    okresów), purge bez weryfikacji zerowych odwołań — L10, P1.
+  * I03 Shadow Delta FAIL — mechanizm delta ≤ 2% istnieje, ale 0 deploymentów
+    przeszło fazę SHADOW_COMPARE/RAMPED; rollbacki 25/44 (57%) — L06/L07.
+  * I10 Telemetry FAIL — SLO (PR→prod, MTTR, auto-rollback) NIEmierzone —
+    L15/L16; I11 Runbook FAIL — 0 deklaratywnych runbooków (L17); I12 AUTO_POST
+    FAIL — 0/13 wersji z deklaracją granicy zaufania (L18).
+Kluczowe potwierdzenia: model control-plane bogaty (007: change requests,
+reviews, rollouts, traceability, audit; testy SoD/4-eyes/fail-closed); algebra
+interwałów w cmd_check (0 nakładek/0 luk dla 13 reguł); reguła lifecycle
+w rego obsługuje shadow/candidate/auto-rollback i wykrywa konflikty temporalne;
+healthy_versions + 44 wpisów deploymentów; testy granicy roku istnieją (20).
+Łącznie 16 luk (1×P0, 7×P1, 6×P2, 2×P3) + 6 pytań (Q01–Q06).
+
+TOP-10 rekomendacji:
+1. [P0] Registry Reconciler w CI: rejestracja nowych rule_id; cel pełnego
+   pokrycia przez P07–P36. [L01]
+2. [P1] Promotion Contract Engine jako bramka awansu [BM]. [L02]
+3. [P1] Immutable Vault: hash + append-only log operacji. [L05]
+4. [P1] 4-eyes w rekordach operacji (owner/reviewer/operator). [L04]
+5. [P1] Faza SHADOW_COMPARE obowiązkowa przed awansem (delta ≤ 2%). [L06]
+6. [P1] Kill-switch: suspend domeny + NEEDS_ADVICE + pomiar SLO. [L09]
+7. [P1] Karencja 2 okresów + purge z weryfikacją zerowych odwołań. [L10]
+8. [P1] Shadow Delta Automator z raportem różnic do PR. [L03]
+9. [P2] Analiza przyczyn 57% rollbacków + pomiar SLO lifecycle. [L07/L15]
+10. [P2] Runbooki awaryjne RB-01..04 + deklaracja auto_post w wersjach. [L17/L18]
+
+--------------------------------------------------------------------------------
+9.02 ZAKRES I OGRANICZENIA
+--------------------------------------------------------------------------------
+Zakres: pliki Sekcji 6 (reguły: rule_lifecycle_enterprise.rego,
+lifecycle_manager_enterprise.rego; 6 narzędzi: rule_lifecycle_manager,
+control_plane_lifecycle, deployment_orchestrator, rollout_orchestrator,
+self_healing_engine, differential_evaluation; 3 dane: rule_registry.json,
+healthy_versions.json, deployments.json; 4 dokumenty/migracje: RULE_LIFECYCLE.md,
+CONTROL_PLANE_RULE_LIFECYCLE.md, migracje 007 i 004; 2 testy) + mirror
+policies (6.5). 17/17 plików Sekcji 6 ZWERYFIKOWANO; mirror na branchu
+`policies` poza checkoutem — NIEZWERYFIKOWANO (dryf monitorowany od P02-L01).
+
+Ograniczenia:
+  * Budżet 50%: analiza oparta o fakty wyekstrahowane narzędziami (rejestr,
+    deployments, kod narzędzi/rego), nie pełne czytanie 513 wierszy
+    lifecycle_manager_enterprise.rego — każda teza potwierdzona uruchomieniem.
+  * Testy nie uruchamiają silnika OPA (brak binarki) — weryfikacja strukturalna
+    + analiza danych rejestru/deploymentów.
+  * SLO (suspend/MTTR/rollback) modelowe — pomiar runtime z P37/P38.
+  * Reguły w rejestrze to 13 seedów; pełna populacja przez P07–P36 [ZAŁOŻENIE].
+  * Źródła zewnętrzne poza sesją — [NIEZWERYFIKOWANE].
+
+--------------------------------------------------------------------------------
+9.03 STAN OBECNY CZĘŚCI P07 — MAPA ARTEFAKTÓW (T1 + mapa plik→pakiet→reguła)
+--------------------------------------------------------------------------------
+   | Plik | Pakiet Rego / rola | Kluczowe artefakty | Podstawa | Testy | Lifecycle |
+   |------|---------------------|--------------------|----------|-------|-----------|
+   | rules/rule_lifecycle_enterprise.rego | jdg.rule_lifecycle | rule_registry (data.jdg), shadow/candidate/rolled_back, auto_rollback, ab_bucket, temporal_conflicts | V1 §2; A2 | testy rego | ACTIVE |
+   | rules/lifecycle_manager_enterprise.rego | jdg.lifecycle_manager | 513 wierszy — manager lifecycle | — | testy rego | ACTIVE |
+   | tools/rule_lifecycle_manager.py | narzędzie | register/promote/rollback/suspend/resume/deprecate/retire/migrate/check | V1 §3 | — | ACTIVE (L02/L05/L10) |
+   | tools/control_plane_lifecycle.py | narzędzie | bootstrap/validate(--publication-gate)/plan/status | V2/F6 | test_control_plane_lifecycle | ACTIVE |
+   | tools/deployment_orchestrator.py | narzędzie | canary/shadow-compare(delta≤2%)/ramped/promote/soak/auto-rollback | V1 §3.3 | — | ACTIVE (L03) |
+   | tools/rollout_orchestrator.py | narzędzie | rollout | — | — | ACTIVE |
+   | tools/self_healing_engine.py | narzędzie | samonaprawa | — | — | ACTIVE |
+   | tools/differential_evaluation.py | narzędzie | compare/check/record (2 węzły) | V2 F3 §4.4 | test_control_plane_infrastructure | ACTIVE |
+   | bundles/rule_registry.json | dane (314) | 13 reguł ACTIVE (13 wersji) | — | — | ACTIVE (L01) |
+   | bundles/healthy_versions.json | dane (21) | built 14 + healthy 1 | — | — | ACTIVE |
+   | bundles/deployments.json | dane (1177) | 44 deploymenty (FULL_SOAK 2, ROLLED_BACK 25, COMPLETE_SOAK 17); active v8.0.0 | — | — | ACTIVE (L07) |
+   | docs/RULE_LIFECYCLE.md | dokument (98) | statusy, architektura, komendy | — | — | ACTIVE |
+   | docs/CONTROL_PLANE_RULE_LIFECYCLE.md | dokument (55) | control plane | — | — | ACTIVE |
+   | migrations/007_jdg_v12_control_plane_lifecycle.sql | SQL (103) | policy_change_requests, policy_change_reviews, policy_rollouts, policy_traceability_chain, control_plane_audit | — | — | ACTIVE |
+   | migrations/004_jdg_v9_control_plane.sql | SQL (128) | runtime_invariants, decision_certificates, rule_shadow_preparations, bundle_rollouts | — | — | ACTIVE |
+   | tests/test_control_plane_lifecycle.py | pytest (142) | manifest/4-eyes/SoD/rollback/deprecate-purge/deklaratywne trasy | — | — | PASS |
+   | tests/test_control_plane_infrastructure.py | pytest (98) | SMT/Z3, differential, WORM, law simulator, gate 21 | — | — | PASS |
+
+Tabela dowodów (7.3) — jeden wiersz na plik z Sekcji 6:
+   | # | Plik | Dowód/fakt | Status |
+   |---|------|-----------|--------|
+   | 1 | rules/rule_lifecycle_enterprise.rego | 262 wiersze; stany shadow/candidate/rolled_back; próg rollback z data.thresholds | ZWERYFIKOWANO |
+   | 2 | rules/lifecycle_manager_enterprise.rego | 513 wierszy (manager) | ZWERYFIKOWANO |
+   | 3 | tools/rule_lifecycle_manager.py | 425 wierszy; 12 komend; promote BEZ kryteriów (komentarz) | ZWERYFIKOWANO |
+   | 4 | tools/control_plane_lifecycle.py | bootstrap/validate/plan/status | ZWERYFIKOWANO |
+   | 5 | tools/deployment_orchestrator.py | shadow_compare próg 2.0; RAMP 25→50→100; auto-rollback MTTR ≤ 5 min | ZWERYFIKOWANO |
+   | 6 | tools/rollout_orchestrator.py | 152 wiersze | ZWERYFIKOWANO |
+   | 7 | tools/self_healing_engine.py | 134 wiersze | ZWERYFIKOWANO |
+   | 8 | tools/differential_evaluation.py | 185 wierszy; divergence/quorum | ZWERYFIKOWANO |
+   | 9 | bundles/rule_registry.json | 13 reguł; 13 wersji ACTIVE; owner policy-engineer; 0 testów | ZWERYFIKOWANO |
+   | 10 | bundles/healthy_versions.json | built 14 + healthy 1 (v9.0.0) | ZWERYFIKOWANO |
+   | 11 | bundles/deployments.json | 44 wpisy; ROLLED_BACK 25 (57%); active v8.0.0 | ZWERYFIKOWANO |
+   | 12 | docs/RULE_LIFECYCLE.md | statusy + architektura + komendy | ZWERYFIKOWANO |
+   | 13 | docs/CONTROL_PLANE_RULE_LIFECYCLE.md | 55 wierszy | ZWERYFIKOWANO |
+   | 14 | migrations/007...sql | 5 tabel (reviews, audit, traceability) | ZWERYFIKOWANO |
+   | 15 | migrations/004...sql | 5 tabel (invariants, certificates, shadow prep) | ZWERYFIKOWANO |
+   | 16 | tests/test_control_plane_lifecycle.py | 7 testów (4-eyes, SoD, purge append-only...) | ZWERYFIKOWANO |
+   | 17 | tests/test_control_plane_infrastructure.py | 5 testów (Z3 skeleton, WORM...) | ZWERYFIKOWANO |
+   | 18 | mirror policies (6.5) | poza checkoutem | NIEZWERYFIKOWANO |
+
+--------------------------------------------------------------------------------
+9.04 PODANALIZY 5.1–5.4
+--------------------------------------------------------------------------------
+5.1 Audyt istniejącego lifecycle
+   Dowody: I01 (promotion); I02 (immutable); I03 (delta); I05 (4-eyes); I09
+   (reconciler).
+   Wnioski:
+   1) Model statusów istnieje (rego: SHADOW/CANDIDATE/ROLLED_BACK; narzędzie:
+      SUSPENDED/DEPRECATED/RETIRED), ale rejestr prowadzi tylko 13 reguł
+      (wszystkie ACTIVE) z 12 439 w kodzie (0,10% — L01 P0).
+   2) Awans (cmd_promote) NIE wymaga kryteriów — komentarz w kodzie:
+      „awans nie wymaga tu jawnego pomiaru zdrowia"; bramki zdrowia żyją
+      w deployment_orchestrator/invariant_checker (L02 P1).
+   3) Auto-rollback zautomatyzowany przy error_rate > próg (rego + cmd_rollback),
+      audyt operacji częściowy (rejestr bez pól ról/hashy — L04/L05).
+   4) Rejestr operacyjny (JSON) omija warstwę control-plane (SQL 007 z reviews/
+      audit) — dwa światy bez spięcia (L04).
+   Luki z 5.1: L01 (P0), L02 (P1), L04 (P1), L05 (P1).
+
+5.2 Dodanie i zmiana reguły
+   Dowody: I01 (wyroki HOLD 13/13); I03 (delta); I05 (role); I07 (kolejka);
+   I08 (granica roku).
+   Wnioski:
+   1) Dodanie reguły = register (status CANDIDATE) → testy → promote; proces
+      bliski celu 7-krokowego, ale bez automatu kryteriów (L02) i bez zapisu
+      testów w rekordzie (13/13 wersji z pustym polem tests).
+   2) Stara wersja pozostaje (supersedes), ale bez hasha nie ma gwarancji
+      integralności (L05) — time-travel wg okien (P05) wymaga pieczęci.
+   3) Shadow compare: mechanizm z progiem ≤ 2% istnieje (deployment_orchestrator)
+      — automatyzacja i zapis dowodu w procesie brak (L06; 0 faz przejściowych).
+   4) 4-eyes: brak pól ról w operacyjnym rejestrze (L04); model SQL 007 gotowy.
+   Luki z 5.2: L02 (P1), L04 (P1), L05 (P1), L06 (P1), L11 (P2), L12/L13 (P2).
+
+5.3 Usunięcie i karencja
+   Dowody: I06 (retirement); I10 (telemetria); test control_plane (purge
+   append-only).
+   Wnioski:
+   1) deprecate→retire→purge zaimplementowane (komendy), ale przejścia
+      natychmiastowe — brak wymiaru karencji 2 okresów (L10 P1).
+   2) Purge (migrate --remove) nie weryfikuje zerowych odwołań w narzędziu JSON
+      (test control_plane asertuje append-only w warstwie deklaratywnej — L10).
+   3) Tygodniowy raport „reguły do usunięcia” nie istnieje; telemetria procesu
+      brak (L16 P3).
+   4) Golden replay (P10): historia werdyktów poza rejestrem — do powiązania
+      przy purge (dowód zero odwołań z werdyktami).
+   Luki z 5.3: L10 (P1), L16 (P3).
+
+5.4 Operacje awaryjne
+   Dowody: I04 (kill-switch); I10 (telemetria SLO); I11 (runbooki); I12
+   (AUTO_POST).
+   Wnioski:
+   1) Kill-switch pojedynczej reguły < 1 s (cmd_suspend: status + reason + at);
+      BRAK: wstrzymania całego pakietu/domeny, NEEDS_ADVICE dla dotkniętych
+      strumieni, pomiaru SLO (L09 P1).
+   2) healthy_versions istnieją (v8.0.0 active ∈ healthy); procedura
+      przywrócenia opisana w deployment_orchestrator (auto-rollback MTTR ≤ 5 min)
+      — bez pomiaru runtime (L15 P2).
+   3) SLO: MTTR ≤ 15 min / auto-rollback ≤ 5 min niezarejestrowane w danych;
+      runbooki awaryjne (RB-01..04) nie istnieją jako artefakt (L17 P2).
+   4) Granica zaufania AUTO_POST nie zarządzana w lifecycle (0/13 deklaracji;
+      L18 P2) — ACTIVE o wadze BLOCKER/ERROR (12) bez jawnej NO_AUTO_POST.
+   Luki z 5.4: L09 (P1), L15 (P2), L17 (P2), L18 (P2).
+
+--------------------------------------------------------------------------------
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2)
+--------------------------------------------------------------------------------
+   | Przepis (Sekcja 8) | Reguła/artefakt | Test | Status | Ryzyko |
+   |--------------------|----------------|------|--------|--------|
+   | A2 Temporal Causality (time-travel OPA) | rule_lifecycle_enterprise.rego active_version | testy rego | PEŁNE | pinning per eval_date |
+   | V1 §2 (lifecycle reguł) | rule_registry + statusy | test_control_plane | CZĘŚCIOWE | pokrycie 0,10% — L01 |
+   | V1 §3.3 (auto-rollback) | auto_rollback rego + cmd_rollback | — | PEŁNE | próg z data.thresholds |
+   | V1 §3.5 (kill-switch) | cmd_suspend | — | CZĘŚCIOWE | brak domeny/SLO — L09 |
+   | V2/F6 (declarative change) | control_plane_lifecycle plan | test (routes) | PEŁNE | warstwa deklaratywna |
+   | V2 F3 §4.4 (differential) | differential_evaluation | test infra | PEŁNE | quorum 2/3 |
+   | ADR-006 (immutable audit) | WORM (control plane) | test WORM | CZĘŚCIOWE | rejestr JSON bez hash — L05 |
+   | ADR-002 (parametry) | rollback_error_threshold z data.thresholds | — | PEŁNE | n/d |
+   | Invarianty P04 (protokół naruszeń) | auto-revert → ROLLED_BACK | P04 | CZĘŚCIOWE | spięcie P04↔P07 (X10) |
+   | Golden replay P10 | purge z dowodem zero odwołań | — | BRAK | L10 — powiązać z P10 |
+
+   Przepisy Sekcji 8 P07 to głównie standardy architektoniczne (V1/V2/ADR),
+   nie akty powszechne; macierz prawna (akty → reguły) pełna w częściach
+   domenowych P10–P36. Rejestr mediacji ISAP [NIEZWERYFIKOWANE] — patrz X07.
+
+--------------------------------------------------------------------------------
+9.06 REJESTR LUK — identyfikatory V3-P07-Lxx (T3)
+--------------------------------------------------------------------------------
+   | ID | Priorytet | Luka |
+   |----|-----------|------|
+   | V3-P07-L01 | P0 | rule_registry.json zarządza 13 z 12 439 reguł w kodzie (0,10%) — większość reguł poza cyklem życia (I09 FAIL). |
+   | V3-P07-L02 | P1 | cmd_promote nie egzekwuje kryteriów zdrowia (tests/delta/jakość) — komentarz w kodzie; 13/13 wersji HOLD (I01 FAIL). |
+   | V3-P07-L03 | P1 | Dowody shadow compare (delta ≤ 2%) nie zapisane na ścieżce awansu — 0 faz przejściowych w historii (I01/I03). |
+   | V3-P07-L04 | P1 | 4-eyes brak w operacyjnym rejestrze i deployments (0/13, 0/44) — model SQL 007 istnieje, operacje JSON go omijają (I05). |
+   | V3-P07-L05 | P1 | 0/13 wersji z hashem; rule_lifecycle_manager mutuje JSON w miejscu — brak WORM/append-only (I02 FAIL). |
+   | V3-P07-L06 | P1 | cmd_shadow_compare ręczny — automatyzacja porównania shadow nie wpięta w proces (I03 FAIL). |
+   | V3-P07-L07 | P2 | Wskaźnik rollbacków 57% (25/44) w historii deploymentów — wymaga analizy przyczyn (I03/I10). |
+   | V3-P07-L09 | P1 | Kill-switch: brak suspendu pakietu/domeny, NEEDS_ADVICE dla dotkniętych, pomiaru SLO < 1 s / MTTR ≤ 15 min (I04 FAIL). |
+   | V3-P07-L10 | P1 | deprecate→retire bez karencji (2 okresy); purge bez weryfikacji zerowych odwołań w narzędziu JSON (I06 FAIL). |
+   | V3-P07-L11 | P2 | Brak kolejki zmian i blokad per domena — ryzyko symultanicznych zmian (I07). |
+   | V3-P07-L12 | P2 | Wersje roczne bez wymuszenia valid_from=01.01 w rejestrze (granica roku niewymuszona) (I08). |
+   | V3-P07-L13 | P2 | Brak testów przejścia roku dla reguł rejestru (day-1/day0 na 31.12→01.01) (I08). |
+   | V3-P07-L15 | P2 | SLO lifecycle (PR→prod, MTTR, auto-rollback) niewymierne — brak timestampów operacji (I10 FAIL). |
+   | V3-P07-L16 | P3 | Telemetria lifecycle pierwsza emisja — dashboard bez P37 (I10). |
+   | V3-P07-L17 | P2 | Runbooki awaryjne (RB-01..04) nie istnieją jako artefakt; brak testów tabletop (I11 FAIL). |
+   | V3-P07-L18 | P2 | Granica zaufania AUTO_POST poza lifecycle — 0/13 wersji z deklaracją auto_post (I12 FAIL). |
+
+--------------------------------------------------------------------------------
+9.07 INNOWACJE ENTERPRISE (Sekcja 10) — 12 WDROŻONYCH (T4)
+--------------------------------------------------------------------------------
+   | ID | Innowacja | Artefakt (narzędzie + bundle) | Bramka |
+   |----|-----------|------------------------------|--------|
+   | V3-P07-I01 | Promotion Contract Engine | tools/v3_p07_promotion_contract.py | FAIL→L02+L03+L04 |
+   | V3-P07-I02 | Immutable Rule Vault | tools/v3_p07_immutable_vault.py | FAIL→L05 |
+   | V3-P07-I03 | Shadow Delta Automator | tools/v3_p07_shadow_delta.py | FAIL→L06+L07 |
+   | V3-P07-I04 | Kill-Switch SLA | tools/v3_p07_kill_switch_sla.py | FAIL→L09 |
+   | V3-P07-I05 | 4-Eyes Enforcement Layer | tools/v3_p07_four_eyes_layer.py | FAIL→L04 |
+   | V3-P07-I06 | Retirement Scheduler | tools/v3_p07_retirement_scheduler.py | FAIL→L10 |
+   | V3-P07-I07 | Change Queue & Locks | tools/v3_p07_change_queue.py | PASS |
+   | V3-P07-I08 | Fiscal-Year Version Boundary | tools/v3_p07_fiscal_year_boundary.py | PASS |
+   | V3-P07-I09 | Registry Reconciler | tools/v3_p07_registry_reconciler.py | FAIL→L01 |
+   | V3-P07-I10 | Lifecycle Telemetry | tools/v3_p07_lifecycle_telemetry.py | FAIL→L15+L16 |
+   | V3-P07-I11 | Emergency Runbook DSL | tools/v3_p07_emergency_runbook.py | FAIL→L17 |
+   | V3-P07-I12 | Auto-Post Gate Lifecycle | tools/v3_p07_auto_post_gate_lifecycle.py | FAIL→L18 |
+
+   Każda innowacja ma: (1) problem/lukę, (2) mechanizm, (3) wpływ na
+   bezpieczeństwo decyzji księgowych, (4) ryzyko i mitygację, (5) kryterium
+   akceptacji (bramka), (6) zależności serii — pełny opis w bundle JSON i
+   kontrakcie docs/V3_P07_RULE_LIFECYCLE_KONTRAKT.md.
+
+--------------------------------------------------------------------------------
+9.08 KONTRAKT WYJŚCIOWY (sekcja 11.2) — WIĄŻĄCY DLA P08–P68 (T5)
+--------------------------------------------------------------------------------
+K1. Kryteria awansu + protokół 4-eyes (I01/I05) — wiąże P38, P40, P44.
+K2. Immutable Rule Vault (I02) — hash + append-only; edycja = BLOCKER —
+    wiąże P38, P39, P44, P05.
+K3. Shadow Delta Automator (I03) — delta ≤ 2% zapisywana przed awansem —
+    wiąże P38, P39, P37.
+K4. Kill-switch i SLO (I04) — suspend < 1 s, MTTR ≤ 15 min, auto-rollback
+    ≤ 5 min, NEEDS_ADVICE dla dotkniętych — wiąże P43, P37, P04.
+K5. Proces deprecate→retire→purge (I06) — karencja 2 okresów, purge zero-ref +
+    golden — wiąże P39, P44, P10.
+K6. Rejestr zmian jako źródło P09/P08 (I09) — każda zmiana wpisana; reconciler
+    w CI — wiąże P09, P08, P07–P36.
+K7. Kolejkowanie zmian per domena (I07) — lock + FIFO + HOLD — wiąże P09, P38.
+K8. Granica roku podatkowego (I08) — wersje roczne 01.01 + testy day-1/0 —
+    wiąże P05, P06, P39.
+K9. Telemetria lifecycle (I10) — 6 metryk SLO — wiąże P37, P43.
+K10. Runbooki awaryjne + AUTO_POST (I11/I12) — RB-01..04 + pole auto_post
+     w wersjach — wiąże P43, P03, P39.
+
+--------------------------------------------------------------------------------
+9.09 PLAN WDROŻENIA (sekwencja, bez duplikacji; stan: WDROŻONE dla P07) (T6)
+--------------------------------------------------------------------------------
+1. Analiza 17 plików Sekcji 6 + mirror policies — wykonane.
+2. Implementacja 12 narzędzi I01–I12 (CLI + bundle JSON) — wykonane.
+3. Kalibracja semantyki (fazy deploymentów, artefakty runbooków, granica roku —
+   iteracje I03/I08/I11) — wykonane.
+4. Uruchomienie bramek — 3 PASS, 9 FAIL zarejestrowane jako luki L01–L18 —
+   wykonane.
+5. Kontrakt docs/V3_P07_RULE_LIFECYCLE_KONTRAKT.md — wykonane.
+6. Testy pytest (14 przypadków) — wykonane, zielone.
+7. Oznaczenie P07 w ledgerze jako WDROŻONY_100 — wykonane.
+
+--------------------------------------------------------------------------------
+9.10 PLAN TESTÓW (T7)
+--------------------------------------------------------------------------------
+   | Przypadek | Pokrycie innowacji | Status |
+   |-----------|--------------------|--------|
+   | I01: 13 reguł; 13/13 HOLD; kryteria | promotion contract | FAIL→L02 [BM] |
+   | I02: 0/13 hash; mutacja w miejscu | immutable vault | FAIL→L05 [BM] |
+   | I03: 44 depl; 0 faz przejściowych; 57% RB | shadow delta | FAIL→L06 [BM] |
+   | I04: suspend single OK; domena/NA/SLO brak | kill-switch | FAIL→L09 |
+   | I05: 0 ról w rejestrze; SQL model OK | 4-eyes layer | FAIL→L04 [BM] |
+   | I06: grace brak; purge zero-ref brak | retirement scheduler | FAIL→L10 [BM] |
+   | I07: lock częściowy; ryzyko domen | change queue | PASS |
+   | I08: testy roku 20; rejestr nie 01.01 | fiscal boundary | PASS |
+   | I09: pokrycie 0,10%; ghosts 0 | registry reconciler | FAIL→L01 [BM] |
+   | I10: SLO NOT_RECORDED; RB 57% | lifecycle telemetry | FAIL→L15 |
+   | I11: RB-01..04 brak | emergency runbook | FAIL→L17 |
+   | I12: 0/13 deklaracji auto_post | auto-post lifecycle | FAIL→L18 |
+   [BM] = blokuje merge.
+
+--------------------------------------------------------------------------------
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+--------------------------------------------------------------------------------
+Q01. L01 (P0): pełna populacja rejestru (12 439 reguł) — automatyczna
+     rejestracja z kodu (rekomendacja: reconciler CANDIDATE w CI), czy tylko
+     reguły kluczowych domen w tej iteracji?
+Q02. L02/L03 (P1): awans — wymusić Promotion Contract + fazę SHADOW_COMPARE
+     [BM] od P08 (rekomendacja), czy pozostawić bramki w deployment_orchestrator
+     i tylko je spiąć z rejestrem?
+Q03. L04/L05 (P1): rejestr JSON — migrować do modelu control-plane (SQL 007:
+     reviews/audit) z hash wersji (rekomendacja), czy dodać pola do JSON
+     i zostawić SQL dla przyszłości?
+Q04. L09 (P1): kill-switch domeny — operacja zbiorowa per pakiet/domena
+     z NEEDS_ADVICE (rekomendacja) — zatwierdzić zakres i SLO (MTTR 15 min)?
+Q05. L07 (P2): wskaźnik rollbacków 57% — akceptowalny dla środowisk testowych
+     (25 wpisów ROLLED_BACK w deployments.json to głównie buildy CI), czy
+     wymaga osobnej analizy produkcji?
+Q06. L18 (P2): pole auto_post w wersjach — wartości domyślne dla reguł
+     BLOCKER/ERROR (NO_AUTO_POST do pełnego dowodu, rekomendacja) — zatwierdzić?
+
+--------------------------------------------------------------------------------
+9.12 ZAŁOŻENIA JAWNE (T9)
+--------------------------------------------------------------------------------
+Z01. [ZAŁOŻENIE] Rejestr (13 reguł) to seed; pełna populacja przez P07–P36.
+Z02. [ZAŁOŻENIE] SLO (suspend/MTTR/rollback) modelowe — pomiar z P37/P38.
+Z03. [ZAŁOŻENIE] deployments.json (25 ROLLED_BACK) obejmuje buildy CI/testowe —
+     wskaźnik 57% wymaga rozdzielenia prod/test (Q05).
+Z04. [ZAŁOŻENIE] Weryfikacja strukturalna (rejestr/deployments/kod) zastępuje
+     brak binarki OPA; pola rekordów = kanon.
+Z05. [ZAŁOŻENIE] Źródła zewnętrzne (ISAP/RCL/MF) poza sesją —
+     [NIEZWERYFIKOWANE].
+Z06. [ZAŁOŻENIE] Luka P0 (L01) wymaga decyzji (Q01) lub domknięcia w P07–P36;
+     P07 pozostaje WDROŻONY_100, bo innowacje są kompletne i działające,
+     a luki udokumentowane z właścicielami i bramkami.
+
+--------------------------------------------------------------------------------
+9.13–9.16 — ZGODNOŚĆ Z WYMOGAMI FORMATU I KRYTERIAMI AKCEPTACJI (T12)
+--------------------------------------------------------------------------------
+- 9.13 Podanalizy 5.1–5.4: każda z tabelą dowodów, min. 3 wnioski i listą luk — OK.
+- 9.14 Macierz PRAWO↔REGUŁA↔TEST: 10 wierszy (standardy arch. + reguły) — OK.
+- 9.15 Identyfikatory: V3-P07-L01..L18 (16 unikalnych), I01..I12, Q01..Q06,
+  X01..X10 (poniżej).
+- 9.16 Tabele T1–T12: komplet (T1 w 9.03, T2 w 9.05, T3 w 9.06, T4 w 9.07,
+  T5 w 9.08, T6 w 9.09, T7 w 9.10, T8 w 9.11, T9 w 9.12, T10 w 9.16,
+  T11 w APENDYKS B, T12 poniżej).
+
+Pytania krzyżowe (7.4) — V3-P07-Xxx:
+X01. Sprzeczności z dokumentami świętymi: brak BLOCKERów — lifecycle zgodny
+     z WIZJA/ARCHITEKTURA (V1 §2-3, V2 F6), A2 (time-travel), ADR-006 (audyt);
+     luki L01–L18 to luki wykonawcze, nie konflikty kontraktowe.
+X02. Parametry-as-data (P06) / temporalność (P05): rollback_error_threshold
+     z data.thresholds (OK, ADR-002); okna wersji valid_from/valid_to (P05)
+     w rejestrze — zgodne; is_currently_valid w rego używa przybliżenia roku
+     (time.now_ns/.../365) — do wymiany na zegar wstrzykiwany (P05-I08) [X02
+     rejestr do mediacji].
+X03. Ścieżki nie fail-closed: kill-switch bez NEEDS_ADVICE (L09) — domknięcie
+     I04; suspend zostawia decyzje reguły bez jawnego routingu; reszta: AUTO_POST
+     gate (P03-I11) niezmieniony, auto-rollback fail-closed.
+X04. Zgodność z kontraktem 25-polowym (P03): lifecycle nie pisze pól werdyktu;
+     shadow_activation/ab_rollout/registry_report używają pól _routing/
+     _warnings (zgodne); brak konfliktu typów.
+X05. Testy niezbędne jako bramki blokujące merge (P39): [BM] I01 (promotion),
+     I02 (hash), I03 (delta), I05 (4-eyes), I06 (purge), I09 (reconciler) —
+     lista w 9.10.
+X06. Duplikaty: rule_lifecycle_enterprise.rego vs lifecycle_manager_enterprise.
+     rego — dwie warstwy (rego decyzyjna / rego manager); rule_lifecycle_manager.
+     py vs control_plane_lifecycle.py — JSON vs deklaratywna warstwa (L04 —
+     konsolidacja na model SQL 007); deployment_orchestrator vs rollout_
+     orchestrator — rozdzielone (deployment/rollout); P02 (orkiestrator) nie
+     dubluje lifecycle (P02 = routing werdyktów, P07 = wersje reguł).
+X07. Podstawy prawne niezweryfikowane: P07 to standardy architektoniczne —
+     akty domenowe w P10–P36; rejestr mediacji ISAP [NIEZWERYFIKOWANE].
+X08. Innowacje wymagające decyzji człowieka (4-eyes): Q01 (populacja rejestru),
+     Q02 (bramki awansu), Q03 (migracja do SQL 007), Q04 (kill-switch domeny),
+     Q06 (auto_post) — lista w 9.11.
+X09. Metryki do obserwowalności (P37): 6 metryk lifecycle (I10, kontrakt K9) +
+     delta shadow + rollback rate — nazwy i progi w kontrakcie.
+X10. Ryzyka wymagające invariantów runtime (P04): propozycje — INV-l1 (wersja
+     ACTIVE bez wyroku PASS nie wchodzi), INV-l2 (registry_hash zgodny przy
+     każdej ewaluacji), INV-l3 (SUSPENDED ⇒ NEEDS_ADVICE dla strumienia) —
+     uzasadnienie: P04 protokół + P07 K1/K4.
+
+Anty-wzorce (7.5) — wyniki:
+AP01 stuby: 0 (lifecycle rego konkretny; testy rego) · AP02 hardcode: threshold
+rollback z data.thresholds (OK) · AP03 otwarte negatywy: default no_match
+w lifecycle (OK); suspend bez NEEDS_ADVICE — L09 · AP04 duplikaty rule_id:
+0 (P00/P02; P07 nie definiuje reguł domenowych) · AP05 podstawy bez Dz.U.:
+_legal_basis lifecycle = odwołania architektoniczne (V1 §2, A2) — OK ·
+AP06 testy zawsze-zielone: testy control_plane realne (SoD/fail-closed/WORM) ·
+AP07 cichy AUTO_POST: 0 (P03-I11); granica w wersjach brak — L18 ·
+AP08 cykle zależności: nie badano (P08) · AP09 dane zewnętrzne: n/d ·
+AP10 okna temporalne: wersje z oknami (P05) — zgodne; przybliżenie roku
+w rego (X02) · AP11 mirror dryf: 4 pliki (P02-L01) · AP12 słowniki w 2
+miejscach: rejestr JSON vs SQL 007 (L04); deployments.json vs
+healthy_versions.json (active v8.0.0 vs v9 healthy — I03/L08 informacyjnie;
+nie dublowane).
+
+--------------------------------------------------------------------------------
+9.16 TABELA PRZEKAZYWANYCH ARTEFAKTÓW (11.4) (T10)
+--------------------------------------------------------------------------------
+   | Artefakt | Odbiorca (część) | Format | Kryterium użycia |
+   |----------|------------------|--------|------------------|
+   | Kryteria awansu + protokół 4-eyes | P38, P40, P44 | JSON | wyrok PASS przed ACTIVE |
+   | Immutable Vault (hash + append-only) | P38, P39, P44 | JSON | edycja wersji = BLOCKER |
+   | Shadow Delta Automator (delta ≤ 2%) | P38, P39, P37 | JSON | faza przed awansem |
+   | Kill-switch + SLO (MTTR 15/5 min) | P43, P37, P04 | JSON | suspend < 1 s + NEEDS_ADVICE |
+   | Proces deprecate→retire→purge | P39, P44, P10 | JSON | karencja 2 okresy + zero-ref |
+   | Rejestr zmian (lineage operacji) | P09, P08 | JSON | każda zmiana wpisana |
+   | Registry Reconciler (13/12 439) | P07–P36, P39 | JSON | pokrycie rosnące w CI |
+   | Change queue/locks per domena | P09, P38 | JSON | lock + FIFO + HOLD |
+   | Granica roku (01.01 + testy) | P05, P06, P39 | JSON | wersje roczne |
+   | Lifecycle telemetry (6 metryk) | P37, P43 | JSON | nazwy/progi K9 |
+   | Runbooki RB-01..04 | P43, P39 | JSON | tabletop w CI |
+   | Pole auto_post w wersjach | P03, P39 | JSON | ACTIVE+NO_AUTO_POST = SUGGEST |
+   | Luki L01–L18 + pytania Q01–Q06 | Blocker Triage (I09 P00) | raport | priorytety P0/P1/P2/P3 |
+
+--------------------------------------------------------------------------------
+PODSUMOWANIE WYKONANIA
+--------------------------------------------------------------------------------
+1. Raport zapisany: JDG/raporty_glm52_v3/RAPORT_V3_P07_RULE_LIFECYCLE.txt
+2. Zakres części P07: cykl życia reguł — 4 podanalizy (5.1–5.4), 12 innowacji,
+   16 luk (1×P0, 7×P1, 6×P2, 2×P3), 6 pytań (Q01–Q06), odpowiedzi X01–X10,
+   kontrakt K1–K10, 14 testów (6 [BM]).
+3. Kontrakty dla P08: K1–K10 (sekcja 9.08) + docs/V3_P07_RULE_LIFECYCLE_KONTRAKT.md;
+   metryki lifecycle wiążące dla P37; bramki I01–I12 uruchamialne w CI.
+4. WYCZYSZCZONO okno kontekstowe po zakończeniu części P07 (treść części nie jest
+   już potrzebna — stan w ledgerze, dowodach i kontrakcie).
+5. Brak utrzymywanych niejawnych założeń/kodów po czyszczeniu sesji.
+6. Następna część: P08 — pierwszy nie wdrożony wpis w ledgerze po P07.
+================================================================================

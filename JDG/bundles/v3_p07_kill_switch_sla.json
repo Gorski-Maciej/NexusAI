@@ -1,0 +1,51 @@
+{
+  "innovation": "V3-P07-I04",
+  "generated_at": "2026-09-03T10:26:13.381421+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "suspended_now": 0,
+    "single_rule_suspend": true,
+    "package_suspend": false,
+    "needs_advice_coupling": false
+  },
+  "slo": {
+    "suspend_s": 1.0,
+    "auto_rollback_min": 5.0,
+    "mttr_min": 15.0,
+    "measured": false
+  },
+  "checks": [
+    {
+      "name": "single_rule_suspend",
+      "status": "OK",
+      "detail": "cmd_suspend + status SUSPENDED: True; SUSPENDED dziś: 0"
+    },
+    {
+      "name": "package_domain_suspend",
+      "status": "FAIL",
+      "detail": "wstrzymanie całego pakietu/domeny: BRAK"
+    },
+    {
+      "name": "needs_advice_coupling",
+      "status": "FAIL",
+      "detail": "SUSPENDED → NEEDS_ADVICE w rego: False"
+    },
+    {
+      "name": "slo_measured",
+      "status": "FAIL",
+      "detail": "SLO nie mierzone: brak znaczników czasowych operacji (suspend→active) w rejestrze; MTTR/auto-rollback bez pomiaru"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P07-L09",
+      "severity": "P1",
+      "evidence": "kill-switch istnieje dla POJEDYNCZEJ reguły (cmd_suspend), ale brak: (a) wstrzymania pakietu/domeny jednym ruchem, (b) automatycznego NEEDS_ADVICE dla strumieni dotkniętych, (c) pomiaru SLO < 1 s i MTTR ≤ 15 min",
+      "fix": "Kill-Switch SLA (I04): operacje zbiorowe per domena + routing dotkniętych decyzji → NEEDS_ADVICE + znaczniki czasu operacji (P37)"
+    }
+  ],
+  "contract": {
+    "binding": "P43 (security/DR — SLO MTTR), P38 (hot-reload), P37 (metryki), P04 (protokół naruszenia → BLOCK)",
+    "rule": "suspend < 1 s z audytem (kto/kiedy/dlaczego) + alert; decyzje dotknięte = NEEDS_ADVICE (fail-closed)"
+  }
+}

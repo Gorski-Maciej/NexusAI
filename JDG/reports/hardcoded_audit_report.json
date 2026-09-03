@@ -1,0 +1,363 @@
+{
+  "generated_at": "2026-09-03T10:06:38.353744",
+  "total_hardcoded": 26373,
+  "current_thresholds": 809,
+  "target_thresholds": 7376,
+  "categories": {
+    "large_integer": 23197,
+    "decimal_rate": 2370,
+    "time_period": 806
+  },
+  "findings": [
+    {
+      "file": "_helpers_jdg.rego",
+      "value": "86400000000000",
+      "category": "large_integer",
+      "line": 90,
+      "context": "days := (t2 - t1) / 86400000000000"
+    },
+    {
+      "file": "_helpers_jdg.rego",
+      "value": "0.20",
+      "category": "decimal_rate",
+      "line": 317,
+      "context": "object.get(health, \"error_rate\", 0) < object.get(health, \"max_error_rate\", 0.20)"
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2022",
+      "category": "large_integer",
+      "line": 137,
+      "context": "\"reason\": \"R0582 — kanoniczna wersja P914; Art.36a SUS (społeczne=0, zdrowotna=NADAL) — Dz.U. 2022 p"
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "1740",
+      "category": "large_integer",
+      "line": 137,
+      "context": "\"reason\": \"R0582 — kanoniczna wersja P914; Art.36a SUS (społeczne=0, zdrowotna=NADAL) — Dz.U. 2022 p"
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "12900",
+      "category": "large_integer",
+      "line": 151,
+      "context": "\"reason\": \"Polski Ład: 4.9% od dochodu, odliczenie max 12900 PLN/rok\","
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "12900",
+      "category": "large_integer",
+      "line": 169,
+      "context": "\"reason\": \"R0563 — liniowy: limit odliczenia zdrowotnej 12900 PLN/rok (Polski Ład)\","
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 203,
+      "context": "\"reason\": \"P740 — ulga na start (6 mies.) — Art. 18a ustawy o SUS (wprowadzona 2018-04-01)\","
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2019",
+      "category": "large_integer",
+      "line": 209,
+      "context": "\"reason\": \"P741 — Mały ZUS Plus (36 mies.) — Art. 18c ustawy o SUS (wprowadzony 2019-04-01)\","
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2023",
+      "category": "large_integer",
+      "line": 223,
+      "context": "\"reason\": \"R0652 — sankcja 30% VAT dla dłużnika; obowiązek korekty po 90 dniach (Art.89b) od 2023-07"
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 233,
+      "context": "\"reason\": \"Ulga B+R 100% — Art. 26e PIT (wprowadzona 2018, rozszerzona 2022: 200% dla CBR)\","
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2022",
+      "category": "large_integer",
+      "line": 233,
+      "context": "\"reason\": \"Ulga B+R 100% — Art. 26e PIT (wprowadzona 2018, rozszerzona 2022: 200% dla CBR)\","
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2022",
+      "category": "large_integer",
+      "line": 239,
+      "context": "\"reason\": \"Ulga B+R 200% dla Centrów B+R — Art. 26e ust. 10 PIT (Polski Ład 2022)\","
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2019",
+      "category": "large_integer",
+      "line": 247,
+      "context": "\"reason\": \"IP Box 5% od kwalifikowanego IP — Art. 30ca PIT (wprowadzony 2019, rozszerzony 2022)\","
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2022",
+      "category": "large_integer",
+      "line": 247,
+      "context": "\"reason\": \"IP Box 5% od kwalifikowanego IP — Art. 30ca PIT (wprowadzony 2019, rozszerzony 2022)\","
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2018",
+      "category": "large_integer",
+      "line": 263,
+      "context": "\"reason\": \"MDR DAC6 — obowiązek raportowania schematów transgranicznych (Dyrektywa 2018/822, impleme"
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2021",
+      "category": "large_integer",
+      "line": 263,
+      "context": "\"reason\": \"MDR DAC6 — obowiązek raportowania schematów transgranicznych (Dyrektywa 2018/822, impleme"
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2021",
+      "category": "large_integer",
+      "line": 271,
+      "context": "\"reason\": \"P1617 — Tarcza COVID: zwolnienia ZUS, świadczenia postojowe, subwencje PFR (archiwalne po"
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2022",
+      "category": "large_integer",
+      "line": 279,
+      "context": "\"reason\": \"Limit paragonu z NIP jako faktury uproszczonej: 450 PLN (od 2022-01-01, poprzednio 250 PL"
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2021",
+      "category": "large_integer",
+      "line": 287,
+      "context": "\"reason\": \"SLIM VAT 2 — uproszczenia fakturowania, kursy walut, korekty (ustawa z 2021)\","
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2022",
+      "category": "large_integer",
+      "line": 303,
+      "context": "\"reason\": \"Estoński CIT — opodatkowanie dopiero przy wypłacie zysku (Art. 24-24h CIT, rozszerzenia 2"
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 303,
+      "context": "\"reason\": \"Estoński CIT — opodatkowanie dopiero przy wypłacie zysku (Art. 24-24h CIT, rozszerzenia 2"
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2022",
+      "category": "large_integer",
+      "line": 311,
+      "context": "\"reason\": \"Kwota wolna 30 000 PLN — Art. 27 ust. 1 PIT (Polski Ład 2022, wcześniej 8 000 PLN)\","
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2022",
+      "category": "large_integer",
+      "line": 319,
+      "context": "\"reason\": \"Próg skali 120 000 PLN — Art. 27 ust. 1 PIT (Polski Ład 2022, wcześniej 85 528 PLN)\","
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2022",
+      "category": "large_integer",
+      "line": 327,
+      "context": "\"reason\": \"Limit ryczałtu 2 000 000 EUR — Polski Ład 2022 (wcześniej 250 000 EUR)\","
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2022",
+      "category": "large_integer",
+      "line": 355,
+      "context": "\"reason\": \"Jednorazowa amortyzacja de minimis 100 000 PLN — Polski Ład 2022 (wcześniej 10 000 PLN)\","
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2023",
+      "category": "large_integer",
+      "line": 492,
+      "context": "\"temporal_note\": \"150 dni → 90 dni (SLIM VAT 3/2023-07-01)\""
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2019",
+      "category": "large_integer",
+      "line": 562,
+      "context": "\"temporal_note\": \"Obowiązuje od 2019-01-01\""
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2021",
+      "category": "large_integer",
+      "line": 571,
+      "context": "\"temporal_note\": \"Obowiązuje od 2021-01-01\""
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2022",
+      "category": "large_integer",
+      "line": 578,
+      "context": "\"temporal_note\": \"Obowiązuje od 2022-01-01\""
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2023",
+      "category": "large_integer",
+      "line": 585,
+      "context": "\"temporal_note\": \"Obowiązuje od 2023-07-01\""
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2022",
+      "category": "large_integer",
+      "line": 592,
+      "context": "\"temporal_note\": \"Obowiązuje od 2022-01-01\""
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2022",
+      "category": "large_integer",
+      "line": 599,
+      "context": "\"temporal_note\": \"30k od 2022 (Polski Ład)\""
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2022",
+      "category": "large_integer",
+      "line": 606,
+      "context": "\"temporal_note\": \"120k od 2022 (Polski Ład)\""
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2022",
+      "category": "large_integer",
+      "line": 613,
+      "context": "\"temporal_note\": \"2M EUR od 2022\""
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "2022",
+      "category": "large_integer",
+      "line": 620,
+      "context": "\"temporal_note\": \"100k od 2022 (Polski Ład)\""
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "90 dni",
+      "category": "time_period",
+      "line": 295,
+      "context": "\"reason\": \"SLIM VAT 3 — 90 dni złe długi, WIS wiążące, faktury korygujące in minus (ustawa z 26.05.2"
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "90 dni",
+      "category": "time_period",
+      "line": 492,
+      "context": "\"temporal_note\": \"150 dni → 90 dni (SLIM VAT 3/2023-07-01)\""
+    },
+    {
+      "file": "_metadata_jdg.rego",
+      "value": "90 dni",
+      "category": "time_period",
+      "line": 581,
+      "context": "\"title\": \"SLIM VAT 3 — złe długi 90 dni, WIS\","
+    },
+    {
+      "file": "accounting.rego",
+      "value": "5000",
+      "category": "large_integer",
+      "line": 118,
+      "context": "amount > object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, \"transport_damage_limit\", 5000)"
+    },
+    {
+      "file": "accounting.rego",
+      "value": "5000",
+      "category": "large_integer",
+      "line": 120,
+      "context": "amount <= object.get(data.thresholds.jdg.automatyzacja_ksiegowosci, \"transport_damage_limit\", 5000)"
+    },
+    {
+      "file": "accounting.rego",
+      "value": "10000",
+      "category": "large_integer",
+      "line": 457,
+      "context": "input.invoice.amount_net > object.get(data.thresholds.jdg.depreciation, \"one_off_low_value_limit\", 1"
+    },
+    {
+      "file": "accounting.rego",
+      "value": "100000",
+      "category": "large_integer",
+      "line": 713,
+      "context": "input.invoice.amount_net <= object.get(data.thresholds.jdg.depreciation, \"one_off_annual_limit\", 100"
+    },
+    {
+      "file": "accounting.rego",
+      "value": "2000000",
+      "category": "large_integer",
+      "line": 893,
+      "context": "input.jdg_entrepreneur.annual_revenue_eur > object.get(data.thresholds.jdg.depreciation, \"uor_books_"
+    },
+    {
+      "file": "accounting.rego",
+      "value": "10000",
+      "category": "large_integer",
+      "line": 1005,
+      "context": "asset_value <= object.get(data.thresholds.jdg.depreciation, \"one_off_low_value_limit\", 10000)"
+    },
+    {
+      "file": "accounting.rego",
+      "value": "10000",
+      "category": "large_integer",
+      "line": 1026,
+      "context": "improvement_cost > 10000"
+    },
+    {
+      "file": "accounting.rego",
+      "value": "2025",
+      "category": "large_integer",
+      "line": 1547,
+      "context": "\"_warnings\":[\"REMAMENT ELEKTRONICZNY — od 2025 obowiązek prowadzenia w formie elektronicznej. Zgodno"
+    },
+    {
+      "file": "accounting.rego",
+      "value": "10000",
+      "category": "large_integer",
+      "line": 1661,
+      "context": "asset_value <= object.get(data.thresholds.jdg.depreciation, \"one_off_low_value_limit\", 10000)"
+    },
+    {
+      "file": "accounting.rego",
+      "value": "100000",
+      "category": "large_integer",
+      "line": 1663,
+      "context": "else := {\"matched\":true,\"rule_id\":\"jdg.accounting.fixed_asset_de_minimis_100k\",\"package\":\"jdg.accoun"
+    },
+    {
+      "file": "accounting.rego",
+      "value": "10000",
+      "category": "large_integer",
+      "line": 1672,
+      "context": "improvement_amount > 10000"
+    },
+    {
+      "file": "accounting.rego",
+      "value": "0.00",
+      "category": "decimal_rate",
+      "line": 663,
+      "context": "\"0_0\":0.00,   # Grunty — bez amortyzacji"
+    }
+  ]
+}

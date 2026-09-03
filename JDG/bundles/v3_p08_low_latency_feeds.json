@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P08-I09",
+  "generated_at": "2026-09-03T10:42:24.864253+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "webhook": false,
+    "poll_fallback": true,
+    "sla_measured": true,
+    "sla_detect_hours": 1
+  },
+  "checks": [
+    {
+      "name": "push_channel",
+      "status": "FAIL",
+      "detail": "webhook w isap_crawler.py: False"
+    },
+    {
+      "name": "poll_fallback",
+      "status": "OK",
+      "detail": "polling daemon (60 min): True"
+    },
+    {
+      "name": "sla_measured",
+      "status": "OK",
+      "detail": "metryka czasu wykrycia: True"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P08-L09",
+      "severity": "P2",
+      "evidence": "isap_crawler.py: brak webhooków (polling-only, daemon co 60 min wg opisu architektury — cron @daily w nagłówku), brak metryki time-to-detect; SLA < 1 h nieweryfikowalny",
+      "fix": "I09 Low-Latency Legal Feeds: webhook Dz.U./ISAP push + fallback polling 30 min; metryka time-to-detect w P37"
+    }
+  ],
+  "contract": {
+    "binding": "P37 (metryka time-to-detect), P08-I01 (radar na bazie feedu), P08-I06 (kalendarz z daty feedu)",
+    "rule": "SLA: zmiana wykryta < 1 h od publikacji; webhook primary, polling fallback; brak wykrycia > 1 h = alert P1"
+  }
+}

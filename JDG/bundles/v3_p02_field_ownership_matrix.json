@@ -1,0 +1,535 @@
+{
+  "innovation": "V3-P02-I03",
+  "name": "Field Ownership Matrix — kto pisze, kto może nadpisać",
+  "generated_at": "2026-09-03T08:00:06+00:00",
+  "packages_analyzed": 331,
+  "unresolved_packages": [
+    "jdg.pit.advances_returns"
+  ],
+  "canonical_25": [
+    "matched",
+    "rule_id",
+    "package",
+    "priority",
+    "vat_rate",
+    "rounding_level",
+    "gtu_code",
+    "vat_exemption",
+    "procedure",
+    "pit_form",
+    "pit_rate",
+    "pit_bracket",
+    "pit_annual_return_type",
+    "kus_qualification",
+    "kus_percent",
+    "zus_social_base_type",
+    "zus_health_rate",
+    "business_status",
+    "ceidg_registration_required",
+    "valid_from",
+    "valid_to",
+    "_routing",
+    "_routing_reason",
+    "_legal_basis",
+    "_warnings"
+  ],
+  "ownership": {
+    "matched": {
+      "owner": "jdg.accounting",
+      "writers": 327,
+      "top3": [
+        "jdg.accounting",
+        "jdg.accounting.depreciation",
+        "jdg.accounting.pkpir"
+      ]
+    },
+    "rule_id": {
+      "owner": "jdg.accounting",
+      "writers": 327,
+      "top3": [
+        "jdg.accounting",
+        "jdg.accounting.depreciation",
+        "jdg.accounting.pkpir"
+      ]
+    },
+    "package": {
+      "owner": "jdg.accounting",
+      "writers": 327,
+      "top3": [
+        "jdg.accounting",
+        "jdg.accounting.depreciation",
+        "jdg.accounting.pkpir"
+      ]
+    },
+    "priority": {
+      "owner": "jdg.accounting",
+      "writers": 327,
+      "top3": [
+        "jdg.accounting",
+        "jdg.accounting.depreciation",
+        "jdg.accounting.pkpir"
+      ]
+    },
+    "vat_rate": {
+      "owner": "jdg.accounting.depreciation",
+      "writers": 26,
+      "top3": [
+        "jdg.accounting.depreciation",
+        "jdg.accounting.pkpir_validation",
+        "jdg.banking"
+      ]
+    },
+    "rounding_level": {
+      "owner": "jdg.annual_declaration",
+      "writers": 21,
+      "top3": [
+        "jdg.annual_declaration",
+        "jdg.business.gig_economy",
+        "jdg.crossborder"
+      ]
+    },
+    "gtu_code": {
+      "owner": "jdg.accounting.pkpir_validation",
+      "writers": 12,
+      "top3": [
+        "jdg.accounting.pkpir_validation",
+        "jdg.banking",
+        "jdg.crossborder"
+      ]
+    },
+    "vat_exemption": {
+      "owner": "jdg.business.gig_economy",
+      "writers": 6,
+      "top3": [
+        "jdg.business.gig_economy",
+        "jdg.edge_cases",
+        "jdg.pit.elearning"
+      ]
+    },
+    "procedure": {
+      "owner": "jdg.api_fallback",
+      "writers": 16,
+      "top3": [
+        "jdg.api_fallback",
+        "jdg.business.gig_economy",
+        "jdg.business.v3_09"
+      ]
+    },
+    "pit_form": {
+      "owner": "jdg.accounting.pkpir_validation",
+      "writers": 60,
+      "top3": [
+        "jdg.accounting.pkpir_validation",
+        "jdg.allowances",
+        "jdg.annual_declaration"
+      ]
+    },
+    "pit_rate": {
+      "owner": "jdg.allowances",
+      "writers": 18,
+      "top3": [
+        "jdg.allowances",
+        "jdg.annual_declaration",
+        "jdg.business.gig_economy"
+      ]
+    },
+    "pit_bracket": {
+      "owner": "jdg.annual_declaration",
+      "writers": 10,
+      "top3": [
+        "jdg.annual_declaration",
+        "jdg.edge_cases",
+        "jdg.fallback"
+      ]
+    },
+    "pit_annual_return_type": {
+      "owner": "jdg.allowances",
+      "writers": 14,
+      "top3": [
+        "jdg.allowances",
+        "jdg.annual_declaration",
+        "jdg.business.gig_economy"
+      ]
+    },
+    "kus_qualification": {
+      "owner": "jdg.accounting",
+      "writers": 35,
+      "top3": [
+        "jdg.accounting",
+        "jdg.accounting.depreciation",
+        "jdg.accounting.pkpir"
+      ]
+    },
+    "kus_percent": {
+      "owner": "jdg.accounting",
+      "writers": 28,
+      "top3": [
+        "jdg.accounting",
+        "jdg.accounting.depreciation",
+        "jdg.accounting.pkpir"
+      ]
+    },
+    "zus_social_base_type": {
+      "owner": "jdg.annual_declaration",
+      "writers": 20,
+      "top3": [
+        "jdg.annual_declaration",
+        "jdg.banking",
+        "jdg.business"
+      ]
+    },
+    "zus_health_rate": {
+      "owner": "jdg.annual_declaration",
+      "writers": 17,
+      "top3": [
+        "jdg.annual_declaration",
+        "jdg.banking",
+        "jdg.business"
+      ]
+    },
+    "business_status": {
+      "owner": "jdg.annual_declaration",
+      "writers": 21,
+      "top3": [
+        "jdg.annual_declaration",
+        "jdg.business",
+        "jdg.cashflow_predictor"
+      ]
+    },
+    "ceidg_registration_required": {
+      "owner": "jdg.business",
+      "writers": 7,
+      "top3": [
+        "jdg.business",
+        "jdg.kks",
+        "jdg.lifecycle_manager"
+      ]
+    },
+    "valid_from": {
+      "owner": "jdg.adaptive_trust",
+      "writers": 109,
+      "top3": [
+        "jdg.adaptive_trust",
+        "jdg.annual_declaration",
+        "jdg.autoform"
+      ]
+    },
+    "valid_to": {
+      "owner": "jdg.annual_declaration",
+      "writers": 22,
+      "top3": [
+        "jdg.annual_declaration",
+        "jdg.autoform",
+        "jdg.banking_sca"
+      ]
+    },
+    "_routing": {
+      "owner": "jdg.accounting",
+      "writers": 273,
+      "top3": [
+        "jdg.accounting",
+        "jdg.accounting.depreciation",
+        "jdg.accounting.pkpir"
+      ]
+    },
+    "_routing_reason": {
+      "owner": "jdg.accounting",
+      "writers": 298,
+      "top3": [
+        "jdg.accounting",
+        "jdg.accounting.depreciation",
+        "jdg.accounting.pkpir"
+      ]
+    },
+    "_legal_basis": {
+      "owner": "jdg.accounting",
+      "writers": 327,
+      "top3": [
+        "jdg.accounting",
+        "jdg.accounting.depreciation",
+        "jdg.accounting.pkpir"
+      ]
+    },
+    "_warnings": {
+      "owner": "jdg.accounting",
+      "writers": 291,
+      "top3": [
+        "jdg.accounting",
+        "jdg.accounting.depreciation",
+        "jdg.accounting.pkpir"
+      ]
+    }
+  },
+  "money_fields_multi_writer": [
+    {
+      "field": "vat_rate",
+      "writers": [
+        [
+          "jdg.accounting.depreciation",
+          1
+        ],
+        [
+          "jdg.accounting.pkpir_validation",
+          1
+        ],
+        [
+          "jdg.banking",
+          1
+        ],
+        [
+          "jdg.business.gig_economy",
+          1
+        ]
+      ]
+    },
+    {
+      "field": "vat_exemption",
+      "writers": [
+        [
+          "jdg.business.gig_economy",
+          1
+        ],
+        [
+          "jdg.edge_cases",
+          1
+        ],
+        [
+          "jdg.pit.elearning",
+          1
+        ],
+        [
+          "jdg.restructuring",
+          1
+        ]
+      ]
+    },
+    {
+      "field": "pit_rate",
+      "writers": [
+        [
+          "jdg.allowances",
+          1
+        ],
+        [
+          "jdg.annual_declaration",
+          1
+        ],
+        [
+          "jdg.business.gig_economy",
+          1
+        ],
+        [
+          "jdg.digital",
+          1
+        ]
+      ]
+    },
+    {
+      "field": "pit_bracket",
+      "writers": [
+        [
+          "jdg.annual_declaration",
+          1
+        ],
+        [
+          "jdg.edge_cases",
+          1
+        ],
+        [
+          "jdg.fallback",
+          1
+        ],
+        [
+          "jdg.p06_innovations",
+          1
+        ]
+      ]
+    },
+    {
+      "field": "kus_percent",
+      "writers": [
+        [
+          "jdg.accounting",
+          1
+        ],
+        [
+          "jdg.accounting.depreciation",
+          1
+        ],
+        [
+          "jdg.accounting.pkpir",
+          1
+        ],
+        [
+          "jdg.accounting.pkpir_validation",
+          1
+        ]
+      ]
+    },
+    {
+      "field": "zus_health_rate",
+      "writers": [
+        [
+          "jdg.annual_declaration",
+          1
+        ],
+        [
+          "jdg.banking",
+          1
+        ],
+        [
+          "jdg.business",
+          1
+        ],
+        [
+          "jdg.cashflow_predictor",
+          1
+        ]
+      ]
+    }
+  ],
+  "foreign_writers_by_money_field": {
+    "vat_rate": [
+      "jdg.accounting.depreciation",
+      "jdg.accounting.pkpir_validation",
+      "jdg.banking",
+      "jdg.business.gig_economy",
+      "jdg.digital",
+      "jdg.judicial_rulings",
+      "jdg.local_taxes.pcc_enterprise",
+      "jdg.micro.amort_a22n",
+      "jdg.micro.budownictwo",
+      "jdg.neural_mesh",
+      "jdg.p02_innovations",
+      "jdg.p34_remaining",
+      "jdg.pit.elearning",
+      "jdg.restructuring",
+      "jdg.temporal",
+      "jdg.vida_drr_full",
+      "jdg.wis_api",
+      "jdg.zus.sickness_benefits"
+    ],
+    "vat_exemption": [
+      "jdg.business.gig_economy",
+      "jdg.pit.elearning",
+      "jdg.restructuring",
+      "jdg.zus.sickness_benefits"
+    ],
+    "pit_rate": [
+      "jdg.annual_declaration",
+      "jdg.business.gig_economy",
+      "jdg.digital",
+      "jdg.employer",
+      "jdg.exit_tax_mdr",
+      "jdg.jpk_cit",
+      "jdg.micro.ryczalt_cykl_atomic_p13",
+      "jdg.neural_mesh",
+      "jdg.p06_innovations",
+      "jdg.temporal"
+    ],
+    "pit_bracket": [
+      "jdg.annual_declaration",
+      "jdg.p06_innovations",
+      "jdg.residency",
+      "jdg.tax_optimization",
+      "jdg.temporal"
+    ],
+    "kus_percent": [
+      "jdg.accounting",
+      "jdg.accounting.depreciation",
+      "jdg.accounting.pkpir",
+      "jdg.accounting.pkpir_validation",
+      "jdg.business.gig_economy",
+      "jdg.employer",
+      "jdg.judicial_rulings",
+      "jdg.local_taxes.excise_enterprise",
+      "jdg.local_taxes.pcc_enterprise",
+      "jdg.local_taxes.procedures_enterprise",
+      "jdg.micro.amort_a22b",
+      "jdg.micro.amort_a22c",
+      "jdg.micro.amort_a22h",
+      "jdg.micro.amort_a22i",
+      "jdg.micro.amort_a22k",
+      "jdg.micro.pkpir_costs",
+      "jdg.micro.pkpir_nkup",
+      "jdg.neural_mesh",
+      "jdg.nkup_enterprise",
+      "jdg.pkpir_live",
+      "jdg.strategic_advisor",
+      "jdg.vat_substantive_complete"
+    ],
+    "zus_health_rate": [
+      "jdg.annual_declaration",
+      "jdg.banking",
+      "jdg.business",
+      "jdg.cashflow_predictor",
+      "jdg.cross_domain_hub",
+      "jdg.legislative_monitor",
+      "jdg.neural_mesh",
+      "jdg.pit.forms",
+      "jdg.pit.kup",
+      "jdg.pit.transitions",
+      "jdg.tax_optimization"
+    ]
+  },
+  "owning_domains": {
+    "vat_rate": [
+      "jdg.vat",
+      "jdg.micro.vat",
+      "jdg.crossborder",
+      "jdg.substantive",
+      "jdg.edge_cases",
+      "jdg.fallback",
+      "jdg.ksef"
+    ],
+    "vat_exemption": [
+      "jdg.vat",
+      "jdg.micro.vat",
+      "jdg.edge_cases",
+      "jdg.fallback"
+    ],
+    "pit_rate": [
+      "jdg.pit",
+      "jdg.micro.pit",
+      "jdg.allowances",
+      "jdg.ryczalt",
+      "jdg.edge_cases",
+      "jdg.fallback",
+      "jdg.advances"
+    ],
+    "pit_bracket": [
+      "jdg.pit",
+      "jdg.edge_cases",
+      "jdg.fallback"
+    ],
+    "kus_percent": [
+      "jdg.pit",
+      "jdg.ryczalt",
+      "jdg.kus",
+      "jdg.edge_cases",
+      "jdg.fallback",
+      "jdg.allowances"
+    ],
+    "zus_health_rate": [
+      "jdg.zus",
+      "jdg.micro.zus",
+      "jdg.micro.zdrowotna",
+      "jdg.health",
+      "jdg.edge_cases",
+      "jdg.fallback"
+    ]
+  },
+  "immutable_allowlist": [
+    "jdg.zus",
+    "jdg.zus.sickness_benefits",
+    "jdg.zus.enterprise_benefits",
+    "jdg.zus.health_contribution",
+    "jdg.business",
+    "jdg.security.fortress"
+  ],
+  "gate": {
+    "pass": false,
+    "rule": "pola kwotowe/stawkowe pisane wyłącznie przez domenę właścicielską; pisarz spoza domeny = kandydat do audytu nadpisań; nadpisanie chronione allowlistą niemutowalną (INV-005/018/042)"
+  },
+  "note": "macierz generowana z kodu (nie ręczna); pola kwotowe pisane przez >1 domenę = powierzchnia ryzyka silent overwrite przez safe_merge — do audytu 4-eyes (Q); allowlista chroni ZUS/business przed nadpisaniem."
+}

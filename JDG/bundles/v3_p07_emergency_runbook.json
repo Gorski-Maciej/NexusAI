@@ -1,0 +1,94 @@
+{
+  "innovation": "V3-P07-I11",
+  "generated_at": "2026-09-03T10:27:23.548827+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "required": 4,
+    "found": 0,
+    "missing": 4
+  },
+  "runbooks": [
+    {
+      "id": "RB-01",
+      "scenario": "kill-switch reguły (suspend < 1 s)",
+      "steps": [
+        "identyfikacja reguły",
+        "cmd_suspend",
+        "weryfikacja NEEDS_ADVICE",
+        "alert + audyt"
+      ],
+      "verify": "status SUSPENDED + brak wpływu na werdykty"
+    },
+    {
+      "id": "RB-02",
+      "scenario": "auto-rollback wersji (error_rate > próg)",
+      "steps": [
+        "detekcja przekroczenia",
+        "rollback do supersedes",
+        "golden replay (P10)"
+      ],
+      "verify": "status ROLLED_BACK + golden zielony"
+    },
+    {
+      "id": "RB-03",
+      "scenario": "freeze domeny (2× BLOCK/24h — P04)",
+      "steps": [
+        "eskalacja P04",
+        "FREEZE",
+        "4-eyes odblokowanie"
+      ],
+      "verify": "domena FROZEN + zielony test negatywny"
+    },
+    {
+      "id": "RB-04",
+      "scenario": "przywrócenie healthy_versions",
+      "steps": [
+        "wybór wersji zdrowej",
+        "deployment",
+        "soak + delta ≤ 2%"
+      ],
+      "verify": "active_version ∈ healthy_versions"
+    }
+  ],
+  "missing": [
+    "RB-01",
+    "RB-02",
+    "RB-03",
+    "RB-04"
+  ],
+  "checks": [
+    {
+      "name": "runbook_artifacts",
+      "status": "FAIL",
+      "detail": "dedykowane artefakty runbook w docs/: BRAK"
+    },
+    {
+      "name": "runbook_coverage",
+      "status": "FAIL",
+      "detail": "pokrycie scenariuszy: 0/4; brak: ['RB-01', 'RB-02', 'RB-03', 'RB-04']"
+    },
+    {
+      "name": "tabletop_tests",
+      "status": "FAIL",
+      "detail": "testy tabletop (odgrywanie scenariusza na staging) nie istnieją jako artefakt"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P07-L17",
+      "severity": "P2",
+      "evidence": "brak deklaratywnych runbooków awaryjnych: ['RB-01', 'RB-02', 'RB-03', 'RB-04'] — reakcja na incydent zależna od wiedzy operatora",
+      "fix": "Emergency Runbook DSL (I11): scenariusze w repo + testy tabletop w CI (P43)"
+    }
+  ],
+  "dsl": {
+    "scenario": "id + opis",
+    "steps": "kroki operacyjne",
+    "verify": "warunek sukcesu (fail-closed)",
+    "owner": "rola 4-eyes (I05)"
+  },
+  "contract": {
+    "binding": "P43 (security/DR), P39 (tabletop w CI), P04 (freeze), P07-I04 (kill-switch), P07-I06 (rollback)",
+    "rule": "incydent bez runbooka = eskalacja 4-eyes; runbook bez testu tabletop = P2"
+  }
+}

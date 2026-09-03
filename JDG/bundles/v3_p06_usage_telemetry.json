@@ -1,0 +1,127 @@
+{
+  "innovation": "V3-P06-I12",
+  "generated_at": "2026-09-03T12:43:05.509354+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "maps_used": 10,
+    "refs_total": 130,
+    "block_contexts": 94,
+    "files_with_refs": 22,
+    "high_priority": 3
+  },
+  "usage_top": [
+    {
+      "map": "depreciation",
+      "refs": 49,
+      "impact": "HIGH"
+    },
+    {
+      "map": "automatyzacja_ksiegowosci",
+      "refs": 23,
+      "impact": "HIGH"
+    },
+    {
+      "map": "business_lifecycle",
+      "refs": 16,
+      "impact": "HIGH"
+    },
+    {
+      "map": "pcc_local_excise",
+      "refs": 13,
+      "impact": "MED"
+    },
+    {
+      "map": "pit",
+      "refs": 11,
+      "impact": "MED"
+    },
+    {
+      "map": "temporal_epochs",
+      "refs": 8,
+      "impact": "MED"
+    },
+    {
+      "map": "rodo_aml_bdo",
+      "refs": 7,
+      "impact": "MED"
+    },
+    {
+      "map": "bounds",
+      "refs": 1,
+      "impact": "LOW"
+    },
+    {
+      "map": "local_taxes",
+      "refs": 1,
+      "impact": "LOW"
+    },
+    {
+      "map": "opa_system",
+      "refs": 1,
+      "impact": "LOW"
+    }
+  ],
+  "by_file_top": [
+    [
+      "micro/ryczalt_cykl_atomic_p13.rego",
+      16
+    ],
+    [
+      "micro/pcc_lokalne_atomic_p14.rego",
+      13
+    ],
+    [
+      "temporal.rego",
+      13
+    ],
+    [
+      "accounting/depreciation_enterprise.rego",
+      12
+    ],
+    [
+      "accounting/pkpir_enterprise_live.rego",
+      12
+    ],
+    [
+      "edge_cases.rego",
+      12
+    ],
+    [
+      "accounting/pkpir_enterprise_validation.rego",
+      8
+    ],
+    [
+      "accounting/depreciation_enterprise_complete.rego",
+      7
+    ]
+  ],
+  "checks": [
+    {
+      "name": "usage_measured",
+      "status": "OK",
+      "detail": "map używanych: 10; odwołań: 130; kontekstów BLOCK/fallback: 94"
+    },
+    {
+      "name": "audit_priority_defined",
+      "status": "OK",
+      "detail": "priorytet HIGH (audyt/migracja najpierw): ['depreciation', 'automatyzacja_ksiegowosci', 'business_lifecycle']"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P06-L18",
+      "severity": "P3",
+      "evidence": "telemetria pierwsza emisja — bez pomiaru runtime frekwencji decyzyjnej (potrzebny licznik z P37)",
+      "fix": "metryki runtime per mapa parametrów (P37): decision_count, block_count, fallback_count"
+    }
+  ],
+  "contract": {
+    "binding": "P37 (metryki runtime), P06-I03 (lineage), P39 (audyt priorytetów), P06-I02 (migracja HIGH first)",
+    "metric_names": [
+      "parameter_refs_static",
+      "parameter_decision_count",
+      "parameter_block_count",
+      "parameter_fallback_count"
+    ]
+  }
+}

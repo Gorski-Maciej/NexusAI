@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P08-I07",
+  "generated_at": "2026-09-03T10:42:22.234919+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "drafts": 1,
+    "with_scenarios": 0,
+    "invalidation_links": 0
+  },
+  "checks": [
+    {
+      "name": "scenario_branches",
+      "status": "FAIL",
+      "detail": "drafty z wariantami: 0/1"
+    },
+    {
+      "name": "invalidation",
+      "status": "FAIL",
+      "detail": "unieważnianie wariantów: supersedes=0 superseded_by=0"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P08-L07",
+      "severity": "P2",
+      "evidence": "law_radar.json przechowuje tylko status pojedynczego draftu (DRL-0001: status DRAFT_LAW, predicted_diff=null); brak pola scenariuszy ani unieważniania — równoległe projekty alternatywne (np. dwie wersje nowelizacji VAT) nie są rozróżnialne",
+      "fix": "I07 Scenario Versioning: draft→[warianty], status per wariant, supersedes/superseded_by, predicted_diff per wariant → SHADOW per wariant"
+    }
+  ],
+  "contract": {
+    "binding": "P08-I03 (Pre-Life Shadow per wariant), P08-I08 (repeal w wariancie), P05 (okna ważności per wariant)",
+    "rule": "draft z N wariantami → N zestawów SHADOW; uchwalenie wariantu A unieważnia B i C z wpisem superseded_by"
+  }
+}

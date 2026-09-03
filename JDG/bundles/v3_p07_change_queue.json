@@ -1,0 +1,56 @@
+{
+  "innovation": "V3-P07-I07",
+  "generated_at": "2026-09-03T12:43:06.283872+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rules": 13,
+    "domains": 9,
+    "lock_mechanism": true,
+    "multi_rule_domains": 2
+  },
+  "per_domain": {
+    "other": 4,
+    "kks": 1,
+    "ksef": 1,
+    "pcc": 1,
+    "ordpu": 1,
+    "crossborder": 1,
+    "rodo": 1,
+    "pit": 2,
+    "uor": 1
+  },
+  "checks": [
+    {
+      "name": "domain_density",
+      "status": "OK",
+      "detail": "domeny w rejestrze: {'other': 4, 'kks': 1, 'ksef': 1, 'pcc': 1, 'ordpu': 1, 'crossborder': 1, 'rodo': 1, 'pit': 2, 'uor': 1}"
+    },
+    {
+      "name": "change_lock_mechanism",
+      "status": "OK",
+      "detail": "mechanizm lock/kolejki w narzędziach: ['rule_lifecycle_manager.py', 'control_plane_lifecycle.py']"
+    },
+    {
+      "name": "simultaneous_change_risk",
+      "status": "WARN",
+      "detail": "domeny z >1 regułą (ryzyko zmian równoległych): ['other', 'pit']"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P07-L11",
+      "severity": "P2",
+      "evidence": "brak kolejki zmian i blokad per domena — dwie równoległe zmiany w tej samej domenie mogą wejść bez sekwencjonowania (domeny z >1 regułą: ['other', 'pit'])",
+      "fix": "Change Queue & Locks (I07): lock per domena na czas zmiany (register→awans), kolejka FIFO, konflikt = HOLD [BM]"
+    }
+  ],
+  "model": {
+    "lock": "per domena (register→awans)",
+    "queue": "FIFO",
+    "conflict": "HOLD + 4-eyes (I05)"
+  },
+  "contract": {
+    "binding": "P09 (declarative change — źródło kolejki), P38 (rollout), P07-I01 (awans)",
+    "rule": "druga zmiana w zablokowanej domenie = HOLD z komunikatem konfliktu"
+  }
+}

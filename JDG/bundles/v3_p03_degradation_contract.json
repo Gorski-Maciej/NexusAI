@@ -1,0 +1,163 @@
+{
+  "innovation": "V3-P03-I10",
+  "name": "Degradation Contract Patterns — puste ≠ błędne (P03-AN12)",
+  "generated_at": "2026-09-03T08:38:04.430677+00:00",
+  "patterns": {
+    "DEGRADED_API": {
+      "matched": true,
+      "rule_id": "jdg.api_fallback.no_match",
+      "package": "jdg.degradation",
+      "priority": 9999,
+      "vat_rate": "",
+      "rounding_level": "",
+      "gtu_code": "",
+      "vat_exemption": "",
+      "procedure": "",
+      "pit_form": "",
+      "pit_rate": "",
+      "pit_bracket": "",
+      "pit_annual_return_type": "",
+      "kus_qualification": "",
+      "kus_percent": "",
+      "zus_social_base_type": "",
+      "zus_health_rate": "",
+      "business_status": "",
+      "ceidg_registration_required": "",
+      "valid_from": "",
+      "valid_to": "",
+      "_routing": "TRIAGE_QUEUE",
+      "_routing_reason": "",
+      "_legal_basis": "",
+      "_warnings": [
+        "DEGRADED_API: usługa zewnętrzna niedostępna"
+      ],
+      "_degraded_context": true,
+      "_contract_complete": true,
+      "_missing_fields": []
+    },
+    "PARTIAL": {
+      "matched": true,
+      "rule_id": "jdg.fallback.partial",
+      "package": "jdg.degradation",
+      "priority": 9999,
+      "vat_rate": "",
+      "rounding_level": "",
+      "gtu_code": "",
+      "vat_exemption": "",
+      "procedure": "",
+      "pit_form": "",
+      "pit_rate": "",
+      "pit_bracket": "",
+      "pit_annual_return_type": "",
+      "kus_qualification": "",
+      "kus_percent": "",
+      "zus_social_base_type": "",
+      "zus_health_rate": "",
+      "business_status": "",
+      "ceidg_registration_required": "",
+      "valid_from": "",
+      "valid_to": "",
+      "_routing": "TRIAGE_QUEUE",
+      "_routing_reason": "",
+      "_legal_basis": "",
+      "_warnings": [
+        "PARTIAL: brak danych domeny VAT"
+      ],
+      "_degraded_context": true,
+      "_contract_complete": true,
+      "_missing_fields": []
+    },
+    "BLOCKED": {
+      "matched": true,
+      "rule_id": "jdg.risk.domain_block",
+      "package": "jdg.degradation",
+      "priority": 9999,
+      "vat_rate": "",
+      "rounding_level": "",
+      "gtu_code": "",
+      "vat_exemption": "",
+      "procedure": "",
+      "pit_form": "",
+      "pit_rate": "",
+      "pit_bracket": "",
+      "pit_annual_return_type": "",
+      "kus_qualification": "",
+      "kus_percent": "",
+      "zus_social_base_type": "",
+      "zus_health_rate": "",
+      "business_status": "",
+      "ceidg_registration_required": "",
+      "valid_from": "",
+      "valid_to": "",
+      "_routing": "BLOCK_AND_ALERT",
+      "_routing_reason": "",
+      "_legal_basis": "",
+      "_warnings": [
+        "BLOCK: kontrahent w sieci fraudowej"
+      ],
+      "_contract_complete": true,
+      "_missing_fields": []
+    },
+    "NO_MATCH": {
+      "matched": false,
+      "rule_id": "jdg.fallback.no_match_jdg",
+      "package": "jdg.degradation",
+      "priority": 9999,
+      "vat_rate": "",
+      "rounding_level": "",
+      "gtu_code": "",
+      "vat_exemption": "",
+      "procedure": "",
+      "pit_form": "",
+      "pit_rate": "",
+      "pit_bracket": "",
+      "pit_annual_return_type": "",
+      "kus_qualification": "",
+      "kus_percent": "",
+      "zus_social_base_type": "",
+      "zus_health_rate": "",
+      "business_status": "",
+      "ceidg_registration_required": "",
+      "valid_from": "",
+      "valid_to": "",
+      "_routing": "TRIAGE_QUEUE",
+      "_routing_reason": "",
+      "_legal_basis": "",
+      "_warnings": [
+        "NO_MATCHING_RULE — brak dopasowania"
+      ],
+      "_contract_complete": true,
+      "_missing_fields": []
+    }
+  },
+  "all_patterns_complete": true,
+  "short_contract_paths": [
+    {
+      "file": "rules/api_fallback.rego",
+      "rule_id": "jdg.api_fallback.whitelist_degradation",
+      "canonical_fields_found": 21
+    },
+    {
+      "file": "rules/api_fallback.rego",
+      "rule_id": "jdg.api_fallback.multi_degradation",
+      "canonical_fields_found": 20
+    },
+    {
+      "file": "rules/fallback.rego",
+      "rule_id": "jdg.fallback.domestic_23pct",
+      "canonical_fields_found": 21
+    },
+    {
+      "file": "rules/reliability_guarantee_enterprise.rego",
+      "rule_id": "jdg.reliability_guarantee.fallback_ladder_gate",
+      "canonical_fields_found": 9
+    }
+  ],
+  "short_contract_count": 4,
+  "semantics": "każda degradacja zwraca pełny 25-polowy kontrakt z _degraded_context i _warnings — klient programowo rozróżnia DEGRADED_API/PARTIAL/BLOCKED/NO_MATCH",
+  "gate": {
+    "pass": false,
+    "rule": "zero ścieżek degradacji ze skróconym kontraktem (fail-closed, P03-AN12); wzorzec z jawnym _degraded_context (INV-038)"
+  },
+  "note": "Skan kodu wykrywa ścieżki TRIAGE/BLOCK z <25 polami w kontekście reguły; padding pustych pól to kontrakt, nie nadpisanie (konwencja P02)."
+}

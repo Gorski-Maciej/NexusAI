@@ -1,0 +1,171 @@
+{
+  "innovation": "V3-P04-I08",
+  "name": "Invariant Provenance — wykonane invarianty w werdykcie (dowód audytu)",
+  "generated_at": "2026-09-03T08:57:48.983691+00:00",
+  "runtime_enforced_count": 22,
+  "verdict_with_invariant_execution": {
+    "rule_id": "jdg.vat.rate_23",
+    "_routing": "ALLOW",
+    "vat_rate": "0.23",
+    "_provenance_tree": {
+      "bundle_version": "v2026.09.03",
+      "path": [
+        {
+          "step": 1
+        }
+      ]
+    },
+    "_invariant_execution": {
+      "catalog_version": "v1.0",
+      "checked_count": 23,
+      "failed_count": 0,
+      "execution": [
+        {
+          "invariant": "INV-001",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-002",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-003",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-004",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-005",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-006",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-007",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-009",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-012",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-014",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-020",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-021",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-022",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-024",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-028",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-030",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-032",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-034",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-035",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-036",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-038",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-039",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 1
+        },
+        {
+          "invariant": "INV-002",
+          "passed": true,
+          "level": "RUNTIME",
+          "latency_model": 3
+        }
+      ],
+      "latency_model_total": 25
+    }
+  },
+  "traceability": "reguła → INV → wynik → werdykt → certyfikat (P04-AN08/AN12); wersja katalogu invariantów w każdym werdykcie",
+  "gate": {
+    "pass": true,
+    "rule": "werdykt niesie pełną listę wykonanych invariantów (P04-I08) — dowód dla audytu; wersja katalogu obecna (P04-AN12)"
+  },
+  "note": "Egzekucja runtime pokrywa 22 INV (reszta katalogu BUILD/STAT lub luka L01); _invariant_execution dołącza runtime_invariants.enforce() (POST-MERGE)."
+}

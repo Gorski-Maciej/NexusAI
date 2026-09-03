@@ -1,0 +1,42 @@
+{
+  "innovation": "V3-P12-I09",
+  "generated_at": "2026-09-03T12:59:24+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "correction_rules": true,
+    "transaction_date_temporal": true,
+    "rate_transitions": true,
+    "correction_tools": [
+      "v3_p11_correction_chain.py",
+      "v3_p12_rate_change_corrector.py"
+    ],
+    "correction_tests": true
+  },
+  "checks": [
+    {
+      "name": "correction_rules",
+      "status": "OK",
+      "detail": "reguły korekty faktur (art. 106j): True"
+    },
+    {
+      "name": "transaction_date_temporal",
+      "status": "OK",
+      "detail": "temporalność (stawka z dnia transakcji): True"
+    },
+    {
+      "name": "rate_transitions",
+      "status": "OK",
+      "detail": "obsługa przejść stawek w czasie: True"
+    },
+    {
+      "name": "correction_tests",
+      "status": "OK",
+      "detail": "testy korekt po zmianie stawki: True"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P05 (temporalność), P16 (JPK/KSeF), P44",
+    "rule": "zmiana stawki = automatyczne wykrycie faktur do korekty (art. 106j); stawka z dnia transakcji (nie wystawienia)"
+  }
+}

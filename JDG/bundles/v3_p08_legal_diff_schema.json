@@ -1,0 +1,23 @@
+{
+  "schema": [
+    "act",
+    "legal_unit",
+    "change_type",
+    "old_text",
+    "new_text",
+    "effective_from",
+    "certainty",
+    "legal_node_id"
+  ],
+  "sample": {
+    "diff_id": "D-2026-0001",
+    "act": "Ustawa o VAT",
+    "legal_unit": "art. 113 ust. 1",
+    "legal_node_id": "PL/uVAT/art/113/ust/1",
+    "change_type": "AMEND_VALUE",
+    "old_text": "1 200 000 EUR",
+    "new_text": "2 000 000 EUR",
+    "effective_from": "2027-01-01",
+    "certainty": 0.0
+  }
+}

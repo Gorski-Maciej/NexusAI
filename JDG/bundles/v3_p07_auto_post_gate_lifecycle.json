@@ -1,0 +1,43 @@
+{
+  "innovation": "V3-P07-I12",
+  "generated_at": "2026-09-03T10:26:19.461072+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "versions_total": 13,
+    "flagged": 0,
+    "active_decisional": 12,
+    "no_auto_post_support": false
+  },
+  "checks": [
+    {
+      "name": "auto_post_flag",
+      "status": "FAIL",
+      "detail": "wersje z jawną deklaracją auto_post: 0/13"
+    },
+    {
+      "name": "lifecycle_support",
+      "status": "WARN",
+      "detail": "wsparcie NO_AUTO_POST w rego lifecycle: False"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P07-L18",
+      "severity": "P2",
+      "evidence": "żadna wersja rejestru nie deklaruje granicy auto_post — reguły ACTIVE o wysokiej wadze (BLOCKER/ERROR) nie niosą jawnej decyzji NO_AUTO_POST, granica zaufania poza lifecycle",
+      "fix": "Auto-Post Gate Lifecycle (I12): pole auto_post (AUTO/NO_AUTO_POST/SUGGEST_ONLY) w schema wersji + walidacja z P03-I11 [BM]"
+    }
+  ],
+  "model": {
+    "states": [
+      "AUTO_POST",
+      "NO_AUTO_POST",
+      "SUGGEST_ONLY"
+    ],
+    "rule": "ACTIVE + NO_AUTO_POST = decyzja zawsze SUGGEST/NEEDS_ADVICE do czasu pełnego dowodu (P03-I11)"
+  },
+  "contract": {
+    "binding": "P03 (kontrakt werdyktu — AUTO_POST gate), P07-I01 (awans), P39 (testy), P04 (invarianty)",
+    "rule": "awans do ACTIVE bez deklaracji auto_post = HOLD (I01); cichy AUTO_POST = naruszenie fail-closed"
+  }
+}

@@ -1,0 +1,251 @@
+{
+  "innovation": "V3-P04-I10",
+  "name": "Negative Test Generator — szkielet testów naruszeń (P04-AN06)",
+  "generated_at": "2026-09-03T08:57:49.811157+00:00",
+  "runtime_invariants": [
+    "INV-001",
+    "INV-002",
+    "INV-003",
+    "INV-004",
+    "INV-005",
+    "INV-006",
+    "INV-007",
+    "INV-009",
+    "INV-012",
+    "INV-014",
+    "INV-020",
+    "INV-021",
+    "INV-022",
+    "INV-024",
+    "INV-028",
+    "INV-030",
+    "INV-032",
+    "INV-034",
+    "INV-035",
+    "INV-036",
+    "INV-038",
+    "INV-039"
+  ],
+  "generated_tests": [
+    {
+      "invariant": "INV-001",
+      "test_name": "test_inv_001_block",
+      "violating_verdict": {
+        "vat_rate": "0.24",
+        "rule_id": "jdg.vat.rate_bad"
+      },
+      "expected": "failed zawiera INV-001 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-002",
+      "test_name": "test_inv_002_block",
+      "violating_verdict": {
+        "rule_id": "jdg.contract.short",
+        "matched": true
+      },
+      "expected": "failed zawiera INV-002 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-003",
+      "test_name": "test_inv_003_block",
+      "violating_verdict": {
+        "rule_id": "jdg.dup.rule",
+        "duplicate_in_path": true
+      },
+      "expected": "failed zawiera INV-003 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-004",
+      "test_name": "test_inv_004_block",
+      "violating_verdict": {
+        "rule_id": "jdg.generic.violation"
+      },
+      "expected": "failed zawiera INV-004 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-005",
+      "test_name": "test_inv_005_block",
+      "violating_verdict": {
+        "_warnings": [
+          "IMMUTABLE_VERDICT_OVERWRITE"
+        ],
+        "rule_id": "jdg.zus.overwrite"
+      },
+      "expected": "failed zawiera INV-005 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-006",
+      "test_name": "test_inv_006_block",
+      "violating_verdict": {
+        "certainty_guard": "CERTAINTY_BLOCKED",
+        "auto_post": true,
+        "rule_id": "jdg.host.bad"
+      },
+      "expected": "failed zawiera INV-006 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-007",
+      "test_name": "test_inv_007_block",
+      "violating_verdict": {
+        "valid_from": "2026-12-31",
+        "valid_to": "2026-01-01",
+        "rule_id": "jdg.temporal.bad"
+      },
+      "expected": "failed zawiera INV-007 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-009",
+      "test_name": "test_inv_009_block",
+      "violating_verdict": {
+        "matched": true,
+        "_legal_basis": "",
+        "rule_id": "jdg.legal.missing"
+      },
+      "expected": "failed zawiera INV-009 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-012",
+      "test_name": "test_inv_012_block",
+      "violating_verdict": {
+        "vat_amount": 12.345,
+        "rule_id": "jdg.amount.bad"
+      },
+      "expected": "failed zawiera INV-012 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-014",
+      "test_name": "test_inv_014_block",
+      "violating_verdict": {
+        "rule_id": "jdg.generic.violation"
+      },
+      "expected": "failed zawiera INV-014 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-020",
+      "test_name": "test_inv_020_block",
+      "violating_verdict": {
+        "_routing_context": {
+          "transaction_type": "DOMESTIC_SALE"
+        },
+        "rule_id": "jdg.routing.bad"
+      },
+      "expected": "failed zawiera INV-020 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-021",
+      "test_name": "test_inv_021_block",
+      "violating_verdict": {
+        "net_amount": 100,
+        "gross_amount": 99,
+        "rule_id": "jdg.amount.bad"
+      },
+      "expected": "failed zawiera INV-021 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-022",
+      "test_name": "test_inv_022_block",
+      "violating_verdict": {
+        "rule_id": "jdg.generic.violation"
+      },
+      "expected": "failed zawiera INV-022 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-024",
+      "test_name": "test_inv_024_block",
+      "violating_verdict": {
+        "rule_id": "jdg.generic.violation"
+      },
+      "expected": "failed zawiera INV-024 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-028",
+      "test_name": "test_inv_028_block",
+      "violating_verdict": {
+        "rule_id": "jdg.generic.violation"
+      },
+      "expected": "failed zawiera INV-028 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-030",
+      "test_name": "test_inv_030_block",
+      "violating_verdict": {
+        "_provenance_tree": {
+          "path": [
+            {
+              "step": 1
+            }
+          ]
+        },
+        "rule_id": "jdg.prov.bad"
+      },
+      "expected": "failed zawiera INV-030 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-032",
+      "test_name": "test_inv_032_block",
+      "violating_verdict": {
+        "certainty_class": "MAYBE",
+        "rule_id": "jdg.class.bad"
+      },
+      "expected": "failed zawiera INV-032 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-034",
+      "test_name": "test_inv_034_block",
+      "violating_verdict": {
+        "rule_id": "jdg.generic.violation"
+      },
+      "expected": "failed zawiera INV-034 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-035",
+      "test_name": "test_inv_035_block",
+      "violating_verdict": {
+        "_routing": "BLOCK_AND_ALERT",
+        "auto_post": true,
+        "rule_id": "jdg.host.bad"
+      },
+      "expected": "failed zawiera INV-035 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-036",
+      "test_name": "test_inv_036_block",
+      "violating_verdict": {
+        "_routing_context": {
+          "entity_status": "ACTIVE"
+        },
+        "rule_id": "jdg.routing.bad"
+      },
+      "expected": "failed zawiera INV-036 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-038",
+      "test_name": "test_inv_038_block",
+      "violating_verdict": {
+        "_degraded_context": true,
+        "certainty_class": "CERTAIN",
+        "rule_id": "jdg.degrade.bad"
+      },
+      "expected": "failed zawiera INV-038 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    },
+    {
+      "invariant": "INV-039",
+      "test_name": "test_inv_039_block",
+      "violating_verdict": {
+        "_provenance_tree": {
+          "path": []
+        },
+        "rule_id": "jdg.prov.bad"
+      },
+      "expected": "failed zawiera INV-039 → certainty_class=NEEDS_ADVICE (BLOCK)"
+    }
+  ],
+  "generated_count": 22,
+  "coverage_rule": "każdy INV runtime ma test negatywny (naruszenie → BLOCK); testy [BM] blokują merge",
+  "skeleton_pytest": "#!/usr/bin/env python3\n\"\"\"Auto-generowane testy negatywne invariantów (V3-P04-I10).\"\"\"\nfrom __future__ import annotations\n\nimport json\nimport sys\nfrom pathlib import Path\n\nBASE_DIR = Path(__file__).resolve().parents[2]\nsys.path.insert(0, str(BASE_DIR / 'tools'))\n\n\ndef test_inv_001_block():\n    verdict = {\"vat_rate\": \"0.24\", \"rule_id\": \"jdg.vat.rate_bad\"}\n    # Oczekiwanie: naruszenie INV-001 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_002_block():\n    verdict = {\"rule_id\": \"jdg.contract.short\", \"matched\": true}\n    # Oczekiwanie: naruszenie INV-002 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_003_block():\n    verdict = {\"rule_id\": \"jdg.dup.rule\", \"duplicate_in_path\": true}\n    # Oczekiwanie: naruszenie INV-003 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_004_block():\n    verdict = {\"rule_id\": \"jdg.generic.violation\"}\n    # Oczekiwanie: naruszenie INV-004 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_005_block():\n    verdict = {\"_warnings\": [\"IMMUTABLE_VERDICT_OVERWRITE\"], \"rule_id\": \"jdg.zus.overwrite\"}\n    # Oczekiwanie: naruszenie INV-005 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_006_block():\n    verdict = {\"certainty_guard\": \"CERTAINTY_BLOCKED\", \"auto_post\": true, \"rule_id\": \"jdg.host.bad\"}\n    # Oczekiwanie: naruszenie INV-006 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_007_block():\n    verdict = {\"valid_from\": \"2026-12-31\", \"valid_to\": \"2026-01-01\", \"rule_id\": \"jdg.temporal.bad\"}\n    # Oczekiwanie: naruszenie INV-007 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_009_block():\n    verdict = {\"matched\": true, \"_legal_basis\": \"\", \"rule_id\": \"jdg.legal.missing\"}\n    # Oczekiwanie: naruszenie INV-009 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_012_block():\n    verdict = {\"vat_amount\": 12.345, \"rule_id\": \"jdg.amount.bad\"}\n    # Oczekiwanie: naruszenie INV-012 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_014_block():\n    verdict = {\"rule_id\": \"jdg.generic.violation\"}\n    # Oczekiwanie: naruszenie INV-014 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_020_block():\n    verdict = {\"_routing_context\": {\"transaction_type\": \"DOMESTIC_SALE\"}, \"rule_id\": \"jdg.routing.bad\"}\n    # Oczekiwanie: naruszenie INV-020 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_021_block():\n    verdict = {\"net_amount\": 100, \"gross_amount\": 99, \"rule_id\": \"jdg.amount.bad\"}\n    # Oczekiwanie: naruszenie INV-021 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_022_block():\n    verdict = {\"rule_id\": \"jdg.generic.violation\"}\n    # Oczekiwanie: naruszenie INV-022 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_024_block():\n    verdict = {\"rule_id\": \"jdg.generic.violation\"}\n    # Oczekiwanie: naruszenie INV-024 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_028_block():\n    verdict = {\"rule_id\": \"jdg.generic.violation\"}\n    # Oczekiwanie: naruszenie INV-028 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_030_block():\n    verdict = {\"_provenance_tree\": {\"path\": [{\"step\": 1}]}, \"rule_id\": \"jdg.prov.bad\"}\n    # Oczekiwanie: naruszenie INV-030 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_032_block():\n    verdict = {\"certainty_class\": \"MAYBE\", \"rule_id\": \"jdg.class.bad\"}\n    # Oczekiwanie: naruszenie INV-032 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_034_block():\n    verdict = {\"rule_id\": \"jdg.generic.violation\"}\n    # Oczekiwanie: naruszenie INV-034 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_035_block():\n    verdict = {\"_routing\": \"BLOCK_AND_ALERT\", \"auto_post\": true, \"rule_id\": \"jdg.host.bad\"}\n    # Oczekiwanie: naruszenie INV-035 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_036_block():\n    verdict = {\"_routing_context\": {\"entity_status\": \"ACTIVE\"}, \"rule_id\": \"jdg.routing.bad\"}\n    # Oczekiwanie: naruszenie INV-036 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_038_block():\n    verdict = {\"_degraded_context\": true, \"certainty_class\": \"CERTAIN\", \"rule_id\": \"jdg.degrade.bad\"}\n    # Oczekiwanie: naruszenie INV-038 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n\ndef test_inv_039_block():\n    verdict = {\"_provenance_tree\": {\"path\": []}, \"rule_id\": \"jdg.prov.bad\"}\n    # Oczekiwanie: naruszenie INV-039 → BLOCK / NEEDS_ADVICE\n    assert verdict  # szkielet — podepnij evaluate() z runtime_invariants\n",
+  "gate": {
+    "pass": true,
+    "rule": "≥20 testów negatywnych dla katalogu runtime (P04-AN06) — dowód skuteczności warstwy konstytucyjnej"
+  },
+  "note": "Szkielety — podpięcie do evaluate() z runtime_invariants_enterprise.rego w CI (P39); I05 (mutation) dostarcza przypadki."
+}

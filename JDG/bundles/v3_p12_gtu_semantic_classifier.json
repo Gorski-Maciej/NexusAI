@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P12-I03",
+  "generated_at": "2026-09-03T12:59:09+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "gtu_covered": 13,
+    "gtu_total": 13,
+    "missing_gtu": [],
+    "gtu_data_files": [
+      "v3_p12_gtu_semantic_classifier.json"
+    ],
+    "needs_advice_hits": 10,
+    "gtu_tools": [
+      "v3_p12_gtu_semantic_classifier.py"
+    ]
+  },
+  "checks": [
+    {
+      "name": "gtu_coverage",
+      "status": "OK",
+      "detail": "GTU_01..GTU_13 w regułach: 13/13 (brak: [])"
+    },
+    {
+      "name": "gtu_map_as_data",
+      "status": "OK",
+      "detail": "mapa GTU→PKWiU/CN jako dane: ['v3_p12_gtu_semantic_classifier.json']"
+    },
+    {
+      "name": "fail_closed_classification",
+      "status": "OK",
+      "detail": "NEEDS_ADVICE w regułach GTU: True (łącznie NEEDS_ADVICE: 10)"
+    },
+    {
+      "name": "gtu_tooling",
+      "status": "OK",
+      "detail": "narzędzia GTU: ['v3_p12_gtu_semantic_classifier.py']"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P16 (JPK/KSeF — pola GTU), P03 (werdykt), P44",
+    "rule": "każdy GTU ma regułę; mapa PKWiU/CN→GTU jako dane; niejednoznaczność = NEEDS_ADVICE (nigdy cichy wybór)"
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "schema_version": "1.0.0",
+  "report": "V3_REGISTRY_OF_REGISTRIES",
+  "generated_at": "2026-09-03T03:20:07.516879+00:00",
+  "registries": {
+    "manifest_v2.json": {
+      "label": "MANIFEST 2.0 (P01)",
+      "rego_files": 449,
+      "rule_blocks": 13033,
+      "matched_blocks": 12134,
+      "unique_rule_ids": 12182,
+      "duplicate_rule_ids": 235,
+      "stub_count": 1028,
+      "tools": 223,
+      "generated_at": "2026-08-17T12:31:49.484505+00:00"
+    },
+    "rule_registry.json": {
+      "label": "Rule Registry",
+      "entries": 13,
+      "generated_at": null
+    },
+    "metrics_pewnosci.json": {
+      "label": "Metrics Pewności (Pewność Dashboard)",
+      "lci": 55.56,
+      "tcl": 5.33,
+      "rv": 5.88,
+      "uvr": 1138,
+      "duplikaty": 396,
+      "stuby": 432,
+      "generated_at": null
+    },
+    "coverage_canon.json": {
+      "label": "Coverage Canon (AD-01)",
+      "lci": null,
+      "tcl": null,
+      "rv": null,
+      "uvr": null,
+      "generated_at": "2026-08-30T14:09:48+00:00"
+    },
+    "coverage_deserts.json": {
+      "label": "Coverage Deserts",
+      "desert_nodes": 72,
+      "total_nodes": 103,
+      "desert_pct": 69.9,
+      "alarm": true,
+      "generated_at": "2026-08-08T12:11:26.035091+00:00"
+    },
+    "healthy_versions.json": {
+      "label": "Healthy Versions (bundle)",
+      "built": 14,
+      "healthy": 1,
+      "generated_at": null
+    },
+    "thresholds_data.json": {
+      "label": "Thresholds Data (ADR-002)",
+      "parameters": 1,
+      "changed_by_audit": 1
+    },
+    "legal_graph.json": {
+      "label": "Legal Graph (LKG)",
+      "nodes": 258,
+      "edges": 0,
+      "generated_at": "2026-08-30T14:04:30+00:00"
+    },
+    "v3_campaign_ledger.json": {
+      "label": "V3 Campaign Ledger (P00-I06)",
+      "total": 69,
+      "wdrozony_100": 0,
+      "generated_at": "2026-09-03T03:19:56.910471+00:00"
+    }
+  },
+  "conflicts": [
+    {
+      "kind": "CONFLIKT_STUBY",
+      "claims": [
+        [
+          "manifest_v2.json",
+          1028
+        ],
+        [
+          "metrics_pewnosci.json",
+          432
+        ]
+      ],
+      "message": "Rejestry podają różne liczby stubów {true} — jedno źródło prawdy wymagane (P45)."
+    }
+  ],
+  "conflict_count": 1,
+  "status": "KONFLIKTY_WYKRYTO"
+}

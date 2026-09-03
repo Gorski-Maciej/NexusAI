@@ -1,0 +1,196 @@
+{
+  "innovation": "V3-P01-I04",
+  "generated_at": "2026-09-03T06:44:12+00:00",
+  "rules_total": 12439,
+  "overall_health": 0.6379,
+  "classes": {
+    "NON_CANONICAL": 10133,
+    "OK": 1687,
+    "MISSING": 59,
+    "UNKNOWN_ACT": 560
+  },
+  "score_scale": {
+    "OK": 1.0,
+    "NON_CANONICAL": 0.6,
+    "UNKNOWN_ACT": 0.3,
+    "MISSING": 0.0
+  },
+  "by_act_dashboard": [
+    {
+      "act": "(nieznany akt)",
+      "rules": 5197,
+      "avg_health": 0.5609
+    },
+    {
+      "act": "ustawa o PIT",
+      "rules": 1835,
+      "avg_health": 0.6074
+    },
+    {
+      "act": "ustawa o VAT",
+      "rules": 1678,
+      "avg_health": 0.6253
+    },
+    {
+      "act": "Ordynacja podatkowa",
+      "rules": 769,
+      "avg_health": 0.8845
+    },
+    {
+      "act": "Kodeks karny skarbowy",
+      "rules": 433,
+      "avg_health": 0.8642
+    },
+    {
+      "act": "ustawa o rachunkowości",
+      "rules": 420,
+      "avg_health": 0.6152
+    },
+    {
+      "act": "ustawa o SUS",
+      "rules": 411,
+      "avg_health": 0.6088
+    },
+    {
+      "act": "ustawa o ryczałcie",
+      "rules": 281,
+      "avg_health": 0.6911
+    },
+    {
+      "act": "Prawo przedsiębiorców",
+      "rules": 204,
+      "avg_health": 0.9725
+    },
+    {
+      "act": "ustawa o świadczeniach opieki zdrowotnej",
+      "rules": 182,
+      "avg_health": 0.622
+    },
+    {
+      "act": "ustawa o PCC",
+      "rules": 177,
+      "avg_health": 0.7627
+    },
+    {
+      "act": "ustawa o zarządzie sukcesyjnym",
+      "rules": 146,
+      "avg_health": 0.6438
+    },
+    {
+      "act": "rozporządzenie PKPiR",
+      "rules": 109,
+      "avg_health": 0.7578
+    },
+    {
+      "act": "ustawa o podatku akcyzowym",
+      "rules": 98,
+      "avg_health": 0.902
+    },
+    {
+      "act": "RODO",
+      "rules": 96,
+      "avg_health": 1.0
+    },
+    {
+      "act": "ustawa o zasiłku pieniężnym",
+      "rules": 84,
+      "avg_health": 0.6
+    },
+    {
+      "act": "ustawa o podatkach i opłatach lokalnych",
+      "rules": 76,
+      "avg_health": 0.7421
+    },
+    {
+      "act": "ustawa o BDO",
+      "rules": 66,
+      "avg_health": 0.6
+    },
+    {
+      "act": "ustawa o CEIDG",
+      "rules": 48,
+      "avg_health": 0.9833
+    },
+    {
+      "act": "ustawa o CIT",
+      "rules": 47,
+      "avg_health": 0.7617
+    },
+    {
+      "act": "ustawa o AML",
+      "rules": 46,
+      "avg_health": 0.6
+    },
+    {
+      "act": "Prawo budowlane",
+      "rules": 19,
+      "avg_health": 1.0
+    },
+    {
+      "act": "ustawa o rehabilitacji zawodowej",
+      "rules": 7,
+      "avg_health": 0.8286
+    },
+    {
+      "act": "ustawa o podatku rolnym",
+      "rules": 4,
+      "avg_health": 1.0
+    },
+    {
+      "act": "Kodeks pracy",
+      "rules": 3,
+      "avg_health": 1.0
+    },
+    {
+      "act": "ustawa o e-Doręczeniach",
+      "rules": 1,
+      "avg_health": 1.0
+    },
+    {
+      "act": "ustawa o podatkach i opłatach lokalnych (środki transportowe)",
+      "rules": 1,
+      "avg_health": 0.6
+    },
+    {
+      "act": "ustawa o transporcie drogowym",
+      "rules": 1,
+      "avg_health": 1.0
+    }
+  ],
+  "worst_acts": [
+    {
+      "act": "ustawa o podatku rolnym",
+      "rules": 4,
+      "avg_health": 1.0
+    },
+    {
+      "act": "Kodeks pracy",
+      "rules": 3,
+      "avg_health": 1.0
+    },
+    {
+      "act": "ustawa o e-Doręczeniach",
+      "rules": 1,
+      "avg_health": 1.0
+    },
+    {
+      "act": "ustawa o podatkach i opłatach lokalnych (środki transportowe)",
+      "rules": 1,
+      "avg_health": 0.6
+    },
+    {
+      "act": "ustawa o transporcie drogowym",
+      "rules": 1,
+      "avg_health": 1.0
+    }
+  ],
+  "trend": {
+    "basis": "kolejne audyty legal_basis_audit.py — porównywać RV i rozkład klas w czasie"
+  },
+  "gate": {
+    "rule": "reguła krytyczna z klasą MISSING lub UNKNOWN_ACT = fail CI (V3-P01-I08)",
+    "overall_min": 0.8,
+    "overall_now": 0.6379,
+    "pass": false
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "innovation": "V3-P04-I07",
+  "name": "Constitutional Freeze — auto-freeze domeny + odblokowanie 4-eyes (P04-AN11)",
+  "generated_at": "2026-09-03T08:57:48.586544+00:00",
+  "policy": {
+    "freeze_threshold": 2,
+    "window_hours": 24,
+    "rule": "2× naruszenie BLOCK w 24h → freeze domeny; odblokowanie wyłącznie 4-eyes + dowód naprawy (test negatywny zielony)"
+  },
+  "incidents_window": [
+    {
+      "domain": "jdg.vat",
+      "invariant": "INV-001",
+      "at": "2026-09-03T06:57:48.586421+00:00"
+    },
+    {
+      "domain": "jdg.vat",
+      "invariant": "INV-001",
+      "at": "2026-09-02T21:57:48.586421+00:00"
+    },
+    {
+      "domain": "jdg.zus",
+      "invariant": "INV-005",
+      "at": "2026-09-03T03:57:48.586421+00:00"
+    }
+  ],
+  "domain_states": {
+    "jdg.vat": {
+      "violations_24h": 2,
+      "state": "FROZEN",
+      "auto_post": "DISABLED",
+      "unblock_requires": "4-eyes + test negatywny INV zielony"
+    },
+    "jdg.zus": {
+      "violations_24h": 1,
+      "state": "WATCH",
+      "auto_post": "ALLOWED_IF_CERTAIN",
+      "unblock_requires": null
+    }
+  },
+  "frozen_domains": [
+    "jdg.vat"
+  ],
+  "gate": {
+    "pass": true,
+    "rule": "polityka eskalacji działa: 2× naruszenie BLOCK w 24h → FROZEN; 1× → WATCH; 0× → HEALTHY (P04-AN11)"
+  },
+  "note": "Scenariusz modelowy (3 incydenty) — licznik runtime z P37; freeze wyłącza AUTO_POST domeny (fail-closed, nigdy ciche przejście)."
+}

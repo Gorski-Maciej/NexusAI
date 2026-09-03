@@ -1,0 +1,92 @@
+{
+  "innovation": "V3-P03-I07",
+  "name": "Verdict as Evidence Object — podpis, merkle, retencja (F4)",
+  "generated_at": "2026-09-03T08:25:32.826564+00:00",
+  "evidence_object": {
+    "verdict": {
+      "matched": true,
+      "rule_id": "jdg.vat.rate_23",
+      "package": "jdg.vat",
+      "priority": 23,
+      "vat_rate": "0.23",
+      "rounding_level": "position",
+      "gtu_code": "",
+      "pit_form": "SCALE",
+      "pit_rate": "0.12",
+      "pit_bracket": "LOW",
+      "pit_annual_return_type": "PIT-36",
+      "kus_qualification": "full",
+      "kus_percent": 100,
+      "zus_social_base_type": "STANDARD",
+      "zus_health_rate": "0.09",
+      "business_status": "ACTIVE",
+      "ceidg_registration_required": true,
+      "_routing": "ALLOW",
+      "_routing_reason": "stawka standardowa, pełne dane",
+      "_legal_basis": "Art. 41 ust. 1 ustawy o VAT",
+      "_warnings": [],
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "certainty_class": "CERTAIN",
+      "golden_hash": "sha256:REPLAY"
+    },
+    "legal_refs": [
+      {
+        "ref": "PL/vat/art/41/ust/1",
+        "verified": true,
+        "source": "ISAP"
+      },
+      {
+        "ref": "PL/vat/art/106e/ust/1",
+        "verified": true,
+        "source": "ISAP"
+      }
+    ],
+    "provenance_path": [
+      {
+        "step": 1,
+        "package": "jdg.validation",
+        "rule_id": "jdg.validation.nip_checksum",
+        "routing": "OK"
+      },
+      {
+        "step": 2,
+        "package": "jdg.vat",
+        "rule_id": "jdg.vat.rate_23",
+        "routing": "ALLOW"
+      }
+    ],
+    "seal": {
+      "payload_hash": "sha256:2045f689a88afa9f0540c24678c5c8a139312a120b81cf7b892ec2bc3d46e232",
+      "merkle_root": "sha256:7bac8d8765d5892a0b6f3cca45c3304c4a8a93b3e0df5d536a3db5d7f8300f33",
+      "signature": "HSM-ECDSA-<placeholder-4-eyes>",
+      "signed_by": "PENDING_4EYES"
+    },
+    "versions": {
+      "bundle_version": "v2026.09.03",
+      "rule_version": "1.4.2",
+      "threshold_version": "1.3.0"
+    },
+    "retention": {
+      "required_years": 5,
+      "legal_basis": "Art. 86 § 1 OP; Art. 112 VAT",
+      "expires_on": "2031-12-31",
+      "worm_archive": true
+    },
+    "export_targets": [
+      "PDF",
+      "XML",
+      "JSON_SEALED"
+    ]
+  },
+  "paper_verdict": "════════════════════════════════════════════════\nWERDYKT PODATKOWY JDG — DOKUMENT DOWODOWY (F4)\n════════════════════════════════════════════════\n  Decyzja:      ALLOW (CERTAIN)\n  Reguła:       jdg.vat.rate_23\n  Podstawa:     Art. 41 ust. 1 ustawy o VAT\n  Legal refs:\n    - PL/vat/art/41/ust/1 [ISAP] [ZWERYFIKOWANO]\n    - PL/vat/art/106e/ust/1 [ISAP] [ZWERYFIKOWANO]\n  Ścieżka:      2 kroków\n  Versje:       bundle=v2026.09.03 rule=1.4.2 thr=1.3.0\n  Golden hash:  sha256:REPLAY\n  Merkle root:  sha256:7bac8d8765d5892a0b6f3cca45c3304c4a8a93b3e0df5d536a3db5d7f8300f33\n  Retencja:     5 lat (do 2031-12-31)\n════════════════════════════════════════════════",
+  "seal_verification": {
+    "payload_hash_matches": true,
+    "merkle_derivable": true
+  },
+  "gate": {
+    "pass": true,
+    "rule": "obiekt dowodowy kompletny: werdykt + legal refs + path + seal + wersje + retencja; eksport bez utraty dowodu (P03-AN09/AN10)"
+  },
+  "note": "Podpis HSM oznaczony PENDING_4EYES — nigdy nie deklarujemy podpisu bez realnego HSM (zasada zero fantazji, Sekcja 12 pkt 14); wdrożenie podpisu w P11/P43 (WORM)."
+}

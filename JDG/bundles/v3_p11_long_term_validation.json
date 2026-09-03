@@ -1,0 +1,46 @@
+{
+  "innovation": "V3-P11-I11",
+  "generated_at": "2026-09-03T12:19:33+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "timestamp": true,
+    "algorithm_versioning": true,
+    "retention_50y": false,
+    "policy": {}
+  },
+  "checks": [
+    {
+      "name": "timestamp",
+      "status": "OK",
+      "detail": "znacznik czasu podpisu: True"
+    },
+    {
+      "name": "algorithm_versioning",
+      "status": "OK",
+      "detail": "wersja algorytmu w seal: True | seal keys: ['version', 'payload_hash', 'content_hash', 'merkle_root', 'hsm_signature', 'verification_url']"
+    },
+    {
+      "name": "retention_50y",
+      "status": "FAIL",
+      "detail": "retencja 50 lat w WORM policy: {}"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P11-L11",
+      "severity": "P2",
+      "evidence": "seal certyfikatu nie zawiera wersji algorytmu ani kid (klucza) — po latach, gdy algorytm/klucz się zmieni (I07), nie będzie wiadomo jak zweryfikować stary podpis; brak jawnej polityki LTV (timestamp + re-weryfikacja starych podpisów)",
+      "fix": "I11: LTV — seal z algorytm + kid + timestamp; polityka re-weryfikacji starych certyfikatów; retencja WORM 50 lat audytowych (art. 74 uor / art. 86 Ordynacji)"
+    },
+    {
+      "id": "V3-P11-L11b",
+      "severity": "P2",
+      "evidence": "worm_storage.py nie deklaruje jawnej retencji 50 lat (tylko append-only + merkle) — polityka retencji audytowej nieudokumentowana",
+      "fix": "I11: retencja 50 lat w policy WORM + replikacja DR (P43)"
+    }
+  ],
+  "contract": {
+    "binding": "P43 (retencja/DR), P38 (deploy), P44",
+    "rule": "seal niesie algorytm+kid+timestamp; certyfikat weryfikowalny przez dekady bez sieci; retencja 50 lat"
+  }
+}

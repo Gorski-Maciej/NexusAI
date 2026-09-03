@@ -1,0 +1,43 @@
+{
+  "innovation": "V3-P06-I04",
+  "generated_at": "2026-09-03T12:43:01.808323+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "leaf_count": 617,
+    "boundary_rows": 2661,
+    "checksum": "37a4a76eb11d4ce4",
+    "vat_standard": [
+      0.23
+    ]
+  },
+  "checks": [
+    {
+      "name": "dataset_built",
+      "status": "OK",
+      "detail": "dataset: 617 liści, 2661 wierszy granicznych, checksum 37a4a76eb11d4ce4"
+    },
+    {
+      "name": "vat_rates_in_legal_set",
+      "status": "OK",
+      "detail": "standard_rate ∈ {0,5,8,23%}: [0.23]; poza zbiorem: []"
+    },
+    {
+      "name": "certification_procedure",
+      "status": "WARN",
+      "detail": "właściciel i cykl certyfikacji datasetu nieustaleni (procedura 4-eyes)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P06-L09",
+      "severity": "P2",
+      "evidence": "brak procedury certyfikacji golden datasetu (właściciel, cykl, podpis) — dataset budowany automatycznie z warstwy danych kodu",
+      "fix": "procedura certyfikacji 4-eyes (P06 kontrakt) + podpięcie do golden replay P10"
+    }
+  ],
+  "dataset_file": "v3_p06_golden_data_dataset.json",
+  "contract": {
+    "binding": "P10 (golden oracle — re-ewaluacja przy zmianie danych), P39 (testy przy każdej zmianie), P06-I03 (lineage dotkniętych reguł)",
+    "rule": "zmiana danych bez zielonego golden datasetu = blokada merge [BM]"
+  }
+}

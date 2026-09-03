@@ -1,0 +1,561 @@
+{
+  "innovation": "V3-P10-I09",
+  "name": "Golden Coverage Planner — domykanie pokrycia per domena",
+  "generated_at": "2026-09-03T12:43:23+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "packages_total": 255,
+    "packages_covered": 29,
+    "coverage_pct": 11.37,
+    "missing_high_risk": [
+      "crossborder",
+      "crossborder_etap17",
+      "crossborder_rates",
+      "kks_ord_etap16",
+      "ksef_firewall",
+      "ksef_innovations",
+      "ksef_jpk_etap20",
+      "ksef_offline_queue",
+      "ksef_outbox",
+      "ksef_receipt_digest",
+      "ksef_resilience",
+      "ksef_sanction_monitor",
+      "ksef_sandbox",
+      "ksef_upo_tracker",
+      "ord",
+      "p01_fundament_innovations",
+      "p01_innovations",
+      "p02_decision_core_innovations",
+      "p02_innovations",
+      "p03_innovations",
+      "p03_orchestrator_innovations",
+      "p03_vat_macro_innovations",
+      "p04_innovations",
+      "p04_vat_macro_enterprise",
+      "p04_vat_micro_innovations",
+      "p05_innovations",
+      "p05_pit_macro_innovations",
+      "p05_vat_micro_atomic",
+      "p06_innovations",
+      "p06_pit_macro_enterprise",
+      "p06_pit_micro_innovations",
+      "p07_innovations",
+      "p07_pit_micro_atomic",
+      "p07_zus_macro_innovations",
+      "p08_innovations",
+      "p08_zus_macro_enterprise",
+      "p08_zus_micro_innovations",
+      "p09_innovations",
+      "p09_ksiegowosc_pkpir_uor_innovations",
+      "p10_innovations",
+      "p10_kks_innovations",
+      "p11_innovations",
+      "p12_innovations",
+      "p13_innovations",
+      "p14_innovations",
+      "p14_pcc_lokalne_akcyza_innovations",
+      "p15_innovations",
+      "p15_srodowisko_bdo_innovations",
+      "p16_innovations",
+      "p17_innovations",
+      "p17_ksef_jpk_edeklaracje_innovations",
+      "p18_automatyzacja_ksiegowosci_innovations",
+      "p19_hr_swiadczenia_innovations",
+      "p20_neural_mesh_innovations",
+      "p21_innovations",
+      "p21_opa_system_innovations",
+      "p22_innovations",
+      "p22_validation_tools_innovations",
+      "p23_innovations",
+      "p23_test_rego_ci_innovations",
+      "p24_audyt_kompletny_innovations",
+      "p24_innovations",
+      "p3233_innovations",
+      "p33_ordpu_kks_supplement",
+      "p33_uor_supplement",
+      "p34_innovations",
+      "p35_innovations",
+      "pit",
+      "pit_macro_etap10",
+      "pit_micro_reliefs_etap11",
+      "pkpir_etap14",
+      "pkpir_live",
+      "pkpir_rates",
+      "pkpir_to_uor_transformer",
+      "uor",
+      "uor_etap15",
+      "uor_rates",
+      "vat",
+      "vat_cashflow",
+      "vat_deductions_audit",
+      "vat_fraud_detection",
+      "vat_mpp_split_payment",
+      "vat_rates_audit",
+      "vat_substantive_complete",
+      "zus",
+      "zus_core_etap12",
+      "zus_micro_etap13"
+    ]
+  },
+  "plan": [
+    {
+      "domain": "crossborder",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "crossborder_etap17",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "crossborder_rates",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "kks_ord_etap16",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "ksef_firewall",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "ksef_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "ksef_jpk_etap20",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "ksef_offline_queue",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "ksef_outbox",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "ksef_receipt_digest",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "ksef_resilience",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "ksef_sanction_monitor",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "ksef_sandbox",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "ksef_upo_tracker",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "ord",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p01_fundament_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p01_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p02_decision_core_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p02_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p03_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p03_orchestrator_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p03_vat_macro_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p04_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p04_vat_macro_enterprise",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p04_vat_micro_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p05_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p05_pit_macro_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p05_vat_micro_atomic",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p06_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p06_pit_macro_enterprise",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p06_pit_micro_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p07_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p07_pit_micro_atomic",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p07_zus_macro_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p08_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p08_zus_macro_enterprise",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p08_zus_micro_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p09_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p09_ksiegowosc_pkpir_uor_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p10_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p10_kks_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p11_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p12_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p13_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p14_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p14_pcc_lokalne_akcyza_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p15_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p15_srodowisko_bdo_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p16_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p17_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p17_ksef_jpk_edeklaracje_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p18_automatyzacja_ksiegowosci_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p19_hr_swiadczenia_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p20_neural_mesh_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p21_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p21_opa_system_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p22_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p22_validation_tools_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p23_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p23_test_rego_ci_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p24_audyt_kompletny_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p24_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p3233_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p33_ordpu_kks_supplement",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p33_uor_supplement",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p34_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "p35_innovations",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "pit",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "pit_macro_etap10",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "pit_micro_reliefs_etap11",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "pkpir_etap14",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "pkpir_live",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "pkpir_rates",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "pkpir_to_uor_transformer",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "uor",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "uor_etap15",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "uor_rates",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "vat",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "vat_cashflow",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "vat_deductions_audit",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "vat_fraud_detection",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "vat_mpp_split_payment",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "vat_rates_audit",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "vat_substantive_complete",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "zus",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "zus_core_etap12",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    },
+    {
+      "domain": "zus_micro_etap13",
+      "priority": "HIGH",
+      "action": "seed golden verdicts (granice + edge cases)"
+    }
+  ],
+  "checks": [
+    {
+      "name": "coverage_map",
+      "status": "OK",
+      "detail": "pakiety w rules/: 255, pokryte golden: 29"
+    },
+    {
+      "name": "high_risk_covered",
+      "status": "FAIL",
+      "detail": "domeny wysokiego ryzyka BEZ pokrycia golden: ['crossborder', 'crossborder_etap17', 'crossborder_rates', 'kks_ord_etap16', 'ksef_firewall', 'ksef_innovations', 'ksef_jpk_etap20', 'ksef_offline_queue', 'ksef_outbox', 'ksef_receipt_digest', 'ksef_resilience', 'ksef_sanction_monitor', 'ksef_sandbox', 'ksef_upo_tracker', 'ord', 'p01_fundament_innovations', 'p01_innovations', 'p02_decision_core_innovations', 'p02_innovations', 'p03_innovations', 'p03_orchestrator_innovations', 'p03_vat_macro_innovations', 'p04_innovations', 'p04_vat_macro_enterprise', 'p04_vat_micro_innovations', 'p05_innovations', 'p05_pit_macro_innovations', 'p05_vat_micro_atomic', 'p06_innovations', 'p06_pit_macro_enterprise', 'p06_pit_micro_innovations', 'p07_innovations', 'p07_pit_micro_atomic', 'p07_zus_macro_innovations', 'p08_innovations', 'p08_zus_macro_enterprise', 'p08_zus_micro_innovations', 'p09_innovations', 'p09_ksiegowosc_pkpir_uor_innovations', 'p10_innovations', 'p10_kks_innovations', 'p11_innovations', 'p12_innovations', 'p13_innovations', 'p14_innovations', 'p14_pcc_lokalne_akcyza_innovations', 'p15_innovations', 'p15_srodowisko_bdo_innovations', 'p16_innovations', 'p17_innovations', 'p17_ksef_jpk_edeklaracje_innovations', 'p18_automatyzacja_ksiegowosci_innovations', 'p19_hr_swiadczenia_innovations', 'p20_neural_mesh_innovations', 'p21_innovations', 'p21_opa_system_innovations', 'p22_innovations', 'p22_validation_tools_innovations', 'p23_innovations', 'p23_test_rego_ci_innovations', 'p24_audyt_kompletny_innovations', 'p24_innovations', 'p3233_innovations', 'p33_ordpu_kks_supplement', 'p33_uor_supplement', 'p34_innovations', 'p35_innovations', 'pit', 'pit_macro_etap10', 'pit_micro_reliefs_etap11', 'pkpir_etap14', 'pkpir_live', 'pkpir_rates', 'pkpir_to_uor_transformer', 'uor', 'uor_etap15', 'uor_rates', 'vat', 'vat_cashflow', 'vat_deductions_audit', 'vat_fraud_detection', 'vat_mpp_split_payment', 'vat_rates_audit', 'vat_substantive_complete', 'zus', 'zus_core_etap12', 'zus_micro_etap13']"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P10-L09",
+      "severity": "P1",
+      "evidence": "domeny wysokiego ryzyka regresji bez werdyktu golden: ['crossborder', 'crossborder_etap17', 'crossborder_rates', 'kks_ord_etap16', 'ksef_firewall', 'ksef_innovations', 'ksef_jpk_etap20', 'ksef_offline_queue', 'ksef_outbox', 'ksef_receipt_digest', 'ksef_resilience', 'ksef_sanction_monitor', 'ksef_sandbox', 'ksef_upo_tracker', 'ord', 'p01_fundament_innovations', 'p01_innovations', 'p02_decision_core_innovations', 'p02_innovations', 'p03_innovations', 'p03_orchestrator_innovations', 'p03_vat_macro_innovations', 'p04_innovations', 'p04_vat_macro_enterprise', 'p04_vat_micro_innovations', 'p05_innovations', 'p05_pit_macro_innovations', 'p05_vat_micro_atomic', 'p06_innovations', 'p06_pit_macro_enterprise', 'p06_pit_micro_innovations', 'p07_innovations', 'p07_pit_micro_atomic', 'p07_zus_macro_innovations', 'p08_innovations', 'p08_zus_macro_enterprise', 'p08_zus_micro_innovations', 'p09_innovations', 'p09_ksiegowosc_pkpir_uor_innovations', 'p10_innovations', 'p10_kks_innovations', 'p11_innovations', 'p12_innovations', 'p13_innovations', 'p14_innovations', 'p14_pcc_lokalne_akcyza_innovations', 'p15_innovations', 'p15_srodowisko_bdo_innovations', 'p16_innovations', 'p17_innovations', 'p17_ksef_jpk_edeklaracje_innovations', 'p18_automatyzacja_ksiegowosci_innovations', 'p19_hr_swiadczenia_innovations', 'p20_neural_mesh_innovations', 'p21_innovations', 'p21_opa_system_innovations', 'p22_innovations', 'p22_validation_tools_innovations', 'p23_innovations', 'p23_test_rego_ci_innovations', 'p24_audyt_kompletny_innovations', 'p24_innovations', 'p3233_innovations', 'p33_ordpu_kks_supplement', 'p33_uor_supplement', 'p34_innovations', 'p35_innovations', 'pit', 'pit_macro_etap10', 'pit_micro_reliefs_etap11', 'pkpir_etap14', 'pkpir_live', 'pkpir_rates', 'pkpir_to_uor_transformer', 'uor', 'uor_etap15', 'uor_rates', 'vat', 'vat_cashflow', 'vat_deductions_audit', 'vat_fraud_detection', 'vat_mpp_split_payment', 'vat_rates_audit', 'vat_substantive_complete', 'zus', 'zus_core_etap12', 'zus_micro_etap13'] (z 255 pakietów w rules/, golden pokrywa 29)",
+      "fix": "I09: plan domykania pokrycia golden per domena (priorytet wg ryzyka P10-AN11) z seedowaniem werdyktów granicznych"
+    }
+  ],
+  "contract": {
+    "binding": "P10 (golden), P44 (certyfikacja), P12-P28 (domeny)",
+    "rule": "domena wysokiego ryzyka bez pokrycia golden = znany limit pokrycia w dashboardzie (I07), plan domknięcia w CI"
+  }
+}

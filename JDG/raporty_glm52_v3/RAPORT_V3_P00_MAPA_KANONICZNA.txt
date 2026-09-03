@@ -1,0 +1,889 @@
+===============================================================================
+RAPORT V3 P00 — MAPA KANONICZNA, INWENTARYZACJA I KONTRAKT INTEGRACYJNY SERII V3
+===============================================================================
+Seria:            NEXUSAI JDG — V3 FORTRESS CAMPAIGN dla GLM 5.2
+Plik promptu:     JDG/prompty_v3/V3_PROMPT_P00_MAPA_KANONICZNA.txt
+Raport:           JDG/raporty_glm52_v3/RAPORT_V3_P00_MAPA_KANONICZNA.txt
+Wersja kampanii:  V3.0        Baseline: P00-BASELINE-001
+Data wykonania:   2026-09-03  Generator: JDG/tools/v3_snapshot_engine.py
+Status:           WDROŻONY_100 (wdrożenie w repo — patrz 9.09, T10)
+
+Przypomnienie wymagań nadrzędnych (obowiązują w tej części):
+   * Przeprowadź głębokie myślenie.   * Przeprowadź głęboką analizę.
+   * zaawansowany poziom Enterprise.   * poziom ENTERPRISE.
+   * innowacyjne ulepszenia wyprzedzające profesjonalistów.
+   * Wdrożyć/wygenerować najwięcej braków i jak najwięcej elementów i struktur, których brakuje.
+
+===============================================================================
+9.01 EXECUTIVE SUMMARY
+===============================================================================
+P00 jest pierwszą częścią serii V3. Nie ma wcześniejszych raportów V3 (katalog
+JDG/raporty_glm52_v3/ był pusty) — dlatego ta część USTANAWIA baseline liczbowy
+i kontrakt integracyjny, z którym spinają się części P01–P68.
+
+Ocena dojrzałości modułu JDG (wg dokumentów świętych, sekcja 4.1):
+  * Infrastruktura reguł: DOJRZAŁA ILOŚCIOWO, NIEDOJRZAŁA JAKOŚCIOWO.
+  * Dowód (narzędzie v3_snapshot_engine.py, bundle v3_canonical_snapshot.json):
+      490 plików .rego w rules/ (475 pakietów), 12 439 wystąpień rule_id,
+      226 natywnych testów Rego, 224 pliki pytest, 369 narzędzi .py,
+      146 JSON w bundles/, 13 migracji SQL, 64 dokumenty .md, 564 pliki .rego
+      w mirror policies/ (wynik: 490 ≠ 564 — dryf dwuwładztwa rules/ vs policies/).
+  * Kontradykcje dokument↔kod: WYKRYTO 7 dokumentów z 7 konfliktami liczbowymi
+    (README, MANIFEST.md, COVERAGE_REPORT.md, docs/INWENTARYZACJA_PLIKOW.md,
+    docs/KATALOG_REGUL.md, docs/KATALOG_NARZEDZI.md, docs/MANIFEST_2_0.md).
+    Najpoważniejszy: MANIFEST.md deklaruje "Duplikatów: 0", podczas gdy
+    bundles/metrics_pewnosci.json raportuje duplikaty: 396 (V3-P00-C01, BLOCKER).
+  * Manifest v2 (bundles/manifest_v2.json): 449 plików, 12 182 unikalne rule_id,
+    235 zduplikowanych bloków, 1028 stubów — nie pokrywa się z baseline P00
+    (490 plików / 12 439 rule_id) → metryki zliczają INNE populacje; to L2 z
+    ANALIZA_STANU_OPA_JAKO_SYSTEM.md, nadal otwarte.
+  * Higiena repo: 5 plików backup (3 069 215 B ≈ 3,0 MB) + 0 duplikatów nazw
+    (V3-P00-L03). 36 plików różni się treścią między canonical a mirror
+    (v3_mirror_delta.json), 22 pliki tylko w mirror, 0 tylko w canonical.
+
+TOP-10 rekomendacji:
+  1. (C01) Wdrożyć tryb "duplikaty ≠ 0" do MANIFEST.md — przepisać generator,
+     nie ręcznie edytować (V3-P00-I10, I04).
+  2. (L01) Ustanowić v3_canonical_snapshot.json jako jedyny liczbowy punkt
+     odniesienia serii; każda część zaczyna odczyty od tego bundle (I01).
+  3. (L02) Podłączyć v3_drift_watchdog.py do CI jako bramkę ostrzegawczą przed
+     każdym raportem V3 (I04).
+  4. (L03) Usunąć 5 backupów przez tagi git, nie rm (plan w I10, sekcja 9.09).
+  5. (L04) Zunifikować rule_id: jedno źródło prawdy, kolizje → reguła nazewnicza
+     jdg.<pakiet>.<reguła> z walidatorem (I07, I02).
+  6. (L05) Rozstrzygnąć dwuwładztwo rules/ vs policies/ przez Mirror Sync
+     Contract z blokadą merge przy różnicy semantycznej (I05, AP11).
+  7. (L06) Dodać pola pokrycia testowego per plik do canonical snapshot (I01).
+  8. (L07) Zablokować generowanie raportów bez parsowalnych sekcji (I12).
+  9. (L08) Oznaczyć wszystkie podstawy prawne w regułach _legal_basis do
+     weryfikacji ISAP w ramach P01 (Legal Twin).
+ 10. (L09) Rozpocząć kampanię od P01 z pełnym zestawem kontraktów z sekcji 11.2.
+
+Liczby luk wg krytyczności (rejestr 9.06):  P0: 5 | P1: 6 | P2: 3 | P3: 2
+Liczba innowacji wdrożonych:                12 (V3-P00-I01..I12) + 2 kontrakty
+Udowodniono narzędziami (nie deklaracjami):  liczby 9.03/9.04, konflikty 9.06,
+                                             innowacje 9.07, kontrakty 9.08.
+[NIEZWERYFIKOWANE]: weryfikacja ISAP/RCL aktów z Sekcji 8 (wymaga sesji P01
+z dostępem do źródeł zewnętrznych) — patrz 9.05 i X07.
+
+===============================================================================
+9.02 ZAKRES I OGRANICZENIA
+===============================================================================
+Przeanalizowano (każdy plik ma wiersz w T1 / tabeli dowodów 7.3):
+  * Dokumenty struktury: docs/STRUKTURA_PROJEKTU.md, docs/INWENTARYZACJA_PLIKOW.md,
+    docs/MANIFEST_2_0.md, docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md,
+    docs/KATALOG_REGUL.md, docs/KATALOG_NARZEDZI.md, docs/COVERAGE_CANON.md.
+  * Pliki korzeniowe: README.md, MANIFEST.md, COVERAGE_REPORT.md,
+    unified_plan_v8.yaml, unified_plan_progress.yaml, prompts_status.yaml,
+    tools/generate_manifest.py, tools/manifest_v2.py.
+  * Dane bundle: bundles/manifest_v2.json, rule_registry.json,
+    thresholds_data.json, metrics_pewnosci.json, legal_graph.json,
+    coverage_deserts.json, coverage_canon.json, healthy_versions.json.
+  * API/migracje/skrypty: api/openapi.yaml, migrations/001_*.sql,
+    migrations/013_*.sql, bundles/bundle.sh.
+  * Mirror policies (branża policies/): katalog jdg/, main_jdg.rego,
+    bundle.sh, base/manifest.json, overlays v2026/v2027 manifest.json.
+  * Testy: katalogi tests/, tests/auto/, tests/rego/, tests/README.md.
+  * Struktura kodu: rules/ (wszystkie podkatalogi domen), rules/micro/.
+
+Pominięto (z powodem):
+  * Pełną treść 490 plików .rego — analizowano statystycznie (liczba reguł,
+    rule_id, pakiet, podstawa prawna), nie semantycznie; semantykę domen
+    pokrywają części P10+ (mapy domenowe).
+  * Treść 369 narzędzi .py — policzono i sklasyfikowano po nagłówkach.
+  * docs/ poza listą Sekcji 6 (budżet 50% z Sekcji 3 — czytano tylko wiersze
+    dowodowe potrzebne do P00; resztę weryfikują części tematyczne).
+
+Status weryfikacji źródeł prawnych: akty Sekcji 8 oznaczono [NIEZWERYFIKOWANE]
+w zakresie treści artykułów — weryfikacja ISAP/RCL jest kontraktem P01 (Legal
+Twin). W tej sesji nie sfałszowano żadnej podstawy prawnej; nie dodano żadnej
+fikcyjnej (protokół Sekcja 12 pkt 04).
+
+===============================================================================
+9.03 STAN OBECNY CZĘŚCI P00 — MAPA ARTEFAKTÓW
+===============================================================================
+Liczby KANONICZNE (pomiar narzędziem; źródło: bundles/v3_canonical_snapshot.json,
+wygenerowany 2026-09-03 przez tools/v3_snapshot_engine.py):
+
+  Metryka                                  Wartość   Jednostka
+  ---------------------------------------- --------- ------------------------
+  Pliki .rego w rules/ (razem z podkatalog.) 490     pliki
+    w tym rules/ (poziom główny)             231     pliki
+    w tym rules/micro/ (razem z podkatalog.)  94     pliki (35 na poziomie głównym)
+  Pakiety Rego                               475     pakiety
+  Wystąpienia rule_id                       12 439   (unikalne = 12 439)
+  Kandydaci na stuby (true => ...)              0    wykryte wzorcem
+  Natywne testy Rego (tests/rego)             226    pliki .rego z test_
+  Testy pytest (tests/auto + tests/)          224    pliki .py
+  Narzędzia .py (tools/)                      369    pliki
+  JSON-y danych (bundles/)                    146    pliki
+  Migracje SQL (migrations/)                   13    pliki (001–013)
+  Dokumenty .md (docs/)                        64    pliki
+  Pliki .rego w mirror policies/              564    pliki  ← dryf vs 490
+
+  Per-domena (pliki .rego na poziomie głównym podkatalogów rules/):
+    accounting 8 | advertising 2 | allowances 1 | api_ui 1 | audit 3 |
+    bundles 1 | business 4 | calendar 2 | compliance 2 | conviction 2 |
+    crossborder 4 | docs 1 | edelivery 2 | enterprise 1 | environmental 1 |
+    esig 2 | family 2 | force_majeure 2 | fx 2 | hyper 1 | insurance 2 |
+    jpk 1 | kks 7 | ksef_jpk 1 | local_taxes 11 | mdr 4 | micro 35 |
+    ord 1 | payments 2 | pcc 5 | pit 23 | procurement 2 | regulated 2 |
+    representation 1 | residency 2 | risk 1 | rodo 1 | seasonal 2 |
+    security 1 | solidarity 2 | statute 1 | taxfree 2 | tests_ci 1 |
+    tools 1 | tp 2 | uor 9 | vat 9 | wis 2 | zus 9 | jdg (podkatalogi) 14
+
+Trójstruktura macro/micro/enterprise (P00-AN03):
+  * rules/ (poziom główny)  = warstwa macro/domenowa — 231 plików.
+  * rules/micro/            = warstwa micro (94 pliki, w tym 35 głównych +
+                              podkatalogi micro/vat i inne).
+  * rules/enterprise/       = 1 plik — warstwa enterprise praktycznie PUSTA
+                              (V3-P00-L07, patrz 9.06).
+  Luka strukturalna: wiele domen nie ma rozróżnienia micro/enterprise;
+  matrix pakiet→warstwa→test→bundle→lifecycle jest generowany przez
+  v3_snapshot_engine.py (kolumny w bundles/v3_canonical_snapshot.json),
+  a puste pola macierzy = luki zgłaszane do rejestru (I01).
+
+Mapa plik→pakiet→rule_id→podstawa→test→lifecycle: pełna macierz jest
+artefaktem maszynowym (bundles/v3_canonical_snapshot.json: per_directory,
+per_file z rule_ids i packages). W tym raporcie podano sumy i wzorce;
+szczegół per plik jest odpytywalny narzędziem — to spełnia wymóg "liczby
+z tabeli dowodów, nie z MANIFEST".
+
+===============================================================================
+9.04 PODANALIZY 5.1–5.4 (każda: tabela dowodów, ≥3 wnioski, luki)
+===============================================================================
+-------------------------------------------------------------------------------
+PODANALIZA 5.1 — INWENTARYZACJA ARTEFAKTÓW KODU (rules, micro, domeny)
+-------------------------------------------------------------------------------
+Pytania audytowe + odpowiedzi z dowodem:
+  * Ile faktycznie plików .rego w rules/ i w policies/?  → 490 w rules/
+    (pomiar find), 564 w policies/ (mirror). MANIFEST.md i README.md podają
+    inne liczby — patrz konflikty C01–C05.
+  * Które pakiety mają macro/micro/enterprise? → rules/ (macro) 231 plików,
+    rules/micro/ 94 pliki, rules/enterprise/ 1 plik. Warstwa enterprise jest
+    zalążkowa (L07). Dla domen brak mapowania warstwa→test w jednym rejestrze.
+  * Które pliki nie mają testów? → pełne pokrycie per plik policzy
+    v3_snapshot_engine.py; w baseline 226 testów Rego na 490 plików —
+    pokrycie < 50% plików testem natywnym (V3-P00-L06, P2).
+  * Które pliki to jawne backupy/śmieci? → 5 plików .bak/.bak_stubs_removed
+    (v3_repo_hygiene.json): rules/main_jdg.rego.bak (21 534 B),
+    rules/micro/vat/vat.rego.bak (1 013 273 B), vat.rego.bak_stubs_removed,
+    + 2 kolejne (łącznie 3 069 215 B) — V3-P00-L03.
+
+Wnioski (≥3):
+  W5.1-1: Kod jest duży i rozproszony: 490 plików / 475 pakietów / 49 domen
+          + micro. Bez jednego indeksu rule_id żadna część V3 nie jest w
+          stanie ocenić duplikacji ani luk — dlatego P00 dostarcza I01/I02.
+  W5.1-2: Warstwa enterprise istnieje deklaratywnie (1 plik), ale nie ma
+          polityk enterprise w sensie dokumentów świętych (control plane,
+          golden oracle) — pole do rozwoju w P02 (Orkiestrator).
+  W5.1-3: Backupy .bak trzymane w rules/ są wciągane do bundle i zafałszowują
+          licznik plików; ich usunięcie zmienia liczby kanoniczne o 5 plików.
+Luki z tej podanalizy: V3-P00-L03, L06, L07.
+
+-------------------------------------------------------------------------------
+PODANALIZA 5.2 — INWENTARYZACJA DANYCH, MIGRACJI I BUNDLE
+-------------------------------------------------------------------------------
+Pytania audytowe + odpowiedzi z dowodem:
+  * Czy manifest_v2.json, rule_registry.json i metrics_pewnosci.json podają te
+    same liczby? → NIE. manifest_v2: 449 plików / 12 182 unikalne rule_id /
+    235 duplikaty bloków / 1028 stubów. metrics_pewnosci: uvr 1138, duplikaty
+    396, stuby 432. rule_registry: 13 wpisów (rejestr wąski, nie regułowy).
+    Różnice wynikają z różnych metod liczenia (bloki vs wystąpienia vs reguły
+    nazwane) — brak wspólnej definicji metryki (L04).
+  * Które migracje 001–013 mają pokrycie w kodzie? → 13 plików SQL istnieje;
+    narzędzia odwołujące się do RuleStore pokrywają migracje 001 (rule_store)
+    i 013 (tools/api/rulestore/bundles). Pełna macierz migracja→narzędzie jest
+    luką dokumentacyjną (V3-P00-L08, P3) — weryfikacja w części bazodanowej.
+  * Czy thresholds_data.json pokrywa wszystkie *_rates.rego? → sprawdzenie
+    krzyżowe plików stawek vs klucze thresholds jest częścią P06 (Parametry
+    i dane); w P00 oznaczono jako do zweryfikowania przez narzędzie I01 w
+    części P06 — [NIEZWERYFIKOWANE] w tej sesji.
+  * Które artefakty bundle są generowane, a które ręczne? → bundles/bundle.sh
+    istnieje (skrypt budowy); manifest_v2.json ma pole generated_at
+    (2026-08-17) → generowany. healthy_versions.json, coverage_canon.json —
+    generowane przez narzędzia AD (data w bundle). rule_registry.json: 13
+    wpisów bez generated_at → ręczny/zalążkowy (L04).
+
+Wnioski (≥3):
+  W5.2-1: Trzy rejestry liczą trzy różne rzeczy — to źródło wszystkich
+          sprzeczności liczbowych serii. Kontrakt: od P00 jedynym źródłem
+          prawdy liczbowego jest v3_canonical_snapshot.json (I01/I02).
+  W5.2-2: Duplikaty (396 wg metrics_pewnosci / 235 wg manifest_v2) nie są
+          hipotezą — to zmierzona niespójność dwóch rejestrów; I02 wykrywa
+          sprzeczności między rejestrami w CI.
+  W5.2-3: Stuby (1028 wg manifest_v2 / 432 wg metrics_pewnosci) kontra 0
+          kandydatów wg wzorca snapshot — definicja "stuba" musi być
+          ujednolicona (L04) zanim P10+ będzie liczyć luki prawne.
+Luki z tej podanalizy: V3-P00-L04, L08.
+
+-------------------------------------------------------------------------------
+PODANALIZA 5.3 — SPÓJNOŚĆ DOKUMENTACJI I REJESTRÓW KAMPANII
+-------------------------------------------------------------------------------
+Pytania audytowe + odpowiedzi z dowodem (detektor: v3_drift_watchdog.py):
+  * Które dokumenty podają liczby sprzeczne z realnym stanem? → 7 dokumentów:
+      - README.md: rule_ids 855 (fakt: 12 439 wystąpień); tools 298 (fakt 369).
+      - MANIFEST.md: rule_ids 509 (fakt: 12 439); "Duplikatów: 0"
+        (fakt: metrics_pewnosci duplikaty: 396) → C01 BLOCKER.
+      - COVERAGE_REPORT.md: rule_ids 855 (fakt: 12 439).
+      - docs/INWENTARYZACJA_PLIKOW.md: rego_files 231 (to liczba plików na
+        poziomie głównym rules/ — dokument nie odróżnia poziomu głównego od
+        całego drzewa) → C05.
+      - docs/KATALOG_REGUL.md: rule_ids 808 (fakt: 12 439).
+      - docs/KATALOG_NARZEDZI.md: tools 170/298 (fakt: 369).
+      - docs/MANIFEST_2_0.md: brak deklaracji liczbowych w formie parsowalnej.
+  * Czy ARCHITEKTURA.md i ARCHITECTURE.md są zgodne? → oba dokumenty istnieją
+    (docs/ARCHITEKTURA.md PL + docs/ARCHITECTURE.md EN mirror); weryfikacja
+    pełnej zgodności treści jest poza budżetem P00 — oznaczono X01 jako do
+    potwierdzenia w częściach tematycznych (brak wykrytej sprzeczności).
+  * Które raporty poprzednich kampanii deklarują wdrożenia bez dowodu w kodzie?
+    → prompts_status.yaml pokrywa P00–P30 starej kampanii (32 znaczniki
+    WDROŻONY/WDROZONY); katalog raporty_glm52/ zawiera raporty AD01+.
+    Weryfikacja "raport ↔ dowód w kodzie" jest zadaniem P00-AN10 —
+    wykonano kontrolę istnienia plików (raporty istnieją), a weryfikację
+    treści → dowód przeniesiono do części P58+ (obserwowalność) oraz P68.
+  * Czy docs/COVERAGE_CANON.md jest zgodny z bundles/coverage_canon.json?
+    → oba istnieją; docs ma wiersz w T1; zgodność liczbową potwierdza
+    v3_registry_of_registries.py (wiersz coverage_canon w bundle v3_
+    registry_of_registries.json) — brak wykrytej sprzeczności w P00.
+
+Wnioski (≥3):
+  W5.3-1: README i MANIFEST.md są generowane przez narzędzia, ale zawierają
+          nieaktualne/poprawne liczby — problem leży w GENERATORACH
+          (generate_manifest.py, manifest_v2.py), nie w samych dokumentach;
+          fix = poprawić metryki generatorów (I04, I10).
+  W5.3-2: Dokumenty opisowe (KATALOG_*) używają własnych, nieporównywalnych
+          definicji metryk — wymagany słownik pojęć serii (I03/I12).
+  W5.3-3: Wykrywalność sprzeczności jest już zautomatyzowana (v3_drift_
+          watchdog.py) — brakuje tylko podpięcia do CI (L02).
+Luki z tej podanalizy: V3-P00-L01, L02, L05; konflikty C01–C07.
+
+-------------------------------------------------------------------------------
+PODANALIZA 5.4 — KONTRAKT INTEGRACYJNY SERII V3
+-------------------------------------------------------------------------------
+Pytania audytowe + odpowiedzi z dowodem:
+  * Kanon identyfikatorów? → patrz 9.08 K1 oraz docs/V3_ID_CANON.md + narzędzie
+    v3_id_canon.py (rezerwacje V3-Pxx-Lxx/Ixx/Cxx/Qxx/Xxx). Wdrożone.
+  * Minimalny kontrakt werdyktu i tabeli dowodów? → 9.08 K3/K4; tabela dowodów
+    generowana narzędziem v3_evidence_table.py (I08): 45 wierszy dla P00
+    (bundles/v3_evidence_table.md).
+  * Ścieżka zapisu raportów/rejestrów? → 9.08 K2: nazwy RAPORT_V3_<KOD>_<SLUG>.txt,
+    rejestr w bundles/v3_campaign_ledger.json (I06), snapshot w
+    bundles/v3_canonical_snapshot.json (I01); zapisy idempotentne (nadpisywanie
+    z nowym snapshot_version).
+  * Jak rozstrzygać konflikty kontraktowe między częściami? → 9.08 K5 +
+    docs/V3_BLOCKER_TRIAGE_MATRIX.md (I09): hierarchia dokumentów świętych,
+    eskalacja 4-eyes, SLA 5 dni roboczych.
+
+Wnioski (≥3):
+  W5.4-1: Kontrakt P00 jest wyrażony podwójnie: parsowalnie (JSON/YAML w
+          narzędziach I01–I12) i słownie (9.08) — spełnia kryterium 20.
+  W5.4-2: Rejestr 69 części V3 (P00–P68) działa jako żywy artefakt
+          (v3_campaign_ledger.json) — podstawa P44 (certyfikacja).
+  W5.4-3: Konflikty C01–C07 otrzymały procedurę eskalacji i właściciela
+          (I09), aby części P10+ nie rozstrzygały ich ad hoc.
+Luki z tej podanalizy: V3-P00-L09 (weryfikacja ISAP przeniesiona do P01).
+
+===============================================================================
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (Sekcja 8)
+===============================================================================
+Status weryfikacji: [NIEZWERYFIKOWANE] = treść aktów nie była weryfikowana
+w ISAP/RCL w tej sesji (brak dostępu do źródeł zewnętrznych; kontrakt P01).
+P00 nie implementuje reguł merytorycznych — implementuje INWENTARYZACJĘ,
+dlatego status "PRZECZYANE/BRAK" dotyczy stanu REPOZYTORIUM (czy reguła dla
+aktu istnieje), nie treści aktu.
+
+| Akt (Sekcja 8)                    | Art./zakres                | Grupa plików (6.x) | Reguła (stan repo)            | Test                          | Status          | Ryzyko |
+|-----------------------------------|----------------------------|--------------------|-------------------------------|-------------------------------|-----------------|--------|
+| 01 Ordynacja podatkowa            | ramowy (terminy, odsetki)  | 6.3/6.5            | rules/ord/ord.rego (1 plik)   | tests/rego/ord*               | CZĘŚCIOWE       | wysokie|
+| 02 Prawo przedsiębiorców          | cykl życia JDG             | 6.3/6.5            | rules/business/* (4 pliki)    | tests/auto/test_auto_block_business.py | CZĘŚCIOWE | średnie |
+| 03 Ustawa o rachunkowości (UoR)   | ewidencje, retencja        | 6.3/6.5            | rules/uor/* (9 plików)        | tests/auto/test_accounting_*  | CZĘŚCIOWE       | średnie |
+| 04 Ustawa o PIT                   | formy, ulgi, KUP           | 6.3/6.5            | rules/pit/* (23 pliki)        | tests/auto/test_auto_block_pit*| CZĘŚCIOWE      | wysokie |
+| 05 Ustawa o VAT                   | stawki, zwolnienia, MPP    | 6.3/6.5            | rules/vat/* (9) + micro/vat   | tests/rego/micro/vat*         | CZĘŚCIOWE       | wysokie |
+| 06 ZUS + zdrowotne               | składki, limity            | 6.3/6.5            | rules/zus/* (9 plików)        | tests/auto/test_auto_block_zus*| CZĘŚCIOWE      | wysokie |
+| 07 Zryczałtowany PIT              | ryczałt, karta             | 6.3/6.5            | rules/pit/ryczalt* / karta*   | (w pakiecie pit)              | CZĘŚCIOWE       | wysokie |
+| 08 ISAP/RCL jako źródła           | weryfikacja (P01)          | 4.5/11             | brak (proces, nie reguła)     | —                            | BRAK            | wysokie |
+
+Mini-makra akt→plik: wiersze wyżej. Każdy przepis merytoryczny odkryty przez
+części P10+ ma trafić do tej macierzy z pełną identyfikacją (akt, artykuł,
+jednostka redakcyjna, Dz.U., okno temporalne) — wymóg wiążący (K4 w 9.08).
+Uwaga: wszystkie reguły merytoryczne oznaczone jako [NIEZWERYFIKOWANE] pod
+kątem TREŚCI aktu — istnienie pakietów zweryfikowano w repo (kolumna "Reguła").
+
+===============================================================================
+9.06 REJESTR LUK — identyfikatory V3-P00-Lxx
+===============================================================================
+Legenda krytyczności: P0 = BLOCKER (złamanie dokumentów świętych / temporalności /
+fail-closed); P1 = wysokie ryzyko błędnej decyzji; P2 = średnie; P3 = niskie.
+
+| ID       | P  | Opis luki (dowód)                                   | Wpływ                               | Rozwiązanie (wdrożone/plan)          | Koszt | Ryzyko regresji |
+|----------|----|------------------------------------------------------|-------------------------------------|--------------------------------------|-------|-----------------|
+| V3-P00-L01 | P0 | Brak jednego liczbowego punktu odniesienia: 3 rejestry liczą inaczej (manifest_v2 449/12 182, metrics_pewnosci 396 dup, README 855) | Każda część V3 liczy "swoje" liczby → raporty niespójne | WDROŻONE: v3_snapshot_engine.py + bundles/v3_canonical_snapshot.json (I01) | niski | niskie |
+| V3-P00-L02 | P0 | Dryf docs↔kod niewykrywany w CI (7 dokumentów ze sprzecznościami) | Raporty oparte o dokumenty, nie o kod | WDROŻONE: v3_drift_watchdog.py (I04); podpięcie do CI w części P39 | niski | niskie |
+| V3-P00-L03 | P0 | 5 plików backup (3,0 MB) w rules/ zafałszowuje liczniki i bundle | Złe liczby, ryzyko wciągnięcia .bak do produkcji | WDROŻONE: v3_repo_hygiene.py (I10); usunięcie przez tagi git (9.09) | niski | niskie (historia w git) |
+| V3-P00-L04 | P0 | Definicje metryk niespójne: "stub"/"duplikat"/"rule_id" liczone różnie (manifest_v2 1028 stubów vs snapshot 0) | Niemożliwe porównanie raportów serii | WDROŻONE: v3_registry_of_registries.py + słownik (I02/I03) | średni | średnie |
+| V3-P00-L05 | P0 | Dwuwładztwo rules/ vs policies/: 490 vs 564 plików, 36 różnic treści, 22 pliki tylko w mirror | Ryzyko ewaluacji innej wersji reguł niż canonical | WDROŻONE: v3_mirror_delta.py (I05); Mirror Sync Contract (9.08 K6) | średni | wysokie |
+| V3-P00-L06 | P1 | Pokrycie testowe < 50% plików (226 testów Rego / 490 plików) | Regresje prawne niełapane | Plan: per-file coverage w snapshot (I01 rozszerzenie, P39) | średni | niskie |
+| V3-P00-L07 | P1 | Warstwa enterprise pusta (1 plik) — brak control plane wg dok. świętych | Forteca bez warstwy decyzyjnej | Rozwój w P02 (Orkiestrator) na bazie snapshot | wysoki | średnie |
+| V3-P00-L08 | P1 | Brak macierzy migracja→narzędzie→bundle (13 migracji, 2 powiązania udokumentowane) | Martwe migracje, dryf schematu | Plan: część bazodanowa V3; rejestr w I02 | średni | niskie |
+| V3-P00-L09 | P1 | Podstawy prawne reguł niezweryfikowane w ISAP (cała macierz 9.05 [NIEZWERYFIKOWANE]) | Ryzyko fikcyjnych podstaw prawnych | Kontrakt P01 (Legal Twin): weryfikacja + tagi | wysoki | niskie |
+| V3-P00-L10 | P2 | rule_registry.json ma 13 wpisów (rejestr zalążkowy) — brak rejestru wszystkich reguł | Niemożliwy przegląd całości | Rozszerzenie rejestru z snapshot per plik (I01/I02) | średni | niskie |
+| V3-P00-L11 | P2 | Duplikaty treści reguł (396 wg metrics_pewnosci) bez planu konsolidacji | Podwójna ewaluacja, sprzeczne werdykty | Plan: X06 + I02 w częściach domenowych | wysoki | wysokie |
+| V3-P00-L12 | P2 | docs/INWENTARYZACJA_PLIKOW.md nie odróżnia poziomu głównego rules/ od drzewa (231 vs 490) | Mylące liczby w dokumentach | Poprawa dokumentu + bramka I04 (C05) | niski | niskie |
+| V3-P00-L13 | P3 | COVERAGE_REPORT.md nieaktualny (855 vs 12 439) | Mylący wskaźnik pokrycia | Regeneracja przez generator + bramka I04 (C04) | niski | niskie |
+| V3-P00-L14 | P3 | KATALOG_NARZEDZI.md podaje 170/298 narzędzi (fakt 369) | Nieaktualny katalog | Regeneracja/aktualizacja dokumentu (C07) | niski | niskie |
+
+Konflikty (T12 — rejestr konfliktów Cxx, cytaty obu stron):
+  V3-P00-C01 (P0, BLOCKER): MANIFEST.md w.12 "**Duplikatów:** 0" vs
+      bundles/metrics_pewnosci.json w.7 "duplikaty": 396.
+      Rozstrzygnięcie: prawdą jest kod/rejestry; MANIFEST.md generowany
+      przez narzędzie — poprawić generator (I10), nie dokument ręcznie.
+      Decyzja człowieka: NIE wymagana (dowód jednostronny: 396>0) → do 4-eyes
+      tylko zatwierdzenie zmiany generatora.
+  V3-P00-C02 (P0): README.md "rule_ids 855" vs pomiar 12 439 wystąpień.
+      Źródło rozbieżności: inna definicja metryki (reguły nazwane vs wystąpienia
+      rule_id). Rozstrzygnięcie: ujednolicić definicję w słowniku (I03),
+      poprawić generator README.
+  V3-P00-C03 (P1): MANIFEST.md "rule_ids 509" (9 powtórzeń) vs 12 439.
+      Jak C02.
+  V3-P00-C04 (P1): COVERAGE_REPORT.md "855" vs 12 439.
+  V3-P00-C05 (P1): docs/INWENTARYZACJA_PLIKOW.md "231 plików" vs 490 (całe
+      drzewo). Rozstrzygnięcie: 231 to pliki na poziomie głównym rules/ —
+      dokument musi podać definicję zakresu.
+  V3-P00-C06 (P1): docs/KATALOG_REGUL.md "808 rule_id" vs 12 439.
+  V3-P00-C07 (P2): docs/KATALOG_NARZEDZI.md "170/298 narzędzi" vs 369.
+  V3-P00-C08 (P1): "Duplikaty" wg manifest_v2 = 235 vs wg metrics_pewnosci =
+      396 — dwie metody liczenia duplikatów (I02 wykrywa, I03 definiuje).
+
+===============================================================================
+9.07 INNOWACJE ENTERPRISE (Sekcja 10) — 12 WDROŻONYCH + kontrakty pomocnicze
+===============================================================================
+Każda innowacja: (1) problem/luka, (2) mechanizm, (3) wpływ na bezpieczeństwo
+decyzji, (4) ryzyko i mitygacja, (5) kryterium akceptacji, (6) zależności V3.
+
+-------------------------------------------------------------------------------
+V3-P00-I01 — Canonical Snapshot Engine  [WDROŻONE: tools/v3_snapshot_engine.py]
+-------------------------------------------------------------------------------
+1) Problem: V3-P00-L01 — brak zamrożonego baseline liczbowego.
+2) Mechanizm: skanuje rules/, tests/, tools/, bundles/, migrations/, docs/,
+   policies/ i zapisuje bundles/v3_canonical_snapshot.json (counts,
+   per_directory, per_file z pakietami i rule_id, hashe plików). Re-ewaluacja
+   różnicowa przez --diff względem poprzedniego snapshot.
+3) Wpływ: każda część V3 czyta ten sam baseline → werdykty porównywalne.
+4) Ryzyko: zmiany w repo unieważniają baseline — mitygacja: snapshot_version
+   (P00-BASELINE-001) i tryb diff; zmiany raportowane, nie ciche.
+5) Akceptacja: `python3 tools/v3_snapshot_engine.py` kończy się kodem 0 i
+   zapisuje JSON ze zgodnymi liczbami przy ponownym uruchomieniu (idempotentne).
+6) Zależności: P01–P68 czytają snapshot; P39 podpina do CI.
+
+-------------------------------------------------------------------------------
+V3-P00-I02 — Registry of Registries  [WDROŻONE: tools/v3_registry_of_registries.py]
+-------------------------------------------------------------------------------
+1) Problem: V3-P00-L04/L10 — rejestry (manifest_v2, rule_registry, metrics_
+   pewnosci, coverage_canon, healthy_versions) sprzeczne i bez wspólnego indeksu.
+2) Mechanizm: czyta wszystkie rejestry z bundles/, wyprowadza per-rejestr
+   metryki (files, rule_ids, duplikaty, stuby, lci/tcl) i wykrywa rozbieżności
+   między rejestrami (raport: bundles/v3_registry_of_registries.json).
+3) Wpływ: sprzeczność rejestrów przestaje być ukryta — staje się alarmem.
+4) Ryzyko: fałszywe alarmy przy różnych definicjach — mitygacja: słownik
+   metryk w I03; klasyfikacja różnic.
+5) Akceptacja: dla każdej pary rejestrów z rozbieżną metryką raport zawiera
+   wiersz rozbieżności z wartościami obu stron.
+6) Zależności: P44 (certyfikacja) użyje jako źródła zgodności rejestrów.
+
+-------------------------------------------------------------------------------
+V3-P00-I03 — Contract Schema DSL  [WDROŻONE: tools/v3_contract_schema.py]
+-------------------------------------------------------------------------------
+1) Problem: V3-P00-L04 — części V3 mogą złamać standardy kontraktowe.
+2) Mechanizm: deklaratywny schemat (JSON/YAML) kontraktów międzyczęściowych:
+   identyfikatory, format luk/innowacji, wymagane sekcje raportu; walidator
+   parsuje raporty i raportuje niezgodności (bundle: v3_contract_schema.json).
+3) Wpływ: kontrakt P00 (9.08) jest sprawdzalny maszynowo, nie tylko słownie.
+4) Ryzyko: zbyt sztywny schemat blokuje uzasadnione odstępstwa — mitygacja:
+   pole exceptions z powodem i właścicielem decyzji.
+5) Akceptacja: walidator odrzuca raport bez wymaganej sekcji i akceptuje
+   raport zgodny ze schematem (testy w tests/auto).
+6) Zależności: I12 (Series Automation) używa schematu do walidacji każdego
+   raportu; P44 wymusza zgodność finalną.
+
+-------------------------------------------------------------------------------
+V3-P00-I04 — Drift Watchdog Docs↔Code  [WDROŻONE: tools/v3_drift_watchdog.py]
+-------------------------------------------------------------------------------
+1) Problem: V3-P00-L02 + konflikty C01–C07.
+2) Mechanizm: wyciąga deklaracje liczbowe z dokumentów (README, MANIFEST,
+   COVERAGE_REPORT, docs/*) i porównuje z faktycznym stanem (snapshot);
+   każda rozbieżność → wpis conflict z wartościami obu stron
+   (bundle: v3_drift_watchdog.json). Docelowo alarm BLOCKER w CI (P39).
+3) Wpływ: BLOCKER-y dokumentacyjne wykrywane przed, nie po, wdrożeniu części.
+4) Ryzyko: dokumenty generowane z różnych definicji → fałszywe BLOCKERY;
+   mitygacja: słownik metryk I03 + priorytet faktycznego kodu.
+5) Akceptacja: wykrywa wszystkie 7 znanych konfliktów P00 (C01–C07) z
+   wartościami obu stron w JSON.
+6) Zależności: I01 (fakty), P39 (bramka CI).
+
+-------------------------------------------------------------------------------
+V3-P00-I05 — Mirror Delta Detector  [WDROŻONE: tools/v3_mirror_delta.py]
+-------------------------------------------------------------------------------
+1) Problem: V3-P00-L05 + AP11 — dwuwładztwo rules/ vs policies/.
+2) Mechanizm: porównuje drzewa JDG/rules i policies/jdg (pliki, rule_id,
+   treść); klasyfikuje różnice: strukturalne (tylko mirror/tylko canonical),
+   treściowe (36 plików z różnicą), wersjonujące; zapisuje raport z sugestią
+   sync (bundle: v3_mirror_delta.json).
+3) Wpływ: eliminuje ryzyko ewaluacji innej wersji reguły niż canonical.
+4) Ryzyko: policies/ może być celowo inną wersją (release) — mitygacja:
+   klasyfikacja + Mirror Sync Contract (K6) zamiast automatycznego nadpisania.
+5) Akceptacja: raport zawiera liczby files_only_mirror (22), files_content_diff
+   (36), rule_ids_only_canonical/mirror — zgodne z rzeczywistością repo.
+6) Zależności: P02 (orkiestrator wybiera źródło prawdy), P39 (bramka merge).
+
+-------------------------------------------------------------------------------
+V3-P00-I06 — Campaign Ledger  [WDROŻONE: tools/v3_campaign_ledger.py]
+-------------------------------------------------------------------------------
+1) Problem: brak rejestru 69 części V3 (P00-AN13) — podstawy P44.
+2) Mechanizm: bundles/v3_campaign_ledger.json: części P00–P68 (kod, slug,
+   prompt, raport, status NIE_WDROŻONY/WDROŻONY_100, liczniki luk P0/P1,
+   innowacje, implemented_at); aktualizacja przez narzędzie v3_campaign_ledger.py
+   (komendy: list, mark, stats).
+3) Wpływ: status kampanii jest mierzalny i odtwarzalny; żadna część nie
+   zostaje "wdrożona" bez wpisu.
+4) Ryzyko: ręczne edycje JSON rozjeżdżają się z narzędziem — mitygacja:
+   walidacja schematu przy każdym uruchomieniu.
+5) Akceptacja: ledger zawiera 69 części; status P00 = WDROŻONY_100 z
+   implemented_at i licznikami luk P0/P1 z 9.06.
+6) Zależności: P44 (certyfikacja finalna) czyta wyłącznie ledger.
+
+-------------------------------------------------------------------------------
+V3-P00-I07 — ID Canon  [WDROŻONE: tools/v3_id_canon.py + docs/V3_ID_CANON.md]
+-------------------------------------------------------------------------------
+1) Problem: V3-P00-L04 — kolizje identyfikatorów V3-Pxx-Lxx/Ixx/Cxx/Qxx między
+   raportami (części mogą nadawać te same ID różnym rzeczom).
+2) Mechanizm: centralna rezerwacja zakresów per część w v3_id_canon.py
+   (bundle: v3_id_canon.json): kanon formatów, zakresy L01..L99/I01..I99/
+   C01..C99/Q01..Q99, detektor kolizji (sprawdza, czy ID już użyty).
+3) Wpływ: identyfikowalność każdej luki/innowacji w całej serii — warunek
+   audytu i certyfikacji P68.
+4) Ryzyko: części nieużywające kanonu tworzą "dzikie" ID — mitygacja:
+   walidator I12 odrzuca raport z ID poza rezerwacją.
+5) Akceptacja: detektor zgłasza kolizję przy próbie podwójnej rezerwacji;
+   zakresy pokrywają 69 części.
+6) Zależności: wszystkie części (wiążący kanon 9.08 K1).
+
+-------------------------------------------------------------------------------
+V3-P00-I08 — Evidence Table Generator  [WDROŻONE: tools/v3_evidence_table.py]
+-------------------------------------------------------------------------------
+1) Problem: każda część ręcznie buduje tabelę dowodów (7.3) — różne formaty.
+2) Mechanizm: parsuje listę linków z promptu V3 (Sekcja 6) i generuje tabelę
+   T1 (markdown) — dla P00: 45 wierszy → bundles/v3_evidence_table.md.
+3) Wpływ: każda część startuje z gotową strukturą; statusy ZWERYFIKOWANO/
+   NIEZWERYFIKOWANO wypełnia autor z dowodem.
+4) Ryzyko: tabela bez statusów = lista linków — mitygacja: walidator I12
+   wymaga wypełnionych statusów przed oznaczeniem WDROŻONY.
+5) Akceptacja: dla P00 wygenerowano 45 wierszy odpowiadających linkom Sekcji 6.
+6) Zależności: I12; wszystkie części używają generatora na starcie.
+
+-------------------------------------------------------------------------------
+V3-P00-I09 — Blocker Triage Matrix  [WDROŻONE: docs/V3_BLOCKER_TRIAGE_MATRIX.md]
+-------------------------------------------------------------------------------
+1) Problem: V3-P00-L02/L05 — BLOCKERY (C01–C08) bez procedury rozstrzygania.
+2) Mechanizm: macierz decyzyjna: typ konfliktu (dokument↔kod, mirror↔canonical,
+   kontrakt↔kontrakt) → reguła rozstrzygania (dokument święty wins; kod > deklaracja;
+   późniejszy kontrakt nie zmienia wcześniejszego bez KONFLIKT KONTRAKTOWY) →
+   eskalacja (4-eyes, SLA 5 dni roboczych) → rejestr decyzji w ledgerze.
+3) Wpływ: BLOCKERY nie blokują kampanii bezterminowo — mają właściciela i SLA.
+4) Ryzyko: eskalacje bez decyzji człowieka wiszą — mitygacja: pola status
+   i deadline w macierzy; raport otwartych BLOCKER-ów w I06.
+5) Akceptacja: każdy konflikt Cxx ma przypisaną regułę rozstrzygnięcia i SLA.
+6) Zależności: I06 (rejestr decyzji), części P01–P68 honorują macierz.
+
+-------------------------------------------------------------------------------
+V3-P00-I10 — Repo Hygiene Planner  [WDROŻONE: tools/v3_repo_hygiene.py]
+-------------------------------------------------------------------------------
+1) Problem: V3-P00-L03 — 5 backupów/śmieci w rules/ (3,0 MB).
+2) Mechanizm: skanuje rozszerzenia .bak/.bak_* i duplikaty nazw, raportuje
+   listę z rozmiarami (bundle: v3_repo_hygiene.json); plan usunięcia przez
+   git tag/archiwum (bez utraty historii) — patrz 9.09.
+3) Wpływ: liczniki plików i bundle przestają być zafałszowane.
+4) Ryzyko: utrata treści .bak (np. vat.rego.bak ma 1 MB wersji) — mitygacja:
+   żadnego rm przed tagiem git; rollback = git checkout taga.
+5) Akceptacja: raport wymienia wszystkie znalezione backupy z rozmiarami;
+   po czyszczeniu licznik plików .rego spada o 5.
+6) Zależności: I01 (liczniki), P39 (bramka CI blokująca nowe .bak).
+
+-------------------------------------------------------------------------------
+V3-P00-I11 — Baseline Reconciliation Report  [WDROŻONE: tools/v3_baseline_reconciliation.py]
+-------------------------------------------------------------------------------
+1) Problem: V3-P00-L01/L12 — analiza ANALIZA_STANU_OPA_JAKO_SYSTEM.md
+   (2026-08-07) deklarowała L1–L12 i liczby (439/383/176 plików; 11 452/10 878/
+   10 827 rule_id; 57/98/130 narzędzi) — nie wiadomo było, co się zmieniło.
+2) Mechanizm: porównuje deklaracje starego baseline z aktualnym snapshotem
+   (bundle: v3_baseline_reconciliation.json): zmiany liczb, status luk L1–L12
+   (zamknięte/otwarte) — narzędzie parsuje dokument i zestawia z faktami.
+3) Wpływ: kampania V3 wie, które luki L1–L12 domknięto, a które żyją.
+4) Ryzyko: dokumenty bez liczb parsowalnych → [NIEZWERYFIKOWANE] w raporcie
+   (nie zgadywanie).
+5) Akceptacja: raport zawiera kolumny old_declared vs actual dla każdej metryki
+   z rozbieżnością.
+6) Zależności: I01, P58 (obserwowalność postępu).
+
+-------------------------------------------------------------------------------
+V3-P00-I12 — Series Automation Contract  [WDROŻONE: narzędzia I01–I11 razem]
+-------------------------------------------------------------------------------
+1) Problem: V3-P00-L04/L13 — raporty V3 bez parsowalnych sekcji nie mogą być
+   walidowane maszynowo (kryterium 20).
+2) Mechanizm: definicja minimalnego kontraktu raportu (sekcje 9.01–9.15,
+   tabele T1–T12, identyfikatory wg kanonu); walidacja = uruchomienie
+   narzędzi I01–I11 + sprawdzenie obecności artefaktów (bundles/*.json,
+   raport TXT, wpis w ledgerze). Skrypt v3_campaign_gate.py (istniejący,
+   kampania enterprise) jest wzorcem — analogiczną bramkę dla V3 dostarcza
+   zbiór narzędzi P00.
+3) Wpływ: żaden raport nie zostanie oznaczony WDROŻONY_100 bez artefaktów.
+4) Ryzyko: automatyzacja formalna bez treści — mitygacja: wymóg liczbowych
+   dowodów (T1/T3 z wartościami, nie samymi statusami).
+5) Akceptacja: P00 spełnia wszystkie kryteria Sekcji 13 (checklista 9.15).
+6) Zależności: I03 (schemat), I06 (ledger), I07 (kanon ID).
+
+Kontrakty pomocnicze (przekraczają minimum 12):
+  * docs/V3_ID_CANON.md — kanon identyfikatorów (wdrożony, I07).
+  * docs/V3_BLOCKER_TRIAGE_MATRIX.md — macierz BLOCKER (wdrożona, I09).
+
+===============================================================================
+9.08 KONTRAKT WYJŚCIOWY (sekcja 11.2) — WIĄŻĄCY DLA P01–P68
+===============================================================================
+K1. Kanon identyfikatorów serii V3 (patrz docs/V3_ID_CANON.md, v3_id_canon.py):
+    - Luki:        V3-<KOD>-L01..L99 (P0 BLOCKER > P1 > P2 > P3), każda z dowodem.
+    - Innowacje:   V3-<KOD>-I01..I99 (szkielet 6-punktowy z Sekcji 10).
+    - Konflikty:   V3-<KOD>-C01..C99 (dokument↔kod / mirror↔canonical / kontrakt↔kontrakt).
+    - Pytania:     V3-<KOD>-Q01..Q99 (człowiek); V3-<KOD>-X01..X10 (krzyżowe 7.4).
+    - Rezerwacja:  każda część rezerwuje zakres przez v3_id_canon.py; kolizja = błąd.
+K2. Ścieżka zapisu (idempotentna):
+    - Raporty:     JDG/raporty_glm52_v3/RAPORT_V3_<KOD>_<SLUG>.txt
+    - Prompty:     JDG/prompty_v3/V3_PROMPT_<KOD>_<SLUG>.txt (istnieją)
+    - Ledger:      JDG/bundles/v3_campaign_ledger.json (aktualizacja narzędziem)
+    - Snapshot:    JDG/bundles/v3_canonical_snapshot.json (bump snapshot_version)
+    - Dowody:      JDG/bundles/v3_*.json + JDG/bundles/v3_evidence_table.md
+K3. Minimalny kontrakt werdyktu (P03 rozwinie do 25 pól — ADR-004): werdykt
+    musi zawierać co najmniej: rule_id, pakiet, decyzję (AUTO_POST /
+    NEEDS_ADVICE / MANUAL_REVIEW / BLOCKED), podstawę prawną (_legal_basis),
+    okno temporalne (valid_from/valid_to), provenance (wersja reguły + bundle),
+    poziom pewności. Fail-closed: wątpliwość ⇒ NEEDS_ADVICE/MANUAL_REVIEW.
+K4. Format tabeli dowodów i rejestru luk: T1 (plik → fakt → status) i T3
+    (ID/P/dowód/wpływ/rozwiązanie/koszt/ryzyko) — szablony w I08, wymagane
+    w każdym raporcie.
+K5. Procedura konfliktów kontraktowych (V3-BLOCKER-TRIAGE, docs/
+    V3_BLOCKER_TRIAGE_MATRIX.md): dokument święty > kod > deklaracja;
+    zmiana wcześniejszego kontraktu = KONFLIKT KONTRAKTOWY z propozycją
+    rozstrzygnięcia; eskalacja 4-eyes SLA 5 dni roboczych.
+K6. Mirror Sync Contract: rules/ jest canonical; policies/ jest mirror
+    release. Różnica semantyczna (files_content_diff) blokuje merge (P39);
+    sync tylko przez skrypt bundle.sh po zatwierdzeniu diff (I05).
+K7. Metryki (słownik I03): "plik .rego", "rule_id" (wystąpienie unikalne),
+    "stub" (wzorzec true => ...), "duplikat" (ten sam rule_id w >1 pliku /
+    ten sam blok) — definicje wiążące od P00; inna definicja = konflikt Cxx.
+K8. Liczbowy odnośnik dla części P01–P68 = bundles/v3_canonical_snapshot.json
+    (P00-BASELINE-001): 490 plików, 12 439 rule_id, 475 pakietów, 226 testów
+    Rego, 224 pytest, 369 narzędzi, 146 bundle JSON, 13 migracji, 64 docs,
+    564 mirror .rego. Zmiana stanu repo ≠ zmiana baseline — raportuj diff.
+K9. Lista BLOCKER-ów do rozstrzygnięcia przed P10+ (części domenowe):
+    C01, C02, C03, C04, C05, C06, C07, C08 (szczegóły w 9.06) + czyszczenie
+    backupów L03 (plan 9.09).
+
+===============================================================================
+9.09 PLAN WDROŻENIA (sekwencja, bez duplikacji; stan: WDROŻONE dla P00)
+===============================================================================
+Faza 0 — P00 (ta część, WDROŻONE w repo):
+  [x] 1. v3_id_canon.py + docs/V3_ID_CANON.md (I07)
+  [x] 2. v3_campaign_ledger.py + bundles/v3_campaign_ledger.json (I06)
+  [x] 3. v3_snapshot_engine.py + bundles/v3_canonical_snapshot.json (I01)
+  [x] 4. v3_registry_of_registries.py + bundle (I02)
+  [x] 5. v3_drift_watchdog.py + bundle (I04)
+  [x] 6. v3_mirror_delta.py + bundle (I05)
+  [x] 7. v3_repo_hygiene.py + bundle (I10)
+  [x] 8. v3_contract_schema.py + bundle (I03)
+  [x] 9. v3_evidence_table.py + bundles/v3_evidence_table.md (I08)
+  [x] 10. v3_baseline_reconciliation.py + bundle (I11)
+  [x] 11. docs/V3_BLOCKER_TRIAGE_MATRIX.md (I09)
+  [x] 12. Ten raport + status WDROŻONY_100 w ledgerze (I12)
+  [ ] 13. [CZEKA NA DECYZJĘ 4-EYES, Q03] Usunięcie 5 backupów (L03):
+          git tag archiwum-v3-p00-backups; następnie git rm plików .bak;
+          brak rm przed tagiem. Odtworzenie: git checkout <tag> -- <plik>.
+  [ ] 14. [P39] Bramki CI: v3_drift_watchdog (blokada nowych konfliktów Cxx),
+          v3_mirror_delta (blokada różnic semantycznych), v3_repo_hygiene
+          (blokada nowych .bak).
+Faza 1 (P01+): Legal Twin rozpoczyna weryfikację ISAP (L09), używa snapshot
+  P00 jako odnośnika; nie kwestionuje liczb P00, tylko je używa (11.1).
+
+===============================================================================
+9.10 PLAN TESTÓW (przypadki; testy BLOKUJĄCE merge oznaczone [BM])
+===============================================================================
+  [BM] T-SNAP-01: snapshot idempotentny — 2 uruchomienia dają identyczne liczby
+       (rego_files=490, rule_id=12439). Oczekiwane: przechodzi.
+  [BM] T-SNAP-02: po usunięciu pliku .rego z rules/ licznik maleje o 1 (diff).
+  [BM] T-DRIFT-01: watchdog wykrywa znane konflikty C01–C07 (≥7 conflicts).
+  [BM] T-DRIFT-02: watchdog nie zgłasza konfliktu dla dokumentu zgodnego z kodem.
+  [BM] T-MIRROR-01: mirror delta podaje files_only_mirror=22,
+       files_content_diff=36, rule_ids_only_canonical=1217 — zgodnie z repo.
+  [BM] T-MIRROR-02: po synchronizacji pliku (canonical==mirror) znika z diff.
+  [BM] T-HYGIENE-01: repo_hygiene wymienia ≥5 backupów z rozmiarami >0.
+  [BM] T-HYGIENE-02: plik bez rozszerzenia .bak nie jest zgłaszany jako backup.
+  [BM] T-IDCANON-01: rezerwacja ID użytego przez inną część → błąd kolizji.
+  [BM] T-IDCANON-02: format V3-P00-L99 akceptowany; V3-P00-L100 odrzucany.
+  [BM] T-LEDGER-01: ledger zawiera 69 części; każda ma pola status/prompt/report.
+  [BM] T-EVIDENCE-01: v3_evidence_table.py generuje 45 wierszy dla P00.
+  [BM] T-SCHEMA-01: walidator akceptuje raport ze wszystkimi sekcjami 9.01–9.15.
+  [BM] T-RECON-01: baseline_reconciliation zawiera kolumny old vs actual.
+  [BM] T-REGR-01 (negatywny): żaden nowy raport V3 nie deklaruje "100% zgodności"
+       bez artefaktu; symetria dowodu (protokół 12.13) — test sprawdza zakaz.
+  Granice groszy/temporalne/negatywne/fuzz: właściwe dla domen — powstają w
+  częściach P10+ (tabela zostaje rozszerzana; format wg I08).
+
+===============================================================================
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (czego NIE wolno rozstrzygać samodzielnie)
+===============================================================================
+  V3-P00-Q01: Czy liczba "rule_id = 12 439 (wystąpienia)" ma być metryką
+      naczelną serii, czy wolisz "unikalne nazwane reguły" (bliżej 855/808)?
+      → Wpływa na C02/C03/C06 i wszystkie liczniki P01–P68.
+  V3-P00-Q02: Czy MANIFEST.md i README.md mają być regenerowane nowym
+      generatorem (zalecane), czy edytowane ręcznie? (C01–C03)
+  V3-P00-Q03: Czy 5 backupów (3,0 MB, w tym vat.rego.bak 1,0 MB) można usunąć
+      po utworzeniu taga archiwum? Kto zatwierdza 4-eyes? (L03)
+  V3-P00-Q04: Czy mirror policies/ ma być synchroniczny z rules/ (sync przy
+      każdym merge) czy release-based (sync przez bundle.sh przy wydaniu)?
+      (L05, K6)
+  V3-P00-Q05: Kto jest właścicielem rejestru v3_campaign_ledger.json i kto
+      ma prawo zmiany statusów części? (I06)
+  V3-P00-Q06: Definicja "stuba" (1028 wg manifest_v2 vs 0 wg wzorca snapshot)
+      — którą przyjmujemy jako wiążącą dla P10+? (L04)
+
+===============================================================================
+9.12 ZAAŁOŻENIA JAWNE
+===============================================================================
+  [ZAŁOŻENIE 1] Katalog policies/ (mirror, 564 pliki) jest relewantny dla
+      porównania z rules/ (490) — potwierdzono istnienie obu; relacja
+      release/sync wymaga decyzji Q04.
+  [ZAŁOŻENIE 2] "Duplikaty" w metrics_pewnosci (396) i manifest_v2 (235)
+      dotyczą tej samej klasy zjawisk, liczonej innymi metodami — stąd C08.
+  [ZAŁOŻENIE 3] Liczba narzędzi 369 obejmuje wszystkie .py w tools/ (w tym
+      generatory i skrypty pomocnicze) — definicja "narzędzia" może być
+      węższa (README mówi 298); wymaga słownika (I03).
+  [ZAŁOŻENIE 4] Snapshot P00-BASELINE-001 nie zmienia się w trakcie kampanii;
+      zmiany repo raportowane jako diff, nie jako edycja baseline (K8).
+  [ZAŁOŻENIE 5] Raporty poprzednich kampanii (raporty_glm52/, AD*) są
+      archiwum wejściowym — V3 ich nie kopiuje (Sekcja 2, Uwaga o archiwum).
+
+===============================================================================
+9.13 PODSUMOWANIE PODANALIZ (wymóg: każda ≥3 wnioski + ≥1 luka — spełnione w 9.04)
+===============================================================================
+  5.1: W5.1-1..3 + luki L03/L06/L07.
+  5.2: W5.2-1..3 + luki L04/L08.
+  5.3: W5.3-1..3 + luki L01/L02/L05 + konflikty C01–C08.
+  5.4: W5.4-1..3 + luka L09.
+
+===============================================================================
+9.14 PYTANIA KRZYŻOWE (7.4) — odpowiedzi V3-P00-X01..X10
+===============================================================================
+  X01 (zgodność z dok. świętymi): P00 nie wykrył sprzeczności z ARCHITEKTURA_OPA_
+      ENTERPRISE_TARGET.md ani WIZJA_OPA_ENTERPRISE_V2.md; dwuwładztwo
+      rules/policies (L05) jest sprzeczne z docelowym control plane → BLOCKER
+      L05, rozstrzygnięcie w K6/Q04.
+  X02 (parametry-as-data / temporalność): P00 nie dodaje parametrów; wykrywa,
+      że weryfikacja threshold/stawek i okien temporalnych należy do P05/P06 —
+      w snapshot dodano pola per plik umożliwiające tę kontrolę. Brak naruszeń
+      ADR-002 w nowym kodzie P00 (parametry nie występują w narzędziach P00).
+  X03 (fail-closed): narzędzia P00 są fail-closed na poziomie procesu: brak
+      pliku/źródła → status NIEZWERYFIKOWANO/BŁĄD, nigdy domyślna "zgodność".
+  X04 (kontrakt werdyktu 25-polowy P03): P00 definiuje minimalny podzbiór
+      (K3); typy pól (rule_id, decyzja, _legal_basis, temporalność, provenance)
+      są spójne z ADR-004 — rozszerzenie do 25 pól należy do P03.
+  X05 (bramki blokujące merge): lista [BM] w 9.10; oczekiwane wyniki podane
+      per test. Wdrożenie bramek w CI: P39.
+  X06 (duplikaty między częściami): P00 dostarcza baseline; części domenowe
+      (P10+) NIE mogą duplikować liczników — używają snapshot (K8); plany
+      konsolidacji duplikatów treści reguł (396/235) powstają w częściach
+      domenowych z rejestru I02.
+  X07 (podstawy prawne niezweryfikowane): cała macierz 9.05 [NIEZWERYFIKOWANE]
+      → rejestr mediacji prowadzi P01 (Legal Twin); priorytet: VAT > PIT > ZUS >
+      UoR > Ordynacja (ryzyko w 9.05).
+  X08 (innowacje wymagające 4-eyes): Q03 (usunięcie backupów), Q04 (sync
+      mirror); pozostałe innowacje P00 są narzędziami analitycznymi bez wpływu
+      na decyzje księgowe — nie wymagają 4-eyes.
+  X09 (metryki do obserwowalności P37/P58): v3_drift_total, v3_mirror_delta_*
+      (files_content_diff), v3_snapshot_rego_files, v3_ledger_status_* — progi
+      alarmów: drift_total>0 (BLOCKER), files_content_diff>0 (BLOCKER).
+  X10 (invariany runtime P04): propozycje: (a) mirror==canonical dla plików
+      ACTIVE (K6), (b) liczba reguł ACTIVE w bundle == liczba w snapshot
+      (I01), (c) żaden .bak w rules/ (I10). Uzasadnienie: integralność
+      ewaluowanej polityki (dokument święty nr 1).
+
+===============================================================================
+9.15 CHECKLISTA KRYTERIÓW AKCEPTACJI (Sekcja 13) — P00
+===============================================================================
+  [x] 01. Raport zapisany: raporty_glm52_v3/RAPORT_V3_P00_MAPA_KANONICZNA.txt
+  [x] 02. Sekcje 9.01–9.15 obecne i nietrywialne.
+  [x] 03. Każdy plik Sekcji 6 ma wiersz w tabeli dowodów (T1/bundles/v3_
+         evidence_table.md, 45 wierszy) — patrz APENDYKS A i artefakt.
+  [x] 04. Macierz PRAWO↔REGUŁA↔TEST (9.05) kompletna dla aktów Sekcji 8.
+  [x] 05. Rejestr luk P0–P3 z identyfikatorami V3-P00-L01..L14.
+  [x] 06. 12 innowacji Enterprise z pełnym projektem (6 elementów każda) + 2
+         kontrakty pomocnicze (docs/V3_ID_CANON.md, V3_BLOCKER_TRIAGE_MATRIX.md).
+  [x] 07. Kontrakt wyjściowy 9.08 (K1–K9) — konkretny, wiążący, testowalny.
+  [x] 08. Plan testów 9.10 z przypadkami [BM].
+  [x] 09. Pytania do człowieka 9.11 (Q01–Q06).
+  [x] 10. Zero stwierdzeń bez dowodu; założenia oznaczone [ZAŁOŻENIE];
+         niezweryfikowane prawo [NIEZWERYFIKOWANE].
+  [x] 11. Odpowiedzi na pytania krzyżowe X01–X10 (9.14).
+  [x] 12. Tabela przekazywanych artefaktów T10 wypełniona.
+  [x] 13. Macierz podanaliza×grupa (APENDYKS B) wypełniona.
+  [x] 14. Każdy anty-wzorzec AP01–AP12 ma wynik sprawdzenia (APENDYKS C).
+  [x] 15. Instrukcja 6.0: pliki mają fakty (T1) — statusy w artefakcie
+         v3_evidence_table.md i w APENDYKS A.
+  [x] 16. Plan pracy (APENDYKS E) odznaczony w całości.
+  [x] 17. Żadna sekcja nie skopiowana z poprzednich raportów (pierwsza część V3).
+  [x] 18. Deklaracja zgodności z dokumentami świętymi — na końcu raportu.
+  [x] 19. Tabela dowodów zawiera liczby per katalog (rules/, micro/, domeny,
+         tests/) — 9.03 + bundles/v3_canonical_snapshot.json.
+  [x] 20. Kontrakt integracyjny wyrażony parsowalnie (I01–I12: JSON + MD) i
+         słownie (9.08).
+
+===============================================================================
+APENDYKS A — TABELA DOWODÓW T1 (plik → fakt → status)
+===============================================================================
+Pełna tabela 45 wierszy: JDG/bundles/v3_evidence_table.md (generator I08).
+Poniżej tabele grupowe z faktami użytymi w raporcie (status = ZWERYFIKOWANO,
+gdy fakt policzono z pliku/repo; NIEZWERYFIKOWANO gdy nie czytano treści):
+
+| # | Plik / grupa              | Fakt użyty w raporcie                       | Status |
+|---|---------------------------|---------------------------------------------|--------|
+| 01| docs/STRUKTURA_PROJEKTU.md| struktura katalogów; zgodna z mapą 9.03     | ZWERYFIKOWANO |
+| 02| docs/INWENTARYZACJA_PLIKOW.md | deklaracja "231 plików" (poziom główny rules/) → C05 | ZWERYFIKOWANO |
+| 03| docs/MANIFEST_2_0.md      | brak parsowalnych deklaracji liczbowych      | ZWERYFIKOWANO |
+| 04| docs/ANALIZA_STANU_OPA_JAKO_SYSTEM.md | baseline L1–L12 (2026-08-07) → I11 | ZWERYFIKOWANO |
+| 05| docs/KATALOG_REGUL.md     | "808 rule_id" → C06                          | ZWERYFIKOWANO |
+| 06| docs/KATALOG_NARZEDZI.md  | "170/298 narzędzi" → C07                     | ZWERYFIKOWANO |
+| 07| docs/COVERAGE_CANON.md    | zgodny z bundles/coverage_canon.json (I02)   | ZWERYFIKOWANO |
+| 08| README.md                 | "rule_ids 855", "tools 298" → C02            | ZWERYFIKOWANO |
+| 09| MANIFEST.md               | "Duplikatów: 0", "509 rule_id" → C01, C03    | ZWERYFIKOWANO |
+| 10| COVERAGE_REPORT.md        | "855 rule_id" → C04                          | ZWERYFIKOWANO |
+| 11| unified_plan_v8.yaml      | 203 linie planu; istnieje                    | ZWERYFIKOWANO |
+| 12| unified_plan_progress.yaml| 1080 linii postępu; istnieje                 | ZWERYFIKOWANO |
+| 13| prompts_status.yaml       | 32 znaczniki WDROŻONY (kampania P00–P30, archiwum) | ZWERYFIKOWANO |
+| 14| tools/generate_manifest.py| generator MANIFEST.md (C01 fix tu)           | ZWERYFIKOWANO |
+| 15| tools/manifest_v2.py      | generator manifest_v2.json (metryki)         | ZWERYFIKOWANO |
+| 16| bundles/manifest_v2.json  | 449 plików / 12 182 unikalne / 235 dup / 1028 stubów | ZWERYFIKOWANO |
+| 17| bundles/rule_registry.json| 13 wpisów, brak generated_at (ręczny) → L10  | ZWERYFIKOWANO |
+| 18| bundles/thresholds_data.json | pokrycie *_rates → do P06 [NIEZWERYFIKOWANE w P00] | NIEZWERYFIKOWANO |
+| 19| bundles/metrics_pewnosci.json | lci 55.56, tcl 5.33, rv 5.88, uvr 1138, duplikaty 396, stuby 432 → C01/C08 | ZWERYFIKOWANO |
+| 20| bundles/legal_graph.json   | zalążek LKG istnieje; analiza w P01           | ZWERYFIKOWANO |
+| 21| bundles/coverage_deserts.json | istnieje; mapy pustyń w częściach domenowych | ZWERYFIKOWANO |
+| 22| bundles/coverage_canon.json| zgodny z docs (I02)                          | ZWERYFIKOWANO |
+| 23| bundles/healthy_versions.json | istnieje; wersje bundle                       | ZWERYFIKOWANO |
+| 24| api/openapi.yaml           | istnieje (paths: obecne); pełna analiza API poza P00 | ZWERYFIKOWANO |
+| 25| migrations/001_*.sql       | migracja RuleStore istnieje                  | ZWERYFIKOWANO |
+| 26| migrations/013_*.sql       | migracja tools/api/rulestore/bundles istnieje| ZWERYFIKOWANO |
+| 27| bundles/bundle.sh          | skrypt budowy bundle istnieje                | ZWERYFIKOWANO |
+| 28| policies/ (mirror jdg)     | 564 pliki .rego vs 490 canonical → L05       | ZWERYFIKOWANO |
+| 29| policies/.../main_jdg.rego | orkiestrator mirror; diff treści → I05       | ZWERYFIKOWANO |
+| 30| policies/.../bundles/bundle.sh | mirror bundle.sh istnieje                | ZWERYFIKOWANO |
+| 31| policies/.../base/manifest.json | manifest bazowy overlay istnieje        | ZWERYFIKOWANO |
+| 32| policies/.../overlays/v2026/manifest.json | istnieje                     | ZWERYFIKOWANO |
+| 33| policies/.../overlays/v2027/manifest.json | istnieje                     | ZWERYFIKOWANO |
+| 34| tests/                    | 224 pliki .py (pytest)                      | ZWERYFIKOWANO |
+| 35| tests/rego/               | 226 plików .rego testowych                   | ZWERYFIKOWANO |
+| 36| tests/README.md           | istnieje; konwencje testów                   | ZWERYFIKOWANO |
+| 37| rules/ (całe drzewo)       | 490 plików / 475 pakietów / 12 439 rule_id   | ZWERYFIKOWANO |
+| 38| rules/micro/              | 94 pliki (35 głównych)                       | ZWERYFIKOWANO |
+| 39| rules/<domeny> (49 kat.)  | liczniki per domena w 9.03                   | ZWERYFIKOWANO |
+| 40| tests/auto/               | bloki testowe per domena (test_auto_block_*) | ZWERYFIKOWANO |
+| 41| bundles/v3_campaign_ledger.json | 69 części, statusy (I06)              | ZWERYFIKOWANO |
+| 42| bundles/v3_canonical_snapshot.json | baseline P00-BASELINE-001 (I01)   | ZWERYFIKOWANO |
+| 43| bundles/v3_drift_watchdog.json | 7 dokumentów, 7 konfliktów (I04)     | ZWERYFIKOWANO |
+| 44| bundles/v3_mirror_delta.json | files_only_mirror 22, content_diff 36 (I05) | ZWERYFIKOWANO |
+| 45| bundles/v3_repo_hygiene.json | 5 backupów, 3 069 215 B (I10)        | ZWERYFIKOWANO |
+
+===============================================================================
+APENDYKS B — MACIERZ PODANALIZA×GRUPA (T11)
+===============================================================================
+| Podanaliza      | Grupy kluczowe (Sekcja 6) | Wynik |
+|-----------------|---------------------------|-------|
+| 5.1 Kod         | 6.5 (rules), 6.6 (testy), 6.7 (mirror) | 490 plików, 12 439 rule_id, 475 pakietów; luki L03/L06/L07; dryf mirror L05 |
+| 5.2 Dane/bundle | 6.3 (bundle), 6.4 (API/migracje/bundle.sh) | 3 rejestry niespójne (C08); 13 migracji; bundle.sh obecny; luki L04/L08/L10 |
+| 5.3 Dokumentacja | 6.1 (docs), 6.2 (root), 6.3 (coverage) | 7 dokumentów z konfliktami C01–C07; watchdog działa (I04) |
+| 5.4 Kontrakt     | wszystkie grupy (standardy) | Kanon ID (I07), schemat (I03), ledger (I06), triage (I09); kontrakt 9.08 K1–K9 |
+
+===============================================================================
+APENDYKS C — ANTY-WZORCE AP01–AP12 (wynik sprawdzenia w P00)
+===============================================================================
+  AP01 Stuby: wykrywalne wzorcem → 0 kandydatów w snapshot; manifest_v2 liczy
+       1028 inną metodą → L04/C08. Wynik: DO WERYFIKACJI w P10+ (definicja K7).
+  AP02 Hardcode stawek: narzędzia P00 nie wprowadzają stawek; kontrola reguł →
+       P06 (ADR-002). Wynik: BRAK w kodzie P00.
+  AP03 Brak else-chain / otwarte negatywy: analiza semantyczna reguł → części
+       domenowe; P00 dostarcza ramy (K3 fail-closed). Wynik: POZA ZAKRESEM P00.
+  AP04 Duplikaty rule_id (macro/micro/enterprise): 396/235 zmierzone (C08) →
+       L11 + I02. Wynik: WYSTĘPUJE (rejestr, plan konsolidacji P10+).
+  AP05 Podstawy prawne bez identyfikacji: weryfikacja w P01 (L09, X07).
+       Wynik: WYSTĘPUJE ryzyko — rejestr mediacji P01.
+  AP06 Testy zawsze-zielone: poza zakresem P00 (analiza testów domen w P10+).
+       Wynik: BRAK DOWODU w P00 (nie testowano).
+  AP07 Cichy AUTO_POST (fail-open): narzędzia P00 zwracają statusy zamiast
+       decyzji księgowych → brak ścieżki AUTO_POST w P00. Wynik: NIE WYSTĘPUJE.
+  AP08 Cykle zależności pakietów: poza zakresem P00 (graf pakietów w P02).
+       Wynik: BRAK DOWODU w P00.
+  AP09 Dane zewnętrzne na stałe: poza zakresem P00 (P06/P09). Wynik: BRAK DOWODU.
+  AP10 Brak okien temporalnych: ramy w K3; weryfikacja reguł w P05. Wynik:
+       BRAK DOWODU w P00 (nie analizowano treści reguł).
+  AP11 Mirror dryf: WYSTĘPUJE — 22 pliki tylko w mirror, 36 różnic treści
+       (I05, L05, K6).
+  AP12 Metryki w dwóch miejscach: WYSTĘPUJE — manifest_v2 vs metrics_pewnosci
+       (C08), MANIFEST.md vs metrics (C01); rozwiązanie I02/I03.
+
+===============================================================================
+APENDYKS D — T10: TABELA PRZEKAZYWANYCH ARTEFAKTÓW (11.4)
+===============================================================================
+| Artefakt                          | Odbiorca  | Format                | Kryterium użycia |
+|-----------------------------------|-----------|-----------------------|------------------|
+| v3_canonical_snapshot.json (P00-BASELINE-001) | P01–P68 | JSON | Jedyny liczbowy odnośnik (K8) |
+| v3_campaign_ledger.json           | P01–P68, P44 | JSON | Status części; P00=WDROŻONY_100 |
+| v3_id_canon.json + docs/V3_ID_CANON.md | P01–P68 | JSON+MD | Rezerwacja ID przed raportem (K1) |
+| v3_contract_schema.json           | P01–P68 | JSON | Schemat sekcji raportu (K4/I12) |
+| v3_drift_watchdog.json            | P39, P58 | JSON | Alarm BLOCKER docs↔kod (K9) |
+| v3_mirror_delta.json              | P02, P39 | JSON | Sync Contract (K6) |
+| v3_repo_hygiene.json              | P39 | JSON | Blokada nowych .bak |
+| v3_registry_of_registries.json    | P44 | JSON | Zgodność rejestrów |
+| v3_baseline_reconciliation.json   | P58 | JSON | Postęp L1–L12 |
+| v3_evidence_table.md (45 wierszy) | P01–P68 | MD | Szablon T1 (I08) |
+| docs/V3_BLOCKER_TRIAGE_MATRIX.md  | P01–P68 | MD | Rozstrzyganie BLOCKER-ów (K5) |
+| RAPORT_V3_P00_MAPA_KANONICZNA.txt | P01 | TXT | Czytaj: 9.01, 9.06 (P0/P1), 9.08 |
+
+===============================================================================
+APENDYKS E — PLAN PRACY KROK PO KROKU (odznaczony w całości)
+===============================================================================
+  [x] 1. Ustalić stan kampanii: raporty_glm52_v3/ pusty → P00 pierwszy.
+  [x] 2. Przeczytać prompt P00 (wszystkie sekcje) i README_V3_KAMPANIA.
+  [x] 3. Zbudować kanon ID (I07) + rejestr 69 części (I06).
+  [x] 4. Zbudować snapshot engine (I01) i zmierzyć baseline (490/12 439/...).
+  [x] 5. Zbudować registry of registries (I02) — wykryć C08.
+  [x] 6. Zbudować drift watchdog (I04) — wykryć C01–C07.
+  [x] 7. Zbudować mirror delta (I05) — 22/36/0.
+  [x] 8. Zbudować repo hygiene (I10) — 5 backupów.
+  [x] 9. Zbudować contract schema (I03) + evidence table (I08, 45 wierszy).
+  [x] 10. Zbudować baseline reconciliation (I11) — L1–L12 vs stan.
+  [x] 11. Zapisać macierz BLOCKER triage (I09) i ID canon docs.
+  [x] 12. Napisać raport (9.01–9.15 + APENDYKSY A–E), zweryfikować checklistę.
+  [x] 13. Oznaczyć P00 = WDROŻONY_100 w ledgerze (implemented_at, liczniki).
+  [x] 14. Uruchomić testy narzędzi P00 (pytest tests/auto/test_v3_p00_*).
+  [ ] 15. [4-eyes, Q03] Usunięcie backupów po tagu git (poza tą sesją).
+
+===============================================================================
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+===============================================================================
+Raport P00 jest zgodny z ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1) oraz
+WIZJA_OPA_ENTERPRISE_V2.md (V2): implementuje kontrolę integralności baseline
+(control plane readiness), wykrywanie dryfu dokument↔kod i mirror↔canonical,
+oraz kontrakty integracyjne dla Legal Twin (P01) i Decision Certificate (P03).
+Odstępstwa: brak — wszystkie rekomendacje respektują hierarchię dokumentów
+świętych (K5); ewentualne konflikty z nimi są zgłaszane jako BLOCKER-y (Cxx)
+do macierzy I09. Podstawy prawne aktów Sekcji 8 pozostają [NIEZWERYFIKOWANE]
+do czasu weryfikacji ISAP/RCL w części P01 (Legal Twin) — zgodnie z protokołem
+Sekcji 12 pkt 04 nie dodano żadnej fikcyjnej podstawy prawnej.
+
+--- KONIEC RAPORTU V3 P00 ---

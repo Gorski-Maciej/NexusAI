@@ -1,0 +1,54 @@
+{
+  "innovation": "V3-P07-I05",
+  "generated_at": "2026-09-03T10:26:13.736589+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "registry_versions": 13,
+    "with_role_fields": 0,
+    "deployments": 44,
+    "deployments_signed": 0,
+    "sql_4eyes_model": true,
+    "distinct_owners": [
+      "policy-engineer"
+    ]
+  },
+  "checks": [
+    {
+      "name": "registry_role_fields",
+      "status": "FAIL",
+      "detail": "wersje z polami ról: 0/13; unikalni ownerzy: {'policy-engineer'}"
+    },
+    {
+      "name": "deployments_signed",
+      "status": "FAIL",
+      "detail": "deploymenty z podpisem roli: 0/44"
+    },
+    {
+      "name": "sql_model_4eyes",
+      "status": "OK",
+      "detail": "migracja 007: policy_change_reviews + control_plane_audit = True"
+    },
+    {
+      "name": "control_plane_tests",
+      "status": "OK",
+      "detail": "test SoD/4-eyes control plane: True"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P07-L04",
+      "severity": "P1",
+      "evidence": "rozdźwięk 4-eyes: control plane (SQL 007 + testy) modeluje policy_change_reviews/audit, ale operacyjny rule_registry.json i deployments.json nie niosą ról/podpisów — narzędzia JSON (register/promote/suspend) omijają warstwę 4-eyes",
+      "fix": "4-Eyes Enforcement Layer (I05): podpisy ról w rekordach operacji (author→reviewer→operator) + bramka CI wymagająca reviewed_by ≠ owner przed awansem [BM]"
+    }
+  ],
+  "model": {
+    "separation": "author ≠ reviewer ≠ operator",
+    "record": "version.owner (autor) + review.approved_by (recenzent) + operation.operator (operator)",
+    "gate": "awans bez reviewed_by ≠ owner = blokada [BM]"
+  },
+  "contract": {
+    "binding": "P38 (deployment), P40 (jakość), P44 (certyfikacja), P39 (CI), P07-I01 (awans)",
+    "rule": "operacja lifecycle bez podpisu operatora = wpis do control_plane_audit jako naruszenie"
+  }
+}

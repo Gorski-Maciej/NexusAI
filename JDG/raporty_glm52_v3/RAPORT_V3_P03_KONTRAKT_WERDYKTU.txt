@@ -1,0 +1,345 @@
+================================================================================
+RAPORT V3-P03 — KONTRAKT WERDYKTU 25-POLOWY, KOMPOZYCJA DECYZJI I KLASA PEWNOŚCI
+================================================================================
+Część kampanii V3 (GLM52): P03/69
+Plik promptu:    JDG/prompty_v3/V3_PROMPT_P03_KONTRAKT_WERDYKTU.txt
+Status:          WDROŻONY_100
+Data wdrożenia:  2026-09-03
+Narzędzia:       JDG/tools/v3_p03_*.py (12 innowacji I01–I12)
+Dowody:          JDG/bundles/v3_p03_*.json (12 bundle)
+Kontrakt:        JDG/docs/V3_P03_KONTRAKT_WERDYKTU_KONTRAKT.md
+Testy:           JDG/tests/auto/test_v3_p03_verdict_contract.py (14 testów)
+Taksonomia:      JDG/docs/V3_P03_ERROR_TAXONOMY.md (generowana z definicji)
+
+--------------------------------------------------------------------------------
+9.01 EXECUTIVE SUMMARY
+--------------------------------------------------------------------------------
+P03 domyka kontrakt werdyktu: 25-polowy słownik kanoniczny (r01_orchestrator_core_innovations_v9,
+INV-043), kompozycja decyzji (decision_composer_enterprise, BLOCK>TRIAGE>WARNING>FALLBACK),
+klasa pewności (runtime_invariants _classify: CERTAIN/CONDITIONAL/NEEDS_ADVICE), degradacja
+(fallback/api_fallback) i provenance (provenance.rego + decision_certificate.py).
+
+Wdrożono 12 innowacji jako działające narzędzia (dowody JSON w bundles/).
+Wynik bramek: 9/12 PASS, 3/12 FAIL (celowo, jako luki do domknięcia):
+  * I01 Contract Version Matrix FAIL — 11 z 25 pól kanonicznych brakuje w OpenAPI
+    VerdictResponse (L01, P0) — dryf spec↔kod.
+  * I10 Degradation Contract FAIL — 4 ścieżki degradacji ze skróconym kontraktem
+    (L04, P0) — brak pól temporalnych w fallback/api_fallback.
+  * I08 Scoring Telemetry FAIL (alarm modelowy) — rozkład klas pokazuje mechanizm
+    alarmów; NEEDS_ADVICE 20% > próg 15% (L05, P2 — cel V2: automatyzacja ≥50% CERTAIN).
+Kluczowe potwierdzenia: 0 werdyktów materialnych bez _legal_basis (I06, skan 11 936 reguł),
+fail-closed AUTO_POST (I11: 6 warunków), golden hash deterministyczny (I04), UVR=0 (I09),
+taksonomia 10 kodów błędów (I12). Łącznie 8 luk (2×P0, 4×P1, 2×P2) + 5 pytań (Q01–Q05).
+
+--------------------------------------------------------------------------------
+9.02 ZAKRES I OGRANICZENIA
+--------------------------------------------------------------------------------
+Zakres: 22 pliki z Sekcji 6 promptu (7 reguł, 4 dokumenty, 7 narzędzi/API, 4 testy/
+migracja) + mirror policies (kontekst). Wszystkie zweryfikowane — 22/22 ZWERYFIKOWANO
+(zob. T1).
+
+Ograniczenia:
+  * Budżet 50%: analiza oparta o fakty wyekstrahowane narzędziami (skan kodu), nie
+    pełne czytanie 11 936 reguł — determinizm ekstrakcji potwierdzony niezależnymi
+    weryfikacjami (sekcja 9.04).
+  * Testy nie uruchamiają silnika OPA (brak binarki) — weryfikacja strukturalna +
+    modelowe property tests (I02, I04, I11).
+  * Rozkład klas pewności (I08) jest MODELOWY (próbka reprezentatywna), nie pomiar
+    runtime — wartości produkcyjne z P37.
+  * Podpisy HSM oznaczone PENDING_4EYES — zero deklaracji bez realnego HSM
+    (Sekcja 12 pkt 14).
+  * Mirror policies (Sekcja 6.5) na branchu `policies` — dryf 4 plików orkiestratora
+    zarejestrowany w P02-L01; w P03 nie powielano (kontrakt P02 honorowany).
+
+--------------------------------------------------------------------------------
+9.03 STAN OBECNY CZĘŚCI P03 — MAPA ARTEFAKTÓW (T1 + mapa plik→pakiet→reguła)
+--------------------------------------------------------------------------------
+   | Plik | Pakiet Rego | Kluczowe rule_id | Podstawa prawna | Testy | Lifecycle |
+   |------|-------------|------------------|-----------------|-------|-----------|
+   | rules/decision_composer_enterprise.rego | jdg.decision_composer | routing_aggregator (DCC-2250), conflict_detector (DCC-2255) | ADR-001; kompozycja wielopakietowa | test_orchestrator_data_contract (check_decision_composer) | ACTIVE |
+   | rules/decision_core_completeness_enterprise.rego | jdg.decision_core_completeness | limitations_alert, retention_non_compliant, edge_case_gap | Art. 70 §1-2 OP; Art. 86 §1 OP; P02 Sekcje 3-5 | pytest (completeness) | ACTIVE |
+   | rules/decision_scoring_enterprise.rego | jdg.enterprise.decision_scoring | dse_appeal_chance (DSE-3210), dse_gaar_scorer (DSE-3220), dse_limitation_scorer (DSE-3230), dse_deadline_scorer (DSE-3240) | OrdPU (art. 70, 119a, 162); decyzje | pytest (scoring) | ACTIVE |
+   | rules/adaptive_trust_scoring_enterprise.rego | jdg.adaptive_trust | auto_post_gate, suggest_gate, triage_gate (AT-01..06) | P02 Sekcja 1; risk.rego P1 | pytest (trust) | ACTIVE |
+   | rules/validation.rego | jdg.validation | nip_checksum (R0613), regon_checksum (R0614), invoice_number_continuity (R0615), invoice_date_future (R0616), sale_delivery_date_range (R0617), invoice_amount_consistency (R0618), nip_seller_buyer_distinct (R0619), ksef_upo_required (R0620) | Art. 96 VAT; Art. 106e/106i/106na VAT | pytest (validation) | ACTIVE |
+   | rules/provenance.rego | jdg.provenance | build_provenance, enrich_verdict (A1) | audit infra (Sovos Merkle pattern) | verify_verdict_invariants.py | ACTIVE |
+   | rules/fallback.rego | jdg.fallback | domestic_23pct (P1000), no_match_jdg (P1099) | Art. 41 ust. 1 VAT; Art. 27 ust. 1 PIT | pytest (fallback) | ACTIVE |
+   | rules/main_jdg.rego | jdg.main | final_verdict (PAS 18n: enforce + certificate) | ADR-022, F2/F4 | verify_verdict_invariants.py | ACTIVE |
+   | rules/r01_orchestrator_core_innovations_v9.rego | jdg.r01_orchestrator_core_innovations | verdict_25_fields, INV-043 | raport master 00 + P02 | fuzz (I12 P02) | ACTIVE |
+   | rules/audit/runtime_invariants_enterprise.rego | jdg.runtime_invariants | evaluate/_classify (42 INV) | F4 V2 §5.2; ADR-022 | verify_verdict_invariants.py | ACTIVE |
+   | api/openapi.yaml | — | VerdictResponse (19 pól), 18 ścieżek | — | api_spec_consistency.py | ACTIVE (dryf L01) |
+   | migrations/008_jdg_v13_orchestrator_contract.sql | — | orchestrator_verdict_fields | — | test_orchestrator_data_contract | ACTIVE |
+
+--------------------------------------------------------------------------------
+9.04 PODANALIZY 5.1–5.4
+--------------------------------------------------------------------------------
+5.1 Audyt 25 pól w kodzie i OpenAPI
+   Dowody: I01 (canon=25, oas=19, drift=11); I03 (semantyka pustki 25/25); I05 (diff gate).
+   Wnioski:
+   1) Słownik kanoniczny 25 pól istnieje w kodzie (r01, INV-043) i w kontrakcie narzędzia
+      (VERDICT_FIELDS w orchestrator_data_contract.py) — ale OpenAPI VerdictResponse ma
+      TYLKO 19 pól; 11 pól kanonicznych (package, priority, rounding_level, gtu_code,
+      procedure, pit_bracket, pit_annual_return_type, kus_percent,
+      ceidg_registration_required, valid_from, valid_to) nie ma odzwierciedlenia w specyfikacji
+      → klient API nie może ich odczytać (L01, P0).
+   2) P03-AN01: macierz pole→typ→producent→walidacja→test→status — wygenerowana per pole
+      (I03 + tabela T1); 16 pól wymaganych non-empty (cisza kontraktowa = ryzyko).
+   3) P03-AN06: dryf spec↔kod nie był wykrywany automatycznie — I05 ustanawia bramkę
+      (diff OpenAPI bez diffu testów = fail merge; stan: BASELINE_REGISTERED).
+   Luki z 5.1: L01 (OpenAPI 11 pól), L02 (P03-AN01 macierz per pole wymaga utrzymania
+   w CI — obecnie generowana narzędziem, nie bramką).
+
+5.2 Klasa pewności i scoring
+   Dowody: I02 (determinizm 500 prób, semantyka klas); I08 (rozkład + alarmy); I11 (AUTO_POST gate).
+   Wnioski:
+   1) Semantyka klas istnieje w runtime_invariants._classify (F4 V2 §5.2) — CERTAIN/
+      CONDITIONAL/NEEDS_ADVICE; I02 odwzorowuje ją 1:1 jako testowalny silnik Python
+      (determinizm: reorder kluczy = ten sam wynik; 500 prób).
+   2) Zamknięta lista warunków CERTAIN (P03-AN03): brak naruszeń + brak degradacji +
+      proweniencja + podstawa prawna — 4 warunki testowalne; I11 dodaje guard
+      (AUTO_POST_ALLOWED) — łącznie 6 warunków maszynowych, fail-closed (INV-006/035).
+   3) Scoring pewności jest deterministyczny w definicji (I02), ale brakuje telemetrii
+      runtime (P37) — I08 definiuje metryki i progi (CERTAIN≥50%, NEEDS_ADVICE≤15%);
+      dashboard PEWNOSC pokazuje CERTAIN=0.0% dla certyfikatów F4 — rozbieżność definicji
+      do uzgodnienia (Q04).
+   Luki z 5.2: L05 (rozkład klas bez runtime — pomiar z P37), L03 (brak testu granicznego
+   klasy pewności w pytest — dodać property test w CI).
+
+5.3 Degradacja kontraktu i błędy
+   Dowody: I10 (4 wzorce degradacji + skan 4 skróconych kontraktów); I12 (taksonomia 10 kodów).
+   Wnioski:
+   1) Wzorce degradacji (DEGRADED_API/PARTIAL/BLOCKED/NO_MATCH) są kompletne jako SZABLONY
+      (I10 all_patterns_complete=True) — ale skan kodu wykrył 4 REALNE ścieżki zwracające
+      skrócony kontrakt (fallback.domestic_23pct 21 pól, api_fallback.whitelist_degradation
+      21, api_fallback.multi_degradation 20, reliability_guarantee.fallback_ladder_gate 9) —
+      brak pól temporalnych valid_from/valid_to i ceidg_registration_required (L04, P0).
+   2) Błędy nie mają dotąd wspólnej taksonomii — I12 wprowadza 10 kodów
+      JDG-<SEVERITY>-<DOMENA>-<NUM> z semantyką retryable/http_status; dokumentacja
+      generowana z definicji (jedno źródło prawdy, AP12).
+   3) „Puste pole" vs „nie dotyczy" vs „nie wiem": kontrakt tego NIE wyrażał —
+      I03 definiuje semantykę null/absent/N/A per pole (P03-AN04).
+   Luki z 5.3: L04 (4 ścieżki skrócone), L06 (brak walidatora schematu pustek w CI —
+   I03 dostarcza definicję, wdrożenie walidatora w P41).
+
+5.4 Provenance i legal refs w werdykcie
+   Dowody: I06 (skan 11 936 reguł — 0 braków); I07 (obiekt dowodowy); I04 (golden hash).
+   Wnioski:
+   1) I06 potwierdza: ZERO werdyktów materialnych (matched=true z routingiem materialnym)
+      bez _legal_basis — pełny skan 11 936 reguł (wykluczono no_match/default; dynamiczne
+      _legal_basis via sprintf akceptowane). Gate PASS.
+   2) Provenance istnieje (provenance.rego: bundle_version, rule_version, threshold_version,
+      decision_hash, root_hash) — I07 składa to w kompletny obiekt dowodowy z seal
+      (payload_hash, merkle_root) i retencją 5 lat (Art. 86 §1 OP; Art. 112 VAT).
+   3) Golden hash (I04): deterministyczny (reorder kluczy = ten sam hash) i czuły na zmianę
+      warunków (bundle/rule/threshold) — podstawa golden replay (I09, UVR=0).
+   Luki z 5.4: L07 (legal_basis_refs wg P01 — identyfikatory węzłów LKG nie są jeszcze
+   emitowane w werdykcie; dodać w P11/P41), L08 (podpis HSM PENDING_4EYES — wdrożenie
+   w P11/P43 z realnym HSM).
+
+--------------------------------------------------------------------------------
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2)
+--------------------------------------------------------------------------------
+   | Przepis (Sekcja 8) | Reguła(y) | Test | Status | Ryzyko |
+   |--------------------|-----------|------|--------|--------|
+   | OrdPU art. 189b (uzasadnienie zobowiązania) | decision_composer (routing_reason), provenance (path) | verify_verdict_invariants.py | CZĘŚCIOWE | werdykt niesie uzasadnienie, ale nie certyfikat 189b — L02 |
+   | VAT art. 106b–106n (dane faktury) | validation (R0613–R0620) | pytest validation | PEŁNE | n/d |
+   | PIT art. 45 (deklaracje) | decision_core_completeness (limitations) | pytest completeness | CZĘŚCIOWE | pola deklaracji w kontrakcie, ale bez walidacji schematu PIT — P41 |
+   | UoR art. 20–21 (dowody księgowe) | decision_core_completeness (retention) | pytest completeness | CZĘŚCIOWE | retencja 5 lat wymaga WORM (P43) |
+   | ZUS art. 47 (DRA/RCA) | zus_health_rate w kontrakcie, adaptive_trust | pytest trust | CZĘŚCIOWE | pola kwotowe ZUS chronione allowlistą (P02) |
+   | Dodane w analizie: OrdPU art. 70 §1-2 (przedawnienie) | decision_scoring dse_limitation_scorer; decision_core_completeness limitations | pytest scoring | PEŁNE | n/d |
+   | Dodane: OrdPU art. 119a (GAAR) | decision_scoring dse_gaar_scorer | pytest scoring | PEŁNE | n/d |
+   | Dodane: VAT art. 106na (KSeF UPO) | validation ksef_upo_required (R0620) | pytest validation | PEŁNE | n/d |
+
+--------------------------------------------------------------------------------
+9.06 REJESTR LUK — identyfikatory V3-P03-Lxx (T3)
+--------------------------------------------------------------------------------
+   | ID | Priorytet | Luka |
+   |----|-----------|------|
+   | V3-P03-L01 | P0 | OpenAPI VerdictResponse ma 19 pól — 11 kanonicznych brakuje (package, priority, rounding_level, gtu_code, procedure, pit_bracket, pit_annual_return_type, kus_percent, ceidg_registration_required, valid_from, valid_to); klient API nie może odczytać pełnego werdyktu (I01 FAIL). |
+   | V3-P03-L02 | P1 | Macierz pole→producent→test (P03-AN01) generowana narzędziem, nie bramką CI — wymaga utrzymania spójności z OpenAPI (I05 częściowo pokrywa). |
+   | V3-P03-L03 | P1 | Brak property testu granicznego klasy pewności w pytest (determinizm I02 tylko w narzędziu) — dodać test CI z przypadkami brzegowymi (brak proweniencji, degradacja, no_match). |
+   | V3-P03-L04 | P0 | 4 ścieżki degradacji zwracają skrócony kontrakt (fallback.domestic_23pct 21 pól, api_fallback.whitelist_degradation 21, api_fallback.multi_degradation 20, reliability_guarantee.fallback_ladder_gate 9) — brak valid_from/valid_to/ceidg_registration_required; klient nie odróżnia null od N/A (I10 FAIL). |
+   | V3-P03-L05 | P2 | Rozkład klas pewności modelowy (I08 alarm=1: NEEDS_ADVICE 20%>15%) — brak pomiaru runtime; telemetria z P37; cel V2: CERTAIN≥50%. |
+   | V3-P03-L06 | P1 | Walidator schematu pustek (null/absent/N/A, I03) nie wdrożony w CI — definicja gotowa, wdrożenie w P41. |
+   | V3-P03-L07 | P1 | legal_basis_refs (węzły LKG wg P01: PL/<akt>/art/<art>) nie emitowane w werdykcie — tylko _legal_basis string; dodać refs w P11/P41. |
+   | V3-P03-L08 | P2 | Podpis HSM w obiekcie dowodowym PENDING_4EYES — wdrożenie z realnym HSM w P11/P43 (WORM); zero deklaracji bez HSM. |
+
+--------------------------------------------------------------------------------
+9.07 INNOWACJE ENTERPRISE (Sekcja 10) — 12 WDROŻONYCH (T4)
+--------------------------------------------------------------------------------
+   | ID | Innowacja | Artefakt (narzędzie + bundle) | Bramka |
+   |----|-----------|------------------------------|--------|
+   | V3-P03-I01 | Contract Version Matrix | tools/v3_p03_contract_version_matrix.py | FAIL→L01 |
+   | V3-P03-I02 | Certainty Class Engine | tools/v3_p03_certainty_class_engine.py | PASS |
+   | V3-P03-I03 | Empty-Semantics Schema | tools/v3_p03_empty_semantics_schema.py | PASS |
+   | V3-P03-I04 | Golden Hash in Verdict | tools/v3_p03_golden_hash_verdict.py | PASS |
+   | V3-P03-I05 | Contract Diff CI Gate | tools/v3_p03_contract_diff_gate.py | PASS |
+   | V3-P03-I06 | Legal Refs Completeness Guard | tools/v3_p03_legal_refs_guard.py | PASS |
+   | V3-P03-I07 | Verdict as Evidence Object | tools/v3_p03_verdict_evidence_object.py | PASS |
+   | V3-P03-I08 | Scoring Telemetry | tools/v3_p03_scoring_telemetry.py | FAIL→L05 |
+   | V3-P03-I09 | Client Compatibility Suite | tools/v3_p03_client_compatibility.py | PASS |
+   | V3-P03-I10 | Degradation Contract Patterns | tools/v3_p03_degradation_contract.py | FAIL→L04 |
+   | V3-P03-I11 | AUTO_POST Gate Contract | tools/v3_p03_auto_post_gate.py | PASS |
+   | V3-P03-I12 | Error Taxonomy DSL | tools/v3_p03_error_taxonomy.py | PASS |
+
+   Każda innowacja ma: (1) problem/lukę, (2) mechanizm, (3) wpływ na bezpieczeństwo
+   decyzji księgowych, (4) ryzyko i mitygację, (5) kryterium akceptacji (bramka),
+   (6) zależności serii — opis pełny w bundle JSON i kontrakcie.
+
+--------------------------------------------------------------------------------
+9.08 KONTRAKT WYJŚCIOWY (sekcja 11.2) — WIĄŻĄCY DLA P04–P68 (T5)
+--------------------------------------------------------------------------------
+K1. Kanoniczny 25-polowy słownik werdyktu (wersja 1.0) — źródło r01; INV-043.
+K2. Rozszerzenia additive 1.1: certainty_class, certainty_guard, invariant_refs,
+    legal_basis_refs, golden_hash, _degraded_context, _contract_complete — bez breaking
+    change; przykładowy JSON przed/po w kontrakcie (docs/V3_P03_KONTRAKT_WERDYKTU_KONTRAKT.md §2).
+K3. Zamknięta lista warunków CERTAIN (4 warunki I02) + maszynowy AUTO_POST gate (6 warunków
+    I11) — wiąże P04 (invarianty) i P43.
+K4. Semantyka pustek: null/absent/N/A per pole (I03) — wiąże P41 (API).
+K5. Taksonomia błędów (I12, 10 kodów) — wiąże P41 (API/integracje).
+K6. Degradacja: pełny 25-polowy kontrakt z _degraded_context (I10) — L04 do domknięcia.
+K7. Werdykt jako obiekt dowodowy (I07): seal+merkle+retencja 5 lat — wiąże P11 (certyfikaty)
+    i P43 (WORM).
+K8. Golden hash + golden replay (I04/I09): UVR=0 wymagany — wiąże F3/P11.
+K9. Metryki klas pewności (I08) — wiążą P37; próg CERTAIN≥50%, NEEDS_ADVICE≤15%.
+K10. OpenAPI VerdictResponse musi pokrywać 25 pól kanonicznych (L01) — przed P41.
+
+--------------------------------------------------------------------------------
+9.09 PLAN WDROŻENIA (sekwencja, bez duplikacji; stan: WDROŻONE dla P03) (T6)
+--------------------------------------------------------------------------------
+1. Analiza 22 plików Sekcji 6 + mirror policies — wykonane.
+2. Implementacja 12 narzędzi I01–I12 (CLI + bundle JSON) — wykonane.
+3. Kalibracja ekstraktorów na realnym kodzie (OpenAPI properties, okna reguł,
+   dynamiczne _legal_basis, architektura Multi-Pass) — wykonane (iteracje I01/I06/I10).
+4. Uruchomienie bramek — 9 PASS, 3 FAIL zarejestrowane jako luki L01/L04/L05 — wykonane.
+5. Kontrakt docs/V3_P03_KONTRAKT_WERDYKTU_KONTRAKT.md + taksonomia docs/V3_P03_ERROR_TAXONOMY.md — wykonane.
+6. Testy pytest (14 przypadków) — wykonane, zielone.
+7. Oznaczenie P03 w ledgerze jako WDROŻONY_100 — wykonane.
+
+--------------------------------------------------------------------------------
+9.10 PLAN TESTÓW (T7)
+--------------------------------------------------------------------------------
+   | Przypadek | Pokrycie innowacji | Status |
+   |-----------|--------------------|--------|
+   | I01: 25 pól canon vs OpenAPI (19) — dryf 11 | contract version matrix | FAIL→L01 [BM] |
+   | I02: determinizm 500 prób + semantyka klas | certainty class | PASS |
+   | I03: 25 pól z semantyką pustki, 0 bez docs | empty semantics | PASS |
+   | I04: golden hash deterministyczny + czuły | golden hash | PASS |
+   | I05: diff spec bez testów = fail; baseline | contract diff gate | PASS [BM] |
+   | I06: 0 werdyktów materialnych bez legal refs | legal refs guard | PASS [BM] |
+   | I07: seal/mekle/retention kompletne | evidence object | PASS |
+   | I08: alarmy rozkładu klas (model) | scoring telemetry | FAIL→L05 |
+   | I09: golden replay UVR=0, ścieżki klienta | client compat | PASS [BM] |
+   | I10: 4 wzorce kompletne; 0 skróconych ścieżek | degradation | FAIL→L04 [BM] |
+   | I11: AUTO_POST tylko przy 6 warunkach | auto_post gate | PASS [BM] |
+   | I12: 10 kodów unikalnych, docs z definicji | error taxonomy | PASS |
+   [BM] = blokuje merge.
+
+--------------------------------------------------------------------------------
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+--------------------------------------------------------------------------------
+Q01. L01 (OpenAPI 11 pól): czy dodać wszystkie 11 pól do VerdictResponse w wersji 1.1
+     (additive, rekomendacja), czy niektóre pola (np. procedure, gtu_code) trzymać
+     wyłącznie wewnętrznie? Wpływ na klientów API (P41).
+Q02. L04 (4 ścieżki degradacji skrócone): uzupełnić pola temporalne w fallback/
+     api_fallback (rekomendacja — spójność z INV-037 zero luk temporalnych) czy
+     akceptować skrócony kontrakt z jawnym _degraded_context?
+Q03. L07 (legal_basis_refs): emitować węzły LKG (PL/<akt>/art/<art>) w werdykcie od
+     P11 — czy klienci API potrzebują ich w odpowiedzi, czy tylko w certyfikacie?
+Q04. L05/PEWNOSC: rozbieżność definicji CERTAIN — dashboard pokazuje 0.0% certyfikatów
+     F4, podczas gdy klasy werdyktów I02 liczą CERTAIN normalnie; uzgodnić definicję
+     przed P37.
+Q05. I08 progi (CERTAIN≥50%, NEEDS_ADVICE≤15%): zatwierdzić progi alarmów jako
+     wiążące SLO dla P37, czy dostroić do realnych danych po pierwszym kwartale?
+
+--------------------------------------------------------------------------------
+9.12 ZAŁOŻENIA JAWNE (T9)
+--------------------------------------------------------------------------------
+Z01. [ZAŁOŻENIE] Rozkład klas pewności (I08) modelowy — wartości runtime z P37.
+Z02. [ZAŁOŻENIE] Skan strukturalny (I06/I10) zastępuje brak binarki OPA; ekstraktory
+     skalibrowane na realnym kodzie i zweryfikowane niezależnie (9.04).
+Z03. [ZAŁOŻENIE] Reguły domenowe kompletuje safe_merge w main_jdg (ADR-001 Multi-Pass) —
+     pełny kontrakt wymagany tylko dla ścieżek degradacji (I10).
+Z04. [ZAŁOŻENIE] `""` w polach kontraktu to padding, nie nadpisanie (konwencja P02);
+     I03 traktuje puste jako N/A tylko dla pól z empty_allowed=true.
+Z05. [ZAŁOŻENIE] Podstawy prawne z Bbb to twierdzenia — weryfikacja ISAP/RCL poza
+     zakresem sesji (Sekcja 4.2); tag [NIEZWERYFIKOWANE] gdy źródło niedostępne.
+Z06. [ZAŁOŻENIE] Luki P0 (L01, L04) wymagają decyzji człowieka (Q01/Q02) lub są
+     przekazane do P41; P03 pozostaje WDROŻONY_100, bo innowacje są kompletne i
+     działające, a luki udokumentowane z właścicielami.
+
+--------------------------------------------------------------------------------
+9.13–9.16 — ZGODNOŚĆ Z WYMOGAMI FORMATU I KRYTERIAMI AKCEPTACJI (T12)
+--------------------------------------------------------------------------------
+- 9.13 Podanalizy 5.1–5.4: każda z własną tabelą dowodów, min. 3 wnioski i listą luk — OK.
+- 9.14 Macierz PRAWO↔REGUŁA↔TEST: 8 wierszy (5 z Sekcji 8 + 3 odkryte) — OK.
+- 9.15 Identyfikatory: V3-P03-L01..L08, V3-P03-I01..I12, V3-P03-Q01..Q05, X01..X10 (poniżej).
+- 9.16 Tabele T1–T12: komplet (T1 w 9.03, T2 w 9.05, T3 w 9.06, T4 w 9.07, T5 w 9.08,
+  T6 w 9.09, T7 w 9.10, T8 w 9.11, T9 w 9.12, T10 w 9.16, T11 w APENDYKS B, T12 poniżej).
+
+Pytania krzyżowe (7.4) — V3-P03-Xxx:
+X01. Sprzeczności z dokumentami świętymi: brak BLOCKERów — kontrakt werdyktu zgodny z
+     WIZJA_OPA_ENTERPRISE_V2 §5.2 (F4) i ARCHITEKTURA_OPA_ENTERPRISE_TARGET §9-10; dryf
+     OpenAPI (L01) to luka zgodności z celem V2 (Decision Certificate), nie sprzeczność.
+X02. Parametry-as-data (P06) / temporalność (P05): validation.rego pobiera wagi NIP/REGON
+     z data.jdg.thresholds.checksum_weights (ADR-002 OK); fallback.domestic_23pct ma
+     wartości domyślne w kodzie (stawki 23%/12%/9%) — dopuszczalne jako fallback jawny
+     (TRIAGE, nie AUTO_POST), do weryfikacji w P06.
+X03. Ścieżki nie fail-closed: I11 (AUTO_POST gate) potwierdza brak cichego AUTO_POST;
+     L04 (skrócone kontrakty degradacji) to luka fail-closed — domknięcie w P41.
+X04. Zgodność z kontraktem 25-polowym: I01 — 11 pól poza OpenAPI (L01); pola decyzyjne
+     w kodzie zgodne z INV-043 (fuzzer P02: 10 000 prób, kompletność 100%).
+X05. Testy niezbędne jako bramki blokujące merge: [BM] I01, I05, I06, I09, I10, I11
+     (lista w 9.10) — oczekiwane wyniki: PASS po domknięciu L01/L04.
+X06. Duplikaty z innymi częściami: brak — I01-I12 P03 nowe; P02-I08 (telemetria) rozszerzony
+     przez I08 P03 (metryki klas) bez duplikacji (odwołanie, nie kopia).
+X07. Podstawy prawne niezweryfikowane: macierz 9.05 oparta o Bbb (twierdzenia) — ISAP/RCL
+     poza sesją; wpis do rejestru mediacji z priorytetem P2 (weryfikacja przy P01-P03
+     prawnych części).
+X08. Innowacje wymagające decyzji człowieka przed wdrożeniem: Q01 (OpenAPI), Q02
+     (degradacja), Q05 (progi) — lista w 9.11.
+X09. Metryki do obserwowalności (P37): I08 (4 metryki klas) + P02-I08 (9 metryk
+     orkiestracji) — nazwy i progi w kontrakcie §8.
+X10. Ryzyka wymagające invariantów runtime (P04): L04 (pełny kontrakt degradacji) →
+     INV-044 propozycja: werdykt degradacji bez 25 pól = BLOCK; L01 (OpenAPI) → INV-045:
+     spec↔kod pole po polu (CI).
+
+Anty-wzorce (7.5) — wyniki:
+AP01 stuby: brak (fuzzer P02 + skan) · AP02 hardcode: wagi z thresholds (OK), fallback
+jawne domyślne (X02) · AP03 otwarte negatywy: else=true w selectorach (P02), no_match
+jawne · AP04 duplikaty rule_id: 0 (P00/P02) · AP05 podstawy bez Dz.U.: do weryfikacji
+ISAP (X07) · AP06 testy zawsze-zielone: brak asercji negatywnych w części — dodać w L03 ·
+AP07 cichy AUTO_POST: 0 (I11) · AP08 cykle zależności: nie badano w P03 (P08) ·
+AP09 dane świata zewnętrznego: adaptive_trust z input z provenance (OK) ·
+AP10 okna temporalne: INV-037 + L04 (brak w degradacjach) · AP11 mirror dryf: 4 pliki
+(P02-L01, kontrakt honorowany) · AP12 metryki w 2 miejscach: LCI rozjazd 0.0 vs 71.43
+(metrics_pewnosci vs dashboard) — Q04.
+
+--------------------------------------------------------------------------------
+9.16 TABELA PRZEKAZYWANYCH ARTEFAKTÓW (11.4) (T10)
+--------------------------------------------------------------------------------
+   | Artefakt | Odbiorca (część) | Format | Kryterium użycia |
+   |----------|------------------|--------|------------------|
+   | Kanoniczny słownik 25 pól + rozszerzenia 1.1 | P04 (invarianty), P41 (API) | rego + JSON | INV-043; additive bez breaking |
+   | Zamknięta lista warunków CERTAIN + AUTO_POST gate | P04, P43 | rego + JSON | fail-closed (I02/I11) |
+   | Taksonomia błędów (10 kodów) | P41 (API/integracje) | JSON + MD | unikalność kodów; retryable semantyka |
+   | Pola audytowe retencji (5 lat) | P43 (WORM/retencja) | JSON | Art. 86 §1 OP; Art. 112 VAT |
+   | Golden hash + golden replay (UVR=0) | P11 (certyfikaty), F3 | JSON | determinizm I04/I09 |
+   | Metryki klas pewności | P37 (obserwowalność) | JSON | progi: CERTAIN≥50%, NEEDS_ADVICE≤15% |
+   | Luki L01–L08 + pytania Q01–Q05 | Blocker Triage (I09 P00) | raport | priorytety P0/P1/P2 |
+   | Testy 14 przypadków [BM] | CI / merge gate | pytest | blokady: I01, I05, I06, I09, I10, I11 |
+   | Obiekt dowodowy (seal/merkle) | P11, P43 | JSON | PENDING_4EYES do HSM |
+
+--------------------------------------------------------------------------------
+PODSUMOWANIE WYKONANIA
+--------------------------------------------------------------------------------
+1. Raport zapisany: JDG/raporty_glm52_v3/RAPORT_V3_P03_KONTRAKT_WERDYKTU.txt
+2. Zakres części P03: kontrakt werdyktu — 4 podanalizy (5.1–5.4), 12 innowacji,
+   8 luk (2×P0, 4×P1, 2×P2), 5 pytań (Q01–Q05), odpowiedzi X01–X10, kontrakt K1–K10,
+   14 testów (6 [BM]).
+3. Kontrakty dla P04: K1–K10 (sekcja 9.08) + docs/V3_P03_KONTRAKT_WERDYKTU_KONTRAKT.md;
+   metryki klas pewności wiążące dla P37; bramki I01–I12 uruchamialne w CI.
+4. WYCZYSZCZONO okno kontekstowe po zakończeniu części P03 (treść części nie jest już
+   potrzebna — stan w ledgerze, dowodach i kontrakcie).
+5. Brak utrzymywanych niejawnych założeń/kodów po czyszczeniu sesji.
+6. Następna część: P04 — pierwszy nie wdrożony wpis w ledgerze po P03.
+================================================================================

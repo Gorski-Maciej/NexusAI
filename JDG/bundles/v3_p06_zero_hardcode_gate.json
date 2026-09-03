@@ -1,0 +1,230 @@
+{
+  "innovation": "V3-P06-I02",
+  "generated_at": "2026-09-03T10:13:00.059883+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "domain_candidates": 2503,
+    "raw_numeric_tokens": 26165,
+    "default_literals": 77,
+    "files_scanned": 225,
+    "existing_audits": {
+      "docs_analiza_stanu_265": 265,
+      "hardcoded_audit_gate": 13595,
+      "hardcoded_audit_kpi": 26373
+    }
+  },
+  "top_files": [
+    [
+      "p05_pit_innovations_v8.rego",
+      167
+    ],
+    [
+      "neural_rule_mesh_enterprise.rego",
+      86
+    ],
+    [
+      "p16_business_lifecycle_innovations_v8.rego",
+      76
+    ],
+    [
+      "tax_optimization_enterprise.rego",
+      72
+    ],
+    [
+      "local_taxes/pcc_enterprise_complete.rego",
+      64
+    ],
+    [
+      "p24_innovations_enterprise.rego",
+      59
+    ],
+    [
+      "p15_pcc_local_excise_innovations_v8.rego",
+      54
+    ],
+    [
+      "kks.rego",
+      48
+    ],
+    [
+      "pit/tax_loss_harvesting_enterprise.rego",
+      48
+    ],
+    [
+      "strategic_advisor_enterprise.rego",
+      44
+    ]
+  ],
+  "examples": [
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 31,
+      "cls": "DEFAULT_LITERAL",
+      "value": "10000",
+      "ctx": "\"asset_minimum_value_pln\": object.get(data.thresholds.jdg.depreciation, \"one_off_low_value_limit\", 1"
+    },
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 31,
+      "cls": "DOMAIN_VALUE",
+      "value": "10000",
+      "ctx": "\"asset_minimum_value_pln\": object.get(data.thresholds.jdg.depreciation, \"one_off_low_value_limit\", 1"
+    },
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 43,
+      "cls": "DEFAULT_LITERAL",
+      "value": "10000",
+      "ctx": "is_fixed_asset := [asset_value >= object.get(data.thresholds.jdg.depreciation, \"one_off_low_value_li"
+    },
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 43,
+      "cls": "DOMAIN_VALUE",
+      "value": "10000",
+      "ctx": "is_fixed_asset := [asset_value >= object.get(data.thresholds.jdg.depreciation, \"one_off_low_value_li"
+    },
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 46,
+      "cls": "DEFAULT_LITERAL",
+      "value": "10000",
+      "ctx": "{\"c\": asset_value < object.get(data.thresholds.jdg.depreciation, \"one_off_low_value_limit\", 10000), "
+    },
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 46,
+      "cls": "DOMAIN_VALUE",
+      "value": "10000",
+      "ctx": "{\"c\": asset_value < object.get(data.thresholds.jdg.depreciation, \"one_off_low_value_limit\", 10000), "
+    },
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 72,
+      "cls": "DEFAULT_LITERAL",
+      "value": "10000",
+      "ctx": "asset_value < object.get(data.thresholds.jdg.depreciation, \"one_off_low_value_limit\", 10000)"
+    },
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 72,
+      "cls": "DOMAIN_VALUE",
+      "value": "10000",
+      "ctx": "asset_value < object.get(data.thresholds.jdg.depreciation, \"one_off_low_value_limit\", 10000)"
+    },
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 100,
+      "cls": "DOMAIN_VALUE",
+      "value": "10000",
+      "ctx": "initial_value >= object.get(data.thresholds.jdg.depreciation, \"one_off_low_value_limit\", 10000)"
+    },
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 164,
+      "cls": "DOMAIN_VALUE",
+      "value": "100000",
+      "ctx": "\"depreciation_limit_pln\": object.get(data.thresholds.jdg.depreciation, \"one_off_de_minimis_limit\", 1"
+    },
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 179,
+      "cls": "DOMAIN_VALUE",
+      "value": "100000",
+      "ctx": "one_time_amount := min([initial_value, object.get(data.thresholds.jdg.depreciation, \"one_off_de_mini"
+    },
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 180,
+      "cls": "DOMAIN_VALUE",
+      "value": "100000",
+      "ctx": "remaining_value := max([0, initial_value - object.get(data.thresholds.jdg.depreciation, \"one_off_de_"
+    },
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 201,
+      "cls": "DOMAIN_VALUE",
+      "value": "100%",
+      "ctx": "\"_warnings\": [sprintf(\"AMORTYZACJA SAMOCHODU OSOBOWEGO — Wartość: %.0f PLN. Limit: %.0f PLN (%s). Am"
+    },
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 208,
+      "cls": "DOMAIN_VALUE",
+      "value": "225000",
+      "ctx": "{\"c\": is_electric == true, \"v\": object.get(data.thresholds.jdg.depreciation, \"passenger_car_limit_el"
+    },
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 209,
+      "cls": "DOMAIN_VALUE",
+      "value": "150000",
+      "ctx": "{\"c\": true, \"v\": object.get(data.thresholds.jdg.depreciation, \"passenger_car_limit_standard\", 150000"
+    },
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 219,
+      "cls": "DOMAIN_VALUE",
+      "value": "0.01",
+      "ctx": "kup_allowed_pct := floor(depreciable_base / max([car_value, 0.01]) * 100)"
+    },
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 236,
+      "cls": "DOMAIN_VALUE",
+      "value": "10000",
+      "ctx": "\"improvement_threshold\": object.get(data.thresholds.jdg.depreciation, \"improvement_threshold\", 10000"
+    },
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 246,
+      "cls": "DOMAIN_VALUE",
+      "value": "10000",
+      "ctx": "exceeds_threshold := improvement_amount >= object.get(data.thresholds.jdg.depreciation, \"improvement"
+    },
+    {
+      "file": "accounting/depreciation_enterprise.rego",
+      "line": 353,
+      "cls": "DOMAIN_VALUE",
+      "value": "23%",
+      "ctx": "\"_warnings\": [sprintf(\"SPRZEDAŻ ŚRODKA TRWAŁEGO — %.2f PLN. (1) Przychód = cena sprzedaży netto (kol"
+    },
+    {
+      "file": "accounting/depreciation_enterprise_complete.rego",
+      "line": 53,
+      "cls": "DOMAIN_VALUE",
+      "value": "10000",
+      "ctx": "initial_value >= object.get(data.thresholds.jdg.depreciation, \"one_off_low_value_limit\", 10000)"
+    }
+  ],
+  "checks": [
+    {
+      "name": "domain_values_count",
+      "status": "FAIL",
+      "detail": "kandydatów DOMAIN_VALUE w liniach z logiką: 2503 (limit allowlisty: 200 legacy; surowych tokenów numerycznych w plikach: 26165 — w tym stringi/message)"
+    },
+    {
+      "name": "audit_tools_consistency",
+      "status": "FAIL",
+      "detail": "rozjazd audytów hardcode: docs ANALIZA_STANU ~265 (32 pliki, 2026-07-13) vs hardcoded_audit_gate 13 595 vs hardcoded_audit.py KPI 26 373 — trzy narzędzia, trzy semantyki (AP12)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P06-L02",
+      "severity": "P1",
+      "evidence": "wartości domenowe w logice reguł (kandydaci DOMAIN_VALUE): 2503; top pliki: [('p05_pit_innovations_v8.rego', 167), ('neural_rule_mesh_enterprise.rego', 86), ('p16_business_lifecycle_innovations_v8.rego', 76), ('tax_optimization_enterprise.rego', 72), ('local_taxes/pcc_enterprise_complete.rego', 64)]",
+      "fix": "zero-hardcode gate wg klasyfikacji + migracja wartości do JSON store (I03 lineage), allowlista wyrażeń strukturalnych"
+    },
+    {
+      "id": "V3-P06-L04",
+      "severity": "P1",
+      "evidence": "trzy narzędzia audytu hardcode dają trzy różne liczby (docs 265 / gate 13 595 / KPI 26 373) — brak wspólnej definicji i jednego źródła prawdy (AP12)",
+      "fix": "unifikacja na klasyfikacji I02 (DEFAULT_LITERAL/DOMAIN_VALUE/STRUCTURAL/METADATA) + jeden rejestr z wersjonowaniem"
+    }
+  ],
+  "contract": {
+    "binding": "P39 (bramka CI), P07–P36 (migracja wartości)",
+    "rule": "nowa wartość liczbowa w regule domenowej bez wpisu JSON = FAIL [BM]"
+  }
+}

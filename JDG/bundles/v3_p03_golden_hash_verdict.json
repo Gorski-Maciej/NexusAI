@@ -1,0 +1,52 @@
+{
+  "innovation": "V3-P03-I04",
+  "name": "Golden Hash in Verdict — odtworzenie 1:1 (F3 V2)",
+  "generated_at": "2026-09-03T08:25:30.301618+00:00",
+  "golden_hash": "sha256:f26e61d97fb5aa37396e86ea73ba2cc84f19055f6fe95524f788b07d6214468d",
+  "golden_conditions": {
+    "input_fingerprint": "nip=5213456789|inv=2026-09-03-0001|dir=SALE",
+    "bundle_version": "v2026.09.03",
+    "rule_version": "1.4.2",
+    "threshold_version": "1.3.0",
+    "evaluation_date": "2026-09-03",
+    "routing_context": "DOMESTIC_SALE"
+  },
+  "verdict_sample": {
+    "rule_id": "jdg.vat.rate_23",
+    "_routing": "ALLOW",
+    "certainty_class": "CERTAIN",
+    "golden_hash": "sha256:f26e61d97fb5aa37396e86ea73ba2cc84f19055f6fe95524f788b07d6214468d",
+    "golden_conditions": {
+      "input_fingerprint": "nip=5213456789|inv=2026-09-03-0001|dir=SALE",
+      "bundle_version": "v2026.09.03",
+      "rule_version": "1.4.2",
+      "threshold_version": "1.3.0",
+      "evaluation_date": "2026-09-03",
+      "routing_context": "DOMESTIC_SALE"
+    }
+  },
+  "probes": [
+    {
+      "name": "bundle_version_change",
+      "hash_changed": true,
+      "ok": true
+    },
+    {
+      "name": "rule_version_change",
+      "hash_changed": true,
+      "ok": true
+    },
+    {
+      "name": "key_reorder_deterministic",
+      "hash_same": true,
+      "ok": true
+    }
+  ],
+  "probes_ok": true,
+  "replay_contract": "golden replay: ten sam golden_hash → ta sama decyzja; zmiana warunków → inny hash → UVR (nieuzasadniona zmiana werdyktu) wykrywalny",
+  "gate": {
+    "pass": true,
+    "rule": "golden_hash deterministyczny (reorder = ten sam) i czuły na zmianę warunków (bundle/rule/threshold) — P03-AN02, F3 V2"
+  },
+  "note": "Hash liczony w Python wrapperze (OPA bez crypto) — wzorzec spójny z provenance.rego (root_hash) i decision_certificate.py (merkle_root); golden replay w P03-I09 i P11."
+}

@@ -1,0 +1,37 @@
+{
+  "innovation": "V3-P08-I10",
+  "generated_at": "2026-09-03T10:42:25.161102+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "changes": 1,
+    "ready": 0,
+    "states": {
+      "DRL-0001": "NIE_GOTOWE"
+    },
+    "drafts": 1
+  },
+  "checks": [
+    {
+      "name": "readiness_per_change",
+      "status": "FAIL",
+      "detail": "statusy: {'DRL-0001': 'NIE_GOTOWE'}"
+    },
+    {
+      "name": "weekly_report_artifact",
+      "status": "FAIL",
+      "detail": "brak artefaktu cyklicznego raportu gotowości (weekly)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P08-L10",
+      "severity": "P2",
+      "evidence": "kalendarz: 1 zmiana(y), wszystkie NIE_GOTOWE (rules_prepared=[] w DRL-0001); brak tygodniowego raportu gotowości — zespół nie ma jednego miejsca 'co się zmienia i czy silnik jest gotowy'",
+      "fix": "I10 Compliance Readiness Report: generator weekly z macierzy (I05) + stanów lifecycle (P07) per zmiana"
+    }
+  ],
+  "contract": {
+    "binding": "P08-I04 (lead time), P08-I05 (impact), P07 (lifecycle), P37 (raport cykliczny)",
+    "rule": "raport tygodniowy: per zmiana status GOTOWE/W_PRZYGOTOWANIU/NIE_GOTOWE + reguły + data wejścia"
+  }
+}

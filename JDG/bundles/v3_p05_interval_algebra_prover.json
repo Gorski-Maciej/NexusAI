@@ -1,0 +1,82 @@
+{
+  "innovation": "V3-P05-I01",
+  "generated_at": "2026-09-03T09:55:34+00:00",
+  "gate": "FAIL",
+  "method": "algebra interwałów Allen-like na 3 warstwach (RULES/PARAMS/LKG); GAP = end+1d < next_from; OVERLAP = next_from <= end (okno otwarte = OVERLAP_OPEN_END)",
+  "metrics": {
+    "registry_rules": 32,
+    "rules_gaps": 0,
+    "rules_overlaps": 0,
+    "enforcement_calls": 0,
+    "params_versioned": 1,
+    "params_gaps": 0,
+    "params_overlaps": 0,
+    "epochs_years": [
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2025
+    ],
+    "epochs_missing": [
+      2024,
+      2026
+    ],
+    "lkg_nodes": 258,
+    "lkg_acts": 26,
+    "layers_checked": [
+      "RULES",
+      "PARAMS",
+      "LKG"
+    ]
+  },
+  "checks": [
+    {
+      "name": "LAYER_RULES_windows",
+      "status": "OK",
+      "detail": "registry=32 reguł temporalnych, luki=0, nakładki=0"
+    },
+    {
+      "name": "LAYER_RULES_enforcement",
+      "status": "FAIL",
+      "detail": "wywołań is_active* poza definicjami: 0"
+    },
+    {
+      "name": "LAYER_PARAMS_windows",
+      "status": "OK",
+      "detail": "parametry wersjonowane=1 (keys=['vat.standard_rate']...), luki=0, nakładki=0"
+    },
+    {
+      "name": "LAYER_PARAMS_epochs_continuity",
+      "status": "WARN",
+      "detail": "epoki data.thresholds.jdg.temporal_epochs: [2018, 2019, 2020, 2021, 2022, 2023, 2025]; brak lat: [2024, 2026]"
+    },
+    {
+      "name": "LAYER_LKG_nodes",
+      "status": "OK",
+      "detail": "legal_graph: akty=26, węzły=258, distinct refs=0"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P05-L01",
+      "severity": "P0",
+      "evidence": "temporal_validity registry (32 wpisy) istnieje, ale zero reguł/orchestrator woła metadata.is_active*/helpers.is_active* — okna NIE filtrują decyzji; egzekucja tylko tam, gdzie reguła samodzielnie sprawdza datę inline",
+      "fix": "bramka PASS-0: odfiltruj werdykty reguł nieaktywnych na input.evaluation_datetime wg registry (is_active_for_date) — kontrakt V3-P05-I05/I08"
+    },
+    {
+      "id": "V3-P05-L02",
+      "severity": "P2",
+      "evidence": "temporal_epochs nieciągłe: brak [2024, 2026] (skok e2023→e2025) — rok bez epoki nie może być celem time-travel look-up",
+      "fix": "dodać e2024/e2026 do data.thresholds.jdg.temporal_epochs (P06 — parametry jako dane)"
+    }
+  ],
+  "contract": {
+    "binding": "P06 parametry / P08 Law Radar / P37 metryki / P39 CI",
+    "invariant": "INV-037 (zero luk + zero nakładek) — dowód w CI na każdej warstwie",
+    "registry_ref": "rules/_metadata_jdg.rego → temporal_validity",
+    "epochs_ref": "data.thresholds.jdg.temporal_epochs (ADR-002)"
+  }
+}

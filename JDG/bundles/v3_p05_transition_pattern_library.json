@@ -1,0 +1,104 @@
+{
+  "innovation": "V3-P05-I09",
+  "generated_at": "2026-09-03T12:43:00+00:00",
+  "gate": "PASS",
+  "patterns": [
+    {
+      "pattern": "WINDOW_SUPERSEDE",
+      "rule_id": "jdg.edge_cases.zus_declaration_zero_on_suspension",
+      "valid_from": "2022-04-01",
+      "supersedes": "P914",
+      "reason": "R0582 — kanoniczna wersja P914; Art.36a SUS (społeczne=0, zdrowotna=NADAL) — Dz.U. 2022 poz. 1740 (Polski Ład 2.0)",
+      "legal_anchor": "Art. 36a SUS (P914→R0582) / wg reason"
+    },
+    {
+      "pattern": "WINDOW_SUPERSEDE",
+      "rule_id": "jdg.pit.tax_free_30k_scale_12_32",
+      "valid_from": "2022-01-01",
+      "supersedes": "jdg.pit.scale_rates_2019",
+      "reason": "Polski Ład: skala 12%/32%, kwota wolna 30 000 PLN, kwota zmniejszająca 3 600 PLN",
+      "legal_anchor": "Art. 36a SUS (P914→R0582) / wg reason"
+    },
+    {
+      "pattern": "EPOCH_LOOKUP",
+      "rule_id": "temporal:tax_free_amount",
+      "valid_from": "rok jako parametr (ADR-002)",
+      "legal_anchor": "wartości wg roku — patrz ciało funkcji"
+    },
+    {
+      "pattern": "EPOCH_LOOKUP",
+      "rule_id": "temporal:depreciation_one_off_limit",
+      "valid_from": "rok jako parametr (ADR-002)",
+      "legal_anchor": "wartości wg roku — patrz ciało funkcji"
+    },
+    {
+      "pattern": "LEGACY_CLOSED",
+      "rule_id": "jdg.temporal.middle_class_relief_2026",
+      "valid_from": "2025-01-01",
+      "legal_anchor": "Art. 26 ust. 1 pkt 2aa-2ab PIT (uchylony z dniem 01.01.2023)",
+      "why": "ulga zniesiona od 2023 — reguła negatywna dla 2026"
+    },
+    {
+      "pattern": "LEGACY_CLOSED",
+      "rule_id": "jdg.temporal.middle_class_relief_2022",
+      "valid_from": "2022-01-01",
+      "legal_anchor": "Art. 26 ust. 1 pkt 2aa-2ab PIT (stan prawny 2022)",
+      "why": "ulga aktywna tylko w 2022"
+    },
+    {
+      "pattern": "LEGACY_CLOSED",
+      "rule_id": "jdg.temporal.covid_legacy",
+      "valid_from": "2020-01-01",
+      "legal_anchor": "Rozp. COVID (archiwalne 2020-2021)",
+      "why": "okres 03.2020-12.2021 (tarcze)"
+    },
+    {
+      "pattern": "EFFECTIVE_GATE",
+      "rule_id": "jdg.temporal.ksef_delayed_2026",
+      "valid_from": "2026-02-01",
+      "legal_anchor": "Art. 106na-106nq VAT (KSeF obowiązkowy od 01.02.2026)",
+      "why": "KSeF obowiązkowy od 01.02.2026"
+    },
+    {
+      "pattern": "TRANSITION_WINDOW",
+      "rule_id": "jdg.temporal.polski_lad_transition",
+      "valid_from": "2025-01-01",
+      "legal_anchor": "Art. 27 PIT (stan na 01.01.2022-30.06.2022)",
+      "why": "okres przejściowy 01-06.2022"
+    },
+    {
+      "pattern": "EPOCH_LOOKUP",
+      "rule_id": "jdg.temporal.historical_pit_rate_2019",
+      "valid_from": "2025-01-01",
+      "legal_anchor": "Art. 27 PIT (stan prawny na 2019 r.)",
+      "why": "stawki PIT na 2019"
+    },
+    {
+      "pattern": "EPOCH_LOOKUP",
+      "rule_id": "jdg.temporal.historical_pit_rate_2025",
+      "valid_from": "2025-01-01",
+      "legal_anchor": "Art. 27 PIT (stan prawny od 1 lipca 2022)",
+      "why": "stawki PIT na 2025"
+    }
+  ],
+  "metrics": {
+    "patterns_total": 11
+  },
+  "checks": [
+    {
+      "name": "patterns_cataloged",
+      "status": "OK",
+      "detail": "wzorców w bibliotece: 11"
+    },
+    {
+      "name": "legal_anchor_present",
+      "status": "OK",
+      "detail": "wpisy bez kotwicy prawnej: []"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "wszystkie części domenowe P10–P36 (wzorce przepisów przejściowych)",
+    "rule": "nowa nowelizacja = instancja wzorca z biblioteki + test day-1/0/+1 (I05)"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "innovation": "V3-P01-I08",
+  "generated_at": "2026-09-03T06:44:13+00:00",
+  "forward": {
+    "direction": "reguła → węzeł prawny (_legal_basis)",
+    "ok": 11820,
+    "fail": 619,
+    "pass": false,
+    "fail_classes": {
+      "MISSING": 59,
+      "UNKNOWN_ACT": 560
+    }
+  },
+  "reverse": {
+    "direction": "węzeł materialny → reguła",
+    "material_nodes": 251,
+    "uncovered": 55,
+    "pass": false
+  },
+  "gate": {
+    "pass": false,
+    "rule": "oba kierunki muszą być spójne przed AUTO_POST; wyjątki tylko przez rejestr mediacji"
+  },
+  "note": "wartości fail są celowo raportowane (nie ukrywane) — gate to pomiar, nie fikcja"
+}

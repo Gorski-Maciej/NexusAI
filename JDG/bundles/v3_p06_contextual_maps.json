@@ -1,0 +1,45 @@
+{
+  "innovation": "V3-P06-I07",
+  "generated_at": "2026-09-03T10:11:11.423166+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "context_maps": 3,
+    "context_code_keys": 1,
+    "contextual_refs": {
+      "local_taxes": 1,
+      "pcc_local_excise": 1
+    }
+  },
+  "checks": [
+    {
+      "name": "contextual_maps_exist",
+      "status": "OK",
+      "detail": "mapy kontekstowe w warstwie danych: ['local_excise_etap19', 'local_taxes', 'pcc_local_excise']"
+    },
+    {
+      "name": "context_codes_validated",
+      "status": "FAIL",
+      "detail": "brak walidacji kodów kontekstu (TERYT/PKD) przy zapisie — schema nie zna przestrzeni kontekstu"
+    },
+    {
+      "name": "contextual_references",
+      "status": "OK",
+      "detail": "referencje do map kontekstowych w regułach: {'local_taxes': 1, 'pcc_local_excise': 1}"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P06-L12",
+      "severity": "P2",
+      "evidence": "schema parametru (I01) nie ma wymiaru kontekstu — brak walidacji kodów TERYT/PKD; stawki gminne (UPOL art. 5) bez modelu namespace.context.code",
+      "fix": "rozszerzenie schema v2 o scope=context + walidacja kodu wg rejestru (TERYT/PKD) + wartość domyślna z zakresem ustawowym"
+    }
+  ],
+  "model": {
+    "namespace": "pl.teryt.XXXXXX / pl.pkd.A.BB.C / domain.param",
+    "rule": "klucz kontekstowy bez rekordu w rejestrze kodów = odrzucenie; brak wartości dla kodu = fallback do default z zakresem ustawowym"
+  },
+  "contract": {
+    "binding": "P12–P36 domenowe (migracja wartości kontekstowych), P06-I11 (range proofs), P09 (deklaratywna zmiana)"
+  }
+}

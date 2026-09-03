@@ -1,0 +1,47 @@
+{
+  "innovation": "V3-P11-I03",
+  "generated_at": "2026-09-03T12:19:26+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "offline_cli": "v3_p11_offline_verifier.py",
+    "verify_local": true,
+    "network_dependent": true,
+    "verifies_content": true,
+    "offline_docs": [],
+    "decade_test": false
+  },
+  "checks": [
+    {
+      "name": "offline_verifier_exists",
+      "status": "OK",
+      "detail": "narzędzie offline: v3_p11_offline_verifier.py"
+    },
+    {
+      "name": "content_verification",
+      "status": "OK",
+      "detail": "weryfikacja treści (recompute hash payload): True"
+    },
+    {
+      "name": "offline_docs",
+      "status": "FAIL",
+      "detail": "instrukcja offline w docs: BRAK"
+    },
+    {
+      "name": "decade_test",
+      "status": "FAIL",
+      "detail": "test dekady (certyfikat sprzed lat weryfikuje się dziś): False"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P11-L03",
+      "severity": "P1",
+      "evidence": "verify() w certificate_service.py sprawdza tylko kształt (64-hex payload_hash + prefix 'HSM-ECDSA-') — nie ma weryfikacji kryptograficznej podpisu, merkle roota ani legal refs; brak samodzielnego CLI offline i instrukcji dla audytora; verification_url sugeruje zależność od sieci",
+      "fix": "I03: Offline Verifier CLI (weryfikacja bez sieci: seal → merkle → legal refs hash → kompletność), test dekady"
+    }
+  ],
+  "contract": {
+    "binding": "P44 (audyt/certyfikacja finalna), P41 (UI/API)",
+    "rule": "weryfikacja offline weryfikuje: podpis klucza (I07), merkle root (I02), legal refs hash (P01/P05) — bez dostępu do sieci"
+  }
+}

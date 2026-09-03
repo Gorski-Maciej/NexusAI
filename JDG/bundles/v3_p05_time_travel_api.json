@@ -1,0 +1,104 @@
+{
+  "innovation": "V3-P05-I11",
+  "generated_at": "2026-09-03T09:55:49+00:00",
+  "gate": "FAIL",
+  "api": {
+    "reconstruct": "reconstruct(rule_id, date) -> wersja aktywna (max(valid_from) <= date)",
+    "verify": "verify(snapshot_id) -> zgodność stanu repo (I02)",
+    "replay_golden": "re-ewaluacja golden 1:1",
+    "fail_closed": "brak aktywnej wersji na datę = NEEDS_ADVICE (nigdy wersja bieżąca dla przeszłości)"
+  },
+  "golden_replay": {
+    "total": 30,
+    "replayed_ok": 26,
+    "mismatch": [
+      "c4a1b2d3e4f5a6b7c8d9e0f1a2b3c4d5",
+      "a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1",
+      "c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2",
+      "e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3"
+    ],
+    "skipped": 0
+  },
+  "boundary_demo": [
+    {
+      "rule_id": "jdg.zus.health_scale",
+      "date": "2021-12-31",
+      "active": false,
+      "valid_from": "2022-01-01",
+      "valid_to": null,
+      "decision": "NEEDS_ADVICE — reguła nieaktywna na datę (fail-closed)"
+    },
+    {
+      "rule_id": "jdg.zus.health_scale",
+      "date": "2022-01-01",
+      "active": true,
+      "valid_from": "2022-01-01",
+      "valid_to": null
+    },
+    {
+      "rule_id": "jdg.business.suspension_zus",
+      "date": "2022-03-31",
+      "active": false,
+      "valid_from": "2022-04-01",
+      "valid_to": null,
+      "decision": "NEEDS_ADVICE — reguła nieaktywna na datę (fail-closed)"
+    },
+    {
+      "rule_id": "jdg.business.suspension_zus",
+      "date": "2022-04-01",
+      "active": true,
+      "valid_from": "2022-04-01",
+      "valid_to": null
+    },
+    {
+      "rule_id": "jdg.validation.ksef_upo_required",
+      "date": "2026-01-31",
+      "active": false,
+      "valid_from": "2026-02-01",
+      "valid_to": null,
+      "decision": "NEEDS_ADVICE — reguła nieaktywna na datę (fail-closed)"
+    },
+    {
+      "rule_id": "jdg.validation.ksef_upo_required",
+      "date": "2026-02-01",
+      "active": true,
+      "valid_from": "2026-02-01",
+      "valid_to": null
+    }
+  ],
+  "metrics": {
+    "registry_entries": 32,
+    "golden_total": 30,
+    "golden_ok": 26,
+    "demo_rows": 6
+  },
+  "checks": [
+    {
+      "name": "golden_replay_1:1",
+      "status": "FAIL",
+      "detail": "replay 26/30 (rozjazdy: 4)"
+    },
+    {
+      "name": "time_travel_boundaries",
+      "status": "OK",
+      "detail": "rekonstrukcje graniczne: 6 (day-1/day0 dla 3 nowelizacji)"
+    },
+    {
+      "name": "snapshot_available",
+      "status": "OK",
+      "detail": "vault snapshot: acab5f9259a013ab"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P05-L08",
+      "severity": "P1",
+      "evidence": "zapisane verdict_hash nie są deterministyczną funkcją werdyktu (sha256-canonical-json-v1): ['c4a1b2d3e4f5a6b7c8d9e0f1a2b3c4d5', 'a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1', 'c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2', 'e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3']",
+      "fix": "re-generacja hash golden_verdicts wg jednego kanonu (P10 GOLDEN_ORACLE); immunitet przeszłości wymaga spójnych pieczęci (P03-I04 / P11)"
+    }
+  ],
+  "contract": {
+    "binding": "P10 golden oracle / P11 certyfikaty / P03 kontrakt werdyktu (pole snapshot_id)",
+    "audit": "rekonstrukcja dla KAS/audytu: snapshot_id + input → werdykt 1:1"
+  }
+}

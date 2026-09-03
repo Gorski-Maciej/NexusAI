@@ -1,0 +1,51 @@
+{
+  "innovation": "V3-P08-I03",
+  "generated_at": "2026-09-03T10:42:20.979055+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "future_versions": 0,
+    "shadow_future": 0,
+    "future_params": 0
+  },
+  "dryrun_demo": {
+    "change": "limit małego podatnika VAT → 2 000 000 EUR (projekt)",
+    "current": "oss_threshold_eur (data layer)",
+    "mode": "SHADOW_ANALYSIS_ONLY",
+    "steps": [
+      "feed → diff",
+      "impact (I05)",
+      "rejestracja SHADOW (P07)",
+      "dry run na danych bieżących",
+      "aktywacja 01.01 z testem day-0"
+    ]
+  },
+  "checks": [
+    {
+      "name": "future_shadow_count",
+      "status": "FAIL",
+      "detail": "wersje z valid_from w przyszłości: 0 (w tym SHADOW: 0)"
+    },
+    {
+      "name": "future_params",
+      "status": "WARN",
+      "detail": "parametry z valid_from w przyszłości: 0"
+    },
+    {
+      "name": "dryrun_ready",
+      "status": "OK",
+      "detail": "dry run możliwy przez data_service (get --as-of) + P05-I11 (time-travel API) — demo P08-AN04 gotowe"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P08-L03",
+      "severity": "P1",
+      "evidence": "0 wersji reguł i 0 parametrów z valid_from w przyszłości — mechanizm pre-life SHADOW (pipeline → SHADOW → dry run → aktywacja) nie ma dziś żadnej instancji; gotowość do przyszłych nowelizacji nieweryfikowalna",
+      "fix": "Pre-Life Shadow Rules (I03): pipeline tworzy przyszłą wersję w SHADOW z lead time ≥ 30 dni (P07-I01 awans po dry runie); demo AN04 jako test E2E (I11)"
+    }
+  ],
+  "contract": {
+    "binding": "P07 (SHADOW + awans), P05 (okna i dry run), P06 (parametry przyszłe), P08-I11 (test E2E)",
+    "rule": "nowelizacja z lead < 30 dni bez wersji SHADOW = alert P1; aktywacja tylko z zielonym dry runem [BM]"
+  }
+}

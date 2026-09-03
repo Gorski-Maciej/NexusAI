@@ -1,0 +1,41 @@
+{
+  "innovation": "V3-P08-I11",
+  "generated_at": "2026-09-03T12:43:08.137464+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "e2e_test_exists": true,
+    "pipeline_tool": true
+  },
+  "mock_novelization": {
+    "id": "MOCK-E2E-001",
+    "act": "ustawa o VAT",
+    "article": "art. 113",
+    "change_type": "PROG",
+    "new_value": 300000,
+    "effective": "2030-01-01"
+  },
+  "checks": [
+    {
+      "name": "e2e_test_exists",
+      "status": "OK",
+      "detail": "test_ingest_impact_plan (P01) odpala pipeline na mock nowelizacji PIT: ingest→impact→plan — pełny łańcuch do SHADOW→ACTIVE/bundle poza testem"
+    },
+    {
+      "name": "pipeline_stages",
+      "status": "OK",
+      "detail": "isap_rule_update_pipeline.py: ingest→impact→plan→emit (istnieje), ale bez rygla e2e"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P08-L11",
+      "severity": "P3",
+      "evidence": "istnieje test_ingest_impact_plan (P01) pokrywający mock nowelizację przez ingest→impact→plan; brak pokrycia etapów SHADOW→CANDIDATE→ACTIVE (P07) i regeneracji bundle (P38) na mock feedzie",
+      "fix": "I11 Pipeline E2E Test Rig: rozszerzyć rig o etapy lifecycle (MOCK-E2E-001 przez P07→P38) + asercje golden"
+    }
+  ],
+  "contract": {
+    "binding": "P10 (golden replay po zmianie), P07 (SHADOW→ACTIVE), P38 (bundle regenerowany)",
+    "rule": "CI: mock nowelizacja przechodzi wszystkie etapy bez cichego AUTO_POST; wynik zgodny z oczekiwanym werdyktem"
+  }
+}

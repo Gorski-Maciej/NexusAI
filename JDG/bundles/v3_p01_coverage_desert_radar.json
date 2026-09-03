@@ -1,0 +1,94 @@
+{
+  "innovation": "V3-P01-I07",
+  "generated_at": "2026-09-03T06:44:13+00:00",
+  "by_domain": [
+    {
+      "domain": "business",
+      "nodes": 12,
+      "desert_nodes": 2,
+      "desert_pct": 16.7,
+      "severity": "OK",
+      "settlement_plan": "domknąć 2 węzłów przez V3-P01-I02/I06 (SHADOW+4-eyes)"
+    },
+    {
+      "domain": "kks",
+      "nodes": 14,
+      "desert_nodes": 4,
+      "desert_pct": 28.6,
+      "severity": "UWAGA",
+      "settlement_plan": "domknąć 4 węzłów przez V3-P01-I02/I06 (SHADOW+4-eyes)"
+    },
+    {
+      "domain": "ord",
+      "nodes": 21,
+      "desert_nodes": 1,
+      "desert_pct": 4.8,
+      "severity": "OK",
+      "settlement_plan": "domknąć 1 węzłów przez V3-P01-I02/I06 (SHADOW+4-eyes)"
+    },
+    {
+      "domain": "other",
+      "nodes": 91,
+      "desert_nodes": 28,
+      "desert_pct": 30.8,
+      "severity": "UWAGA",
+      "settlement_plan": "domknąć 28 węzłów przez V3-P01-I02/I06 (SHADOW+4-eyes)"
+    },
+    {
+      "domain": "pit",
+      "nodes": 37,
+      "desert_nodes": 23,
+      "desert_pct": 62.2,
+      "severity": "ALARM",
+      "settlement_plan": "domknąć 23 węzłów przez V3-P01-I02/I06 (SHADOW+4-eyes)"
+    },
+    {
+      "domain": "pkpir",
+      "nodes": 4,
+      "desert_nodes": 4,
+      "desert_pct": 100.0,
+      "severity": "ALARM",
+      "settlement_plan": "domknąć 4 węzłów przez V3-P01-I02/I06 (SHADOW+4-eyes)"
+    },
+    {
+      "domain": "ryczalt",
+      "nodes": 14,
+      "desert_nodes": 6,
+      "desert_pct": 42.9,
+      "severity": "UWAGA",
+      "settlement_plan": "domknąć 6 węzłów przez V3-P01-I02/I06 (SHADOW+4-eyes)"
+    },
+    {
+      "domain": "uor",
+      "nodes": 16,
+      "desert_nodes": 0,
+      "desert_pct": 0.0,
+      "severity": "OK",
+      "settlement_plan": "domknąć 0 węzłów przez V3-P01-I02/I06 (SHADOW+4-eyes)"
+    },
+    {
+      "domain": "vat",
+      "nodes": 33,
+      "desert_nodes": 13,
+      "desert_pct": 39.4,
+      "severity": "UWAGA",
+      "settlement_plan": "domknąć 13 węzłów przez V3-P01-I02/I06 (SHADOW+4-eyes)"
+    },
+    {
+      "domain": "zus",
+      "nodes": 16,
+      "desert_nodes": 1,
+      "desert_pct": 6.2,
+      "severity": "OK",
+      "settlement_plan": "domknąć 1 węzłów przez V3-P01-I02/I06 (SHADOW+4-eyes)"
+    }
+  ],
+  "weekly_alert": {
+    "cadence": "tydzień",
+    "threshold": "nowy węzeł materialny bez reguły = alert",
+    "channel": "CI + raport V3"
+  },
+  "graph_nodes": 258,
+  "desert_catalog_sample": 20,
+  "contract": "pustynia pokrycia jako bramka CI (V3-P01-I08): nowy przepis w Bbb bez reguły = fail"
+}

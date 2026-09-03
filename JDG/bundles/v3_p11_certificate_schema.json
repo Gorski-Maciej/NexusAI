@@ -1,0 +1,74 @@
+{
+  "innovation": "V3-P11-I01",
+  "generated_at": "2026-09-03T12:19:24+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "certificate_count": 1,
+    "fields_completeness": 1.0,
+    "schema_defined": false,
+    "has_human_layer": false
+  },
+  "schema": {
+    "certificate_id": "DC-YYYY-MM-DD-NNNNNNNN",
+    "transaction_date": "data transakcji (valid_from okna)",
+    "certainty_class": "CERTAIN|CONDITIONAL|NEEDS_ADVICE",
+    "decision": {
+      "rule_id": "str",
+      "matched": "bool",
+      "legal_basis": "list",
+      "legal_basis_refs": "list",
+      "bundle_version": "str",
+      "rule_version": "str",
+      "invariant_violations": "list"
+    },
+    "seal": {
+      "version": "str",
+      "payload_hash": "sha256",
+      "merkle_root": "sha256",
+      "hsm_signature": "b64/hex",
+      "verification_url": "str"
+    },
+    "generated_at": "ISO-8601",
+    "legal_quote": "cytat przepisu w wersji z dnia transakcji (P01/P05)",
+    "human_explanation": "wyjaśnienie prostym językiem (warstwy)"
+  },
+  "pdf_sections": [
+    "nagłówek",
+    "decyzja",
+    "klasa pewności",
+    "podstawa prawna z cytatem",
+    "progi/wartości",
+    "wersje (reguła/bundle/threshold)",
+    "pieczęć/QR",
+    "stopka"
+  ],
+  "checks": [
+    {
+      "name": "schema_defined",
+      "status": "FAIL",
+      "detail": "formalny schemat certyfikatu: None"
+    },
+    {
+      "name": "fields_complete",
+      "status": "OK",
+      "detail": "kompletność pól top-level: 100% (6/6)"
+    },
+    {
+      "name": "human_layer",
+      "status": "FAIL",
+      "detail": "warstwa ludzka (wyjaśnienie/citat przepisu): False"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P11-L01",
+      "severity": "P1",
+      "evidence": "brak formalnego schematu certyfikatu (JSON Schema / dokumentu V3_P11); decision_certificates.json ma pole seal.merkle_root równe payload_hash (Merkle-lite) i hsm_signature jako string HSM-ECDSA-<hash> bez dowodu podpisu kluczem",
+      "fix": "I01: schema v1 (JSON) + odwzorowanie PDF (sekcje); pole merkle_root = prawdziwy root drzewa (I02), hsm_signature z klucza (I07)"
+    }
+  ],
+  "contract": {
+    "binding": "P41 (UI/API), P44 (certyfikacja), P03 (werdykt)",
+    "rule": "certyfikat JSON = nadzbiór pól werdyktu; PDF = odwzorowanie 1:1 (zero informacji w PDF, których nie ma w JSON)"
+  }
+}

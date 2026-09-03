@@ -1,0 +1,51 @@
+{
+  "innovation": "V3-P11-I08",
+  "generated_at": "2026-09-03T12:19:30+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "human_layer": true,
+    "layered": false,
+    "status_ui": true,
+    "proof_view": true,
+    "certainty_ux": true
+  },
+  "checks": [
+    {
+      "name": "human_layer",
+      "status": "OK",
+      "detail": "warstwa ludzka certyfikatu (PDF/MD): True"
+    },
+    {
+      "name": "layered_explanation",
+      "status": "FAIL",
+      "detail": "wyjaśnienie warstwowe (krótko→szczegół→dowód): False"
+    },
+    {
+      "name": "verification_status_ui",
+      "status": "OK",
+      "detail": "status weryfikacji w UI/docs: True"
+    },
+    {
+      "name": "show_proof",
+      "status": "OK",
+      "detail": "pokaż-dowód (legal_quote/hashe w PDF): True"
+    },
+    {
+      "name": "certainty_ux",
+      "status": "OK",
+      "detail": "klasy pewności w warstwie ludzkiej: True"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P11-L08",
+      "severity": "P2",
+      "evidence": "warstwa ludzka certyfikatu (to_pdf_text) wypisuje pola techniczne (hashe, hsm_signature) bez wyjaśnienia warstwowego i bez prostego języka; brak sekcji 'co to znaczy dla Ciebie' i konsekwencji klasy pewności",
+      "fix": "I08: Trust UI Pattern — PDF z warstwami (decyzja 1 zdanie → szczegóły → pełny dowód), status zielony/żółty/czerwony, przycisk pokaz-dowod (show proof)"
+    }
+  ],
+  "contract": {
+    "binding": "P41 (UI/API), P03 (klasy pewności), P09 (UX deklaratywny)",
+    "rule": "PDF zero informacji spoza JSON; wyjaśnienie warstwowe; konsekwencje klasy pewności jawne (AUTO_POST tylko CERTAIN)"
+  }
+}

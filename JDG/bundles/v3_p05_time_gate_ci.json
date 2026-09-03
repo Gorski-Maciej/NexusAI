@@ -1,0 +1,186 @@
+{
+  "innovation": "V3-P05-I05",
+  "generated_at": "2026-09-03T09:55:42+00:00",
+  "gate": "FAIL",
+  "rule": "zmiana valid_from/valid_to = obowiązkowy dowód ciągłości (day-1/day0/day+1) w tym samym PR; brak dowodu = blokada merge (P39)",
+  "coverage": {
+    "2018-01-01": {
+      "rules": [
+        "jdg.allowances.relief_rd_standard"
+      ],
+      "pre_date": "2017-12-31",
+      "post_date": "2018-01-02",
+      "has_pre_assertion": false,
+      "has_day0_assertion": false,
+      "has_post_assertion": false,
+      "boundary": false
+    },
+    "2018-04-01": {
+      "rules": [
+        "jdg.zus.start_relief",
+        "jdg.zus.preferential"
+      ],
+      "pre_date": "2018-03-31",
+      "post_date": "2018-04-02",
+      "has_pre_assertion": false,
+      "has_day0_assertion": true,
+      "has_post_assertion": false,
+      "boundary": false
+    },
+    "2019-01-01": {
+      "rules": [
+        "jdg.allowances.relief_ip_box",
+        "jdg.pit.exit_tax"
+      ],
+      "pre_date": "2018-12-31",
+      "post_date": "2019-01-02",
+      "has_pre_assertion": false,
+      "has_day0_assertion": false,
+      "has_post_assertion": false,
+      "boundary": false
+    },
+    "2019-04-01": {
+      "rules": [
+        "jdg.zus.maly_plus"
+      ],
+      "pre_date": "2019-03-31",
+      "post_date": "2019-04-02",
+      "has_pre_assertion": false,
+      "has_day0_assertion": true,
+      "has_post_assertion": false,
+      "boundary": false
+    },
+    "2019-10-01": {
+      "rules": [
+        "jdg.pit.scale_rates_2019"
+      ],
+      "pre_date": "2019-09-30",
+      "post_date": "2019-10-02",
+      "has_pre_assertion": false,
+      "has_day0_assertion": false,
+      "has_post_assertion": false,
+      "boundary": false
+    },
+    "2020-03-01": {
+      "rules": [
+        "jdg.temporal.covid_legacy"
+      ],
+      "pre_date": "2020-02-29",
+      "post_date": "2020-03-02",
+      "has_pre_assertion": false,
+      "has_day0_assertion": false,
+      "has_post_assertion": false,
+      "boundary": false
+    },
+    "2021-01-01": {
+      "rules": [
+        "jdg.mdr.dac6_reporting"
+      ],
+      "pre_date": "2020-12-31",
+      "post_date": "2021-01-02",
+      "has_pre_assertion": false,
+      "has_day0_assertion": true,
+      "has_post_assertion": false,
+      "boundary": false
+    },
+    "2022-01-01": {
+      "rules": [
+        "jdg.zus.health_scale",
+        "jdg.zus.health_linear",
+        "jdg.zus.health_lump_sum",
+        "jdg.edge_cases.pit_health_contrib_scale_9pct_no_deduction",
+        "jdg.edge_cases.pit_linear_health_underpayment",
+        "jdg.edge_cases.pit_lump_sum_health_progressive",
+        "jdg.allowances.relief_rd_centrum",
+        "jdg.vat.receipt_nip_limit_450",
+        "jdg.vat.slim_vat_2",
+        "jdg.pit.estonian_cit",
+        "jdg.pit.tax_free_amount_30k",
+        "jdg.pit.scale_threshold_120k",
+        "jdg.pit.lump_sum_2m_eur",
+        "jdg.pit.tax_free_30k_scale_12_32",
+        "jdg.pit.relief_shared_limit_85528",
+        "jdg.accounting.depreciation_one_off_100k"
+      ],
+      "pre_date": "2021-12-31",
+      "post_date": "2022-01-02",
+      "has_pre_assertion": true,
+      "has_day0_assertion": true,
+      "has_post_assertion": false,
+      "boundary": true
+    },
+    "2022-04-01": {
+      "rules": [
+        "jdg.business.suspension_zus",
+        "jdg.edge_cases.zus_declaration_zero_on_suspension"
+      ],
+      "pre_date": "2022-03-31",
+      "post_date": "2022-04-02",
+      "has_pre_assertion": true,
+      "has_day0_assertion": true,
+      "has_post_assertion": false,
+      "boundary": true
+    },
+    "2023-07-01": {
+      "rules": [
+        "jdg.edge_cases.sanction_bad_debt_debtor_30pct",
+        "jdg.vat.slim_vat_3"
+      ],
+      "pre_date": "2023-06-30",
+      "post_date": "2023-07-02",
+      "has_pre_assertion": true,
+      "has_day0_assertion": true,
+      "has_post_assertion": false,
+      "boundary": true
+    },
+    "2026-02-01": {
+      "rules": [
+        "jdg.validation.ksef_upo_required",
+        "jdg.edge_cases.sanction_ksef_missing_100pct",
+        "jdg.edge_cases.deadline_ksef_offline_7_days"
+      ],
+      "pre_date": "2026-01-31",
+      "post_date": "2026-02-02",
+      "has_pre_assertion": true,
+      "has_day0_assertion": true,
+      "has_post_assertion": false,
+      "boundary": true
+    }
+  },
+  "metrics": {
+    "anchors_total": 11,
+    "anchors_full_boundary": 4,
+    "core_anchors": 6,
+    "core_missing_boundary": 2
+  },
+  "checks": [
+    {
+      "name": "core_anchors_boundary",
+      "status": "FAIL",
+      "detail": "kotwic konstytucyjnych bez pary day-1/day+0: 2"
+    },
+    {
+      "name": "registry_anchor_coverage",
+      "status": "OK",
+      "detail": "kotwic w registry: 11, z pełną parą graniczną (day-1+day0): 4 (36%)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P05-L07",
+      "severity": "P1",
+      "evidence": "kotwica 2018-04-01 bez dowodu ciągłości day-1/day+0: {\"date\": \"2018-04-01\", \"rules\": [\"jdg.zus.start_relief\", \"jdg.zus.preferential\"], \"has_pre\": false, \"has_day0\": true}",
+      "fix": "test graniczny (day-1 nieaktywna / day+0 aktywna) — wymóg Time Gate CI przed merge"
+    },
+    {
+      "id": "V3-P05-L07",
+      "severity": "P1",
+      "evidence": "kotwica 2019-04-01 bez dowodu ciągłości day-1/day+0: {\"date\": \"2019-04-01\", \"rules\": [\"jdg.zus.maly_plus\"], \"has_pre\": false, \"has_day0\": true}",
+      "fix": "test graniczny (day-1 nieaktywna / day+0 aktywna) — wymóg Time Gate CI przed merge"
+    }
+  ],
+  "contract": {
+    "binding": "P39 testy/CI, P38 bundle, P06 parametry",
+    "merge_block": "każda zmiana okna (reguła lub parametr) bez testów day-1/day0/day+1 = blokada"
+  }
+}

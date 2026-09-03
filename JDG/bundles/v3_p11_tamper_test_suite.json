@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P11-I09",
+  "generated_at": "2026-09-03T12:19:31+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "tamper_tests": [],
+    "negative_assertions": false,
+    "content_change_detected": true,
+    "existing_cert_tests": [
+      "test_enterprise_operating_contract.py",
+      "test_final_certification_etap28_audit.py",
+      "test_final_certification_v4.py"
+    ]
+  },
+  "checks": [
+    {
+      "name": "tamper_tests",
+      "status": "FAIL",
+      "detail": "testy tamper certyfikatów: BRAK"
+    },
+    {
+      "name": "negative_assertions",
+      "status": "FAIL",
+      "detail": "asercja negatywna (verified==False po mutacji): False"
+    },
+    {
+      "name": "content_change_detected",
+      "status": "OK",
+      "detail": "weryfikator wykrywa zmianę treści (recompute): True"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P11-L09",
+      "severity": "P1",
+      "evidence": "brak testów tamper-proof: żaden test nie mutuje pola certyfikatu (decision.decision, legal_basis, kwota) i nie asertuje verified==False; verify() sprawdza tylko kształt (regex 64-hex + prefix HSM) — zmiana decision nie jest wykrywana",
+      "fix": "I09: Tamper Test Suite — mutacja każdej grupy pól → weryfikacja offline MUSI zawieść (payload_hash/merkle/legal refs); asercje negatywne jako bramka CI"
+    }
+  ],
+  "contract": {
+    "binding": "P39 (bramki merge), P10 (mutation testing), P44",
+    "rule": "każda mutacja certyfikatu → verified=False; testy tamper blokują merge"
+  }
+}

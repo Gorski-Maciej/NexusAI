@@ -1,0 +1,56 @@
+{
+  "innovation": "V3-P06-I09",
+  "generated_at": "2026-09-03T12:43:02.470784+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "params": 1,
+    "stale": 0,
+    "no_source": 0,
+    "audit_entries": 1
+  },
+  "rows": [
+    {
+      "key": "vat.standard_rate",
+      "value": 0.23,
+      "source_act": "Art. 41 ustawy o VAT",
+      "changed_by": "system",
+      "changed_at": "2026-08-08T11:34:34",
+      "age_days": -1,
+      "verified": false
+    }
+  ],
+  "checks": [
+    {
+      "name": "freshness_rows",
+      "status": "OK",
+      "detail": "parametrów w dashboardzie: 1"
+    },
+    {
+      "name": "stale_params",
+      "status": "WARN",
+      "detail": "parametry starsze niż rok / bez wersji: 0"
+    },
+    {
+      "name": "source_verification",
+      "status": "WARN",
+      "detail": "źródła zewnętrzne [NIEZWERYFIKOWANE] — status verified=False dla wszystkich (weryfikacja ISAP/MF/ZUS poza sesją)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P06-L16",
+      "severity": "P3",
+      "evidence": "zerowa weryfikacja źródeł (verified=False) — wszystkie parametry store pochodzą z seedu systemowego",
+      "fix": "rejestr mediacji ISAP/RCL (P06 kontrakt, 9.05) + cykliczny audyt"
+    }
+  ],
+  "contract": {
+    "binding": "P37 (dashboard świeżości — metryki), P08 (Law Radar — źródła), P06-I06 (feedery)",
+    "metric_names": [
+      "parameter_count",
+      "parameter_age_max_days",
+      "parameter_source_verified_pct",
+      "parameter_feed_freshness_days"
+    ]
+  }
+}

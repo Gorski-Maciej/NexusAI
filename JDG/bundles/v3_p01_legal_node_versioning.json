@@ -1,0 +1,65 @@
+{
+  "innovation": "V3-P01-I01",
+  "generated_at": "2026-09-03T06:44:10+00:00",
+  "scheme": "PL/<akt>/art/<art>[/ust/<ust>][/pkt/<pkt>][/lit/<lit>]",
+  "nodes_total": 258,
+  "distinct_refs": 146,
+  "versions_count": 258,
+  "diff_between_versions": 93,
+  "time_travel_sample_date": "2026-02-01",
+  "time_travel_active_nodes": 258,
+  "node_ref_sample": [
+    "PL/akt-inny/art/",
+    "PL/akt-inny/art/1-2",
+    "PL/akt-inny/art/10",
+    "PL/akt-inny/art/100",
+    "PL/akt-inny/art/103"
+  ],
+  "diff_sample": [
+    {
+      "legal_node_ref": "PL/akt-inny/art/10",
+      "from_version": 1,
+      "to_version": 1,
+      "diff": [
+        "act_dz_u: '2025 poz. 789' → None"
+      ]
+    },
+    {
+      "legal_node_ref": "PL/akt-inny/art/106a-106n",
+      "from_version": 1,
+      "to_version": 1,
+      "diff": [
+        "act_dz_u: '2025 poz. 456' → None"
+      ]
+    },
+    {
+      "legal_node_ref": "PL/akt-inny/art/108a-108f",
+      "from_version": 1,
+      "to_version": 1,
+      "diff": [
+        "act_dz_u: '2025 poz. 456' → None"
+      ]
+    },
+    {
+      "legal_node_ref": "PL/akt-inny/art/109",
+      "from_version": 1,
+      "to_version": 1,
+      "diff": [
+        "act_dz_u: '2025 poz. 733' → ''"
+      ]
+    },
+    {
+      "legal_node_ref": "PL/akt-inny/art/109",
+      "from_version": 1,
+      "to_version": 1,
+      "diff": [
+        "act_dz_u: '' → None"
+      ]
+    }
+  ],
+  "contract": {
+    "binding": "P05 temporalność / P08 Law Radar / P11 certyfikaty",
+    "okno_waznosci": "valid_from/valid_to z migracji 003",
+    "zasada": "werdykt na dzień D używa wyłącznie wersji aktywnej na D; brak wersji = NEEDS_ADVICE"
+  }
+}

@@ -1,0 +1,208 @@
+{
+  "innovation": "V3-P05-I08",
+  "generated_at": "2026-09-03T09:55:47+00:00",
+  "gate": "FAIL",
+  "contract": {
+    "source": "input.temporal.clock (RFC3339 lub ns) — wstrzykiwany przez ewaluatora; host clock time.now_ns() ZAKAZANY w regułach DECISION",
+    "recorded_in_verdict": "pole clock_used + evaluation_date (rozszerzenie V3-P03)",
+    "zone": "Europe/Warsaw (CET/CEST); granice dat ISO date-only; DST tylko dla timestamp",
+    "leap": "29.02 obsługiwany przez kalendarz ISO (datetime.date)",
+    "binding": "P06 / P37 / P39 / P11 (certyfikat musi zawierać clock_used)"
+  },
+  "inventory": [
+    {
+      "file": "rules/edelivery_gateway_v2_enterprise.rego",
+      "line": 69,
+      "rule_id": null,
+      "class": "TIMESTAMP"
+    },
+    {
+      "file": "rules/edelivery_gateway_v2_enterprise.rego",
+      "line": 127,
+      "rule_id": null,
+      "class": "TIMESTAMP"
+    },
+    {
+      "file": "rules/edge_cases.rego",
+      "line": 396,
+      "rule_id": "jdg.edge_cases.vat_pro_rata_detailed",
+      "class": "DECISION"
+    },
+    {
+      "file": "rules/edge_cases.rego",
+      "line": 397,
+      "rule_id": "jdg.edge_cases.vat_pro_rata_detailed",
+      "class": "DECISION"
+    },
+    {
+      "file": "rules/edge_cases.rego",
+      "line": 710,
+      "rule_id": "jdg.edge_cases.date_not_future",
+      "class": "DECISION"
+    },
+    {
+      "file": "rules/kks.rego",
+      "line": 659,
+      "rule_id": "jdg.kks.statute_of_limitations_crime_5y",
+      "class": "DECISION"
+    },
+    {
+      "file": "rules/kks.rego",
+      "line": 685,
+      "rule_id": "jdg.kks.statute_of_limitations_misdemeanor_3y",
+      "class": "DECISION"
+    },
+    {
+      "file": "rules/kks.rego",
+      "line": 1985,
+      "rule_id": "jdg.kks.offense_statute_mapping_p394",
+      "class": "DECISION"
+    },
+    {
+      "file": "rules/legislative_impact_analyzer_enterprise.rego",
+      "line": 19,
+      "rule_id": null,
+      "class": "TIMESTAMP"
+    },
+    {
+      "file": "rules/legislative_impact_analyzer_enterprise.rego",
+      "line": 107,
+      "rule_id": null,
+      "class": "TIMESTAMP"
+    },
+    {
+      "file": "rules/legislative_impact_analyzer_enterprise.rego",
+      "line": 115,
+      "rule_id": null,
+      "class": "TIMESTAMP"
+    },
+    {
+      "file": "rules/legislative_impact_analyzer_enterprise.rego",
+      "line": 116,
+      "rule_id": null,
+      "class": "TIMESTAMP"
+    },
+    {
+      "file": "rules/lifecycle_manager_enterprise.rego",
+      "line": 151,
+      "rule_id": "jdg.lifecycle.current_phase_detection",
+      "class": "DECISION"
+    },
+    {
+      "file": "rules/local_taxes/pcc_enterprise_complete.rego",
+      "line": 166,
+      "rule_id": "jdg.local_taxes.pcc.declaration_deadline_14d",
+      "class": "DECISION"
+    },
+    {
+      "file": "rules/p03_orchestrator_innovations_v9.rego",
+      "line": 122,
+      "rule_id": null,
+      "class": "TIMESTAMP"
+    },
+    {
+      "file": "rules/p16_business_lifecycle_innovations_v8.rego",
+      "line": 42,
+      "rule_id": "jdg.p16_innovations.lifecycle_navigator",
+      "class": "DECISION"
+    },
+    {
+      "file": "rules/p34_remaining_fixes.rego",
+      "line": 487,
+      "rule_id": "jdg.p34.cache_last_verdict",
+      "class": "DECISION"
+    },
+    {
+      "file": "rules/provenance.rego",
+      "line": 47,
+      "rule_id": null,
+      "class": "TIMESTAMP"
+    },
+    {
+      "file": "rules/provenance.rego",
+      "line": 82,
+      "rule_id": null,
+      "class": "TIMESTAMP"
+    },
+    {
+      "file": "rules/rule_lifecycle_enterprise.rego",
+      "line": 95,
+      "rule_id": null,
+      "class": "TIMESTAMP"
+    },
+    {
+      "file": "rules/tax_correspondence_engine_enterprise.rego",
+      "line": 62,
+      "rule_id": null,
+      "class": "TIMESTAMP"
+    },
+    {
+      "file": "rules/tax_correspondence_engine_enterprise.rego",
+      "line": 65,
+      "rule_id": null,
+      "class": "TIMESTAMP"
+    },
+    {
+      "file": "rules/temporal.rego",
+      "line": 82,
+      "rule_id": "jdg.temporal.statute_limitations_5yr",
+      "class": "DECISION"
+    },
+    {
+      "file": "rules/temporal.rego",
+      "line": 100,
+      "rule_id": "jdg.temporal.statute_limitations_10yr",
+      "class": "DECISION"
+    },
+    {
+      "file": "rules/temporal.rego",
+      "line": 669,
+      "rule_id": "jdg.temporal.time_travel_rule_selection",
+      "class": "DECISION"
+    },
+    {
+      "file": "rules/temporal.rego",
+      "line": 685,
+      "rule_id": "jdg.temporal.document_retention_expiry",
+      "class": "DECISION"
+    },
+    {
+      "file": "rules/validation.rego",
+      "line": 168,
+      "rule_id": "jdg.validation.invoice_date_future",
+      "class": "DECISION"
+    }
+  ],
+  "metrics": {
+    "total_uses": 27,
+    "decision_class": 15,
+    "timestamp_class": 12,
+    "validation_hits": 2
+  },
+  "checks": [
+    {
+      "name": "single_clock_source",
+      "status": "FAIL",
+      "detail": "użyć time.now_ns(): 27 (DECISION: 15, TIMESTAMP: 12)"
+    },
+    {
+      "name": "zone_model",
+      "status": "OK",
+      "detail": "kontrakt: strefa PL (CET/CEST) — daty ISO 8601 date-only; DST dotyczy wyłącznie znaczników czasu, nie dat granicznych (day-0 = północ lokalna)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P05-L11",
+      "severity": "P1",
+      "evidence": "reguły DECISION ze zegarem ściennym: ['jdg.edge_cases.vat_pro_rata_detailed@rules/edge_cases.rego:396', 'jdg.edge_cases.vat_pro_rata_detailed@rules/edge_cases.rego:397', 'jdg.edge_cases.date_not_future@rules/edge_cases.rego:710', 'jdg.kks.statute_of_limitations_crime_5y@rules/kks.rego:659', 'jdg.kks.statute_of_limitations_misdemeanor_3y@rules/kks.rego:685', 'jdg.kks.offense_statute_mapping_p394@rules/kks.rego:1985', 'jdg.lifecycle.current_phase_detection@rules/lifecycle_manager_enterprise.rego:151', 'jdg.local_taxes.pcc.declaration_deadline_14d@rules/local_taxes/pcc_enterprise_complete.rego:166', 'jdg.p16_innovations.lifecycle_navigator@rules/p16_business_lifecycle_innovations_v8.rego:42', 'jdg.p34.cache_last_verdict@rules/p34_remaining_fixes.rego:487', 'jdg.temporal.statute_limitations_5yr@rules/temporal.rego:82', 'jdg.temporal.statute_limitations_10yr@rules/temporal.rego:100']",
+      "fix": "migracja na input.temporal.clock (wstrzyknięty, zapisywany w werdykcie); TIMESTAMP (provenance) może zostać — nie wpływa na prawdę werdyktu"
+    },
+    {
+      "id": "V3-P05-L11b",
+      "severity": "P3",
+      "evidence": "walidacje przyszłości na zegarze ściennym: ['jdg.edge_cases.date_not_future', 'jdg.validation.invoice_date_future'] — replay historyczny wymaga zamrożenia zegara (opa eval --time) dla odtworzenia 1:1",
+      "fix": "dopuścić --time/injected clock w replay (I11 Time-Travel API)"
+    }
+  ]
+}

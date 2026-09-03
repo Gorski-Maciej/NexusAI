@@ -1,0 +1,63 @@
+{
+  "innovation": "V3-P06-I10",
+  "generated_at": "2026-09-03T12:43:03.015396+00:00",
+  "gate": "PASS",
+  "mode": "VALIDATION_DEMO",
+  "metrics": {
+    "legal_sets": 4,
+    "valid_candidate_ok": true,
+    "invalid_rejected": true
+  },
+  "validated_payload": {
+    "key": "vat.standard_rate",
+    "value": 0.08,
+    "unit": "pct",
+    "valid_from": "2027-01-01",
+    "valid_to": null,
+    "source_act": "Art. 41 ustawy o VAT",
+    "article": "41",
+    "changed_by": "declarative-form-demo",
+    "scope": "global",
+    "human_reason": "obniżona stawka na usługi (przykład)"
+  },
+  "rejected_example": {
+    "candidate": {
+      "key": "vat.standard_rate",
+      "value": 0.25,
+      "unit": "pct",
+      "valid_from": "2027-01-01",
+      "valid_to": null,
+      "source_act": "Art. 41 ustawy o VAT",
+      "article": "41",
+      "changed_by": "declarative-form-demo",
+      "scope": "global"
+    },
+    "errors": [
+      "value 0.25 poza ustawowym zbiorem [0.0, 0.05, 0.08, 0.23]"
+    ]
+  },
+  "checks": [
+    {
+      "name": "valid_candidate_accepted",
+      "status": "OK",
+      "detail": "kandydat 0.08 VAT: PRZYJĘTY"
+    },
+    {
+      "name": "invalid_candidate_rejected",
+      "status": "OK",
+      "detail": "kandydat 0.25 VAT: ODRZUCONY — ['value 0.25 poza ustawowym zbiorem [0.0, 0.05, 0.08, 0.23]']"
+    }
+  ],
+  "findings": [],
+  "pipeline": [
+    "opis ludzki",
+    "walidacja zbioru ustawowego",
+    "wersja payload",
+    "PR/rewiew 4-eyes",
+    "hot-reload (I05)",
+    "golden dataset (I04)"
+  ],
+  "contract": {
+    "binding": "P09 (declarative change — pełny formularz), P06-I08 (rollback), P39 (testy przy zmianie), P06-I05 (SLO)"
+  }
+}

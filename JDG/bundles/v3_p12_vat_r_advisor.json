@@ -1,0 +1,54 @@
+{
+  "innovation": "V3-P12-I08",
+  "generated_at": "2026-09-03T12:59:21+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "advisor_tools": [
+      "v3_p12_vat_r_advisor.py",
+      "vat_rate_engine.py",
+      "vat_rate_harmonization_gate.py",
+      "vat_ruleid_migrator.py"
+    ],
+    "subject_exemption_rules": 11,
+    "subject_rule_ids": [
+      "\"rule_id\": \"jdg.vat.substantive.subject_exemption_jdg\"",
+      "\"rule_id\": \"jdg.vat.substantive.exemption_loss_2_years\"",
+      "\"rule_id\":\"jdg.vat.subject_exemption_startup_proportion\"",
+      "\"rule_id\":\"jdg.vat.object_exemption_pkd\"",
+      "\"rule_id\":\"jdg.vat.exemption_financial\""
+    ],
+    "benefit_simulation": true,
+    "advisor_docs": [
+      "VAT_AUDYT_R03.md",
+      "VAT_MACRO_P03.md",
+      "VAT_MICRO_P04.md"
+    ]
+  },
+  "checks": [
+    {
+      "name": "advisor_tool",
+      "status": "OK",
+      "detail": "narzędzie decyzyjne VAT: ['v3_p12_vat_r_advisor.py', 'vat_rate_engine.py', 'vat_rate_harmonization_gate.py', 'vat_ruleid_migrator.py']"
+    },
+    {
+      "name": "subject_exemption_rules",
+      "status": "OK",
+      "detail": "rule_id zwolnienia podmiotowego: 11 (['\"rule_id\": \"jdg.vat.substantive.subject_exemption_jdg\"', '\"rule_id\": \"jdg.vat.substantive.exemption_loss_2_years\"', '\"rule_id\":\"jdg.vat.subject_exemption_startup_proportion\"'])"
+    },
+    {
+      "name": "benefit_simulation",
+      "status": "OK",
+      "detail": "symulacja korzyści (odliczenia vs zwolnienie): True"
+    },
+    {
+      "name": "decision_docs",
+      "status": "OK",
+      "detail": "dokumentacja doradcy: ['VAT_AUDYT_R03.md', 'VAT_MACRO_P03.md', 'VAT_MICRO_P04.md']"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P14 (ryczałt), P44, P03 (werdykt)",
+    "rule": "rekomendacja zwolnienie-vs-VAT tylko z symulacją kwotową; rezygnacja/powrót śledzone temporalnie (I11)"
+  }
+}
