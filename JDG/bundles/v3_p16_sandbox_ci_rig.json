@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P16-I08",
+  "generated_at": "2026-09-04T13:05:20+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "cadence": true,
+    "trend": true,
+    "overdue": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "sandbox_rule",
+      "status": "OK",
+      "detail": "reguła sandbox_ci_rig: True"
+    },
+    {
+      "name": "cadence",
+      "status": "OK",
+      "detail": "cykl cotygodniowy (7 dni) jako dane"
+    },
+    {
+      "name": "trend_report",
+      "status": "OK",
+      "detail": "raport z trendem awaryjności"
+    },
+    {
+      "name": "overdue_triage",
+      "status": "OK",
+      "detail": "test poza cyklem → TRIAGE_QUEUE"
+    },
+    {
+      "name": "params_adr002",
+      "status": "OK",
+      "detail": "brak parametrów: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P39 (bramki CI), ksef_sandbox_harness (MF sandbox), P16-AN09",
+    "rule": "cotygodniowy sandbox CI z raportem i trendami"
+  }
+}

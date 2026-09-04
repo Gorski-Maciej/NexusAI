@@ -1,0 +1,53 @@
+{
+  "innovation": "V3-P19-I09",
+  "generated_at": "2026-09-04T14:09:08+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "drift_block": true,
+    "boundary_triage": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "golden_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p19_pcc_akcyza_bdo.pcc_golden_set: True"
+    },
+    {
+      "name": "golden_contract",
+      "status": "OK",
+      "detail": "kontrakt oracle: case_id/in_golden_set/match/boundary"
+    },
+    {
+      "name": "drift_block",
+      "status": "OK",
+      "detail": "rozjazd decyzji z golden = BLOCK"
+    },
+    {
+      "name": "boundary_triage",
+      "status": "OK",
+      "detail": "przypadek graniczny (1000 zł / 15. dzień) = TRIAGE"
+    },
+    {
+      "name": "version_as_data",
+      "status": "OK",
+      "detail": "wersja golden set z data.thresholds (ADR-002)"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: granice 1000 zł / 14 dni"
+    },
+    {
+      "name": "main_jdg_wiring",
+      "status": "OK",
+      "detail": "import + rejestr + final_verdict_p87"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "ustawa o PCC art. 9 pkt 10 (1000 zł) / termin 14 dni; ADR-002",
+    "rule": "oracle golden — rozjazd = BLOCK, granica = TRIAGE"
+  }
+}

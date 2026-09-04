@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P16-I04",
+  "generated_at": "2026-09-04T13:05:19+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "xsd": true,
+    "gtu": true,
+    "mpp": true,
+    "block": true
+  },
+  "checks": [
+    {
+      "name": "firewall_rule",
+      "status": "OK",
+      "detail": "reguła pre_send_firewall: True"
+    },
+    {
+      "name": "xsd_fields",
+      "status": "OK",
+      "detail": "walidacja wymaganych pól XSD"
+    },
+    {
+      "name": "gtu_dictionary",
+      "status": "OK",
+      "detail": "GTU ze słownika 13 kodów"
+    },
+    {
+      "name": "mpp_semantics",
+      "status": "OK",
+      "detail": "MPP zgodny z progiem (kontrakt P12/P13)"
+    },
+    {
+      "name": "block_invalid",
+      "status": "OK",
+      "detail": "błędna faktura → BLOCK_AND_ALERT (zero śmieci do MF)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P12/P13 (GTU/MPP), rozporządzenie MF (XSD FA), P39 (bramki CI)",
+    "rule": "pre-send firewall: XSD + semantyka przed wysyłką"
+  }
+}

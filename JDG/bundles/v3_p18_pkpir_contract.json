@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P18-I07",
+  "generated_at": "2026-09-04T13:45:11+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "fields": true,
+    "block": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "contract_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p18_ryczalt.pkpir_contract: True"
+    },
+    {
+      "name": "fields",
+      "status": "OK",
+      "detail": "pola: suma ryczałt vs suma PKPiR + różnica"
+    },
+    {
+      "name": "zero_drift_block",
+      "status": "OK",
+      "detail": "rozjazd > tolerancji = BLOCK (zero rozjazdów)"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: tolerancja groszowa z data.thresholds.lump_sum"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 15-19 ustawy o zryczałtowanym PIT; kontrakt V3_P28 (PKPiR)",
+    "rule": "kontrakt pól ewidencji ryczałt ↔ PKPiR"
+  }
+}

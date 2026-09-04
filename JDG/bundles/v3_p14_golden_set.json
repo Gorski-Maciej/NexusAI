@@ -1,0 +1,43 @@
+{
+  "innovation": "V3-P14-I10",
+  "generated_at": "2026-09-04T11:50:19+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "cases": {
+      "tax_free_boundary": true,
+      "young_age_boundary": true,
+      "pit0_income_boundary": true,
+      "thermo_limit_boundary": true
+    },
+    "unknown_gate": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "golden_rule",
+      "status": "OK",
+      "detail": "reguła relief_golden_set: True"
+    },
+    {
+      "name": "golden_cases",
+      "status": "OK",
+      "detail": "golden cases: tax_free_boundary=True, young_age_boundary=True, pit0_income_boundary=True, thermo_limit_boundary=True"
+    },
+    {
+      "name": "unknown_gate",
+      "status": "OK",
+      "detail": "nieznany golden case → NEEDS_ADVICE (fail-closed)"
+    },
+    {
+      "name": "params",
+      "status": "OK",
+      "detail": "brak parametrów granic: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P10 (golden oracle), P39 (bramki CI blokujące merge), P05 (temporalność)",
+    "rule": "golden decyzje ulgowe z granicami limitów i wieku (testy regresji)"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P18-I05",
+  "generated_at": "2026-09-04T13:45:11+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "split": true,
+    "unknown_block": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "split_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p18_ryczalt.rate_split_engine: True"
+    },
+    {
+      "name": "per_rate_totals",
+      "status": "OK",
+      "detail": "sumy per stawka z pozycji ewidencji"
+    },
+    {
+      "name": "unknown_rate_block",
+      "status": "OK",
+      "detail": "stawka spoza zestawu = BLOCK (invariant)"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: zestaw stawek z data.thresholds.lump_sum"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 12 ust. 1 ustawy o zryczałtowanym PIT; art. 15 (ewidencja)",
+    "rule": "split przychodów wielostawkowych per stawka"
+  }
+}

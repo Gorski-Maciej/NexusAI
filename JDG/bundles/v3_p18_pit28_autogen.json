@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P18-I08",
+  "generated_at": "2026-09-04T13:45:11+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "single_source": true,
+    "block": true,
+    "due": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "pit28_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p18_ryczalt.pit28_autogen: True"
+    },
+    {
+      "name": "single_source",
+      "status": "OK",
+      "detail": "PIT-28 z ewidencji (ewidencja = jedyne źródło prawdy)"
+    },
+    {
+      "name": "mismatch_block",
+      "status": "OK",
+      "detail": "rozjazd ewidencja ↔ deklaracja = BLOCK (invariant)"
+    },
+    {
+      "name": "due_date",
+      "status": "OK",
+      "detail": "termin PIT-28 (20.02) jako dana"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: termin z data.thresholds.lump_sum"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 21 ustawy o zryczałtowanym PIT (PIT-28); kontrakt V3_P16 (deklaracje/e-Deklaracje)",
+    "rule": "PIT-28 z ewidencji z walidacją sum per stawka"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P18-I06",
+  "generated_at": "2026-09-04T13:45:12+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "before_after": true,
+    "idempotency": true,
+    "audit": true
+  },
+  "checks": [
+    {
+      "name": "correction_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p18_ryczalt.year_end_correction_lab: True"
+    },
+    {
+      "name": "before_after_year",
+      "status": "OK",
+      "detail": "korekta przed/po zakończeniu roku (granice)"
+    },
+    {
+      "name": "idempotency",
+      "status": "OK",
+      "detail": "event_id + already_applied → duplikat pomijany"
+    },
+    {
+      "name": "audit_invariant",
+      "status": "OK",
+      "detail": "korekta bez audytu = BLOCK (invariant V3_P04)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 15-19 ustawy o zryczałtowanym PIT (ewidencja); invariant V3_P04 (korekta audytowana); idempotencja jak V3_P16",
+    "rule": "korekty ewidencji przed/po roku — audytowalne i idempotentne"
+  }
+}

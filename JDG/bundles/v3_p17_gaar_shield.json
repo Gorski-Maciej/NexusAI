@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P17-I03",
+  "generated_at": "2026-09-04T13:29:49+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "mae": true,
+    "checklist": true,
+    "protective": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "gaar_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p17_ordynacja_obrona.gaar_shield_framework: True"
+    },
+    {
+      "name": "mae_1mln",
+      "status": "OK",
+      "detail": "MAE: korzyść < 1 mln = wyłączenie (parametryzowane)"
+    },
+    {
+      "name": "protective_checklist",
+      "status": "OK",
+      "detail": "checklista ochronna (wartość dodana, uzasadnienie biznesowe)"
+    },
+    {
+      "name": "protective_scoring",
+      "status": "OK",
+      "detail": "scoring ochronny — NIE wina, NEEDS_ADVICE"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: próg MAE z data.thresholds.ord"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 119a OrdPU; certainty_class V3_P03 (klasa, nie wina); interpretacje LKG V3_P01",
+    "rule": "scoring ochronny GAAR z MAE i ścieżką interpretacji"
+  }
+}

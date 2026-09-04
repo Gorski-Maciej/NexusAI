@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P13-I02",
+  "generated_at": "2026-09-04T10:41:05+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "planner_rule": true,
+    "schedule": true,
+    "annual": true,
+    "fail_closed": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "planner_rule",
+      "status": "OK",
+      "detail": "reguła multi_year_correction_planner: True"
+    },
+    {
+      "name": "schedule_5_10_years",
+      "status": "OK",
+      "detail": "harmonogram 5/10/1 lat (art. 91) w regułach"
+    },
+    {
+      "name": "annual_correction",
+      "status": "OK",
+      "detail": "korekty roczne IN_PLUS/IN_MINUS + % roczny"
+    },
+    {
+      "name": "fail_closed",
+      "status": "OK",
+      "detail": "rok poza harmonogramem → NEEDS_ADVICE"
+    },
+    {
+      "name": "params_as_data",
+      "status": "OK",
+      "detail": "brak parametrów multi_year_*: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P05 (temporalność), P10 (golden), P39 (bramki CI), P16 (JPK korekty)",
+    "rule": "harmonogram korekt wieloletnich art. 91 (10/5/1 lat) z korektą roczną"
+  }
+}

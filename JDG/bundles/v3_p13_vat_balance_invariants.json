@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P13-I09",
+  "generated_at": "2026-09-04T10:41:06+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "invariants_rule": true,
+    "balance": true,
+    "symmetry": true,
+    "jpk": true,
+    "block": true
+  },
+  "checks": [
+    {
+      "name": "invariants_rule",
+      "status": "OK",
+      "detail": "reguła vat_balance_invariants: True"
+    },
+    {
+      "name": "deduction_le_due",
+      "status": "OK",
+      "detail": "odliczenia ≤ należny (art. 86 VAT)"
+    },
+    {
+      "name": "correction_symmetry",
+      "status": "OK",
+      "detail": "symetria korekt in_minus = in_plus (art. 89a/89b)"
+    },
+    {
+      "name": "jpk_coherence",
+      "status": "OK",
+      "detail": "spójność JPK_V7 (art. 106e VAT)"
+    },
+    {
+      "name": "block_on_violation",
+      "status": "OK",
+      "detail": "naruszenie invariantu → BLOCK_AND_ALERT (P04)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P04 (invarianty), P10 (golden), P39 (bramki CI), P03 (werdykt), P16 (JPK_V7)",
+    "rule": "invarianty VAT: odliczenia ≤ należny + symetria korekt + spójność JPK (P04)"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P13-I07",
+  "generated_at": "2026-09-04T10:41:04+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "fraud_rule": true,
+    "signals": true,
+    "human_review": true,
+    "routing": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "fraud_rule",
+      "status": "OK",
+      "detail": "reguła fraud_signal_framework: True"
+    },
+    {
+      "name": "graph_signals",
+      "status": "OK",
+      "detail": "sygnały grafu (puste faktury, karuzele, MTIC, graph match)"
+    },
+    {
+      "name": "human_review",
+      "status": "OK",
+      "detail": "human review WYMUSZONY — nigdy automatyczna wina"
+    },
+    {
+      "name": "fail_closed_routing",
+      "status": "OK",
+      "detail": "scoring HIGH/MEDIUM → MANUAL_REVIEW/NEEDS_ADVICE"
+    },
+    {
+      "name": "params_as_data",
+      "status": "OK",
+      "detail": "brak parametrów fraud_*: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P03 (werdykt), P05 (temporalność), P10 (golden), P39 (bramki CI), P36 (procesy), P41 (UI review)",
+    "rule": "fraud = SYGNAŁ z human review (nigdy wina); scoring wpływa na certainty_class (P03)"
+  }
+}

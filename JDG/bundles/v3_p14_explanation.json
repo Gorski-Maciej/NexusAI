@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P14-I12",
+  "generated_at": "2026-09-04T11:50:19+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "plain_language": true,
+    "basis": true,
+    "unknown_gate": true
+  },
+  "checks": [
+    {
+      "name": "explanation_rule",
+      "status": "OK",
+      "detail": "reguła relief_explanation_engine: True"
+    },
+    {
+      "name": "plain_language",
+      "status": "OK",
+      "detail": "narracja PL (co policzono/podstawa/routing/dokumenty) + certificate_ready"
+    },
+    {
+      "name": "legal_basis_chain",
+      "status": "OK",
+      "detail": "legal_basis z katalogu ulg (traceability)"
+    },
+    {
+      "name": "unknown_gate",
+      "status": "OK",
+      "detail": "nieznana ulga → NEEDS_ADVICE (fail-closed)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "V2 F4 (Decision Certificate), P11, P03 (certainty_class)",
+    "rule": "wyjaśnienie decyzji ulgowej prostym językiem (PDF do certyfikatu)"
+  }
+}

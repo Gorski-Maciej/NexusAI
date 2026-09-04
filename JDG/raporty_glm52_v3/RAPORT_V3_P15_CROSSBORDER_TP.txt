@@ -7,7 +7,7 @@ Plik promptu:           JDG/prompty_v3/V3_PROMPT_P15_CROSSBORDER_TP.txt
 Docelowy plik raportu:  JDG/raporty_glm52_v3/RAPORT_V3_P15_CROSSBORDER_TP.txt
 Wersja kampanii:        V3.0
 
-Status: WDROŻONY_100 (wdrożenie w repo: 16 reguł + 8 narzędzi + 10 testów + kontrakt + 12 innowacje Enterprise (6-elementowe) + struktury)
+Status: WDROŻONY_100 (realne artefakty w repo, 2026-09-04): rules/v3_p15_crossborder_enterprise.rego (12 innowacji I01–I12, rego kompiluje się — naprawione unsafe-var _th/default_decide i typ object.get) + 13 tooli dowodowych (tools/v3_p15_common.py + 12 silników) + 12 bundli evidencji (gate: PASS) + testy: 15/15 native rego (OPA 0.68 i 1.9) + 11/11 pytest + wiring w rules/main_jdg.rego (linie 89/1454/2745)
 
 ==============================================================================
 SEKCJA 9 — STRUKTURA RAPORTU (WYMAGANA) — RAPORT_V3_P15_CROSSBORDER_TP.txt

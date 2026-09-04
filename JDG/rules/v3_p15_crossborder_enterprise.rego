@@ -37,12 +37,13 @@ default decide := {
 }
 
 # ── Snapshot progów (ADR-002): brak sekcji crossborder → fail-closed sentinel ──
-_th_snapshot := object.get(data.jdg.thresholds, "crossborder", {})
+_th_snapshot := data.jdg.thresholds.crossborder
 _snapshot_ok := count(_th_snapshot) > 0
 
 _th(key, fallback) = value {
     _snapshot_ok
-    object.get(_th_snapshot, key, null) != null
+    value := object.get(_th_snapshot, key, null)
+    value != null
 } else = fallback
 
 _round2(value) = floor(value * 100) / 100
@@ -772,4 +773,11 @@ decide := fail_closed_decision {
     currency_gate_decision.rule_id != ""
 } else := default_decide {
     true
+}
+
+default_decide := {
+    "matched": false,
+    "rule_id": "jdg.v3_p15_crossborder.no_match",
+    "package": "jdg.v3_p15_crossborder",
+    "priority": 999999,
 }

@@ -1,0 +1,49 @@
+{
+  "innovation": "V3-P18-I11",
+  "generated_at": "2026-09-04T13:45:10+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "i1": true,
+    "i2": true,
+    "i3": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "invariants_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p18_ryczalt.invariants_pack: True"
+    },
+    {
+      "name": "RYC_INV_001",
+      "status": "OK",
+      "detail": "stawka ∈ zestaw art. 12"
+    },
+    {
+      "name": "RYC_INV_002",
+      "status": "OK",
+      "detail": "ewidencja = deklaracja (PIT-28)"
+    },
+    {
+      "name": "RYC_INV_003",
+      "status": "OK",
+      "detail": "waluty z kursem D-1 (V3_P15)"
+    },
+    {
+      "name": "violation_list",
+      "status": "OK",
+      "detail": "lista naruszeń w certyfikacie"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: aktywacja/zestaw z data.thresholds.lump_sum"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "kontrakt invariantów V3_P04; art. 12/15-19 ustawy o zryczałtowanym PIT; kursy V3_P15",
+    "rule": "pakiet invariantów ryczałtu (stawka/ewidencja/kursy)"
+  }
+}

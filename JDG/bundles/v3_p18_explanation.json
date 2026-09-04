@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P18-I12",
+  "generated_at": "2026-09-04T13:45:09+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "types": true,
+    "complete": true,
+    "fail_closed": true
+  },
+  "checks": [
+    {
+      "name": "explanation_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p18_ryczalt.explanation_engine: True"
+    },
+    {
+      "name": "types",
+      "status": "OK",
+      "detail": "typy wyjaśnień: stawka / wykluczenie / forma"
+    },
+    {
+      "name": "completeness",
+      "status": "OK",
+      "detail": "komplet: decyzja + podstawa + kwota (PDF)"
+    },
+    {
+      "name": "fail_closed",
+      "status": "OK",
+      "detail": "nieznany typ = BLOCK (fail-closed)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 12/8 ustawy o zryczałtowanym PIT; V2 F4 (Decision Certificate — wytłumaczalność)",
+    "rule": "wyjaśnienie wyboru stawki/wykluczeń prostym językiem"
+  }
+}

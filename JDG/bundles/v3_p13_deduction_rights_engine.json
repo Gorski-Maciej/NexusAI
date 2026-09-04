@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P13-I01",
+  "generated_at": "2026-09-04T10:41:04+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rights_rule": true,
+    "moment": true,
+    "car": true,
+    "fail_closed": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "rights_rule",
+      "status": "OK",
+      "detail": "reguła deduction_rights_engine: True"
+    },
+    {
+      "name": "moment_art86b",
+      "status": "OK",
+      "detail": "moment odliczenia (3 miesiące, prefinansowanie) w regułach"
+    },
+    {
+      "name": "car_art88",
+      "status": "OK",
+      "detail": "auta art. 88 (50%/100%, użycie mieszane) w regułach"
+    },
+    {
+      "name": "fail_closed",
+      "status": "OK",
+      "detail": "routing BLOCK_AND_ALERT/NEEDS_ADVICE obecny"
+    },
+    {
+      "name": "params_as_data",
+      "status": "OK",
+      "detail": "brak parametrów deduction_*/blocked_*: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P06 (parametry-as-data), P05 (temporalność), P10 (golden), P39 (bramki CI)",
+    "rule": "prawo do odliczenia (art. 86) + moment (art. 86b) + ograniczenia (art. 88, auta 50%)"
+  }
+}

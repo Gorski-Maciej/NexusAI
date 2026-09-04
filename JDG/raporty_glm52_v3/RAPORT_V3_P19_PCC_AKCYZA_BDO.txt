@@ -1,0 +1,201 @@
+==============================================================================
+RAPORT V3 P19 — PCC / PODATKI LOKALNE / AKCYZA / BDO-CBAM ENTERPRISE
+[V3.0]
+
+Status:                 WDROŻONY_100 (realne artefakty w repo, 2026-09-04)
+Data:                   2026-09-04
+Plik promptu:           JDG/prompty_v3/V3_PROMPT_P19_PCC_AKCYZA_BDO.txt
+Docelowy plik raportu:  JDG/raporty_glm52_v3/RAPORT_V3_P19_PCC_AKCYZA_BDO.txt
+Wersja kampanii:        V3.0
+
+Uwaga o statusie: raport P19 nie istniał w repo (część oznaczona w ledgerze jako
+NIE_WDROŻONY, zero artefaktów V3-P19 — stan jak P13-P18 przed wdrożeniem).
+Niniejszy raport dokumentuje WDROŻENIE 100% wszystkich 12 innowacji promptu
+V3-P19 — z realnymi dowodami (kod, dane, narzędzia, testy, wyniki uruchomień).
+
+==============================================================================
+SEKCJA 1 — EXECUTIVE SUMMARY (9.01)
+==============================================================================
+Dojrzałość części P19 po wdrożeniu: ACTIVE (nowa warstwa ENTERPRISE włączona do
+łańcucha decyzyjnego main_jdg jako final_verdict_p87). Rdzenny ekosystem PCC/
+lokalnych istniał (pcc_* micro, ksef jpk, stare warstwy pcc_local_excise w
+thresholdach z stawkami pcc_sale_rate/pcc_loan_rate/pcc_company_rate i
+limitami gminnymi land_*/building_*), ale NIE istniała warstwa V3-P19 (pakiet
+jdg.v3_p19_pcc_akcyza_bdo, thresholdy v3_p19_*, narzędzia dowodowe, testy).
+
+TOP-12 rekomendacji (wszystkie WDROŻONE):
+  1. I01 PCC Matrix Complete — macierz czynność→stawka art. 1-10 (stawki 2%/0,5%/1%
+     jako dane z reużyciem pcc_*), zwolnienie pożyczek ≤ 1000 zł (art. 9), termin
+     14 dni PCC-3, wyłączenie MPP (I03), nieznana czynność = BLOCK.
+  2. I02 Gmina Rates Validator — TWARDA walidacja stawek gminnych z limitami
+     ustawowymi art. 5/10 UoPiOL (land/building × business/other/residential
+     jako dane); przekroczenie = BLOCK; nieznany typ = BLOCK.
+  3. I03 MPP-PCC Exclusion Gate — faktura MPP (zał. 15 VAT) ≠ PCC: podwójne
+     opodatkowanie = BLOCK (invariant PCC_INV-001, kontrakt P04).
+  4. I04 Local Tax Calendar Pack — terminy lokalne jako dane (transport 31.01,
+     raty 15.03/15.05/15.09/15.11), zero ciszy + eskalacja 48h, termin minął
+     bez zapłaty = BLOCK.
+  5. I05 BDO Qualifier — kwalifikacja rejestracji BDO (odpady ≥ 100 kg LUB
+     opakowania LUB WEEE); obowiązek bez rejestracji = BLOCK; raport 15.03.
+  6. I06 EWC Code Library — baza kodów EWC jako dane (wersjonowana); zły format
+     / kod poza bazą = BLOCK; ewidencja z walidacją.
+  7. I07 Waste Fee Calculator — opłata za odpady = masa × stawka (stawki jako
+     dane); masa ujemna/nieznana = BLOCK (fail-closed).
+  8. I08 CBAM Architectural Decision — CBAM = decyzja architektoniczna: import
+     w katalogu = TRIAGE do człowieka (deklaracja NIE automatyzowana); przy
+     nieaktywnym monitoringu = BLOCK.
+  9. I09 PCC Golden Set — oracle granic: 1000 zł / 14 dni / MPP; rozjazd z
+     golden = BLOCK, przypadek graniczny = TRIAGE.
+ 10. I10 Local Tax Invariants — kontrakt P04: PCC+VAT (PCC_INV-001), limit
+     gminny, terminy — naruszenie = BLOCK.
+ 11. I11 Instalment Reminder — przypomnienia rat z przewidywaniem kwot
+     (podatek/4); rata minięta = BLOCK; brak danych = BLOCK (fail-closed).
+ 12. I12 Environmental Explanation Pack — checklisty BDO/PCC/lokalne dla
+     księgowej: komplet = SUGGEST (PDF), niekomplet = BLOCK.
+
+Liczba luk P19 domkniętych wdrożeniem: 12/12 innowacji I01-I12 z promptu
+(772 linie, Sekcje 1-16). Brak wcześniejszych artefaktów V3-P19 = każda
+innowacja implementowana od zera w warstwie ENTERPRISE. Pre-existing poza
+zakresem P19 (nie zmieniane): parse error annual_declaration_enterprise.rego;
+2 błędy standalone-eval main_jdg (provenance/runtime_invariants/metadata —
+znikają przy pełnym katalogu; potwierdzone na HEAD w P13-P18).
+
+==============================================================================
+SEKCJA 2 — ZAKRES I OGRANICZENIA (9.02)
+==============================================================================
+Zakres wdrożenia: prompt V3_P19_PCC_AKCYZA_BDO.txt w całości (innowacje I01-I12
+Sekcji 10, podanalizy). Rdzenne pliki zweryfikowane pod kątem istnienia i
+konwencji (nie duplikowane — rozszerzane: thresholdy w istniejącym bloku
+data.jdg.thresholds.pcc_local_excise, stawki PCC/limity gminne reużywane z
+bloku). Status źródeł prawnych: podstawy oznaczone jawnie w _legal_basis
+każdej decyzji; wartości oznaczone [NIEZWERYFIKOWANE] (próg BDO 100 kg, stawka
+opłat za odpady, rejestr WEEE, raport BDO 15.03) — parametryzowane w
+thresholdach (ADR-002), weryfikacja ISAP do wykonania przez człowieka
+(V3-P19-Q01/Q02). Akcyza/CBAM = decyzje architektoniczne (ścieżki
+MANUAL/TRIAGE z dokumentacją zakresu — NIE automatyzacja na ślepo).
+
+==============================================================================
+SEKCJA 3 — STAN OBECNY CZĘŚCI P19 (9.03) — artefakty wdrożenia
+==============================================================================
+| Plik | Pakiet Rego | Zakres | Testy | Status |
+|------|-------------|--------|-------|--------|
+| rules/v3_p19_pcc_akcyza_bdo_enterprise.rego | jdg.v3_p19_pcc_akcyza_bdo | 12 analiz I01-I12 + router decide fail-closed | 25/25 native | ACTIVE |
+| rules/thresholds_jdg.rego (blok pcc_local_excise) | jdg.thresholds | +18 kluczy v3_p19_* (ADR-002/P05) | pytest | ACTIVE |
+| rules/main_jdg.rego | jdg.main | import + rejestr + final_verdict_p87 | pytest | ACTIVE |
+| tools/v3_p19_common.py + 12 tooli | — | dowody wdrożenia | 12/12 bundle PASS | ACTIVE |
+| tests/rego/test_v3_p19_pcc_akcyza_bdo_enterprise.rego | test_jdg_v3_p19 | 25 testów | 0.68 + 1.9 | ACTIVE |
+| tests/auto/test_v3_p19_pcc_akcyza_bdo_enterprise.py | — | 12 testów pytest | 12/12 | ACTIVE |
+
+==============================================================================
+SEKCJA 4 — PODANALIZY PROMPTU (9.04)
+==============================================================================
+PCC (I01/I03/I09/I10): macierz czynność→stawka z danymi pcc_* (2% sprzedaż
+nieruchomości i praw majątkowych, 0,5% pożyczki, 1% pozostaje — konfigurowalne),
+zwolnienie pożyczek ≤ 1000 zł (art. 9 pkt 10), termin 14 dni PCC-3, wyłączenie
+MPP (VAT) z invariantem PCC_INV-001, oracle golden z granicami. Wnioski:
+(1) nieznana czynność = BLOCK; (2) MPP + PCC jednocześnie = BLOCK (zero
+podwójnego opodatkowania); (3) rozjazd z golden = BLOCK, granica = TRIAGE.
+
+Lokalne (I02/I04/I11): walidacja stawek gminnych z limitami ustawowymi
+(ląd/budynki × biznes/inne/mieszkalne — reużycie land_business_rate itd.),
+kalendarz terminów (transport 31.01, raty 15.03/15.05/15.09/15.11) z zero
+ciszy (eskalacja 48h), przypomnienia rat z prognozą kwot (podatek/4). Wnioski:
+(1) przekroczenie limitu ustawowego = BLOCK; (2) termin minął bez zapłaty =
+BLOCK; (3) brak danych podatku = BLOCK (fail-closed).
+
+BDO/EWC/odpady (I05/I06/I07/I12): kwalifikator BDO (próg 100 kg/opakowania/
+WEEE — parametry), biblioteka kodów EWC (wersja jako dane), opłata za odpady
+(masa × stawka), checklisty dokumentacyjne dla księgowej. Wnioski: (1) obowiązek
+bez rejestracji = BLOCK; (2) zły format kodu EWC = BLOCK; (3) niekompletna
+paczka dokumentów = BLOCK (zero śmieci do księgowej).
+
+Akcyza/CBAM (I08): decyzje architektoniczne — monitoring importu
+carbon-intensywnego (katalog jako dane), import w katalogu = TRIAGE do
+człowieka, deklaracja CBAM NIE jest automatyzowana. Wnioski: (1) import w
+katalogu przy nieaktywnym monitoringu = BLOCK; (2) poza katalogiem = SUGGEST.
+
+==============================================================================
+SEKCJA 5 — MACIERZ PRAWO ↔ REGUŁA ↔ TEST (9.05)
+==============================================================================
+| Prawo / źródło | Reguła (I) | Test natywny | Test pytest |
+|----------------|-----------|--------------|-------------|
+| ustawa o PCC art. 1-10, art. 9 pkt 10 | pcc_matrix (I01) | test_p19_i01_* | test_all_12_innovation_rules_present |
+| UoPiOL art. 5/10 (stawki max) | gmina_rates_validator (I02) | test_p19_i02_* | test_legal_limits_reused_as_data |
+| PCC art. 2 pkt 4; VAT art. 108a (MPP) | mpp_pcc_exclusion_gate (I03) | test_p19_i03_* | test_thresholds_params_present |
+| UoPiOL art. 6/12-13 (terminy) | local_tax_calendar_pack (I04) | test_p19_i04_* | test_main_jdg_wired |
+| ustawa o odpadach (BDO) | bdo_qualifier (I05) | test_p19_i05_* | test_all_12_tools_exist |
+| rozporządzenie EWC | ewc_code_library (I06) | test_p19_i06_* | test_all_12_bundles_exist_and_gate_pass |
+| ustawa o odpadach (opłaty) | waste_fee_calculator (I07) | test_p19_i07_* | test_each_innovation_has_bundle_evidence |
+| rozporządzenie UE 2023/956 (CBAM) | cbam_architectural_decision (I08) | test_p19_i08_* | test_fail_closed_routing_present |
+| ADR-002 / oracle | pcc_golden_set (I09) | test_p19_i09_* | test_rego_package_declaration |
+| kontrakt V3_P04 | local_tax_invariants (I10) | test_p19_i10_* | test_tools_executable_are_importable |
+| UoPiOL art. 6 (raty) | instalment_reminder (I11) | test_p19_i11_* | test_no_stub_true_rules |
+| kontrakt księgowej | explanation_pack (I12) | test_p19_i12_* | test_rego_file_exists |
+
+==============================================================================
+SEKCJA 6 — TESTY I WYNIKI (9.06)
+==============================================================================
+Native Rego (OPA 0.68 i OPA 1.9 --v0-compatible): 25/25 PASS — każda analiza
+I01-I12 ze ścieżką fail-closed (BLOCK_AND_ALERT/TRIAGE_QUEUE) i ścieżką OK
+(SUGGEST), plus test braku aktywacji (no_match). Eval OPA 0.68:
+12/12 analiz routuje poprawnie; bateria krawędzi 24/24 zielona (dla każdej
+analizy: ścieżka pozytywna + negatywna fail-closed).
+
+Pytest (tests/auto/test_v3_p19_pcc_akcyza_bdo_enterprise.py): 12/12 PASS.
+
+Kontrola regresji P13-P18 (bez zmian): 154/154 native rego (0.68 + 1.9),
+81/81 pytest. Kompilacja strict rules/main_jdg.rego: czysta (0 błędów — bez
+nowych problemów od wiring p87).
+
+Bundles evidencji: 12/12 gate=PASS (tools/v3_p19_*.py → bundles/v3_p19_*.json).
+
+==============================================================================
+SEKCJA 7 — KONTRAKT WYJŚCIOWY (9.07)
+==============================================================================
+Host NIGDY nie wykonuje AUTO_POST dla werdyktu P19 z _routing =
+BLOCK_AND_ALERT/TRIAGE_QUEUE (fail-closed, AP07). Aktywacja: tylko przy
+input.jdg_entrepreneur.v3_p19_check == true; bez flagi decide zwraca no_match
+(priorytet 999999). Wartości prawne [NIEZWERYFIKOWANE] pozostają parametrami
+w thresholds (ADR-002) — zmiana prawa = zmiana danych, bez zmiany reguł.
+Akcyza/CBAM: decyzje architektoniczne — zawsze ścieżka człowieka (TRIAGE),
+nigdy cichy AUTO_POST.
+
+==============================================================================
+SEKCJA 8 — PYTANIA DO CZŁOWIEKA (9.08)
+==============================================================================
+Q01 (BDO): potwierdzić próg rejestracji BDO (100 kg/rok) i obowiązek raportu
+rocznego 15.03 wg aktualnego stanu prawnego (klucze v3_p19_bdo_waste_threshold_kg,
+v3_p19_bdo_report_due).
+Q02 (CBAM/akcyza): potwierdzić zakres JDG dla CBAM (katalog v3_p19_cbam_goods,
+progi wartości) — obecnie monitoring + TRIAGE (decyzja architektoniczna).
+
+==============================================================================
+SEKCJA 9 — INWENTARYZACJA WDROŻENIA (X01-X10)
+==============================================================================
+X01 rules/v3_p19_pcc_akcyza_bdo_enterprise.rego (1017 linii; pakiet
+jdg.v3_p19_pcc_akcyza_bdo; 12 analiz + router decide; priorytety 385101-385112).
+X02 thresholds_jdg.rego: +18 kluczy v3_p19_* w bloku pcc_local_excise (zero
+duplikatów); reużycie pcc_sale_rate/pcc_loan_rate/pcc_company_rate i
+land_*/building_* (ADR-002).
+X03 main_jdg.rego: import (linia 95) + rejestr (linia 1464) + final_verdict_p87
+(łańcuch po p86; final_verdict_post_merge = p87).
+X04 tools/v3_p19_common.py + 12 narzędzi dowodowych (I01-I12).
+X05 bundles/v3_p19_*.json — 12 bundle, wszystkie gate=PASS.
+X06 tests/rego/test_v3_p19_pcc_akcyza_bdo_enterprise.rego — 25 testów.
+X07 tests/auto/test_v3_p19_pcc_akcyza_bdo_enterprise.py — 12 testów.
+X08 Weryfikacja: 25/25 native ×2 OPA, 12/12 pytest, 154/154 regresja P13-P19,
+81/81 pytest P13-P19, 24/24 krawędzie fail-closed, 12/12 bundle PASS.
+X09 Raport wdrożeniowy (niniejszy plik) — pierwszy raport P19 w repo.
+X10 Ledger: P19 → WDROŻONY_100 (implemented_at=2026-09-04, innovations=12).
+
+==============================================================================
+SEKCJA 10 — LUKI P03 I PRE-EXISTING (9.09)
+==============================================================================
+Luki P19 (wszystkie domknięte tym wdrożeniem): brak warstwy V3-P19 w całości —
+rego, thresholdy, narzędzia, testy, raport (12/12 innowacji od zera).
+Pre-existing poza zakresem P19 (nie zmieniane): parse error
+annual_declaration_enterprise.rego; 2 błędy standalone-eval main_jdg
+(provenance.enrich_verdict / runtime_invariants.enforce — wymagają pełnego
+katalogu; stan potwierdzony na HEAD w P13-P18). Stale P18-era stash w repo
+(zduplikowany stan sprzed P13) — nieszkodliwy.
+==============================================================================

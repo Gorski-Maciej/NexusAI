@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P17-I08",
+  "generated_at": "2026-09-04T13:29:51+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "stages": true,
+    "next": true,
+    "zero_silence": true,
+    "fail_closed": true
+  },
+  "checks": [
+    {
+      "name": "timeline_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p17_ordynacja_obrona.proceeding_timeline: True"
+    },
+    {
+      "name": "stages",
+      "status": "OK",
+      "detail": "etapy: czynności/postępowanie/odwołanie/WSA/audyt"
+    },
+    {
+      "name": "next_action",
+      "status": "OK",
+      "detail": "mapowanie etap → następna czynność + termin"
+    },
+    {
+      "name": "zero_silence",
+      "status": "OK",
+      "detail": "cisza > progu = BLOCK + eskalacja"
+    },
+    {
+      "name": "fail_closed",
+      "status": "OK",
+      "detail": "nieznany etap = BLOCK (fail-closed)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 187-234 OrdPU; art. 223; art. 53 PPSA; kontrakt V3_P36",
+    "rule": "timeline spraw z zero ciszy i dowodami"
+  }
+}

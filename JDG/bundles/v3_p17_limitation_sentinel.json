@@ -1,0 +1,50 @@
+{
+  "innovation": "V3-P17-I02",
+  "generated_at": "2026-09-04T13:29:50+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "calendar": true,
+    "suspensions": true,
+    "alerts": true,
+    "fail_closed": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "limitation_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p17_ordynacja_obrona.limitation_sentinel: True"
+    },
+    {
+      "name": "calendar_5y_31_12",
+      "status": "OK",
+      "detail": "koniec roku kalendarzowego + 5 (31.12)"
+    },
+    {
+      "name": "suspensions_art71",
+      "status": "OK",
+      "detail": "zawieszenia przesuwają koniec (art. 71)"
+    },
+    {
+      "name": "alerts_90_60_30",
+      "status": "OK",
+      "detail": "alerty N-dni przed przedawnieniem"
+    },
+    {
+      "name": "fail_closed",
+      "status": "OK",
+      "detail": "przedawnienie bez ścieżki = BLOCK"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: lata/reguła/alerty z data.thresholds.ord"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 70-72 OrdPU; kontrakt V3_P36 (kalendarz proceduralny)",
+    "rule": "kalendarz przedawnienia z alertami 90/60/30 i zawieszeniami"
+  }
+}

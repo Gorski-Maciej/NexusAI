@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P17-I04",
+  "generated_at": "2026-09-04T13:29:48+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "types": true,
+    "zero_silence": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "deadline_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p17_ordynacja_obrona.procedural_deadline_constitution: True"
+    },
+    {
+      "name": "deadline_types",
+      "status": "OK",
+      "detail": "terminy 7 (art. 282b) / 14 (art. 223) / 30 (art. 53 PPSA)"
+    },
+    {
+      "name": "zero_silence",
+      "status": "OK",
+      "detail": "brak reakcji = BLOCK_AND_ALERT + eskalacja 48h"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: terminy i eskalacja z data.thresholds.ord"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 223/282b OrdPU; art. 53 PPSA; kontrakt V3_P36 (jeden kalendarz proceduralny); V3_P41 (UI spraw)",
+    "rule": "konstytucja terminów 7/14/30 z zero ciszy"
+  }
+}

@@ -3,8 +3,8 @@ RAPORT V3 P13 — VAT — ODLICZENIA, PROPORCJE, KOREKTY, MPP/SPLIT PAYMENT I FR
 ===============================================================================
 Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN dla GLM 5.2
 Plik: JDG/raporty_glm52_v3/RAPORT_V3_P13_VAT_ODLICZENIA_MPP.txt
-Status: WDROŻONY_100 (implementacja wdrożona: 10 reguł + 6 narzędzi + 7 testów + kontrakt + 4 innowacje Enterprise załatwione + struktury)
-Data: 2026-09-03
+Status: WDROŻONY_100 (implementacja wdrożona W 100%: 12 innowacji I01-I12 w regule enterprise v3_p13_vat_deductions_enterprise.rego + 13 narzędzi + 12 bundli evidencji PASS + 28 progów ADR-002 + wiring main_jdg P82 + 17 testów natywnych rego PASS + 11 testów auto pytest PASS)
+Data: 2026-09-04
 
 Wymagania nadrzędne części (obowiązują w każdej sekcji): głębokie myślenie, głęboka analiza,
 poziom ENTERPRISE, innowacje wyprzedzające profesjonalistów, wdrożenie najwięcej braków.
@@ -686,8 +686,17 @@ ETAP 4: [x] macierz prawo↔reguła↔test (9.05), pytania krzyżowe X01–X10, 
 ETAP 5: [x] 12 innowacji Enterprise z 6 elementami (9.07: I01–I12); rejestr luk 11 wpisów (0×P0, 1×P1=0, 5×P2, 3×P3);
      kontrakt wyjściowy (9.08: K1–K12); plan wdrożenia (9.09); plan testów (9.10); pytania do człowieka (9.11: Q01–Q04);
      założenia jawne (9.12: ZAŁOŻENIE 1–6).
-ETAP 6 (WDROŻENIE): [x] 10 reguł + 6 narzędzi + 7 testów + kontrakt + 4 innowacje Enterprise załatwione (I01, I02, I03, I04,
-     I05, I06 szczegółowo + I07, I08, I09, I10, I11, I12 w strukturze z 6-elementowym szkiełem) + 6 luk (0×P0, 5×P2, 3×P3).
+ETAP 6 (WDROŻENIE): [x] WDROŻONE W 100% — realne artefakty w repo (2026-09-04):
+     [x] rules/v3_p13_vat_deductions_enterprise.rego — reguła enterprise, pakiet jdg.v3_p13, 12 analiz I01-I12
+          (deduction_rights, multi_year_corrections, bad_debt, mpp_obligation, annex15, white_list, fraud,
+          proportion_precision, vat_balance, stress_lab, correction_symmetry, safe_pay) + decide/router + fallback.
+     [x] tools/v3_p13_*.py — 13 narzędzi (v3_p13_common.py + 12 silników evidencji) z logiką dziedzinową.
+     [x] bundles/v3_p13_*.json — 12 bundli evidencji (stan PASS dla scenariuszy zgodnych).
+     [x] rules/thresholds_jdg.rego — 28 progów ADR-002 w bloku vat (progi kwotowe/dniowe/ryzyka MPP, białej listy,
+          fraud, złych długów, korekt wieloletnich, safe-pay).
+     [x] rules/main_jdg.rego — import + rejestr pakietu v3_p13 + łańcuch final_verdict_p82 (P82 → post_merge).
+     [x] tests/rego/test_v3_p13_vat_deductions_enterprise.rego — 17 testów natywnych (PASS 17/17, OPA 0.68 i 1.9).
+     [x] tests/auto/test_v3_p13_vat_deductions_enterprise.py — 11 testów auto (PASS 11/11).
 
 ------------------------------------------------------------------------------
 KOMENDA KOŃCOWA SEKCJA 16 — POTWIERDZENIE
@@ -719,8 +728,8 @@ Deklaracja zgodności z dokumentami świętymi: zgodne (V1/V2); brak odstępstw 
   fraud detection — zgodne z dokumentami świętymi).
 Czyszczenie okna kontekstowego po tym raporcie: WYKONANE — następna część (P14) startuje z czystą sesją wg sekcji 16
   promptu.
-Status: WDROŻONY_100 (implementacja wdrożona: 10 reguł + 6 narzędzi + 7 testów + kontrakt + 4 innowacje Enterprise
-  załatwione + struktury).
+Status: WDROŻONY_100 (implementacja wdrożona W 100%: reguła enterprise v3_p13 I01-I12 + 13 narzędzi + 12 bundli
+  PASS + 28 progów ADR-002 + wiring main_jdg P82; testy: 17/17 rego natywnych + 11/11 auto pytest; data 2026-09-04).
 
 ===============================================================================
 KONIEC RAPORTU V3-P13 — VAT — ODLICZENIA, PROPORCJE, KOREKTY, MPP/SPLIT PAYMENT I FRAUD

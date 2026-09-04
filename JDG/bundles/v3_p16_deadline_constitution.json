@@ -1,0 +1,50 @@
+{
+  "innovation": "V3-P16-I05",
+  "generated_at": "2026-09-04T13:05:17+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "calendar": true,
+    "overdue": true,
+    "shift": true,
+    "alert": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "deadline_rule",
+      "status": "OK",
+      "detail": "reguła deadline_constitution: True"
+    },
+    {
+      "name": "calendar_as_data",
+      "status": "OK",
+      "detail": "kalendarz terminów jako dane (ADR-002)"
+    },
+    {
+      "name": "overdue_alarm",
+      "status": "OK",
+      "detail": "invariant: brak deklaracji po terminie = alarm"
+    },
+    {
+      "name": "weekend_shift",
+      "status": "OK",
+      "detail": "przeniesienia weekendowe/świąteczne (shifted_to)"
+    },
+    {
+      "name": "n_day_alert",
+      "status": "OK",
+      "detail": "alert N-dni przed terminem"
+    },
+    {
+      "name": "params_adr002",
+      "status": "OK",
+      "detail": "brak parametrów: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P36 (kalendarz), P05 (temporalność), V3_P04 (invarianty)",
+    "rule": "terminy fiskalne jako konstytucja z invariantami"
+  }
+}

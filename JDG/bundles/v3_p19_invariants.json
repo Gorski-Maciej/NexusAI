@@ -1,0 +1,59 @@
+{
+  "innovation": "V3-P19-I10",
+  "generated_at": "2026-09-04T14:09:08+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "pcc_inv_001": true,
+    "gmina_block": true,
+    "deadline_block": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "invariants_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p19_pcc_akcyza_bdo.local_tax_invariants: True"
+    },
+    {
+      "name": "invariant_inputs",
+      "status": "OK",
+      "detail": "flagi naruszeń: PCC+VAT / limit gminny / termin"
+    },
+    {
+      "name": "pcc_inv_001",
+      "status": "OK",
+      "detail": "invariant PCC_INV-001 (zero podwójnego opodatkowania)"
+    },
+    {
+      "name": "gmina_limit_block",
+      "status": "OK",
+      "detail": "stawka gminna ponad limit = BLOCK"
+    },
+    {
+      "name": "deadline_block",
+      "status": "OK",
+      "detail": "termin minięty = BLOCK"
+    },
+    {
+      "name": "contract_p04",
+      "status": "OK",
+      "detail": "kontrakt invariantów V3_P04"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: aktywność invariantów z data.thresholds"
+    },
+    {
+      "name": "main_jdg_wiring",
+      "status": "OK",
+      "detail": "import + rejestr + final_verdict_p87"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "kontrakt V3_P04 (invarianty); PCC_INV-001; UoPiOL art. 5/10",
+    "rule": "paczka invariantów lokalnych — naruszenie = BLOCK"
+  }
+}

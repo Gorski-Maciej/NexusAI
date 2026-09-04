@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P13-I05",
+  "generated_at": "2026-09-04T10:41:03+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "annex15_rule": true,
+    "versioned": true,
+    "validation": true,
+    "fail_closed": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "annex15_rule",
+      "status": "OK",
+      "detail": "reguła annex15_as_versioned_data: True"
+    },
+    {
+      "name": "versioned_data",
+      "status": "OK",
+      "detail": "pełna lista CN jako dane wersjonowane z historią zmian"
+    },
+    {
+      "name": "pkwiu_cn_validation",
+      "status": "OK",
+      "detail": "walidacja PKWiU/CN (prefix match) w regułach"
+    },
+    {
+      "name": "fail_closed",
+      "status": "OK",
+      "detail": "nieznany CN / brak danych → NEEDS_ADVICE"
+    },
+    {
+      "name": "params_as_data",
+      "status": "OK",
+      "detail": "brak parametrów annex15_*: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P06 (parametry), P05 (temporalność), P10 (golden), P39 (bramki CI), P44",
+    "rule": "zał. 15 (MPP) jako dane wersjonowane CN + walidacja PKWiU/CN + historia zmian"
+  }
+}

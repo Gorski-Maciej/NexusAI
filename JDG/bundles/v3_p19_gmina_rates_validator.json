@@ -1,0 +1,54 @@
+{
+  "innovation": "V3-P19-I02",
+  "generated_at": "2026-09-04T14:09:05+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "types": true,
+    "exceeds_block": true,
+    "fail_closed": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "validator_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p19_pcc_akcyza_bdo.gmina_rates_validator: True"
+    },
+    {
+      "name": "contract_fields",
+      "status": "OK",
+      "detail": "kontrakt: typ stawki / stawka gminna / rok"
+    },
+    {
+      "name": "statutory_types",
+      "status": "OK",
+      "detail": "4 typy stawek wg art. 5 UoPiOL"
+    },
+    {
+      "name": "exceeds_block",
+      "status": "OK",
+      "detail": "przekroczenie limitu ustawowego = BLOCK"
+    },
+    {
+      "name": "unknown_fail_closed",
+      "status": "OK",
+      "detail": "nieznany typ stawki = BLOCK (fail-closed)"
+    },
+    {
+      "name": "limits_as_data",
+      "status": "OK",
+      "detail": "ADR-002: limity ustawowe z data.thresholds"
+    },
+    {
+      "name": "main_jdg_wiring",
+      "status": "OK",
+      "detail": "import + rejestr + final_verdict_p87"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "UoPiOL art. 5/10 (stawki maksymalne); ADR-002/P06",
+    "rule": "walidator stawek gminnych z twardymi limitami ustawowymi"
+  }
+}

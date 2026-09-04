@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P16-I12",
+  "generated_at": "2026-09-04T13:05:18+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "schema": true,
+    "violation": true,
+    "version": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "golden_rule",
+      "status": "OK",
+      "detail": "reguła ksef_jpk_golden_set: True"
+    },
+    {
+      "name": "schema_validation",
+      "status": "OK",
+      "detail": "walidacja schematowa golden faktur/JPK"
+    },
+    {
+      "name": "oracle_gate",
+      "status": "OK",
+      "detail": "rozjazd z golden → BLOCK_AND_ALERT (fail-closed)"
+    },
+    {
+      "name": "version",
+      "status": "OK",
+      "detail": "wersjonowanie golden setu"
+    },
+    {
+      "name": "params_adr002",
+      "status": "OK",
+      "detail": "brak parametrów: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Golden Oracle (V2 F3, P10), P39 (bramki CI), P05 (temporalność)",
+    "rule": "golden faktury/JPK z walidacją schematową (oracle)"
+  }
+}

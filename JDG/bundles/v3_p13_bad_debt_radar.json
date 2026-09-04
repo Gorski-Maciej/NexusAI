@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P13-I03",
+  "generated_at": "2026-09-04T10:41:03+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "radar_rule": true,
+    "days90": true,
+    "auto": true,
+    "fail_closed": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "radar_rule",
+      "status": "OK",
+      "detail": "reguła bad_debt_radar: True"
+    },
+    {
+      "name": "90_days",
+      "status": "OK",
+      "detail": "monitoring 90 dni (art. 89a/89b) w regułach"
+    },
+    {
+      "name": "auto_in_minus",
+      "status": "OK",
+      "detail": "automatyczna korekta in minus + zawiadomienie dłużnika"
+    },
+    {
+      "name": "fail_closed",
+      "status": "OK",
+      "detail": "brak zawiadomienia → NEEDS_ADVICE"
+    },
+    {
+      "name": "params_as_data",
+      "status": "OK",
+      "detail": "brak parametrów bad_debt_*: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P05 (temporalność), P10 (golden), P39 (bramki CI), P16 (JPK korekty)",
+    "rule": "złe długi art. 89a/89b: 90 dni + zawiadomienie → korekta in minus"
+  }
+}

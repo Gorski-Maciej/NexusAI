@@ -1,0 +1,54 @@
+{
+  "innovation": "V3-P19-I01",
+  "generated_at": "2026-09-04T14:09:05+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "fields": true,
+    "rates": true,
+    "exemption": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "pcc_matrix_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p19_pcc_akcyza_bdo.pcc_matrix: True"
+    },
+    {
+      "name": "contract_fields",
+      "status": "OK",
+      "detail": "kontrakt wejściowy: typ czynności/kwota/MPP/PCC-3/termin"
+    },
+    {
+      "name": "rates_as_data",
+      "status": "OK",
+      "detail": "stawki 2%/0,5%/1% z data.thresholds (pcc_*)"
+    },
+    {
+      "name": "loan_exemption",
+      "status": "OK",
+      "detail": "zwolnienie pożyczek ≤ 1000 zł (art. 9 pkt 10)"
+    },
+    {
+      "name": "deadline_14d",
+      "status": "OK",
+      "detail": "termin 14 dni / PCC-3 w logice decyzji"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: klucze thresholdów (5)"
+    },
+    {
+      "name": "main_jdg_wiring",
+      "status": "OK",
+      "detail": "import + rejestr + final_verdict_p87"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "ustawa o PCC art. 1-10 (stawki/zwolnienia); art. 9 pkt 10; ADR-002",
+    "rule": "macierz czynność→stawka z progami 1000 zł / 14 dni / wyłączeniem MPP"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P18-I10",
+  "generated_at": "2026-09-04T13:45:10+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "oracle": true,
+    "boundary": true,
+    "version": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "golden_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p18_ryczalt.golden_set: True"
+    },
+    {
+      "name": "oracle",
+      "status": "OK",
+      "detail": "oracle: golden rate match (stawki/wykluczenia)"
+    },
+    {
+      "name": "date_boundary",
+      "status": "OK",
+      "detail": "granica daty roku (31.12/1.01) = TRIAGE"
+    },
+    {
+      "name": "versioned",
+      "status": "OK",
+      "detail": "wersja golden z danych (P05)"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: wersja golden z data.thresholds.lump_sum"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Golden Oracle (V2 F3, P10); art. 12/8 ustawy o zryczałtowanym PIT",
+    "rule": "golden decyzje stawek/wykluczeń w oracle"
+  }
+}

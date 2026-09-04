@@ -1,0 +1,53 @@
+{
+  "innovation": "V3-P19-I03",
+  "generated_at": "2026-09-04T14:09:06+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "double_block": true,
+    "invariant": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "exclusion_gate",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p19_pcc_akcyza_bdo.mpp_pcc_exclusion_gate: True"
+    },
+    {
+      "name": "contract_fields",
+      "status": "OK",
+      "detail": "kontrakt: faktura MPP / deklaracja PCC / sprzedaż majątku"
+    },
+    {
+      "name": "double_tax_block",
+      "status": "OK",
+      "detail": "MPP + PCC jednocześnie = BLOCK"
+    },
+    {
+      "name": "invariant",
+      "status": "OK",
+      "detail": "invariant PCC_INV-001 (kontrakt P04)"
+    },
+    {
+      "name": "triage",
+      "status": "OK",
+      "detail": "sprzedaż bez rozstrzygnięcia = TRIAGE (fail-closed)"
+    },
+    {
+      "name": "gate_as_data",
+      "status": "OK",
+      "detail": "ADR-002: aktywność bramki z data.thresholds"
+    },
+    {
+      "name": "main_jdg_wiring",
+      "status": "OK",
+      "detail": "import + rejestr + final_verdict_p87"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "ustawa o PCC art. 2 pkt 4; art. 108a VAT (MPP); invariant P04",
+    "rule": "bramka MPP-PCC — zero podwójnego opodatkowania VAT/PCC"
+  }
+}

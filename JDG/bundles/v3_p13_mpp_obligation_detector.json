@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P13-I04",
+  "generated_at": "2026-09-04T10:41:05+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "mpp_rule": true,
+    "brutto": true,
+    "sanction": true,
+    "block": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "mpp_rule",
+      "status": "OK",
+      "detail": "reguła mpp_obligation_detector: True"
+    },
+    {
+      "name": "gross_basis",
+      "status": "OK",
+      "detail": "próg 15k liczony od kwoty BRUTTO"
+    },
+    {
+      "name": "sanctions_108d",
+      "status": "OK",
+      "detail": "sankcja 30% + NKUP + solidarna odpowiedzialność"
+    },
+    {
+      "name": "block_on_violation",
+      "status": "OK",
+      "detail": "brak MPP przy obowiązku → BLOCK_AND_ALERT"
+    },
+    {
+      "name": "params_as_data",
+      "status": "OK",
+      "detail": "brak parametrów MPP (misc): BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P06 (parametry), P05 (temporalność), P10 (golden), P16 (JPK MPP), P41 (UI płatności)",
+    "rule": "auto-detekcja MPP end-to-end + blokada (30% + NKUP + solidarna) + walidacja brutto 15k"
+  }
+}

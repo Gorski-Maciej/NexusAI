@@ -1,0 +1,49 @@
+{
+  "innovation": "V3-P14-I05",
+  "generated_at": "2026-09-04T11:50:17+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "deadline": true,
+    "compare": true,
+    "late_gate": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "form_changer_rule",
+      "status": "OK",
+      "detail": "reguła form_changer_proactive: True"
+    },
+    {
+      "name": "deadline_20_02",
+      "status": "OK",
+      "detail": "termin art. 9 ust. 2 (20.02) + okno decyzyjne"
+    },
+    {
+      "name": "tax_compare",
+      "status": "OK",
+      "detail": "porównanie skala vs liniowy (12%/32%+kwota wolna vs 19%)"
+    },
+    {
+      "name": "late_gate",
+      "status": "OK",
+      "detail": "zmiana po terminie → NEEDS_ADVICE (fail-closed)"
+    },
+    {
+      "name": "params",
+      "status": "OK",
+      "detail": "brak parametrów form: BRAK"
+    },
+    {
+      "name": "domain_transition",
+      "status": "OK",
+      "detail": "rules/pit/tax_form_transition_intelligence.rego obecny — rozszerzenie"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P05 (temporalność), P41 (UI doradcy), P36 (kalendarz)",
+    "rule": "proaktywny doradca formy z terminem 20.02 (art. 9 ust. 2) i porównaniem podatku"
+  }
+}

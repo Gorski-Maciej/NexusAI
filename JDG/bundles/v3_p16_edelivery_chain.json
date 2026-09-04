@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P16-I10",
+  "generated_at": "2026-09-04T13:05:17+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "chain": true,
+    "broken": true,
+    "timeout": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "edelivery_rule",
+      "status": "OK",
+      "detail": "reguła edelivery_chain: True"
+    },
+    {
+      "name": "chain_stages",
+      "status": "OK",
+      "detail": "status → UPO → archiwum (każde ogniwo)"
+    },
+    {
+      "name": "zero_silence",
+      "status": "OK",
+      "detail": "przerwany łańcuch → BLOCK_AND_ALERT (zero ciszy)"
+    },
+    {
+      "name": "timeout",
+      "status": "OK",
+      "detail": "timeout statusu 24h"
+    },
+    {
+      "name": "params_adr002",
+      "status": "OK",
+      "detail": "brak parametrów: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "ustawa o doręczeniach elektronicznych (2026-01-01), P11 (UPO)",
+    "rule": "e-Doręczenia: pełny łańcuch z zero ciszy"
+  }
+}

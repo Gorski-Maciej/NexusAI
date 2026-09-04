@@ -1,0 +1,49 @@
+{
+  "innovation": "V3-P14-I07",
+  "generated_at": "2026-09-04T11:50:18+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "cap_50_5yr": true,
+    "window": true,
+    "blocker": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "loss_rule",
+      "status": "OK",
+      "detail": "reguła loss_harvesting_planner: True"
+    },
+    {
+      "name": "50pct_5yr",
+      "status": "OK",
+      "detail": "50%/rok + okno 5 lat + harmonogram (schedule)"
+    },
+    {
+      "name": "window_monitor",
+      "status": "OK",
+      "detail": "monitoring okien (pozostało do wykorzystania)"
+    },
+    {
+      "name": "double_count_blocker",
+      "status": "OK",
+      "detail": "podwójne odliczenie straty → BLOCK_AND_ALERT"
+    },
+    {
+      "name": "params",
+      "status": "OK",
+      "detail": "brak parametrów straty: BRAK"
+    },
+    {
+      "name": "domain_loss",
+      "status": "OK",
+      "detail": "rules/pit/tax_loss_harvesting_enterprise.rego obecny — rozszerzenie"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P04 (invarianty), P36 (kalendarz), P05 (okna temporalne)",
+    "rule": "plan wykorzystania straty 50%/5 lat z monitoringiem okien i BLOCKEREM duplikatu"
+  }
+}

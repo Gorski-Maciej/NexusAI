@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P17-I06",
+  "generated_at": "2026-09-04T13:29:47+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "conditions": true,
+    "monitoring": true,
+    "rates": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "aud_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p17_ordynacja_obrona.aud_benefit_tracker: True"
+    },
+    {
+      "name": "conditions",
+      "status": "OK",
+      "detail": "warunki benefitu (ujawnienie przed wszczęciem + wpłata)"
+    },
+    {
+      "name": "monitoring",
+      "status": "OK",
+      "detail": "monitoring naruszeń warunków AUD"
+    },
+    {
+      "name": "rates_as_data",
+      "status": "OK",
+      "detail": "stawki w certyfikacie z thresholdów (ADR-002)"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: stawki AUD z data.thresholds.ord"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 30a/30b OrdPU (AUD) [NIEZWERYFIKOWANE — raport P17]; ADR-002",
+    "rule": "tracker benefitu AUD z monitoringiem warunków"
+  }
+}

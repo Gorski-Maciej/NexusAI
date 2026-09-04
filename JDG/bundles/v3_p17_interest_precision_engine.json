@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P17-I01",
+  "generated_at": "2026-09-04T13:29:49+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "capitalization": true,
+    "rounding": true,
+    "temporal": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "interest_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p17_ordynacja_obrona.interest_precision_engine: True"
+    },
+    {
+      "name": "monthly_capitalization",
+      "status": "OK",
+      "detail": "kapitalizacja miesięczna (model składany, numbers.range)"
+    },
+    {
+      "name": "grosz_rounding",
+      "status": "OK",
+      "detail": "zaokrąglenie half-up do 0,01 (granice groszowe)"
+    },
+    {
+      "name": "temporal_retro",
+      "status": "OK",
+      "detail": "okno temporalne stawki + fail-closed retro (P05)"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: stawka/okno z data.thresholds.ord"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 56 OrdPU; ADR-002 (parametry-as-data); P05 (temporalność); kontrakt V3_P36 (płatności)",
+    "rule": "odsetki groszowe z kapitalizacją miesięczną i granicą 0,01"
+  }
+}

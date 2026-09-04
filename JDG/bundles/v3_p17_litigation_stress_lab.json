@@ -1,0 +1,50 @@
+{
+  "innovation": "V3-P17-I12",
+  "generated_at": "2026-09-04T13:29:50+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "interest_10y": true,
+    "multi_suspension": true,
+    "last_day": true,
+    "fail_closed": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "stress_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p17_ordynacja_obrona.litigation_stress_lab: True"
+    },
+    {
+      "name": "interest_10y",
+      "status": "OK",
+      "detail": "symulacja odsetek 10 lat (120 mies. kapitalizacji)"
+    },
+    {
+      "name": "multi_suspension",
+      "status": "OK",
+      "detail": "wielokrotne zawieszenia > limitu (art. 71)"
+    },
+    {
+      "name": "last_day_appeal",
+      "status": "OK",
+      "detail": "apelacja w ostatnim dniu bez reakcji = BLOCK"
+    },
+    {
+      "name": "fail_closed_unknown",
+      "status": "OK",
+      "detail": "nieznany scenariusz = BLOCK (fail-closed)"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: katalog scenariuszy z data.thresholds.ord"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 56/70-72 OrdPU (symulacje graniczne); kontrakt V3_P04",
+    "rule": "stress lab: symulatory granic z decyzją fail-closed"
+  }
+}

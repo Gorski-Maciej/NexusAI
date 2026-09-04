@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P14-I08",
+  "generated_at": "2026-09-04T11:50:18+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "catalog": true,
+    "coverage": 13,
+    "fail_closed": true
+  },
+  "checks": [
+    {
+      "name": "doc_pack_rule",
+      "status": "OK",
+      "detail": "reguła relief_documentation_pack: True"
+    },
+    {
+      "name": "docs_catalog",
+      "status": "OK",
+      "detail": "katalog checklist per ulga (termo/rd/ip_box minimum)"
+    },
+    {
+      "name": "coverage",
+      "status": "OK",
+      "detail": "ulg z checklistą: 13/13"
+    },
+    {
+      "name": "fail_closed",
+      "status": "OK",
+      "detail": "brak dokumentów → NEEDS_ADVICE (AP07 — nigdy cichy AUTO_POST)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P03 (certainty), P11 (certyfikat), KAS (dowody), P28 (księgowość)",
+    "rule": "checklist dokumentacyjne per ulga — dowody dla KAS; brak = NEEDS_ADVICE"
+  }
+}

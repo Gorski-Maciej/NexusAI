@@ -87,6 +87,13 @@ import data.jdg.tp.hyper as tp_hyper
 import data.jdg.exit_tax_cfc as exit_tax_cfc
 import data.jdg.crossborder.v3_08 as crossborder_v3_08
 import data.jdg.v3_p15_crossborder as v3_p15_crossborder
+import data.jdg.v3_p13_vat_deductions as v3_p13_vat_deductions
+import data.jdg.v3_p14_pit_reliefs as v3_p14_pit_reliefs
+import data.jdg.v3_p16_ksef_jpk as v3_p16_ksef_jpk
+import data.jdg.v3_p17_ordynacja_obrona as v3_p17_ordynacja_obrona
+import data.jdg.v3_p18_ryczalt as v3_p18_ryczalt
+import data.jdg.v3_p19_pcc_akcyza_bdo as v3_p19_pcc_akcyza_bdo
+import data.jdg.v3_p20_ksiegowosc as v3_p20_ksiegowosc
 import data.jdg.micro.quality_v3_13 as micro_quality_v3_13
 import data.jdg.hyper.quality_v3_14 as hyper_quality_v3_14
 import data.jdg.enterprise.quality_v3_15 as enterprise_quality_v3_15
@@ -1450,6 +1457,13 @@ _package_decisions := {
     "jdg.crossborder.post_brexit": post_brexit.decide,
     "jdg.crossborder.v3_08": crossborder_v3_08.decide,
     "jdg.v3_p15_crossborder": v3_p15_crossborder.decide,
+    "jdg.v3_p13_vat_deductions": v3_p13_vat_deductions.decide,
+    "jdg.v3_p14_pit_reliefs": v3_p14_pit_reliefs.decide,
+    "jdg.v3_p16_ksef_jpk": v3_p16_ksef_jpk.decide,
+    "jdg.v3_p17_ordynacja_obrona": v3_p17_ordynacja_obrona.decide,
+    "jdg.v3_p18_ryczalt": v3_p18_ryczalt.decide,
+    "jdg.v3_p19_pcc_akcyza_bdo": v3_p19_pcc_akcyza_bdo.decide,
+    "jdg.v3_p20_ksiegowosc": v3_p20_ksiegowosc.decide,
     "jdg.international": international.decide,
     "jdg.tp": tp.decide,
     "jdg.tp.hyper": tp_hyper.decide,
@@ -2742,6 +2756,95 @@ final_verdict_p81 = safe_merge(final_verdict_p80,
         fallback.decide
     ))
 
+# V3-P13 (kampania V3 FORTRESS): warstwa odliczeń VAT ENTERPRISE — prawo do
+# odliczenia i moment (art. 86-88), proporcja (art. 90), korekty wieloletnie
+# (art. 91), złe długi (art. 89a/89b — 90 dni), MPP (art. 108a-108d, zał. 15,
+# 15k brutto, sankcje 30%), Biała Lista (art. 96b), fraud signals (art. 105a-105c,
+# human review — nigdy wina), invarianty VAT (P04) i doradca płatności. SUGGEST/
+# no_auto_post i fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p13_check nie jest true.
+final_verdict_p82 = safe_merge(final_verdict_p81,
+    safe_merge(v3_p13_vat_deductions.decide,
+        fallback.decide
+    ))
+
+# V3-P14 (kampania V3 FORTRESS): warstwa PIT ENTERPRISE — komplet ulg
+# (art. 26/26e/26eb/26gb/26h/26ec/30ca/21 ust. 1 pkt 148-154 PIT), macierz
+# ulg (I01), limity-as-data (I02), IP Box nexus (I03), optymalizacja kolejności
+# odliczeń pod invariant P04 (I04), doradca formy (I05 — 20.02, art. 9 ust. 2),
+# symulator 12M (I06), loss harvesting (I07 — 50%/5 lat), checklist dokumentacyjne
+# (I08), sentinel wygasania ulg (I09), golden set granic (I10), detektor kolizji
+# ulg (I11 — BLOCKER) i wyjaśnienie decyzji (I12). FAIL-CLOSED: NEEDS_ADVICE/
+# BLOCK_AND_ALERT przy braku danych/dokumentów; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p14_check nie jest true.
+final_verdict_p83 = safe_merge(final_verdict_p82,
+    safe_merge(v3_p14_pit_reliefs.decide,
+        fallback.decide
+    ))
+
+# V3-P16 (kampania V3 FORTRESS): warstwa KSeF/JPK ENTERPRISE — pełny cykl
+# raportowania fiskalnego: orchestrator sesji KSeF (I01, art. 106ka-106m),
+# offline queue RPO=0 z WAL (I02, art. 106na), UPO sentinel zero-ciszy (I03),
+# pre-send firewall XSD+semantyka (I04), kalendarz terminów jako konstytucja
+# (I05 — VAT 25./PIT 30.04/JPK 25.), kontrakt pól JPK z P12/P13 (I06),
+# korekty idempotentne (I07, art. 106j), sandbox CI (I08), chaos drill 72h
+# (I09), e-Doręczenia chain (I10), monitor kar KSeF (I11) i golden set (I12).
+# SUGGEST/no_auto_post i fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p16_check nie jest true.
+final_verdict_p84 = safe_merge(final_verdict_p83,
+    safe_merge(v3_p16_ksef_jpk.decide,
+        fallback.decide
+    ))
+
+# V3-P17 (kampania V3 FORTRESS): warstwa obronna ORDYNACJI ENTERPRISE —
+# odsetki groszowe z kapitalizacją miesięczną (I01, art. 56 — stawki jako dane
+# z valid_from, temporalność retro), kalendarz przedawnienia 31.12+5 (I02,
+# art. 70-72 — zawieszenia, alerty 90/60/30), GAAR shield ochronny (I03,
+# art. 119a — MAE 1 mln, NIE wina), konstytucja terminów 7/14/30 z zero ciszy
+# (I04), doradca korekty czynnej (I05, art. 81), AUD benefit tracker (I06,
+# art. 30a/30b), ruling 4-eyes (I07), timeline spraw (I08), paczka obronna
+# (I09), biblioteka interpretacji KIS (I10 — LKG P01), invarianty ORD (I11,
+# kontrakt P04) i stress lab (I12). SUGGEST/no_auto_post i fail-closed;
+# nieaktywny dopóki input.jdg_entrepreneur.v3_p17_check nie jest true.
+final_verdict_p85 = safe_merge(final_verdict_p84,
+    safe_merge(v3_p17_ordynacja_obrona.decide,
+        fallback.decide
+    ))
+
+# V3-P18 (kampania V3 FORTRESS): warstwa RYCZAŁTU ENTERPRISE — stawki art. 12
+# jako dane z mapami PKWiU wersjonowanymi (I01), sentinel wykluczeń art. 8
+# (I02), wykluczenie w trakcie roku ze ścieżką zmiany formy (I03), doradca 4
+# form z kosztami składkowymi (I04 — integracja P14), split przychodów
+# wielostawkowych (I05), korekty ewidencji przed/po roku (I06), kontrakt
+# ryczałt↔PKPiR (I07), PIT-28 z ewidencji (I08), rejestr wykluczeń (I09),
+# golden set (I10), invarianty ryczałtu (I11 — kontrakt P04) i wyjaśnienia
+# (I12). SUGGEST/no_auto_post i fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p18_check nie jest true.
+final_verdict_p86 = safe_merge(final_verdict_p85,
+    safe_merge(v3_p18_ryczalt.decide,
+        fallback.decide
+    ))
+
+# V3-P19 (PCC_AKCYZA_BDO): PCC/local (I01-I04), BDO/EWC (I05-I07), waste
+# fees/CBAM (I08), golden set (I09), invariants (I10), instalments (I11),
+# explanation pack (I12). SUGGEST/no_auto_post i fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p19_check nie jest true.
+final_verdict_p87 = safe_merge(final_verdict_p86,
+    safe_merge(v3_p19_pcc_akcyza_bdo.decide,
+        fallback.decide
+    ))
+
+# V3-P20 (KSIEGOWOSC_PKPIR_UOR): PKPiR/UoR/amortyzacja/leasing — rdzeń
+# księgowości ENTERPRISE. 12 analiz: schema PKPiR (I01), remanent chain (I02),
+# NKUP boundary (I03), jednorazowa sentinel (I04), KŚT rates as data (I05),
+# leasing split (I06), PKPiR→UoR (I07), year-end chain (I08), double-entry (I09),
+# golden set (I10), invariants (I11), checklisty (I12). SUGGEST/no_auto_post i
+# fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p20_check nie jest true.
+final_verdict_p88 = safe_merge(final_verdict_p87,
+    safe_merge(v3_p20_ksiegowosc.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -2756,8 +2859,8 @@ final_verdict_p81 = safe_merge(final_verdict_p80,
 # ═══════════════════════════════════════════════════════════════════════════════
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
-# Compatibility anchors remain available as final_verdict_p53..p81, but the
-# effective POST-MERGE input is p81. This preserves every stage p54..p80 and
+# Compatibility anchors remain available as final_verdict_p53..p83, but the
+# effective POST-MERGE input is p83. This preserves every stage p54..p82 and
 # removes the former hand-written object.union chain that could silently skip
 # stages or overwrite immutable fields (INV-018/INV-042).
 # Legacy audit anchors (documentation only; deliberately not executable):
@@ -2774,7 +2877,7 @@ final_verdict_p81 = safe_merge(final_verdict_p80,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p81
+    final_verdict_p88
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

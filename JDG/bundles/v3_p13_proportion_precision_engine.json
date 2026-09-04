@@ -1,0 +1,50 @@
+{
+  "innovation": "V3-P13-I08",
+  "generated_at": "2026-09-04T10:41:06+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "proportion_rule": true,
+    "rounding": true,
+    "boundaries": true,
+    "test_1pct": true,
+    "pre_proportion": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "proportion_rule",
+      "status": "OK",
+      "detail": "reguła proportion_precision_engine: True"
+    },
+    {
+      "name": "grosz_rounding",
+      "status": "OK",
+      "detail": "zaokrąglanie 0,001 (proporcja art. 90)"
+    },
+    {
+      "name": "boundaries_2_98",
+      "status": "OK",
+      "detail": "granice 2%/98% (0% / 100% odliczenia)"
+    },
+    {
+      "name": "test_1pct",
+      "status": "OK",
+      "detail": "test graniczny 1% (proporcja 98% vs 100%)"
+    },
+    {
+      "name": "pre_proportion",
+      "status": "OK",
+      "detail": "pre-proporcja nowego podatnika (art. 90 ust. 8-10) + korekta wstępna"
+    },
+    {
+      "name": "params_as_data",
+      "status": "OK",
+      "detail": "brak parametrów proportion_*: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P06 (parametry), P05 (temporalność), P10 (golden), P39 (bramki CI), P16 (JPK proporcje)",
+    "rule": "proporcja art. 90 z groszówką (0,001), granice 2%/98%, test 1%, pre-proporcja nowego podatnika"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "innovation": "V3-P19-I12",
+  "generated_at": "2026-09-04T14:09:09+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "types": true,
+    "complete": true,
+    "fail_closed": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "explanation_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p19_pcc_akcyza_bdo.explanation_pack: True"
+    },
+    {
+      "name": "pack_contract",
+      "status": "OK",
+      "detail": "kontrakt: typ paczki / podstawa / komplet checklisty"
+    },
+    {
+      "name": "pack_types",
+      "status": "OK",
+      "detail": "typy paczek: BDO / PCC / lokalne"
+    },
+    {
+      "name": "completeness",
+      "status": "OK",
+      "detail": "komplet = SUGGEST (PDF do księgowej)"
+    },
+    {
+      "name": "fail_closed",
+      "status": "OK",
+      "detail": "nieznany typ / niekomplet = BLOCK (fail-closed)"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: terminy w paczkach z data.thresholds"
+    },
+    {
+      "name": "main_jdg_wiring",
+      "status": "OK",
+      "detail": "import + rejestr + final_verdict_p87"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "checklisty BDO (raport 15.03) / PCC / lokalne — kontrakt księgowej",
+    "rule": "paczki wyjaśnień — komplet = SUGGEST, niekomplet = BLOCK"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P18-I01",
+  "generated_at": "2026-09-04T13:45:12+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "categories": true,
+    "map_version": true,
+    "rates_as_data": true
+  },
+  "checks": [
+    {
+      "name": "rates_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p18_ryczalt.rates_matrix: True"
+    },
+    {
+      "name": "categories",
+      "status": "OK",
+      "detail": "mapowanie kategoria PKWiU → stawka (art. 12)"
+    },
+    {
+      "name": "rate_map_versioned",
+      "status": "OK",
+      "detail": "mapa PKWiU wersjonowana + próg 14% dla IT"
+    },
+    {
+      "name": "rates_as_data",
+      "status": "OK",
+      "detail": "ADR-002/P06: stawki (w tym 10/12,5/14%) z data.thresholds.lump_sum"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 12 ustawy o zryczałtowanym PIT; ADR-002/P06; mapa MF/PKWiU",
+    "rule": "stawki-as-data z walidacją kategoria → stawka"
+  }
+}

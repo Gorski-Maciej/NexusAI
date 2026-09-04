@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P14-I01",
+  "generated_at": "2026-09-04T11:50:16+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "matrix_rule": true,
+    "catalog": true,
+    "relief_coverage": 12,
+    "domain_ok": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "matrix_rule",
+      "status": "OK",
+      "detail": "reguła reliefs_matrix_complete: True"
+    },
+    {
+      "name": "catalog_present",
+      "status": "OK",
+      "detail": "katalog reliefs_catalog z legal_basis/type w regułach"
+    },
+    {
+      "name": "relief_coverage",
+      "status": "OK",
+      "detail": "ulgi pokryte w macierzy: 12/12 (min. 12 z P14)"
+    },
+    {
+      "name": "limits_data",
+      "status": "OK",
+      "detail": "brak limitów w thresholds: BRAK"
+    },
+    {
+      "name": "domain_files",
+      "status": "OK",
+      "detail": "pliki domenowe rules/pit (art21/thermo/rd) obecne — rozszerzenie, nie duplikat"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P06 (parametry), P10 (golden), P39 (bramki CI), P28/P44 (księgowość)",
+    "rule": "pełna macierz ulg PIT: ulga → przepis → warunki → limit → reguła → test → status"
+  }
+}

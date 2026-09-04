@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P18-I04",
+  "generated_at": "2026-09-04T13:45:09+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "forms": true,
+    "recommendation": true,
+    "karta": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "advisor_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p18_ryczalt.four_form_advisor: True"
+    },
+    {
+      "name": "four_forms",
+      "status": "OK",
+      "detail": "porównanie ryczałt/skala/liniowy/karta (12M)"
+    },
+    {
+      "name": "recommendation",
+      "status": "OK",
+      "detail": "rekomendacja formy + kwoty po podatku"
+    },
+    {
+      "name": "karta_decision",
+      "status": "OK",
+      "detail": "karta = TRIAGE (warunki art. 21-30, decyzja człowieka)"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: stawki form/zdrowotna z data.thresholds.lump_sum"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 12 ustawy o zryczałtowanym PIT; art. 21-30 (karta) [NIEZWERYFIKOWANE]; integracja V3_P14 (form_changer)",
+    "rule": "doradca 4 form z kosztami składkowymi na danych 12M"
+  }
+}

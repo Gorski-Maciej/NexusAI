@@ -1,0 +1,49 @@
+{
+  "innovation": "V3-P14-I06",
+  "generated_at": "2026-09-04T11:50:17+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "contract_12m": true,
+    "compare": true,
+    "gap_gate": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "simulator_rule",
+      "status": "OK",
+      "detail": "reguła form_simulator_12m: True"
+    },
+    {
+      "name": "12_month_contract",
+      "status": "OK",
+      "detail": "kontrakt: 12 mies. danych historycznych + założenia wzrostu"
+    },
+    {
+      "name": "three_forms_compare",
+      "status": "OK",
+      "detail": "porównanie skala/liniowy/ryczałt + rekomendacja"
+    },
+    {
+      "name": "gap_fail_closed",
+      "status": "OK",
+      "detail": "< 12 mies. danych → NEEDS_ADVICE (fail-closed)"
+    },
+    {
+      "name": "params",
+      "status": "OK",
+      "detail": "brak parametrów: BRAK"
+    },
+    {
+      "name": "domain_forms",
+      "status": "OK",
+      "detail": "rules/pit/forms.rego + tax_form_transition_intelligence obecne"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P18 (ryczałt — stawki PKWiU poza zakresem), P41 (UI), P36 (kalendarz)",
+    "rule": "symulator form 12 mies. (historia + scenariusze) z raportem porównawczym"
+  }
+}

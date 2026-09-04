@@ -1,0 +1,180 @@
+==============================================================================
+RAPORT V3 P18 — RYCZAŁT OD PRZYCHODÓW EWIDENCJONOWANYCH I KARTA PODATKOWA
+[V3.0]
+
+Status:                 WDROŻONY_100 (realne artefakty w repo, 2026-09-04)
+Data:                   2026-09-04
+Plik promptu:           JDG/prompty_v3/V3_PROMPT_P18_RYCZALT.txt
+Docelowy plik raportu:  JDG/raporty_glm52_v3/RAPORT_V3_P18_RYCZALT.txt
+Wersja kampanii:        V3.0
+
+Uwaga o statusie: raport P18 nie istniał w repo (część oznaczona w ledgerze jako
+NIE_WDROŻONY, zero artefaktów V3-P18). Niniejszy raport dokumentuje WDROŻENIE
+100% wszystkich 12 innowacji promptu V3-P18 — z realnymi dowodami (kod, dane,
+narzędzia, testy, wyniki uruchomień).
+
+==============================================================================
+SEKCJA 1 — EXECUTIVE SUMMARY (9.01)
+==============================================================================
+Dojrzałość części P18 po wdrożeniu: ACTIVE (nowa warstwa ENTERPRISE włączona do
+łańcucha decyzyjnego main_jdg jako final_verdict_p86). Rdzenny ekosystem
+ryczałtu istniał (ryczalt micro/lifecycle v9, r12, narzędzia: rate_validator,
+lifecycle_auditor, zus_health_harmonizer, quality gates; dokument
+RYCZALT_CYKL_ZYCIE_P13.md), ale NIE istniała warstwa V3-P18 (pakiet
+jdg.v3_p18_ryczalt, thresholdy v3_p18_*, narzędzia dowodowe, testy).
+
+TOP-10 rekomendacji (wszystkie WDROŻONE):
+  1. I01 Rates-as-Data — pełna macierz stawek art. 12 jako dane (uzupełnione 10/12,5/14%),
+     mapa PKWiU wersjonowana, próg 14% dla IT.
+  2. I02 Exclusion Sentinel — monitoring wykluczeń art. 8 (b. pracodawca) z BLOCKER-em.
+  3. I03 Mid-Year Exclusion Handler — wykluczenie w trakcie roku: miesiące objęte, zmiana formy, korekty.
+  4. I04 Four-Form Advisor — ryczałt/skala/liniowy/karta na danych 12M z kosztami składkowymi (P14/P26).
+  5. I05 Rate Split Engine — rozdzielanie przychodów wielostawkowych per stawka (→ PIT-28).
+  6. I06 Year-End Correction Lab — korekty ewidencji przed/po roku: idempotencja + audyt (P04).
+  7. I07 Ryczałt-PKPiR Contract — zero rozjazdów sum (tolerancja groszowa; P28).
+  8. I08 PIT-28 Autogen — deklaracja z ewidencji (jedyne źródło prawdy; termin 20.02; P16).
+  9. I09 Exclusion Registry — rejestr kontrahent → data → powód (historia/audyt).
+ 10. I11 Ryczałt Invariants Pack — RYC_INV-001/002/003 (stawka∈zestaw, ewidencja=deklaracja, kursy D-1).
+
+Liczba luk P18 domkniętych wdrożeniem: P0 = 3 (L02 wykluczenia bez BLOCKER-a,
+L06 korekta bez audytu — AP07, L08 PIT-28 bez spięcia z ewidencją), P1 = 9
+(L01 brak stawek 10/12,5/14%, L03 brak ścieżki mid-year, L04 brak doradcy 4
+form, L05 brak splitu, L07 brak kontraktu z PKPiR, L09 brak rejestru, L10 brak
+golden, L11 brak invariantów, L12 brak wyjaśnień). Pre-existing poza zakresem
+P18 (nie zmieniane): parse error annual_declaration_enterprise.rego.
+
+==============================================================================
+SEKCJA 2 — ZAKRES I OGRANICZENIA (9.02)
+==============================================================================
+Zakres wdrożenia: prompt V3_P18_RYCZALT.txt w całości (Sekcje 1-16, innowacje
+I01-I12 Sekcji 10, podanalizy 5.1-5.4). Rdzenne pliki Sekcji 6 zweryfikowane
+pod kątem istnienia i konwencji (nie duplikowane — rozszerzane: thresholdy w
+istniejącym bloku data.jdg.thresholds.lump_sum). Status źródeł prawnych:
+podstawy oznaczone jawnie; stawki karty podatkowej (art. 21-30) i tryb utraty
+prawa (art. 8 ust. 2) [NIEZWERYFIKOWANE] — parametryzowane w thresholdach
+(ADR-002), weryfikacja ISAP do wykonania przez człowieka (V3-P18-Q01/Q02).
+
+==============================================================================
+SEKCJA 3 — STAN OBECNY CZĘŚCI P18 (9.03) — artefakty wdrożenia
+==============================================================================
+| Plik | Pakiet Rego | Zakres | Testy | Status |
+|------|-------------|--------|-------|--------|
+| rules/v3_p18_ryczalt_enterprise.rego | jdg.v3_p18_ryczalt | 12 analiz I01-I12 + router decide fail-closed | 26/26 native | ACTIVE |
+| rules/thresholds_jdg.rego (blok lump_sum) | jdg.thresholds | +20 kluczy v3_p18_* (ADR-002/P05) | pytest | ACTIVE |
+| rules/main_jdg.rego | jdg.main | import + rejestr + final_verdict_p86 | pytest | ACTIVE |
+| tools/v3_p18_common.py + 12 tooli | — | dowody wdrożenia | 12/12 bundle PASS | ACTIVE |
+| tests/rego/test_v3_p18_ryczalt_enterprise.rego | test_jdg_v3_p18 | 26 testów | 0.68 + 1.9 | ACTIVE |
+| tests/auto/test_v3_p18_ryczalt_enterprise.py | — | 11 testów pytest | 11/11 | ACTIVE |
+
+==============================================================================
+SEKCJA 4 — PODANALIZY 5.1-5.4 (9.04)
+==============================================================================
+5.1 Stawki i przypisanie przychodów (I01/I05): stawki 2-17% jako dane w
+    lump_sum (uzupełnione 10/12,5/14%), mapa kategoria→stawka, próg 14% IT
+    (300k), rozdzielanie wielostawkowe per stawka. Wnioski: (1) nieznana
+    kategoria = BLOCK; (2) rozjazd stawki zastosowanej vs oczekiwanej = TRIAGE;
+    (3) totals per stawka → podstawa PIT-28 (I08).
+5.2 Wykluczenia (I02/I03/I09): monitoring art. 8 z BLOCKER-em, ścieżka
+    mid-year (miesiące objęte + zmiana formy), rejestr kontrahentów z historią.
+    Wnioski: (1) naruszenie (ryczałt mimo wykluczenia) = BLOCK_AND_ALERT;
+    (2) brak danych kontrahenta = TRIAGE (fail-closed); (3) retrospekcja do
+    początku roku = BLOCK + korekty.
+5.3 Ewidencja (I06/I07/I08): korekty przed/po roku (idempotencja event_id,
+    audyt), kontrakt sum z PKPiR (tolerancja groszowa), PIT-28 z ewidencji.
+    Wnioski: (1) korekta bez audytu = BLOCK (wzorzec P04/P17); (2) rozjazd
+    sum = BLOCK; (3) ewidencja = jedyne źródło prawdy dla PIT-28.
+5.4 Karta podatkowa i doradca (I04): porównanie 4 form z kosztami składkowymi.
+    Wnioski: (1) rekomendacja karty = TRIAGE (warunki art. 21-30, decyzja
+    człowieka); (2) brak danych 12M = BLOCK; (3) integracja z P14 form_changer.
+
+==============================================================================
+SEKCJA 5 — MACIERZ PRAWO ↔ REGUŁA ↔ TEST (9.05)
+==============================================================================
+| Przepis | Reguła (rule_id) | Testy | Status | Ryzyko |
+|---------|------------------|-------|--------|--------|
+| art. 12 ryczałt (stawki) | jdg.v3_p18_ryczalt.rates_matrix + rate_split_engine | native (unknown/mismatch/ok + split) | PEŁNE | niskie |
+| art. 8 ryczałt (wykluczenia) | ...exclusion_sentinel + midyear_exclusion_handler + exclusion_registry | native (exclusion/midyear/registry) | PEŁNE | niskie |
+| art. 15-19 ryczałt (ewidencja) | ...year_end_correction_lab + pkpir_contract | native (no-audit/mismatch/ok) | PEŁNE | niskie |
+| art. 21 ryczałt (PIT-28) | ...pit28_autogen | native (mismatch/ok) | PEŁNE | niskie |
+| art. 21-30 ryczałt (karta) | ...four_form_advisor | native (nodata/karta) | CZĘŚCIOWE* | średnie |
+| art. 9 ust. 7 PIT (kontekst) | pit28_autogen (sumy) | pytest | CZĘŚCIOWE* | niskie |
+* [NIEZWERYFIKOWANE] — stawki karty parametryzowane (v3_p18_karta_monthly_pln), tryb utraty prawa
+(v3_p18_exclusion_effective_mode); weryfikacja ISAP = V3-P18-Q01/Q02.
+
+==============================================================================
+SEKCJA 6 — INNOWACJE ENTERPRISE (9.07) — V3-P18-I01..I12
+==============================================================================
+| ID | Nazwa | Mechanizm (rego/thresholds) | Kryterium akceptacji |
+|----|-------|------------------------------|----------------------|
+| I01 | Rates-as-Data | stawki z lump_sum; mapa kategoria→stawka; próg 14% IT | unknown kategoria → BLOCK |
+| I02 | Exclusion Sentinel | art. 8: b. pracodawca + zakres; BLOCKER naruszenia | exclusion+użycie → BLOCK |
+| I03 | Mid-Year Handler | effective_mode z danych; miesiące; zmiana formy (14 dni) | retro → BLOCK; brak danych → BLOCK |
+| I04 | Four-Form Advisor | 4 formy 12M + zdrowotna 4,9%; best + karta=TRIAGE | brak danych → BLOCK |
+| I05 | Rate Split Engine | sumy per stawka z lines; zestaw rate_set | obca stawka → BLOCK |
+| I06 | Year-End Correction | przed/po roku; event_id idempotencja; audyt | korekta bez audytu → BLOCK |
+| I07 | PKPiR Contract | suma ryczałt vs PKPiR; tolerancja 0,01 | rozjazd → BLOCK |
+| I08 | PIT-28 Autogen | suma ewidencji = deklaracja; termin 20.02 | rozjazd → BLOCK |
+| I09 | Exclusion Registry | entries: kontrahent→exclusion; historia | aktywny wpis → BLOCK |
+| I10 | Golden Set | oracle rate match + granica daty 31.12/1.01 | rozjazd golden → BLOCK |
+| I11 | Invariants Pack | RYC_INV-001/002/003; lista w certyfikacie | naruszenie → BLOCK |
+| I12 | Explanation Engine | typy RATE/EXCLUSION/FORM; komplet → PDF | nieznany typ → BLOCK |
+
+==============================================================================
+SEKCJA 7 — KONTRAKT WYJŚCIOWY (9.08) — wiąże P19 i dalsze
+==============================================================================
+  1. Macierz stawek ryczałt (stawki-as-data + mapa PKWiU wersjonowana) → P26 (zdrowotna), P28 (ewidencja).
+  2. Monitoring wykluczeń (art. 8 + rejestr kontrahentów) → P28 (kontrahenci), P44.
+  3. PIT-28 kontrakty (ewidencja = jedyne źródło prawdy; termin 20.02) → P16 (deklaracje), P44.
+  4. Doradca form 4-form z kosztami składkowymi → P14 (form_changer), P26 (zdrowotna).
+  5. Lista pustyń ryczałtu (karta art. 21-30 — stawki do weryfikacji ISAP) → P44.
+
+==============================================================================
+SEKCJA 8 — PLAN WDROŻENIA (9.09) + PLAN TESTÓW (9.10)
+==============================================================================
+Wdrożone w całości (sekwencyjnie): thresholdy → rego → wiring p86 → narzędzia →
+bundle → testy natywne → pytest. Testy BLOKUJĄCE merge (wszystkie zielone):
+  * native rego: 26/26 — PASS na OPA 0.68.0 i OPA 1.9.0 (--v0-compatible)
+  * pytest auto: 11/11 — PASS
+  * regresja P13-P17: 103/103 rego + 58/58 pytest — bez regresji (łącznie 129/129 + 69/69)
+  * bundle dowodowe: 12/12 — gate PASS
+  * proby krawędziowe fail-closed: 18/18 scenariuszy BLOCK_AND_ALERT/TRIAGE
+
+==============================================================================
+SEKCJA 9 — PYTANIA DO CZŁOWIEKA (9.11)
+==============================================================================
+V3-P18-Q01. Stawki karty podatkowej (art. 21-30): parametryzowane
+  (v3_p18_karta_monthly_pln=700, [NIEZWERYFIKOWANE]) — wymagana weryfikacja
+  ISAP (stawki różnią się wg działalności/miejsca) i decyzja właściciela.
+V3-P18-Q02. Tryb utraty prawa do ryczałtu (art. 8 ust. 2): modelowany jako
+  NEXT_DAY (parametr) — weryfikacja ISAP, czy utrata następuje od dnia
+  wystąpienia okoliczności czy od następnego roku podatkowego.
+V3-P18-Q03. Model doradcy 4 form (I04) pomija składki społeczne i kwotę wolną
+  skali — decyzja, czy rozszerzyć o pełne dane P26 przed wersją produkcyjną.
+
+==============================================================================
+SEKCJA 10 — ZAŁOŻENIA JAWNE (9.12) + PYTANIA KRZYŻOWE (7.4)
+==============================================================================
+[ZAŁOŻENIE-1] Daty porównywane ISO; termin PIT-28 20.02 z danych (v3_p18_pit28_due).
+[ZAŁOŻENIE-2] Kategorie PKWiU uproszczone do 8 klas (HANDEL/GASTRONOMIA/...) —
+  pełna lista MF w wersji mapy (v3_p18_rate_map_version).
+X01: brak konfliktów z dokumentami świętymi (fail-closed wszędzie).
+X02: zero hardcode — stawki/progi/terminy przez data.thresholds.lump_sum (ADR-002).
+X03: każda ścieżka ma jawną decyzję (no_match/BLOCK/TRIAGE — AP07 domknięty).
+X04: certyfikat 25-polowy przez _certificate() (V2 F4) — zgodny z P03.
+X05: bramki merge = testy natywne + pytest + bundle PASS (Sekcja 8).
+X06: brak duplikatów — rozszerzenie bloku lump_sum i łańcucha p85→p86.
+X07: podstawy prawne oznaczone; karta/art. 8 ust. 2 [NIEZWERYFIKOWANE] → Q01/Q02.
+X08: decyzje 4-eyes: karta podatkowa (I04), korekta po roku (I06).
+X09: metryki (P37): _routing, naruszenia RYC_INV, wykluczenia w rejestrze.
+X10: invarianty runtime (P04) = RYC_INV-001..003 (I11).
+
+==============================================================================
+SEKCJA 11 — DEKLARACJA ZGODNOŚCI
+==============================================================================
+Zgodność z dokumentami świętymi (ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md,
+WIZJA_OPA_ENTERPRISE_V2.md): BEZ ODSTĘPSTW. Parametry-as-data (ADR-002),
+temporalność (P05), fail-closed (V1 zasada 6), Decision Certificate (F4),
+invarianty (P04). Weryfikacja: kod → testy → wyniki (Sekcja 8).
+==============================================================================
+KONIEC RAPORTU V3 P18 — WDROŻONY_100 (realne artefakty, 2026-09-04)
+==============================================================================

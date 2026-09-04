@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P16-I02",
+  "generated_at": "2026-09-04T13:05:21+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "wal": true,
+    "rpo_rto": true,
+    "loss_risk": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "queue_rule",
+      "status": "OK",
+      "detail": "reguła zero_loss_offline_queue: True"
+    },
+    {
+      "name": "wal",
+      "status": "OK",
+      "detail": "Write-Ahead Log wymagany (RPO=0)"
+    },
+    {
+      "name": "rpo_rto",
+      "status": "OK",
+      "detail": "parametry RPO/RTO jako dane"
+    },
+    {
+      "name": "fail_closed_loss",
+      "status": "OK",
+      "detail": "ryzyko utraty → BLOCK_AND_ALERT (fail-closed)"
+    },
+    {
+      "name": "params_adr002",
+      "status": "OK",
+      "detail": "brak parametrów: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P43 (DR/BCP), V1 resilience (RPO=0), ADR-002",
+    "rule": "kolejka offline zero utraty (WAL, klucze idempotencji)"
+  }
+}

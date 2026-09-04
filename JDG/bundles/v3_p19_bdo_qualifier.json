@@ -1,0 +1,53 @@
+{
+  "innovation": "V3-P19-I05",
+  "generated_at": "2026-09-04T14:09:06+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "obligation": true,
+    "unregistered_block": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "bdo_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p19_pcc_akcyza_bdo.bdo_qualifier: True"
+    },
+    {
+      "name": "qualifier_fields",
+      "status": "OK",
+      "detail": "kontrakt: kg odpadów / opakowania / WEEE / rejestracja"
+    },
+    {
+      "name": "obligation_logic",
+      "status": "OK",
+      "detail": "obowiązek: odpady ≥ 100 kg LUB opakowania LUB WEEE"
+    },
+    {
+      "name": "unregistered_block",
+      "status": "OK",
+      "detail": "obowiązek bez rejestracji = BLOCK"
+    },
+    {
+      "name": "annual_report",
+      "status": "OK",
+      "detail": "raport roczny BDO do 15.03"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: progi BDO z data.thresholds"
+    },
+    {
+      "name": "main_jdg_wiring",
+      "status": "OK",
+      "detail": "import + rejestr + final_verdict_p87"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "ustawa o odpadach (BDO); próg 100 kg [NIEZWERYFIKOWANE]; raport 15.03",
+    "rule": "kwalifikator obowiązku BDO z BLOCK przy braku rejestracji"
+  }
+}

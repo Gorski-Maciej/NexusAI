@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P18-I09",
+  "generated_at": "2026-09-04T13:45:08+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "entries": true,
+    "block": true,
+    "triage": true
+  },
+  "checks": [
+    {
+      "name": "registry_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p18_ryczalt.exclusion_registry: True"
+    },
+    {
+      "name": "entries",
+      "status": "OK",
+      "detail": "rejestr: kontrahent → wykluczenie (historia)"
+    },
+    {
+      "name": "active_block",
+      "status": "OK",
+      "detail": "aktywny wpis dla kontrahenta = BLOCK"
+    },
+    {
+      "name": "missing_triage",
+      "status": "OK",
+      "detail": "kontrahent poza rejestrem = TRIAGE (uzupełnij dane)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 8 ustawy o zryczałtowanym PIT; kontrakt P28 (kontrahenci); audyt P37",
+    "rule": "rejestr wykluczeń z historią i audytem"
+  }
+}

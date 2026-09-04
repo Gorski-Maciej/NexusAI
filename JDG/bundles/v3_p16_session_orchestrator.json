@@ -1,0 +1,49 @@
+{
+  "innovation": "V3-P16-I01",
+  "generated_at": "2026-09-04T13:05:21+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "offline_switch": true,
+    "retry_policy": true,
+    "compiles": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "orchestrator_rule",
+      "status": "OK",
+      "detail": "reguła ksef_session_orchestrator: True"
+    },
+    {
+      "name": "offline_switch",
+      "status": "OK",
+      "detail": "przełączenie ONLINE→OFFLINE (okno 168h)"
+    },
+    {
+      "name": "retry_policy",
+      "status": "OK",
+      "detail": "retry z max_retries + eskalacja"
+    },
+    {
+      "name": "idempotency",
+      "status": "OK",
+      "detail": "numer KSeF wymagany po dacie obowiązku"
+    },
+    {
+      "name": "params_adr002",
+      "status": "OK",
+      "detail": "brak parametrów: BRAK"
+    },
+    {
+      "name": "opa_check",
+      "status": "OK",
+      "detail": "kompilacja rego (OPA check)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "V3_P04 (zero ciszy), P12/P13 (pola faktury), ADR-002",
+    "rule": "sesje KSeF online/batch/offline z idempotencją i retry"
+  }
+}

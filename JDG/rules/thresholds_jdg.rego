@@ -93,6 +93,40 @@ vat := {
     "small_taxpayer_vat_includes_vat": true,     # VAT: przychód Z VATem
     "small_taxpayer_pit_excludes_vat": true,     # PIT: przychód BEZ VATu
     "small_taxpayer_uor_excludes_vat": true,     # UoR: przychód BEZ VATu
+
+    # ════════════════════════════════════════════════════════════════════════
+    # V3-P13 VAT DEDUCTIONS / MPP / FRAUD ENTERPRISE (kampania V3 FORTRESS)
+    # ADR-002 zero hardcode — progi odliczeń, MPP, Biała Listy, fraud.
+    # ════════════════════════════════════════════════════════════════════════
+    # V3-P13-I01: Deduction Rights Engine (art. 86b VAT — moment odliczenia)
+    "deduction_moment_months": 3,                # odliczenie w miesiącu faktury lub 2 następnych
+    "deduction_prefinancing_months": 3,          # art. 86b ust. 2 — prefinansowanie (3 miesiące)
+    "blocked_deduction_categories": ["NKUP", "paliwo_osobowe", "noclegi", "gastronomia", "bez_dokumentu"],
+    # V3-P13-I02: Multi-Year Correction Planner (art. 91 VAT)
+    "multi_year_years_real_estate": 10,          # nieruchomości — 10 lat
+    "multi_year_years_other": 5,                 # pozostałe środki trwałe — 5 lat
+    "multi_year_years_low_value": 1,             # < 15 000 zł — 1 rok
+    # V3-P13-I05: Annex 15 as Versioned Data (MPP zał. 15 VAT)
+    "annex15_data_version": "2026-09",
+    "annex15_valid_from": "2019-11-01",
+    "annex15_cn_codes": ["01", "02", "03", "04", "07", "08", "10", "12", "15", "17", "18", "19", "20", "21", "22", "23", "24", "25", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "44", "48", "49", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75", "76", "78", "79", "80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96"],
+    # V3-P13-I06: White List Gate (art. 96b VAT)
+    "whitelist_check_threshold_pln": 15000,      # weryfikacja przed przelewem > 15 000 zł
+    "whitelist_cache_ttl_hours": 24,             # cache TTL
+    "whitelist_fallback_mode": "NEEDS_ADVICE",  # offline → NEEDS_ADVICE
+    # V3-P13-I07: Fraud Signal Framework (art. 105a-105c VAT)
+    "fraud_score_high": 60,                      # HIGH ≥ 60
+    "fraud_score_medium": 30,                    # MEDIUM ≥ 30
+    "fraud_human_review_required": true,         # human review WYMUSZONY (nigdy wina)
+    # V3-P13-I10: VAT Stress Lab (P37/P39)
+    "stress_scenario_size": 1000,                # 1000 faktur MPP jednocześnie
+    "stress_latency_budget_ms": 1000,            # budżet opóźnienia < 1s
+    "stress_throughput_target": 100,             # > 100 decyzji/s
+    "v3_p13_threshold_version": "vat-deductions-v3p13-2026.09",
+    "threshold_version": "vat-deductions-2026.08",
+    "legal_basis_version": "isap-lkg-2026.08",
+    "valid_from": "2025-01-01",
+    "valid_to": null,
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -210,6 +244,36 @@ ksef_jpk_edeklaracje := {
         "frequency": "rocznie (I kw.)",
         "sections": ["bilans", "rachunek_zyskow_i_strat", "informacja_dodatkowa", "dane_podatkowe"],
         "entities": ["CIT_OSOBA_PRAWNA", "CIT_OSOBA_FIZYCZNA_JDG"],
+    },
+
+    # ── V3-P16 (kampania V3 FORTRESS): KSeF/JPK ENTERPRISE — I01..I12 ──
+    # Klucze warstwy enterprise V3-P16 (rozszerzenie — zero duplikacji):
+    # sesje KSeF (I01), offline RPO=0/WAL (I02), UPO sentinel (I03),
+    # pre-send firewall (I04), kalendarz terminów (I05), kontrakt pól JPK
+    # (I06), korekty idempotentne (I07), sandbox CI (I08), chaos drill 72h
+    # (I09), e-Doręczenia chain (I10), kary progresywne (I11), golden set (I12).
+    "v3_p16_threshold_version": "ksef-jpk-v3p16-2026.09",
+    "v3_p16_session_max_retries": 3,              # I01: retry sesji KSeF
+    "v3_p16_offline_window_hours": 168,           # I01/I02: okno offline 7 dni (art. 106na)
+    "v3_p16_wal_required": true,                  # I02: Write-Ahead Log — RPO=0
+    "v3_p16_offline_rpo_hours": 0,                # I02/I09: RPO=0 (zero utraty)
+    "v3_p16_offline_rto_hours": 4,                # I02/I09: RTO cel 4h
+    "v3_p16_upo_timeout_hours": 24,               # I03: timeout UPO → alarm
+    "v3_p16_upo_escalation_hours": 48,            # I03: eskalacja
+    "v3_p16_edelivery_status_timeout_hours": 24,  # I10: status e-Doręczeń
+    "v3_p16_sandbox_cadence_days": 7,             # I08: cotygodniowy sandbox CI
+    "v3_p16_chaos_drill_hours": 72,               # I09: KSeF down 72h
+    "v3_p16_golden_set_version": "ksef-jpk-golden-2026.09",  # I12
+    "v3_p16_deadlines": {                          # I05: kalendarz terminów (dane)
+        "vat7_day": 25,
+        "jpk_v7_day": 25,
+        "pit36_deadline": "04-30",
+        "pit28_deadline": "02-28",
+        "jpk_pkpir_day": 20,
+        "zus_dra_day": 20,
+        "weekend_shift": true,
+        "holiday_shift": true,
+        "alert_days_before": 7,
     },
 }
 
@@ -675,6 +739,39 @@ pit := {
     "zus_social_as_kup": true,
     # Estimator karty podatkowej w symulacji „co by było gdyby” (P05 INN-06)
     "card_tax_estimation_pct": 0.20,
+
+    # ════════════════════════════════════════════════════════════════════════
+    # V3-P14 PIT RELIEFS / FORMS ENTERPRISE (kampania V3 FORTRESS)
+    # ADR-002 zero hardcode — limity ulg jako DANE roczne z valid_from
+    # (P06 parametry-as-data, P05 temporalność). Innowacje V3-P14-I01..I12.
+    # ════════════════════════════════════════════════════════════════════════
+    # V3-P14-I02: Limit-as-Data Engine — limity roczne ulg z valid_from
+    "v3_p14_relief_limits": {
+        "young": {"limit_pln": 85528, "valid_from": "2022-01-01"},        # art. 21 ust. 1 pkt 148 PIT
+        "return_work": {"limit_pln": 85528, "valid_from": "2022-01-01"},  # art. 21 ust. 1 pkt 152 PIT
+        "family_4plus": {"limit_pln": 85528, "valid_from": "2022-01-01"}, # art. 21 ust. 1 pkt 153 PIT
+        "senior": {"limit_pln": 85528, "valid_from": "2022-01-01"},       # art. 21 ust. 1 pkt 154 PIT
+        "thermo": {"limit_pln": 53000, "valid_from": "2019-01-01"},       # art. 26h PIT (na podatnika)
+        "rehab_car": {"limit_pln": 2280, "valid_from": "2024-01-01"},     # art. 26 ust. 1 pkt 6 PIT (auto)
+        "internet": {"limit_pln": 760, "valid_from": "2024-01-01"},       # art. 26 ust. 1 pkt 6a PIT
+    },
+    "v3_p14_threshold_version": "pit-reliefs-v3p14-2026.09",
+    # V3-P14-I01/I09: granice wieku i okien czasowych ulg PIT-0
+    "young_relief_max_age": 26,                  # ulga młodych — do 26 lat
+    "return_work_relief_years": 4,               # art. 21 ust. 1 pkt 152 — 4 lata
+    # V3-P14-I03: Nexus Ratio Auditor (art. 30ca ust. 4 PIT)
+    "ip_box_nexus_full_ratio": 0.50,             # ≥ 50% — FULL premium
+    "ip_box_nexus_partial_ratio": 0.25,          # ≥ 25% — partial discount
+    # V3-P14-I09: okno inwestycyjne robotyzacji (art. 26gb PIT — 2022-2026)
+    "robotization_relief_last_year": 2026,
+    "relief_expiry_alert_months": 3,             # alert sentinela z 3-mies. wyprzedzeniem
+    # V3-P14-I06: symulator — wskaźnik ogólny ryczałtu (stawki PKWiU: kontrakt P18/P14)
+    "lump_sum_generic_rate": 0.10,
+    # Wersjonowanie snapshotu pit (kontrakt _certificate V3-P14)
+    "threshold_version": "pit-reliefs-2026.09",
+    "legal_basis_version": "isap-pit-2026.08",
+    "valid_from": "2025-01-01",
+    "valid_to": null,
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -797,6 +894,31 @@ ksiegowosc := {
     # PKPiR — struktura ewidencji
     "pkpir_columns": 17,                       # kolumny 1–17 (rozporządzenie MF 15.11.2025)
     "pkpir_cash_basis_days": 14,               # memoriał kasowy — 14 dni na zapis
+
+    # ── V3-P20 KSIĘGOWOŚĆ PKPiR/UoR/AMORTYZACJA/LEASING (kampania V3 FORTRESS, jdg.v3_p20_ksiegowosc) ──
+    # Rdzeń księgowości ENTERPRISE — PKPiR (kolumny, remanent, NKUP, korekty),
+    # UoR (księgi, inwentaryzacja, sprawozdania), amortyzacja (art. 22a-22n),
+    # leasing (operacyjny/finansowy). Limity współdzielone NIE są duplikowane:
+    # 150k aut / 10k NKUP-ulepszenie / 100k jednorazowa / stawki KŚT / próg 2M EUR
+    # czytane przez pakiet z bloków depreciation/accounting (ADR-002, AP04/AP12).
+    "v3_p20_threshold_version": "ksiegowosc-v3p20-2026.09",
+    "v3_p20_schema_version": "pkpir-cols-17-2025.11",  # I01: wersja schematu kolumn (rozp. MF 15.11.2025)
+    "v3_p20_pkpir_cash_booking_days": 14,       # I01: memoriał kasowy — 14 dni na zapis
+    "v3_p20_remanent_rule": "RK_MINUS_RP",      # I02: koszty = remanent końcowy − początkowy (art. 24a)
+    "v3_p20_remanent_chain_invariant": true,     # I02: Rk roku N = Rp roku N+1 (invariant łańcucha)
+    "v3_p20_nkup_use_months": 12,                # I03: użycie < 1 roku → koszt bieżący (art. 22d/22f)
+    "v3_p20_one_time_alert_pct": 0.80,           # I04: alarm przy 80% limitu jednorazowej 100k
+    "v3_p20_one_time_groups": ["3", "4", "5", "6", "7", "8"],  # I04: art. 22k ust. 7 — grupy 3-8 (minus auta)
+    "v3_p20_kst_rate_version": "kst-2026.01",    # I05: wersja tabeli stawek KŚT (grupy→stawki)
+    "v3_p20_leasing_op_initial_months": 12,      # I06: opłata wstępna operacyjnego — rozłożenie 12M [NIEZWERYFIKOWANE]
+    "v3_p20_uor_transition_procedure": "REMANENT_PLUS_CLOSING",  # I07: przejście PKPiR→UoR w trakcie roku
+    "v3_p20_uor_transition_months": 3,           # I07: procedura przejścia — okno 3 mies. [NIEZWERYFIKOWANE]
+    "v3_p20_closing_pit_due": "04-30",           # I08: PIT roczny do 30.04 (łańcuch zamknięcia roku)
+    "v3_p20_closing_jpk_due": "02-20",           # I08: JPK_V7 do 25./20. — kontekst łańcucha [NIEZWERYFIKOWANE]
+    "v3_p20_double_entry_invariant": true,        # I09: UoR — bilans zbalansowany (podwójny zapis, P04)
+    "v3_p20_golden_version": "ksiegowosc-golden-2026.09",  # I10: wersja golden set księgowości
+    "v3_p20_invariants_active": true,             # I11: pakiet invariantów księgowości (kontrakt P04)
+    "v3_p20_checklist_version": "dowody-ksiegowe-2026.01",  # I12: wersja checklist dokumentacyjnych
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -837,6 +959,32 @@ lump_sum := {
     "rate_12pct": 0.12,                          # IT, wolne zawody >300k
     "rate_15pct": 0.15,                          # Zarządzanie
     "rate_17pct": 0.17,                          # Wolne zawody
+
+    # ── V3-P18 RYCZAŁT ENTERPRISE (kampania V3 FORTRESS, pakiet jdg.v3_p18_ryczalt) ──
+    # Stawki jako dane (ADR-002/P06) — uzupełnione brakujące stawki art. 12
+    # (10/12,5/14%) + zestaw stawek + mapy PKWiU wersjonowane + wykluczenia
+    # art. 8 + formy/karta. Podstawy do weryfikacji ISAP (art. 21-30 karta —
+    # stawki karty [NIEZWERYFIKOWANE], patrz raport P18).
+    "v3_p18_threshold_version": "ryczalt-v3p18-2026.09",
+    "v3_p18_rate_10pct": 0.10,                   # I01: art. 12 — stawka 10% (uzupełnienie)
+    "v3_p18_rate_12_5pct": 0.125,                # I01: art. 12 — stawka 12,5% (uzupełnienie)
+    "v3_p18_rate_14pct": 0.14,                   # I01: art. 12 — stawka 14% (IT powyżej progu)
+    "v3_p18_rate_set": [0.02, 0.03, 0.055, 0.085, 0.10, 0.12, 0.125, 0.14, 0.15, 0.17],
+    "v3_p18_rate_map_version": "pkwiu-ryczalt-2025.09",   # I01/I10: wersja mapy PKWiU→stawka
+    "v3_p18_rate_14pct_threshold_pln": 300000,   # I01: próg 300k dla stawki 14%/12,5% IT
+    "v3_p18_exclusion_former_employer": true,    # I02: art. 8 — usługi dla b. pracodawcy
+    "v3_p18_exclusion_effective_mode": "NEXT_DAY",  # I03: utrata od dnia nast. [NIEZWERYFIKOWANE]
+    "v3_p18_midyear_change_deadline_days": 14,   # I03: termin ścieżki zmiany formy
+    "v3_p18_health_rate_pct": 0.049,             # I04: zdrowotna 4,9% (kontekst P26)
+    "v3_p18_scale_low_rate": 0.12,               # I04: PIT skala — próg dolny 12%
+    "v3_p18_scale_high_rate": 0.32,              # I04: PIT skala — próg górny 32%
+    "v3_p18_scale_threshold_pln": 120000,        # I04: próg skali
+    "v3_p18_linear_rate": 0.19,                  # I04: PIT liniowy 19%
+    "v3_p18_karta_monthly_pln": 700,             # I04: karta — stawka mies. [NIEZWERYFIKOWANE]
+    "v3_p18_pit28_due": "02-20",                # I08: PIT-28 do 20 lutego
+    "v3_p18_contract_tolerance_pln": 0.01,       # I07: tolerancja groszowa ryczałt↔PKPiR
+    "v3_p18_golden_version": "ryczalt-golden-2026.09",   # I10: wersja golden set
+    "v3_p18_invariants_active": true,            # I11: invarianty ryczałtu (kontrakt P04)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -878,6 +1026,30 @@ ord := {
     "overpayment_claim_years": 5,                # Art. 72-80 — prawo do wniosku o nadpłatę: 5 lat
     "interest_lombard_multiplier": 2.0,          # Art. 56 — odsetki: 200% stopy lombardowej
     "instalment_relief_active": true,            # Art. 67a-67e — ulgi w spłacie
+
+    # ── V3-P17 ORDYNACJA OBRONA (kampania V3 FORTRESS, pakiet jdg.v3_p17_ordynacja_obrona) ──
+    # Odsetki / przedawnienie / GAAR / procedury obrony — parametry-as-data (ADR-002,
+    # P06); temporalność przez valid_from (P05). Podstawy prawne do weryfikacji ISAP
+    # (art. 30a/30b — stawki AUD oznaczone [NIEZWERYFIKOWANE] — patrz raport P17).
+    "v3_p17_threshold_version": "ordynacja-obrona-v3p17-2026.09",
+    "v3_p17_interest_rate_annual": 0.08,          # I01: art. 56 OP — bazowa stopa roczna (dane)
+    "v3_p17_interest_rates_valid_from": "2023-01-01",  # I01: okno temporalne stawki (P05)
+    "v3_p17_interest_capitalization": "MONTHLY",  # I01: art. 56 — kapitalizacja miesięczna
+    "v3_p17_statute_years": 5,                    # I02: art. 70 — 5 lat
+    "v3_p17_statute_end_rule": "CALENDAR_YEAR_END_PLUS_5",  # I02: koniec roku kal. + 5
+    "v3_p17_limitation_alert_days": [90, 60, 30], # I02: alerty przed przedawnieniem
+    "v3_p17_suspension_max_events": 3,            # I02: limit zdarzeń zawieszenia (art. 71)
+    "v3_p17_gaar_mae_threshold_pln": 1000000,     # I03: art. 119a — MAE 1 mln zł
+    "v3_p17_deadline_statement_days": 7,          # I04: art. 282b — stanowisko 7 dni
+    "v3_p17_appeal_days": 14,                     # I04: art. 223 — odwołanie 14 dni
+    "v3_p17_wsa_days": 30,                        # I04: art. 53 PPSA — skarga 30 dni
+    "v3_p17_zero_silence_escalation_days": 2,     # I04: zero ciszy — eskalacja po 48h
+    "v3_p17_aud_reduced_rate_pct": 0.0,           # I06: art. 30a/30b — stawka po ujawnieniu [NIEZWERYFIKOWANE]
+    "v3_p17_aud_full_rate_pct": 0.12,             # I06: art. 30a/30b — stawka bazowa [NIEZWERYFIKOWANE]
+    "v3_p17_ruling_4eyes_required": true,         # I07: wniosek KIS — wymagany review prawnika
+    "v3_p17_interpretation_law_change_sentinel": true,  # I10: zmiana prawa = utrata ochrony
+    "v3_p17_invariants_active": true,             # I11: pakiet invariantów (kontrakt P04)
+    "v3_p17_stress_scenarios": ["interest_10y", "multi_suspension", "last_day_appeal"],  # I12
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1131,6 +1303,29 @@ pcc_local_excise := {
     "legal_basis_version": "isap-lkg-2026.08",
     "valid_from": "2026-01-01",
     "valid_to": null,
+
+    # ── V3-P19 PCC / LOKALNE / BDO ENTERPRISE (kampania V3 FORTRESS, jdg.v3_p19_pcc_akcyza_bdo) ──
+    # Stawki PCC/limity gminne/akcyza już w bloku (pcc_sale_rate, land_*_rate itd.) —
+    # poniżej tylko BRAKUJĄCE dane P19 (terminy, raty, BDO/EWC/CBAM, invarianty),
+    # ADR-002/P05; akcyza/CBAM = decyzje architektoniczne [NIEZWERYFIKOWANE — Q01/Q02].
+    "v3_p19_threshold_version": "pcc-lokalne-bdo-v3p19-2026.09",
+    "v3_p19_property_installments": ["03-15", "05-15", "09-15", "11-15"],  # I04/I11: raty nieruchomości art. 12-13 UoPiOL
+    "v3_p19_transport_due": "01-31",                # I04: podatek transportowy do 31.01
+    "v3_p19_zero_silence_escalation_days": 2,        # I04: zero ciszy — eskalacja 48h
+    "v3_p19_statutory_limit_check": true,            # I02: walidacja stawek gminnych z limitami ustawowymi
+    "v3_p19_mpp_pcc_exclusion": true,                # I03: bramka MPP faktura ≠ PCC (zero podwójnego opodatkowania)
+    "v3_p19_loan_exemption_limit": 1000,             # I01/I09: zwolnienie pożyczek do 1000 zł (art. 9 pkt 10)
+    "v3_p19_bdo_waste_threshold_kg": 100,            # I05: BDO — próg odpadów do rejestracji [NIEZWERYFIKOWANE]
+    "v3_p19_bdo_packaging_active": true,             # I05: BDO — wprowadzający opakowania
+    "v3_p19_weee_seller_registration": true,         # I05: WEEE — rejestr sprzedawców [NIEZWERYFIKOWANE]
+    "v3_p19_waste_fee_per_kg_pln": 0.30,             # I07: opłata za odpady [NIEZWERYFIKOWANE — stawki wg kodów]
+    "v3_p19_ewc_library_version": "ewc-2026.01",    # I06: wersja bazy kodów EWC
+    "v3_p19_cbam_monitor_active": true,              # I08: monitoring importu CBAM
+    "v3_p19_cbam_goods": ["CEMENT", "STAL", "ALUMINIUM", "NAWOZY", "WODOR", "ENERGIA"],  # I08
+    "v3_p19_golden_version": "pcc-local-golden-2026.09",  # I09: wersja golden set
+    "v3_p19_invariants_active": true,                # I10: invarianty lokalne (kontrakt P04)
+    "v3_p19_bdo_report_due": "03-15",               # I05/I07: raport BDO do 15.03 [NIEZWERYFIKOWANE]
+    "v3_p19_pcc3_form": "PCC-3",                    # I01: formularz PCC-3
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

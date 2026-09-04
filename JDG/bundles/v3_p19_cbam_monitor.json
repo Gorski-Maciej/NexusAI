@@ -1,0 +1,53 @@
+{
+  "innovation": "V3-P19-I08",
+  "generated_at": "2026-09-04T14:09:08+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "catalogue": true,
+    "architectural": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "cbam_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p19_pcc_akcyza_bdo.cbam_architectural_decision: True"
+    },
+    {
+      "name": "scope_catalogue",
+      "status": "OK",
+      "detail": "katalog towarów carbon-intensywnych (jako dane)"
+    },
+    {
+      "name": "in_scope_logic",
+      "status": "OK",
+      "detail": "detekcja importu w katalogu CBAM"
+    },
+    {
+      "name": "architectural_decision",
+      "status": "OK",
+      "detail": "deklaracja CBAM = decyzja architektoniczna (NIE automatyzacja)"
+    },
+    {
+      "name": "triage_to_human",
+      "status": "OK",
+      "detail": "import w katalogu = TRIAGE do człowieka"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: katalog + monitoring z data.thresholds"
+    },
+    {
+      "name": "main_jdg_wiring",
+      "status": "OK",
+      "detail": "import + rejestr + final_verdict_p87"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "rozporządzenie UE CBAM 2023/956 (kontekst importera); Q02",
+    "rule": "monitoring CBAM — decyzja architektoniczna, TRIAGE, nie automatyzacja"
+  }
+}

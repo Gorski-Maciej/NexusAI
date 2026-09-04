@@ -1,0 +1,54 @@
+{
+  "innovation": "V3-P19-I04",
+  "generated_at": "2026-09-04T14:09:06+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "deadlines": true,
+    "breach_block": true,
+    "zero_silence": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "calendar_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p19_pcc_akcyza_bdo.local_tax_calendar_pack: True"
+    },
+    {
+      "name": "deadlines_as_data",
+      "status": "OK",
+      "detail": "terminy (31.01 / 15.03..15.11) z data.thresholds"
+    },
+    {
+      "name": "breach_block",
+      "status": "OK",
+      "detail": "termin minął bez zapłaty = BLOCK"
+    },
+    {
+      "name": "zero_silence",
+      "status": "OK",
+      "detail": "zero ciszy + eskalacja (48h)"
+    },
+    {
+      "name": "instalment_track",
+      "status": "OK",
+      "detail": "śledzenie rat: paid/payments_count/days_left"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: kalendarz i eskalacja z data.thresholds"
+    },
+    {
+      "name": "main_jdg_wiring",
+      "status": "OK",
+      "detail": "import + rejestr + final_verdict_p87"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "UoPiOL art. 6/12-13 (terminy); kontrakt V3_P36 (zero ciszy)",
+    "rule": "kalendarz podatków lokalnych — zero ciszy, eskalacja 48h"
+  }
+}

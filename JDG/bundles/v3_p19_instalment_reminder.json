@@ -1,0 +1,59 @@
+{
+  "innovation": "V3-P19-I11",
+  "generated_at": "2026-09-04T14:10:10+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "forecast": true,
+    "breach_block": true,
+    "fail_closed": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "reminder_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p19_pcc_akcyza_bdo.instalment_reminder: True"
+    },
+    {
+      "name": "contract_fields",
+      "status": "OK",
+      "detail": "kontrakt: podatek roczny / raty opłacone / dni do terminu"
+    },
+    {
+      "name": "forecast",
+      "status": "OK",
+      "detail": "przewidywanie kwoty raty (podatek/4)"
+    },
+    {
+      "name": "breach_block",
+      "status": "OK",
+      "detail": "rata minięta bez zapłaty = BLOCK (zero ciszy)"
+    },
+    {
+      "name": "urgent_window",
+      "status": "OK",
+      "detail": "≤ 14 dni do terminu = przypomnienie z eskalacją"
+    },
+    {
+      "name": "fail_closed",
+      "status": "OK",
+      "detail": "brak danych podatku = BLOCK (fail-closed)"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: terminy rat + eskalacja z data.thresholds"
+    },
+    {
+      "name": "main_jdg_wiring",
+      "status": "OK",
+      "detail": "import + rejestr + final_verdict_p87"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "UoPiOL art. 6 (raty 15.03/15.05/15.09/15.11); zero ciszy V3_P36",
+    "rule": "przypomnienia rat nieruchomości z prognozą kwot"
+  }
+}

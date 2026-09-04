@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P17-I09",
+  "generated_at": "2026-09-04T13:29:48+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "checklist": true,
+    "block": true,
+    "types": true
+  },
+  "checks": [
+    {
+      "name": "defense_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p17_ordynacja_obrona.defense_packet_generator: True"
+    },
+    {
+      "name": "checklist",
+      "status": "OK",
+      "detail": "checklista: odpowiedź, dokumenty, dowody, review"
+    },
+    {
+      "name": "incomplete_block",
+      "status": "OK",
+      "detail": "wysyłka niekompletnej paczki = BLOCK"
+    },
+    {
+      "name": "case_types",
+      "status": "OK",
+      "detail": "typy spraw: apelacja/skarga/odpowiedź/zalecenia"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 187-234 OrdPU; art. 53 PPSA; kontrakt V3_P41 (UI spraw)",
+    "rule": "generator paczki obronnej z checklistą braków"
+  }
+}

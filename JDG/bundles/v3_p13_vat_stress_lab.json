@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P13-I10",
+  "generated_at": "2026-09-04T10:41:06+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "stress_rule": true,
+    "scenarios": true,
+    "metrics": true,
+    "safe": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "stress_rule",
+      "status": "OK",
+      "detail": "reguła vat_stress_lab: True"
+    },
+    {
+      "name": "scenarios",
+      "status": "OK",
+      "detail": "scenariusze: 1000 faktur MPP, korekta masowa, fraud chain"
+    },
+    {
+      "name": "p37_metrics",
+      "status": "OK",
+      "detail": "metryki P37 (latency < 1s, throughput > 100/s)"
+    },
+    {
+      "name": "no_decision_change",
+      "status": "OK",
+      "detail": "wynik = raport; nigdy zmiana decyzji"
+    },
+    {
+      "name": "params_as_data",
+      "status": "OK",
+      "detail": "brak parametrów stress_*: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P04 (invarianty), P10 (golden), P39 (bramki CI), P37 (obserwowalność), P36 (procesy)",
+    "rule": "VAT Stress Lab: 1000 faktur MPP, korekta masowa, fraud chains — metryki P37"
+  }
+}

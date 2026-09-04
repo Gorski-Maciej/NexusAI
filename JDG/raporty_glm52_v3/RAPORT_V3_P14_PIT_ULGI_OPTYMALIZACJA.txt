@@ -1,13 +1,19 @@
 ==============================================================================
 RAPORT V3 P14 — PIT — FORMY OPODATKOWANIA, ULGI I OPTYMALIZACJA [V3.0]
 
-Status:                 WDROŻONY_100
-Data:                   2026-09-03
+Status:                 WDROŻONY_100 (realne artefakty w repo, 2026-09-04)
+Data:                   2026-09-04
 Plik promptu:           JDG/prompty_v3/V3_PROMPT_P14_PIT_ULGI_OPTYMALIZACJA.txt
 Docelowy plik raportu:  JDG/raporty_glm52_v3/RAPORT_V3_P14_PIT_ULGI_OPTYMALIZACJA.txt
 Wersja kampanii:        V3.0
-Data:                   2026-09-03
-Status: WDROŻONY_100 (wdrożenie w repo: 16 reguł + 8 narzędzi + 8 testów + kontrakt + 12 innowacje Enterprise (6-elementowe) + struktury)
+Data:                   2026-09-04
+Status: WDROŻONY_100 (WDROŻONE W REPO 2026-09-04): rules/v3_p14_pit_reliefs_enterprise.rego
+  (pakiet jdg.v3_p14_pit_reliefs — 12 innowacji I01-I12) + 28 progów PIT w
+  rules/thresholds_jdg.rego (v3_p14_relief_limits z valid_from, ADR-002/P06) +
+  wiring rules/main_jdg.rego (import, rejestr, final_verdict_p83) + 13 narzędzi
+  tools/v3_p14_*.py + 12 bundle dowodowych bundles/v3_p14_*.json (gate=PASS) +
+  testy: tests/rego/test_v3_p14_pit_reliefs_enterprise.rego (24/24 PASS na OPA
+  0.68 i 1.9) + tests/auto/test_v3_p14_pit_reliefs_enterprise.py (14/14 PASS).
 
 ==============================================================================
 SEKCJA 9 — STRUKTURA RAPORTU (WYMAGANA) — RAPORT_V3_P14_PIT_ULGI_OPTYMALIZACJA.txt

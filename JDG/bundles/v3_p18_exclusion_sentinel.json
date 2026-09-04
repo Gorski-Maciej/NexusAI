@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P18-I02",
+  "generated_at": "2026-09-04T13:45:09+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "flags": true,
+    "blocker": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "sentinel_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p18_ryczalt.exclusion_sentinel: True"
+    },
+    {
+      "name": "flags",
+      "status": "OK",
+      "detail": "flagi: b. pracodawca + zakres + kompletność danych"
+    },
+    {
+      "name": "blocker",
+      "status": "OK",
+      "detail": "naruszenie wykluczenia = BLOCKER (ryczałt mimo wykluczenia)"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: wykluczenie b. pracodawcy z data.thresholds.lump_sum"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 8 ustawy o zryczałtowanym PIT; kontrakt P28 (kontrahenci)",
+    "rule": "sentinel wykluczeń z BLOCKER-em i kalkulacją konsekwencji"
+  }
+}

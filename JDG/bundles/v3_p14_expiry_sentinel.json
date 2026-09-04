@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P14-I09",
+  "generated_at": "2026-09-04T11:50:18+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "young": true,
+    "return": true,
+    "robotization": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "sentinel_rule",
+      "status": "OK",
+      "detail": "reguła relief_expiry_sentinel: True"
+    },
+    {
+      "name": "young_age_26",
+      "status": "OK",
+      "detail": "granica wieku 26 lat (ulga młodych, pkt 148)"
+    },
+    {
+      "name": "return_4yr",
+      "status": "OK",
+      "detail": "okno 4 lat powrotu do pracy (pkt 152)"
+    },
+    {
+      "name": "robotization_window",
+      "status": "OK",
+      "detail": "okno inwestycyjne robotyzacji (26gb — do 2026)"
+    },
+    {
+      "name": "params",
+      "status": "OK",
+      "detail": "brak parametrów okien: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P05 (temporalność), P36 (kalendarz), P37 (obserwowalność)",
+    "rule": "sentinel wygasania ulg czasowych (wiek 26, powrót 4 lata, robotyzacja 2026)"
+  }
+}

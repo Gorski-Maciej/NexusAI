@@ -1,0 +1,50 @@
+{
+  "innovation": "V3-P16-I09",
+  "generated_at": "2026-09-04T13:05:17+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "drill_72h": true,
+    "rpo_rto": true,
+    "loss": true,
+    "drill_gate": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "chaos_rule",
+      "status": "OK",
+      "detail": "reguła chaos_ksef_drill: True"
+    },
+    {
+      "name": "drill_72h",
+      "status": "OK",
+      "detail": "scenariusz KSeF down 72h"
+    },
+    {
+      "name": "rpo_rto_measure",
+      "status": "OK",
+      "detail": "pomiar RPO/RTO (zero utraty)"
+    },
+    {
+      "name": "loss_block",
+      "status": "OK",
+      "detail": "utrata faktur → BLOCK_AND_ALERT"
+    },
+    {
+      "name": "drill_gate",
+      "status": "OK",
+      "detail": "awaria bez drillu → NEEDS_ADVICE"
+    },
+    {
+      "name": "params_adr002",
+      "status": "OK",
+      "detail": "brak parametrów: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P43 (DR/BCP), V1 resilience (RPO/RTO), P16-AN12",
+    "rule": "chaos drill: KSeF down 72h → zero utraty (RPO/RTO)"
+  }
+}

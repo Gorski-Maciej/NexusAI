@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P13-I06",
+  "generated_at": "2026-09-04T10:41:07+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "whitelist_rule": true,
+    "threshold": true,
+    "fallback": true,
+    "audit": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "whitelist_rule",
+      "status": "OK",
+      "detail": "reguła white_list_gate: True"
+    },
+    {
+      "name": "before_transfer_15k",
+      "status": "OK",
+      "detail": "weryfikacja przed przelewem > 15 000 zł (art. 96b)"
+    },
+    {
+      "name": "offline_fallback",
+      "status": "OK",
+      "detail": "fallback offline → NEEDS_ADVICE (nigdy cichy AUTO_POST)"
+    },
+    {
+      "name": "cache_and_audit",
+      "status": "OK",
+      "detail": "cache TTL + audit weryfikacji"
+    },
+    {
+      "name": "params_as_data",
+      "status": "OK",
+      "detail": "brak parametrów whitelist_*: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P05 (temporalność), P10 (golden), P39 (bramki CI), P41 (UI review), P13 (cross-border)",
+    "rule": "Biała Lista (art. 96b): weryfikacja > 15k przed przelewem, cache, fallback NEEDS_ADVICE, audit"
+  }
+}

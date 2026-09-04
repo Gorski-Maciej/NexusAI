@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P16-I07",
+  "generated_at": "2026-09-04T13:05:18+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "event_ids": true,
+    "retry": true,
+    "duplicate_block": true,
+    "deadline": true
+  },
+  "checks": [
+    {
+      "name": "corrections_rule",
+      "status": "OK",
+      "detail": "reguła idempotent_corrections: True"
+    },
+    {
+      "name": "event_ids",
+      "status": "OK",
+      "detail": "identyfikatory zdarzeń korekt"
+    },
+    {
+      "name": "retry_proof",
+      "status": "OK",
+      "detail": "retry idempotentne (brak duplikatu)"
+    },
+    {
+      "name": "duplicate_block",
+      "status": "OK",
+      "detail": "kolizja zdarzeń → BLOCK_AND_ALERT"
+    },
+    {
+      "name": "deadline_30d",
+      "status": "OK",
+      "detail": "termin korekt 30 dni (art. 106j)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 106j VAT, art. 81 OrdPU, P06 (idempotencja)",
+    "rule": "korekty JPK idempotentne (event_id, retry-proof)"
+  }
+}

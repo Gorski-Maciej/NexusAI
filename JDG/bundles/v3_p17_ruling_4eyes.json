@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P17-I07",
+  "generated_at": "2026-09-04T13:29:51+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "completeness": true,
+    "4eyes": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "ruling_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p17_ordynacja_obrona.ruling_autodrafter_4eyes: True"
+    },
+    {
+      "name": "formal_completeness",
+      "status": "OK",
+      "detail": "checklista formalna wniosku (opis, stanowisko, podstawa, opłata)"
+    },
+    {
+      "name": "4eyes_gate",
+      "status": "OK",
+      "detail": "bramka 4-eyes: wysyłka bez review = BLOCK"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: wymóg review z data.thresholds.ord"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 14b-14d OrdPU; kontrakt LKG V3_P01; pytanie X08 (4-eyes)",
+    "rule": "autodrafter wniosków KIS z bramką 4-eyes"
+  }
+}

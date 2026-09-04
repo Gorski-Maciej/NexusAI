@@ -1,0 +1,54 @@
+{
+  "innovation": "V3-P19-I06",
+  "generated_at": "2026-09-04T14:09:07+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "format": true,
+    "membership": true,
+    "fail_closed": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "ewc_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p19_pcc_akcyza_bdo.ewc_code_library: True"
+    },
+    {
+      "name": "contract_fields",
+      "status": "OK",
+      "detail": "kontrakt: kod EWC / obecność w bazie / format"
+    },
+    {
+      "name": "format_validation",
+      "status": "OK",
+      "detail": "walidacja formatu kodu EWC"
+    },
+    {
+      "name": "library_membership",
+      "status": "OK",
+      "detail": "członkostwo kodu w bibliotece EWC"
+    },
+    {
+      "name": "fail_closed",
+      "status": "OK",
+      "detail": "zły format / kod poza bazą = BLOCK (fail-closed)"
+    },
+    {
+      "name": "version_as_data",
+      "status": "OK",
+      "detail": "ADR-002: wersja bazy EWC z data.thresholds"
+    },
+    {
+      "name": "main_jdg_wiring",
+      "status": "OK",
+      "detail": "import + rejestr + final_verdict_p87"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "rozporządzenie ws. katalogu odpadów (EWC); ADR-002",
+    "rule": "biblioteka kodów EWC jako dane + walidacja ewidencji"
+  }
+}

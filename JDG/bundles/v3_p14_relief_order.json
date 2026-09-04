@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P14-I04",
+  "generated_at": "2026-09-04T11:50:17+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "order": true,
+    "invariant": true,
+    "missing_params": [],
+    "domain_ok": true
+  },
+  "checks": [
+    {
+      "name": "order_rule",
+      "status": "OK",
+      "detail": "reguła relief_order_optimizer: True"
+    },
+    {
+      "name": "canonical_order",
+      "status": "OK",
+      "detail": "kolejność kanoniczna + indeks porządku + kwoty zastosowane"
+    },
+    {
+      "name": "invariant_p04",
+      "status": "OK",
+      "detail": "invariant suma odliczeń ≤ dochód → BLOCK_AND_ALERT przy naruszeniu"
+    },
+    {
+      "name": "params",
+      "status": "OK",
+      "detail": "brak parametrów: BRAK"
+    },
+    {
+      "name": "domain_optimizer",
+      "status": "OK",
+      "detail": "rules/pit/cross_relief_optimizer_enterprise.rego obecny — rozszerzenie"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P04 (invarianty runtime), P28 (księgowość), P44 (deklaracje)",
+    "rule": "optymalna kolejność odliczeń pod invariant suma ≤ dochód (BLOCK przy nadwyżce)"
+  }
+}

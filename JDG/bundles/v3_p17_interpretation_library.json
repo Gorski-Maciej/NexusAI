@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P17-I10",
+  "generated_at": "2026-09-04T13:29:49+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "lookup": true,
+    "sentinel": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "library_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p17_ordynacja_obrona.interpretation_library: True"
+    },
+    {
+      "name": "lookup",
+      "status": "OK",
+      "detail": "wyszukiwanie per przepis (hit/ważność/zmiana prawa)"
+    },
+    {
+      "name": "law_change_sentinel",
+      "status": "OK",
+      "detail": "sentinel zmiany prawa = utrata ochrony"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: sentinel z data.thresholds.ord"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 14b-14d OrdPU; kontrakt LKG V3_P01; certainty V3_P03",
+    "rule": "biblioteka interpretacji KIS z datami ważności i sentinelem"
+  }
+}

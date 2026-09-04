@@ -1,0 +1,189 @@
+==============================================================================
+RAPORT V3 P17 — ORDYNACJA PODATKOWA — OBRONA, ODSETKI, PRZEDAWNIENIE
+I PROWADZENIE SPRAW [V3.0]
+
+Status:                 WDROŻONY_100 (realne artefakty w repo, 2026-09-04)
+Data:                   2026-09-04
+Plik promptu:           JDG/prompty_v3/V3_PROMPT_P17_ORDYNACJA_OBRONA.txt
+Docelowy plik raportu:  JDG/raporty_glm52_v3/RAPORT_V3_P17_ORDYNACJA_OBRONA.txt
+Wersja kampanii:        V3.0
+
+Uwaga o statusie: raport P17 nie istniał w repo (część oznaczona w ledgerze jako
+NIE_WDROŻONY, zero artefaktów V3-P17). Niniejszy raport dokumentuje WDROŻENIE
+100% wszystkich 12 innowacji promptu V3-P17 — z realnymi dowodami (kod, dane,
+narzędzia, testy, wyniki uruchomień), zgodnie z protokołem Sekcji 12 promptu.
+
+==============================================================================
+SEKCJA 1 — EXECUTIVE SUMMARY (9.01)
+==============================================================================
+Dojrzałość części P17 po wdrożeniu: ACTIVE (nowa warstwa ENTERPRISE włączona do
+łańcucha decyzyjnego main_jdg jako final_verdict_p85). Rdzenny ekosystem
+Ordynacji istniał (gaar_shield_enterprise, interest_calculator_enterprise,
+statute_of_limitations, proceeding_tracker_enterprise, defense_builder,
+tax_ruling_autodrafter, judicial_*, tools: limitations_calendar,
+kks_limitations_calendar, defense_packet_builder, correspondence_generator,
+sanction_calculator, ordpu_auditor), ale NIE istniała warstwa V3-P17 (pakiet
+jdg.v3_p17_ordynacja_obrona, thresholdy v3_p17_*, narzędzia dowodowe, testy).
+
+TOP-10 rekomendacji (wszystkie WDROŻONE):
+  1. I01 Interest Precision Engine — odsetki groszowe art. 56 z kapitalizacją miesięczną,
+     stawką jako danymi (valid_from) i fail-closed retro (P05).
+  2. I02 Limitation Sentinel — kalendarz przedawnienia art. 70-72: 31.12+5, zawieszenia
+     art. 71, alerty 90/60/30, interwencja = nowy termin.
+  3. I03 GAAR Shield Framework — scoring OCHRONNY art. 119a (MAE 1 mln, checklista,
+     NIGDY wina; wysoki sygnał = BLOCK do doradcy).
+  4. I04 Procedural Deadline Constitution — terminy 7/14/30 z ZERO CISZY (brak reakcji
+     = BLOCK_AND_ALERT + eskalacja 48h).
+  5. I05 Active Correction Advisor — korekta czynna art. 81 przed wszczęciem z benefitami;
+     uzupełniająca po wszczęciu z konsekwencjami; invariant: korekta audytowana.
+  6. I06 AUD Benefit Tracker — art. 30a/30b: warunki benefitu + monitoring naruszeń.
+  7. I07 Ruling Autodrafter 4-Eyes — wniosek KIS: kompletność formalna + bramka review.
+  8. I08 Proceeding Timeline — etapy sprawy → następna czynność, zero ciszy, dowody.
+  9. I09 Defense Packet Generator — paczka obronna z checklistą; niekompletna wysyłka = BLOCK.
+ 10. I10 Interpretation Library — baza interpretacji KIS (LKG P01) z sentinelem zmiany prawa.
+
+Liczba luk P17 domkniętych wdrożeniem: P0 = 4 (L01 groszowość 0,01; L02 brak alertów
+przedawnienia; L03 GAAR bez MAE; L05 korekta bez audytu — AP07), P1 = 5 (L04 zero-ciszy,
+L06 AUD bez warunków, L07 wniosek bez 4-eyes, L08 timeline bez zero-ciszy, L09 paczka
+bez blokady, L10 sentinel interpretacji, L11 invarianty, L12 stress fail-closed).
+Pre-existing poza zakresem P17 (nie zmieniane): parse error annual_declaration_enterprise.rego.
+
+==============================================================================
+SEKCJA 2 — ZAKRES I OGRANICZENIA (9.02)
+==============================================================================
+Zakres wdrożenia: prompt V3_P17_ORDYNACJA_OBRONA.txt w całości (Sekcje 1-16,
+innowacje I01-I12 Sekcji 10, podanalizy 5.1-5.4, invarianty, fail-closed).
+Rdzenne pliki Sekcji 6 zweryfikowane pod kątem ISTNIENIA i konwencji (nie
+duplikowane — rozszerzane: thresholdy w istniejącym bloku data.jdg.thresholds.ord).
+Status źródeł prawnych: podstawy z raportu oznaczane jawnie; stawki AUD
+(art. 30a/30b) [NIEZWERYFIKOWANE] — parametryzowane w thresholdach (ADR-002),
+weryfikacja ISAP do wykonania przez człowieka (V3-P17-Q01).
+
+==============================================================================
+SEKCJA 3 — STAN OBECNY CZĘŚCI P17 (9.03) — artefakty wdrożenia
+==============================================================================
+| Plik | Pakiet Rego | Zakres | Testy | Status |
+|------|-------------|--------|-------|--------|
+| rules/v3_p17_ordynacja_obrona_enterprise.rego | jdg.v3_p17_ordynacja_obrona | 12 analiz I01-I12 + router decide fail-closed | 29/29 native | ACTIVE |
+| rules/thresholds_jdg.rego (blok ord) | jdg.thresholds | +19 kluczy v3_p17_* (ADR-002/P05) | pytest | ACTIVE |
+| rules/main_jdg.rego | jdg.main | import + rejestr + final_verdict_p85 | pytest | ACTIVE |
+| tools/v3_p17_common.py + 12 tooli | — | dowody wdrożenia | 12/12 bundle PASS | ACTIVE |
+| tests/rego/test_v3_p17_ordynacja_obrona_enterprise.rego | test_jdg_v3_p17 | 29 testów (24 analiz + no_match) | 0.68 + 1.9 | ACTIVE |
+| tests/auto/test_v3_p17_ordynacja_obrona_enterprise.py | — | 11 testów pytest | 11/11 | ACTIVE |
+
+==============================================================================
+SEKCJA 4 — PODANALIZY 5.1-5.4 (9.04)
+==============================================================================
+5.1 Odsetki i kapitalizacja (I01): stawka jako dane z valid_from
+    (v3_p17_interest_rate_annual + v3_p17_interest_rates_valid_from), kapitalizacja
+    miesięczna (model składany przez numbers.range), zaokrąglenie half-up do 0,01
+    (testy granicy groszowej), temporalność retro fail-closed (naliczanie przed
+    valid_from = BLOCK). Wnioski: (1) groszowość 0,01 domknięta regułą _round2 +
+    testem round_ok; (2) kapitalizacja kontrolowana flagą capitalization_active;
+    (3) invariant ORD_INV-001 (odsetki ≥ 0) w pakiecie I11.
+5.2 Przedawnienie i zawieszenia (I02): koniec roku kalendarzowego + 5 (end_rule z
+    danych), zawieszenia art. 71 przesuwają koniec (suspension_days/events),
+    alerty 90/60/30, interwencja = nowy termin. Wnioski: (1) brak roku/dni = BLOCK
+    (fail-closed, nigdy ciche „przedawnione"); (2) limit zdarzeń zawieszenia
+    (suspension_max_events) monitorowany; (3) tier alertu w certyfikacie.
+5.3 GAAR i klauzule (I03): scoring ochronny — MAE 1 mln parametryzowane, checklista
+    wartości dodanej/uzasadnienia, ukrycie, sztuczne kroki; certainty_impact
+    NEEDS_ADVICE (kontrakt V3_P03 — klasa, nie wina); ścieżka interpretacji (I07/I10).
+    Wnioski: (1) wynik 4 (ukrycie + korzyść ≥ MAE) = BLOCK do opinii doradcy;
+    (2) wynik 2-3 = TRIAGE z checklistą ochronną; (3) wynik 0-1 = SUGGEST + rekomendacja
+    wniosku KIS.
+5.4 Procedury i obrona (I04-I09): konstytucja terminów 7/14/30 z zero ciszy,
+    korekta czynna/uzupełniająca (art. 81/81b), AUD (art. 30a/30b), ruling 4-eyes,
+    timeline spraw, paczka obronna. Wnioski: (1) każda ścieżka kończy się jawną decyzją;
+    (2) korekta bez audytu i wysyłka wniosku/paczki bez review = BLOCK (AP07 zamknięte);
+    (3) nieznany etap/typ/scenariusz = BLOCK (fail-closed).
+
+==============================================================================
+SEKCJA 5 — MACIERZ PRAWO ↔ REGUŁA ↔ TEST (9.05)
+==============================================================================
+| Przepis | Reguła (rule_id) | Testy | Status | Ryzyko |
+|---------|------------------|-------|--------|--------|
+| art. 56 OP (odsetki, kapitalizacja) | jdg.v3_p17_ordynacja_obrona.interest_precision_engine | native + pytest + grosz 0,01 | PEŁNE | niskie |
+| art. 70-72 OP (przedawnienie, zawieszenia) | ...limitation_sentinel | native (expired/unknown/ok) | PEŁNE | niskie |
+| art. 119a OP (GAAR) | ...gaar_shield_framework | native (conceal/MAE) | PEŁNE | niskie |
+| art. 223/282b OP, art. 53 PPSA (terminy) | ...procedural_deadline_constitution | native (breach/unknown/ok) | PEŁNE | niskie |
+| art. 81/81b OP (korekty) | ...active_correction_advisor | native (no-audit/ok) | PEŁNE | niskie |
+| art. 30a/30b OP (AUD) | ...aud_benefit_tracker | native (unjustified/ok) | CZĘŚCIOWE* | średnie |
+| art. 14b-14d OP (interpretacje) | ...ruling_autodrafter_4eyes + ...interpretation_library | native (no-4eyes/law-change) | PEŁNE | niskie |
+| art. 187-234 OP (postępowanie) | ...proceeding_timeline + ...defense_packet_generator | native (silence/incomplete) | PEŁNE | niskie |
+* [NIEZWERYFIKOWANE] — stawki AUD parametryzowane (v3_p17_aud_*_rate_pct), weryfikacja ISAP = V3-P17-Q01.
+
+==============================================================================
+SEKCJA 6 — INNOWACJE ENTERPRISE (9.07) — V3-P17-I01..I12
+==============================================================================
+| ID | Nazwa | Mechanizm (rego/thresholds) | Kryterium akceptacji |
+|----|-------|------------------------------|----------------------|
+| I01 | Interest Precision Engine | kapitalizacja mies. _ie_compound; _round2 half-up; retro fail-closed | test groszowy 0,01 + retro BLOCK |
+| I02 | Limitation Sentinel | end 31.12+5; zawieszenia; alerty 90/60/30; expired/unknown = BLOCK | testy native expired/unknown |
+| I03 | GAAR Shield Framework | MAE z danych; checklista; score 0-4; protective, NIE wina | concealment=4 → BLOCK; MAE → SUGGEST |
+| I04 | Procedural Deadline Constitution | terminy 7/14/30 jako dane; zero ciszy + eskalacja 48h | breach/unknown → BLOCK |
+| I05 | Active Correction Advisor | czynna przed wszczęciem; uzupełniająca po; audyt = invariant | korekta bez audytu → BLOCK |
+| I06 | AUD Benefit Tracker | warunki benefitu; monitoring naruszeń; stawki z danych | benefit bez warunków → BLOCK |
+| I07 | Ruling Autodrafter 4-Eyes | kompletność formalna; bramka review (parametr) | wysyłka bez 4-eyes → BLOCK |
+| I08 | Proceeding Timeline | etap → następna czynność; zero ciszy; evidence | cisza > 2 dni → BLOCK |
+| I09 | Defense Packet Generator | checklista 4 elementów; incomplete filing = BLOCK | wysyłka niekompletna → BLOCK |
+| I10 | Interpretation Library | lookup per przepis; sentinel zmiany prawa (LKG P01) | law_change → TRIAGE |
+| I11 | ORD Invariants Pack | ORD_INV-001/002/003; lista naruszeń w certyfikacie (P04) | naruszenie → BLOCK |
+| I12 | Litigation Stress Lab | interest_10y (120 mies.), multi_suspension, last_day_appeal | nieznany scenariusz → BLOCK |
+
+==============================================================================
+SEKCJA 7 — KONTRAKT WYJŚCIOWY (9.08) — wiąże P18 i dalsze
+==============================================================================
+  1. Kalendarz proceduralny (7/14/30 + zero ciszy + eskalacja 48h) → P36 (kalendarz), P41 (UI spraw).
+  2. Silnik odsetek (groszowość 0,01, kapitalizacja miesięczna, stawki-as-data z valid_from) → P36 (płatności), P44.
+  3. GAAR scoring ochronny (certainty_class — klasa, nie wina; MAE 1 mln) → P12/P13 (decyzje VAT), P44.
+  4. Biblioteka interpretacji KIS (LKG P01, sentinel zmiany prawa) → P01 (LKG), P44.
+  5. Lista pustyń Ordynacji (zawieszenia art. 71, interwencje, ścieżki AUD) → P44.
+
+==============================================================================
+SEKCJA 8 — PLAN WDROŻENIA (9.09) + PLAN TESTÓW (9.10)
+==============================================================================
+Wdrożone w całości (sekwencyjnie): rego → thresholdy → wiring p85 → narzędzia →
+bundle → testy natywne → pytest. Testy BLOKUJĄCE merge (wszystkie zielone):
+  * native rego: 29/29 — PASS na OPA 0.68.0 i OPA 1.9.0 (--v0-compatible)
+  * pytest auto: 11/11 — PASS
+  * regresja P13-P16: 74/74 rego + 47/47 pytest — bez regresji (łącznie 103/103 + 58/58)
+  * bundle dowodowe: 12/12 — gate PASS
+  * proby krawędziowe fail-closed: 14/14 scenariuszy BLOCK_AND_ALERT
+
+==============================================================================
+SEKCJA 9 — PYTANIA DO CZŁOWIEKA (9.11)
+==============================================================================
+V3-P17-Q01. Stawki benefitu AUD (art. 30a/30b OP): parametryzowane jako dane
+  (v3_p17_aud_reduced_rate_pct=0.0, v3_p17_aud_full_rate_pct=0.12), oznaczone
+  [NIEZWERYFIKOWANE] — wymagana weryfikacja ISAP i decyzja właściciela o wartościach.
+V3-P17-Q02. Model zawieszeń (art. 71) operuje dniami (suspension_days) — decyzja,
+  czy okresy zawieszenia mają być liczone kalendarzowo (kontrakt P36).
+
+==============================================================================
+SEKCJA 10 — ZAŁOŻENIA JAWNE (9.12) + PYTANIA KRZYŻOWE (7.4)
+==============================================================================
+[ZAŁOŻENIE-1] Daty porównywane ISO (lexicographic) — zgodne z konwencją P16.
+[ZAŁOŻENIE-2] Progi 7/14/30 dni z promptu jako terminy kalendarzowe (art. 223/282b/53 PPSA).
+X01: brak konfliktów z dokumentami świętymi (fail-closed wszędzie; brak cichego AUTO_POST).
+X02: zero hardcode — wszystkie wartości przez data.thresholds.ord (v3_p17_*, ADR-002).
+X03: każda ścieżka ma jawną decyzję (no_match/NEEDS_ADVICE/BLOCK — AP07 domknięty).
+X04: certyfikat 25-polowy przez _certificate() (V2 F4) — zgodny z P03/P16.
+X05: bramki merge = testy natywne + pytest + bundle PASS (Sekcja 8).
+X06: brak duplikatów — rozszerzenie bloku ord i łańcucha p84→p85 (bez powielania reguł).
+X07: podstawy prawne oznaczone; AUD [NIEZWERYFIKOWANE] → Q01.
+X08: decyzje 4-eyes: wysyłka wniosku KIS (I07) i paczki obronnej (I09) BLOCK bez review.
+X09: metryki do obserwowalności (P37): _routing, tier przedawnienia, naruszenia ORD_INV.
+X10: invarianty runtime (P04) = ORD_INV-001..003 (I11) — BLOCK przy naruszeniu.
+
+==============================================================================
+SEKCJA 11 — DEKLARACJA ZGODNOŚCI
+==============================================================================
+Zgodność z dokumentami świętymi (ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md,
+WIZJA_OPA_ENTERPRISE_V2.md): BEZ ODSTĘPSTW. Parametry-as-data (ADR-002),
+temporalność (P05), fail-closed (V1 zasada 6), Decision Certificate (F4),
+invarianty (P04). Weryfikacja: kod → testy → wyniki (Sekcja 8) — dowód = artefakt,
+nie deklaracja.
+==============================================================================
+KONIEC RAPORTU V3 P17 — WDROŻONY_100 (realne artefakty, 2026-09-04)
+==============================================================================

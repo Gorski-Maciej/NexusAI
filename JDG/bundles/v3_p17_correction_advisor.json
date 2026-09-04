@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P17-I05",
+  "generated_at": "2026-09-04T13:29:48+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "czynna": true,
+    "uzupelniajaca": true,
+    "audit_invariant": true
+  },
+  "checks": [
+    {
+      "name": "correction_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p17_ordynacja_obrona.active_correction_advisor: True"
+    },
+    {
+      "name": "czynna_przed_wszczeciem",
+      "status": "OK",
+      "detail": "korekta czynna przed wszczęciem (art. 81 § 1)"
+    },
+    {
+      "name": "uzupelniajaca_po",
+      "status": "OK",
+      "detail": "korekta uzupełniająca po wszczęciu (art. 81b)"
+    },
+    {
+      "name": "audit_invariant",
+      "status": "OK",
+      "detail": "invariant ORD_INV-003: korekta zawsze audytowana"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 81 i 81b OrdPU; invariant V3_P04 (korekta audytowana); kontrakt V3_P36",
+    "rule": "doradca korekty czynnej/uzupełniającej z benefitami i audytem"
+  }
+}

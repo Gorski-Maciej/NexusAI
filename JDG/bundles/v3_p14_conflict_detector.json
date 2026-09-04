@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P14-I11",
+  "generated_at": "2026-09-04T11:50:19+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "cost_ids": true,
+    "pairs": true,
+    "blocker": true
+  },
+  "checks": [
+    {
+      "name": "conflict_rule",
+      "status": "OK",
+      "detail": "reguła multi_relief_conflict_detector: True"
+    },
+    {
+      "name": "shared_cost_ids",
+      "status": "OK",
+      "detail": "wykrywanie wspólnych cost_ids między roszczeniami"
+    },
+    {
+      "name": "forbidden_pairs",
+      "status": "OK",
+      "detail": "pary zakazane: B+R+robotyzacja, B+R+IP Box (katalog)"
+    },
+    {
+      "name": "blocker",
+      "status": "OK",
+      "detail": "kolizja → BLOCK_AND_ALERT (BLOCKER, nigdy cichy AUTO_POST)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P04 (invarianty runtime), P28 (księgowość), P44 (deklaracje)",
+    "rule": "wykrywanie kolizji ulg (te same koszty w 2 ulgach) — BLOCKER"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P18-I03",
+  "generated_at": "2026-09-04T13:45:10+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "path": true,
+    "retro": true,
+    "fail_closed": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "midyear_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p18_ryczalt.midyear_exclusion_handler: True"
+    },
+    {
+      "name": "path",
+      "status": "OK",
+      "detail": "ścieżka: data wykluczenia → miesiące → zmiana formy/korekty"
+    },
+    {
+      "name": "retro_block",
+      "status": "OK",
+      "detail": "retrospekcja do początku roku = BLOCK (korekty I06)"
+    },
+    {
+      "name": "fail_closed",
+      "status": "OK",
+      "detail": "brak daty/miesięcy = BLOCK (fail-closed)"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: tryb utraty i termin z data.thresholds.lump_sum"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 8 ust. 2 ustawy o zryczałtowanym PIT [NIEZWERYFIKOWANE — Q01]; korekty V3_P04",
+    "rule": "handler wykluczenia mid-year ze ścieżką zmiany formy"
+  }
+}

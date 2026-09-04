@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P16-I11",
+  "generated_at": "2026-09-04T13:05:19+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "regimes": true,
+    "progression": true,
+    "levels": true
+  },
+  "checks": [
+    {
+      "name": "penalty_rule",
+      "status": "OK",
+      "detail": "reguła penalty_exposure_monitor: True"
+    },
+    {
+      "name": "regimes",
+      "status": "OK",
+      "detail": "reżimy sankcji (100%/70%/50%)"
+    },
+    {
+      "name": "progression",
+      "status": "OK",
+      "detail": "progi z thresholdów (500k/300k/250k)"
+    },
+    {
+      "name": "exposure_levels",
+      "status": "OK",
+      "detail": "poziomy ekspozycji (wysoka/średnia/niska)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "art. 106na-106nb VAT (kary), P37 (observability), KKS art. 54",
+    "rule": "monitor narażenia na kary KSeF (progresja, symulacja)"
+  }
+}

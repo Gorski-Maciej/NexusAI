@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P16-I06",
+  "generated_at": "2026-09-04T13:05:19+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "gtu": true,
+    "mpp": true,
+    "contract": true
+  },
+  "checks": [
+    {
+      "name": "jpk_contract_rule",
+      "status": "OK",
+      "detail": "reguła jpk_field_contract: True"
+    },
+    {
+      "name": "gtu_check",
+      "status": "OK",
+      "detail": "GTU ze słownika (13 kodów) — walidacja wierszy"
+    },
+    {
+      "name": "mpp_check",
+      "status": "OK",
+      "detail": "MPP zgodny z progiem (kontrakt P12/P13)"
+    },
+    {
+      "name": "contract_gate",
+      "status": "OK",
+      "detail": "niezgodność → blokada generacji JPK_V7"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "V3_P12/P13 (GTU/MPP), P28 (PKPiR→JPK), art. 99 ust. 2a VAT",
+    "rule": "pola JPK_V7 jako kontrakt — walidacja krzyżowa przed generacją"
+  }
+}

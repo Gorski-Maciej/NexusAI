@@ -7,7 +7,7 @@ Plik promptu:           JDG/prompty_v3/V3_PROMPT_P16_KSEF_JPK.txt
 Docelowy plik raportu:  JDG/raporty_glm52_v3/RAPORT_V3_P16_KSEF_JPK.txt
 Wersja kampanii:        V3.0
 
-Status: WDROŻONY_100 (wdrożenie w repo: 16 reguł + 8 narzędzi + 10 testów + kontrakt + 12 innowacje Enterprise (6-elementowe) + struktury)
+Status: WDROŻONY_100 (realne artefakty w repo, 2026-09-04): rules/v3_p16_ksef_jpk_enterprise.rego (12 innowacji I01–I12: orchestrator sesji KSeF, offline RPO=0/WAL, UPO sentinel, pre-send firewall, kalendarz terminów, kontrakt pól JPK, korekty idempotentne, sandbox CI, chaos drill 72h, e-Doręczenia chain, kary KSeF, golden set — rego kompiluje się) + 13 tooli dowodowych (tools/v3_p16_common.py + 12 silników) + 12 bundli evidencji (gate: PASS) + testy: 18/18 native rego (OPA 0.68 i 1.9) + 11/11 pytest + +17 kluczy thresholdów v3_p16_* w rules/thresholds_jdg.rego + wiring w rules/main_jdg.rego (final_verdict_p84)
 
 ==============================================================================
 SEKCJA 9 — STRUKTURA RAPORTU (WYMAGANA) — RAPORT_V3_P16_KSEF_JPK.txt

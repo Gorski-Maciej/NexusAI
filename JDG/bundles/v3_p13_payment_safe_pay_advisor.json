@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P13-I12",
+  "generated_at": "2026-09-04T10:41:05+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "safe_pay_rule": true,
+    "triple": true,
+    "verdict": true,
+    "suggest": true
+  },
+  "checks": [
+    {
+      "name": "safe_pay_rule",
+      "status": "OK",
+      "detail": "reguła payment_safe_pay_advisor: True"
+    },
+    {
+      "name": "triple_evidence",
+      "status": "OK",
+      "detail": "kontrahent + MPP + Biała Lista (pełny łańcuch dowodów)"
+    },
+    {
+      "name": "verdict",
+      "status": "OK",
+      "detail": "„bezpiecznie zapłać tak” / NEEDS_ADVICE"
+    },
+    {
+      "name": "suggest_no_auto",
+      "status": "OK",
+      "detail": "SUGGEST/no_auto_post — nigdy automatyczny nakaz płatności"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P03 (werdykt), P10 (golden), P39 (bramki CI), P41 (UI review), P13 (cross-border)",
+    "rule": "doradca płatności: kontrahent + MPP + Biała Lista → bezpiecznie zapłać (SUGGEST)"
+  }
+}

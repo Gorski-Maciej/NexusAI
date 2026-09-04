@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P14-I03",
+  "generated_at": "2026-09-04T11:50:16+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "formula": true,
+    "doc_gate": true,
+    "missing_params": [],
+    "domain_ipbox": true
+  },
+  "checks": [
+    {
+      "name": "nexus_rule",
+      "status": "OK",
+      "detail": "reguła nexus_ratio_auditor: True"
+    },
+    {
+      "name": "nexus_formula",
+      "status": "OK",
+      "detail": "wzór nexus (qc×1.3/tc, cap 100%) + tier FULL/PARTIAL/LOW + checklist"
+    },
+    {
+      "name": "doc_gate_fail_closed",
+      "status": "OK",
+      "detail": "brak dokumentacji/ewidencji → NEEDS_ADVICE (fail-closed)"
+    },
+    {
+      "name": "params",
+      "status": "OK",
+      "detail": "brak parametrów nexus: BRAK"
+    },
+    {
+      "name": "domain_ipbox",
+      "status": "OK",
+      "detail": "rules/pit/ipbox_enterprise.rego obecny — rozszerzenie, nie duplikat"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P03 (certainty_class), P10 (golden), P39 (CI)",
+    "rule": "IP Box 5%: nexus ratio (50/25%), checklist dokumentacyjna, NEEDS_ADVICE bez dowodów"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "innovation": "V3-P19-I07",
+  "generated_at": "2026-09-04T14:09:07+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "rate_as_data": true,
+    "fail_closed": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "fee_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p19_pcc_akcyza_bdo.waste_fee_calculator: True"
+    },
+    {
+      "name": "contract_fields",
+      "status": "OK",
+      "detail": "kontrakt: masa kg / stawka za kg"
+    },
+    {
+      "name": "rate_as_data",
+      "status": "OK",
+      "detail": "stawka za kg z data.thresholds (ADR-002)"
+    },
+    {
+      "name": "effective_rate",
+      "status": "OK",
+      "detail": "efektywna stawka: ctx → fallback z danych"
+    },
+    {
+      "name": "fail_closed",
+      "status": "OK",
+      "detail": "masa ujemna/nieznana = BLOCK (fail-closed)"
+    },
+    {
+      "name": "grosz_round",
+      "status": "OK",
+      "detail": "zaokrąglenie groszowe kalkulacji"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: stawka opłaty z data.thresholds"
+    },
+    {
+      "name": "main_jdg_wiring",
+      "status": "OK",
+      "detail": "import + rejestr + final_verdict_p87"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "ustawa o odpadach (opłaty); stawki [NIEZWERYFIKOWANE]; ADR-002",
+    "rule": "kalkulator opłaty za odpady — masa × stawka z danych"
+  }
+}

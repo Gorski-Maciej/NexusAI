@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P13-I11",
+  "generated_at": "2026-09-04T10:41:04+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "symmetry_rule": true,
+    "symmetry": true,
+    "gate": true,
+    "audit": true,
+    "block": true
+  },
+  "checks": [
+    {
+      "name": "symmetry_rule",
+      "status": "OK",
+      "detail": "reguła correction_symmetry_guard: True"
+    },
+    {
+      "name": "in_minus_equals_in_plus",
+      "status": "OK",
+      "detail": "symetria korekt in_minus = in_plus (art. 89a/89b)"
+    },
+    {
+      "name": "gate_90_days",
+      "status": "OK",
+      "detail": "gate CI na korekty art. 89a/89b z 90 dniami"
+    },
+    {
+      "name": "audit_event_id",
+      "status": "OK",
+      "detail": "identyfikator zdarzenia (audytowalność korekt)"
+    },
+    {
+      "name": "block_on_violation",
+      "status": "OK",
+      "detail": "asymetria/brak event_id → BLOCK_AND_ALERT"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P04 (invarianty), P10 (golden), P39 (bramki CI), P05 (temporalność), P16 (JPK korekty)",
+    "rule": "korekta in minus = in plus (art. 89a/89b) + gate CI 90 dni + audyt event_id"
+  }
+}

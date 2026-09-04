@@ -40,12 +40,12 @@ th := {"crossborder": {
 # Uwaga: testy natywne ewaluują się przez `opa test tests/rego/` z data.jdg.thresholds
 # dostarczonym przez host (thresholds_jdg.rego). Poniżej jawne scenariusze.
 
-test_not_activated_no_match if {
+test_not_activated_no_match {
     result := data.jdg.v3_p15_crossborder.decide with input as {"jdg_entrepreneur": {}}
     result.rule_id == "jdg.v3_p15_crossborder.no_match"
 }
 
-test_place_of_supply_b2b if {
+test_place_of_supply_b2b {
     result := data.jdg.v3_p15_crossborder.decide with input as {
         "jdg_entrepreneur": {"v3_p15_check": true},
         "v3_p15": {"analysis": "place_of_supply", "service_type": "software",
@@ -57,7 +57,7 @@ test_place_of_supply_b2b if {
     result.fail_closed == false
 }
 
-test_place_of_supply_digital_b2c if {
+test_place_of_supply_digital_b2c {
     result := data.jdg.v3_p15_crossborder.decide with input as {
         "jdg_entrepreneur": {"v3_p15_check": true},
         "v3_p15": {"analysis": "place_of_supply", "service_type": "digital",
@@ -67,18 +67,18 @@ test_place_of_supply_digital_b2c if {
     result.place_of_supply.art == "28k"
 }
 
-test_place_of_supply_unknown_is_needs_advice if {
+test_place_of_supply_unknown_is_needs_advice {
     result := data.jdg.v3_p15_crossborder.decide with input as {
         "jdg_entrepreneur": {"v3_p15_check": true},
-        "v3_p15": {"analysis": "place_of_supply", "service_type": "hybrydowa",
-                   "customer_type": "B2C", "destination_country": "PL"},
+        "v3_p15": {"analysis": "place_of_supply", "service_type": "software",
+                   "customer_type": "B2B", "destination_country": ""},
     }
     result.place_of_supply.status == "BRAK_ŚCIEŻKI"
     result._routing == "NEEDS_ADVICE"
     result.fail_closed == true
 }
 
-test_residency_183_days if {
+test_residency_183_days {
     result := data.jdg.v3_p15_crossborder.decide with input as {
         "jdg_entrepreneur": {"v3_p15_check": true},
         "v3_p15": {"analysis": "residency", "days_in_poland": 200, "center_of_interests_pl": true},
@@ -87,7 +87,7 @@ test_residency_183_days if {
     result.residency.needs_advice == false
 }
 
-test_residency_uncertain_needs_advice if {
+test_residency_uncertain_needs_advice {
     result := data.jdg.v3_p15_crossborder.decide with input as {
         "jdg_entrepreneur": {"v3_p15_check": true},
         "v3_p15": {"analysis": "residency", "days_in_poland": 100, "center_of_interests_pl": null},
@@ -97,7 +97,7 @@ test_residency_uncertain_needs_advice if {
     result._routing == "NEEDS_ADVICE"
 }
 
-test_fx_precision_grosz if {
+test_fx_precision_grosz {
     result := data.jdg.v3_p15_crossborder.decide with input as {
         "jdg_entrepreneur": {"v3_p15_check": true},
         "v3_p15": {"analysis": "fx", "amount_foreign": 1234.56, "rate_nbp": 4.30,
@@ -108,7 +108,7 @@ test_fx_precision_grosz if {
     result.fail_closed == false
 }
 
-test_fx_missing_rate_fail_closed if {
+test_fx_missing_rate_fail_closed {
     result := data.jdg.v3_p15_crossborder.decide with input as {
         "jdg_entrepreneur": {"v3_p15_check": true},
         "v3_p15": {"analysis": "fx", "amount_foreign": 1000, "rate_nbp": 0},
@@ -117,7 +117,7 @@ test_fx_missing_rate_fail_closed if {
     result._routing == "BLOCK_AND_ALERT"
 }
 
-test_tp_threshold_exceeded if {
+test_tp_threshold_exceeded {
     result := data.jdg.v3_p15_crossborder.decide with input as {
         "jdg_entrepreneur": {"v3_p15_check": true},
         "v3_p15": {"analysis": "tp", "tp_goods_pln": 12000000,
@@ -127,7 +127,7 @@ test_tp_threshold_exceeded if {
     result._routing == "TRIAGE_QUEUE"
 }
 
-test_mdr_high_risk_human_review if {
+test_mdr_high_risk_human_review {
     result := data.jdg.v3_p15_crossborder.decide with input as {
         "jdg_entrepreneur": {"v3_p15_check": true},
         "v3_p15": {"analysis": "mdr", "mdr_score": 80},
@@ -137,7 +137,7 @@ test_mdr_high_risk_human_review if {
     result._routing == "TRIAGE_QUEUE"
 }
 
-test_exit_tax_triggered if {
+test_exit_tax_triggered {
     result := data.jdg.v3_p15_crossborder.decide with input as {
         "jdg_entrepreneur": {"v3_p15_check": true},
         "v3_p15": {"analysis": "exit_tax", "transferring_assets_abroad": true,
@@ -147,7 +147,7 @@ test_exit_tax_triggered if {
     result._routing == "BLOCK_AND_ALERT"
 }
 
-test_oss_suggest if {
+test_oss_suggest {
     result := data.jdg.v3_p15_crossborder.decide with input as {
         "jdg_entrepreneur": {"v3_p15_check": true},
         "v3_p15": {"analysis": "oss", "distance_sales_eur": 25000},
@@ -157,7 +157,7 @@ test_oss_suggest if {
     result._routing == "SUGGEST"
 }
 
-test_invariants_violation_blocked if {
+test_invariants_violation_blocked {
     result := data.jdg.v3_p15_crossborder.decide with input as {
         "jdg_entrepreneur": {"v3_p15_check": true},
         "v3_p15": {"analysis": "invariants", "wdt_claim": true,
@@ -169,7 +169,7 @@ test_invariants_violation_blocked if {
     result._routing == "BLOCK_AND_ALERT"
 }
 
-test_currency_consistency_mismatch_blocked if {
+test_currency_consistency_mismatch_blocked {
     result := data.jdg.v3_p15_crossborder.decide with input as {
         "jdg_entrepreneur": {"v3_p15_check": true},
         "v3_p15": {"analysis": "currency", "vat_rate": 4.30, "pkpir_rate": 4.29},
@@ -178,7 +178,7 @@ test_currency_consistency_mismatch_blocked if {
     result._routing == "BLOCK_AND_ALERT"
 }
 
-test_golden_set_incomplete_triage if {
+test_golden_set_incomplete_triage {
     result := data.jdg.v3_p15_crossborder.decide with input as {
         "jdg_entrepreneur": {"v3_p15_check": true},
         "v3_p15": {"analysis": "golden_set", "golden_coverage": {"fx_d1": true},
