@@ -919,6 +919,24 @@ ksiegowosc := {
     "v3_p20_golden_version": "ksiegowosc-golden-2026.09",  # I10: wersja golden set księgowości
     "v3_p20_invariants_active": true,             # I11: pakiet invariantów księgowości (kontrakt P04)
     "v3_p20_checklist_version": "dowody-ksiegowe-2026.01",  # I12: wersja checklist dokumentacyjnych
+    "kst_version": "kst-2026.01",                       # I05: wersja tabeli KŚT
+    "depreciation_limits": {"one_time_eur": 100000},   # I04: limit jednorazowej
+    "leasing_limits": {"car_pln": 150000},            # I06: limit aut 150k
+    "nkup_limits": {"use_months": 12, "value_limit_pln": 10000},  # I03
+    "kst_group_1_rate": 0.015,
+    "kst_group_2_rate": 0.02,
+    "kst_group_3_rate": 0.025,
+    "kst_group_4_rate": 0.05,
+    "kst_group_5_rate": 0.10,
+    "kst_group_6_rate": 0.20,
+    "kst_group_7_rate": 0.25,
+    "kst_group_8_rate": 0.40,
+    "kst_group_9_rate": 0.50,
+    "one_time_depreciation_limit_eur": 100000,
+    "car_leasing_limit_150000": 150000,
+    "golden_version": "bookkeeping-golden-2026.09",
+    "bookkeeping_invariants_active": true,
+    "pkpir_column_count_minimum": 17,
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

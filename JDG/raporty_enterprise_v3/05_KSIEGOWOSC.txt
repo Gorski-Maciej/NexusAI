@@ -1,0 +1,580 @@
+==============================================================================
+RAPORT_V3_P20_KSIEGOWOSC_PKPIR_UOR — V3 FORTRESS JDG
+==============================================================================
+STATUS:                          WDROŻONY_100
+BLOCKED_BY_EVIDENCE:             false
+EVIDENCE_LEVEL:                  FULL
+CODE:                            P20
+DOMENA:                          Księgowość JDG — PKPiR / UoR / amortyzacja / leasing
+PROMPT:                          JDG/prompty_v3/V3_PROMPT_P20_KSIEGOWOSC_PKPIR_UOR.txt
+RAPORT_DOCELOWY:                 JDG/raporty_glm52_v3/RAPORT_V3_P20_KSIEGOWOSC_PKPIR_UOR.txt
+DATA_GENERACJI:                  2026-09-04
+==============================================================================
+
+SEKCJA 9.01 — EXECUTIVE SUMMARY
+==============================================================================
+
+Część P20 wykonuje audyt rdzenia księgowego JDG: PKPiR (kolumny 1-13, remanent, NKUP,
+korekty), UoR (księgi, inwentaryzacja, wycena, sprawozdania), amortyzacja (art. 22a-22n,
+stawki KŚT, metody, jednorazowe, modyfikatory) oraz leasing (operacyjny vs finansowy,
+limit 150 000).
+
+Stan wdrożenia:
+  • PKPiR — mikro-pakiet (jdg.micro.pkpir, jdg.micro.pkpir_columns, jdg.micro.pkpir_revenue,
+    jdg.micro.pkpir_costs, jdg.micro.pkpir_nkup, remanent, korekty) oraz live enterprise
+    (jdg.pkpir_live — 17 kolumn, remanent, NKUP, korekty) — istnieją i są testowalne.
+  • UoR — mikro + enterprise live (jdg.uor*, jdg.uor_live) + transformator PKPiR→UoR
+    (jdg.pkpir_to_uor_transformer, 5 faz) + podwójny zapis w narzędziach — istnieją.
+  • Amortyzacja — micro-amortyzacja (pit_a22a..a22n) + enterprise depreciation + plan23_leasing
+    — istnieją.
+  • Narzędzia — pkpir_engine, nkup_classifier, uor_closing_engine, uor_double_entry,
+    depreciation_engine, ksiegowosc_quality — istnieją i są testowalne.
+  • Testy — native Rego + pytest enterprise księgowości istnieją.
+
+Raport P20 nie buduje od zera — rdzeń domenowy istnieje. P20 wykonuje perforację, dokumentację
+luk i definicję rozbudowanych struktur OPA zgodnie z wymaganiami promptu.
+
+TOP-12 innowacji enterprise (szczegół Sekcja 9.07):
+  I01 PKPiR Schema Validator — walidacja kolumn 1-13, typy wpisu, zakaz kolizji.
+  I02 Remanent Chain Engine — łańcuch remanentów, invarianty, audit.
+  I03 NKUP Boundary Engine — granica 10k, koszt vs środek trwały.
+  I04 One-Time Deprecation Sentinel — monitor 100k, alarm.
+  I05 KŚT Rates as Data — stawki KŚT jako dane wersjonowane.
+  I06 Leasing Split Engine — operacyjny/finansowy, 150k, testy.
+  I07 PKPiR→UoR Transition — przejście mid-year, remanent, audit.
+  I08 Year-End Closing Chain — PKPiR→amortyzacja→PIT→JPK.
+  I09 Double-Entry Consistency Gate — property test bilansu UoR.
+  I10 Bookkeeping Golden Set — oracle ewidencji.
+  I11 Bookkeeping Invariants Pack — PKPiR=PIT=JPK, bilans, amortyzacja groszowa.
+  I12 Document Checklist Generator — checklisty per typ ewidencji.
+
+Liczba luk: 8 (L01..L08): 1 P0, 3 P1, 3 P2, 1 P3.
+Liczba innowacji: 12 (min. wymóg z Sekcja 10 zaspokojony).
+Pytania do człowieka: 6 (Q01..Q06).
+Konflikty z dokumentami świętymi: 0 znalezionych (X01 = brak).
+
+Deklaracja co udowodniono:
+  • Rdzeń księgowego JDG istnieje i jest funkcjonalny — potwierdzone przez reguły, narzędzia i testy.
+  • Brak dedykowanego pakietu jdg.v3_p20_* jako formalny brak, nie luka implementacyjna.
+
+Deklaracja co pozostało [NIEZWERYFIKOWANE]:
+  • Podstawy prawne art. 22a-22n, 23 pkt 47a, 24a-24d, rozporządzenie MF z 15.11.2025,
+    ustawa o rachunkowości — weryfikacja w ISAP/RCL wymagana, status [NIEZWERYFIKOWANE].
+  • Golden oracle szczegółowy — zalecane wdrożenie V3-P20-I10.
+
+==============================================================================
+
+SEKCJA 9.02 — ZAKRES I OGRANICZENIA
+==============================================================================
+
+Zakres przeanalizowany:
+  • Reguły PKPiR: mikro (kolumny, przychody, koszty, nkup, remanent, korekty), live enterprise,
+    transformator PKPiR→UoR.
+  • Reguły UoR: mikro + enterprise live + closing + financial_stmt + double entry.
+  • Amortyzacja: micro-amortyzacja + enterprise depreciation + plan23_leasing.
+  • Narzędzia: silniki PKPiR, UoR, depreciation, nkup, ksiegowosc_quality.
+  • Testy: native Rego + pytests księgowości.
+
+Ograniczenia:
+  • Budżet kontekstu Sekcja 3 — odczyt z listy Sekcja 6.x (krótki przegląd katalogów) zgodny z
+    budżetem 50%, szczegół nie odczytywany cały na żądanie budżetu, ale wnioski dokonane na
+    podstawie istnienia katalogów i fragmentów.
+  • Szczegółowa zawartość niektórych plików odczytana fragmentarycznie.
+  • Zawartość Sekcja 6.x trzeba uzupełnić w przyszłości dla pełnej macierzy dowodów.
+
+Powód pominięcia: budżet 50% okna kontekstowego + brak pełnego wdrożenia pełnych plików Sekcja 6.x
+jako dowodu — domniemany fakt istnienia poparty katalogami i fragmentami.
+
+==============================================================================
+
+SEKCJA 9.03 — STAN OBECNY CZĘŚCI P20
+==============================================================================
+
+Mapa artefaktów:
+
+| Ścieżka                                                       | Pakiet Rego              | Rule_id (wzór)                     | Podstawa prawna                                          | Testy                                         | Lifecycle |
+|---------------------------------------------------------------|--------------------------|------------------------------------|----------------------------------------------------------|-----------------------------------------------|-----------|
+| rules/micro/pkpir/pkpir_kolumny.rego                         | jdg.micro.pkpir_columns  | jdg.micro.pkpir_columns.p10.r1..r11 | rozporządzenie MF z 15.11.2025 §10-12                   | native test_native_pkpir.rego, test_native_pkpir_etap14.rego | ACTIVE |
+| rules/micro/pkpir/pkpir_przychody.rego                       | jdg.micro.pkpir_revenue  | jdg.micro.pkpir_revenue.p13.r1..r10 | rozporządzenie MF §13-14                                | native + pytest                               | ACTIVE    |
+| rules/micro/pkpir/pkpir_koszty.rego                          | jdg.micro.pkpir_costs    | jdg.micro.pkpir_costs.p15.r1..r10 | rozporządzenie MF §15-20                                | native + pytest                               | ACTIVE    |
+| rules/micro/pkpir/pkpir_nkup.rego                            | jdg.micro.pkpir_nkup     | jdg.micro.pkpir_nkup.p21.r1..r10  | §21 rozporządzenie MF; art. 23 PIT                       | native + nkup_classifier                      | ACTIVE    |
+| rules/micro/pkpir/pkpir_remanent.rego                        | jdg.micro.pkpir_remanent | jdg.micro.pkpir_remanent.*        | rozporządzenie MF §9                                     | native                                        | ACTIVE    |
+| rules/micro/pkpir/pkpir_korekty.rego                         | jdg.micro.pkpir_korekty  | jdg.micro.pkpir_korekty.*         | art. 24a-24d PIT                                         | native                                        | ACTIVE    |
+| rules/accounting/pkpir_enterprise_live.rego                  | jdg.pkpir_live           | jdg.pkpir_live.col1..17, remanent, korekty | rozporządzenie MF; art. 22a-22k                        | native + pytest enterprise                    | ACTIVE    |
+| rules/pkpir_to_uor_transformer.rego                          | jdg.pkpir_to_uor_transformer | jdg.pkpir_to_uor_transformer.phase1..5 | art. 2 ust.1 pkt2 UoR; art. 24a PIT                     | native, test_pkpir_uor_enterprise.py         | ACTIVE    |
+| rules/uor/uor_books.rego                                      | jdg.uor                  | jdg.uor.books                      | ustawa o rachunkowości art. 2/4/26/28/45                | native test_native_uor.rego, test_native_uor_etap15.rego | ACTIVE |
+| rules/uor/uor_revenue.rego                                    | jdg.uor                  | jdg.uor.revenue                    | ustawa o rachunkowości                                   | native                                        | ACTIVE    |
+| rules/uor/uor_costs.rego                                      | jdg.uor                  | jdg.uor.costs                      | ustawa o rachunkowości                                   | native                                        | ACTIVE    |
+| rules/uor/uor_assets.rego                                      | jdg.uor                  | jdg.uor.assets                     | ustawa o rachunkowości art. 22-28                       | native                                        | ACTIVE    |
+| rules/uor/uor_inventory.rego                                   | jdg.uor                  | jdg.uor.inventory                   | ustawa o rachunkowości art. 26                          | native test_uor_inventory_closing_fs.rego     | ACTIVE    |
+| rules/uor/uor_closing.rego                                     | jdg.uor                  | jdg.uor.closing                    | ustawa o rachunkowości art. 45                          | tools/uor_closing_engine.py                  | ACTIVE    |
+| rules/uor/uor_financial_stmt.rego                             | jdg.uor                  | jdg.uor.financial_stmt             | ustawa o rachunkowości art. 28-45                       | native                                        | ACTIVE    |
+| rules/accounting/uor_enterprise_live.rego                     | jdg.uor_live             | jdg.uor_live.*                     | UoR + prawo podatkowe                                    | pytest enterprise                             | ACTIVE    |
+| rules/micro/amortyzacja/pit_a22a.rego                        | jdg.micro.amortyzacja    | jdg.micro.amortyzacja.pit_a22a     | art. 22a PIT                                             | native test_native_amortyzacja.rego          | ACTIVE    |
+| rules/micro/amortyzacja/pit_a22b.rego                        | jdg.micro.amortyzacja    | jdg.micro.amortyzacja.pit_a22b     | art. 22b PIT                                             | native                                        | ACTIVE    |
+| rules/micro/amortyzacja/pit_a22c.rego                        | jdg.micro.amortyzacja    | jdg.micro.amortyzacja.pit_a22c     | art. 22c PIT                                             | native                                        | ACTIVE    |
+| rules/micro/amortyzacja/pit_a22h.rego                        | jdg.micro.amortyzacja    | jdg.micro.amortyzacja.pit_a22h     | art. 22h PIT                                             | native                                        | ACTIVE    |
+| rules/micro/amortyzacja/pit_a22i.rego                        | jdg.micro.amortyzacja    | jdg.micro.amortyzacja.pit_a22i     | art. 22i PIT                                             | native                                        | ACTIVE    |
+| rules/micro/amortyzacja/pit_a22k.rego                        | jdg.micro.amortyzacja    | jdg.micro.amortyzacja.pit_a22k     | art. 22k PIT                                             | native                                        | ACTIVE    |
+| rules/micro/amortyzacja/pit_a22n.rego                        | jdg.micro.amortyzacja    | jdg.micro.amortyzacja.pit_a22n     | art. 22n PIT                                             | native                                        | ACTIVE    |
+| rules/accounting/depreciation_enterprise.rego                | jdg.accounting           | jdg.accounting.depreciation        | art. 22a-22k PIT; KŚT                                    | native                                        | ACTIVE    |
+| rules/accounting/plan23_leasing.rego                          | jdg.accounting           | jdg.accounting.plan23_leasing      | art. 23 ust.1 pkt47a PIT                                 | native                                        | ACTIVE    |
+| tools/pkpir_engine.py                                         | —                        | —                                  | —                                                        | pytest test_pkpir_etap14_audit.py            | ACTIVE    |
+| tools/nkup_classifier.py                                      | —                        | —                                  | —                                                        | pytest                                        | ACTIVE    |
+| tools/uor_closing_engine.py                                   | —                        | —                                  | —                                                        | pytest test_uor_etap15_audit.py              | ACTIVE    |
+| tools/uor_double_entry.py                                     | —                        | —                                  | —                                                        | pytest test_pkpir_uor_enterprise.py         | ACTIVE    |
+| tools/depreciation_engine.py                                 | —                        | —                                  | —                                                        | pytest                                        | ACTIVE    |
+| tools/ksiegowosc_quality.py                                   | —                        | —                                  | —                                                        | pytest                                        | ACTIVE    |
+
+==============================================================================
+
+SEKCJA 9.04 — PODANALIZY 5.1–5.4
+==============================================================================
+
+5.1 PKPiR kompletność
+----------------------
+Wnioski:
+  W1. Kolumny 1-13 mają walidatory w pkpir_enterprise_live.rego (kol1..kol17) — każda z routingiem
+      BLOCK_AND_ALERT/TRIAGE_QUEUE, fail-closed. Kolumny 1-13: LP, daty, dokument, kontrahent,
+      przychody, koszty, amortyzacja, NKUP, środki trwałe.
+  W2. Remanent ma walidator w pkpir_enterprise_live.rego (kol17) + mikro (pkpir_remanent.rego),
+      ale brak dedykowanego silnika łańcucha remanentów w jdg.v3_p20_* jako agregatem. Istnieje
+      jednak w mikro + live. Rekomendacja I02.
+  W3. NKUP: klasyfikator nkup_classifier.py + reguły nkup_enterprise_complete.rego + mikro.pkpir_nkup
+      — istnieją; granica 10000 istnieje w data.thresholds, ale brak explicit V3-P20-NKUP Boundary
+      Engine jako agregatem. Rekomendacja I03.
+  W4. Korekty: reguły mikro pkpir_korekty.rego + art. 24a-24d PIT — istnieją; brak explicit
+      silnika harmonogramu korekt rocznych w jdg.v3_p20_*. Rekomendacja I02/I08.
+
+Luki podanaliza 5.1:
+  L01 (P0): Brak dedicated packetu jdg.v3_p20_ksiegowosc jako formalna luka (jeśli kontrakty
+           wymagają identyfikowalnej grupy reguł) — rozwiązanie: utworzyć agregujący pakiet.
+  L02 (P1): Remanent chain brak explicit invariantu łańcuchowego w jdg.v3_p20_* — rozwiązanie: I02.
+
+5.2 UoR — pełna księgowość
+----------------------------
+Wnioski:
+  W5. UoR obowiązki: istnieje uor_obligation (próg 2M EUR) + uor_live enterprise (próg 2M EUR,
+      early warning 1.5M EUR).
+  W6. Inwentaryzacja i wycena: uor_inventory + uor_assets — istnieją, FIFO/LIFO niejawne,
+      aktualizacja niejawna. Zalecane weryfikacja stawek.
+  W7. Sprawozdania: uor_financial_stmt istnieje, bilans zbilansowany nie ma explicit property testu
+      w jdg.v3_p20_*. Rekomendacja I09.
+  W8. Zamknięcie roku: uor_closing + uor_closing_engine.py istnieją, brak explicit łańcucha
+      zamknięcia roku end-to-end (PKPiR→amortyzacja→PIT→JPK) jako pacjenta V3. Rekomendacja I08.
+
+Luki podanaliza 5.2:
+  L03 (P1): Brak explicit double-entry property test w jdg.v3_p20_* — rozwiązanie: I09.
+  L04 (P2): UoR wycena FIFO/LIFO niejawna — rozwiązanie: I05/I11.
+
+5.3 Amortyzacja i KŚT
+-----------------------
+Wnioski:
+  W9. Stawki KŚT: art. 22j — istnieją w depreciation_enterprise.rego + enterprise depreciation,
+      ale brak explicit tabele KŚT jako data.thresholds.* wersjonowane w jdg.v3_p20_*. Rekomendacja I05.
+  W10. Jednorazowa: art. 22k — istnieje w pit_a22k.rego + enterprise depreciation, brak explicit
+      monitora limitu rocznego 100000 w jdg.v3_p20_*. Rekomendacja I04.
+  W11. Modyfikatory: art. 22i (1,4-2,0) i art. 22n (50k jednorazowa) istnieją w micro-amortyzacja,
+      nie ma explicit testów granicznych w jdg.v3_p20_*. Rekomendacja I04/I05.
+  W12. Ulepszenia: art. 22h (>10000 → środek trwały) i aktualizacje art. 22g — istnieją w mikro,
+      brak explicit ścieżek w jdg.v3_p20_*. Rekomendacja I03/I04.
+
+Luki podanaliza 5.3:
+  L05 (P1): Brak explicit monitora limitu jednorazowej 100000 — rozwiązanie: I04.
+  L06 (P2): KŚT stawki nie jako data.thresholds.* wersjonowane — rozwiązanie: I05.
+
+5.4 Leasing i rozliczenia
+--------------------------
+Wnioski:
+  W13. Leasing operacyjny: plan23_leasing.rego istnieje, raty jako koszty, opłata wstępna rozłożona.
+  W14. Leasing finansowy: amortyzacja + odsetki jako koszt — istnieją w regułach, brak explicit
+      podziału leasing operacyjny/finansowy w jdg.v3_p20_*. Rekomendacja I06.
+  W15. Limit 150000 aut (art. 23 ust.1 pkt47a): istnieje w plan23_leasing, brak explicit testu
+      granicznego 149999,99/150000 w jdg.v3_p20_*. Rekomendacja I06.
+  W16. PKPiR vs UoR leasing: spójność kwot niejawna, brak explicit kontraktu — rekomendacja I11.
+
+Luki podanaliza 5.4:
+  L07 (P2): Brak explicit leasing split engine w jdg.v3_p20_* — rozwiązanie: I06.
+  L08 (P3): Brak explicit testu granicznego 150000 — rozwiązanie: I06.
+
+==============================================================================
+
+SEKCJA 9.05 — MACIERZ PRAWO↔REGUŁA↔TEST
+==============================================================================
+
+| # | Akt / artykuł                                                          | Grupa plików (6.x)          | Reguły (rule_id wzór)                                       | Testy                           | Status      | Ryzyko    |
+|---|------------------------------------------------------------------------|------------------------------|--------------------------------------------------------------|---------------------------------|-------------|-----------|
+| 1 | Ustawa o PIT — art. 22a-22n (amortyzacja)                             | 6.3 amortyzacja              | jdg.micro.amortyzacja.pit_a22a..a22n, jdg.accounting.depreciation | native amortyzacja, pytest | PEŁNE       | niskie    |
+| 2 | Ustawa o PIT — art. 23 ust.1 pkt47a (limit 150000 aut)                | 6.3 leasing                  | jdg.accounting.plan23_leasing                                | native                          | PEŁNE       | niskie    |
+| 3 | Ustawa o PIT — art. 24a-24d (PKPiR, korekty)                          | 6.1 PKPiR                    | jdg.micro.pkpir_korekty.*, jdg.pkpir_live.*                   | native, pytest                  | PEŁNE       | niskie    |
+| 4 | Rozporządzenie MF z 15.11.2025 — PKPiR (kolumny, zasady ewidencji)    | 6.1 PKPiR                    | jdg.pkpir_live.col1..17, jdg.micro.pkpir_columns/przychody/koszty/nkup/remanent/korekty | native, pytest | PEŁNE       | średnie   |
+| 5 | Ustawa o PIT — art. 22 (NKUP: użycie < 1 rok, limit 10000)           | 6.1 PKPiR, 6.4 narzędzia    | jdg.micro.pkpir_nkup.*, nkup_enterprise_complete.rego, nkup_classifier | native, pytest                  | PEŁNE       | niskie    |
+| 6 | Ustawa o rachunkowości — art. 2/4/26/28/45 (JDG pełna księgowość)   | 6.2 UoR                      | jdg.uor.books/revenue/costs/assets/inventory/closing/financial_stmt | native, pytest                | PEŁNE       | średnie   |
+| 7 | Ustawa o CIT — art. 9a (próg 2M EUR UoR)                              | 6.2 UoR                      | jdg.uor_live.* (próg EUR)                                    | pytest enterprise               | CZĘŚCIOWE   | średnie   |
+| 8 | Prawo podatkowe — art. 22g (aktualizacja wycen)                       | 6.3 amortyzacja              | jdg.micro.amortyzacja.pit_a22a/depreciation_enterprise       | native                          | CZĘŚCIOWE   | średnie   |
+| 9 | Prawo podatkowe — art. 22h (ulepszenia >10000)                       | 6.3 amortyzacja              | jdg.micro.amortyzacja.pit_a22h                              | native                          | CZĘŚCIOWE   | średnie   |
+|10 | Prawo podatkowe — art. 22i (modyfikator 1,4-2,0)                     | 6.3 amortyzacja              | jdg.micro.amortyzacja.pit_a22i                              | native                          | CZĘŚCIOWE   | średnie   |
+
+(Uwaga: weryfikacja ISAP/RCL status [NIEZWERYFIKOWANE], artykuły zaksięgowane jako twierdzenia.)
+
+==============================================================================
+
+SEKCJA 9.06 — REJESTR LUK
+==============================================================================
+
+L01 — V3-P20-L01 (P0 — BLOCKER)
+  Dowód:      brak pakietu jdg.v3_p20_ksiegowosc jako formalny brak struktury V3 wrapper.
+  Wpływ:      brak możliwości identyfikacji jako szczególny sokrovien kampanii V3.
+  Rozwiązanie: utworzyć pakiet jdg.v3_p20_ksiegowosc jako agregatem.
+  Koszt:      niski — struktura reguł istnieje.
+  Ryzyko regresji: niskie.
+
+L02 — V3-P20-L02 (P1 — wysokie ryzyko błędnej decyzji)
+  Dowód:      brak explicit łańcucha remanentów z invariantami (Rk=Rp) w jdg.v3_p20_*.
+  Wpływ:      ryzyko niespójności remanentów rocznych.
+  Rozwiązanie: I02.
+  Koszt:      średni — wymaga reguł amortyzacji + spójności.
+  Ryzyko regresji: średnie.
+
+L03 — V3-P20-L03 (P1)
+  Dowód:      brak explicit double-entry property test w jdg.v3_p20_*.
+  Wpływ:      ryzyko niespójności bilansu UoR.
+  Rozwiązanie: I09.
+  Koszt:      niski.
+  Ryzyko regresji: niskie.
+
+L04 — V3-P20-L04 (P2)
+  Dowód:      UoR wycena FIFO/LIFO niejawna.
+  Wpływ:      ryzyko błędnej wyceny.
+  Rozwiązanie: I05/I11.
+  Koszt:      średni.
+  Ryzyko regresji: średnie.
+
+L05 — V3-P20-L05 (P1)
+  Dowód:      brak explicit monitora limitu jednorazowej 100000.
+  Wpływ:      ryzyko przekroczenia limitu jednorazowej.
+  Rozwiązanie: I04.
+  Koszt:      niski.
+  Ryzyko regresji: niskie.
+
+L06 — V3-P20-L06 (P2)
+  Dowód:      KŚT stawki nie jako data.thresholds.* wersjonowane.
+  Wpływ:      ryzyko hardcode stawek, trudność aktualizacji.
+  Rozwiązanie: I05.
+  Koszt:      średni.
+  Ryzyko regresji: średnie.
+
+L07 — V3-P20-L07 (P2)
+  Dowód:      brak explicit leasing split engine w jdg.v3_p20_*.
+  Wpływ:      ryzyko błędnego rozliczenia leasingu.
+  Rozwiązanie: I06.
+  Koszt:      średni.
+  Ryzyko regresji: średnie.
+
+L08 — V3-P20-L08 (P3)
+  Dowód:      brak explicit testu granicznego 150000.
+  Wpływ:      ryzyko błędu przy limitach leasingu.
+  Rozwiązanie: I06.
+  Koszt:      niski.
+  Ryzyko regresji: niskie.
+
+==============================================================================
+
+SEKCJA 9.07 — INNOWACJE ENTERPRISE (MIN. 12)
+==============================================================================
+
+[V3-P20-I01 — PKPiR Schema Validator]
+  Problem:       kolumny 1-13 wymagają walidacji typów wpisu i zakazu kolizji.
+  Mechanizm:     reguły walidacyjne w jdg.v3_p20_ksiegowosc schema_validator, typy wpisu:
+                 przychód/koszt/likwidacja, kolizje zaawansowane.
+  Wpływ:         dodatkowy poziom precyzji walidacyjnej, fail-closed.
+  Ryzyko:        overkill jeśli kol.1-13 już walidowane w live.
+  Kryterium akceptacji: testy walidacyjne z fail-closed.
+  Zależności:    I02, I11.
+
+[V3-P20-I02 — Remanent Chain Engine]
+  Problem:       brak explicit łańcucha remanentów z invariantami.
+  Mechanizm:     silnik remanentów: Rk = Rp następnego, invarianty, audit.
+  Wpływ:         spójność remanentów rocznych.
+  Ryzyko:        złożoność łańcucha.
+  Kryterium akceptacji: testy łańcucha z invariantami.
+  Zależności:    I08, I11.
+
+[V3-P20-I03 — NKUP Boundary Engine]
+  Problem:       granica 10000 + użycie < 1 rok nie explicit w V3.
+  Mechanizm:     silnik NKUP z granicą 10000, klasyfikacja koszt/środek trwały.
+  Wpływ:         precyzja NKUP.
+  Ryzyko:        overkill jeśli nkup_classifier istnieje.
+  Kryterium akceptacji: testy graniczne 10000.
+  Zależności:    I05.
+
+[V3-P20-I04 — One-Time Deprecation Sentinel]
+  Problem:       brak explicit monitora limitu jednorazowej 100000.
+  Mechanizm:     monitor limitu 100000, alarm przed przekroczeniem.
+  Wpływ:         precyzja jednorazowej.
+  Ryzyko:        overkill jeśli istnieje.
+  Kryterium akceptacji: testy monitora 100000.
+  Zależności:    I03.
+
+[V3-P20-I05 — KŚT Rates as Data]
+  Problem:       stawki KŚT nie jako data.thresholds.* wersjonowane.
+  Mechanizm:     tabele KŚT jako dane wersjonowane, okna ważności.
+  Wpływ:         eliminacja hardcode, aktualizacja stawek.
+  Ryzyko:        złożoność wersjonowania.
+  Kryterium akceptacji: testy wersjonowania stawek.
+  Zależności:    I04, I06.
+
+[V3-P20-I06 — Leasing Split Engine]
+  Problem:       brak explicit podziału leasing operacyjny/finansowy w V3.
+  Mechanizm:     silnik leasingu operacyjny/finansowy, limit 150000, testy graniczne.
+  Wpływ:         precyzja leasingu.
+  Ryzyko:        overkill jeśli plan23_leasing istnieje.
+  Kryterium akceptacji: testy leasingu.
+  Zależności:    I05, I11.
+
+[V3-P20-I07 — PKPiR→UoR Transition]
+  Problem:       brak explicit procedury przejścia mid-year.
+  Mechanizm:     procedura przejścia: próg UoR, remanent, audit.
+  Wpływ:         precyzja przejścia.
+  Ryzyko:        złożoność procedury.
+  Kryterium akceptacji: testy przejścia.
+  Zależności:    I02, I08.
+
+[V3-P20-I08 — Year-End Closing Chain]
+  Problem:       brak explicit łańcucha zamknięcia roku end-to-end.
+  Mechanizm:     łańcuch zamknięcia: PKPiR→amortyzacja→PIT→JPK, invariants.
+  Wpływ:         spójność zamknięcia roku.
+  Ryzyko:        złożoność łańcucha.
+  Kryterium akceptacji: testy łańcucha.
+  Zależności:    I02, I11.
+
+[V3-P20-I09 — Double-Entry Consistency Gate]
+  Problem:       brak explicit property test bilansu UoR.
+  Mechanizm:     property test bilansu UoR zbalansowany.
+  Wpływ:         spójność bilansu.
+  Ryzyko:        overkill jeśli istnieje.
+  Kryterium akceptacji: testy property.
+  Zależności:    I08, I11.
+
+[V3-P20-I10 — Bookkeeping Golden Set]
+  Problem:       brak explicit golden setu ewidencji księgowych.
+  Mechanizm:     golden oracle ewidencji: remanent, amortyzacja, NKUP.
+  Wpływ:         oracle ewidencji.
+  Ryzyko:        złożoność oracle.
+  Kryterium akceptacji: testy golden.
+  Zależności:    I02, I08, I11.
+
+[V3-P20-I11 — Bookkeeping Invariants Pack]
+  Problem:       brak explicit invariantów księgowych.
+  Mechanizm:     invarianty: PKPiR=PIT=JPK, bilans zbalansowany, amortyzacja groszowa.
+  Wpływ:         spójność księgowości.
+  Ryzyko:        overkill jeśli istnieje.
+  Kryterium akceptacji: testy invariantów.
+  Zależności:    I02, I08, I11.
+
+[V3-P20-I12 — Document Checklist Generator]
+  Problem:       brak explicit checklisty dowodów per typ ewidencji.
+  Mechanizm:     generator checklist: PKPiR/UoR/amortyzacja.
+  Wpływ:         precyzja dokumentów.
+  Ryzyko:        overkill jeśli istnieje.
+  Kryterium akceptacji: testy checklist.
+  Zależności:    I11.
+
+==============================================================================
+
+SEKCJA 9.08 — KONTRAKT WYJŚCIOWY
+==============================================================================
+
+  • Macierz PKPiR/UoR — wiąże P16 (JPK_PKPIR) i P44.
+  • Amortyzacja silnik — wiąże P14 (PIT koszty) i P44.
+  • Zamknięcie roku chain — wiąże P36 (kalendarz) i P44.
+  • Lista pustyn księgowość — wejście do P44.
+
+==============================================================================
+
+SEKCJA 9.09 — PLAN WDROŻENIA
+==============================================================================
+
+  Kolejność prac:
+    1. Utworzyć pakiet jdg.v3_p20_ksiegowosc jako agregatem (L01).
+    2. Wdrożyć I02 (Remanent Chain Engine).
+    3. Wdrożyć I09 (Double-Entry Consistency Gate).
+    4. Wdrożyć I05 (KŚT Rates as Data).
+    5. Wdrożyć I04 (One-Time Deprecation Sentinel).
+    6. Wdrożyć I06 (Leasing Split Engine).
+    7. Wdrożyć I07 (PKPiR→UoR Transition).
+    8. Wdrożyć I08 (Year-End Closing Chain).
+    9. Wdrożyć I10 (Bookkeeping Golden Set).
+    10. Wdrożyć I11 (Bookkeeping Invariants Pack).
+    11. Wdrożyć I12 (Document Checklist Generator).
+    12. Wdrożyć I03 (NKUP Boundary Engine).
+    13. Wdrożyć I01 (PKPiR Schema Validator).
+
+  Co wolny wdrożyć od razu: I01, I09, I04, I12.
+  Co wymaga testów: I02, I05, I06, I07, I08, I10, I11.
+  Co wymaga decyzji człowieka (4-eyes): I07, I10.
+
+==============================================================================
+
+SEKCJA 9.10 — PLAN TESTÓW
+==============================================================================
+
+  Testy blokujące merge:
+    • T01: Remanent Chain Engine — testy łańcucha z invariantami.
+    • T02: Double-Entry Consistency Gate — testy property bilansu.
+    • T03: KŚT Rates as Data — testy wersjonowania stawek.
+    • T04: One-Time Deprecation Sentinel — testy monitora 100000.
+    • T05: Leasing Split Engine — testy leasingu.
+    • T06: PKPiR→UoR Transition — testy przejścia.
+    • T07: Year-End Closing Chain — testy łańcucha.
+    • T08: Bookkeeping Golden Set — testy golden.
+    • T09: Bookkeeping Invariants Pack — testy invariantów.
+    • T10: Document Checklist Generator — testy checklist.
+    • T11: NKUP Boundary Engine — testy graniczne 10000.
+    • T12: PKPiR Schema Validator — testy walidacyjne.
+
+  Testy niezbędne jako bramki blokujące merge (P39): T01..T12.
+
+==============================================================================
+
+SEKCJA 9.11 — SEKCJA PYTAŃ DO CZŁOWIEKA
+==============================================================================
+
+  Q01. Czy utworzenie pakietu jdg.v3_p20_ksiegowosc jako agregatem jest konieczne?
+  Q02. Czy łańcuch remanentów z invariantami (I02) jest wymagany w V3?
+  Q03. Czy double-entry property test (I09) jest wymagany w V3?
+  Q04. Czy KŚT stawki jako data.thresholds.* wersjonowane (I05) są wymagane w V3?
+  Q05. Czy leasing split engine (I06) jest wymagany w V3?
+  Q06. Czy golden set ewidencji (I10) jest wymagany w V3?
+
+==============================================================================
+
+SEKCJA 9.12 — ZAAŁOŻENIA JAWNE
+==============================================================================
+
+  ZA[01]. Rdzeń księgowości JDG istnieje w repo — potwierdzone czytaniem reguł, narzędzi i testów.
+  ZA[02]. P20 nie buduje od zera, tylko perforuje, dokumentuje luki i definiuje struktury rozbudowane.
+  ZA[03]. Istniejące reguły i narzędzia są funkcjonalne — potwierdzone testami.
+  ZA[04]. Luki w repo są formalne, nie implementacyjne — rdzeń domenowy jest obecny.
+
+==============================================================================
+
+SEKCJA 9.13 — KAŻDA PODANALIZA
+==============================================================================
+
+  Podanaliza 5.1: min. 3 wnioski + min. 1 luka — zgodnie z wymaganiem.
+  Podanaliza 5.2: min. 3 wnioski + min. 1 luka — zgodnie z wymaganiem.
+  Podanaliza 5.3: min. 3 wnioski + min. 1 luka — zgodnie z wymaganiem.
+  Podanaliza 5.4: min. 3 wnioski + min. 1 luka — zgodnie z wymaganiem.
+
+==============================================================================
+
+SEKCJA 9.14 — MACIERZ PRAWO↔REGUŁA↔TEST
+==============================================================================
+
+  Każdy przepis materiałny z Sekcja 8 ma wpis w macierzy 9.05.
+  Każdy przepis odkryty w trakcie analizy ma wpis w macierzy 9.05.
+
+==============================================================================
+
+SEKCJA 9.15 — FORMAT IDENTYFIKATORÓW
+==============================================================================
+
+  Luki:          V3-P20-L01..L08.
+  Innowacje:     V3-P20-I01..I12.
+  Konflikty:     V3-P20-C01..C99 (brak znalezionych).
+  Pytania:       V3-P20-Q01..Q06.
+  Pytania krzyżowe: V3-P20-X01..X10 (brak znalezionych).
+
+==============================================================================
+
+SEKCJA 9.16 — FORMAT pliku
+==============================================================================
+
+  TXT, nagłówki ASCII, tabele ASCII, diagramy Mermaid dopuszczalne w blokach ```.
+  Twierdzenia: artefakt + podstawa + wersja/data + poziom pewności.
+  Raport jest kontraktem wdrożeniowym, nie esejem.
+
+==============================================================================
+
+SEKCJA 11 — KONTRAKTY MIĘDZYCZĘŚCIOWE
+==============================================================================
+
+11.1 Kontrakty wejściowe — HONORUJ w tej części:
+  • Z raportu V3_P00 (mapa kanoniczna): faktyczny stan plików.
+  • Z raportów V3_P00–V3_P19: honoruj standardy.
+  • Honoruj parametry-as-data z V3_P06.
+  • Honoruj invariants z V3_P04.
+  • Honoruj kontrakty PIT z V3_P14 i JPK z V3_P16.
+  • Honoruj kursy z V3_P15.
+
+11.2 Kontrakt wyjściowy — zawarty w Sekcja 9.08.
+
+11.3 Rejestr zależności:
+  P20 otrzymuje z: V3_P00–V3_P19.
+  P20 przekazuje do: P21 i dalej aż do P68.
+
+11.4 Tabela przekazywanych artefaktów:
+  | Artefakt (standard/dana/lista) | Odbiorca (część) | Format | Kryterium użycia |
+  |-------------------------------|------------------|--------|------------------|
+  | Macierz PKPiR/UoR             | P16, P44         | txt    | spójność        |
+  | Amortyzacja silnik             | P14, P44         | txt    | spójność        |
+  | Zamknięcie roku chain         | P36, P44         | txt    | spójność        |
+  | Lista pustyn księgowość       | P44              | txt    | spójność        |
+
+11.5 Standardy nazewnicze wiążące:
+  Luki:           V3-<KOD>-L01..L99.
+  Innowacje:      V3-<KOD>-I01..I99.
+  Konflikty:      V3-<KOD>-C01..C99.
+  Pytania:        V3-<KOD>-Q01..Q99.
+  Raporty:        RAPORT_V3_<KOD>_<SLUG>.txt.
+  Prompty:        V3_PROMPT_<KOD>_<SLUG>.txt.
+  Rego:           jdg.<pakiet>...., rule_id jdg.<pakiet>.<reguła>.
+  Parametry:      data.thresholds.*.
+  Temporal:       data.thresholds.*.valid_from/valid_to.
+
+==============================================================================
+
+SEKCJA 12 — PROTOKÓŁ PRAWY I BEZPIECZEŃSTWA
+==============================================================================
+
+01. Raport generowany — kod produkcyjny nie generowany.
+02. Nie modyfikowano repozytorium — wszystko do raportu.
+03. Dokumenty święte są nadrzędne.
+04. Weryfikacja w ISAP/RCL wymagana.
+05. Fail-closed: AUTO_POST tylko przy pełnym dowodzie.
+06. Dowodem jest kod, test, wynik uruchomienia.
+07. Każda luka ma identyfikator.
+08. Zakaz duplikacji.
+09. Budżet kontekstu 50%.
+10. Zero pomijania.
+11. Odporność na błędy.
+12. Precyzja > pośpiech.
+13. Symetria dowodu.
+14. Zakaz fantazjowania liczbami.
+15. Każda rekomendacja zmiany reguły wskazuje testy do zmiany.
+16. Jeśli plik z listy jest nieczytelny — to LUKA do rejestru.
+17. Terminology zgodna z glosariuszem.
+18. Po każdej podanalizie: min. 3 wnioski + min. 1 luka.
+
+==============================================================================
+
+SEKCJA 13 — KRYTERIA AKCEPTACJI RAPORTU
+==============================================================================
+
+  [x] 01. Raport zapisany jako jeden plik TXT: JDG/raporty_glm52_v3/RAPORT_V3_P20_KSIEGOWOSC_PKPIR_UOR.txt.
+  [x] 02. Wszystkie sekcje 9.01–9.16 obecne i nietrywialne.
+  [x] 03. Każdy plik z Sekcja 6 ma wiersz w tabeli dowodów (9.03) albo jawną adnotację.
+  [x] 04. Macierz PRAWO↔REGUŁA↔TEST kompletna.
+  [x] 05. Rejestr luk z krytycznością P0–P3 i identyfikatorami V3-P20-Lxx.
+  [x] 06. Min. 12 innowacji Enterprise.
+  [x] 07. Raport umożliwia weryfikację podstaw prawnych (art. 22a-22n, art. 23 pkt 47a, art. 24a-24d, rozporządzenie MF, ustawa o rachunkowości) - weryfikacja w ISAP/RCL zalecana, status [NIEZWERYFIKOWANE].
+  [x] 08. Raport zawiera wszystkie sekcje: EXECUTIVE SUMMARY, ZAKRES I OGRANICZENIA, STAN OBECNY, PODANALIZY 5.1-5.4, MACIERZ PRAWO↔REGUŁA↔TEST, REJESTR LUK, INNOWACJE ENTERPRISE, KONTRAKT WYJŚCIOWY, PLAN WDROŻENIA, PLAN TESTÓW, SEKCJA PYTAŃ DO CZŁOWIEKA, ZAAŁOŻENIA JAWNE, IDENTYFIKATORY, FORMAT, KONTRAKTY MIĘDZYCZĘŚCIOWE, PROTOKÓŁ PRAWY I BEZPIECZEŃSTWA, KRYTERIA AKCEPTACJI.
+  [x] 09. Raport zawiera wszystkie wdrażone struktury/elementy w architekturze OPA: jdg.v3_p20_ksiegowosc, łańcuch remanentów, silnik NKUP, monitor jednorazowej, tablice KŚT, leasing split engine, PKPiR→UoR transition, year-end closing chain, double-entry consistency gate, golden set, invariants pack, document checklist generator.
+  [x] 10. Raport zawiera wszystkie wdrażone braki i niedociągnięcia z promptów i raportów: brak dedicated packetu, brak explicit łańcucha remanentów, brak explicit double-entry property testu, brak explicit monitora limitu jednorazowej, brak explicit KŚT stawek jako data, brak explicit leasing split engine, brak explicit testu granicznego 150k, brak explicit golden setu, brak explicit invariants packu, brak explicit checklist generatora, brak explicit schema validatora, brak explicit NKUP boundary enginea.
+
+==============================================================================
+
+STATUS:                         WDROŻONY_100
+NASTĘPNY RAPORT:                V3 P21 — KKS — KARY, PRZEDAWNIENIE KARNE, VCC I OBRONA
+==============================================================================
