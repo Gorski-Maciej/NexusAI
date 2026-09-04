@@ -1056,6 +1056,45 @@ crossborder := {
     "legal_basis_version": "isap-lkg-2026.08",
     "valid_from": "2025-01-01",
     "valid_to": null,
+
+    # ═════════════════════════════════════════════════════════════════════════
+    # V3-P15 CROSS-BORDER ENTERPRISE (kampania V3 FORTRESS) — ADR-002 zero hardcode
+    # ═════════════════════════════════════════════════════════════════════════
+    # V3-P15-I01: Place-of-Supply Matrix (art. 28a-28o VAT)
+    "pos_b2b_rule": "28b",                        # B2B — miejsce siedziby nabywcy
+    "pos_b2c_rule": "28c",                        # B2C — miejsce świadczenia usługi
+    "pos_real_estate_rule": "28e",                # nieruchomości — miejsce położenia
+    "pos_restaurant_rule": "28f",                 # gastronomia — miejsce wykonania
+    "pos_accommodation_rule": "28g",              # krótkoterminowe zakwaterowanie
+    "pos_digital_b2c_rule": "28k",                # usługi elektroniczne B2C — miejsce konsumpcji
+    # V3-P15-I02: EU VAT Rates Feed (stawki UE jako dane z valid_from)
+    "eu_vat_rates_feed_source": "https://taxation-customs.ec.europa.eu/vat-rates_en",
+    "eu_vat_rates_version": "2026-07",
+    # V3-P15-I04: FX Precision Engine (kursy NBP D-1, groszowe zaokrąglenia)
+    "fx_rounding_rule": "round_half_up",          # zaokrąglanie wg art. 22b VAT kontekst
+    "fx_rounding_scale": 2,                        # grosz (0,01)
+    "fx_use_previous_day_rate": true,              # kurs D-1 dla ewidencji (P28)
+    # V3-P15-I05: TP Threshold Sentinel (art. 23o/23zf PIT) — alerty dokumentacyjne
+    "tp_monitoring_alert_days": 30,                # alert przed upływem terminu dokumentacji
+    # V3-P15-I06: MDR Hallmark Scorer (art. 86a OrdPU / DAC6)
+    "mdr_human_review_required": true,             # human review WYMUSZONY
+    "mdr_reporting_deadline_days": 30,             # termin MDR-1 od zdarzenia
+    # V3-P15-I07: Exit Tax Early Warning (art. 24cg/30da PIT)
+    "exit_tax_early_warning_days": 60,             # alert 60 dni przed zdarzeniem
+    # V3-P15-I08: Cross-Border Golden Set (Golden Oracle P10)
+    "golden_set_min_verdicts": 30,                 # minimalna reprezentatywność golden setu
+    # V3-P15-I09: OSS Decision Advisor (art. 28k-28m VAT)
+    "oss_distance_selling_threshold_eur": 10000,   # próg sprzedaży wysyłkowej B2C (art. 24)
+    "oss_annual_threshold_eur": 100000,            # próg roczny dla rekomendacji OSS
+    # V3-P15-I10: Distance Selling Tracker (art. 24/25 VAT)
+    "distance_selling_limit_eur": 10000,           # próg per kraj (10k EUR standard UE)
+    # V3-P15-I11: Cross-Border Invariants (P04)
+    "wdt_invariant_required": true,                # WDT wymaga VAT-UE + VIES nabywcy
+    "fx_d1_invariant_required": true,              # kurs D-1 dla ewidencji
+    "import_services_rc_required": true,           # import usług — reverse charge obowiązkowy
+    # V3-P15-I12: Currency Consistency Gate (kontrakt P28/P16)
+    "currency_consistency_required": true,         # te same kursy VAT i PKPiR
+    "v3_p15_threshold_version": "crossborder-v3p15-2026.09",
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,50 @@
+{
+  "innovation": "V3-P15-I11",
+  "generated_at": "2026-09-04T04:40:40+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "wdt": true,
+    "fx_d1": true,
+    "rc": true,
+    "block": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "invariants_rule",
+      "status": "OK",
+      "detail": "reguła crossborder_invariants: True"
+    },
+    {
+      "name": "wdt_invariant",
+      "status": "OK",
+      "detail": "WDT wymaga VAT-UE + VIES nabywcy"
+    },
+    {
+      "name": "fx_d1_invariant",
+      "status": "OK",
+      "detail": "kurs D-1 dla ewidencji"
+    },
+    {
+      "name": "import_rc_invariant",
+      "status": "OK",
+      "detail": "import usług — reverse charge obowiązkowy"
+    },
+    {
+      "name": "block_on_violation",
+      "status": "OK",
+      "detail": "naruszenie invariantu → BLOCK_AND_ALERT"
+    },
+    {
+      "name": "params_as_data",
+      "status": "OK",
+      "detail": "brak parametrów *_invariant_required: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P04 (invarianty runtime), P13 (import usług), P44",
+    "rule": "WDT bez VAT-UE / kurs nie D-1 / import usług bez reverse charge = BLOCK_AND_ALERT"
+  }
+}

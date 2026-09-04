@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P15-I04",
+  "generated_at": "2026-09-04T04:40:38+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "fx_rule": true,
+    "rounding": true,
+    "invariant": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "fx_rule",
+      "status": "OK",
+      "detail": "reguła fx_precision_engine: True"
+    },
+    {
+      "name": "grosz_rounding",
+      "status": "OK",
+      "detail": "zaokrąglanie round-half-up (0,01) w regułach"
+    },
+    {
+      "name": "invariant_groszowy",
+      "status": "OK",
+      "detail": "invariant: suma PLN = suma(wartość × kurs)"
+    },
+    {
+      "name": "params_as_data",
+      "status": "OK",
+      "detail": "brak parametrów fx_*: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P28 (księgowość), P16 (JPK waluty), P04 (inwarianty), P44",
+    "rule": "kursy D-1 dla ewidencji; przeliczenia groszowe round-half-up; invariant PLN sprawdzany"
+  }
+}

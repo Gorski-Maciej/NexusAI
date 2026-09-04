@@ -1,0 +1,32 @@
+{
+  "innovation": "V3-P15-I09",
+  "generated_at": "2026-09-04T04:40:39+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "oss_rule": true,
+    "suggest": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "oss_rule",
+      "status": "OK",
+      "detail": "reguła oss_decision_advisor: True"
+    },
+    {
+      "name": "suggest_no_auto",
+      "status": "OK",
+      "detail": "rekomendacja SUGGEST + no_auto_post (decyzja człowieka)"
+    },
+    {
+      "name": "params_as_data",
+      "status": "OK",
+      "detail": "brak parametrów oss_*: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P12 (stawki), P44",
+    "rule": "OSS = rekomendacja SUGGEST z symulatorem; nigdy automatyczna rejestracja"
+  }
+}

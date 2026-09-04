@@ -1,0 +1,32 @@
+{
+  "innovation": "V3-P15-I10",
+  "generated_at": "2026-09-04T04:40:40+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "triage": true,
+    "limit_param": true
+  },
+  "checks": [
+    {
+      "name": "distance_selling_rule",
+      "status": "OK",
+      "detail": "reguła distance_selling_tracker: True"
+    },
+    {
+      "name": "alarm_on_exceed",
+      "status": "OK",
+      "detail": "przekroczenie progu per kraj → TRIAGE_QUEUE + alarm"
+    },
+    {
+      "name": "limit_param",
+      "status": "OK",
+      "detail": "parametr distance_selling_limit_eur (ADR-002)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P36 (kalendarz), P12 (stawki), P44",
+    "rule": "sprzedaż wysyłkowa powyżej progu per kraj = alarm + obowiązki rejestracyjne"
+  }
+}

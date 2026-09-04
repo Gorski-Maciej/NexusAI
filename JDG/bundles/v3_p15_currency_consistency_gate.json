@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P15-I12",
+  "generated_at": "2026-09-04T04:40:40+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "compare": true,
+    "block": true,
+    "param": true
+  },
+  "checks": [
+    {
+      "name": "currency_gate_rule",
+      "status": "OK",
+      "detail": "reguła currency_consistency_gate: True"
+    },
+    {
+      "name": "vat_pkpir_compare",
+      "status": "OK",
+      "detail": "porównanie kursów VAT vs PKPiR na tym samym inputcie"
+    },
+    {
+      "name": "block_on_mismatch",
+      "status": "OK",
+      "detail": "niespójność kursów → BLOCK_AND_ALERT (JPK zgodność)"
+    },
+    {
+      "name": "param",
+      "status": "OK",
+      "detail": "parametr currency_consistency_required (ADR-002)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P28 (księgowość), P16 (JPK_V7), P39 (CI), P44",
+    "rule": "te same kursy dla VAT i PKPiR na tym samym inputcie; inaczej BLOCK przed księgowaniem"
+  }
+}

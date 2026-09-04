@@ -1,0 +1,32 @@
+{
+  "innovation": "V3-P15-I06",
+  "generated_at": "2026-09-04T04:40:38+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "mdr_rule": true,
+    "human_review": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "mdr_rule",
+      "status": "OK",
+      "detail": "reguła mdr_hallmark_scorer: True"
+    },
+    {
+      "name": "human_review_forced",
+      "status": "OK",
+      "detail": "human review wymuszony + termin 30 dni od zdarzenia"
+    },
+    {
+      "name": "params_as_data",
+      "status": "OK",
+      "detail": "brak parametrów mdr_*: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P36 (kalendarz), P44",
+    "rule": "scoring MDR ≥70 = TRIAGE_QUEUE + human review; termin 30 dni; zero AUTO_POST"
+  }
+}

@@ -86,6 +86,7 @@ import data.jdg.tp
 import data.jdg.tp.hyper as tp_hyper
 import data.jdg.exit_tax_cfc as exit_tax_cfc
 import data.jdg.crossborder.v3_08 as crossborder_v3_08
+import data.jdg.v3_p15_crossborder as v3_p15_crossborder
 import data.jdg.micro.quality_v3_13 as micro_quality_v3_13
 import data.jdg.hyper.quality_v3_14 as hyper_quality_v3_14
 import data.jdg.enterprise.quality_v3_15 as enterprise_quality_v3_15
@@ -1448,6 +1449,7 @@ _package_decisions := {
     "jdg.crossborder": crossborder.decide,
     "jdg.crossborder.post_brexit": post_brexit.decide,
     "jdg.crossborder.v3_08": crossborder_v3_08.decide,
+    "jdg.v3_p15_crossborder": v3_p15_crossborder.decide,
     "jdg.international": international.decide,
     "jdg.tp": tp.decide,
     "jdg.tp.hyper": tp_hyper.decide,
@@ -2729,6 +2731,17 @@ final_verdict_p80 = safe_merge(final_verdict_p79,
         fallback.decide
     ))
 
+# V3-P15 (kampania V3 FORTRESS): warstwa transgraniczna ENTERPRISE — place of
+# supply (art. 28a-28o), stawki VAT UE jako dane, rezydencja NEEDS_ADVICE
+# (art. 3 PIT), kursy NBP D-1 z precyzją groszową, TP/MDR/exit-tax sentinele,
+# OSS/distance selling, invarianty cross-border (P04) i bramka spójności
+# walutowej VAT↔PKPiR. SUGGEST/no_auto_post i fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p15_check nie jest true.
+final_verdict_p81 = safe_merge(final_verdict_p80,
+    safe_merge(v3_p15_crossborder.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -2743,8 +2756,8 @@ final_verdict_p80 = safe_merge(final_verdict_p79,
 # ═══════════════════════════════════════════════════════════════════════════════
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
-# Compatibility anchors remain available as final_verdict_p53..p80, but the
-# effective POST-MERGE input is p80. This preserves every stage p54..p79 and
+# Compatibility anchors remain available as final_verdict_p53..p81, but the
+# effective POST-MERGE input is p81. This preserves every stage p54..p80 and
 # removes the former hand-written object.union chain that could silently skip
 # stages or overwrite immutable fields (INV-018/INV-042).
 # Legacy audit anchors (documentation only; deliberately not executable):
@@ -2761,7 +2774,7 @@ final_verdict_p80 = safe_merge(final_verdict_p79,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p80
+    final_verdict_p81
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

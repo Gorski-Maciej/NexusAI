@@ -1,0 +1,32 @@
+{
+  "innovation": "V3-P15-I05",
+  "generated_at": "2026-09-04T04:40:38+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "tp_rule": true,
+    "triage": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "tp_rule",
+      "status": "OK",
+      "detail": "reguła tp_threshold_sentinel: True"
+    },
+    {
+      "name": "triage_on_exceed",
+      "status": "OK",
+      "detail": "przekroczenie progu → TRIAGE_QUEUE + checklista dokumentacyjna"
+    },
+    {
+      "name": "params_as_data",
+      "status": "OK",
+      "detail": "brak parametrów tp_*: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P36 (kalendarz terminów), P44",
+    "rule": "przekroczenie progu TP = TRIAGE_QUEUE z checklistą dokumentacyjną i terminem 6 mies."
+  }
+}

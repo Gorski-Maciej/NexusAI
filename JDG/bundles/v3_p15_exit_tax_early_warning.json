@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P15-I07",
+  "generated_at": "2026-09-04T04:40:39+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "exit_tax_rule": true,
+    "block": true,
+    "deferral": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "exit_tax_rule",
+      "status": "OK",
+      "detail": "reguła exit_tax_early_warning: True"
+    },
+    {
+      "name": "block_on_trigger",
+      "status": "OK",
+      "detail": "zdarzenie powyżej progu → BLOCK_AND_ALERT + checklista"
+    },
+    {
+      "name": "deferral_eea",
+      "status": "OK",
+      "detail": "odroczenie EOG (5 lat) uwzględnione"
+    },
+    {
+      "name": "params_as_data",
+      "status": "OK",
+      "detail": "brak parametrów exit_tax_*: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P44, P10 (golden), P04 (inwarianty)",
+    "rule": "zdarzenie exit tax powyżej progu = BLOCK_AND_ALERT + checklista; odroczenie EOG rozważane"
+  }
+}

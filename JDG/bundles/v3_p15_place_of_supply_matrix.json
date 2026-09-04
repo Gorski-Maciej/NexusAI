@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P15-I01",
+  "generated_at": "2026-09-04T04:40:37+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "place_of_supply_rule": true,
+    "zone_coverage": true,
+    "fail_closed": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "place_of_supply_rule",
+      "status": "OK",
+      "detail": "reguła place_of_supply_matrix: True"
+    },
+    {
+      "name": "zone_coverage",
+      "status": "OK",
+      "detail": "strefy B2B/B2C/nieruchomości/gastronomia/brak-ścieżki obecne"
+    },
+    {
+      "name": "fail_closed_unknown_path",
+      "status": "OK",
+      "detail": "nieznana ścieżka → NEEDS_ADVICE (fail-closed)"
+    },
+    {
+      "name": "params_as_data",
+      "status": "OK",
+      "detail": "brak parametrów pos_* w thresholds: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P12 (stawki), P16 (JPK pola UE), P44",
+    "rule": "każda ścieżka place of supply ma regułę + status; nieznana = NEEDS_ADVICE"
+  }
+}

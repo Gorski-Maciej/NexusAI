@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P15-I08",
+  "generated_at": "2026-09-04T04:40:39+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "golden_set_rule": true,
+    "boundaries": true,
+    "triage": true,
+    "min_param": true
+  },
+  "checks": [
+    {
+      "name": "golden_set_rule",
+      "status": "OK",
+      "detail": "reguła crossborder_golden_set: True"
+    },
+    {
+      "name": "boundary_decisions",
+      "status": "OK",
+      "detail": "pokrycie decyzjami granicznymi (D-1, 183 dni, TP, place of supply)"
+    },
+    {
+      "name": "triage_incomplete",
+      "status": "OK",
+      "detail": "niekompletny golden set → TRIAGE_QUEUE"
+    },
+    {
+      "name": "min_verdicts_param",
+      "status": "OK",
+      "detail": "parametr golden_set_min_verdicts (ADR-002)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P10 (Golden Oracle), P44",
+    "rule": "golden set cross-border pokrywa decyzje graniczne; replay na nowych wersjach reguł"
+  }
+}

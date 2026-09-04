@@ -1,0 +1,32 @@
+{
+  "innovation": "V3-P15-I02",
+  "generated_at": "2026-09-04T04:40:37+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "eu_rates_rule": true,
+    "fail_closed": true,
+    "missing_params": []
+  },
+  "checks": [
+    {
+      "name": "eu_rates_rule",
+      "status": "OK",
+      "detail": "reguła eu_vat_rates_feed: True"
+    },
+    {
+      "name": "fail_closed_missing_rate",
+      "status": "OK",
+      "detail": "brak stawki kraju → NEEDS_ADVICE (fail-closed)"
+    },
+    {
+      "name": "params_as_data",
+      "status": "OK",
+      "detail": "brak parametrów eu_vat_rates_*: BRAK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P06 (parametry-as-data), P05 (temporalność), P44",
+    "rule": "stawki VAT UE wyłącznie jako dane z valid_from i źródłem; brak = NEEDS_ADVICE"
+  }
+}

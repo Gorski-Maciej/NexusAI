@@ -1,0 +1,32 @@
+{
+  "innovation": "V3-P15-I03",
+  "generated_at": "2026-09-04T04:40:37+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "residency_rule": true,
+    "needs_advice": true,
+    "threshold": true
+  },
+  "checks": [
+    {
+      "name": "residency_rule",
+      "status": "OK",
+      "detail": "reguła residency_advisor: True"
+    },
+    {
+      "name": "determinator_needs_advice",
+      "status": "OK",
+      "detail": "niepewna rezydencja → NEEDS_ADVICE + checklist dokumentów"
+    },
+    {
+      "name": "residency_days_param",
+      "status": "OK",
+      "detail": "parametr residency_days (183) w thresholds (ADR-002)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "P03 (klasy pewności), P44",
+    "rule": "niepewna rezydencja = NEEDS_ADVICE + checklist (certyfikat, kalendarz, centrum interesów)"
+  }
+}
