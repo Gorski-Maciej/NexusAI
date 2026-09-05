@@ -1,0 +1,50 @@
+{
+  "innovation": "V3-P25-I04",
+  "generated_at": "2026-09-05T21:24:53+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "rig": {
+      "year": 2026,
+      "days": 365,
+      "hits": 55,
+      "missing": 0,
+      "rollovers": 29,
+      "zero_silence": true
+    },
+    "rig_ok": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "rig_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p25_kalendarz_zbiorczy.year_rollover_rig: True"
+    },
+    {
+      "name": "rig_engine_2026",
+      "status": "OK",
+      "detail": "rok 2026: 365 dni, 55 terminów, 0 pominiętych, 29 przeniesień"
+    },
+    {
+      "name": "zero_missing",
+      "status": "OK",
+      "detail": "pominięty termin = BLOCK (zero pominięć obowiązkowe)"
+    },
+    {
+      "name": "rollover_mismatch",
+      "status": "OK",
+      "detail": "oczekiwane vs obliczone przeniesienia — spójność = warunek zaliczenia"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: klucze ['v3_p25_public_holidays', 'v3_p25_master_deadline_table']"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Test rok przeniesień wiąże P39 (testy blokujące merge) i P44 (certyfikacja): wygeneruj rok → zero pominiętych",
+    "rule": "365 dni × obowiązki → hits == expected, missing == 0"
+  }
+}

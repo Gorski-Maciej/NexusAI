@@ -1,0 +1,49 @@
+{
+  "innovation": "V3-P25-I02",
+  "generated_at": "2026-09-05T21:24:53+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "three_kinds": true,
+    "mismatch_block": true,
+    "engine_probe": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "rollover_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p25_kalendarz_zbiorczy.weekend_rollover: True"
+    },
+    {
+      "name": "three_kinds",
+      "status": "OK",
+      "detail": "NEXT/PREV/NONE — przeniesienia per obowiązek (I02)"
+    },
+    {
+      "name": "mismatch_block",
+      "status": "OK",
+      "detail": "oczekiwane ≠ zarejestrowane = BLOCK"
+    },
+    {
+      "name": "legal_basis",
+      "status": "OK",
+      "detail": "art. 12 § 4 OrdPU + art. 47 ust. 3 SUS + art. 4 ust. 3 PCC"
+    },
+    {
+      "name": "engine_probe",
+      "status": "OK",
+      "detail": "sobota 30.05.2026: NEXT=2026-06-01, PREV=2026-05-29, NONE=2026-05-30, Wielkanoc2026=2026-03-18"
+    },
+    {
+      "name": "holidays_as_data",
+      "status": "OK",
+      "detail": "ADR-002: klucze ['v3_p25_rollover_rule', 'v3_p25_rollover_exception_rule', 'v3_p25_public_holidays']"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Przeniesienia zweryfikowane PER obowiązek; wyjątek PCC 14 dni (art. 4 ust. 3 — brak przeniesienia); status [NIEZWERYFIKOWANE] ISAP",
+    "rule": "NEXT/PREV/NONE z tabeli MASTER; święta ruchome algorytmicznie"
+  }
+}

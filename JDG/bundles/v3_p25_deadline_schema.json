@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P25-I05",
+  "generated_at": "2026-09-05T21:24:54+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "fields": true,
+    "rows": 17,
+    "rows_ok": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "schema_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p25_kalendarz_zbiorczy.deadline_schema: True"
+    },
+    {
+      "name": "schema_fields",
+      "status": "OK",
+      "detail": "pola v1: ['obligation', 'base_day', 'base_date', 'base_days', 'base_months', 'frequency', 'rollover', 'alert_override', 'checklist', 'action', 'legal_basis']"
+    },
+    {
+      "name": "frequencies",
+      "status": "OK",
+      "detail": "MONTHLY/QUARTERLY/ANNUAL/EVENT"
+    },
+    {
+      "name": "master_rows_valid",
+      "status": "OK",
+      "detail": "17 wierszy tabeli MASTER walidowanych schematem v1"
+    },
+    {
+      "name": "fail_closed",
+      "status": "OK",
+      "detail": "brak pola / nieznana częstotliwość = BLOCK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Deadline Schema v1 wiąże P41 (UI kalendarza) i P44 (certyfikacja): pola, częstotliwości, fail-closed",
+    "rule": "schemat walidowany per wiersz; brak pola = BLOCK"
+  }
+}

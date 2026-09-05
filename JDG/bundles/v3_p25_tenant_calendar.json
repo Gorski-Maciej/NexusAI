@@ -1,0 +1,49 @@
+{
+  "innovation": "V3-P25-I07",
+  "generated_at": "2026-09-05T21:24:54+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "forms": [
+      "SCALE",
+      "LINEAR",
+      "LUMP_SUM",
+      "TAX_CARD"
+    ],
+    "layer_ok": true,
+    "forms_distinct": true,
+    "isolation": true
+  },
+  "checks": [
+    {
+      "name": "tenant_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p25_kalendarz_zbiorczy.tenant_calendar: True"
+    },
+    {
+      "name": "forms_matrix",
+      "status": "OK",
+      "detail": "4 formy → różne zestawy terminów PIT/ZUS"
+    },
+    {
+      "name": "forms_distinct",
+      "status": "OK",
+      "detail": "zestawy terminów różnią się per forma (LUMP_SUM → ryczałt 20.)"
+    },
+    {
+      "name": "isolation",
+      "status": "OK",
+      "detail": "izolacja tenant_id (AP08/AP12 — jedno źródło, brak mieszania)"
+    },
+    {
+      "name": "fail_closed",
+      "status": "OK",
+      "detail": "brak tenant_id / nieznana forma = BLOCK"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Warstwa tenant wiąże P63 (multi-tenant) i P41 (widok per JDG)",
+    "rule": "kalendarz per tenant per forma; izolacja obowiązkowa"
+  }
+}

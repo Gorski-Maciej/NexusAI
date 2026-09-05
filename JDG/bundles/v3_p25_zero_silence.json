@@ -1,0 +1,55 @@
+{
+  "innovation": "V3-P25-I03",
+  "generated_at": "2026-09-05T21:24:53+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "breach_block": true,
+    "constitution": true,
+    "alerts": true,
+    "escalation": true,
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "zero_silence_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p25_kalendarz_zbiorczy.zero_silence: True"
+    },
+    {
+      "name": "breach_block",
+      "status": "OK",
+      "detail": "termin minął + brak wykonania = BLOCK (zero ciszy)"
+    },
+    {
+      "name": "constitution_gate",
+      "status": "OK",
+      "detail": "naruszenie konstytucji (breach bez BLOCK) = BLOCK (P04)"
+    },
+    {
+      "name": "alerts_7_3_1",
+      "status": "OK",
+      "detail": "alerty 7/3/1 z override per obowiązek z tabeli MASTER"
+    },
+    {
+      "name": "escalation_48h",
+      "status": "OK",
+      "detail": "eskalacja 48h (księgowa → manager)"
+    },
+    {
+      "name": "emergency_paths",
+      "status": "OK",
+      "detail": "ścieżki awaryjne: odsetki (art. 56 OP) + korekta czynna (art. 81 OP)"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: klucze ['v3_p25_zero_silence_constitution', 'v3_p25_alert_levels_days', 'v3_p25_escalation_hours']"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Konstytucja zero-ciszy (kontrakt V3_P04): brak wykonania = alarm + eskalacja, NIGDY cisza; AUTO_POST niemożliwy przy breach",
+    "rule": "breach=BLOCK; alerty 7/3/1 per obowiązek; eskalacja 48h"
+  }
+}

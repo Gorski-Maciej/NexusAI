@@ -29,59 +29,122 @@ input_hash := object.get(ctx, "input_hash", "")
 owner_approval := object.get(ctx, "owner_approval", false)
 manual_recipient := object.get(ctx, "manual_recipient", "")
 
-source_complete := count(source_refs) > 0 and count(legal_nodes) > 0 and
+source_complete := count(source_refs) > 0
+source_complete_legal = true {
+    source_complete
+    count(legal_nodes) > 0
     legal_basis_version != ""
-temporal_valid := evaluation_date != "" and facts_version != "" and
-    threshold_version != "" and valid_from != ""
+} else = false {
+    true
+}
+temporal_valid = true {
+    evaluation_date != ""
+    facts_version != ""
+    threshold_version != ""
+    valid_from != ""
+} else = false {
+    true
+}
 
 api := object.get(ctx, "api", {})
 endpoints_total := object.get(api, "endpoints_total", 0)
 jwt_security_required := object.get(api, "jwt_security_required", false)
-api_ok := object.get(api, "spec_present", false) and
-    endpoints_total >= min_api_endpoints and
+api_ok = true {
+    object.get(api, "spec_present", false)
+    endpoints_total >= min_api_endpoints
     jwt_security_required
+} else = false {
+    true
+}
 
 consistency := object.get(ctx, "consistency", {})
-consistency_ok := object.get(consistency, "audit_run", false) and
-    object.get(consistency, "markers_complete", false) and
+consistency_ok = true {
+    object.get(consistency, "audit_run", false)
+    object.get(consistency, "markers_complete", false)
     object.get(consistency, "gap_count", 99999) <= max_documented_only_gaps
+} else = false {
+    true
+}
 
 authz := object.get(ctx, "authz", {})
-authz_ok := object.get(authz, "rbac_roles_defined", false) and
-    object.get(authz, "sod_enforced", false) and
+authz_ok = true {
+    object.get(authz, "rbac_roles_defined", false)
+    object.get(authz, "sod_enforced", false)
     object.get(authz, "authz_tests_present", false)
+} else = false {
+    true
+}
 
 decision_center := object.get(ctx, "decision_center", {})
 modes_covered := {mode | some mode in required_decision_modes;
     mode in object.get(decision_center, "modes_supported", [])}
-decision_center_ok := count(modes_covered) == count(required_decision_modes) and
+decision_center_ok = true {
+    count(modes_covered) == count(required_decision_modes)
     object.get(decision_center, "certainty_guard_required", false)
+} else = false {
+    true
+}
 
 lifecycle := object.get(ctx, "lifecycle", {})
-lifecycle_ok := object.get(lifecycle, "four_eyes_enforced", false) and
-    object.get(lifecycle, "canary_required", false) and
+lifecycle_ok = true {
+    object.get(lifecycle, "four_eyes_enforced", false)
+    object.get(lifecycle, "canary_required", false)
     object.get(lifecycle, "soak_hours", 0) >= min_soak_hours
+} else = false {
+    true
+}
 
 declarative := object.get(ctx, "declarative_change", {})
-declarative_ok := object.get(declarative, "wizard_present", false) and
-    object.get(declarative, "dry_run_default", false) and
+declarative_ok = true {
+    object.get(declarative, "wizard_present", false)
+    object.get(declarative, "dry_run_default", false)
     count(object.get(declarative, "never_automated", [])) > 0
+} else = false {
+    true
+}
 
 resilience := object.get(ctx, "resilience", {})
-resilience_ok := object.get(resilience, "idempotency_key_required", false) and
-    object.get(resilience, "rate_limit_defined", false) and
+resilience_ok = true {
+    object.get(resilience, "idempotency_key_required", false)
+    object.get(resilience, "rate_limit_defined", false)
     object.get(resilience, "health_ready_endpoints", false)
+} else = false {
+    true
+}
 
 versioning := object.get(ctx, "versioning", {})
-versioning_ok := object.get(versioning, "uri_path_versioning", false) and
+versioning_ok = true {
+    object.get(versioning, "uri_path_versioning", false)
     object.get(versioning, "breaking_changes_rule", false)
+} else = false {
+    true
+}
 
-contract_complete := api_ok and consistency_ok and authz_ok and
-    decision_center_ok and lifecycle_ok and declarative_ok and
-    resilience_ok and versioning_ok and source_complete and
-    temporal_valid and input_hash != ""
+contract_complete = true {
+    api_ok
+    consistency_ok
+    authz_ok
+    decision_center_ok
+    lifecycle_ok
+    declarative_ok
+    resilience_ok
+    versioning_ok
+    source_complete_legal
+    temporal_valid
+    input_hash != ""
+} else = false {
+    true
+}
 
-hard_block := not contract_complete or not owner_approval or manual_recipient == ""
+hard_block = true {
+    not contract_complete
+} else = true {
+    not owner_approval
+} else = true {
+    manual_recipient == ""
+} else = false {
+    true
+}
 api_ui_state := "API_UI_VALIDATED" if {
     contract_complete
     not hard_block

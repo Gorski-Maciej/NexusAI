@@ -1,0 +1,72 @@
+{
+  "innovation": "V3-P25-I09",
+  "generated_at": "2026-09-05T21:24:55+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "probe_partial": {
+      "obligation": "VAT_JPK_MONTHLY",
+      "master": [
+        "JPK_V7",
+        "ZAPLATA"
+      ],
+      "reported": [
+        "JPK_V7"
+      ],
+      "missing": [
+        "ZAPLATA"
+      ],
+      "complete": false,
+      "empty_master": false,
+      "unknown": false
+    },
+    "probe_ok": {
+      "obligation": "VAT_JPK_MONTHLY",
+      "master": [
+        "JPK_V7",
+        "ZAPLATA"
+      ],
+      "reported": [
+        "JPK_V7",
+        "ZAPLATA"
+      ],
+      "missing": [],
+      "complete": true,
+      "empty_master": false,
+      "unknown": false
+    },
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "checklist_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p25_kalendarz_zbiorczy.completion_checklist: True"
+    },
+    {
+      "name": "diff_engine",
+      "status": "OK",
+      "detail": "sonda: partial→['ZAPLATA'], ok→complete=True, unknown→True"
+    },
+    {
+      "name": "partial_is_triage",
+      "status": "OK",
+      "detail": "brak pozycji checklisty = TRIAGE (zero częściowego wykonania)"
+    },
+    {
+      "name": "empty_master_block",
+      "status": "OK",
+      "detail": "pusta checklista w MASTER = BLOCK (pustynia)"
+    },
+    {
+      "name": "zero_silence_link",
+      "status": "OK",
+      "detail": "komplet → obowiązek domknięty w całości (spójne z I03)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Komplet = deklaracja + zapłata + ewidencja; kontrakt z P16/P14/P26",
+    "rule": "checklist z tabeli MASTER; częściowe wykonanie nigdy nie jest DONE"
+  }
+}

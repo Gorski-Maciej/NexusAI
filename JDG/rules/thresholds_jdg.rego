@@ -962,6 +962,111 @@ bounds := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# V3-P25 KALENDARZ ZBIORCZY — JEDNO ŹRÓDŁO PRAWDY TERMINÓW (kampania V3 FORTRESS)
+# Tabela MASTER terminów (I01) jako DANE: obowiązek → termin bazowy →
+# przeniesienie PER obowiązek (I02, art. 12 § 4-5 OrdPU) → alerty N-dni (I03,
+# zero ciszy P04) → checklista (I09) → link do wykonania (I10).
+# WAŻNE: przeniesienia ZWERYFIKOWANE PER OBOWIĄZEK — VAT/ZUS/PIT-zaliczki:
+# następny dzień roboczy (art. 12 § 4 OP); PIT roczny 30.04: PRZENOSI (§ 4);
+# PCC 14 dni: NIE przenosi (termin odejmuje się od dnia zawarcia, art. 4 ust. 3).
+# Status weryfikacji: [NIEZWERYFIKOWANE] — ISAP/RCL nie wykonano w tej sesji.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+calendar := {
+    "v3_p25_threshold_version": "kalendarz-v3p25-2026.09",
+    "v3_p25_calendar_schema": "deadline-v1-2026.09",          # I05: schemat terminu
+    "v3_p25_zero_silence_constitution": true,                  # I03: minął termin + brak wykonania = BLOCK (P04)
+    "v3_p25_alert_levels_days": [7, 3, 1],                     # I03: alerty N-dni (7/3/1) — per obowiązek override
+    "v3_p25_escalation_hours": 48,                             # I03: eskalacja po 48h od BLOCK (kontrakt P19)
+    "v3_p25_rollover_rule": "NEXT_BUSINESS_DAY",               # I02: domyślne przeniesienie — art. 12 § 4 OrdPU
+    "v3_p25_rollover_exception_rule": "NONE",                  # I02: PCC 14 dni — brak przeniesienia (art. 4 ust. 3)
+    "v3_p25_golden_version": "kalendarz-golden-2026.09",       # I12: golden rok kalendarzowy
+    "v3_p25_tenant_isolation_invariant": true,                 # I07: multi-tenant — izolacja per JDG
+    "v3_p25_workload_forecast_horizon_days": 14,               # I08: prognoza obciążeń księgowych
+    "v3_p25_compliance_score_history_months": 12,              # I11: trend dotrzymywania terminów
+    "v3_p25_dedup_scanner_active": true,                       # I06: detektor hardcode terminów
+
+    # TABELA MASTER (I01): jeden wiersz na obowiązek — jedno źródło prawdy
+    # dla wszystkich domen (P12 VAT, P14 PIT, P16 KSeF/JPK, P19 PCC, P23 CEIDG,
+    # P26 ZUS). Konsumenci CZYTAJĄ tę tabelę — nie definiują własnych dat.
+    "v3_p25_master_deadline_table": [
+        {"obligation": "VAT_JPK_MONTHLY", "base_day": 25, "frequency": "MONTHLY",
+         "rollover": "NEXT_BUSINESS_DAY", "alert_override": [7, 3, 1],
+         "checklist": ["JPK_V7", "ZAPLATA"], "action": "generate_jpk_v7",
+         "legal_basis": "Art. 99 ust. 1-3 i art. 103 ust. 1 ustawy o VAT [NIEZWERYFIKOWANE]"},
+        {"obligation": "VAT_JPK_QUARTERLY", "base_day": 25, "frequency": "QUARTERLY",
+         "rollover": "NEXT_BUSINESS_DAY", "alert_override": [7, 3, 1],
+         "checklist": ["JPK_V7K", "ZAPLATA"], "action": "generate_jpk_v7k",
+         "legal_basis": "Art. 99 ust. 3 i art. 103 ust. 2 ustawy o VAT [NIEZWERYFIKOWANE]"},
+        {"obligation": "PIT_ADVANCE_MONTHLY", "base_day": 20, "frequency": "MONTHLY",
+         "rollover": "NEXT_BUSINESS_DAY", "alert_override": [7, 3, 1],
+         "checklist": ["ZALICZKA"], "action": "pay_pit_advance",
+         "legal_basis": "Art. 44 ust. 6 ustawy o PIT [NIEZWERYFIKOWANE]"},
+        {"obligation": "PIT_LUMP_SUM_MONTHLY", "base_day": 20, "frequency": "MONTHLY",
+         "rollover": "NEXT_BUSINESS_DAY", "alert_override": [7, 3, 1],
+         "checklist": ["ZALICZKA_RYCZALT"], "action": "pay_pit_ryczalt",
+         "legal_basis": "Art. 8 ust. 1 ustawy o ryczałcie [NIEZWERYFIKOWANE]"},
+        {"obligation": "PIT_ANNUAL_RETURN", "base_date": "04-30", "frequency": "ANNUAL",
+         "rollover": "NEXT_BUSINESS_DAY", "alert_override": [30, 7, 1],
+         "checklist": ["PIT_36", "PIT_36L", "PIT_28", "ZAPLATA"], "action": "generate_pit_annual",
+         "legal_basis": "Art. 45 ust. 1 ustawy o PIT [NIEZWERYFIKOWANE]"},
+        {"obligation": "ZUS_DRA_NO_EMPLOYEES", "base_day": 10, "frequency": "MONTHLY",
+         "rollover": "PREV_BUSINESS_DAY", "alert_override": [7, 3, 1],
+         "checklist": ["DRA", "SKLADKI"], "action": "generate_zus_dra",
+         "legal_basis": "Art. 47 ust. 1 pkt 1 ustawy o SUS [NIEZWERYFIKOWANE] — przeniesienie wstecz (ust. 3)"},
+        {"obligation": "ZUS_DRA_WITH_EMPLOYEES", "base_day": 15, "frequency": "MONTHLY",
+         "rollover": "PREV_BUSINESS_DAY", "alert_override": [7, 3, 1],
+         "checklist": ["DRA", "SKLADKI"], "action": "generate_zus_dra",
+         "legal_basis": "Art. 47 ust. 1 pkt 2 ustawy o SUS [NIEZWERYFIKOWANE]"},
+        {"obligation": "PCC3_14D", "base_days": 14, "frequency": "EVENT",
+         "rollover": "NONE", "alert_override": [7, 3, 1],
+         "checklist": ["PCC_3", "ZAPLATA"], "action": "generate_pcc3",
+         "legal_basis": "Art. 4 ust. 3 ustawy o PCC [NIEZWERYFIKOWANE] — termin NIE przenosi"},
+        {"obligation": "CEIDG_CHANGE_7D", "base_days": 7, "frequency": "EVENT",
+         "rollover": "NEXT_BUSINESS_DAY", "alert_override": [3, 1],
+         "checklist": ["CEIDG_UPDATE"], "action": "generate_ceidg_change",
+         "legal_basis": "Ustawa CEIDG art. 21 ust. 3 [NIEZWERYFIKOWANE]"},
+        {"obligation": "SUCCESSION_INVENTORY_2M", "base_months": 2, "frequency": "EVENT",
+         "rollover": "NEXT_BUSINESS_DAY", "alert_override": [14, 7, 1],
+         "checklist": ["SPIS_INWENTARZA", "OGLOSZENIE"], "action": "generate_succession_pack",
+         "legal_basis": "Art. 10 ustawy o zarządzie sukcesyjnym [NIEZWERYFIKOWANE]"},
+        {"obligation": "PPK_CONTRIBUTION", "base_day": 15, "frequency": "MONTHLY",
+         "rollover": "NEXT_BUSINESS_DAY", "alert_override": [7, 3, 1],
+         "checklist": ["PPK_WPLATA"], "action": "pay_ppk",
+         "legal_basis": "Art. 22 ustawy o PPK [NIEZWERYFIKOWANE]"},
+        {"obligation": "PROPERTY_TAX_INSTALLMENT", "base_day": 15, "frequency": "QUARTERLY",
+         "rollover": "NEXT_BUSINESS_DAY", "alert_override": [14, 7, 1],
+         "checklist": ["ZAPLATA_RATY"], "action": "pay_property_installment",
+         "legal_basis": "Art. 6 ust. 2 ustawy o podatkach i opłatach lokalnych [NIEZWERYFIKOWANE]"},
+        {"obligation": "TRANSPORT_TAX", "base_date": "01-31", "frequency": "ANNUAL",
+         "rollover": "NEXT_BUSINESS_DAY", "alert_override": [14, 7, 1],
+         "checklist": ["DN_1", "ZAPLATA"], "action": "generate_dn1",
+         "legal_basis": "Art. 12 ust. 6 ustawy o podatkach i opłatach lokalnych [NIEZWERYFIKOWANE]"},
+        {"obligation": "KSEF_SEND_INVOICE", "base_days": 0, "frequency": "EVENT",
+         "rollover": "NONE", "alert_override": [1],
+         "checklist": ["KSEF_SESSION", "WYSYLKA"], "action": "send_ksef",
+         "legal_basis": "Art. 106na ustawy o VAT [NIEZWERYFIKOWANE]"},
+        {"obligation": "BDO_ANNUAL_REPORT", "base_date": "03-15", "frequency": "ANNUAL",
+         "rollover": "NEXT_BUSINESS_DAY", "alert_override": [30, 7, 1],
+         "checklist": ["BDOR"], "action": "generate_bdo_report",
+         "legal_basis": "Art. 59 ustawy o odpadach [NIEZWERYFIKOWANE]"},
+        {"obligation": "APPEAL_14D", "base_days": 14, "frequency": "EVENT",
+         "rollover": "NEXT_BUSINESS_DAY", "alert_override": [3, 1],
+         "checklist": ["ODWOLANIE"], "action": "generate_appeal",
+         "legal_basis": "Art. 129 § 2 Ordynacji podatkowej [NIEZWERYFIKOWANE]"},
+        {"obligation": "COMPLAINT_30D", "base_days": 30, "frequency": "EVENT",
+         "rollover": "NEXT_BUSINESS_DAY", "alert_override": [7, 3, 1],
+         "checklist": ["SKARGA_WSA"], "action": "generate_wsa_complaint",
+         "legal_basis": "Art. 54 § 1 p.p.s.a. [NIEZWERYFIKOWANE]"},
+    ],
+
+    # Wykaz świąt PL (stałe) — wejście do Year Rollover Test Rig (I04/I12);
+    # ruchome (Wielkanoc/Boże Ciało) liczone algorytmicznie w narzędziu.
+    "v3_p25_public_holidays": ["01-01", "01-06", "05-01", "05-03", "08-15",
+                               "11-01", "11-11", "12-25", "12-26"],
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # RYCZAŁT THRESHOLDS
 # ═══════════════════════════════════════════════════════════════════════════════
 

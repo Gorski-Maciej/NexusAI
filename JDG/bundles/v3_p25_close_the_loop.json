@@ -1,0 +1,61 @@
+{
+  "innovation": "V3-P25-I10",
+  "generated_at": "2026-09-05T21:24:55+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "probe_lapsed": {
+      "obligation": "VAT_JPK_MONTHLY",
+      "state": "ACTION_SENT",
+      "action": "generate_jpk_v7",
+      "days_left": -2,
+      "confirmed": false,
+      "lapsed_unconfirmed": true,
+      "invalid_state": false,
+      "no_action": false
+    },
+    "probe_done": {
+      "obligation": "VAT_JPK_MONTHLY",
+      "state": "CONFIRMED",
+      "action": "generate_jpk_v7",
+      "days_left": 10,
+      "confirmed": true,
+      "lapsed_unconfirmed": false,
+      "invalid_state": false,
+      "no_action": false
+    },
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "loop_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p25_kalendarz_zbiorczy.close_the_loop: True"
+    },
+    {
+      "name": "state_machine",
+      "status": "OK",
+      "detail": "PENDING → ACTION_SENT → CONFIRMED (DONE)"
+    },
+    {
+      "name": "lapsed_block",
+      "status": "OK",
+      "detail": "termin minął bez potwierdzenia = BLOCK (zero ciszy)"
+    },
+    {
+      "name": "confirmation_upo",
+      "status": "OK",
+      "detail": "potwierdzenie = UPO / status KSeF"
+    },
+    {
+      "name": "action_link",
+      "status": "OK",
+      "detail": "link do wykonania z tabeli MASTER (wygeneruj deklarację)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Zamknięta pętla wiąże P16 (KSeF/UPO), P14/P26 (wykonanie) i P41 (UI akcji)",
+    "rule": "PENDING→ACTION_SENT→CONFIRMED; lapsed bez UPO = BLOCK"
+  }
+}

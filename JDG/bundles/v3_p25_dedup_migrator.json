@@ -1,0 +1,57 @@
+{
+  "innovation": "V3-P25-I06",
+  "generated_at": "2026-09-05T21:24:54+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "conflict_gate": true,
+    "scan_done": true,
+    "candidates": 1,
+    "scan": [
+      {
+        "file": "rules/deadline_monitor_enterprise.rego",
+        "line": 79,
+        "day": 30
+      }
+    ]
+  },
+  "checks": [
+    {
+      "name": "dedup_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p25_kalendarz_zbiorczy.dedup_gate: True"
+    },
+    {
+      "name": "conflict_gate",
+      "status": "OK",
+      "detail": "źródło ≠ MASTER = TRIAGE (kandydat migracji)"
+    },
+    {
+      "name": "desert_block",
+      "status": "OK",
+      "detail": "obowiązek poza MASTER = BLOCK (pustynia → rejestr luk)"
+    },
+    {
+      "name": "hardcode_scan",
+      "status": "OK",
+      "detail": "przeskanowano 4 plików; kandydatów: 1"
+    },
+    {
+      "name": "migration_plan",
+      "status": "OK",
+      "detail": "konsolidacja, nie dublowanie (kontrakt P00)"
+    }
+  ],
+  "findings": [
+    {
+      "id": "V3-P25-L06",
+      "severity": "P3",
+      "evidence": "hardcode terminów w 1 plikach (1 wystąpień)",
+      "fix": "migracja dat → data.jdg.thresholds.calendar (I06, po certyfikacji P26)"
+    }
+  ],
+  "contract": {
+    "binding": "Domeny czytają tabelę MASTER; hardcode dat = kandydat migracji",
+    "rule": "konflikt = TRIAGE; pustynia = BLOCK"
+  }
+}

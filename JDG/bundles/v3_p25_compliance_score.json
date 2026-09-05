@@ -1,0 +1,57 @@
+{
+  "innovation": "V3-P25-I11",
+  "generated_at": "2026-09-05T21:24:56+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "probe_ok": {
+      "on_time": 95,
+      "total": 100,
+      "pct": 95,
+      "trend": "RISING",
+      "target": 90,
+      "triage": false
+    },
+    "probe_declining": {
+      "on_time": 80,
+      "total": 100,
+      "pct": 80,
+      "trend": "DECLINING",
+      "target": 90,
+      "triage": true
+    },
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "score_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p25_kalendarz_zbiorczy.compliance_score: True"
+    },
+    {
+      "name": "score_engine",
+      "status": "OK",
+      "detail": "sondy: declining=80%→TRIAGE, low=85%→TRIAGE, ok=95%→SUGGEST, nodata→TRIAGE"
+    },
+    {
+      "name": "trend_gate",
+      "status": "OK",
+      "detail": "trend RISING/FLAT/DECLINING; spadek = TRIAGE"
+    },
+    {
+      "name": "target_90",
+      "status": "OK",
+      "detail": "cel ≥ 90% dotrzymanych"
+    },
+    {
+      "name": "window_as_data",
+      "status": "OK",
+      "detail": "ADR-002: v3_p25_compliance_score_history_months"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Metryki wartości → obserwowalność P37 (dashboard % dotrzymanych, kary uniknięte) i P44 (certyfikacja)",
+    "rule": "score = on_time/total; <90% lub spadek = TRIAGE"
+  }
+}

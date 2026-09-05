@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P25-I12",
+  "generated_at": "2026-09-05T21:24:56+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "cases": 8,
+    "probe_ok": {
+      "case_id": "CAL-2026-004",
+      "expected": "BLOCK_AND_ALERT",
+      "actual": "BLOCK_AND_ALERT",
+      "match": true,
+      "in_set": true
+    },
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "golden_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p25_kalendarz_zbiorczy.calendar_golden_set: True"
+    },
+    {
+      "name": "golden_cases",
+      "status": "OK",
+      "detail": "8 przypadków: przeniesienia (3 kierunki), dzień 0, eskalacja, rig, schema, checklista"
+    },
+    {
+      "name": "mismatch_block",
+      "status": "OK",
+      "detail": "sonda: zgodny→match=True, niezgodny→False (BLOCK)"
+    },
+    {
+      "name": "versioned",
+      "status": "OK",
+      "detail": "ADR-002: v3_p25_golden_version (V3_P10)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Golden rok kalendarzowy → oracle V3_P10 i testy blokujące P39",
+    "rule": "expected≠actual = BLOCK; wersja golden jako dane"
+  }
+}

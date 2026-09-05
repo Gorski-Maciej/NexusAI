@@ -94,6 +94,7 @@ import data.jdg.v3_p17_ordynacja_obrona as v3_p17_ordynacja_obrona
 import data.jdg.v3_p18_ryczalt as v3_p18_ryczalt
 import data.jdg.v3_p19_pcc_akcyza_bdo as v3_p19_pcc_akcyza_bdo
 import data.jdg.v3_p20_ksiegowosc as v3_p20_ksiegowosc
+import data.jdg.v3_p25_kalendarz as v3_p25_kalendarz
 import data.jdg.micro.quality_v3_13 as micro_quality_v3_13
 import data.jdg.hyper.quality_v3_14 as hyper_quality_v3_14
 import data.jdg.enterprise.quality_v3_15 as enterprise_quality_v3_15
@@ -1464,6 +1465,7 @@ _package_decisions := {
     "jdg.v3_p18_ryczalt": v3_p18_ryczalt.decide,
     "jdg.v3_p19_pcc_akcyza_bdo": v3_p19_pcc_akcyza_bdo.decide,
     "jdg.v3_p20_ksiegowosc": v3_p20_ksiegowosc.decide,
+    "jdg.v3_p25_kalendarz": v3_p25_kalendarz.decide,
     "jdg.international": international.decide,
     "jdg.tp": tp.decide,
     "jdg.tp.hyper": tp_hyper.decide,
@@ -2845,6 +2847,19 @@ final_verdict_p88 = safe_merge(final_verdict_p87,
         fallback.decide
     ))
 
+# V3-P25 (KALENDARZ_ZBIORCZY): kalendarz terminów — JEDNO ŹRÓDŁO PRAWDY dla
+# wszystkich domen. 12 analiz: tabela MASTER (I01), przeniesienia per obowiązek
+# (I02 — art. 12 § 4 OrdPU / art. 47 ust. 3 SUS / art. 4 ust. 3 PCC), konstytucja
+# zero-ciszy (I03 — kontrakt P04), rok przeniesień (I04), schemat terminu v1
+# (I05), dedup konsolidacja (I06), multi-tenant (I07), prognoza obciążeń (I08),
+# checklisty wykonania (I09), zamknięta pętla UPO (I10), metryki zgodności
+# (I11), golden set kalendarza (I12). SUGGEST/no_auto_post i fail-closed;
+# nieaktywny dopóki input.jdg_entrepreneur.v3_p25_check nie jest true.
+final_verdict_p89 = safe_merge(final_verdict_p88,
+    safe_merge(v3_p25_kalendarz.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -2877,7 +2892,7 @@ final_verdict_p88 = safe_merge(final_verdict_p87,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p88
+    final_verdict_p89
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

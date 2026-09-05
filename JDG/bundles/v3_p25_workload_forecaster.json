@@ -1,0 +1,48 @@
+{
+  "innovation": "V3-P25-I08",
+  "generated_at": "2026-09-05T21:24:55+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "probe": {
+      "upcoming": 9,
+      "capacity": 10,
+      "horizon_days": 14,
+      "load_pct": 90,
+      "overload": true
+    },
+    "thresholds": true
+  },
+  "checks": [
+    {
+      "name": "forecaster_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p25_kalendarz_zbiorczy.workload_forecaster: True"
+    },
+    {
+      "name": "load_engine",
+      "status": "OK",
+      "detail": "sonda: 9 terminów / pojemność 10 → 90% overload=True"
+    },
+    {
+      "name": "overload_triage",
+      "status": "OK",
+      "detail": "przeciążenie = TRIAGE (zaplanuj pracę / zasoby)"
+    },
+    {
+      "name": "horizon_as_data",
+      "status": "OK",
+      "detail": "ADR-002: v3_p25_workload_forecast_horizon_days"
+    },
+    {
+      "name": "capacity_gate",
+      "status": "OK",
+      "detail": "próg 80% pojemności + capacity jako dane wejściowe"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Kalendarz jako doradca: planowanie pracy (koniec kwartału = szczyt)",
+    "rule": "load% > próg → TRIAGE; horyzont 14 dni z danych"
+  }
+}

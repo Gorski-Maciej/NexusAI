@@ -1,0 +1,50 @@
+{
+  "innovation": "V3-P25-I01",
+  "generated_at": "2026-09-05T21:24:52+00:00",
+  "gate": "FAIL",
+  "metrics": {
+    "rule": true,
+    "rows": 17,
+    "schema": true,
+    "fail_closed": true,
+    "thresholds": true,
+    "wired": false
+  },
+  "checks": [
+    {
+      "name": "master_table_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p25_kalendarz_zbiorczy.master_deadline_table: True"
+    },
+    {
+      "name": "table_as_data",
+      "status": "OK",
+      "detail": "obowiązków w tabeli MASTER: 17 (wymagane ≥ 17)"
+    },
+    {
+      "name": "schema_v1_fields",
+      "status": "OK",
+      "detail": "pola schematu: obligation/base/rollover/alerts/checklist/action/legal_basis"
+    },
+    {
+      "name": "fail_closed",
+      "status": "OK",
+      "detail": "nieznany obowiązek = BLOCK (pustynia kalendarza)"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "ADR-002: klucze ['v3_p25_master_deadline_table', 'v3_p25_threshold_version']"
+    },
+    {
+      "name": "main_jdg_wiring",
+      "status": "FAIL",
+      "detail": "import + rejestr + final_verdict_p89"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Jedno źródło prawdy terminów dla P12/P14/P16/P19/P23/P26 — konsumenci CZYTAJĄ tabelę, nie definiują własnych dat",
+    "rule": "tabela MASTER jako dane; nieznany obowiązek = BLOCK"
+  }
+}
