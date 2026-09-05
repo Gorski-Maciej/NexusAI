@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # V3-P20 tool: v3_p20_bookkeeping_invariants_pack
 from __future__ import annotations
+from typing import Any
 
 def main() -> None:
     print("ok")

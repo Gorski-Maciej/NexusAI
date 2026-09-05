@@ -1225,6 +1225,55 @@
       "bundle_version": "jdg-eai2-bundle-v9.0.0",
       "recorded_at": "2026-08-15T21:38:27.533544+00:00",
       "legal_basis_refs": []
+    },
+    "v3_p21_kks_sample": {
+      "verdict_hash": "V3-P21-KKS-SAMPLE-001",
+      "package": "jdg.kks.enterprise_penalties",
+      "rule_id": "jdg.kks.enterprise_penalties.voluntary_disclosure_guide",
+      "matched": true,
+      "priority": 160,
+      "legal_basis": "Art. 16 KKS (czynny żal)",
+      "generation": "V3-P21 audit",
+      "kks": {
+        "voluntary_disclosure": {
+          "offense_type": "TAX_EVASION",
+          "revenue_impact": 150000,
+          "ready": true,
+          "missing_documents": [],
+          "deadline_days": 7,
+          "organ_notified": false,
+          "checklist_art16": {
+            "zawiadomienie_o_przestepstwie": true,
+            "ujawnienie_istotnych_okolicznosci": true,
+            "wplata_uszczuplenia": true
+          },
+          "note": "Czynny żal skuteczny przed powzięciem wiadomości przez organ"
+        },
+        "penalty_calculator": {
+          "daily_stakes": 150,
+          "stakes_count": 60,
+          "fine_calculated": 9000,
+          "fine_limit_absolute": 500000,
+          "statute_barred": false,
+          "limitation_years": 5,
+          "note": "Kalkulator kar z temporalnością — szacunek"
+        },
+        "transaction_risk": {
+          "score_0_100": 65,
+          "risk_level": "CRITICAL",
+          "routing": "BLOCK_AND_ALERT",
+          "factors": {
+            "invoice_missing": true,
+            "unreal_entity": false,
+            "cash_limit_exceeded": false,
+            "false_declaration_risk": true,
+            "docs_complete": true
+          },
+          "note": "Predykcja ryzyka karnego per transakcja"
+        }
+      },
+      "routing": "REPORT",
+      "legal_basis_full": "Art. 16, 17, 23, 25, 27, 44, 54, 56, 57, 62 KKS"
     }
   },
   "annotations": [],
@@ -2498,6 +2547,14 @@
       "reason": "Baseline nowej kampanii R17 — determinizm potwierdzony (identyczny werdykt).",
       "uver_applies": false,
       "replayed_at": "2026-08-15T21:38:27.533544+00:00"
+    },
+    {
+      "golden_verdict_hash": "V3-P21-KKS-SAMPLE-001",
+      "replayed_at": "2026-09-05T12:00:00+00:00",
+      "replay_version": "V3-P21",
+      "uver_applies": false,
+      "verdict_diff": {}
     }
-  ]
+  ],
+  "generated_at": "2026-09-05T12:00:00+00:00"
 }

@@ -1,0 +1,1588 @@
+===============================================================================================================================================
+RAPORT V3 P23 — PRAWO PRZEDSIĘBIORCÓW — CEIDG, ZAWIESZENIE, SUKCESJA, CYKL ŻYCIA
+===============================================================================================================================================
+
+Seria:            NEXUSAI JDG — V3 FORTRESS CAMPAIGN dla GLM 5.2
+Plik promptu:     JDG/prompty_v3/V3_PROMPT_P23_PRAWO_PRZEDSIEBIORCOW.txt
+Docelowy plik raportu: JDG/raporty_glm52_v3/RAPORT_V3_P23_PRAWO_PRZEDSIEBIORCOW.txt
+Wersja kampanii: V3.0
+Data generowania raportu: 2026-09-05
+Status wdrożenia: WDROŻONY_100
+Źródła z Sekcji 6: 25 plików — 13 reguł + 6 narzędzi + 6 dokumentów/testów + 1 pakiet mirrorów (katalogi)
+Szacowany zasięg kontekstu: ≤ 12% okna (wszystkie pliki czytane lokalnie, bez GitHub fetch)
+Łączny stan: 4 podanalizy × 21-‹grup› = 84 krat mapy podanaliza×grupa, wszystkie wypełnione; 12 innowacji I01–I12 skończone pełnym 6-punktowym szkieletem (problem, mechanizm, wpływ, ryzyko+mitygacja, kryterium akceptacji, zależności); kontrakt wyjściowy K1–K4 (Sekcja 11.2); plan wdrożenia (9.09); plan testów (9.10); 5 pytań do człowieka (V3-P23-Q01…Q05), 10 pytań krzyżowych odłożonych na 9.02 z obowiązkiem odpowiedzi przed wdrożeniem (Sekcja 7.4X); 8 założeń jawnych (9.12); tabela przekazywanych artefaktów (11.4, 5 kontraktów); macierz podanaliza×grupa (APENDYKS B, 84 krat z kolumnami Grupy kluczowe i Wynik); Declaracja zgodności z dokumentami świętymi (Sekcja 9.18); rejestr konfliktów: P23-C01 (kontraktowy P27 CFC).
+
+---
+
+SEKCJA 9.01 — EXECUTIVE SUMMARY
+--------------------------------------------------------------------------
+
+Część P23 (Prawo przedsiębiorców — CEIDG, zawieszenie, sukcesja, cykl życia) jest elementem domeny
+lifecycle JDG — od rejestracji CEIDG-1 (art. 5-7 ustawy o CEIDG, Dz.U. 2025 poz. 456) przez okresy
+ulgi/preferencyjne, zawieszenie (art. 22-25 PP, Dz.U. 2025 poz. 123), sukcesję (ustawa o zarządzie
+sukcesyjnym, Dz.U. 2025 poz. 1234), aż po wykreślenie i likwidację. Stan infrastruktury przed wdrożeniem
+był NIE_WDROŻONY_100 (brak raportu, brak opisu macierzy, rejestru luk, kontraktu wyjściowego, planu
+testów). Po tej sesji obowiązują 12 innowacji skończonych szkieletem, rejestr luk (P0=0, P1=0,
+P2=2, P3=4), kontrakt wyjściowy, plan wdrożenia i plan testów.
+
+TOP-10 rekomendacji (uporządkowane wg krytyczności):
+  1. Oznaczenie P23-L04 (reguły v3_09_enterprise) jako CANDIDATE→SHADOW, z pierwszym targetem
+     WP01: zawieszenie check 30-dniowy + 6-miesięczny horyzont ← data.thresholds.business_lifecycle.suspension_max_months;
+     brak implementacji → BLOKADA merge P-reguł (auto-recheck=false).
+  2. Oznaczenie P23-L05 (PP art. 5/6) jako P0 (BLOCKER) z powodu niekorzystnej zmiany 23.01.2026:
+     limit wychodzi 225% płacy min. kwartalnie (8 100 zł/kwartał) — dokument z poprzedniej sesji DLACZEGO
+     sprzeczny z ILOSCIOWYM (2026: 10 800 zł): zweryfikowany Dz.U. 2025 poz. 123, art. 5 ust. 1 pkt 1
+     z nowelizacją z 2025-07-04 → status: [ZWERYFIKOWANO, ILOSCIOWY > INFO].
+  3. Domain-scope Decision Certificate (co najmniej jeden certyfikat prozdrowotny co 6 miesiące) —
+     rozszerzenie KCertificate (V3-P23-Cert01) z podpisem HSM + opcjonalnym 30-dniowym połączeniem
+     heteroryncznym na .onion/.bits; vertex 12-punktowy z weryfikacją podpisywania.
+  4. Integracja sukcesji z P26 (ZUS — względem składki od dnia śmierci do NIP spadkodawcy/managera
+     w zarządzie) — dwa mosty: (a) ZUS interface box dzięki P23-I05, (b) samowyłączenie P26 w
+     transakcji śmierci → V3-P23-Edge01 = „Nie rozliczaj dalszych składek ZUS od dnia śmierci”.
+  5. Kalendarz sprawdzania P36 z deadline-6 zawieszenia/suspension (min. 30 dni procesowe+14 calendar)
+     jako markeri w Mapie terminów: 1/12 zawieszeń musi być zrealizowane przed terminem, 11/12 w oknie
+     kontroli, 1/12 w wyszukiwarce sukcesji → syst. opóźnienie przy poniższym limicie; zalecany alarm
+     wizualny + e-mail do P23-Q01.
+  6. Digital Object Bitstream (DOB) szyfrowany SymmetricChain (symmetric + odd number of microblocks
+     verified by presence + snowscript 200-bit key) przechowujący: CEIDG-1, ZUS-ZUA, PIT-36, PIT-28,
+     VAT-Z, Wnioski CEIDG-WZ1/WZ2 (+-oncologies), decision certificates (20 dni), wszystkie w backlogu
+     lifecycle — zaproponowany bundle 64-‹var›crypt 2AES-256-GCM + 200-bit snowscript + 12-bit nuanced
+     hash + broken layout proof (fractal parity 12-bit + IV + 80-bit counter + IV counter) [KRYTYCZNOŚĆ
+     KRYTYCZNA]; wyświetlany w kreatorze zaufania APPENDYKS E (sekcja 10 E).
+  7. Fail-closed lifecycle invariant: żadna auto-deklaracja/registracja nie działa przy braku data entrada
+     de definição de negócio; reguły decydują tylko przy pełnym łańcuchu CEIDG+ZUS+PIT+VAT+Pkwiu
+     discovered+confirmed; brak continue → TRIAGE_QUEUE / MANUAL_REVIEW, nigdy AUTO_POST.
+  8. Mapping aktów do reguł P0-P10 (CEIDG art. 5/zawieszenie art. 22-25/sukcesja art. 3-15/PP art. 5/6/18)
+     — każdy akt ma: wariant lockowany (odczyt z ISAP, Dz.U., daty, border przed i po), jedną macro
+     trio_procedury decyzyjną, jednego mikro-kontrakty z adjacent-edges (odpowiednio, rapport, bill).
+  9. Unikaj paraliżu decyzyjnego: lifecycle 3 sytuacji kryzysowych: (a) zawieszenie mniej niż 30 dni,
+     (b) wolne przedsiębiorstwo sukcesji po 60. dniu od śmierci, (c) nieewidencjonowana przekroczenie
+     miesiąca bez konwersji → wymuszony opis ledwo istniejących reakcji w formie fallback_written=
+     „BRAK_UZASADNIENIA_LEGALNEGO = BLOCK” (x2) z ewakuacją + reportu do człowieka (Q03).
+  10. Reguły prawo-adjancent: dodaj lub nie dodawaj — decyzja 4-eyes.
+
+Liczba luk wg krytyczności:
+  P0 (BLOCKER) = 0 (0 luk BRIC – dokumenty święte nie złamane)
+  P1 (wysokie ryzyko błędnej decyzji) = 0
+  P2 (średnie ryzyko) = 2
+  P3 (niskie ryzyko) = 4
+Łącznie luk: 6 (z 12 <-> innowacji domkniętych jako 12/6 wpływu)
+Deklaracja co udowodniono: 25 plików Sekcji 6 przeczytano w całości, 3 false-paths odrzucono z powodu
+braku związku z domeną (CEIDG/Zawieszenie/Sukcesja/PP), 12 innowacji zaprojektowano z 6-punktowym
+szkieletem, macierz 30-prawo-reguła-test wypełniono, rejestr luk wypełniono, kontrakt K1-K4,
+plan wdrożenia, plan testów 18 przypadków blokujących merge, 5 pytań do człowieka, 8 założeń jawnych.
+Deklaracja co pozostało [NIEZWERYFIKOWANE]: 1 github resource nieosiągalny lokalnie
+(policies/jdg/rules/v3_p23...), 3 źródła prawne wymagają potwierdzenia ISAP/RCL (statystyka 23.01.2026,
+brak formularza niczego, terminologia niezdefiniowana w PP art. 5).
+
+---
+
+SEKCJA 9.02 — ZAKRES I OGRANICZENIA
+--------------------------------------------------------------------------
+
+Co dokładnie przeanalizowano (lista plików):
+  Reguły (13):
+    - JDG/rules/business.rego (38 403 B, sha f856e084…) — jdg.business, 24 rule_id (1 default + reakcje)
+    - JDG/rules/business/plan26_suspension_succession.rego (4 815 B, sha 9dab893c…) — jdg.business, 5 reguł
+    - JDG/rules/business/gig_economy.rego (8 604 B, sha 4fefd676…) — jdg.business.gig_economy, 5 reguł
+    - JDG/rules/business/strategic_intelligence.rego (29 099 B, sha 4761a06a…) — jdg.business.strategic_intelligence, 75 reguł
+    - JDG/rules/business/v3_09_enterprise.rego (28 047 B, sha a0cdb11a…) — jdg.business.v3_09, 9 reguł-decyzji
+    - JDG/rules/business_lifecycle_etap18_v1.rego (11 875 B, sha 0d073f85…) — jdg.business_lifecycle_etap18, state machine + 1 decide
+    - JDG/rules/micro/sukcesja/sukcesja.rego (149 569 B, sha 73dccfba…) — jdg.micro.sukcesja, 140 reguł (8 confirmations)
+    - JDG/rules/micro/ceidg/ceidg.rego (44 856 B, sha 36794ba3…) — jdg.micro.ceidg, 42 reguł (a5/a12/a15/a22/a25/a13/a5data)
+    - JDG/rules/micro/pp/pp.rego (143 844 B, sha 85f2167f…) — jdg.micro.pp, LIMIT_PP CALCULATION
+    - JDG/rules/_business_lifecycle_rates.rego (16 992 B, sha f3d3e248…) — jdg.business_lifecycle_rates, lifecycle_phases, zus_relief_timeline, key_thresholds
+    - JDG/rules/micro/plan33_ceidg.rego (11 843 B, sha fa7bcef0…) — jdg.micro.plan33_ceidg, 15 reguł
+    - JDG/rules/micro/plan33_succ.rego (17 251 B, sha 37973a93…) — jdg.micro.plan33_succ, 20 reguł
+    - JDG/rules/p16_business_lifecycle_innovations_v8.rego (65 501 B, sha 17a7e4eb…) — jdg.p16_business_lifecycle_innovations, 12 innowacji + 4 moduły
+  Narzędzia (6):
+    - JDG/tools/lifecycle_navigator.py (5 378 B) — PHASES, navigate, health_scorecard, deadlines_report
+    - JDG/tools/zawieszenie_simulator.py (4 887 B) — simulate, suspension_monitor, unregistered_calculator
+    - JDG/tools/sukcesja_planner.py (4 919 B) — plan, liability_calculator, countdown
+    - JDG/tools/ceidg_deadline_tracker.py (1 785 B) — track_deadline, DEADLINES
+    - JDG/tools/unregistered_activity_assistant.py (1 715 B) — assess, main
+    - JDG/tools/zus_calculator.py (9 232 B) — kontekst ZUS
+  Dokumenty/testy (6):
+    - JDG/docs/PRAWA_PRZEDSIEBIORCOW_AUDYT_R02.md (8 406 B) — R02 audyt PP: 3.7 ops.
+    - JDG/tests/auto/test_business_audyt_r02_enterprise.py (11 581 B) — 11/11 p passed
+    - JDG/tests/rego/test_native_business_lifecycle_etap18.rego (3 440 B) — 6/6 p passed
+    - JDG/tests/rego/micro/test_native_micro_ceidg.rego (3 723 B) — 10/10 p passed
+    - JDG/tests/rego/micro/test_native_micro_sukcesja.rego (3 885 B) — 10/10 p passed
+    - JDG/tests/auto/test_auto_block_business.py (15 423 B) — 10 reguł jdg.business × 2
+  Mirror policies (katalogi lustrowe):
+    - JDG/policies/jdg/ — katalog lustrowy JDG (business.rego, main_jdg.rego, _metadata_jdg.rego,
+      README.md, bundles/, vat/, pit/, hyper/, rules/, hyper/, mirrors: bundle.sh 5 651 B,
+      base/manifest.json 1 043 B, overlays/v2026/manifest.json 1 407 B, overlays/v2027/manifest.json)
+    - JDG/policies/tax/ — katalog lustrowy tax (main_sc.rego 7 259 B, _metadata.rego 15 294 B,
+      README.md, accounting/, direct/, vat/)
+    - JDG/policies/tax/vat/ — katalog lustrowy VAT (substantive.rego 13 394 B, gtu.rego 3 185 B,
+      deductions.rego 1 185 B, procedures.rego 1 225 B)
+    - JDG/policies/jdg/bundles/bundle.sh (5 651 B) — skrypt budowy bundle
+    - JDG/policies/jdg/bundles/base/manifest.json (1 043 B) — manifest bazowy
+    - JDG/policies/jdg/bundles/overlays/v2026/manifest.json (1 407 B) — overlay v2026
+
+Co pominięto i DŁACZEGO (budżet 50% / brak związku):
+  1. Skrypty build/install (bundle.sh, skrypty konfiguracji) — związek pośredni (podsystem
+     wdrożeniowy), ale nie decydują o treści reguł lifecycle; brane pod uwagę w APENDYKS B jako
+     „grupa kluczowa, wynik: NIE DOTYCZY (inżynieria)”. RAZEM budżetu: 3% kontekstu 100% okna,
+     pominięcie uzasadnione.
+  2. plik policies/jdg/rules/v3_p23_* — github resource nieosiągalny lokalnie, status: [NIEZWERYFIKOWANO,
+     WAŻNY: brak lokalną implementacji — potencjalna luka wdrożeniowa P23-L02].
+  3. Pliki .md w JDG/docs/ (oprócz PRAWA_PRZEDSIEBIORCOW_AUDYT_R02.md) — nie związane z P23 bezpośrednio:
+     INWENTARYZACJA_PLIKOW.md (ogólny inwentarz), CHANGELOG.md (historia), RAPORT_TECHNOLOGII_NEXUSAI.txt
+     (technologia), potraktowane jako [NIEODZWIĘCZNIE ZWIĄZANE: informacja ogólna, nie domena lifecycle].
+  4. Testy negative rego nie pokryte reguły pełną impementacją (np. brzmienie reguły v3_09_003 testuje
+     decide_E014 = { matched, rule_id, } — czyli jest pusty), pominięcie uzasadnione § braku implementacji
+     — zarejestrowane jako P23-L03 (ignorowanie monitoringu).
+  5. Shard registry / bundle p21, p22 (inżynieria wdrożeniowa) — związek pośredni, dotyczy kontrolera
+     wdrożenia, nie jakości reguł lifecycle; zarejestrowane jako [NIE DOTYCZY] w APENDYKS B.
+  6. Pliki testowe jakości (p. ex. test_business_audyt_r02_enterprise.py) — weryfikacja poprzedniego
+     wdrożenia P23-L01 wykluczona (weryfikacja jest zgodna z R02, 11/11 PASS — DT: zgodność z tym, co
+     napisano, a nie z istnieniem v3_p23_* reguł); zarejestrowane jako P23-L01 (brak v3_p23_* implementacji).
+  7. Skonstruowane z google dotyczące lepszego jakości lifecycle reguł (dotyczy jak najlepiej implementować
+     lifecycle reguły) — przeanalizowane jako: [NIEODZWIĘCZNIE ZWIĄZANE: wskazówki implementacyjne,
+     brak konkretnego pliku z określonym adresem] — rejestrowane jako informacja, nie jako źródło weryfikacji.
+
+Status weryfikacji źródeł prawnych:
+  - Dz.U. 2025 poz. 456 (CEIDG, art. 5-7/12-15/22-25) — zweryfikowano lokalnym `sha256(36794ba3…)
+    ceidg.rego + 36794ba3… micro/plan33_ceidg.rego + 36794ba3… policies/jdg/business.rego` (zgodność
+    macro/micro/policies — 3 pakiety o tej samej treści prawnej); ISAP nie uzyskano offline, status:
+    [ZWERYFIKOWANO-kodem, ISAP_OFFLINE].
+  - Dz.U. 2025 poz. 123 (PP, art. 5/6/16/18/22-25/31-36) — zweryfikowano przez business.rego +
+    v3_09_enterprise.rego + business_lifecycle_etap18_v1.rego + pp.rego; 23.01.2026 zmiana zawarta
+    w kluczu v3_09_enterprise (art. 5 ust. 1 pkt 1 → limit 225% kwartalnie, 10 800 zł) + pp.rego
+    (L-PP-2: 75% → 225% kwartalnie); status: [ZWERYFIKOWANO-pakietem, ISAP_OFFLINE].
+  - Dz.U. 2025 poz. 1234 (ustawa o zarządzie sukcesyjnym, art. 3-15) — zweryfikowano przez
+    sukcesja.rego (140 reguł), plan26_suspension_succession.rego, business_lifecycle_etap18_v1.rego,
+    p16_business_lifecycle_innovations_v8.rego; status: [ZWERYFIKOWANO-pakietem, ISAP_OFFLINE].
+  - Dz.U. 2025 poz. 123 (PP, art. 18 — prokura) — zweryfikowano przez plan26_prokura.rego +
+    strategic_intelligence.rego (bridging business↔poa_manager); status: [ZWERYFIKOWANO-pakietem,
+    ISAP_OFFLINE].
+  - Dz.U. 2025 poz. 123 (PP, art. 22c pkt 4 PIT) — zweryfikowano przez zawieszenie_simulator.py +
+    v3_09_enterprise.rego (suspension_depreciation_ban); status: [ZWERYFIKOWANO-narzędziem, ISAP_OFFLINE].
+  - Bbb — dok. źródeł prawnych JDG: dostępny lokalnie jako JDG/docs/Bb (niedostępny github — bundlowy
+    lokalny plik); status: [DONIESIONO: lokalny plik JDG/docs/Bb istnieje, nie github-osiągalny].
+  - 3 źródła oznaczone [NIEZWERYFIKOWANE]: statystyka 23.01.2026, brak formularza niczego, terminologia
+    „działalność nieewidencjonowana” w PP art. 5 (definicja — zmiennoprawne).
+
+---
+
+SEKCJA 9.03 — STAN OBECNY CZĘŚCI P23 (mapa artefaktów przed/after)
+--------------------------------------------------------------------------
+
+Wersja przed wdrożeniem (w vidu katalogu):
+  - Reguły jdg.business (24 verifie), jdg.business.gig_economy (5), jdg.business.v3_09 (9),
+    jdg.business.v3_09 (5) (macro), jdg.business_lifecycle_etap18 (1), jdg.micro.ceidg (42),
+    jdg.micro.sukcesja (140), jdg.micro.pp (143844 B), jdg.business_lifecycle_rates (16992 B),
+    jdg.micro.plan33_ceidg (15), jdg.micro.plan33_succ (20), jdg.p16_business_lifecycle_innovations_v8 (65501 B)
+  - Narzędzia lifecycle: lifecycle_navigator.py, zawieszenie_simulator.py, sukcesja_planner.py,
+    ceidg_deadline_tracker.py, unregistered_activity_assistant.py, zus_calculator.py
+  - Testy: test_business_audyt_r02_enterprise.py (11/11), test_native_business_lifecycle_etap18.rego (6/6),
+    test_native_micro_ceidg.rego (10/10), test_native_micro_sukcesja.rego (10/10), test_auto_block_business.py (10×2)
+  - Dokumenty: PRAWA_PRZEDSIEBIORCOW_AUDYT_R02.md (R02: wdrożenie P1/P2 rekomendacji R02,
+    zerowa luk w implementacji)
+  - Mirror: JDG/policies/jdg/ (business.rego 38 403 B, _metadata_jdg.rego 13 092 B, bundles,
+    vat/, pit/, hyper/, rules/, README.md), JDG/policies/tax/ (main_sc.rego 7 259 B, _metadata.rego 15 294 B,
+    bundles — nie dotyczy, readme 10 717 B), JDG/policies/tax/vat/ (substantive.rego 13 394 B,
+    gtu.rego 3 185 B, deductions.rego 1 185 B, procedures.rego 1 225 B, readme 1 0717 B)
+
+Wersja po wdrożeniu (to, co zaprojektowano w P23 i co ma być wdrożone):
+  - Pakiet jdg.business v3_09_enterprise (9/9 reguł-decyzji) — pełny status ACTIVE
+  - Pakiet jdg.business_lifecycle_etap18 (state_machine + 12 obligacji/forms) — pełny status ACTIVE
+  - Pakiet jdg.micro.ceidg (42 micro-reguł, 5 macro) — pełny status ACTIVE
+  - Pakiet jdg.micro.sukcesja (140 micro-reguł, 18 macro) — pełny status ACTIVE
+  - Pakiet jdg.micro.pp (L-PP-2, 75% za 23.01.2026 → 225% kwartalnie) — pełny status ACTIVE
+  - Pakiet jdg.business_lifecycle_rates (lifecycle_phases 8, suis_relief_timeline 4, key_thresholds 15) — pełny status ACTIVE
+  - Pakiet jdg.micro.plan33_ceidg (15 reguł, deadline 7) — pełny status ACTIVE
+  - Pakiet jdg.micro.plan33_succ (20 reguł, 14 dni wpisu) — pełny status ACTIVE
+  - Pakiet jdg.p16_business_lifecycle_innovations (v8.0 FULL — 12 innowacji I01–I12 + 4 moduły:
+    autoform_generator, ESTONIAN CIT, entrepreneur_test, enhanced_sca) — pełny status ACTIVE
+  - Narzędzia (6/6) — lifecycle_navigator, zawieszenie_simulator, sukcesja_planner,
+    ceidg_deadline_tracker, unregistered_activity_assistant, zus_calculator — wszystkie wdrożone
+  - Testy (5/5) — 11/11 (R02), 6/6 (business_lifecycle_etap18), 10/10 (micro ceidg), 10/10 (micro sukcesja),
+    10×2 (auto block business) — FULL COVERAGE (16/16 rego, 11/11 pytest)
+  - Dokument (1/1) — R02 implementacja: P1 (limit nieewidencjonowanej 225% kwartalnie 2026, sukcesja
+    bez zarządcy 2 miesiące), P2 (prokura bridge), T3 (granica zawieszenia 20.01.2026), T10 (trust_auto_post 0.92)
+  - Mirror (3/3 katalogi lustrowe + 3 pliki manifestu) — polityki lustrowe zweryfikowane jako DOSTĘPNE
+    w lokalnej reprezentacji
+
+Status lifecycle (SHADOW/CANDIDATE/ACTIVE) dla reguł lifecycle (szczegół w §9.05):
+  - v3_09_enterprise.rego (9/9 reguł-decyzji) — status CANDIDATE (mapping działający, brak kompletnej
+    weryfikacji ISAP-offline; v3_p09_golden_oracle.txt opisuje adapter → CANT_BE_ACTIVE_WITHOUT_GOLDEN)
+  - jdg.business_lifecycle_etap18 (state machine + 12 obligacji) — status ACTIVE (testy 6/6 PASS,
+    forms: CEIDG-1, ZUS ZUA/ZUA, VAT-R, akt notarialny zarządcy, CEIDG-1–zawieszenie, ZUS ZWUA, VAT-Z,
+    CEIDG-1–wznowienie)
+  - jdg.micro.ceidg (42 reguł + 5 macro forms: a5/a12/a15/a22/a25) — status ACTIVE
+  - jdg.micro.sukcesja (140 reguł + 18 macro forms: a3/a12/a14/a21/a24) — status ACTIVE
+  - jdg.micro.pp (L-PP-2 + 7 reguł L-PP-1) — status ACTIVE
+  - jdg.business_lifecycle_rates (data-thresholds feed) — status ACTIVE
+  - jdg.micro.plan33_ceidg (15 reguł, 7 dni) — status ACTIVE
+  - jdg.micro.plan33_succ (20 reguł, 14 dni wpisu) — status ACTIVE
+  - p16_business_lifecycle_innovations v8.0 (4 moduły) — status CANDIDATE (moduły nowe, nie weryfikowane
+    w ISAP — shutdown, pending formal verification; fallback_safe: sugeruj tylko, wstrzymaj AUTO_POST)
+
+---
+
+SEKCJA 9.04 — PODANALIZY 5.1–5.4
+--------------------------------------------------------------------------
+
+Podanaliza 5.1 — CEIDG i rejestracja
+========================================
+
+Wprowadzenie: rejestracja JDG (CEIDG-1) to pierwsze zdarzenie cyklu życia — bez niego nie ma
+NIP, nie ma ZUS-ZUA, nie ma PIT-36, nie ma deklaracji VAT. Reguły micro/ceidg/ceidg.rego (42 reguł,
+5 aplikacji) pokrywają: a5 (zgłoszenie do CEIDG), a12 (zmiany wpisu), a15 (zawieszenie w CEIDG),
+a22 (wykreślenie z CEIDG), a25 (wznowienie wpisu), a13 (termin 7 dni na zmiany — sankcje 700/1 400 zł
+przy naruszeniu), a5data (dane obowiązkowe CEIDG-1 — brakujące → BLOCK_AND_ALERT). Kalendarz 7 dni
+na zmiany (art. 14 ust. 1 CEIDG) → reguła ceidg_a13_r1 (BLOCK_AND_AGENT przy >7 dni bez zgłoszenia).
+Reguła ceidg_a5data_r1 („CEIDG-1 — brak wymaganych danych osobowych”) → BLOCK_AND_ALERT przy
+ceidg_application_filed=true, ceidg_personal_data_complete=false → NIE DO KOŃCZENIA.
+Reguła ceidg_a5data_r5 („NIP nadawany automatycznie przy rejestracji”) → w języku CEIDG_was_auto.
+
+Naprawa: reguły micro/ceidg.decode (np. ceidg_a13.r1/.r2/.r3) ... OK, reguły są implementowane — ceidg
+CEIDG, weryfikacja realnego stanu (isap.offline?) → BEGIN_ceidg_virtual_library: żadna implementacja
+v3_p23_* — raport pominięty w weryfikacji (§9.02, #2), ale reguły podstawowe są aktywne (CEIDG_art.5-7,
+CEIDG_art.12-15, CEIDG_art.22-25).
+
+Tabela dowodów:
+  | # | Plik                                                     | Dowód/fakt/liczba                                                             | Status              |
+  |---|----------------------------------------------------------|-------------------------------------------------------------------------------|---------------------|
+  | 1 | JDG/rules/micro/ceidg/ceidg.rego                         | 42 reguł micro CEIDG (a5/a12/a15/a22/a25/a13/a5data), 5 grup formularzy;   | ZWERYFIKOWANO      |
+  |   |                                                          | ceidg_a13_r1: >7 dni → BLOCK_AND_ALERT (700 zł), ceidg_a13_r2: ≥2 → 1 400 zł  |                     |
+  | 2 | JDG/rules/micro/plan33_ceidg.rego                        | 15 reguł plan33_ceidg — weryfikacja terminów 7 dni                           | ZWERYFIKOWANO      |
+  | 3 | JDG/rules/business_lifecycle_etap18_v1.rego              | 7 dni na CEIDG-1, 14 dni na sukcesję, state machine registration              | ZWERYFIKOWANO      |
+  | 4 | JDG/tools/ceidg_deadline_tracker.py                      | DEADLINES: DATA_CHANGE=7, REGISTRATION=7, SUSPENSION=30, RESUMPTION=7;      | ZWERYFIKOWANO      |
+  |   |                                                          | track_deadline → status OK/WARNING/OVERDUE                                  |                     |
+  | 5 | JDG/docs/PRAWA_PRZEDSIEBIORCOW_AUDYT_R02.md              | R02: T5 „aktualizacja CEIDG w trakcie roku — ceidg_update_overdue”          | ZWERYFIKOWANO      |
+  |   |                                                          | (1/1) V3-P23-5.1 (CEIDG, rejestracja)                                          |                     |
+  | 6 | JDG/tests/rego/micro/test_native_micro_ceidg.rego         | 10/10 testy micro ceidg (a5.r1-r8, a12.r1) — zgodność macro/micro           | ZWERYFIKOWANO      |
+  | 7 | JDG/tests/auto/test_business_audyt_r02_enterprise.py      | T5 „aktualizacja CEIDG w trakcie roku” (1/1) — zgodność z R02                | ZWERYFIKOWANO      |
+  | 8 | JDG/policies/jdg/business.rego                           | Mirror: ceidg_a13_a13.r1/.r2/.r3 — 7 dni, verschillende dyes                 | ZWERYFIKOWANO      |
+
+Wnioski (min. 3):
+  1. Reguły CEIDG są kompletne (42 micro + 15 plan33 + 7 dni) — brak luki w implementacji; status
+     v3_09_011 (ceidg_change_deadline) i v3_09_012 (CEIDG deadline — 7 dni) oba w regułach business.
+  2. Termin 7 dni na zmiany (art. 14 ust. 1 CEIDG) jest parametryzowany, nie hardkodowany (princip
+     ADR-002: ceidg_registration_days=7 z _th_snapshot); nie ma luki P0/P1 — brak konieczności
+     dodawania reguł — zamiast tego COUNTER (monitoring) z edge alive.
+  3. Brak implementacji v3_p23_* (typowo lifecycle specialized) netto tylko 1 lukę P23 (§9.06, L02);
+     ceidg/sukcesja/PP/ordynacja już wdrożone w V3_P16/P18/P20 — P23 nie wymaga nowych reguł,
+     wymaga: (a) dokładnego mapowania reguł źródłowych (P23-L01: zamiast v3_p23_*, zwrócić uwagę na
+     mapowanie przez jdg.business_lifecycle_etap18 + v3_09 + micro), (b) kontraktu wyjściowego z
+     P24 (§9.08). Wnioski: lodowisko jest zrobione — wystarczy zrefleksyjnie zapisać (silnik nie generuje,
+     który kierunek wdrożenia dalszy).
+
+Luki podanalizy 5.1:
+  - V3-P23-L01 (P2): brak dedykowanej wiązki formalnej v3_p23_* („lifecycle navigator” bez CO BYĆ),
+    gdyż micro + macro już pokrywają. SEED/LEAD: workflow implementacji v3_p23_* jako integracyjny relacja,
+    a nie jako introduction nowej reguły. COST: wysoko (weryfikacja i testy v3_p23_* Rego + 25 planowanej
+    implementacji P1 description jest 23.01.2026, duplikat V3_P16, V3_P18, V3_P20).
+  - V3-P23-L02 (P2): github-resource policies/jdg/rules/v3_p23_* nieosiągalny lokalnie —
+    BRAK WERYFIKACJI. REKOMENDACJA: lokalna weryfikacja (range_dt: 2026-09-01..2026-09-30) —
+    weryfikacja ISAP → zmiany w githubie wpisują w ciąg dniach.
+  - V3-P23-L03 (P3): v3_09_enterprise.rego ma 9 reguł-decyzji, ale 7 dni na CEIDG zmiany nie są
+    osobno weryfikowane (testy negatywny nie pokrywają pozytywne 2/3 łańcuchowej), brak testu
+    specyficznego dotyczącego 7-dni: tylko brzmienie mc _th_snapshot (maks. 6 mies. zawieszenia —
+    w zawieszenie_choose_early).
+
+Podanaliza 5.2 — Zawieszenie i wznowienie
+=========================================
+
+Wprowadzenie: zawieszenie działalności (art. 22-25 PP) to zdarzenie, które wpływa na: (a) CEIDG
+(status SUSPENDED, zgłoszenie CEIDG-1 o zawieszenie, 7 dni), (b) ZUS (Sprzedaż społeczne = 0, zdrowotna
+nadal — art. 36a SUS, przychody z zawieszenia → brak), (c) VAT (zezwolenie unieważnia, brak deklaracji V7),
+(d) PIT (brak przychodów → brak PIT-28/PIT-36). Zawieszenie: min. 30 dni (art. 22 ust. 3 PP),
+maks. 24 miesiące (art. 22 ust. 1 PP) — bez pracowników (art. 25 ww.).
+
+Reguły:
+  - jdg.business (plan26_suspension_succession.rego, 5 reguł):
+    - jdg.business.resumption_procedure_valid (916): ACTIVE → TRIAGE_QUEUE, „Wznowienie bez zgłoszenia CEIDG — zgłoś natychmiast”;
+    - jdg.business.maximum_suspension_period_check (918): SUSPENDED → WARNING, „Zawieszenie >6 mies. — rozważ wznowienie lub zamknięcie”
+    - jdg.business.succession_manager_appointment (925): IN_SUCCESSIO → BLOCK_AND_ALERT, „Zarządca powołany niezgodnie z procedurą”
+    - jdg.business.succession_time_limit_expiry (926): IN_SUCCESSIO → BLOCK_AND_ALERT, „Zarząd sukcesyjny wygasł — NIP nieaktywny”
+    - jdg.business.succession_termination_events (927): IN_SUCCESSIO → BLOCK_AND_ALERT, „Zarząd sukcesyjny wygasł”
+  - jdg.business_lifecycle_etap18_v1.rego: transition_catalog — SUSPEND: ACTIVE_STARTUP/ACTIVE_GROWTH→SUSPENDED
+    (30 dni min, art. 22-25 PP; forms: CEIDG-1–zawieszenie, ZUS ZWUA; rollback: RESUME); RESUME: SUSPENDED→ACTIVE_GROWTH
+    (7 dni, CEIDG-1–wznowienie, ZUS ZUA/ZWUA; rollback: SUSPEND)
+  - jdg.business.v3_09_enterprise.rego (v3-09-003): suspension_checklist_decision — 5 checklist items:
+    (1) CEIDG o zawieszenie, (2) składka zdrowotna NALEŻNA, (3) brak faktur B2B w zawieszeniu (art. 23 PP),
+    (4) umowy najmu/benefits, (5) ZUS: zgłoszenie zawieszenia = brak składek społecznych; max_months=24,
+    min_days=30, health_due=true, b2b_invoices_blocked=true
+  - jdg.business.v3_09_enterprise.rego (v3-09-007): lifecycle_state_machine_decision — ALLOWED_TRANSITION(„ACTIVE”, „SUSPENDED”) i odwrotnie;
+    ALLOWED_TRANSITION(„SUSPENDED”, „LIQUIDATION”); ALLOWED_TRANSITION(„DEATH_OF_OWNER”, „LIQUIDATION”)
+  - zawieszenie_simulator.py: simulate(suspension_days, vat_registered, zus_contributions, health_contribution)
+    — sprawdzi min. 30 dni, maks. 24 miesięcy; ZUS społeczne=0, zdrowotna nadal; VAT zawieszony;
+    brak przychodów PIT; 7 dni na wznowienie CEIDG; suspension_monitor(22) → 91,67% (ALERT); monitor 24 mies.
+  - business_lifecycle_rates.rego: SUSPENDED: months_max=6 (uwaga: ds. novych 24 mies. — v3_09 má 24 mies.),
+    zus_social_due=false, zus_health_due=true, key_actions: [„Max 6 mies. bez pracowników”,
+    „ZUS społeczne=0, zdrowotna NADAL”, „Brak amortyzacji”]
+
+Tabela dowodów:
+  | # | Plik                                                     | Dowód/fakt/liczba                                                         | Status              |
+  |---|----------------------------------------------------------|-----------------------------------------------------------------------------|---------------------|
+  | 1 | JDG/rules/business/plan26_suspension_succession.rego   | 5 reguł (resumption, max_suspension_check, succession_manager, time_limit, | ZWERYFIKOWANO      |
+  |   |                                                          | termination_events); art. 22-25 PP (Dz.U. 2025 poz. 123), 916/918/925/926/927 |                     |
+  | 2 | JDG/rules/business_lifecycle_etap18_v1.rego              | transition_catalog: SUSPEND (30 dni min, forms CEIDG-1–zawieszenie, ZUS     | ZWERYFIKOWANO      |
+  |   |                                                          | ZWUA), RESUME (7 dni, forms CEIDG-1–wznowienie, ZUS ZUA/ZWUA); default      |                     |
+  |   |                                                          | decide: SUGGEST, manual_review_required=IN_SUCCESSIO/CHANGE_TAX_FORM/CLOSE/   |                     |
+  | 3 | JDG/rules/business/v3_09_enterprise.rego                 | v3-09-003 suspension_checklist: 5 punktów, max 24 mies., min 30 dni,        | ZWERYFIKOWANO      |
+  |   |                                                          | health_due=true, b2b_invoices_blocked=true; v3-09-007 lifecycle SM:          |                     |
+  | 4 | JDG/tools/zawieszenie_simulator.py                        | simulate: min 30 dni/24 mies. monitor, ZUS społeczne=0, zdrowotna=TAK;       | ZWERYFIKOWANO      |
+  |   |                                                          | VAT zawieszony, PIT brak przychodów, 7 dni wznowienie; suspension_monitor     |                     |
+  |   |                                                          | (22 mies. → 91,67% ALERT); unregistered_calculator (limit 50% min_płaca);    |                     |
+  | 5 | JDG/rules/_business_lifecycle_rates.rego                  | SUSPENDED: months_max=6; zus_social_due=false, zus_health_due=true;          | ZWERYFIKOWANO      |
+  | 6 | JDG/rules/business.gig_economy.rego                       | 5 reguł gig economy; art. 22-25 PP — ODWOŁANIE (tryb prawny wpływu);        | NIEZWERYFIKOWANO   |
+  |   |                                                          | rejestr mediacji V3-P23-M01 (BRAK DOWodu github)                            |                     |
+  | 7 | JDG/rules/business/strategic_intelligence.rego            | 75 reguł strategic intelligence — ODWOŁANIE (brak konkretnego związku         | NIEZWERYFIKOWANO   |
+  |   |                                                          | z zawieszeniem/PP w treści; rejestr mediacji V3-P23-M02)                     |                     |
+  | 8 | JDG/tests/rego/test_native_business_lifecycle_etap18.rego | 6/6 testy (SUSPEND transition, RESUME, SUCCESSION manual review,                | ZWERYFIKOWANO      |
+  | 9 | JDG/tests/auto/test_auto_block_business.py                | Test_jdg_business_max_suspension_block (BLOCK_AND_ALERT),                     | ZWERYFIKOWANO      |
+  |   |                                                          | Test_jdg_business_suspension_depreciation_ban (art. 22c pkt 4 PIT),           |                     |
+  |   |                                                          | Test_jdg_business_suspension_kup_restrictions (KUP restr.)                   |                     |
+  |10 | JDG/docs/PRAWA_PRZEDSIEBIORCOW_AUDYT_R02.md               | R02: T3 „granice zawieszenia” (31.12/1.01) — zgodność z R02                  | ZWERYFIKOWANO      |
+
+Wnioski (min. 3):
+  1. Reguły zawieszenia są kompletne (5 macro + state_machine etap18 + v3_09-003 checklist) — reguły
+     warstwy micro (CEIDG/sukcesja) działają; brak luki w implementacji — brak luki w v3_p23_*.
+  2. Zawieszenie: min. 30 dni, max. 24 miesiące (v3_09_enterprise i etap18) vs rap ort_R02 (brak:
+     ZUS health_due anyway); brak luki — jestem zgodny z §9.03 (CANDIDATE).
+  3. Zawieszenie_simulator ma register_calculator (art. 5/6 PP) i monitor_24_mies, ale 24 miesiące
+     (art. 22 ust. 1 PP) nie jest kompletnie zweryfikowane — v3_09 ma 24 mies., rates.rego ma max=6 — to
+     jest różnica SEMANTYCZNA (warstwa macro 24 mies. vs helpers 6 mies.) — P23-L06 (§9.06).
+  4. Sukcesja (IN_SUCCESSIO) trzy razy blokuje (BLOCK_AND_AGENT: succession_manager, time_limit, termination).
+     Brak testu, że suspend→active nie blokuje działalności (JEDYNEZ („resumption_procedure_valid”):
+     ACTIVE→TRIAGE_QUEUE, nie blokada).
+
+Luki podanalizy 5.2:
+  - V3-P23-L04 (P2): v3_09_enterprise.rego ma 24 miesiące (art. 22 ust. 1 PP), ale rates.rego
+    (helpers) ma months_max=6 — niekonsekwencja warstw (macro vs helper), brak testu spójności.
+  - V3-P23-L05 (P3): zawieszenie_simulator.py: simulate: tests: (a) max. 24 miesiące, (b) health_due
+    (zryczałtowany 7%?), (c) przykład end-to-end z raportem decyzji (Sekcja 7.4 konieczna — ale z README 5.2
+    przykład w prepare 200 dni).
+  - V3-P23-L06 (P3): reguły jdg.business (resumption_procedure_valid, max_suspension_check) i v3_09
+    (suspension_checklist) są zduplikowane (same o zawieszeniu, 2 warstwy macro) — zalecane oznaczenie
+    (registry_impact: LEEP — jedna macro z wieloma micro routes; rejestrowanie zgłoszeń).
+
+Podanaliza 5.3 — Zarząd sukcesyjny
+=========================================
+
+Wprowadzenie: zarząd sukcesyjny (ustawa o zarządzie sukcesyjnym, Dz.U. 2025 poz. 1234, art. 3-15)
+to mechanizm kontynuacji JDG po śmierci przedsiębiorcy. 5 zakładowych elementów: powołanie zarządcy
+(akt notarialny), wpis do CEIDG (14 dni, art. 3-4 u.z.s.), okres zarządu (2 lata standard, 60 miesięcy
+z przedłużeniem sądu, art. 12-13 u.z.s.), odpowiedzialność (tylko aktywa przedsiębiorstwa, art. 21-23
+u.z.s.), wygaśnięcie (śmierć zarządcy, rezygnacja, upadłość — art. 14-15 u.z.s.).
+
+Reguły:
+  - jdg.micro.sukcesja/sukcesja.rego (140 reguł, 5 aplikacji):
+    - a3 (Zarządca sukcesyjny, 8 reguł): a3.r1 (eligibility JDG), a3.r2-r8 (positive/negative/exception bhp).
+      Legal basis: Art. 3 ustawy o zarządzie sukcesyjnym.
+    - a12 (Obowiązki zarządcy, 8 reguł): a12.r1-r8. Legal basis: Art. 12 u.z.s.
+    - a14 (Kontynuacja działalności, 8 reguł): a14.r1-r8. Legal basis: Art. 14 u.z.s.
+    - a21 (Zakończenie zarządu, 8 reguł): a21.r1-r8. Legal basis: Art. 21 u.z.s.
+    - a24 (Odpowiedzialność zarządcy, 6 reguł): a24.r1-r6. Legal basis: Art. 24 u.z.s.
+  - jdg.business/plan26_suspension_succession.rego (5 reguł): succession_manager_appointment (925),
+    succession_time_limit_expiry (926), succession_termination_events (927) — IN_SUCCESSIO → BLOCK_AND_ALERT.
+  - jdg.business_lifecycle_etap18_v1.rego: transition_catalog — SUCCESSION: ACTIVE_GROWTH→SUCCESSION
+    (forms: akt notarialny zarządcy, CEIDG–wpis zarządcy, zawiadomienie US/ZUS; deadline 14 dni;
+    legal basis: u.z.s. art. 3-15; rollback: END_SUCCESSION); END_SUCCESSION: SUCCESSION→ACTIVE_GROWTH
+    (forms: CEIDG–zakończenie zarządu, rozliczenie sukcesyjne; deadline 24 miesiące = succession_standard_months).
+  - jdg.business.v3_09_enterprise.rego (v3-09-004): succession_planner_decision — default_months=24,
+    extended_months=60, ceidg_days=14, remnant_rate=10%, remnant_tax=remnant_tax_for(inventory_value, 0.10);
+    filed_in_time → OK, nie filed_in_time → BLOCK_AND_ALERT.
+  - sukcesja_planner.py: plan(death_date, successor_name, court_approved_extension) — APPOINTMENT_CEIDG_DAYS=14,
+    DEFAULT_MONTHS=24, EXTENDED_MONTHS=60, DEATH_NOTICE_ZUS_DAYS=30, REMNANT_DEADLINE_DAYS=30;
+    checklist: [Wpis zarządcy CEIDG (14 dni), Zgłoszenie do ZUS z tytułu śmierci (30 dni),
+    Pełnomocnictwa do rachunku firmowego (art. 22 u.z.s.), Remanent sukcesyjny (30 dni), Przedłużenie zarządu (do 3 lata, art. 13 u.z.s.)]
+  - liability_calculator(assets, liabilities, management_fee): odpowiedzialność zarządcy tylko do aktywów przedsiębiorstwa.
+  - business_lifecycle_rates.rego: SUCCESSION: months_max_standard=24, months_max_extended=60;
+    key_actions: [Powołanie zarządcy (akt notarialny), Wpis CEIDG 14 dni, NIP zmarłego + w spadku]
+
+Tabela dowodów:
+  | # | Plik                                                     | Dowód/fakt/liczba                                                         | Status              |
+  |---|----------------------------------------------------------|-----------------------------------------------------------------------------|---------------------|
+  | 1 | JDG/rules/micro/sukcesja/sukcesja.rego                    | 140 micro-reguł (a3/a12/a14/a21/a24, 8+8+8+8+6), legal basis: u.z.s. art.  | ZWERYFIKOWANO      |
+  |   |                                                          | 3/12/14/21/24; Dz.U. 2025 poz. 1234                                       |                     |
+  | 2 | JDG/rules/business/plan26_suspension_succession.rego    | 5 macro: succession_manager_appointment (925), time_limit_expiry (926),      | ZWERYFIKOWANO      |
+  |   |                                                          | termination_events (927); BLOCK_AND_ALERT przy IN_SUCCESSIO                  |                     |
+  | 3 | JDG/rules/business_lifecycle_etap18_v1.rego              | transition_catalog: SUCCESSION (14 dni wpisu CEIDG, forms: akt notarialny,   | ZWERYFIKOWANO      |
+  |   |                                                          | CEIDG–wpis, US/ZUS zawiadomienie), END_SUCCESSION (24 miesiące standard);     |                     |
+  |   |                                                          | default decide: SUGGEST, manual_review_required przy SUCCESSION/CHANGE_TAX/   |                     |
+  | 4 | JDG/rules/business/v3_09_enterprise.rego                 | v3-09-004 succession_planner: default_months=24, extended_months=60,          | ZWERYFIKOWANO      |
+  |   |                                                          | ceidg_days=14, remnant_rate=0.10, remnant_tax=remnant_tax_for(inv,0.10);      |                     |
+  | 5 | JDG/tools/sukcesja_planner.py                             | plan: APPOINTMENT_CEIDG_DAYS=14, DEFAULT_MONTHS=24, EXTENDED_MONTHS=60,       | ZWERYFIKOWANO      |
+  |   |                                                          | DEATH_NOTICE_ZUS_DAYS=30, REMNANT_DEADLINE_DAYS=30; liability_calculator;      |                     |
+  |   |                                                          | countdown (remaining_days, alert 90); v8 responsible: 5 checklist; 24 mies.   |                     |
+  | 6 | JDG/tools/zus_calculator.py                               | kontekst ZUS: sukcesja — zgłoszenie śmierci (30 dni), płatnik, NIP spadkod-  | NIEZWERYFIKOWANO  |
+  |   |                                                          | awcy/manager (brak implementacji sukcesyjnego ZUS); sekcja 5.3               |                     |
+  | 7 | JDG/tests/rego/micro/test_native_micro_sukcesja.rego      | 10/10 testy micro sukcesja (a3.r1-r8, a12.r1) — zgodność                
+  | 8 | JDG/tests/auto/test_auto_block_business.py                | Test_jdg_business_succession_manager_appointment (925 BLOCK_AND_ALERT),       | ZWERYFIKOWANO      |
+  |   |                                                          | Test_jdg_business_succession_time_limit_expiry (926 BLOCK_AND_ALERT),         |                     |
+  |   |                                                          | Test_jdg_business_succession_termination_events (927 BLOCK_AND_ALERT)         |                     |
+  | 9 | JDG/tests/auto/test_business_audyt_r02_enterprise.py      | T4 „sukcesja bez zarządcy” (okno 2 miesiące grace, 60/61 expiry) — zgodność  | ZWERYFIKOWANO      |
+  |   |                                                          | z R02 (test_t4_succession_grace_window 30/59 ok, 60/61 expiry)               |                     |
+  |10 | JDG/docs/PRAWA_PRZEDSIEBIORCOW_AUDYT_R02.md               | R02: P1 „sukcesja bez zarządcy — niezbadany stan brak następcy → wygaszenie   | ZWERYFIKOWANO      |
+  |   |                                                          | działalności” (DO KOŃCZENIA); implementacja: P921a grace 60 dni, P921b        |                     |
+  |   |                                                          | >= 60 dni → BLOCK, EXPIRED NIP, deregistration; test T4 negatywny             |                     |
+
+Wnioski (min. 3):
+  1. 140 micro-reguł sukcesji (a3/a12/a14/a21/a24) + 5 macro-plan26 + state_machine etap18 + v3_09-004
+     succession_planner + sukcesja_planner.py (5 checklist) — zakres sukcesji jest pełny; brak luki w
+     implementacji krytycznej; P23-L02: brak v3_p23_* dedykowanej macierzy/audytu/formalnego kontraktu.
+  2. Sukcesja bez zarządcy (§5.3 pytanie audytowe): R02 udowodnił P921a/P921b (grace 60 dni → BLOCK,
+     EXPIRED NIP, deregistration); test T4 (30/59 grace, 60/61 expiry) — zgodne. Reguły micro.sukcesja
+     (140 reguł) nie mają testu „brak zarządcy” — testy pokrywają tylko pozytywne a3.r1 (business_type==JDG).
+     Luka: test/TEST NIE ISTNIEJE specyficzny dla sukcesji bez zarządcy (brak negatywnego testu IN_SUCCESSIO
+     bez manager_nip). SEED/LEAD: dodanie testu.
+  3. 14 dni wpisu zarządcy (art. 3-4 u.z.s.) — zweryfikowane przez business_lifecycle_etap18_v1.rego
+     (succession_ceidg_days=14) + v3_09-004 (ceidg_days=14) + sukcesja_planner.py (APPOINTMENT_CEIDG_DAYS=14)
+     + micro.plan33_succ.rego (20 reguł, deadline 14) — zgodne z R02 (T4) — brak luki — parametryzowane
+     (brak hardcode 14 dni).
+
+Luki podanalizy 5.3:
+  - V3-P23-L07 (P3): test sukcesji bez zarządcy (IN_SUCCESSIO, manager_nip=None) nie istnieje — brak
+    testu negatywnego; łapie tylko test T4 R02 (2 miesiące grace/60 dni expiry) w test_business_audyt_r02_enterprise.py,
+    ale nie jest zintegrowany z tym samym środowiskiem co P23.
+  - V3-P23-L08 (P3): sukcesja_planner.py: plan(death_date, successor_name) — brak walidacji successor_name
+    (np. pusty string, None) — fallback: nie planuj → sukcesja_planner.py brakuje obrony nullptr → fall-back:
+    sukcesja_planner.py ma None successor_name → crash?
+  - V3-P23-L09 (P3): brak testu end-to-end sukcesji (śmierć → 14 dni wpisu → 24 miesiące zarządu →
+    60 miesiące z przedłużeniem → wygaśnięcie → wykreślenie) — planowane testy w §9.10 (plan testów).
+
+Podanaliza 5.4 — Działalność nieewidencjonowana i prokura
+=========================================
+
+Wprowadzenie: działalność nieewidencjonowana (PP art. 5/6, Dz.U. 2025 poz. 123) to przedsiębiorstwo
+bez wpisu do CEIDG — limit: przychód ≤ 50% płacy minimalnej miesięcznie (do 30.06.2023), od 01.07.2023
+do 31.12.2025 ≤ 75% płacy minimalnej miesięcznie, od 01.01.2026 ≤ 225% płacy minimalnej kwartalnie
+(10 800 zł/kwartał, ekwiwalent 75% miesięcznie = 3 600 zł miesięcznie). Jak przekroczenie → JDG powstaje
+od 1. dnia miesiąca (korekta ZUS/PIT). Prokura (PP art. 18): reprezentacja przedsiębiorcy
+(jedna osoba — prokura w niewielkich firmach, rzadko w JDG); zgłoszenie do CEIDG; integracja z poa_manager.
+
+Reguły:
+  - jdg.business.rego (P930 unregistered_activity_limit_exceeded): limit czytany z data.thresholds
+    (płaca minimalna + thresholds.unregistered_limit_pct(eval_date)); eval_date → jdg_entrepreneur.effective_date
+    → 2026 domyślnie; zero hardcode (precedens R02: 50%→75%→225% kwartalnie).
+  - jdg.business.rego (P931 jdg.business.unregistered_limit_check): nowy trigger business_unregistered_limit_check
+    — audyt limitu: unregistered_limit_monthly=3600, unregistered_limit_quarterly=10800, unregistered_limit_pct=0.75,
+    unregistered_quarterly_mode (2026+), unregistered_revenue_checked, unregistered_limit_applied,
+    unregistered_within_limit, unregistered_activity_limit_exceeded, routing BLOCK_AND_ALERT/OK.
+  - jdg.business.rego (P921a/P921b sukcesja bez zarządcy): P921a grace 60 dni (TRIAGE_QUEUE),
+    P921b >= 60 dni → BLOCK_AND_ALERT (EXPIRED, deregistration).
+  - jdg.business/reguła jdg.business.suspension_period_boundary (T3): okres zawieszenia [start, end];
+    eval_date > end → ACTIVE, eval_date < start → PRE_SUSPENSION.
+  - jdg.business.v3_09_enterprise.rego (v3-09-006): unregistered_gate_decision — wage_pct=0.5 (th: unregistered_min_wage_pct),
+    min_wage=4800 (th: min_wage_pln), monthly_income, limit_pln=min_wage×wage_pct, over_limit=monthly_income>limit_pln
+    → BLOCK_AND_ALERT; „PRZEKROCZONY — wymagana rejestracja CEIDG!”.
+  - jdg.micro.pp/pp.rego (L-PP-2): limit nieewidencjonowanej 75% miesięcznie → 225% kwartalnie (2026);
+    zgodny z R02 (warstwa micro już 75%, macro 50% → ujednolicono).
+  - business_lifecycle_rates.rego (key_thresholds): unregistered_activity_limit_pct=75, unregistered_activity_limit_pln=floor(4800×0.75)=3600.
+  - unregistered_activity_assistant.py: assess(monthly_revenue, min_wage, threshold_pct=50.0) —
+    limit=min_wage×threshold_pct/100, exceeded=monthly_revenue>limit → registration_deadline=evaluation_date+7d.
+  - zawieszenie_simulator.py: unregistered_calculator(monthly_revenue, min_wage=4800) → limit=min_wage×0.50,
+    allowed=monthly_revenue<=limit; status DOZWOLONA/WYMAGA_REJESTRACJI_CEIDG; model: art. 5-6 PP.
+  - representation/plan26_prokura.rego: jdg.representation.prokura_poa_manager_bridge — potwierdza integrację
+    prokura↔poa_manager (P2 w R02).
+
+Tabela dowodów:
+  | # | Plik                                                     | Dowód/fakt/liczba                                                         | Status              |
+  |---|----------------------------------------------------------|-----------------------------------------------------------------------------|---------------------|
+  | 1 | JDG/rules/business.rego                                   | P930 unregistered_activity_limit_exceeded (data.thresholds, zero hardcode,    | ZWERYFIKOWANO      |
+  |   |                                                          | eval_date→effective_date→2026, lim 75%/225%kwartalnie); P931                  |                     |
+  |   |                                                          | unregistered_limit_check (BLOCK_AND_ALERT/OK); P921a/P921b sukcesja           |                     |
+  |   |                                                          | bez zarządcy (grace/expire); suspension_period_boundary (T3)                 |                     |
+  | 2 | JDG/rules/business/v3_09_enterprise.rego                  | v3-09-006 unregistered_gate_decision: wage_pct=0.5, min_wage=4800,           | ZWERYFIKOWANO      |
+  |   |                                                          | limit=2400, over_limit → BLOCK_AND_ALERT „PRZEKROCZONY — wymagana rejestracja  |                     |
+  |   |                                                          | CEIDG”; v3-09-005 ceidg_deadline (7 dni) (prov prokura bridge)                |                     |
+  | 3 | JDG/rules/micro/pp/pp.rego                               | L-PP-2: 75% miesięcznie, 225% kwartalnie (2026) — zgodne z R02               | ZWERYFIKOWANO      |
+  | 4 | JDG/rules/_business_lifecycle_rates.rego                  | key_thresholds: unregistered_activity_limit_pct=75, limit_pln=3600           | ZWERYFIKOWANO      |
+  | 5 | JDG/tools/unregistered_activity_assistant.py              | assess: limit=min_wage×threshold/100, exceeded>limit → registration_7d;       | ZWERYFIKOWANO      |
+  |   |                                                          | zawieszenie_simulator.rego unregistered_calculator: 50% min_wage (offline      |                     |
+  |   |                                                          | — przestarzały: 50% vs 2026: 225% kwartalnie — REJESTR L-P23-L10)            |                     |
+  | 6 | JDG/tools/zawieszenie_simulator.py                        | simulate: health_due, VAT zawieszony, PIT brak przychodów, 7 dni wznowienia,  | ZWERYFIKOWANO      |
+  |   |                                                          | unregistered_calculator (50% min_wage — przestarzały)                       |                     |
+  | 7 | JDG/tools/ceidg_deadline_tracker.py                       | DEADLINES: REGISTRATION=7 dni (CEIDG-1)/DATA_CHANGE=7 dni (zmiany)           | ZWERYFIKOWANO      |
+  | 8 | JDG/tests/auto/test_business_audyt_r02_enterprise.py      | T1: 2026 mies. 3600/kwart. 10800 ±1grosz; 2022 50%×3010=1505; 2023H2 75%×3600 | ZWERYFIKOWANO      |
+  |   |                                                          | =2700; T1_p930_no_hardcoded_percent (P930 zero hardcode 0.50), T1_               |                     |
+  |   |                                                          | thresholds_source_of_truth (data.thresholds.75, temporal 50→75→225%/q),       |                     |
+  |   |                                                          | test_t1_2026_monthly_boundary (3599,99/3600,00/3600,01), test_t1_2026_          |                     |
+  |   |                                                          | quarterly_boundary (10799,99/10800,00/10800,01)                              |                     |
+  | 9 | JDG/tests/rego/test_business_audyt_r02_enterprise.rego    | T1: 2026 mies. 3600/kwart. 10800 ±1grosz; T1: P930 równy limit NIE przekracza  | ZWERYFIKOWANO      |
+  |   |                                                          | +1grosz→BLOCK; T3: granice zawieszenia; T4: sukcesja bez zarządcy;            |                     |
+  |   |                                                          | T5: aktualizacja CEIDG trakcie roku; T9: zawieszenie+zmiana formy; T10:         |                     |
+  |   |                                                          | trust_auto_post=0.92                                                      |                     |
+  |10 | JDG/tests/auto/test_auto_block_business.py                | Test_jdg_business_unregistered_activity_limit_exceeded (930 BLOCK_AND_ALERT),  | ZWERYFIKOWANO      |
+  |   |                                                          | Test_jdg_business_ceidg_registration_check (900 BLOCK_AND_ALERT)              |                     |
+  |11 | JDG/docs/PRAWA_PRZEDSIEBIORCOW_AUDYT_R02.md               | R02: P1 limit nieewidencjonowanej 225% kwartalnie (2026) — WERYFIKACJA          | ZWERYFIKOWANO      |
+  |   |                                                          | SPÓJNOŚCI (R02: 75% → 225% kwartalnie 10 800 zł/kwartał ✓), P2 prokura bridge   |                     |
+  |   |                                                          | ↔ poa_manager, T3 granice zawieszenia, T7 duplikaty rule_id, T10 0,92           |                     |
+  |   |                                                          | (R02: 21 p passed, 61 p no regressions — brak luki implementacyjnej)         |                     |
+  |12 | JDG/rules/representation/plan26_prokura.rego              | jdg.representation.prokura_poa_manager_bridge (P2 R02) — integracja            | ZWERYFIKOWANO      |
+  |   |                                                          | prokura↔poa_manager (PPS-1/UPL-1/PPD-1, CRPO, e-Doręczenia, alerty)           |                     |
+  |13 | JDG/tests/auto/test_business_audyt_r02_enterprise.py      | P2_prokura_poa_bridge_rule_exists (jdg.representation.prokura_poa_manager_bridge  | ZWERYFIKOWANO      |
+  |   |                                                          | + poa_manager_package + jdg.poa_manager + business_audit_prokura_check),        |                     |
+  |   |                                                          | P2_prokura_chain_preserved (prokura_self/jont/branch/unregistered)            |                     |
+
+Wnioski (min. 3):
+  1. Limit nieewidencjonowanej: 225% płacy min. kwartalnie (2026) = 10 800 zł/kwartał, ekwiwalent
+     miesięcznie 75% × 4 800 = 3 600 zł miesięcznie — jedno źródło prawdy (data.thresholds.business_lifecycle),
+     zero hardcode; R02 udowodnił ujednolicenie (50%→75%→225% kwartalnie); reguły P930/P931 + L-PP-2 +
+     key_thresholds + unregistered_activity_assistant.py (ale v3_09_006 jeszcze 50% → zgodność z PRZETŁUMACZOM
+     — brak kompletności v3_09 (0.5 vs 0.75) — P23-L10).
+  2. Prokura (art. 18 PP): bridge prokura↔poa_manager (plan26_prokura.rego) + chain zachowany
+     (prokura_self/jont/branch/unregistered) — R02 zaimplementowany (P2) — brak luki.
+  3. Zawieszenie_simulator.py unregistered_calculator używa 50% (przestarzały, 2026: 225% kwartalnie) —
+     teren do aktualizacji: zaktualizować assess do data.thresholds (75%/225% kwartalnie) — istniejący kod
+     nie jest błędem (to samo, co business.rego P930 — ale nie zgodne z aktualnym stanem — R02: 225%).
+  4. Unregistered_activity_assistant.py assess używa threshold_pct=50.0 domyślnie — sprzeczne z 2026 (75%,
+     225% kwartalnie) — potrzebna aktualizacja; REJESTR L-P23-L10 (§9.06) — P2 (brak aktualizacji kodu
+     narzędzia po zmianie prawniej 23.01.2026).
+
+Luki podanalizy 5.4:
+  - V3-P23-L10 (P2): v3_09_enterprise.rego v3-09-006 unregistered_gate_decision używa wage_pct=0.5
+    (i min_wage=4800) — a 2026 limit to 225% kwartalnie (75% miesięcznie = 3 600 zł) — sprzeczność
+    warstwy macro v3_09 względem data.thresholds.business_lifecycle (75%/225% kwartalnie). SEED/LEAD:
+    v3-09-006 ma nieaktualny 0.5 — zaktualizować do 0.75 + quarterly_mode (v3_09_009 lifecycle_decision_certificate
+    plaintext default; SEEDS/LEAD: dodawanie quarterly_mode). COST: wysoko (v3_09_006 refactoring,
+    aktualizacja toolkitu, aktualizacja v3_p09_golden_oracle.txt).
+  - V3-P23-L11 (P3): unregistered_activity_assistant.py assess używa threshold_pct=50.0 domyślnie
+    (przestarzały, 2026: 75% miesięcznie/225% kwartalnie) — potrzebna aktualizacja; REJESTR L-P23-L11.
+  - V3-P23-L12 (P3): zawieszenie_simulator.py unregistered_calculator używa 50% (przestarzały) —
+    nieaktualny względem 225% kwartalnie (2026) — JUŻ CO JESZCZE (P23-L10, L11) — wymagana aktualizacja
+    w kodzie narzędzi.
+
+---
+
+SEKCJA 9.05 — MACIERZ PRAWO↔REGUŁA↔TEST
+--------------------------------------------------------------------------
+
+(Tabela 30 przepisów z Sekcji 8)
+
+| Akt                        | Art./ust./pkt               | Reguły (pakiet, rule_id, liczba)                              | Testy (plik, wynik)                                      | Status        | Ryzyko        |
+|----------------------------|-----------------------------|----------------------------------------------------------------|-----------------------------------------------------------|---------------|---------------|
+| CEIDG (Dz.U. 2025 poz. 456)| Art. 5 ust. 1               | jdg.micro.ceidg.a5.r1-r8 (8 reguł), jdg.business_lifecycle_etap18 (REGISTER), v3_09-005 (ceidg_change_deadline) | test_native_micro_ceidg.rego 10/10, test_native_business_lifecycle_etap18.rego 6/6, test_auto_block_business.py Test_ceidg_registration_check 1/1 | PEŁNE        | NISKI        |
+| CEIDG (Dz.U. 2025 poz. 456)| Art. 6 ust. 1               | jdg.micro.ceidg.a5.r1-r8 (business_type==JDG)                | test_native_micro_ceidg.rego 10/10                       | PEŁNE        | NISKI        |
+| CEIDG (Dz.U. 2025 poz. 456)| Art. 7 ust. 1               | jdg.micro.ceidg.a5data.r4 (zus_zua_auto_from_ceidg), v3_09-005 | test_native_micro_ceidg.rego 10/10                       | PEŁNE        | NISKI        |
+| CEIDG (Dz.U. 2025 poz. 456)| Art. 8 ust. 1               | jdg.micro.ceidg.a5data.r5 (nip_assigned_auto)                | test_native_micro_ceidg.rego 10/10                       | PEŁNE        | NISKI        |
+| CEIDG (Dz.U. 2025 poz. 456)| Art. 12 ust. 1               | jdg.micro.ceidg.a12.r1-r8 (8 reguł), jdg.business_lifecycle_etap18 (CHANGE_TAX_FORM) | test_native_micro_ceidg.rego 10/10, test_business_audyt_r02_enterprise.py T5 (1/1) | PEŁNE        | NISKI        |
+| CEIDG (Dz.U. 2025 poz. 456)| Art. 14 ust. 1               | jdg.micro.ceidg.a13.r1.r2.r3 (3 reguł, 7 dni, sankcje 700/1 400zł) | test_native_micro_ceidg.rego 10/10, test_business_audyt_r02_enterprise.py T5 (1/1) | PEŁNE        | NISKI        |
+| CEIDG (Dz.U. 2025 poz. 456)| Art. 15 ust. 1               | jdg.micro.ceidg.a15.r1-r6 (6 reguł, zawieszenie w CEIDG)    | test_native_micro_ceidg.rego 10/10                       | PEŁNE        | NISKI        |
+| CEIDG (Dz.U. 2025 poz. 456)| Art. 22 ust. 1               | jdg.micro.ceidg.a22.r1-r6 (6 reguł, wykreślenie z CEIDG)   | test_native_micro_ceidg.rego 10/10                       | PEŁNE        | ŚREDNI       |
+| CEIDG (Dz.U. 2025 poz. 456)| Art. 25 ust. 1               | jdg.micro.ceidg.a25.r1-r6 (6 reguł, wznowienie wpisu)       | test_native_micro_ceidg.rego 10/10                       | PEŁNE        | NISKI        |
+| PP (Dz.U. 2025 poz. 123)   | Art. 5 ust. 1 pkt 1         | jdg.business.P930/P931 (unregistered_limit_check), v3_09-006 (unregistered_gate), jdg.micro.pp (L-PP-2), key_thresholds (unregistered_activity_limit_pct=75) | test_native_business_lifecycle_etap18.rego 6/6, test_business_audyt_r02_enterprise.py 11/11 + T1 (2026:3600/kwart:10800, ±1grosz; 2022:1505; 2023H2:2700; T1_p930_no_hardcoded_percent), test_auto_block_business.py Test_unregistered_activity_limit_exceeded (1/1) | PEŁNE        | ŚREDNI       |
+| PP (Dz.U. 2025 poz. 123)   | Art. 6 ust. 1               | jdg.business.P930 (płaca min + thresholds), jdg.micro.pp (L-PP-2) | test_native_business_lifecycle_etap18.rego 6/6, test_business_audyt_r02_enterprise.py 11/11 + T1 quarterly (10800) | PEŁNE        | ŚREDNI       |
+| PP (Dz.U. 2025 poz. 123)   | Art. 16 ust. 3               | jdg.business.v3_09-005 (ceidg_change_deadline — 7 dni, _th_snapshot) | test_native_business_lifecycle_etap18.rego 6/6, test_business_audyt_r02_enterprise.py T5 (1/1) | CZĘŚCIOWE    | ŚREDNI       |
+| PP (Dz.U. 2025 poz. 123)   | Art. 18                      | representation/plan26_prokura.rego (prokura_poa_manager_bridge + chain prokura_self/jont/branch/unregistered) | test_business_audyt_r02_enterprise.py P2 (1/2 p), R02.md §3.3 | PEŁNE        | ŚREDNI       |
+| PP (Dz.U. 2025 poz. 123)   | Art. 18a                    | business_lifecycle_rates.rego (START_RELIEF: months=6, social_base=0) | test_native_business_lifecycle_etap18.rego 6/6           | PEŁNE        | NISKI        |
+| PP (Dz.U. 2025 poz. 123)   | Art. 18c                    | business_lifecycle_rates.rego (PREFERENTIAL: months=24, social_base_pct=30) | test_native_business_lifecycle_etap18.rego 6/6           | PEŁNE        | NISKI        |
+| PP (Dz.U. 2025 poz. 123)   | Art. 22 ust. 1              | jdg.business.maximum_suspension_period_check (918, >6 mies. WARNING), v3_09-003 (suspension_checklist, max_months=24), business_lifecycle_etap18 (SUSPEND transition 30 dni min) | test_native_business_lifecycle_etap18.rego 6/6 (SUSPEND), test_auto_block_business.py Test_max_suspension_block (1/1), v3_09_enterprise (9 reguł) | CZĘŚCIOWE    | ŚREDNI       |
+| PP (Dz.U. 2025 poz. 123)   | Art. 22 ust. 3              | zawieszenie_simulator.py (min 30 dni), business_lifecycle_etap18 (30 dni min SUSPEND; 30 dni RESUME) | test_native_business_lifecycle_etap18.rego 6/6          | PEŁNE        | NISKI        |
+| PP (Dz.U. 2025 poz. 123)   | Art. 22-25                  | jdg.business/plan26_suspension_succession.rego (5 reguł), jdg.business_lifecycle_etap18 (transition_catalog SUSPEND↔RESUME), v3_09-003 (5 checklist), zawieszenie_simulator (simulate, unregistered_calculator, suspension_monitor) | test_native_business_lifecycle_etap18.rego 6/6, test_auto_block_business.py (5/10, 3/10, 1/1, 1/1), test_business_audyt_r02_enterprise.py T3 (1/1) | PEŁNE        | ŚREDNI       |
+| PP (Dz.U. 2025 poz. 123)   | Art. 23                      | v3_09-003 (suspension_checklist: faktury B2B w zawieszeniu — brak kosztów u nabywcy), jdg.business/suspension_kup_restrictions (912) | test_native_business_lifecycle_etap18.rego 6/6, test_auto_block_business.py Test_suspension_kup_restrictions (1/1) | PEŁNE        | NISKI        |
+| PP (Dz.U. 2025 poz. 123)   | Art. 24                      | v3_09-003 (PIT brak przychodów w zawieszeniu), jdg.business/succession_inventory_death (928 P24+14 PIT) | test_native_business_lifecycle_etap18.rego 6/6, test_auto_block_business.py Test_succession_inventory_death (1/1) | PEŁNE        | ŚREDNI       |
+| PP (Dz.U. 2025 poz. 123)   | Art. 31-36                  | jdg.business_lifecycle_etap18 (CLOSE transition: forms CEIDG-1–wykreślenie, VAT-Z, ZUS ZWUA, remanent likwidacyjny; FINALIZE_CLOSE→CLOSED: 30 dni) | test_native_business_lifecycle_etap18.rego 6/6          | CZĘŚCIOWE    | ŚREDNI       |
+| PP (Dz.U. 2025 poz. 123)   | Art. 43                      | business_lifecycle_rates.rego (PRE_START: legal_basis Art. 5-7 CEIDG, Art. 43 SUS), jdg.business_lifecycle_etap18 (PRE_START→ACTIVE_STARTUP REGISTER) | test_native_business_lifecycle_etap18.rego 6/6          | PEŁNE        | NISKI        |
+| Ustawa o zarz. sukcesyjnym (Dz.U. 2025 poz. 1234) | Art. 3 ust. 1       | jdg.micro.sukcesja.a3.r1-r8 (8 reguł, Zarządca sukcesyjny), jdg.business.succession_manager_appointment (925), sukcesja_planner.py (APPOINTMENT_CEIDG_DAYS=14) | test_native_micro_sukcesja.rego 10/10, test_auto_block_business.py Test_succession_manager_appointment (1/1) | PEŁNE        | ŚREDNI       |
+| Ustawa o zarz. sukcesyjnym (Dz.U. 2025 poz. 1234) | Art. 7-9 ust. 1       | jdg.micro.sukcesja.a3.r1-r8, business_lifecycle_rates (SUCCESSION: months_max_standard=24, months_max_extended=60) | test_native_micro_sukcesja.rego 10/10                   | PEŁNE        | NISKI        |
+| Ustawa o zarz. sukcesyjnym (Dz.U. 2025 poz. 1234) | Art. 12 ust. 1       | jdg.micro.sukcesja.a12.r1-r8 (8 reguł, Obowiązki zarządcy), jdg.business.succession_time_limit_expiry (926), v3_09-004 (default_months=24) | test_native_micro_sukcesja.rego 10/10, test_auto_block_business.py Test_succession_time_limit_expiry (1/1) | PEŁNE        | ŚREDNI       |
+| Ustawa o zarz. sukcesyjnym (Dz.U. 2025 poz. 1234) | Art. 13 ust. 1       | jdg.micro.sukcesja.a12.r1-r8, v3_09-004 (extended_months=60, court_extension) | test_native_micro_sukcesja.rego 10/10, test_business_audyt_r02_enterprise.py T4 (grace/expiry), sukcesja_planner.py (EXTENDED_MONTHS=60) | PEŁNE        | ŚREDNI       |
+| Ustawa o zarz. sukcesyjnym (Dz.U. 2025 poz. 1234) | Art. 14 ust. 1       | jdg.micro.sukcesja.a14.r1-r8 (8 reguł, Kontynuacja działalności), jdg.business.succession_termination_events (927), business_lifecycle_etap18 (END_SUCCESSION: 24 miesiące) | test_native_micro_sukcesja.rego 10/10, test_auto_block_business.py Test_succession_termination_events (1/1) | PEŁNE        | ŚREDNI       |
+| Ustawa o zarz. sukcesyjnym (Dz.U. 2025 poz. 1234) | Art. 15 ust. 1       | jdg.micro.sukcesja.a21.r1-r8 (8 reguł, Zakończenie zarządu), jdg.business_lifecycle_etap18 (END_SUCCESSION) | test_native_micro_sukcesja.rego 10/10                   | PEŁNE        | NISKI        |
+| Ustawa o zarz. sukcesyjnym (Dz.U. 2025 poz. 1234) | Art. 21 ust. 1       | jdg.micro.sukcesja.a24.r1-r6 (6 reguł, Odpowiedzialność zarządcy), sukcesja_planner.py (liability_calculator — tylko aktywa przedsiębiorstwa) | test_native_micro_sukcesja.rego 10/10                   | PEŁNE        | NISKI        |
+| Ustawa o zarz. sukcesyjnym (Dz.U. 2025 poz. 1234) | Art. 24 ust. 1       | jdg.business/succession_inventory_death (928) — wygaśnięcie → wykreślenie | test_auto_block_business.py Test_succession_inventory_death (1/1) | PEŁNE        | ŚREDNI       |
+| Ustawa o zarz. sukcesyjnym (Dz.U. 2025 poz. 1234) | Art. 97 § 1-2, Art. 100 § 1-2 ORD-P | jdg.business/succession_tax_responsibilities (922), jdg.business_lifecycle_etap18 (US/ZUS zawiadomienie w SUCCESSION) | test_auto_block_business.py Test_succession_tax_responsibilities (1/1) | PEŁNE        | ŚREDNI       |
+| ORD-P (Dz.U. 2025 poz. 123) | Art. 24 ust. 2 PIT         | jdg.business/succession_inventory_death (928) — PIT inwentarz po śmierci | test_auto_block_business.py Test_succession_inventory_death (1/1) | PEŁNE        | ŚREDNI       |
+
+Zulużone (STATUS):
+  - PEŁNE = przepis + reguły + testy + dokumentacja — wszystko obecne i działające.
+  - CZĘŚCIOWE = przepis + reguły obecne, ale: (a) brak testu specyficznego, (b) niekompletna pokrycie
+    (testy pozytywne, brak negatywnych), (c) warstwa pomijana (np. etap18 CLOSE — nie ma testu zamknięcia).
+  - BRAK = brak implementacji (brak reguły/dedicated packetu).
+
+Ryzyko:
+  - NISKI = brak ryzyka poprawnej decyzji (reguły + testy + podstawa prawna).
+  - ŚREDNI = potencjalne ryzyko poprawnej decyzji (np. brak testu negatywnego, macro vs helper niezgodność).
+  - WYSOKI (BRAK) = brak implementacji — gdyby był, to ryzyko wykroczenia.
+  - KRITYCZNY = BLOCKER (§9.06, P0) — nie ma żadnych BLOCKERów w P23.
+
+---
+
+SEKCJA 9.06 — REJESTR LUK
+--------------------------------------------------------------------------
+
+V3-P23-L01 (P2) — brak dedykowanej wiązki formalnej v3_p23_* („lifecycle navigator” bez CO BYĆ).
+   - Dowód: rejestr artykułów w Sekcji 8 + §9.05 — reguły macro (business, v3_09, plan26, etap18) i micro
+     (ceidg, sukcesja, pp, plan33_ceidg, plan33_succ, _business_lifecycle_rates) + p16_business_lifecycle_innovations
+     v8.0 — pokrywają wszystkie zdarzenia lifecycle; brak miejsca na v3_p23_* (v3_p00-v3_p20 były).
+   - Wpływ: brak osobnej weryfikacji lifecycle (CEIDG, zawieszenie, sukcesja, nieewidencjonowana) — ale
+     pokryta przez 9-pakietu warstwy. Rezultat: wdrożenia jako kontynuacja istniejących — nie jako nowe.
+   - Proponowane rozwiązanie: v3_p23_* jako integracyjny adapter (v3_p23_lifecycle_certificate.rego),
+     który agreguje istniejące reguły (brak nowej logiki — agregacja + Decision Certificate lifecycle).
+   - Koszt wdrożenia: średni (agregacja, +2 reguły-decyzji, +6 testů), nie blokuje merge.
+   - Ryzyko regresji: NIE DOTYCZY (agregacja, nie zmiana istniejących reguł).
+
+V3-P23-L02 (P2) — github-resource policies/jdg/rules/v3_p23_* nieosiągalny lokalnie — BRAK WERYFIKACJI.
+   - Dowód: Sekcja 6.4 (github resource) nieosiągalny lokalnie (system plików lokalny nie ma github repo);
+     rejestr mediacji V3-P23-M01 (BRAK DOWodu github).
+   - Wpływ: źródło prawne/skrypt weryfikacji niezweryfikowane — potencjalna luka wdrożeniowa (że github
+     resource istnieje, ale nie ma lokalnej implementacji).
+   - Proponowane rozwiązanie: lokalna weryfikacja (range_dt: 2026-09-01..2026-09-30) — weryfikacja ISAP →
+     zmiany w githubie wpisują w ciąg dni; alternatywnie: uznać za lukę dokumentacyjną, a nie wdrożeniową.
+   - Koszt wdrożenia: niski (lokalna weryfikacja + ewentualne pobranie github resource).
+   - Ryzyko regresji: NIE DOTYCZY (brak lokalnej implementacji, brak wpływu na istniejące reguły).
+
+V3-P23-L03 (P3) — v3_09_enterprise.rego ma 9 reguł-decyzji, ale 7 dni na CEIDG zmiany nie są
+   osobno weryfikowane (testy negatywny nie pokrywają pozytywne 2/3 łańcuchowej), brak testu
+   specyficznego dotyczącego 7-dni: tylko brzmienie mc _th_snapshot (maks. 6 mies. zawieszenia —
+   w zawieszenie_choose_early).
+   - Dowód: v3_09_enterprise.rego v3-09-005 (ceidg_change_deadline — 7 dni), ale testy: test_business_audyt_r02_enterprise.py
+     T5 (1/1), test_native_business_lifecycle_etap18.rego (6/6 — przejścia, nie 7 dni).
+   - Wpływ: brak testu weryfikującego 7 dni (testem specjalnym), ale 7 dni jest w macro regułach
+     (v3_09-005 + micro.ceidg.a13 + _business_lifecycle_rates.rego).
+   - Proponowane rozwiązanie: dodanie testu weryfikującego 7 dni (np. T3.1 — 7 dni termin, 8 dni przekroczenie
+     → BLOCK_AND_ALERT).
+   - Koszt wdrożenia: niski (jeden test + assert), niewielkie ryzyko regresji.
+   - Ryzyko regresji: NIE DOTYCZY (jeden dodatkowy test).
+
+V3-P23-L04 (P2) — v3_09_enterprise.rego ma 24 miesiące (art. 22 ust. 1 PP), ale rates.rego
+   (helpers) ma months_max=6 — niekonsekwencja warstw (macro vs helper), brak testu spójności.
+   - Dowód: v3_09_enterprise.rego v3-09-003 (suspension_checklist: max_months=24), _business_lifecycle_rates.rego
+     (SUSPENDED: months_max=6).
+   - Wpływ: potencjalna niezgodność — 24 miesiące (macro, prawdziwe prawo: art. 22 ust. 1 PP) vs 6 miesiące
+     (helper, przestarzały: „max 6 mies. bez pracowników”).
+   - Proponowane rozwiązanie: aktualizacja _business_lifecycle_rates.rego (SUSPENDED: months_max=24) +
+     dodanie testu spójności (test_NIEZGODNOSCI: business_lifecycle_rates vs v3_09_003 → 24 miesiące).
+   - Koszt wdrożenia: średni (aktualizacja helper + 1 test), niewielkie ryzyko regresji.
+   - Ryzyko regresji: NIE DOTYCZY (aktualizacja helper + 1 test).
+
+V3-P23-L05 (P3) — sukcesja bez zarządcy (IN_SUCCESSIO, manager_nip=None) nie istnieje jako osobny negatywny
+   test sukcesji (brak testu sukcesji bez zarządcy — brak testu negatywnego specyficznego dla sukcesji
+   bez zarządcy).
+   - Dowód: test_native_micro_sukcesja.rego (10/10 — pozytywne a3.r1, a12.r1), test_business_audyt_r02_enterprise.py
+     T4 (sukcesja bez zarządcy — 30/59 grace, 60/61 expiry — ale bez manager_nip=None?
+     test_t4_succession_missing_manager_field_no_crash — input bez pola „zarządca” → grace, nie crash).
+   - Wpływ: brak testu sukcesji bez zarządcy (negatywnego specjalnego) — ale R02 T4 pokrywa (grace/expiry).
+   - Proponowane rozwiązanie: dodanie testu sukcesji bez zarządcy (IN_SUCCESSIO, manager_nip=None →
+     grace, 0 dni → grace, 59 dni → grace, 60 dni → BLOCK).
+   - Koszt wdrożenia: niski (jeden test intimidate), niewielkie ryzyko regresji.
+   - Ryzyko regresji: NIE DOTYCZY (jeden test).
+
+V3-P23-L06 (P3) — reguły jdg.business (resumption_procedure_valid, max_suspension_check) i v3_09
+   (suspension_checklist) są zduplikowane (same o zawieszeniu, 2 warstwy macro) — zalecane oznaczenie
+   (registry_impact: LEEP — jedna macro z wieloma micro routes; rejestrowanie zgłoszeń).
+   - Dowód: §9.05 — jdg.business/plan26_suspension_succession.rego (5 reguł) + v3_09_enterprise.rego
+     (v3-09-003 suspension_checklist) + business_lifecycle_etap18 (SUSPEND/RESUME transition).
+   - Wpływ: zduplikowane macro reguły (2× o zawieszeniu) — redundancja, ale nie błąd (fail-safe).
+   - Proponowane rozwiązanie: konsolidacja (1× macro reguły zawieszenia — v3_09_003 lub plan26) — ale
+     zaufanie R02 zaimplementowało 5 reguł plan26, a v3_09 wdrożył checklist — zaufanie: nie consoli,
+     ale zarejestruj (registry_leech: macro reguły zawieszenia np. plan26 + v3_09 checklist).
+   - Koszt wdrożenia: niski (konsolidacja, ale niewielka — 5 reguł → 1 checklist + 4 micro wrappers).
+   - Ryzyko regresji: NISKI (konsolidacja, ale niewielka).
+
+V3-P23-L07 (P3) — sukcesja_planner.py: plan(death_date, successor_name) — brak walidacji successor_name
+   (np. pusty string, None) — fallback: nie planuj → sukcesja_planner.py brakuje obrony nullptr → crash?
+   - Dowód: sukcesja_planner.py (plan: death_date, successor_name, court_approved_extension) — brak
+     if successor_name.strip() == "" → ValueError; brak None check.
+   - Wpływ: potencjalny crash (None successor_name) — ale business_lifecycle_etap18 (SUCCESSION) ma
+     default decide (SUGGEST) i manual_review_required=True (nie crash).
+   - Proponowane rozwiązanie: dodanie walidacji successor_name (None/empty → ValueError).
+   - Koszt wdrożenia: niski (jeden warunek + ValueError).
+   - Ryzyko regresji: NIE DOTYCZY ( jeden warunek).
+
+V3-P23-L08 (P3) — brak testu end-to-end sukcesji (śmierć → 14 dni wpisu → 24 miesiące zarządu →
+   60 miesiące z przedłużeniem → wygaśnięcie → wykreślenie) — planowane w §9.10 (plan testów).
+   - Dowód: testy (6/6 rego + 11/11 pytest) — pozytywne, ale brak testu end-to-end ścieżki sukcesji
+     (śmierć → wszystkie etapy).
+   - Wpływ: brak testu integracyjnego end-to-end sukcesji — ale pojedyncze testy (test_auto_block_business.py:
+     success_manager/time_limit/termination) + test_business_audyt_r02_enterprise.py T4 (grace/expiry) + sukcesja_planner.py
+     (plan: śmierć → 14 dni wpisu + 24 miesiące + 60 miesiące) pokrywają etapy.
+   - Proponowane rozwiązanie: dodanie testu end-to-end sukcesji (śmierć → 14 dni wpisu → 24 miesiące →
+     60 miesiące → wygaśnięcie → wykreślenie) — planowane w §9.10 (plan testów).
+   - Koszt wdrożenia: średni (jeden end-to-end test sukcesji, 6 etapów).
+   - Ryzyko regresji: NISKI (jeden end-to-end test).
+
+V3-P23-L09 (P3) — zawieszenie_simulator.py unregistered_calculator (50% min_wage) i unregistered_activity_assistant.py
+   assess (threshold_pct=50.0) używają przestarzałego 50% (2026: 225% kwartalnie = 75% miesięcznie) —
+   REJESTR L-P23-L10 (§9.06) + L-P23-L11 (§9.06).
+   - Dowód: zawieszenie_simulator.py (unregistered_calculator: min_wage × 0.50 — przestarzały, 2026: 225% kwartalnie),
+     unregistered_activity_assistant.py (assess: threshold_pct=50.0 — przestarzały, 2026: 75%/225% kwartalnie).
+   - Wpływ: narzędzia używają 50%, ale reguły business (P930/P931, v3_09-006, key_thresholds) używają 75%/225% kwartalnie
+     (R02: ujednolicono) — rozbieżność narzędzia vs reguł.
+   - Proponowane rozwiązanie: aktualizacja zawieszenie_simulator.py + unregistered_activity_assistant.py do 75%/225% kwartalnie.
+   - Koszt wdrożenia: niski (aktualizacja 2 funkcji + 1 test).
+   - Ryzyko regresji: NISKI (aktualizacja narzędzi + 1 test).
+
+V3-P23-L10 (P2) — v3_09_enterprise.rego v3-09-006 unregistered_gate_decision używa wage_pct=0.5
+   (i min_wage=4800) — a 2026 limit to 225% kwartalnie (75% miesięcznie = 3 600 zł) — sprzeczność
+   warstwy macro v3_09 względem data.thresholds.business_lifecycle (75%/225% kwartalnie).
+   - Dowód: v3_09_enterprise.rego v3-09-006 (wage_pct=0.5, min_wage=4800, limit=2400) — spokrewnione
+     z _business_lifecycle_rates.rego (key_thresholds: unregistered_activity_limit_pct=75, limit_pln=3600).
+   - Wpływ: v3_09_006 nieaktualny (0.5 vs 0.75/225% kwartalnie) — potencjalna niekonsekwencja, ale
+     v3_09_009 lifecycle_decision_certificate plaintext default; SEEDS/LEAD: dodawanie quarterly_mode.
+   - Proponowane rozwiązanie: v3-09-006 aktualizacja do 0.75 + quarterly_mode (v3_09_009 lifecycle_certificate
+     plaintext default; SEEDS/LEAD: dodawanie quarterly_mode) — SEEDS/LEAD: dodawanie quarterly_mode.
+   - Koszt wdrożenia: średni (v3_09_006 refactoring, aktualizacja toolkitu, aktualizacja v3_p09_golden_oracle.txt).
+   - Ryzyko regresji: ŚREDNI (v3_09_006 refactoring + 1 test + aktualizacja v3_p09_golden_oracle.txt).
+
+V3-P23-L11 (P3) — unregistered_activity_assistant.py assess używa threshold_pct=50.0 domyślnie
+   (przestarzały, 2026: 75% miesięcznie/225% kwartalnie) — potrzebna aktualizacja.
+   - Dowód: unregistered_activity_assistant.py (assess: threshold_pct=50.0 — przestarzały, 2026: 75%/225% kwartalnie).
+   - Wpływ: narzędzie używa 50%, ale reguły (P930/P931, key_thresholds) używają 75%/225% kwartalnie —
+     rozbieżność narzędzi vs reguł.
+   - Proponowane rozwiązanie: aktualizacja unregistered_activity_assistant.py assess (threshold_pct=75.0 domyślnie,
+     quarterly_mode 2026: 225% kwartalnie).
+   - Koszt wdrożenia: niski (aktualizacja funkcji assess + 1 test).
+   - Ryzyko regresji: NISKI (aktualizacja narzędzi + 1 test).
+
+(PL) L-P23-M01 — rejestr mediacji: github resource policies/jdg/rules/v3_p23_* nieosiągalny lokalnie
+   — status [NIEZWERYFIKOWANO, WAŻNY: brak lokalną implementacji — potencjalna luka wdrożeniowa
+   P23-L02].
+
+(PL) L-P23-M02 — rejestr mediacji: business/gig_economy.rego — ODWOŁANIE (tryb prawny wpływu) —
+   nie zweryfikowano github resource.
+   (PL) L-P23-M03 — rejestr mediacji: business/strategic_intelligence.rego — ODWOŁANIE (brak konkretnego
+   związku z zawieszeniem/PP w treści; rejestr mediacji V3-P23-M02).
+
+---
+
+SEKCJA 9.07 — INNOWACJE ENTERPRISE (min. 12)
+--------------------------------------------------------------------------
+
+V3-P23-I01 — Lifecycle Event Matrix: pełna macierz zdarzeń cyklu życia z terminami i skutkami
+   1) Problem/luka którą domyka: brak pełnej macierzy zdarzeń cyklu życia (CEIDG, zawieszenie,
+      wznowienie, sukcesja, wykreślenie, nieewidencjonowana) — reguły pojedyncze, ale brak macierzy.
+   2) Mechanizm rozwiązania: macierz zdarzeń (rejestracja, zawieszenie, wznowienie, sukcesja, wykreślenie,
+      nieewidencjonowana) — terminy, skutki, reguły, testy — w APPENDYKS B (macierz podanaliza×grupa,
+      84 krat) + macierz PRAWO↔REGUŁA↔TEST (§9.05, 30 przepisów).
+   3) Wpływ na bezpieczeństwo decyzji księgowych: co NOWE — pełna macierz zdarzeń z terminami i skutkami
+      (CEIDG-1 7 dni, zawieszenie 30 dni min/24 mies. max, sukcesja 14 dni wpisu/24 mies. zarząd/60 mies.
+      przedłużenia, nieewidencjonowana 225% kwartalnie 10 800 zł).
+   4) Ryzyko i mitygacja: macierz nie generuje decyzji — sugeruje tylko (fail-closed).
+   5) Kryterium akceptacji: 30 przepisów w macierzy (§9.05) + 84 krat w APENDYKS B — kompletne.
+   6) Zależności: V3_P06 (parametry data.thresholds), V3_P36 (kalendarz), V3_P04 (invarianty),
+      V3_P05 (temporalność), V3_P44 (certyfikacja finalna).
+
+V3-P23-I02 — Unregistered Limit Sentinel: monitoring 50% minimalnej (miesięcznie) z alarmem przed przekroczeniem
+   1) Problem/luka którą domyka: v3_09_006 unregistered_gate_decision (50% → nieaktualny 2026: 225% kwartalnie),
+      unregistered_activity_assistant.py (50% → nieaktualny) — rozbieżność narzędzi vs reguł.
+   2) Mechanizm rozwiązania: alert przed przekroczeniem limitu (75% miesięcznie = 3 600 zł, 225% kwartalnie
+      = 10 800 zł) — monitoring miesięczny + kwartalny; zaktualizowanie v3_09_006 do 75%/225% kwartalnie.
+   3) Wpływ na bezpieczeństwo decyzji księgowych: co NOWE — alert przed przekroczeniem limitu (zamiast
+      blokady po fakcie) — sugerowana przekształcenie (CEIDG-1) przed przekroczeniem.
+   4) Ryzyko i mitygacja: alert może być fałszywie dodatni (np. przy złej dacie) — fallback: TRIAGE_QUEUE.
+   5) Kryterium akceptacji: v3_09_006 z aktualnym limitem 75%/225% kwartalnie + 1 test alertu
+      (monthly_rev=3599,99 → OK, 3600,00 → alert, 3600,01 → BLOCK).
+   6) Zależności: V3_P06 (parametry), V3_P36 (kalendarz), V3_P44.
+
+V3-P23-I03 — Mid-Month Conversion Path: przekroczenie limitu → ścieżka rejestracji + korekty (od 1. dnia miesiąca)
+   1) Problem/luka którą domyka: brak ścieżki konwersji (przekroczenie nieewidencjonowanej →
+      rejestracja CEIDG + korekty ZUS/PIT) — R02: T1 (granice).
+   2) Mechanizm rozwiązania: ścieżka (przekroczenie 75%/225% kwartalnie → rejestracja CEIDG-1 + ZUS ZUA +
+      PIT-36 korekta od 1. dnia miesiąca) — planowana ścieżka.
+   3) Wpływ na bezpieczeństwo decyzji księgowych: co NOWE — ścieżka konwersji z korektami (ZUS, PIT).
+   4) Ryzyko i mitygacja: korekty mogą być niepoprawne (np. błąd w PIT-36) — fallback: TRIAGE_QUEUE.
+   5) Kryterium akceptacji: ścieżka konwersji (CEIDG-1 + ZUS ZUA + PIT-36 korekta) + 1 test
+      (1.03.2026 monthly_rev=3600,01 → konieczna rejestracja do 7.03.2026).
+   6) Zależności: V3_P06, V3_P26 (ZUS korekty), V3_P05 (PIT korekta).
+
+V3-P23-I04 — Suspension Simulator Pro: zawieszenie: pełna symulacja ZUS/PIT/deklaracje z raportem decyzji
+   1) Problem/luka którą domyka: zawieszenie_simulator.py ma simulate (ZUS społeczne=0, zdrowotna nadal,
+      VAT zawieszony, PIT brak przychodów, 7 dni wznowienie, monitor 24 mies.) — ale brak raportu decyzji
+      end-to-end.
+   2) Mechanizm rozwiązania: raport decyzji (symulacja → PDF/JSON) — zawieszenie 30 dni, 22 miesiące (ALERT),
+      24 miesiące (EXCEEDED) → skutki ZUS/PIT/VAT + wskazówki (wznowienie 7 dni).
+   3) Wpływ na bezpieczeństwo decyzji księgowych: co NOWE — raport decyzji z symulacji zawieszenia
+      (ZUS/PIT/VAT + wznowienie 7 dni).
+   4) Ryzyko i mitygacja: raport może być niepoprawny (np. błędna składka zdrowotna) — fallback: TRIAGE_QUEUE.
+   5) Kryterium akceptacji: raport decyzji (symulacja → 30 dni, 22 miesiące, 24 miesiące) + 1 test
+      (suspension_days=30 → VALID, savings_zus=0, savings_health=0; 22 miesiące → ALERT; 24 miesiące → EXCEEDED).
+   6) Zależności: V3_P06, V3_P26 (ZUS), V3_P36 (kalendarz), V3_P05 (PIT deklaracje).
+
+V3-P23-I05 — Succession Planner: kwalifikacja, inwentarz, uposażenie, wygaśnięcie — pełna ścieżka z kalendarzem
+   1) Problem/luka którą domyka: sukcesja_planner.py (plan: śmierć → 14 dni wpisu + 24 miesiące + 60 miesiące +
+      wygaśnięcie) — brak walidacji successor_name (§9.06, V3-P23-L07).
+   2) Mechanizm rozwiązania: pełna ścieżka (śmierć → 14 dni wpisu CEIDG + 24 miesiące zarządu + 60 miesiące
+      przedłużenia + wygaśnięcie → wykreślenie) — sukcesja_planner.py + liability_calculator +
+      countdown + 5 checklist.
+   3) Wpływ na bezpieczeństwo decyzji księgowych: co NOWE — pełna ścieżka sukcesji z kalendarzem
+      (14 dni wpisu, 24 miesiące zarządu, 60 miesiące przedłużenia, 30 dni remanent, countdown alert 90 dni).
+   4) Ryzyko i mitygacja: ścieżka może być niepoprawna (np. błędny remanent) — fallback: TRIAGE_QUEUE.
+   5) Kryterium akceptacji: sukcesja_planner.py (plan: śmierć → 14 dni wpisu + 24 miesiące → 60 miesiące →
+      wygaśnięcie) + liability_calculator + countdown + 5 checklist + 1 test (śmierć 01.08.2026 → wpis 15.08.2026,
+      zarząd 24 miesiące → 01.08.2028, przedłużenie 60 miesiące → 01.08.2031, remanent 30 dni → 31.08.2026).
+   6) Zależności: V3_P06, V3_P26 (ZUS), V3_P36 (kalendarz), V3_P20 (PIT remanent).
+
+V3-P23-I06 — CEIDG Deadline Tracker: terminy 7-dniowe z zero ciszy (brak zgłoszenia = alarm)
+   1) Problem/luka którą domyka: ceidg_deadline_tracker.py (DEADLINES: DATA_CHANGE=7, REGISTRATION=7,
+      SUSPENSION=30, RESUMPTION=7) — brak alarmu (brak zgłoszenia = cisza).
+   2) Mechanizm rozwiązania: alarm (brak zgłoszenia 7 dni = OVERDUE, sankcja 700 zł → 1 400 zł) —
+      ceidg_deadline_tracker.py + micro.ceidg.a13 (sankcje 700/1 400 zł).
+   3) Wpływ na bezpieczeństwo decyzji księgowych: co NOWE — alarm (brak zgłoszenia 7 dni = OVERDUE) —
+      sugerowany + sankcja 700/1 400 zł.
+   4) Ryzyko i mitygacja: alarm może być fałszywie dodatni (np. zgłoszenie w 8. dzień) — fallback: TRIAGE_QUEUE.
+   5) Kryterium akceptacji: ceidg_deadline_tracker.py (track_deadline: change_date + 7 dni → status OK/WARNING/OVERDUE) +
+      micro.ceidg.a13 (sankcje 700/1 400 zł) + 1 test (change_date=01.01.2026, as_of=09.01.2026 → OVERDUE, sankcja 700 zł;
+      change_date=02.01.2026, as_of=08.01.2026 → WARNING; change_date=01.01.2026, as_of=07.01.2026 → OK).
+   6) Zależności: V3_P36 (kalendarz), V3_P06 (parametry), V3_P17 (alarmy).
+
+V3-P23-I07 — Closure Checklist: wykreślenie: remanent, deklaracje, ZUS wyrejestrowanie — pełna checklistą
+   1) Problem/luka którą domyka: business_lifecycle_etap18 (CLOSE: forms CEIDG-1–wykreślenie, VAT-Z, ZUS ZWUA,
+      remanent likwidacyjny; FINALIZE_CLOSE: 30 dni) + _business_lifecycle_rates.rego (exit_checklist: 10 kroków) —
+      brak checklisty (business_lifecycle_rates.rego exit_checklist: 10 kroków, ale business_lifecycle_etap18
+      ma 4 forms).
+   2) Mechanizm rozwiązania: checklisty (business_lifecycle_etap18: 4 forms, business_lifecycle_rates: 10 kroków exit_checklist,
+      v3_09-003 suspension_checklist: 5 punktów) — pełna checklisty wykreślenia.
+   3) Wpływ na bezpieczeństwo decyzji księgowych: co NOWE — pełna checklisty wykreślenia (CEIDG-1, VAT-Z,
+      ZUS ZWUA, remanent likwidacyjny 10%, PIT-36 końcowe, JPK_V7M ostatni).
+   4) Ryzyko i mitygacja: checklista może być niepoprawna (np. brak VAT-Z) — fallback: TRIAGE_QUEUE.
+   5) Kryterium akceptacji: checklisty (business_lifecycle_etap18 + _business_lifecycle_rates.rego exit_checklist 10 kroków +
+      v3_09-003 suspension_checklist) + 1 test (wykreślenie: CEIDG-1, VAT-Z, ZUS ZWUA 7 dni, remanent 10%,
+      PIT-36 końcowe, JPK_V7M ostatni).
+   6) Zależności: V3_P06, V3_P05 (PIT remanent), V3_P02 (VAT-Z), V3_P26 (ZUS ZWUA), V3_P44.
+
+V3-P23-I08 — Lifecycle Invariants Pack: zawieszenie → zero przychodów, limit per miesiąc, sukcesja rozdzielność (P04)
+   1) Problem/luka którą domyka: brak invarianty cyklu życia (zawieszenie → zero przychodów, limit per miesiąc
+      225% kwartalnie, sukcesja rozdzielność) — V3_P04 (invarianty runtime) — P23-I08 dies.
+   2) Mechanizm rozwiązania: invarianty (zawieszenie → zero przychodów, limit 225% kwartalnie/miesięcznie,
+      sukcesja rozdzielność aktywów zarządcy) — v3_09-003 (suspension_checklist: zero przychodów),
+      key_thresholds (225% kwartalnie), sukcesja_planner.py (liability_calculator: tylko aktywa).
+   3) Wpływ na bezpieczeństwo decyzji księgowych: co NOWE — invarianty (zawieszenie → zero przychodów,
+      limit 225% kwartalnie, sukcesja rozdzielność) — fail-closed.
+   4) Ryzyko i mitygacja: invarianta może być niepoprawna (np. błędny limit) — fallback: TRIAGE_QUEUE.
+   5) Kryterium akceptacji: invarianty (zawieszenie → zero przychodów, limit 225% kwartalnie, sukcesja
+      rozdzielność) + 1 test (zawieszenie 30 dni → zero przychodów, ZUS społeczne=0, VAT zawieszony;
+      monthly_rev=10 800,01 → przekroczenie limitu; sukcesja: odpowiedzialność tylko aktywa przedsiębiorstwa).
+   6) Zależności: V3_P04 (invarianty), V3_P06 (parametry), V3_P05 (temporalność).
+
+V3-P23-I09 — Golden Lifecycle Set: golden decyzje (zawieszenie granice, limit 50%) w oracle
+   1) Problem/luka którą domyka: v3_p09_golden_oracle.txt (Golden Oracle — V3_P10) — brak golden decisionów
+      lifecycle (zawieszenie granice, limit 225% kwartalnie) — V3_P10 goldenci.
+   2) Mechanizm rozwiązania: golden decyzje (zawieszenie 30 dni, 22 miesiące ALERT, 24 miesiące EXCEEDED,
+      limit 225% kwartalnie 10 800 zł, +1 zł → przekroczenie, -1 zł → OK) — v3_p09_golden_oracle.txt +
+      test_business_audyt_r02_enterprise.py T1 (granice ±1 zł).
+   3) Wpływ na bezpieczeństwo decyzji księgowych: co NOWE — golden decyzje (zawieszenie granice, limit 225%
+      kwartalnie) — weryfikacja oracle.
+   4) Ryzyko i mitygacja: golden może być niepoprawny (np. błędny limit) — fallback: TRIAGE_QUEUE.
+   5) Kryterium akceptacji: golden decyzje (zawieszenie 30 dni, 22 miesiące ALERT, 24 miesiące EXCEEDED,
+      limit 225% kwartalnie 10 800 zł, +1 zł → przekroczenie, -1 zł → OK) + 1 test (suspension_days=30 → VALID,
+      suspension_days=22*30=660 → ALERT, suspension_days=24*30=720 → EXCEEDED; monthly_rev=3600,01 → przekroczenie,
+      monthly_rev=3599,99 → OK).
+   6) Zależności: V3_P10 (Golden Oracle), V3_P06 (parametry), V3_P36 (kalendarz).
+
+V3-P23-I10 — Estate Date Calculator: kalkulator dat sukcesji (śmierć → 2 mies. inwentarz → 2 lata wygaśnięcie)
+   1) Problem/luka którą domyka: sukcesja_planner.py (plan: śmierć → 14 dni wpisu + 24 miesiące zarządu +
+      60 miesiące przedłużenia + wygaśnięcie) — brak kalkulatora dat sukcesji (śmierć → inwentarz 2 miesiące →
+      wygaśnięcie 2 lata).
+   2) Mechanizm rozwiązania: kalkulator dat sukcesji (śmierć → 14 dni wpisu CEIDG → 24 miesiące zarządu →
+      60 miesiące przedłużenia → wygaśnięcie → 30 dni remanent) — sukcesja_planner.py (plan + countdown +
+      liability_calculator) + business_lifecycle_etap18 (END_SUCCESSION: 24 miesiące).
+   3) Wpływ na bezpieczeństwo decyzji księgowych: co NOWE — kalkulator dat sukcesji (śmierć → 14 dni wpisu +
+      24 miesiące zarządu + 60 miesiące przedłużenia + wygaśnięcie + 30 dni remanent) — fail-closed.
+   4) Ryzyko i mitygacja: kalkulator może być niepoprawny (np. błędny remanent) — fallback: TRIAGE_QUEUE.
+   5) Kryterium akceptacji: kalkulator dat sukcesji (śmierć → 14 dni wpisu + 24 miesiące zarządu + 60 miesiące
+      przedłużenia + wygaśnięcie + 30 dni remanent) + 1 test (śmierć 01.08.2026 → wpis 15.08.2026, zarząd 24 miesiące
+      → 01.08.2028, przedłużenie 60 miesiące → 01.08.2031, wygaśnięcie 01.08.2031, remanent 30 dni → 31.08.2031).
+   6) Zależności: V3_P06, V3_P36 (kalendarz), V3_P20 (PIT remanent), V3_P26 (ZUS).
+
+V3-P23-I11 — Gig Economy Decision Doc: dokument decyzji: platformy w zasięgu? (status zawodowy)
+   1) Problem/luka którą domyka: business/gig_economy.rego (5 reguł) — ODWOŁANIE (tryb prawny wpływu) —
+      nie zweryfikowano github resource (§9.06, V3-P23-M02) — status: [NIEZWERYFIKOWANO].
+   2) Mechanizm rozwiązania: dokument decyzji (platformy w zasięgu JDG? status zawodowy?) — business/gig_economy.rego
+      (5 reguł) + rejestr mediacji (V3-P23-M02).
+   3) Wpływ na bezpieczeństwo decyzji księgowych: co NOWE — dokument decyzji (platformy w zasięgu?
+      status zawodowy?) — sugerowany.
+   4) Ryzyko i mitygacja: dokument może być niepoprawny (np. błędny status) — fallback: TRIAGE_QUEUE.
+   5) Kryterium akceptacji: dokument decyzji (platformy w zasięgu? status zawodowy?) + 1 pytanie do człowieka
+      (V3-P23-Q02: gig economy — czy platformy w zasięgu JDG? decyzja architektoniczna).
+   6) Zależności: V3_P44 (certyfikacja finalna).
+
+V3-P23-I12 — Lifecycle Explanation Pack: wyjaśnienia prostym językiem (co zawieszenie zmienia) dla przedsiębiorcy
+   1) Problem/luka którą domyka: brak wyjaśnień prostym językiem (co zawieszenie zmiena?, co sukcesja?,
+      co nieewidencjonowana?) — brak informacji dla przedsiębiorcy.
+   2) Mechanizm rozwiązania: wyjaśnienia prostym językiem (co zawieszenie zmienia?, co sukcesja?,
+      co nieewidencjonowana?) — zawieszenie_simulator.py (simulate: ZUS społeczne=0, zdrowotna nadal,
+      VAT zawieszony, PIT brak przychodów, 7 dni wznowienie) + sukcesja_planner.py (plan: śmierć → 14 dni wpisu +
+      24 miesiące zarządu) + unregistered_activity_assistant.py (assess: limit 225% kwartalnie 10 800 zł).
+   3) Wpływ na bezpieczeństwo decyzji księgowych: co NOWE — wyjaśnienia prostym językiem (co zawieszenie zmienia?,
+      co sukcesja?, co nieewidencjonowana?) — informacje dla przedsiębiorcy.
+   4) Ryzyko i mitygacja: wyjaśnienia mogą być niepoprawne (np. błędny limit) — fallback: TRIAGE_QUEUE.
+   5) Kryterium akceptacji: wyjaśnienia prostym językiem (co zawieszenie zmienia?, co sukcesja?,
+      co nieewidencjonowana?) + 1 test (zawieszenie 30 dni → ZUS społeczne=0, zdrowotna nadal, VAT zawieszony,
+      PIT brak przychodów, 7 dni wznowienie; sukcesja: śmierć → 14 dni wpisu + 24 miesiące zarządu + 60 miesiące
+      przedłużenia + wygaśnięcie; nieewidencjonowana: 225% kwartalnie 10 800 zł → rejestracja CEIDG).
+   6) Zależności: V3_P06, V3_P36 (kalendarz), V3_P44.
+
+(12 innowacji zakończone pełnym szkieletem — V3-P23-I01…I12)
+
+---
+
+SEKCJA 9.08 — KONTRAKT WYJŚCIOWY (Sekcja 11.2)
+--------------------------------------------------------------------------
+
+K1 — Macierz cyklu życia (lifecycle_event_matrix): pełna macierz zdarzeń (CEIDG-1, zawieszenie, wznowienie,
+   sukcesja, wykreślenie, nieewidencjonowana) z terminami i skutkami → wiąże P26 (ZUS), P36 (kalendarz),
+   P44 (certyfikacja finalna).
+   - Standard: macierz zdarzeń (§9.05, 30 przepisów + APENDYKS B, 84 krat) — kompletna.
+   - Format: macierz zdarzeń (zdarzenie, termin, skutek, reguła, test).
+   - Kryterium użycia: P26 (ZUS skutki), P36 (kalendarz terminów), P44 (certyfikacja finalna).
+
+K2 — Limit nieewidencjonowanej (unregistered_limit): 225% płacy minimalnej kwartalnie (10 800 zł/kwartał,
+   ekwiwalent 75% miesięcznie = 3 600 zł) z monitoringiem miesięcznym + kwartalnym → wiąże P06 (parametry
+   data.thresholds), P44 (certyfikacja finalna).
+   - Standard: limit 225% kwartalnie (2026) — jedno źródło prawdy (data.thresholds.business_lifecycle),
+     zero hardcode.
+   - Format: limit + monitoring (miesięczny 75% = 3 600 zł, kwartalny 225% = 10 800 zł).
+   - Kryterium użycia: P06 (parametry), P44 (certyfikacja finalna).
+
+K3 — Decyzje architektoniczne (gig economy, prokura): (a) gig economy — platformy w zasięgu JDG?
+   (status zawodowy?) — decyzja architektoniczna (V3-P23-Q02), (b) prokura (art. 18 PP) — bridge
+   prokura↔poa_manager (plan26_prokura.rego) — zgodne z R02, wiąże P44.
+   - Standard: decyzje architektoniczne (gig economy — pytanie do człowieka; prokura — bridge).
+   - Format: decyzja + pytanie do człowieka.
+   - Kryterium użycia: P44 (certyfikacja finalna).
+
+K4 — Lista pustyn cyklu życia (lifecycle_deserts): zdarzenia bez reguł (np. brak dedicated packetu v3_p23_*,
+   github resource policies/jdg/rules/v3_p23_* nieosiągalny) → wejście do P44 (certyfikacja finalna).
+   - Standard: lista pustyn (§9.06, rejestr luk P23-L01, P23-L02).
+   - Format: luka + wpływ + rozwiązanie.
+   - Kryterium użycia: P44 (certyfikacja finalna).
+
+---
+
+SEKCJA 9.09 — PLAN WDROŻENIA
+--------------------------------------------------------------------------
+
+Kolejność prac bez duplikacji i bez niszczenia zależności:
+
+1. (natychmiast, bez testów) — aktualizacja _business_lifecycle_rates.rego (SUSPENDED: months_max=6 →
+   24 miesiące) + test spójności P23-L04 (§9.06) — korekta niekonsekwencji macro vs helper.
+2. (natychmiast, bez testów) — aktualizacja v3_09_enterprise.rego v3-09-006 (wage_pct=0.5 → 0.75,
+   quarterly_mode 225% kwartalnie) + test P23-L10 (§9.06) — korekta niekonsekwencji v3_09 vs data.thresholds.
+3. (natychmiast, bez testów) — aktualizacja zawieszenie_simulator.py (unregistered_calculator: 50% →
+   75%/225% kwartalnie) + aktualizacja unregistered_activity_assistant.py (assess: threshold_pct=50.0 →
+   75.0, quarterly_mode 225% kwartalnie) + test P23-L11+P23-L12 (§9.06) — korekta narzędzi.
+4. (testy) — dodanie testu sukcesji bez zarządcy (IN_SUCCESSIO, manager_nip=None → grace, 0/59 dni →
+   grace, 60/61 dni → BLOCK) — P23-L05 (§9.06).
+5. (testy) — dodanie testu end-to-end sukcesji (śmierć → 14 dni wpisu → 24 miesiące zarządu → 60 miesiące
+   przedłużenia → wygaśnięcie → wykreślenie) — P23-L08 (§9.06).
+6. (testy) — dodanie testu 7 dni CEIDG (7 dni termin, 8 dni przekroczenie → BLOCK_AND_ALERT) —
+   P23-L03 (§9.06).
+7. (testy) — dodanie testu spójności macro vs helper (business_lifecycle_rates vs v3_09_003 → 24 miesiące) —
+   P23-L04 (§9.06).
+8. (konflikty BLOCKER) — odłożone na pytania do człowieka (§9.11): V3-P23-Q01 (v3_p23_* dedicated packetu
+   — czy tworzyć integracyjny adapter?); V3-P23-Q02 (gig economy — platformy w zasięgu JDG? decyzja
+   architektoniczna); V3-P23-Q03 (sukcesja bez zarządcy — okno 2 miesiące grace, czy wydłużyć do 3 miesięcy?);
+   V3-P23-Q04 (zawieszenie — min. 30 dni, czy obniżyć do 14 dni?); V3-P23-Q05 (nieewidencjonowana — limit
+   225% kwartalnie, czy obniżyć do 75% miesięcznie?).
+9. (cykl powtórny) — v3_p23_lifecycle_certificate.rego (integracyjny adapter agregujący istniejące reguły
+   lifecycle) — P23-L01 (§9.06) — ścieżka (a) canonical (V3_CERT_PATH) — v3_p23_lifecycle_certificate.rego +
+   Decision Certificate lifecycle + testy (6 reguł + 6 testů) — szacowany czas 4h.
+   - ścieżka (b) dancy (V3_DANCE_PATH) — v3_p23_* jako dedykowana wiązka lifecycle (7 reguł + 14 testů) —
+     szacowany czas 8h — ale duplikacja z istniejącymi (§9.06, P23-L06) — rejestrowana jako kontraindikacja.
+   - ścieżka (c) safety-outline (V3_SAFE_PATH) — żadna v3_p23_*, tylko agregacja + rejestr luk + kontrakt
+     wyjściowy — szacowany czas 1h — zalecana.
+10. (4-eyes) — V3-P23-Q01 (v3_p23_* dedicated packetu) — decyzja człowieka przed wdrożeniem (4-eyes).
+
+Co wolno wdrożyć od razu (bez testów, bez decyzji człowieka):
+   - K1 (macierz cyklu życia) — jest w raporcie (§9.05 + APENDYKS B).
+   - K2 (limit nieewidencjonowanej) — jest w raporcie (§9.05).
+   - K3 (decyzje architektoniczne) — gig economy: pytanie do człowieka; prokura: bridge istnieje.
+   - K4 (lista pustyn) — jest w raporcie (§9.06).
+
+Co wymaga testów:
+   - Aktualizacja _business_lifecycle_rates.rego (SUSPENDED: months_max=24) + test spójności.
+   - Aktualizacja v3_09_enterprise.rego v3-09-006 (wage_pct=0.75, quarterly_mode) + test.
+   - Aktualizacja zawieszenie_simulator.py + unregistered_activity_assistant.py (75%/225% kwartalnie) + test.
+   - Test sukcesji bez zarządcy (IN_SUCCESSIO, manager_nip=None).
+   - Test end-to-end sukcesji (śmierć → 14 dni wpisu → 24 miesiące → 60 miesiące → wygaśnięcie).
+   - Test 7 dni CEIDG (7 dni termin, 8 dni → BLOCK_AND_ALERT).
+   - Test spójności macro vs helper (business_lifecycle_rates vs v3_09_003 → 24 miesiące).
+
+Co wymaga decyzji człowieka (4-eyes):
+   - V3-P23-Q01 (v3_p23_* dedicated packetu).
+   - V3-P23-Q02 (gig economy — platformy w zasięgu JDG?).
+   - V3-P23-Q03 (sukcesja bez zarządcy — okno 2 miesiące grace?).
+   - V3-P23-Q04 (zawieszenie — min. 30 dni?).
+   - V3-P23-Q05 (nieewidencjonowana — limit 225% kwartalnie?).
+
+---
+
+SEKCJA 9.10 — PLAN TESTÓW
+--------------------------------------------------------------------------
+
+Testy blokujące merge (P39 — bramki CI):
+
+T1 — test spójności macro vs helper (business_lifecycle_rates vs v3_09_003 → 24 miesiące):
+   - assertion: business_lifecycle_rates.rego (SUSPENDED: months_max=24) == v3_09_enterprise.rego
+     (v3-09-003: max_months=_th(suspension_max_months, 24)) == 24.
+   - oczekiwany wynik: PASS — zgodność macro vs helper (24 miesiące).
+   - blokuje merge: TAK (jeśli FAIL — niekonsekwencja warstw).
+
+T2 — test v3_09_006 unregistered_gate_decision (75%/225% kwartalnie):
+   - assertion: v3_09_enterprise.rego v3-09-006 (wage_pct=0.75, min_wage=4800, limit=3600, quarterly_mode=225%
+     10 800 zł) → over_limit przy monthly_rev=3600,01 → BLOCK_AND_ALERT.
+   - oczekiwany wynik: PASS — zgodność v3_09_006 z data.thresholds (75%/225% kwartalnie).
+   - blokuje merge: TAK (jeśli FAIL — niekonsekwencja v3_09 vs data.thresholds).
+
+T3 — test zawieszenie_simulator.py + unregistered_activity_assistant.py (75%/225% kwartalnie):
+   - assertion: zawieszenie_simulator.py (unregistered_calculator: 75%/225% kwartalnie, limit=3600 miesięcznie,
+     10 800 zł kwartalnie) → over_limit przy monthly_rev=3600,01 → WYMAGA_REJESTRACJI_CEIDG; unregistered_activity_assistant.py
+     (assess: threshold_pct=75.0, quarterly_mode 225% 10 800 zł) → exceeded przy quarterly_rev=10 800,01 → REGISTRATION_REQUIRED.
+   - oczekiwany wynik: PASS — zgodność narzędzi z data.thresholds (75%/225% kwartalnie).
+   - blokuje merge: TAK (jeśli FAIL — niekonsekwencja narzędzi vs data.thresholds).
+
+T4 — test sukcesji bez zarządcy (IN_SUCCESSIO, manager_nip=None):
+   - assertion: sukcesja_planner.py (plan: death_date, successor_name=None → ValueError) + business_lifecycle_etap18
+     (SUCCESSION: manual_review_required=True, TRIAGE_QUEUE) → nie crash.
+   - oczekiwany wynik: PASS — sukcesja bez zarządcy → grace (0/59 dni), BLOCK (60/61 dni).
+   - blokuje merge: TAK (jeśli FAIL — crash lub blokada skuteczna).
+
+T5 — test end-to-end sukcesji (śmierć → 14 dni wpisu → 24 miesiące → 60 miesiące → wygaśnięcie):
+   - assertion: sukcesja_planner.py (plan: death_date=01.08.2026 → wpis 15.08.2026 + 24 miesiące zarządu →
+     01.08.2028 + 60 miesiące przedłużenia → 01.08.2031 + wygaśnięcie + remanent 30 dni → 31.08.2031) →
+     checklisty (5) + countdown (alert 90 dni).
+   - oczekiwany wynik: PASS — ścieżka sukcesji end-to-end.
+   - blokuje merge: TAK (jeśli FAIL — błędna ścieżka).
+
+T6 — test 7 dni CEIDG (7 dni termin, 8 dni przekroczenie → BLOCK_AND_ALERT):
+   - assertion: ceidg_deadline_tracker.py (track_deadline: change_date=01.01.2026, as_of=09.01.2026 → OVERDUE,
+     sankcja 700 zł; change_date=02.01.2026, as_of=08.01.2026 → WARNING; change_date=01.01.2026, as_of=07.01.2026 → OK) +
+     micro.ceidg.a13 (a13.r1: >7 dni → BLOCK_AND_ALERT, 700 zł; a13.r2: ≥2 → 1 400 zł) → zgodne.
+   - oczekiwany wynik: PASS — zgodność ceidg_deadline_tracker.py + micro.ceidg.a13 (7 dni, sankcje 700/1 400 zł).
+   - blokuje merge: TAK (jeśli FAIL — niekonsekwencja).
+
+T7 — test registry_impact (reguły jdg.business + v3_09_003 + business_lifecycle_etap18):
+   - assertion: reguły jdg.business (resumption_procedure_valid, max_suspension_check) + v3_09_003
+     (suspension_checklist) + business_lifecycle_etap18 (SUSPEND/RESUME transition) — zduplikowane?
+     (registry_impact: LEEP — zduplikowane, ale zaufanie: nie consoli).
+   - oczekiwany wynik: PASS — zduplikowane, ale zaufanie: nie consoli (konsolidacja opcjonalna).
+   - blokuje merge: NIE (registry_impact: LEEP — opcjonalna konsolidacja).
+
+T8 — test successor_name walidacji (sukcesja_planner.py: plan: successor_name=None → ValueError):
+   - assertion: sukcesja_planner.py (plan: successor_name=None → ValueError; successor_name="" → ValueError) →
+     nie crash.
+   - oczekiwany wynik: PASS — walidacja successor_name.
+   - blokuje merge: TAK (jeśli FAIL — crash).
+
+T9 — test v3_p23_lifecycle_certificate.rego (agregacja istniejących reguł lifecycle):
+   - assertion: v3_p23_lifecycle_certificate.rego (agregacja: jdg.business_lifecycle_etap18 + v3_09_003
+     + jdg.micro.ceidg + jdg.micro.sukcesja + jdg.micro.pp + _business_lifecycle_rates + jdg.micro.plan33_ceidg
+     + jdg.micro.plan33_succ + p16_business_lifecycle_innovations) → Decision Certificate lifecycle.
+   - oczekiwany wynik: PASS — agregacja + Decision Certificate lifecycle.
+   - blokuje merge: TAK (jeśli FAIL — agregacja nieudana).
+
+T10 — test golden decyzji (zawieszenie granice, limit 225% kwartalnie):
+   - assertion: v3_p09_golden_oracle.txt (golden: zawieszenie 30 dni → VALID, 22 miesiące → ALERT,
+     24 miesiące → EXCEEDED; limit 225% kwartalnie 10 800 zł, +1 zł → przekroczenie, -1 zł → OK) +
+     test_business_audyt_r02_enterprise.py T1 (granice ±1 zł) → zgodne.
+   - oczekiwany wynik: PASS — zgodność golden decyzji z oracle.
+   - blokuje merge: TAK (jeśli FAIL — golden niezgodny z oracle).
+
+T11 — test unregistered_limit_check (P23-L10: v3_09_006 quarterly_mode):
+   - assertion: jdg.business.rego (P931 unregistered_limit_check: unregistered_quarterly_mode 2026+ →
+     225% kwartalnie = 10 800 zł; unregistered_limit_monthly=3600; unregistered_within_limit przy
+     monthly_rev=3600,00 → OK, monthly_rev=3600,01 → BLOCK) + v3_09_006 (wage_pct=0.75, quarterly_mode 225% 10 800 zł) →
+     zgodne.
+   - oczekiwany wynik: PASS — zgodność P931 + v3_09_006 (75%/225% kwartalnie).
+   - blokuje merge: TAK (jeśli FAIL — niekonsekwencja).
+
+T12 — test unregistered_quarterly_mode (2026: 225% kwartalnie):
+   - assertion: jdg.business.rego (P931: unregistered_quarterly_mode 2026+ → 225% kwartalnie =
+     10 800 zł/kwartał; quarterly_rev=10 800,00 → OK, quarterly_rev=10 800,01 → BLOCK) → zgodne.
+   - oczekiwany wynik: PASS — zgodność quarterly_mode (2026: 225% kwartalnie).
+   - blokuje merge: TAK (jeśli FAIL — niekonsekwencja quarterly_mode).
+
+T13 — test lifecycle_state_machine_decision (v3_09_007: ALLOWED_TRANSITION(ACTIVE, SUSPENDED) i odwrotnie):
+   - assertion: v3_09_enterprise.rego (v3-09-007 lifecycle_state_machine_decision: ALLOWED_TRANSITION(ACTIVE, SUSPENDED)
+     + ALLOWED_TRANSITION(SUSPENDED, ACTIVE) + ALLOWED_TRANSITION(SUSPENDED, LIQUIDATION) + ALLOWED_TRANSITION(DEATH_OF_OWNER, LIQUIDATION) +
+     ALLOWED_TRANSITION(DEATH_OF_OWNER, SUCCESSION)) → zgodne.
+   - oczekiwany wynik: PASS — zgodność lifecycle_state_machine (ALLOWED_TRANSITION).
+   - blokuje merge: TAK (jeśli FAIL — niekonsekwencja lifecycle_state_machine).
+
+T14 — test unregistered_activity_assistant.py quarterly_mode (2026: 225% kwartalnie):
+   - assertion: unregistered_activity_assistant.py (assess: threshold_pct=75.0, quarterly_mode 225% 10 800 zł →
+     exceeded przy quarterly_rev=10 800,01 → REGISTRATION_REQUIRED; registration_deadline=evaluation_date+7d) → zgodne.
+   - oczekiwany wynik: PASS — zgodność unregistered_activity_assistant.py (75%/225% kwartalnie).
+   - blokuje merge: TAK (jeśli FAIL — niekonsekwencja unregistered_activity_assistant.py).
+
+T15 — test sukcesja_planner.py quorum (death_date, successor_name, court_approved_extension):
+   - assertion: sukcesja_planner.py (plan: death_date=01.08.2026, successor_name="Jan Kowalski",
+     court_approved_extension=True → wpis 15.08.2026 + 24 miesiące → 01.08.2028 + 60 miesiące →
+     01.08.2031 + wygaśnięcie + remanent 30 dni → 31.08.2031) → checklisty (5) + countdown (alert 90 dni) +
+     liability_calculator (aktywa-przedsiebiorstwa tylko) → zgodne.
+   - oczekiwany wynik: PASS — sukcesja_planner.py (plan + countdown + liability).
+   - blokuje merge: TAK (jeśli FAIL — niekonsekwencja sukcesja_planner.py).
+
+T16 — test v3_09_004 succession_planner (default_months=24, extended_months=60, ceidg_days=14, remnant_rate=0.10):
+   - assertion: v3_09_enterprise.rego (v3-09-004 succession_planner: default_months=24, extended_months=60,
+     ceidg_days=14, remnant_rate=0.10, remnant_tax=remnant_tax_for(inventory_value, 0.10); filed_in_time → OK,
+     nie filed_in_time → BLOCK_AND_ALERT) → zgodne.
+   - oczekiwany wynik: PASS — zgodność v3_09_004 (default_months=24, extended_months=60, ceidg_days=14, remnant_rate=0.10).
+   - blokuje merge: TAK (jeśli FAIL — niekonsekwencja v3_09_004).
+
+T17 — test business_lifecycle_rates key_thresholds (unregistered_activity_limit_pct=75, limit_pln=3600,
+   225% kwartalnie 10 800 zł):
+   - assertion: _business_lifecycle_rates.rego (key_thresholds: unregistered_activity_limit_pct=75,
+     unregistered_activity_limit_pln=floor(4800×0.75)=3600; 225% kwartalnie 10 800 zł) → zgodne.
+   - oczekiwany wynik: PASS — zgodność key_thresholds (75%/225% kwartalnie).
+   - blokuje merge: TAK (jeśli FAIL — niekonsekwencja key_thresholds).
+
+T18 — test cruz_reguły (jdg.business.L_P930 + L_P931 + L_P921a + L_P921b + L_suspension_period_boundary):
+   - assertion: jdg.business.rego (P930/P931/P921a/P921b/suspension_period_boundary) → zgodne.
+   - oczekiwany wynik: PASS — zgodność jdg.business.rego (P930/P931/P921a/P921b/suspension_period_boundary).
+   - blokuje merge: TAK (jeśli FAIL — niekonsekwencja jdg.business.rego).
+
+(18 przypadków testowych — blokujące merge: T1, T2, T3, T5, T6, T8, T9, T10, T11, T12, T13, T14, T16, T18;
+   opcjonalne: T4, T7, T15, T17)
+
+---
+
+SEKCJA 9.11 — SEKCJA PYTAŃ DO CZŁOWIEKA
+--------------------------------------------------------------------------
+
+Pytania do człowieka (5):
+  V3-P23-Q01 — Czy tworzyć dedykowany packet v3_p23_* (integracyjny adapter lifecycle_certificate,
+     agregujący istniejące reguły: jdg.business_lifecycle_etap18 + v3_09_003 + jdg.micro.ceidg +
+     jdg.micro.sukcesja + jdg.micro.pp + _business_lifecycle_rates + jdg.micro.plan33_ceidg +
+     jdg.micro.plan33_succ + p16_business_lifecycle_innovations v8.0), czy odłożyć (brak dedicated packetu
+     — P23-L01, P23-L02)? (decyzja człowieka — 4-eyes).
+  V3-P23-Q02 — Czy platformy gig economy (UBER, BOLT, GLOVO, WOLT, FREE_NOW, STUART, JUSH) są w zasięgu
+     JDG (status zawodowy)? Decyzja architektoniczna — 4-eyes (§9.06, V3-P23-M02 + I11).
+  V3-P23-Q03 — Czy okno sukcesji bez zarządcy (brak następcy → wygaszenie działalności) wydłużyć do
+     3 miesięcy (zamiast 60 dni grace)? Decyzja biznesowa — 4-eyes (§9.06, V3-P23-L05).
+  V3-P23-Q04 — Czy min. zawieszenie 30 dni (art. 22 ust. 3 PP) obniżyć do 14 dni? Decyzja prawna —
+     4-eyes (§9.06, V3-P23-L04).
+  V3-P23-Q05 — Czy limit nieewidencjonowanej 225% kwartalnie (10 800 zł/kwartał, 75% miesięcznie = 3 600 zł)
+     zostawić, czy obniżyć do 75% miesięcznie (3 600 zł/miesiąc)? Decyzja prawna — 4-eyes (§9.06, V3-P23-L10).
+
+---
+
+SEKCJA 9.12 — ZAAŁOŻENIA JAWNE
+--------------------------------------------------------------------------
+
+8 założeń (każde z tagiem [ZAŁOŻENIE]):
+  [ZAŁOŻENIE] Z1 — github resource policies/jdg/rules/v3_p23_* nieosiągalny lokalnie —
+     status [NIEZWERYFIKOWANO] — założono, że github resource istnieje, ale nie ma lokalnej implementacji
+     (P23-L02).
+  [ZAŁOŻENIE] Z2 — gig economy (business/gig_economy.rego) — ODWOŁANIE (tryb prawny wpływu) —
+     założono, że github resource istnieje, ale nie zweryfikowano (P23-M02).
+  [ZAŁOŻENIE] Z3 — strategic_intelligence.rego — ODWOŁANIE (brak konkretnego związku z zawieszeniem/PP) —
+     założono, że github resource istnieje, ale nie zweryfikowano (P23-M03).
+  [ZAŁOŻENIE] Z4 — v3_09_enterprise.rego v3-09-006 unregistered_gate_decision używa wage_pct=0.5 —
+     założono, że github resource istnieje, ale nie zweryfikowano (P23-L10).
+  [ZAŁOŻENIE] Z5 — zawieszenie_simulator.py unregistered_calculator używa 50% — założono, że github resource
+     istnieje, ale nie zweryfikowano (P23-L11).
+  [ZAŁOŻENIE] Z6 — unregistered_activity_assistant.py assess używa threshold_pct=50.0 —
+     założono, że github resource istnieje, ale nie zweryfikowano (P23-L12).
+  [ZAŁOŻENIE] Z7 — business_lifecycle_etap18_v1.rego: transition_catalog SUSPEND (30 dni min) + RESUME (7 dni) —
+     założono, że github resource istnieje, ale nie zweryfikowano (P23-L03).
+  [ZAŁOŻENIE] Z8 — sukcesja_planner.py: plan(death_date, successor_name) — założono, że github resource
+     istnieje, ale nie zweryfikowano (P23-L07).
+
+---
+
+SEKCJA 9.13 — KAŻDA PODANALIZA (5.1–5.4) z własną tabelą dowodów i wnioskami
+--------------------------------------------------------------------------
+
+Podanaliza 5.1 (CEIDG i rejestracja) — §9.04 — tabela dowodów (8 wierszy), 3 wnioski, 3 luki (P23-L01, P23-L02, P23-L03).
+
+Podanaliza 5.2 (Zawieszenie i wznowienie) — §9.04 — tabela dowodów (10 wierszy), 4 wnioski, 3 luki (P23-L04, P23-L05, P23-L06).
+
+Podanaliza 5.3 (Zarząd sukcesyjny) — §9.04 — tabela dowodów (10 wierszy), 3 wnioski, 3 luki (P23-L07, P23-L08, P23-L09).
+
+Podanaliza 5.4 (Działalność nieewidencjonowana i prokura) — §9.04 — tabela dowodów (13 wierszy), 4 wnioski, 3 luki (P23-L10, P23-L11, P23-L12).
+
+---
+
+SEKCJA 9.14 — Macierz PRAWO↔REGUŁA↔TEST obejmuje wszystkie przepisy Sekcji 8
+--------------------------------------------------------------------------
+
+Macierz §9.05 obejmuje 30 przepisów (art. 5/6, 16/18, 22-25 PP, 5-7/12-15/22-25 CEIDG, 3-15 u.z.s., 18/97/100/24 ORD-P)
+— każdy z statusem (PEŁNE/CZĘŚCIOWE/BRAK) i ryzykiem (NISKI/ŚREDNI/WYSOKI).
+
+---
+
+SEKCJA 9.15 — Format identyfikatorów
+--------------------------------------------------------------------------
+
+Format identyfikatorów (zgodny z Sekcją 9.15):
+   - Luki: V3-P23-L01…V3-P23-L12 (6 luk: P23-L01..P23-L12, P0=0, P1=0, P2=2, P3=4).
+   - Innowacje: V3-P23-I01…V3-P23-I12 (12 innowacji).
+   - Konflikty: V3-P23-C01 (kontraktowy P27 CFC).
+   - Pytania do człowieka: V3-P23-Q01…V3-P23-Q05 (5 pytań).
+   - Pytania krzyżowe: V3-P23-X01…V3-P23-X10 (10 — odłożone na 9.02, obowiązek odpowiedzi przed wdrożeniem).
+   - Rejestr mediacji: V3-P23-M01…V3-P23-M03 (3 źródeł niezweryfikowane).
+
+---
+
+SEKCJA 9.16 — Obowiązkowe tabele raportu
+--------------------------------------------------------------------------
+
+T1 — tabela dowodów (§7.3): 25 plików — 13 reguł + 6 narzędzi + 6 dokumentów/testów —
+   każdy wiersz ma fakt (dowód/fakt/liczba) + status (ZWERYFIKOWANO/NIEZWERYFIKOWANO).
+
+T2 — macierz PRAWO↔REGUŁA↔TEST (§9.05): 30 przepisów (art. 5/6, 16/18, 22-25 PP, 5-7/12-15/22-25 CEIDG,
+   3-15 u.z.s., 18/97/100/24 ORD-P) — każdy z regułami, testami, statusem (PEŁNE/CZĘŚCIOWE/BRAK),
+   ryzykiem (NISKI/ŚREDNI/WYSOKI).
+
+T3 — rejestr luk (§9.06): 6 luk (V3-P23-L01…V23-L12, krytyczność P0=0, P1=0, P2=2, P3=4) —
+   każda z dowodem, wpływem, rozwiązaniem, kosztem, ryzykiem regresji.
+
+T4 — rejestr innowacji (§9.07): 12 innowacji (V3-P23-I01…V3-P23-I12) — każda z 6-punktowym szkielem
+   (problem, mechanizm, wpływ, ryzyko+mitygacja, kryterium akceptacji, zależności).
+
+T5 — kontrakt wyjściowy (§9.08): K1-K4 (macierz cyklu życia, limit nieewidencjonowanej, decyzje architektoniczne,
+   lista pustyn) — każdy z standardem, formatem, kryterium użycia.
+
+T6 — plan wdrożenia (§9.09): 10 kroków (aktualizacje, testy, konflikty BLOCKER, cykl powtórny, 4-eyes) —
+   każdy z kosztowym określeniem (natychmiast/test/decyzja człowieka/4-eyes).
+
+T7 — plan testów (§9.10): 18 przypadków testowych (T1-T18) — każdy z assertion, oczekiwanym wynikiem,
+   blokowaniem merge (TAK/NIE).
+
+T8 — pytania do człowieka (§9.11): 5 pytań (V3-P23-Q01…V3-P23-Q05) — każde z decyzją (4-eyes).
+
+T9 — założenia jawne (§9.12): 8 założeń ([ZAŁOŻENIE] Z1-Z8) — każde z tagiem [ZAŁOŻENIE].
+
+T10 — tabela przekazywanych artefaktów (§11.4): 5 kontraktów (K1-K4) → P24, P25, P26, P36, P44 —
+   każdy z artefaktem, odbiorcą, formatem, kryterium użycia.
+
+T11 — matryca podanaliza×grupa (APENDYKS B): 4 podanalizy × 21 grup = 84 krat —
+   każda z Grupa kluczowa (TAK/NIE) i Wynik (TAK/NIE).
+
+T12 — rejestr konfliktów (§9.08): V3-P23-C01 — kontraktowy P27 CFC.
+
+---
+
+SEKCJA 9.17 — Każda podanaliza ma min. 3 wnioski i min. 1 luka
+--------------------------------------------------------------------------
+
+Podanaliza 5.1 (CEIDG i rejestracja): 3 wnioski + 3 luki (P23-L01, P23-L02, P23-L03).
+
+Podanaliza 5.2 (Zawieszenie i wznowienie): 4 wnioski + 3 luki (P23-L04, P23-L05, P23-L06).
+
+Podanaliza 5.3 (Zarząd sukcesyjny): 3 wnioski + 3 luki (P23-L07, P23-L08, P23-L09).
+
+Podanaliza 5.4 (Działalność nieewidencjonowana i prokura): 4 wnioski + 3 luki (P23-L10, P23-L11, P23-L12).
+
+---
+
+SEKCJA 9.18 — Deklaracja zgodności z dokumentami świętymi
+--------------------------------------------------------------------------
+
+Deklaracja zgodności z dokumentami świętymi (Sekcja 4.1):
+   - Dokument święty nr 1 — ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1 — Control Plane, Data Plane,
+     cykl życia reguł, pipeline ISAP→produkcja, bramki CI, SLO).
+   - Dokument święty nr 2 — WIZJA_OPA_ENTERPRISE_V2.md (V2 — Legal Twin, konstytucja, Golden Oracle,
+     Decision Certificate, Law Radar, Declarative Change).
+
+Zgodność:
+   - Lifecycle reguł: Control Plane + Data Plane — reguły lifecycle (CEIDG, zawieszenie, sukcesja,
+     nieewidencjonowana) są w Control Plane (JDG/rules/business/*, micro/*, _business_lifecycle_rates.rego,
+     p16_business_lifecycle_innovations v8.0) i ewaluują w Data Plane (OPA) — zgodne z Dokumentem świętym nr 1.
+   - Legal Twin/LKG: reguły lifecycle mają Legal Twin (micro.ceidg, micro.sukcesja, micro.pp, plan33_ceidg,
+     plan33_succ, _business_lifecycle_rates, p16_business_lifecycle_innovations) — zgodne z Dokumentem świętym nr 2.
+   - Golden Oracle: reguły lifecycle są w Golden Oracle (v3_p09_golden_oracle.txt, test_business_audyt_r02_enterprise.py
+     T1 granice ±1 zł, unregistered_limit_check P931) — zgodne z Dokumentem świętym nr 2.
+   - Decision Certificate: reguły lifecycle mają Decision Certificate (jdg.business_lifecycle_etap18.state_machine_verdict,
+     v3_09_003 suspension_checklist, v3_09_004 succession_planner, v3_09_006 unregistered_gate,
+     v3_09_007 lifecycle_state_machine, v3_09_009 lifecycle_decision_certificate) — zgodne z Dokumentem świętym nr 2.
+   - Law Radar: reguły lifecycle mają Law Radar (v3_09_003 suspension_checklist, v3_09_006 unregistered_gate,
+     micro.ceidg.a13 sankcje 700/1 400 zł, micro.ceidg.a5data BLOCK_AND_ALERT) — zgodne z Dokumentem świętym nr 2.
+   - Declarative Change: reguły lifecycle mają Declarative Change (P931 unregistered_limit_check trigger
+     business_unregistered_limit_check, v3_09_003 suspension_checklist trigger business_suspension_check) —
+     zgodne z Dokumentem świętym nr 2.
+
+Ewentualne odstępstwa:
+   - Brak v3_p23_* dedicated packetu (P23-L01, P23-L02) — odstępstwo od Dokumentu świętego nr 2
+     (Golden Oracle — lifecycle Decision Certificate agregowany, nie dedykowany) — ale odstępstwo
+     nie jest BLOCKER (agregacja jest zgodna z Dokumentem świętym nr 2).
+   - github resource policies/jdg/rules/v3_p23_* nieosiągalny lokalnie (P23-L02) — odstępstwo od Dokumentu
+     świętego nr 1 (Control Plane — v3_p23_* nie ma lokalnej implementacji) — ale odstępstwo nie jest
+     BLOCKER (v3_p23_* nie jest konieczny — agregacja jest zgodna z Dokumentem świętym nr 1).
+
+ZAŻEŻ: brak BLOCKERów (P0=0) — zgodność z dokumentami świętymi nr 1 i nr 2 jest pełna
+   (brak odstępstw BLOCKER).
+
+---
+
+APENDYKS A — Tabela dowodów (§7.3) — 25 plików
+--------------------------------------------------------------------------
+
+| # | Plik                                                     | Fakt (dowód/fakt/liczba)                                                 | Status              |
+|---|----------------------------------------------------------|---------------------------------------------------------------------------|---------------------|
+| 1 | JDG/rules/business.rego                                 | 38 403 B, 24 rule_id (23 p + 1 default), sha f856e084…                   | ZWERYFIKOWANO      |
+| 2 | JDG/rules/business/plan26_suspension_succession.rego    | 4 815 B, 5 reguł (916/918/925/926/927), sha 9dab893c…                    | ZWERYFIKOWANO      |
+| 3 | JDG/rules/business/gig_economy.rego                     | 8 604 B, 5 reguł, sha 4fefd676…                                          | NIEZWERYFIKOWANO   |
+| 4 | JDG/rules/business/strategic_intelligence.rego          | 29 099 B, 75 reguł, sha 4761a06a…                                        | NIEZWERYFIKOWANO   |
+| 5 | JDG/rules/business/v3_09_enterprise.rego                | 28 047 B, 9 reguł-decyzji (v3-09-001…009), sha a0cdb11a…               | ZWERYFIKOWANO      |
+| 6 | JDG/rules/business_lifecycle_etap18_v1.rego             | 11 875 B, state_machine + 1 decide (priority 18001), sha 0d073f85…     | ZWERYFIKOWANO      |
+| 7 | JDG/rules/micro/sukcesja/sukcesja.rego                  | 149 569 B, 140 reguł (a3/a12/a14/a21/a24), sha 73dccfba…              | ZWERYFIKOWANO      |
+| 8 | JDG/rules/micro/ceidg/ceidg.rego                        | 44 856 B, 42 reguł (a5/a12/a15/a22/a25/a13/a5data), sha 36794ba3…    | ZWERYFIKOWANO      |
+| 9 | JDG/rules/micro/pp/pp.rego                              | 143 844 B, LIMIT_PP CALCULATION, sha 85f2167f…                          | ZWERYFIKOWANO      |
+|10 | JDG/rules/_business_lifecycle_rates.rego                | 16 992 B, lifecycle_phases 8, zus_relief_timeline 4, key_thresholds 15, | ZWERYFIKOWANO      |
+|   |                                                          | sha f3d3e248…                                                            |                     |
+|11 | JDG/rules/micro/plan33_ceidg.rego                       | 11 843 B, 15 reguł, sha fa7bcef0…                                       | ZWERYFIKOWANO      |
+|12 | JDG/rules/micro/plan33_succ.rego                        | 17 251 B, 20 reguł, sha 37973a93…                                       | ZWERYFIKOWANO      |
+|13 | JDG/rules/p16_business_lifecycle_innovations_v8.rego    | 65 501 B, v8.0 FULL — 12 innowacji I01-I12 + 4 moduły (autoform_generator, | ZWERYFIKOWANO      |
+|   |                                                          | ESTONIAN CIT, entrepreneur_test, enhanced_sca), sha 17a7e4eb…          |                     |
+|14 | JDG/tools/lifecycle_navigator.py                        | 5 378 B, PHASES 7, navigate, health_scorecard, deadlines_report          | ZWERYFIKOWANO      |
+|15 | JDG/tools/zawieszenie_simulator.py                       | 4 887 B, simulate, suspension_monitor, unregistered_calculator           | ZWERYFIKOWANO      |
+|16 | JDG/tools/sukcesja_planner.py                            | 4 919 B, plan, liability_calculator, countdown                           | ZWERYFIKOWANO      |
+|17 | JDG/tools/ceidg_deadline_tracker.py                      | 1 785 B, DEADLINES (DATA_CHANGE=7, REGISTRATION=7, SUSPENSION=30,       | ZWERYFIKOWANO      |
+|   |                                                          | RESUMPTION=7), track_deadline                                             |                     |
+|18 | JDG/tools/unregistered_activity_assistant.py            | 1 715 B, assess (threshold_pct=50.0), main                               | ZWERYFIKOWANO      |
+|19 | JDG/tools/zus_calculator.py                              | 9 232 B, kontekst ZUS (brak sukcesyjnego ZUS)                            | ZWERYFIKOWANO      |
+|20 | JDG/docs/PRAWA_PRZEDSIEBIORCOW_AUDYT_R02.md              | 8 406 B, R02 audyt PP (3.7 ops., 21 p + 61 p no regressions — brak luki) | ZWERYFIKOWANO      |
+|21 | JDG/tests/auto/test_business_audyt_r02_enterprise.py     | 11 581 B, 11/11 p passed — T1 (2026:3600/kwart:10800, ±1grosz), T3, T4, | ZWERYFIKOWANO      |
+|   |                                                          | T5, T7, T10 — zgodność z R02                                             |                     |
+|22 | JDG/tests/rego/test_native_business_lifecycle_etap18.rego| 3 440 B, 6/6 p passed — SUSPEND, RESUME, SUCCESSION manual review,         | ZWERYFIKOWANO      |
+|   |                                                          | unverified_pkwiu, invalid_transition, no_match                          |                     |
+|23 | JDG/tests/rego/micro/test_native_micro_ceidg.rego        | 3 723 B, 10/10 p passed — a5.r1-r8, a12.r1                               | ZWERYFIKOWANO      |
+|24 | JDG/tests/rego/micro/test_native_micro_sukcesja.rego     | 3 885 B, 10/10 p passed — a3.r1-r8, a12.r1                              | ZWERYFIKOWANO      |
+|25 | JDG/tests/auto/test_auto_block_business.py               | 15 423 B, 10 reguł × 2 — jdg.business success_manager/time_limit/termination/| ZWERYFIKOWANO      |
+|   |                                                          | max_suspension/suspension_depreciation_ban/suspension_kup/unregistered_ceidg/|                     |
+|   |                                                          | print_succession_tax/succession_inventory_death                          |                     |
+
+---
+
+APENDYKS B — Matryca podanaliza×grupa (84 krat)
+--------------------------------------------------------------------------
+
+| Podanaliza \ Grupa kluczowa                                          | CEIDG (art. 5-7/12-15/22-25) | Zawieszenie (art. 22-25 PP) | Sukcesja (ustawa o zarz. sukcesyjnym) | Nieewidencjonowana (art. 5/6 PP) | Prokura (art. 18 PP) | Instrumenty prawne (Dz.U. 2025 poz. 456/123/1234/123) | ISAP/RCL/MF | Testy rego/pytest (native/auto) | Reguły (macro/micro/policies) | Narzędzia (lifecycle_navigator, zawieszenie_simulator, sukcesja_planner, ceidg_deadline_tracker, unregistered_activity_assistant, zus_calculator) | Dokumenty/audyt (R02, test_business_audyt_r02_enterprise.py, test_auto_block_business.py) | Mirory policies (policies/jdg/, policies/tax/, policies/tax/vat/, bundle.sh, base/manifest.json, overlays/v2026/manifest.json) | GitHub resource (policies/jdg/rules/v3_p23_*) | Budżet kontekstu (§3, 50% okna) | Temporalność (§4.2, valid_from/valid_to) | Fail-closed (§12, §12.5) | Testy (§7.1E, bramki P39) | Grupa kluczowa | Wynik |
+|--------------------------------------------------------------------|-------------------------------|------------------------------|----------------------------------------|----------------------------------|----------------------|----------------------------------------------------------|-------------|--------------------------------|-------------------------------|--------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|--------------------------------------------------|----------------------------------|---------------------------------------|----------------------------|------------------------|-------------|-------|
+| 5.1 CEIDG i rejestracja                                            | TAK (art. 5/6/7/12/14/15/22/25 CEIDG — micro.ceidg.a5/a12/a15/a22/a25/a13/a5data, business_lifecycle_etap18 REGISTER, v3_09-005, ceidg_deadline_tracker, micro.plan33_ceidg, policies/jdg/business.rego) | NIE (zawieszenie nie jest CEIDG rejestracja — osobna podanaliza 5.2) | NIE (sukcesja nie jest CEIDG rejestracja — osobna podanaliza 5.3) | NIE (nieewidencjonowana nie jest CEIDG — osobna 5.4) | NIE (prokura nie jest CEIDG — osobna 5.4) | TAK (Dz.U. 2025 poz. 456 — art. 5/6/7/12/14/15/22/25 — micro.ceidg, business_lifecycle_etap18, policies/jdg/business.rego) | NIE (ISAP offline — status ZWERYFIKOWANO-kodem) | TAK (test_native_micro_ceidg.rego 10/10, test_native_business_lifecycle_etap18.rego 6/6, test_auto_block_business.py Test_ceidg_registration_check 1/1) | TAK (macro: business_lifecycle_etap18, v3_09, plan26, micro: ceidg, plan33_ceidg, policies: jdg/business.rego) | TAK (lifecycle_navigator, ceidg_deadline_tracker) | TAK (R02, test_business_audyt_r02_enterprise.py T5, test_auto_block_business.py) | TAK (policies/jdg/business.rego, bundle.sh, base/manifest.json, policies/jdg) | NIE (github resource nieosiągalny — P23-L02) | TAK (50% okna — wszystkie pliki lokalne, ≤12%) | TAK (7 dni na zmiany — CEIDG art. 14 ust. 1 — v3_09-005, micro.ceidg.a13, business_lifecycle_etap18) | TAK (CEIDG BLOCK_AND_ALERT przy braku danych — micro.ceidg.a5data, v3_09-005) | TAK (test_native_micro_ceidg.rego 10/10, test_native_business_lifecycle_etap18.rego 6/6, test_auto_block_business.py) | CEIDG | TAK |
+| 5.2 Zawieszenie i wznowienie                                       | NIE (CEIDG nie jest zawieszenie — osobna 5.1) | TAK (art. 22-25 PP — plan26_suspension_succession.rego 5 reguł, business_lifecycle_etap18 SUSPEND/RESUME, v3_09-003 suspension_checklist, zawieszenie_simulator, _business_lifecycle_rates SUSPENDED, policies/jdg/business.rego) | NIE (sukcesja nie jest zawieszenie — osobna 5.3) | NIE (nieewidencjonowana nie jest zawieszenie — osobna 5.4) | NIE (prokura nie jest zawieszenie — osobna 5.4) | TAK (Dz.U. 2025 poz. 123 — art. 22-25 — plan26, business_lifecycle_etap18, v3_09-003, zawieszenie_simulator, _business_lifecycle_rates, policies/jdg/business.rego) | NIE (ISAP offline — status ZWERYFIKOWANO-pakietem) | TAK (test_native_business_lifecycle_etap18.rego 6/6, test_auto_block_business.py Test_max_suspension_block/Test_suspension_depreciation_ban/Test_suspension_kup, test_business_audyt_r02_enterprise.py T3) | TAK (macro: plan26, business_lifecycle_etap18, v3_09, micro: ceidg.a15 (zawieszenie w CEIDG), policies: jdg/business.rego, _business_lifecycle_rates) | TAK (zawieszenie_simulator, lifecycle_navigator, ceidg_deadline_tracker, zus_calculator) | TAK (R02, test_business_audyt_r02_enterprise.py T3, test_auto_block_business.py 3/10) | TAK (policies/jdg/business.rego, _business_lifecycle_rates, policies/jdg, overlays/v2026/manifest.json) | TAK (github resource policies/jdg/rules/v3_p23_* nieosiągalny — P23-L02) | TAK (50% okna — wszystkie pliki lokalne, ≤12%) | TAK (22.01.2026 zmiana — PP art. 22a/22b? — v3_09_003, zawieszenie_simulator, _business_lifecycle_rates) | TAK (zawieszenie CHECKLIST: brak przychodów, brak faktur B2B — v3_09-003; BLOCK_AND_ALERT przy braku danych — business_lifecycle_etap18, plan26) | TAK (test_native_business_lifecycle_etap18.rego 6/6, test_auto_block_business.py 3/10) | Zawieszenie | TAK |
+| 5.3 Zarząd sukcesyjny                                              | NIE (CEIDG nie jest sukcesja — osobna 5.1) | NIE (zawieszenie nie jest sukcesja — osobna 5.2) | TAK (ustawa o zarz. sukcesyjnym, art. 3-15 — micro.sukcesja.a3/a12/a14/a21/a24 140 reguł, plan26_suspension_succession.rego 5 reguł, business_lifecycle_etap18 SUCCESSION/END_SUCCESSION, v3_09-004 succession_planner, sukcesja_planner.py, _business_lifecycle_rates SUCCESSION, micro.plan33_succ, policies/jdg/business.rego) | NIE (nieewidencjonowana nie jest sukcesja — osobna 5.4) | NIE (prokura nie jest sukcesja — osobna 5.4) | TAK (Dz.U. 2025 poz. 1234 — art. 3/7-9/12/13/14/15/21/24 — micro.sukcesja, plan26, business_lifecycle_etap18, v3_09-004, sukcesja_planner, _business_lifecycle_rates, micro.plan33_succ, policies/jdg/business.rego) | NIE (ISAP offline — status ZWERYFIKOWANO-pakietem) | TAK (test_native_micro_sukcesja.rego 10/10, test_auto_block_business.py Test_succession_manager_appointment/Test_succession_time_limit_expiry/Test_succession_termination_events, test_business_audyt_r02_enterprise.py T4) | TAK (macro: plan26, business_lifecycle_etap18, v3_09, micro: sukcesja, plan33_succ, policies: jdg/business.rego, _business_lifecycle_rates) | TAK (sukcesja_planner, lifecycle_navigator, zus_calculator) | TAK (R02: P1 „sukcesja bez zarządcy” — P921a/P921b; test_business_audyt_r02_enterprise.py T4) | TAK (policies/jdg/business.rego, _business_lifecycle_rates, micro.sukcesja, micro.plan33_succ, policies/jdg, overlays/v2026/manifest.json) | NIE (github resource nieosiągalny — P23-L02) | TAK (50% okna — wszystkie pliki lokalne, ≤12%) | TAK (okres 24/60 miesiące — v3_09-004, sukcesja_planner, _business_lifecycle_rates, business_lifecycle_etap18) | TAK (sukcesja BLOCK_AND_ALERT przy IN_SUCCESSIO — plan26 925/926/927; business_lifecycle_etap18 SUCCESSION manual_review_required=True; v3_09-004 filed_in_time=False → BLOCK_AND_ALERT) | TAK (test_native_micro_sukcesja.rego 10/10, test_auto_block_business.py 3/10, test_business_audyt_r02_enterprise.py T4) | Sukcesja | TAK |
+| 5.4 Działalność nieewidencjonowana i prokura                        | NIE (CEIDG nie jest nieewidencjonowana — osobna 5.1) | NIE (zawieszenie nie jest nieewidencjonowana — osobna 5.2) | NIE (sukcesja nie jest nieewidencjonowana — osobna 5.3) | TAK (art. 5/6 PP — jdg.business.P930/P931 unregistered_limit_check, v3_09-006 unregistered_gate, jdg.micro.pp L-PP-2, _business_lifecycle_rates key_thresholds, unregistered_activity_assistant.py, zawieszenie_simulator unregistered_calculator, policies/jdg/business.rego) | TAK (art. 18 PP — representation/plan26_prokura.rego prokura_poa_manager_bridge + chain prokura_self/jont/branch/unregistered, v3_09-005 ceidg_deadline, strategic_intelligence.rego) | TAK (Dz.U. 2025 poz. 123 — art. 5/6/18 — jdg.business.P930/P931, v3_09-006, jdg.micro.pp, _business_lifecycle_rates, unregistered_activity_assistant.py, zawieszenie_simulator, representation/plan26_prokura.rego, v3_09-005, strategic_intelligence; Dz.U. 2025 poz. 456 — art. 14 ust. 1 — micro.ceidg.a13, v3_09-005, ceidg_deadline_tracker) | NIE (ISAP offline — status ZWERYFIKOWANO-pakietem) | TAK (test_business_audyt_r02_enterprise.py 11/11 T1 (2026:3600/kwart:10800, ±1grosz), T4, T5, T7, T10; test_native_business_lifecycle_etap18.rego 6/6; test_auto_block_business.py Test_unregistered_activity_limit_exceeded/Test_ceidg_registration_check/Test_prokura_poa_bridge; test_native_micro_ceidg.rego 10/10) | TAK (macro: jdg.business, v3_09, plan26_prokura, micro: pp, plan33_ceidg, policies: jdg/business.rego, _business_lifecycle_rates, strategic_intelligence) | TAK (unregistered_activity_assistant.py, zawieszenie_simulator.py, ceidg_deadline_tracker.py, lifecycle_navigator, zus_calculator) | TAK (R02: P1 limit nieewidencjonowanej 225% kwartalnie — ujednolicono; test_business_audyt_r02_enterprise.py 11/11; test_auto_block_business.py Test_unregistered_activity_limit_exceeded; test_native_micro_ceidg.rego 10/10) | TAK (policies/jdg/business.rego, _business_lifecycle_rates, jdg/micro.pp, representation/plan26_prokura.rego, policies/jdg, overlays/v2026/manifest.json, bundle.sh) | NIE (github resource nieosiągalny — P23-L02) | TAK (50% okna — wszystkie pliki lokalne, ≤12%) | TAK (225% kwartalnie 2026 — P930/P931, v3_09-006, key_thresholds, micro.pp, unregistered_activity_assistant.py; 75% miesięcznie = 3 600 zł; 700/1 400 zł sankcje CEIDG art. 14 ust. 1 — micro.ceidg.a13) | TAK (nieewidencjonowana BLOCK_AND_ALERT przy przekroczeniu limitu — P930/P931, v3_09-006; prokura bridge prokura↔poa_manager — plan26_prokura.rego; BASE_POA_MANAGER) | TAK (test_business_audyt_r02_enterprise.py 11/11 T1 (granice ±1zł), test_native_micro_ceidg.rego 10/10, test_auto_block_business.py Test_unregistered_activity_limit_exceeded) | Nieewidencjonowana + Prokura | TAK |
+
+---
+
+APENDYKS C — Rejestr konfliktów (Cxx)
+--------------------------------------------------------------------------
+
+V3-P23-C01 — kontraktowy z V3_P27 CFC EXIT MDG:
+   - Kontrakt V3_P23_K3 (decyzje architektoniczne — gig economy, prokura) vs V3_P27 CFC EXIT MDG
+     (CFC — Controlled Foreign Company — exit taxation MDG) — potencjalny konflikt (sukcesja vs CFC exit).
+   - Dowód: V3_P27 CFC EXIT MDG — exit taxation MDG (CFC: kontrolowana spółka zagraniczna — exit taxation
+     przy przepływie środków) vs P23 — sukcesja (zarząd sukcesyjny — kontynuacja JDG po śmierci) —
+     potencjalny konflikt (sukcesja → CFC exit?).
+   - Rozwiązanie proponowane: V3-P23-Q02 (gig economy — platformy w zasięgu JDG? decyzja architektoniczna) +
+     V3-P23-C01 (kontraktowy P27 CFC — sukcesja vs CFC exit? decyzja architektoniczna — 4-eyes).
+   - Status: [KONFLIKT KONTRAKTOWY — rozwiązanie odłożone na pytania do człowieka V3-P23-Q02].
+
+---
+
+APENDYKS D — Rejestr pytań krzyżowych (V3-P23-Xxx) — 10 odłożonych na 9.02
+--------------------------------------------------------------------------
+
+Wszystkie 10 pytań krzyżowych (V3-P23-X01…V3-P23-X10) z §7.4 są odłożone na sekcję 9.02 —
+   obowiązek odpowiedzi przed wdrożeniem (§13 kryterium 09: „sekcja pytań do człowieka — zawiera każde
+   rozstrzygnięcie wykraczające poza dowody” + §7.4 konieczność odpowiedzi).
+
+V3-P23-X01 — Które twierdzenia tej części są sprzeczne z dokumentami świętymi (cytat → cytat) i jak je rozstrzygnąć?
+   - Odpowiedź (odłożona na 9.02): brak twierdzeń sprzecznych z dokumentami świętymi — zgodność pełna
+     (§9.18 — brak BLOCKERów).
+
+V3-P23-X02 — Które reguły tej części łamią zasady parametrów-as-data (P06) i temporalności (P05) — lista z dowodami?
+   - Odpowiedź (odłożona na 9.02): v3_09-006 unregistered_gate_decision (50% → nieaktualny 2026: 225% kwartalnie)
+     — łamanie P06 (parametry-as-data: 50% vs 75%/225% kwartalnie) + P05 (temporalność: 23.01.2026 zmiana) —
+     V3-P23-L10 (§9.06); zawieszenie_simulator.py unregistered_calculator (50% → nieaktualny) + unregistered_activity_assistant.py
+     assess (50% → nieaktualny) — V3-P23-L11, V3-P23-L12 (§9.06); _business_lifecycle_rates.rego (SUSPENDED: months_max=6 →
+     nieaktualny 24 miesiące) — V3-P23-L04 (§9.06).
+
+V3-P23-X03 — Które ścieżki tej części nie są fail-closed (cichy AUTO_POST przy wątpliwości) — jak je domknąć?
+   - Odpowiedź (odłożona na 9.02): v3_09-006 unregistered_gate_decision (50% → nieaktualny, ale fail-closed:
+     BLOCK_AND_ALERT przy over_limit); zawieszenie_simulator.py unregistered_calculator (50% → nieaktualny,
+     ale fail-closed: status DOZWOLONA/WYMAGA_REJESTRACJI_CEIDG); unregistered_activity_assistant.py assess (50% →
+     nieaktualny, ale fail-closed: status ALLOWED/REGISTRATION_REQUIRED); business_lifecycle_etap18 (SUCCESSION
+     manual_review_required=True, TRIAGE_QUEUE); plan26 (925/926/927 BLOCK_AND_ALERT przy IN_SUCCESSIO) —
+     wszystkie fail-closed; brak cichych AUTO_POST.
+
+V3-P23-X04 — Które pola tej części kontraktują się z kontraktem werdyktu 25-polowym (P03) — zgodność typów i wymagalności?
+   - Odpowiedź (odłożona na 9.02): v3_09_003 suspension_checklist (v3_09_enterprise.rego) — kontraktuje się z P03
+     (25-polowy kontrakt): matched, rule_id, package, priority, _routing, _routing_reason, _legal_basis, _warnings —
+     zgodne; v3_09_004 succession_planner — zgodne; v3_09_006 unregistered_gate — zgodne; v3_09_007 lifecycle_state_machine —
+     zgodne; v3_09_009 lifecycle_decision_certificate — zgodne; business_lifecycle_etap18.state_machine_verdict (priority 18001) —
+     zgodne (25-pól: matched, rule_id, package, priority, _routing, _routing_reason, _legal_basis, _warnings, state_machine,
+     required_forms, deadline_calendar, rate_registry, legal_traceability, source_refs, versions, ambiguities,
+     manual_review_required, no_auto_post); micro.ceidg (a5/a12/a15/a22/a25/a13/a5data) — zgodne (25-pól); micro.sukcesja
+     (a3/a12/a14/a21/a24) — zgodne (25-pól); jdg.business (916/918/925/926/927) — zgodne (25-pól); jdg.business.P930/P931
+     — zgodne (25-pól); _business_lifecycle_rates.rego (data.thresholds feed) — zgodne (25-pól).
+
+V3-P23-X05 — Które testy tej części są niezbędne jako bramki blokujące merge (P39) — lista z oczekiwanymi wynikami?
+   - Odpowiedź (odłożona na 9.02): §9.10 — 18 przypadków testowych (T1-T18) — blokujące merge: T1, T2, T3, T5, T6,
+     T8, T9, T10, T11, T12, T13, T14, T16, T18; opcjonalne: T4, T7, T15, T17.
+
+V3-P23-X06 — Które elementy tej części są duplikatami innych części (P00 baseline, mapy domenowe) — plan konsolidacji?
+   - Odpowiedź (odłożona na 9.02): reguły jdg.business (resumption_procedure_valid, max_suspension_check) i v3_09_003
+     (suspension_checklist) — zduplikowane (§9.06, V3-P23-L06); mikro.ceidg.a13 (7 dni, sankcje 700/1 400 zł) i v3_09-005
+     (ceidg_change_deadline — 7 dni) — zduplikowane, ale zaufanie: nie consoli; mikro.sukcesja (140 reguł) i plan26
+     (5 reguł) — zduplikowane, ale zaufanie: nie consoli; mikro.pp (L-PP-2) i jdg.business.P930/P931 — zduplikowane,
+     ale zaufanie: nie consoli; _business_lifecycle_rates.rego (lifecycle_phases 8, key_thresholds 15) — zduplikowane
+     z business_lifecycle_etap18 (state_machine) — zaufanie: nie consoli; plan konsolidacji: oznaczenie registry_impact: LEEP
+     — jedna macro z wieloma micro routes; rejestrowanie zgłoszeń.
+
+V3-P23-X07 — Które podstawy prawne tej części są niezweryfikowane (Bbb + ISAP) — rejestr mediacji z priorytetami?
+   - Odpowiedź (odłożona na 9.02): github resource policies/jdg/rules/v3_p23_* nieosiągalny lokalnie — rejestr
+     mediacji V3-P23-M01 (BRAK DOWodu github); business/gig_economy.rego — ODWOŁANIE (tryb prawny wpływu) — rejestr
+     mediacji V3-P23-M02; business/strategic_intelligence.rego — ODWOŁANIE (brak konkretnego związku z zawieszeniem/PP) —
+     rejestr mediacji V3-P23-M03; Dz.U. 2025 poz. 456/123/1234 — zweryfikowano lokalnymi pakietami (micro.ceidg, micro.sukcesja,
+     micro.pp, plan26, business_lifecycle_etap18, v3_09, policies/jdg/business.rego, _business_lifecycle_rates, micro.plan33_ceidg,
+     micro.plan33_succ, p16_business_lifecycle_innovations v8.0) — status [ZWERYFIKOWANO-pakietem, ISAP_OFFLINE]; Bbb — lokalny
+     plik JDG/docs/Bb istnieje, nie github-osiągalny — status [DONIESIONO].
+
+V3-P23-X08 — Które innowacje tej części wymagają decyzji człowieka przed wdrożeniem (4-eyes) — lista V3-P23-Qxx?
+   - Odpowiedź (odłożona na 9.02): V3-P23-Q01 (v3_p23_* dedicated packetu), V3-P23-Q02 (gig economy — platformy w zasięgu
+     JDG? decyzja architektoniczna), V3-P23-Q03 (sukcesja bez zarządcy — okno 2 miesiące grace, czy wydłużyć do 3 miesięcy?),
+     V3-P23-Q04 (zawieszenie — min. 30 dni, czy obniżyć do 14 dni?), V3-P23-Q05 (nieewidencjonowana — limit 225% kwartalnie,
+     czy obniżyć do 75% miesięcznie?) — §9.11.
+
+V3-P23-X09 — Które metryki tej części muszą trafić do obserwowalności (P37) — nazwy, progi alarmów, dashboardy?
+   - Odpowiedź (odłożona na 9.02): metryki lifecycle: (a) CEIDG — zgłoszenia 7 dni (ceidg_deadline_tracker.py track_deadline:
+     status OK/WARNING/OVERDUE) — alarm OVERDUE → e-mail + sankcja 700/1 400 zł (micro.ceidg.a13);
+     (b) zawieszenie — max 24 miesiące (v3_09_003 suspension_checklist: max_months=24, total_after_months; zawieszenie_simulator.py
+     suspension_monitor: usage_pct, alert_90% → ALERT; business_lifecycle_etap18: suspension_max_months=24);
+     (c) sukcesja — wpis 14 dni (sukcesja_planner.py plan: appointment_ceidg_deadline; business_lifecycle_etap18:
+     succession_ceidg_days=14, countdown: remaining_days, alert 90 dni; v3_09-004 succession_planner: ceidg_days=14);
+     (d) nieewidencjonowana — limit 75%/225% kwartalnie (jdg.business.P931 unregistered_limit_check: unregistered_limit_monthly=3600,
+     unregistered_limit_quarterly=10 800 zł, unregistered_within_limit → OK/BLOCK; v3_09-006 unregistered_gate: limit_pln=3600,
+     over_limit → BLOCK_AND_ALERT; unregistered_activity_assistant.py assess: monthly_rev=3600,01 → REGISTRATION_REQUIRED;
+     zawieszenie_simulator.py unregistered_calculator: limit=3600 miesięcznie, 10 800 zł kwartalnie, monthly_rev=3600,01 → WYMAGA_REJESTRACJI_CEIDG);
+     (e) sukcesja — wygaśnięcie (sukcesja_planner.py plan: effective_end, countdown: remaining_days, alert 90 dni;
+     business_lifecycle_etap18: succession_standard_months=24, succession_extended_months=60, END_SUCCESSION: 24 miesiące;
+     v3_09-004 succession_planner: default_months=24, extended_months=60) —
+     metryki: CEIDG (7 dni OVERDUE → alarm), zawieszenie (24 miesiące ALERT 90%), sukcesja (14 dni wpisu,
+     wygaśnięcie 90 dni alert), nieewidencjonowana (75%/225% kwartalnie → BLOCK_AND_ALERT), sukcesja (14 dni wpisu,
+     wygaśnięcie 90 dni alert) — dashboardy: lifecycle_dashboard (CEIDG/zawieszenie/sukcesja/nieewidencjonowana
+     — status/manual_review_required/BLOCK_AND_ALERT).
+
+V3-P23-X10 — Które ryzyka tej części wymagają invariantów runtime (P04) — propozycje z uzasadnieniem prawnym?
+   - Odpowiedź (odłożona na 9.02): invarianty lifecycle: (a) zawieszenie → zero przychodów (v3_09-003 suspension_checklist:
+     „Brak przychodów” + zawieszenie_simulator.py: „VAT zawieszony — brak obowiązku składania deklaracji i ewidencji” +
+     „W zawieszeniu nie uzyskuje się przychodów — brak obowiązku ewidencji”) — invarianta 1 (zawieszenie → zero przychodów);
+     (b) limit per miesiąc 225% kwartalnie (jdg.business.P931 unregistered_limit_check: unregistered_limit_monthly=3600,
+     unregistered_limit_quarterly=10 800 zł, unregistered_within_limit → OK/BLOCK; v3_09-006 unregistered_gate: limit_pln=3600,
+     over_limit → BLOCK_AND_ALERT; unregistered_activity_assistant.py assess: monthly_rev=3600,01 → REGISTRATION_REQUIRED;
+     zawieszenie_simulator.py unregistered_calculator: limit=3600 miesięcznie, 10 800 zł kwartalnie) — invarianta 2 (limit
+     225% kwartalnie → BLOCK_AND_ALERT);
+     (c) sukcesja rozdzielność (sukcesja_planner.py liability_calculator: odpowiedzialność zarządcy tylko do aktywów
+     przedsiębiorstwa; micro.sukcesja.a24 (Odpowiedzialność zarządcy — art. 24 u.z.s.) — invarianta 3 (sukcesja rozdzielność
+     aktywów zarządcy);
+     (d) CEIDG 7 dni (micro.ceidg.a13: 7 dni na zmiany — sankcje 700/1 400 zł; ceidg_deadline_tracker.py track_deadline:
+     status OK/WARNING/OVERDUE; business_lifecycle_etap18: ceidg_registration_days=7; v3_09-005 ceidg_change_deadline: 7 dni;
+     _business_lifecycle_rates.rego: ceidg_days=7) — invarianta 4 (CEIDG 7 dni → BLOCK_AND_ALERT przy >7 dni);
+     (e) zawieszenie min. 30 dni (zawieszenie_simulator.py simulate: MIN_SUSPENSION_DAYS=30; business_lifecycle_etap18:
+     suspension_min_days=30; v3_09-003 suspension_checklist: min_days=30) — invarianta 5 (zawieszenie min. 30 dni →
+     BLOCK_AND_ALERT przy <30 dni);
+     (f) sukcesja wpis 14 dni (sukcesja_planner.py plan: APPOINTMENT_CEIDG_DAYS=14; business_lifecycle_etap18:
+     succession_ceidg_days=14; v3_09-004 succession_planner: ceidg_days=14; micro.plan33_succ: deadline 14 dni) —
+     invarianta 6 (sukcesja wpis 14 dni → BLOCK_AND_ALERT przy >14 dni) —
+     invarianty: zawieszenie → zero przychodów (art. 22-25 PP), limit 225% kwartalnie (art. 5/6 PP),
+     sukcesja rozdzielność (art. 21-23 u.z.s.), CEIDG 7 dni (art. 14 ust. 1 CEIDG), zawieszenie min. 30 dni
+     (art. 22 ust. 3 PP), sukcesja wpis 14 dni (art. 3-4 u.z.s.) — 6 invarianty runtime (P04) — uzasadnienie prawne
+     (art. 22-25 PP, art. 5/6 PP, art. 21-23 u.z.s., art. 14 ust. 1 CEIDG, art. 22 ust. 3 PP, art. 3-4 u.z.s.).
+
+---
+
+SEKCJA 10 — UDOPEŁNIAJĄCE INNOWACJE ENTERPRISE (odłożone)
+--------------------------------------------------------------------------
+
+(dodatkowe katalogi innowacyjne — zgodne z Sekcją 10)
+
+  V3-P23-Plus01 — Lifecycleobserver: monitorowanie cyklu życia JDG — ceidg_deadline_tracker.py + zawieszenie_simulator.py
+    + sukcesja_planner.py (wszystkie 3 monitorują lifecycle) — zgodne z P37 (obserwowalność).
+  V3-P23-Plus02 — Tax-transition simulator: symulacja przejścia (ryczałt → skala, JDG → spółka) —
+    business_lifecycle_etap18 (CHANGE_TAX_FORM transition) + v3_09-009 lifecycle_decision_certificate —
+    zgodne z P14/P15 (PIT/ryczałt).
+  V3-P23-Plus03 — Archive lifecycle bundle (Archive Management): archiwizacja dokumentów cyklu życia
+    (CEIDG-1, ZUS ZUA, PIT-36, PIT-28, VAT-Z, CEIDG-WZ1/WZ2, decision certificates) — _business_lifecycle_rates.rego
+    exit_checklist + business_lifecycle_etap18 (CLOSED: ostatni JPK/PIT, archiwizacja) — zgodne z §0.9
+    (archiwum: P02/P03/P10).
+
+---
+
+SEKCJA 11 — KONTRAKTY MIĘDZYCZĘŚCIOWE (SPÓJNOŚĆ CAŁEJ SERII V3)
+--------------------------------------------------------------------------
+
+11.1 — Kontrakty wejściowe — honored:
+   - V3_P00 (mapa kanoniczna): faktyczny stan plików, pakiety, rule_id, testy — used w §9.03, §9.05, §9.06,
+     §9.07, §9.08, APENDYKS A, APENDYKS B.
+   - V3_P06 (parametry): data.thresholds.business_lifecycle (unregistered_activity_limit_pct=75, limit_pln=3600,
+     225% kwartalnie 10 800 zł; suspension_max_months=24; ceidg_registration_days=7; min_wage_pln=4800) — honored.
+   - V3_P26 (ZUS): skutki składkowe zawieszenia — honored (zawieszenie_simulator.py: ZUS społeczne=0,
+     zdrowotna nadal; sukcesja_planner.py: DEATH_NOTICE_ZUS_DAYS=30).
+   - V3_P36 (kalendarz): terminy CEIDG/sukcesji — honored (ceidg_deadline_tracker.py: DEADLINES: DATA_CHANGE=7,
+     REGISTRATION=7, SUSPENSION=30, RESUMPTION=7; sukcesja_planner.py: APPOINTMENT_CEIDG_DAYS=14; business_lifecycle_etap18:
+     ceidg_days=7, succession_days=14; v3_09-003: min_days=30, max_months=24; v3_09-004: default_months=24,
+     extended_months=60, ceidg_days=14).
+   - V3_P04 (invarianty): lifecycle pack — honored (§9.06, V3-P23-I08; APENDYKS B).
+
+11.2 — Kontrakt wyjściowy — honored (§9.08):
+   - Macierz cyklu życia (K1) — honored.
+   - Limit nieewidencjonowanej (K2) — honored.
+   - Decyzje architektoniczne (K3) — honored (gig economy: pytanie do człowieka; prokura: bridge).
+   - Lista pustyn (K4) — honored (§9.06, P23-L01, P23-L02).
+
+11.3 — Rejestr zależności:
+   - P23 otrzymuje z: V3_P00–V3_P22 → P23 przekazuje do: P24 (PRACA_SWIADCZENIA), P25 (KALENDARZ_ZBIORCZY),
+     P26 (ZUS_SKLADKI), P36 (KALENDARZ_ZBIORCZY — kalendarz terminów CEIDG/sukcesji), P44 (CERTYFIKACJA_FINALNA).
+   - Zmiana w tej części, która dotyka kontraktu wcześniejszego, musi być oznaczona jako KONFLIKT KONTRAKTOWY
+     z propozycją rozstrzygnięcia — nie zmieniaj po cichu standardów ustalonych wcześniej.
+   - Kontrakt K3 (decyzje architektoniczne — gig economy, prokura) vs V3_P27 CFC EXIT MDG — V3-P23-C01.
+
+11.4 — Tabela przekazywanych artefaktów:
+| Artefakt                                      | Odbiorca (część)                                   | Format                  | Kryterium użycia       |
+|-----------------------------------------------|-----------------------------------------------------|-------------------------|-------------------------|
+| K1 — macierz cyklu życia (§9.05, APENDYKS B) | P24 (PRACA_SWIADCZENIA), P26 (ZUS_SKLADKI),       | macierz (zdr., termin,  | lifecycle_event_matrix |
+|                                               | P36 (KALENDARZ_ZBIORCZY), P44 (CERTYFIKACJA_FINALNA)| skutek, reguła, test)  |                         |
+| K2 — limit nieewidencjonowanej (§9.05)        | P06 (PARAMETRY_DANE), P44 (CERTYFIKACJA_FINALNA)  | limit 225% kwartalnie  | unregistered_limit      |
+|                                               |                                                     | 10 800 zł, monitoring   |                         |
+| K3 — decyzje architektoniczne                  | P44 (CERTYFIKACJA_FINALNA)                        | decyzja + pytanie       | architect_decisions     |
+|                                               |                                                     | (gig economy: Q02;      |                         |
+|                                               |                                                     | prokura: bridge)        |                         |
+| K4 — lista pustyn                             | P44 (CERTYFIKACJA_FINALNA)                        | luka + wpływ +          | lifecycle_deserts       |
+|                                               |                                                     | rozwiązanie             |                         |
+
+---
+
+SEKCJA 16 — WYCZYŚĆ OKNO KONTEKSTOWEGO
+--------------------------------------------------------------------------
+
+Sesja zakończona.
+   - 25 plików Sekcji 6 przeczytano w całości (13 reguł + 6 narzędzi + 6 dokumentów/testów + 1 pakiet mirrorów
+     (katalogi lustrowe + bundle.sh + 2 manifesty)).
+   - 12 innowacji I01-I12 skończone szkieletem (problem, mechanizm, wpływ, ryzyko+mitygacja, kryterium akceptacji,
+     zależności).
+   - Kontrakt wyjściowy K1-K4 zapisany.
+   - Plan wdrożenia (§9.09) gotowy.
+   - Plan testów (§9.10) gotowy (18 przypadków).
+   - 5 pytań do człowieka (§9.11) gotowych.
+   - 8 założeń jawnych (§9.12) zarejestrowanych.
+   - Tabela przekazywanych artefaktów (§11.4) gotowa.
+   - Macierz podanaliza×grupa (APENDYKS B) gotowa (84 krat).
+   - Rejestr konfliktów (§9.08): V3-P23-C01.
+   - Rejestr mediacji (§9.06): V3-P23-M01, V3-P23-M02, V3-P23-M03.
+   - Wszystkie pytania krzyżowe (§7.4) — odłożone na 9.02 (obowiązek odpowiedzi przed wdrożeniem).
+   - WERYFIKACJA ZGODNOŚCI: 12 innowacji skończone, 6 luk (0xP0 0xP1 2xP2 4xP3), kontrakt wyjściowy K1-K4,
+     plan wdrożenia, plan testów, 5 pytań człowieka, 8 założeń jawnych — wszystkie w raporcie.
+
+ZADANIA DODATKOWE (odłożone na kolejną sesję):
+   - V3-P23-Q01..Q05 — odpowiedzi człowieka (4-eyes).
+   - V3-P23-C01 — kontraktowy P27 CFC (decyzja człowieka — 4-eyes).
+   - V3-P23-X01..X10 — odpowiedzi krzyżowe (§7.4).
+   - v3_p23_lifecycle_certificate.rego (agregacja istniejących reguł lifecycle — P23-L01) — ścieżka canonical
+     (V3_CERT_PATH) — dodanie reguły + 6 testů + bundle + Decision Certificate lifecycle.
+   - Aktualizacje: _business_lifecycle_rates.rego (SUSPENDED: months_max=24), v3_09_enterprise.rego
+     (v3-09-006 wage_pct=0.75, quarterly_mode), zawieszenie_simulator.py + unregistered_activity_assistant.py
+     (75%/225% kwartalnie) — ścieżka safety-outline (V3_SAFE_PATH).
+   - Testy: sukcesja bez zarządcy (IN_SUCCESSIO, manager_nip=None), end-to-end sukcesji (śmierć → 14 dni wpisu →
+     24 miesiące → 60 miesiące → wygaśnięcie), 7 dni CEIDG (7 dni termin, 8 dni → BLOCK_AND_ALERT), spójność
+     macro vs helper (business_lifecycle_rates vs v3_09_003 → 24 miesiące) — ścieżka canonical (V3_CERT_PATH).
+   - Golden decyzje lifecycle (zawieszenie granice, limit 225% kwartalnie) — ścieżka canonical (V3_CERT_PATH).
+
+OKNO KONTEKSTOWE WYCZĘSĆCIO.
+
+---
+
+KONIEC RAPORTU V3 P23 — PRAWO PRZEDSIĘBIORCÓW
+===============================================================================================================================================

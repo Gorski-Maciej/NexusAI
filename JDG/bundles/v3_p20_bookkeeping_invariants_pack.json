@@ -1,5 +1,12 @@
 {
   "innovation": "V3-P20-I11",
   "gate": "PASS",
-  "version": "2026-09"
+  "version": "2026-09",
+  "rule_id": "jdg.v3_p20_ksiegowosc_pkpir_uor.bookkeeping_invariants_pack",
+  "analysis": "bookkeeping_invariants_pack",
+  "evidence_files": ["JDG/rules/v3_p20_ksiegowosc_pkpir_uor_enterprise.rego"],
+  "test_report": "tests/auto/test_v3_p20_ksiegowosc_pkpir_uor_enterprise.py",
+  "status": "PASS",
+  "ledger": "v3_campaign_ledger.json",
+  "notes": "V3-P20-I11: invariants pack — PKPiR=PIT=JPK, bilans zbalansowany."
 }
