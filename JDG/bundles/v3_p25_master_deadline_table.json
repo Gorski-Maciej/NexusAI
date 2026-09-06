@@ -1,14 +1,14 @@
 {
   "innovation": "V3-P25-I01",
-  "generated_at": "2026-09-05T21:24:52+00:00",
-  "gate": "FAIL",
+  "generated_at": "2026-09-06T12:46:24+00:00",
+  "gate": "PASS",
   "metrics": {
     "rule": true,
     "rows": 17,
     "schema": true,
     "fail_closed": true,
     "thresholds": true,
-    "wired": false
+    "wired": true
   },
   "checks": [
     {
@@ -38,7 +38,7 @@
     },
     {
       "name": "main_jdg_wiring",
-      "status": "FAIL",
+      "status": "OK",
       "detail": "import + rejestr + final_verdict_p89"
     }
   ],

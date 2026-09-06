@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-08-27T11:42:32.380809+00:00",
-  "rules_files": 490,
-  "policies_files": 564,
+  "generated_at": "2026-09-06T13:25:56.685168+00:00",
+  "rules_files": 500,
+  "policies_files": 580,
   "missing_in_policies": [],
   "extra_in_policies": [
     "data/thresholds_sc.rego",
@@ -37,6 +37,12 @@
     "jdg/risk.rego",
     "jdg/rodo.rego",
     "jdg/routing.rego",
+    "jdg/rules/v3_p13_vat_deductions_enterprise.rego",
+    "jdg/rules/v3_p14_pit_reliefs_enterprise.rego",
+    "jdg/rules/v3_p16_ksef_jpk_enterprise.rego",
+    "jdg/rules/v3_p19_pcc_akcyza_bdo_enterprise.rego",
+    "jdg/rules/v3_p20_ksiegowosc_pkpir_uor_enterprise.rego",
+    "jdg/rules/v3_p25_kalendarz_zbiorczy_enterprise.rego",
     "jdg/temporal.rego",
     "jdg/validation.rego",
     "jdg/vat/deductions.rego",

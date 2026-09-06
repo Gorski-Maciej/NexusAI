@@ -1,0 +1,47 @@
+{
+  "innovation": "V3-P26-I11",
+  "generated_at": "2026-09-06T07:30:33+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "scenarios": {
+      "S1_form_change_midyear": "TRIAGE_QUEUE",
+      "S2_suspension_q4": "TRIAGE_QUEUE",
+      "S3_tier_breach_november": "BLOCK_AND_ALERT"
+    },
+    "required": 3,
+    "chaos_contract": true
+  },
+  "checks": [
+    {
+      "name": "stress_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p26_zus_skladki.stress_lab: True"
+    },
+    {
+      "name": "scenario_completeness",
+      "status": "OK",
+      "detail": "komplet 3 scenariuszy z zus26"
+    },
+    {
+      "name": "routing_assertions",
+      "status": "OK",
+      "detail": "niezgodny routing scenariusza = BLOCK (asercja fail-closed)"
+    },
+    {
+      "name": "chaos_contract",
+      "status": "OK",
+      "detail": "chaos-test prawny K10 (nigdy cichy AUTO_POST)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p90"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Stress lab wiąże P04 (chaos fail-closed), P09 (zmiana formy) i P44",
+    "rule": "brak kompletu / niezgodny routing = BLOCK"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "innovation": "V3-P26-I10",
+  "generated_at": "2026-09-06T07:32:42+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "mirror_ok": true,
+    "min_wage_2026": 4800,
+    "preferential_base": 1440.0
+  },
+  "checks": [
+    {
+      "name": "min_wage_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p26_zus_skladki.minimum_wage_integration: True"
+    },
+    {
+      "name": "feed_gate",
+      "status": "OK",
+      "detail": "brak feedu minimalnej = BLOCK (podstawa niepoliczalna)"
+    },
+    {
+      "name": "drift_triage",
+      "status": "OK",
+      "detail": "dryf ≥1% od referencji = TRIAGE (feed P06 do odświeżenia)"
+    },
+    {
+      "name": "base30_as_data",
+      "status": "OK",
+      "detail": "preferential_base_30pct w data.thresholds.zus (ADR-002)"
+    },
+    {
+      "name": "mirror_30pct",
+      "status": "OK",
+      "detail": "30% × 4800 = 1440.00 (referencja 1440,00)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p90"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Feed P06 (minimalna) wiąże I02 (automat ulg) i P44; preferencyjna = 30% minimalnej",
+    "rule": "brak feedu = BLOCK; dryf ≥1% = TRIAGE"
+  }
+}

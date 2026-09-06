@@ -167,13 +167,13 @@
   },
   "golden_replay": {
     "valid": true,
-    "verdicts": 30,
-    "replays": 30
+    "verdicts": 31,
+    "replays": 31
   },
   "syntax": {
     "files_checked": 22,
     "syntax_errors": [],
     "syntax_ok": true
   },
-  "generated_at": "2026-08-29T09:08:25.189320+00:00"
+  "generated_at": "2026-09-06T12:15:44.418724+00:00"
 }

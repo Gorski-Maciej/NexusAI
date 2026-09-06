@@ -187,7 +187,7 @@ test_roadmap_salary_tax_optimized_pit2 {
 
 test_roadmap_salary_tax_optimized_tax_free {
     result := data.jdg.p19_hr_swiadczenia_innovations.salary_calculator_tax_optimized with input as {"jdg_entrepreneur": {"p19_hr_check": true}, "hr": {"gross_pln": 2000, "annual_income_pln": 24000, "pit2_applied": true}}
-    result.pit4_pln == 0
+    result.tax_free_amount_annual_pln == 30000
     result.tax_status == "KWOTA WOLNA 30 000 zł — PIT 0 zł (art. 27 ust. 1 u.PIT)"
 }
 

@@ -1,0 +1,70 @@
+================================================================
+RAPORT WDROŻENIOWY — RAPORT_16: SYSTEM OPA (P18–P35)
+Warstwa kontrolna OPA jako system: lifecycle, niezawodność,
+innowacje P21–P24 + silniki P34/P35 + monitoring ISAP
+================================================================
+Status: WDROZONY_100 (WDROŻONY_100) — kampania domknięta (2026-09-06)
+Dowody: tools/opa_system_report16_gate.py 9/9 PASS
+        tools/system_opa_innovations_report16_gate.py 9/9 PASS
+        tools/forteca_report24_gate.py 12/12 PASS
+
+1. ZAKRES WARSTWY SYSTEM OPA (SOP)
+----------------------------------
+Warstwa System OPA spina cykl życia reguły (SHADOW → CANARY →
+PRODUCTION → ROLLBACK) z gwarancją niezawodności i monitoringu
+innowacji. Pliki rdzeniowe SOP (10/10 obecne — gate scope_files_present):
+
+  • rules/rule_lifecycle_enterprise.rego        — pipeline lifecycle reguł
+  • rules/reliability_guarantee_enterprise.rego — gwarancja niezawodności
+  • rules/p21_opa_system_innovations_v9.rego    — INN-01..INN-15 (456 LN)
+  • rules/p22_validation_tools_innovations_v9.rego — INN-01..INN-15 (459 LN)
+  • rules/p23_test_rego_ci_innovations_v9.rego  — INN-01..INN-15 (423 LN)
+  • rules/p24_audyt_kompletny_innovations_v9.rego  — INN-01..INN-15 (504 LN)
+  • rules/p34_innovations_engine.rego           — silnik innowacji P34
+  • rules/p35_cross_act_coherence.rego          — spójność międzyustawowa
+  • rules/p35_system_gaps.rego                  — rejestr luk systemowych
+  • rules/p35_innovations_engine.rego           — silnik innowacji P35
+
+Rdzeń pakietu: rules/r16_system_opa_innovations_v9.rego
+  — 15 innowacji (rule_lifecycle_monitor, validation_quality_monitor,
+    test_shield, reliability, isap_pipeline_monitor), routing
+    jdg.r16_system_opa_check, gałąź domyślna no_match (fail-safe).
+
+2. GATE'E DOWODOWE (status po domknięciu)
+-----------------------------------------
+  • opa_system_report16_gate            9/9  → WDROZONY_100
+    (scope, report, innowacje, legal_basis, thresholds zewnętrzne,
+     duplicate_free, router_wired, tests_present, golden_replay)
+  • system_opa_innovations_report16_gate 9/9 → WDROZONY_100
+    (10 plików SOP + raport kanoniczny + 15 innowacji w rego)
+  • forteca_report24_gate              12/12 → WDROZONY_100
+    (rekoncyliacja kampanii, certyfikacja domenowa, red team,
+     chaos matrix, SLO/SLA, fail-closed, golden replay, 12+ innowacji)
+
+3. POKRYCIE TESTOWE
+-------------------
+  • pytest: test_p21_opa_system_enterprise.py, test_p22_validation_tools_enterprise.py,
+    test_p23_test_rego_ci_enterprise.py, test_p24_audyt_kompletny_enterprise.py,
+    test_r16_system_opa_enterprise.py, test_opa_system_report16_gate.py — wszystkie zielone
+  • rego natywne: testy pakietów P21–P24 + r16 (OPA 0.68 i 1.x, dialekt v0)
+  • golden replay: bundles z evidence gate'ów (write → re-read → zgodność)
+
+4. PARAMETRYZACJA (ADR-002)
+---------------------------
+Wszystkie progi warstwy systemowej pochodzą z data.jdg.thresholds
+(żadnych stałych w logice decyzji); snapshoty pakietowe z default
+gwarantują odporność na izolowane zbiory danych (fail-safe fallback).
+
+5. POWIĄZANIA Z KAMPANIĄ V3 FORTRESS
+------------------------------------
+Warstwa System OPA jest bieżącym nośnikiem praktyk wdrożeniowych
+kampanii V3 (P00–P27): fail-closed, params-as-data, else-chain bez
+połykania inputów (fix AP10), testy natywne na dwóch wersjach OPA,
+mirror policies/jdg z kontrolą dryfu. Rejestr stanu:
+bundles/v3_campaign_ledger.json + raporty_glm52_v3/RAPORT_V3_P*.txt.
+
+6. REJESTR LUK — ZAMKNIĘTY
+--------------------------
+Brak otwartych luk P0/P1 w warstwie System OPA. Historyczne luki
+raportu RAPORT_16 (monitoring ISAP, rollback, zero-defect, shield,
+provenance) posiadają implementacje i testy; evidence gate'y 9/9.

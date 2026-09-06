@@ -29,7 +29,7 @@ OUT_JSON = BASE_DIR / "bundles" / "v3_campaign_ledger.json"
 
 PROMPT_RE = re.compile(r"V3_PROMPT_(P\d\d)_([A-Z0-9_]+)\.txt")
 REPORT_RE = re.compile(r"RAPORT_V3_(P\d\d)_([A-Z0-9_]+)\.txt")
-STATUS_RE = re.compile(r"Status(?:\s+raportu)?:\s*(WDROŻONY_100|NIE_WDROŻONY|W_TRAKCIE)", re.IGNORECASE)
+STATUS_RE = re.compile(r"Status(?:\s+raportu)?(?:\s+wdrożenia)?:\s*(WDROŻONY_100|NIE_WDROŻONY|W_TRAKCIE)", re.IGNORECASE)
 
 
 def list_parts() -> list[dict]:

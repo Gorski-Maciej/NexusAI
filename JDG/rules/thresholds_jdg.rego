@@ -1067,6 +1067,30 @@ calendar := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# ZUS26 — V3-P26 GOVERNANCE (kampania V3 FORTRESS)
+# Governance warstwy składkowej V3-P26: tolerancje, automat ulg, stress lab,
+# wersje golden. Stawki/podstawy/progi zdrowotnej POZOSTAJĄ w bloku zus
+# (jedno źródło prawdy stawek). Temporalność (P05): valid_from per rok.
+# Status weryfikacji: [NIEZWERYFIKOWANE] — ISAP/RCL/zus.pl nie wykonano.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+zus26 := {
+    "v3_p26_threshold_version": "zus26-v3p26-2026.09",
+    "legal_basis_version": "SUS+USOZ-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    "v3_p26_grosz_tolerance": 0.005,                           # I01: tolerancja groszowa
+    "v3_p26_tier_alert_approach_pct": 90,                      # I03: alarm przed progiem
+    "v3_p26_health_params_version": "health-2026.09",          # I04: wersja parametrów zdrowotnej
+    "v3_p26_suspension_alert_months": 24,                      # I05: przegląd długiego zawieszenia
+    "v3_p26_golden_version": "zus-golden-2026.09",             # I08: golden granic składkowych
+    "v3_p26_health_rescale_periods": 4,                        # I09: okresy przeliczenia (kwartalne)
+    "v3_p26_min_wage_drift_pct": 1.0,                          # I10: dryf feedu minimalnej
+    "v3_p26_stress_required_scenarios": 3,                     # I11: komplet scenariuszy
+    "v3_p26_invariants_active": true,                          # I07: konstytucja składkowa (P04)
+    "v3_p26_dra_zero_silence": true,                           # I06: zero ciszy DRA/RCA (P25)
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # RYCZAŁT THRESHOLDS
 # ═══════════════════════════════════════════════════════════════════════════════
 

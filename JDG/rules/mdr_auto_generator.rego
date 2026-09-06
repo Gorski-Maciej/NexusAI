@@ -28,22 +28,24 @@ decide := verdict {
     object.get(input.mdr, "role", "") == "PROMOTER"
     object.get(input.document, "mdr_scheme_detected", false) == true
 
-    hallmarks := []
-    hallmarks := array.concat(hallmarks, ["A1_confidentiality"]) { object.get(input.invoice, "confidentiality_clause", false) }
-    hallmarks := array.concat(hallmarks, ["A2_success_fee"]) { object.get(input.invoice, "success_fee_structure", false) }
-    hallmarks := array.concat(hallmarks, ["A3_standardized"]) { object.get(input.invoice, "standardized_documentation", false) }
-    hallmarks := array.concat(hallmarks, ["A4_loss_buying"]) { object.get(input.invoice, "loss_buying_scheme", false) }
-    hallmarks := array.concat(hallmarks, ["A5_conversion"]) { object.get(input.invoice, "tax_benefit_type", "") == "CONVERSION" }
-    hallmarks := array.concat(hallmarks, ["A6_circular"]) { object.get(input.invoice, "circular_flow", false) }
-    hallmarks := array.concat(hallmarks, ["A7_double_deduction"]) { object.get(input.invoice, "double_deduction_detected", false) }
-    hallmarks := array.concat(hallmarks, ["B1_loss_group"]) { object.get(input.invoice, "loss_utilization_group", false) }
-    hallmarks := array.concat(hallmarks, ["B4_tax_haven"]) { object.get(input.invoice, "tax_haven_involved", false) }
-    hallmarks := array.concat(hallmarks, ["C1_C4_cross_border"]) { object.get(input.invoice, "cross_border_deduction_related", false) }
-    hallmarks := array.concat(hallmarks, ["C5_tp_gap"]) { object.get(input.invoice, "tp_methodology_gap", false) }
-    hallmarks := array.concat(hallmarks, ["D1_ip_transfer"]) { object.get(input.invoice, "ip_transfer_no_remuneration", false) }
-    hallmarks := array.concat(hallmarks, ["E1_crs_bypass"]) { object.get(input.invoice, "crs_bypass_detected", false) }
-    hallmarks := array.concat(hallmarks, ["MBT_required"]) { object.get(input.invoice, "mbt_required", false) }
-
+    inv := object.get(input, "invoice", {})
+    all_h := [
+        ["A1_confidentiality", object.get(inv, "confidentiality_clause", false)],
+        ["A2_success_fee", object.get(inv, "success_fee_structure", false)],
+        ["A3_standardized", object.get(inv, "standardized_documentation", false)],
+        ["A4_loss_buying", object.get(inv, "loss_buying_scheme", false)],
+        ["A5_conversion", object.get(inv, "tax_benefit_type", "") == "CONVERSION"],
+        ["A6_circular", object.get(inv, "circular_flow", false)],
+        ["A7_double_deduction", object.get(inv, "double_deduction_detected", false)],
+        ["B1_loss_group", object.get(inv, "loss_utilization_group", false)],
+        ["B4_tax_haven", object.get(inv, "tax_haven_involved", false)],
+        ["C1_C4_cross_border", object.get(inv, "cross_border_deduction_related", false)],
+        ["C5_tp_gap", object.get(inv, "tp_methodology_gap", false)],
+        ["D1_ip_transfer", object.get(inv, "ip_transfer_no_remuneration", false)],
+        ["E1_crs_bypass", object.get(inv, "crs_bypass_detected", false)],
+        ["MBT_required", object.get(inv, "mbt_required", false)],
+    ]
+    hallmarks := [pair[0] | pair := all_h[_]; pair[1] == true]
     hallmarks_count := count(hallmarks)
     deadline_days := 30
 
@@ -136,28 +138,15 @@ else := verdict {
     mdr_overdue := object.get(input.document, "mdr_overdue", false)
     role := object.get(input.mdr, "role", "UNKNOWN")
 
-    days_since_scheme := 0 { scheme_available_date == 0 }
-    days_since_impl := 0 { first_impl_date == 0 }
+    current_ts := object.get(input.mdr, "current_date", 0)
 
-    days_remaining_scheme := 30 - days_since_scheme { days_since_scheme > 0 }
-    days_remaining_impl := 30 - days_since_impl { days_since_impl > 0 }
+    days_since_scheme := _days_elapsed(current_ts, scheme_available_date)
+    days_since_impl := _days_elapsed(current_ts, first_impl_date)
+    days_remaining_scheme := 30 - days_since_scheme
 
-    escalation_level := "OK" { mdr3_submitted }
-    escalation_level := "GREEN" { not mdr3_submitted; days_remaining_scheme > 14 }
-    escalation_level := "YELLOW" { not mdr3_submitted; days_remaining_scheme <= 14; days_remaining_scheme > 7 }
-    escalation_level := "ORANGE" { not mdr3_submitted; days_remaining_scheme <= 7; days_remaining_scheme > 0 }
-    escalation_level := "RED" { not mdr3_submitted; days_remaining_scheme <= 0 or mdr_overdue }
-    escalation_level := "RED_CRITICAL" { mdr_overdue; not mdr3_submitted }
-
-    routing := ""
-    routing := "BLOCK_AND_ALERT" { escalation_level == "RED_CRITICAL" or escalation_level == "RED" }
-    routing := "TRIAGE_QUEUE" { escalation_level == "ORANGE" }
-    routing := "WARNING" { escalation_level == "YELLOW" }
-
-    mg_next_action := "SUBMIT NOW!" { escalation_level in {"RED", "RED_CRITICAL"} }
-    mg_next_action := "PREPARE submission" { escalation_level == "ORANGE" }
-    mg_next_action := "Monitor deadline" { escalation_level == "YELLOW" }
-    mg_next_action := "" { true }
+    escalation_level := _escalation(mdr3_submitted, days_remaining_scheme, mdr_overdue)
+    routing := _mg_routing(escalation_level)
+    mg_next_action := _mg_next_action(escalation_level)
 
     verdict := {
         "matched": true,
@@ -221,28 +210,25 @@ else := verdict {
     object.get(input.document, "mdr_scheme_detected", false) == true
     object.get(input.mdr, "mdr3_submitted", false) == false
 
-    tax_advantage := object.get(input.invoice, "tax_benefit_amount", 0)
-    hallmarks_detected := 0
+    tax_advantage := object.get(object.get(input, "invoice", {}), "tax_benefit_amount", 0)
 
-    # Count applicable hallmarks from input fields
-    hallmarks_detected := hallmarks_detected + 1 { object.get(input.invoice, "confidentiality_clause", false) }
-    hallmarks_detected := hallmarks_detected + 1 { object.get(input.invoice, "success_fee_structure", false) }
-    hallmarks_detected := hallmarks_detected + 1 { object.get(input.invoice, "cross_border_element", false) }
-    hallmarks_detected := hallmarks_detected + 1 { object.get(input.invoice, "tax_haven_involved", false) }
-    hallmarks_detected := hallmarks_detected + 1 { object.get(input.invoice, "double_deduction_detected", false) }
-    hallmarks_detected := hallmarks_detected + 1 { object.get(input.invoice, "crs_bypass_detected", false) }
-    hallmarks_detected := hallmarks_detected + 1 { object.get(input.invoice, "hybrid_mismatch_detected", false) }
+    # Zliczenie applicable hallmark z pól wejsciowych (comprehension)
+    inv5 := object.get(input, "invoice", {})
+    hallmarks_detected := count([k |
+        ks := ["confidentiality_clause", "success_fee_structure", "cross_border_element",
+               "tax_haven_involved", "double_deduction_detected", "crs_bypass_detected",
+               "hybrid_mismatch_detected"];
+        k := ks[_];
+        object.get(inv5, k, false) == true
+    ])
+
+    penalty_factor := _penalty_factor(hallmarks_detected)
 
     max_admin_penalty := 21000000
-    penalty_factor := 0.1 { hallmarks_detected <= 2 }
-    penalty_factor := 0.3 { hallmarks_detected >= 3; hallmarks_detected <= 4 }
-    penalty_factor := 0.5 { hallmarks_detected >= 5; hallmarks_detected <= 6 }
-    penalty_factor := 0.8 { hallmarks_detected >= 7 }
-    else := 0.2 { true }
 
     estimated_penalty := floor(max_admin_penalty * penalty_factor * 100) / 100
     kks_daily_rates := 720
-    kks_daily_rate_pln := floor(object.get(input.jdg_entrepreneur, "daily_rate_pln", 116.33) * 100) / 100
+    kks_daily_rate_pln := floor(object.get(object.get(input, "jdg_entrepreneur", {}), "daily_rate_pln", 116.33) * 100) / 100
     kks_max_penalty := floor(kks_daily_rates * kks_daily_rate_pln * 100) / 100
 
     total_exposure := estimated_penalty + kks_max_penalty
@@ -266,3 +252,35 @@ else := verdict {
         "_description": "MG-005: MDR Sanction Calculator — estimate admin penalty + KKS exposure based on hallmarks"
     }
 }
+
+# ── Helpery MG (Rego-safe: else-chainy, deterministyczne daty) ──
+
+_days_elapsed(cur, ts) = d {
+    ts > 0
+    cur >= ts
+    d := floor((cur - ts) / 86400000000000)
+} else = 0 { true }
+
+_escalation(submitted, remaining, overdue) = "OK" { submitted == true }
+else = "RED_CRITICAL" { overdue == true }
+else = "RED" { remaining <= 0 }
+else = "ORANGE" { remaining <= 7 }
+else = "YELLOW" { remaining <= 14 }
+else = "GREEN" { true }
+
+_mg_routing(level) = "BLOCK_AND_ALERT" { level == "RED_CRITICAL" }
+else = "BLOCK_AND_ALERT" { level == "RED" }
+else = "TRIAGE_QUEUE" { level == "ORANGE" }
+else = "WARNING" { level == "YELLOW" }
+else = "" { true }
+
+_mg_next_action(level) = "SUBMIT NOW!" { level == "RED_CRITICAL" }
+else = "SUBMIT NOW!" { level == "RED" }
+else = "PREPARE submission" { level == "ORANGE" }
+else = "Monitor deadline" { level == "YELLOW" }
+else = "" { true }
+
+_penalty_factor(n) = 0.8 { n >= 7 }
+else = 0.5 { n >= 5 }
+else = 0.3 { n >= 3 }
+else = 0.1 { true }

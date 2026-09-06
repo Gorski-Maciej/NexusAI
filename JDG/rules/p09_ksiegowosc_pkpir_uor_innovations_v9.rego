@@ -38,7 +38,13 @@ import future.keywords.if
 default decide := {"matched":false,"rule_id":"jdg.p09_ksiegowosc_pkpir_uor_innovations.no_match","package":"jdg.p09_ksiegowosc_pkpir_uor_innovations","priority":999999}
 
 # ── Źródła danych: progi z data.jdg.thresholds (ADR-002 — zero hardcode) ──────
-thresholds := object.get(data.jdg, "thresholds", {})
+# Snapshot progów (wzorzec repo): precyzyjna zależność od data.jdg.thresholds
+# — object.get(data.jdg, ...) tworzy recursję z decide tego pakietu.
+default thresholds = {}
+
+thresholds = th {
+    th := data.jdg.thresholds
+}
 accounting_limits := object.get(thresholds, "accounting", {
     "uor_threshold_eur": 2000000,          # próg UoR art. 2 ust. 1 pkt 5 (2M EUR)
     "eur_pln_reference": 4.50,             # kurs referencyjny NBP (referencyjny)
@@ -61,6 +67,28 @@ kst_rates := object.get(accounting_limits, "kst_group_rates", {
 
 round2(x) = r {
     r := round(x * 100) / 100
+}
+
+# Helpery logiczne (Rego v0 — brak infix and/or w wartościach obiektów)
+_and2(a, b) = true {
+    a == true
+    b == true
+} else = false {
+    true
+}
+
+_or2(a, b) = true {
+    a == true
+} else = true {
+    b == true
+} else = false {
+    true
+}
+
+_score(cond, if_true, if_false) = if_true {
+    cond == true
+} else = if_false {
+    true
 }
 
 # ── SEKCJA 1: AUDYT STRUKTURY PKPiR (kolumny 1-17) ────────────────────────────
@@ -121,10 +149,10 @@ pkpir_auto_dekretacja := {
     "package": "jdg.p09_ksiegowosc_pkpir_uor_innovations",
     "priority": 811,
     "matched": true,
-    "operation_type": object.get(input.document, "type", "sale_goods"),
-    "column": object.get(pkpir_column_mapping, object.get(input.document, "type", "sale_goods"), {}),
-    "amount": to_number(object.get(input.document, "net_amount", 0)),
-    "vat": round2(to_number(object.get(input.document, "net_amount", 0)) * to_number(object.get(input.document, "vat_rate", 0.23))),
+    "operation_type": object.get(_document_in, "type", "sale_goods"),
+    "column": object.get(pkpir_column_mapping, object.get(_document_in, "type", "sale_goods"), {}),
+    "amount": to_number(object.get(_document_in, "net_amount", 0)),
+    "vat": round2(to_number(object.get(_document_in, "net_amount", 0)) * to_number(object.get(_document_in, "vat_rate", 0.23))),
     "_routing": "",
     "_routing_reason": "Auto-dekretacja operacji na kolumny PKPiR",
     "_legal_basis": "Rozporządzenie o PKPiR (Dz.U. 2025 poz. 567)",
@@ -139,19 +167,21 @@ pkpir_validator_realtime := {
     "package": "jdg.p09_ksiegowosc_pkpir_uor_innovations",
     "priority": 812,
     "matched": true,
-    "total_income": round2(to_number(object.get(input.ledger, "income_col_9", 0))),
-    "income_calc": round2(to_number(object.get(input.ledger, "col_7", 0)) + to_number(object.get(input.ledger, "col_8", 0))),
-    "income_ok": round2(to_number(object.get(input.ledger, "col_7", 0)) + to_number(object.get(input.ledger, "col_8", 0))) == round2(to_number(object.get(input.ledger, "income_col_9", 0))),
-    "total_expenses": round2(to_number(object.get(input.ledger, "expenses_col_14", 0))),
-    "expenses_calc": round2(to_number(object.get(input.ledger, "col_10", 0)) + to_number(object.get(input.ledger, "col_11", 0)) + to_number(object.get(input.ledger, "col_12", 0)) + to_number(object.get(input.ledger, "col_13", 0))),
-    "expenses_ok": round2(to_number(object.get(input.ledger, "col_10", 0)) + to_number(object.get(input.ledger, "col_11", 0)) + to_number(object.get(input.ledger, "col_12", 0)) + to_number(object.get(input.ledger, "col_13", 0))) == round2(to_number(object.get(input.ledger, "expenses_col_14", 0))),
-    "consistent": round2(to_number(object.get(input.ledger, "col_7", 0)) + to_number(object.get(input.ledger, "col_8", 0))) == round2(to_number(object.get(input.ledger, "income_col_9", 0))) and round2(to_number(object.get(input.ledger, "col_10", 0)) + to_number(object.get(input.ledger, "col_11", 0)) + to_number(object.get(input.ledger, "col_12", 0)) + to_number(object.get(input.ledger, "col_13", 0))) == round2(to_number(object.get(input.ledger, "expenses_col_14", 0))),
+    "total_income": round2(to_number(object.get(_ledger_in, "income_col_9", 0))),
+    "income_calc": round2(to_number(object.get(_ledger_in, "col_7", 0)) + to_number(object.get(_ledger_in, "col_8", 0))),
+    "income_ok": income_ok,
+    "total_expenses": round2(to_number(object.get(_ledger_in, "expenses_col_14", 0))),
+    "expenses_calc": round2(to_number(object.get(_ledger_in, "col_10", 0)) + to_number(object.get(_ledger_in, "col_11", 0)) + to_number(object.get(_ledger_in, "col_12", 0)) + to_number(object.get(_ledger_in, "col_13", 0))),
+    "expenses_ok": expenses_ok,
+    "consistent": _and2(income_ok, expenses_ok),
     "_routing": "",
     "_routing_reason": "Walidator PKPiR realtime — spójność kolumn 9 i 14",
     "_legal_basis": "Rozporządzenie o PKPiR (Dz.U. 2025 poz. 567)",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
+    income_ok := round2(to_number(object.get(_ledger_in, "col_7", 0)) + to_number(object.get(_ledger_in, "col_8", 0))) == round2(to_number(object.get(_ledger_in, "income_col_9", 0)))
+    expenses_ok := round2(to_number(object.get(_ledger_in, "col_10", 0)) + to_number(object.get(_ledger_in, "col_11", 0)) + to_number(object.get(_ledger_in, "col_12", 0)) + to_number(object.get(_ledger_in, "col_13", 0))) == round2(to_number(object.get(_ledger_in, "expenses_col_14", 0)))
 }
 
 # ── SEKCJA 2: AUDYT UoR (POZIOM ENTERPRISE — PRIORYTET) ───────────────────────
@@ -165,19 +195,25 @@ uor_obligation_engine := {
     "package": "jdg.p09_ksiegowosc_pkpir_uor_innovations",
     "priority": 820,
     "matched": true,
-    "annual_revenue_pln": to_number(object.get(input.jdg_entrepreneur, "annual_revenue_pln", 0)),
-    "annual_revenue_eur": round2(to_number(object.get(input.jdg_entrepreneur, "annual_revenue_pln", 0)) / eur_pln_reference),
+    "annual_revenue_pln": revenue_pln,
+    "annual_revenue_eur": revenue_eur,
     "threshold_eur": uor_threshold_eur,
     "threshold_pln": round2(uor_threshold_eur * eur_pln_reference),
-    "exceeds": to_number(object.get(input.jdg_entrepreneur, "annual_revenue_pln", 0)) / eur_pln_reference >= uor_threshold_eur,
-    "early_warning": to_number(object.get(input.jdg_entrepreneur, "annual_revenue_pln", 0)) / eur_pln_reference >= uor_threshold_eur * early_warning_pct / 100,
-    "decision": "UoR" if to_number(object.get(input.jdg_entrepreneur, "annual_revenue_pln", 0)) / eur_pln_reference >= uor_threshold_eur else "PKPiR",
+    "exceeds": exceeds,
+    "early_warning": early_warning,
+    "decision": decision,
     "_routing": "",
     "_routing_reason": "Silnik decyzji PKPiR czy UoR — próg 2M EUR (art. 2 ust. 1 pkt 5 UoR)",
     "_legal_basis": "Art. 2 ust. 1 pkt 5, art. 2 ust. 2 UoR",
-    "_warnings": [sprintf("Przychód: %.2f PLN = %.2f EUR | Próg: %.0f EUR (%.2f PLN) | Decyzja: %s%s", [to_number(object.get(input.jdg_entrepreneur, "annual_revenue_pln", 0)), round2(to_number(object.get(input.jdg_entrepreneur, "annual_revenue_pln", 0)) / eur_pln_reference), uor_threshold_eur, round2(uor_threshold_eur * eur_pln_reference), "UoR" if to_number(object.get(input.jdg_entrepreneur, "annual_revenue_pln", 0)) / eur_pln_reference >= uor_threshold_eur else "PKPiR", " | UWAGA: 75% progu — planuj przejście" if to_number(object.get(input.jdg_entrepreneur, "annual_revenue_pln", 0)) / eur_pln_reference >= uor_threshold_eur * early_warning_pct / 100 and to_number(object.get(input.jdg_entrepreneur, "annual_revenue_pln", 0)) / eur_pln_reference < uor_threshold_eur else ""])],
+    "_warnings": [sprintf("Przychód: %.2f PLN = %.2f EUR | Próg: %.0f EUR (%.2f PLN) | Decyzja: %s%s", [revenue_pln, revenue_eur, uor_threshold_eur, round2(uor_threshold_eur * eur_pln_reference), decision, warning_early])],
 } {
     object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
+    revenue_pln := to_number(object.get(input.jdg_entrepreneur, "annual_revenue_pln", 0))
+    revenue_eur := round2(revenue_pln / eur_pln_reference)
+    exceeds := revenue_eur >= uor_threshold_eur
+    early_warning := revenue_eur >= uor_threshold_eur * early_warning_pct / 100
+    decision := _score(exceeds, "UoR", "PKPiR")
+    warning_early := _score(_and2(early_warning, exceeds == false), " | UWAGA: 75% progu — planuj przejście", "")
 }
 
 # Audyt UoR — zasady memoriałowe, dowody, inwentaryzacja, wycena, sprawozdania.
@@ -216,19 +252,44 @@ amortization_dual_calculator := {
     "decision_mode": "SUGGEST",
     "valid_from": "2025-01-01",
     "valid_to": null,
-    "asset_value": to_number(object.get(input.asset, "value", 0)),
-    "kst_group": object.get(input.asset, "kst_group", "4"),
-    "tax_rate": object.get(kst_rates, object.get(input.asset, "kst_group", "4"), 0.14),
-    "book_rate": to_number(object.get(input.asset, "book_rate", 0.20)),
-    "tax_annual": round2(to_number(object.get(input.asset, "value", 0)) * object.get(kst_rates, object.get(input.asset, "kst_group", "4"), 0.14)),
-    "book_annual": round2(to_number(object.get(input.asset, "value", 0)) * to_number(object.get(input.asset, "book_rate", 0.20))),
-    "difference": round2(to_number(object.get(input.asset, "value", 0)) * to_number(object.get(input.asset, "book_rate", 0.20)) - to_number(object.get(input.asset, "value", 0)) * object.get(kst_rates, object.get(input.asset, "kst_group", "4"), 0.14)),
+    "asset_value": to_number(object.get(_asset_in, "value", 0)),
+    "kst_group": object.get(_asset_in, "kst_group", "4"),
+    "tax_rate": object.get(kst_rates, object.get(_asset_in, "kst_group", "4"), 0.14),
+    "book_rate": to_number(object.get(_asset_in, "book_rate", 0.20)),
+    "tax_annual": round2(to_number(object.get(_asset_in, "value", 0)) * object.get(kst_rates, object.get(_asset_in, "kst_group", "4"), 0.14)),
+    "book_annual": round2(to_number(object.get(_asset_in, "value", 0)) * to_number(object.get(_asset_in, "book_rate", 0.20))),
+    "difference": round2(to_number(object.get(_asset_in, "value", 0)) * to_number(object.get(_asset_in, "book_rate", 0.20)) - to_number(object.get(_asset_in, "value", 0)) * object.get(kst_rates, object.get(_asset_in, "kst_group", "4"), 0.14)),
     "_routing": "",
     "_routing_reason": "Kalkulator amortyzacji bilansowej vs podatkowej (różnice przejściowe)",
     "_legal_basis": "UoR art. 32; ustawy o PIT art. 22a-22m",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
+}
+
+# ── Defensywne defaulty pod-obiektów wejściowych (kontrakt fail-safe) ─────────
+# object.get(input.X, ...) na nieistniejącym pod-obiekcie = undefined → cała
+# reguła przestaje być zdefiniowana. Lokalne snapshoty gwarantują obiekt.
+default _ledger_in = {}
+default _asset_in = {}
+default _uor_books_in = {}
+default _lease_in = {}
+default _document_in = {}
+
+_ledger_in = v {
+    v := input.ledger
+}
+_asset_in = v {
+    v := input.asset
+}
+_uor_books_in = v {
+    v := input.uor_books
+}
+_lease_in = v {
+    v := input.lease
+}
+_document_in = v {
+    v := input.document
 }
 
 # ── SEKCJA 3: AUDYT AMORTYZACJI I LEASINGU (poziom ENTERPRISE) ────────────────
@@ -262,7 +323,7 @@ amortization_leasing_audit := {
         "financial": "KUP tylko odsetki, kapitał przez amortyzację (art. 23f PIT)",
         "classification": "test 40% normatywnego okresu",
     },
-    "annual_depreciation": round2(to_number(object.get(input.asset, "value", 0)) * object.get(kst_rates, object.get(input.asset, "kst_group", "4"), 0.14)),
+    "annual_depreciation": round2(to_number(object.get(_asset_in, "value", 0)) * object.get(kst_rates, object.get(_asset_in, "kst_group", "4"), 0.14)),
     "_routing": "",
     "_routing_reason": "Audyt amortyzacji (KŚT, jednorazowa, limity aut) i leasingu (operacyjny/finansowy)",
     "_legal_basis": "ustawy o PIT art. 22a-22n, 23a-23f; rozporządzenie RM (KŚT)",
@@ -295,10 +356,10 @@ car_limit_audit := {
     "package": "jdg.p09_ksiegowosc_pkpir_uor_innovations",
     "priority": 832,
     "matched": true,
-    "car_value": to_number(object.get(input.asset, "car_value", 0)),
-    "is_electric": object.get(input.asset, "is_electric", false) == true,
-    "limit": car_limit_electric if object.get(input.asset, "is_electric", false) == true else car_limit_standard,
-    "excess": max([to_number(object.get(input.asset, "car_value", 0)) - (car_limit_electric if object.get(input.asset, "is_electric", false) == true else car_limit_standard), 0]),
+    "car_value": to_number(object.get(_asset_in, "car_value", 0)),
+    "is_electric": object.get(_asset_in, "is_electric", false) == true,
+    "limit": eff_limit,
+    "excess": max([to_number(object.get(_asset_in, "car_value", 0)) - eff_limit, 0]),
     "note": "Auto > limit — KUP z leasingu/amortyzacji limitowany proporcjonalnie (art. 23a pkt 47a PIT)",
     "_routing": "",
     "_routing_reason": "Limit aut osobowych 150k/225k — amortyzacja i leasing",
@@ -306,7 +367,8 @@ car_limit_audit := {
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
-}
+
+    eff_limit := _score(object.get(_asset_in, "is_electric", false) == true, car_limit_electric, car_limit_standard)}
 
 # ── SEKCJA 4: AUDYT REMANENTU I KOREKT (poziom ENTERPRISE) ────────────────────
 remanent_audit := {
@@ -474,7 +536,7 @@ document_validator := {
         "nazwa dokumentu", "data wystawienia", "nr identyfikacyjny",
         "dane wystawcy i odbiorcy", "treść operacji", "kwota",
     ],
-    "complete": count([e | e := ["nazwa dokumentu", "data wystawienia", "nr identyfikacyjny", "dane wystawcy i odbiorcy", "treść operacji", "kwota"][_]; object.get(input.document, e, "") != ""]) == 6,
+    "complete": count([e | e := ["nazwa dokumentu", "data wystawienia", "nr identyfikacyjny", "dane wystawcy i odbiorcy", "treść operacji", "kwota"][_]; object.get(_document_in, e, "") != ""]) == 6,
     "_routing": "",
     "_routing_reason": "Walidator dowodów księgowych (art. 21 UoR)",
     "_legal_basis": "Art. 21-22 UoR",
@@ -526,17 +588,18 @@ leasing_comparator := {
     "package": "jdg.p09_ksiegowosc_pkpir_uor_innovations",
     "priority": 876,
     "matched": true,
-    "monthly_rent": to_number(object.get(input.lease, "monthly_rent", 0)),
-    "operating_kup_monthly": to_number(object.get(input.lease, "monthly_rent", 0)),
-    "financial_kup_monthly": round2(to_number(object.get(input.lease, "monthly_rent", 0)) * to_number(object.get(input.lease, "interest_share", 0.20))),
-    "annual_difference": round2(to_number(object.get(input.lease, "monthly_rent", 0)) * 12 - to_number(object.get(input.lease, "monthly_rent", 0)) * to_number(object.get(input.lease, "interest_share", 0.20)) * 12),
-    "recommendation": "operacyjny" if to_number(object.get(input.lease, "monthly_rent", 0)) > 0 else "brak",
+    "monthly_rent": to_number(object.get(_lease_in, "monthly_rent", 0)),
+    "operating_kup_monthly": to_number(object.get(_lease_in, "monthly_rent", 0)),
+    "financial_kup_monthly": round2(to_number(object.get(_lease_in, "monthly_rent", 0)) * to_number(object.get(_lease_in, "interest_share", 0.20))),
+    "annual_difference": round2(to_number(object.get(_lease_in, "monthly_rent", 0)) * 12 - to_number(object.get(_lease_in, "monthly_rent", 0)) * to_number(object.get(_lease_in, "interest_share", 0.20)) * 12),
+    "recommendation": rec_leasing,
     "_routing": "",
     "_routing_reason": "Symulator leasingu operacyjnego vs finansowego (KUP)",
     "_legal_basis": "Art. 23b, art. 23f PIT",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
+    rec_leasing := _score(to_number(object.get(_lease_in, "monthly_rent", 0)) > 0, "operacyjny", "brak")
 }
 
 # INN-15: Auto-aktualizacja szablonów księgi (hook temporalny).
@@ -568,18 +631,22 @@ pkpir_cross_domain_validator := {
     "vat_ok": vat_ok,
     "pit_ok": pit_ok,
     "zus_ok": zus_ok,
-    "cross_consistent": vat_ok and pit_ok and zus_ok,
+    "cross_consistent": _and2(vat_ok, _and2(pit_ok, zus_ok)),
     "violations": violations,
-    "_routing": "TRIAGE_QUEUE" if count(violations) > 0 else "",
+    "_routing": routing_cross,
     "_routing_reason": "Walidator spójności międzyksięgowej PKPiR↔VAT↔PIT↔ZUS — zero rozjazdów",
     "_legal_basis": "Rozporządzenie o PKPiR (Dz.U. 2025 poz. 567); VAT art. 109; PIT art. 24a; ZUS art. 46",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
-    vat_ok := round2(to_number(object.get(input.ledger, "pkpir_col7_sales_net", 0))) == round2(to_number(object.get(input.ledger, "vat_sales_base", 0)))
-    pit_ok := round2(to_number(object.get(input.ledger, "pkpir_income", 0))) == round2(to_number(object.get(input.ledger, "pit_advance_base", 0)))
-    zus_ok := round2(to_number(object.get(input.ledger, "pkpir_col12_wages", 0))) == round2(to_number(object.get(input.ledger, "zus_contribution_base", 0)))
-    violations := [v | v := {"domain": "VAT", "expected": to_number(object.get(input.ledger, "vat_sales_base", 0)), "actual": to_number(object.get(input.ledger, "pkpir_col7_sales_net", 0))}; not vat_ok] + [w | w := {"domain": "PIT", "expected": to_number(object.get(input.ledger, "pit_advance_base", 0)), "actual": to_number(object.get(input.ledger, "pkpir_income", 0))}; not pit_ok] + [x | x := {"domain": "ZUS", "expected": to_number(object.get(input.ledger, "zus_contribution_base", 0)), "actual": to_number(object.get(input.ledger, "pkpir_col12_wages", 0))}; not zus_ok]
+    vat_ok := round2(to_number(object.get(_ledger_in, "pkpir_col7_sales_net", 0))) == round2(to_number(object.get(_ledger_in, "vat_sales_base", 0)))
+    pit_ok := round2(to_number(object.get(_ledger_in, "pkpir_income", 0))) == round2(to_number(object.get(_ledger_in, "pit_advance_base", 0)))
+    zus_ok := round2(to_number(object.get(_ledger_in, "pkpir_col12_wages", 0))) == round2(to_number(object.get(_ledger_in, "zus_contribution_base", 0)))
+    violations := array.concat(array.concat(
+        [v | v := {"domain": "VAT", "expected": to_number(object.get(_ledger_in, "vat_sales_base", 0)), "actual": to_number(object.get(_ledger_in, "pkpir_col7_sales_net", 0))}; not vat_ok],
+        [w | w := {"domain": "PIT", "expected": to_number(object.get(_ledger_in, "pit_advance_base", 0)), "actual": to_number(object.get(_ledger_in, "pkpir_income", 0))}; not pit_ok]),
+        [x | x := {"domain": "ZUS", "expected": to_number(object.get(_ledger_in, "zus_contribution_base", 0)), "actual": to_number(object.get(_ledger_in, "pkpir_col12_wages", 0))}; not zus_ok])
+    routing_cross := _score(count(violations) > 0, "TRIAGE_QUEUE", "")
 }
 
 # INN-17: Zamknięcie roku z checklistą prawną (remanent, rozliczenie, archiwum 5 lat).
@@ -600,13 +667,15 @@ year_closing_checklist := {
     "remanent_done": object.get(input.jdg_entrepreneur, "year_closing_remanent_done", false) == true,
     "return_filed": object.get(input.jdg_entrepreneur, "year_closing_return_filed", false) == true,
     "archive_ready": object.get(input.jdg_entrepreneur, "year_closing_archive_ready", false) == true,
-    "closing_complete": object.get(input.jdg_entrepreneur, "year_closing_remanent_done", false) == true and object.get(input.jdg_entrepreneur, "year_closing_return_filed", false) == true and object.get(input.jdg_entrepreneur, "year_closing_archive_ready", false) == true,
-    "_routing": "TRIAGE_QUEUE" if (not object.get(input.jdg_entrepreneur, "year_closing_remanent_done", false)) or (not object.get(input.jdg_entrepreneur, "year_closing_return_filed", false)) else "",
+    "closing_complete": closing_complete,
+    "_routing": routing_closing,
     "_routing_reason": "Zamknięcie roku — checklista prawna (remanent, rozliczenie, archiwizacja)",
     "_legal_basis": "Art. 24 ust. 2 PIT; art. 74 UoR; art. 86 §1 OrdPU; art. 193a OrdPU",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
+    closing_complete := _and2(object.get(input.jdg_entrepreneur, "year_closing_remanent_done", false) == true, _and2(object.get(input.jdg_entrepreneur, "year_closing_return_filed", false) == true, object.get(input.jdg_entrepreneur, "year_closing_archive_ready", false) == true))
+    routing_closing := _score(_or2(object.get(input.jdg_entrepreneur, "year_closing_remanent_done", false) == false, object.get(input.jdg_entrepreneur, "year_closing_return_filed", false) == false), "TRIAGE_QUEUE", "")
 }
 
 # INN-18: JPK_PKPIR readiness — gotowość struktury PKPiR do JPK (16 kolumn, forma elektroniczna).
@@ -618,14 +687,16 @@ jpk_pkpir_readiness := {
     "jpk_schema_columns": 16,
     "pkpir_columns_ready": count(pkpir_columns) >= 16,
     "electronic_form": object.get(input.jdg_entrepreneur, "pkpir_electronic_form", true) == true,
-    "ready": count(pkpir_columns) >= 16 and object.get(input.jdg_entrepreneur, "pkpir_electronic_form", true) == true,
+    "ready": ready_jpk,
     "on_demand_deadline": "30 dni od wezwania US (art. 193a §2 OrdPU)",
-    "_routing": "TRIAGE_QUEUE" if object.get(input.jdg_entrepreneur, "pkpir_electronic_form", true) != true else "",
+    "_routing": routing_jpk,
     "_routing_reason": "JPK_PKPIR readiness — struktura PKPiR vs wzorzec JPK (16 kolumn)",
     "_legal_basis": "Art. 30a ustawy o rachunkowości; art. 193a OrdPU; rozp. MF w sprawie JPK_VAT",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
+    ready_jpk := _and2(count(pkpir_columns) >= 16, object.get(input.jdg_entrepreneur, "pkpir_electronic_form", true) == true)
+    routing_jpk := _score(object.get(input.jdg_entrepreneur, "pkpir_electronic_form", true) != true, "TRIAGE_QUEUE", "")
 }
 
 # INN-19: Ciągłość bilansu otwarcia (bilans otwarcia = bilans zamknięcia poprzedniego roku).
@@ -634,19 +705,20 @@ uor_opening_balance_continuity := {
     "package": "jdg.p09_ksiegowosc_pkpir_uor_innovations",
     "priority": 881,
     "matched": true,
-    "opening_total_assets": to_number(object.get(input.uor_books, "opening_total_assets", 0)),
-    "opening_total_liabilities": to_number(object.get(input.uor_books, "opening_total_liabilities", 0)),
-    "closing_total_assets_prev": to_number(object.get(input.uor_books, "closing_total_assets_prev_year", 0)),
-    "closing_total_liabilities_prev": to_number(object.get(input.uor_books, "closing_total_liabilities_prev_year", 0)),
+    "opening_total_assets": to_number(object.get(_uor_books_in, "opening_total_assets", 0)),
+    "opening_total_liabilities": to_number(object.get(_uor_books_in, "opening_total_liabilities", 0)),
+    "closing_total_assets_prev": to_number(object.get(_uor_books_in, "closing_total_assets_prev_year", 0)),
+    "closing_total_liabilities_prev": to_number(object.get(_uor_books_in, "closing_total_liabilities_prev_year", 0)),
     "continuity_ok": continuity_ok,
-    "balance_ok": round2(to_number(object.get(input.uor_books, "opening_total_assets", 0))) == round2(to_number(object.get(input.uor_books, "opening_total_liabilities", 0))),
-    "_routing": "TRIAGE_QUEUE" if not continuity_ok else "",
+    "balance_ok": round2(to_number(object.get(_uor_books_in, "opening_total_assets", 0))) == round2(to_number(object.get(_uor_books_in, "opening_total_liabilities", 0))),
+    "_routing": routing_continuity,
     "_routing_reason": "Ciągłość bilansu — otwarcie roku = zamknięcie roku poprzedniego (art. 10-12 UoR)",
     "_legal_basis": "Art. 10-12, art. 22 UoR",
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
-    continuity_ok := round2(to_number(object.get(input.uor_books, "opening_total_assets", 0))) == round2(to_number(object.get(input.uor_books, "closing_total_assets_prev_year", 0))) and round2(to_number(object.get(input.uor_books, "opening_total_liabilities", 0))) == round2(to_number(object.get(input.uor_books, "closing_total_liabilities_prev_year", 0)))
+    continuity_ok := _and2(round2(to_number(object.get(_uor_books_in, "opening_total_assets", 0))) == round2(to_number(object.get(_uor_books_in, "closing_total_assets_prev_year", 0))), round2(to_number(object.get(_uor_books_in, "opening_total_liabilities", 0))) == round2(to_number(object.get(_uor_books_in, "closing_total_liabilities_prev_year", 0))))
+    routing_continuity := _score(continuity_ok == false, "TRIAGE_QUEUE", "")
 }
 
 # INN-20: Inteligentny klasyfikator kolumn PKPiR po opisie faktury (reguły + ML-ready).
@@ -655,7 +727,7 @@ pkpir_intelligent_classifier := {
     "package": "jdg.p09_ksiegowosc_pkpir_uor_innovations",
     "priority": 882,
     "matched": true,
-    "description": object.get(input.document, "description", ""),
+    "description": object.get(_document_in, "description", ""),
     "classified_column": classified_column,
     "classification_confidence": "HIGH",
     "_routing": "",
@@ -664,8 +736,8 @@ pkpir_intelligent_classifier := {
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
-    desc_lower := lower(object.get(input.document, "description", ""))
-    classified_column := "7" if contains(desc_lower, "sprzedaż") or contains(desc_lower, "sprzedaz") or contains(desc_lower, "usługa") or contains(desc_lower, "usluga") else "8" if contains(desc_lower, "odsetki") or contains(desc_lower, "dotacja") or contains(desc_lower, "refundacja") else "10" if contains(desc_lower, "zakup towarów") or contains(desc_lower, "zakup towarow") or contains(desc_lower, "materiały") or contains(desc_lower, "materialy") or contains(desc_lower, "zakup") else "12" if contains(desc_lower, "wynagrodzenie") or contains(desc_lower, "pensja") or contains(desc_lower, "lista płac") else "13"
+    desc_lower := lower(object.get(_document_in, "description", ""))
+    classified_column := _classify_pkwiu_column(desc_lower)
 }
 
 # ── GŁÓWNY DECIDE (P09) — raport syntetyczny Księgowość PKPiR+UoR ──────────────
@@ -692,4 +764,17 @@ decide := {
     "_warnings": [],
 } {
     object.get(input.jdg_entrepreneur, "p09_ksiegowosc_check", false) == true
+}
+
+# ── Klasyfikator kolumn PKPiR (else-chain, deterministyczny) ──────────────────
+_classify_pkwiu_column(desc) = "7" {
+    _or2(_or2(contains(desc, "sprzedaż"), contains(desc, "sprzedaz")), _or2(contains(desc, "usługa"), contains(desc, "usluga")))
+} else = "8" {
+    _or2(contains(desc, "odsetki"), _or2(contains(desc, "dotacja"), contains(desc, "refundacja")))
+} else = "10" {
+    _or2(_or2(contains(desc, "zakup towarów"), contains(desc, "zakup towarow")), _or2(contains(desc, "materiały"), _or2(contains(desc, "materialy"), contains(desc, "zakup"))))
+} else = "12" {
+    _or2(_or2(contains(desc, "wynagrodzenie"), contains(desc, "pensja")), contains(desc, "lista płac"))
+} else = "13" {
+    true
 }

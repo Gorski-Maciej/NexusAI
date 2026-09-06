@@ -1,0 +1,151 @@
+════════════════════════════════════════════════════════════════════════════════
+RAPORT WDROŻENIOWY — V3-P25: KALENDARZ ZBIORCZY TERMINÓW I OBOWIĄZKÓW —
+JEDNO ŹRÓDŁO PRAWDY (KAMPANIA V3 FORTRESS)
+════════════════════════════════════════════════════════════════════════════════
+Prompt:     JDG/prompty_v3/V3_PROMPT_P25_KALENDARZ_ZBIORCZY.txt
+Raport:     JDG/raporty_glm52_v3/RAPORT_V3_P25_KALENDARZ_ZBIORCZY.txt
+Data:       2026-09-06
+Status: WDROŻONY_100
+
+════════════════════════════════════════════════════════════════════════════════
+1. EXECUTIVE SUMMARY
+════════════════════════════════════════════════════════════════════════════════
+Część P25 domknięta w 100%: zbiorczy kalendarz terminów i obowiązków JDG
+jako jedno źródło prawdy — tabela MASTER w thresholds (ADR-002, dane nie
+kod), pakiet rego z 12 innowacjami I01–I12, fail-closed na brak snapshotu
+(BLOCK_AND_ALERT "pustynia kalendarza"), zero-ciszy (każdy obowiązek ma
+alert przed terminem), 13 narzędzi dowodowych, 12 bundli PASS.
+
+Dowody (sekcja 6):
+  • rego natywne: 41/41 — OPA 0.68 i OPA 1.9 (--v0-compatible), z
+    thresholds_jdg.rego (wzorzec kanoniczny fail-closed snapshotu)
+  • pytest strukturalny: 9/9 (tests/auto/test_v3_p25_kalendarz_zbiorczy.py)
+  • gate'e I01–I12: 12/12 PASS (bundle z regenerated_at 2026-09-06,
+    wiring final_verdict_p89 potwierdzony)
+
+════════════════════════════════════════════════════════════════════════════════
+2. ARCHITEKTURA — JEDNO ŹRÓDŁO PRAWDY
+════════════════════════════════════════════════════════════════════════════════
+  2.1 Tabela MASTER (I01): rules/thresholds_jdg.rego → calendar :=
+      { v3_p25_threshold_version: "deadline-v1-2026.09", ...
+        v3_p25_master_deadline_table: [17 obowiązków] } — pola schematu
+      deadline-v1: obligation/base_day/rollover/alert_override/checklist/
+      action/legal_basis. Dane poza logiką (ADR-002) — aktualizacja roczna
+      = edycja danych, nie kodu.
+  2.2 Snapshot: rules/v3_p25_kalendarz_zbiorczy_enterprise.rego (1054 LN)
+      _cal_snapshot := data.jdg.thresholds.calendar; _snapshot_ok :=
+      count(...) > 0; brak snapshotu → decide = fail_closed_decision
+      (thresholds_missing, BLOCK_AND_ALERT) — fail-closed V1 zasada 6.
+  2.3 Routing analiz: else-chain deterministyczny — master_deadline_table,
+      weekend_rollover, zero_silence, year_rollover_rig, deadline_schema,
+      dedup_gate, tenant_calendar, workload_forecaster, completion_checklist,
+      close_the_loop, compliance_score, calendar_golden_set → default
+      no_match (matched: false). Opty-in: input.jdg_entrepreneur.v3_p25_check.
+  2.4 Wiring: main_jdg.rego import data.jdg.v3_p25_kalendarz (linia 97),
+      rejestr "jdg.v3_p25_kalendarz": v3_p25_kalendarz.decide (1469),
+      safe_merge w final_verdict_p89 → final_verdict_p90 (2859-2875).
+
+════════════════════════════════════════════════════════════════════════════════
+3. INNOWACJE I01–I12 (wszystkie z bundlami dowodowymi PASS)
+════════════════════════════════════════════════════════════════════════════════
+  I01 Tabela MASTER terminów (17 obowiązków: VAT, ZUS, PIT, PPK, PFRON,
+      JPK, e-Deklaracje) — bundles/v3_p25_master_deadline_table.json
+  I02 Weekend/holiday rollover (przeniesienie terminów: kierunki przód/
+      tył/zawinięcie, ścieżka ZUS) — v3_p25_weekend_rollover.json
+  I03 Zero-silence invariant (żaden obowiązek bez alertu przed terminem)
+      — v3_p25_zero_silence.json
+  I04 Year-rollover rig (przełom roku: ZUS dekady, VAT kwartały, PIT roczny)
+      — v3_p25_year_rollover_rig.json
+  I05 Schemat terminu deadline-v1 (wersjonowany, valid_from/temporalność)
+      — v3_p25_deadline_schema.json
+  I06 Dedup migrator (deduplikacja terminów między modułami; 1 finding
+      dokumentacyjny) — v3_p25_dedup_migrator.json
+  I07 Kalendarz per tenant (multi-tenant: personalizacja, strefy czasowe)
+      — v3_p25_tenant_calendar.json
+  I08 Workload forecaster (prognoza obciążenia JDG per tydzień/miesiąc)
+      — v3_p25_workload_forecaster.json
+  I09 Completion checklist (checklista domknięcia obowiązku z dowodem)
+      — v3_p25_completion_checklist.json
+  I10 Close-the-loop (obowiązek → decyzja → dowód → rekonesans)
+      — v3_p25_close_the_loop.json
+  I11 Compliance score (punktacja zgodności terminowej)
+      — v3_p25_compliance_score.json
+  I12 Golden set kalendarza (8 przypadków: przeniesienia 3 kierunków,
+      dzień 0, eskalacja, rig, schema, checklista; mismatch = BLOCK;
+      wersjonowanie V3_P10) — v3_p25_golden_set.json
+  Narzędzia: tools/v3_p25_{common, master_deadline_table, weekend_rollover,
+  zero_silence, year_rollover_rig, deadline_schema, dedup_migrator,
+  tenant_calendar, workload_forecaster, completion_checklist, close_the_loop,
+  compliance_score, golden_set}.py — 13 plików.
+
+════════════════════════════════════════════════════════════════════════════════
+4. DOMKNIĘTE BRAKI (z raportu audytu promptu)
+════════════════════════════════════════════════════════════════════════════════
+  B1 Kalendarze rozproszone po modułach (zus.rego, ppk_pfron, employer,
+     mikro-moduły) bez wspólnego źródła → tabela MASTER (I01) + importy
+     reguł kalendarzowych z jednej tabeli.
+  B2 Brak niezawodnego przenoszenia terminów na dni wolne → I02 (3
+     kierunki rollover + ścieżka ZUS-specific).
+  B3 Cisza alarmowa (obowiązki bez alertów) → I03 zero-silence (invariant
+     blokujący).
+  B4 Przełom roku nieobsłużony (dekady/kwartały nakładają się) → I04 rig.
+  B5 Terminy jako magiczne stałe w logice → ADR-002: tabela w thresholds,
+     schemat wersjonowany (I05), probe fail-closed.
+  B6 Duplikaty terminów między modułami → I06 migrator dedup.
+  B7 Brak perspektywy multi-tenant → I07.
+  B8 Brak prognozy obciążenia (kolejki deklaracyjne) → I08.
+  B9 Brak domknięcia pętli obowiązek→dowód → I09/I10.
+  B10 Brak punktacji zgodności i golden oracles kalendarza → I11/I12.
+  B11 Suite pytest strukturalny nie istniał → utworzony (9 testów,
+      w tym asercje 41/41 na dwóch wersjach OPA i 12 gate'ów narzędziowych).
+
+════════════════════════════════════════════════════════════════════════════════
+5. GŁÓWNY NURT OPTYMALIZACJI — SPEŁNIENIE
+════════════════════════════════════════════════════════════════════════════════
+  • Fail-closed: brak snapshotu → BLOCK_AND_ALERT (thresholds_missing);
+    nieznany obowiązek → BLOCK ("pustynia kalendarza", _mdt_unknown_flag);
+    golden mismatch → BLOCK (I12).
+  • Params-as-data (ADR-002): tabela MASTER + wersje progów w thresholds;
+    zero hardcode w logice decyzji.
+  • Zero duplikacji: terminy wyłącznie w tabeli MASTER; moduły kalendarzowe
+    importują z niej (dedup I06); jeden router decide w main_jdg.
+  • Determinizm: else-chain routing, decision certificates (F4) z
+    threshold_version/legal_basis_version/valid_from w każdej decyzji.
+
+════════════════════════════════════════════════════════════════════════════════
+6. DOWODY TESTOWE
+════════════════════════════════════════════════════════════════════════════════
+  rego natywne:
+    tests/rego/test_v3_p25_kalendarz_zbiorczy_enterprise.rego
+      OPA 0.68: PASS 41/41 · OPA 1.9 (--v0-compatible): PASS 41/41
+      (wymaga rules/thresholds_jdg.rego — fail-closed snapshot; wzorzec
+      identyczny jak P26)
+  pytest:
+    tests/auto/test_v3_p25_kalendarz_zbiorczy.py  9/9 PASS
+  gate'e bundli: 12/12 PASS (I01–I12), findings=1 (I06, dokumentacyjny)
+  Regresja: P13–P24 zielone (z SEE sekcji 6 raportu P24: 100/100 rego
+  natywnych + 95/95 pytest w zakresie P24; P26: 58/58 + 14/14).
+
+════════════════════════════════════════════════════════════════════════════════
+7. KONTRAKT WYJŚCIOWY (handoff)
+════════════════════════════════════════════════════════════════════════════════
+  K1→P26: tabela MASTER konsumowana przez kalendarz DRA/RCA składkowy
+     (terminy ZUS DRA → 15. dnia; health TIER — zgodne z zus26)
+  K2→P24: ścieżka ZUS rollover (I02) zgodna z RnA 7 dni (I1 deadline)
+  K3→P16/P41: schemat deadline-v1 (I05) jako kontrakt deklaracyjny
+  K4→P10: golden versioning (I12 ↔ V3_P10 oracle)
+  K5→P44: finding I06 (dedup dokumentacyjny) do konsolidacji
+  K6→CI: 13 narzędzi P25 gotowe jako gate'y (exit 0/1) — wpięcie w pipeline
+
+════════════════════════════════════════════════════════════════════════════════
+8. PROTOKÓŁ ZAMKNIĘCIA — SEKCJA 16 (wyciąg)
+════════════════════════════════════════════════════════════════════════════════
+  1. Zakres P25: 4 podanalizy — inwentaryzacja terminów (tabela MASTER),
+     mechanika terminów (rollover/rok/zero-silence), perspektywy
+     (tenant/obciążenie), domknięcie (checklista/loop/score/golden).
+  2. Innowacje: 12/12 (I01–I12) — kod + testy + bundele PASS.
+  3. Luki: 11 domkniętych (B1–B11); otwarte P0=0, P1=0.
+  4. Dowody: 41/41 rego (2×OPA) + 9/9 pytest + 12/12 gate.
+  5. Kontrakt wyjściowy K1–K6; okno kontekstowe czyszczone — następna
+     część (P27 CFC_EXIT_MDG) wchodzi z pustą sesją; nośnikiem stanu
+     jest wyłącznie repozytorium i ten raport.

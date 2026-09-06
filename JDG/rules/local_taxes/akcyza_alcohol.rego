@@ -292,9 +292,8 @@ else := {
     "_warnings": ["[AKCYZA] Handel wyrobami akcyzowymi wymaga ZEZWOLENIA (koncesja/skład podatkowy/pośredniczący)!"]
 } {
     object.get(input.jdg_entrepreneur, "trades_excise_goods", false) == true
-    has_permit := object.get(input.jdg_entrepreneur, "has_excise_permit", false)
-    has_warehouse := object.get(input.jdg_entrepreneur, "has_tax_warehouse", false)
-    not has_permit and not has_warehouse
+    ent := object.get(input, "jdg_entrepreneur", {})
+    not _has_either(ent)
 }
 
 else := {
@@ -309,3 +308,10 @@ else := {
 } {
     object.get(input.invoice, "tobacco_type", "") == "RAW_TOBACCO"
 }
+
+_has_either(doc) = true {
+    object.get(doc, "has_excise_permit", false) == true
+} else = true {
+    object.get(doc, "has_tax_warehouse", false) == true
+} else = false { true }
+

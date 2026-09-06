@@ -1,0 +1,42 @@
+{
+  "innovation": "V3-P26-I09",
+  "generated_at": "2026-09-06T07:30:32+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "periods": 4,
+    "annual_correction": true
+  },
+  "checks": [
+    {
+      "name": "rescaler_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p26_zus_skladki.form_change_rescaler: True"
+    },
+    {
+      "name": "quarterly_periods",
+      "status": "OK",
+      "detail": "okresy przeliczenia (4 kwartalne) z zus26"
+    },
+    {
+      "name": "change_month_gate",
+      "status": "OK",
+      "detail": "form_change_month > 0 wymusza przeliczenie"
+    },
+    {
+      "name": "annual_correction",
+      "status": "OK",
+      "detail": "korekta roczna 22 maja (art. 81 ust. 2-2b) [NIEZWERYFIKOWANE]"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p90"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Rescaler wiąże P14/P18 (formy) i P44; scenariusz zmiany formy w stress lab (I11)",
+    "rule": "niekompletne przeliczenie = TRIAGE; nadmiarowe = BLOCK"
+  }
+}

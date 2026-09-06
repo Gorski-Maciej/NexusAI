@@ -156,20 +156,6 @@ else := {
 
 else := {
     "matched": true,
-    "rule_id": "jdg.akcyza.fuel_energy.energy.r1",
-    "package": "jdg.akcyza.fuel_energy",
-    "priority": 250020,
-    "_routing": "",
-    "_routing_reason": "",
-    "_legal_basis": "Art. 2 ust. 1 pkt 1; Art. 89 ust. 3 Ustawy o podatku akcyzowym",
-    "_warnings": ["[AKCYZA] Energia elektryczna — stawka: 5 PLN/MWh (2026). Obowiązek: sprzedawca energii."],
-    "rate_per_mwh": 5.00
-} {
-    object.get(input.invoice, "product_category", "") == "ELECTRICITY"
-}
-
-else := {
-    "matched": true,
     "rule_id": "jdg.akcyza.fuel_energy.energy.r2",
     "package": "jdg.akcyza.fuel_energy",
     "priority": 250021,
@@ -180,6 +166,20 @@ else := {
 } {
     object.get(input.invoice, "product_category", "") == "ELECTRICITY"
     object.get(input.jdg_entrepreneur, "is_end_user", true) == true
+}
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.akcyza.fuel_energy.energy.r1",
+    "package": "jdg.akcyza.fuel_energy",
+    "priority": 250020,
+    "_routing": "",
+    "_routing_reason": "",
+    "_legal_basis": "Art. 2 ust. 1 pkt 1; Art. 89 ust. 3 Ustawy o podatku akcyzowym",
+    "_warnings": ["[AKCYZA] Energia elektryczna — stawka: 5 PLN/MWh (2026). Obowiązek: sprzedawca energii."],
+    "rate_per_mwh": 5.00
+} {
+    object.get(input.invoice, "product_category", "") == "ELECTRICITY"
 }
 
 else := {

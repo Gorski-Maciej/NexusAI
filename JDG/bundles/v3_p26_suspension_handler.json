@@ -1,0 +1,48 @@
+{
+  "innovation": "V3-P26-I05",
+  "generated_at": "2026-09-06T07:31:01+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "pauza_block": true,
+    "alert_months": 24,
+    "p23_contract": true
+  },
+  "checks": [
+    {
+      "name": "suspension_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p26_zus_skladki.suspension_handler: True"
+    },
+    {
+      "name": "relief_pauza_block",
+      "status": "OK",
+      "detail": "aktywna ulga w zawieszeniu bez pauzy = BLOCK"
+    },
+    {
+      "name": "health_days_triage",
+      "status": "OK",
+      "detail": "dni zdrowotnej w zawieszeniu = TRIAGE"
+    },
+    {
+      "name": "long_suspension_alert",
+      "status": "OK",
+      "detail": "próg alertu 24 mies. z zus26 (P05)"
+    },
+    {
+      "name": "lifecycle_contract",
+      "status": "OK",
+      "detail": "kontrakt cyklu życia V3_P23"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p90"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Skutki składkowe zawieszenia wiążą P23 (zawieszenie CEIDG) i P24 (zasiłki); symulacja ścieżki składkowej",
+    "rule": "ulga bez pauzy = BLOCK; dni zdrowotnej = TRIAGE"
+  }
+}

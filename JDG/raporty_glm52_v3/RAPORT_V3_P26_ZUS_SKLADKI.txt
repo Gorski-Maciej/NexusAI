@@ -1,0 +1,711 @@
+==============================================================================
+RAPORT V3 P26 — ZUS — SKŁADKI SPOŁECZNE, ZDROWOTNA, ULGI I KALENDARZ
+==============================================================================
+
+Seria:            NEXUSAI JDG — V3 FORTRESS CAMPAIGN dla GLM 5.2
+Plik promptu:     JDG/prompty_v3/V3_PROMPT_P26_ZUS_SKLADKI.txt
+Raport docelowy:  JDG/raporty_glm52_v3/RAPORT_V3_P26_ZUS_SKLADKI.txt
+Status:           WDROŻONY_100
+EVIDENCE_LEVEL:   FULL
+CODE:             P26
+Data wdrożenia:   2026-09-06
+Wersja kampanii:  V3.0
+Zakres:           4 podanalizy, 42 pliki z Sekcji 6 (42/42 obecne, 0 BRAK),
+                  12 innowacji Enterprise I01–I12 WDROŻONYCH w kodzie,
+                  58/58 testów natywnych Rego (OPA 0.68 + 1.9), 14/14 pytest,
+                  12/12 bundle gate PASS, wiring main_jdg final_verdict_p90,
+                  mirror policies hash-parity dla 3 plików zmienionych.
+Weryfikacja źródeł prawnych: [NIEZWERYFIKOWANE] — ISAP/RCL/MF/zus.pl nie
+                  wykonano w tej sesji (protokół prawny 04/07; rejestr 9.12).
+
+──────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+──────────────────────────────────────────────────────────────────────────────
+
+Ocena dojrzałości części P26 PRZED wdrożeniem: CZĘŚCIOWA. Stan wejściowy
+(dowód: v3_campaign_ledger.json → P26 status NIE_WDROŻONY, innovations=0;
+brak rules/v3_p26*, brak tools/v3_p26*, brak bundles/v3_p26*, brak raportu):
+warstwa ZUS istniała w 3 warstwach (zus.rego, micro/*, zus/*), ale BRAK było:
+(1) dedykowanego pakietu V3-P26 z kontraktem decision-certificate, (2) automatu
+kolejności ulg (błąd klasyczny łączenia ulg — K02), (3) progów zdrowotnej
+liczonych NARASTAJĄCO z alarmem przed przekroczeniem, (4) weryfikacji wersji
+parametrów zdrowotnej (ISAP gate), (5) skutków składkowych zawieszenia,
+(6) walidacji zero-ciszy DRA/RCA, (7) INV-pack składkowego (kontrakt P04),
+(8) golden set granic składkowych, (9) rescalera zdrowotnej przy zmianie formy,
+(10) integracji feedu minimalnej (P06), (11) stress lab składkowego,
+(12) bramki spójności ZUS×PIT×ryczałt.
+
+Stan PO wdrożeniu: WDROŻONY_100. Pakiet jdg.v3_p26_zus_skladki (1016 linii
+Rego, 12 analiz I01–I12, else-chain deterministyczny, fail-closed) +
+governance data.jdg.thresholds.zus26 (12 kluczy v3_p26_*, okno temporalne
+valid_from 2026-01-01 — P05) + stopy/progi z ISTNIEJĄCEGO bloku zus
+(jedno źródło prawdy stawek — zero duplikacji stawek, ADR-002) + wiring
+final_verdict_p90 (po P25, przed POST-MERGE invariants) + 13 narzędzi dowodowych
+(common + 12) + 12 bundli gate PASS + 58 testów natywnych + 14 pytest.
+
+TOP-10 rekomendacji (wszystkie WDROŻONE w tej sesji):
+  R1. Pakiet jdg.v3_p26_zus_skladki z routingiem fail-closed i certyfikatem
+      (I01–I12) — WDROŻONO.
+  R2. Automat kolejności ulg NONE→START(6)→PREFERENCYJNA(24)/MZP(36)→STANDARD;
+      równoległość = BLOCK — WDROŻONO (I02).
+  R3. Progi zdrowotnej NARASTAJĄCO 60k/300k z granicą groszową (±0,01 po
+      zaokrągleniu do grosza — naprawa precyzji float) i alarmem 90% —
+      WDROŻONO (I03).
+  R4. Health 2026 Verifier: wersja parametrów z danych + ISAP gate
+      (rozjazd wersji = BLOCK; brak ISAP = TRIAGE) — WDROŻONO (I04).
+  R5. Suspension Handler: pauza ulgi obowiązkowa (BLOCK przy braku) —
+      WDROŻONO (I05).
+  R6. DRA/RCA/ZZA zero-ciszy: 4 bramki BLOCK + RCA od pracowników —
+      WDROŻONO (I06).
+  R7. INV pack: 4 kody naruszeń konstytucji składkowej (kontrakt P04) —
+      WDROŻONO (I07).
+  R8. Golden set granic składkowych (kontrakt P10) — WDROŻONO (I08).
+  R9. Form Change Rescaler (4 okresy kwartalne; korekta 22 maja) —
+      WDROŻONO (I09).
+  R10. Minimum Wage Integration (brak feedu = BLOCK; dryf 1% = TRIAGE) +
+       Stress Lab (3 scenariusze, chaos K10) + Cross-Act Gate (ZUS×PIT×
+       ryczałt, kontrakty P14/P18) — WDROŻONO (I10/I11/I12).
+
+Liczba luk wg krytyczności (rejestr 9.06): P0=0, P1=1 (L13), P2=1 (L14),
+P3=2 (L15, L16). Luki L01–L12 (braki strukturalne wejściowe) ZAMKNIĘTE
+wdrożeniem I01–I12.
+
+Deklaracja dowodowa: udowodniono (kod + testy + uruchomienia): kompilacja
+rego na OPA 0.68 i 1.9, 58/58 ścieżek routing, granice groszowe 4161,00 →
+812,23 (mirror matematyki), granice 60k/300k ±0,01, automat ulg (10 przejść
+legalnych), wiring main_jdg, mirror hash-parity. NIE udowodniono (pozostaje
+[NIEZWERYFIKOWANE]): aktualność stawek/progów 2026 w ISAP (L13/L16),
+rozstrzygnięcie rozbieżności 812,63 (prompt) vs 812,23 (arytmetyka) przez
+człowieka (L14/Q01).
+
+──────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+──────────────────────────────────────────────────────────────────────────────
+
+Przeanalizowano (Sekcja 6 promptu — 42/42 pliki obecne w repo, status
+ZWERYFIKOWANO = plik istnieje i zawiera deklarowany fakt strukturalny):
+  * 6.1 ZUS reguły macro — 14 plików (zus.rego, micro/zus_micro_atomic_p09,
+    micro/_zus_micro_rates, micro/zdrowotna/zdrowotna, zdrowotna_a79,
+    zus/health_contribution_enterprise, health_precision_engine_v8,
+    cumulative_revenue_engine, zus_enterprise_zero_doubt,
+    zus_extensions_enterprise, micro/plan33_zus, p08_zus_macro_enterprise_v9,
+    zus_micro_etap13_v1, zus_core_etap12_v1).
+  * 6.2 Narzędzia ZUS — 17 plików (zus_calculator … zus_dra_generator).
+  * 6.3 Dokumenty i testy — 11 plików (ZUS_MACRO_P07.md, ZUS_MICRO_P08.md,
+    4 testy pytest/audit, 5 testów rego natywnych).
+  * 6.4 Mirror policies — katalogi policies/jdg, policies/tax, policies/tax/vat,
+    bundle.sh, 2 manifesty (obecne; sync wykonany).
+  * Nowe artefakty wdrożeniowe (12 reguł + thresholds + wiring + 13 tooli +
+    12 bundli + 2 test-suite + raport).
+
+Pominięto i DLACZEGO: (a) treści merytoryczne dokumentów świętych czytane
+wyłącznie w zakresie kontraktów wskazanych w 11.1 promptu (budżet 50% okna);
+(b) fetch ISAP/RCL/zus.pl — niedostępne w tej sesji → wszystko oznaczone
+[NIEZWERYFIKOWANE] z wpisem do rejestru mediacji (9.12/L13/L16); (c) legacy
+pliki mirror spoza canonical (22 pliki, np. _helpers.rego, cit.rego) — własność
+P48 (mirror sync), nie P26; jedynie potwierdzono brak wpływu na P26
+(hash-parity 3 plików zmienionych przez P26).
+
+Status weryfikacji źródeł prawnych: wszystkie podstawy prawne części P26
+(art. 18–18c, 22, 47 SUS; art. 79–81 u.ś.o.z.; ustawa zasiłkowa; obwieszczenia
+MF) mają status [NIEZWERYFIKOWANE] — twierdzenia, nie dowody (protokół 04).
+Zero fikcyjnych artykułów/Dz.U./stawek: wszystkie wartości liczbowe pochodzą
+Z ISTNIEJĄCEGO data.jdg.thresholds.zus lub są oznaczone jako założenie.
+
+──────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P26 — mapa artefaktów (PO wdrożeniu)
+──────────────────────────────────────────────────────────────────────────────
+
+| Artefakt | Pakiet Rego | rule_id | Podstawa prawna | Testy | Lifecycle |
+|---|---|---|---|---|---|
+| rules/v3_p26_zus_skladki_enterprise.rego | jdg.v3_p26_zus_skladki | 12 × jdg.v3_p26_zus_skladki.<analiza> | art. 18a-18c/22/47 SUS; art. 79-81 u.ś.o.z. [NIEZWERYFIKOWANE] | 58 rego + 14 pytest | ACTIVE (za flagą v3_p26_check) |
+| rules/thresholds_jdg.rego (blok zus26) | data.jdg.thresholds.zus26 | 12 kluczy v3_p26_* | ADR-002/P06; P05 valid_from | 2 pytest | ACTIVE |
+| rules/thresholds_jdg.rego (blok zus — istniejący) | data.jdg.thresholds.zus | stopy/progi rdzenia | art. 18a/18c/22 SUS; 81 u.ś.o.z. [NIEZWERYFIKOWANE] | istniejące | ACTIVE |
+| rules/main_jdg.rego (final_verdict_p90) | data.jdg.main | jdg.v3_p26_zus_skladki.decide | ADR-004 kontrakt werdyktu | wiring pytest | ACTIVE |
+| tools/v3_p26_common.py + 12 tooli | — | — | — | 14 pytest + gate | ACTIVE |
+| bundles/v3_p26_*.json (12) | — | — | — | gate PASS | ACTIVE |
+| policies/v3_p26_zus_skladki_enterprise.rego (mirror) | mirror | mirror | P48 | hash-parity | ACTIVE |
+| tests/rego/test_v3_p26_zus_skladki_enterprise.rego | test_jdg_v3_p26 | 58 testów | — | OPA 0.68+1.9 | ACTIVE |
+| tests/auto/test_v3_p26_zus_skladki_enterprise.py | pytest | 14 testów | — | pytest | ACTIVE |
+
+Stan PRZED wdrożeniem (dowód strukturalny): brak którejkolwiek z powyższych
+pozycji z prefiksem v3_p26; ledger P26 = NIE_WDROŻONY/innovations=0.
+
+──────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4
+──────────────────────────────────────────────────────────────────────────────
+
+5.1 SKŁADKI SPOŁECZNE I PODSTAWY
+  Dowody (tabela T1, wiersze 1–14): stopy 19,52/8/2,45/1,67 w data.thresholds.zus
+  (pension_rate/disability_rate/sickness_voluntary_rate/accident_rate) — dane,
+  nie hardcode w regułach P26; micro/_zus_micro_rates.rego czyta pension_rate
+  z _ths z fallbackiem 0.1952 (data-first, ADR-002); podstawa standardowa
+  social_base_standard=5204.40 (60% prognozy) JAKO parametr; drugi klucz
+  social_base_standard_60pct=5460.00 (micro) — NIESPÓJNOŚĆ wykryta → L13.
+  Wnioski (≥3):
+    W1. Stopy są danymi (P06 honorowany) — dowód: thresholds_jdg.rego:781+ i
+        odczyt w rego; zero stawek wpisanych w kod P26.
+    W2. Podstawa 60% prognozy jest parametrem, ALE blok zus zawiera DWIE
+        różne wartości podstawy (5204.40 vs 5460.00) pod dwoma kluczami —
+        duplikacja semantyczna (AP04/AP12) → luka L13 (P1, konsolidacja).
+    W3. Precyzja groszowa wymaga zaokrąglenia total (nie tylko składek):
+        float 812.23+332.88+101.94+69.49 daje 1316.539999… → naprawione
+        _grosze(total); test 58/58 potwierdza total=1316.54.
+    W4. Rozbieżność wzorca z promptu (4161,00 → „812,63") vs arytmetyka
+        (4161 × 0,1952 = 812,23) — przyjęto 812,23; mediacja Q01/L14.
+    W5. Dobrowolny chorobowy (2,45%) i karencja 90 dni są w danych
+        (sickness_voluntary_rate, sickness_waiting_days_voluntary) i w P26
+        liczone groszowo (I01).
+  Luki podanalizy: L13 (P1, otwarta), L14 (P2, otwarta).
+
+5.2 ULGI SKŁADKOWE
+  Dowody (T1, wiersze 15–17): start_relief_months=6, preferential_months=24,
+  maly_zus_plus_months=36 + limity przychodowe MZP w data.thresholds.zus;
+  PRZED P26: brak automatu kolejności (kluczowe pytanie audytowe — błąd
+  klasyczny) → WDROŻONO I02.
+  Wnioski:
+    W1. Kwalifikacje i limity są danymi; kolejność ulg PRZED P26 nie była
+        regułowana (dowód: brak rules v3_p26 i brak automatu w zus/*) —
+        luka zamknięta I02 (automat 5 stanów, 10 legalnych przejść,
+        równoległość = BLOCK, przekroczenie miesięcy = BLOCK).
+    W2. Przejście PREFERENCYJNA → MALY_ZUS_PLUS wymaga weryfikacji art. 18c
+        (możliwe ograniczenia łączenia po preferencyjnej) → routing TRIAGE,
+        nie ciche przyjęcie (fail-closed).
+    W3. Zakończenie ulgi ma kalendarz w tabeli MASTER P25 (ZUS_DRA_*) oraz
+        ścieżkę przejścia w I02; przebazowanie po uldze = STANDARD
+        (pełna podstawa).
+  Luki podanalizy: brak otwartych (I02 zamknął L02; ograniczenie art. 18c
+  do weryfikacji ISAP mieści się w L13/L16).
+
+5.3 SKŁADKA ZDROWOTNA (POLSKI ŁAD)
+  Dowody (T1, wiersze 4–8, 19–21): health_scale_rate=0.09,
+  health_linear_rate=0.049, health_linear_deduction_limit=14100 (2026),
+  progi 60k/300k + kwoty TIER 491.40/819.00/1474.20 (przeciętne 9100) —
+  WSZYSTKIE jako dane; cumulative_revenue_engine.rego istniał (dowód: plik
+  w 6.1), ale bez bramki narastająco-with-alert w warstwie V3 → WDROŻONO I03;
+  wersjonowanie limitu odliczenia w default_threshold_versions (zus.health_
+  linear_deduction: 8700→14100 od 2026-01-01) — dowód temporalności P05.
+  Wnioski:
+    W1. Stawki/progi zdrowotnej są danymi z oknami temporalnymi (dowód:
+        default_threshold_versions.zus.health_linear_deduction) — jednak
+        WSZYSTKIE wartości 2026 [NIEZWERYFIKOWANE] w ISAP → I04 wymusza
+        gate (rozjazd wersji = BLOCK; brak ISAP = TRIAGE).
+    W2. Progi NARASTAJĄCO (cumulative_revenue_ytd) z granicą groszową:
+        59 999,99/60 000,00/60 000,01 → TIER_1/TIER_1/TIER_2 (testy 58/58);
+        precyzja float naprawiona przez _grosze(diff).
+    W3. Alarm przed przekroczeniem (≥90% progu) = TRIAGE — użytkownik widzi
+        zbliżenie progu PRZED zmianą TIER (auto-post niemożliwy).
+    W4. Kwoty TIER wyliczone z przeciętnego 9100 (60/100/180%) — spójne
+        z komentarzami bloku zus; weryfikacja obwieszczenia MF → L13/L16.
+  Luki podanalizy: L13 (P1), L16 (P3, dziedziczone z P25).
+
+5.4 KALENDARZ I ROZLICZENIA
+  Dowody (T1, wiersze 12–14, 31–42): tools/zus_calendar.py i zus_dra_
+  generator.py istnieją (dowód: 42/42 plików); terminy DRA 10./15. (ZUS_DRA_*
+  w tabeli MASTER V3_P25 z rollover PREV_BUSINESS_DAY — art. 47 ust. 3);
+  PRZED P26: brak warstwy V3 walidującej DRA/RCA/ZZA zero-ciszy i skutki
+  zawieszenia → WDROŻONO I05/I06.
+  Wnioski:
+    W1. Terminy DRA są konsolidowane w kalendarzu MASTER P25 (kontrakt
+        honorowany; zero duplikacji dat — AP04 sprawdzone, brak).
+    W2. RnA/RSA 7 dni są w danych (reporting_deadline_days=7) i w kontrakcie
+        P24; P26 I06 respektuje (formularze: DRA/RCA/ZZA/RCA_ALIGN).
+    W3. Zawieszenie: aktywna ulga bez pauzy = BLOCK (I05) — ścieżka
+        składkowa zawieszenia PRZED P26 nie była regułowana (dowód: brak
+        rules v3_p26); dni zdrowotnej w zawieszeniu = TRIAGE (nigdy cisza).
+    W4. Kody zatrudnienia/generowanie DRA z danych: walidacja zero-ciszy
+        pól (identyfikator/okres/pola wymagane) = BLOCK; forma vs
+        pracownicy (RCA gdy >0) = TRIAGE przy różnicy.
+  Luki podanalizy: L06 zamknięta (I06); terminy ISAP → L16 (P3).
+
+──────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2 — akty z Sekcji 8, wszystkie obowiązkowe)
+──────────────────────────────────────────────────────────────────────────────
+
+| Akt (Sekcja 8) | Art./ust. | Reguła (P26) | Test | Status | Ryzyko |
+|---|---|---|---|---|---|
+| 01. Ustawa o SUS | 18a (60% prognozy, na start) | I01 (zakres podstawy), I02 (START 6m) | test_p26_i01_*; test_p26_i02_over_limit_block | PEŁNE (wartości [NIEZWERYFIKOWANE]) | średnie — L13/L16 |
+| 01. Ustawa o SUS | 18b (preferencyjna 30% minimalnej) | I02 (PREFERENCYJNA), I10 (feed minimalnej) | test_p26_i10_* | PEŁNE [NIEZWERYFIKOWANE] | niskie |
+| 01. Ustawa o SUS | 18c (mały ZUS Plus) | I02 (MZP 36m, przejście TRIAGE) | test_p26_i02_mzp_transition_triage | PEŁNE [NIEZWERYFIKOWANE] | średnie — kolejność łączenia |
+| 02. Ustawa o SUS | 22 (stopy 19,52/8/2,45/1,67) | I01 (grosze z danych) | test_p26_i01_penny_4161 | PEŁNE [NIEZWERYFIKOWANE] | niskie (dane, nie kod) |
+| 03. Ustawa o SUS | 47 (DRA 10./15., RnA/RSA 7 dni) | I06 (zero-ciszy, RCA) | test_p26_i06_* (6) | PEŁNE [NIEZWERYFIKOWANE] | niskie — terminy w P25 |
+| 04. Ustawa o ś.w.o.z. | 79–81 (9%/4,9%/TIER; progi 60k/300k) | I03 (narastająco), I04 (ISAP gate), I09 (rescaler), I12 (cross-act) | test_p26_i03_* (9); i04 (4); i09 (4); i12 (6) | PEŁNE [NIEZWERYFIKOWANE] | WYSOKIE — L13 (weryfikacja 2026) |
+| 05. Ustawa zasiłkowa (kontekst P24) | — | I05 (zawieszenie a zasiłki/karencja w danych) | test_p26_i05_* (4) | CZĘŚCIOWE (domena P24) | niskie |
+| 06. Obwieszczenia MF (prognoza, minimalna) | — | I10 (feed minimalnej; dryf 1%) | test_p26_i10_no_feed_block | CZĘŚCIOWE (feed = wejście hosta) | średnie — L13 |
+| (odkryty) Ustawa o SUS | 21 (zawieszenie) | I05 | test_p26_i05_* | PEŁNE [NIEZWERYFIKOWANE] | niskie |
+| (odkryty) ADR-004/P03 | kontrakt werdyktu | wszystkie (certyfikat 426101–426112) | 58/58 | PEŁNE | niskie |
+| (odkryty) P04/P10/P25 | invarianty/golden/kalendarz | I07/I08/I06 | test_p26_i07/i08/i06 | PEŁNE | niskie |
+
+──────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (T3)
+──────────────────────────────────────────────────────────────────────────────
+
+| ID | Kryt. | Opis | Dowód | Wpływ | Rozwiązanie | Koszt | Regresja | Status |
+|---|---|---|---|---|---|---|---|---|
+| L01 | P0→ZAMKNIĘTA | brak dedykowanego pakietu v3_p26 | ledger P26 innovations=0; brak plików | brak warstwy V3 | pakiet jdg.v3_p26_zus_skladki | — | 58/58 zielone | ZAMKNIĘTA |
+| L02 | P1→ZAMKNIĘTA | brak automatu kolejności ulg | brak reguły w zus/* | błędne łączenie ulg | I02 | — | testy i02 | ZAMKNIĘTA |
+| L03 | P1→ZAMKNIĘTA | progi zdrowotnej bez trybu narastającego+alertu | cumulative_revenue_engine bez bramki V3 | zły TIER | I03 | — | testy i03 | ZAMKNIĘTA |
+| L04 | P1→ZAMKNIĘTA | brak gate wersji/ISAP parametrów zdrowotnej | brak reguły | zaufanie nieaktualnym stawkom | I04 | — | testy i04 | ZAMKNIĘTA |
+| L05 | P2→ZAMKNIĘTA | zawieszenie bez ścieżki składkowej | brak reguły | błędna DRA | I05 | — | testy i05 | ZAMKNIĘTA |
+| L06 | P1→ZAMKNIĘTA | DRA bez walidacji zero-ciszy | zus_dra_generator bez bramki V3 | deklaracja z brakami | I06 | — | testy i06 | ZAMKNIĘTA |
+| L07 | P1→ZAMKNIĘTA | brak INV-pack składkowego | brak reguły | fail-open możliwy | I07 | — | testy i07 | ZAMKNIĘTA |
+| L08 | P2→ZAMKNIĘTA | brak golden granic składkowych | brak reguły | regresje przechodzą | I08 | — | testy i08 | ZAMKNIĘTA |
+| L09 | P2→ZAMKNIĘTA | zmiana formy bez rescalera | brak reguły | rozjazd zdrowotnej | I09 | — | testy i09 | ZAMKNIĘTA |
+| L10 | P1→ZAMKNIĘTA | brak feedu minimalnej (fail-open) | brak reguły | zła podstawa preferencyjnej | I10 | — | testy i10 | ZAMKNIĘTA |
+| L11 | P2→ZAMKNIĘTA | brak stress lab | brak reguły | odporność nieudowodniona | I11 | — | testy i11 | ZAMKNIĘTA |
+| L12 | P2→ZAMKNIĘTA | brak bramki ZUS×PIT×ryczałt | brak reguły | rozjazd zdrowotnej | I12 | — | testy i12 | ZAMKNIĘTA |
+| L13 | P1 (OTWARTA) | duplikacja podstawy w bloku zus: social_base_standard=5204.40 vs social_base_standard_60pct=5460.00 | thresholds_jdg.rego (2 klucze) | możliwe 2 różne decyzje o podstawie | konsolidacja do 1 klucza + migracja odczytów (P00 dedup) | 0.5d | odczyty micro | OTWARTA |
+| L14 | P2 (OTWARTA) | wzorzec groszowy z promptu (4161,00→812,63) arytmetycznie niespójny (poprawnie 812,23) | mirror matematyki + test 58/58 | dokumentacja vs kod | mediacja Q01; poprawka promptu/doc | 0.1d | brak | OTWARTA |
+| L15 | P3 (OTWARTA) | mirror policies: 22 pliki spoza canonical (legacy) | v3_mirror_delta.json | dryf mirror (poza P26) | program P48 | — | poza P26 | OTWARTA |
+| L16 | P3 (OTWARTA) | terminy/kwoty ZUS 2026 (DRA, TIER, przeciętne) niezweryfikowane w ISAP/zus.pl | tagi [NIEZWERYFIKOWANE] | możliwa nieaktualność | weryfikacja ISAP → P44 (I04 daje gate) | 1d | testy temporalne | OTWARTA |
+
+Podsumowanie: P0=0, P1=1, P2=1, P3=2 (otwarte); 12 zamkniętych wdrożeniem.
+
+──────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (T4) — V3-P26-I01..I12 (szkielet 6-punktowy)
+──────────────────────────────────────────────────────────────────────────────
+
+I01 CONTRIBUTION PRECISION ENGINE
+ 1) Domyka L01 (brak warstwy groszowej V3); odpowiada P26-AN01/AN11.
+ 2) Mechanizm: podstawa → 4 stopy z data.thresholds.zus → zaokrąglenie
+    half-up do grosza (progi i total) → porównanie z expected_total
+    (tolerancja v3_p26_grosz_tolerance=0,005); zakres podstawy: minimum
+    60% prognozy gdy brak aktywnej ulgi (fail-closed przy braku wartości
+    w snapshotie — brak BLOCK na niepełnych danych).
+ 3) Bezpieczeństwo: składki liczone z DANYCH z dowodem groszowym; cicha
+    pomyłka grosza niemożliwa (TRIAGE przy diff > tolerancji).
+ 4) Ryzyko: precyzja float (1316.5399…) — mitygacja: _grosze(total);
+    wykrycie: test_p26_i01_penny_4161; rollback: wyłączenie flagi v3_p26_check.
+ 5) Kryterium: 4161,00 → 812,23/332,88/101,94/69,49, total 1316,54
+    (test 58/58, OPA 0.68+1.9). Zależności: P06 (stopy), P04 (grosze).
+ 6) Kontrakt: macierz składki wiąże P24/P18/P44 (sekcja 9.08).
+
+I02 RELIEF ORDER AUTOMATON
+ 1) Domyka L02 (błąd klasyczny łączenia ulg); P26-AN04.
+ 2) Automat stanów NONE/START/PREFERENCYJNA/MALY_ZUS_PLUS/STANDARD;
+    10 legalnych przejść; BLOCK: nieznany stan, równoległość, miesiące
+    ponad limit (6/24/36 z danych), nielegalne przejście; TRIAGE:
+    PREFERENCYJNA→MZP (art. 18c do weryfikacji).
+ 3) Niemożliwe ciche podwójne ulgi — BLOCK z powodem prawnym.
+ 4) Ryzyko: zbyt restrykcyjny automat — mitygacja: ścieżka SUGGEST dla
+    legalnych przejść; wykrycie: testy i02; rollback: flaga.
+ 5) Kryterium: 6 testów i02 (BLOCK×4, TRIAGE×1, SUGGEST×1) zielone.
+    Zależności: P23 (cykl życia), I10 (podstawa preferencyjnej).
+ 6) Kontrakt: wiąże P24 (RnA), P44.
+
+I03 CUMULATIVE TIER SENTINEL
+ 1) Domyka L03; P26-AN03/AN06/AN08 (przekroczenie progu w listopadzie).
+ 2) cumulative_revenue_ytd → TIER 1/2/3 (progi 60k/300k z danych);
+    granica groszowa _grosze(diff) ≤ 0,01 = TRIAGE; alarm ≥90% progu =
+    TRIAGE (przed przekroczeniem); zły expected_tier = BLOCK.
+ 3) Zmiana TIER przewidywalna z wyprzedzeniem; złe złote oczekiwania =
+    BLOCK (regresja prawna niewykrywalna inaczej).
+ 4) Ryzyko: float przy granicy — mitygacja: zaokrąglenie różnicy do grosza
+    (naprawione po pierwszym runie testów — dowód ścieżki detekcji).
+ 5) Kryterium: 9 testów i03 (granice 59999.99/60000.00/60000.01/300000.00/
+    300000.01, alarm, mismatch, negative, ok). Zależności: P18 (przychody).
+ 6) Kontrakt: progi narastająco wiążą P18/P44; kwoty TIER z P25/P26 danych.
+
+I04 HEALTH 2026 VERIFIER
+ 1) Domyka L04; P26-AN02 (AKT 8.04/19: weryfikacja stawek 2026).
+ 2) Wersja parametrów zdrowotnej: host (input) vs data.thresholds.zus26
+    (v3_p26_health_params_version); rozjazd = BLOCK; brak wersji = TRIAGE;
+    isap_verified=false = TRIAGE (zaufanie wymaga dowodu).
+ 3) Silnik NIGDY nie ufa parametrom bez wersji i weryfikacji — kluczowe
+    przy nowelizacjach zdrowotnej.
+ 4) Ryzyko: blokady przy zmianie wersji — mitygacja: jawny protokół
+    podbicia wersji (P07 lifecycle); wykrycie: testy i04; rollback: sync
+    wersji host↔dane.
+ 5) Kryterium: 4 testy i04 zielone. Zależności: P05 (temporalność),
+    P06 (parametry), P44 (lista poprawek = wejście).
+ 6) Kontrakt: lista poprawek zdrowotnej → P44 (P0 przy rozbieżnościach).
+
+I05 SUSPENSION CONTRIBUTION HANDLER
+ 1) Domyka L05; P26-AN08 (zawieszenie Q4).
+ 2) suspended=true wymaga relief_paused gdy ulga aktywna (BLOCK inaczej);
+    dni zdrowotnej w zawieszeniu >0 = TRIAGE; zawieszenie ≥24 mies. =
+    TRIAGE (przegląd cyklu życia — kontrakt P23).
+ 3) Zawieszenie nie generuje już cicho błędnych składek/ulg.
+ 4) Ryzyko: fałszywe BLOCK przy częściowej aktywacji — mitygacja: jawne
+    pola input; testy i05; rollback: flaga.
+ 5) Kryterium: 4 testy i05. Zależności: P23 (zawieszenie), P24 (zasiłki).
+ 6) Kontrakt: skutki składkowe zawieszenia → P23/P24/P44.
+
+I06 DRA GENERATOR VALIDATED
+ 1) Domyka L06; P26-AN10.
+ 2) Formularze DRA/RCA/ZZA/RCA_ALIGN; BLOCK: nieznana forma, brak pól
+    wymaganych, brak identyfikatora, brak okresu (zero ciszy — kontrakt
+    P25); TRIAGE: forma ≠ przewidywana (pracownicy>0 → RCA).
+ 3) Deklaracja nie powstaje z brakującymi polami — cisza niemożliwa.
+ 4) Ryzyko: schemat ZUS może się zmienić — mitygacja: kontrakt pól jako
+    dane (P06); wykrycie: testy i06; rollback: flaga.
+ 5) Kryterium: 6 testów i06. Zależności: P25 (terminy), P16 (deklaracje).
+ 6) Kontrakt: DRA generator → P16/P41 (UI), pola → P44.
+
+I07 ZUS INVARIANTS PACK
+ 1) Domyka L07; P26-AN05; kontrakt P04 (INV runtime jako rozszerzenia).
+ 2) 4 kody naruszeń: CONTRIBUTION_NEGATIVE (składka <0), BASE_OUT_OF_RANGE
+    (podstawa poniżej minimum bez ulgi), RELIEF_ORDER_INVALID (flaga
+    automatu I02), GROSZ_PRECISION_INVALID; każde = BLOCK_AND_ALERT
+    z listą naruszeń.
+ 3) Konstytucja składkowa egzekwowana w runtime — AUTO_POST niemożliwy.
+ 4) Ryzyko: duplikacja z P04 — mitygacja: P26 = rozszerzenia domenowe,
+    nie konkurencja (enforce P04 zostaje); testy i07; rollback: flaga
+    v3_p26_invariants_active.
+ 5) Kryterium: 5 testów i07 (4 naruszenia + ok). Zależności: P04, I02.
+ 6) Kontrakt: INV pack → P04/P44.
+
+I08 ZUS GOLDEN SET
+ 1) Domyka L08; kontrakt P10 (Golden Oracle).
+ 2) Oracle granic: 6 przypadków golden (grosze 4161, granice 60k/300k,
+    ostatni dzień ulgi, przekroczenie, równoległość); expected vs actual
+    routing; mismatch = BLOCK; wersja golden z danych (zus26).
+ 3) Zmiana zachowania składkowego bez aktualizacji golden = BLOCK —
+    regresja prawna niewykrywalna statycznie.
+ 4) Ryzyko: brittleness golden — mitygacja: celowe granice (nie snapshoty
+    masowe); testy i08; rollback: aktualizacja golden przez 4-eyes.
+ 5) Kryterium: 3 testy i08. Zależności: P10, I01–I03.
+ 6) Kontrakt: golden ZUS → P10/P44.
+
+I09 FORM CHANGE HEALTH RESCALER
+ 1) Domyka L09; P26-AN08/AN12.
+ 2) form_change_month>0 → wymagane przeliczenie zdrowotnej w
+    v3_p26_health_rescale_periods=4 okresach kwartalnych; niekompletne =
+    TRIAGE; nadmiarowe = BLOCK; korekta roczna 22 maja (art. 81) w reason.
+ 3) Zmiana formy w roku nie zostawia cichego rozjazdu zdrowotnej.
+ 4) Ryzyko: inne okresy niż kwartalne — mitygacja: parametr w danych;
+    testy i09; rollback: flaga.
+ 5) Kryterium: 4 testy i09. Zależności: P14/P18 (formy), I03.
+ 6) Kontrakt: rescaler → P14/P18/P44.
+
+I10 MINIMUM WAGE INTEGRATION
+ 1) Domyka L10; P26 spec (honoruj P06 — minimalna w warstwie danych).
+ 2) Feed minimum_wage_monthly wymagany (0 = BLOCK — podstawa
+    niepoliczalna); podstawa preferencyjnej = 30% minimalnej (grosze);
+    dryf vs referencja (preferential_base_30pct/0.30) ≥ 1% = TRIAGE.
+ 3) Podstawa preferencyjnej zawsze śledzi aktualną minimalną z dowodem
+    wersji; brak feedu nie przechodzi ciszą.
+ 4) Ryzyko: opóźniony feed po noweli — mitygacja: dryf-TRIAGE; testy
+    i10; rollback: aktualizacja feedu.
+ 5) Kryterium: 3 testy i10 (no-feed BLOCK, drift TRIAGE, ok SUGGEST z
+    base=1440,00). Zależności: P06, I02.
+ 6) Kontrakt: feed minimalnej → I02/P44.
+
+I11 ZUS STRESS LAB
+ 1) Domyka L11; P26-AN08; chaos K10 / kontrakt P04.
+ 2) Scenariusze jako dane (list of {name, expected_routing,
+    actual_routing}); komplet ≥ v3_p26_stress_required_scenarios=3;
+    niezgodny routing = BLOCK (fail-open wykryty).
+ 3) Odporność silnika składkowego mierzalna i egzekwowana.
+ 4) Ryzyko: flaky scenariusze — mitygacja: deterministyczne wejścia;
+    testy i11; rollback: flaga.
+ 5) Kryterium: 3 testy i11 (incomplete/failing/ok). Zależności: P04, I09.
+ 6) Kontrakt: stress lab → P04/P44.
+
+I12 CROSS-ACT CONSISTENCY GATE
+ 1) Domyka L12; P26-AN09/AN12 (rozszerzenie cross_act_zus_checker).
+ 2) Zadeklarowana zdrowotna vs domena: SCALE→9% dochodu; LINEAR→4,9%
+    dochodu; LUMP_SUM→kwota TIER z danych; nieznana forma = BLOCK;
+    brak deklaracji przy oczekiwanej kwocie = TRIAGE; diff > 0,005 =
+    BLOCK_AND_ALERT.
+ 3) ZUS, PIT i ryczałt rozliczają TĘ SAMĄ zdrowotną — rozjazd = BLOCK.
+ 4) Ryzyko: odliczenie zdrowotnej (P14) może legalnie zmienić dochód —
+    mitygacja: tolerancja + kontrakt pól (wejście = dochód po odliczeniu
+    według kontraktu P14); testy i12; rollback: flaga.
+ 5) Kryterium: 6 testów i12 (3 formy ok + unknown/missing/drift).
+    Zależności: P14, P18, P24.
+ 6) Kontrakt: cross-act → P14/P18/P24/P44.
+
+──────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (T5) — wiąże P27 i dalsze
+──────────────────────────────────────────────────────────────────────────────
+
+K1. MACIERZ SKŁADKI (I01/I02/I10): podstawa → stopa → grosze → ulga jako
+    kontrakt pól: {contribution_base, relief_active, relief_state,
+    previous_state, relief_months_used, parallel_reliefs,
+    minimum_wage_monthly}. Odbiorcy: P24 (RnA/zasiłki), P18 (ryczałt
+    progi), P44. Zasada: stopy/progi WYŁĄCZNIE z data.thresholds.zus;
+    klienci NIE definiują własnych stawek (AP04/AP12 zabronione).
+K2. ZDROWOTNA SILNIK (I03/I04/I09/I12): {cumulative_revenue_ytd,
+    expected_tier, health_params_version, isap_verified, tax_form,
+    pit_income, health_contributed, form_change_month, rescaled_periods}.
+    Zasada: progi narastająco; kwoty TIER z danych; wersja+ISAP wymagane
+    do zaufania; zmiana formy wymaga rescalera.
+K3. DRA GENERATOR (I06): kontrakt pól {form_type ∈ {DRA,RCA,ZZA,RCA_ALIGN},
+    required_fields_present, payer_identified, declaration_period,
+    employees_count}; zero ciszy; terminy z kalendarza MASTER P25.
+K4. LISTA POPRAWEK ZDROWOTNEJ (I04/L13/L14/L16): weryfikacja ISAP stawek/
+    progów 2026 → wejście do P44; PRIORYTET P0 jeżeli rozbieżności
+    (aktualnie: 0 potwierdzonych rozbieżności — wszystko [NIEZWERYFIKOWANE];
+    1 niespójność wewnętrzna L13 do konsolidacji).
+K5. INV-PACK SKŁADKOWY (I07): 4 kody naruszeń jako rozszerzenia konstytucji
+    P04; każdy pakiet domenowy V3 może dodać kody, nie może osłabić.
+K6. GOLDEN SKŁADKOWY (I08): nowe granice składkowe wchodzą do golden
+    (ZUS-2026-Gxx) przez 4-eyes; mismatch = BLOCK.
+
+──────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA (T6) — wykonany w tej sesji
+──────────────────────────────────────────────────────────────────────────────
+
+| Krok | Co | Status | Dowód |
+|---|---|---|---|
+| 1 | Rego pakiet (12 analiz, fail-closed, certificate) | WDROŻONO | rules/v3_p26_zus_skladki_enterprise.rego (1016 linii) |
+| 2 | Governance zus26 (12 kluczy, valid_from) | WDROŻONO | thresholds_jdg.rego (blok zus26) |
+| 3 | Wiring main_jdg (import+rejestr+p90) | WDROŻONO | final_verdict_p90 → post_merge |
+| 4 | 13 narzędzi dowodowych | WDROŻONO | tools/v3_p26_*.py |
+| 5 | 12 bundli gate | WDROŻONO | bundles/v3_p26_*.json (12× PASS) |
+| 6 | Testy natywne 58 | WDROŻONO | OPA 0.68: 58/58; OPA 1.9 (--v0-compatible): 58/58 |
+| 7 | Testy pytest 14 | WDROŻONO | tests/auto/test_v3_p26_zus_skladki_enterprise.py |
+| 8 | Mirror sync | WDROŻONO | policies_sync_gate.py sync (500 plików); hash-parity 3/3 |
+| 9 | Regresja P13–P25 | WDROŻONO | rego: 17/24/18/29/26/25/41; pytest P13-P20: 68/68 |
+| 10 | Raport + ledger | WDROŻONO | ten plik; v3_campaign_ledger.json |
+| Wymagające decyzji człowieka (4-eyes) | mediacja L13/L14; weryfikacja ISAP L16 | OTWARTE | sekcja 9.11 |
+
+──────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (T7) — przypadki blokujące merge
+──────────────────────────────────────────────────────────────────────────────
+
+| Typ | Przypadek | Oczekiwane | Blokuje merge? |
+|---|---|---|---|
+| unit/regen | 4161,00 × stopy → 812,23/332,88/101,94/69,49; total 1316,54 | SUGGEST + wartości | TAK (test_p26_i01_penny_4161) |
+| boundary | 59999.99/60000.00/60000.01 → TIER_1/TIER_1/TIER_2 | TRIAGE (granica) | TAK (i03_boundary_*) |
+| boundary | 300000.00/300000.01 → TIER_2/TIER_3 | TRIAGE | TAK |
+| fail-closed | base=0; form nieznana; brak feedu; brak okresu DRA; równoległe ulgi | BLOCK_AND_ALERT | TAK |
+| temporal | hv wersja host≠dane | BLOCK | TAK |
+| chaos | stress lab: niezgodny routing scenariusza | BLOCK | TAK |
+| golden | mismatch expected vs actual | BLOCK | TAK |
+| negatywne | no_match bez flagi v3_p26_check | no_match | TAK |
+| fuzz (plan) | losowe inputy P26 → nigdy AUTO_POST bez pełnego dowodu | fail-closed | plan (P33/P66) |
+| golden replay (plan) | replay werdyktów P26 po zmianie stóp | delta=0 lub BLOCK | plan (P10) |
+
+Wyniki uruchomień (dowód): OPA 0.68 → PASS: 58/58; OPA 1.9 → PASS: 58/58;
+pytest → 14/14 (+68/68 regresji P13–P20).
+
+──────────────────────────────────────────────────────────────────────────────
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+──────────────────────────────────────────────────────────────────────────────
+
+Q01. Wzorzec groszowy: prompt P26 zakłada 4161,00 → „812,63"; arytmetyka
+     4161 × 19,52% = 812,23. Rozstrzygnięcie wymaga człowieka (które
+     zaokrąglenie/podstawa jest wzorcem ZUS?). PRZYJĘTO tymczasowo 812,23
+     (dowód arytmetyczny); L14.
+Q02. Kwalifikacja przejścia PREFERENCYJNA → MAŁY ZUS PLUS (art. 18c): czy
+     dopuszczalna po wykorzystaniu preferencyjnej? Automat daje TRIAGE —
+     decyzja interpretacyjna po stronie człowieka/prawnika.
+Q03. Wartości 2026: social_base_standard 5204,40 vs 5460,00 (L13) oraz
+     kwoty TIER (491,40/819,00/1474,20 z przeciętnego 9100) — wymagana
+     weryfikacja ISAP/zus.pl i konsolidacja kluczy (4-eyes).
+Q04. Konflikt BLOCKER: brak (nie stwierdzono sprzeczności z dokumentami
+     świętymi — sekcja 9.18/T12).
+
+──────────────────────────────────────────────────────────────────────────────
+9.12 ZAAŁOŻENIA JAWNE (T9)
+──────────────────────────────────────────────────────────────────────────────
+
+[ZAŁOŻENIE] Z1: social_base_standard=5204,40 (60% × 8674) jest aktualną
+  podstawą standardową 2026 [NIEZWERYFIKOWANE].
+[ZAŁOŻENIE] Z2: progi zdrowotnej 60k/300k i kwoty TIER (491,40/819,00/
+  1474,20) obowiązują w 2026 [NIEZWERYFIKOWANE].
+[ZAŁOŻENIE] Z3: stopy 19,52/8/2,45/1,67 nie zmieniły się na 2026
+  [NIEZWERYFIKOWANE].
+[ZAŁOŻENIE] Z4: 812,23 (nie 812,63) jest poprawnym wzorcem groszowym dla
+  podstawy 4161,00 (arytmetyka; mediacja Q01).
+[ZAŁOŻENIE] Z5: terminy DRA 10./15. z rolloverem PREV_BUSINESS_DAY są
+  poprawne (dziedziczone z tabeli MASTER P25) [NIEZWERYFIKOWANE].
+[ZAŁOŻENIE] Z6: karencja chorobowego dobrowolnego 90 dni (dane) aktualna
+  [NIEZWERYFIKOWANE].
+[ZAŁOŻENIE] Z7: ulga na start 6 mies. → preferencyjna/MZP — kolejność
+  zgodna z art. 18a-18c w brzmieniu 2026 [NIEZWERYFIKOWANE].
+[ZAŁOŻENIE] Z8: health_linear_deduction_limit 14100 od 2026-01-01
+  (default_threshold_versions) [NIEZWERYFIKOWANE].
+
+──────────────────────────────────────────────────────────────────────────────
+9.13/9.14 — podanalizy z dowodami: sekcja 9.04; macierz z aktami Sekcji 8
+(włącznie z odkrytymi): sekcja 9.05. 9.15 — identyfikatory: użyte konsekwentnie
+V3-P26-L/I/Q/X/C.
+
+──────────────────────────────────────────────────────────────────────────────
+T1 — TABELA DOWODÓW (Sekcja 7.3; jeden wiersz na plik z Sekcji 6)
+──────────────────────────────────────────────────────────────────────────────
+
+| # | Plik | Co z niego pobieramy (dowód/fakt) | Status |
+|---|------|-----------------------------------|--------|
+| 1 | rules/zus.rego | rdzeń ZUS: kluczowe ścieżki składkowe; spójność nazw z thresholds | ZWERYFIKOWANO (istnieje, odczyt strukturalny) |
+| 2 | rules/micro/zus_micro_atomic_p09.rego | atomy mikro ZUS (podstawy/ulgi) | ZWERYFIKOWANO |
+| 3 | rules/micro/_zus_micro_rates.rego | stopy z _ths (pension_rate, fallback 0.1952) — data-first | ZWERYFIKOWANO |
+| 4 | rules/micro/zdrowotna/zdrowotna.rego | zdrowotna: skala/liniowy/ryczałt mikro | ZWERYFIKOWANO |
+| 5 | rules/micro/zdrowotna/zdrowotna_a79.rego | art. 79 (podstawy zdrowotnej) | ZWERYFIKOWANO |
+| 6 | rules/zus/health_contribution_enterprise.rego | enterprise zdrowotna | ZWERYFIKOWANO |
+| 7 | rules/zus/health_precision_engine_v8.rego | precyzja zdrowotnej v8 | ZWERYFIKOWANO |
+| 8 | rules/zus/cumulative_revenue_engine.rego | przychody narastająco (baza I03) | ZWERYFIKOWANO |
+| 9 | rules/zus/zus_enterprise_zero_doubt.rego | zero-doubt ZUS | ZWERYFIKOWANO |
+| 10 | rules/zus/zus_extensions_enterprise.rego | rozszerzenia ZUS | ZWERYFIKOWANO |
+| 11 | rules/micro/plan33_zus.rego | plan33 ZUS (harmonizacja) | ZWERYFIKOWANO |
+| 12 | rules/p08_zus_macro_enterprise_v9.rego | makro-innowacje v9 | ZWERYFIKOWANO |
+| 13 | rules/zus_micro_etap13_v1.rego | mikro etap 13 | ZWERYFIKOWANO |
+| 14 | rules/zus_core_etap12_v1.rego | rdzeń etap 12 | ZWERYFIKOWANO |
+| 15 | tools/zus_calculator.py | kalkulator składek (mirror) | ZWERYFIKOWANO |
+| 16 | tools/zdrowotna_tier_engine.py | silnik TIER (baza I03) | ZWERYFIKOWANO |
+| 17 | tools/contribution_base_validator.py | walidacja podstawy (baza I01) | ZWERYFIKOWANO |
+| 18 | tools/health_tier_recalculator.py | przelicznik TIER (baza I09) | ZWERYFIKOWANO |
+| 19 | tools/preferential_period_tracker.py | tracker ulg (baza I02) | ZWERYFIKOWANO |
+| 20 | tools/health_reconciliation_micro.py | rekonsyliacja zdrowotnej | ZWERYFIKOWANO |
+| 21 | tools/zus_naming_unifier.py | unifikacja nazw | ZWERYFIKOWANO |
+| 22 | tools/zus_rule_sharding.py | sharding reguł | ZWERYFIKOWANO |
+| 23 | tools/zus_atom_linter.py | linter atomów | ZWERYFIKOWANO |
+| 24 | tools/zus_completeness_engine.py | kompletność ZUS | ZWERYFIKOWANO |
+| 25 | tools/zus_atom_test_matrix.py | macierz testów atomów | ZWERYFIKOWANO |
+| 26 | tools/cross_act_zus_checker.py | cross-act (baza I12) | ZWERYFIKOWANO |
+| 27 | tools/zus_calendar.py | kalendarz ZUS (kontrakt P25) | ZWERYFIKOWANO |
+| 28 | tools/zus_micro_quality.py | jakość mikro | ZWERYFIKOWANO |
+| 29 | tools/zus_law_radar.py | radar prawa ZUS | ZWERYFIKOWANO |
+| 30 | tools/zus_plan33_fixer.py | fixer plan33 | ZWERYFIKOWANO |
+| 31 | tools/zus_dra_generator.py | generator DRA (baza I06) | ZWERYFIKOWANO |
+| 32 | docs/ZUS_MACRO_P07.md | dokumentacja makro | ZWERYFIKOWANO |
+| 33 | docs/ZUS_MICRO_P08.md | dokumentacja mikro | ZWERYFIKOWANO |
+| 34 | tests/test_zus_core_etap12_audit.py | testy rdzenia etap 12 | ZWERYFIKOWANO |
+| 35 | tests/test_zus_micro_etap13_audit.py | testy mikro etap 13 | ZWERYFIKOWANO |
+| 36 | tests/rego/test_native_zus_macro.rego | testy natywne makro | ZWERYFIKOWANO |
+| 37 | tests/rego/test_native_zus_micro.rego | testy natywne mikro | ZWERYFIKOWANO |
+| 38 | tests/rego/micro/test_native_micro_zus.rego | testy natywne micro/ | ZWERYFIKOWANO |
+| 39 | tests/rego/test_p08_zus_micro_enterprise.rego | testy P08 mikro | ZWERYFIKOWANO |
+| 40 | tests/rego/test_p08_zus_macro_enterprise.rego | testy P08 makro | ZWERYFIKOWANO |
+| 41 | tests/test_p08_zus_macro_enterprise.py | testy pytest P08 | ZWERYFIKOWANO |
+| 42 | tests/auto/test_p09_zus_micro_enterprise_glm52.py | testy P09 GLM52 | ZWERYFIKOWANO |
+| 43 | policies/jdg (katalog) | mirror zgodność | ZWERYFIKOWANO (sync) |
+| 44 | policies/tax, policies/tax/vat | mirror warstwy podatkowej | ZWERYFIKOWANO (istnieją) |
+| 45 | policies/jdg/bundles/bundle.sh | skrypt bundle mirror | ZWERYFIKOWANO |
+| 46 | policies/jdg/bundles/base/manifest.json | manifest bazowy | ZWERYFIKOWANO |
+| 47 | policies/jdg/bundles/overlays/v2026/manifest.json | overlay v2026 | ZWERYFIKOWANO |
+
+(42 pliki z Sekcji 6 + 5 pozycji mirror-rozdzaj katalogów = 47 wierszy;
+każdy plik ma fakt strukturalny; treści merytoryczne czytane wybiórczo wg
+budżetu 50% — adnotacja w 9.02.)
+
+──────────────────────────────────────────────────────────────────────────────
+9.16 pozostałe tabele obowiązkowe
+──────────────────────────────────────────────────────────────────────────────
+
+T5 KONTRAKT WYJŚCIOWY: sekcja 9.08 (K1–K6).
+T6 PLAN WDROŻENIA: sekcja 9.09.
+T7 PLAN TESTÓW: sekcja 9.10.
+T8 PYTANIA: sekcja 9.11 (Q01–Q04).
+T9 ZAŁOŻENIA: sekcja 9.12 (Z1–Z8).
+
+T10 PRZEKAZYWANE ARTEfakty (Sekcja 11.4):
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|---|---|---|---|
+| Macierz składki (kontrakt pól K1) | P24, P18, P44 | pola input v3_p26 | każda ścieżka składkowa P24/P18 |
+| Zdrowotna silnik (K2) | P14, P18, P44 | pola input + dane zus26 | zdrowotna per forma |
+| DRA generator kontrakt (K3) | P16, P41 | pola formularza | generowanie deklaracji ZUS |
+| Lista poprawek zdrowotnej (K4) | P44 | rejestr luk L13/L14/L16 | certyfikacja finalna (P0 przy rozbieżnościach) |
+| INV pack kody (K5) | P04/P33 | kody naruszeń | rozszerzenia konstytucji |
+| Golden granice (K6) | P10 | przypadki ZUS-2026-Gxx | oracle składkowy |
+
+T11 MATRYCA PODANALIZA × GRUPA (APENDYKS B):
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik |
+|---|---|---|---|
+| 5.1 | 6.1 (14), 6.2 (17), 6.3 (11) | ≥3 twierdzenia z dowodem | 9.04/5.1 + 9.05 wiersze 1–3, 9.06 L13/L14 |
+| 5.2 | 6.1, 6.2, 6.3 | ≥3 | 9.04/5.2 + 9.05 wiersz 01b/c + I02/I10 |
+| 5.3 | 6.1 (zdrowotna), 6.2, 6.3 | ≥3 | 9.04/5.3 + 9.05 wiersz 04 + I03/I04/I09/I12 |
+| 5.4 | 6.1, 6.2 (calendar/dra), 6.4 | ≥3 | 9.04/5.4 + 9.05 wiersz 03 + I05/I06 |
+
+T12 REJESTR KONFLIKTÓW (Cxx): brak konfliktów dokument↔kod i mirror↔canonical
+dla P26 (mirror hash-parity 3/3). Otwarte rozbieżności o charakterze
+mediacyjnym (nie konflikt BLOCKER): L13 (duplikacja kluczy podstawy —
+AP04/AP12 wewnątrz bloku zus), L14 (wzorzec promptu vs arytmetyka).
+
+──────────────────────────────────────────────────────────────────────────────
+PYTANIA KRZYŻOWE (Sekcja 7.4) — V3-P26-X01..X10
+──────────────────────────────────────────────────────────────────────────────
+
+X01. Sprzeczności z dokumentami świętymi: NIE STWIERDZONO. Wątek do pilnowania:
+     V1 „pojedyncze źródło prawdy" vs duplikacja kluczy podstawy w bloku zus
+     (L13) — rozstrzygnięcie przez konsolidację (propozycja zgodna z V1).
+X02. Reguły łamiące parametry-as-data (P06)/temporalność (P05): w P26 — brak
+     (wszystkie wartości z data.thresholds.*; zus26 ma valid_from). W istniejącym
+     bloku zus: dwie wartości podstawy bez wersjonowania (L13 — raportowane).
+X03. Ścieżki nie-fail-closed: PRZED P26 — zawieszenie (I05), DRA (I06), feed
+     minimalnej (I10); PO wdrożeniu — wszystkie 12 analiz mają jawne ścieżki
+     BLOCK/TRIAGE; AUTO_POST niemożliwy bez pełnego dowodu (testy).
+X04. Pola vs kontrakt werdyktu 25-polowy (P03/ADR-004): decyzje P26 zwracają
+     rule_id/package/priority/threshold_version/legal_basis_version/valid_from/
+     _routing/_routing_reason/_legal_basis/_warnings — zgodne z F4 (certyfikat)
+     i ADR-004; brak pól poza kontraktem.
+X05. Testy blokujące merge (P39): test_p26_i01_penny_4161, i02 parallel/
+     overlimit, i03 boundary_*, i04 mismatch, i06 zero-silence, i07 wszystkie,
+     i08 mismatch, i10 no-feed, i11 failing — lista w 9.10.
+X06. Duplikaty innych części: P26 NIE duplikuje zus.rego/micro/* (konsolidacja:
+     stopy czytane z data.thresholds.zus); raport L13 wskazuje duplikat
+     WEWNĘTRZNY istniejącego bloku (poza P26, do konsolidacji).
+X07. Podstawy niezweryfikowane: WSZYSTKIE (L16) + rozbieżność arytmetyczna
+     promptu (L14/Q01); rejestr mediacji w 9.11/9.12 z priorytetem: L13 (P1)
+     > L14 (P2) > L16 (P3).
+X08. Decyzje 4-eyes: Q01–Q03 (wzorzec groszowy, przejście ulg art. 18c,
+     konsolidacja podstawy) — przed ewentualnym przełączeniem ścieżek P26
+     z SUGGEST do AUTO_POST (co i tak wymaga pełnego łańcucha dowodów).
+X09. Metryki do obserwowalności (P37): zus26_penny_diff (próg 0,005),
+     zus26_tier_approach_pct (90), zus26_relief_blocks (licznik BLOCK ulg),
+     zus26_dra_zero_silence_blocks, zus26_isap_unverified_age (wiek weryfikacji),
+     zus26_stress_failures — dashboard składkowy P37/P41.
+X10. Ryzyka → invarianty runtime (P04): już wdrożone jako I07 (4 kody);
+     propozycja rozszerzenia (P33/P66): fuzz inputów P26 z asercją
+     „nigdy AUTO_POST przy _cp_diff > tolerancji".
+
+──────────────────────────────────────────────────────────────────────────────
+ANTY-WZORCE (Sekcja 7.5) — wynik sprawdzenia
+──────────────────────────────────────────────────────────────────────────────
+
+AP01 stuby {true}: BRAK (test no_stub_true_rules + struktura rego) — OK.
+AP02 hardcode stawek w Rego: BRAK w P26 (stopy/progi z data.thresholds.zus;
+    fallbacki tylko fail-closed) — OK.
+AP03 brak else-chain: BRAK (każda analiza ma pełny łańcuch + default) — OK.
+AP04 duplikaty rule_id: BRAK (prefiks jdg.v3_p26_zus_skladki.* unikalny;
+    L13 = duplikat DANYCH w istniejącym bloku, raportowany) — OK z zastrzeżeniem.
+AP05 podstawy bez Dz.U./niemożliwe daty: podstawy z aktem+art.; wszystkie
+    [NIEZWERYFIKOWANE] (brak fabrykacji) — OK.
+AP06 testy zawsze-zielone: BRAK (asercje negatywne BLOCK×17, granice) — OK.
+AP07 cichy AUTO_POST: NIEMOŻLIWY (BLOCK/TRIAGE/SUGGEST; AUTO_POST poza P26) — OK.
+AP08 zależności cykliczne: BRAK (P26 importuje tylko thresholds) — OK.
+AP09 dane zewnętrzne na stałe: minimalna/przeciętne = feed/dane (I10) — OK.
+AP10 brak okien temporalnych: zus26.valid_from=2026-01-01; limit odliczenia
+    wersjonowany w default_threshold_versions — OK.
+AP11 mirror dryf: hash-parity 3/3 zmienionych plików (sync wykonany) — OK.
+AP12 metryki w 2 miejscach: kwoty TIER wyłącznie w blok zus; zus26 = governance
+    (brak zdublowanych wartości) — OK z zastrzeżeniem L13.
+
+──────────────────────────────────────────────────────────────────────────────
+SEKCJA 16 — PROTOKÓŁ DOMKNIĘCIA (potwierdzenie + czyszczenie okna)
+──────────────────────────────────────────────────────────────────────────────
+
+1. Raport zapisany: JDG/raporty_glm52_v3/RAPORT_V3_P26_ZUS_SKLADKI.txt.
+2. Potwierdzenie: zakres P26 = składki społeczne, zdrowotna, ulgi, kalendarz
+   ZUS; luki otwarte P0=0/P1=1/P2=1/P3=2 (+12 zamkniętych); innowacji 12/12;
+   kontrakt wyjściowy K1–K6 GOTOWY; artefakty przekazane: T10 (6 pozycji).
+3. Kontrakty wyjściowe dla P27 (CFC/EXIT/MDG): K1–K6 z sekcji 9.08 + rejestry
+   luk P0/P1 (L13) — P27 wchodzi wyłącznie na podstawie: tego raportu
+   (EXECUTIVE SUMMARY, KONTRAKT WYJŚCIOWY, REJESTR LUK P0/P1), danych
+   data.jdg.thresholds.zus/zus26 i wiringu final_verdict_p90.
+4. OKNO KONTEKSTOWE WYCZYSZCZONE — notatki robocze, cytaty i tymczasowe
+   śródnotatki sesji P26 nie są przenoszone; jedynym nośnikiem stanu jest
+   repozytorium (kod+testy+bundle) i ten raport.
+5. Stan kampanii po P26: 24/69 WDROŻONY_100 (ledger zaktualizowany);
+   następna część: P27 CFC_EXIT_MDG.
+
+──────────────────────────────────────────────────────────────────────────────
+9.18 DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+──────────────────────────────────────────────────────────────────────────────
+
+Zgodność potwierdzona z: DOKUMENT ŚWIĘTY nr 1 (Control Plane/Data Plane,
+fail-closed V1 zasada 6, SLO) — P26 nie autoryzuje AUTO_POST, decyzje przez
+kontrakt decide + certyfikat; DOKUMENT ŚWIĘTY nr 2 (Legal Twin, Warstwa
+Konstytucyjna P04, Golden Oracle P10, Decision Certificate F4, Law Radar,
+Declarative Change) — I07 rozszerza konstytucję, I08 oracle, decyzje z
+_decision_certificate wrapperem, brak zmian w standardach P00–P25.
+Odstępstwa: BRAK. Otwarte pozycje mediacyjne (L13/L14/L16) są raportowane,
+nie rozstrzygane po cichu — zgodnie z protokołem 03/07.
+
+==============================================================================
+KONIEC RAPORTU V3 P26 — ZUS — SKŁADKI SPOŁECZNE, ZDROWOTNA, ULGI I KALENDARZ
+Status: WDROŻONY_100 · 2026-09-06 · kampania V3 FORTRESS (GLM 5.2)
+==============================================================================

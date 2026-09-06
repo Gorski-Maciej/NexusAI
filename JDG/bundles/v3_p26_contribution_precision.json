@@ -1,0 +1,54 @@
+{
+  "innovation": "V3-P26-I01",
+  "generated_at": "2026-09-06T07:32:41+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "penny_ok": true,
+    "rates_as_data": true,
+    "sample": {
+      "pension": 812.23,
+      "disability": 332.88,
+      "sickness": 101.94,
+      "accident": 69.49
+    },
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "precision_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p26_zus_skladki.contribution_precision: True"
+    },
+    {
+      "name": "grosze_rounding",
+      "status": "OK",
+      "detail": "zaokrąglenie half-up do grosza w rego (I01/I07/I12)"
+    },
+    {
+      "name": "base_bounds",
+      "status": "OK",
+      "detail": "zakres podstawy: min 60% prognozy bez ulgi (art. 18a)"
+    },
+    {
+      "name": "rates_as_data",
+      "status": "OK",
+      "detail": "stopy 19,52/8/2,45/1,67 z data.thresholds.zus (ADR-002)"
+    },
+    {
+      "name": "penny_test_4161",
+      "status": "OK",
+      "detail": "4161,00 → emerytalna 812.23 (oczekiwane 812,23; prompt 812,63 = rozbieżność do mediacji V3-P26-X07)"
+    },
+    {
+      "name": "tolerance",
+      "status": "OK",
+      "detail": "tolerancja groszowa 0,005 z zus26 (I01)"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Kontrakt składki: podstawa → stopa → grosze; wiąże P24 (RnA/zasiłki), P18 (ryczałt progi) i P44",
+    "rule": "składki groszowe half-up; zakres podstawy fail-closed"
+  }
+}

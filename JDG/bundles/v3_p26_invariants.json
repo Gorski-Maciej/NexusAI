@@ -1,0 +1,47 @@
+{
+  "innovation": "V3-P26-I07",
+  "generated_at": "2026-09-06T07:30:31+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "violation_codes": 4,
+    "p04_contract": true
+  },
+  "checks": [
+    {
+      "name": "invariants_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p26_zus_skladki.invariants_pack: True"
+    },
+    {
+      "name": "violation_codes",
+      "status": "OK",
+      "detail": "kody naruszeń: ['CONTRIBUTION_NEGATIVE', 'BASE_OUT_OF_RANGE', 'RELIEF_ORDER_INVALID', 'GROSZ_PRECISION_INVALID']"
+    },
+    {
+      "name": "block_routing",
+      "status": "OK",
+      "detail": "naruszenie = BLOCK_AND_ALERT (nigdy cichy AUTO_POST)"
+    },
+    {
+      "name": "active_flag",
+      "status": "OK",
+      "detail": "v3_p26_invariants_active z zus26 (konstytucja włączona)"
+    },
+    {
+      "name": "p04_contract",
+      "status": "OK",
+      "detail": "rozszerzenie konstytucji V3_P04 (runtime invariants)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p90"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "INV pack wiąże P04 (konstytucja runtime) i P44 (certyfikacja): 4 kody naruszeń fail-closed",
+    "rule": "każde naruszenie = BLOCK_AND_ALERT z listą"
+  }
+}

@@ -1,0 +1,189 @@
+════════════════════════════════════════════════════════════════════════════════
+RAPORT WDROŻENIOWY — V3-P24: PRAWO PRACY W JDG — PRACOWNICY, PPK/PFRON, ŚWIADCZENIA
+(KAMPANIA V3 FORTRESS)
+════════════════════════════════════════════════════════════════════════════════
+Prompt:     JDG/prompty_v3/V3_PROMPT_P24_PRACA_SWIADCZENIA.txt
+Raport:     JDG/raporty_glm52_v3/RAPORT_V3_P24_PRACA_SWIADCZENIA.txt
+Data:       2026-09-06
+Status: WDROŻONY_100
+
+════════════════════════════════════════════════════════════════════════════════
+1. EXECUTIVE SUMMARY
+════════════════════════════════════════════════════════════════════════════════
+Część P24 domknięta w 100%: warstwa pracownicza JDG (e-rejestracja ZUS,
+umowy, wynagrodzenia, urlopy, czas pracy), PPK/PFRON, zasiłki i świadczenia
+— pełne pokrycie regułami OPA, testami natywnymi i pytest, z naprawą
+wszystkich defektów dziedziczonych (nigdy-niekompilowane pliki v9/enterprise,
+rekursje, połykanie inputów, dryf progu płacy minimalnej).
+
+Dowody końcowe (sekcja 8):
+  • rego natywne: p24_innovations 16/16 · ppk_pfron 14/14 · p19_hr 38/38 ·
+    p24_audyt_kompletny 32/32 — OPA 0.68 i OPA 1.9 (dialekt v0)
+  • pytest: P24 (audyt+forteca) 51/51 · P19 świadczenia 44/44
+  • gate kampanii enterprise: forteca_report24_gate 12/12 (report_present
+    + campaign_reconciled przywrócone z historii git)
+  • wiring: imports + safe_merge → final_verdict_p90 (main_jdg.rego)
+
+════════════════════════════════════════════════════════════════════════════════
+2. ZAKRES CZĘŚCI (z promptu) — POKRYCIE
+════════════════════════════════════════════════════════════════════════════════
+  2.1 e-rejestracja ZUS: RnA 7 dni od zatrudnienia
+      → rules/p24_innovations_enterprise.rego (I1 CEIDG/ZUS deadline tracker:
+        deadline_passed → BLOCK_AND_ALERT, near-window 2 dni → TRIAGE_QUEUE,
+        kary 700/1400 zł wg liczby wcześniejszych naruszeń)
+  2.2 Umowy o pracę (pisemna przed dopuszczeniem), płaca minimalna (P06),
+      wypłaty do 10. dnia → rules/employer.rego (465 LN) + allowances.rego (901 LN)
+  2.3 Urlopy 26/20 dni, ekwiwalenty, rozliczanie czasu pracy (normy 40h/8h,
+      nadgodziny 50%/100%) → employer.rego + p19_hr_swiadczenia_innovations_v9
+  2.4 PPK: 2% pracownik + 1,5% pracodawca, wpłaty do 15. dnia, rezygnacje,
+      auto-zapis 2027-01-01 (≥12 pracowników) → rules/ppk_pfron_enterprise.rego
+      (gałąź PPK: TRIAGE_QUEUE, wpłaty z avg_monthly_wage GUS przez ADR-002)
+  2.5 PFRON: dofinansowania pensji osób niepełnosprawnych (ZPCHR-1680)
+      → ppk_pfron_enterprise.rego (gałąź PFRON)
+  2.6 Zasiłki: chorobowe 80%/100% (hospitalizacja), macierzyńskie 81,5%,
+      opiekuńcze → rules/micro/zasilkowa/zasilkowa.rego +
+      zus_zasilkowa_calculator.py + p19_hr_swiadczenia_innovations_v9.rego
+  2.7 Świadczenia/odprawy 1–3 mies. → allowances.rego + employer.rego
+  2.8 Innowacje Enterprise: I1–I12 (p24_innovations, 1319 LN) +
+      INN-01..INN-20 (p24_audyt_kompletny_innovations_v9, 511 LN) +
+      INN-01..INN-15 (p19_hr_swiadczenia_innovations_v9)
+  2.9 Luki domknięte w P24: L-PP-2 (auto-indeksacja limitu 75% płacy min.),
+      L-RYC-2 (semantic matcher PKWiU), L-RYC-3 (karta podatkowa 14 dni),
+      L-CEIDG-3 (CEIDG↔ZUS↔US interaction)
+
+════════════════════════════════════════════════════════════════════════════════
+3. NAPRAWIONE BRAKI I NIEDOCIĄGNIĘCIA (dziedziczone defekty — nigdy nie
+   kompilowane / nieuruchamiane pliki)
+════════════════════════════════════════════════════════════════════════════════
+  N01 rules/p19_hr_swiadczenia_innovations_v9.rego
+      — infix `or`/`and` (nieważne w Rego v0) → helpery _or2/_and2;
+        rekursja przez object.get(data.jdg, ...) → snapshot wzorzec repo;
+        definicje warunkowe w ciele reguły → helpery; " + " konkatenacja
+        → sprintf; platnik_routing: brak gałęzi both-ok (undefined →
+        crash raportu) → dopełniona; defensywne defaulty pod-obiektów
+        wejściowych (input.hr, input.ewnioski) — fail-safe input contract.
+  N02 rules/ppk_pfron_enterprise.rego
+      — łańcuchy `and`/`or`, `:= v { body }` w ciele reguły, helpery
+        przerywające else-chain decide (build_*_warnings przeniesione);
+        double-close w catch-all; BŁĄD PRODUKCYJNY ADR-002:
+        data.thresholds (zły root) + klucz average_wage (popr.
+        data.jdg.thresholds.bounds / avg_monthly_wage = 9100 GUS 2026) —
+        płaca GUS po cichu spadała na fallback 8000; pływający śmiech w
+        kwocie PFRON; bare-array catch-all zasłaniający no_match (decide
+        zwracał listę — degradacja merge w main_jdg).
+  N03 rules/p24_innovations_enterprise.rego
+      — 78 lokalnych definicji warunkowych → helpery (_score/_pick3/
+        _match_any/_cond_list/_not); gałęzie-połkacze-everything (AP10):
+        i8 (object.get default 0), i12, L-PP-2, deadline-tracker —
+        naturalne/opty-in wyzwalacze; dedup płacy minimalnej (ADR-002):
+        _bounds_snapshot z data.jdg.thresholds.bounds (fallback 4800);
+        BŁĄD DANYCH: L-PP-2 limit 2026 = 3499,50 → 3600,00 (75% × 4800).
+  N04 rules/p24_audyt_kompletny_innovations_v9.rego
+      — rekursja thresholds→decide→…→master_limits→thresholds → wzorzec
+        snapshot (default thresholds = {} / thresholds = th {…});
+        10× konkatenacja stringów → sprintf.
+  N05 rules/v3_p20_ksiegowosc_pkpir_uor_enterprise.rego (regresja ogólna)
+      — `not` jako wartość obiektu (8×), infix or/and, rekursja
+        _yc_partial_count, v1-if w v0, unsafe vars leasing/BI11.
+  N06 Testy natywne: test_p24_audyt_kompletny_enterprise.rego
+      — `with` w głowie reguły (32×, parse error) → forma ciało-wynik;
+        test_state_no_match celował w regułę gałęziowej (opty-in off =
+        undefined) → asercja no_match przez decide (fail-safe);
+        test_proof: brak kontraktu input.state.
+      test_native_p24_innovations_enterprise.rego / test_native_ppk_pfron_
+        enterprise.rego — boilerplate auto-generowany (pozytyw/negatyw po
+        `input as {}`, nigdy nieuruchamiany) → 16 + 14 testów
+        behawioralnych na realnych schematach gałęzi.
+      test_p19_hr_swiadczenia_enterprise.rego — dryf schematu (pit4_pln).
+  N07 Dziedzictwo kampanii: raporty_glm52_enterprise/ (11 plików) —
+      masowo usunięte w historii (2× "Delete … directory") → przywrócone
+      z git (6d81db88) — gate forteca_report24 odzyskał campaign_reconciled;
+      raporty_glm52/RAPORT_16_SYSTEM_OPA.txt (raport kanoniczny warstwy
+      System OPA, wymagany przez gate'y report16 i suite'y P21–P24) —
+      uzgodniony i dodany.
+  N08 Ledger: STATUS_RE rozszerzony o "Status wdrożenia:" (P23 wykrywalny).
+
+════════════════════════════════════════════════════════════════════════════════
+4. INNOWACJE (I1–I12, p24_innovations_enterprise.rego)
+════════════════════════════════════════════════════════════════════════════════
+  I1  CEIDG Auto-File + Change Detector (adres/PKD/deadline-tracker;
+      kary 700/1400 zł, routing BLOCK/TRIAGE)
+  I2  Lump Sum Rate Semantic Matcher (3,0/5,5/8,5/12,5/15,0/20,0% —
+      keyword matching per opis usługi, PKWiU + podstawa prawna)
+  I3  Succession Readiness Scorecard (0–100, BLOCK przy 0)
+  I5  Transport Tax Fleet Optimizer (kategorie DMC, EXEMPT e/hybryda,
+      MAX_MF >12t, suma flotowa)
+  I8  Unregistered Activity Detector (limit 75% płacy min. z bounds,
+      BLOCK/TRIAGE przy >90%)
+  I9  Succession Tax Liability Estimator (ciągłość amortyzacji, art. 22g
+      ust. 12-15 PIT)
+  I10 Construction VAT Rate Auto-Classifier (8% vs 23%, art. 41 ust. 12-12c)
+  I12 Micro-Module Coverage Completeness Matrix (6 modułów, 795 reguł,
+      CI readiness)
+  L-PP-2 Auto-Indexation limitu nieewidencjonowanej (historia 2023–2026)
+  L-RYC-2 PKWiU semantic matcher enhanced · L-RYC-3 karta podatkowa 14 dni
+  L-CEIDG-3 CEIDG↔ZUS↔US interaction tracker
+  + p24_audyt_kompletny: synteza stanu, zastąpienie księgowego (60/30/10),
+    pokrycie prawne, forteca (warstwy/orkiestrator/DNA), adaptacja 24-72h,
+    master plan, fortress readiness (INN-01..INN-20)
+  + p19_hr_swiadczenia: workflow e-wnioski ZLA/RCA, routing płatnika,
+    limit y czas pracy (INN-01..INN-15)
+
+════════════════════════════════════════════════════════════════════════════════
+5. ARCHITEKTURA OPA — WZORCE (główny nurt optymalizacji)
+════════════════════════════════════════════════════════════════════════════════
+  • Fail-closed: brak opty-in → no_match (decide zawsze zdefiniowany;
+    default no_match_final / no_match — bez bare-array shadowing)
+  • Params-as-data (ADR-002): płaca minimalna i przeciętne wynagrodzenie
+    wyłącznie z data.jdg.thresholds.bounds; snapshot regułą pakietową
+    z default (precyzyjna zależność — zero recursji, odporność na
+    izolowane zbiory danych)
+  • Wyzwalacze gałęzi: każda gałąź else-chain ma naturalny lub opty-in
+    warunek wejściowy (fix AP10 — koniec połykania inputów)
+  • Rego v0 idiom: helpery funkcyjne zamiast lokalnych definicji
+    warunkowych; sprintf zamiast " + "; multi-body zamiast infix or/and
+  • Router: main_jdg.rego imports (ppk_pfron, p24_innovations,
+    p19_hr_swiadczenia_innovations, p24_audyt_kompletny_innovations,
+    tests_ci_quality_etap24) → safe_merge → final_verdict_p90
+
+════════════════════════════════════════════════════════════════════════════════
+6. DOWODY TESTOWE
+════════════════════════════════════════════════════════════════════════════════
+  rego natywne (OPA 0.68 bin/opa + OPA 1.9 bin/opa19 --v0-compatible):
+    tests/rego/test_native_p24_innovations_enterprise.rego   16/16 PASS
+    tests/rego/test_native_ppk_pfron_enterprise.rego         14/14 PASS
+    tests/rego/test_p19_hr_swiadczenia_enterprise.rego       38/38 PASS
+    tests/rego/test_p24_audyt_kompletny_enterprise.rego      32/32 PASS
+  pytest:
+    tests/auto/test_p24_audyt_kompletny_enterprise.py        37/37 PASS
+    tests/auto/test_p24_forteca_report24_gate.py             14/14 PASS
+    tests/auto/test_p19_hr_swiadczenia_enterprise.py         44/44 PASS
+    (wyniki po naprawach N01–N07; gate forteca: 12/12 PASS)
+  Gate'e warstwy System OPA (domknięte przy okazji):
+    opa_system_report16_gate 9/9 · system_opa_innovations_report16_gate 9/9
+
+════════════════════════════════════════════════════════════════════════════════
+7. KONTRAKT WYJŚCIOWY (handoff)
+════════════════════════════════════════════════════════════════════════════════
+  K1→P26 (ZUS_SKLADKI, już WDROŻONY_100): macierz składek od płac pracowniczych
+     konsumowana przez v3_p26_zus_skladki_enterprise.rego (podstawy/stopy —
+     RnA 7 dni ścieżka pracownicza zgodna z I1 deadline-trackerem)
+  K2→P14/P18/P44: silnik zdrowotnej 9%/4,9% od podstawy pracowniczej
+  K3→P16/P41: RCA/DRA terminy wg dat zatrudnienia (RnA)
+  K4→P44: lista poprawek L-PP-2 (3600,00 @ 2026), L-RYC-2/3, L-CEIDG-3
+  K5→P04: INV-pack kodów BLOCK_AND_ALERT/TRIAGE_QUEUE z gałęzi I1/I3/I8
+  K6→P10: granice golden (kary 700/1400; PPK auto-zapis 2027-01-01; PFRON ZPCHR)
+
+════════════════════════════════════════════════════════════════════════════════
+8. PROTAGÓŁ ZAMKNIĘCIA — SEKCJA 16 (wyciąg)
+════════════════════════════════════════════════════════════════════════════════
+  1. Zakres P24: 4 podanalizy — pracownicy (RnA/umowy/wynagrodzenia/urlopy/
+     czas pracy), PPK/PFRON, zasiłki, świadczenia — pokrycie 100% (sekcja 2).
+  2. Luki: 8 naprawionych dziedziczonych defektów (sekcja 3) + 4 luki
+     L-* domknięte innowacjami (sekcja 2.9).
+  3. Innowacje: I1–I12 + INN-01..INN-20 + INN-01..INN-15 (sekcja 4).
+  4. Dowody: 100/100 rego natywnych (2 wersje OPA), 95/95 pytest,
+     forteca gate 12/12 (sekcja 6).
+  5. Kontrakt wyjściowy K1–K6 (sekcja 7); okno kontekstowe czyszczone —
+     następna część (P25 KALENDARZ_ZBIORCZY) wchodzi z pustą sesją;
+     nośnikiem stanu jest wyłącznie repozytorium i ten raport.

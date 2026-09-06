@@ -11,6 +11,12 @@ package jdg.pit.depreciation
 import data.jdg.helpers
 import future.keywords.if
 
+default _dep_low_value_snapshot = {}
+
+_dep_low_value_snapshot = dep {
+    dep := data.jdg.thresholds.depreciation
+}
+
 default decide := {
     "matched": false,
     "rule_id": "jdg.pit.depreciation.no_match",
@@ -23,6 +29,23 @@ default decide := {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 decide := {
+    "matched": true,
+    "rule_id": "jdg.pit.depreciation.a22a.r3",
+    "package": "jdg.pit.depreciation",
+    "priority": 300003,
+    "_routing": "",
+    "_routing_reason": "",
+    "_legal_basis": "Art. 22a ust. 1; Art. 22d ust. 1 PIT",
+    "_warnings": ["[PIT] Wartość ≤ 10 000 PLN — jednorazowy odpis amortyzacyjny (lub bezpośrednio w koszty)"]
+} {
+    object.get(input.invoice, "expense_type", "") == "FIXED_ASSET"
+    initial_value := object.get(input.invoice, "amount_net", 0)
+    low_limit := object.get(_dep_low_value_snapshot, "one_off_low_value_limit", 10000)
+    initial_value <= low_limit
+    initial_value > 0
+}
+
+else := {
     "matched": true,
     "rule_id": "jdg.pit.depreciation.a22a.r1",
     "package": "jdg.pit.depreciation",
@@ -52,21 +75,6 @@ else := {
     initial_value := object.get(input.invoice, "amount_net", 0)
     initial_value >= object.get(data.thresholds.jdg.depreciation, "one_off_low_value_limit", 10000)
     input.invoice.expense_type == "FIXED_ASSET"
-}
-
-else := {
-    "matched": true,
-    "rule_id": "jdg.pit.depreciation.a22a.r3",
-    "package": "jdg.pit.depreciation",
-    "priority": 300003,
-    "_routing": "",
-    "_routing_reason": "",
-    "_legal_basis": "Art. 22a ust. 1; Art. 22d ust. 1 PIT",
-    "_warnings": ["[PIT] Wartość ≤ 10 000 PLN — jednorazowy odpis amortyzacyjny (lub bezpośrednio w koszty)"]
-} {
-    initial_value := object.get(input.invoice, "amount_net", 0)
-    initial_value <= object.get(data.thresholds.jdg.depreciation, "one_off_low_value_limit", 10000)
-    initial_value > 0
 }
 
 else := {

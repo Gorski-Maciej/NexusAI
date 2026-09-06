@@ -36,7 +36,30 @@ import future.keywords.in
 default decide := {"matched": false, "rule_id": "jdg.p19_hr_swiadczenia_innovations.no_match", "package": "jdg.p19_hr_swiadczenia_innovations", "priority": 999999}
 
 # ── Źródła danych: progi z data.jdg.thresholds (ADR-002 — zero hardcode) ──────
-thresholds := object.get(data.jdg, "thresholds", {})
+# UWAGA (fix AP08): referencja przez bezpośrednią ścieżkę data.jdg.thresholds
+# (przekazanie całego drzewa data.jdg do object.get tworzy zależność od
+# WSZYSTKICH reguł pakietu → rekursja). Fallback przez default.
+default thresholds := {}
+thresholds := data.jdg.thresholds
+
+# Fail-safe wejście: brakujące pod-obiekty inputu → {} (zamiast type-error
+# wywracającego cały raport syntetyczny — fix AP09)
+default jdg_in := {}
+jdg_in := input.jdg_entrepreneur
+default hr_in := {}
+hr_in := input.hr
+default family_in := {}
+family_in := input.family
+default fm_in := {}
+fm_in := input.force_majeure
+default sol_in := {}
+sol_in := input.solidarity
+default adv_in := {}
+adv_in := input.advertising
+default dash_in := {}
+dash_in := input.dashboard
+default ewn_in := {}
+ewn_in := input.ewnioski
 hr_limits := object.get(thresholds, "hr_swiadczenia", {
     "kup_dojazdy_pln": 300,                  # KUP dojazdów — 300 zł/mies. (art. 22 ust. 2 pkt 4 u.PIT)
     "zus_emerytalna_pct": 9.76,              # składka emerytalna pracownika
@@ -133,7 +156,7 @@ force_majeure_pay(gross) = round2(gross * force_majeure_pay_pct / 100) { true }
 leave_balance(worked_days) = "W TERMINIE" { worked_days >= 0 }
 else = "" { true }
 
-family_status(children, income_per_capita) = "800+ PRZYSŁUGUJE — " + sprintf("%d dzieci", [children]) { children > 0 }
+family_status(children, income_per_capita) = sprintf("800+ PRZYSŁUGUJE — %d dzieci", [children]) { children > 0 }
 else = "BRAK UPRAWNIEŃ — brak dzieci" { true }
 
 family_routing(children) = "TRIAGE_QUEUE" { children > 0 }
@@ -163,15 +186,30 @@ odprawa_calc(years_employed, monthly_salary) = round2(odprawa_months(years_emplo
 fm_routing(days_used) = "TRIAGE_QUEUE" { days_used > force_majeure_days_max }
 else = "" { true }
 
-advertising_class(desc) = "REKLAMA — KUP (limit 0.25% przychodu)" { contains(desc, "reklama") or contains(desc, "ogłoszenie") or contains(desc, "promocja") }
-else = "REPREZENTACJA — nie jest KUP (art. 23 ust. 1 pkt 23 u.PIT)" { contains(desc, "reprezentacja") or contains(desc, "spotkanie") or contains(desc, "poczęstunek") }
+advertising_class(desc) = "REKLAMA — KUP (limit 0.25% przychodu)" {
+	is_advertising_keyword(desc)
+}
+else = "REPREZENTACJA — nie jest KUP (art. 23 ust. 1 pkt 23 u.PIT)" {
+	is_representation_keyword(desc)
+}
 else = "REKLAMA — KUP (pozostałe wydatki marketingowe)" { true }
+
+# Koniunkcja OR jako wielo-definicja predykatu (Rego v0: brak operatora `or`)
+is_advertising_keyword(desc) { contains(desc, "reklama") }
+is_advertising_keyword(desc) { contains(desc, "ogłoszenie") }
+is_advertising_keyword(desc) { contains(desc, "promocja") }
+
+is_representation_keyword(desc) { contains(desc, "reprezentacja") }
+is_representation_keyword(desc) { contains(desc, "spotkanie") }
+is_representation_keyword(desc) { contains(desc, "poczęstunek") }
 
 # ── SEKCJA 1: MAPA POKRYCIA MODUŁÓW (HR i świadczenia) ────────────────────────
 # Status COMPLETE/PARTIAL/MISSING z data.jdg.p19_audit (hr_swiadczenia_auditor.py).
 p19_priority_modules := ["employer", "mpips", "family", "force_majeure", "insurance", "solidarity", "ppk_pfron", "payments", "procurement", "advertising"]
 
-p19_audit_data := object.get(data.jdg, "p19_audit", {})
+# Dane audytu z data.jdg.p19_audit (host) — default {} gdy brak (fix AP08).
+default p19_audit_data := {}
+p19_audit_data := data.jdg.p19_audit
 p19_coverage_modules := object.get(p19_audit_data, "modules", {})
 
 hr_coverage_report := {
@@ -195,7 +233,7 @@ hr_coverage_report := {
     "_legal_basis": "ADR-002 (progi z data.jdg.thresholds)",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
 }
 
 # ── SEKCJA 1: AUDYT PRACODAWCY (employer 28 + mpips 13 — POZIOM ENTERPRISE) ────
@@ -224,7 +262,7 @@ employer_audit := {
     "_legal_basis": "Kodeks pracy; art. 22 ust. 2 pkt 4 u.PIT; art. 31-32 u.PIT",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
 }
 
 # INN-01: KALKULATOR WYNAGRODZEŃ PRACOWNIKA (brutto → netto, ZUS, PIT-4).
@@ -233,16 +271,16 @@ salary_calculator := {
     "package": "jdg.p19_hr_swiadczenia_innovations",
     "priority": 3321,
     "matched": true,
-    "gross_pln": to_number(object.get(input.hr, "gross_pln", 0)),
-    "kup_pln": object.get(input.hr, "kup_pln", kup_dojazdy_pln),
-    "net_pln": net_salary(to_number(object.get(input.hr, "gross_pln", 0)), object.get(input.hr, "kup_pln", kup_dojazdy_pln)),
+    "gross_pln": to_number(object.get(hr_in, "gross_pln", 0)),
+    "kup_pln": object.get(hr_in, "kup_pln", kup_dojazdy_pln),
+    "net_pln": net_salary(to_number(object.get(hr_in, "gross_pln", 0)), object.get(hr_in, "kup_pln", kup_dojazdy_pln)),
     "note": "kalkulator wynagrodzeń pracownika — brutto→netto: ZUS (emerytalna/rentowa/chorobowa/zdrowotna) + PIT-4",
     "_routing": "",
-    "_routing_reason": sprintf("Kalkulator wynagrodzeń: brutto %.2f → netto %.2f", [to_number(object.get(input.hr, "gross_pln", 0)), net_salary(to_number(object.get(input.hr, "gross_pln", 0)), object.get(input.hr, "kup_pln", kup_dojazdy_pln))]),
+    "_routing_reason": sprintf("Kalkulator wynagrodzeń: brutto %.2f → netto %.2f", [to_number(object.get(hr_in, "gross_pln", 0)), net_salary(to_number(object.get(hr_in, "gross_pln", 0)), object.get(hr_in, "kup_pln", kup_dojazdy_pln))]),
     "_legal_basis": "Art. 31-32 u.PIT; art. 16-18 u.ZUS",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
 }
 
 # INN-02: GENERATOR LISTY PŁAC.
@@ -251,16 +289,16 @@ payroll_generator := {
     "package": "jdg.p19_hr_swiadczenia_innovations",
     "priority": 3322,
     "matched": true,
-    "employees": to_number(object.get(input.hr, "employees", 0)),
+    "employees": to_number(object.get(hr_in, "employees", 0)),
     "payroll_generated": true,
     "fields": ["brutto", "ZUS pracownika", "zaliczka PIT-4", "netto", "ZUS pracodawcy", "FP/FGŚP"],
     "note": "generator listy płac — auto-kalkulacja składników dla każdego pracownika",
     "_routing": "",
-    "_routing_reason": sprintf("Generator listy płac: %d pracowników", [to_number(object.get(input.hr, "employees", 0))]),
+    "_routing_reason": sprintf("Generator listy płac: %d pracowników", [to_number(object.get(hr_in, "employees", 0))]),
     "_legal_basis": "Art. 85-87 KP; art. 31 u.PIT",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
 }
 
 # INN-03: TRACKER URLOPÓW (Kodeks pracy).
@@ -270,16 +308,16 @@ leave_tracker := {
     "priority": 3323,
     "matched": true,
     "leave_entitlement_days": 26,
-    "leave_used_days": to_number(object.get(input.hr, "leave_used_days", 0)),
-    "leave_remaining_days": 26 - to_number(object.get(input.hr, "leave_used_days", 0)),
-    "status": leave_balance(26 - to_number(object.get(input.hr, "leave_used_days", 0))),
+    "leave_used_days": to_number(object.get(hr_in, "leave_used_days", 0)),
+    "leave_remaining_days": 26 - to_number(object.get(hr_in, "leave_used_days", 0)),
+    "status": leave_balance(26 - to_number(object.get(hr_in, "leave_used_days", 0))),
     "note": "tracker urlopów — 20/26 dni (staż <10 / ≥10 lat), bilans urlopowy",
     "_routing": "",
-    "_routing_reason": sprintf("Tracker urlopów: %d dni wykorzystane, %d pozostało", [to_number(object.get(input.hr, "leave_used_days", 0)), 26 - to_number(object.get(input.hr, "leave_used_days", 0))]),
+    "_routing_reason": sprintf("Tracker urlopów: %d dni wykorzystane, %d pozostało", [to_number(object.get(hr_in, "leave_used_days", 0)), 26 - to_number(object.get(hr_in, "leave_used_days", 0))]),
     "_legal_basis": "Art. 154-155 KP",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
 }
 
 # ── SEKCJA 2: AUDYT ŚWIADCZEŃ RODZINNYCH (family 85 — PRIORYTET ★) ───────────
@@ -301,7 +339,7 @@ family_benefits_audit := {
     "_legal_basis": "Ustawa 800+; ustawa o świadczeniach rodzinnych; art. 27f u.PIT",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
 }
 
 # INN-04: KALKULATOR ŚWIADCZEŃ RODZINNYCH (800+ / zasiłek).
@@ -310,16 +348,16 @@ family_benefit_calculator := {
     "package": "jdg.p19_hr_swiadczenia_innovations",
     "priority": 3331,
     "matched": true,
-    "children": to_number(object.get(input.family, "children", 0)),
-    "800_plus_monthly_pln": round2(to_number(object.get(input.family, "children", 0)) * family_800_plus_pln),
-    "status": family_status(to_number(object.get(input.family, "children", 0)), object.get(input.family, "income_per_capita", 0)),
+    "children": to_number(object.get(family_in, "children", 0)),
+    "800_plus_monthly_pln": round2(to_number(object.get(family_in, "children", 0)) * family_800_plus_pln),
+    "status": family_status(to_number(object.get(family_in, "children", 0)), object.get(family_in, "income_per_capita", 0)),
     "note": "kalkulator świadczeń rodzinnych — 800+ miesięcznie, status uprawnień",
-    "_routing": family_routing(to_number(object.get(input.family, "children", 0))),
-    "_routing_reason": sprintf("Kalkulator świadczeń rodzinnych: %d dzieci → %.2f zł/mies. 800+", [to_number(object.get(input.family, "children", 0)), round2(to_number(object.get(input.family, "children", 0)) * family_800_plus_pln)]),
+    "_routing": family_routing(to_number(object.get(family_in, "children", 0))),
+    "_routing_reason": sprintf("Kalkulator świadczeń rodzinnych: %d dzieci → %.2f zł/mies. 800+", [to_number(object.get(family_in, "children", 0)), round2(to_number(object.get(family_in, "children", 0)) * family_800_plus_pln)]),
     "_legal_basis": "Ustawa 800+; ustawa o świadczeniach rodzinnych",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
 }
 
 # ── SEKCJA 3: AUDYT SIŁY WYŻSZEJ I UBEZPIECZEŃ (POZIOM ENTERPRISE) ───────────
@@ -346,7 +384,7 @@ force_majeure_insurance_audit := {
     "_legal_basis": "Art. 148¹ KP; ustawa o systemie ubezpieczeń społecznych",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
 }
 
 # INN-05: KALKULATOR SIŁY WYŻSZEJ (art. 148¹ KP).
@@ -355,18 +393,18 @@ force_majeure_calculator := {
     "package": "jdg.p19_hr_swiadczenia_innovations",
     "priority": 3341,
     "matched": true,
-    "days_used": to_number(object.get(input.force_majeure, "days_used", 0)),
+    "days_used": to_number(object.get(fm_in, "days_used", 0)),
     "max_days_per_year": force_majeure_days_max,
-    "gross_pln": to_number(object.get(input.force_majeure, "gross_pln", 0)),
-    "pay_for_force_majeure_pln": force_majeure_pay(to_number(object.get(input.force_majeure, "gross_pln", 0))),
-    "within_limit": to_number(object.get(input.force_majeure, "days_used", 0)) <= force_majeure_days_max,
+    "gross_pln": to_number(object.get(fm_in, "gross_pln", 0)),
+    "pay_for_force_majeure_pln": force_majeure_pay(to_number(object.get(fm_in, "gross_pln", 0))),
+    "within_limit": to_number(object.get(fm_in, "days_used", 0)) <= force_majeure_days_max,
     "note": "kalkulator siły wyższej — 2 dni/rok (art. 148¹ KP), 50% wynagrodzenia",
-    "_routing": fm_routing(to_number(object.get(input.force_majeure, "days_used", 0))),
-    "_routing_reason": sprintf("Kalkulator siły wyższej: %d dni (max %d), 50%% = %.2f zł", [to_number(object.get(input.force_majeure, "days_used", 0)), force_majeure_days_max, force_majeure_pay(to_number(object.get(input.force_majeure, "gross_pln", 0)))]),
+    "_routing": fm_routing(to_number(object.get(fm_in, "days_used", 0))),
+    "_routing_reason": sprintf("Kalkulator siły wyższej: %d dni (max %d), 50%% = %.2f zł", [to_number(object.get(fm_in, "days_used", 0)), force_majeure_days_max, force_majeure_pay(to_number(object.get(fm_in, "gross_pln", 0)))]),
     "_legal_basis": "Art. 148¹ KP",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
 }
 
 # INN-06: TRACKER PPK.
@@ -375,17 +413,17 @@ ppk_tracker := {
     "package": "jdg.p19_hr_swiadczenia_innovations",
     "priority": 3342,
     "matched": true,
-    "ppk_enrolled": object.get(input.hr, "ppk_enrolled", false),
+    "ppk_enrolled": object.get(hr_in, "ppk_enrolled", false),
     "employee_pct": object.get(hr_limits, "ppk_employee_pct", 2.0),
     "employer_pct": object.get(hr_limits, "ppk_employer_pct", 1.5),
-    "status": ppk_status(object.get(input.hr, "ppk_enrolled", false)),
+    "status": ppk_status(object.get(hr_in, "ppk_enrolled", false)),
     "note": "tracker PPK — obowiązek pracodawcy (po 90 dniach), składki 2% pracownik + 1.5% pracodawca",
-    "_routing": ppk_routing(object.get(input.hr, "ppk_enrolled", false)),
-    "_routing_reason": sprintf("Tracker PPK: zapisany=%v", [object.get(input.hr, "ppk_enrolled", false)]),
+    "_routing": ppk_routing(object.get(hr_in, "ppk_enrolled", false)),
+    "_routing_reason": sprintf("Tracker PPK: zapisany=%v", [object.get(hr_in, "ppk_enrolled", false)]),
     "_legal_basis": "Ustawa o PPK",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
 }
 
 # ── SEKCJA 4: AUDYT PPK/PFRON/FUNDUSZU SOLIDARNOŚCIOWEGO (POZIOM ENTERPRISE) ──
@@ -415,7 +453,7 @@ ppk_pfron_solidarity_audit := {
     "_legal_basis": "Ustawa o PPK; ustawa o PFRON; ustawa o funduszu solidarnościowym",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
 }
 
 # INN-07: KALKULATOR PFRON.
@@ -424,17 +462,17 @@ pfron_contributor := {
     "package": "jdg.p19_hr_swiadczenia_innovations",
     "priority": 3351,
     "matched": true,
-    "employees": to_number(object.get(input.hr, "employees", 0)),
+    "employees": to_number(object.get(hr_in, "employees", 0)),
     "threshold_employees": pfron_threshold_employees,
-    "obligation": pfron_obligation(to_number(object.get(input.hr, "employees", 0))),
-    "monthly_fee_pln": round2(to_number(object.get(input.hr, "employees", 0)) * to_number(object.get(hr_limits, "pfron_fee_per_etat_pln", 40.75))),
+    "obligation": pfron_obligation(to_number(object.get(hr_in, "employees", 0))),
+    "monthly_fee_pln": round2(to_number(object.get(hr_in, "employees", 0)) * to_number(object.get(hr_limits, "pfron_fee_per_etat_pln", 40.75))),
     "note": "kalkulator PFRON — obowiązek od 25 pracowników, opłata za etat (40,75 zł × etaty)",
-    "_routing": pfron_routing(to_number(object.get(input.hr, "employees", 0))),
-    "_routing_reason": sprintf("Kalkulator PFRON: %d pracowników, opłata %.2f zł/mies.", [to_number(object.get(input.hr, "employees", 0)), round2(to_number(object.get(input.hr, "employees", 0)) * to_number(object.get(hr_limits, "pfron_fee_per_etat_pln", 40.75)))]),
+    "_routing": pfron_routing(to_number(object.get(hr_in, "employees", 0))),
+    "_routing_reason": sprintf("Kalkulator PFRON: %d pracowników, opłata %.2f zł/mies.", [to_number(object.get(hr_in, "employees", 0)), round2(to_number(object.get(hr_in, "employees", 0)) * to_number(object.get(hr_limits, "pfron_fee_per_etat_pln", 40.75)))]),
     "_legal_basis": "Ustawa o rehabilitacji zawodowej (PFRON)",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
 }
 
 # INN-08: KALKULATOR FUNDUSZU SOLIDARNOŚCIOWEGO.
@@ -443,17 +481,17 @@ solidarity_calculator := {
     "package": "jdg.p19_hr_swiadczenia_innovations",
     "priority": 3352,
     "matched": true,
-    "applies": object.get(input.solidarity, "applies", false),
+    "applies": object.get(sol_in, "applies", false),
     "donation_pct": solidarity_donation_pct,
-    "monthly_contribution_pln": round2(to_number(object.get(input.solidarity, "gross_base_pln", 0)) * solidarity_donation_pct / 100),
-    "status": solidarity_status(object.get(input.solidarity, "applies", false)),
+    "monthly_contribution_pln": round2(to_number(object.get(sol_in, "gross_base_pln", 0)) * solidarity_donation_pct / 100),
+    "status": solidarity_status(object.get(sol_in, "applies", false)),
     "note": "kalkulator funduszu solidarnościowego — 0.5% od podstawy (2026), terminy wpłat",
     "_routing": "",
-    "_routing_reason": sprintf("Kalkulator solidarnościowy: 0.5%% od %.2f zł = %.2f zł", [to_number(object.get(input.solidarity, "gross_base_pln", 0)), round2(to_number(object.get(input.solidarity, "gross_base_pln", 0)) * solidarity_donation_pct / 100)]),
+    "_routing_reason": sprintf("Kalkulator solidarnościowy: 0.5%% od %.2f zł = %.2f zł", [to_number(object.get(sol_in, "gross_base_pln", 0)), round2(to_number(object.get(sol_in, "gross_base_pln", 0)) * solidarity_donation_pct / 100)]),
     "_legal_basis": "Ustawa o funduszu solidarnościowym",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
 }
 
 # INN-09: KALKULATOR ODPRAW (art. 8 u.zwolnieniach).
@@ -462,17 +500,17 @@ severance_calculator := {
     "package": "jdg.p19_hr_swiadczenia_innovations",
     "priority": 3353,
     "matched": true,
-    "years_employed": to_number(object.get(input.hr, "years_employed", 0)),
-    "monthly_salary_pln": to_number(object.get(input.hr, "monthly_salary_pln", 0)),
-    "severance_months": odprawa_months(to_number(object.get(input.hr, "years_employed", 0))),
-    "severance_pln": odprawa_calc(to_number(object.get(input.hr, "years_employed", 0)), to_number(object.get(input.hr, "monthly_salary_pln", 0))),
+    "years_employed": to_number(object.get(hr_in, "years_employed", 0)),
+    "monthly_salary_pln": to_number(object.get(hr_in, "monthly_salary_pln", 0)),
+    "severance_months": odprawa_months(to_number(object.get(hr_in, "years_employed", 0))),
+    "severance_pln": odprawa_calc(to_number(object.get(hr_in, "years_employed", 0)), to_number(object.get(hr_in, "monthly_salary_pln", 0))),
     "note": "kalkulator odpraw — 1 mies. (<2 lat), 2 mies. (2-8 lat), 3 mies. (≥8 lat) — art. 8 u.zwolnieniach",
     "_routing": "",
-    "_routing_reason": sprintf("Kalkulator odpraw: %d miesięcy × %.2f zł = %.2f zł", [odprawa_months(to_number(object.get(input.hr, "years_employed", 0))), to_number(object.get(input.hr, "monthly_salary_pln", 0)), odprawa_calc(to_number(object.get(input.hr, "years_employed", 0)), to_number(object.get(input.hr, "monthly_salary_pln", 0)))]),
+    "_routing_reason": sprintf("Kalkulator odpraw: %d miesięcy × %.2f zł = %.2f zł", [odprawa_months(to_number(object.get(hr_in, "years_employed", 0))), to_number(object.get(hr_in, "monthly_salary_pln", 0)), odprawa_calc(to_number(object.get(hr_in, "years_employed", 0)), to_number(object.get(hr_in, "monthly_salary_pln", 0)))]),
     "_legal_basis": "Art. 8 u.zwolnieniach grupowych (do 3 miesięcy)",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
 }
 
 # ── SEKCJA 5: AUDYT PŁATNOŚCI, ZAMÓWIEŃ, REKLAMY (POZIOM ENTERPRISE) ─────────
@@ -502,7 +540,7 @@ payments_procurement_advertising_audit := {
     "_legal_basis": "Art. 85 KP; ustawa PZP; art. 23 ust. 1 pkt 23 u.PIT",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
 }
 
 # INN-10: AUDYT PŁATNOŚCI WYNAGRODZEŃ (terminy).
@@ -511,16 +549,16 @@ payroll_payments_monitor := {
     "package": "jdg.p19_hr_swiadczenia_innovations",
     "priority": 3361,
     "matched": true,
-    "payday": to_number(object.get(input.hr, "payday", 10)),
+    "payday": to_number(object.get(hr_in, "payday", 10)),
     "salary_deadline": 10,
-    "on_time": to_number(object.get(input.hr, "payday", 10)) <= 10,
+    "on_time": to_number(object.get(hr_in, "payday", 10)) <= 10,
     "note": "monitor terminów płatności wynagrodzeń — do 10. dnia (art. 85 KP), ZUS do 15., PIT-4 do 20.",
     "_routing": "",
-    "_routing_reason": sprintf("Monitor płatności: wypłata %d. dnia (termin 10.)", [to_number(object.get(input.hr, "payday", 10))]),
+    "_routing_reason": sprintf("Monitor płatności: wypłata %d. dnia (termin 10.)", [to_number(object.get(hr_in, "payday", 10))]),
     "_legal_basis": "Art. 85 KP; art. 47 u.ZUS; art. 38 u.PIT",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
 }
 
 # INN-11: KLASYFIKATOR REKLAMA vs REPREZENTACJA.
@@ -529,16 +567,16 @@ advertising_classifier := {
     "package": "jdg.p19_hr_swiadczenia_innovations",
     "priority": 3362,
     "matched": true,
-    "expense_desc": object.get(input.advertising, "expense_desc", ""),
+    "expense_desc": object.get(adv_in, "expense_desc", ""),
     "classified_as": classification,
     "note": "klasyfikator wydatków — reklama (KUP, limit 0.25%) vs reprezentacja (nie-KUP)",
     "_routing": "",
-    "_routing_reason": sprintf("Klasyfikator wydatku: %s → %s", [object.get(input.advertising, "expense_desc", ""), classification]),
+    "_routing_reason": sprintf("Klasyfikator wydatku: %s → %s", [object.get(adv_in, "expense_desc", ""), classification]),
     "_legal_basis": "Art. 23 ust. 1 pkt 23 u.PIT",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
-    classification := advertising_class(object.get(input.advertising, "expense_desc", ""))
+    object.get(jdg_in, "p19_hr_check", false) == true
+    classification := advertising_class(object.get(adv_in, "expense_desc", ""))
 }
 
 # INN-12: PIPELINE AUTO-AKTUALIZACJI REGUŁ HR (Sekcja 6).
@@ -565,7 +603,7 @@ hr_pipeline_snapshot := {
     "_legal_basis": "ADR-002; obwieszczenia MPiPS; ustawa o ZUS",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
 }
 
 # ── SEKCJA 7: GENIALNE POMYSŁY ENTERPRISE (INN-01..INN-12) ────────────────────
@@ -586,8 +624,19 @@ else = "" { true }
 platnik_status(import_ok, export_ok) = "PŁATNIK ZUS ZINTEGROWANY — import + eksport list płac OK" { import_ok == true; export_ok == true }
 else = "PŁATNIK ZUS — WYMAGA KONFIGURACJI importu/eksportu list płac" { true }
 
-platnik_routing(import_ok, export_ok) = "TRIAGE_QUEUE" { import_ok == false or export_ok == false }
-else = "" { true }
+# Alternatywa OR jako wielo-definicja (Rego v0: brak operatora `or`)
+# Totalna funkcja: każda kombinacja (import, eksport) ma gałąź (fix AP09)
+platnik_routing(import_ok, export_ok) = "TRIAGE_QUEUE" {
+    import_ok == false
+}
+platnik_routing(import_ok, export_ok) = "TRIAGE_QUEUE" {
+    import_ok == true
+    export_ok == false
+}
+platnik_routing(import_ok, export_ok) = "" {
+    import_ok == true
+    export_ok == true
+}
 
 family_panel_status(auto_applications, total) = sprintf("PANEL ŚWIADCZEŃ — %d/%d wniosków automatycznych (ZUS/MPiPS)", [auto_applications, total]) { auto_applications < total }
 else = "PANEL ŚWIADCZEŃ — WSZYSTKIE WNIOSKI AUTOMATYCZNE (ZUS/MPiPS)" { true }
@@ -596,7 +645,7 @@ family_panel_routing(auto_applications, total) = "TRIAGE_QUEUE" { auto_applicati
 else = "" { true }
 
 salary_tax_status(pit2_applied, annual_income) = "KWOTA WOLNA 30 000 zł — PIT 0 zł (art. 27 ust. 1 u.PIT)" { annual_income <= tax_free_amount_annual }
-else = "PIT-2 ULGA ZASTOSOWANA — " + sprintf("%d zł/mies. (art. 31c u.PIT)", [pit2_monthly_relief]) { pit2_applied == true }
+else = sprintf("PIT-2 ULGA ZASTOSOWANA — %d zł/mies. (art. 31c u.PIT)", [pit2_monthly_relief]) { pit2_applied == true }
 else = "PIT-2 NIEZASTOSOWANE — złóż oświadczenie PIT-2 u pracodawcy" { true }
 
 ppk_auto_status(auto_contributions) = "PPK AUTO-WPŁATY AKTYWNE — 2% + 1.5% z listy płac" { auto_contributions == true }
@@ -649,9 +698,9 @@ payroll_end_to_end_module := {
     "_legal_basis": "Art. 85 KP; art. 31-32 u.PIT; art. 47 u.ZUS",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
     required_steps := to_number(object.get(payroll_e2e, "required_steps", 7))
-    completed_steps := to_number(object.get(input.hr, "payroll_steps_completed", 0))
+    completed_steps := to_number(object.get(hr_in, "payroll_steps_completed", 0))
 }
 
 # P0-2: integracja z Płatnikiem ZUS (import/eksport list płac).
@@ -671,9 +720,9 @@ platnik_zus_integration := {
     "_legal_basis": "Ustawa o systemie ubezpieczeń społecznych; Płatnik ZUS (PUE)",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
-    import_ok := object.get(input.hr, "platnik_import_ok", false)
-    export_ok := object.get(input.hr, "platnik_export_ok", false)
+    object.get(jdg_in, "p19_hr_check", false) == true
+    import_ok := object.get(hr_in, "platnik_import_ok", false)
+    export_ok := object.get(hr_in, "platnik_export_ok", false)
 }
 
 # P1-1: panel świadczeń rodzinnych z automatycznymi wnioskami do ZUS/MPiPS.
@@ -694,9 +743,9 @@ family_benefits_panel := {
     "_legal_basis": "Ustawa 800+; ustawa o świadczeniach rodzinnych; ustawa 300+",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
-    applications_total := to_number(object.get(input.family, "applications_total", 0))
-    auto_applications := to_number(object.get(input.family, "auto_applications", 0))
+    object.get(jdg_in, "p19_hr_check", false) == true
+    applications_total := to_number(object.get(family_in, "applications_total", 0))
+    auto_applications := to_number(object.get(family_in, "auto_applications", 0))
 }
 
 # P1-2: kalkulator wynagrodzeń z uwzględnieniem kwoty wolnej i ulg (PIT-2).
@@ -705,23 +754,23 @@ salary_calculator_tax_optimized := {
     "package": "jdg.p19_hr_swiadczenia_innovations",
     "priority": 3383,
     "matched": true,
-    "gross_pln": to_number(object.get(input.hr, "gross_pln", 0)),
-    "kup_pln": object.get(input.hr, "kup_pln", kup_dojazdy_pln),
+    "gross_pln": to_number(object.get(hr_in, "gross_pln", 0)),
+    "kup_pln": object.get(hr_in, "kup_pln", kup_dojazdy_pln),
     "pit2_applied": pit2_applied,
     "pit2_monthly_relief_pln": pit2_monthly_relief,
     "tax_free_amount_annual_pln": tax_free_amount_annual,
     "annual_income_pln": annual_income,
-    "net_pln": tax_optimized_net(to_number(object.get(input.hr, "gross_pln", 0)), object.get(input.hr, "kup_pln", kup_dojazdy_pln), pit2_applied, annual_income),
+    "net_pln": tax_optimized_net(to_number(object.get(hr_in, "gross_pln", 0)), object.get(hr_in, "kup_pln", kup_dojazdy_pln), pit2_applied, annual_income),
     "tax_status": salary_tax_status(pit2_applied, annual_income),
     "note": "kalkulator wynagrodzeń z kwotą wolną i ulgą PIT-2 — art. 31c u.PIT (P1)",
     "_routing": "",
-    "_routing_reason": sprintf("Kalkulator PIT-2: brutto %.2f, PIT-2=%v, dochód roczny %.2f", [to_number(object.get(input.hr, "gross_pln", 0)), pit2_applied, annual_income]),
+    "_routing_reason": sprintf("Kalkulator PIT-2: brutto %.2f, PIT-2=%v, dochód roczny %.2f", [to_number(object.get(hr_in, "gross_pln", 0)), pit2_applied, annual_income]),
     "_legal_basis": "Art. 31c u.PIT (PIT-2); art. 27 ust. 1 u.PIT (kwota wolna)",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
-    pit2_applied := object.get(input.hr, "pit2_applied", object.get(salary_tax_opt, "pit2_applicable", true))
-    annual_income := to_number(object.get(input.hr, "annual_income_pln", 0))
+    object.get(jdg_in, "p19_hr_check", false) == true
+    pit2_applied := object.get(hr_in, "pit2_applied", object.get(salary_tax_opt, "pit2_applicable", true))
+    annual_income := to_number(object.get(hr_in, "annual_income_pln", 0))
 }
 
 # P1-3: tracker PPK z pełną automatyzacją wpłat (2% + 1.5%).
@@ -732,9 +781,9 @@ ppk_auto_contribution_tracker := {
     "matched": true,
     "employee_pct": object.get(ppk_auto, "employee_pct", 2.0),
     "employer_pct": object.get(ppk_auto, "employer_pct", 1.5),
-    "gross_pln": to_number(object.get(input.hr, "gross_pln", 0)),
-    "employee_contribution_pln": round2(to_number(object.get(input.hr, "gross_pln", 0)) * to_number(object.get(ppk_auto, "employee_pct", 2.0)) / 100),
-    "employer_contribution_pln": round2(to_number(object.get(input.hr, "gross_pln", 0)) * to_number(object.get(ppk_auto, "employer_pct", 1.5)) / 100),
+    "gross_pln": to_number(object.get(hr_in, "gross_pln", 0)),
+    "employee_contribution_pln": round2(to_number(object.get(hr_in, "gross_pln", 0)) * to_number(object.get(ppk_auto, "employee_pct", 2.0)) / 100),
+    "employer_contribution_pln": round2(to_number(object.get(hr_in, "gross_pln", 0)) * to_number(object.get(ppk_auto, "employer_pct", 1.5)) / 100),
     "auto_contributions": auto_contributions,
     "deadline_payment_day": object.get(ppk_auto, "deadline_payment_day", 15),
     "status": ppk_auto_status(auto_contributions),
@@ -744,8 +793,8 @@ ppk_auto_contribution_tracker := {
     "_legal_basis": "Ustawa o PPK; art. 47 u.ZUS",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
-    auto_contributions := object.get(input.hr, "ppk_auto_contributions", object.get(ppk_auto, "auto_contributions", true))
+    object.get(jdg_in, "p19_hr_check", false) == true
+    auto_contributions := object.get(hr_in, "ppk_auto_contributions", object.get(ppk_auto, "auto_contributions", true))
 }
 
 # P2-1: dashboard HR (urlopy, płace, PFRON) w UI.
@@ -766,12 +815,12 @@ hr_dashboard_ui := {
     "_legal_basis": "ADR-002; art. 154-155 KP; ustawa o PFRON",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
-    leave_used := to_number(object.get(input.dashboard, "leave_used_days", 0))
-    leave_remaining := to_number(object.get(input.dashboard, "leave_remaining_days", 0))
-    payroll_ready := to_number(object.get(input.dashboard, "payroll_ready", 0))
-    pfron_oblig := object.get(input.dashboard, "pfron_obligation", false)
-    pending_items := to_number(object.get(input.dashboard, "leave_pending", 0)) + to_number(object.get(input.dashboard, "payroll_pending", 0)) + pfron_extra_count(pfron_oblig)
+    object.get(jdg_in, "p19_hr_check", false) == true
+    leave_used := to_number(object.get(dash_in, "leave_used_days", 0))
+    leave_remaining := to_number(object.get(dash_in, "leave_remaining_days", 0))
+    payroll_ready := to_number(object.get(dash_in, "payroll_ready", 0))
+    pfron_oblig := object.get(dash_in, "pfron_obligation", false)
+    pending_items := to_number(object.get(dash_in, "leave_pending", 0)) + to_number(object.get(dash_in, "payroll_pending", 0)) + pfron_extra_count(pfron_oblig)
 }
 
 # P2-2: e-wnioski pracownicze (urlop, siła wyższa) z auto-akceptacją.
@@ -792,9 +841,9 @@ employee_ewnioski_workflow := {
     "_legal_basis": "Art. 168-172 KP (urlopy); art. 148¹ KP (siła wyższa)",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
-    applications := to_number(object.get(input.ewnioski, "applications", 0))
-    auto_approved := to_number(object.get(input.ewnioski, "auto_approved", 0))
+    object.get(jdg_in, "p19_hr_check", false) == true
+    applications := to_number(object.get(ewn_in, "applications", 0))
+    auto_approved := to_number(object.get(ewn_in, "auto_approved", 0))
 }
 
 # ── GŁÓWNY DECIDE (P19) — raport syntetyczny HR i świadczeń ───────────────────
@@ -823,5 +872,5 @@ decide := {
     "_legal_basis": "Kodeks pracy; ustawa 800+; ustawa o PPK; ustawa o PFRON; u.PIT",
     "_warnings": [],
 } {
-    object.get(input.jdg_entrepreneur, "p19_hr_check", false) == true
+    object.get(jdg_in, "p19_hr_check", false) == true
 }

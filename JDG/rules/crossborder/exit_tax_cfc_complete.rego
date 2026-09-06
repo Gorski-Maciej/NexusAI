@@ -11,17 +11,6 @@ package jdg.exit_tax_cfc
 import data.jdg.helpers
 import future.keywords.if
 
-default decide := {
-    "matched": false,
-    "rule_id": "jdg.exit_tax_cfc.no_match",
-    "package": "jdg.exit_tax_cfc",
-    "priority": 999999
-}
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# EXIT TAX — Art. 30da PIT (10 reguł)
-# ═══════════════════════════════════════════════════════════════════════════════
-
 decide := {
     "matched": true,
     "rule_id": "jdg.exit_tax_cfc.exit_tax.r1",
@@ -99,23 +88,6 @@ else := {
 
 else := {
     "matched": true,
-    "rule_id": "jdg.exit_tax_cfc.exit_tax.r6",
-    "package": "jdg.exit_tax_cfc",
-    "priority": 360006,
-    "_routing": "",
-    "_routing_reason": "",
-    "_legal_basis": "Art. 30da ust. 9 PIT",
-    "_warnings": ["[EXIT TAX] Deklaracja o wysokości dochodu z Exit Tax — do 7 dnia miesiąca następującego po miesiącu przeniesienia"]
-} {
-    true
-}
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# CFC — Art. 30f PIT (8 reguł)
-# ═══════════════════════════════════════════════════════════════════════════════
-
-else := {
-    "matched": true,
     "rule_id": "jdg.exit_tax_cfc.cfc.r1",
     "package": "jdg.exit_tax_cfc",
     "priority": 360020,
@@ -130,7 +102,7 @@ else := {
     stake := object.get(input.jdg_entrepreneur, "foreign_company_stake_pct", 0)
     foreign_tax := object.get(input.jdg_entrepreneur, "foreign_cit_rate", 1.0)
     stake > 50
-    foreign_tax < 14.25
+    foreign_tax < 0.1425
 }
 
 else := {
@@ -176,20 +148,19 @@ else := {
 
 else := {
     "matched": true,
-    "rule_id": "jdg.exit_tax_cfc.cfc.r5",
+    "rule_id": "jdg.exit_tax_cfc.wht.r2",
     "package": "jdg.exit_tax_cfc",
-    "priority": 360024,
-    "_routing": "",
-    "_routing_reason": "",
-    "_legal_basis": "Art. 30f ust. 5 PIT",
-    "_warnings": ["[CFC] Termin: CIT-CFC do końca 9. miesiąca następnego roku podatkowego CFC"]
+    "priority": 360043,
+    "_routing": "BLOCK_AND_ALERT",
+    "_routing_reason": "WHT >2M PLN BEZ certyfikatu rezydencji — obowiązek 20% lub opinia o stosowaniu preferencji!",
+    "_legal_basis": "Art. 26 ust. 2e CIT",
+    "_warnings": ["[WHT] Płatność >2M PLN bez certyfikatu rezydencji — pobierz WHT 20% lub złóż WH-OSC!"]
 } {
-    true
+    annual_foreign_payments := object.get(input.jdg_entrepreneur, "annual_foreign_payments_pln", 0)
+    has_certificate := object.get(input.jdg_entrepreneur, "has_tax_residence_certificates", false)
+    annual_foreign_payments > 2000000
+    not has_certificate
 }
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# WHT / PE — Cross-border expansion (5 reguł)
-# ═══════════════════════════════════════════════════════════════════════════════
 
 else := {
     "matched": true,
@@ -235,19 +206,20 @@ else := {
 
 else := {
     "matched": true,
-    "rule_id": "jdg.exit_tax_cfc.wht.r2",
+    "rule_id": "jdg.exit_tax_cfc.cfc.r5",
     "package": "jdg.exit_tax_cfc",
-    "priority": 360043,
-    "_routing": "BLOCK_AND_ALERT",
-    "_routing_reason": "WHT >2M PLN BEZ certyfikatu rezydencji — obowiązek 20% lub opinia o stosowaniu preferencji!",
-    "_legal_basis": "Art. 26 ust. 2e CIT",
-    "_warnings": ["[WHT] Płatność >2M PLN bez certyfikatu rezydencji — pobierz WHT 20% lub złóż WH-OSC!"]
+    "priority": 360024,
+    "_routing": "",
+    "_routing_reason": "",
+    "_legal_basis": "Art. 30f ust. 5 PIT",
+    "_warnings": ["[CFC] Termin: CIT-CFC do końca 9. miesiąca następnego roku podatkowego CFC"]
 } {
-    annual_foreign_payments := object.get(input.jdg_entrepreneur, "annual_foreign_payments_pln", 0)
-    has_certificate := object.get(input.jdg_entrepreneur, "has_tax_residence_certificates", false)
-    annual_foreign_payments > 2000000
-    not has_certificate
+    object.get(input, "cfc_deadline_check", false) == true
 }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# WHT / PE — Cross-border expansion (5 reguł)
+# ═══════════════════════════════════════════════════════════════════════════════
 
 else := {
     "matched": true,
@@ -261,3 +233,20 @@ else := {
 } {
     object.get(input.jdg_entrepreneur, "has_cfc", false) == true
 }
+else := {
+    "matched": true,
+    "rule_id": "jdg.exit_tax_cfc.exit_tax.r6",
+    "package": "jdg.exit_tax_cfc",
+    "priority": 360006,
+    "_routing": "",
+    "_routing_reason": "",
+    "_legal_basis": "Art. 30da ust. 9 PIT",
+    "_warnings": ["[EXIT TAX] Deklaracja o wysokości dochodu z Exit Tax — do 7 dnia miesiąca następującego po miesiącu przeniesienia"]
+} {
+    true
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CFC — Art. 30f PIT (8 reguł)
+# ═══════════════════════════════════════════════════════════════════════════════
+

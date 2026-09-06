@@ -1,0 +1,48 @@
+{
+  "innovation": "V3-P26-I02",
+  "generated_at": "2026-09-06T07:30:59+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "states": 5,
+    "legal_transitions": 10,
+    "limits_as_data": true
+  },
+  "checks": [
+    {
+      "name": "relief_order_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p26_zus_skladki.relief_order_automaton: True"
+    },
+    {
+      "name": "states",
+      "status": "OK",
+      "detail": "stany automatu: ['NONE', 'START', 'PREFERENCYJNA', 'MALY_ZUS_PLUS', 'STANDARD']"
+    },
+    {
+      "name": "parallel_block",
+      "status": "OK",
+      "detail": "ulgi równoległe = BLOCK (błąd klasyczny)"
+    },
+    {
+      "name": "limits_as_data",
+      "status": "OK",
+      "detail": "6/24/36 mies. z data.thresholds.zus (ADR-002)"
+    },
+    {
+      "name": "transition_automaton",
+      "status": "OK",
+      "detail": "automat przejść (10 legalnych)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: import + rejestr + final_verdict_p90"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Automat ulg wiąże P24 (RnA), P23 (cykl życia) i P44; kolejność: na start → preferencyjna/mały ZUS",
+    "rule": "równoległość/przekroczenie limitu = BLOCK"
+  }
+}

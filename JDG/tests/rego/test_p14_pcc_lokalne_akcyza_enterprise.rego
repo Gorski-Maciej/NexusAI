@@ -6,6 +6,10 @@ package jdg.tests.p14_pcc_lokalne_akcyza
 
 import future.keywords.in
 
+round2(x) = r {
+    r := round(x * 100) / 100
+}
+
 # ── 1. Mapa pokrycia artykułów PCC+lokalne+akcyza ─────────────────────────────
 test_p14_coverage_report {
     result := data.jdg.p14_pcc_lokalne_akcyza_innovations.pcc_local_excise_coverage_report with

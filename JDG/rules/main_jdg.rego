@@ -95,6 +95,7 @@ import data.jdg.v3_p18_ryczalt as v3_p18_ryczalt
 import data.jdg.v3_p19_pcc_akcyza_bdo as v3_p19_pcc_akcyza_bdo
 import data.jdg.v3_p20_ksiegowosc as v3_p20_ksiegowosc
 import data.jdg.v3_p25_kalendarz as v3_p25_kalendarz
+import data.jdg.v3_p26_zus_skladki as v3_p26_zus_skladki
 import data.jdg.micro.quality_v3_13 as micro_quality_v3_13
 import data.jdg.hyper.quality_v3_14 as hyper_quality_v3_14
 import data.jdg.enterprise.quality_v3_15 as enterprise_quality_v3_15
@@ -1466,6 +1467,7 @@ _package_decisions := {
     "jdg.v3_p19_pcc_akcyza_bdo": v3_p19_pcc_akcyza_bdo.decide,
     "jdg.v3_p20_ksiegowosc": v3_p20_ksiegowosc.decide,
     "jdg.v3_p25_kalendarz": v3_p25_kalendarz.decide,
+    "jdg.v3_p26_zus_skladki": v3_p26_zus_skladki.decide,
     "jdg.international": international.decide,
     "jdg.tp": tp.decide,
     "jdg.tp.hyper": tp_hyper.decide,
@@ -2860,6 +2862,21 @@ final_verdict_p89 = safe_merge(final_verdict_p88,
         fallback.decide
     ))
 
+# V3-P26 (ZUS_SKLADKI): warstwa składkowa ENTERPRISE — składki groszowe
+# (I01, art. 18a/22 SUS — stopy z data.thresholds.zus), automat kolejności ulg
+# (I02 — na start → preferencyjna/mały ZUS, równoległość = BLOCK), sentinel
+# progów NARASTAJĄCO 60k/300k (I03), weryfikator zdrowotnej 2026/ISAP (I04),
+# handler zawieszenia (I05 — pauza ulgi), DRA/RCA/ZZA zero-ciszy (I06,
+# art. 47), invarianty składkowe (I07 — kontrakt P04), golden set granic
+# (I08), rescaler zdrowotnej przy zmianie formy (I09), integracja minimalnej
+# (I10 — feed P06), stress lab (I11) i bramka spójności ZUS×PIT×ryczałt
+# (I12). SUGGEST/no_auto_post i fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p26_check nie jest true.
+final_verdict_p90 = safe_merge(final_verdict_p89,
+    safe_merge(v3_p26_zus_skladki.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -2875,7 +2892,7 @@ final_verdict_p89 = safe_merge(final_verdict_p88,
 # Kontekst routingu musi być dołączony PRZED enforce(): INV-020/036 badają
 # rzeczywisty werdykt końcowy, a nie wersję pozbawioną metadanych routingu.
 # Compatibility anchors remain available as final_verdict_p53..p83, but the
-# effective POST-MERGE input is p83. This preserves every stage p54..p82 and
+# effective POST-MERGE input is p90. This preserves every stage p54..p82 and
 # removes the former hand-written object.union chain that could silently skip
 # stages or overwrite immutable fields (INV-018/INV-042).
 # Legacy audit anchors (documentation only; deliberately not executable):
@@ -2892,7 +2909,7 @@ final_verdict_p89 = safe_merge(final_verdict_p88,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p89
+    final_verdict_p90
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

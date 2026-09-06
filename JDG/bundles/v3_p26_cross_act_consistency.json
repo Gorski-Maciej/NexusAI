@@ -1,0 +1,51 @@
+{
+  "innovation": "V3-P26-I12",
+  "generated_at": "2026-09-06T07:30:34+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "forms": [
+      "SCALE",
+      "LINEAR",
+      "LUMP_SUM"
+    ],
+    "sample_scale_income_100k": 9000.0
+  },
+  "checks": [
+    {
+      "name": "cross_act_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p26_zus_skladki.cross_act_consistency: True"
+    },
+    {
+      "name": "forms",
+      "status": "OK",
+      "detail": "formy: ['SCALE', 'LINEAR', 'LUMP_SUM'] → zdrowotna (9%/4,9%/TIER)"
+    },
+    {
+      "name": "grosz_tolerance",
+      "status": "OK",
+      "detail": "rozjazd > 0,005 = BLOCK (cross-act)"
+    },
+    {
+      "name": "missing_data_triage",
+      "status": "OK",
+      "detail": "brak zadeklarowanej zdrowotnej = TRIAGE (nie cisza)"
+    },
+    {
+      "name": "field_contracts",
+      "status": "OK",
+      "detail": "kontrakty pól V3_P14 (dochód) + V3_P18 (przychody ryczałtu)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p90"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Bramka spójności wiąże P14 (dochód→zdrowotna), P18 (przychody→TIER), P24 (RnA) i P44",
+    "rule": "rozjazd > tolerancji = BLOCK; brak danych = TRIAGE"
+  }
+}

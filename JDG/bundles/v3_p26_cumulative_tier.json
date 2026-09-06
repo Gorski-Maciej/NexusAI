@@ -1,0 +1,48 @@
+{
+  "innovation": "V3-P26-I03",
+  "generated_at": "2026-09-06T07:30:59+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "boundary_ok": true,
+    "tier_1_limit": 60000,
+    "tier_2_limit": 300000
+  },
+  "checks": [
+    {
+      "name": "tier_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p26_zus_skladki.cumulative_tier_sentinel: True"
+    },
+    {
+      "name": "cumulative_mode",
+      "status": "OK",
+      "detail": "przychód NARASTAJĄCO rocznie (nie per miesiąc)"
+    },
+    {
+      "name": "boundary_tests",
+      "status": "OK",
+      "detail": "granice 60k/300k ±0,01: [59999.99, 60000.0, 60000.01, 299999.99, 300000.0, 300000.01]"
+    },
+    {
+      "name": "approach_alert",
+      "status": "OK",
+      "detail": "alarm ≥90% progu (PRZED przekroczeniem)"
+    },
+    {
+      "name": "limits_as_data",
+      "status": "OK",
+      "detail": "progi z data.thresholds.zus (ADR-002)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p90"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Progi narastająco wiążą P18 (przychody ryczałtu) i P44; kwoty TIER z data.thresholds.zus",
+    "rule": "granica ±0,01 = TRIAGE; zły TIER = BLOCK"
+  }
+}

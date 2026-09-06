@@ -37,7 +37,14 @@ import future.keywords.in
 default decide := {"matched": false, "rule_id": "jdg.p24_audyt_kompletny_innovations.no_match", "package": "jdg.p24_audyt_kompletny_innovations", "priority": 999999}
 
 # ── Źródła danych: progi z data.jdg.thresholds (ADR-002 — zero hardcode) ──────
-thresholds := object.get(data.jdg, "thresholds", {})
+# UWAGA: object.get(data.jdg, ...) tworzy zależność od CAŁEGO drzewa jdg
+# (w tym decide tego pakietu) → recursja. Wzorzec repo: snapshot regułą
+# pakietową z default — precyzyjna zależność od data.jdg.thresholds.
+default thresholds = {}
+
+thresholds = th {
+    th := data.jdg.thresholds
+}
 master_limits := object.get(thresholds, "audyt_kompletny", {
     "target_coverage_pct": 100,              # cel pokrycia prawnego 100%
     "completeness_target": 100,              # cel Completeness Score 100/100
@@ -63,36 +70,36 @@ round2(x) = r {
 }
 
 # ── Funkcje pomocnicze (else-chain — deterministyczne, zero konfliktów) ────────
-state_status(completeness, target) = "STAN NIEWYSTARCZAJĄCY — " + sprintf("Completeness %d/100", [completeness]) {
+state_status(completeness, target) = sprintf("STAN NIEWYSTARCZAJĄCY — Completeness %d/100", [completeness]) {
     completeness < target
 }
 else = "STAN PEŁNY — Completeness 100/100"
 
-coverage_status(pct, target) = "LUKA PRAWNA — " + sprintf("%.1f%% pokrycia < %d%%", [pct, target]) {
+coverage_status(pct, target) = sprintf("LUKA PRAWNA — %.1f%% pokrycia < %d%%", [pct, target]) {
     pct < target
 }
 else = "POKRYCIE 100% — brak luk"
 
-accountant_status(auto_post_pct, ask_user_pct, auto_target, ask_max) = "AUTOMATYZACJA MOŻLIWA — " + sprintf("%.1f%% AUTO_POST, %.1f%% ASK_USER", [auto_post_pct, ask_user_pct]) {
+accountant_status(auto_post_pct, ask_user_pct, auto_target, ask_max) = sprintf("AUTOMATYZACJA MOŻLIWA — %.1f%% AUTO_POST, %.1f%% ASK_USER", [auto_post_pct, ask_user_pct]) {
     auto_post_pct >= auto_target
     ask_user_pct <= ask_max
 }
-else = "POTRZEBNA OPTYMALIZACJA — " + sprintf("%.1f%% AUTO_POST, %.1f%% ASK_USER", [auto_post_pct, ask_user_pct])
+else = sprintf("POTRZEBNA OPTYMALIZACJA — %.1f%% AUTO_POST, %.1f%% ASK_USER", [auto_post_pct, ask_user_pct])
 
-fortress_status(score, target) = "FORTECA OSIĄGNIĘTA — " + sprintf("wskaźnik %d ≥ %d", [score, target]) {
+fortress_status(score, target) = sprintf("FORTECA OSIĄGNIĘTA — wskaźnik %d ≥ %d", [score, target]) {
     score >= target
 }
-else = "FORTECA W BUDOWIE — " + sprintf("wskaźnik %d < %d", [score, target])
+else = sprintf("FORTECA W BUDOWIE — wskaźnik %d < %d", [score, target])
 
-adaptation_status(hours, max_hours) = "ADAPTACJA W " + sprintf("%dh", [hours]) {
+adaptation_status(hours, max_hours) = sprintf("ADAPTACJA W %dh", [hours]) {
     hours <= max_hours
 }
-else = "ADAPTACJA ZA WOLNA — " + sprintf("%dh > %dh", [hours, max_hours])
+else = sprintf("ADAPTACJA ZA WOLNA — %dh > %dh", [hours, max_hours])
 
-phase_status(phase, done) = "FAZA " + phase + " AKTYWNA" {
+phase_status(phase, done) = sprintf("FAZA %s AKTYWNA", [phase]) {
     done == false
 }
-else = "FAZA " + phase + " UKOŃCZONA"
+else = sprintf("FAZA %s UKOŃCZONA", [phase])
 
 # ── Sekcja 1: SYNTEZA STANU MODUŁU ────────────────────────────────────────────
 state_synthesis := {

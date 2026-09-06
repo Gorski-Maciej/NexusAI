@@ -1,0 +1,49 @@
+{
+  "innovation": "V3-P26-I04",
+  "generated_at": "2026-09-06T07:31:00+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "isap_gate": true,
+    "health_scale_rate": 0.09,
+    "health_linear_rate": 0.049,
+    "linear_deduction_limit_2026": 14100
+  },
+  "checks": [
+    {
+      "name": "verifier_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p26_zus_skladki.health_2026_verifier: True"
+    },
+    {
+      "name": "versioned_params",
+      "status": "OK",
+      "detail": "wersja parametrów zdrowotnej z data.thresholds.zus26"
+    },
+    {
+      "name": "isap_gate",
+      "status": "OK",
+      "detail": "brak weryfikacji ISAP = TRIAGE (nigdy zaufanie domyślne)"
+    },
+    {
+      "name": "version_mismatch_block",
+      "status": "OK",
+      "detail": "rozjazd wersji host↔dane = BLOCK (akt 8.04)"
+    },
+    {
+      "name": "legal_tag",
+      "status": "OK",
+      "detail": "stawki/progi oznaczone [NIEZWERYFIKOWANE] (protokół 04)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p90"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Lista poprawek zdrowotnej → wejście do P44 (P0 przy rozbieżnościach); wiąże P14 (dochód) i P18 (ryczałt)",
+    "rule": "wersja host ≠ dane = BLOCK; brak ISAP = TRIAGE"
+  }
+}

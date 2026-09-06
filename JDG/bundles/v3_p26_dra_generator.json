@@ -1,0 +1,53 @@
+{
+  "innovation": "V3-P26-I06",
+  "generated_at": "2026-09-06T07:31:01+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "forms": 4,
+    "required_blocks": [
+      "form_type",
+      "declaration_period",
+      "payer_identified",
+      "employees_count"
+    ],
+    "zero_silence": true
+  },
+  "checks": [
+    {
+      "name": "dra_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p26_zus_skladki.dra_generator: True"
+    },
+    {
+      "name": "forms",
+      "status": "OK",
+      "detail": "formularze: ['DRA', 'RCA', 'ZZA', 'RCA_ALIGN']"
+    },
+    {
+      "name": "zero_silence_fields",
+      "status": "OK",
+      "detail": "brak pól/identyfikatora/okresu = BLOCK (zero ciszy)"
+    },
+    {
+      "name": "rca_employees_rule",
+      "status": "OK",
+      "detail": "pracownicy > 0 → RCA (przewidywana forma = TRIAGE przy różnicy)"
+    },
+    {
+      "name": "p25_calendar_contract",
+      "status": "OK",
+      "detail": "terminy DRA 10./15. z kalendarza MASTER V3_P25"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p90"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "DRA generator wiąże P16 (deklaracje) i P41 (UI); kontrakt pól: form/period/ident/employees",
+    "rule": "zero ciszy: brak pola = BLOCK; forma≠przewidywana = TRIAGE"
+  }
+}

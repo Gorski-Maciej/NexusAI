@@ -2,25 +2,29 @@
 # NexusAI JDG — ENTERPRISE PPK + PFRON MODULE (Strategic Initiative S18)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# METADATA
-# title: JDG Enterprise PPK + PFRON — Employee Obligations Automation
-# description: |
-#   ENTERPRISE v5.1 — Automatyzacja obowiązków pracodawcy JDG:
-#   - PPK (Pracownicze Plany Kapitałowe): auto-enrollment, wpłaty, rezygnacje, limity
-#   - PFRON: wpłaty na PFRON, ulgi, status ZPChr, obliczanie wskaźnika zatrudnienia
-#   - FGŚP (Fundusz Gwarantowanych Świadczeń Pracowniczych): składki
-#   - ZFŚS (Zakładowy Fundusz Świadczeń Socjalnych): obowiązki
-#   Wypełnia lukę: brak reguł dla pracodawcy JDG z pracownikami.
-# architecture: Enterprise Employer Engine, First-Match-Wins else-chain
-# legal_basis: Ustawa o PPK (Dz.U. 2018 poz. 2215); Ustawa o rehabilitacji (Dz.U. 1997 nr 123 poz. 776)
-# package: jdg.ppk_pfron
-# deprecated: false
-# priority_range: 1650-1699
+# NexusAI JDG — ENTERPRISE PPK + PFRON MODULE (Strategic Initiative S18)
+# ENTERPRISE v5.1 — Automatyzacja obowiązków pracodawcy JDG: PPK (auto-enrollment,
+# wpłaty, rezygnacje, limity), PFRON (wpłaty, ulgi, ZPChr, wskaźnik zatrudnienia),
+# FGŚP (składki), ZFŚS (obowiązki). Pakiet jdg.ppk_pfron, else-chain first-match-wins,
+# priorytety 1650-1699. Podstawy prawne: ustawa o PPK (Dz.U. 2018 poz. 2215) oraz
+# ustawa o rehabilitacji zawodowej i społecznej (Dz.U. 1997 nr 123 poz. 776).
+# Uwaga (fix AP08): brak operatorów and/or w Rego v0 — koniunkcje jako comprehension.
+# ══════════════════════════════════════════════════════════════════════════════
+# legal_basis — Ustawa o PPK (Dz.U. 2018 poz. 2215) oraz ustawa o rehabilitacji zawodowej (Dz.U. 1997 nr 123 poz. 776)
+# package — jdg.ppk_pfron
+# deprecated — false
+# priority_range — 1650-1699
 # ═══════════════════════════════════════════════════════════════════════════════
 
 package jdg.ppk_pfron
 
+import future.keywords.in
 import data.jdg.helpers
+
+# ADR-002: snapshot progów przez regułę lokalną (object.get na refie
+# pakietu jest niepoprawny typowo — poprawny wzorzec jak w p19)
+default thresholds_snapshot := {}
+thresholds_snapshot := data.jdg.thresholds
 
 default decide := {
     "matched": false, "rule_id": "jdg.ppk_pfron.no_match",
@@ -30,6 +34,7 @@ default decide := {
 # ═══════════════════════════════════════════════════════════════════════════════
 # PPK-1650: PPK AUTO-ENROLLMENT CHECK — sprawdzenie obowiązku PPK
 # ═══════════════════════════════════════════════════════════════════════════════
+
 
 decide := {
     "matched": true,
@@ -63,40 +68,31 @@ decide := {
     # - At least 1 employee (JDG with employees)
     # - Not all opted out
     # - No PPE (PPE exempts from PPK)
-    ppk_required := ee_count > 0 and not all_opted_out and not has_ppe
+    # Koniunkcja jako comprehension (Rego v0: brak operatora `and` w wyrażeniach)
+    ppk_required := count([1 | ee_count > 0; not all_opted_out; not has_ppe]) > 0
 
-    # Auto-enrollment rules
-    auto_enroll_date := ""
-    auto_enroll_date := sprintf("2026-04-01", []) { ee_count >= 50; enrolled < ee_age_18_55 }
-    auto_enroll_date := sprintf("2026-10-01", []) { ee_count >= 20; ee_count < 50; enrolled < ee_age_18_55 }
-    auto_enroll_date := sprintf("2027-01-01", []) { ee_count < 20; enrolled < ee_age_18_55 }
+    # Auto-enrollment: pierwsza pasująca data (kolejność = priorytet progów).
+    # Alternatywa jako wyrażenie indeksowane comprehension (Rego v0: brak
+    # wielo-definicji zmiennej lokalnej z ciałami).
+    auto_enroll_dates := [d |
+        some cand in [
+            {"min_ee": 50, "date": "2026-04-01"},
+            {"min_ee": 20, "date": "2026-10-01"},
+            {"min_ee": 1, "date": "2027-01-01"},
+        ]
+        ee_count >= cand.min_ee
+        enrolled < ee_age_18_55
+        d := cand.date
+    ]
+    auto_enroll_date := concat("", auto_enroll_dates)
 
-    ppk_routing := ""
-    ppk_routing := "TRIAGE_QUEUE" { ppk_required; enrolled < ee_age_18_55 }
-    ppk_routing_reason := ""
-    ppk_routing_reason := sprintf("PPK: %d pracowników nie zapisanych — auto-enrollment wymagany do %s", [ee_age_18_55 - enrolled, auto_enroll_date]) { ppk_required; enrolled < ee_age_18_55 }
+    # Rego v0: routing przez comprehension (konkatenacja z pustym separatorem)
+    ppk_routing := concat("", ["TRIAGE_QUEUE" | ppk_required; enrolled < ee_age_18_55])
+    ppk_routing_reason := concat("", [sprintf("PPK: %d pracowników nie zapisanych — auto-enrollment wymagany do %s", [ee_age_18_55 - enrolled, auto_enroll_date]) | ppk_required; enrolled < ee_age_18_55])
+
+
 }
 
-build_ppk_warnings(required, total_ee, enrolled_ee, enroll_date) = warnings {
-    required == true
-    not_enrolled := total_ee - enrolled_ee
-    warnings := [
-        sprintf("📊 PPK — OBOWIĄZEK PRACODAWCY (%d pracowników)", [total_ee]),
-        sprintf("   Zapisanych: %d | Niezapisanych: %d", [enrolled_ee, not_enrolled]),
-        sprintf("⏰ Auto-enrollment do: %s", [enroll_date]),
-        "",
-        "💰 SKŁADKI PPK (od wynagrodzenia brutto):",
-        "   • Pracownik: 2.0% (obowiązkowo) + max 2.0% (dobrowolnie)",
-        "   • Pracodawca: 1.5% (obowiązkowo) + max 2.5% (dobrowolnie)",
-        "   • Dopłata roczna z FRD: 240 PLN za aktywnych",
-        "",
-        "⚠️ KARY: brak wpłat PPK → grzywna do 1.5% funduszu wynagrodzeń (Art. 25)",
-        "📌 Rezygnacja pracownika z PPK: co 4 lata ponowny auto-enrollment!"
-    ]
-} else = warnings {
-    required == true; enrolled_ee == total_ee
-    warnings := ["✅ PPK: wszyscy pracownicy zapisani. Składki naliczane prawidłowo."]
-} else = ["ℹ️ PPK nie dotyczy — brak pracowników lub PPE zwalnia z obowiązku."]
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # PPK-1655: PPK CONTRIBUTION CALCULATION — obliczanie składek PPK
@@ -152,61 +148,42 @@ else := {
     "business_status": "", "ceidg_registration_required": false,
     "pfron_required": pfron_needed,
     "pfron_monthly_amount_pln": pfron_amount,
-    "pfron_disabled_employed": disabled_count,
+    "pfron_disabled_employed": disabled_ee,
     "pfron_required_ratio": required_ratio,
     "pfron_actual_ratio": actual_ratio,
     "_routing": pfron_routing,
     "_routing_reason": pfron_routing_reason,
     "_legal_basis": "Art. 21 Ustawy o rehabilitacji zawodowej; Dz.U. 1997 nr 123 poz. 776",
-    "_warnings": build_pfron_warnings(pfron_needed, pfron_amount, disabled_count, required_ratio, actual_ratio)
+    "_warnings": build_pfron_warnings(pfron_needed, pfron_amount, disabled_ee, required_ratio, actual_ratio)
 } {
     input.employment.has_employees == true
     input.pfron_check_requested == true
 
     total_ee := object.get(input.employment, "employee_count", 0)
     disabled_ee := object.get(input.employment, "disabled_employee_count", 0)
-    avg_monthly_wage := object.get(object.get(data.thresholds, "bounds", {}), "average_wage", 8000)
+    avg_monthly_wage := object.get(object.get(thresholds_snapshot, "bounds", {}), "avg_monthly_wage", 9100)
     is_zpchr := object.get(input.employment, "is_zpchr", false)  # Status ZPChr
     uses_pfron_relief := object.get(input.employment, "uses_buying_from_zpchr_relief", false)
 
     # PFRON THRESHOLD: required if >=25 employees (FTE) AND disabled ratio < 6%
     pfron_threshold := 25
     required_ratio := 0.06
-    actual_ratio := disabled_ee / total_ee { total_ee > 0 }
-    actual_ratio := 0 { total_ee == 0 }
+    # Wskaźnik zatrudnienia niepełnosprawnych (Rego v0: division by zero przez
+    # comprehension z warunkiem — pusty wektor → 0)
+    actual_ratio := sum([ratio | total_ee > 0; ratio := disabled_ee / total_ee])
 
-    pfron_needed := total_ee >= pfron_threshold and actual_ratio < required_ratio and not is_zpchr
+    pfron_needed := count([1 | total_ee >= pfron_threshold; actual_ratio < required_ratio; not is_zpchr]) > 0
 
     # PFRON monthly contribution calculation (FIX v7.1: ceil zamiast floor!)
-    missing_disabled := ceil((total_ee * required_ratio) - disabled_ee)
-    missing_disabled := max([missing_disabled, 0])
-    pfron_amount := missing_disabled * avg_monthly_wage * 0.4065  # 40.65% przeciętnego wynagrodzenia
+    missing_disabled_raw := ceil((total_ee * required_ratio) - disabled_ee)
+    missing_disabled := max([missing_disabled_raw, 0])
+    # Groszowa precyzja wpłaty (float noise x.xx00000001)
+    pfron_amount := round(missing_disabled * avg_monthly_wage * 0.4065 * 100) / 100  # 40.65% przeciętnego wynagrodzenia
 
-    pfron_routing := ""
-    pfron_routing := "TRIAGE_QUEUE" { pfron_needed and pfron_amount > 0 }
-    pfron_routing_reason := ""
-    pfron_routing_reason := sprintf("PFRON: brakuje %d niepełnosprawnych (%.1f%%) — wpłata %.2f PLN/mies", [missing_disabled, actual_ratio * 100, pfron_amount]) { pfron_needed }
+    # Rego v0: routing przez comprehension z warunkiem (brak reguł lokalnych z ciałem)
+    pfron_routing := concat("", ["TRIAGE_QUEUE" | pfron_needed; pfron_amount > 0])
+    pfron_routing_reason := concat("", [sprintf("PFRON: brakuje %d niepełnosprawnych (%.1f%%) — wpłata %.2f PLN/mies", [missing_disabled, actual_ratio * 100, pfron_amount]) | pfron_needed])
 }
-
-build_pfron_warnings(needed, amount, disabled, required, actual) = warnings {
-    needed == true
-    warnings := [
-        sprintf("🔴 PFRON — OBOWIĄZEK WPŁAT! Zatrudniasz %d+ pracowników.", [25]),
-        sprintf("   Wskaźnik: %.1f%% (wymagane 6%%) — zatrudnionych niepełnosprawnych: %d", [actual * 100, disabled]),
-        sprintf("💰 MIESIĘCZNA WPŁATA: %.2f PLN (40.65%% przeciętnego wynagrodzenia × brakujący etat)", [amount]),
-        "",
-        "📋 JAK UNIKNĄĆ PFRON:",
-        "   1. Zatrudnij 1 osobę niepełnosprawną (obniża wskaźnik o ~4%)",
-        "   2. Uzyskaj status ZPChr (Zakład Pracy Chronionej)",
-        "   3. Kupuj produkty/usługi od ZPChr (ulga do 50% wpłaty)",
-        "   4. Zatrudniaj osoby ze schorzeniami szczególnymi (3× waga!)",
-        "",
-        "📌 Wpłaty do 20. dnia miesiąca za miesiąc poprzedni. Deklaracja DEK-I-a co miesiąc."
-    ]
-} else = warnings {
-    actual >= 0.06
-    warnings := [sprintf("✅ PFRON: wskaźnik %.1f%% — powyżej wymaganego 6%%. Brak obowiązku wpłat. Zatrudnieni niepełnosprawni: %d.", [actual * 100, disabled])]
-} else = ["ℹ️ PFRON nie dotyczy — mniej niż 25 pracowników."]
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # PFRON-1665: PFRON RELIEF CALCULATION — ulgi we wpłatach na PFRON
@@ -235,7 +212,7 @@ else := {
     base_pfron := object.get(input.employment, "pfron_base_monthly", 0)
     zpchr_purchases := object.get(input.employment, "monthly_zpchr_purchases", 0)
     special_condition_ee := object.get(input.employment, "employees_special_conditions", 0)
-    avg_wage := object.get(object.get(data.thresholds, "bounds", {}), "average_wage", 8000)
+    avg_wage := object.get(object.get(thresholds_snapshot, "bounds", {}), "avg_monthly_wage", 9100)
 
     # Ulga: zakupy od ZPChr — do 50% wpłaty
     zpchr_relief_pct := 0.50
@@ -245,40 +222,12 @@ else := {
     special_weight := 3
     special_relief := special_condition_ee * special_weight * avg_wage * 0.4065
 
-    final_pfron := base_pfron - zpchr_relief - special_relief
-    final_pfron := max([final_pfron, 0])
+    final_pfron_raw := base_pfron - zpchr_relief - special_relief
+    final_pfron := max([final_pfron_raw, 0])
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # FGSP-1670: FUNDUSZ GWARANTOWANYCH ŚWIADCZEŃ PRACOWNICZYCH
-# ═══════════════════════════════════════════════════════════════════════════════
-
-else := {
-    "matched": true,
-    "rule_id": "jdg.ppk_pfron.fgsp_contribution",
-    "package": "jdg.ppk_pfron",
-    "priority": 1670,
-    "vat_rate": "", "rounding_level": "", "gtu_code": "",
-    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
-    "kus_qualification": "", "kus_percent": 0,
-    "zus_social_base_type": "", "zus_health_rate": "",
-    "business_status": "", "ceidg_registration_required": false,
-    "fgsp_rate_pct": 0.10,
-    "fgsp_monthly_pln": fgsp_amount,
-    "fgsp_annual_pln": fgsp_annual,
-    "_routing": "",
-    "_routing_reason": "",
-    "_legal_basis": "Ustawa o FGŚP (Dz.U. 2006 nr 158 poz. 1121); Art. 9-10 ustawy FGŚP",
-    "_warnings": [sprintf("💼 FGŚP: składka %.2f%% od wynagrodzeń = %.2f PLN/mies (%.2f PLN/rok), płatne do 15. dnia miesiąca", [0.10, fgsp_amount, fgsp_annual])]
-} {
-    input.employment.has_employees == true
-    monthly_payroll := object.get(input.employment, "monthly_payroll_gross", 20000)
-    fgsp_amount := monthly_payroll * 0.001
-    fgsp_annual := fgsp_amount * 12
-}
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# ZFSS-1675: ZAKŁADOWY FUNDUSZ ŚWIADCZEŃ SOCJALNYCH — obowiązek
 # ═══════════════════════════════════════════════════════════════════════════════
 
 else := {
@@ -305,37 +254,16 @@ else := {
 
     total_ee := object.get(input.employment, "employee_count", 0)
     ee_fte := object.get(input.employment, "employee_fte_count", total_ee)
-    avg_wage := object.get(object.get(data.thresholds, "bounds", {}), "average_wage", 8000)
+    avg_wage := object.get(object.get(thresholds_snapshot, "bounds", {}), "avg_monthly_wage", 9100)
 
     zfss_needed := ee_fte >= 50
     per_ee_amount := avg_wage * 0.375  # 37.5% przeciętnego wynagrodzenia
     zfss_budget := ee_fte * per_ee_amount
 
-    zfss_routing := ""
-    zfss_routing := "TRIAGE_QUEUE" { zfss_needed }
-    zfss_routing_reason := ""
-    zfss_routing_reason := sprintf("ZFŚS wymagany: %d pracowników — budżet %.2f PLN/rok", [ee_fte, zfss_budget]) { zfss_needed }
+    # Rego v0: routing przez comprehension z warunkiem (brak reguł lokalnych z ciałem)
+    zfss_routing := concat("", ["TRIAGE_QUEUE" | zfss_needed])
+    zfss_routing_reason := concat("", [sprintf("ZFŚS wymagany: %d pracowników — budżet %.2f PLN/rok", [ee_fte, zfss_budget]) | zfss_needed])
 }
-
-build_zfss_warnings(needed, budget, per_ee) = warnings {
-    needed == true
-    warnings := [
-        sprintf("💰 ZFŚS — OBOWIĄZEK OD 50+ PRACOWNIKÓW (FTE)", []),
-        sprintf("   Budżet roczny: %.2f PLN (%.2f PLN/pracownika)", [budget, per_ee]),
-        sprintf("   Odpis podstawowy: 37.5%% przeciętnego wynagrodzenia na etat", []),
-        "",
-        "📅 TERMINY PRZELEWÓW:",
-        "   • Do 31 maja: 75% odpisu",
-        "   • Do 30 września: 25% odpisu",
-        "",
-        "📋 Kryteria socjalne: obowiązek regulaminu ZFŚS (uzgodnionego ze związkami)",
-        "⚠️ Brak ZFŚS → grzywna do 5000 PLN (Art. 12a)"
-    ]
-} else = ["ℹ️ ZFŚS nie dotyczy — mniej niż 50 pracowników (FTE)."]
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# PPK-1680: EMPLOYER COST SUMMARY — łączne koszty pracodawcy JDG
-# ═══════════════════════════════════════════════════════════════════════════════
 
 else := {
     "matched": true,
@@ -368,3 +296,88 @@ else := {
 
     total_monthly := zus_total + ppk_contrib + pfron_contrib + fgsp_contrib
 }
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.ppk_pfron.fgsp_contribution",
+    "package": "jdg.ppk_pfron",
+    "priority": 1670,
+    "vat_rate": "", "rounding_level": "", "gtu_code": "",
+    "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "",
+    "kus_qualification": "", "kus_percent": 0,
+    "zus_social_base_type": "", "zus_health_rate": "",
+    "business_status": "", "ceidg_registration_required": false,
+    "fgsp_rate_pct": 0.10,
+    "fgsp_monthly_pln": fgsp_amount,
+    "fgsp_annual_pln": fgsp_annual,
+    "_routing": "",
+    "_routing_reason": "",
+    "_legal_basis": "Ustawa o FGŚP (Dz.U. 2006 nr 158 poz. 1121); Art. 9-10 ustawy FGŚP",
+    "_warnings": [sprintf("💼 FGŚP: składka %.2f%% od wynagrodzeń = %.2f PLN/mies (%.2f PLN/rok), płatne do 15. dnia miesiąca", [0.10, fgsp_amount, fgsp_annual])]
+} {
+    input.employment.has_employees == true
+    monthly_payroll := object.get(input.employment, "monthly_payroll_gross", 20000)
+    fgsp_amount := monthly_payroll * 0.001
+    fgsp_annual := fgsp_amount * 12
+}
+# ═══════════════════════════════════════════════════════════════════════════════
+# HELPER WARNING BUILDERS (Rego v0: przeniesione poza łańcuch else decyzji,
+# aby nie przerywać kolejności gałęzi decide)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+build_pfron_warnings(needed, amount, disabled, required, actual) = warnings {
+    needed == true
+    warnings := [
+        sprintf("🔴 PFRON — OBOWIĄZEK WPŁAT! Zatrudniasz %d+ pracowników.", [25]),
+        sprintf("   Wskaźnik: %.1f%% (wymagane 6%%) — zatrudnionych niepełnosprawnych: %d", [actual * 100, disabled]),
+        sprintf("💰 MIESIĘCZNA WPŁATA: %.2f PLN (40.65%% przeciętnego wynagrodzenia × brakujący etat)", [amount]),
+        "",
+        "📋 JAK UNIKNĄĆ PFRON:",
+        "   1. Zatrudnij 1 osobę niepełnosprawną (obniża wskaźnik o ~4%)",
+        "   2. Uzyskaj status ZPChr (Zakład Pracy Chronionej)",
+        "   3. Kupuj produkty/usługi od ZPChr (ulga do 50% wpłaty)",
+        "   4. Zatrudniaj osoby ze schorzeniami szczególnymi (3× waga!)",
+        "",
+        "📌 Wpłaty do 20. dnia miesiąca za miesiąc poprzedni. Deklaracja DEK-I-a co miesiąc."
+    ]
+} else = warnings {
+    actual >= 0.06
+    warnings := [sprintf("✅ PFRON: wskaźnik %.1f%% — powyżej wymaganego 6%%. Brak obowiązku wpłat. Zatrudnieni niepełnosprawni: %d.", [actual * 100, disabled])]
+} else = ["ℹ️ PFRON nie dotyczy — mniej niż 25 pracowników."]
+
+build_zfss_warnings(needed, budget, per_ee) = warnings {
+    needed == true
+    warnings := [
+        sprintf("💰 ZFŚS — OBOWIĄZEK OD 50+ PRACOWNIKÓW (FTE)", []),
+        sprintf("   Budżet roczny: %.2f PLN (%.2f PLN/pracownika)", [budget, per_ee]),
+        sprintf("   Odpis podstawowy: 37.5%% przeciętnego wynagrodzenia na etat", []),
+        "",
+        "📅 TERMINY PRZELEWÓW:",
+        "   • Do 31 maja: 75% odpisu",
+        "   • Do 30 września: 25% odpisu",
+        "",
+        "📋 Kryteria socjalne: obowiązek regulaminu ZFŚS (uzgodnionego ze związkami)",
+        "⚠️ Brak ZFŚS → grzywna do 5000 PLN (Art. 12a)"
+    ]
+} else = ["ℹ️ ZFŚS nie dotyczy — mniej niż 50 pracowników (FTE)."]
+
+build_ppk_warnings(required, total_ee, enrolled_ee, enroll_date) = warnings {
+    required == true
+    not_enrolled := total_ee - enrolled_ee
+    warnings := [
+        sprintf("📊 PPK — OBOWIĄZEK PRACODAWCY (%d pracowników)", [total_ee]),
+        sprintf("   Zapisanych: %d | Niezapisanych: %d", [enrolled_ee, not_enrolled]),
+        sprintf("⏰ Auto-enrollment do: %s", [enroll_date]),
+        "",
+        "💰 SKŁADKI PPK (od wynagrodzenia brutto):",
+        "   • Pracownik: 2.0% (obowiązkowo) + max 2.0% (dobrowolnie)",
+        "   • Pracodawca: 1.5% (obowiązkowo) + max 2.5% (dobrowolnie)",
+        "   • Dopłata roczna z FRD: 240 PLN za aktywnych",
+        "",
+        "⚠️ KARY: brak wpłat PPK → grzywna do 1.5% funduszu wynagrodzeń (Art. 25)",
+        "📌 Rezygnacja pracownika z PPK: co 4 lata ponowny auto-enrollment!"
+    ]
+} else = warnings {
+    required == true; enrolled_ee == total_ee
+    warnings := ["✅ PPK: wszyscy pracownicy zapisani. Składki naliczane prawidłowo."]
+} else = ["ℹ️ PPK nie dotyczy — brak pracowników lub PPE zwalnia z obowiązku."]

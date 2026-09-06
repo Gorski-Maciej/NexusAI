@@ -1,0 +1,48 @@
+{
+  "innovation": "V3-P26-I08",
+  "generated_at": "2026-09-06T07:32:42+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule": true,
+    "golden_cases": 6,
+    "grosz_ok": true,
+    "tier1": 491.4
+  },
+  "checks": [
+    {
+      "name": "golden_rule",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p26_zus_skladki.golden_set: True"
+    },
+    {
+      "name": "oracle",
+      "status": "OK",
+      "detail": "oracle granic: 6 przypadków golden"
+    },
+    {
+      "name": "grosz_golden_4161",
+      "status": "OK",
+      "detail": "golden groszowe: emerytalna 812.23 (oczekiwane 812,23)"
+    },
+    {
+      "name": "boundary_cases",
+      "status": "OK",
+      "detail": "granice ulg i progów w golden (60k/300k ±0,01)"
+    },
+    {
+      "name": "versioned",
+      "status": "OK",
+      "detail": "wersja golden z zus26 (P05)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p90"
+    }
+  ],
+  "findings": [],
+  "contract": {
+    "binding": "Golden Oracle (V3_P10); granice art. 18a/18c/22 SUS, 81 u.ś.o.z. [NIEZWERYFIKOWANE]",
+    "rule": "golden niezgodny = BLOCK (regresja składkowa)"
+  }
+}

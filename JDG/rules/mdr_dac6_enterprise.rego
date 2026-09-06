@@ -2,7 +2,7 @@
 # NexusAI JDG — ENTERPRISE MDR DAC6 REPORTING ENGINE (Strategic Initiative S16b)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# METADATA
+# Documentation metadata (kept as ordinary comments; not parsed by OPA)
 # title: JDG Enterprise MDR DAC6 — Mandatory Disclosure Rules
 # description: |
 #   ENTERPRISE v7.0 — Kompleksowy silnik raportowania MDR (DAC6).
@@ -69,7 +69,7 @@ decide := {
     )
 } {
     input.mdr_dac6_check == true
-    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    pit_form := object.get(object.get(input, "jdg_entrepreneur", {}), "tax_form", "PIT_SCALE")
     
     # Transaction data
     transaction_type := object.get(input, "mdr_transaction_type", "")
@@ -86,121 +86,43 @@ decide := {
     acquires_loss_company := object.get(input, "mdr_acquires_loss_company", false)
     converts_income_type := object.get(input, "mdr_converts_income", false)
     
-    detected_hallmarks := []
-    
-    # === Category A: Generic Hallmarks (Main Benefit Test required) ===
-    hallmark_a1 := confidentiality_clause or success_fee
-    detected_hallmarks := array.concat(detected_hallmarks, ["A1"]) { hallmark_a1 }
-    
-    hallmark_a2 := standardized_documentation
-    detected_hallmarks := array.concat(detected_hallmarks, ["A2"]) { hallmark_a2 }
-    
-    hallmark_a3 := acquires_loss_company
-    detected_hallmarks := array.concat(detected_hallmarks, ["A3"]) { hallmark_a3 }
-    
-    # === Category B: Specific Hallmarks (Main Benefit Test required) ===
-    hallmark_b1 := acquires_loss_company and count(involves_countries) > 1
-    detected_hallmarks := array.concat(detected_hallmarks, ["B1"]) { hallmark_b1 }
-    
-    hallmark_b2 := converts_income_type and tax_advantage > 50000
-    detected_hallmarks := array.concat(detected_hallmarks, ["B2"]) { hallmark_b2 }
-    
-    hallmark_b3 := uses_circular_flow
-    detected_hallmarks := array.concat(detected_hallmarks, ["B3"]) { hallmark_b3 }
-    
-    # === Category C: Cross-border specific (Main Benefit Test) ===
-    hallmark_c1 := double_deduction_check(input)
-    detected_hallmarks := array.concat(detected_hallmarks, ["C1"]) { hallmark_c1 }
-    
-    hallmark_c2 := double_deduction_check(input) and count(involves_countries) > 1
-    detected_hallmarks := array.concat(detected_hallmarks, ["C2"]) { hallmark_c2 }
-    
-    hallmark_c3 := false
-    detected_hallmarks := array.concat(detected_hallmarks, ["C3"]) { hallmark_c3 }
-    
-    hallmark_c4 := uses_ip_transfer and count(involves_countries) > 1
-    detected_hallmarks := array.concat(detected_hallmarks, ["C4"]) { hallmark_c4 }
-    
-    # === Category D: Specific Hallmarks re automatic exchange (NO MBT) ===
-    hallmark_d1 := uses_hybrid_structure
-    detected_hallmarks := array.concat(detected_hallmarks, ["D1"]) { hallmark_d1 }
-    
-    hallmark_d2 := involves_tax_haven
-    detected_hallmarks := array.concat(detected_hallmarks, ["D2"]) { hallmark_d2 }
-    
-    # === Category E: Transfer pricing (NO MBT) ===
-    hallmark_e1 := uses_ip_transfer and tax_advantage > 10000000
-    detected_hallmarks := array.concat(detected_hallmarks, ["E1"]) { hallmark_e1 }
-    
-    count_hallmarks := count(detected_hallmarks)
-    is_reportable := count_hallmarks > 0 and count(involves_countries) >= 1
-    
-    # Hallmark category detection — uses independent boolean flags
-    # to avoid circular self-reference in Rego
-    has_hallmark_a := count([h | h := [hallmark_a1, hallmark_a2, hallmark_a3]; h == true]) > 0
-    has_hallmark_b := count([h | h := [hallmark_b1, hallmark_b2, hallmark_b3]; h == true]) > 0
-    has_hallmark_c := count([h | h := [hallmark_c1, hallmark_c2, hallmark_c3, hallmark_c4]; h == true]) > 0
-    has_hallmark_d := count([h | h := [hallmark_d1, hallmark_d2]; h == true]) > 0
-    has_hallmark_e := hallmark_e1
-
-    hallmark_category := "A" { has_hallmark_a }
-    hallmark_category := "B" { not has_hallmark_a; has_hallmark_b }
-    hallmark_category := "C" { not has_hallmark_a; not has_hallmark_b; has_hallmark_c }
-    hallmark_category := "D" { not has_hallmark_a; not has_hallmark_b; not has_hallmark_c; has_hallmark_d }
-    hallmark_category := "E" { not has_hallmark_a; not has_hallmark_b; not has_hallmark_c; not has_hallmark_d; has_hallmark_e }
-    hallmark_category := "-" { not has_hallmark_a; not has_hallmark_b; not has_hallmark_c; not has_hallmark_d; not has_hallmark_e }
-    main_benefit_test_result := count_hallmarks > 0
-    
-    cross_border_countries := involves_countries
-    
-    # Deadline calculation (Art. 86f OrdPU)
-    deadline_days := 30 { count_hallmarks == 1 and tax_advantage <= 50000 }
-    deadline_days := 14 { count_hallmarks > 1 or tax_advantage > 50000 }
-    deadline_days := 7 { count_hallmarks >= 3 or tax_advantage > 10000000 }
-    
-    mdr_routing := "BLOCK_AND_ALERT" { is_reportable; deadline_days <= 7 }
-    mdr_routing := "TRIAGE_QUEUE" { is_reportable; deadline_days > 7 }
-    mdr_routing := "" { true }
-    mdr_reason := sprintf("MDR — schemat wykryty! Zglos MDR-1 w ciagu %d dni. Kary do 21 000 000 PLN!", 
-        [deadline_days]) { is_reportable }
-    mdr_reason := "" { true }
-}
-
-double_deduction_check(input) = true {
-    object.get(input, "mdr_double_deduction", false) == true
-} else = false { true }
-
-build_mdr_warnings(reportable, hallmarks, cat, mbt, countries, tax_adv, deadline) = warnings {
-    reportable == false
-    warnings := ["✅ MDR DAC6 — brak schematu podlegajacego raportowaniu."]
-} else = {
-    hallmark_str := concat(", ", hallmarks)
-    countries_str := concat(", ", countries)
-    
-    warnings := [
-        sprintf("🚨 MDR DAC6 — SCHEMAT PODATKOWY WYKRYTY! ZGLOS MDR-1!", []),
-        sprintf("   Hallmark(i): %s (Kategoria %s)", [hallmark_str, cat]),
-        sprintf("   Panstwa: %s", [countries_str]),
-        sprintf("   Korzysc podatkowa: %.0f PLN", [tax_adv]),
-        sprintf("   TERMIN: %d dni od dnia nastepujacego po udostepnieniu schematu!", [deadline]),
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-        "⚠️ KARY za brak raportowania MDR:",
-        "   • KKS: do 720 stawek dziennych (Art. 80f KKS)",
-        "   • Kara pieniezna: do 21 000 000 PLN!",
-        "   • Odpowiedzialnosc solidarna doradcy i korzystajacego",
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-        "📋 FORMULARZ MDR-1 — wymagane dane:",
-        "   • Identyfikacja schematu (nazwa, opis, podstawa prawna)",
-        "   • Wskazanie hallmark",
-        "   • Wartosc korzysci podatkowej",
-        "   • Panstwa czlonkowskie, ktorych dotyczy",
-        "   • Dane korzystajacego i doradcy",
-        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-        "💡 Zloz MDR-1 przez ePUAP do Szefa KAS w terminie!",
-        "   • MDR-1: raportowanie przez doradce/promotora",
-        "   • MDR-2: raportowanie przez korzystajacego (gdy brak doradcy)",
-        "   • MDR-3: raportowanie kwartalne dla promotorow"
+    # === Macierz hallmark (etykieta, warunek) — kanoniczna taksonomia MDR A1-E1 ===
+    all_pairs := [
+        ["A1", _or2(confidentiality_clause, success_fee)],
+        ["A2", standardized_documentation],
+        ["A3", acquires_loss_company],
+        ["B1", _and2(acquires_loss_company, count(involves_countries) > 1)],
+        ["B2", _and2(converts_income_type, tax_advantage > 50000)],
+        ["B3", uses_circular_flow],
+        ["C1", double_deduction_check(input)],
+        ["C2", _and2(double_deduction_check(input), count(involves_countries) > 1)],
+        ["C3", false],
+        ["C4", _and2(uses_ip_transfer, count(involves_countries) > 1)],
+        ["D1", uses_hybrid_structure],
+        ["D2", involves_tax_haven],
+        ["E1", _and2(uses_ip_transfer, tax_advantage > 10000000)],
     ]
+    detected_hallmarks := [p[0] | p := all_pairs[_]; p[1] == true]
+
+    count_hallmarks := count(detected_hallmarks)
+    is_reportable := _and2(count_hallmarks > 0, count(involves_countries) >= 1)
+    main_benefit_test_result := count_hallmarks > 0
+    cross_border_countries := involves_countries
+
+    # Kategoria hallmark — pierwsza dopasowana A->E (bez cyklicznej referencji)
+    has_hallmark_a := _has_cat("A", detected_hallmarks)
+    has_hallmark_b := _has_cat("B", detected_hallmarks)
+    has_hallmark_c := _has_cat("C", detected_hallmarks)
+    has_hallmark_d := _has_cat("D", detected_hallmarks)
+    has_hallmark_e := _has_cat("E", detected_hallmarks)
+    hallmark_category := _hallmark_category(has_hallmark_a, has_hallmark_b, has_hallmark_c, has_hallmark_d, has_hallmark_e)
+
+    # Termin (Art. 86f OrdPU) — najsurowszy kwalifikujacy termin wygrywa;
+    # default 30 dni = sciezka "brak schematu" (decyzja zawsze zdefiniowana)
+    deadline_days := _deadline_days(count_hallmarks, tax_advantage)
+
+    mdr_routing := _mdr_routing(is_reportable, deadline_days)
+    mdr_reason := _mdr_reason(is_reportable, deadline_days)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -227,8 +149,8 @@ else := {
     "_warnings": [
         sprintf("📊 ANALIZA PROGU KORZYSCI PODATKOWEJ MDR", []),
         sprintf("   Korzysc: %.0f PLN", [tax_advantage]),
-        sprintf("   Prog maly: 50 000 PLN — %s", ["PRZEKROCZONY" { exceeds_threshold } else "OK"]),
-        sprintf("   Prog duzy: 10 000 000 PLN"),
+        sprintf("   Prog maly: 50 000 PLN — %s", [_przek(exceeds_threshold)]),
+        "   Prog duzy: 10 000 000 PLN",
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
         "⚠️ UWAGA: Dla hallmark D i E (automatyczna wymiana) NIE ma progu!",
         "   Kazda korzysc podlega raportowaniu (Art. 86a ust. 2 OrdPU).",
@@ -237,17 +159,15 @@ else := {
     ]
 } {
     input.mdr_dac6_threshold_check == true
-    pit_form := object.get(input.jdg_entrepreneur, "tax_form", "PIT_SCALE")
+    pit_form := object.get(object.get(input, "jdg_entrepreneur", {}), "tax_form", "PIT_SCALE")
     tax_advantage := object.get(input, "mdr_tax_advantage_pln", 0)
-    is_jdg := object.get(input.jdg_entrepreneur, "business_type", "") != "SP_ZOO"
+    is_jdg := object.get(object.get(input, "jdg_entrepreneur", {}), "business_type", "") != "SP_ZOO"
     
     exceeds_threshold := tax_advantage > 50000
-    jdg_exempt := is_jdg and tax_advantage <= 50000
+    jdg_exempt := _and2(is_jdg, tax_advantage <= 50000)
     
-    ta_routing := "TRIAGE_QUEUE" { exceeds_threshold }
-    ta_routing := "" { true }
-    ta_reason := sprintf("Korzysc %.0f PLN > 50k PLN — MDR wymagane", [tax_advantage]) { exceeds_threshold }
-    ta_reason := "" { true }
+    ta_routing := _ta_route(exceeds_threshold)
+    ta_reason := _ta_reason(tax_advantage, exceeds_threshold)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -289,20 +209,118 @@ else := {
     
     is_promoter := object.get(input, "mdr_is_promoter", false)
     is_user := object.get(input, "mdr_is_user", false)
-    is_reportable := is_promoter or is_user
+    is_reportable := _or2(is_promoter, is_user)
     
-    reporter_type := "PROMOTOR/DORADCA — MDR-1 w 30 dni" { is_promoter }
-    reporter_type := "KORZYSTAJACY — MDR-1 w 30 dni od gotowosci do wdrozenia" { is_user }
-    reporter_type := "NIEOKRESLONY" { true }
+    reporter_type := _reporter_type(is_promoter, is_user)
     
-    form_to_file := "MDR-1" { is_promoter or is_user }
-    form_to_file := "MDR-3 (kwartalny)" { is_promoter }
+    form_to_file := _form_to_file(is_promoter, is_user)
     
     cal_days := 30
     annual_report_needed := is_promoter
     
-    tl_routing := "TRIAGE_QUEUE" { is_reportable }
-    tl_routing := "" { true }
-    tl_reason := "Zloz MDR-1 w terminie — kary za opoznienie!" { is_reportable }
-    tl_reason := "" { true }
+    tl_routing := _tl_route(is_reportable)
+    tl_reason := _tl_reason(is_reportable)
+}
+
+# ── Funkcje pomocnicze (poza łańcuchem else — naprawa łańcucha decyzyjnego) ──
+
+double_deduction_check(doc) = true {
+    object.get(doc, "mdr_double_deduction", false) == true
+} else = false { true }
+
+# ── Helpery MDR (Rego-safe: else-chainy zamiast warunkow w tresci reguly) ──
+
+_and2(a, b) = true {
+    a == true
+    b == true
+} else = false { true }
+
+_or2(a, b) = true {
+    a == true
+} else = true {
+    b == true
+} else = false { true }
+
+_has_cat(letter, hs) = true {
+    h := hs[_]
+    startswith(h, letter)
+} else = false { true }
+
+_hallmark_category(ha, hb, hc, hd, he) = "A" { ha == true }
+else = "B" { hb == true }
+else = "C" { hc == true }
+else = "D" { hd == true }
+else = "E" { he == true }
+else = "-" { true }
+
+_deadline_days(n, adv) = 7 { n >= 3 }
+else = 7 { adv > 10000000 }
+else = 14 { n > 1 }
+else = 14 { adv > 50000 }
+else = 30 { true }
+
+_mdr_routing(rep, dl) = "BLOCK_AND_ALERT" { rep == true; dl <= 7 }
+else = "TRIAGE_QUEUE" { rep == true }
+else = "" { true }
+
+_mdr_reason(rep, dl) = sprintf("MDR — schemat wykryty! Zglos MDR-1 w ciagu %d dni. Kary do 21 000 000 PLN!", [dl]) { rep == true }
+else = "" { true }
+
+_przek(c) = "PRZEKROCZONY" { c == true }
+else = "OK" { true }
+
+_ta_route(exceeds) = "TRIAGE_QUEUE" { exceeds == true }
+else = "" { true }
+
+_ta_reason(adv, exceeds) = sprintf("Korzysc %.0f PLN > 50k PLN — MDR wymagane", [adv]) { exceeds == true }
+else = "" { true }
+
+_reporter_type(prom, user) = "PROMOTOR/DORADCA — MDR-1 w 30 dni" { prom == true }
+else = "KORZYSTAJACY — MDR-1 w 30 dni od gotowosci do wdrozenia" { user == true }
+else = "NIEOKRESLONY" { true }
+
+_form_to_file(prom, user) = "MDR-1 + MDR-3 (kwartalny)" { prom == true }
+else = "MDR-1" { user == true }
+else = "-" { true }
+
+_tl_route(rep) = "TRIAGE_QUEUE" { rep == true }
+else = "" { true }
+
+_tl_reason(rep) = "Zloz MDR-1 w terminie — kary za opoznienie!" { rep == true }
+else = "" { true }
+
+build_mdr_warnings(reportable, hallmarks, cat, mbt, countries, tax_adv, deadline) = warnings {
+    reportable == false
+    warnings := ["✅ MDR DAC6 — brak schematu podlegajacego raportowaniu."]
+}
+
+build_mdr_warnings(reportable, hallmarks, cat, mbt, countries, tax_adv, deadline) = warnings {
+    reportable == true
+    hallmark_str := concat(", ", hallmarks)
+    countries_str := concat(", ", countries)
+    
+    warnings := [
+        sprintf("🚨 MDR DAC6 — SCHEMAT PODATKOWY WYKRYTY! ZGLOS MDR-1!", []),
+        sprintf("   Hallmark(i): %s (Kategoria %s)", [hallmark_str, cat]),
+        sprintf("   Panstwa: %s", [countries_str]),
+        sprintf("   Korzysc podatkowa: %.0f PLN", [tax_adv]),
+        sprintf("   TERMIN: %d dni od dnia nastepujacego po udostepnieniu schematu!", [deadline]),
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "⚠️ KARY za brak raportowania MDR:",
+        "   • KKS: do 720 stawek dziennych (Art. 80f KKS)",
+        "   • Kara pieniezna: do 21 000 000 PLN!",
+        "   • Odpowiedzialnosc solidarna doradcy i korzystajacego",
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "📋 FORMULARZ MDR-1 — wymagane dane:",
+        "   • Identyfikacja schematu (nazwa, opis, podstawa prawna)",
+        "   • Wskazanie hallmark",
+        "   • Wartosc korzysci podatkowej",
+        "   • Panstwa czlonkowskie, ktorych dotyczy",
+        "   • Dane korzystajacego i doradcy",
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+        "💡 Zloz MDR-1 przez ePUAP do Szefa KAS w terminie!",
+        "   • MDR-1: raportowanie przez doradce/promotora",
+        "   • MDR-2: raportowanie przez korzystajacego (gdy brak doradcy)",
+        "   • MDR-3: raportowanie kwartalne dla promotorow"
+    ]
 }

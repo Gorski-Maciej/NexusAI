@@ -336,14 +336,15 @@
       "slug": "ZUS_SKLADKI",
       "prompt": "V3_PROMPT_P26_ZUS_SKLADKI.txt",
       "report": "RAPORT_V3_P26_ZUS_SKLADKI.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
-      "luki_p1": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": "",
-      "luki_p2": 0,
-      "luki_p3": 0
+      "luki_p1": 1,
+      "innovations": 12,
+      "implemented_at": "2026-09-06T08:01:38.670517+00:00",
+      "notes": "P26 ZUS_SKLADKI: WDROZONY_100 (2026-09-06). rules/v3_p26_zus_skladki_enterprise.rego (12 innowacji I01-I12, 12 analiz, certificate 426101-426112, fail-closed); thresholds zus26 (12 kluczy v3_p26_*, valid_from 2026-01-01, ADR-002); wiring main_jdg final_verdict_p90; 13 tooli tools/v3_p26_*.py; 12 bundli gate PASS; testy 58/58 rego (OPA 0.68+1.9 --v0-compatible) + 14/14 pytest; regresja P13-P25 rego zielona (17/24/18/29/26/25/41) + pytest P13-P20 68/68; mirror hash-parity 3/3; raport RAPORT_V3_P26_ZUS_SKLADKI.txt. Luki otwarte: P1=1 (L13 duplikacja kluczy podstawy w bloku zus), P2=1 (L14 wzorzec 812,63 vs arytmetyka 812,23), P3=2 (L15 mirror legacy, L16 ISAP niezweryfikowane).",
+      "luki_p2": 1,
+      "luki_p3": 2,
+      "auto_recheck": false
     },
     "P27": {
       "slug": "CFC_EXIT_MDG",
@@ -823,9 +824,10 @@
       "notes": "Realne wdrozenie 2026-09-04: rules/v3_p15_crossborder_enterprise.rego (12 innowacji I01-I12, rego kompiluje sie - naprawione unsafe-var _th/default_decide + typ object.get), 13 tooli + 12 bundli PASS, testy 15/15 rego (OPA 0.68+1.9) + 11/11 pytest, wiring main_jdg (89/1454/2745)"
     }
   },
-  "summary":{"total": 69,
-    "wdrozony_100": 26,
-    "nie_wdrozony": 43,
-    "progress_pct": 37.68
+  "summary": {
+    "total": 69,
+    "wdrozony_100": 27,
+    "nie_wdrozony": 42,
+    "progress_pct": 39.13
   }
 }
