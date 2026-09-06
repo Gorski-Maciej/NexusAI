@@ -96,6 +96,7 @@ import data.jdg.v3_p19_pcc_akcyza_bdo as v3_p19_pcc_akcyza_bdo
 import data.jdg.v3_p20_ksiegowosc as v3_p20_ksiegowosc
 import data.jdg.v3_p25_kalendarz as v3_p25_kalendarz
 import data.jdg.v3_p26_zus_skladki as v3_p26_zus_skladki
+import data.jdg.v3_p27_cfc_exit_mdr as v3_p27_cfc_exit_mdr
 import data.jdg.micro.quality_v3_13 as micro_quality_v3_13
 import data.jdg.hyper.quality_v3_14 as hyper_quality_v3_14
 import data.jdg.enterprise.quality_v3_15 as enterprise_quality_v3_15
@@ -1468,6 +1469,8 @@ _package_decisions := {
     "jdg.v3_p20_ksiegowosc": v3_p20_ksiegowosc.decide,
     "jdg.v3_p25_kalendarz": v3_p25_kalendarz.decide,
     "jdg.v3_p26_zus_skladki": v3_p26_zus_skladki.decide,
+    # ── V3-P27: CFC/EXIT/MDR (rejestr decyzji, sygnały, gate'y — human-only) ──
+    "jdg.v3_p27_cfc_exit_mdr": v3_p27_cfc_exit_mdr.decide,
     "jdg.international": international.decide,
     "jdg.tp": tp.decide,
     "jdg.tp.hyper": tp_hyper.decide,
@@ -2877,6 +2880,22 @@ final_verdict_p90 = safe_merge(final_verdict_p89,
         fallback.decide
     ))
 
+# ═══════════════════════════════════════════════════════════════════════════
+# V3-P27 (kampania V3 FORTRESS): CFC, EXIT TAX, MDR I PRZEPŁYWY
+# MIĘDZYJURYSDYKCYJNE — 13 analiz I01–I13 (rejestr decyzji architektonicznych
+# CFC/PAiN/rulingi — input P44, monitoring exit tax → zawsze NEEDS_ADVICE,
+# weryfikator progów 2M/4M [ZWERYFIKOWANO-WEB], MDR hallmark scorer v2 z
+# HUMAN REVIEW, 30-day gate z kalendarzem P25, funkcja pomocnicza 10M/2.5M
+# EUR, detektor sygnałów CFC, konstytucja międzynarodowa INV-X01..X04 (P04),
+# checklista wyceny, ścieżka rulingów, golden set granic, stress lab i
+# bramka harmonizacji przepływów P15/P17/P22/P25). SUGGEST/NEEDS_ADVICE i
+# fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p27_check nie
+# jest true.
+final_verdict_p91 = safe_merge(final_verdict_p90,
+    safe_merge(v3_p27_cfc_exit_mdr.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -2909,7 +2928,7 @@ final_verdict_p90 = safe_merge(final_verdict_p89,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p90
+    final_verdict_p91
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

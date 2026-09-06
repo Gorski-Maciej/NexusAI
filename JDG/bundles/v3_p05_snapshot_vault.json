@@ -1,26 +1,32 @@
 {
   "current": {
-    "git_head": "c4ec8b58",
-    "built_at": "2026-09-03T12:42:53+00:00",
+    "git_head": "1f2c6448",
+    "built_at": "2026-09-06T20:02:17+00:00",
     "components": {
       "rules_rego": {
-        "count": 490,
-        "sha1": "9923e373bfdd1dabc399206d3f0c0f50841f0cd3"
+        "count": 501,
+        "sha1": "e73c60af168b9a8d310327472e448d7581524205"
       },
-      "bundles/thresholds_data.json": "901d287df0f6dcbf24e4f4c3dac55550a1eaec07",
+      "bundles/thresholds_data.json": "20655273bee5fdce995e490cb4737142a437e912",
       "bundles/legal_graph.json": "748d25733d79381e89280d457be2ca3fa73d27fe",
-      "bundles/golden_verdicts.json": "a994c9fa877451d2aad251cccf2af48868489595",
+      "bundles/golden_verdicts.json": "4239d12281cfe343b3f6096b40d5aef557686e5b",
       "migrations": {
         "count": 13,
         "sha1": "6051bc055032e8386a1d8397cda4bff20cf51351"
       },
       "golden_verdicts": {
-        "verdicts": 30,
+        "verdicts": 31,
         "bundle_version": 2,
-        "replay_rows": 30
+        "replay_rows": 31
       }
     },
-    "snapshot_id": "acab5f9259a013abd309bf2d1cf5aa7d02aa46aa550d3e7b1c3de21e8e258c7d"
+    "snapshot_id": "f9166b8f593b2dc83685246af12566479b628e642c10280830566737e409cc6c"
   },
-  "history": []
+  "history": [
+    {
+      "snapshot_id": "acab5f9259a013abd309bf2d1cf5aa7d02aa46aa550d3e7b1c3de21e8e258c7d",
+      "superseded_at": "2026-09-06T20:02:17+00:00",
+      "reason": "zmiana składników snapshotu (rules/parametry/legal nodes/schema)"
+    }
+  ]
 }

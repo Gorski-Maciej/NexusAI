@@ -1,0 +1,32 @@
+{
+  "innovation": "V3-P27-I06",
+  "generated_at": "2026-09-06T19:28:35+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p27_cfc_exit_mdr.mdr_auxiliary_function: True"
+    },
+    {
+      "name": "thresholds",
+      "status": "OK",
+      "detail": "brakujące klucze: brak"
+    },
+    {
+      "name": "routing",
+      "status": "OK",
+      "detail": "routing: NEEDS_ADVICE (powyżej kryterium = doradca)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p91"
+    }
+  ],
+  "findings": []
+}

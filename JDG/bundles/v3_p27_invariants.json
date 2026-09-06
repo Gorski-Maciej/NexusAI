@@ -1,0 +1,37 @@
+{
+  "innovation": "V3-P27-I08",
+  "generated_at": "2026-09-06T19:28:35+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p27_cfc_exit_mdr.international_invariants_pack: True"
+    },
+    {
+      "name": "thresholds",
+      "status": "OK",
+      "detail": "brakujące klucze: brak"
+    },
+    {
+      "name": "routing",
+      "status": "OK",
+      "detail": "routing: BLOCK_AND_ALERT (naruszenie = BLOCK)"
+    },
+    {
+      "name": "legacy_ap_scan",
+      "status": "OK",
+      "detail": "anty-wzorce w plikach legacy: brak"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p91"
+    }
+  ],
+  "findings": []
+}

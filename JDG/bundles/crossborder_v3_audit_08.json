@@ -47,15 +47,19 @@
     {
       "file": "rules/crossborder/exit_tax_cfc_complete.rego",
       "exists": true,
-      "lines": 264,
+      "lines": 257,
       "package": "jdg.exit_tax_cfc",
-      "rule_count": 17,
-      "unique_rule_ids": 17,
+      "rule_count": 15,
+      "unique_rule_ids": 15,
       "duplicates_in_file": [],
-      "has_no_match_default": true,
+      "has_no_match_default": false,
       "has_legal_basis": true,
       "hardcoded_amounts": [
-        "L203: 2000000 :: \"threshold_pln\": 2000000,"
+        "L34: 4000000 :: \"exemption_threshold_pln\": object.get(data.jdg.thresholds.crossborder, \"exit_tax_threshold_pln\", 400",
+        "L37: 4000000 :: threshold := object.get(data.jdg.thresholds.crossborder, \"exit_tax_threshold_pln\", 4000000)",
+        "L181: 2000000 :: wht_threshold := object.get(data.jdg.thresholds.crossborder, \"wht_annual_threshold_pln\", 2000000)",
+        "L195: 2000000 :: \"threshold_pln\": object.get(data.jdg.thresholds.crossborder, \"wht_annual_threshold_pln\", 2000000),",
+        "L199: 2000000 :: wht_threshold := object.get(data.jdg.thresholds.crossborder, \"wht_annual_threshold_pln\", 2000000)"
       ]
     },
     {
@@ -145,7 +149,7 @@
     {
       "file": "rules/cfc_auto_classifier.rego",
       "exists": true,
-      "lines": 249,
+      "lines": 272,
       "package": "jdg.cfc_auto_classifier",
       "rule_count": 4,
       "unique_rule_ids": 4,
@@ -153,25 +157,27 @@
       "has_no_match_default": true,
       "has_legal_basis": true,
       "hardcoded_amounts": [
-        "L38: 10000 :: passive_pct_for(passive_income, total_income) = floor(passive_income / total_income * 10000) / 100 {"
+        "L49: 10000 :: passive_pct_for(passive_income, total_income) = floor(passive_income / total_income * 10000) / 100 {",
+        "L128: 250000 :: de_minimis_bench := object.get(cb27, \"v3_p27_cfc_de_minimis_eur\", 250000)",
+        "L176: 250000 :: threshold := object.get(cb27, \"v3_p27_cfc_de_minimis_eur\", 250000)"
       ]
     },
     {
       "file": "rules/mdr/mdr_hallmarks.rego",
       "exists": true,
-      "lines": 317,
+      "lines": 306,
       "package": "jdg.mdr.hallmarks",
-      "rule_count": 21,
-      "unique_rule_ids": 21,
+      "rule_count": 20,
+      "unique_rule_ids": 20,
       "duplicates_in_file": [],
-      "has_no_match_default": true,
+      "has_no_match_default": false,
       "has_legal_basis": true,
       "hardcoded_amounts": []
     },
     {
       "file": "rules/mdr/mdr_enterprise.rego",
       "exists": true,
-      "lines": 428,
+      "lines": 453,
       "package": "jdg.mdr.enterprise",
       "rule_count": 18,
       "unique_rule_ids": 18,
@@ -180,9 +186,9 @@
       "has_legal_basis": true,
       "hardcoded_amounts": [
         "L150: 21000000 :: max_penalty := object.get(object.get(data.thresholds, \"jdg\", {}), \"mdr_sanction_max_pln\", 21000000)",
-        "L302: 1000000 :: \"_routing_reason\": sprintf(\"MDR SANKCJA: brak MDR-3! Kara %.0f PLN za każdy dzień zwłoki (max %.0f m",
-        "L311: 21000000 :: max_penalty := object.get(object.get(data.thresholds, \"jdg\", {}), \"mdr_sanction_max_pln\", 21000000)",
-        "L353: 5000000 :: original_penalty := object.get(input.mdr, \"mdr_potential_penalty_pln\", 5000000)"
+        "L300: 1000000 :: \"_routing_reason\": sprintf(\"MDR SANKCJA: brak MDR-3! Kara %.0f PLN za każdy dzień zwłoki (max %.0f m",
+        "L309: 21000000 :: max_penalty := object.get(object.get(data.thresholds, \"jdg\", {}), \"mdr_sanction_max_pln\", 21000000)",
+        "L351: 5000000 :: original_penalty := object.get(input.mdr, \"mdr_potential_penalty_pln\", 5000000)"
       ]
     },
     {
@@ -257,7 +263,7 @@
   "totals": {
     "domain_files": 18,
     "existing_files": 18,
-    "rule_ids_total": 501
+    "rule_ids_total": 498
   },
   "wiring": {
     "required": 13,

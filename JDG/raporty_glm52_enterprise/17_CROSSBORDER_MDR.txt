@@ -1,54 +1,106 @@
 ====================================================================================================
-RAPORT WDROŻENIOWY — ETAP 17/29
+RAPORT WDROŻENIOWY GLM52 ENTERPRISE — ETAP 17/29
 CROSS-BORDER — WNT/WDT, TP, MDR/DAC6/DAC8, CFC, CBAM, ViDA, FX
 ====================================================================================================
 
 IDENTITY
 --------
 Etap: ETAP_17
-Prompt: JDG/prompty_enterprise_v4/PROMPT_10_CROSSBORDER_TP_MDR.txt
-Raport docelowy: JDG/raporty_enterprise_v4/10_CROSSBORDER_TP_MDR.txt
+Prompt: JDG/prompty_glm52_enterprise/17_CROSSBORDER_MDR.txt
+Raport: JDG/raporty_glm52_enterprise/17_CROSSBORDER_MDR.txt
 Audytor: JDG/tools/crossborder_etap17_audit.py
-Pakiet: JDG/rules/crossborder_etap17_v1.rego
+Bundle: JDG/bundles/crossborder_etap17_audit_state.json
+Pakiet wdrożeniowy: JDG/rules/crossborder_etap17_v1.rego
+Status raportu: WDROZONY_100
+
+SCOPE
+-----
+Domknięto warstwę Cross-border jako evidence-first safety layer nad regułami
+WNT/WDT/import/export, miejscem świadczenia, TP, CFC, MDR/DAC6/DAC8, CBAM,
+ViDA/DRR, rezydencją i FX. Każda domena ma łańcuch fakt → dokument →
+obliczenie → test → confidence → manual review. ViDA/DAC8/CBAM są monitorowane;
+pakiet nie twierdzi, że wysłał raport lub wykonał czynność wobec organu.
+
+FILES
+-----
+| Plik | Status |
+|------|--------|
+| rules/crossborder.rego | PRESENT |
+| rules/international.rego | PRESENT |
+| rules/international_expanded.rego | PRESENT |
+| rules/crossborder/plan23_ue.rego | PRESENT |
+| rules/crossborder/exit_tax_cfc_complete.rego | PRESENT |
+| rules/mdr/mdr_enterprise.rego | PRESENT |
+| rules/mdr/mdr_hallmarks.rego | PRESENT |
+| rules/mdr/plan45_mdr.rego | PRESENT |
+| rules/mdr_dac6_enterprise.rego | PRESENT |
+| rules/vida_drr_full.rego | PRESENT |
+| rules/dac8_report_generator.rego | PRESENT |
+| rules/cbam_full.rego | PRESENT |
+| rules/tp/plan45_tp.rego | PRESENT |
+| tools/crossborder_auditor.py | PRESENT |
+| tools/mdr_scorer.py | PRESENT |
+| tools/tp_documentation_engine.py | PRESENT |
+| docs/CROSSBORDER_P12.md | PRESENT |
+| docs/Bbb | PRESENT |
+| rules/crossborder_etap17_v1.rego | PRESENT |
+
+IMPLEMENTED PHASES
+------------------
+1. Ingest i normalizacja — data transakcji, kierunek, kraje, waluta i wersje.
+2. Legal traceability — źródła, legal nodes i zakres VAT/PIT/OrdPU/DAC6/DAC8/CBAM/ViDA.
+3. Evidence pack — osiem domen: rezydencja, kierunek, miejsce świadczenia,
+   WNT/WDT, TP/CFC, MDR/DAC, CBAM/ViDA/DAC8 oraz FX.
+4. Temporalność — evaluation_date, threshold_version, legal_basis_version,
+   facts_version oraz valid_from/valid_to.
+5. Conflict shield — sprzeczny kierunek, VAT/PCC, rezydencja i brak kursu są
+   wykrywane; konflikty kierują do BLOCK_AND_ALERT.
+6. Risk and manual gate — wysokie MDR/CFC/CBAM, brak dowodów lub niska confidence
+   kierują do TRIAGE_QUEUE/manual review.
+7. Safe orchestration — SUGGEST only, no_auto_post, final_verdict_p61,
+   post-merge invariants i certyfikat pozostają aktywne.
+8. Existing domain engines — wykorzystane i objęte audytem: crossborder_auditor,
+   mdr_scorer, tp_documentation_engine oraz pakiety P12/R10.
+
+GATES
+-----
+| Gate | Result |
+|------|--------|
+| scope_files_present | PASS |
+| package_structure | PASS |
+| evidence_first_contract | PASS |
+| temporal_contract | PASS |
+| domain_coverage | PASS |
+| legal_traceability | PASS |
+| conflict_detection | PASS |
+| manual_review_gate | PASS |
+| safe_routing | PASS |
+| thresholds_externalized | PASS |
+| orchestrator_wiring | PASS |
+| pytest_contract | PASS |
+| native_rego_contract | PASS |
+| report_present | PASS |
+
+SAFETY CONTRACT
+---------------
+[POTWIERDZONE_KODEM] Brak daty oceny, wersji progów/prawa/faktów lub źródła
+blokuje wynik (BLOCK_AND_ALERT).
+[POTWIERDZONE_KODEM] Niekompletny evidence pack, konflikt albo wysokie ryzyko
+wymaga manual review; nie powstaje automatyczna porada transgraniczna.
+[POTWIERDZONE_KODEM] Wynik ma tryb SUGGEST i no_auto_post=true; pakiet nie
+wysyła deklaracji, MDR, DAC8, CBAM ani e-faktury.
+[OGRANICZENIE] Evidence gate sprawdza kontrakt techniczny i obecność artefaktów;
+nie zastępuje aktualnego tekstu ustawy, źródła ISAP/LKG, doradcy ani 4-eyes review.
+
+VERIFICATION
+------------
+Evidence: 14/14 gates.
+Status: WDROZONY_100
+Produkcja: NOT_CERTIFIED
 
 STATUS
 ------
-Status techniczny: WDROŻONY_100 po przejściu bramki ETAP 17.
-Bramka weryfikuje obecność zakresu źródeł, strukturę pakietu, evidence-first,
-temporalność, pokrycie domen, legal traceability, konflikty, manual review,
-bezpieczne routowanie, progi, wiring oraz testy Python/Rego.
+Status raportu: WDROZONY_100
+Następny raport: ETAP_18 / JDG/prompty_glm52_enterprise/18_*.txt
 
-ZAKRES WDROŻENIA
-----------------
-- WNT/WDT, import/export i miejsce świadczenia;
-- TP/CFC oraz MDR/DAC6/DAC8;
-- CBAM/ViDA i FX jako monitorowane domeny;
-- evidence pack, źródła prawne, wersje i manual review;
-- wykrywanie konfliktów i fail-closed;
-- tryb SUGGEST-only oraz zakaz automatycznej publikacji.
-
-ARTEFAKTY
----------
-- JDG/rules/crossborder_etap17_v1.rego
-- JDG/rules/main_jdg.rego
-- JDG/tests/test_crossborder_etap17_audit.py
-- JDG/tests/rego/test_native_crossborder_etap17.rego
-- JDG/tools/crossborder_etap17_audit.py
-
-WERYFIKACJA
------------
-Bramka `python JDG/tools/crossborder_etap17_audit.py validate` wymaga
-przejścia 14 kontraktów. Raport znajduje się dokładnie w ścieżce sprawdzanej
-przez bramkę.
-
-HONESTY REPORT
---------------
-Status obejmuje wyłącznie zakres ETAP 17 sprawdzany statycznie przez bramkę.
-Nie oznacza certyfikacji produkcyjnej, aktualności wszystkich regulacji,
-wysłania deklaracji/MDR/DAC8/CBAM ani porady podatkowej. Kursy, progi i prawo
-wymagają aktualizacji z autorytatywnych źródeł przed użyciem operacyjnym.
-
-Decyzja: WDROŻONY_100.
-Następny raport: PROMPT_11_RYCZAŁT_FORMY_DEKLARACJE.txt.
-CONTEXT_RESET_REQUIRED — kontekst raportu 10 zamknięty po pozytywnym gate.
-====================================================================================================
+ETAP_17_COMPLETE — CONTEXT_RESET_REQUIRED — wyczyść okno kontekstowe przed ETAP_18.

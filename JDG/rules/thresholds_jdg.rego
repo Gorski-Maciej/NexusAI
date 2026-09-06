@@ -1417,6 +1417,54 @@ crossborder := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# V3-P27 CROSSBORDER GOVERNANCE (kampania V3 FORTRESS, jdg.v3_p27_cfc_exit_mdr)
+# Governance CFC/EXIT/MDR jako dane (ADR-002/P06) + okno temporalne (P05).
+# Wartości rdzenia (progi exit tax, MDR 30 dni, CFC, rezydencja) — w bloku
+# crossborder powyżej (jedno źródło prawdy); poniżej wyłącznie v3_p27_*.
+# Statusy weryfikacji: 2M/4M exit tax i 10M/2.5M EUR MDR [ZWERYFIKOWANO-WEB,
+# 2026-09-06]; de minimis CFC 250k EUR [NIEZWERYFIKOWANE] — kaucja I03/I07.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+crossborder27 := {
+    "v3_p27_threshold_version": "crossborder-v3p27-2026.09",
+    "legal_basis_version": "PIT+OrdPU-v3p27-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I02/I03: exit tax — progi/lock/raty (2M art. 24cg ust. 5; 4M rdzeń; lock 5 lat)
+    "v3_p27_exit_tax_property_threshold_pln": 2000000,
+    "v3_p27_exit_tax_reinvestment_lock_years": 5,
+    "v3_p27_exit_tax_installments_eea": 5,
+    "v3_p27_exit_tax_signal_deadline": "7th_of_next_month",   # info-rule (art. 30da ust. 9)
+    # I03: weryfikator progów (ISAP gate)
+    "v3_p27_verifier_version": "v3p27-verify-2026.09",
+    "v3_p27_verifier_drift_pln": 0.01,                        # groszowa czułość (golden P26)
+    # I04: MDR hallmark scorer v2 (human review)
+    "v3_p27_mdr_human_review_score": 70,
+    # I05: MDR 30-day gate (kalendarz P25)
+    "v3_p27_mdr_warn_days": 7,
+    "v3_p27_mdr_weekend_shift": true,
+    "v3_p27_mdr_zero_silence": true,
+    # I06: MDR funkcja pomocnicza / kryterium kwalifikowanego korzystającego
+    "v3_p27_mdr_qualified_beneficiary_eur": 10000000,
+    "v3_p27_mdr_arrangement_value_eur": 2500000,
+    "v3_p27_mdr_auxiliary_excludes": false,
+    # I07: CFC signal detector (sygnały, nie rachunek)
+    "v3_p27_cfc_ownership_min_pct": 25,
+    "v3_p27_cfc_passive_signal_pct": 50,
+    "v3_p27_cfc_de_minimis_eur": 250000,                      # [NIEZWERYFIKOWANE]
+    # I09: katalog metod wyceny exit tax
+    "v3_p27_valuation_methods": ["MARKET_COMPARABLE", "INCOME_APPROACH", "COST_APPROACH"],
+    # I11/I12: golden + stress
+    "v3_p27_golden_version": "intl-golden-2026.09",
+    "v3_p27_golden_tolerance": 0.01,
+    "v3_p27_stress_required_scenarios": 3,
+    # I08: konstytucja międzynarodowa (P04)
+    "v3_p27_invariants_active": true,
+    "v3_p27_mdr_human_only": true,
+    "v3_p27_exit_tax_advisor_only": true,
+    "v3_p27_cfc_needs_advice_only": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PCC / PODATKI LOKALNE / AKCYZĄ THRESHOLDS — RAPORT_11 (ADR-002)
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -1444,7 +1492,8 @@ pcc_local_excise := {
 
     # Akcyza — alkohol (zł/hl, 2026)
     "excise_ethanol_per_hl": 6900,              # etanol 100%
-    "excise_beer_per_plato": 8.57,              # piwo za °Plato    "excise_wine_per_hl": 185,                 # wino
+    "excise_beer_per_plato": 8.57,              # piwo za °Plato
+    "excise_wine_per_hl": 185,                  # wino (stawka do weryfikacji ISAP — P27 fix AP02)
     # V3-10 (kampania) — wersjonowanie snapshotu dla Decision Certificates
     "threshold_version": "pcc-local-2026.08",
     "legal_basis_version": "isap-lkg-2026.08",

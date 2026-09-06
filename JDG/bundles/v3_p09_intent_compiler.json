@@ -1,12 +1,19 @@
 {
   "innovation": "V3-P09-I02",
-  "generated_at": "2026-09-03T12:43:09.550879+00:00",
+  "generated_at": "2026-09-06T20:02:23.203868+00:00",
   "gate": "FAIL",
   "metrics": {
     "samples": 3,
     "targets_missing": 2,
     "store_params": [
-      "vat.standard_rate"
+      "vat.exemption_housing_area_m2_max",
+      "vat.exemption_suspended_years",
+      "vat.limit_113",
+      "vat.np_rate",
+      "vat.reduced_rate_5",
+      "vat.reduced_rate_8",
+      "vat.standard_rate",
+      "vat.zero_rate"
     ],
     "hardcoded_target_key": "vat.rate.declared"
   },
@@ -43,7 +50,7 @@
     {
       "id": "V3-P09-L02",
       "severity": "P1",
-      "evidence": "declarative_change.py execute zapisuje parametr 'vat.rate.declared' — klucz NIEISTNIEJĄCY w thresholds_data.json (store zawiera tylko ['vat.standard_rate']); kompilacja nie weryfikuje celu → zmiana danych nie dociera do decyzji (dead write)",
+      "evidence": "declarative_change.py execute zapisuje parametr 'vat.rate.declared' — klucz NIEISTNIEJĄCY w thresholds_data.json (store zawiera tylko ['vat.exemption_housing_area_m2_max', 'vat.exemption_suspended_years', 'vat.limit_113', 'vat.np_rate', 'vat.reduced_rate_5', 'vat.reduced_rate_8', 'vat.standard_rate', 'vat.zero_rate']); kompilacja nie weryfikuje celu → zmiana danych nie dociera do decyzji (dead write)",
       "fix": "I02 Intent Compiler: parser → plan z kluczem zweryfikowanym w store/rejestrze + verdict pewności; brak klucza = odrzucenie"
     }
   ],

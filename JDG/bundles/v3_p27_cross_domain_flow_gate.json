@@ -1,0 +1,27 @@
+{
+  "innovation": "V3-P27-I13",
+  "generated_at": "2026-09-06T19:28:33+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p27_cfc_exit_mdr.cross_domain_flow_gate: True"
+    },
+    {
+      "name": "routing",
+      "status": "OK",
+      "detail": "routing: TRIAGE_QUEUE (brak harmonizacji = TRIAGE)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p91"
+    }
+  ],
+  "findings": []
+}

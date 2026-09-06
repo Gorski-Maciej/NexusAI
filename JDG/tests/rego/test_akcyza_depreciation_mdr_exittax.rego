@@ -150,7 +150,9 @@ test_hallmark_c1_tax_haven if {
 
 # ── Exit Tax + CFC tests ──────────────────────────────────────────────────────
 
-test_exit_tax_transfer if {
+# V3-P27: kolejność else-chain poprawiona — r3 (wyłączenie < próg 4M, art. 30da
+# ust. 1 pkt 2) sprawdzane PRZED r1; poniżej progu nie ma exit tax (nie r1).
+test_exit_tax_exemption_below_threshold if {
     result := exit_tax_cfc.decide with input as {
         "jdg_entrepreneur": {"transferring_assets_abroad": true},
         "invoice": {
@@ -159,7 +161,20 @@ test_exit_tax_transfer if {
         }
     }
     result.matched == true
+    result.rule_id == "jdg.exit_tax_cfc.exit_tax.r3"
+}
+
+test_exit_tax_transfer if {
+    result := exit_tax_cfc.decide with input as {
+        "jdg_entrepreneur": {"transferring_assets_abroad": true},
+        "invoice": {
+            "asset_market_value": 5000000,
+            "asset_tax_value": 3000000
+        }
+    }
+    result.matched == true
     result.rule_id == "jdg.exit_tax_cfc.exit_tax.r1"
+    result._routing == "NEEDS_ADVICE"
 }
 
 test_cfc_control if {

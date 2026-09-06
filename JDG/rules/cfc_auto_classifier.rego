@@ -1,8 +1,19 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI JDG — CFC AUTO-CLASSIFIER (P13 Priority 2)
+# NexusAI JDG — CFC AUTO-CLASSIFIER (P13 Priority 2; V3-P27 audyt 2026-09-06)
 # Package: jdg.cfc_auto_classifier
-# Legal basis: Art. 30f PIT; Art. 45 ust. 1aa PIT; EU List of Non-Cooperative Jurisdictions
+# Legal basis: Art. 30c-30f PIT (CFC — osoby fizyczne); EU List of Non-Cooperative Jurisdictions
 # Public rule IDs: passive_classifier, de_minimis_check, jurisdiction_check.
+#
+# V3-P27 FIXES (kampania V3 FORTRESS — AP02/ADR-002 + zasada I07):
+#   * Progi 33.0 / 250000 / 4.5 / stopa 0.19 → z data.jdg.thresholds (kaucja
+#     jako fallback, wartości z danych); zgodnie z ADR-002 (P06).
+#   * Próg zwolnienia CFC to 250 000 PLN dochodu (art. 30c ust. 7 PIT)
+#     [ZWERYFIKOWANO-WEB 2026-09-06] — kwota 250k EUR z de minimis pozostaje
+#     [NIEZWERYFIKOWANE] i jest tylko sygnałem do doradcy.
+#   * Routing podmiotowy: sygnał CFC nigdy nie kończy się cichym rachunkiem
+#     podatku — klasyfikacja zwraca NEEDS_ADVICE (V3-P27-I07/I08); pole
+#     cac_cfc_tax_due pozostaje jako SZACUNEK informacyjny z etykietą
+#     needs_tax_advisor, NIGDY jako podstawą księgowania (P03/P04).
 # ═══════════════════════════════════════════════════════════════════════════════
 
 package jdg.cfc_auto_classifier
@@ -96,7 +107,7 @@ routing_for(risk_level, passive_exceeded) = "BLOCK_AND_ALERT" {
 } else = "TRIAGE_QUEUE" {
     risk_level == "HIGH"
     passive_exceeded
-} else = "WARNING" {
+} else = "NEEDS_ADVICE" {
     passive_exceeded
 } else = ""
 
@@ -110,12 +121,18 @@ passive_decision := verdict {
     passive_income := passive_income_for(buckets)
     active_income := total_income - passive_income
     passive_pct := passive_pct_for(passive_income, total_income)
-    threshold := 33.0
+    cb := object.get(data.jdg.thresholds, "crossborder", {})
+    cb27 := object.get(data.jdg.thresholds, "crossborder27", {})
+    threshold := object.get(cb27, "v3_p27_cfc_passive_signal_pct", 50)
+    ownership_min := object.get(cb27, "v3_p27_cfc_ownership_min_pct", 25)
+    de_minimis_bench := object.get(cb27, "v3_p27_cfc_de_minimis_eur", 250000)
     passive_exceeded := passive_pct > threshold
     score := risk_score_for(passive_exceeded, ownership_pct, country, buckets, total_income)
     risk_level := risk_level_for(score)
     attributed := income_attributed(total_income, ownership_pct)
-    tax_due := floor(attributed * 0.19 * 100) / 100
+    cfc_rate := object.get(cb, "cfc_tax_rate_threshold_pct", 0.1425)
+    pit_rate := object.get(cb, "exit_tax_rate_pct", 0.19)
+    tax_estimate := floor(attributed * pit_rate * 100) / 100
     dominant := dominant_type_for(buckets)
     verdict := {
         "matched": true,
@@ -132,27 +149,32 @@ passive_decision := verdict {
         "cac_income_buckets": buckets,
         "cac_ownership_pct": ownership_pct,
         "cac_cfc_income_attributed": attributed,
-        "cac_cfc_tax_due": tax_due,
+        "cac_cfc_tax_due": tax_estimate,
+        "needs_tax_advisor": true,
         "cac_risk_score": score,
         "cac_risk_level": risk_level,
+        "cac_ownership_signal_min_pct": ownership_min,
+        "cac_de_minimis_benchmark_eur": de_minimis_bench,
         "cac_pit_cfc_due": "30 września następnego roku",
         "_routing": routing_for(risk_level, passive_exceeded),
-        "_routing_reason": sprintf("CFC Classifier: %.1f%% passive (%s dominant) — Risk: %s (%d/100). Tax: %.0f PLN", [passive_pct, dominant, risk_level, score, tax_due]),
-        "_legal_basis": "Art. 30f PIT — CFC; Art. 45 ust. 1aa PIT (PIT-CFC)",
-        "_description": "CAC-001: CFC Passive Income Auto-Classifier with 10 income buckets and risk scoring"
+        "_routing_reason": sprintf("CFC Classifier: %.1f%% passive (%s dominant) — Risk: %s (%d/100). Estimate: %.0f PLN — decyzja przez doradcę (V3-P27).", [passive_pct, dominant, risk_level, score, tax_estimate]),
+        "_legal_basis": "Art. 30c-30f PIT — CFC [ZWERYFIKOWANO-WEB 2026-09-06: próg zwolnienia 250 000 PLN, art. 30c ust. 7]; Art. 45 ust. 1aa PIT (PIT-CFC)",
+        "_description": "CAC-001: CFC Passive Income Auto-Classifier — 10 income buckets, risk scoring, sygnał NEEDS_ADVICE (V3-P27-I07)"
     }
     profile.has_cfc == true
     object.get(profile, "cfc_de_minimis_requested", false) == false
     object.get(profile, "cfc_jurisdiction_requested", false) == false
 }
 
-# CAC-002: CFC de minimis check.
+# CAC-002: CFC de minimis check (250 000 PLN — art. 30c ust. 7 PIT
+# [ZWERYFIKOWANO-WEB]; benchmark EUR z danych [NIEZWERYFIKOWANE]).
 de_minimis_decision := verdict {
     profile := cfc_profile()
     ownership_pct := object.get(profile, "cfc_ownership_pct", 0)
     revenue := object.get(profile, "cfc_revenue_eur", 0)
-    threshold := 250000
-    scale := 4.5
+    cb27 := object.get(data.jdg.thresholds, "crossborder27", {})
+    threshold := object.get(cb27, "v3_p27_cfc_de_minimis_eur", 250000)
+    scale := object.get(cb27, "v3_p27_cfc_de_minimis_scale", 4.5)
     limit := threshold * scale / 100
     attributed := floor(revenue * ownership_pct * 100) / 100
     applies := attributed <= limit
@@ -170,8 +192,8 @@ de_minimis_decision := verdict {
         "cac_note": de_minimis_note(applies, ownership_qualifies),
         "_routing": "",
         "_routing_reason": sprintf("CFC De Minimis: %.0f EUR attributed vs %.0f EUR threshold — %s", [attributed, limit, de_minimis_action(applies, ownership_qualifies)]),
-        "_legal_basis": "Art. 30f ust. 2 PIT",
-        "_description": "CAC-002: CFC De Minimis check — 250k EUR threshold with ownership scaling"
+        "_legal_basis": "Art. 30c ust. 7 PIT (zwolnienie 250 000 PLN [ZWERYFIKOWANO-WEB]); benchmark EUR [NIEZWERYFIKOWANE]",
+        "_description": "CAC-002: CFC De Minimis check — próg z danych z ownership scaling (V3-P27 AP02 fix)"
     }
     profile.has_cfc == true
     profile.cfc_de_minimis_requested == true
@@ -198,7 +220,8 @@ jurisdiction_decision := verdict {
     tax_haven := country in tax_havens
     blacklisted := country in eu_blacklist
     greylisted := country in eu_greylist
-    low_tax := foreign_rate < 14.25
+    cb := object.get(data.jdg.thresholds, "crossborder", {})
+    low_tax := foreign_rate < object.get(cb, "cfc_tax_rate_threshold_pct", 0.1425)
     category := jurisdiction_category(tax_haven, blacklisted, greylisted, low_tax)
     verdict := {
         "matched": true,

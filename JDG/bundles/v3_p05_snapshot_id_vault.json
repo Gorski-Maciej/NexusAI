@@ -1,28 +1,35 @@
 {
   "innovation": "V3-P05-I02",
-  "generated_at": "2026-09-03T12:42:53+00:00",
-  "gate": "PASS",
-  "snapshot_id": "acab5f9259a013abd309bf2d1cf5aa7d02aa46aa550d3e7b1c3de21e8e258c7d",
+  "generated_at": "2026-09-06T20:02:17+00:00",
+  "gate": "FAIL",
+  "snapshot_id": "f9166b8f593b2dc83685246af12566479b628e642c10280830566737e409cc6c",
   "components": {
-    "rules_files": 490,
-    "thresholds_data_sha1": "901d287df0f6dcbf24e4f4c3dac55550a1eaec07",
+    "rules_files": 501,
+    "thresholds_data_sha1": "20655273bee5fdce995e490cb4737142a437e912",
     "legal_graph_sha1": "748d25733d79381e89280d457be2ca3fa73d27fe",
     "migrations_count": 13,
-    "git_head": "c4ec8b58"
+    "git_head": "1f2c6448"
   },
   "checks": [
     {
       "name": "golden_reconstructibility",
-      "status": "OK",
-      "detail": "verdicts=30, wpisy bez hasha/wer. bundle: 0"
+      "status": "FAIL",
+      "detail": "verdicts=31, wpisy bez hasha/wer. bundle: 1"
     },
     {
       "name": "vault_worm",
       "status": "OK",
-      "detail": "identyczny snapshot (repo niezmienione)"
+      "detail": "nowy snapshot (poprzedni: acab5f9259a0… — w rejestrze)"
     }
   ],
-  "findings": [],
+  "findings": [
+    {
+      "id": "V3-P05-L03",
+      "severity": "P1",
+      "evidence": "złote werdykty bez pełnego klucza odtworzenia: ['v3_p21_kks_sample']",
+      "fix": "uzupełnić bundle_version/verdict_hash (generator golden, P10)"
+    }
+  ],
   "vault_written": "bundles/v3_p05_snapshot_vault.json",
   "contract": {
     "binding": "P06 parametry / P10 golden oracle / P38 bundle / P11 certyfikaty",
