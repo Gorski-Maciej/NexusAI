@@ -162,7 +162,9 @@ def test_main_jdg_wired_p91():
     assert '"jdg.v3_p27_cfc_exit_mdr": v3_p27_cfc_exit_mdr.decide' in src
     assert "final_verdict_p91 = safe_merge(final_verdict_p90" in src
     assert "final_verdict_post_merge = safe_merge(" in src
-    assert 'final_verdict_p91\n)' in src
+    # Kontrakt P27: p91 włączony do łańcucha; od P28 kotwica post-merge
+    # przesuwa się na p92 (łańcuch rośnie — p91 pozostaje w pełni podłączony).
+    assert "final_verdict_p92 = safe_merge(final_verdict_p91" in src
 
 
 # ── Naprawy legacy (AP01/AP02) ─────────────────────────────────────────────────

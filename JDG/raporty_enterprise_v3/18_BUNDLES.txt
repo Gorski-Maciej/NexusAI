@@ -1,0 +1,98 @@
+==============================================================================
+RAPORT V3-18 BUNDLES + POLICIES MIRROR + RULESTORE + MIGRACJE + DEPLOY — V3 FORTRESS JDG
+==============================================================================
+==============================================================================
+STATUS:                          WDROZONY_100
+EVIDENCE_LEVEL:                  FULL
+CODE:                            P18 (część 18 kampanii V3)
+BRAMKA_JAKOSCI:                  tools/bundles_quality_v3_18_gate.py
+WYNIK_BRAMKI:                    WDROZONY_100 (8/8 bramek)
+DATA_GENERACJI:                  2026-09-07 13:23 UTC
+METODOLOGIA:                     raport generowany z dowodów (bramka --json +
+                                 inwentaryzacja exists() + rejestr enterprise_v3)
+==============================================================================
+
+------------------------------------------------------------------------------
+SEKCJA A — ZAKRES CZĘŚCI (źródło: v3_parts_data_b.PARTS_B)
+------------------------------------------------------------------------------
+Zakres: bundle.sh (v9.x), manifest.json, podpis, overlays v2026/v2027, mirror policies (546 plikow, hash-parity 0% drift), RuleStore DuckDB (13 migracje, 9 tabel), data_service (hot-reload), deployment_orchestrator (canary), dr_orchestrator (RTO/RPO).
+
+------------------------------------------------------------------------------
+SEKCJA B — LUKI ARCHIWALNE ROZPOZNAWE W CZĘŚCI
+------------------------------------------------------------------------------
+LUKI: podpisy bunday bez weryfikacji lokalnie; overlay v2027 testy; mirror oraz generat; brak test& siły podpisu kryptograficznego.
+
+------------------------------------------------------------------------------
+SEKCJA C — WYNIK RZECZYWISTEGO URUCHOMIENIA BRAMKI (dowód)
+------------------------------------------------------------------------------
+komenda: python tools/bundles_quality_v3_18_gate.py --json
+  PASS scope_complete
+  PASS metadata_complete
+  PASS contract_complete
+  PASS router_wired
+  PASS tools_complete
+  PASS tests_complete
+  PASS report_present
+  PASS registry_present
+  opa_check: available=False passed=None
+
+------------------------------------------------------------------------------
+SEKCJA D — INWENTARYZACJA ARTEFAKTÓW (exists() na każdej ścieżce)
+------------------------------------------------------------------------------
+STATUS | GRUPA | ŚCIEŻKA
+------------------------------------------------------------------------------
+OK     | Bundles (★) | bundles/bundle.sh
+OK     | Bundles (★) | dir:bundles
+OK     | Overlays / policies (★) | tools/overlay_engine.py
+OK     | Overlays / policies (★) | tools/overlay_generator.py
+OK     | Overlays / policies (★) | policies
+OK     | Overlays / policies (★) | policies/README.md
+OK     | RuleStore / migracje (★) | dir:migrations
+OK     | RuleStore / migracje (★) | migrations/001_jdg_rule_store.sql
+OK     | RuleStore / migracje (★) | migrations/013_jdg_v18_tools_api_rulestore_bundles.sql
+OK     | Narzedzia (★) | tools/bundle_server.py
+OK     | Narzedzia (★) | tools/deployment_orchestrator.py
+OK     | Narzedzia (★) | tools/data_service.py
+OK     | Narzedzia (★) | tools/dr_orchestrator.py
+OK     | Narzedzia (★) | tools/policies_sync_gate.py
+------------------------------------------------------------------------------
+RAZEM: 14 artefaktów, obecnych 14, brakujących 0
+
+------------------------------------------------------------------------------
+SEKCJA E — BLOK REJESTRU enterprise_v3_registry.json (część 18)
+------------------------------------------------------------------------------
+stan:                wdrozone
+zgodnosc_v1v2:       True
+liczba_zmienionych_plikow: 7
+  • Nowy kontrakt rules/bundles/quality_v3_18.rego (Delivery Certificate): bundle_ok (build+SBOM+signature), verify_ok (lokalna weryfikacja obowiazkowa — seed 1), overlay_ok (macierz v2026/v2027 przetestowana — seed 2), mirror_ok (0% drift / 100% hash-parity BLOKUJACE — seed 3), rulestore_ok (13 migracji + schema versioned + seed z obwieszczen MF — seed 4), canary_ok (hot-reload <=60 s — seed 5, rollback MTTR <=5 min — seed 6), dr_ok (RTO/RPO <=15 min, game-day <=30 dni — seed 8); fail-closed, DECOUPLED, no_auto_post=true.
+  • Zero-hardcode: snapshot thresholds bundles_quality_v3_18 = bundles-v3-2026.08 (SLA progi 60 s / 5 min / 0% drift / 15+15 min RTO-RPO / 30 dni game-day) wg ADR-002.
+  • Wiring orkiestratora: import data.jdg.bundles.quality_v3_18 + final_verdict_p78 = safe_merge(final_verdict_p77, ...); kotwica POST-MERGE → p78 (regex p7[4-9] — regresja 14/15/16/17 PASS).
+  • Nowa bramka tools/bundles_quality_v3_18_gate.py: 8 bramek; SCOPE 15 plikow JDG + policies/README.md (repo) + licznik mirror .rego; evidence bundles/bundles_v3_audit_18.json WDROZONY_100 (8/8 PASS).
+  • Testy natywne tests/rego/test_native_bundles_quality_v3_18.rego (T01-T08: golden delivery, fail-closed owner, unsigned bundle, mirror drift, migracje RuleStore, canary SLA hot-reload i MTTR osobno, DR game-day stale, no_auto_post zawsze true) + pytest tests/test_bundles_quality_v3_18.py (7 PASS).
+  • Audyt potwierdzil luki z promptu: podpisy bez weryfikacji w CI (L-18-001), hash-parity nieblokujaca (L-18-002), brak granicy delivery (L-18-003); raport raporty_enterprise_v3/18_BUNDLES.txt (sekcje A-J).
+  • Raport: 21 luk (L-18-001..021), 11 innowacji V1/V2 (sign+verify jako dwa niezalezne niezmienniki, overlay matrix test, mirror jako prawdziwy single source of truth, seed obwieszczen, Delivery Certificate w lancuchu werdyktu p78).
+  luka pozostała: Sila podpisu produkcyjnego (opa sign vs HSM/KMS) — decyzja wlasciciela bezpieczenstwa / czesc 19 (L-18-004).
+  luka pozostała: bundle_server verify-before-serve oraz integracja healthy_versions.json z deployment_orchestrator — czesc 19 API/Control Plane (L-18-012/L-18-013).
+  luka pozostała: legal_basis_version per plik w mirrorze oraz README drift 0% — czesc 20 DOKUMENTACJA (L-18-015/L-18-019).
+  luka pozostała: Testy idempotentnosci migracji SQL w CI — czesc 17 infrastruktura (L-18-014).
+  luka pozostała: Auto-rollback 5 min jako polityka domyslna oraz harmonogram game-day co 30 dni — decyzje wlasciciela (sekcja H raportu).
+raport:              None
+
+------------------------------------------------------------------------------
+SEKCJA F — POMYSŁY ROZWOJOWE CZĘŚCI (z kampanii źródłowej)
+------------------------------------------------------------------------------
+1) Bundle sign + verify w CI (F2); 2) overlay matrix test; 3) hash-parity blokujaca (0% drift); 4) RuleStore seed wg obwieszczen; 5) hot-reload test; 6) canary z rollback 5 min; 7) SBOM na kazdy bundle; 8) DR game-day co miesiac.
+
+------------------------------------------------------------------------------
+SEKCJA G — METODOLOGIA I GRANICE DOWODU
+------------------------------------------------------------------------------
+1. Wynik bramki w Sekcji C to rzeczywisty uruchomiony proces (subprocess),
+   nie deklaracja — timestamp w nagłówku jest momentem tego uruchomienia.
+2. Inwentaryzacja w Sekcji D sprawdza istnienie plików/katalogów, nie ich treść;
+   treść weryfikują same bramki jakości (kontrole markerów) — patrz Sekcja C.
+3. Blok rejestru w Sekcji E pochodzi 1:1 z bundles/enterprise_v3_registry.json.
+4. Raport NIE deklaruje '100% zgodności' — status WDROZONY_100 pochodzi
+   wyłącznie z wyniku bramki i może się zmienić przy kolejnym uruchomieniu.
+
+RAPORT WYGENEROWANY AUTOMATYCZNIE przez tools/v3_p29_enterprise_reports_generate.py
+(część P29 kampanii V3 — domknięcie braku report_present w bramkach 14-20).

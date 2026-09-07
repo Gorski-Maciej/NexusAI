@@ -1,0 +1,416 @@
+==============================================================================
+RAPORT V3 P27 — CFC, EXIT TAX, MDR SZCZEGÓŁY I PRZEPŁYWY MIĘDZYJURYSDYKCYJNE
+==============================================================================
+Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN
+Prompt:        JDG/prompty_v3/V3_PROMPT_P27_CFC_EXIT_MDG.txt
+Raport:        JDG/raporty_glm52_v3/RAPORT_V3_P27_CFC_EXIT_MDG.txt
+Status części: WDROŻONY_100 (2026-09-07)
+Data raportu:  2026-09-07
+
+──────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+──────────────────────────────────────────────────────────────────────────────
+
+Część P27 jest WDROŻONA W 100%. Wszystkie 13 innowacji Enterprise (I01-I13,
+minimum z promptu to 12) ma komplet artefaktów: reguły Rego w dedykowanym
+pakiecie jdg.v3_p27_cfc_exit_mdr, parametry-as-data w rules/thresholds_jdg.rego
+(blok crossborder27, ADR-002), wiring w rules/main_jdg.rego (final_verdict_p91),
+13 narzędzi dowodowych, 13 bundli gate=PASS oraz dwa kompletne zestawy testów.
+
+Dowody z tej sesji (uruchomienia, nie deklaracje):
+  * Rego: opa check --v0-compatible → OK (OPA 1.9.0); testy natywne 42/42 PASS.
+  * Pytest: tests/auto/test_v3_p27_cfc_exit_mdr_enterprise.py → 15/15 PASS
+    (po domknięciu L01 poniżej).
+  * Regresja P13→P27: 295/295 testów natywnych Rego PASS (17/24/15/18/29/26/25/
+    41/58/42) oraz 131/131 pytest PASS — zero regresji.
+  * Narzędzia: 13/13 bram innowacji gate=PASS (findings=0).
+  * Wiring: import (main_jdg.rego:99), rejestr pakietów (:1473),
+    final_verdict_p91 = safe_merge(final_verdict_p90, ...) (:2894), post-merge
+    (:2931).
+
+Rejestr luk: P0=0, P1=0, P2=0, P3=2 (L01 domknięta w tej sesji; L02/L03 P3
+pozostają jako obowiązek weryfikacji ISAP i sync mirroru — patrz 9.06).
+
+TOP rekomendacje (wszystkie wykonane lub przekazane):
+  1. [WYKONANE] L01: naprawa wzorca ADR-002 w legacy exit_tax_cfc_complete.rego
+     (object.get(data.jdg.thresholds, "crossborder", {}) zamiast dostępu
+     kropkowego — fail-open przy braku klucza).
+  2. [PRZEKAZANE] L02: weryfikacja ISAP progów exit tax (4M PLN) i funkcji
+     pomocniczej MDR (50M EUR) — narzędzie I03 dokumentuje parametry, ale
+     niezależna weryfikacja ISAP/RCL nie była wykonywana w tej sesji
+     [NIEZWERYFIKOWANE].
+  3. [PRZEKAZANE] L03: mirror policies — brak wpisów v3_p27 w policies/jdg
+     (spójne z L15 z P26: mirror legacy); sync do zaplanowania w P48.
+  4. [WYKONANE] Potwierdzenie fail-closed: MDR = BLOCK_AND_ALERT przy braku
+    human review, exit tax = zawsze NEEDS_ADVICE, CFC = tylko NEEDS_ADVICE.
+
+Deklaracja: udowodniono testami i uruchomieniami zgodność implementacji z
+kontraktem promptu. NIE udowodniono (i nie udaje) niezależnej weryfikacji ISAP —
+każda podstawa prawna ma status jawny.
+
+──────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+──────────────────────────────────────────────────────────────────────────────
+
+Przeanalizowano (wiersze w T1): rules/v3_p27_cfc_exit_mdr_enterprise.rego,
+rules/thresholds_jdg.rego (blok crossborder27), rules/main_jdg.rego (wiring),
+rules/crossborder/exit_tax_cfc_complete.rego, rules/exit_tax_mdr_enterprise.rego,
+rules/cfc_auto_classifier.rego, tests/rego/test_v3_p27_*.rego,
+tests/auto/test_v3_p27_*.py, 15 plików tools/v3_p27_*.py, 13 bundli
+bundles/v3_p27_*.json.
+
+Ograniczenia:
+  * Weryfikacja ISAP/RCL/MF NIE została wykonana w tej sesji (brak dostępu
+    sieciowego do isap.sejm.gov.pl w środowisku uruchomienia) — wszystkie
+    podstawy prawne mają status [NIEZWERYFIKOWANE] lub dziedziczą status
+    z kodu (np. adnotacja "[ZWERYFIKOWANO-WEB 2026-09-06]" w legacy rego —
+    traktowana jako twierdzenie kodu, nie dowód tej sesji).
+  * Mirror policies (policies/jdg) nie zawiera artefaktów v3_p27 — porównanie
+    mirror↔canonical dla P27 niemożliwe (rejestrowane jako L03, P3).
+  * Sekcja 6 promptu wymienia 21 plików (grupy 6.1-6.4) + 6 pozycji mirroru
+    (6.5). Wszystkie pliki grup 6.1-6.4 istnieją w repozytorium i zostały
+    objęte analizą; pozycje mirroru 6.5 mają status NIEZWERYFIKOWANO dla
+    v3_p27 (brak wpisów) — luka L03.
+
+──────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P27 — MAPA ARTEFAKTÓW
+──────────────────────────────────────────────────────────────────────────────
+
+Plik                                          | Pakiet Rego                  | Rule_id (przykład)                                   | Podstawa prawna            | Testy                        | Lifecycle
+----------------------------------------------|------------------------------|------------------------------------------------------|----------------------------|------------------------------|----------
+rules/v3_p27_cfc_exit_mdr_enterprise.rego     | jdg.v3_p27_cfc_exit_mdr      | jdg.v3_p27_cfc_exit_mdr.architecture_decision_register | art. 30c/30da/86a-86r [NIEZW.] | 42/42 rego + 15/15 pytest  | ACTIVE (wired p91)
+rules/thresholds_jdg.rego (crossborder27)     | jdg.thresholds               | v3_p27_* (27 kluczy)                                 | ADR-002                    | test_exit_tax_core_thresholds | ACTIVE
+rules/main_jdg.rego (final_verdict_p91)       | jdg.orchestrator             | final_verdict_p91                                    | ADR-004                    | test_main_jdg_wired_p91      | ACTIVE
+rules/crossborder/exit_tax_cfc_complete.rego  | jdg.exit_tax_cfc             | jdg.exit_tax_cfc.exit_tax.r3 (r1-r6, cfc.r1-r5, wht, pe, treaty) | art. 30da [NIEZW.] | test_legacy_exit_tax_stub    | ACTIVE
+rules/exit_tax_mdr_enterprise.rego            | jdg.exit_tax_mdr             | jdg.exit_tax.asset_transfer_abroad_detected          | art. 30da/30f [NIEZW.]     | (legacy, kompiluje się)      | ACTIVE
+rules/cfc_auto_classifier.rego                | jdg.cfc_auto_classifier      | (parametry z data: v3_p27_cfc_passive_signal_pct)    | art. 30c [NIEZW.]          | test_legacy_cfc_classifier   | ACTIVE
+tools/v3_p27_*.py (15 plików)                 | —                            | —                                                    | —                          | uruchomienia gate=PASS       | ACTIVE
+bundles/v3_p27_*.json (13 plików)             | —                            | —                                                    | —                          | gate=PASS (13/13)            | ACTIVE
+
+Wszystkie 13 rule_id innowacji obecne w rego i w teście INNOVATIONS (I01-I13).
+
+──────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4
+──────────────────────────────────────────────────────────────────────────────
+
+5.1 CFC — kwalifikacja i decyzja
+  Dowody: rules/v3_p27_cfc_exit_mdr_enterprise.rego (I07 cfc_signal_detector),
+  rules/cfc_auto_classifier.rego (parametry v3_p27_cfc_passive_signal_pct,
+  v3_p27_cfc_de_minimis_eur — test_legacy_cfc_classifier_parameters_from_data),
+  tools/v3_p27_cfc_signal_detector.py (gate=PASS).
+  Wnioski:
+    W1. Decyzja architektoniczna jest udokumentowana w rejestrze I01: CFC dla
+        JDG = sygnał → NEEDS_ADVICE; silnik NIGDY nie kalkuluje CFC automatycznie
+        (inwariant I08, test na BLOCK_AND_ALERT przy naruszeniu).
+    W2. Sygnały udziałów zagranicznych są wykrywane z danych wejściowych
+        (cfc_signal_detector), z progiem de minimis i udziałem pasywnym jako
+        parametrami (ADR-002) — realistyczne dla JDG jako detekcja, nie kalkulacja.
+    W3. Zwolnienie małego podatnika / wyłączenia UE/EOG są regułowane jako
+        parametry z valid_from; ścieżka NEEDS_ADVICE → doradca podatkowy jest
+        jedyną drogą (test: human review MDR + CFC need-advice).
+  Luki podanalizy: brak otwartych (P0-P2 = 0).
+
+5.2 Exit tax — zdarzenia i progi
+  Dowody: rules/crossborder/exit_tax_cfc_complete.rego (r1-r6: rezydencja,
+  majątek, wyłączenie <4M, odroczenie UE/EOG 5 rat, informacyjna r6 po usunięciu
+  stubu AP01), rules/v3_p27_cfc_exit_mdr_enterprise.rego (I02 signal monitor,
+  I03 threshold verifier, I09 documentation pack), thresholds (exit_tax_threshold_pln
+  = 4000000, valid_from), tools/v3_p27_exit_tax_*.py (PASS).
+  Wnioski:
+    W1. Zdarzenia (zmiana rezydencji, przeniesienie majątku) mają monitoring
+        sygnałów (I02) — sygnał → NEEDS_ADVICE, nigdy automatyczna deklaracja
+        (test test_legacy_exit_tax_stub_removed_and_chain_reordered).
+    W2. Progi i lock są parametrami z oknami temporalnymi (valid_from w bloku
+        crossborder27); wartość 4M PLN zgodna z adnotacją kodu art. 30da ust. 1
+        pkt 2 — weryfikacja ISAP pozostała otwarta (L02) [NIEZWERYFIKOWANE].
+    W3. Wycena rynkowa i raty (5 lat) są ścieżkami: I09 dostarcza checklistę
+        dokumentacyjną (metoda, dokumenty, opinia); odsetki/raty honorują
+        kontrakt V3_P17 (silnik odsetkowy P17).
+  Luki podanalizy: L02 (P3, ISAP).
+
+5.3 MDR szczegóły
+  Dowody: rules/v3_p27_cfc_exit_mdr_enterprise.rego (I04 hallmark scorer v2,
+  I05 30-day gate, I06 auxiliary function), tools/v3_p27_mdr_*.py (PASS),
+  thresholds (mdr_deadline_days=30, aux threshold), legacy mdr_* rego (kontekst).
+  Wnioski:
+    W1. Schematy zewnętrzne/wewnętrzne mają reguły roli (JDG = podatnik);
+        scorer I04 zwraca scoring z WYMAGANYM human review — raport nigdy
+        automatyczny (test human_review_required → BLOCK_AND_ALERT).
+    W2. Funkcja pomocnicza (próg 50M EUR) jest parametrem z weryfikacją (I06);
+        wartość w thresholds z valid_from — weryfikacja ISAP w L02.
+    W3. Terminy 30 dni są w kalendarzu (kontrakt V3_P25) z zero-ciszy (I05):
+        deadline weekend → rollover wg konwencji P25; checklisty raportu
+        (dane, formaty) w narzędziu I04/I05.
+  Luki podanalizy: brak otwartych (P0-P2 = 0).
+
+5.4 Przepływy i rulingi
+  Dowody: rules/v3_p27_cfc_exit_mdr_enterprise.rego (I01 architecture register,
+  I10 ruling path advisor, I13 cross-domain flow gate), tools/v3_p27_architecture_register.py,
+  tools/v3_p27_ruling_path_advisor.py, tools/v3_p27_cross_domain_flow_gate.py (PASS).
+  Wnioski:
+    W1. PAiN (art. 24ba PIT/CIT kontekst) ma JAWNĄ decyzję w rejestrze I01:
+        poza zakresem automatyzacji JDG — tylko sygnał i NEEDS_ADVICE.
+    W2. Rulingi (pre-ruling UE) mają ścieżkę doradczą I10 (jeśli decyzja:
+        w zasięgu = tylko przygotowanie wniosku, nigdy decyzja podatkowa).
+    W3. Harmonizacja krzyżowa (P15 kursy/rezydencja, P12 stawki, P13 odliczenia)
+        jest egzekwowana przez I13 cross_domain_flow_gate (gate=PASS) i
+        invariants pack I08 (P04 rozszerzenie).
+  Luki podanalizy: brak otwartych (P0-P2 = 0).
+
+──────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2)
+──────────────────────────────────────────────────────────────────────────────
+
+| Akt | Art./ust./pkt | Grupa plików | Reguła | Test | Status | Ryzyko |
+|-----|---------------|--------------|--------|------|--------|--------|
+| PIT | 30c1-30c3 (CFC) | 6.1, 6.4 | jdg.v3_p27_cfc_exit_mdr.cfc_signal_detector; cfc_auto_classifier (parametry) | test_v3_p27 rego (CFC scenariusze) + pytest legacy_cfc | CZĘŚCIOWE (ISAP L02) | średnie |
+| PIT | 30da ust. 1 pkt 1-2 (exit tax zdarzenia/progi) | 6.1 | exit_tax_cfc r1/r2/r3; I02 signal monitor; I03 threshold verifier | test_legacy_exit_tax_stub... + rego exit tax | CZĘŚCIOWE (ISAP L02) | średnie |
+| PIT | 30da ust. 8-9 (odroczenie UE/EOG, raty, deklaracja) | 6.1 | exit_tax_cfc r4/r5/r6 | rego exit tax scenariusze | CZĘŚCIOWE (ISAP L02) | niskie |
+| PIT | 24ba (PAiN) | 6.3 | I01 architecture register (decyzja: poza zakresem) | rego architecture register | PRZECZYANE (jawna decyzja) | niskie |
+| Ustawa o wymianie informacji (MDR) | schematy, funkcja pomocnicza, hallmarks, 30 dni | 6.2 | I04/I05/I06 | rego MDR scenariusze + pytest human_review | CZĘŚCIOWE (ISAP L02) | średnie |
+| DAC6 (UE) | paradygmat schematów | 6.2 | mdr_dac6_enterprise (legacy) + I04 scoring | test_native_mdr_dac6 (legacy) | CZĘŚCIOWE | niskie |
+
+Każdy przepis ma status jawny; żadne twierdzenie prawne nie jest przedstawiane
+jako zweryfikowane bez dowodu.
+
+──────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (T3)
+──────────────────────────────────────────────────────────────────────────────
+
+| ID | Kryt. | Opis | Dowód | Wpływ | Rozwiązanie | Koszt | Regresja | Status |
+|----|-------|------|-------|-------|-------------|-------|----------|--------|
+| V3-P27-L01 | P2→ZAMKNIĘTA | Fail-open w legacy exit_tax_cfc_complete.rego: dostęp kropkowy data.jdg.thresholds.crossborder → undefined przy braku klucza (naruszenie ADR-002 wzorca repo) | pytest test_legacy_exit_tax_stub_removed_and_chain_reordered FAIL przed naprawą | przy izolowanym zbiorze danych próg = undefined → gałąź niezdefiniowana | object.get(object.get(data.jdg.thresholds,"crossborder",{}),...) — 5 miejsc naprawionych w tej sesji | 15 min | brak (295/295 rego po naprawie) | ZAMKNIĘTA 2026-09-07 |
+| V3-P27-L02 | P3 | Weryfikacja ISAP progów exit tax (4M PLN) i funkcji pomocniczej MDR (50M EUR) nie wykonana w tej sesji | brak dostępu sieciowego; adnotacje kodu ≠ dowód | ryzyko rozbieżności wartości z ustawą | uruchomić tools/v3_p27_exit_tax_threshold_verifier.py z ISAP + wpisać poprawki do thresholds | 2-4 h | niskie | OTWARTA (P3, przekazana do P47/P44) |
+| V3-P27-L03 | P3 | Mirror policies: brak wpisów v3_p27 w policies/jdg (dryf canonical↔mirror dla nowej części) | grep -rln v3_p27 policies/ → 0 wyników | mirror nie odzwierciedla P27 | sync w P48 (spójne z L15 z P26: mirror legacy) | 1-2 h | niskie | OTWARTA (P3, przekazana do P48) |
+
+Luki P0: 0. Luki P1: 0. Luki P2: 0 (L01 zamknięta). Luki P3: 2 otwarte.
+
+──────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (T4) — 13 wdrożonych (minimum 12)
+──────────────────────────────────────────────────────────────────────────────
+
+Każda innowacja: reguła w jdg.v3_p27_cfc_exit_mdr + tool + bundle gate=PASS +
+scenariusze testowe. Szkielet 6-punktowy (problem/mechanizm/wpływ/ryzyko/
+kryterium/zależności) zrealizowany w kodzie narzędzi (sekcja evidence) i w rego.
+
+| ID | Nazwa | Rule_id | Tool | Bundle | Gate |
+|----|-------|---------|------|--------|------|
+| I01 | Architecture Decision Register | jdg.v3_p27_cfc_exit_mdr.architecture_decision_register | v3_p27_architecture_register.py | v3_p27_architecture_register.json | PASS |
+| I02 | Exit Tax Signal Monitor | ...exit_tax_signal_monitor | v3_p27_exit_tax_signal_monitor.py | ... | PASS |
+| I03 | Exit Tax Threshold Verifier | ...exit_tax_threshold_verifier | v3_p27_exit_tax_threshold_verifier.py | ... | PASS |
+| I04 | MDR Hallmark Scorer v2 | ...mdr_hallmark_scorer_v2 | v3_p27_mdr_hallmark_scorer.py | ... | PASS |
+| I05 | MDR 30-Day Gate | ...mdr_30day_gate | v3_p27_mdr_30day_gate.py | ... | PASS |
+| I06 | Auxiliary Function Check | ...mdr_auxiliary_function | v3_p27_mdr_auxiliary_function.py | ... | PASS |
+| I07 | CFC Signal Detector | ...cfc_signal_detector | v3_p27_cfc_signal_detector.py | ... | PASS |
+| I08 | International Invariants Pack | ...international_invariants_pack | v3_p27_invariants.py | ... | PASS |
+| I09 | Exit Tax Documentation Pack | ...exit_tax_documentation | v3_p27_exit_tax_documentation.py | ... | PASS |
+| I10 | Ruling Path Advisor | ...ruling_path_advisor | v3_p27_ruling_path_advisor.py | ... | PASS |
+| I11 | Golden International Set | ...international_golden_set | v3_p27_golden_set.py | ... | PASS |
+| I12 | International Stress Lab | ...international_stress_lab | v3_p27_stress_lab.py | ... | PASS |
+| I13 | Cross-Domain Flow Gate (dodatkowa) | ...cross_domain_flow_gate | v3_p27_cross_domain_flow_gate.py | ... | PASS |
+
+Kluczowe kryteria akceptacji (testowalne, potwierdzone):
+  * I02/I07: sygnał exit tax/CFC → routing NEEDS_ADVICE (nigdy AUTO_POST);
+    test: BLOCK_AND_ALERT przy naruszeniu.
+  * I04: scoring hallmarks wymaga human review — brak review = BLOCK_AND_ALERT.
+  * I03/I06: progi wyłącznie z data.thresholds (brak hardcode — test ADR-002).
+  * I11: golden set wpisany do bundles/golden_verdicts (replay).
+  * I12: scenariusze stress (rezydencja mid-year, MDR deadline weekend) PASS.
+
+──────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (T5) — wiąże P28 i dalsze
+──────────────────────────────────────────────────────────────────────────────
+
+K1. Rejestr decyzji architektonicznych (I01): CFC/PAiN/rulingi — zakres
+    silnika zdefiniowany (CFC=sygnał, PAiN=poza zakresem, rulingi=ścieżka
+    doradcza). Wejście do P44.
+K2. Sygnały exit/CFC (I02/I07): format sygnału i routing NEEDS_ADVICE —
+    wiąże P41 (UI alerty) i P44.
+K3. MDR checklisty (I04/I05): dane/formaty/terminy 30 dni z human review —
+    wiąże P36 (procesy) i P44.
+K4. Lista poprawek progów (I03): parametry z valid_from; weryfikacja ISAP
+    jako otwarty obowiązek — wejście do P44 i P47.
+K5. Invariants pack I08 rozszerza kontrakt V3_P04 o trzy reguły międzynarodowe:
+    MDR human-only, exit tax advisor-only, CFC need-advice-only.
+
+──────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA (T6) — wykonany
+──────────────────────────────────────────────────────────────────────────────
+
+1. [X] Rego pakiet jdg.v3_p27_cfc_exit_mdr (13 analiz + decide fail-closed).
+2. [X] Thresholds: blok crossborder27, 27 kluczy v3_p27_*, valid_from (ADR-002/P05).
+3. [X] Wiring main_jdg: import + rejestr + final_verdict_p91 + post-merge.
+4. [X] Narzędzia: 13 silników + common + generator (15 plików).
+5. [X] Bundle: 13 gate=PASS.
+6. [X] Testy natywne Rego: 42 scenariusze (OPA 1.9.0 --v0-compatible).
+7. [X] Testy pytest: 15 (w tym granice 2M/4M, 30 dni, human review, NEEDS_ADVICE).
+8. [X] Naprawy legacy: stub AP01 usunięty (r6 jawny), parametry-as-data w
+       cfc_auto_classifier, ADR-002 wzorzec w exit_tax_cfc_complete (L01).
+9. [X] Regresja P13-P27: 295/295 rego + 131/131 pytest.
+10. [X] Raport + ledger (ta sesja).
+
+──────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (T7)
+──────────────────────────────────────────────────────────────────────────────
+
+Blokujące merge (obecne, PASS):
+  * test_exit_tax_core_thresholds_in_crossborder — progi 4M/30 dni/183 jako dane.
+  * test_main_jdg_wired_p91 — wiring kompletny.
+  * test_legacy_exit_tax_stub_removed_and_chain_reordered — brak stubów,
+    unikalność rule_id, kolejność łańcucha (r3 wyłączenie przed transferem),
+    ADR-002.
+  * test_legacy_cfc_classifier_parameters_from_data — zero hardcode (AP02).
+  * Scenariusze Rego: granice progu (±0,01), 30 dni MDR (day-0/day-1),
+    human review, NEEDS_ADVICE, stress mid-year/weekend.
+
+Wyniki: 42/42 rego (OPA 1.9.0, --v0-compatible), 15/15 pytest,
+regresja P13-P27 295/295 + 131/131.
+
+──────────────────────────────────────────────────────────────────────────────
+9.11 PYTANIA DO CZŁOWIEKA (T8)
+──────────────────────────────────────────────────────────────────────────────
+
+V3-P27-Q01: Czy wartość progu exit tax 4M PLN potwierdzona w ISAP (art. 30da
+            ust. 1 pkt 2 PIT)? [NIEZWERYFIKOWANE w tej sesji]
+V3-P27-Q02: Czy próg funkcji pomocniczej MDR (50M EUR) potwierdzony w ISAP?
+            [NIEZWERYFIKOWANE w tej sesji]
+V3-P27-Q03: Czy decyzja I01 (PAiN poza zakresem automatyzacji JDG) akceptowana
+            jako wiążąca dla P44? (4-eyes)
+
+──────────────────────────────────────────────────────────────────────────────
+9.12 ZAŁOŻENIA JAWNE (T9)
+──────────────────────────────────────────────────────────────────────────────
+
+[ZAŁOŻENIE] Z1: Adnotacja "[ZWERYFIKOWANO-WEB 2026-09-06]" w kodzie legacy
+   traktowana jako twierdzenie kodu, nie jako dowód tej sesji.
+[ZAŁOŻENIE] Z2: Kolejność łańcucha else w exit_tax_cfc_complete (r3 pierwsza)
+   jest zamierzona (wyłączenie < progu przed regułami transferu).
+[ZAŁOŻENIE] Z3: Brak wpisów mirror v3_p27 = brak syncu, nie celowe usunięcie.
+
+──────────────────────────────────────────────────────────────────────────────
+T1 — TABELA DOWODÓW (7.3)
+──────────────────────────────────────────────────────────────────────────────
+
+| # | Plik | Dowód/fakt | Status |
+|---|------|-----------|--------|
+| 1 | rules/crossborder/exit_tax_cfc_complete.rego | r3-r6, cfc.r1-r5, wht, pe, treaty; L01 naprawiona (object.get 2-poziomowy); brak stubów | ZWERYFIKOWANO |
+| 2 | rules/exit_tax_mdr_enterprise.rego | legacy pakiet jdg.exit_tax_mdr; _thresholds_root wzorzec ADR-002; kompiluje się | ZWERYFIKOWANO |
+| 3 | rules/cfc_auto_classifier.rego | parametry z data (v3_p27_cfc_passive_signal_pct, de_minimis); needs_tax_advisor | ZWERYFIKOWANO |
+| 4 | rules/residency/plan44_residency.rego | kontekst rezydencji (P15 kontrakt) | ZWERYFIKOWANO (istnieje) |
+| 5 | rules/mdr/plan44_mdr.rego | kontekst MDR plan44 | ZWERYFIKOWANO (istnieje) |
+| 6 | rules/mdr/plan45_mdr.rego | kontekst MDR plan45 | ZWERYFIKOWANO (istnieje) |
+| 7 | rules/mdr/mdr_enterprise.rego | kontekst MDR enterprise | ZWERYFIKOWANO (istnieje) |
+| 8 | rules/mdr/mdr_hallmarks.rego | hallmarks legacy (scoring v2 w P27 rego) | ZWERYFIKOWANO (istnieje) |
+| 9 | rules/mdr_dac6_enterprise.rego | DAC6 legacy | ZWERYFIKOWANO (istnieje) |
+| 10 | rules/mdr_auto_generator.rego | generator legacy | ZWERYFIKOWANO (istnieje) |
+| 11 | rules/cross_jurisdiction_ruling_enterprise.rego | rulingi legacy | ZWERYFIKOWANO (istnieje) |
+| 12 | rules/wis/plan44_wis.rego | WIS kontekst | ZWERYFIKOWANO (istnieje) |
+| 13 | rules/solidarity/plan44_solidarity.rego | solidarnościowa kontekst | ZWERYFIKOWANO (istnieje) |
+| 14 | tools/cfc_classifier.py | klasyfikator legacy | ZWERYFIKOWANO (istnieje) |
+| 15 | tools/mdr_scorer.py | scorer legacy | ZWERYFIKOWANO (istnieje) |
+| 16 | tools/tp_documentation_engine.py | TP dokumentacja (kontekst) | ZWERYFIKOWANO (istnieje) |
+| 17 | tools/fx_rate_engine.py | kursy (kontrakt P15) | ZWERYFIKOWANO (istnieje) |
+| 18 | tools/crossborder_auditor.py | audyt cross-border | ZWERYFIKOWANO (istnieje) |
+| 19 | tests/rego/test_native_exit_tax_mdr_enterprise.rego | testy legacy | ZWERYFIKOWANO (istnieje) |
+| 20 | tests/rego/test_native_mdr_dac6_enterprise.rego | testy legacy | ZWERYFIKOWANO (istnieje) |
+| 21 | tests/rego/test_native_wis_api_enterprise.rego | testy legacy | ZWERYFIKOWANO (istnieje) |
+| 22-27 | mirror policies/jdg, /tax, /tax/vat, bundle.sh, manifesty | brak wpisów v3_p27 | NIEZWERYFIKOWANO (L03) |
+
+──────────────────────────────────────────────────────────────────────────────
+T10 — PRZEKAZYWANE ARTEFAKTY (11.4)
+──────────────────────────────────────────────────────────────────────────────
+
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| Rejestr decyzji I01 | P44 | rego + bundle JSON | certyfikacja zakresu silnika |
+| Sygnały exit/CFC I02/I07 | P41, P44 | rego + tool | UI alerty NEEDS_ADVICE |
+| MDR checklisty I04/I05 | P36, P44 | tool + bundle | procesy raportowania |
+| Lista poprawek progów I03 | P44, P47 | thresholds + tool | weryfikacja ISAP |
+| Invariants I08 | P04/P04-kontrakt | rego | rozszerzenie konstytucji |
+| Golden set I11 | P10 oracle | bundle | replay decyzji |
+
+──────────────────────────────────────────────────────────────────────────────
+T11 — MATRYCA PODANALIZA×GRUPA (APENDYKS B)
+──────────────────────────────────────────────────────────────────────────────
+
+| Podanaliza | Grupy kluczowe | Wynik |
+|------------|----------------|-------|
+| 5.1 CFC | 6.1, 6.4 | COMPLETE (I07 + parametry + NEEDS_ADVICE) |
+| 5.2 Exit tax | 6.1, 6.4 | COMPLETE (I02/I03/I09; L02 ISAP P3) |
+| 5.3 MDR | 6.2, 6.4 | COMPLETE (I04/I05/I06; human review) |
+| 5.4 Przepływy/rulingi | 6.3, 6.4 | COMPLETE (I01/I10/I13) |
+
+──────────────────────────────────────────────────────────────────────────────
+T12 — REJESTR KONFLIKTÓW
+──────────────────────────────────────────────────────────────────────────────
+
+Brak konfliktów z dokumentami świętymi. L01 była niezgodnością z ADR-002
+(wzorzec repo) — naprawiona w tej sesji, przeniesiona do rejestru luk jako
+zamknięta.
+
+──────────────────────────────────────────────────────────────────────────────
+PYTANIA KRZYŻOWE 7.4 (X01-X10)
+──────────────────────────────────────────────────────────────────────────────
+
+X01: Brak sprzeczności z dokumentami świętymi (T12 pusty; fail-closed zgodny
+     z V1/V2: NEEDS_ADVICE przy wątpliwości).
+X02: Po naprawie L01 — brak reguł łamiących P06/P05 w zakresie P27 (test ADR-002
+     PASS; valid_from obecne).
+X03: Po naprawie L01 — brak fail-open w P27 (object.get z defaultami).
+X04: Werdykty P27 używają kontraktu 25-polowego (final_verdict_p91 przez
+     safe_merge; test wiring).
+X05: Testy blokujące: patrz 9.10 (wszystkie PASS).
+X06: Duplikaty: brak nowych duplikatów; legacy rozszerzone, nie kopiowane
+     (r6 jawny zamiast stubu; parametry cfc_auto_classifier z data).
+X07: Niezweryfikowane podstawy: L02 (rejestr mediacji, priorytet P3).
+X08: Q01-Q03 (4-eyes): progi ISAP + decyzja PAiN.
+X09: Metryki do P37: mdr_deadline_breach, exit_tax_signal_count,
+     cfc_signal_count, human_review_pending (narzędzia I02/I04/I05/I07).
+X10: Invarianty runtime: I08 (MDR human-only, exit tax advisor-only, CFC
+     need-advice-only) — uzasadnienie: sankcje i odpowiedzialność karna/podatkowa.
+
+──────────────────────────────────────────────────────────────────────────────
+ANTY-WZORCE 7.5 — WYNIKI SPRAWDZENIA
+──────────────────────────────────────────────────────────────────────────────
+
+AP01 stuby: NIE MA (test braku {true}; r6 jawny).
+AP02 hardcode: NIE MA (test ADR-002; po naprawie L01).
+AP03 else-chain: OK (r3 pierwsza — wyłączenie przed transferem; test kolejności).
+AP04 duplikaty: NIE MA (test unikalności rule_id).
+AP05 podstawy prawne: statusy jawne [NIEZWERYFIKOWANE] (L02).
+AP06 testy zawsze-zielone: NIE MA (asercje negatywne obecne: not stub, not hardcode).
+AP07 cichy AUTO_POST: NIE MA (MDR/exit/CFC = BLOCK_AND_ALERT/NEEDS_ADVICE).
+AP08 cykle: NIE MA (pakiet samodzielny; importy jednokierunkowe).
+AP09 dane zewnętrzne: parametry z data.thresholds (brak stałych kursów w P27).
+AP10 okna temporalne: OBECNE (valid_from w crossborder27).
+AP11 mirror dryf: WYKRYTY (L03, P3 — brak wpisów; sync P48).
+AP12 słowniki w dwóch miejscach: NIE DOTYCZY (jedno źródło: thresholds).
+
+──────────────────────────────────────────────────────────────────────────────
+SEKCJA 16 — POTWIERDZENIE ZAMKNIĘCIA CZĘŚCI P27
+──────────────────────────────────────────────────────────────────────────────
+
+Zakres: P27 CFC/EXIT TAX/MDR/przepływy — 4 podanalizy COMPLETE.
+Luki: P0=0, P1=0, P2=0 (L01 zamknięta), P3=2 otwarte (L02 ISAP, L03 mirror).
+Innowacje: 13/13 (I01-I13), wszystkie gate=PASS.
+Kontrakt wyjściowy: K1-K5 (9.08) — wiążące dla P28+.
+Artefakty przekazane: T10.
+
+Kontrakty wyjściowe dla P28 (lista wg Sekcji 16 promptu):
+  1. K1 Rejestr decyzji architektonicznych (I01) → P44.
+  2. K2 Sygnały exit/CFC (I02/I07) → P41, P44.
+  3. K3 MDR checklisty (I04/I05) → P36, P44.
+  4. K4 Lista poprawek progów (I03) → P44, P47.
+  5. K5 Invariants pack (I08) → kontrakt V3_P04.
+
+OKNO KONTEKSTOWE: zgodnie z Sekcją 16 promptu — po zapisaniu tego raportu i
+aktualizacji ledera sesja P27 jest domknięta; wejście do P28 WYŁĄCZNIE przez
+ten raport (9.01, 9.08, 9.06) i bundles/v3_campaign_ledger.json.
+
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI:
+Implementacja P27 jest zgodna z ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1) i
+WIZJA_OPA_ENTERPRISE_V2.md (V2): fail-closed (NEEDS_ADVICE/BLOCK_AND_ALERT,
+zero cichego AUTO_POST), parametry-as-data (ADR-002, valid_from P05), Legal
+Twin traceability (rule→test→bundle→certyfikat), Golden Oracle (I11), Decision
+Certificate (wiring p91 w łańcuchu post-merge). Odstępstwa: brak (L02/L03 są
+obowiązkami weryfikacyjnymi, nie odstępstwami architektonicznymi).

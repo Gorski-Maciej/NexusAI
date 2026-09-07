@@ -350,25 +350,29 @@
       "slug": "CFC_EXIT_MDG",
       "prompt": "V3_PROMPT_P27_CFC_EXIT_MDG.txt",
       "report": "RAPORT_V3_P27_CFC_EXIT_MDG.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
       "luki_p1": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": ""
+      "luki_p2": 0,
+      "luki_p3": 2,
+      "innovations": 13,
+      "implemented_at": "2026-09-07T00:00:00.000000+00:00",
+      "notes": "P27 CFC_EXIT_MDG: WDROZONY_100 (2026-09-07). rules/v3_p27_cfc_exit_mdr_enterprise.rego (13 innowacji I01-I13, decide fail-closed); thresholds crossborder27 (27 kluczy v3_p27_*, valid_from, ADR-002); wiring main_jdg final_verdict_p91; 13 tooli + 13 bundli gate PASS; testy 42/42 rego (OPA 1.9.0 --v0-compatible) + 15/15 pytest; regresja P13-P27 zielona (295/295 rego, 131/131 pytest). Naprawy legacy: stub AP01 usuniety (exit_tax.r6 jawny), parametry-as-data cfc_auto_classifier, L01 zamknieta (wzorzec ADR-002 object.get 2-poziomowy w exit_tax_cfc_complete.rego — 5 miejsc). Luki otwarte: P3=2 (L02 ISAP weryfikacja progow, L03 mirror sync do P48). Raport: RAPORT_V3_P27_CFC_EXIT_MDG.txt",
+      "auto_recheck": false
     },
     "P28": {
       "slug": "HYPER_PLAN45",
       "prompt": "V3_PROMPT_P28_HYPER_PLAN45.txt",
       "report": "RAPORT_V3_P28_HYPER_PLAN45.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
       "luki_p1": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": "",
       "luki_p2": 0,
-      "luki_p3": 0
+      "luki_p3": 3,
+      "innovations": 12,
+      "implemented_at": "2026-09-07T00:00:00.000000+00:00",
+      "notes": "P28 HYPER_PLAN45: WDROZONY_100 (2026-09-07). rules/v3_p28_hyper_plan45_enterprise.rego (12 innowacji I01-I12, decide fail-closed); thresholds hyper45 (23 klucze v3_p28_*, valid_from, ADR-002); wiring main_jdg final_verdict_p92; 12 tooli + 12 bundli gate PASS; testy 40/40 rego (OPA 1.9.0 --v0-compatible) + 17/17 pytest; regresja P13-P28 zielona (335/335 rego, 148/148 pytest). Mapa hiperkontekst→domeny→kontrakty (I01), detektor duplikatów fx/limits z decyzja konsolidacji (I02: fx=P15, limits=P06), force majeure framework z kalendarzem P25 (I03), sanctions gate human-review + AML P22 (I04), rejestr domen marginalnych (I05), esig kontrakt P11/P16 (I06), crisis drill zero-ciszy (I07), bramka sieci (I08), konstytucja INV-H01..H04 (I09), golden set (I10), plan pustyn (I11), silnik wyjasnien (I12). Luki otwarte: P3=3 (L01 konsolidacja fizyczna duplikatow -> P50, L02 weryfikacja ISAP -> P47/P44, L03 mirror sync -> P48). Raport: RAPORT_V3_P28_HYPER_PLAN45.txt",
+      "auto_recheck": false
     },
     "P29": {
       "slug": "KAMPANIE_JAKOSCI_V3",
@@ -826,8 +830,8 @@
   },
   "summary": {
     "total": 69,
-    "wdrozony_100": 27,
-    "nie_wdrozony": 42,
-    "progress_pct": 39.13
+    "wdrozony_100": 29,
+    "nie_wdrozony": 40,
+    "progress_pct": 42.03
   }
 }

@@ -1,0 +1,32 @@
+{
+  "innovation": "V3-P28-I04",
+  "generated_at": "2026-09-07T11:05:24+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p28_hyper_plan45.sanctions_gate: True"
+    },
+    {
+      "name": "thresholds",
+      "status": "OK",
+      "detail": "brakujące klucze: brak"
+    },
+    {
+      "name": "routing",
+      "status": "OK",
+      "detail": "routing: BLOCK_AND_ALERT (brak human review = BLOCK)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p92"
+    }
+  ],
+  "findings": []
+}

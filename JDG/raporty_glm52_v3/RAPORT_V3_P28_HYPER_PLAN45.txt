@@ -1,0 +1,457 @@
+==============================================================================
+RAPORT V3 P28 — HYPERKONTEKSTY PLAN44/45 I KRYTYCZNE ŚCIEŻKI DZIAŁANIA
+==============================================================================
+Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN
+Prompt:        JDG/prompty_v3/V3_PROMPT_P28_HYPER_PLAN45.txt
+Raport:        JDG/raporty_glm52_v3/RAPORT_V3_P28_HYPER_PLAN45.txt
+Status części: WDROŻONY_100 (2026-09-07)
+Data raportu:  2026-09-07
+
+──────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+──────────────────────────────────────────────────────────────────────────────
+
+Część P28 jest WDROŻONA W 100%. Wszystkie 12 innowacji Enterprise (I01-I12,
+minimum z promptu) ma komplet artefaktów: reguły Rego w dedykowanym pakiecie
+jdg.v3_p28_hyper_plan45, parametry-as-data w rules/thresholds_jdg.rego
+(blok hyper45, ADR-002), wiring w rules/main_jdg.rego (final_verdict_p92),
+12 narzędzi dowodowych + common + generator (14 plików), 12 bundli
+gate=PASS oraz dwa kompletne zestawy testów.
+
+Dowody z tej sesji (uruchomienia, nie deklaracje):
+  * Rego: opa check --v0-compatible → OK (OPA 1.9.0); testy natywne 40/40 PASS.
+  * Pytest: tests/auto/test_v3_p28_hyper_plan45_enterprise.py → 17/17 PASS.
+  * Regresja P13→P28: 335/335 testów natywnych Rego PASS (17/24/15/18/29/26/25/
+    41/58/42/40) oraz 148/148 pytest PASS — zero regresji.
+  * Narzędzia: 12/12 bram innowacji gate=PASS (findings=0).
+  * Wiring: import (main_jdg.rego), rejestr pakietów, final_verdict_p92 =
+    safe_merge(final_verdict_p91, ...), post-merge → final_verdict_p92.
+
+Rejestr luk: P0=0, P1=0, P2=0, P3=3 (L01 konsolidacja fx/limits — decyzja
+rejestrowa wykonana, fizyczne wygaszenie duplikatów legacy przekazane do P50;
+L02 weryfikacja ISAP podstaw prawnych hiperkontekstów; L03 mirror sync).
+
+TOP rekomendacje (wszystkie wykonane lub przekazane):
+  1. [WYKONANE] Mapa hiperkontekst→domeny→kontrakty→testy (I01) jako dane
+     + bramka spójności sieci (I08) — rozjazd = BLOCKER w CI.
+  2. [WYKONANE] Decyzja konsolidacji duplikatów (I02): fx = P15 fx_rate_engine
+     jedyne źródło kursów (hyper/plan44 = mapowanie prawne, nie dane kursowe);
+     limits = P06 jedyny rejestr progów.
+  3. [WYKONANE] Force majeure framework (I03): kwalifikacja z katalogu,
+     zawieszenie terminów wyłącznie przez kalendarz P25, degradacja →
+     NEEDS_ADVICE; silnik NIGDY nie przesuwa terminu automatycznie.
+  4. [WYKONANE] Sanctions gate (I04): lista → BLOCK_AND_ALERT bez human
+     review; integracja AML P22; zero auto-transakcji.
+  5. [WYKONANE] Crisis drill (I07): siła wyższa + KSeF down + termin VAT →
+     zero ciszy (3 scenariusze obowiązkowe, P04 K10).
+  6. [PRZEKAZANE] L01: fizyczna konsolidacja duplikatów legacy → P50.
+  7. [PRZEKAZANE] L02: weryfikacja ISAP (art. 71-72 OP, art. 127-129 VAT,
+     art. 4 ust. 4 uor, listy sankcyjne UE, PZP, eIDAS) → P47/P44.
+  8. [PRZEKAZANE] L03: mirror policies — brak wpisów v3_p28 → sync w P48.
+
+Deklaracja: udowodniono testami i uruchomieniami zgodność implementacji z
+kontraktem promptu. NIE udowodniono (i nie udaje) niezależnej weryfikacji ISAP
+— każda podstawa prawna ma status jawny [NIEZWERYFIKOWANE].
+
+──────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+──────────────────────────────────────────────────────────────────────────────
+
+Przeanalizowano (wiersze w T1): 14 katalogów rules/jdg/hyper/* (general,
+sanctions, limits, force_majeure, fx, family, edelivery, procurement, wis,
+mdr, solidarity, audit, deadlines, misc), 9 domen marginalnych plan44/45
+(esig, taxfree, seasonal, insurance, advertising, regulated, force_majeure,
+procurement, fx + esig_auto_applicator), 11 plików testów (6.3), nowy pakiet
+v3_p28 + thresholds + wiring + 12 tooli + 12 bundli.
+
+Ograniczenia:
+  * Weryfikacja ISAP/RCL/MF NIE została wykonana w tej sesji (brak dostępu
+    sieciowego do isap.sejm.gov.pl w środowisku uruchomienia) — wszystkie
+    podstawy prawne mają status jawny [NIEZWERYFIKOWANE].
+  * Mirror policies (policies/jdg) nie zawiera artefaktów v3_p28 — porównanie
+    mirror↔canonical dla P28 niemożliwe (luka L03, P3; spójne z L15 z P26
+    i L03 z P27).
+  * Pliki Sekcji 6 istnieją w repozytorium (zweryfikowano istnienie i treść
+    nagłówków/struktur); pozycje mirroru 6.4 mają status NIEZWERYFIKOWANO
+    dla v3_p28 (brak wpisów) — luka L03.
+
+──────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P28 — MAPA ARTEFAKTÓW
+──────────────────────────────────────────────────────────────────────────────
+
+Plik                                          | Pakiet Rego                | Rule_id (przykład)                       | Podstawa prawna        | Testy                       | Lifecycle
+----------------------------------------------|----------------------------|------------------------------------------|------------------------|-----------------------------|----------
+rules/v3_p28_hyper_plan45_enterprise.rego     | jdg.v3_p28_hyper_plan45    | jdg.v3_p28_hyper_plan45.hyper_context_map | OP 71-72/VAT 127-129/eIDAS [NIEZW.] | 40/40 rego + 17/17 pytest | ACTIVE (wired p92)
+rules/thresholds_jdg.rego (hyper45)           | jdg.thresholds             | v3_p28_* (23 klucze)                     | ADR-002                | test_hyper45_block_complete | ACTIVE
+rules/main_jdg.rego (final_verdict_p92)       | jdg.orchestrator           | final_verdict_p92                        | ADR-004                | test_main_jdg_wired_p92     | ACTIVE
+rules/jdg/hyper/*/plan45.rego (14 kat.)       | jdg.hyper.*                | jdg.hyper.<ctx>.*                        | różne (legacy)         | test_native_hyper.rego itd. | ACTIVE (legacy)
+rules/<domena>/plan44_*.rego (9 domen)        | jdg.esig/fx/...            | jdg.<domena>.*                           | różne (legacy)         | test_native_jdg_*.rego      | ACTIVE (legacy)
+tools/v3_p28_*.py (14 plików)                 | —                          | —                                        | —                      | uruchomienia gate=PASS      | ACTIVE
+bundles/v3_p28_*.json (12 plików)             | —                          | —                                        | —                      | gate=PASS (12/12)           | ACTIVE
+
+Wszystkie 12 rule_id innowacji obecne w rego i w teście INNOVATIONS (I01-I12).
+
+──────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4
+──────────────────────────────────────────────────────────────────────────────
+
+5.1 Hiperkonteksty plan45 (hyper/*)
+  Dowody: rules/jdg/hyper/* (14 katalogów: general 100, sanctions 51, limits 34,
+  force_majeure 22, fx 25, family 21, edelivery 21, procurement 21, wis 18,
+  mdr 38, solidarity 11, audit 25, deadlines 56, misc 49 reguł — liczby z
+  MANIFEST.md), nowy pakiet I01 (mapa) i I03/I04 (framework/gate).
+  Wnioski:
+    W1. Każdy katalog hyper ma jasny cel i reguły (14/14 z rule_id i
+        _legal_basis); mapa I01 dokumentuje domeny dotykane i kontrakty.
+    W2. Force majeure wpływa na kalendarz P25 przez jawny kontrakt
+        deadline_suspension (I03) — zawieszenie = ścieżka doradcza, nie
+        automatyczne przesunięcie (degradacja NEEDS_ADVICE).
+    W3. Sanctions wpływa na decyzje przez BLOCK_AND_ALERT + HUMAN REVIEW (I04)
+        z integracją AML P22 (kontrakt sanctions_human_review).
+  Luki podanalizy: L01 (P3, duplikaty fx/limits — decyzja podjęta, fizyczna
+  konsolidacja do P50).
+
+5.2 Domeny marginalne plan44/45
+  Dowody: rules/esig, taxfree, seasonal, insurance, advertising, regulated,
+  procurement, force_majeure, fx (plan44+plan45); testy natywne test_native_jdg_*;
+  rejestr I05 i plan I11 w nowym pakiecie.
+  Wnioski:
+    W1. Decyzje architektoniczne JAWNE (rejestr I05): taxfree=INFO,
+        seasonal=DATA, insurance/advertising=COST, esig=CONTRACT,
+        regulated/procurement=OUT_OF_SCOPE z uzasadnieniem — input P44.
+    W2. esig ma warstwę kontraktową I06: próg podpisu kwalifikowanego z danych
+        (10 000 PLN, hyper_contexts qualified_signature_value_threshold),
+        klucze z kontraktu P11/P16; brak klucza = BLOCK_AND_ALERT.
+    W3. Wszystkie 9 domen marginalnych ma testy natywne (zero pustyn
+        testowych — potwierdzone testem test_marginal_domains_have_native_tests
+        i I11 gate=PASS).
+  Luki podanalizy: brak otwartych (P0-P2 = 0).
+
+5.3 Spójność sieci zależności
+  Dowody: mapa I01 (14 hiperkontekstów z domenami/kontraktami/testami),
+  bramka I08 (network_consistency_gate: rozjazd = BLOCK_AND_ALERT, pokrycie
+  <14 = TRIAGE), detektor I02 (duplikaty fx/limits z decyzją konsolidacji).
+  Wnioski:
+    W1. Mapa zależności jest udokumentowana JAKO DANE (I01) i egzekwowana
+        testem (I08) — rozjazd hiperkontekst↔domena = BLOCKER w CI (AN11).
+    W2. Kontrakty (fx=P15, sanctions=AML P22, force_majeure=P25) są jawnymi
+        polami mapy i invariantami I09 (INV-H01..H04).
+    W3. Duplikaty: fx (hyper↔plan44↔narzędzie P15) i limits (hyper↔P06)
+        wykryte i rozstrzygnięte decyzją rejestrową — jedno źródło prawdy
+        (fx=P15 silnik, hyper/plan44=mapowanie; limits=P06 rejestr).
+  Luki podanalizy: L01 (P3 — fizyczne wygaszenie duplikatów legacy do P50).
+
+5.4 Krytyczne ścieżki działania
+  Dowody: framework I03 (katalog zdarzeń FLOOD/FIRE/EPIDEMIC/WAR/
+  STATE_RESTRICTION; max 90 dni z danych; deadline w oknie → NEEDS_ADVICE),
+  crisis drill I07 (3 scenariusze: FORCE_MAJEURE_ACTIVE, KSEF_DOWN,
+  DEADLINE_TODAY; brak kompletu = TRIAGE, porażka = BLOCK), kalendarz P25
+  (deadline_alert_7/3/1, przesunięcia weekendowe).
+  Wnioski:
+    W1. Siła wyższa ma ścieżki: kwalifikacja (katalog), zawieszenie terminów
+        (kalendarz P25), degradacja decyzji (NEEDS_ADVICE) — zero automatów.
+    W2. Awarie zewnętrzne (KSeF down — P16) współgrają z hiperkontekstami w
+        crisis drill I07: każdy wymiar kryzysu = ścieżka, nie cisza.
+    W3. Chaos drill hiperkontekstów potwierdzony testem (test_p28_i07_ok:
+        3/3 scenariuszy PASS → fail-closed potwierdzone).
+  Luki podanalizy: L02 (P3 — weryfikacja ISAP art. 71-72 OP / 127-129 VAT).
+
+──────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2)
+──────────────────────────────────────────────────────────────────────────────
+
+| Akt | Art./ust./pkt | Grupa plików | Reguła | Test | Status | Ryzyko |
+|-----|---------------|--------------|--------|------|--------|--------|
+| Ordynacja podatkowa | art. 71-72 (zawieszenie bieg — kontekst) | 6.1, 6.2 | jdg.v3_p28_hyper_plan45.force_majeure_framework | test_p28_i03_* (4 scenariusze) | CZĘŚCIOWE (ISAP L02) | średnie |
+| Ustawa o VAT | art. 127-129 (siła wyższa — zweryfikować) | 6.1 | force_majeure_framework (tag [NIEZWERYFIKOWANE]) | test_p28_i03_* | CZĘŚCIOWE (ISAP L02) | niskie |
+| Ustawa o rachunkowości | art. 4 ust. 4 (istotność — paradygmat) | 6.3 | crisis_drill (ścieżki krytyczne) | test_p28_i07_* | CZĘŚCIOWE (ISAP L02) | niskie |
+| Rozporządzenia sankcyjne UE | listy consolidated | 6.1 | sanctions_gate (provenance wersji list z danych) | test_p28_i04_* (5 scenariuszy) | CZĘŚCIOWE (ISAP L02) | wysokie |
+| Prawo zamówień publicznych | kontekst procurement | 6.2 | marginal_domain_register (OUT_OF_SCOPE) | test_p28_i05_register | PRZECZYANE (jawna decyzja) | niskie |
+| eIDAS + OrdPU | art. 25-26; art. 126 § 5 (podpis kwalifikowany) | 6.2 | esig_contract_layer | test_p28_i06_* (4 scenariusze) | CZĘŚCIOWE (ISAP L02) | średnie |
+
+Każdy przepis ma status jawny; żadne twierdzenie prawne nie jest przedstawiane
+jako zweryfikowane bez dowodu.
+
+──────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (T3)
+──────────────────────────────────────────────────────────────────────────────
+
+| ID | Kryt. | Opis | Dowód | Wpływ | Rozwiązanie | Koszt | Regresja | Status |
+|----|-------|------|-------|-------|-------------|-------|----------|--------|
+| V3-P28-L01 | P3 | Duplikaty fx (hyper↔plan44↔narzędzie P15) i limits (hyper↔P06) — decyzja konsolidacji podjęta (I02: fx=P15, limits=P06), fizyczne wygaszenie duplikatów legacy nie wykonane | grep fx_rate/limit w rules/jdg/hyper/fx, rules/fx, tools/fx_rate_engine — 3 źródła mapowania | ryzyko rozjazdu interpretacji przy nowelizacji | konsolidacja fizyczna w P50 (dead code/duplikaty) | 4-8 h | średnie (legacy testy) | OTWARTA (P3, przekazana do P50) |
+| V3-P28-L02 | P3 | Weryfikacja ISAP: art. 71-72 OP, art. 127-129 VAT, art. 4 ust. 4 uor, listy sankcyjne UE, PZP, eIDAS art. 25-26 — nie wykonana w tej sesji | brak dostępu sieciowego; statusy [NIEZWERYFIKOWANE] w rego | ryzyko rozbieżności wartości z ustawą | uruchomić weryfikację ISAP + poprawki do thresholds | 4-6 h | niskie | OTWARTA (P3, przekazana do P47/P44) |
+| V3-P28-L03 | P3 | Mirror policies: brak wpisów v3_p28 w policies/jdg (dryf canonical↔mirror) | grep -rln v3_p28 policies/ → 0 wyników | mirror nie odzwierciedla P28 | sync w P48 (spójne z L15 z P26, L03 z P27) | 1-2 h | niskie | OTWARTA (P3, przekazana do P48) |
+
+Luki P0: 0. Luki P1: 0. Luki P2: 0. Luki P3: 3 otwarte.
+
+──────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (T4) — 12 wdrożonych (minimum 12)
+──────────────────────────────────────────────────────────────────────────────
+
+Każda innowacja: reguła w jdg.v3_p28_hyper_plan45 + tool + bundle gate=PASS +
+scenariusze testowe. Szkielet 6-punktowy (problem/mechanizm/wpływ/ryzyko/
+kryterium/zależności) zrealizowany w kodzie narzędzi (sekcja evidence) i w rego.
+
+| ID | Nazwa | Rule_id | Tool | Bundle | Gate |
+|----|-------|---------|------|--------|------|
+| I01 | Hyper Context Map | jdg.v3_p28_hyper_plan45.hyper_context_map | v3_p28_hyper_context_map.py | v3_p28_hyper_context_map.json | PASS |
+| I02 | Duplicate Detector Pack | ...duplicate_detector | v3_p28_duplicate_detector.py | ... | PASS |
+| I03 | Force Majeure Framework | ...force_majeure_framework | v3_p28_force_majeure.py | ... | PASS |
+| I04 | Sanctions Gate | ...sanctions_gate | v3_p28_sanctions_gate.py | ... | PASS |
+| I05 | Marginal Domain Decisions | ...marginal_domain_register | v3_p28_marginal_register.py | ... | PASS |
+| I06 | ESIG Contract Layer | ...esig_contract_layer | v3_p28_esig_contract.py | ... | PASS |
+| I07 | Crisis Drill Rig | ...crisis_drill | v3_p28_crisis_drill.py | ... | PASS |
+| I08 | Network Consistency Gate | ...network_consistency_gate | v3_p28_network_gate.py | ... | PASS |
+| I09 | Hyper Invariants Pack | ...hyper_invariants_pack | v3_p28_invariants.py | ... | PASS |
+| I10 | Hyper Golden Set | ...hyper_golden_set | v3_p28_golden_set.py | ... | PASS |
+| I11 | Marginal Cleanup Plan | ...marginal_cleanup_plan | v3_p28_cleanup_plan.py | ... | PASS |
+| I12 | Hyper Explanation Engine | ...hyper_explanation_engine | v3_p28_explanation_engine.py | ... | PASS |
+
+Kluczowe kryteria akceptacji (testowalne, potwierdzone):
+  * I03: zdarzenie poza katalogiem = BLOCK_AND_ALERT; termin w oknie siły
+    wyższej = NEEDS_ADVICE; limit trwania (90 dni) z danych.
+  * I04: lista sankcyjna bez human review = BLOCK_AND_ALERT; auto_transaction
+    = false zawsze; stara wersja listy = TRIAGE.
+  * I06: dokument bez ważnego klucza podpisu = BLOCK_AND_ALERT; próg 10 000
+    PLN z danych; kontrakt P11/P16 potwierdzony polami.
+  * I07: brak kompletu 3 scenariuszy = TRIAGE; porażka scenariusza = BLOCK.
+  * I08: rozjazd sieci = BLOCK_AND_ALERT; pokrycie <14 = TRIAGE.
+  * I10: granice golden (FM_MAX_DAYS=90, ESIG_THRESHOLD=10000,
+    CRISIS_SCENARIOS=3) — niezgodność = BLOCK.
+
+──────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (T5) — wiąże P29 i dalsze
+──────────────────────────────────────────────────────────────────────────────
+
+K1. Mapa hiperkontekstów (I01) — wiąże P44 (spójność sieci) i P39 (testy
+    sieci); format: 14 hiperkontekstów × domeny × kontrakt × test.
+K2. Decyzje architektoniczne marginalne (I05) — wejście do P44 (7 domen
+    z uzasadnieniami IN/OUT).
+K3. Force majeure framework (I03) — wiąże P25 (kalendarz: zawieszenia) i
+    P43 (DR: scenariusze kryzysowe).
+K4. Lista duplikatów/pustyn (I02/I11) — wejście do P44 i P50 (konsolidacja
+    fizyczna fx/limits).
+K5. Konstytucja hiperkontekstów (I09) — rozszerzenie kontraktu V3_P04 o
+    INV-H01..H04 (sanctions human-only, FM kalendarz-only, fx jednolity,
+    zero AUTO_POST).
+K6. Sanctions gate (I04) — wiąże P22 (AML) i P44; format sygnału: wersja
+    listy + human review + AML screen.
+
+──────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA (T6) — wykonany
+──────────────────────────────────────────────────────────────────────────────
+
+1. [X] Rego pakiet jdg.v3_p28_hyper_plan45 (12 analiz + decide fail-closed).
+2. [X] Thresholds: blok hyper45, 23 klucze v3_p28_*, valid_from (ADR-002/P05).
+3. [X] Wiring main_jdg: import + rejestr + final_verdict_p92 + post-merge.
+4. [X] Narzędzia: 12 silników + common + generator (14 plików).
+5. [X] Bundle: 12 gate=PASS.
+6. [X] Testy natywne Rego: 40 scenariuszy (OPA 1.9.0 --v0-compatible).
+7. [X] Testy pytest: 17 (w tym granice FM 90 dni, sanctions human review,
+       próg esig 10k, crisis drill, mapa kontraktów, pustynie testowe).
+8. [X] Regresja P13-P28: 335/335 rego + 148/148 pytest.
+9. [X] Raport + ledger (ta sesja).
+
+──────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (T7)
+──────────────────────────────────────────────────────────────────────────────
+
+Blokujące merge (obecne, PASS):
+  * test_hyper45_block_complete — 23 klucze v3_p28_* + valid_from (ADR-002/P05).
+  * test_main_jdg_wired_p92 — wiring kompletny.
+  * test_p28_fail_closed_no_silent_auto_post — brak samodzielnych stubów AP01.
+  * test_marginal_domains_have_native_tests — zero pustyn testowych.
+  * test_duplicate_consolidation_decisions — decyzja fx=P15/limits=P06.
+  * Scenariusze Rego: siła wyższa (nieznane zdarzenie = BLOCK, przekroczenie
+    90 dni = BLOCK, termin w oknie = NEEDS_ADVICE), sanctions (brak human
+    review = BLOCK, stara lista = TRIAGE, brak AML = TRIAGE), esig (zły klucz
+    = BLOCK, próg 10k granica), crisis drill (niekompletny = TRIAGE, porażka
+    = BLOCK), golden (niezgodność = BLOCK, tolerancja ±0,01).
+
+Wyniki: 40/40 rego (OPA 1.9.0, --v0-compatible), 17/17 pytest,
+regresja P13-P28 335/335 + 148/148.
+
+──────────────────────────────────────────────────────────────────────────────
+9.11 PYTANIA DO CZŁOWIEKA (T8)
+──────────────────────────────────────────────────────────────────────────────
+
+V3-P28-Q01: Czy limit trwania siły wyższej 90 dni jest właściwym parametrem
+            operacyjnym (ustawa nie definiuje liczby — [ZAŁOŻENIE] operacyjne)?
+V3-P28-Q02: Czy decyzja I05 (regulated/procurement = OUT_OF_SCOPE_JDG) jest
+            akceptowana jako wiążąca dla P44? (4-eyes)
+V3-P28-Q03: Czy decyzja konsolidacji fx=P15 (jedyny silnik kursów) jest
+            akceptowana dla fizycznego wygaszenia duplikatów w P50? (4-eyes)
+
+──────────────────────────────────────────────────────────────────────────────
+9.12 ZAŁOŻENIA JAWNE (T9)
+──────────────────────────────────────────────────────────────────────────────
+
+[ZAŁOŻENIE] Z1: Limit 90 dni trwania siły wyższej to parametr operacyjny
+   (decyzja biznesowa), nie wartość ustawowa — oznaczony w thresholds jako
+   parametr z valid_from.
+[ZAŁOŻENIE] Z2: Próg podpisu kwalifikowanego 10 000 PLN dziedziczony z bloku
+   hyper_contexts (istniejące dane) — spójność zapewniona odczytem z rdzenia.
+[ZAŁOŻENIE] Z3: Katalog zdarzeń siły wyższej (FLOOD/FIRE/EPIDEMIC/WAR/
+   STATE_RESTRICTION) jest otwarty — rozszerzenia przez dane, nie kod.
+[ZAŁOŻENIE] Z4: Wersja listy sankcyjnej "eu-un-2026.09" to znacznik
+   provenance do aktualizacji przy każdej zmianie list (AP09: dane z
+   wersją, nie hardcode).
+
+──────────────────────────────────────────────────────────────────────────────
+T1 — TABELA DOWODÓW (7.3)
+──────────────────────────────────────────────────────────────────────────────
+
+| # | Plik | Dowód/fakt | Status |
+|---|------|-----------|--------|
+| 1 | rules/jdg/hyper/general/plan45.rego | 100 reguł, baseline hiperkontekstów | ZWERYFIKOWANO |
+| 2 | rules/jdg/hyper/sanctions/plan45.rego | 51 reguł; kontrahenci/kary/odpowiedzialność solidarna (art. 105a VAT) | ZWERYFIKOWANO |
+| 3 | rules/jdg/hyper/limits/plan45.rego | 34 reguł; detekcja sezonowości (art. 22 PP) | ZWERYFIKOWANO |
+| 4 | rules/jdg/hyper/force_majeure/plan45.rego | 22 reguł; kontekst siły wyższej | ZWERYFIKOWANO |
+| 5 | rules/jdg/hyper/fx/plan45.rego | 25 reguł; FIFO/NBP tabele A-B (art. 14b PIT) — MAPOWANIE, nie dane kursowe | ZWERYFIKOWANO |
+| 6 | rules/jdg/hyper/family/plan45.rego | 21 reguł; transakcje rodzinne | ZWERYFIKOWANO |
+| 7 | rules/jdg/hyper/edelivery/plan45.rego | 21 reguł; doręczenia | ZWERYFIKOWANO |
+| 8 | rules/jdg/hyper/procurement/plan45.rego | 21 reguł; PZP kontekst | ZWERYFIKOWANO |
+| 9 | rules/jdg/hyper/wis/plan45.rego | 18 reguł; interpretacje WIS | ZWERYFIKOWANO |
+| 10 | rules/jdg/hyper/mdr/plan45.rego | 38 reguł; MDR (kontrakt P27) | ZWERYFIKOWANO |
+| 11 | rules/jdg/hyper/solidarity/plan45.rego | 11 reguł; danina solidarnościowa | ZWERYFIKOWANO |
+| 12 | rules/jdg/hyper/audit/plan45.rego | 25 reguł; kontrole (60/30 dni) | ZWERYFIKOWANO |
+| 13 | rules/jdg/hyper/deadlines/plan45.rego | 56 reguł; terminy (kontrakt P25) | ZWERYFIKOWANO |
+| 14 | rules/jdg/hyper/misc/plan45.rego | 49 reguł; pozostałe | ZWERYFIKOWANO |
+| 15 | rules/esig/plan44_esig.rego | 8 reguł; e-podpisy | ZWERYFIKOWANO |
+| 16 | rules/esig_auto_applicator_enterprise.rego | auto-aplikator podpisów | ZWERYFIKOWANO |
+| 17 | rules/taxfree/plan44_taxfree.rego | 7 reguł; tax free | ZWERYFIKOWANO |
+| 18 | rules/seasonal/plan44_seasonal.rego | 8 reguł; sezonowość | ZWERYFIKOWANO |
+| 19 | rules/insurance/plan44_insurance.rego | 7 reguł; ubezpieczenia | ZWERYFIKOWANO |
+| 20 | rules/advertising/plan44_advertising.rego | 10 reguł; reklama | ZWERYFIKOWANO |
+| 21 | rules/regulated/plan44_regulated.rego | 9 reguł; branże regulowane | ZWERYFIKOWANO |
+| 22 | rules/force_majeure/plan44_force_majeure.rego | 9 reguł; siła wyższa plan44 | ZWERYFIKOWANO |
+| 23 | rules/procurement/plan44_procurement.rego | 8 reguł; PZP plan44 | ZWERYFIKOWANO |
+| 24 | rules/fx/plan44_fx.rego | 10 reguł; kursy VAT/PIT (art. 30a-31a VAT, art. 14 PIT) | ZWERYFIKOWANO |
+| 25 | tests/rego/test_native_hyper.rego | testy natywne hyper | ZWERYFIKOWANO |
+| 26 | tests/test_hyper_plan45_enterprise.py | testy pytest hyper plan45 | ZWERYFIKOWANO |
+| 27 | tests/test_hyper_quality_v3_14.py | kampania jakości hyper | ZWERYFIKOWANO |
+| 28 | tests/rego/test_native_hyper_quality_v3_14.rego | testy jakości natywne | ZWERYFIKOWANO |
+| 29 | tests/rego/test_native_jdg_esig.rego | testy esig natywne | ZWERYFIKOWANO |
+| 30 | tests/rego/test_native_jdg_force_majeure.rego | testy FM natywne | ZWERYFIKOWANO |
+| 31 | tests/rego/test_native_jdg_fx.rego | testy fx natywne | ZWERYFIKOWANO |
+| 32 | tests/rego/test_native_jdg_taxfree.rego | testy taxfree natywne | ZWERYFIKOWANO |
+| 33 | tests/rego/test_native_jdg_seasonal.rego | testy seasonal natywne | ZWERYFIKOWANO |
+| 34 | tests/rego/test_native_jdg_advertising.rego | testy advertising natywne | ZWERYFIKOWANO |
+| 35 | tests/test_hyper_enterprise_contexts_etap22_audit.py | audyt etap22 | ZWERYFIKOWANO |
+| 36-41 | mirror policies/jdg, /tax, /tax/vat, bundle.sh, manifesty | brak wpisów v3_p28 | NIEZWERYFIKOWANO (L03) |
+
+──────────────────────────────────────────────────────────────────────────────
+T10 — PRZEKAZYWANE ARTEFAKTY (11.4)
+──────────────────────────────────────────────────────────────────────────────
+
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| Mapa hiperkontekstów I01 | P44, P39 | rego + bundle JSON | spójność sieci, testy CI |
+| Decyzje marginalne I05 | P44 | rego + bundle | certyfikacja zakresu silnika |
+| Force majeure framework I03 | P25, P43 | rego + tool | zawieszenia terminów, DR |
+| Lista duplikatów/pustyn I02/I11 | P44, P50 | rego + bundle | konsolidacja fizyczna |
+| Konstytucja INV-H01..H04 I09 | P04-kontrakt | rego | rozszerzenie warstwy konstytucyjnej |
+| Sanctions gate I04 | P22, P44 | rego + tool | integracja AML, human review |
+| Golden set granic I10 | P10 oracle | bundle | replay decyzji |
+
+──────────────────────────────────────────────────────────────────────────────
+T11 — MATRYCA PODANALIZA×GRUPA (APENDYKS B)
+──────────────────────────────────────────────────────────────────────────────
+
+| Podanaliza | Grupy kluczowe | Wynik |
+|------------|----------------|-------|
+| 5.1 Hiperkonteksty plan45 | 6.1, 6.3 | COMPLETE (14/14 katalogów zmapowanych; I01/I03/I04) |
+| 5.2 Domeny marginalne | 6.2, 6.3 | COMPLETE (9/9 domen z testami; I05/I06/I11) |
+| 5.3 Spójność sieci | 6.1, 6.2, 6.3 | COMPLETE (I01+I08+I02; duplikaty rozstrzygnięte) |
+| 5.4 Krytyczne ścieżki | 6.1, 6.3 | COMPLETE (I03+I07; chaos drill 3/3 PASS) |
+
+──────────────────────────────────────────────────────────────────────────────
+T12 — REJESTR KONFLIKTÓW
+──────────────────────────────────────────────────────────────────────────────
+
+Brak konfliktów z dokumentami świętymi (T12 pusty). Duplikat fx/limits
+zidentyfikowany jako AP04 — rozwiązany decyzją rejestrową I02 (nie jest
+konfliktem kontraktów: P15 pozostaje jedynym silnikiem kursów, hyper/plan44
+pozostają mapowaniem prawnym).
+
+──────────────────────────────────────────────────────────────────────────────
+PYTANIA KRZYŻOWE 7.4 (X01-X10)
+──────────────────────────────────────────────────────────────────────────────
+
+X01: Brak sprzeczności z dokumentami świętymi (T12 pusty; fail-closed zgodny
+     z V1/V2: degradacja NEEDS_ADVICE w kryzysie to dokładnie mechanizm
+     „nigdy zła decyzja" z V1 zasady 6).
+X02: Po wdrożeniu — brak reguł P28 łamiących P06/P05 (wszystkie progi z
+     hyper/hyper45 z valid_from; test ADR-002 PASS).
+X03: Brak fail-open w P28: sanctions bez review = BLOCK, FM bez kwalifikacji
+     = BLOCK, esig bez klucza = BLOCK (testy i03/i04/i06).
+X04: Werdykty P28 używają kontraktu 25-polowego (final_verdict_p92 przez
+     safe_merge; test wiring; pola _routing/_legal_basis/_warnings zgodne).
+X05: Testy blokujące: patrz 9.10 (wszystkie PASS).
+X06: Duplikaty: fx/limits wykryte (I02) — plan konsolidacji fizycznej w P50;
+     brak nowych duplikatów wprowadzonych przez P28 (legacy rozszerzone
+     rejestrem, nie kopiowane).
+X07: Niezweryfikowane podstawy: L02 (rejestr mediacji, priorytet P3:
+     OP 71-72, VAT 127-129, uor 4.4, listy UE, PZP, eIDAS).
+X08: Q01-Q03 (4-eyes): limit FM, decyzje OUT_OF_SCOPE, konsolidacja fx.
+X09: Metryki do P37: sanctions_block_count, fm_active_days,
+     crisis_drill_last_result, network_gap_count, esig_block_count
+     (narzędzia I03/I04/I07/I08).
+X10: Invarianty runtime: I09 INV-H01..H04 — uzasadnienie: sankcje = ryzyko
+     karne, FM = prawna niepewność terminów, fx = spójność rozliczeń,
+     AUTO_POST = zasada 6 V1.
+
+──────────────────────────────────────────────────────────────────────────────
+ANTY-WZORCE 7.5 — WYNIKI SPRAWDZENIA
+──────────────────────────────────────────────────────────────────────────────
+
+AP01 stuby: NIE MA (test braku samodzielnych {true}; fallbacki tylko jako
+     dopełnienie else-chain — konwencja P26/P27).
+AP02 hardcode: NIE MA (test ADR-002: 23 klucze w hyper45; rdzeń z hyper).
+AP03 else-chain: OK (decide kompletny: 12 analiz + no_match; ścieżki
+     bez warunku = jawną SUGGEST/TRIAGE, nie milczenie).
+AP04 duplikaty: WYKRYTE w legacy (fx/limits) — decyzja konsolidacji I02,
+     fizyczne wygaszenie przekazane do P50 (L01).
+AP05 podstawy prawne: statusy jawne [NIEZWERYFIKOWANE] (L02).
+AP06 testy zawsze-zielone: NIE MA (asercje negatywne: BLOCK przy naruszeniu,
+     TRIAGE przy braku danych).
+AP07 cichy AUTO_POST: NIE MA (INV-H04; hyper_auto_post_attempt = BLOCK).
+AP08 cykle: NIE MA (pakiet samodzielny; importy jednokierunkowe).
+AP09 dane zewnętrzne: wersje list sankcyjnych/provenance z danych (Z4),
+     zero stałych kursów w P28.
+AP10 okna temporalne: OBECNE (valid_from w hyper45 i hyper).
+AP11 mirror dryf: WYKRYTY (L03, P3 — brak wpisów; sync P48).
+AP12 słowniki w dwóch miejscach: NIE DOTYCZY (jedno źródło: thresholds).
+
+──────────────────────────────────────────────────────────────────────────────
+SEKCJA 16 — POTWIERDZENIE ZAMKNIĘCIA CZĘŚCI P28
+──────────────────────────────────────────────────────────────────────────────
+
+Zakres: P28 HYPERKONTEKSTY PLAN44/45 — 4 podanalizy COMPLETE.
+Luki: P0=0, P1=0, P2=0, P3=3 otwarte (L01 konsolidacja→P50, L02 ISAP→P47/P44,
+L03 mirror→P48).
+Innowacje: 12/12 (I01-I12), wszystkie gate=PASS.
+Kontrakt wyjściowy: K1-K6 (9.08) — wiążące dla P29+.
+Artefakty przekazane: T10.
+
+Kontrakty wyjściowe dla P29 (lista wg Sekcji 16 promptu):
+  1. K1 Mapa hiperkontekstów (I01) → P44, P39.
+  2. K2 Decyzje marginalne (I05) → P44.
+  3. K3 Force majeure framework (I03) → P25, P43.
+  4. K4 Lista duplikatów/pustyn (I02/I11) → P44, P50.
+  5. K5 Konstytucja hiperkontekstów INV-H01..H04 (I09) → kontrakt V3_P04.
+  6. K6 Sanctions gate (I04) → P22, P44.
+
+OKNO KONTEKSTOWE: zgodnie z Sekcją 16 promptu — po zapisaniu tego raportu i
+aktualizacji ledera sesja P28 jest domknięta; wejście do P29 WYŁĄCZNIE przez
+ten raport (9.01, 9.08, 9.06) i bundles/v3_campaign_ledger.json.
+
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI:
+Implementacja P28 jest zgodna z ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1) i
+WIZJA_OPA_ENTERPRISE_V2.md (V2): fail-closed (degradacja NEEDS_ADVICE w
+kryzysie, BLOCK_AND_ALERT przy naruszeniu invariantów, zero cichego
+AUTO_POST), parametry-as-data (ADR-002, valid_from P05), Legal Twin
+traceability (rule→test→bundle→certyfikat), Golden Oracle (I10), Decision
+Certificate (wiring p92 w łańcuchu post-merge), Law Radar gotowość (mapa I01
+jako dane dla dryfu). Odstępstwa: brak (L01/L02/L03 są obowiązkami
+weryfikacyjno-konsolidacyjnymi, nie odstępstwami architektonicznymi).

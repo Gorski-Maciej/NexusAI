@@ -1,0 +1,92 @@
+==============================================================================
+RAPORT V3-19 API + CONTROL PLANE + UI / CENTRUM DECYZJI — V3 FORTRESS JDG
+==============================================================================
+==============================================================================
+STATUS:                          WDROZONY_100
+EVIDENCE_LEVEL:                  FULL
+CODE:                            P19 (część 19 kampanii V3)
+BRAMKA_JAKOSCI:                  tools/api_ui_quality_v3_19_gate.py
+WYNIK_BRAMKI:                    WDROZONY_100 (8/8 bramek)
+DATA_GENERACJI:                  2026-09-07 13:23 UTC
+METODOLOGIA:                     raport generowany z dowodów (bramka --json +
+                                 inwentaryzacja exists() + rejestr enterprise_v3)
+==============================================================================
+
+------------------------------------------------------------------------------
+SEKCJA A — ZAKRES CZĘŚCI (źródło: v3_parts_data_b.PARTS_B)
+------------------------------------------------------------------------------
+Zakres: api/openapi.yaml (17 endpointow, JWT), docs/API_REFERENCJA.md, api_spec_consistency, control_plane_lifecycle, rule_lifecycle_manager, declarative_change, centrum decyzji (AUTO_POST / SUGGEST / ASK_USER).
+
+------------------------------------------------------------------------------
+SEKCJA B — LUKI ARCHIWALNE ROZPOZNAWE W CZĘŚCI
+------------------------------------------------------------------------------
+LUKI: brak serwera (tylko spec); brak Flet; brak authZ testow; declarative change bez obslugi uzytka.
+
+------------------------------------------------------------------------------
+SEKCJA C — WYNIK RZECZYWISTEGO URUCHOMIENIA BRAMKI (dowód)
+------------------------------------------------------------------------------
+komenda: python tools/api_ui_quality_v3_19_gate.py --json
+  PASS scope_complete
+  PASS metadata_complete
+  PASS contract_complete
+  PASS router_wired
+  PASS api_spec_complete
+  PASS control_plane_complete
+  PASS decision_center_documented
+  PASS artifacts_and_tests_ready
+  opa_check: available=False passed=None
+
+------------------------------------------------------------------------------
+SEKCJA D — INWENTARYZACJA ARTEFAKTÓW (exists() na każdej ścieżce)
+------------------------------------------------------------------------------
+STATUS | GRUPA | ŚCIEŻKA
+------------------------------------------------------------------------------
+OK     | API (★) | api/openapi.yaml
+OK     | API (★) | docs/API_REFERENCJA.md
+OK     | API (★) | tools/api_spec_consistency.py
+OK     | Control Plane (★) | tools/control_plane_lifecycle.py
+OK     | Control Plane (★) | tools/rule_lifecycle_manager.py
+OK     | Control Plane (★) | tools/declarative_change.py
+OK     | Control Plane (★) | docs/CONTROL_PLANE_RULE_LIFECYCLE.md
+OK     | UI / centrum decyzji (★) | docs/PODRECZNIK_UZYTKOWNIKA.md
+------------------------------------------------------------------------------
+RAZEM: 8 artefaktów, obecnych 8, brakujących 0
+
+------------------------------------------------------------------------------
+SEKCJA E — BLOK REJESTRU enterprise_v3_registry.json (część 19)
+------------------------------------------------------------------------------
+stan:                wdrozone
+zgodnosc_v1v2:       True
+liczba_zmienionych_plikow: 9
+  • Nowy kontrakt rules/api_ui/quality_v3_19.rego (API Delivery Contract): api_ok (spec >= 17 endpointow + JWT), consistency_ok (audyt spec-implementacja, 0 luk DOCUMENTED_ONLY), authz_ok (RBAC + SoD + testy authZ), decision_center_ok (AUTO_POST/SUGGEST/ASK_USER + certainty guard), lifecycle_ok (4-eyes + canary + SOAK >= 24 h), declarative_ok (kreator + dry-run default + never_automated), resilience_ok (idempotencja + rate-limit + health/ready), versioning_ok; fail-closed, DECOUPLED, no_auto_post=true.
+  • Zero-hardcode: snapshot thresholds api_ui_quality_v3_19 = api-ui-v3-2026.08 (min_api_endpoints=17, max_documented_only_gaps=0, min_soak_hours=24, required_decision_modes) wg ADR-002.
+  • Wiring orkiestratora: import data.jdg.api_ui.quality_v3_19 + final_verdict_p79 = safe_merge(final_verdict_p78, ...); kotwica POST-MERGE → p79 (regex p7[4-9] — regresja 14-18 PASS).
+  • Ulepszenia realne openapi.yaml: x-rate-limit (token-bucket per tenant), GET /jdg/ready (readiness probe / verify-before-serve L-18-012), x-decision-modes na /jdg/cert (CERTAIN→AUTO_POST, CONDITIONAL→SUGGEST, NEEDS_ADVICE→ASK_USER); api_spec_consistency.py: mapowanie /jdg/ready + marker x-rate-limit — audyt 18/18 IMPLEMENTED · gaps=0.
+  • Nowa bramka tools/api_ui_quality_v3_19_gate.py: 8 bramek; SCOPE 13 plikow; evidence bundles/api_ui_v3_audit_19.json WDROZONY_100 (8/8 PASS).
+  • Testy natywne tests/rego/test_native_api_ui_quality_v3_19.rego (T01-T08: golden API delivery, fail-closed owner, luki spec blokuja, brak SoD/testow authZ blokuje, niepelne tryby decyzyjne blokuja, SOAK < 24 h blokuje, resilience/versioning blokuja, no_auto_post zawsze true) + pytest tests/test_api_ui_quality_v3_19.py (7 PASS); regresja 17+18+19: 21 PASS.
+  • Raport raporty_enterprise_v3/19_API_UI.txt (sekcje A-J): 21 luk (L-19-001..021), 11 innowacji V1/V2 (kontrakt trybow decyzyjnych w API, readiness jako warunek wejscia do ruchu, rate-limit w kontrakcie, zero luk jako niezmiennik, authZ trojka niezmiennikow, lifecycle control plane bramkowany).
+  luka pozostała: Serwer produkcyjny API (Litestar/FastAPI) — decyzja architektoniczna / czesc 20.
+  luka pozostała: HSM/KMS dla podpisow control plane zamiast lokalnego SHA-256 — decyzja wlasciciela bezpieczenstwa (L-19-010).
+  luka pozostała: OpenAPI diff gate w CI oraz kreator UI zmian deklaratywnych — czesci 17-CI/20 (L-19-011/L-19-009).
+  luka pozostała: Generowanie docs/API_REFERENCJA.md z openapi.yaml — czesc 20 (L-19-015).
+  luka pozostała: Webhooki Law Radar w spec i per-endpoint rate-limit override — rekomendacje (L-19-017/L-19-018).
+raport:              None
+
+------------------------------------------------------------------------------
+SEKCJA F — POMYSŁY ROZWOJOWE CZĘŚCI (z kampanii źródłowej)
+------------------------------------------------------------------------------
+1) Litestar API z OpenAPI; 2) JWT+RBAC testy; 3) centrum decyzji web (AUTO_POST/SUGGEST/ASK_USER); 4) declarative change wizard; 5) rate-limit i idempotencja; 6) health/readiness; 7) API gateway wersignment; 8) OpenAPI diff gate.
+
+------------------------------------------------------------------------------
+SEKCJA G — METODOLOGIA I GRANICE DOWODU
+------------------------------------------------------------------------------
+1. Wynik bramki w Sekcji C to rzeczywisty uruchomiony proces (subprocess),
+   nie deklaracja — timestamp w nagłówku jest momentem tego uruchomienia.
+2. Inwentaryzacja w Sekcji D sprawdza istnienie plików/katalogów, nie ich treść;
+   treść weryfikują same bramki jakości (kontrole markerów) — patrz Sekcja C.
+3. Blok rejestru w Sekcji E pochodzi 1:1 z bundles/enterprise_v3_registry.json.
+4. Raport NIE deklaruje '100% zgodności' — status WDROZONY_100 pochodzi
+   wyłącznie z wyniku bramki i może się zmienić przy kolejnym uruchomieniu.
+
+RAPORT WYGENEROWANY AUTOMATYCZNIE przez tools/v3_p29_enterprise_reports_generate.py
+(część P29 kampanii V3 — domknięcie braku report_present w bramkach 14-20).

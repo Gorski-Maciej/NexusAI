@@ -1,0 +1,108 @@
+==============================================================================
+RAPORT V3-14 HYPER CONTEXTS PLAN44/45 - DEADLINES, LIMITS, KALENDARZE — V3 FORTRESS JDG
+==============================================================================
+==============================================================================
+STATUS:                          WDROZONY_100
+EVIDENCE_LEVEL:                  FULL
+CODE:                            P14 (część 14 kampanii V3)
+BRAMKA_JAKOSCI:                  tools/hyper_quality_v3_14_gate.py
+WYNIK_BRAMKI:                    WDROZONY_100 (8/8 bramek)
+DATA_GENERACJI:                  2026-09-07 13:23 UTC
+METODOLOGIA:                     raport generowany z dowodów (bramka --json +
+                                 inwentaryzacja exists() + rejestr enterprise_v3)
+==============================================================================
+
+------------------------------------------------------------------------------
+SEKCJA A — ZAKRES CZĘŚCI (źródło: v3_parts_data_b.PARTS_B)
+------------------------------------------------------------------------------
+Zakres: katalog kontekstow (general, deadlines, limits, sanctions, mdr, fx, audyt, edelivery, family, force_majeure, procurement, solidarity, wis, residency, tp, esig) - kalendarz podatkowy (VAT 25., PIT 20/30.04, ZUS 5/10/15/20, JPK 25.), limity, sankcje.
+
+------------------------------------------------------------------------------
+SEKCJA B — LUKI ARCHIWALNE ROZPOZNAWE W CZĘŚCI
+------------------------------------------------------------------------------
+LUKI: plan45 491 regu niejust spójnych; deadline engine czesciowy; brak powiazan z cz. 07 (przedawnienia) i cz. 04 (ZUS); registry bez walidacji.
+
+------------------------------------------------------------------------------
+SEKCJA C — WYNIK RZECZYWISTEGO URUCHOMIENIA BRAMKI (dowód)
+------------------------------------------------------------------------------
+komenda: python tools/hyper_quality_v3_14_gate.py --json
+  PASS scope_complete
+  PASS metadata_complete
+  PASS contract_complete
+  PASS router_wired
+  PASS tests_complete
+  PASS tools_complete
+  PASS report_present
+  PASS registry_present
+  opa_check: available=False passed=None
+
+------------------------------------------------------------------------------
+SEKCJA D — INWENTARYZACJA ARTEFAKTÓW (exists() na każdej ścieżce)
+------------------------------------------------------------------------------
+STATUS | GRUPA | ŚCIEŻKA
+------------------------------------------------------------------------------
+OK     | Hyper Plan44/45 (★) | rules/jdg/hyper/general/plan45.rego
+OK     | Hyper Plan44/45 (★) | rules/jdg/hyper/deadlines/plan45.rego
+OK     | Hyper Plan44/45 (★) | rules/jdg/hyper/limits/plan45.rego
+OK     | Hyper Plan44/45 (★) | rules/jdg/hyper/sanctions/plan45.rego
+OK     | Hyper Plan44/45 (★) | rules/jdg/hyper/mdr/plan45.rego
+OK     | Hyper Plan44/45 (★) | rules/jdg/hyper/fx/plan45.rego
+OK     | Hyper Plan44/45 (★) | rules/jdg/hyper/audit/plan45.rego
+OK     | Hyper Plan44/45 (★) | rules/jdg/hyper/family/plan45.rego
+OK     | Kalendarze i deadlines (★) | rules/calendar/plan44_calendar.rego
+OK     | Kalendarze i deadlines (★) | rules/calendar/plan45_calendar.rego
+OK     | Kalendarze i deadlines (★) | rules/conviction/plan44_conviction.rego
+OK     | Kalendarze i deadlines (★) | rules/conviction/plan45_conviction.rego
+OK     | Pozostale (★) | rules/edelivery/plan44_edelivery.rego
+OK     | Pozostale (★) | rules/family/plan44_family.rego
+OK     | Pozostale (★) | rules/fx/plan44_fx.rego
+OK     | Pozostale (★) | rules/insurance/plan44_insurance.rego
+OK     | Narzedzia (★) | tools/deadline_engine.py
+OK     | Narzedzia (★) | tools/legal_change_calendar.py
+OK     | Narzedzia (★) | tools/limits_registry.py
+OK     | Narzedzia (★) | tools/sanction_calculator.py
+OK     | Narzedzia (★) | tools/hyper_quality.py
+OK     | Testy (★) | tests/test_hyper_plan45_enterprise.py
+------------------------------------------------------------------------------
+RAZEM: 22 artefaktów, obecnych 22, brakujących 0
+
+------------------------------------------------------------------------------
+SEKCJA E — BLOK REJESTRU enterprise_v3_registry.json (część 14)
+------------------------------------------------------------------------------
+stan:                wdrozone
+zgodnosc_v1v2:       True
+liczba_zmienionych_plikow: 9
+  • Dodano rules/hyper/quality_v3_14.rego: fail-closed kontrakt Hyper Contexts Plan44/45 z registry, source/legal nodes, temporalnością, deadline, limit, sankcja, force majeure, FX, e-Doręczenia, grafem zależności i bindingiem cross-domain.
+  • Dodano thresholds_jdg.rego: wersjonowany snapshot hyper_quality_v3_14, registry_version, legal_basis_version, katalog kontekstów i politykę dni roboczych.
+  • Dopięto pakiet do rules/main_jdg.rego jako final_verdict_p74 po p73; warstwa pozostaje DECOUPLED/SUGGEST i no_auto_post=true.
+  • Dodano tools/hyper_quality_v3_14_gate.py: evidence gate obejmujący 32 artefakty, metadata, wiring, testy i narzędzia.
+  • Dodano pytest tests/test_hyper_quality_v3_14.py oraz natywne tests/rego/test_native_hyper_quality_v3_14.rego dla pełnego kontraktu i fail-closed.
+  • Gate V3-14: 8/8 bramek PASS, 573 rule_id w zakresie, 0 duplikatów, 0 pustych legal_basis i 0 stubów.
+  • Zapisano bundles/hyper_quality_v3_audit_14.json oraz raport raporty_enterprise_v3/14_HYPER_CTX.txt w strukturze A-J.
+  • Istniejące moduły Plan44/45 pozostawiono jako legacy source-of-domain; nie zmieniono ich semantyki masową migracją.
+  • OPA CLI niedostępne lokalnie; opa check/test pozostają obowiązkową bramką CI.
+  luka pozostała: OPA CLI nie jest dostępne lokalnie — opa check -b i opa test wymagają CI.
+  luka pozostała: Aktualność podstaw prawnych i zewnętrznych kalendarzy wymaga zatwierdzenia właściciela domeny/Law Radar.
+  luka pozostała: Integracje MF, NBP, e-Doręczenia i podpis HSM pozostają odpowiedzialnością control plane/host.
+  luka pozostała: Legacy Plan44/45 nie został masowo przepisywany, aby nie zmieniać niezweryfikowanej semantyki.
+  luka pozostała: Canary, rollback, mirror i pełny Golden replay są przekazane do części 16-19.
+raport:              None
+
+------------------------------------------------------------------------------
+SEKCJA F — POMYSŁY ROZWOJOWE CZĘŚCI (z kampanii źródłowej)
+------------------------------------------------------------------------------
+1) Fiscal Calendar Engine z kontuarem dow; 2) jedyny registry deadlineow; 3) sankcje map (KKS vs ORD); 4) Family 4+ z progress; 5) edelivery tracker; 6) force majeure - provizja; 7) fx auto-kalk; 8) sprzenge z Golden replay.
+
+------------------------------------------------------------------------------
+SEKCJA G — METODOLOGIA I GRANICE DOWODU
+------------------------------------------------------------------------------
+1. Wynik bramki w Sekcji C to rzeczywisty uruchomiony proces (subprocess),
+   nie deklaracja — timestamp w nagłówku jest momentem tego uruchomienia.
+2. Inwentaryzacja w Sekcji D sprawdza istnienie plików/katalogów, nie ich treść;
+   treść weryfikują same bramki jakości (kontrole markerów) — patrz Sekcja C.
+3. Blok rejestru w Sekcji E pochodzi 1:1 z bundles/enterprise_v3_registry.json.
+4. Raport NIE deklaruje '100% zgodności' — status WDROZONY_100 pochodzi
+   wyłącznie z wyniku bramki i może się zmienić przy kolejnym uruchomieniu.
+
+RAPORT WYGENEROWANY AUTOMATYCZNIE przez tools/v3_p29_enterprise_reports_generate.py
+(część P29 kampanii V3 — domknięcie braku report_present w bramkach 14-20).

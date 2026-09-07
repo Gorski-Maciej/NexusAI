@@ -1464,6 +1464,44 @@ crossborder27 := {
     "v3_p27_cfc_needs_advice_only": true,
 }
 
+hyper45 := {
+    "v3_p28_threshold_version": "hyper-v3p28-2026.09",
+    "legal_basis_version": "OP+VAT+PZP-v3p28-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I03: force majeure — katalog zdarzeń + limit trwania + kalendarz P25
+    "v3_p28_force_majeure_max_days": 90,
+    "v3_p28_force_majeure_calendar_p25_linked": true,
+    "v3_p28_force_majeure_degradation": "NEEDS_ADVICE",
+    # I04: sanctions gate — wersje list + human review + AML P22
+    "v3_p28_sanctions_list_version": "eu-un-2026.09",
+    "v3_p28_sanctions_human_review_required": true,
+    "v3_p28_sanctions_aml_p22_linked": true,
+    # I05: rejestr domen marginalnych (decyzje jawne)
+    "v3_p28_marginal_register_version": "v3p28-md-2026.09",
+    # I06: esig — próg podpisu kwalifikowanego + kontrakt kluczy
+    "v3_p28_esig_qualified_threshold_pln": 10000,
+    "v3_p28_esig_contract_p11_p16": true,
+    # I07: crisis drill — komplet scenariuszy (P04 K10)
+    "v3_p28_crisis_required_scenarios": 3,
+    "v3_p28_crisis_zero_silence": true,
+    # I08: network consistency — oczekiwana liczba hiperkontekstów
+    "v3_p28_network_expected_contexts": 14,
+    "v3_p28_network_gap_blocker": true,
+    # I09: konstytucja hiperkontekstów (P04)
+    "v3_p28_invariants_active": true,
+    "v3_p28_sanctions_human_only": true,
+    "v3_p28_fm_calendar_only": true,
+    "v3_p28_fx_single_engine": true,
+    "v3_p28_hyper_no_silent_auto_post": true,
+    # I10: golden set granic (P10)
+    "v3_p28_golden_version": "hyper-golden-2026.09",
+    "v3_p28_golden_tolerance": 0.01,
+    # I11: pustynie testowe domen marginalnych
+    "v3_p28_cleanup_max_untested": 3,
+    # I01: mapa kontekstów
+    "v3_p28_context_map_version": "v3p28-hcm-2026.09",
+}
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PCC / PODATKI LOKALNE / AKCYZĄ THRESHOLDS — RAPORT_11 (ADR-002)
 # ═══════════════════════════════════════════════════════════════════════════════

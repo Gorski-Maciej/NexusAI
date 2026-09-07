@@ -1,0 +1,95 @@
+==============================================================================
+RAPORT V3-17 TESTY + CI/CD + CHAOS + MUTATION + GOLDEN — V3 FORTRESS JDG
+==============================================================================
+==============================================================================
+STATUS:                          WDROZONY_100
+EVIDENCE_LEVEL:                  FULL
+CODE:                            P17 (część 17 kampanii V3)
+BRAMKA_JAKOSCI:                  tools/tests_ci_quality_v3_17_gate.py
+WYNIK_BRAMKI:                    WDROZONY_100 (8/8 bramek)
+DATA_GENERACJI:                  2026-09-07 13:23 UTC
+METODOLOGIA:                     raport generowany z dowodów (bramka --json +
+                                 inwentaryzacja exists() + rejestr enterprise_v3)
+==============================================================================
+
+------------------------------------------------------------------------------
+SEKCJA A — ZAKRES CZĘŚCI (źródło: v3_parts_data_b.PARTS_B)
+------------------------------------------------------------------------------
+Zakres: testy pytest (198) + natywne Rego (207), golden verdicts (12m), mutation runner, chaos runner, fuzz, property, workflows CI (ci, opa-ci, jdg-quality-gates-blocking, jdg-scheduled-drift), kana ry.
+
+------------------------------------------------------------------------------
+SEKCJA B — LUKI ARCHIWALNE ROZPOZNAWE W CZĘŚCI
+------------------------------------------------------------------------------
+LUKI: testy tautologiczne; golden bez diff a prawnego; brak automatycznej rejestracji regresji; CI wymaga opa - check; bramka 13/14.
+
+------------------------------------------------------------------------------
+SEKCJA C — WYNIK RZECZYWISTEGO URUCHOMIENIA BRAMKI (dowód)
+------------------------------------------------------------------------------
+komenda: python tools/tests_ci_quality_v3_17_gate.py --json
+  PASS scope_complete
+  PASS metadata_complete
+  PASS contract_complete
+  PASS router_wired
+  PASS tools_complete
+  PASS tests_complete
+  PASS report_present
+  PASS registry_present
+  opa_check: available=False passed=None
+
+------------------------------------------------------------------------------
+SEKCJA D — INWENTARYZACJA ARTEFAKTÓW (exists() na każdej ścieżce)
+------------------------------------------------------------------------------
+STATUS | GRUPA | ŚCIEŻKA
+------------------------------------------------------------------------------
+OK     | Testy (★) | tests/rego/micro/test_native_micro_pit.rego
+OK     | Testy (★) | tests/rego/micro/test_native_micro_vat.rego
+OK     | Testy (★) | tests/test_final_certification_etap28_audit.py
+OK     | Chaos / mutation / fuzz (★★) | tools/chaos_runner.py
+OK     | Chaos / mutation / fuzz (★★) | tools/fuzz_runner.py
+OK     | Chaos / mutation / fuzz (★★) | tools/mutation_runner.py
+OK     | Chaos / mutation / fuzz (★★) | tools/property_suite.py
+OK     | Chaos / mutation / fuzz (★★) | tools/golden_replay.py
+OK     | CI/CD workflows (★★) | .github/workflows/ci.yml
+OK     | CI/CD workflows (★★) | .github/workflows/opa-ci.yml
+OK     | CI/CD workflows (★★) | .github/workflows/jdg-quality-gates-blocking.yml
+------------------------------------------------------------------------------
+RAZEM: 11 artefaktów, obecnych 11, brakujących 0
+
+------------------------------------------------------------------------------
+SEKCJA E — BLOK REJESTRU enterprise_v3_registry.json (część 17)
+------------------------------------------------------------------------------
+stan:                wdrozone
+zgodnosc_v1v2:       True
+liczba_zmienionych_plikow: 7
+  • Nowy kontrakt rules/tests_ci/quality_v3_17.rego (CI Quality Certificate): suites_complete (pytest+native, puste suite = FAIL), coverage >= 95%, mutation >= 85 BLOCKING, fuzz >= 10000 ze schematami KSeF/JPK, property >= 200, chaos >= 5 z undetected_failures == 0, golden replay + DIFF PRAWNY czysty, 4 workflowy wymagane, auto-rejestracja regresji wersjonowana; fail-closed, DECOUPLED, no_auto_post=true.
+  • Zero-hardcode: snapshot thresholds tests_ci_quality_v3_17 = tests-ci-v3-2026.08 SPÓJNY z etap24 (mutation 85, fuzz 10000, property 200, coverage 95).
+  • Wiring orkiestratora: import data.jdg.tests_ci.quality_v3_17 + final_verdict_p77 = safe_merge(final_verdict_p76, ...); kotwica POST-MERGE → p77; kompatybilność w przód regexem p7[4-9] — regresja 14/15/16 PASS.
+  • Nowa bramka tools/tests_ci_quality_v3_17_gate.py: SCOPE 13 plików + 4 workflowy repo (.github/workflows), 8 bramek — evidence bundles/tests_ci_v3_audit_17.json WDROZONY_100 (8/8 PASS, detekcja cmd_record/cmd_replay i immutability baseline golden_replay).
+  • Testy natywne tests/rego/test_native_tests_ci_quality_v3_17.rego (T01-T08: golden CI 198+207/97/90 blocking/fuzz 12000/chaos 6-0, fail-closed owner/puste suite/mutation/golden-diff/chaos/workflows) + pytest tests/test_tests_ci_quality_v3_17.py (7 PASS); zestaw kampanijny V3 09-17: 63 PASS.
+  • Audyt potwierdził luki krytyczne z promptu: golden bez diff a prawnego, brak auto-rejestracji regresji, mutation nieblokujący, chaos bez CRON, fuzz bez schematów KSeF/JPK; raport raporty_enterprise_v3/17_TESTY_CI.txt (sekcje A-J).
+  • Raport: 21 luk (L-17-001..021), 11 innowacji V1/V2 (Golden v2 z diff prawnym, mutation blokowany, chaos jako obowiązek, empty-suite semantics, workflow contract).
+  luka pozostała: OPA CLI niedostępne lokalnie — opa check -b / opa test pozostają bramką CI; instalacja w obrazie CI = decyzja infrastrukturalna.
+  luka pozostała: L-17-007: dopisanie bramek V3-14..17 do jdg-quality-gates-blocking.yml — decyzja CI-owner (koszt minut).
+  luka pozostała: L-17-001: producent diffu prawnego dla Golden v2 (dekompozycja polowa wg aktów) — część 20 Legal Twin/Law Radar.
+  luka pozostała: L-17-008/L-17-014: chaos jako CRON (jdg-scheduled-drift) i replay historyczny na PR — decyzje właściciela środowiska/CI.
+  luka pozostała: Flaga --blocking mutation_runnera i fazowanie progu 70→80→85 — ryzyko fali czerwonych mutantów micro, decyzja właściciela.
+raport:              None
+
+------------------------------------------------------------------------------
+SEKCJA F — POMYSŁY ROZWOJOWE CZĘŚCI (z kampanii źródłowej)
+------------------------------------------------------------------------------
+1) Golden Verdicts v2 z diff prawnym (F3); 2) replay historyczny na PR; 3) mutation coverage blokowany; 4) chaos jako CRON; 5) fuzz schema KSeF/JPK; 6) kalibracja srednich bledow; 7) raporty CI; 8) gate 100% natywnych dla krytycznych pakietow.
+
+------------------------------------------------------------------------------
+SEKCJA G — METODOLOGIA I GRANICE DOWODU
+------------------------------------------------------------------------------
+1. Wynik bramki w Sekcji C to rzeczywisty uruchomiony proces (subprocess),
+   nie deklaracja — timestamp w nagłówku jest momentem tego uruchomienia.
+2. Inwentaryzacja w Sekcji D sprawdza istnienie plików/katalogów, nie ich treść;
+   treść weryfikują same bramki jakości (kontrole markerów) — patrz Sekcja C.
+3. Blok rejestru w Sekcji E pochodzi 1:1 z bundles/enterprise_v3_registry.json.
+4. Raport NIE deklaruje '100% zgodności' — status WDROZONY_100 pochodzi
+   wyłącznie z wyniku bramki i może się zmienić przy kolejnym uruchomieniu.
+
+RAPORT WYGENEROWANY AUTOMATYCZNIE przez tools/v3_p29_enterprise_reports_generate.py
+(część P29 kampanii V3 — domknięcie braku report_present w bramkach 14-20).

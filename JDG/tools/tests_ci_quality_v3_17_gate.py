@@ -121,7 +121,7 @@ def audit_contract() -> dict[str, Any]:
         "snapshot_aligned_etap24": all(k in snapshot_block for k in ['"min_mutation_score": 85', '"min_fuzz_cases": 10000', '"min_property_cases": 200']),
         "import_present": "import data.jdg.tests_ci.quality_v3_17 as tests_ci_quality_v3_17" in main,
         "p77_present": "final_verdict_p77 = safe_merge(final_verdict_p76" in main,
-        "post_merge_anchor_current": bool(re.search(r"final_verdict_post_merge = safe_merge\(\s*\{\"_routing_context\": routing_context\},\s*final_verdict_(p7[4-9]|p8[0-5])", main)),
+        "post_merge_anchor_current": bool(re.search(r"final_verdict_post_merge = safe_merge\(\s*\{\"_routing_context\": routing_context\},\s*final_verdict_(p7[4-9]|p8[0-9]|p9[0-9])", main)),
         "no_auto_post_guard": '"no_auto_post": true' in contract,
     }
 

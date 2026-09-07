@@ -1,0 +1,32 @@
+{
+  "innovation": "V3-P28-I11",
+  "generated_at": "2026-09-07T11:05:28+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p28_hyper_plan45.marginal_cleanup_plan: True"
+    },
+    {
+      "name": "thresholds",
+      "status": "OK",
+      "detail": "brakujące klucze: brak"
+    },
+    {
+      "name": "routing",
+      "status": "OK",
+      "detail": "routing: TRIAGE_QUEUE (pustynia = TRIAGE)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p92"
+    }
+  ],
+  "findings": []
+}

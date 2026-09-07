@@ -19,7 +19,7 @@
     "files_total": 16,
     "files_present": 16,
     "missing": [],
-    "mirror_rego_files": 546,
+    "mirror_rego_files": 580,
     "scope_complete": true
   },
   "metadata": {
@@ -89,5 +89,5 @@
     "passed": null,
     "message": "OPA CLI unavailable locally; CI gate required."
   },
-  "generated_at": "2026-08-26T11:24:08.698709+00:00"
+  "generated_at": "2026-09-07T13:25:56.711140+00:00"
 }

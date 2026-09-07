@@ -97,6 +97,7 @@ import data.jdg.v3_p20_ksiegowosc as v3_p20_ksiegowosc
 import data.jdg.v3_p25_kalendarz as v3_p25_kalendarz
 import data.jdg.v3_p26_zus_skladki as v3_p26_zus_skladki
 import data.jdg.v3_p27_cfc_exit_mdr as v3_p27_cfc_exit_mdr
+import data.jdg.v3_p28_hyper_plan45 as v3_p28_hyper_plan45
 import data.jdg.micro.quality_v3_13 as micro_quality_v3_13
 import data.jdg.hyper.quality_v3_14 as hyper_quality_v3_14
 import data.jdg.enterprise.quality_v3_15 as enterprise_quality_v3_15
@@ -1471,6 +1472,8 @@ _package_decisions := {
     "jdg.v3_p26_zus_skladki": v3_p26_zus_skladki.decide,
     # ── V3-P27: CFC/EXIT/MDR (rejestr decyzji, sygnały, gate'y — human-only) ──
     "jdg.v3_p27_cfc_exit_mdr": v3_p27_cfc_exit_mdr.decide,
+    # ── V3-P28: HYPER/PLAN45 (mapa kontekstów, force majeure, sanctions gate) ──
+    "jdg.v3_p28_hyper_plan45": v3_p28_hyper_plan45.decide,
     "jdg.international": international.decide,
     "jdg.tp": tp.decide,
     "jdg.tp.hyper": tp_hyper.decide,
@@ -2897,6 +2900,20 @@ final_verdict_p91 = safe_merge(final_verdict_p90,
     ))
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# PAS 17p: V3-P28 HYPERKONTEKSTY PLAN44/45 I KRYTYCZNE ŚCIEŻKI DZIAŁANIA —
+# 12 analiz I01–I12 (mapa hiperkontekst→domeny→kontrakty, detektor duplikatów
+# fx/limits, force majeure framework z kalendarzem P25, sanctions gate z
+# HUMAN REVIEW i AML P22, rejestr domen marginalnych, warstwa esig P11/P16,
+# crisis drill zero-ciszy, bramka spójności sieci, konstytucja hiperkontekstów
+# INV-H01..H04 (P04), golden set granic, plan domknięcia pustyni, silnik
+# wyjaśnień). SUGGEST/NEEDS_ADVICE i fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p28_check nie jest true.
+final_verdict_p92 = safe_merge(final_verdict_p91,
+    safe_merge(v3_p28_hyper_plan45.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
 #   • _invariant_report  — wynik evaluate() (invariant_failed, failed, levels),
@@ -2928,7 +2945,7 @@ final_verdict_p91 = safe_merge(final_verdict_p90,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p91
+    final_verdict_p92
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

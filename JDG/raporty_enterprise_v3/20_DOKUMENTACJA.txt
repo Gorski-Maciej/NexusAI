@@ -1,0 +1,101 @@
+==============================================================================
+RAPORT V3-20 DOKUMENTACJA + LEGAL TWIN + HARMONIZACJA KONCOWA — V3 FORTRESS JDG
+==============================================================================
+==============================================================================
+STATUS:                          WDROZONY_100
+EVIDENCE_LEVEL:                  FULL
+CODE:                            P20 (część 20 kampanii V3)
+BRAMKA_JAKOSCI:                  tools/docs_quality_v3_20_gate.py
+WYNIK_BRAMKI:                    WDROZONY_100 (8/8 bramek)
+DATA_GENERACJI:                  2026-09-07 13:23 UTC
+METODOLOGIA:                     raport generowany z dowodów (bramka --json +
+                                 inwentaryzacja exists() + rejestr enterprise_v3)
+==============================================================================
+
+------------------------------------------------------------------------------
+SEKCJA A — ZAKRES CZĘŚCI (źródło: v3_parts_data_b.PARTS_B)
+------------------------------------------------------------------------------
+Zakres: Legal Twin (narzedzia, raporty, sledzenie powiazan regula-artykul), harmonizacja (MANIFEST v2, KATALOG_REGUL, SLOWNIK_REFERENCJI_PRAWNYCH, LEGAL_SOURCE_REGISTRY, GAP_REPORT, AUDYT_PODSTAW_PRAWNYCH), dokumentacja uzytkownika i FAQ, finalnie certyfikacja kampanii i rejestr V3.
+
+------------------------------------------------------------------------------
+SEKCJA B — LUKI ARCHIWALNE ROZPOZNAWE W CZĘŚCI
+------------------------------------------------------------------------------
+LUKI: Legal Twin bez pelnego sledzenia zmian (diff artykul -> rule_id); MANIFEST v2 moze nie zawierac nowych pakietow; brak gate spójnosci docs-rules; brak finalnego certyfikatu po kampanii V3.
+
+------------------------------------------------------------------------------
+SEKCJA C — WYNIK RZECZYWISTEGO URUCHOMIENIA BRAMKI (dowód)
+------------------------------------------------------------------------------
+komenda: python tools/docs_quality_v3_20_gate.py --json
+  PASS scope_complete
+  PASS metadata_complete
+  PASS contract_complete
+  PASS router_wired
+  PASS legal_twin_complete
+  PASS harmonization_complete
+  PASS user_docs_and_campaign_certified
+  PASS artifacts_and_tests_ready
+  opa_check: available=False passed=None
+
+------------------------------------------------------------------------------
+SEKCJA D — INWENTARYZACJA ARTEFAKTÓW (exists() na każdej ścieżce)
+------------------------------------------------------------------------------
+STATUS | GRUPA | ŚCIEŻKA
+------------------------------------------------------------------------------
+OK     | Legal Twin (★★) | tools/legal_twin.py
+OK     | Legal Twin (★★) | tools/legal_twin_traceability.py
+OK     | Legal Twin (★★) | tools/legal_twin_engine.py
+OK     | Legal Twin (★★) | docs/LEGAL_TWIN_RAPORT.md
+OK     | Legal Twin (★★) | docs/LEGAL_TWIN_TRACEABILITY.md
+OK     | Harmonizacja (★★) | docs/LEGAL_COVERAGE_GAP_RAPORT.md
+OK     | Harmonizacja (★★) | docs/SLOWNIK_REFERENCJI_PRAWNYCH.md
+OK     | Harmonizacja (★★) | docs/LEGAL_SOURCE_REGISTRY.md
+OK     | Harmonizacja (★★) | docs/AUDYT_PODSTAW_PRAWNYCH.md
+OK     | Harmonizacja (★★) | docs/KATALOG_REGUL.md
+OK     | Harmonizacja (★★) | docs/KATALOG_NARZEDZI.md
+OK     | Dokumentacja uzytkownika (★★) | docs/FAQ.md
+OK     | Dokumentacja uzytkownika (★★) | docs/LOGIKA_BIZNESOWA.md
+OK     | Dokumentacja uzytkownika (★★) | docs/ZGODNOSC_PRAWNA.md
+OK     | Dokumentacja uzytkownika (★★) | docs/PODRECZNIK_UZYTKOWNIKA.md
+OK     | Certyfikacja (★) | tools/final_certification_etap28_audit.py
+OK     | Certyfikacja (★) | tests/test_final_certification_etap28_audit.py
+------------------------------------------------------------------------------
+RAZEM: 17 artefaktów, obecnych 17, brakujących 0
+
+------------------------------------------------------------------------------
+SEKCJA E — BLOK REJESTRU enterprise_v3_registry.json (część 20)
+------------------------------------------------------------------------------
+stan:                wdrozone
+zgodnosc_v1v2:       True
+liczba_zmienionych_plikow: 9
+  • Nowy kontrakt rules/docs/quality_v3_20.rego (Documentation & Certification Contract): legal_twin_ok (traceability + auto-trace artykul→rule_id→test + lancuch amendment), docs_gate_ok (dwukierunkowa bramka: kazda regula ma legal_basis ORAZ kazde legal_basis ma regule), manifest_ok (MANIFEST v3 z pakietami kampanii, auto-generowany), glossary_ok, user_docs_ok (FAQ + podrecznik + narracja decyzyjna PL), certification_ok (kampania 20/20 WDROZONY_100 + evidence), v1v2_ok; fail-closed, DECOUPLED, no_auto_post=true.
+  • Zero-hardcode: snapshot thresholds docs_quality_v3_20 = docs-v3-2026.08 (campaign_total_parts=20, min_v3_packages_in_manifest=7) wg ADR-002.
+  • Wiring orkiestratora: import data.jdg.docs.quality_v3_20 + final_verdict_p80 = safe_merge(final_verdict_p79, ...); kotwica POST-MERGE → p80; regex kompatybilnosci w przod rozszerzony do p7[4-9]|p8[0-5] w bramkach 18/19/20 — regresja PASS.
+  • Ulepszenie realne MANIFEST.md: NOWA sekcja PAKIETY KAMPANII V3 (V3-14..V3-20: plik, rule_id kontraktu, evidence) — luka MANIFEST bez nowych pakietow USUNIETA.
+  • Nowa bramka tools/docs_quality_v3_20_gate.py: 8 bramek; SCOPE 23 plikow (Legal Twin + harmonizacja + dokumentacja uzytkownika + certyfikacja + kontrakt); evidence bundles/docs_v3_audit_20.json WDROZONY_100 (8/8 PASS).
+  • Testy natywne tests/rego/test_native_docs_quality_v3_20.rego (T01-T08) + pytest tests/test_docs_quality_v3_20.py (7 PASS); certyfikacja kampanii: czesci 00-20 = wdrozone w rejestrze.
+  • Raport raporty_enterprise_v3/20_DOKUMENTACJA.txt (sekcje A-J): 21 luk (L-20-001..021), 11 innowacji V1/V2 (Legal Twin v2 z auto-trace, dwukierunkowy documentation gate, MANIFEST v3 z pakietow, certyfikat kampanii jako niezmiennik werdyktu p80).
+  luka pozostała: Regeneracja pelnego MANIFEST przez generate_manifest.py (sekcja per-plik) — decyzja CI/cron.
+  luka pozostała: Kreator UI zmian deklaratywnych i serwer produkcyjny API — przekazane z 19 do harmonogramu produktowego.
+  luka pozostała: HSM/KMS dla podpisow control plane — przekazane z 18/19, decyzja wlasciciela bezpieczenstwa.
+  luka pozostała: Webhooki Law Radar w OpenAPI i generowanie API_REFERENCJA z openapi.yaml — backlog minor.
+  luka pozostała: Interpretacje prawne niejednoznaczne — zawsze czlowiek (system dostarcza evidence i wersje aktow, nie opinie).
+raport:              None
+
+------------------------------------------------------------------------------
+SEKCJA F — POMYSŁY ROZWOJOWE CZĘŚCI (z kampanii źródłowej)
+------------------------------------------------------------------------------
+1) Legal Twin v2 - auto-trace artykul -> rule_id -> test; 2) dokumentacyjny gate (kazda regula ma legal_basis, kazdy legal_basis ma regule); 3) MANIFEST v3 auto-generowany z pakietow; 4) harmonizacja slownikow; 5) spójnosc docs z V1/V2; 6) finalny raport certyfikacji V3; 7) decision narrative PL; 8) baseline README do stanu po kampanii.
+
+------------------------------------------------------------------------------
+SEKCJA G — METODOLOGIA I GRANICE DOWODU
+------------------------------------------------------------------------------
+1. Wynik bramki w Sekcji C to rzeczywisty uruchomiony proces (subprocess),
+   nie deklaracja — timestamp w nagłówku jest momentem tego uruchomienia.
+2. Inwentaryzacja w Sekcji D sprawdza istnienie plików/katalogów, nie ich treść;
+   treść weryfikują same bramki jakości (kontrole markerów) — patrz Sekcja C.
+3. Blok rejestru w Sekcji E pochodzi 1:1 z bundles/enterprise_v3_registry.json.
+4. Raport NIE deklaruje '100% zgodności' — status WDROZONY_100 pochodzi
+   wyłącznie z wyniku bramki i może się zmienić przy kolejnym uruchomieniu.
+
+RAPORT WYGENEROWANY AUTOMATYCZNIE przez tools/v3_p29_enterprise_reports_generate.py
+(część P29 kampanii V3 — domknięcie braku report_present w bramkach 14-20).

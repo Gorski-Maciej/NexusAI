@@ -116,7 +116,7 @@ def audit_contract() -> dict[str, Any]:
         "snapshot_versioned": all(key in thresholds for key in ["threshold_version", "registry_version", "valid_from", "valid_to"]),
         "import_present": "import data.jdg.hyper.quality_v3_14" in main,
         "p74_present": "final_verdict_p74 = safe_merge(final_verdict_p73" in main,
-        "post_merge_uses_p74": bool(re.search(r"final_verdict_(p7[4-9]|p8[0-5])\n\)", main)),
+        "post_merge_uses_p74": bool(re.search(r"final_verdict_(p7[4-9]|p8[0-9]|p9[0-9])\n\)", main)),
         "no_auto_post_guard": '"no_auto_post": true' in contract,
     }
 

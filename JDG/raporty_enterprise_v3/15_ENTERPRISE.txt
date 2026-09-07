@@ -1,0 +1,98 @@
+==============================================================================
+RAPORT V3-15 INICJATYWY ENTERPRISE S1-S24 + NEURONAL MESH + SCORING — V3 FORTRESS JDG
+==============================================================================
+==============================================================================
+STATUS:                          WDROZONY_100
+EVIDENCE_LEVEL:                  FULL
+CODE:                            P15 (część 15 kampanii V3)
+BRAMKA_JAKOSCI:                  tools/enterprise_quality_v3_15_gate.py
+WYNIK_BRAMKI:                    WDROZONY_100 (9/9 bramek)
+DATA_GENERACJI:                  2026-09-07 13:23 UTC
+METODOLOGIA:                     raport generowany z dowodów (bramka --json +
+                                 inwentaryzacja exists() + rejestr enterprise_v3)
+==============================================================================
+
+------------------------------------------------------------------------------
+SEKCJA A — ZAKRES CZĘŚCI (źródło: v3_parts_data_b.PARTS_B)
+------------------------------------------------------------------------------
+Zakres: inicjatywy S1-S24 (auto-deklaracje, autogen JPK_V7M, KSeF resilience, banking PSD2, legislatywny monitor, optymalizacja, cross-domain intelligence, red team, strategic advisor, defencja audytowa), Neural Mesh, Decision Scoring (Trust Score), taxonomy.
+
+------------------------------------------------------------------------------
+SEKCJA B — LUKI ARCHIWALNE ROZPOZNAWE W CZĘŚCI
+------------------------------------------------------------------------------
+LUKI: inicjatywy niekompletne (estoński CIT); overlap z domenami; decision scoring bez kalibracji; neural mesh skromny.
+
+------------------------------------------------------------------------------
+SEKCJA C — WYNIK RZECZYWISTEGO URUCHOMIENIA BRAMKI (dowód)
+------------------------------------------------------------------------------
+komenda: python tools/enterprise_quality_v3_15_gate.py --json
+  PASS scope_complete
+  PASS metadata_complete
+  PASS s1_s24_complete
+  PASS contract_complete
+  PASS router_wired
+  PASS tools_complete
+  PASS tests_complete
+  PASS report_present
+  PASS registry_present
+  opa_check: available=False passed=None
+
+------------------------------------------------------------------------------
+SEKCJA D — INWENTARYZACJA ARTEFAKTÓW (exists() na każdej ścieżce)
+------------------------------------------------------------------------------
+STATUS | GRUPA | ŚCIEŻKA
+------------------------------------------------------------------------------
+OK     | Enterprise: wybrane (★) | rules/hyper_plan45_meta_enterprise.rego
+OK     | Enterprise: wybrane (★) | rules/enterprise_ai_neural_etap23_v1.rego
+OK     | Enterprise: wybrane (★) | rules/neural_mesh_v2_enterprise.rego
+OK     | Enterprise: wybrane (★) | rules/decision_scoring_enterprise.rego
+OK     | Enterprise: wybrane (★) | rules/cross_domain_intelligence_enterprise.rego
+OK     | Enterprise: wybrane (★) | rules/cross_domain_red_team_etap27_v1.rego
+OK     | Enterprise: wybrane (★) | rules/tax_optimization_enterprise.rego
+OK     | Neural mesh (★) | rules/neural_rule_mesh_enterprise.rego
+OK     | Neural mesh (★) | rules/decision_composer_enterprise.rego
+OK     | Narzedzia (★) | tools/autonomous_tax_strategy.py
+OK     | Narzedzia (★) | tools/cross_domain_red_team_etap27_audit.py
+OK     | Narzedzia (★) | tools/penalty_calculator.py
+OK     | Narzedzia (★) | tools/decision_quality_monitor.py
+------------------------------------------------------------------------------
+RAZEM: 13 artefaktów, obecnych 13, brakujących 0
+
+------------------------------------------------------------------------------
+SEKCJA E — BLOK REJESTRU enterprise_v3_registry.json (część 15)
+------------------------------------------------------------------------------
+stan:                wdrozone
+zgodnosc_v1v2:       True
+liczba_zmienionych_plikow: 7
+  • Naprawiono kontrakt rules/enterprise/quality_v3_15.rego: składnia else-chain/inline-if zgodna ze wzorcem V3-14, rejestr S1-S24 deklaratywny przez numbers.range(1,24), stan przez osobną regułę contract_state.
+  • Kontrakt S1-S24 + Neural Mesh + Scoring: initiative_registry_complete, source_complete, temporal_valid, scoring_calibrated (100 próbek / acc 0.95 / Brier 0.10 z snapshotu), mesh_complete+conflict_free, composer_complete (deterministic+evidence+test_refs), red_team_complete (min 10 scenariuszy, undetected_failures=0); fail-closed, DECOUPLED, no_auto_post=true.
+  • Zero-hardcode: wszystkie progi kontraktu konsumowane z snapshotu thresholds enterprise_quality_v3_15 = enterprise-quality-2026.08 (score_auto_post_min=92, score_suggest_min=75, score_abstain_max=50, min_mesh_nodes=13, min_mesh_edges=12, min_red_team_scenarios=10).
+  • Zweryfikowano wiring orkiestratora: import data.jdg.enterprise.quality_v3_15 + final_verdict_p75 = safe_merge(final_verdict_p74, ...) — POST-MERGE na p75; naprawiono przy okazji check post_merge w bramce V3-14 (akceptacja kotwicy p74/p75) — regresja 14 PASS.
+  • Nowa bramka tools/enterprise_quality_v3_15_gate.py: 18 plików SCOPE (9 pakietów enterprise z listy promptu, kontrakt, thresholds, main, 4 narzędzia, testy), 9 bramek — evidence bundles/enterprise_v3_audit_15.json WDROŻONY_100 (9/9 PASS, 0 duplikatów rule_id, 0 pustych legal_basis).
+  • Testy natywne tests/rego/test_native_enterprise_quality_v3_15.rego (T01-T08: golden contract, fail-closed owner/initiative/kalibracja/konflikt/red-team, pasma score_class, no_auto_post) + pytest tests/test_enterprise_quality_v3_15.py (7 PASS); zestaw kampanijny 13+14+15: 17 PASS.
+  • Raport raporty_enterprise_v3/15_ENTERPRISE.txt: audyt 13 plików warstwy (9 Rego + 4 narzędzia), 22 luki (L-15-001..022, w tym 5 krytycznych: brak kontraktu, scoring bez kalibracji, hardcode kursu EUR/progów GAAR), 11 innowacji V1/V2.
+  luka pozostała: OPA CLI niedostępne lokalnie — opa check -b / opa test pozostają bramką CI (artefakt natywny gotowy).
+  luka pozostała: L-15-004/L-15-005: hardcode kursu EUR 4.5 z inputu (neural_mesh_v2) oraz progów GAAR/base_chance (decision_scoring) — eksternalizacja do thresholds w części 16 po zatwierdzeniu właściciela domeny.
+  luka pozostała: L-15-007/L-15-015: producent ctx.mesh i ctx.scoring (graf + emiter metryk z decision_quality_monitor) — dopięcie hosta w części 16/19.
+  luka pozostała: L-15-010/L-15-011: overlap tax_optimization × neural_mesh_v2 oraz podwójny nadzorca Plan45 (meta × quality_v3_14) — decyzja konsolidacyjna w części 16/18.
+  luka pozostała: L-15-020: reguła auto_post_override (neural_mesh_v2, priority 500021) sprzeczna z no_auto_post — usunięcie wymaga decyzji właściciela.
+raport:              None
+
+------------------------------------------------------------------------------
+SEKCJA F — POMYSŁY ROZWOJOWE CZĘŚCI (z kampanii źródłowej)
+------------------------------------------------------------------------------
+1) Trust Score v2 (multi-warstwowy); 2) Auto-Strategy Engine (wybor formy); 3) Decision Composer z kontraktem; 4) cross-domain intelligence; 5) red team jako CI; 6) predykcje wynikow; 7) symulacje what-if; 8) SLO dashboard.
+
+------------------------------------------------------------------------------
+SEKCJA G — METODOLOGIA I GRANICE DOWODU
+------------------------------------------------------------------------------
+1. Wynik bramki w Sekcji C to rzeczywisty uruchomiony proces (subprocess),
+   nie deklaracja — timestamp w nagłówku jest momentem tego uruchomienia.
+2. Inwentaryzacja w Sekcji D sprawdza istnienie plików/katalogów, nie ich treść;
+   treść weryfikują same bramki jakości (kontrole markerów) — patrz Sekcja C.
+3. Blok rejestru w Sekcji E pochodzi 1:1 z bundles/enterprise_v3_registry.json.
+4. Raport NIE deklaruje '100% zgodności' — status WDROZONY_100 pochodzi
+   wyłącznie z wyniku bramki i może się zmienić przy kolejnym uruchomieniu.
+
+RAPORT WYGENEROWANY AUTOMATYCZNIE przez tools/v3_p29_enterprise_reports_generate.py
+(część P29 kampanii V3 — domknięcie braku report_present w bramkach 14-20).

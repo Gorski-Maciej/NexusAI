@@ -31,10 +31,10 @@ decide := {
     "_routing_reason": "EXIT TAX wyłączony: wartość rynkowa aktywów < progu 4 000 000 PLN (art. 30da ust. 1 pkt 2 PIT) — bez obowiązku.",
     "_legal_basis": "Art. 30da ust. 1 pkt 2 PIT [ZWERYFIKOWANO-WEB 2026-09-06]",
     "_warnings": [],
-    "exemption_threshold_pln": object.get(data.jdg.thresholds.crossborder, "exit_tax_threshold_pln", 4000000)
+    "exemption_threshold_pln": object.get(object.get(data.jdg.thresholds, "crossborder", {}), "exit_tax_threshold_pln", 4000000)
 } {
     market_value := object.get(input.invoice, "asset_market_value", 0)
-    threshold := object.get(data.jdg.thresholds.crossborder, "exit_tax_threshold_pln", 4000000)
+    threshold := object.get(object.get(data.jdg.thresholds, "crossborder", {}), "exit_tax_threshold_pln", 4000000)
     market_value < threshold
 }
 
@@ -178,7 +178,7 @@ else := {
 } {
     annual_foreign_payments := object.get(input.jdg_entrepreneur, "annual_foreign_payments_pln", 0)
     has_certificate := object.get(input.jdg_entrepreneur, "has_tax_residence_certificates", false)
-    wht_threshold := object.get(data.jdg.thresholds.crossborder, "wht_annual_threshold_pln", 2000000)
+    wht_threshold := object.get(object.get(data.jdg.thresholds, "crossborder", {}), "wht_annual_threshold_pln", 2000000)
     annual_foreign_payments > wht_threshold
     not has_certificate
 }
@@ -192,11 +192,11 @@ else := {
     "_routing_reason": "WHT — płatność za granicę > 2M PLN rocznie: obowiązek pobrania WHT 20% (lub stawka UPO) — walidacja przez doradcę.",
     "_legal_basis": "Art. 26 ust. 1 CIT (WHT — podatek u źródła)",
     "_warnings": ["[WHT] Płatność za granicę > 2M PLN rocznie — OBOWIĄZEK pobrania WHT 20% (lub stawka UPO)!"],
-    "threshold_pln": object.get(data.jdg.thresholds.crossborder, "wht_annual_threshold_pln", 2000000),
+    "threshold_pln": object.get(object.get(data.jdg.thresholds, "crossborder", {}), "wht_annual_threshold_pln", 2000000),
     "standard_rate": 0.20
 } {
     annual_foreign_payments := object.get(input.jdg_entrepreneur, "annual_foreign_payments_pln", 0)
-    wht_threshold := object.get(data.jdg.thresholds.crossborder, "wht_annual_threshold_pln", 2000000)
+    wht_threshold := object.get(object.get(data.jdg.thresholds, "crossborder", {}), "wht_annual_threshold_pln", 2000000)
     annual_foreign_payments > wht_threshold
 }
 
