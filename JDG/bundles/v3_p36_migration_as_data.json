@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P36-I11",
+  "generated_at": "2026-09-08T19:10:18+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "definition_required": true,
+    "hardcoded_mappings_blocked": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p36_generatory_migratory.migration_as_data: True"
+    },
+    {
+      "name": "definition_required",
+      "status": "OK",
+      "detail": "migracja bez definicji = BLOCK: True"
+    },
+    {
+      "name": "hardcoded_mappings_blocked",
+      "status": "OK",
+      "detail": "mapowania w kodzie = BLOCK (ADR-002): True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p100"
+    }
+  ],
+  "findings": []
+}

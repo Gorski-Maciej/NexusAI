@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P33-I03",
+  "generated_at": "2026-09-08T16:35:59+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "isap_verification_required": true,
+    "unverified_basis_block_path": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p33_neural_mesh_ai.legal_hallucination_guard: True"
+    },
+    {
+      "name": "isap_verification_required",
+      "status": "OK",
+      "detail": "v3_p33_isap_verification_required w thresholds: True"
+    },
+    {
+      "name": "unverified_basis_block_path",
+      "status": "OK",
+      "detail": "brak hashu ISAP → BLOCK (zakaz fikcyjnych artykułów): True"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P34-I09",
+  "generated_at": "2026-09-08T17:57:45+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "p40_service_contract": true,
+    "audit_trail_required": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p34_walidacja_narzedzia.validation_as_service: True"
+    },
+    {
+      "name": "p40_service_contract",
+      "status": "OK",
+      "detail": "endpoint P40 + walidacja ad hoc w kontrakcie: True"
+    },
+    {
+      "name": "audit_trail_required",
+      "status": "OK",
+      "detail": "każdy run z ID audytu (I11): True"
+    }
+  ],
+  "findings": []
+}

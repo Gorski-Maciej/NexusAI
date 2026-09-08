@@ -1,0 +1,58 @@
+{
+  "entries": [
+    {
+      "tool": "v3_p36_transform_tool",
+      "plan_id": "v3_p36_demo_001",
+      "ts_utc": "2026-09-08T19:34:37+00:00",
+      "files": [
+        "JDG/bundles/v3_p36_demo_target.json"
+      ],
+      "sha256": {
+        "JDG/bundles/v3_p36_demo_target.json": [
+          "b0907bfb8fb8fc65988cadc19c5b539ee962ddbf0eaa64b00f77af4860df5405",
+          "8a1df198dbb954c2b545ad9fc6bfd5021c7fd7a9bc95b5a0e930a8ce97d7eb5f"
+        ]
+      },
+      "approver_role": "automation",
+      "reason": "Pilotaż standardu transformacji P36: dodanie klucza demo_v3p36 do bundla dowodowego (zero reguł biznesowych, zero PII — RODO art. 5.1c)",
+      "validation": "PASS",
+      "status": "APPLIED"
+    },
+    {
+      "tool": "v3_p36_transform_tool",
+      "plan_id": "v3_p36_demo_001",
+      "ts_utc": "2026-09-08T19:34:38+00:00",
+      "files": [
+        "JDG/bundles/v3_p36_demo_target.json"
+      ],
+      "sha256": {
+        "JDG/bundles/v3_p36_demo_target.json": [
+          "8a1df198dbb954c2b545ad9fc6bfd5021c7fd7a9bc95b5a0e930a8ce97d7eb5f",
+          "8a1df198dbb954c2b545ad9fc6bfd5021c7fd7a9bc95b5a0e930a8ce97d7eb5f"
+        ]
+      },
+      "approver_role": "automation",
+      "reason": "Pilotaż standardu transformacji P36: dodanie klucza demo_v3p36 do bundla dowodowego (zero reguł biznesowych, zero PII — RODO art. 5.1c)",
+      "validation": "PASS",
+      "status": "APPLIED"
+    },
+    {
+      "tool": "v3_p36_transform_tool",
+      "plan_id": "v3_p36_demo_001",
+      "ts_utc": "2026-09-08T19:34:39+00:00",
+      "files": [
+        "JDG/bundles/v3_p36_demo_target.json"
+      ],
+      "sha256": {
+        "JDG/bundles/v3_p36_demo_target.json": [
+          "8a1df198dbb954c2b545ad9fc6bfd5021c7fd7a9bc95b5a0e930a8ce97d7eb5f",
+          "8a1df198dbb954c2b545ad9fc6bfd5021c7fd7a9bc95b5a0e930a8ce97d7eb5f"
+        ]
+      },
+      "approver_role": "automation",
+      "reason": "Pilotaż standardu transformacji P36: dodanie klucza demo_v3p36 do bundla dowodowego (zero reguł biznesowych, zero PII — RODO art. 5.1c)",
+      "validation": "FAIL",
+      "status": "ROLLED_BACK"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P36-I05",
+  "generated_at": "2026-09-08T19:10:18+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "required_fields_threshold": true,
+    "fail_fast_semantics": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p36_generatory_migratory.guard_rails: True"
+    },
+    {
+      "name": "required_fields_threshold",
+      "status": "OK",
+      "detail": "generator_required_fields=True, guard_rail_violations_max=True"
+    },
+    {
+      "name": "fail_fast_semantics",
+      "status": "OK",
+      "detail": "fail-fast z komunikatem przy braku pól: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p100"
+    }
+  ],
+  "findings": []
+}

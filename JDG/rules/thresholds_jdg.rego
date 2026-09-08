@@ -3274,6 +3274,154 @@ v3_p32 := {
     "manual_review_required": true,
 }
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P33 — WARSTWA AI ENTERPRISE (neural mesh, LLM bridge, human-in-the-loop)
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p33 := {
+    "v3_p33_threshold_version": "ai-enterprise-v3p33-2026.09",
+    "legal_basis_version": "ai-enterprise-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: formalna ścieżka awansu propozycji AI (kolejność wiążąca)
+    "v3_p33_pipeline_stages": ["llm_output", "syntax_validate", "smt_z3_proof",
+                               "golden_replay", "four_eyes", "shadow"],
+    # I02: tryb sandboxa AI (read_only | write_sandbox)
+    "v3_p33_ai_sandbox_mode": "read_only",
+    # I03: weryfikacja podstaw prawnych z LLM w ISAP obowiązkowa
+    "v3_p33_isap_verification_required": true,
+    # I04: ledger promptów w WORM + algorytm checksumy jako dane
+    "v3_p33_prompt_ledger_worm": true,
+    "v3_p33_prompt_ledger_checksum_alg": "sha256",
+    # I05: red-team prompt suite — kategorie ataków jako dane + minimum kategorii
+    "v3_p33_red_team_attacks": ["injection", "jailbreak", "exfiltration",
+                                "role_escape", "key_phishing"],
+    "v3_p33_red_team_min_categories": 3,
+    # I06: AUTO_POST zawsze przez AI-gate (trust score odcięty od decyzji)
+    "v3_p33_ai_gate_required": true,
+    # I07: digital twin wyłącznie na danych syntetycznych (RODO by design)
+    "v3_p33_twin_synthetic_only": true,
+    # I08: budżet tokenów i kosztu per sesja AI (cost governor)
+    "v3_p33_token_budget": 1000000,
+    "v3_p33_cost_limit_pln": 500,
+    # I09: wyjaśnienie propozycji AI obowiązkowe (explain-first)
+    "v3_p33_explanation_required": true,
+    # I10: federated mesh — tylko zanonimizowane agregaty (kontrakt prywatności)
+    "v3_p33_mesh_aggregates_only": true,
+    "v3_p33_mesh_min_k": 5,
+    "v3_p33_mesh_aggregate_violation_max": 0,
+    # I11: quantum-safe — docelowy rok migracji post-quantum (harmonogram jako dane)
+    "v3_p33_quantum_migration_year": 2030,
+    # I12: predictor triage — minimalny percentyl pewności sugestii
+    "v3_p33_judgment_min_percentile": 80,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P34 — WALIDACJA NARZĘDZI (walidacja jako governance, poziomy DAG L1-L5)
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p34 := {
+    "v3_p34_threshold_version": "walidacja-v3p34-2026.09",
+    "legal_basis_version": "walidacja-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: poziomy DAG walidacji jako dane (kolejność wiążąca)
+    "v3_p34_dag_levels": ["L1_syntax", "L2_lint", "L3_tests", "L4_semantic", "L5_legal"],
+    # I04: property-based fuzzing — minimalna liczba inputów per reguła
+    "v3_p34_fuzz_min_inputs": 1000,
+    # I06: mirror parity — limit reguł bez porównania AST
+    "v3_p34_mirror_unchecked_max": 0,
+    # I07: doc-numbers — limit liczb bez anchora [DEKLARACJA]
+    "v3_p34_doc_unanchored_max": 0,
+    # I10: heatmapa pokrycia — maksymalna niemłodość i limit spadku punktów
+    "v3_p34_heatmap_max_stale_days": 1,
+    "v3_p34_coverage_drop_block": 5,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P35 — AUDYTORY DOMENOWE (trust score, auditor-as-data, golden cases, skew)
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p35 := {
+    "v3_p35_threshold_version": "audytory-v3p35-2026.09",
+    "legal_basis_version": "audytory-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: trust score — podłoga pewności domeny i próg spadku (telemetria)
+    "v3_p35_trust_score_floor": 70,
+    "v3_p35_trust_drop_triage": 10,
+    # I02: definicje audytów bez kontroli — limit
+    "v3_p35_missing_controls_max": 0,
+    # I03: golden cases — minimum per domena i maksymalny wiek replay
+    "v3_p35_golden_cases_min_per_domain": 3,
+    "v3_p35_golden_replay_max_age_days": 30,
+    # I08: audyt nocny — maksymalna liczba pominiętych dni
+    "v3_p35_nightly_missed_max_days": 1,
+    # I09: pętla feedback operatora — maksymalny wiek
+    "v3_p35_feedback_max_age_days": 14,
+    # I10: SLA reakcji na alarm (godziny)
+    "v3_p35_alert_sla_hours": 4,
+    # I11: maksymalny wiek dowodu aktualności prawa (ISAP check)
+    "v3_p35_law_freshness_max_days": 7,
+    # I12: audyt inverse — minimum przypadków negatywnej przestrzeni per domena
+    "v3_p35_inverse_cases_min": 3,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P36 — GENERATORY MIGRATORY (transformacje jako transakcje, zero-orphan)
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p36 := {
+    "v3_p36_threshold_version": "generatory-v3p36-2026.09",
+    "legal_basis_version": "generatory-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I02: certyfikat idempotencji — drugi run = zero diff (bramka P29)
+    "v3_p36_idempotency_required": true,
+    # I03/I05: generatory produkują reguły+testy jednocześnie; reguła bez testu = BLOCK
+    "v3_p36_rule_without_test_max": 0,
+    # I05: guard rails — wymagane pola wygenerowanej reguły (legal basis, rule_id, okno, test)
+    "v3_p36_generator_required_fields": ["_legal_basis", "rule_id", "valid_from", "test_id"],
+    "v3_p36_guard_rail_violations_max": 0,
+    # I06: golden replay po migracji — maksymalny dryf werdyktów (P10)
+    "v3_p36_replay_drift_max": 0,
+    # I07: mirror-aware apply — dryf mirror po aplikacji (sync P39/P48)
+    "v3_p36_mirror_divergence_max": 0,
+    # I08: generator testów granicznych — minimalne pokrycie reguł wyliczania (%)
+    "v3_p36_boundary_rules_min_covered": 100,
+    # I12: zero-orphan guarantee — łączny limit orphanów po transformacji
+    "v3_p36_orphans_max": 0,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P37 — OBSERWOWALNOŚĆ (SLO, freshness SLA, alerting, benchmark gate)
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p37 := {
+    "v3_p37_threshold_version": "obserwowalnosc-v3p37-2026.09",
+    "legal_basis_version": "obserwowalnosc-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I02: SLA świeżości weryfikacji prawa (ISAP check) per akt
+    "v3_p37_law_freshness_sla_days": 7,
+    # I03: radar NEEDS_ADVICE — próg skoku względem baseline
+    "v3_p37_na_spike_ratio": 3,
+    # I04: budżet latencji p95 per domena (ms)
+    "v3_p37_latency_p95_max_ms": 500,
+    # I06: error budget — freeze wdrożeń poniżej tego poziomu (%)
+    "v3_p37_error_budget_min_pct": 0,
+    # I08: maksymalny rozjazd produkcja vs golden verdicts (P10)
+    "v3_p37_golden_drift_max": 0,
+    # I09: runbook-as-code — limit alarmów bez runbooka
+    "v3_p37_alert_without_runbook_max": 0,
+    # I10: status page — maksymalna niemłodość (dni)
+    "v3_p37_status_page_max_stale_days": 1,
+    # I11: limit kosztu decyzji AI (jednostki kosztu per decyzja)
+    "v3_p37_ai_cost_limit_per_decision": 1.0,
+    # I12: benchmark gate — maksymalna regresja p95 (%)
+    "v3_p37_benchmark_regression_max_pct": 10,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
 # ═══════════════════════════════════════════════════════════════════════════
 # P01 SEK. 3 — WERSJONOWANIE THRESHOLDÓW PER OKRES ROZLICZENIOWY (A2+) ENTERPRISE
 # ═══════════════════════════════════════════════════════════════════════════════

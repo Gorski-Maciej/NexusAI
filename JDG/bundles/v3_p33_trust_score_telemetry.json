@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P33-I06",
+  "generated_at": "2026-09-08T16:36:00+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "ai_gate_required": true,
+    "telemetry_only_semantics": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p33_neural_mesh_ai.trust_score_telemetry: True"
+    },
+    {
+      "name": "ai_gate_required",
+      "status": "OK",
+      "detail": "v3_p33_ai_gate_required (AUTO_POST bez AI-gate = BLOCK): True"
+    },
+    {
+      "name": "telemetry_only_semantics",
+      "status": "OK",
+      "detail": "trust score = telemetria (rankuje kolejki, nie decyduje): True"
+    }
+  ],
+  "findings": []
+}

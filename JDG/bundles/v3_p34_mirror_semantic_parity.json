@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P34-I06",
+  "generated_at": "2026-09-08T17:57:44+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "ast_diff_semantics": true,
+    "mirror_tree_located": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p34_walidacja_narzedzia.mirror_semantic_parity: True"
+    },
+    {
+      "name": "ast_diff_semantics",
+      "status": "OK",
+      "detail": "parity na poziomie AST (semantyka): True"
+    },
+    {
+      "name": "mirror_tree_located",
+      "status": "OK",
+      "detail": "policies/ (mirror) — status zależny od sesji (P48): True"
+    }
+  ],
+  "findings": []
+}

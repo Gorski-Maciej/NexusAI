@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P34-I12",
+  "generated_at": "2026-09-08T17:57:44+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "no_expiry_block_path": true,
+    "expired_block_path": true,
+    "owner_triage_path": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p34_walidacja_narzedzia.exception_register: True"
+    },
+    {
+      "name": "no_expiry_block_path",
+      "status": "OK",
+      "detail": "wyjątek bez wygaśnięcia = BLOCK: True"
+    },
+    {
+      "name": "expired_block_path",
+      "status": "OK",
+      "detail": "wygasły wyjątek = BLOCK: True"
+    },
+    {
+      "name": "owner_triage_path",
+      "status": "OK",
+      "detail": "wyjątek bez właściciela = TRIAGE: True"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,41 @@
+{
+  "innovation": "V3-P37-I12",
+  "generated_at": "2026-09-08T20:03:27+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "regression_max_threshold": true,
+    "measured_baseline_exists": true,
+    "baseline_p95_ms": 616.36,
+    "gate_run_pass": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p37_obserwowalnosc.benchmark_regression: True"
+    },
+    {
+      "name": "regression_max_threshold",
+      "status": "OK",
+      "detail": "v3_p37_benchmark_regression_max_pct w thresholds: True"
+    },
+    {
+      "name": "measured_baseline_exists",
+      "status": "OK",
+      "detail": "baseline zmierzony (p95=616.36 ms, runs=60): True"
+    },
+    {
+      "name": "gate_tool_run_pass",
+      "status": "OK",
+      "detail": "uruchomienie gate: [P37 GATE] p95=617.11 ms vs baseline 616.36 ms → regresja 0.12% (limit 10%) → PASS (exit 0)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p101"
+    }
+  ],
+  "findings": []
+}

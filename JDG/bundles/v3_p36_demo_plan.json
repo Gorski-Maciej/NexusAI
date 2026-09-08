@@ -1,0 +1,21 @@
+{
+  "plan_id": "v3_p36_demo_001",
+  "description": "Pilotaż standardu transformacji P36: dodanie klucza demo_v3p36 do bundla dowodowego (zero reguł biznesowych, zero PII — RODO art. 5.1c)",
+  "critical": false,
+  "approver_role": "automation",
+  "operations": [
+    {
+      "op": "set_key",
+      "file": "JDG/bundles/v3_p36_demo_target.json",
+      "key": "demo_v3p36",
+      "value": {
+        "standard": "transform-transaction-K1",
+        "added_by": "v3_p36_transform_tool",
+        "note": "additive demo key — brak wpływu na reguły i werdykty"
+      }
+    }
+  ],
+  "validation": [
+    "./bin/opa check JDG/rules/v3_p36_generatory_migratory_enterprise.rego JDG/rules/thresholds_jdg.rego"
+  ]
+}

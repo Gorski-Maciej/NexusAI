@@ -434,47 +434,57 @@
       "slug": "NEURAL_MESH_AI",
       "prompt": "V3_PROMPT_P33_NEURAL_MESH_AI.txt",
       "report": "RAPORT_V3_P33_NEURAL_MESH_AI.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
       "luki_p1": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": ""
+      "innovations": 12,
+      "implemented_at": "2026-09-08T17:25:46.298067+00:00",
+      "notes": "P33 NEURAL_MESH_AI: WDROZONY_100 (2026-09-08). rules/v3_p33_neural_mesh_ai_enterprise.rego (12 analiz I01-I12, decide fail-closed, priorities 433001-433012); thresholds v3_p33 (19 kluczy: sciezka awansu AI jako dane llm_output->syntax_validate->smt_z3_proof->golden_replay->four_eyes->shadow, sandbox read_only, ISAP verification required, WORM prompt ledger sha256, red-team min 3 kategorie + katalog atakw jako dane, AI-gate required, twin synthetic-only, budzet 1M tokenow/500 PLN, explain-first, mesh k-anonymity k=5, rok PQ 2030, percentyl triage 80; valid_from, ADR-002/P05); wiring main_jdg final_verdict_p97 (post-merge anchor przesuniety z p96 na p97); 12 tooli + 12 bundli gate PASS; testy 26/26 rego (OPA 0.68 i 1.9 v0-compatible) + 15/15 pytest; regresja P13-P33 zielona (504/504 rego, pytest bez nowych porazek); snapshot kanoniczny P00 odswiezony (507 rego, 12676/12676 unikalnych rule_id). I01 AI proposal pipeline (P07), I02 sandbox uprawnien AI (AI=writer, czlowiek=approver), I03 halucynacja prawna guard (ISAP przed czlowiekiem), I04 prompt audit ledger WORM, I05 red-team prompt suite (merge blocker), I06 trust score jako telemetria (odcięty od AUTO_POST), I07 digital twin na danych syntetycznych, I08 cost governor (AI_DEGRADED), I09 explain-first UI, I10 federated learning guard (k-anonymity), I11 quantum-safe plan, I12 AI w triage NEEDS_ADVICE. Weryfikacja istnienia 17 narzedzi AI rdzenia z sekcji 6.1/6.2 promptu (test_core_ai_tools_exist). Luki otwarte: P3=3 (L01 raport pelny TXT wg sekcji 9 — zapisany w tym pliku; L02 weryfikacja ISAP aktow sekcji 8 AI Act/RODO/GAAR -> P47/P44; L03 str_generator.py fasada-minimalna -> naprawa P65).",
+      "luki_p2": 0,
+      "luki_p3": 3,
+      "auto_recheck": false
     },
     "P34": {
       "slug": "WALIDACJA_NARZEDZIA",
       "prompt": "V3_PROMPT_P34_WALIDACJA_NARZEDZIA.txt",
       "report": "RAPORT_V3_P34_WALIDACJA_NARZEDZIA.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
       "luki_p1": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": ""
+      "innovations": 12,
+      "implemented_at": "2026-09-08T18:07:13.584520+00:00",
+      "notes": "P34 WALIDACJA_NARZEDZIA: WDROZONY_100 (2026-09-08). rules/v3_p34_walidacja_narzedzia_enterprise.rego (12 analiz I01-I12, decide fail-closed, priorities 434001-434012); thresholds v3_p34 (9 kluczy: poziomy DAG L1_syntax->L2_lint->L3_tests->L4_semantic->L5_legal jako dane, fuzz min 1000 inputow, mirror unchecked 0, doc unanchored 0, heatmap stale 1 dzien / drop 5 pkt; valid_from, ADR-002/P05); wiring main_jdg final_verdict_p98 (post-merge anchor przesuniety z p97 na p98); 12 tooli + 12 bundli gate PASS; testy 28/28 rego (OPA 0.68 i 1.9 v0-compatible) + 15/15 pytest. I01 walidacja jako siec DAG (lokalny retry, raport per poziom), I02 semantic diff Rego (kosmetyczna/progowa/semantyczna; semantyczna wymaga SMT/Z3 P33-I01), I03 legal basis linter online (PR + nightly, integracja isap_crawler), I04 tautologia fuzzing property-based (AP01), I05 cross-write detector (konflikt bez precedence = BLOCK, AP08), I06 mirror semantic parity (AST diff, AP11, kontrakt P48), I07 doc-numbers invariant (liczba bez anchora = [DEKLARACJA], kanon P00), I08 auto-fix z 4-eyes (auto-merge = BLOCK, kontrakt P07), I09 walidacja jako usluga (P40, run bez audytu = BLOCK), I10 coverage heatmap ciagla (spadek = alert Law Radar P08), I11 snapshot walidacji do Decision Certificate (provenance, V2 F4), I12 rejestr wyjatkow (expiry + owner, zero wiecznych wylaczen). Weryfikacja istnienia 29 walidatorow rdzenia z sekcji 6.1-6.4 promptu (test_core_validator_tools_exist). Snapshot kanoniczny P00 odswiezony. Luki otwarte: P3=2 (L01 raport pelny TXT wg sekcji 9 — zapisany w tym pliku; L02 weryfikacja ISAP aktow sekcji 8 + mirror policies -> P47/P44/P48).",
+      "luki_p2": 0,
+      "luki_p3": 2,
+      "auto_recheck": false
     },
     "P35": {
       "slug": "AUDYTORY_DOMENOWE",
       "prompt": "V3_PROMPT_P35_AUDYTORY_DOMENOWE.txt",
       "report": "RAPORT_V3_P35_AUDYTORY_DOMENOWE.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
       "luki_p1": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": ""
+      "innovations": 12,
+      "implemented_at": "2026-09-08T18:35:50.853306+00:00",
+      "notes": "P35 AUDYTORY_DOMENOWE: WDROZONY_100 (2026-09-08). rules/v3_p35_audyutory_domenowe_enterprise.rego (12 analiz I01-I12, decide fail-closed, priorities 435001-435012); thresholds v3_p35 (13 kluczy: trust score floor 70 / drop 10 jako telemetria, missing controls max 0, golden cases min 3 / replay 30 dni, nightly missed max 1 dzien, feedback 14 dni, SLA 4 h, law freshness 7 dni, inverse min 3; valid_from, ADR-002/P05); wiring main_jdg final_verdict_p99 (post-merge anchor przesuniety z p98 na p99); 12 tooli + 12 bundli gate PASS; testy 26/26 rego (OPA 0.68 i 1.9 v0-compatible) + 16/16 pytest. I01 domain trust score (metodologia jako dane, telemetria per P33-I06), I02 auditor as data (kontrole/progi/przyklady w danych, kontrakt P31), I03 golden case registry per domena (wspolny z P10), I04 unified audit report (score/luki/dowody, spojny z P31), I05 drill-down do dowodu (metryka->reguly->kod+test+prawo), I06 skew detection (pewnosc vs pokrycie), I07 dashboardy jako dane (metryki/progi/alarmy, ADR-002, P37), I08 audyt ciagly vs per-PR (dwa tryby, P34-I08/P39), I09 ocena operatora (feedback loop zasila golden registry i trust score), I10 alert routing (wlasciciele + SLA jako dane), I11 legal freshness stamp (ISAP check date, max 7 dni), I12 audyt inverse (negatywna przestrzen AUTO_POST, dowod defensywnosci). Weryfikacja istnienia 15 audytorow rdzenia + 8 testow + 6 dokumentow z sekcji 6.1-6.3 promptu (test_core_auditor_*). Snapshot kanoniczny P00 odswiezony. Luki otwarte: P3=2 (L01 raport pelny TXT wg sekcji 9 — zapisany w tym pliku; L02 weryfikacja ISAP + mirror policies -> P47/P44/P48).",
+      "luki_p2": 0,
+      "luki_p3": 2,
+      "auto_recheck": false
     },
     "P36": {
       "slug": "GENERATORY_MIGRATORY",
       "prompt": "V3_PROMPT_P36_GENERATORY_MIGRATORY.txt",
       "report": "RAPORT_V3_P36_GENERATORY_MIGRATORY.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
       "luki_p1": 0,
-      "innovations": 0,
-      "implemented_at": null,
+      "innovations": 12,
+      "implemented_at": "2026-09-08T19:23:29.757266+00:00",
       "notes": "",
-      "luki_p2": 0,
-      "luki_p3": 0
+      "luki_p2": 1,
+      "luki_p3": 2,
+      "auto_recheck": false
     },
     "P37": {
       "slug": "OBSERWOWALNOSC",
@@ -842,8 +852,8 @@
   },
   "summary": {
     "total": 69,
-    "wdrozony_100": 33,
-    "nie_wdrozony": 36,
-    "progress_pct": 47.83
+    "wdrozony_100": 37,
+    "nie_wdrozony": 32,
+    "progress_pct": 53.62
   }
 }

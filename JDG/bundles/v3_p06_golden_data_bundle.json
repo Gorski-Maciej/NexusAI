@@ -1,11 +1,11 @@
 {
   "innovation": "V3-P06-I04",
-  "generated_at": "2026-09-06T20:02:17.983495+00:00",
+  "generated_at": "2026-09-08T17:06:04.104340+00:00",
   "gate": "PASS",
   "metrics": {
-    "leaf_count": 719,
-    "boundary_rows": 3063,
-    "checksum": "35a25a3624f1f74a",
+    "leaf_count": 755,
+    "boundary_rows": 3198,
+    "checksum": "322ce55c2bd0be62",
     "vat_standard": [
       0.23
     ]
@@ -14,7 +14,7 @@
     {
       "name": "dataset_built",
       "status": "OK",
-      "detail": "dataset: 719 liści, 3063 wierszy granicznych, checksum 35a25a3624f1f74a"
+      "detail": "dataset: 755 liści, 3198 wierszy granicznych, checksum 322ce55c2bd0be62"
     },
     {
       "name": "vat_rates_in_legal_set",

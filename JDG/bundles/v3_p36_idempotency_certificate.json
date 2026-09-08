@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P36-I02",
+  "generated_at": "2026-09-08T19:10:18+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "idempotency_threshold": true,
+    "second_run_zero_diff": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p36_generatory_migratory.idempotency_certificate: True"
+    },
+    {
+      "name": "idempotency_threshold",
+      "status": "OK",
+      "detail": "v3_p36_idempotency_required w thresholds: True"
+    },
+    {
+      "name": "second_run_zero_diff",
+      "status": "OK",
+      "detail": "drugi run z diffem = BLOCK (certyfikat idempotencji): True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p100"
+    }
+  ],
+  "findings": []
+}

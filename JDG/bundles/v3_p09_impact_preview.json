@@ -1,10 +1,10 @@
 {
   "innovation": "V3-P09-I05",
-  "generated_at": "2026-09-06T20:02:25.234520+00:00",
+  "generated_at": "2026-09-08T16:54:04.509961+00:00",
   "gate": "FAIL",
   "metrics": {
     "registered_rules": 13,
-    "code_rule_ids": 12601,
+    "code_rule_ids": 12676,
     "replay_wired": true,
     "simulator_wired": false
   },
@@ -24,7 +24,7 @@
     {
       "id": "V3-P09-L05",
       "severity": "P1",
-      "evidence": "rejestr prowadzi 13 reguł, w kodzie ~12601 rule_id; law_amendment_simulator.py (162 wiersze, co-jeśli na werdyktach) istnieje, ale declarative_change.py go nie wywołuje — zatwierdzający nie widzi wpływu zmiany na portfel decyzji przed podpisem",
+      "evidence": "rejestr prowadzi 13 reguł, w kodzie ~12676 rule_id; law_amendment_simulator.py (162 wiersze, co-jeśli na werdyktach) istnieje, ale declarative_change.py go nie wywołuje — zatwierdzający nie widzi wpływu zmiany na portfel decyzji przed podpisem",
       "fix": "I05 Impact Preview: przed 4-eyes uruchom replay (simulator) na historycznym portfelu → raport zmienionych werdyktów + priorytet"
     }
   ],

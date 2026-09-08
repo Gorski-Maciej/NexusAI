@@ -1,0 +1,35 @@
+{
+  "innovation": "V3-P34-I01",
+  "generated_at": "2026-09-08T17:57:46+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "dag_levels": [
+      "L1_syntax",
+      "L2_lint",
+      "L3_tests",
+      "L4_semantic",
+      "L5_legal"
+    ],
+    "dag_levels_as_data": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p34_walidacja_narzedzia.validation_dag: True"
+    },
+    {
+      "name": "dag_levels_as_data",
+      "status": "OK",
+      "detail": "v3_p34.dag_levels ['L1_syntax', 'L2_lint', 'L3_tests', 'L4_semantic', 'L5_legal'] jako dane: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p98"
+    }
+  ],
+  "findings": []
+}

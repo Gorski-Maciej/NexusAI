@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P35-I11",
+  "generated_at": "2026-09-08T18:24:45+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "freshness_threshold": true,
+    "isap_check_date_semantics": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p35_audyutory_domenowe.legal_freshness_stamp: True"
+    },
+    {
+      "name": "freshness_threshold",
+      "status": "OK",
+      "detail": "v3_p35_law_freshness_max_days w thresholds: True"
+    },
+    {
+      "name": "isap_check_date_semantics",
+      "status": "OK",
+      "detail": "ISAP check date w regule: True"
+    }
+  ],
+  "findings": []
+}

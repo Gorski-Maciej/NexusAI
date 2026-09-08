@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P35-I06",
+  "generated_at": "2026-09-08T18:24:46+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "confidence_vs_coverage": true,
+    "critical_and_mild_levels": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p35_audyutory_domenowe.skew_detection: True"
+    },
+    {
+      "name": "confidence_vs_coverage",
+      "status": "OK",
+      "detail": "rozjazd pewność vs pokrycie w regule: True"
+    },
+    {
+      "name": "critical_and_mild_levels",
+      "status": "OK",
+      "detail": "poziomy krytyczny (BLOCK) i łagodny (TRIAGE): True"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P36-I03",
+  "generated_at": "2026-09-08T19:10:20+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "rule_without_test_threshold": true,
+    "joint_rule_test_generation": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p36_generatory_migratory.plan_to_rules: True"
+    },
+    {
+      "name": "rule_without_test_threshold",
+      "status": "OK",
+      "detail": "v3_p36_rule_without_test_max w thresholds: True"
+    },
+    {
+      "name": "joint_rule_test_generation",
+      "status": "OK",
+      "detail": "generacja reguł+testów jednocześnie: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p100"
+    }
+  ],
+  "findings": []
+}

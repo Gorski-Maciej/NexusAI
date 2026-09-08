@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P35-I03",
+  "generated_at": "2026-09-08T18:24:44+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "registry_thresholds": true,
+    "p10_contract_link": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p35_audyutory_domenowe.golden_case_registry: True"
+    },
+    {
+      "name": "registry_thresholds",
+      "status": "OK",
+      "detail": "golden_cases_min=True, replay_max_age_days=True"
+    },
+    {
+      "name": "p10_contract_link",
+      "status": "OK",
+      "detail": "wspólny rejestr z P10 (Golden Oracle): True"
+    }
+  ],
+  "findings": []
+}

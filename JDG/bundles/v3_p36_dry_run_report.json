@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P36-I09",
+  "generated_at": "2026-09-08T19:10:17+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "report_required": true,
+    "four_eyes_critical": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p36_generatory_migratory.dry_run_report: True"
+    },
+    {
+      "name": "report_required",
+      "status": "OK",
+      "detail": "zmiana bez raportu dry-run = BLOCK: True"
+    },
+    {
+      "name": "four_eyes_critical",
+      "status": "OK",
+      "detail": "krytyczne bez 4-eyes = BLOCK: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p100"
+    }
+  ],
+  "findings": []
+}

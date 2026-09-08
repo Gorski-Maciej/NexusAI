@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P34-I02",
+  "generated_at": "2026-09-08T17:57:45+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "change_classes_present": true,
+    "semantic_requires_smt": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p34_walidacja_narzedzia.semantic_diff: True"
+    },
+    {
+      "name": "change_classes",
+      "status": "OK",
+      "detail": "klasy zmian ['kosmetyczna', 'progowa', 'semantyczna'] obecne: True"
+    },
+    {
+      "name": "semantic_requires_smt",
+      "status": "OK",
+      "detail": "zmiana semantyczna wymaga SMT/Z3 (P33-I01): True"
+    }
+  ],
+  "findings": []
+}

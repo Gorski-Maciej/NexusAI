@@ -1,0 +1,29 @@
+{
+  "innovation": "V3-P33-I08",
+  "generated_at": "2026-09-08T16:35:58+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "token_budget_threshold": true,
+    "cost_limit_threshold": true,
+    "degraded_mode": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p33_neural_mesh_ai.cost_governor: True"
+    },
+    {
+      "name": "budget_thresholds",
+      "status": "OK",
+      "detail": "v3_p33_token_budget=True, v3_p33_cost_limit_pln=True"
+    },
+    {
+      "name": "degraded_mode",
+      "status": "OK",
+      "detail": "degradacja do trybu bez AI (AI_DEGRADED): True"
+    }
+  ],
+  "findings": []
+}

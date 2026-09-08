@@ -1,0 +1,35 @@
+{
+  "innovation": "V3-P37-I01",
+  "generated_at": "2026-09-08T20:03:29+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "slos_complete": 6,
+    "slos_total": 6,
+    "slo_thresholds_as_data": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p37_obserwowalnosc.decision_slo: True"
+    },
+    {
+      "name": "slo_catalog_as_data",
+      "status": "OK",
+      "detail": "SLO kompletnych: 6/6 (wymagane ≥ 6)"
+    },
+    {
+      "name": "slo_thresholds_as_data",
+      "status": "OK",
+      "detail": "progi SLO w data.thresholds.v3_p37: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p101"
+    }
+  ],
+  "findings": []
+}

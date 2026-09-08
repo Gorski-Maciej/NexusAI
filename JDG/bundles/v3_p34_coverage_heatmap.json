@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P34-I10",
+  "generated_at": "2026-09-08T17:57:43+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "trend_thresholds": true,
+    "heatmap_tool_present": true,
+    "law_radar_alert": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p34_walidacja_narzedzia.coverage_heatmap_continuous: True"
+    },
+    {
+      "name": "trend_thresholds",
+      "status": "OK",
+      "detail": "v3_p34_coverage_drop_block=True, heatmap_max_stale_days=True"
+    },
+    {
+      "name": "heatmap_tool_present",
+      "status": "OK",
+      "detail": "tools/legal_coverage_heatmap.py (narząd): True"
+    },
+    {
+      "name": "law_radar_alert",
+      "status": "OK",
+      "detail": "spadek pokrycia = alert do Law Radar (P08): True"
+    }
+  ],
+  "findings": []
+}

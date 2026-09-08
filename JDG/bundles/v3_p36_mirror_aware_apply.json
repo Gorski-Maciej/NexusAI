@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P36-I07",
+  "generated_at": "2026-09-08T19:10:19+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "mirror_divergence_threshold": true,
+    "canonical_only_blocked": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p36_generatory_migratory.mirror_aware_apply: True"
+    },
+    {
+      "name": "mirror_divergence_threshold",
+      "status": "OK",
+      "detail": "v3_p36_mirror_divergence_max w thresholds: True"
+    },
+    {
+      "name": "canonical_only_blocked",
+      "status": "OK",
+      "detail": "aplikacja tylko canonical = BLOCK (jedna transakcja): True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p100"
+    }
+  ],
+  "findings": []
+}

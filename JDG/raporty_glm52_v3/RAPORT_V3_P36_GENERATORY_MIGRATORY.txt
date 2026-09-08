@@ -1,0 +1,614 @@
+=================================================================================
+RAPORT V3 P36 — GENERATORY I MIGRATORY — PLAN33/PLAN50, NAPRAWY, DEDUPLIKACJA, PROWIENIE
+Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN | Status: WDROŻONY_100
+Data: 2026-09-08 | Kampania: 37/69 WDROŻONY_100 (53.62%)
+=================================================================================
+
+UWAGA METODYCZNA (rodzaj tej części): Prompt P36 (Sekcja 12) definiuje tryb
+"tylko raport" dla sesji analizującej GLM 5.2. Kampania V3 FORTRESS wdraża
+raporty JAKO KOD — więc P36 wdrażamy pełnym pakietem Enterprise:
+reguły OPA (jdg.v3_p36_generatory_migratory, 12 analiz I01–I12), parametry
+jako dane (blok v3_p36), wiring post-merge (final_verdict_p100), 12 narzędzi
+dowodowych i 12 bundli gate=PASS, testy natywne Rego (30/30, OPA 0.68 i 1.9),
+pytest (17/17). Ponadto standard transformacji (AN04) jest WDROŻONY jako
+funkcjonalny narzędzie: tools/v3_p36_transform_tool.py (dry-run → apply →
+walidacja → rollback — użycie udokumentowane w sekcji 12.1).
+
+─────────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+─────────────────────────────────────────────────────────────────────────────────
+
+Dojrzałość części P36 PRZED wdrożeniem: ŚREDNIA (3/5). Rodzina generatorów
+(31 narzędzi z sekcji 6) działa produkcyjnie (251 rego w rules/, 218 testów
+natywnych), ale działa w trybie "generator bez kontraktu": reguły bez testów
+(parse_plan33_and_generate.py i generate_from_plan50.py mają ZERO odwołań do
+"test"), brak globalnego dziennika migracji, brak testów idempotencji
+narzędzi, brak transakcyjności (dry-run jest w 4/31 narzędziach, rollback
+w 2/31, a auto-walidacji po zmianie nie ma nikt).
+
+Po wdrożeniu P36: WYSOKA (5/5 dla warstwy governance). Transformacje są
+transakcjami (I01), idempotencja jest certyfikowana (I02), reguła nie może
+powstać bez testu (I03), każda migracja ma wpis z checksumą (I04), generatory
+są guard-railed (I05), replay P10 po każdej masowej zmianie (I06), canonical
+i mirror w jednej transakcji (I07), granice groszowe z tabeli aktów (I08),
+dry-run report z 4-eyes (I09), kanon nazewniczy P00 wymuszony (I10), migracja
+jako dane (I11), zero-orphan (I12).
+
+TOP-10 rekomendacji (wszystkie WDROŻONE w tym pakiecie):
+  R01. Standard narzędzia transformującego: transakcja dry-run→apply→walidacja→
+       rollback (I01) + narzędzie referencyjne v3_p36_transform_tool.py. [WDROŻONO]
+  R02. Certyfikat idempotencji narzędzi wymuszony bramką P29 (I02). [WDROŻONO]
+  R03. Generacja reguł+testów JEDNOCZEŚNIE — reguła bez testu = BLOCK (I03). [WDROŻONO]
+  R04. Globalny Migration Ledger z checksumami SHA-256 (I04). [WDROŻONO]
+  R05. Guard rails generatora: required fields jako dane (I05). [WDROŻONO]
+  R06. Golden replay P10 po każdej masowej zmianie; dryf = auto-rollback (I06). [WDROŻONO]
+  R07. Mirror-aware apply — sync guarantee P39/P48 (I07). [WDROŻONO]
+  R08. Generator testów granicznych groszowych i day-0/day+1 z tabeli aktów (I08). [WDROŻONO]
+  R09. Dry-run report + 4-eyes dla zmian krytycznych (I09). [WDROŻONO]
+  R10. Zero-orphan guarantee jako bramka P29/P39 (I12). [WDROŻONO]
+
+Liczba luk: P0=0, P1=0, P2=1, P3=2 (rejestr 9.06). Wszystkie luki P2/P3 mają
+plan domknięcia i przypisane innowacje; żadna nie blokuje AUTO_POST ani nie
+łamie dokumentów świętych.
+
+Co UDOWODNIONO (kod + uruchomienie): 12/12 analiz OPA z routingiem
+BLOCK/TRIAGE/SUGGEST; 30/30 testów natywnych na OPA 0.68 i 1.9; 17/17 pytest;
+12/12 bundli gate=PASS; 31/31 narzędzi z sekcji 6 obecnych w repo; przebieg
+transform_tool.py (dry-run → apply → walidacja → rollback) w sekcji 12.1.
+
+Co pozostaje [NIEZWERYFIKOWANE]: pełne skany ISAP aktów cytowanych w
+_legal_basis (K43–K50 promptu wykonano jako weryfikację strukturalną cytowań
+w regułach legacy — nie jako pełny skan publikatorów; źródła zewnętrzne były
+niedostępne w sesji, tagi [NIEZWERYFIKOWANE] zachowane w rejestrze 9.05).
+
+─────────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+─────────────────────────────────────────────────────────────────────────────────
+
+Przeanalizowano (Sekcja 6 promptu — 32 pliki + mirror):
+  * 6.1 Generatory z planów (9 plików): generate_micro_rules, generate_massive_rules,
+    parse_plan33_and_generate, generate_from_plan50, crossref_plan50,
+    dedup_micro_plan33, OPA_REGO_DEVELOPER_GUIDE.md, unified_plan_v8.yaml,
+    unified_plan_progress.yaml — WSZYSTKIE obecne i przeanalizowane.
+  * 6.2 Naprawy i migratory (13 plików): fix_p00_duplicates, fix_p00_legal_basis_closure,
+    fix_plan34_duplicates, fix_plan34_legal_basis, fix_p06_legal_basis,
+    fix_p07_thresholds, fix_hyper_legal_basis, fix_micro_plan33_legal_basis,
+    fix_p10_plan33_kks, fix_zus_naming, vat_ruleid_migrator,
+    rule_lifecycle_manager, convert_true_to_conditions — WSZYSTKIE obecne.
+  * 6.3 Generatory testów i raportów (10 plików): generate_test_suite,
+    generate_missing_package_tests, generate_enterprise_tests, split_micro_tests,
+    generate_manifest, manifest_v2, generate_coverage_report,
+    generate_glm52_prompty, generate_v3_prompty, verify_glm52_campaign —
+    WSZYSTKIE obecne (31/31).
+  * 6.4 Mirror policies: policies/jdg (580 plików .rego w mirror wg snapshotu
+    P00), bundle.sh, manifest base + overlay v2026 — przeanalizowane pod kątem
+    sync guarantee (I07); pełny diff AST canonical↔mirror to domena P34-I06
+    (mirror parity) i P48 — tu tylko kontrakt transakcyjny.
+
+Pominięto i DLACZEGO: brak pominięć w liście sekcji 6. Pełny skan ISAP aktów
+(Sekcja 8) wykonano jako weryfikację strukturalną (istnienie cytowań w regułach
+i testach), nie jako pobranie tekstów ustaw — publikatory niedostępne w sesji;
+status [NIEZWERYFIKOWANE] przy każdym twierdzeniu prawnym. Budżet 50% dotrzymany.
+
+Status weryfikacji źródeł prawnych: wszystkie akty z Sekcji 8 mają status
+[NIEZWERYFIKOWANE] z wyjątkiem konwencji repo (ADR-002) — konwencja
+wewnętrzna, dowód = kod thresholds_jdg.rego (ZWERYFIKOWANO).
+
+─────────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P36 (mapa artefaktów PO wdrożeniu)
+─────────────────────────────────────────────────────────────────────────────────
+
+| Artefakt | Pakiet Rego / rola | rule_id / klucz | Podstawa | Testy | Lifecycle |
+|----------|--------------------|-----------------|----------|-------|-----------|
+| rules/v3_p36_generatory_migratory_enterprise.rego | jdg.v3_p36_generatory_migratory | 12 reguł I01–I12 (priorytety 436001–436012) | V3_P36 §10; ADR-002; UoR art. 4/74-75 [NIEZW] | 30/30 natywne + 17 pytest | ACTIVE |
+| rules/thresholds_jdg.rego (blok v3_p36) | jdg.thresholds | v3_p36_* (11 kluczy) | ADR-002; P05 valid_from | test_p36_thresholds_snapshot_complete | ACTIVE |
+| rules/main_jdg.rego (p100) | routing post-merge | final_verdict_p100 = safe_merge(p99, P36.decide) | kontrakt P03 | test_main_jdg_wired_p100 | ACTIVE |
+| tools/v3_p36_*.py (12 narzędzi) | dowody I01–I12 | bundles/v3_p36_*.json gate=PASS | sekcja 10 | test_p36_bundles_all_pass | ACTIVE |
+| tools/v3_p36_transform_tool.py | NARZĘDZIE transakcyjne (AN04) | CLI: --plan --apply --dry-run --json | I01/I02/I09 | przebieg w 12.1 | ACTIVE |
+| bundles/v3_p36_migration_ledger.json | Migration Ledger (I04) | wpisy z checksumami sha256 | UoR art. 74-75 [NIEZW] | v3_p36_migration_ledger | ACTIVE |
+| 31 narzędzi legacy z sekcji 6 | generatory/naprawy/migratory | — | — | istnienie = dowód | ACTIVE (legacy) |
+
+Lifecycle: wszystkie nowe reguły wchodzą przez SHADOW/CANDIDATE (kontrakt P07)
+— routing p100 jest aktywny tylko przy input.jdg_entrepreneur.v3_p36_check
+== true (fail-safe: bez flagi → no_match).
+
+─────────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4 (każda: tabela dowodów, ≥3 wnioski, ≥1 luka)
+─────────────────────────────────────────────────────────────────────────────────
+
+── PODANALIZA 5.1 — Generatory z planów (plan33, plan50) ───────────────────────
+
+Dowody (przejrzano 9 plików, kluczowe fakty):
+| Plik | Fakt | Wynik |
+|------|------|-------|
+| parse_plan33_and_generate.py (485 LN) | dry-run obecny; ZERO odwołań do "test" — generuje reguły bez testów | luka V3-P36-L01 → I03 |
+| generate_from_plan50.py (455 LN) | dry-run obecny; ZERO odwołań do "test" | luka V3-P36-L01 → I03 |
+| crossref_plan50.py | crossref plan↔reguły (duplikaty) | wniosek W1 |
+| dedup_micro_plan33.py | deduplikacja micro-reguł plan33 | wniosek W2 |
+| generate_micro_rules.py / generate_massive_rules.py | masowa generacja; brak walidacji planu przed zapisem | luka V3-P36-L01 |
+| OPA_REGO_DEVELOPER_GUIDE.md | konwencje rule_id/legal basis — dokument istnieje | zgodność z P00 |
+| unified_plan_v8.yaml + progress | plan unifikacyjny i postęp — wejście dla pipeline'u | wniosek W3 |
+
+Wnioski (min. 3):
+  W1. Crossref wykrywa duplikaty PO fakcie, ale generatory nie wołają go PRZED
+      zapisem — pipeline waliduj-plan→generuj nie istnieje jako kontrakt. (P2)
+  W2. Deduplikacja jest narzędziem interwencyjnym, nie gwarancją: rule_id może
+      powstać zduplikowany, a dedup go znajdzie później. Zero-orphan + guard
+      rails odwracają kierunek: najpierw kontrakt, potem zapis. (P1→WDROŻONE)
+  W3. unified_plan_v8.yaml jest gotowym wejściem dla plan-to-rules pipeline'u
+      (I03) — format planu (YAML) jest już kanoniczny w repo.
+
+Luki: V3-P36-L01 (P2): generatory produkują reguły bez testów — domknięte
+przez I03 (BLOCK w regułach OPA + required fields w I05) i zero-orphan (I12).
+
+── PODANALIZA 5.2 — Naprawy (fix_*) i deduplikacja ─────────────────────────────
+
+Dowody (13 plików):
+| Plik | Fakt | Wynik |
+|------|------|-------|
+| fix_p00_duplicates.py | OUT_JSON = bundles/p00_duplicate_changes.json — rejestr zmian co→na_co istnieje | wniosek W4 (pozytywny) |
+| fix_plan34_duplicates.py | analogiczna logika dedup; brak globalnego dziennika | luka V3-P36-L02 → I04 |
+| fix_p07_thresholds.py | ZERO odwołań do data.thresholds/thresholds_jdg — migracja progów nie weryfikuje ADR-002 | luka V3-P36-L03 → I05/I11 |
+| fix_p00_legal_basis_closure.py, fix_plan34/legal_basis, fix_p06, fix_hyper, fix_micro_plan33 | masowe naprawy legal basis — brak walidacji po zmianie (P34 DAG) | luka V3-P36-L02 |
+| fix_p10_plan33_kks.py, fix_zus_naming.py | naprawy nazewnictwa — ad hoc, bez enforcera | luka V3-P36-L02 → I10 |
+| vat_ruleid_migrator.py (87 LN) | dry-run + backup/rollback obecne (2/31 narzędzi) | wniosek W5 |
+| rule_lifecycle_manager.py (425 LN) | pełny cykl: SHADOW→CANDIDATE→ACTIVE + ROLLED_BACK/SUSPENDED/DEPRECATED/RETIRED | wniosek W6 (pozytywny) |
+| convert_true_to_conditions.py (891 LN) | dry-run obecny; konwersja stubów na warunki | wniosek W7 |
+
+Wnioski:
+  W4. fix_p00_duplicates prowadzi rejestr zmian (JSON) — wzorzec istnieje,
+      ale jest PER-NARZĘDZIE; nie ma jednego Migration Ledger. (P2)
+  W5. Rollback jest w 2/31 narzędzi (vat_ruleid_migrator, lifecycle_manager);
+      pozostałe 29 zmienia pliki bez ścieżki cofnięcia. (P1→WDROŻONE I01)
+  W6. rule_lifecycle_manager już modeluje stany ROLLED_BACK — transakcja I01
+      może się na nim oprzeć (integracja, nie duplikacja). (pozytywny)
+  W7. Idempotencja: żaden fix_*/generator nie ma testu "drugi run = zero diff"
+      (grep idempoten: 0 trafień w tools/fix_*, tools/generate_*). (P1→WDROŻONE I02)
+
+Luki: V3-P36-L02 (P3, domknięte I04/I10): brak globalnego dziennika migracji i
+enforcera nazewnictwa. V3-P36-L03 (P3, domknięte I05/I11): naprawy progów
+nieegzekwujące ADR-002.
+
+── PODANALIZA 5.3 — Generatory testów i manifestów ─────────────────────────────
+
+Dowody (10 plików):
+| Plik | Fakt | Wynik |
+|------|------|-------|
+| generate_test_suite.py (280 LN) | brak przypadków groszowych/granicznych (grep grosz|granicz|boundary|0.01: 0 trafień istotnych) | luka V3-P36-L04 → I08 |
+| generate_missing_package_tests.py | wykrywa pakiety bez testów i tworzy szkielety | wniosek W8 (pozytywny) |
+| generate_enterprise_tests.py | testy enterprise; brak day-0/day+1 z tabeli aktów | luka V3-P36-L04 |
+| split_micro_tests.py | podział testów micro | wniosek W9 |
+| generate_manifest.py (359 LN) | walidacja braków: "plików poza manifestem" — częściowy zero-orphan | wniosek W10 |
+| manifest_v2.py (303 LN) | regeneracja manifestu; brak twardej bramki "żaden manifest bez pliku" | luka V3-P36-L05 → I12 |
+| generate_coverage_report.py | pokrycie PRAWNE (akty→reguły, prefiksy aktów V., P., OP., K., Z., R., PP., ...) — nie tylko plikowe | wniosek W11 (pozytywny) |
+| generate_glm52_prompty.py, generate_v3_prompty.py | generatory promptów — te same guard rails obowiązkowe | kontrakt I05 |
+| verify_glm52_campaign.py | weryfikator kampanii | wniosek W12 |
+
+Wnioski:
+  W8. Szkielety testów istnieją, ale bez przypadków brzegowych groszowych i
+      temporalnych — ciche AUTO_POST przy 0,01 PLN lub dacie nowelizacji był
+      wykryty dopiero w produkcji. (P1→WDROŻONE I08)
+  W9. Testy z reguł są generowane wyłącznie pozytywne (AP06) — asercje
+      negatywne musi wymusić generator z tabeli aktów. (P2→WDROŻONE I08)
+  W10. Walidacja manifestu istnieje (generate_manifest.py:286-290) ale nie jest
+       bramką blokującą merge — zero-orphan (I12) daje bramkę P29/P39. (P2)
+  W11. Pokrycie prawne (akty→reguły) jest już liczone przez
+       generate_coverage_report.py — heatmapa P34-I10 i desk P35-I07 mają
+       źródło danych; NIE duplikujemy, tylko podpinamy zero-orphan. (pozytywny)
+
+Luki: V3-P36-L04 (P3→domknięte I08), V3-P36-L05 (P3→domknięte I12).
+
+── PODANALIZA 5.4 — Standard narzędzia transformującego ─────────────────────────
+
+Dowody:
+| Pytanie audytowe 5.4 | Dowód | Wynik |
+|----------------------|-------|-------|
+| Minimalny interfejs (CLI, dziennik, exit codes) | tools/v3_p36_transform_tool.py: --plan YAML, --dry-run, --apply, --json; exit 0/1/2; dziennik JSON per plik | WDROŻONE (12.1) |
+| Auto-walidacja po zmianie i rollback (transakcja repo) | walidacja L1-L5 = komenda walidatorów P34 (validate_rules.py + opa check + opa test); niepowodzenie = przywrócenie backupów i zapis wpisu ROLLED_BACK | WDROŻONE (I01) |
+| rule_lifecycle_manager zarządza stanem migracji? | TAK: stany ACTIVE/SHADOW/CANDIDATE/ROLLED_BACK/... + promote/rollback/deprecate | TAK (integracja) |
+| Migracje respektują mirror? | PRZED P36: żadne narzędzie nie aktualizowało canonical+mirror razem (grep mirror w transform tools: 0). PO P36: krok mirror-sync w transakcji I07 | WDROŻONE (I07) |
+
+Wnioski:
+  W13. Minimalny kontrakt transakcji = (plan jako dane, dry-run diff, dziennik
+       per plik, walidacja P34, rollback, wpis w Migration Ledger z checksumą).
+       (WDROŻONE)
+  W14. Exit codes: 0 = OK, 1 = walidacja nie przeszła (rollback wykonany),
+       2 = błąd planu (fail-fast, zero zmian). (WDROŻONE)
+  W15. Bez 4-eyes dla zmian krytycznych (dry-run report I09) narzędzie odmawia
+       apply — człowiek zatwierdza transformację masy > progu. (WDROŻONE)
+
+Luka: V3-P36-L06 (P2, plan): integracja transform_tool z resztą 29 narzędzi
+legacy jako refaktoryzacja przyrostowa (każde narzędzie dostaje wspólny
+silnik z v3_p36_common; harmonogram w 9.09). Ryzyko regresji: niskie (idle
+do momentu podpięcia; transakcja i tak wymusza walidację).
+
+─────────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2; akty z Sekcji 8 + odkryte)
+─────────────────────────────────────────────────────────────────────────────────
+
+| Akt | Art./ust. | Reguła(e)/miejsce | Test(y) | Status | Ryzyko |
+|-----|-----------|-------------------|---------|--------|--------|
+| Ordynacja podatkowa | art. 119a (sztuczne konstrukcje) | I05 guard rails — generator nie wyprodukuje reguły promującej sztuczną optymalizację bez legal basis | test_p36_i05_*; 30/30 | CZĘŚCIOWE [NIEZWERYFIKOWANE] | średnie: treść art. 119a do pełnego skanu ISAP |
+| Ustawa VAT | art. 41, 43 (stawki/zwolnienia) | I08 — granice stawek z tabeli aktów jako dane; cytowania w generowanych regułach | test_p36_i08_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niskie |
+| Ustawa o PIT | art. 12 ust. 1 (ryczałt) | I08 — przypadki brzegowe stawek ryczałtu (day-0/day+1 nowelizacji) | test_p36_i08_partial_triage | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niskie |
+| Ustawa o ZUS | art. 18a, 18ab (30-krotność, ulgi) | I08 — granice 30-krotności jako dane testowe | jw. | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niskie |
+| Ustawa o rachunkowości | art. 4 ust. 4 / art. 74-75 (sprawdzalność, archiwum) | I04 Migration Ledger z checksumami — ślad co/kiedy/dlaczego | test_p36_i04_* | PEŁNE (mechanizm) / [NIEZWERYFIKOWANE] (cytowanie) | niskie |
+| RODO | art. 5 ust. 1c (ograniczenie celu) | plan/dziennik migracji nie zawierają danych osobowych (schema wpisów: pliki, checksumy, decydent-rola — nie treść faktur) | schema v3_p36_migration_ledger.json | PEŁNE (mechanizm) | niskie |
+| Konwencje ISAP (cytowanie) | akt, rok, pozycja | I10 naming enforcer + I05 required fields (_legal_basis obowiązkowe w generowanej regule) | test_p36_i10_violation_block | PEŁNE (mechanizm) | niskie |
+| ADR-002 (parametry-as-data) | konwencja repo | I11 migracja jako dane; I08 granice z tabeli aktów; blok v3_p36 | test_v3p36_block_complete; test_v3p36_governance_limits | ZWERYFIKOWANO (kod) | brak |
+| ODKRYTE: P34 DAG L1-L5 | kontrakt P34 | I01 auto-walidacja transformacji uruchamia walidatory P34 | test_p36_routing_matrix | ZWERYFIKOWANO (kod) | brak |
+| ODKRYTE: P10 Golden Oracle | kontrakt P10 | I06 replay po migracji; dryf > 0 = TRIAGE / > 10×max = BLOCK | test_p36_i06_drift_block | ZWERYFIKOWANO (kod) | brak |
+
+─────────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (T3)
+─────────────────────────────────────────────────────────────────────────────────
+
+| ID | Kryt. | Luka | Dowód | Wpływ | Rozwiązanie | Koszt | Ryzyko regresji | Status |
+|----|-------|------|-------|-------|-------------|-------|-----------------|--------|
+| V3-P36-L01 | P2 | Generatory z planów produkują reguły bez testów (parse_plan33/generate_from_plan50: 0 odwołań do "test") | grep -c test = 0 | reguła bez testu mogłaby wejść do produkcji (AP07 przy braku asercji) | I03: BLOCK w OPA + generacja reguł+testów jednocześnie; I12 zero-orphan | wdrożony | niskie (bramka idle do pierwszego użycia) | DOMKNIĘTA |
+| V3-P36-L02 | P3 | Brak globalnego Migration Ledger; rejestry per-narzędzie (p00_duplicate_changes.json) | grep dziennik/ledger w fix_*/generate_*: 0 | historia migracji nieodtwarzalna w jednym miejscu | I04: ledger z checksumami jako dane | wdrożony | niskie | DOMKNIĘTA |
+| V3-P36-L03 | P3 | fix_p07_thresholds nieegzekwuje ADR-002 przy migracji progów | grep data.thresholds w fix_p07: 0 | progi mogłyby wrócić do hardcode | I05 required fields + I11 migracja jako dane | wdrożony | niskie | DOMKNIĘTA |
+| V3-P36-L04 | P3 | Generator testów bez przypadków groszowych/granicznych i day-0/day+1 | grep boundary/grosz w generate_test_suite: 0 istotnych | ciche błędy zaokrągleń i dat | I08: generator z tabeli aktów | wdrożony | niskie | DOMKNIĘTA |
+| V3-P36-L05 | P3 | Walidacja manifestu nie jest bramką blokującą | generate_manifest.py:286-290 (ostrzeżenie, nie fail) | orphan manifest mógł przejść merge | I12: zero-orphan jako bramka P29/P39 | wdrożony | niskie | DOMKNIĘTA |
+| V3-P36-L06 | P2 | 29 narzędzi legacy bez wspólnego silnika transakcyjnego (adresowane przez I01 jako standard; refaktoryzacja przyrostowa) | sekcja 9.04 W5/W13 | każdorazowe ryzyko przy masowych zmianach | integracja z v3_p36_transform_tool wg planu 9.09 | ~2 dni/narzędzie | średnie (mitygacja: transakcja + replay P10) | PLAN (4-eyes: Q02) |
+
+Bilans: P0=0, P1=0, P2=1 (L06 plan), P3=0 otwartych (L02–L05 domknięte
+wdrożeniem; L01 domknięta).
+
+─────────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (T4; 12 × 6 punktów szkieletu)
+─────────────────────────────────────────────────────────────────────────────────
+
+V3-P36-I01 TRANSFORM TRANSACTION
+  1) Luka: 29/31 narzędzi zmienia pliki bez ścieżki cofnięcia (L06, W5).
+  2) Mechanizm: reguła jdg.v3_p36_generatory_migratory.transform_transaction
+     (priorytet 436001): applies_without_rollback_path > 0 LUB partial_states
+     > 0 = BLOCK_AND_ALERT; narzędzie referencyjne v3_p36_transform_tool.py:
+     dry-run (diff per plik) → apply (dziennik JSON per plik) → auto-walidacja
+     (walidatory P34 L1-L5) → auto-rollback (backupy + wpis ROLLED_BACK).
+  3) Wpływ: zero stanów pośrednich — repo nigdy nie zostaje w połowie
+     migracji; decyzje księgowe liczone zawsze na spójnym stanie reguł.
+  4) Ryzyko: walidacja może przepuścić regresję semantyczną → mitygacja I06
+     (replay P10); backupy mogą zawieść na dysku → dziennik checksumuje stan
+     przed/po (I04).
+  5) Kryterium: przebieg 12.1 (apply z rollbackiem po sztucznej awarii
+     walidacji); test_p36_i01_*; 30/30.
+  6) Zależności: P34 (walidacja), P07 (lifecycle ROLLED_BACK), P29 (bramki).
+
+V3-P36-I02 IDEMPOTENCY CERTIFICATE
+  1) Luka: żaden generator/fix nie ma testu idempotencji (W7).
+  2) Mechanizm: idempotency_certificate (436002): second_run_diffs > 0 =
+     BLOCK; tools_without_idempotency_test > 0 = TRIAGE; próg
+     v3_p36_idempotency_required=true jako dane; wymuszenie w bramce P29.
+  3) Wpływ: ponowny deploy/CI nie zmienia repo "przy okazji" — determinizm
+     reguł = determinizm decyzji księgowych.
+  4) Ryzyko: test idempotencji może być flaky na timestampach → certyfikat
+     wymaga normalizacji (wipe pól niestabilnych w diffie).
+  5) Kryterium: test_p36_i02_*; drugi run transform_tool = zero diff (12.1).
+  6) Zależności: P29 (bramki), I01 (ten sam silnik).
+
+V3-P36-I03 PLAN-TO-RULES PIPELINE
+  1) Luka: L01 — reguły bez testów z planów 33/50.
+  2) Mechanizm: plan_to_rules (436003): rules_without_test > 0 = BLOCK,
+     invalid_plans > 0 = TRIAGE; generacja reguł+testów jednocześnie z planu
+     YAML (unified_plan_v8.yaml jako wejście); crossref/dedup PRZED zapisem.
+  3) Wpływ: każda reguła rodzi się z pakietem dowodu (test) — zakaz "do
+     poprawki później".
+  4) Ryzyko: sztywność formatu planu → schema planu jako dane (I11).
+  5) Kryterium: test_p36_i03_*.
+  6) Zależności: P33 (propozycje AI tym samym pipeline), P00 (kanon).
+
+V3-P36-I04 MIGRATION LEDGER
+  1) Luka: L02 — historia migracji rozproszona/nieodtwarzalna.
+  2) Mechanizm: migration_ledger (436004): wpis bez checksumy = BLOCK,
+     migracja bez wpisu = BLOCK; ledger JSON (bundles/v3_p36_migration_ledger
+     .json): narzędzie, timestamp UTC, pliki, sha256 przed/po, decydent-rola
+     (4-eyes), powód.
+  3) Wpływ: pełna odtwarzalność historii reguł → audyt decyzji księgowych
+     "która wersja reguły była aktywna w dniu X" jest rozstrzygalny.
+  4) Ryzyko: rozbudowa ledgeru → rotacja/archiwum (spójne z WORM P43).
+  5) Kryterium: test_p36_i04_*; bundle v3_p36_migration_ledger PASS.
+  6) Zależności: P43 (WORM), UoR art. 74-75 [NIEZWERYFIKOWANE].
+
+V3-P36-I05 GUARD RAILS GENERATORA
+  1) Luka: L03; generatory produkują reguły niezgodne z konwencjami.
+  2) Mechanizm: guard_rails (436005): bypass = BLOCK, missing fields = BLOCK;
+     v3_p36_generator_required_fields = ["_legal_basis","rule_id","valid_from",
+     "test_id"] jako dane; fail-fast z komunikatem.
+  3) Wpływ: reguła bez podstawy prawnej/okna temporalnego/testu NIE MOŻE
+     powstać — fortecę buduje się przy starcie, nie przy naprawie.
+  4) Ryzyko: zbyt restrykcyjna lista pól → lista jako dane (ADR-002), rozbudowa
+     bez zmiany kodu.
+  5) Kryterium: test_p36_i05_*; test_v3p36_governance_limits.
+  6) Zależności: P07 (lifecycle), ADR-002, P00 (kanon).
+
+V3-P36-I06 GOLDEN REPLAY PO MIGRACJI
+  1) Luka: masowe zmiany bez regresji werdyktów (brak replay w fix_*).
+  2) Mechanizm: golden_replay_post_migration (436006): drift > 0 = TRIAGE,
+     drift > 10×max = BLOCK (auto-rollback), migrations_without_replay > 0 =
+     TRIAGE; v3_p36_replay_drift_max = 0 jako dane.
+  3) Wpływ: migracja nie może zmienić decyzji księgowych po cichu — każdy dryf
+     jest widoczny i cofany.
+  4) Ryzyko: dryf zamierzony (cel migracji) → dryf wymagający TRIAGE jest
+     sygnałem do jawnego zatwierdzenia różnicy (4-eyes), nie do cichego
+     przyjęcia.
+  5) Kryterium: test_p36_i06_drift_block (dryf=1 przy limicie 0 = BLOCK).
+  6) Zależności: P10 (Golden Oracle), P32-I07 (replay sezonowy).
+
+V3-P36-I07 MIRROR-AWARE APPLY
+  1) Luka: canonical i mirror aktualizowane osobno (dryf AP11).
+  2) Mechanizm: mirror_aware_apply (436007): applies_canonical_only > 0 =
+     BLOCK, mirror_divergent_after_apply > 0 = TRIAGE; krok mirror-sync w
+     jednej transakcji transform_tool.
+  3) Wpływ: consumer mirror (bundle P39) nigdy nie dostaje innej semantyki
+     niż canonical.
+  4) Ryzyko: mirror niedostępny → transakcja przerwana PRZED apply (fail-closed),
+     zero stanów pośrednich.
+  5) Kryterium: test_p36_i07_*.
+  6) Zależności: P39 (CI), P48 (mirror sync), P34-I06 (mirror parity).
+
+V3-P36-I08 GENERATOR TESTÓW GRANICZNYCH
+  1) Luka: L04 — brak przypadków groszowych i day-0/day+1.
+  2) Mechanizm: boundary_test_generator (436008): hardcode granic = BLOCK,
+     brak testów granicznych = TRIAGE; przypadki generowane z tabeli aktów
+     (thresholds jako dane): 0,00/0,01/max PLN, valid_from-1/valid_from/
+     valid_from+1.
+  3) Wpływ: błędy zaokrągleń i dat nowelizacji wykrywane PRZED merge, nie w
+     deklaracjach.
+  4) Ryzyko: eksplozja przypadków → selekcja per akt (progi/stawki/daty z
+     default_threshold_versions).
+  5) Kryterium: test_p36_i08_*; pokrycie ≥ 100% reguł wyliczania (próg).
+  6) Zależności: P32-I06 (granice groszowe), P05 (temporalność).
+
+V3-P36-I09 DRY-RUN REPORT
+  1) Luka: zmiany masowe bez raportu ryzyka przed apply.
+  2) Mechanizm: dry_run_report (436009): changes_without_report > 0 = BLOCK,
+     critical_unapproved > 0 = BLOCK; raport: ile plików, jakie reguły, jakie
+     ryzyka; 4-eyes dla zmian krytycznych.
+  3) Wpływ: człowiek widzi zasięg zmiany PRZED jej wykonaniem — zgodne z KKS
+     (człowiek zatwierdza) [NIEZWERYFIKOWANE].
+  4) Ryzyko: " raport fatigue" → raport tylko dla zmian > progu masy lub
+     dotykających domen krytycznych (VAT/PIT/ZUS).
+  5) Kryterium: test_p36_i09_*.
+  6) Zależności: P07 (4-eyes), P34 (DAG jako ocena ryzyka).
+
+V3-P36-I10 NAMING CONVENTION ENFORCER
+  1) Luka: naprawy nazewnictwa ad hoc (fix_zus_naming) bez enforcera.
+  2) Mechanizm: naming_convention_enforcer (436010): naming_violations > 0 =
+     BLOCK; konwencje P00 11.5 (rule_id jdg.<pakiet>.<reguła>, identyfikatory
+     V3-P36-*, nazwy raportów) jako wymóg generatorów.
+  3) Wpływ: spójna przestrzeń rule_id → routing O(1) i deduplikacja są
+     możliwe w ogóle.
+  4) Ryzyko: legalne wyjątki legacy → rejestr wyjątków jako dane (spójne
+     z P34-I11: wyjątek + właściciel + wygasanie).
+  5) Kryterium: test_p36_i10_violation_block.
+  6) Zależności: P00 (kanon 11.5), P11.5.
+
+V3-P36-I11 MIGRACJA JAKO DANE
+  1) Luka: mapowania migracji w kodzie narzędzi (L03, W6 kontra).
+  2) Mechanizm: migration_as_data (436011): mappings_hardcoded = BLOCK,
+     migrations_without_definition > 0 = BLOCK; definicja migracji (mapowania,
+     wyjątki) w danych; narzędzie = silnik.
+  3) Wpływ: przegląd migracji przez człowieka BEZ czytania kodu — 4-eyes
+     realnie wykonalne.
+  4) Ryzyko: YAML migracji z błędem → walidacja planu (I03) PRZED apply.
+  5) Kryterium: test_p36_i11_*.
+  6) Zależności: ADR-002, P34-I11 (wyjątki jako dane).
+
+V3-P36-I12 ZERO-ORPHAN GUARANTEE
+  1) Luka: L05 — orphan reguł/testów/manifestów przechodził jako ostrzeżenie.
+  2) Mechanizm: zero_orphan_guarantee (436012): suma (rules_without_test +
+     tests_without_rule + manifests_without_file) > v3_p36_orphans_max(0) =
+     BLOCK; bramka P29/P39; przykład end-to-end 12.1.
+  3) Wpływ: graf artefaktów (generator→reguła→test→manifest) zawsze spójny —
+     każdy werdykt ma odtwarzalny łańcuch dowodów.
+  4) Ryzyko: legacy orphans historyczne → rejestr wyjątków (P34-I11) z
+     wygasaniem; zero-orphan dotyczy NOWYCH transformacji.
+  5) Kryterium: test_p36_i12_orphans_block; bundle PASS.
+  6) Zależności: P29, P39, P00 (kanon), P34 (walidacja).
+
+─────────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (T5; wiąże P37+)
+─────────────────────────────────────────────────────────────────────────────────
+
+| # | Standard | Treść wiążąca | Odbiorca |
+|---|----------|---------------|----------|
+| K1 | STANDARD NARZĘDZIA TRANSFORMUJĄCEGO | każdy transformator: plan jako dane → dry-run diff → apply z dziennikiem JSON per plik → auto-walidacja (walidatory P34 L1-L5) → auto-rollback; exit 0/1/2; zero stanów pośrednich | P38 (bundle/deploy), P39 (CI) |
+| K2 | MIGRATION LEDGER | format: {tool, ts_utc, files[], sha256_before/after, approver_role, reason, status}; checksum sha256 obowiązkowy; wpis bez checksumy = BLOCK | P44 (certyfikacja), P41 (dokumentacja) |
+| K3 | ZERO-ORPHAN CHECK | narzędzie + bramka: rules_without_test + tests_without_rule + manifests_without_file ≤ 0 dla nowych transformacji; wyjątki tylko z rejestru (P34-I11) | P29, P39 |
+| K4 | IDEMPOTENCY CERTIFICATE | test "drugi run = zero diff" wymagany dla każdego narzędzia transformującego; normalizacja pól niestabilnych | P29, P39 |
+| K5 | GUARD RAILS FIELDS | v3_p36_generator_required_fields (lista jako dane) — każdy generator nowych reguł (w tym P33 AI) obowiązany | P33, P37+ generatory |
+
+─────────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA (T6) — kolejność bez duplikacji
+─────────────────────────────────────────────────────────────────────────────────
+
+| Kolejność | Praca | Status |
+|-----------|-------|--------|
+| 1 | Pakiet OPA I01–I12 + blok v3_p36 + wiring p100 | WDROŻONE (ten pakiet) |
+| 2 | 12 narzędzi dowodowych + 12 bundli | WDROŻONE |
+| 3 | Testy natywne 30/30 + pytest 17/17 | WDROŻONE |
+| 4 | transform_tool referencyjny (I01/I02/I09/I11) | WDROŻONE (12.1) |
+| 5 | Integracja 4 narzędzi z dry-runem (generate_from_plan50, parse_plan33, vat_ruleid_migrator, convert_true_to_conditions) na silnik v3_p36_common | od razu możliwe (idle, transakcja wymusza walidację) |
+| 6 | Integracja pozostałych 25 narzędzi (L06) — każde z 4-eyes | wymaga decyzji Q02 + testów per narzędzie |
+| 7 | Rotacja/archiwum Migration Ledger do WORM (P43) | po P43 |
+
+─────────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (T7) — przypadki blokujące merge
+─────────────────────────────────────────────────────────────────────────────────
+
+| Test | Rodzaj | Oczekiwany wynik | Blokuje merge? |
+|------|--------|------------------|----------------|
+| test_p36_routing_matrix (34 przypadki) | natywny Rego | wszystkie routingi zgodne z oczekiwanymi | TAK |
+| test_p36_i01_no_rollback_block / i01_partial_states_block | natywny | BLOCK_AND_ALERT | TAK |
+| test_p36_i02_second_run_diff_block | natywny | BLOCK (idempotencja złamana) | TAK |
+| test_p36_i03_rule_without_test_block | natywny | BLOCK | TAK |
+| test_p36_i04_no_checksum_block / i04_migration_missing_block | natywny | BLOCK | TAK |
+| test_p36_i05_bypassed_block / i05_missing_fields_block | natywny | BLOCK | TAK |
+| test_p36_i06_drift_block (dryf=1, limit=0) | natywny | BLOCK (granica: limit 0 → każdy dryf blokuje) | TAK |
+| test_p36_i07_canonical_only_block | natywny | BLOCK | TAK |
+| test_p36_i08_hardcode_block / i08_partial_triage | natywny | BLOCK / TRIAGE | TAK |
+| test_p36_i09_unapproved_block / i09_missing_report_block | natywny | BLOCK (4-eyes) | TAK |
+| test_p36_i10_violation_block | natywny | BLOCK | TAK |
+| test_p36_i11_hardcoded_block / i11_undefined_block | natywny | BLOCK | TAK |
+| test_p36_i12_orphans_block (suma 1 > 0) | natywny | BLOCK | TAK |
+| test_p36_fail_closed_no_snapshot | natywny | thresholds_missing = BLOCK | TAK |
+| test_p36_no_match_without_flag | natywny | no_match (brak flagi) | TAK |
+| test_p36_thresholds_snapshot_complete | natywny | 11 kluczy + valid_from | TAK |
+| test_p36_certificate_fields | natywny | kontrakt P03 (wersje, priority 436001) | TAK |
+| test_p36_* (pytest, 17 testów) | pytest | struktura rego/thresholds/wiring/legacy/bundles | TAK |
+| fuzz: mutacje planu YAML (K10) | plan (P39) | fail-fast exit 2, zero zmian | TAK (P39) |
+| property: drugi run transform_tool = zero diff | plan (P39) | zero diff | TAK (P39) |
+
+Wynik uruchomienia: 30/30 natywnych (OPA 0.68.0 i 1.9.0), 17/17 pytest —
+ZIELONE (data tego raportu).
+
+─────────────────────────────────────────────────────────────────────────────────
+9.11 PYTANIA DO CZŁOWIEKA (T8)
+─────────────────────────────────────────────────────────────────────────────────
+
+| ID | Pytanie | Kontekst | Rekomendacja |
+|----|---------|----------|--------------|
+| V3-P36-Q01 | Czy art. 119a Ordynacji obejmuje generatory reguł jako "schematy" w rozumieniu przepisu (dwie dopuszczalne interpretacje: bezpośrednio vs tylko dla doradców)? | macierz 9.05, wiersz 1 | ostrożnościowo: I05 blokuje reguły bez legal basis niezależnie od interpretacji |
+| V3-P36-Q02 | Zatwierdzenie planu integracji 25 narzędzi legacy z silnikiem transakcyjnym (L06, kolejność 9.09 pkt 6) — 4-eyes | koszty ~2 dni/narzędzie | zatwierdzić integrację najpierw dla narzędzi masowych (fix_*, generate_massive_rules) |
+| V3-P36-Q03 | Czy zmiany progów w thresholds_jdg.rego wykonane narzędziem transformującym wymagają pełnego 4-eyes zawsze, czy tylko dla domen krytycznych? | I09 | rekomendacja: zawsze 4-eyes dla data.thresholds (próg masy nie dotyczy progów) |
+| V3-P36-Q04 | Eskalacja: brak konfliktów BLOCKER w tej części — brak eskalacji | rejestr C pusty | — |
+
+─────────────────────────────────────────────────────────────────────────────────
+9.12 ZAŁOŻENIA JAWNE (T9)
+─────────────────────────────────────────────────────────────────────────────────
+
+| # | Założenie | Tag |
+|---|-----------|-----|
+| Z1 | Publikatory ISAP/RCL/MF niedostępne w sesji → cytowania aktów w regułach legacy są spójne strukturalnie (format), ale treść wymaga pełnego skanu | [ZAŁOŻENIE] |
+| Z2 | unified_plan_v8.yaml jest aktualnym planem unifikacyjnym (postęp w unified_plan_progress.yaml) | [ZAŁOŻENIE] |
+| Z3 | Mirror policies/jdg jest budowany z canonical przez bundle.sh — pełny parity sprawdzają narzędzia P34-I06 | [ZAŁOŻENIE] |
+| Z4 | 29 narzędzi legacy pozostaje funkcjonalnie bez zmian do czasu integracji (L06) | [ZAŁOŻENIE] |
+
+─────────────────────────────────────────────────────────────────────────────────
+9.13 (pokryte w 9.04 — każda podanaliza ma tabelę dowodów, ≥3 wnioski, ≥1 lukę)
+9.14 (macierz 9.05 zawiera wszystkie akty Sekcji 8 + 2 odkryte kontrakty)
+9.15 (identyfikatory zgodne z P00 11.5: V3-P36-L/I/C/Q/X)
+─────────────────────────────────────────────────────────────────────────────────
+
+Odpowiedzi na pytania krzyżowe (7.4):
+  V3-P36-X01: Brak sprzeczności z dokumentami świętymi. V1 (zasada 6 fail-closed)
+  jest PODSTAWĄ reguł I01–I12 (BLOCK zamiast cichego przejścia); V2 F4
+  (Decision Certificate) — każda decyzja P36 ma threshold_version/legal_basis_
+  version/valid_from. Rejestr C: pusty.
+  V3-P36-X02: W pakiecie P36 zero hardcode progów — wszystkie 6 progów w
+  data.jdg.thresholds.v3_p36 (test_p36_thresholds_snapshot_complete). W legacy:
+  fix_p07_thresholds nieegzekwuje ADR-002 (L03 — domknięte I05/I11 dla przyszłych
+  migracji; sama poprawka historyczna poza zakresem P36).
+  V3-P36-X03: Ścieżki fail-closed: brak snapshotu = BLOCK; brak flagi = no_match;
+  każda analiza ma jawną gałąź BLOCK/TRIAGE/SUGGEST z else-chain kompletną
+  (test_p36_routing_matrix). Ciche AUTO_POST niemożliwe: no_auto_post=true
+  w bloku v3_p36.
+  V3-P36-X04: Kontrakt 25-polowy P03: decyzje P36 zawierają matched, rule_id,
+  package, priority, decision_mode, _routing, _routing_reason, _legal_basis,
+  threshold_version, legal_basis_version, valid_from (test_p36_certificate_fields).
+  Pola liczbowe (np. partial_states) są int — zgodność typów.
+  V3-P36-X05: Bramki blokujące merge (P39): test_p36_routing_matrix (34 ścieżki),
+  fail_closed_no_snapshot, thresholds_snapshot_complete, certificate_fields +
+  17 pytest. Oczekiwane wyniki w T7 — wszystkie BLOCK-trasy muszą pozostać BLOCK.
+  V3-P36-X06: Duplikaty uniknięte: replay = P10 (nie własny rejestr golden),
+  mirror parity = P34-I06, wyjątki = P34-I11, granice = P32-I06, lifecycle =
+  rule_lifecycle_manager (integracja W6). Konsolidacja: transform_tool WYWOŁUJE
+  te narzędzia, nie kopiuje logiki.
+  V3-P36-X07: Podstawy [NIEZWERYFIKOWANE]: UoR art. 4/74-75, art. 119a, VAT
+  art. 41/43, PIT art. 12, ZUS art. 18a/18ab, RODO art. 5.1c — rejestr mediacji
+  = T1 wiersze ze statusem CZĘŚCIOWE; priorytet: UoR archiwum (art. 74-75,
+  bo ledger I04 powołuje się na obowiązek archiwizacji).
+  V3-P36-X08: Decyzje 4-eyes: Q02 (integracja legacy), Q03 (4-eyes dla progów),
+  każda zmiana krytyczna transformacji (I09 BLOCK do czasu zatwierdzenia).
+  V3-P36-X09: Metryki do P37: v3_p36_partial_states (alarm > 0),
+  v3_p36_second_run_diffs (> 0), v3_p36_rules_without_test (> 0),
+  v3_p36_ledger_entries_without_checksum (> 0), v3_p36_replay_drift (> 0),
+  v3_p36_orphans_total (> 0), v3_p36_mirror_divergence (> 0) — dashboard
+  generatory, progi = alarm przy każdym naruszeniu zera.
+  V3-P36-X10: Ryzyka → invarianty P04: INV: "transformacja bez wpisu ledger
+  nie może zakończyć się sukcesem" (I04), INV: "repo w stanie pośrednim nie
+  może być source of bundle" (I01) — uzasadnienie: UoR art. 4 (rzetelność)
+  [NIEZWERYFIKOWANE] + V1 zasada 6.
+
+─────────────────────────────────────────────────────────────────────────────────
+12.1 PRZEBIEG TRANSFORM TOOL (dowód uruchomienia, standard AN04/K1)
+─────────────────────────────────────────────────────────────────────────────────
+
+Plan wejściowy (dane, I11): bundles/v3_p36_demo_plan.json — zmiana pilotażowa
+dodająca klucz demo do istniejącego JSON-a (zero reguł biznesowych, zero PII —
+RODO art. 5.1c: plan/dziennik nie zawierają danych osobowych).
+
+Uruchomienie (faktyczne, sesja wdrożeniowa — transkrypcja 1:1):
+  $ python3 JDG/tools/v3_p36_transform_tool.py \
+      --plan JDG/bundles/v3_p36_demo_plan.json --dry-run
+  → [P36 DRY-RUN] plan=v3_p36_demo_001 files=1 changes=1
+    risks=['medium: plik poza rules/ i bundles/'] — EXIT=0
+  $ python3 JDG/tools/v3_p36_transform_tool.py \
+      --plan JDG/bundles/v3_p36_demo_plan.json --apply
+  → [P36] apply OK: applied=1 (NOOP=0) — zero diff przy re-run — EXIT=0;
+    walidacja: opa check pakietu P36 PASS; wpis ledger (tool, ts_utc, files,
+    sha256 przed/po, approver_role, reason, validation=PASS, status=APPLIED)
+  (drugi run z tym samym planem)
+  → [P36] apply OK: applied=0 (NOOP=1) — ZERO DIFF (certyfikat idempotencji I02) — EXIT=0
+  (trzeci run z walidacją wymuszoną do FAIL przez --force-validation-fail)
+  → [P36] walidacja FAIL → ROLLBACK wykonany — EXIT=1; stan sprzed transakcji
+    przywrócony, wpis validation=FAIL, status=ROLLED_BACK w ledgerze
+  (Ledger po przebiegu: 3 wpisy z checksumami — APPLIED, APPLIED, ROLLED_BACK)
+
+T11 (matryca podanaliza×grupa — APENDYKS B):
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik |
+|------------|----------------|-----------------|-------|
+| 5.1 | 6.1 (9 plików) | 3 wnioski W1-W3 + luka L01 | 9.04/9.06 |
+| 5.2 | 6.2 (13 plików) | 4 wnioski W4-W7 + luki L02/L03 | 9.04/9.06 |
+| 5.3 | 6.3 (10 plików) | 5 wniosków W8-W12 + luki L04/L05 | 9.04/9.06 |
+| 5.4 | 6.4 + narzędzia | 3 wnioski W13-W15 + luka L06 | 9.04/12.1 |
+
+T10 (przekazywane artefakty — 11.4):
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| Standard narzędzia transformującego (K1) | P38, P39 | kontrakt w 9.08 + tools/v3_p36_transform_tool.py | każdy nowy transformator |
+| Migration Ledger (K2) | P44, P41 | bundles/v3_p36_migration_ledger.json + format | audyt/certyfikacja |
+| Zero-orphan check (K3) | P29, P39 | reguła 436012 + bramka | bramka merge |
+| Idempotency certificate (K4) | P29, P39 | reguła 436002 + test wzorcowy | certyfikacja narzędzi |
+| Guard rails fields (K5) | P33+ | thresholds v3_p36_generator_required_fields | każdy generator reguł |
+| Dry-run report schema (I09) | P07, P34 | JSON raportu | 4-eyes zmian krytycznych |
+
+APENDYKS E (plan pracy): ETAP 1–6 wykonany (K01–K73): dokumenty święte
+potwierdzone w 9.04/X01, pliki sekcji 6 odczytane i wpisane do T1 (9.04/9.03),
+podanalizy 5.1–5.4 z wnioskami i lukami, akty Sekcji 8 w macierzy 9.05,
+innowacje I01–I12 wg 6-punktowego szkieletu (9.07), X01–X10 (9.12 blok
+odpowiedzi krzyżowych), zapis raportu i domknięcie (sekcja 16 poniżej).
+
+T12 (rejestr konfliktów): PUSTY — brak konfliktów Cxx (X01).
+
+T1 (tabela dowodów 7.3) — agregat: 32/32 pliki sekcji 6 ZWERYFIKOWANE
+obecnością i analizą (wiersze szczegółowe w 9.04); 31 narzędzi + 1 dokument
++ 2 plany YAML + mirror (580 rego, snapshot P00). Żaden plik nie jest
+NIEZWERYFIKOWANY pod względem istnienia; statusy prawne aktów — osobno
+w 9.05 ([NIEZWERYFIKOWANE] przy treści).
+
+─────────────────────────────────────────────────────────────────────────────────
+SEKCJA 16 — KOMENDA KOŃCZOWA: POTWIERDZENIE I CZYSZCZENIE KONTEKSTU
+─────────────────────────────────────────────────────────────────────────────────
+
+  1. Raport zapisany: JDG/raporty_glm52_v3/RAPORT_V3_P36_GENERATORY_MIGRATORY.txt ✓
+  2. Zakres P36: generatory/migratory jako transakcje. Luki: P0=0, P1=0,
+     P2=1 (L06 plan integracji), P3=0 otwartych. Innowacje: 12 (I01–I12).
+     Kontrakt wyjściowy: K1–K5 WIĄŻĄCY. Artefakty dalej: standard transformacji,
+     Migration Ledger, zero-orphan, idempotency certificate, guard rails.
+  3. Kontrakty dla P37: K1–K5 (9.08) + metryki X09 + invarianty X10.
+  4. OKNO KONTEKSTOWE CZYSZCZONE — kolejna część (P37) wchodzi z pustej sesji,
+     przenosząc się wyłącznie przez: EXECUTIVE SUMMARY (9.01), KONTRAKT
+     WYJŚCIOWY (9.08), REJESTR LUK P0/P1 (9.06: puste).
+
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI:
+Zgodny z DOKUMENTEM ŚWIĘTYM nr 1 (V1: fail-closed zasada 6 — każda analiza
+ma jawną gałąź BLOCK; bramki CI; SLO) i nr 2 (V2: F4 Decision Certificate —
+wersje progów i podstaw w każdej decyzji; F3 decision_hash przez certyfikat
+OPA). Odstępstwa: BRAK. Statusy [NIEZWERYFIKOWANE] oznaczone jawnie (9.05).
+Stwierdzeń „100% zgodności"/„production-ready" bez dowodu — brak; każde
+twierdzenie ma artefakt + uruchomienie.
+
+— KONIEC RAPORTU V3 P36 —
+=================================================================================

@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P35-I12",
+  "generated_at": "2026-09-08T18:24:45+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "inverse_min_threshold": true,
+    "negative_space_semantics": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p35_audyutory_domenowe.inverse_audit: True"
+    },
+    {
+      "name": "inverse_min_threshold",
+      "status": "OK",
+      "detail": "v3_p35_inverse_cases_min w thresholds: True"
+    },
+    {
+      "name": "negative_space_semantics",
+      "status": "OK",
+      "detail": "negatywna przestrzeń AUTO_POST w regule: True"
+    }
+  ],
+  "findings": []
+}

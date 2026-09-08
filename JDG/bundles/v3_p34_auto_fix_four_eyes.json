@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P34-I08",
+  "generated_at": "2026-09-08T17:57:42+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "auto_fix_tools_present": true,
+    "pr_review_required_block": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p34_walidacja_narzedzia.auto_fix_four_eyes: True"
+    },
+    {
+      "name": "auto_fix_tools_present",
+      "status": "OK",
+      "detail": "convert_true_to_conditions + debug_converter: True"
+    },
+    {
+      "name": "pr_review_required_block",
+      "status": "OK",
+      "detail": "auto-merge = BLOCK; poprawka jako PR (4-eyes): True"
+    }
+  ],
+  "findings": []
+}

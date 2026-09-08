@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P36-I10",
+  "generated_at": "2026-09-08T19:10:19+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "violation_blocked": true,
+    "p00_canon_binding": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p36_generatory_migratory.naming_convention_enforcer: True"
+    },
+    {
+      "name": "violation_blocked",
+      "status": "OK",
+      "detail": "naruszenie konwencji = BLOCK (kanon P00 11.5): True"
+    },
+    {
+      "name": "p00_canon_binding",
+      "status": "OK",
+      "detail": "kanon P00 jako źródło konwencji: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p100"
+    }
+  ],
+  "findings": []
+}

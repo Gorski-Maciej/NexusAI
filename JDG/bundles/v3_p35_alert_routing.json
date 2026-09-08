@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P35-I10",
+  "generated_at": "2026-09-08T18:24:42+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "sla_threshold": true,
+    "owner_routing_semantics": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p35_audyutory_domenowe.alert_routing: True"
+    },
+    {
+      "name": "sla_threshold",
+      "status": "OK",
+      "detail": "v3_p35_alert_sla_hours w thresholds: True"
+    },
+    {
+      "name": "owner_routing_semantics",
+      "status": "OK",
+      "detail": "trasy do właścicieli jako dane: True"
+    }
+  ],
+  "findings": []
+}

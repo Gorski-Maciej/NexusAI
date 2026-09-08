@@ -1,0 +1,77 @@
+{
+  "catalog_version": "v3p37-slo-2026.09",
+  "valid_from": "2026-01-01",
+  "owner": "jdg-observability",
+  "error_budget_policy": {
+    "window_days": 30,
+    "freeze_below_pct": 0,
+    "escalation_role": "slo-owner",
+    "note": "wyczerpanie budżetu = freeze wdrożeń reguł (I06); odbudowa przez naprawę SLO z runbookiem"
+  },
+  "slos": [
+    {
+      "id": "SLO-01-availability",
+      "metric": "engine_eval_success_ratio",
+      "target": 0.995,
+      "window_days": 30,
+      "source": "bundles/metrics.json (health_score) + deployments.json",
+      "action": "rollback bundle do healthy_versions; freeze wdrożeń",
+      "runbook": "docs/runbooks/RB01_dostepnosc_silnika.md",
+      "actionable": true
+    },
+    {
+      "id": "SLO-02-latency-p95",
+      "metric": "eval_latency_p95_ms",
+      "target": 500,
+      "window_days": 7,
+      "source": ".benchmarks/eval_baseline.json + v3_p37_benchmark_gate.py",
+      "action": "rejestr domen ponad budżet (I04); else-chain → routing O(1) (P02)",
+      "runbook": "docs/runbooks/RB02_latencja_p95.md",
+      "actionable": true
+    },
+    {
+      "id": "SLO-03-accuracy-golden",
+      "metric": "golden_drift_count",
+      "target": 0,
+      "window_days": 1,
+      "source": "tools/v3_p37_golden_drift_watch.py (P10 golden verdicts)",
+      "action": "BLOCK + diff inputów; zamierzony dryf = 4-eyes update golden",
+      "runbook": "docs/runbooks/RB03_golden_drift.md",
+      "actionable": true
+    },
+    {
+      "id": "SLO-04-law-freshness",
+      "metric": "max_isap_check_age_days",
+      "target": 7,
+      "window_days": 1,
+      "source": "rejestr _legal_basis reguł + Law Radar (P08)",
+      "action": "lista aktów do re-checku; reguły z aktami nieświeżymi bez AUTO_POST",
+      "runbook": "docs/runbooks/RB04_swiezosc_prawa.md",
+      "actionable": true
+    },
+    {
+      "id": "SLO-05-fail-closed-reason",
+      "metric": "needs_advice_without_reason_ratio",
+      "target": 0,
+      "window_days": 1,
+      "source": "telemetria certyfikatów (I05) + radar NEEDS_ADVICE (I03)",
+      "action": "dodać jawny powód w regule; nagły skok = auto-ticket P08/P30",
+      "runbook": "docs/runbooks/RB05_na_bez_powodu.md",
+      "actionable": true
+    },
+    {
+      "id": "SLO-06-benchmark-regression",
+      "metric": "benchmark_regression_pct",
+      "target": 10,
+      "window_days": 1,
+      "source": ".benchmarks/eval_baseline.json vs pomiar CI",
+      "action": "BLOCK deploy bundle do naprawy lub 4-eyes podniesienia baseline",
+      "runbook": "docs/runbooks/RB06_regresja_benchmarku.md",
+      "actionable": true
+    }
+  ],
+  "vanity_metrics_review": {
+    "policy": "metryka bez progu akcji i runbooka = vanity; usunięcie lub podpięcie progu",
+    "note": "wszystkie 6 SLO powyżej actionable; inwentaryzacja w raporcie P37 9.04 (W-AN01)"
+  }
+}

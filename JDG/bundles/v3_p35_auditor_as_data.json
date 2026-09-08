@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P35-I02",
+  "generated_at": "2026-09-08T18:24:42+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "missing_controls_threshold": true,
+    "p31_contract_link": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p35_audyutory_domenowe.auditor_as_data: True"
+    },
+    {
+      "name": "missing_controls_threshold",
+      "status": "OK",
+      "detail": "v3_p35_missing_controls_max w thresholds: True"
+    },
+    {
+      "name": "p31_contract_link",
+      "status": "OK",
+      "detail": "definicja audytu (kontrole) + kontrakt P31: True"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P33-I02",
+  "generated_at": "2026-09-08T16:35:57+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "sandbox_mode_as_data": true,
+    "writer_approver_separation": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p33_neural_mesh_ai.ai_sandbox_permissions: True"
+    },
+    {
+      "name": "sandbox_mode_threshold",
+      "status": "OK",
+      "detail": "v3_p33_ai_sandbox_mode w thresholds (domyślnie read_only): True"
+    },
+    {
+      "name": "writer_approver_separation",
+      "status": "OK",
+      "detail": "AI=writer, human=approver (P07/KKS): True"
+    }
+  ],
+  "findings": []
+}

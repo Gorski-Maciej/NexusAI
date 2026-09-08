@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P34-I03",
+  "generated_at": "2026-09-08T17:57:44+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "isap_crawler_present": true,
+    "pr_and_nightly_paths": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p34_walidacja_narzedzia.legal_basis_linter: True"
+    },
+    {
+      "name": "isap_crawler_present",
+      "status": "OK",
+      "detail": "tools/isap_crawler.py (integracja lintera): True"
+    },
+    {
+      "name": "pr_and_nightly_paths",
+      "status": "OK",
+      "detail": "ścieżki PR (dostępność) i nocna (dryf): True"
+    }
+  ],
+  "findings": []
+}

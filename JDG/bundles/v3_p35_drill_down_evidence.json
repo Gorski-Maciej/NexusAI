@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P35-I05",
+  "generated_at": "2026-09-08T18:24:44+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "full_trace_fields": true,
+    "broken_trace_block_path": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p35_audyutory_domenowe.drill_down_evidence: True"
+    },
+    {
+      "name": "full_trace_fields",
+      "status": "OK",
+      "detail": "kod + test + podstawa prawna w śladzie: True"
+    },
+    {
+      "name": "broken_trace_block_path",
+      "status": "OK",
+      "detail": "przerwany ślad = BLOCK: True"
+    }
+  ],
+  "findings": []
+}

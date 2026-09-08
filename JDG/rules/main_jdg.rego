@@ -102,6 +102,11 @@ import data.jdg.v3_p29_quality_campaigns as v3_p29_quality_campaigns
 import data.jdg.v3_p30_innovation_waves as v3_p30_innovation_waves
 import data.jdg.v3_p31_audit_stages as v3_p31_audit_stages
 import data.jdg.v3_p32_ksiegowosc_automation as v3_p32_ksiegowosc_automation
+import data.jdg.v3_p33_neural_mesh_ai as v3_p33_neural_mesh_ai
+import data.jdg.v3_p34_walidacja_narzedzia as v3_p34_walidacja_narzedzia
+import data.jdg.v3_p35_audyutory_domenowe as v3_p35_audyutory_domenowe
+import data.jdg.v3_p36_generatory_migratory as v3_p36_generatory_migratory
+import data.jdg.v3_p37_obserwowalnosc as v3_p37_obserwowalnosc
 import data.jdg.micro.quality_v3_13 as micro_quality_v3_13
 import data.jdg.hyper.quality_v3_14 as hyper_quality_v3_14
 import data.jdg.enterprise.quality_v3_15 as enterprise_quality_v3_15
@@ -1485,6 +1490,16 @@ _package_decisions := {
     # ── V3-P31: ETAPY AUDYTÓW 12-28 (supersynteza, risk-of-fortress, frontier) ──
     "jdg.v3_p31_audit_stages": v3_p31_audit_stages.decide,
     "jdg.v3_p32_ksiegowosc_automation": v3_p32_ksiegowosc_automation.decide,
+    # ── V3-P33: WARSTWA AI (sandbox, ścieżka awansu AI, audyt promptów, red-team) ──
+    "jdg.v3_p33_neural_mesh_ai": v3_p33_neural_mesh_ai.decide,
+    # ── V3-P34: WALIDACJA NARZĘDZI (DAG L1-L5, semantic diff, tautologia, wyjątki) ──
+    "jdg.v3_p34_walidacja_narzedzia": v3_p34_walidacja_narzedzia.decide,
+    # ── V3-P35: AUDYTORY DOMENOWE (trust score, golden cases, skew, freshness) ──
+    "jdg.v3_p35_audyutory_domenowe": v3_p35_audyutory_domenowe.decide,
+    # ── V3-P36: GENERATORY MIGRATORY (transform transaction, zero-orphan, ledger) ──
+    "jdg.v3_p36_generatory_migratory": v3_p36_generatory_migratory.decide,
+    # ── V3-P37: OBSERWOWALNOŚĆ (SLO, freshness SLA, drift watch, benchmark gate) ──
+    "jdg.v3_p37_obserwowalnosc": v3_p37_obserwowalnosc.decide,
     "jdg.international": international.decide,
     "jdg.tp": tp.decide,
     "jdg.tp.hyper": tp_hyper.decide,
@@ -2971,6 +2986,87 @@ final_verdict_p96 = safe_merge(final_verdict_p95,
     ))
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18r: V3-P33 WARSTWA AI ENTERPRISE — NEURAL MESH, LLM BRIDGE I
+# HUMAN-IN-THE-LOOP — 12 analiz I01–I12 (AI proposal pipeline: LLM→walidacja→
+# SMT/Z3→golden replay→4-eyes→SHADOW; sandbox uprawnień AI bez zapisu do
+# produkcji; halucynacja prawna guard (ISAP przed człowiekiem); prompt audit
+# ledger WORM z checksumą; red-team prompt suite; trust score jako telemetria
+# odcięta od AUTO_POST; digital twin na danych syntetycznych; cost governor;
+# explain-first UI; federated learning guard (k-anonymity); quantum-safe plan;
+# AI w triage NEEDS_ADVICE — predictor tylko sortuje). SUGGEST/NEEDS_ADVICE i
+# fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p33_check nie jest true.
+final_verdict_p97 = safe_merge(final_verdict_p96,
+    safe_merge(v3_p33_neural_mesh_ai.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18s: V3-P34 WALIDACJA NARZĘDZI — WALIDACJA JAKO GOVERNANCE — 12 analiz
+# I01–I12 (walidacja jako sieć DAG L1-L5 z lokalnym retry; semantic diff Rego
+# z klasyfikacją zmian; legal basis linter online PR+nightly; tautologia
+# fuzzing property-based; cross-write detector bez precedence = BLOCKER;
+# mirror semantic parity AST diff; doc-numbers invariant [DEKLARACJA];
+# auto-fix z 4-eyes jako PR; walidacja jako usługa ad hoc; coverage heatmap
+# ciągła z trendem do Law Radar; snapshot walidacji w Decision Certificate;
+# rejestr wyjątków z expiry i właścicielem — zero wiecznych wyłączeń).
+# SUGGEST/NEEDS_ADVICE i fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p34_check nie jest true.
+final_verdict_p98 = safe_merge(final_verdict_p97,
+    safe_merge(v3_p34_walidacja_narzedzia.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18t: V3-P35 AUDYTORY DOMENOWE — ZAUFANIE DOMEN JAKO GOVERNANCE — 12
+# analiz I01–I12 (domain trust score z metodologią jako telemetria; auditor
+# as data; golden case registry per domena (P10); unified audit report;
+# drill-down do dowodu; skew detection pewność vs pokrycie; dashboardy jako
+# dane; audyt ciągły vs per-PR; ocena operatora (feedback loop); alert
+# routing z SLA jako dane; legal freshness stamp (ISAP check date); audyt
+# inverse — negatywna przestrzeń AUTO_POST). SUGGEST/NEEDS_ADVICE i
+# fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p35_check nie
+# jest true.
+final_verdict_p99 = safe_merge(final_verdict_p98,
+    safe_merge(v3_p35_audyutory_domenowe.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18o: V3-P36 — GENERATORY MIGRATORY (post-merge, p99 → p100)
+# Generatory reguł i migracje rule_id jako transakcje: transform transaction
+# (dry-run diff → apply z dziennikiem → auto-walidacja → auto-rollback;
+# analizy I01–I12 (idempotency certificate wymuszony w bramkach P29; plan-to-
+# rules pipeline — reguła bez testu = BLOCK; migration ledger z checksumami;
+# guard rails generatora — fail-fast bez legal basis/rule_id/okna/testu;
+# golden replay po migracji (P10); mirror-aware apply (P39/P48); generator
+# testów granicznych groszowych i day-0/day+1 z tabeli aktów; dry-run report
+# z 4-eyes dla zmian krytycznych; naming convention enforcer (kanon P00);
+# migracja jako dane (ADR-002); zero-orphan guarantee — żadna reguła bez
+# testu, żaden test bez reguły, żaden manifest bez pliku). Fail-closed;
+# nieaktywny dopóki input.jdg_entrepreneur.v3_p36_check nie jest true.
+final_verdict_p100 = safe_merge(final_verdict_p99,
+    safe_merge(v3_p36_generatory_migratory.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18p: V3-P37 — OBSERWOWALNOŚĆ (post-merge, p100 → p101)
+# Decyzje z telemetrią jak kod z coverage: decision SLO contract (SLO jako
+# dane: metryka/próg/okno/akcja/runbook; analizy I01–I12 (freshness SLA dla
+# prawa — wiek weryfikacji ISAP per akt; needs-advice radar — skok fail-closed
+# = sygnał luki; latency budget per domena — routing O(1); decision
+# certificate jako telemetria (P11); error budget freeze — CI odmawia merge;
+# anomaly detection z sezonowością księgową; golden drift watch (P10);
+# runbook-as-code — alarm bez runbooka = BLOCK; comprehensive status page;
+# metryki kosztu decyzji (ścieżki AI P33); benchmark regression gate).
+# Fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p37_check nie jest
+# true.
+final_verdict_p101 = safe_merge(final_verdict_p100,
+    safe_merge(v3_p37_obserwowalnosc.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
 #   • _invariant_report  — wynik evaluate() (invariant_failed, failed, levels),
@@ -3002,7 +3098,7 @@ final_verdict_p96 = safe_merge(final_verdict_p95,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p96
+    final_verdict_p101
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

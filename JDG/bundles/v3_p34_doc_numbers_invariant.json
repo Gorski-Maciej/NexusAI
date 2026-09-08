@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P34-I07",
+  "generated_at": "2026-09-08T17:57:43+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "unanchored_limit_threshold": true,
+    "declaration_tag_semantics": true,
+    "doc_validator_present": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p34_walidacja_narzedzia.doc_numbers_invariant: True"
+    },
+    {
+      "name": "unanchored_limit_threshold",
+      "status": "OK",
+      "detail": "v3_p34_doc_unanchored_max w thresholds: True"
+    },
+    {
+      "name": "declaration_tag_semantics",
+      "status": "OK",
+      "detail": "etykieta [DEKLARACJA] w regule: True"
+    },
+    {
+      "name": "doc_validator_present",
+      "status": "OK",
+      "detail": "tools/doc_consistency_validator.py: True"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P37-I02",
+  "generated_at": "2026-09-08T20:03:30+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "freshness_sla_threshold": true,
+    "unverified_blocks_auto_post": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p37_obserwowalnosc.law_freshness_sla: True"
+    },
+    {
+      "name": "freshness_sla_threshold",
+      "status": "OK",
+      "detail": "v3_p37_law_freshness_sla_days w thresholds: True"
+    },
+    {
+      "name": "unverified_blocks_auto_post",
+      "status": "OK",
+      "detail": "akt niezweryfikowany = BLOCK: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p101"
+    }
+  ],
+  "findings": []
+}

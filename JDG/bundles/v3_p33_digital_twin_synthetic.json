@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P33-I07",
+  "generated_at": "2026-09-08T16:35:58+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "synthetic_only": true,
+    "rule_impact_measurement": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p33_neural_mesh_ai.digital_twin_synthetic: True"
+    },
+    {
+      "name": "synthetic_only",
+      "status": "OK",
+      "detail": "v3_p33_twin_synthetic_only (dane syntetyczne): True"
+    },
+    {
+      "name": "rule_impact_measurement",
+      "status": "OK",
+      "detail": "twin mierzy wpływ zmian reguł (impact): True"
+    }
+  ],
+  "findings": []
+}

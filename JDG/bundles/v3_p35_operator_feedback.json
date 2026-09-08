@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P35-I09",
+  "generated_at": "2026-09-08T18:24:45+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "feedback_age_threshold": true,
+    "feeds_golden_and_trust": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p35_audyutory_domenowe.operator_feedback: True"
+    },
+    {
+      "name": "feedback_age_threshold",
+      "status": "OK",
+      "detail": "v3_p35_feedback_max_age_days w thresholds: True"
+    },
+    {
+      "name": "feeds_golden_and_trust",
+      "status": "OK",
+      "detail": "ocena zasila golden registry + trust score: True"
+    }
+  ],
+  "findings": []
+}

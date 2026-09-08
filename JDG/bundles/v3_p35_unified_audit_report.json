@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P35-I04",
+  "generated_at": "2026-09-08T18:24:46+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "schema_fields": true,
+    "p31_unified_schema_link": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p35_audyutory_domenowe.unified_audit_report: True"
+    },
+    {
+      "name": "schema_fields",
+      "status": "OK",
+      "detail": "schema (score, luki, dowody) w regule: True"
+    },
+    {
+      "name": "p31_unified_schema_link",
+      "status": "OK",
+      "detail": "spójność z unified schema P31: True"
+    }
+  ],
+  "findings": []
+}

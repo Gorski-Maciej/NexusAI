@@ -1,0 +1,10 @@
+{
+  "demo": {
+    "purpose": "target file for V3-P36 transform tool pilot run"
+  },
+  "demo_v3p36": {
+    "standard": "transform-transaction-K1",
+    "added_by": "v3_p36_transform_tool",
+    "note": "additive demo key — brak wpływu na reguły i werdykty"
+  }
+}

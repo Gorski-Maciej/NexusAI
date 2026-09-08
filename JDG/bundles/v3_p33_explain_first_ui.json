@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P33-I09",
+  "generated_at": "2026-09-08T16:35:58+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "explanation_required": true,
+    "explanation_fields": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p33_neural_mesh_ai.explain_first_ui: True"
+    },
+    {
+      "name": "explanation_required",
+      "status": "OK",
+      "detail": "v3_p33_explanation_required w thresholds: True"
+    },
+    {
+      "name": "explanation_fields",
+      "status": "OK",
+      "detail": "legal_reference + evidence + confidence_percentile: True"
+    }
+  ],
+  "findings": []
+}

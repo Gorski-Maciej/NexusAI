@@ -1,0 +1,36 @@
+{
+  "baseline_version": "v3p37-bench-2026.09",
+  "measured_at": "2026-09-08T00:00:00Z",
+  "method": "opa eval -I data.jdg.v3_p37_obserwowalnosc.decide; 12 przypadków analiz × 5 przebiegów (60 pomiarów); end-to-end COLD START (proces OPA + parse reguł + eval) — metodyka identyczna dla każdego przyszłego pomiaru gate, więc regresja % jest porównywalna 1:1",
+  "cases": 12,
+  "iterations": 5,
+  "runs": 60,
+  "p50_ms": 558.14,
+  "p95_ms": 616.36,
+  "max_ms": 634.12,
+  "per_case_max_ms": {
+    "decision_slo": 590.76,
+    "law_freshness_sla": 562.42,
+    "needs_advice_radar": 558.53,
+    "latency_budget": 634.12,
+    "certificate_telemetry": 604.88,
+    "error_budget_freeze": 583.29,
+    "anomaly_detection": 617.29,
+    "golden_drift_watch": 610.12,
+    "runbook_as_code": 618.83,
+    "status_page": 615.87,
+    "decision_cost": 569.56,
+    "benchmark_regression": 562.74
+  },
+  "measurement_scope": {
+    "cold_start_e2e": "mierzony tutaj (proces + parse + eval) — dominanta: start procesu OPA i parsowanie thresholds_jdg.rego",
+    "in_process_eval": "NIE zmierzono w tej sesji (wymaga instrumentacji runtime hosta) — luka V3-P37-L04; budżet 500 ms p95 z SLO-02 dotyczy in-process eval (telemetria I04), nie cold startu"
+  },
+  "regression_gate": {
+    "max_regression_pct": 10,
+    "comparison": "jak-tylko-do-jaka: nowy pomiar tą samą metodyką vs ten baseline",
+    "rule": "jdg.v3_p37_obserwowalnosc.benchmark_regression (437012)",
+    "tool": "tools/v3_p37_benchmark_gate.py"
+  },
+  "note": "baseline ZMIERZONY (60 przebiegów); podniesienie tylko z 4-eyes (RB-06)"
+}

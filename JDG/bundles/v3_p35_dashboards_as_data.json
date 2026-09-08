@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P35-I07",
+  "generated_at": "2026-09-08T18:29:40+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "dashboard_tools_present": true,
+    "config_as_data_fields": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p35_audyutory_domenowe.dashboards_as_data: True"
+    },
+    {
+      "name": "dashboard_tools_present",
+      "status": "OK",
+      "detail": "enterprise/confidence/drift dashboards: True"
+    },
+    {
+      "name": "config_as_data_fields",
+      "status": "OK",
+      "detail": "metryki + progi + alarmy jako dane: True"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P35-I08",
+  "generated_at": "2026-09-08T18:24:43+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "nightly_limit_threshold": true,
+    "two_audit_modes": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p35_audyutory_domenowe.continuous_vs_per_pr: True"
+    },
+    {
+      "name": "nightly_limit_threshold",
+      "status": "OK",
+      "detail": "v3_p35_nightly_missed_max_days w thresholds: True"
+    },
+    {
+      "name": "two_audit_modes",
+      "status": "OK",
+      "detail": "tryby per-PR (szybki) i nocny (głęboki): True"
+    }
+  ],
+  "findings": []
+}

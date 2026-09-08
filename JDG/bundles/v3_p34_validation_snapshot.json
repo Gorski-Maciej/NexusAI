@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P34-I11",
+  "generated_at": "2026-09-08T17:57:46+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "certificate_provenance": true,
+    "tool_versions_in_certificate": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p34_walidacja_narzedzia.validation_snapshot: True"
+    },
+    {
+      "name": "certificate_provenance",
+      "status": "OK",
+      "detail": "ID walidacji w Decision Certificate (V2 F4): True"
+    },
+    {
+      "name": "tool_versions_in_certificate",
+      "status": "OK",
+      "detail": "wersje narzędzi w certyfikacie: True"
+    }
+  ],
+  "findings": []
+}

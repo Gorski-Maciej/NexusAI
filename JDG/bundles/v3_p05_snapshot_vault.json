@@ -1,11 +1,11 @@
 {
   "current": {
-    "git_head": "1f2c6448",
-    "built_at": "2026-09-06T20:02:17+00:00",
+    "git_head": "f7ced451",
+    "built_at": "2026-09-08T17:06:03+00:00",
     "components": {
       "rules_rego": {
-        "count": 501,
-        "sha1": "e73c60af168b9a8d310327472e448d7581524205"
+        "count": 507,
+        "sha1": "6e245a36a960cc24bcc1040d04ed48fada404cf5"
       },
       "bundles/thresholds_data.json": "20655273bee5fdce995e490cb4737142a437e912",
       "bundles/legal_graph.json": "748d25733d79381e89280d457be2ca3fa73d27fe",
@@ -20,12 +20,17 @@
         "replay_rows": 31
       }
     },
-    "snapshot_id": "f9166b8f593b2dc83685246af12566479b628e642c10280830566737e409cc6c"
+    "snapshot_id": "7a6d04d3be1345588cac8d116d5300da78720a31f03311a4deea6685a7da1751"
   },
   "history": [
     {
       "snapshot_id": "acab5f9259a013abd309bf2d1cf5aa7d02aa46aa550d3e7b1c3de21e8e258c7d",
       "superseded_at": "2026-09-06T20:02:17+00:00",
+      "reason": "zmiana składników snapshotu (rules/parametry/legal nodes/schema)"
+    },
+    {
+      "snapshot_id": "f9166b8f593b2dc83685246af12566479b628e642c10280830566737e409cc6c",
+      "superseded_at": "2026-09-08T16:53:56+00:00",
       "reason": "zmiana składników snapshotu (rules/parametry/legal nodes/schema)"
     }
   ]

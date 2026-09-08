@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P36-I12",
+  "generated_at": "2026-09-08T19:10:20+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "orphans_max_threshold": true,
+    "triple_orphan_check": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p36_generatory_migratory.zero_orphan_guarantee: True"
+    },
+    {
+      "name": "orphans_max_threshold",
+      "status": "OK",
+      "detail": "v3_p36_orphans_max w thresholds: True"
+    },
+    {
+      "name": "triple_orphan_check",
+      "status": "OK",
+      "detail": "reguła/test/manifest — trzy kierunki orphan check: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p100"
+    }
+  ],
+  "findings": []
+}

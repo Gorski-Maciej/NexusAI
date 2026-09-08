@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P35-I01",
+  "generated_at": "2026-09-08T18:24:44+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "methodology_thresholds": true,
+    "telemetry_only_semantics": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p35_audyutory_domenowe.domain_trust_score: True"
+    },
+    {
+      "name": "methodology_thresholds",
+      "status": "OK",
+      "detail": "trust_score_floor=True, trust_drop_triage=True"
+    },
+    {
+      "name": "telemetry_only_semantics",
+      "status": "OK",
+      "detail": "trust score = telemetria (rankuje, nie decyduje): True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p99"
+    }
+  ],
+  "findings": []
+}

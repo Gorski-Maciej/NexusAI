@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P36-I06",
+  "generated_at": "2026-09-08T19:10:17+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "drift_max_threshold": true,
+    "regression_auto_rollback": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p36_generatory_migratory.golden_replay_post_migration: True"
+    },
+    {
+      "name": "drift_max_threshold",
+      "status": "OK",
+      "detail": "v3_p36_replay_drift_max w thresholds: True"
+    },
+    {
+      "name": "regression_auto_rollback",
+      "status": "OK",
+      "detail": "regresja = auto-rollback (P10): True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p100"
+    }
+  ],
+  "findings": []
+}

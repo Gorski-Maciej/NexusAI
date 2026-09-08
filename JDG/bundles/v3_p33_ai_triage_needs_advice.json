@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P33-I12",
+  "generated_at": "2026-09-08T16:35:57+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "min_percentile_threshold": true,
+    "triage_only_semantics": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p33_neural_mesh_ai.ai_triage_needs_advice: True"
+    },
+    {
+      "name": "min_percentile_threshold",
+      "status": "OK",
+      "detail": "v3_p33_judgment_min_percentile w thresholds: True"
+    },
+    {
+      "name": "triage_only_semantics",
+      "status": "OK",
+      "detail": "predictor = triage-only (sortuje kolejki): True"
+    }
+  ],
+  "findings": []
+}
