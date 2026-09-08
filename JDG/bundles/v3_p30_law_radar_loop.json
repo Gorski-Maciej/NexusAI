@@ -1,0 +1,27 @@
+{
+  "innovation": "V3-P30-I12",
+  "generated_at": "2026-09-08T10:21:19+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p30_innovation_waves.law_radar_loop_closure: True"
+    },
+    {
+      "name": "routing",
+      "status": "OK",
+      "detail": "routing: TRIAGE_QUEUE (rekomendacja bez wpisu = TRIAGE)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p94"
+    }
+  ],
+  "findings": []
+}

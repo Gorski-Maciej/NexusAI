@@ -1,0 +1,32 @@
+{
+  "innovation": "V3-P32-I08",
+  "generated_at": "2026-09-08T14:20:43+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p32_ksiegowosc_automation.pre_deadline_corrections: True"
+    },
+    {
+      "name": "thresholds",
+      "status": "OK",
+      "detail": "brakujące klucze: brak"
+    },
+    {
+      "name": "routing",
+      "status": "OK",
+      "detail": "routing: TRIAGE_QUEUE (błędy bez propozycji = TRIAGE)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p96"
+    }
+  ],
+  "findings": []
+}

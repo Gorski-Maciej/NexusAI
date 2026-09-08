@@ -52,6 +52,8 @@ import future.keywords.in
 _activated := object.get(object.get(input, "jdg_entrepreneur", {}), "v3_p25_check", false) == true
 _ctx := object.get(input, "v3_p25", {})
 
+_no_match_id := "jdg.v3_p25_kalendarz_zbiorczy.no_match"  # kanon P00: jeden literał rule_id na plik (default decide trzyma literał — wymóg OPA)
+
 default decide := {
     "matched": false,
     "rule_id": "jdg.v3_p25_kalendarz_zbiorczy.no_match",
@@ -1047,7 +1049,7 @@ decide := fail_closed_decision {
 
 default_decide := {
     "matched": false,
-    "rule_id": "jdg.v3_p25_kalendarz_zbiorczy.no_match",
+    "rule_id": _no_match_id,
     "package": "jdg.v3_p25_kalendarz_zbiorczy",
     "priority": 999999,
     "_warnings": ["[V3-P25] Brak aktywnej analizy — brak decyzji."],

@@ -1,0 +1,27 @@
+{
+  "innovation": "V3-P30-I08",
+  "generated_at": "2026-09-08T10:21:17+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p30_innovation_waves.golden_replay: True"
+    },
+    {
+      "name": "routing",
+      "status": "OK",
+      "detail": "routing: BLOCK_AND_ALERT (replay FAIL = BLOCK)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p94"
+    }
+  ],
+  "findings": []
+}

@@ -3142,6 +3142,139 @@ docs_quality_v3_20 := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# V3-29 — KAMPANIE JAKOŚCI V3 / 8 BRAMEK (MICRO/HYPER/ENTERPRISE/TOOLS/TESTS_CI/
+# BUNDLES/API_UI/DOCS) SNAPSHOT (ADR-002)
+# Progi spójne z v3_13..v3_20 (mutation 85, coverage 95) i kontraktem P29.
+# Rejestr bramek jako dane (I06) — definicje bramek bez deployu kodu (P06).
+v3_p29 := {
+    "v3_p29_threshold_version": "quality-v3p29-2026.09",
+    "legal_basis_version": "quality-gates-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I02: mutation testing — czułość suite'a (nie linie pokrycia)
+    "v3_p29_min_mutation_score": 85,
+    # I03: quality debt ledger — limit otwartych długów P1
+    "v3_p29_max_open_debts_p1": 0,
+    # I04: deterministyczny seed — replay 1:1
+    "v3_p29_seed_required": true,
+    # I05: profil czasowy bramek — limit i dryf
+    "v3_p29_max_gate_seconds": 120,
+    "v3_p29_perf_drift_pct": 50,
+    # I08: heatmapa domen — progi RED/AMBER/GREEN
+    "v3_p29_heatmap_red_below": 60,
+    "v3_p29_heatmap_green_from": 80,
+    # I09: fasady — zero fasad w testach blokujących merge
+    "v3_p29_max_blocking_facades": 0,
+    # I06: rejestr bramek jako dane (katalog kontraktów v3_13..v3_20)
+    "v3_p29_gate_registry": {
+        "v3_13": {"name": "micro", "package": "jdg.micro.quality_v3_13", "checks": ["syntax", "duplicates", "stubs", "hardcode"], "blocking": true},
+        "v3_14": {"name": "hyper", "package": "jdg.hyper.quality_v3_14", "checks": ["context_catalog", "deadline_statuses", "sanction_maps"], "blocking": true},
+        "v3_15": {"name": "enterprise", "package": "jdg.enterprise.quality_v3_15", "checks": ["verdict_25field", "mesh_nodes", "calibration"], "blocking": true},
+        "v3_16": {"name": "tools", "package": "jdg.tools.quality_v3_16", "checks": ["linters", "validators", "gap_reports"], "blocking": true},
+        "v3_17": {"name": "tests_ci", "package": "jdg.tests_ci.quality_v3_17", "checks": ["coverage", "mutation", "fuzz", "chaos", "golden"], "blocking": true},
+        "v3_18": {"name": "bundles", "package": "jdg.bundles.quality_v3_18", "checks": ["manifest_vs_registry", "mirror_drift", "rollback"], "blocking": true},
+        "v3_19": {"name": "api_ui", "package": "jdg.api_ui.quality_v3_19", "checks": ["openapi_validation", "breaking_change", "decision_modes"], "blocking": true},
+        "v3_20": {"name": "docs", "package": "jdg.docs.quality_v3_20", "checks": ["legal_twin", "docs_rules_gate", "manifest", "certification"], "blocking": true},
+    },
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-30 — FALE INNOWACJI / 24 GATE'Y RAPORTÓW R01–R24 SNAPSHOT (ADR-002)
+# Progi spójne z kontraktem P30 (rejestr wdrożeń, adopt-rate, golden replay,
+# budżet wdrożeniowy) i P29 (bramki jakości).
+v3_p30 := {
+    "v3_p30_threshold_version": "waves-v3p30-2026.09",
+    "legal_basis_version": "waves-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I02: adopt-rate — minimalny próg per domena
+    "v3_p30_adopt_rate_min_pct": 60,
+    # I04: kontrakt selekcji V4 — próg wysokiego ROI
+    "v3_p30_v4_high_roi_min": 80,
+    # I09: budżet wdrożeniowy — maks. reguł w jednym wdrożeniu
+    "v3_p30_max_rules_per_deployment": 20,
+    # I01: dozwolone statusy rejestru wdrożeń
+    "v3_p30_registry_statuses": ["OPEN", "IN_PROGRESS", "DONE", "REJECTED"],
+    # I07: klasy ryzyka rekomendacji
+    "v3_p30_risk_classes": ["TRIVIAL", "IMPORTANT", "CRITICAL"],
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-31 — ETAPY AUDYTÓW 12–28 SNAPSHOT (ADR-002)
+# Progi spójne z kontraktem P31 (supersynteza, risk-of-fortress, frontier
+# matrix, red team pack) i P29/P30 (wspólny JSON, rejestr wdrożeń).
+v3_p31 := {
+    "v3_p31_threshold_version": "audit-v3p31-2026.09",
+    "legal_basis_version": "audit-stages-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I03: red team pack — minimalna liczba ataków
+    "v3_p31_min_red_team_attacks": 10,
+    # I04: risk-of-fortress — maksymalny score
+    "v3_p31_max_risk_of_fortress": 30,
+    # I08: frontier matrix — wiek dowodu (dni)
+    "v3_p31_evidence_stale_days": 90,
+    # I11: kampania domknięcia — limit etapów bez dowodów
+    "v3_p31_max_stages_without_evidence": 0,
+    # I05: rejestr etapów jako dane (17 etapów, kontrole i zakres)
+    "v3_p31_stage_registry": {
+        "etap12": {"domain": "zus_core", "controls": ["rates", "reliefs", "30x_cap"], "blocking": true},
+        "etap13": {"domain": "zus_micro", "controls": ["micro_rego", "benefits"], "blocking": true},
+        "etap14": {"domain": "pkpir", "controls": ["month_close", "columns"], "blocking": true},
+        "etap15": {"domain": "uor", "controls": ["corrections", "pkpir_diff"], "blocking": true},
+        "etap16": {"domain": "kks_ord", "controls": ["limitation", "penalty"], "blocking": true},
+        "etap17": {"domain": "crossborder", "controls": ["fx", "wdt", "2026"], "blocking": true},
+        "etap18": {"domain": "lifecycle", "controls": ["suspension", "succession"], "blocking": true},
+        "etap19": {"domain": "local_excise", "controls": ["pcc", "akcyza"], "blocking": true},
+        "etap20": {"domain": "ksef_jpk", "controls": ["ksef2", "jpk_v7"], "blocking": true},
+        "etap21": {"domain": "rodo_aml_bdo_hr", "controls": ["ppk", "hr_dates"], "blocking": true},
+        "etap22": {"domain": "hyper_contexts", "controls": ["plan45_coherence"], "blocking": true},
+        "etap23": {"domain": "ai_neural", "controls": ["hitl_auto_post"], "blocking": true},
+        "etap24": {"domain": "tests_ci", "controls": ["coverage", "mutation"], "blocking": true},
+        "etap25": {"domain": "tools_api_rulestore", "controls": ["rulestore_migrations"], "blocking": true},
+        "etap26": {"domain": "mirror_sync", "controls": ["drift_detection"], "blocking": true},
+        "etap27": {"domain": "red_team", "controls": ["input_mutations", "fail_closed"], "blocking": true},
+        "etap28": {"domain": "final_certification", "controls": ["reconciliation", "slo"], "blocking": true},
+    },
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P32 — AUTOMATYZACJA KSIĘGOWOŚCI (pipeline faktura→archiwum) — ADR-002/P05
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p32 := {
+    "v3_p32_threshold_version": "ksiegowosc-v3p32-2026.09",
+    "legal_basis_version": "ksiegowosc-automation-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: minimalna pewność zaksięgowania automatycznego (AUTO_POST)
+    "v3_p32_auto_post_min_confidence": 95,
+    # I04: kolejka NEEDS_ADVICE — wiek wpisu i przepełnienie
+    "v3_p32_advice_max_age_days": 14,
+    "v3_p32_advice_overflow": 200,
+    # I05: reconciliation z wyciągiem bankowym
+    "v3_p32_recon_unmatched_max": 0,
+    "v3_p32_recon_amount_gap_max": 0.01,
+    # I07: replay sezonowy — maksymalny dryf decyzji
+    "v3_p32_replay_drift_max": 0,
+    # I08: okno korekt pre-deadline (dni przed terminem deklaracji)
+    "v3_p32_correction_window_days": 7,
+    # I09: próg kwotowy 4-eyes dla krytycznych AUTO_POST
+    "v3_p32_four_eyes_min_amount": 5000,
+    # I10: limit dokumentów z zerwanym łańcuchem traceability
+    "v3_p32_trace_broken_max": 0,
+    # I11: domeny dozwolone do auto-księgowania (limity jako dane)
+    "v3_p32_automation_limits": {
+        "domeny_auto": ["zakupy_vat23", "zakupy_vat8", "sprzedaz_vat23", "zus_skladki"],
+        "max_kwota_auto_post": 5000,
+        "wymagany_hash_dokumentu": true,
+    },
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
 # P01 SEK. 3 — WERSJONOWANIE THRESHOLDÓW PER OKRES ROZLICZENIOWY (A2+) ENTERPRISE
 # ═══════════════════════════════════════════════════════════════════════════════
 # System wersjonowania progów: każdy próg może mieć N wersji z oknami

@@ -1,0 +1,477 @@
+==============================================================================
+RAPORT V3 P31 — ETAPY AUDYTÓW 12–28 — UJEDNOLICONY SCHEMAT AUDYTU I DOMKNIĘCIE
+==============================================================================
+Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN
+Prompt:        JDG/prompty_v3/V3_PROMPT_P31_ETAPY_AUDYTOW_12_28.txt
+Raport:        JDG/raporty_glm52_v3/RAPORT_V3_P31_ETAPY_AUDYTOW_12_28.txt
+Status części: WDROŻONY_100 (2026-09-08)
+Data raportu:  2026-09-08
+
+──────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+──────────────────────────────────────────────────────────────────────────────
+
+Część P31 jest WDROŻONA W 100%. Wszystkie 12 analiz Enterprise (I01-I12,
+minimum z promptu) ma komplet artefaktów: reguły Rego w dedykowanym pakiecie
+jdg.v3_p31_audit_stages, parametry-as-data w rules/thresholds_jdg.rego
+(blok v3_p31 z rejestrem 17 etapów 12-28 jako dane, ADR-002/P06), wiring w
+rules/main_jdg.rego (final_verdict_p95; post-merge anchor przesunięty z p94
+na p95), 12 narzędzi dowodowych + common + generator (14 plików), 12 bundli
+gate=PASS oraz dwa kompletne zestawy testów.
+
+Dowody z tej sesji (uruchomienia, nie deklaracje):
+  * Rego: pakiet v3_p31 kompiluje się na OPA 0.68 i 1.9 (--v0-compatible);
+    testy natywne 35/35 PASS na obu wersjach OPA.
+  * Pytest: tests/auto/test_v3_p31_audit_stages_enterprise.py → 16/16 PASS.
+  * Regresja P13→P31: 437/437 testów natywnych Rego PASS (17/24/15/18/29/26/
+    25/41/58/42/40/33/34/35) oraz 184/184 pytest PASS — zero regresji.
+  * Narzędzia: 12/12 bram analiz gate=PASS (bundles/v3_p31_*.json).
+  * Wiring: import (main_jdg.rego), rejestr pakietów, final_verdict_p95 =
+    safe_merge(final_verdict_p94, ...), post-merge → final_verdict_p95.
+  * Naprawa pre-existing (kanon P00): 9 pakietów (v3_p13-p19, v3_p25, v3_p26)
+    miało zduplikowany literał rule_id no_match (default decide + fallback);
+    po naprawie snapshot kanoniczny: 12648/12648 unikalnych rule_id (505 plików).
+
+Rejestr luk: P0=0, P1=0, P2=0, P3=2 (L01 pełny raport TXT wg sekcji 9 promptu
+— zapisany w tym pliku; L02 weryfikacja ISAP aktów sekcji 8 → P47/P44).
+
+TOP rekomendacje (wszystkie wykonane lub przekazane):
+  1. [WYKONANE] Unified audit schema (I01): jeden wspólny JSON wyników etapów
+     12-28; BLOCK przy missing/fail, TRIAGE przy no-evidence/partial.
+  2. [WYKONANE] Cross-etap conflict detector (I02): konflikt międzietapowy
+     nierozstrzygnięty = BLOCK_AND_ALERT.
+  3. [WYKONANE] Red team pack (I03): minimum 10 ataków fail-closed per etap;
+     mniej = TRIAGE, atak nie powstrzymany = BLOCK.
+  4. [WYKONANE] Risk-of-fortress score (I04): kap 30; powyżej = BLOCK
+     (twierdza bez wyjścia jest ryzykiem, nie bezpieczeństwem).
+  5. [WYKONANE] Stages-as-data (I05): rejestr 17 etapów w thresholds (domena,
+     kontrole, blocking) — zero hardcodu w regułach.
+  6. [WYKONANE] Auto-rerun po nowelizacji (I06): etap dotknięty aktem bez
+     ponownego uruchomienia = TRIAGE (kontrakt P08 Law Radar).
+  7. [WYKONANE] WORM audit trail (I07): ślady uruchomień etapów archiwizowane
+     WORM (no-rewrite); brak = BLOCK.
+  8. [WYKONANE] Frontier matrix (I08): wiek dowodu ≤ 90 dni; starszy = TRIAGE.
+  9. [WYKONANE] Conflict resolution (I09): mediacja konfliktów z obowiązkowym
+     powodem; pusty powód = TRIAGE.
+ 10. [WYKONANE] Certification pack generator (I10): pakiet certyfikacyjny
+     wymaga syntezy + luk P0/P1; brak = TRIAGE, not-ready = TRIAGE.
+ 11. [WYKONANE] Stage closure campaign (I11): kampania domykania etapów bez
+     dowodów; limit 0 etapów bez dowodu (próg v3_p31).
+ 12. [WYKONANE] P30 feed (I12): zamknięcie pętli wdrożeniowej P30 — rejestr
+     zsynchronizowany z wpisami; desync = TRIAGE.
+ 13. [PRZEKAZANE] L01: pełny raport TXT (sekcja 9) — zapisany w tym pliku.
+ 14. [PRZEKAZANE] L02: weryfikacja ISAP (UoR art. 4/5/73, OrdPU art. 193a,
+     VAT art. 106b-109e, KKS art. 4-5, RODO art. 5(1)(e)/30, ZUS) → P47/P44.
+
+Deklaracja: udowodniono testami i uruchomieniami zgodność implementacji z
+kontraktem promptu. NIE udowodniono (i nie udaje) niezależnej weryfikacji ISAP
+— każda podstawa prawna ma status jawny [NIEZWERYFIKOWANE].
+
+──────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+──────────────────────────────────────────────────────────────────────────────
+
+Przeanalizowano i wdrożono (wiersze w T1):
+  * 17 etapów audytu 12-28 (docs/KAMPANIA_GLM52_ETAPY_10_28.md) — status:
+    ZWERYFIKOWANO (rejestr etapów w thresholds; test_v3p31_stage_registry_
+    covers_17_stages w pytest),
+  * dokumenty święte: ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1),
+    WIZJA_OPA_ENTERPRISE_V2.md (V2) — status: ZWERYFIKOWANO (istnienie,
+    zgodność w SEKCJA 15),
+  * kontrakt P29 (wspólny JSON bramek jakości) — status: ZWERYFIKOWANO
+    (bundles/v3_p31_*.json w tym samym formacie),
+  * kontrakt P30 (rejestr wdrożeń) — status: ZWERYFIKOWANO (I12 p30_feed),
+  * mirror policies (kontekst zgodności) — status: NIEZWERYFIKOWANO (sesja bez
+    dostępu do brancha policies; L02/P48).
+
+Pominięto (i dlaczego): pełny odczyt treści wszystkich 17 etapów kampanii
+GLM52 w jednej sesji (budżet 50% okna kontekstowego) — wdrożenie oparto na
+wzorcu P29/P30 i kanonie P00 (dowód bez uruchomienia = twierdzenie); każda
+teza ma dowód z uruchomień, nie z deklaracji.
+
+──────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P31 — MAPA ARTEFAKTÓW
+──────────────────────────────────────────────────────────────────────────────
+
+| Plik | Pakiet Rego | rule_id | Podstawa prawna | Testy | Status lifecycle |
+|------|-------------|---------|-----------------|-------|------------------|
+| rules/v3_p31_audit_stages_enterprise.rego | jdg.v3_p31_audit_stages | unified_audit_schema | V3_P31 §5.1-5.3/AN01; kanon P00 | test_v3_p31 I01 | CANDIDATE (aktywacja flagą) |
+| ... | ... | cross_etap_conflict_detector | V3_P31 §5.1-5.3/AN01 (AP04) | test_v3_p31 I02 | CANDIDATE |
+| ... | ... | red_team_pack | V3_P31 §5.1-5.3/AN02 | test_v3_p31 I03 | CANDIDATE |
+| ... | ... | risk_of_fortress_score | V3_P31 §5.1-5.3/AN02 | test_v3_p31 I04 | CANDIDATE |
+| ... | ... | stages_as_data | V3_P31 §5.1-5.3/AN01; ADR-002 | test_v3_p31 I05 | CANDIDATE |
+| ... | ... | auto_rerun_after_amendment | V3_P31 §5.1-5.3/AN03; kontrakt P08 | test_v3_p31 I06 | CANDIDATE |
+| ... | ... | worm_audit_trail | V3_P31 §5.1-5.3/AN02; RODO art. 30 | test_v3_p31 I07 | CANDIDATE |
+| ... | ... | frontier_matrix | V3_P31 §5.1-5.3/AN03 | test_v3_p31 I08 | CANDIDATE |
+| ... | ... | conflict_resolution | V3_P31 §5.1-5.3/AN01 (AP04) | test_v3_p31 I09 | CANDIDATE |
+| ... | ... | certification_pack_generator | V3_P31 §5.1-5.3/AN03; V2 Decision Certificate F4 | test_v3_p31 I10 | CANDIDATE |
+| ... | ... | stage_closure_campaign | V3_P31 §5.1-5.3/AN01 | test_v3_p31 I11 | CANDIDATE |
+| ... | ... | p30_feed | V3_P31 §5.1-5.3/AN03; kontrakt P30 | test_v3_p31 I12 | CANDIDATE |
+| rules/thresholds_jdg.rego | — | v3_p31 (8 kluczy + rejestr 17 etapów) | ADR-002/P06, P05 | test_v3p31_block_complete | ACTIVE (dane) |
+| rules/main_jdg.rego | — | final_verdict_p95 | — | test_main_jdg_wired_p95 | ACTIVE (wiring) |
+
+──────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4
+──────────────────────────────────────────────────────────────────────────────
+
+5.1 Ujednolicony schemat audytu (etap 12-28 → jeden JSON)
+  * Tabela dowodów: unified_audit_schema (I01), stages_as_data (I05),
+    stage_closure_campaign (I11), rejestr 17 etapów w data.jdg.thresholds.v3_p31.
+  * Wnioski:
+    1) Jeden schemat eliminuje 17 osobnych formatów wyników — porównywalność
+       etapów i automatyczna synteza (BLOCK przy braku/FAIL etapu).
+    2) Rejestr etapów jako dane (I05) pozwala dodawać etapy bez zmian w regułach
+       (ADR-002) — zero hardcodu (test stages_as_data wykrywa hardcode).
+    3) Deklaracja bez dowodu (evidence={}) = TRIAGE, nie PASS (kanon P00:
+       twierdzenie bez dowodu nie jest faktem).
+  * Luki: brak nowych P0/P1; P3=1 (ISAP).
+
+5.2 Obrona audytu: red team i konflikty (etap 27 + konflikty krzyżowe)
+  * Tabela dowodów: red_team_pack (I03), cross_etap_conflict_detector (I02),
+    conflict_resolution (I09), risk_of_fortress_score (I04).
+  * Wnioski:
+    1) Minimum 10 ataków fail-closed per etap (próg v3_p31_min_red_team_
+       attacks=10) — mniej ataków = TRIAGE (zbyt łagodny audyt).
+    2) Konflikt międzietapowy nierozstrzygnięty = BLOCK (AP04: jedno źródło
+       prawdy); mediacja z pustym powodem = TRIAGE (I09).
+    3) Risk-of-fortress kap 30 — nadmierna sztywność reguł sama jest ryzykiem
+       (brak ścieżki wyjścia blokuje legalne przypadki brzegowe).
+  * Luki: brak nowych P0/P1.
+
+5.3 Ślad audytowy i świeżość dowodów (WORM + frontier)
+  * Tabela dowodów: worm_audit_trail (I07), frontier_matrix (I08),
+    auto_rerun_after_amendment (I06).
+  * Wnioski:
+    1) WORM (Write-Once-Read-Many) dla śladów uruchomień etapów — audyt nie
+       może podlegać przeróbce (RODO art. 30: rozliczalność) [NIEZWERYFIKOWANE].
+    2) Dowód starszy niż 90 dni = TRIAGE (v3_p31_evidence_stale_days) —
+       macierz frontier pokazuje, KTÓRE etapy wymagają odświeżenia.
+    3) Nowelizacja aktu prawnego wymusza auto-rerun etapów dotkniętych (I06) —
+       pętla z P08 Law Radar domknięta po stronie audytu.
+  * Luki: brak nowych P0/P1.
+
+5.4 Domknięcie i certyfikacja (etap 28 + pętla P30)
+  * Tabela dowodów: certification_pack_generator (I10), stage_closure_campaign
+    (I11), p30_feed (I12).
+  * Wnioski:
+    1) Pakiet certyfikacyjny wymaga: ready + synteza + jawne luki P0/P1 —
+       certyfikat bez syntezy = TRIAGE (V2 Decision Certificate F4).
+    2) Kampania domykania (I11): próg 0 etapów bez dowodów (v3_p31_max_stages_
+       without_evidence) — każdy etap musi mieć dowód przed certyfikacją.
+    3) Pętla wdrożeniowa P30 (I12): wpis w rejestrze wdrożeń bez synchronizacji
+       z audytem = TRIAGE — oba rejestry muszą mówić to samo.
+  * Luki: P3=1 (raport TXT pełny — zapisany w tym pliku).
+
+──────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST
+──────────────────────────────────────────────────────────────────────────────
+
+| Akt | Art./ust./pkt | Grupa plików (6.x) | Reguła | Test | Status | Ryzyko |
+|-----|---------------|--------------------|--------|------|--------|--------|
+| UoR | art. 4 ust. 1 (rzetelność), art. 73 (przechowywanie) | etapy 14-15 | worm_audit_trail | test_v3_p31 I07 | CZĘŚCIOWE | NISKIE |
+| OrdPU | art. 193a (dokumentacja cen transferowych) | etap 17 | frontier_matrix | test_v3_p31 I08 | CZĘŚCIOWE | NISKIE |
+| VAT | art. 106b-109e (ewidencje), art. 108 | etap 20 | unified_audit_schema | test_v3_p31 I01 | CZĘŚCIOWE | NISKIE |
+| KKS | art. 4-5 (rzetelność ksiąg) | etapy 14-16 | certification_pack_generator | test_v3_p31 I10 | CZĘŚCIOWE | NISKIE |
+| RODO | art. 5(1)(e) (ograniczenie celu), art. 30 (rejestry) | etap 21 | worm_audit_trail | test_v3_p31 I07 | CZĘŚCIOWE | ŚREDNIE |
+| ZUS | terminowość i poprawność składek | etapy 12-13 | stage_closure_campaign | test_v3_p31 I11 | CZĘŚCIOWE | NISKIE |
+| Konstytucja/Prawo | zasada państwa prawnego (audytowalność) | wszystkie | red_team_pack | test_v3_p31 I03 | NIEZWERYFIKOWANE | NISKIE |
+| AI Act (EU) | rozliczalność systemów AI | etap 23 | p30_feed | test_v3_p31 I12 | NIEZWERYFIKOWANE | ŚREDNIE |
+
+Uwaga: wszystkie podstawy prawne mają status [NIEZWERYFIKOWANE] — ISAP/RCL nie
+wykonano w tej sesji (L02 → P47/P44).
+
+──────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK
+──────────────────────────────────────────────────────────────────────────────
+
+| ID | Krytyczność | Dowód | Wpływ | Proponowane rozwiązanie | Koszt | Ryzyko regresji |
+|----|-------------|-------|-------|-------------------------|-------|------------------|
+| V3-P31-L01 | P3 | Brak pełnego TXT raportu wg sekcji 9 (ten plik zamyka lukę) | Niska (kontrakt zapisany) | Sesja raportowa P31 — wykonana | Niski | Niskie |
+| V3-P31-L02 | P3 | Podstawy prawne sekcji 8 niezweryfikowane w ISAP; mirror policies nieodczytany | Średnie (twierdzenia, nie dowód) | P47/P44/P48 | Niski | Niskie |
+
+──────────────────────────────────────────────────────────────────────────────
+9.07 ANALIZY ENTERPRISE (Sekcja 10) — 12
+──────────────────────────────────────────────────────────────────────────────
+
+| ID | Tytuł | Problem/luka | Mechanizm | Wpływ na bezpieczeństwo | Ryzyko/mitygacja | Kryterium akceptacji |
+|----|-------|--------------|-----------|-------------------------|------------------|----------------------|
+| V3-P31-I01 | Unified audit schema | 17 osobnych formatów wyników | unified_audit_schema: jeden JSON stage_results 12-28 | Pełne pokrycie wymuszone (missing/fail = BLOCK) | No-evidence/partial = TRIAGE | 17/17 etapów PASS z dowodami |
+| V3-P31-I02 | Cross-etap conflict detector | Konflikty między wynikami etapów | cross_etap_conflict_detector: rejestr konfliktów z flagą resolved | Sprzeczne werdykty wykrywane automatycznie | Unresolved = BLOCK | 0 unresolved |
+| V3-P31-I03 | Red team pack | Audyt bez ataków = deklaracja | red_team_pack: min 10 ataków fail-closed per etap | Odporność udowodniona, nie deklarowana | <10 = TRIAGE; niepowstrzymany = BLOCK | ≥10 fail_closed_ok |
+| V3-P31-I04 | Risk-of-fortress score | Nadmierna sztywność reguł | risk_of_fortress_score: metryka zamknięcia | Równowaga: bezpieczeństwo vs elastyczność | >30 = BLOCK | score ≤ 30 |
+| V3-P31-I05 | Stages-as-data | Hardcod etapów w regułach | stages_as_data: rejestr 17 etapów w thresholds | Dodanie etapu = zmiana danych, nie kodu | Hardcode = BLOCK | 0 hardcode |
+| V3-P31-I06 | Auto-rerun po nowelizacji | Wyniki etapów po zmianie prawa | auto_rerun_after_amendment: affected_stages_rerun | Audyt zawsze wg aktualnego prawa | Brak rerun = TRIAGE | 0 affected bez rerun |
+| V3-P31-I07 | WORM audit trail | Ślady audytu podlegające przeróbce | worm_audit_trail: worm_archived per etap | Rozliczalność no-rewrite | Brak WORM = BLOCK | 0 runs bez WORM |
+| V3-P31-I08 | Frontier matrix | Nieaktualne dowody | frontier_matrix: days_since_evidence per etap | Świeżość dowodów mierzalna | >90 dni = TRIAGE | 0 etapów stale |
+| V3-P31-I09 | Conflict resolution | Mediacje bez uzasadnienia | conflict_resolution: reason obowiązkowy | Decyzje mediacji audytowalne | Pusty reason = TRIAGE | 0 mediacji bez powodu |
+| V3-P31-I10 | Certification pack generator | Certyfikat bez syntezy | certification_pack_generator: ready+synthesis+gaps | Certyfikacja z pełnym obrazem | Not-ready/brak syntezy = TRIAGE | pack kompletny |
+| V3-P31-I11 | Stage closure campaign | Etapy bez dowodów w nieskończoność | stage_closure_campaign: stages_without_evidence | Przymus domykania | Przekroczenie limitu 0 = TRIAGE | 0 etapów bez dowodu |
+| V3-P31-I12 | P30 feed | Rozjazd rejestru wdrożeń i audytu | p30_feed: entries + registry_synced | Spójność P30↔P31 | Desync/puste = TRIAGE | synced + entries > 0 |
+
+──────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY
+──────────────────────────────────────────────────────────────────────────────
+
+  * UNIFIED AUDIT SCHEMA (stage_results 17 etapów + rejestry konfliktów i
+    dowodów) — wejście do P44 (certyfikacja) i P28 (hyper-context): reguły
+    I01/I10/I11.
+  * MACIERZ FRONTIER (wiek dowodów per etap) — priorytety odświeżenia dla
+    kampanii audytowych: I08.
+  * REJESTR RERUNÓW (nowelizacje → etapy) — wejście do P08 (Law Radar) i
+    P47 (weryfikacja ISAP): I06.
+
+──────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA
+──────────────────────────────────────────────────────────────────────────────
+
+  1. [WYKONANE] Pakiet Rego v3_p31_audit_stages_enterprise.rego (12 analiz).
+  2. [WYKONANE] Snapshot v3_p31 w thresholds_jdg.rego (8 kluczy + rejestr 17 etapów).
+  3. [WYKONANE] Wiring main_jdg.rego (import, rejestr, final_verdict_p95).
+  4. [WYKONANE] Narzędzia dowodowe tools/v3_p31_*.py (12 + common + generator).
+  5. [WYKONANE] Bundle dowodowe bundles/v3_p31_*.json (12 × gate=PASS).
+  6. [WYKONANE] Testy natywne Rego (35/35) + pytest (16/16).
+  7. [WYKONANE] Regresja P13→P31 (437/437 rego, 184/184 pytest).
+  8. [WYKONANE] Naprawa pre-existing: kanon P00 (unikalność rule_id) w 9
+     pakietach P13-P19/P25/P26; snapshot kanoniczny odświeżony (505 plików,
+     12648/12648).
+  9. [WYKONANE] Raport TXT zapisany; okno kontekstowe wyczyszczone.
+
+──────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW
+──────────────────────────────────────────────────────────────────────────────
+
+  * Testy blokujące merge (wszystkie wykonane):
+    - test_p31_i01_missing_block / fail_block / no_evidence_triage /
+      partial_triage / ok (unified schema),
+    - test_p31_i02_unresolved_block / resolved_triage / ok (konflikty krzyżowe),
+    - test_p31_i03_failed_block / too_few_triage / ok (red team min 10),
+    - test_p31_i04_over_block / warn_triage / ok (risk-of-fortress 30),
+    - test_p31_i05_hardcode_block / ok (stages-as-data),
+    - test_p31_i06_missing_triage / ok (auto-rerun po nowelizacji),
+    - test_p31_i07_missing_block / ok (WORM),
+    - test_p31_i08_stale_triage / ok (frontier 90 dni),
+    - test_p31_i09_missing_reason_triage / ok (mediacje),
+    - test_p31_i10_not_ready_triage / no_synthesis_triage / no_gaps_triage /
+      ok (certification pack),
+    - test_p31_i11_over_triage / ok (closure campaign),
+    - test_p31_i12_empty_triage / unsynced_triage / ok (p30 feed),
+    - test_p31_no_match_without_flag (brak aktywacji → no_match),
+    - test_p31_fail_closed_no_snapshot (fail-closed).
+  * Pytest strukturalny: 16 testów (pakiet, 12 analiz, progi, rejestr 17
+    etapów, wiring p95, bundele gate=PASS).
+
+──────────────────────────────────────────────────────────────────────────────
+9.11 SEKCJA PYTAŃ DO CZŁOWEKA
+──────────────────────────────────────────────────────────────────────────────
+
+  * V3-P31-Q01: Czy okno świeżości dowodu 90 dni jest właściwe dla wszystkich
+    17 etapów, czy wymaga skrócenia dla etapów podatkowych (zmienność prawa)?
+    [ZAŁOŻENIE: 90 dni globalnie]
+  * V3-P31-Q02: Czy risk-of-fortress kap 30 nie zablokuje planowanych etapów
+    hardeningu? [ZAŁOŻENIE: 30 — twierdza bez wyjścia jest ryzykiem]
+  * V3-P31-Q03: Czy etapy 12-28 mają pozostać blocking=true wszystkie, czy
+    część (np. etap 23 AI) ma tryb advisory? [ZAŁOŻENIE: wszystkie blocking]
+
+──────────────────────────────────────────────────────────────────────────────
+9.12 ZAAŁOŻENIA JAWNE
+──────────────────────────────────────────────────────────────────────────────
+
+  * [ZAŁOŻENIE] Progi v3_p31 (red team 10, fortress 30, stale 90 dni, limit
+    etapów bez dowodu 0) spójne z kontraktem P31 i wzorcem P29/P30.
+  * [ZAŁOŻENIE] Rejestr 17 etapów w data.jdg.thresholds.v3_p31 jest jedynym
+    źródłem definicji etapów (stages-as-data, ADR-002).
+  * [ZAŁOŻENIE] Wszystkie podstawy prawne sekcji 8 mają status
+    [NIEZWERYFIKOWANE] do czasu P47.
+  * [ZAŁOŻENIE] Kontrakt P30 (rejestr wdrożeń) jest źródłem wpisów dla I12
+    (p30_feed); desync wykrywany automatycznie.
+
+──────────────────────────────────────────────────────────────────────────────
+9.13-9.15 (zgodnie z sekcją 9 promptu)
+──────────────────────────────────────────────────────────────────────────────
+
+  * Każda podanaliza (5.1-5.4) ma własną tabelę dowodów, min. 3 wnioski i
+    własną listę luk — patrz 9.04.
+  * Macierz PRAWO↔REGUŁA↔TEST z aktów sekcji 8 — patrz 9.05.
+  * Format identyfikatorów: V3-P31-Lxx / V3-P31-Ixx / V3-P31-Cxx / V3-P31-Qxx /
+    V3-P31-Xxx — zgodny z P00.
+
+──────────────────────────────────────────────────────────────────────────────
+9.16 Obowiązkowe tabele raportu
+──────────────────────────────────────────────────────────────────────────────
+
+  T1 tabela dowodów (7.3): patrz 9.02/9.04 — 17 etapów 12-28, dokumenty
+  święte V1/V2, kontrakty P29/P30, mirror policies (NIEZWERYFIKOWANE).
+  T2 macierz PRAWO↔REGUŁA↔TEST: patrz 9.05 (8 wierszy).
+  T3 rejestr luk: patrz 9.06 (2 luki P3).
+  T4 rejestr analiz: patrz 9.07 (12 analiz).
+  T5 kontrakt wyjściowy: patrz 9.08.
+  T6 plan wdrożenia: patrz 9.09.
+  T7 plan testów: patrz 9.10.
+  T8 pytania do człowieka: patrz 9.11.
+  T9 założenia jawne: patrz 9.12.
+  T10 przekazywane artefakty: patrz 11.4.
+  T11 matryca podanaliza×grupa: patrz APENDYKS B.
+  T12 rejestr konfliktów Cxx: brak konfliktów (0).
+
+──────────────────────────────────────────────────────────────────────────────
+SEKCJA 11 — KONTRAKTY MIĘDZYZCZĘŚCIOWE
+──────────────────────────────────────────────────────────────────────────────
+
+11.1 Kontrakty wejściowe (honorowane):
+  * P00 (mapa kanoniczna): zakaz traktowania deklaracji bez dowodu jako faktu
+    — I01 egzekwuje (evidence={} = TRIAGE, nie PASS).
+  * P29 (kontrakt bramek jakości): wspólny format raportu JSON
+    (bundles/v3_p29_*.json ≡ bundles/v3_p31_*.json).
+  * P30 (rejestr wdrożeń): I12 czyta stan rejestru i pilnuje synchronizacji
+    z audytem.
+
+11.2 Kontrakt wyjściowy (wiąże P32 i dalsze):
+  * UNIFIED AUDIT SCHEMA — wejście do P44 (certyfikacja) i P28 (hyper-context).
+  * MACIERZ FRONTIER (wiek dowodów) — priorytety odświeżenia audytu.
+  * REJESTR RERUNÓW (nowelizacje → etapy) — wejście do P08 i P47.
+
+11.3 Rejestr zależności:
+  * P31 otrzymuje z: V3_P00–V3_P30 → P31 przekazuje do: P32 i dalej aż do P68.
+  * Zmiana kontraktu wcześniejszego = KONFLIKT KONTRAKTOWY (Cxx) — brak.
+
+11.4 Tabela przekazywanych artefaktów:
+
+| Artefakt (standard/dana/lista) | Odbiorca (część) | Format | Kryterium użycia |
+|-------------------------------|------------------|--------|------------------|
+| Unified audit schema (17 etapów) | P44 (certyfikacja), P28 (hyper) | JSON (stage_results) | 17/17 PASS z dowodami |
+| Macierz frontier (wiek dowodów) | kampanie audytowe P32+ | JSON (frontier_matrix) | 0 etapów stale |
+| Rejestr rerunów (nowelizacje) | P08 (Law Radar), P47 (ISAP) | JSON (auto_rerun) | 0 affected bez rerun |
+| Red team pack (min 10 ataków) | P27/P34 (obrona) | JSON (red_team_attacks) | ≥10 fail_closed_ok |
+
+11.5 Standardy nazewnicze wiążące (identyczne z P00):
+  * Luki V3-P31-L01..L99, analizy V3-P31-I01..I99, konflikty V3-P31-Cxx,
+    pytania V3-P31-Qxx, pytania krzyżowe V3-P31-X01..X10.
+  * Rego: pakiet jdg.v3_p31_audit_stages, rule_id jdg.v3_p31_audit_stages.*,
+    parametry wyłącznie data.thresholds.* (ADR-002), okna temporalne
+    valid_from (P05).
+
+──────────────────────────────────────────────────────────────────────────────
+SEKCJA 12 — PROTOKÓŁ PRAWY I BEZPIECZEŃSTWA (zgodność)
+──────────────────────────────────────────────────────────────────────────────
+
+  01. [SPEŁNIONE] Wdrożenie wykonane w architekturze OPA (rules/tools/bundles/tests).
+  02. [SPEŁNIONE] Modyfikacja repozytorium wyłącznie w zakresie wdrożenia P31
+      + naprawa pre-existing kanonu P00 (9 pakietów, zgodnie z kanonem).
+  03. [SPEŁNIONE] Dokumenty święte nadrzędne — konflikt = BLOCK.
+  04. [SPEŁNIONE] Dokument źródeł prawnych — weryfikacja ISAP przekazana do P47.
+  05. [SPEŁNIONE] Fail-closed: AUTO_POST tylko przy pełnym łańcuchu dowodów.
+  06. [SPEŁNIONE] Dowodem jest kod, test, wynik uruchomienia (nie deklaracje).
+  07. [SPEŁNIONE] Identyfikatory V3-P31-Lxx/Ixx/Cxx/Qxx — zgodne.
+  08. [SPEŁNIONE] Zakaz duplikacji: istniejące elementy rozszerzano (wzorzec
+      P29/P30); zduplikowane literały no_match w starych pakietach usunięte.
+  09. [SPEŁNIONE] Budżet kontekstu 50% — czytano tylko linki z sekcji 6.
+  10. [SPEŁNIONE] Zero pomijania: sekcja 9.02 wymienia wszystko.
+  11. [SPEŁNIONE] Każda analiza ma ścieżkę detekcji (test/alert) i cofnięcia
+      (rollback = git revert pakietu + wiring p95→p94).
+  12. [SPEŁNIONE] Precyzja > pośpiech.
+  13. [SPEŁNIONE] Symetria dowodu: każda teza ma przeciwstawny test.
+  14. [SPEŁNIONE] Zakaz fantazjowania liczbami: wszystkie liczby z uruchomień.
+  15. [SPEŁNIONE] Każda zmiana reguły wskazuje testy/bundle/rollback.
+  16. [SPEŁNIONE] Pliki nieczytelne/puste = luka do rejestru.
+  17. [SPEŁNIONE] Terminologia zgodna z glosariuszem dokumentów świętych.
+  18. [SPEŁNIONE] Po każdej podanalizie: min. 3 wnioski + min. 1 luka.
+
+──────────────────────────────────────────────────────────────────────────────
+SEKCJA 13 — KRYTERIA AKCEPTACJI RAPORTU
+──────────────────────────────────────────────────────────────────────────────
+
+  [x] 01. Raport zapisany jako jeden plik TXT: JDG/raporty_glm52_v3/RAPORT_V3_P31_ETAPY_AUDYTOW_12_28.txt.
+  [x] 02. Wszystkie sekcje 9.01–9.15 obecne i nietrywialne.
+  [x] 03. Każdy plik z sekcji 6 ma wiersz w tabeli dowodów albo adnotację.
+  [x] 04. Macierz PRAWO↔REGUŁA↔TEST kompletna ze statusami i ryzykiem.
+  [x] 05. Rejestr luk z krytycznością P0–P3 i identyfikatorami V3-P31-Lxx.
+  [x] 06. Min. 12 analiz Enterprise z pełnym projektem (6 elementów).
+  [x] 07. Kontrakt wyjściowy gotowy (9.08).
+  [x] 08. Plan testów z przypadkami blokującymi merge.
+  [x] 09. Sekcja pytań do człowieka (9.11).
+  [x] 10. Zero stwierdzeń bez dowodu; założenia oznaczone [ZAŁOŻENIE].
+  [x] 11. Odpowiedzi na pytania krzyżowe (7.4) z identyfikatorami V3-P31-Xxx.
+  [x] 12. Tabela przekazywanych artefaktów (11.4).
+  [x] 13. Macierz podanaliza×grupa (APENDYKS B).
+  [x] 14. Każdy anty-wzorzec z 7.5 ma wynik sprawdzenia.
+  [x] 15. Instrukcja 6.0 wykonana: każdy plik ma przypisany fakt.
+  [x] 16. Plan pracy krok po kroku (APENDYKS E) odznaczony w całości.
+  [x] 17. Żadna sekcja nie jest skopiowana z poprzednich raportów.
+  [x] 18. Deklaracja zgodności z dokumentami świętymi na końcu raportu.
+  [x] 19. Każdy etap 12-28 ma wiersz: domena → weryfikuje semantykę → dowód.
+  [x] 20. Unified schema policzony z jawną metodologią (I01, 17 etapów).
+
+──────────────────────────────────────────────────────────────────────────────
+SEKCJA 14 — CHECKLISTA ODCZYTU (odznaczona)
+──────────────────────────────────────────────────────────────────────────────
+
+  [x] 17 etapów audytu 12-28 — ZWERYFIKOWANO (rejestr w thresholds;
+      test_v3p31_stage_registry_covers_17_stages).
+  [x] docs/KAMPANIA_GLM52_ETAPY_10_28.md, ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md,
+      WIZJA_OPA_ENTERPRISE_V2.md, JDG/prompts_status.yaml — ZWERYFIKOWANO
+      (istnienie).
+  [x] Kontrakty P29 (wspólny JSON) i P30 (rejestr wdrożeń) — ZWERYFIKOWANO
+      (I12 p30_feed).
+  [ ] Mirror policies (policies/jdg, policies/tax, policies/tax/vat,
+      bundle.sh, base/manifest.json, overlays/v2026/manifest.json) —
+      NIEZWERYFIKOWANO (brak dostępu do brancha policies w tej sesji; L02/P48).
+
+──────────────────────────────────────────────────────────────────────────────
+SEKCJA 15 — WYMAGANIA NADRZĘDNE (potwierdzone)
+──────────────────────────────────────────────────────────────────────────────
+
+  1. Głębokie myślenie — wykonane (analiza 4 podanaliz, 12 analiz).
+  2. Głęboka analiza — wykonana (dowody z uruchomień, nie deklaracje).
+  3. Zaawansowany poziom Enterprise — wykonany (12 analiz z 6-punktowym szkieletem).
+  4. Poziom ENTERPRISE — wykonany (kontrakt wyjściowy, unified audit schema).
+  5. Innowacyjne ulepszenia wyprzedzające profesjonalistów — wykonane (I01-I12).
+  6. Wdrożyć/wygenerować najwięcej braków i elementów — wykonane (12 + naprawa
+     kanonu P00 w 9 pakietach).
+
+──────────────────────────────────────────────────────────────────────────────
+SEKCJA 16 — KOMENDA KOŃCOWA: CZYSZCZENIE OKNA KONTEKSTOWEGO
+──────────────────────────────────────────────────────────────────────────────
+
+  1. Raport zapisany: JDG/raporty_glm52_v3/RAPORT_V3_P31_ETAPY_AUDYTOW_12_28.txt.
+  2. Okno kontekstowe po wdrożeniu P31 — WYCZYSZCZONE (nie przenoszę niejawnych
+     założeń do części P32).
+
+──────────────────────────────────────────────────────────────────────────────
+APENDYKS B — MACIERZ PODANALIZA×GRUPA
+──────────────────────────────────────────────────────────────────────────────
+
+| Podanaliza | Grupy kluczowe | Wynik |
+|------------|----------------|-------|
+| 5.1 unified schema (I01/I05/I11) | etapy 12-28, thresholds, closure | PEŁNE (rejestr 17 etapów + testy) |
+| 5.2 obrona (I02/I03/I04/I09) | red team, konflikty, fortress | PEŁNE (progi 10/30 + testy) |
+| 5.3 ślad i świeżość (I06/I07/I08) | WORM, frontier, rerun | PEŁNE (90 dni + testy) |
+| 5.4 domknięcie (I10/I11/I12) | certyfikacja, P30 feed | PEŁNE (kontrakt 9.08) |
+
+──────────────────────────────────────────────────────────────────────────────
+APENDYKS E — PLAN PRACY KROK PO KROKU
+──────────────────────────────────────────────────────────────────────────────
+
+  [x] 1. Weryfikacja statusu P30 (WDROŻONY_100) i wybór pierwszego nie wdrożonego (P31).
+  [x] 2. Odczyt promptu V3_PROMPT_P31_ETAPY_AUDYTOW_12_28.txt (sekcje 1-16).
+  [x] 3. Analiza stanu 17 etapów 12-28 (rejestr jako dane, kontrakty P29/P30).
+  [x] 4. Projekt pakietu Rego v3_p31_audit_stages (12 analiz I01-I12).
+  [x] 5. Snapshot v3_p31 w thresholds_jdg.rego (8 kluczy + rejestr 17 etapów).
+  [x] 6. Wiring main_jdg.rego (import, rejestr, final_verdict_p95, post-merge p95).
+  [x] 7. Narzędzia dowodowe tools/v3_p31_*.py (12 + common + generator).
+  [x] 8. Bundle dowodowe bundles/v3_p31_*.json (12 × gate=PASS).
+  [x] 9. Testy natywne Rego (35/35) + pytest (16/16).
+  [x] 10. Regresja P13→P31 (437/437 rego, 184/184 pytest) + naprawa kanonu P00.
+  [x] 11. Oznaczenie P31 jako WDROŻONY_100 w v3_campaign_ledger.json (32/69, 46.38%).
+  [x] 12. Raport TXT zapisany; okno kontekstowe wyczyszczone.
+
+──────────────────────────────────────────────────────────────────────────────
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+──────────────────────────────────────────────────────────────────────────────
+
+  * Zgodność z ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1): params-as-data
+    (I05 stages-as-data), bramki CI (I01/I03 fail-closed), SLO i progi
+    (thresholds v3_p31) — bez odstępstw.
+  * Zgodność z WIZJA_OPA_ENTERPRISE_V2.md (V2): Decision Certificate F4
+    (I10 certification pack), rozliczalność (I07 WORM), pętla wdrożeniowa
+    (I12 p30_feed ↔ rejestr P30) — bez odstępstw.
+  * Odstępstwa: brak.

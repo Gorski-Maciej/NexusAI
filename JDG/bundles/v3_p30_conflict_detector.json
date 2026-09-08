@@ -1,0 +1,27 @@
+{
+  "innovation": "V3-P30-I11",
+  "generated_at": "2026-09-08T10:21:18+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p30_innovation_waves.conflicting_deployment_detector: True"
+    },
+    {
+      "name": "routing",
+      "status": "OK",
+      "detail": "routing: BLOCK_AND_ALERT (konflikt = BLOCK)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p94"
+    }
+  ],
+  "findings": []
+}

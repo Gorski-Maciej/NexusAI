@@ -98,6 +98,10 @@ import data.jdg.v3_p25_kalendarz as v3_p25_kalendarz
 import data.jdg.v3_p26_zus_skladki as v3_p26_zus_skladki
 import data.jdg.v3_p27_cfc_exit_mdr as v3_p27_cfc_exit_mdr
 import data.jdg.v3_p28_hyper_plan45 as v3_p28_hyper_plan45
+import data.jdg.v3_p29_quality_campaigns as v3_p29_quality_campaigns
+import data.jdg.v3_p30_innovation_waves as v3_p30_innovation_waves
+import data.jdg.v3_p31_audit_stages as v3_p31_audit_stages
+import data.jdg.v3_p32_ksiegowosc_automation as v3_p32_ksiegowosc_automation
 import data.jdg.micro.quality_v3_13 as micro_quality_v3_13
 import data.jdg.hyper.quality_v3_14 as hyper_quality_v3_14
 import data.jdg.enterprise.quality_v3_15 as enterprise_quality_v3_15
@@ -1474,6 +1478,13 @@ _package_decisions := {
     "jdg.v3_p27_cfc_exit_mdr": v3_p27_cfc_exit_mdr.decide,
     # ── V3-P28: HYPER/PLAN45 (mapa kontekstów, force majeure, sanctions gate) ──
     "jdg.v3_p28_hyper_plan45": v3_p28_hyper_plan45.decide,
+    # ── V3-P29: KAMPANIE JAKOŚCI V3 (8 bramek, mutation, debt ledger, heatmapa) ──
+    "jdg.v3_p29_quality_campaigns": v3_p29_quality_campaigns.decide,
+    # ── V3-P30: FALE INNOWACJI (rejestr wdrożeń, adopt-rate, golden replay) ──
+    "jdg.v3_p30_innovation_waves": v3_p30_innovation_waves.decide,
+    # ── V3-P31: ETAPY AUDYTÓW 12-28 (supersynteza, risk-of-fortress, frontier) ──
+    "jdg.v3_p31_audit_stages": v3_p31_audit_stages.decide,
+    "jdg.v3_p32_ksiegowosc_automation": v3_p32_ksiegowosc_automation.decide,
     "jdg.international": international.decide,
     "jdg.tp": tp.decide,
     "jdg.tp.hyper": tp_hyper.decide,
@@ -2914,6 +2925,52 @@ final_verdict_p92 = safe_merge(final_verdict_p91,
     ))
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18o: V3-P29 KAMPANIE JAKOŚCI V3 — 8 BRAMEK (MICRO/HYPER/ENTERPRISE/TOOLS/
+# TESTS_CI/BUNDLES/API_UI/DOCS) — 12 analiz I01–I12 (bramka łączna composite,
+# mutation testing contract, quality debt ledger, deterministyczny seed,
+# profil czasowy bramek, gate-as-data P06, auto-kwit blokujący merge, heatmapa
+# jakości domen, detekcja fasad AP06, powiązanie bramek z Decision Certificate
+# F4, pipeline testów granicznych CANDIDATE→ACTIVE, raport zgodności z
+# dokumentami świętymi). SUGGEST/NEEDS_ADVICE i fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p29_check nie jest true.
+final_verdict_p93 = safe_merge(final_verdict_p92,
+    safe_merge(v3_p29_quality_campaigns.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18p: V3-P30 FALE INNOWACJI — 24 GATE'Y RAPORTÓW R01–R24 I SPÓJNOŚĆ
+# WDROŻEŃ — 12 analiz I01–I12 (rejestr wdrożeń jako dane z dowodem DONE,
+# adopt-rate dashboard, diff semantyczny fasad, kontrakt selekcji V4,
+# traceability rekomendacja→PR, wind-down fasad, triage ryzyka 4-eyes,
+# golden replay po wdrożeniu (P10), budżet wdrożeniowy, changelog z danych,
+# detekcja sprzecznych wdrożeń, zamknięcie pętli Law Radar (P08)).
+# SUGGEST/NEEDS_ADVICE i fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p30_check nie jest true.
+final_verdict_p94 = safe_merge(final_verdict_p93,
+    safe_merge(v3_p30_innovation_waves.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18q: V3-P31 ETAPY AUDYTÓW 12–28 — DOMKNIĘCIE CYKLU KAMPANII ETAPOWEJ —
+# 12 analiz I01–I12 (unified audit schema, cross-etap conflict detector,
+# red team pack, risk-of-fortress score, etapy jako dane P06, auto-rerun po
+# nowelizacji (P08), WORM audit trail (P43), frontier matrix, rozstrzyganie
+# sprzeczności, certification pack generator (P44), kampania domknięcia etapów,
+# feed do rejestru wdrożeń P30). SUGGEST/NEEDS_ADVICE i fail-closed; nieaktywny
+# dopóki input.jdg_entrepreneur.v3_p31_check nie jest true.
+final_verdict_p95 = safe_merge(final_verdict_p94,
+    safe_merge(v3_p31_audit_stages.decide,
+        fallback.decide
+    ))
+
+final_verdict_p96 = safe_merge(final_verdict_p95,
+    safe_merge(v3_p32_ksiegowosc_automation.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
 #   • _invariant_report  — wynik evaluate() (invariant_failed, failed, levels),
@@ -2945,7 +3002,7 @@ final_verdict_p92 = safe_merge(final_verdict_p91,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p92
+    final_verdict_p96
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

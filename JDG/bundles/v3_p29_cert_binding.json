@@ -1,0 +1,27 @@
+{
+  "innovation": "V3-P29-I10",
+  "generated_at": "2026-09-08T09:14:16+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p29_quality_campaigns.gate_to_certificate: True"
+    },
+    {
+      "name": "routing",
+      "status": "OK",
+      "detail": "routing: BLOCK_AND_ALERT (certyfikat bez wersji = BLOCK)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p93"
+    }
+  ],
+  "findings": []
+}

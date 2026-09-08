@@ -1,0 +1,32 @@
+{
+  "innovation": "V3-P29-I04",
+  "generated_at": "2026-09-08T09:14:14+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p29_quality_campaigns.deterministic_seed: True"
+    },
+    {
+      "name": "thresholds",
+      "status": "OK",
+      "detail": "brakujące klucze: brak"
+    },
+    {
+      "name": "routing",
+      "status": "OK",
+      "detail": "routing: TRIAGE_QUEUE (brak seeda = TRIAGE)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p93"
+    }
+  ],
+  "findings": []
+}

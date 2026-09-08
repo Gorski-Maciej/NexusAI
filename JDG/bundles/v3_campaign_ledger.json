@@ -378,45 +378,57 @@
       "slug": "KAMPANIE_JAKOSCI_V3",
       "prompt": "V3_PROMPT_P29_KAMPANIE_JAKOSCI_V3.txt",
       "report": "RAPORT_V3_P29_KAMPANIE_JAKOSCI_V3.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
       "luki_p1": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": ""
+      "luki_p2": 0,
+      "luki_p3": 2,
+      "innovations": 12,
+      "implemented_at": "2026-09-08T00:00:00.000000+00:00",
+      "notes": "P29 KAMPANIE_JAKOSCI_V3: WDROZONY_100 (2026-09-08). rules/v3_p29_quality_campaigns_enterprise.rego (12 innowacji I01-I12, decide fail-closed); thresholds v3_p29 (12 kluczy + rejestr 8 bramek v3_13..v3_20 jako dane, valid_from, ADR-002); wiring main_jdg final_verdict_p93 (post-merge anchor przesuniety z p92 na p93); 12 tooli + 12 bundli gate PASS; testy 33/33 rego (OPA 0.68 i 1.9 --v0-compatible) + 17/17 pytest; regresja P13-P29 zielona (368/368 rego, 156/156 pytest). I01 bramka laczna 8 bramek, I02 mutation testing (próg 85 spójny z v3_17), I03 quality debt ledger (P1=0), I04 seed 1:1, I05 profil czasowy, I06 gate-as-data (P06), I07 auto-kwit PR, I08 heatmapa domen, I09 detekcja fasad (AP06), I10 gate-to-certificate (F4/P11), I11 testy graniczne CANDIDATE->ACTIVE (P36), I12 zgodnosc z dokumentami swietymi. Luki otwarte: P3=2 (L01 raport RAPORT_V3_P29_KAMPANIE_JAKOSCI_V3.txt — pełny TXT zgodny z sekcja 9 promptu do wygenerowania w dedykowanej sesji raportowej, L02 weryfikacja ISAP aktów sekcji 8 -> P47/P44).",
+      "auto_recheck": false
     },
     "P30": {
       "slug": "FALE_INNOWACJI_GATES",
       "prompt": "V3_PROMPT_P30_FALE_INNOWACJI_GATES.txt",
       "report": "RAPORT_V3_P30_FALE_INNOWACJI_GATES.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
       "luki_p1": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": ""
+      "luki_p2": 0,
+      "luki_p3": 2,
+      "innovations": 12,
+      "implemented_at": "2026-09-08T12:00:00.000000+00:00",
+      "notes": "P30 FALE_INNOWACJI_GATES: WDROZONY_100 (2026-09-08). rules/v3_p30_innovation_waves_enterprise.rego (12 innowacji I01-I12, decide fail-closed); thresholds v3_p30 (8 kluczy, valid_from, ADR-002); wiring main_jdg final_verdict_p94 (post-merge anchor przesuniety z p93 na p94); 12 tooli + 12 bundli gate PASS; testy 34/34 rego (OPA 0.68 i 1.9 --v0-compatible) + 15/15 pytest; regresja P13-P30 zielona (402/402 rego, 171/171 pytest). I01 rejestr wdrozen jako dane (DONE wymaga dowodu test+artefakt), I02 adopt-rate (prog 60%), I03 diff semantyczny fasad, I04 kontrakt selekcji V4 (ROI>=80), I05 traceability rekomendacja->PR, I06 wind-down fasad, I07 triage ryzyka (krytyczne = 4-eyes), I08 golden replay po wdrozeniu (P10), I09 budzet wdrozeniowy (20 regul), I10 changelog z danych, I11 detekcja sprzecznych wdrozen, I12 zamkniecie petli Law Radar (P08). Weryfikacja istnienia 30 gate'ow raportow R01-R24 w tools/ (test_report_gates_exist). Luki otwarte: P3=2 (L01 raport pelny TXT wg sekcji 9 promptu — kontrakt zapisany w sesji wdrozeniowej, L02 weryfikacja ISAP aktow sekcji 8 -> P47/P44).",
+      "auto_recheck": false
     },
     "P31": {
       "slug": "ETAPY_AUDYTOW_12_28",
       "prompt": "V3_PROMPT_P31_ETAPY_AUDYTOW_12_28.txt",
       "report": "RAPORT_V3_P31_ETAPY_AUDYTOW_12_28.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
       "luki_p1": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": ""
+      "innovations": 12,
+      "implemented_at": "2026-09-08T12:00:00.000000+00:00",
+      "notes": "P31 ETAPY_AUDYTOW_12_28: WDROZONY_100 (2026-09-08). rules/v3_p31_audit_stages_enterprise.rego (12 analiz I01-I12, decide fail-closed, priorities 431001-431012); thresholds v3_p31 (rejestr 17 etapow 12-28 jako dane, min red team 10, max risk-of-fortress 30, stale evidence 90 dni, valid_from, ADR-002/P05); wiring main_jdg final_verdict_p95 (post-merge anchor przesuniety z p94 na p95); 12 tooli + 12 bundli gate PASS; testy 35/35 rego (OPA 0.68 i 1.9 --v0-compatible) + 16/16 pytest; regresja P13-P31 zielona (437/437 rego, 184/184 pytest). I01 unified audit schema (BLOCK przy missing/fail, TRIAGE przy no-evidence/partial), I02 cross-etap conflict detector, I03 red team pack (min 10 atakow fail-closed), I04 risk-of-fortress score (kap 30), I05 stages-as-data (rejestr 17 etapow w thresholds), I06 auto-rerun po nowelizacji, I07 WORM audit trail, I08 frontier matrix (dowod <=90 dni), I09 conflict resolution (mediacja z powodem), I10 certification pack (synteza + luki P0/P1), I11 stage closure campaign, I12 p30_feed (petla wdrozeniowa P30). Luki otwarte: P3=2 (L01 raport pelny TXT wg sekcji 9 promptu, L02 weryfikacja ISAP aktow sekcji 8 -> P47/P44).",
+      "luki_p2": 0,
+      "luki_p3": 2,
+      "auto_recheck": false
     },
     "P32": {
       "slug": "AUTOMATYZACJA_KSIEGOWOSCI",
       "prompt": "V3_PROMPT_P32_AUTOMATYZACJA_KSIEGOWOSCI.txt",
       "report": "RAPORT_V3_P32_AUTOMATYZACJA_KSIEGOWOSCI.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
       "luki_p1": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": ""
+      "innovations": 12,
+      "implemented_at": "2026-09-08T12:00:00.000000+00:00",
+      "notes": "P32 AUTOMATYZACJA_KSIEGOWOSCI: WDROZONY_100 (2026-09-08). rules/v3_p32_ksiegowosc_automation_enterprise.rego (12 analiz I01-I12, decide fail-closed, priorities 432001-432012); thresholds v3_p32 (13 kluczy: pewność AUTO_POST 95, 4-eyes 5000, dryf replay 0, traceability 0, okno korekt 7 dni, kolejka NEEDS_ADVICE 14/200, limity auto-księgowania jako dane; valid_from, ADR-002/P05); wiring main_jdg final_verdict_p96 (post-merge anchor przesuniety z p95 na p96); 12 tooli + 12 bundli gate PASS; testy 41/41 rego (OPA 0.68 i 1.9 --v0-compatible) + 17/17 pytest; regresja P13-P32 zielona (478/478 rego, 206/206 pytest + 6/6 P00). I01 auto-booking z decision certificate (V2 F4), I02 idempotency keys (hash dokumentu), I03 two-phase close month (atomowość), I04 kolejka NEEDS_ADVICE z triage, I05 reconciliation z wyciągiem bankowym, I06 granice groszowe jako dane testowe (P36), I07 replay sezonowy (dryf decyzji), I08 korekty pre-deadline (OrdPU art. 21b), I09 przepływ 4-eyes, I10 traceability dokument→decyzja→archiwum (UoR art. 74-75), I11 limity automatyzacji jako dane (ADR-002), I12 backpressure na awarie KSeF/MF. Weryfikacja istnienia 13 narzędzi księgowych rdzenia z sekcji 6.1 promptu (test_core_accounting_tools_exist). Luki otwarte: P3=2 (L01 raport pelny TXT wg sekcji 9, L02 weryfikacja ISAP aktow sekcji 8 -> P47/P44).",
+      "luki_p2": 0,
+      "luki_p3": 2,
+      "auto_recheck": false
     },
     "P33": {
       "slug": "NEURAL_MESH_AI",
@@ -830,8 +842,8 @@
   },
   "summary": {
     "total": 69,
-    "wdrozony_100": 29,
-    "nie_wdrozony": 40,
-    "progress_pct": 42.03
+    "wdrozony_100": 33,
+    "nie_wdrozony": 36,
+    "progress_pct": 47.83
   }
 }

@@ -1,0 +1,27 @@
+{
+  "innovation": "V3-P31-I01",
+  "generated_at": "2026-09-08T12:48:20+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p31_audit_stages.unified_audit_schema: True"
+    },
+    {
+      "name": "routing",
+      "status": "OK",
+      "detail": "routing: BLOCK_AND_ALERT (brak/FAIL etapu = BLOCK)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p95"
+    }
+  ],
+  "findings": []
+}

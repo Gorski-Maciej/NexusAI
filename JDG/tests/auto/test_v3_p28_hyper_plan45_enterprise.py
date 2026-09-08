@@ -154,7 +154,9 @@ def test_main_jdg_wired_p92():
     assert '"jdg.v3_p28_hyper_plan45": v3_p28_hyper_plan45.decide' in src
     assert "final_verdict_p92 = safe_merge(final_verdict_p91" in src
     assert "final_verdict_post_merge = safe_merge(" in src
-    assert "final_verdict_p92\n)" in src
+    # P92 pozostaje w łańcuchu: p93 = safe_merge(p92, ...) i p92 wchodzi do
+    # safe_merge(final_verdict_p91, ...). Post-merge anchor przeszedł na p93 (P29).
+    assert "final_verdict_p92\n)" in src or "safe_merge(final_verdict_p92," in src
 
 
 # ── Spójność z legacy (mapa I01, duplikaty I02, pustynie I11) ──────────────────

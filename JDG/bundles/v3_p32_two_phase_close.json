@@ -1,0 +1,27 @@
+{
+  "innovation": "V3-P32-I03",
+  "generated_at": "2026-09-08T14:20:42+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p32_ksiegowosc_automation.two_phase_close_month: True"
+    },
+    {
+      "name": "routing",
+      "status": "OK",
+      "detail": "routing: BLOCK_AND_ALERT (commit z niezgodnościami = BLOCK)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p96"
+    }
+  ],
+  "findings": []
+}
