@@ -92,6 +92,9 @@ def build(ledger: dict | None = None) -> dict:
             "innovations": entry.get("innovations", 0),
             "implemented_at": entry.get("implemented_at"),
             "notes": entry.get("notes", ""),
+            # P45-fix: flaga musi być zachowana w wyjściu, inaczej kolejny
+            # rebuild resetuje części bez parsowalnego nagłówka raportu
+            "auto_recheck": entry.get("auto_recheck", True),
         }
     done = sum(1 for v in out["parts"].values() if v["status"] == "WDROŻONY_100")
     out["summary"] = {

@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P45-I06",
+  "generated_at": "2026-09-09T18:32:46+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "badges_total": 27,
+    "with_checksum": 27,
+    "scan_checksum": "bd830dadf61d4ca3...",
+    "registry_visibility": true
+  },
+  "checks": [
+    {
+      "name": "badges_with_checksum",
+      "status": "OK",
+      "detail": "badże z checksumą SHA-256: 27/27"
+    },
+    {
+      "name": "rule_registry_visibility",
+      "status": "OK",
+      "detail": "rule_registry.json: wpisy v3_p45 = 17 (wymagane >=17)"
+    },
+    {
+      "name": "badge_honesty",
+      "status": "OK",
+      "detail": "żaden badge stub_free=true nie jest wydany bez checksumy (zero deklaracji bez dowodu)"
+    },
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p45_stub_killer.stub_free_badge: True"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P45-I07",
+  "generated_at": "2026-09-09T18:32:50+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rego_files_scanned": 520,
+    "empty_templates": 0,
+    "managed_todo_debt": 4,
+    "pr_gate_active": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "no_templates_without_content",
+      "status": "OK",
+      "detail": "przeskanowano 520 plików rego; szablony bez treści (PLACEHOLDER/surowe TODO): 0"
+    },
+    {
+      "name": "todo_debt_registered",
+      "status": "OK",
+      "detail": "TODO-długi z właścicielem w rejestrze: 4 (kierowane do P46/P47/P54 wg treści)"
+    },
+    {
+      "name": "pr_gate_blocks_empty_template",
+      "status": "OK",
+      "detail": "tools/v3_p45_gate.py egzekwuje politykę szablonów: True"
+    },
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p45_stub_killer.template_policy: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p109"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P45-I04",
+  "generated_at": "2026-09-09T18:32:45+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "negative_tests": 6,
+    "opa_068_pass": 22,
+    "opa_19_pass": 22,
+    "convention": "P39-I04 negative-first"
+  },
+  "checks": [
+    {
+      "name": "negative_tests_present",
+      "status": "OK",
+      "detail": "testy negatywne: 6/6 w tests/rego/test_v3_p45_conversions.rego"
+    },
+    {
+      "name": "opa_068_suite_pass",
+      "status": "OK",
+      "detail": "OPA 0.68: PASS 22 przypadków"
+    },
+    {
+      "name": "opa_19_suite_pass",
+      "status": "OK",
+      "detail": "OPA 1.9 (--v0-compatible): PASS 22 przypadków"
+    },
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p45_stub_killer.negative_assertion: True"
+    }
+  ],
+  "findings": []
+}

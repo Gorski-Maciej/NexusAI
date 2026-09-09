@@ -1,0 +1,129 @@
+{
+  "innovation": "V3-P45-I10",
+  "generated_at": "2026-09-09T18:32:53+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "generated_at": "2026-09-09T18:32:52+00:00",
+    "total": 39,
+    "by_domain": {
+      "neural_mesh": 6,
+      "international": 3,
+      "micro": 3,
+      "accounting": 2,
+      "strategic": 2,
+      "zus": 2,
+      "conflicts": 1,
+      "edge_cases": 1,
+      "fallback.rego": 1,
+      "kks": 1,
+      "local_taxes": 1,
+      "mdr": 1,
+      "p05_innovations.rego": 1,
+      "p06_innovations.rego": 1,
+      "p07_innovations.rego": 1,
+      "p08_innovations.rego": 1,
+      "p09_innovations.rego": 1,
+      "p10_innovations.rego": 1,
+      "p11_innovations.rego": 1,
+      "p12_innovations.rego": 1,
+      "p13_innovations.rego": 1,
+      "p24_innovations.rego": 1,
+      "p34_innovations.rego": 1,
+      "p34_remaining.rego": 1,
+      "pcc": 1,
+      "reliability_guarantee.rego": 1,
+      "uor": 1
+    },
+    "by_layer": {
+      "macro": 22,
+      "enterprise": 14,
+      "micro": 3
+    },
+    "trend": "declining",
+    "top10_to_repair": [
+      {
+        "rule_id": "jdg.kks.enterprise.fallback",
+        "file": "rules/kks/kks_enterprise.rego",
+        "repair_plan": "ELSE->NEEDS_ADVICE",
+        "deadline": "2026-10-01"
+      },
+      {
+        "rule_id": "jdg.zus.health.fallback",
+        "file": "rules/zus/health_contribution_enterprise.rego",
+        "repair_plan": "ELSE->NEEDS_ADVICE",
+        "deadline": "2026-10-01"
+      },
+      {
+        "rule_id": "jdg.zus.sickness.fallback",
+        "file": "rules/zus/sickness_benefits_enterprise.rego",
+        "repair_plan": "ELSE->NEEDS_ADVICE",
+        "deadline": "2026-10-01"
+      },
+      {
+        "rule_id": "jdg.accounting.depreciation.fallback",
+        "file": "rules/accounting/depreciation.rego",
+        "repair_plan": "ELSE->NEEDS_ADVICE",
+        "deadline": "2026-10-01"
+      },
+      {
+        "rule_id": "jdg.accounting.pkpir_fallback",
+        "file": "rules/accounting/pkpir.rego",
+        "repair_plan": "ELSE->NEEDS_ADVICE",
+        "deadline": "2026-10-01"
+      },
+      {
+        "rule_id": "jdg.conflicts.fx_rate_source_conflict_nbp_a_vs_c",
+        "file": "rules/conflicts/fx_sources.rego",
+        "repair_plan": "ADD_NBP_TABLES",
+        "deadline": "2026-10-01"
+      },
+      {
+        "rule_id": "jdg.edge_cases.wht_foreign_service",
+        "file": "rules/edge_cases/edge_cases.rego",
+        "repair_plan": "ADD_ART21_UST1_UO_WHT",
+        "deadline": "2026-10-01"
+      },
+      {
+        "rule_id": "jdg.fallback.no_match_jdg",
+        "file": "rules/fallback.rego",
+        "repair_plan": "KEEP+MARK_CHECKPOINT",
+        "deadline": "2026-10-01"
+      },
+      {
+        "rule_id": "jdg.international.summary.r1",
+        "file": "rules/international/summary.rego",
+        "repair_plan": "CONVERT_SUMMARY",
+        "deadline": "2026-10-01"
+      },
+      {
+        "rule_id": "jdg.international.upo.ift2r.r1",
+        "file": "rules/international/upo.rego",
+        "repair_plan": "ADD_ART28U",
+        "deadline": "2026-10-01"
+      }
+    ]
+  },
+  "checks": [
+    {
+      "name": "history_recorded",
+      "status": "OK",
+      "detail": "trend series: 3 pomiarów (stub_census_history.json)"
+    },
+    {
+      "name": "trend_not_rising",
+      "status": "OK",
+      "detail": "trend: 39 -> 39 (spadkowy/stabilny)"
+    },
+    {
+      "name": "census_complete",
+      "status": "OK",
+      "detail": "spis: total=39, domeny=27, warstwy={'macro': 22, 'enterprise': 14, 'micro': 3}, TOP-10=10"
+    },
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p45_stub_killer.stub_census: True"
+    }
+  ],
+  "findings": []
+}

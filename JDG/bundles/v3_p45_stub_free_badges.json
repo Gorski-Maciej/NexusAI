@@ -1,0 +1,195 @@
+{
+  "generated_at": "2026-09-09T18:32:46+00:00",
+  "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+  "badges": {
+    "accounting": {
+      "stub_free": false,
+      "stub_count": 2,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "conflicts": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "edge_cases": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "fallback.rego": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "international": {
+      "stub_free": false,
+      "stub_count": 3,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "kks": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "local_taxes": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "mdr": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "micro": {
+      "stub_free": false,
+      "stub_count": 3,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "neural_mesh": {
+      "stub_free": false,
+      "stub_count": 6,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "p05_innovations.rego": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "p06_innovations.rego": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "p07_innovations.rego": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "p08_innovations.rego": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "p09_innovations.rego": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "p10_innovations.rego": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "p11_innovations.rego": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "p12_innovations.rego": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "p13_innovations.rego": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "p24_innovations.rego": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "p34_innovations.rego": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "p34_remaining.rego": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "pcc": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "reliability_guarantee.rego": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "strategic": {
+      "stub_free": false,
+      "stub_count": 2,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "uor": {
+      "stub_free": false,
+      "stub_count": 1,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    },
+    "zus": {
+      "stub_free": false,
+      "stub_count": 2,
+      "scan_checksum": "bd830dadf61d4ca3a7c9890bc13ba32a5767b5eebf5eaf592aa05d00bdacbc66",
+      "evidence_at": "2026-09-09T18:32:46+00:00",
+      "source": "bundles/stub_register.json"
+    }
+  }
+}

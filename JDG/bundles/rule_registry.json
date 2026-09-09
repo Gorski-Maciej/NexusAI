@@ -1,314 +1,722 @@
 {
   "jdg.adaptive_trust.auto_post_gate": {
+    "suspend_reason": null,
     "versions": [
       {
-        "version": "1.0.0",
-        "rule_id": "jdg.adaptive_trust.auto_post_gate",
-        "title": "Adaptive trust — auto-post gate (rekomendacja SUGGEST)",
-        "legal_basis": "P02 Sekcja 1",
-        "valid_from": "2026-08-13",
-        "valid_to": null,
-        "severity": "WARNING",
-        "owner": "policy-engineer",
         "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P02 Sekcja 1",
+        "owner": "policy-engineer",
+        "registered_at": "2026-08-13",
+        "rollout_pct": 100,
+        "rule_id": "jdg.adaptive_trust.auto_post_gate",
+        "severity": "WARNING",
+        "status": "ACTIVE",
+        "supersedes": null,
         "tests": [],
         "thresholds": [],
-        "impact_rules": [],
-        "rollout_pct": 100,
-        "status": "ACTIVE",
-        "error_rate": 0.0,
-        "supersedes": null,
-        "registered_at": "2026-08-13"
+        "title": "Adaptive trust — auto-post gate (rekomendacja SUGGEST)",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "version": "1.0.0"
       }
-    ],
-    "suspend_reason": null
+    ]
   },
   "jdg.kks.statute_of_limitations_art44": {
+    "suspend_reason": null,
     "versions": [
       {
-        "version": "1.0.0",
-        "rule_id": "jdg.kks.statute_of_limitations_art44",
-        "title": "KKS przedawnienie art. 44",
-        "legal_basis": "Art. 44 KKS",
-        "valid_from": "2026-08-13",
-        "valid_to": null,
-        "severity": "BLOCKER",
-        "owner": "policy-engineer",
         "domain": "kks",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "Art. 44 KKS",
+        "owner": "policy-engineer",
+        "registered_at": "2026-08-13",
+        "rollout_pct": 100,
+        "rule_id": "jdg.kks.statute_of_limitations_art44",
+        "severity": "BLOCKER",
+        "status": "ACTIVE",
+        "supersedes": null,
         "tests": [],
         "thresholds": [],
-        "impact_rules": [],
-        "rollout_pct": 100,
-        "status": "ACTIVE",
-        "error_rate": 0.0,
-        "supersedes": null,
-        "registered_at": "2026-08-13"
+        "title": "KKS przedawnienie art. 44",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "version": "1.0.0"
       }
-    ],
-    "suspend_reason": null
+    ]
   },
   "jdg.ksef_jpk.ksef_mandatory": {
+    "suspend_reason": null,
     "versions": [
       {
-        "version": "1.0.0",
-        "rule_id": "jdg.ksef_jpk.ksef_mandatory",
-        "title": "KSeF obowiązek e-fakturowania (art. 106na)",
-        "legal_basis": "Art. 106na VAT",
-        "valid_from": "2026-08-13",
-        "valid_to": null,
-        "severity": "BLOCKER",
-        "owner": "policy-engineer",
         "domain": "ksef",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "Art. 106na VAT",
+        "owner": "policy-engineer",
+        "registered_at": "2026-08-13",
+        "rollout_pct": 100,
+        "rule_id": "jdg.ksef_jpk.ksef_mandatory",
+        "severity": "BLOCKER",
+        "status": "ACTIVE",
+        "supersedes": null,
         "tests": [],
         "thresholds": [],
-        "impact_rules": [],
-        "rollout_pct": 100,
-        "status": "ACTIVE",
-        "error_rate": 0.0,
-        "supersedes": null,
-        "registered_at": "2026-08-13"
+        "title": "KSeF obowiązek e-fakturowania (art. 106na)",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "version": "1.0.0"
       }
-    ],
-    "suspend_reason": null
+    ]
   },
   "jdg.local_taxes.pcc.sale_detection": {
+    "suspend_reason": null,
     "versions": [
       {
-        "version": "1.0.0",
-        "rule_id": "jdg.local_taxes.pcc.sale_detection",
-        "title": "PCC wykrycie sprzedaży",
-        "legal_basis": "Ustawa o PCC",
-        "valid_from": "2026-08-13",
-        "valid_to": null,
-        "severity": "BLOCKER",
-        "owner": "policy-engineer",
         "domain": "pcc",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "Ustawa o PCC",
+        "owner": "policy-engineer",
+        "registered_at": "2026-08-13",
+        "rollout_pct": 100,
+        "rule_id": "jdg.local_taxes.pcc.sale_detection",
+        "severity": "BLOCKER",
+        "status": "ACTIVE",
+        "supersedes": null,
         "tests": [],
         "thresholds": [],
-        "impact_rules": [],
-        "rollout_pct": 100,
-        "status": "ACTIVE",
-        "error_rate": 0.0,
-        "supersedes": null,
-        "registered_at": "2026-08-13"
+        "title": "PCC wykrycie sprzedaży",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "version": "1.0.0"
       }
-    ],
-    "suspend_reason": null
+    ]
   },
   "jdg.p11_ordynacja_podatkowa_innovations.limitation_engine": {
+    "suspend_reason": null,
     "versions": [
       {
-        "version": "1.0.0",
-        "rule_id": "jdg.p11_ordynacja_podatkowa_innovations.limitation_engine",
-        "title": "Ordynacja podatkowa — silnik przedawnienia",
-        "legal_basis": "Art. 70 OrdPU",
-        "valid_from": "2026-08-13",
-        "valid_to": null,
-        "severity": "BLOCKER",
-        "owner": "policy-engineer",
         "domain": "ordpu",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "Art. 70 OrdPU",
+        "owner": "policy-engineer",
+        "registered_at": "2026-08-13",
+        "rollout_pct": 100,
+        "rule_id": "jdg.p11_ordynacja_podatkowa_innovations.limitation_engine",
+        "severity": "BLOCKER",
+        "status": "ACTIVE",
+        "supersedes": null,
         "tests": [],
         "thresholds": [],
-        "impact_rules": [],
-        "rollout_pct": 100,
-        "status": "ACTIVE",
-        "error_rate": 0.0,
-        "supersedes": null,
-        "registered_at": "2026-08-13"
+        "title": "Ordynacja podatkowa — silnik przedawnienia",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "version": "1.0.0"
       }
-    ],
-    "suspend_reason": null
+    ]
   },
   "jdg.p12_crossborder_innovations.cfc_calculator": {
+    "suspend_reason": null,
     "versions": [
       {
-        "version": "1.0.0",
-        "rule_id": "jdg.p12_crossborder_innovations.cfc_calculator",
-        "title": "CFC kalkulator (cross-border)",
-        "legal_basis": "Art. 24a CIT",
-        "valid_from": "2026-08-13",
-        "valid_to": null,
-        "severity": "BLOCKER",
-        "owner": "policy-engineer",
         "domain": "crossborder",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "Art. 24a CIT",
+        "owner": "policy-engineer",
+        "registered_at": "2026-08-13",
+        "rollout_pct": 100,
+        "rule_id": "jdg.p12_crossborder_innovations.cfc_calculator",
+        "severity": "BLOCKER",
+        "status": "ACTIVE",
+        "supersedes": null,
         "tests": [],
         "thresholds": [],
-        "impact_rules": [],
-        "rollout_pct": 100,
-        "status": "ACTIVE",
-        "error_rate": 0.0,
-        "supersedes": null,
-        "registered_at": "2026-08-13"
+        "title": "CFC kalkulator (cross-border)",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "version": "1.0.0"
       }
-    ],
-    "suspend_reason": null
+    ]
   },
   "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_rate_calculator": {
+    "suspend_reason": null,
     "versions": [
       {
-        "version": "1.0.0",
-        "rule_id": "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_rate_calculator",
-        "title": "Ryczałt — kalkulator stawki",
-        "legal_basis": "Ustawa o zryczałtowanym podatku",
-        "valid_from": "2026-08-13",
-        "valid_to": null,
-        "severity": "BLOCKER",
-        "owner": "policy-engineer",
         "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "Ustawa o zryczałtowanym podatku",
+        "owner": "policy-engineer",
+        "registered_at": "2026-08-13",
+        "rollout_pct": 100,
+        "rule_id": "jdg.p13_ryczalt_cykl_zycia_innovations.ryczalt_rate_calculator",
+        "severity": "BLOCKER",
+        "status": "ACTIVE",
+        "supersedes": null,
         "tests": [],
         "thresholds": [],
-        "impact_rules": [],
-        "rollout_pct": 100,
-        "status": "ACTIVE",
-        "error_rate": 0.0,
-        "supersedes": null,
-        "registered_at": "2026-08-13"
+        "title": "Ryczałt — kalkulator stawki",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "version": "1.0.0"
       }
-    ],
-    "suspend_reason": null
+    ]
   },
   "jdg.p16_rodo_aml_security_innovations.rodo_sanctions_calculator": {
+    "suspend_reason": null,
     "versions": [
       {
-        "version": "1.0.0",
-        "rule_id": "jdg.p16_rodo_aml_security_innovations.rodo_sanctions_calculator",
-        "title": "RODO kalkulator sankcji",
-        "legal_basis": "Art. 83 RODO",
-        "valid_from": "2026-08-13",
-        "valid_to": null,
-        "severity": "BLOCKER",
-        "owner": "policy-engineer",
         "domain": "rodo",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "Art. 83 RODO",
+        "owner": "policy-engineer",
+        "registered_at": "2026-08-13",
+        "rollout_pct": 100,
+        "rule_id": "jdg.p16_rodo_aml_security_innovations.rodo_sanctions_calculator",
+        "severity": "BLOCKER",
+        "status": "ACTIVE",
+        "supersedes": null,
         "tests": [],
         "thresholds": [],
-        "impact_rules": [],
-        "rollout_pct": 100,
-        "status": "ACTIVE",
-        "error_rate": 0.0,
-        "supersedes": null,
-        "registered_at": "2026-08-13"
+        "title": "RODO kalkulator sankcji",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "version": "1.0.0"
       }
-    ],
-    "suspend_reason": null
+    ]
   },
   "jdg.pit.a30c.r1": {
+    "suspend_reason": null,
     "versions": [
       {
-        "version": "1.0.0",
-        "rule_id": "jdg.pit.a30c.r1",
-        "title": "PIT art. 30c",
-        "legal_basis": "Art. 30c PIT",
-        "valid_from": "2026-08-13",
-        "valid_to": null,
-        "severity": "BLOCKER",
-        "owner": "policy-engineer",
         "domain": "pit",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "Art. 30c PIT",
+        "owner": "policy-engineer",
+        "registered_at": "2026-08-13",
+        "rollout_pct": 100,
+        "rule_id": "jdg.pit.a30c.r1",
+        "severity": "BLOCKER",
+        "status": "ACTIVE",
+        "supersedes": null,
         "tests": [],
         "thresholds": [],
-        "impact_rules": [],
-        "rollout_pct": 100,
-        "status": "ACTIVE",
-        "error_rate": 0.0,
-        "supersedes": null,
-        "registered_at": "2026-08-13"
+        "title": "PIT art. 30c",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "version": "1.0.0"
       }
-    ],
-    "suspend_reason": null
+    ]
   },
   "jdg.pit.advances_returns.loss_carry_forward": {
+    "suspend_reason": null,
     "versions": [
       {
-        "version": "1.0.0",
-        "rule_id": "jdg.pit.advances_returns.loss_carry_forward",
-        "title": "PIT rozliczenie straty",
-        "legal_basis": "Art. 9 ust. 3 PIT",
-        "valid_from": "2026-08-13",
-        "valid_to": null,
-        "severity": "BLOCKER",
-        "owner": "policy-engineer",
         "domain": "pit",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "Art. 9 ust. 3 PIT",
+        "owner": "policy-engineer",
+        "registered_at": "2026-08-13",
+        "rollout_pct": 100,
+        "rule_id": "jdg.pit.advances_returns.loss_carry_forward",
+        "severity": "BLOCKER",
+        "status": "ACTIVE",
+        "supersedes": null,
         "tests": [],
         "thresholds": [],
-        "impact_rules": [],
-        "rollout_pct": 100,
-        "status": "ACTIVE",
-        "error_rate": 0.0,
-        "supersedes": null,
-        "registered_at": "2026-08-13"
+        "title": "PIT rozliczenie straty",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "version": "1.0.0"
       }
-    ],
-    "suspend_reason": null
+    ]
   },
   "jdg.rule_lifecycle.auto_rollback": {
+    "suspend_reason": null,
     "versions": [
       {
-        "version": "1.0.0",
-        "rule_id": "jdg.rule_lifecycle.auto_rollback",
-        "title": "Auto-rollback (fail-closed)",
-        "legal_basis": "ADR-001 / P01 Sekcja 2",
-        "valid_from": "2026-08-13",
-        "valid_to": null,
-        "severity": "BLOCKER",
-        "owner": "policy-engineer",
         "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "ADR-001 / P01 Sekcja 2",
+        "owner": "policy-engineer",
+        "registered_at": "2026-08-13",
+        "rollout_pct": 100,
+        "rule_id": "jdg.rule_lifecycle.auto_rollback",
+        "severity": "BLOCKER",
+        "status": "ACTIVE",
+        "supersedes": null,
         "tests": [],
         "thresholds": [],
-        "impact_rules": [],
-        "rollout_pct": 100,
-        "status": "ACTIVE",
-        "error_rate": 0.0,
-        "supersedes": null,
-        "registered_at": "2026-08-13"
+        "title": "Auto-rollback (fail-closed)",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "version": "1.0.0"
       }
-    ],
-    "suspend_reason": null
+    ]
   },
   "jdg.solidarity.hyper.threshold_1m": {
+    "suspend_reason": null,
     "versions": [
       {
-        "version": "1.0.0",
-        "rule_id": "jdg.solidarity.hyper.threshold_1m",
-        "title": "Danina solidarnościowa próg 1 mln",
-        "legal_basis": "Art. 30h PIT",
-        "valid_from": "2026-08-13",
-        "valid_to": null,
-        "severity": "BLOCKER",
-        "owner": "policy-engineer",
         "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "Art. 30h PIT",
+        "owner": "policy-engineer",
+        "registered_at": "2026-08-13",
+        "rollout_pct": 100,
+        "rule_id": "jdg.solidarity.hyper.threshold_1m",
+        "severity": "BLOCKER",
+        "status": "ACTIVE",
+        "supersedes": null,
         "tests": [],
         "thresholds": [],
-        "impact_rules": [],
-        "rollout_pct": 100,
-        "status": "ACTIVE",
-        "error_rate": 0.0,
-        "supersedes": null,
-        "registered_at": "2026-08-13"
+        "title": "Danina solidarnościowa próg 1 mln",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "version": "1.0.0"
       }
-    ],
-    "suspend_reason": null
+    ]
   },
   "jdg.uor_live.full_accounting_obligation_check": {
+    "suspend_reason": null,
     "versions": [
       {
-        "version": "1.0.0",
-        "rule_id": "jdg.uor_live.full_accounting_obligation_check",
-        "title": "UoR obowiązek pełnej księgowości",
-        "legal_basis": "Art. 2 UoR",
-        "valid_from": "2026-08-13",
-        "valid_to": null,
-        "severity": "BLOCKER",
-        "owner": "policy-engineer",
         "domain": "uor",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "Art. 2 UoR",
+        "owner": "policy-engineer",
+        "registered_at": "2026-08-13",
+        "rollout_pct": 100,
+        "rule_id": "jdg.uor_live.full_accounting_obligation_check",
+        "severity": "BLOCKER",
+        "status": "ACTIVE",
+        "supersedes": null,
         "tests": [],
         "thresholds": [],
-        "impact_rules": [],
-        "rollout_pct": 100,
-        "status": "ACTIVE",
-        "error_rate": 0.0,
-        "supersedes": null,
-        "registered_at": "2026-08-13"
+        "title": "UoR obowiązek pełnej księgowości",
+        "valid_from": "2026-08-13",
+        "valid_to": null,
+        "version": "1.0.0"
       }
-    ],
-    "suspend_reason": null
+    ]
+  },
+  "jdg.v3_p45_conversions.mdr_hallmark_a": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "ordpu",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "Ordynacja art. 86a §1 [NIEZWERYFIKOWANE]",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-09",
+        "rollout_pct": 0,
+        "rule_id": "jdg.v3_p45_conversions.mdr_hallmark_a",
+        "severity": "BLOCKER",
+        "status": "SHADOW",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "MDR znacznik ogólny (konwersja stuba)",
+        "valid_from": "2026-09-09",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p45_conversions.pcc_a1_condition": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "pcc",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "PCC art. 1 ust. 1 pkt 1 [NIEZWERYFIKOWANE]",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-09",
+        "rollout_pct": 0,
+        "rule_id": "jdg.v3_p45_conversions.pcc_a1_condition",
+        "severity": "BLOCKER",
+        "status": "SHADOW",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "PCC art. 1 podmiotowość (konwersja stuba)",
+        "valid_from": "2026-09-09",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p45_conversions.uor_a2_threshold": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "uor",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "UoR art. 2 ust. 1 pkt 5 [NIEZWERYFIKOWANE]",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-09",
+        "rollout_pct": 0,
+        "rule_id": "jdg.v3_p45_conversions.uor_a2_threshold",
+        "severity": "BLOCKER",
+        "status": "SHADOW",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "UoR art. 2 próg 2M EUR (konwersja stuba)",
+        "valid_from": "2026-09-09",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p45_conversions.uor_a3_conditions": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "uor",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "UoR art. 3 [NIEZWERYFIKOWANE]",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-09",
+        "rollout_pct": 0,
+        "rule_id": "jdg.v3_p45_conversions.uor_a3_conditions",
+        "severity": "WARNING",
+        "status": "SHADOW",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "UoR art. 3 wyłączenia (konwersja stuba)",
+        "valid_from": "2026-09-09",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p45_conversions.wht_foreign_service": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "crossborder",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "UoWHT art. 21 ust. 1 pkt 2a [NIEZWERYFIKOWANE]",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-09",
+        "rollout_pct": 0,
+        "rule_id": "jdg.v3_p45_conversions.wht_foreign_service",
+        "severity": "BLOCKER",
+        "status": "SHADOW",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "WHT 20% usługi w PL (konwersja stuba)",
+        "valid_from": "2026-09-09",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p45_stub_killer.auto_convert_pipeline": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P45-I03; P34 L1-L5; P36 migration ledger",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-09",
+        "rollout_pct": 0,
+        "rule_id": "jdg.v3_p45_stub_killer.auto_convert_pipeline",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "Auto-convert pipeline (P45-I03)",
+        "valid_from": "2026-09-09",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p45_stub_killer.isap_parity": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P45-I12; ISAP jedyne źródło treści ustaw [NIEZWERYFIKOWANE]",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-09",
+        "rollout_pct": 0,
+        "rule_id": "jdg.v3_p45_stub_killer.isap_parity",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "ISAP parity (P45-I12)",
+        "valid_from": "2026-09-09",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p45_stub_killer.legal_empty": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P45-I11; VAT art. 41/43/108 [NIEZWERYFIKOWANE]",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-09",
+        "rollout_pct": 0,
+        "rule_id": "jdg.v3_p45_stub_killer.legal_empty",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "Legal-empty detector (P45-I11)",
+        "valid_from": "2026-09-09",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p45_stub_killer.mutation_score_gate": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P45-I05; P39 testy jako bramki",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-09",
+        "rollout_pct": 0,
+        "rule_id": "jdg.v3_p45_stub_killer.mutation_score_gate",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "Mutation score gate (P45-I05)",
+        "valid_from": "2026-09-09",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p45_stub_killer.negative_assertion": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P45-I04; P39-I04 negative-first",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-09",
+        "rollout_pct": 0,
+        "rule_id": "jdg.v3_p45_stub_killer.negative_assertion",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "Negative assertion generator (P45-I04)",
+        "valid_from": "2026-09-09",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p45_stub_killer.provenance_of_truth": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P45-I09; P07 lifecycle; Ordynacja art. 21 [NIEZWERYFIKOWANE]",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-09",
+        "rollout_pct": 0,
+        "rule_id": "jdg.v3_p45_stub_killer.provenance_of_truth",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "Provenance of truth (P45-I09)",
+        "valid_from": "2026-09-09",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p45_stub_killer.stub_census": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P45-I10; P37 dashboard; P42 self-scan",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-09",
+        "rollout_pct": 0,
+        "rule_id": "jdg.v3_p45_stub_killer.stub_census",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "Stub census report (P45-I10)",
+        "valid_from": "2026-09-09",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p45_stub_killer.stub_enabling_tests": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P45-I08; P39-I04; tautology_guard",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-09",
+        "rollout_pct": 0,
+        "rule_id": "jdg.v3_p45_stub_killer.stub_enabling_tests",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "Stub-enabling tests (P45-I08)",
+        "valid_from": "2026-09-09",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p45_stub_killer.stub_forensics": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P45-I02; RODO art. 5.2 [NIEZWERYFIKOWANE]",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-09",
+        "rollout_pct": 0,
+        "rule_id": "jdg.v3_p45_stub_killer.stub_forensics",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "Stub forensics (P45-I02)",
+        "valid_from": "2026-09-09",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p45_stub_killer.stub_free_badge": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P45-I06; P44 certyfikat",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-09",
+        "rollout_pct": 0,
+        "rule_id": "jdg.v3_p45_stub_killer.stub_free_badge",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "Stub-free badge per package (P45-I06)",
+        "valid_from": "2026-09-09",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p45_stub_killer.stub_register": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P45-I01; UoR art. 4 ust. 1 [NIEZWERYFIKOWANE]; P44-K1",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-09",
+        "rollout_pct": 0,
+        "rule_id": "jdg.v3_p45_stub_killer.stub_register",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "Stub register with SLA (P45-I01)",
+        "valid_from": "2026-09-09",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p45_stub_killer.template_policy": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P45-I07; P00 standardy",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-09",
+        "rollout_pct": 0,
+        "rule_id": "jdg.v3_p45_stub_killer.template_policy",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "Template rule policy (P45-I07)",
+        "valid_from": "2026-09-09",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
   }
 }

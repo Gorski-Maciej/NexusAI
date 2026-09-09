@@ -16,7 +16,7 @@
 # ESTONIAN_CIT, CIT_SMALL) nie występują dla JDG w praktyce. Moduł modeluje scenariusze
 # hipotetyczne. REALNE znaczenie ma JPK_KR/JPK_ST na żądanie dla JDG prowadzącej pełną
 # księgowość (przychody >2 mln EUR rocznie) — art. 193a OrdPU.
-# TODO: Powiązanie modułu z księgami rachunkowymi (generator JPK_KR/ST).
+# TODO P54: Powiązanie modułu z księgami rachunkowymi (generator JPK_KR/ST).
 #
 # package: jdg.jpk_cit
 # ═══════════════════════════════════════════════════════════════════════════════

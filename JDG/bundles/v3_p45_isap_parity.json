@@ -1,0 +1,66 @@
+{
+  "innovation": "V3-P45-I12",
+  "generated_at": "2026-09-09T18:32:55+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "conversions_total": 5,
+    "with_quote": 5,
+    "unverified_flagged": 5,
+    "mediation_register": "bundles/v3_p45_isap_mediation_register.json"
+  },
+  "checks": [
+    {
+      "name": "conversions_with_isap_quote",
+      "status": "OK",
+      "detail": "konwersje z cytatem ISAP obok kodu: 5/5 (plik rules/v3_p45_conversions.rego: sekcja PARITY_WITH_ISAP)"
+    },
+    {
+      "name": "unverified_marked_honestly",
+      "status": "OK",
+      "detail": "cytaty z jawnym [NIEZWERYFIKOWANE]: 5/5 (zero fikcyjnych podstaw — protokół 04)"
+    },
+    {
+      "name": "mediation_register_written",
+      "status": "OK",
+      "detail": "bundles/v3_p45_isap_mediation_register.json: 5 wpisów do P47"
+    },
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p45_stub_killer.isap_parity: True"
+    }
+  ],
+  "findings": [],
+  "parity": [
+    {
+      "conversion": "jdg.v3_p45_conversions.uor_a2_threshold",
+      "quote": "przedsiębiorca jest obowiązany prowadzić księgi rachunkowe, jeżeli przychody netto ze sprzedaży towarów i usług za rok poprzedający rok obrotowy wynoszą nie mniej niż równowartość 2 000 000 euro",
+      "act": "Ustawa o rachunkowości art. 2 ust. 1 pkt 5",
+      "dz_u": "[NIEZWERYFIKOWANE — ISAP poza sesją]"
+    },
+    {
+      "conversion": "jdg.v3_p45_conversions.uor_a3_conditions",
+      "quote": "ksiąg rachunkowych nie prowadzą osoby fizyczne, jeżeli dokonują ewidencji przychodów i kosztów w sposób umożliwiający ustalenie wysokości dochodu",
+      "act": "Ustawa o rachunkowości art. 3",
+      "dz_u": "[NIEZWERYFIKOWANE — ISAP poza sesją]"
+    },
+    {
+      "conversion": "jdg.v3_p45_conversions.mdr_hallmark_a",
+      "quote": "warunkiem uznania schematu za schemat transgraniczny jest spełniony znacznik ogólny oraz przekroczenie progów",
+      "act": "Ordynacja podatkowa art. 86a §1 (znacznik ogólny)",
+      "dz_u": "[NIEZWERYFIKOWANE — ISAP poza sesją]"
+    },
+    {
+      "conversion": "jdg.v3_p45_conversions.pcc_a1_condition",
+      "quote": "podatkowi od czynności cywilnoprawnych podlega umowa sprzedaży rzeczy lub praw majątkowych",
+      "act": "Ustawa o PCC art. 1 ust. 1 pkt 1",
+      "dz_u": "[NIEZWERYFIKOWANE — ISAP poza sesją]"
+    },
+    {
+      "conversion": "jdg.v3_p45_conversions.wht_foreign_service",
+      "quote": "20% zryczałtowany podatek dochodowy pobiera się od przychodów z świadczonych na terytorium kraju usług, których nabywcą jest podatnik niemający siedziby na terytorium RP",
+      "act": "Ustawa o podatku dochodowym od osób prawnych art. 21 ust. 1 pkt 2a",
+      "dz_u": "[NIEZWERYFIKOWANE — ISAP poza sesją]"
+    }
+  ]
+}

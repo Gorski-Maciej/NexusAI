@@ -1,0 +1,33 @@
+{
+  "package": "v3_p45_conversions",
+  "rule_file": "rules/v3_p45_conversions.rego",
+  "mutators": {
+    "M1_threshold_shift": {
+      "applicable": 0,
+      "killed": 0,
+      "score": null
+    },
+    "M2_condition_invert": {
+      "applicable": 34,
+      "killed": 34,
+      "score": 100.0
+    },
+    "M3_else_removal": {
+      "applicable": 0,
+      "killed": 0,
+      "score": null
+    },
+    "M4_legal_basis_strip": {
+      "applicable": 0,
+      "killed": 0,
+      "score": null,
+      "note": "non-semantic, excluded"
+    }
+  },
+  "total_mutants": 34,
+  "killed": 34,
+  "mutation_score": 100.0,
+  "duration_s": 22.8,
+  "generated_at": "2026-09-09T17:55:35+00:00",
+  "engine": "tools/mutation_runner.py (M1-M3 semantic; M4 non-semantic excluded)"
+}

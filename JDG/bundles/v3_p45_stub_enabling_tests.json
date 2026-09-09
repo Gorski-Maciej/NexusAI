@@ -1,0 +1,68 @@
+{
+  "innovation": "V3-P45-I08",
+  "generated_at": "2026-09-09T18:32:51+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "tautological_test_files": 102,
+    "tautology_max": 0,
+    "stub_domains": [
+      "accounting",
+      "conflicts",
+      "edge_cases",
+      "fallback.rego",
+      "international",
+      "kks",
+      "local_taxes",
+      "mdr",
+      "micro",
+      "neural_mesh",
+      "p05_innovations.rego",
+      "p06_innovations.rego",
+      "p07_innovations.rego",
+      "p08_innovations.rego",
+      "p09_innovations.rego",
+      "p10_innovations.rego",
+      "p11_innovations.rego",
+      "p12_innovations.rego",
+      "p13_innovations.rego",
+      "p24_innovations.rego",
+      "p34_innovations.rego",
+      "p34_remaining.rego",
+      "pcc",
+      "reliability_guarantee.rego",
+      "strategic",
+      "uor",
+      "zus"
+    ],
+    "pairs_unfixed": 0,
+    "repair_sla": "2026-10-01 (rejestr I01)"
+  },
+  "checks": [
+    {
+      "name": "tautology_census_from_tool",
+      "status": "OK",
+      "detail": "tautology_guard: 102 plików testów tautologicznych (licznik z narzędzia, nie deklaracja)"
+    },
+    {
+      "name": "stub_test_pairs",
+      "status": "OK",
+      "detail": "stuby w domenach: ['accounting', 'conflicts', 'edge_cases', 'fallback.rego', 'international', 'kks', 'local_taxes', 'mdr', 'micro', 'neural_mesh', 'p05_innovations.rego', 'p06_innovations.rego', 'p07_innovations.rego', 'p08_innovations.rego', 'p09_innovations.rego', 'p10_innovations.rego', 'p11_innovations.rego', 'p12_innovations.rego', 'p13_innovations.rego', 'p24_innovations.rego', 'p34_innovations.rego', 'p34_remaining.rego', 'pcc', 'reliability_guarantee.rego', 'strategic', 'uor', 'zus']; pary stub+test nienaprawione w P45: 0 (naprawa wg SLA rejestru I01, termin 2026-10-01)"
+    },
+    {
+      "name": "threshold_as_data",
+      "status": "OK",
+      "detail": "data.jdg.thresholds.v3_p45.v3_p45_tautological_test_files_max: True"
+    },
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p45_stub_killer.stub_enabling_tests: True"
+    }
+  ],
+  "findings": [
+    {
+      "severity": "MEDIUM",
+      "message": "tautologie 102 > próg 0 — plan redukcji w rejestrze I01; naprawa negative-first (P39-I04)"
+    }
+  ]
+}

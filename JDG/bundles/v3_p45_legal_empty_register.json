@@ -1,0 +1,194 @@
+{
+  "generated_at": "2026-09-09T18:32:55+00:00",
+  "rego_files_scanned": 520,
+  "legal_basis_empty_or_placeholder": 17,
+  "material_rules_without_act": 13,
+  "zero_target": "P68 RECERTYFIKACJA_FINALNA",
+  "handoff": "P46 (hardcode) + P47 (legal basis) — naprawa wg priorytetu",
+  "entries": [
+    [
+      {
+        "kind": "placeholder_basis",
+        "file": "rules/p21_innovations_enterprise.rego",
+        "snippet": "\"_legal_basis\":\"-\"",
+        "priority": "P1"
+      },
+      {
+        "kind": "placeholder_basis",
+        "file": "rules/p22_innovations_enterprise.rego",
+        "snippet": "\"_legal_basis\":\"—\"",
+        "priority": "P1"
+      },
+      {
+        "kind": "placeholder_basis",
+        "file": "rules/p22_innovations_enterprise.rego",
+        "snippet": "\"_legal_basis\":\"—\"",
+        "priority": "P1"
+      },
+      {
+        "kind": "placeholder_basis",
+        "file": "rules/p22_innovations_enterprise.rego",
+        "snippet": "\"_legal_basis\":\"—\"",
+        "priority": "P1"
+      },
+      {
+        "kind": "placeholder_basis",
+        "file": "rules/p22_innovations_enterprise.rego",
+        "snippet": "\"_legal_basis\":\"—\"",
+        "priority": "P1"
+      },
+      {
+        "kind": "placeholder_basis",
+        "file": "rules/fx/plan45_fx.rego",
+        "snippet": "\"_legal_basis\":\"—\"",
+        "priority": "P1"
+      },
+      {
+        "kind": "placeholder_basis",
+        "file": "rules/fx/plan45_fx.rego",
+        "snippet": "\"_legal_basis\":\"—\"",
+        "priority": "P1"
+      },
+      {
+        "kind": "placeholder_basis",
+        "file": "rules/residency/plan45_residency.rego",
+        "snippet": "\"_legal_basis\":\"—\"",
+        "priority": "P1"
+      },
+      {
+        "kind": "placeholder_basis",
+        "file": "rules/payments/plan45_payments.rego",
+        "snippet": "\"_legal_basis\":\"—\"",
+        "priority": "P1"
+      },
+      {
+        "kind": "placeholder_basis",
+        "file": "rules/seasonal/plan45_seasonal.rego",
+        "snippet": "\"_legal_basis\":\"—\"",
+        "priority": "P1"
+      },
+      {
+        "kind": "placeholder_basis",
+        "file": "rules/seasonal/plan45_seasonal.rego",
+        "snippet": "\"_legal_basis\":\"—\"",
+        "priority": "P1"
+      },
+      {
+        "kind": "placeholder_basis",
+        "file": "rules/seasonal/plan45_seasonal.rego",
+        "snippet": "\"_legal_basis\":\"—\"",
+        "priority": "P1"
+      },
+      {
+        "kind": "placeholder_basis",
+        "file": "rules/conviction/plan45_conviction.rego",
+        "snippet": "\"_legal_basis\":\"—\"",
+        "priority": "P1"
+      },
+      {
+        "kind": "placeholder_basis",
+        "file": "rules/conviction/plan45_conviction.rego",
+        "snippet": "\"_legal_basis\":\"—\"",
+        "priority": "P1"
+      },
+      {
+        "kind": "placeholder_basis",
+        "file": "rules/regulated/plan45_regulated.rego",
+        "snippet": "\"_legal_basis\":\"—\"",
+        "priority": "P1"
+      },
+      {
+        "kind": "placeholder_basis",
+        "file": "rules/regulated/plan45_regulated.rego",
+        "snippet": "\"_legal_basis\":\"—\"",
+        "priority": "P1"
+      },
+      {
+        "kind": "placeholder_basis",
+        "file": "rules/insurance/plan45_insurance.rego",
+        "snippet": "\"_legal_basis\":\"—\"",
+        "priority": "P1"
+      }
+    ],
+    [
+      {
+        "kind": "material_without_act",
+        "file": "rules/temporal.rego",
+        "basis": "ADR-003 + A2 (deterministyczny wybór wersji) + P03 GLM52 §3",
+        "priority": "P0"
+      },
+      {
+        "kind": "material_without_act",
+        "file": "rules/p35_innovations_engine.rego",
+        "basis": "P35 Innov #11: Combined Relief Limit Auto-Enforcer",
+        "priority": "P0"
+      },
+      {
+        "kind": "material_without_act",
+        "file": "rules/conflict_declaration_enterprise.rego",
+        "basis": "P02 Sekcja 2 — Deterministic Conflict Hierarchy",
+        "priority": "P0"
+      },
+      {
+        "kind": "material_without_act",
+        "file": "rules/p15_srodowisko_bdo_innovations_v9.rego",
+        "basis": "ustawy z dnia 14 grudnia 2012 r. o odpadach (Dz.U. 2025 poz. 321); prawo budowla",
+        "priority": "P0"
+      },
+      {
+        "kind": "material_without_act",
+        "file": "rules/v3_p14_pit_reliefs_enterprise.rego",
+        "basis": "ADR-002 parametry-as-data (P06); roczne limity z valid_from (P05)",
+        "priority": "P0"
+      },
+      {
+        "kind": "material_without_act",
+        "file": "rules/v3_p14_pit_reliefs_enterprise.rego",
+        "basis": "P10 golden oracle; P39 bramki CI (granice limitów/wieku)",
+        "priority": "P0"
+      },
+      {
+        "kind": "material_without_act",
+        "file": "rules/v3_p32_ksiegowosc_automation_enterprise.rego",
+        "basis": "V3_P32 §10/I12; kontrakt P25 (terminy); KSeF offline queue (tools)",
+        "priority": "P0"
+      },
+      {
+        "kind": "material_without_act",
+        "file": "rules/v3_p39_testy_ci_enterprise.rego",
+        "basis": "V3_P39 §10/I06; kontrakt P29-I02 (próg 85 spójny z v3_17)",
+        "priority": "P0"
+      },
+      {
+        "kind": "material_without_act",
+        "file": "rules/v3_p39_testy_ci_enterprise.rego",
+        "basis": "V3_P39 §10/I11; kontrakt P33 (fuzz/chaos deterministyczny)",
+        "priority": "P0"
+      },
+      {
+        "kind": "material_without_act",
+        "file": "rules/reliability_guarantee_enterprise.rego",
+        "basis": "P01 Sekcja 4 — Decision Determinism",
+        "priority": "P0"
+      },
+      {
+        "kind": "material_without_act",
+        "file": "rules/v3_p34_walidacja_narzedzia_enterprise.rego",
+        "basis": "V3_P34 §10/I05; anty-wzorzec AP08; V1 (determinizm werdyktu)",
+        "priority": "P0"
+      },
+      {
+        "kind": "material_without_act",
+        "file": "rules/micro/plan33_pit.rego",
+        "basis": "Limit 150k",
+        "priority": "P0"
+      },
+      {
+        "kind": "material_without_act",
+        "file": "rules/business/strategic_intelligence.rego",
+        "basis": "Ogólne terminy wg odpowiednich ustaw",
+        "priority": "P0"
+      }
+    ]
+  ]
+}

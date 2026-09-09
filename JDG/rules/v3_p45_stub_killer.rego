@@ -26,7 +26,7 @@
 #       opuszcza SHADOW; awans bez dowodu = BLOCK),
 #   I10 Stub Census Report (cotygodniowy raport: stuby per domena/warstwa,
 #       trend, TOP-10; brak spisu = TRIAGE),
-#   I11 Legal-Empty Detector (_legal_basis puste/placeholder „TODO/N/A/—";
+#   I11 Legal-Empty Detector (_legal_basis puste lub placeholder;
 #       reguła materiałowa bez aktu = BLOCK),
 #   I12 Parity with ISAP Text (dla skonwertowanych reguł cytat przepisu obok
 #       kodu; konwersja bez cytatu do weryfikacji = TRIAGE).

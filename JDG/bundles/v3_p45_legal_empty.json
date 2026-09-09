@@ -1,0 +1,119 @@
+{
+  "innovation": "V3-P45-I11",
+  "generated_at": "2026-09-09T18:32:55+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rego_files_scanned": 520,
+    "legal_basis_empty_or_placeholder": 17,
+    "material_rules_without_act": 13,
+    "findings_detail": [
+      {
+        "file": "rules/p21_innovations_enterprise.rego",
+        "snippet": "\"_legal_basis\":\"-\""
+      },
+      {
+        "file": "rules/p22_innovations_enterprise.rego",
+        "snippet": "\"_legal_basis\":\"—\""
+      },
+      {
+        "file": "rules/p22_innovations_enterprise.rego",
+        "snippet": "\"_legal_basis\":\"—\""
+      },
+      {
+        "file": "rules/p22_innovations_enterprise.rego",
+        "snippet": "\"_legal_basis\":\"—\""
+      },
+      {
+        "file": "rules/p22_innovations_enterprise.rego",
+        "snippet": "\"_legal_basis\":\"—\""
+      },
+      {
+        "file": "rules/fx/plan45_fx.rego",
+        "snippet": "\"_legal_basis\":\"—\""
+      },
+      {
+        "file": "rules/fx/plan45_fx.rego",
+        "snippet": "\"_legal_basis\":\"—\""
+      },
+      {
+        "file": "rules/residency/plan45_residency.rego",
+        "snippet": "\"_legal_basis\":\"—\""
+      },
+      {
+        "file": "rules/payments/plan45_payments.rego",
+        "snippet": "\"_legal_basis\":\"—\""
+      },
+      {
+        "file": "rules/seasonal/plan45_seasonal.rego",
+        "snippet": "\"_legal_basis\":\"—\""
+      },
+      {
+        "file": "rules/seasonal/plan45_seasonal.rego",
+        "snippet": "\"_legal_basis\":\"—\""
+      },
+      {
+        "file": "rules/seasonal/plan45_seasonal.rego",
+        "snippet": "\"_legal_basis\":\"—\""
+      },
+      {
+        "file": "rules/conviction/plan45_conviction.rego",
+        "snippet": "\"_legal_basis\":\"—\""
+      },
+      {
+        "file": "rules/conviction/plan45_conviction.rego",
+        "snippet": "\"_legal_basis\":\"—\""
+      },
+      {
+        "file": "rules/regulated/plan45_regulated.rego",
+        "snippet": "\"_legal_basis\":\"—\""
+      },
+      {
+        "file": "rules/regulated/plan45_regulated.rego",
+        "snippet": "\"_legal_basis\":\"—\""
+      },
+      {
+        "file": "rules/insurance/plan45_insurance.rego",
+        "snippet": "\"_legal_basis\":\"—\""
+      },
+      {
+        "file": "rules/temporal.rego",
+        "basis": "ADR-003 + A2 (deterministyczny wybór wersji) + P03 GLM52 §3"
+      },
+      {
+        "file": "rules/p35_innovations_engine.rego",
+        "basis": "P35 Innov #11: Combined Relief Limit Auto-Enforcer"
+      },
+      {
+        "file": "rules/conflict_declaration_enterprise.rego",
+        "basis": "P02 Sekcja 2 — Deterministic Conflict Hierarchy"
+      }
+    ]
+  },
+  "checks": [
+    {
+      "name": "scan_complete",
+      "status": "OK",
+      "detail": "przeskanowano 520 plików rego"
+    },
+    {
+      "name": "legal_empty_register_written",
+      "status": "OK",
+      "detail": "bundles/v3_p45_legal_empty_register.json: placeholder=17 (P1), materiałowe-bez-aktu=13 (P0) — SLA u właściciela części P46/P47"
+    },
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p45_stub_killer.legal_empty: True"
+    }
+  ],
+  "findings": [
+    {
+      "severity": "HIGH",
+      "message": "reguły materiałowe bez aktu: 13 — zarejestrowane P0, naprawa P47"
+    },
+    {
+      "severity": "MEDIUM",
+      "message": "placeholdery _legal_basis: 17 — zarejestrowane P1, naprawa P46/P47"
+    }
+  ]
+}

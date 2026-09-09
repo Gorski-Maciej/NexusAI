@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-09-09T18:32:43+00:00",
+  "contract": "P36 migration ledger",
+  "pipeline": "dry-run -> diff -> validate L1-L5 -> golden replay -> 4-eyes",
+  "conversions": [
+    {
+      "stub_rule_id": "jdg.uor.obligation.a2.r6",
+      "converted_rule_id": "jdg.v3_p45_conversions.uor_a2_threshold",
+      "legal_basis": "UoR art. 2 ust. 1 pkt 5 [NIEZWERYFIKOWANE]",
+      "threshold": "data.jdg.thresholds.v3_p45_conversions.v3_p45_conv_uor_threshold_eur"
+    },
+    {
+      "stub_rule_id": "jdg.micro.uor.a3.r8",
+      "converted_rule_id": "jdg.v3_p45_conversions.uor_a3_conditions",
+      "legal_basis": "UoR art. 3 [NIEZWERYFIKOWANE]",
+      "threshold": "data.jdg.thresholds.v3_p45_conversions.v3_p45_conv_uor_threshold_eur"
+    },
+    {
+      "stub_rule_id": "jdg.mdr.hallmarks.general.r4",
+      "converted_rule_id": "jdg.v3_p45_conversions.mdr_hallmark_a",
+      "legal_basis": "Ordynacja art. 86a §1 pkt 1 [NIEZWERYFIKOWANE]",
+      "threshold": "data.jdg.thresholds.v3_p45_conversions.v3_p45_conv_mdr_main_benefit"
+    },
+    {
+      "stub_rule_id": "jdg.pcc.sales_agreements.a1.r15",
+      "converted_rule_id": "jdg.v3_p45_conversions.pcc_a1_condition",
+      "legal_basis": "PCC art. 1 ust. 1 pkt 1 [NIEZWERYFIKOWANE]",
+      "threshold": "data.jdg.thresholds.v3_p45_conversions.v3_p45_conv_pcc_min_pln"
+    },
+    {
+      "stub_rule_id": "jdg.edge_cases.wht_foreign_service",
+      "converted_rule_id": "jdg.v3_p45_conversions.wht_foreign_service",
+      "legal_basis": "UoWHT art. 21 ust. 1 [NIEZWERYFIKOWANE]",
+      "threshold": "data.jdg.thresholds.v3_p45_conversions.v3_p45_conv_wht_rate_pct"
+    }
+  ]
+}

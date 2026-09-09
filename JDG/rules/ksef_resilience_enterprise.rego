@@ -129,12 +129,12 @@ else := {
     # Deadline: 7 dni od ustania awarii na wysyłkę (lub 24h od końca dnia awarii)
     deadline_hours := object.get(data.jdg.thresholds.ksef_jpk_edeklaracje, "ksef_offline_grace_days", 7) * 24
     max_retry_date := ""
-    # Jeśli znamy koniec awarii, deadline = koniec + 7 dni (TODO: full date arithmetic)
+    # Jeśli znamy koniec awarii, deadline = koniec + 7 dni (TODO P54: full date arithmetic)
     max_retry_date := sprintf("%sT23:59:59 (TODO: +7 dni)", [outage_end_expected]) { outage_end_expected != "" }
     max_retry_date := "7 dni od ustania awarii (nieznana data)" { outage_end_expected == "" }
 }
 
-# TODO: Replace with time.add_date() when OPA runtime provides it.
+# TODO P54: Replace with time.add_date() when OPA runtime provides it.
 # Current implementation is a placeholder—real date arithmetic requires external data.
 
 build_offline_warnings(count, hours, deadline) = warnings {

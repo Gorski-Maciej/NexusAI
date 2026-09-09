@@ -1,0 +1,35 @@
+{
+  "generated_at": "2026-09-09T18:32:50+00:00",
+  "policy": "TODO z właścicielem (część docelowa) = zarządzany dług; surowe TODO = szablon bez treści (BLOCK)",
+  "managed_debt": [
+    {
+      "file": "rules/kks.rego",
+      "owner_part": "P46+",
+      "items": [
+        "# TODO P46: data.thresholds.jdg.bounds.kks_criminal_threshold zamiast hardcode"
+      ]
+    },
+    {
+      "file": "rules/ksef_resilience_enterprise.rego",
+      "owner_part": "P46+",
+      "items": [
+        "# Jeśli znamy koniec awarii, deadline = koniec + 7 dni (TODO P54: full date arithmetic)",
+        "# TODO P54: Replace with time.add_date() when OPA runtime provides it."
+      ]
+    },
+    {
+      "file": "rules/jpk_cit.rego",
+      "owner_part": "P46+",
+      "items": [
+        "# TODO P54: Powiązanie modułu z księgami rachunkowymi (generator JPK_KR/ST)."
+      ]
+    },
+    {
+      "file": "rules/banking_automation_enterprise.rego",
+      "owner_part": "P46+",
+      "items": [
+        "# pain.001.001.03 XML header for Elixir batch (TODO P61: add PmtInf entries per payment)"
+      ]
+    }
+  ]
+}

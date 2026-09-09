@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P45-I02",
+  "generated_at": "2026-09-09T18:32:42+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "total_stubs": 39,
+    "attributed": 5,
+    "unattributed": 34,
+    "pathways": {
+      "ręczne rozszerzenie makro — fallback bez else NEEDS_ADVICE": 19,
+      "generator_micro — atomy bez przesłanek materiałowych": 3,
+      "generator_neural_mesh — AI placeholdery bez modelu": 6,
+      "generator_innovations — fallback bez else NEEDS_ADVICE": 11
+    },
+    "creation_path_blocked": true
+  },
+  "checks": [
+    {
+      "name": "forensics_complete",
+      "status": "OK",
+      "detail": "atrybucja pochodzenia: 5/39 (git log dostepny), ścieżka powstawania sklasyfikowana"
+    },
+    {
+      "name": "creation_path_blocked",
+      "status": "OK",
+      "detail": "tools/v3_p45_gate.py (bramka CI stub-free): True"
+    },
+    {
+      "name": "pathway_classification",
+      "status": "OK",
+      "detail": "ścieżki powstawania: {'ręczne rozszerzenie makro — fallback bez else NEEDS_ADVICE': 19, 'generator_micro — atomy bez przesłanek materiałowych': 3, 'generator_neural_mesh — AI placeholdery bez modelu': 6, 'generator_innovations — fallback bez else NEEDS_ADVICE': 11}"
+    },
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p45_stub_killer.stub_forensics: True"
+    }
+  ],
+  "findings": []
+}

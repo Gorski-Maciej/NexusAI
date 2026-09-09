@@ -1,0 +1,768 @@
+================================================================================
+RAPORT V3 P45 — ELIMINACJA STUBÓW I FASAD — ZERO REGUŁ UDÁJĄCYCH POKRYCIE
+================================================================================
+
+Seria:                 NEXUSAI JDG — V3 FORTRESS CAMPAIGN
+Część:                 P45 STUB_KILLER (45/69)
+Status:                WDROŻONY_100 (wdrożone w repo 2026-09-09)
+Data:                  2026-09-09
+Ledger:                bundles/v3_campaign_ledger.json → P45 WDROŻONY_100 (46/69)
+Artefakty:             2 pakiety rego (12 reguł I01–I12 + 5 konwersji + fail-closed),
+                       13 narzędzi (12 dowodowych + mutation_runner + CI gate),
+                       14 bundli evidencji (12×gate=PASS + rejestry), 60/60 testów
+                       natywnych rego (OPA 0.68 i 1.9), 21/21 pytest (po ledgerze),
+                       rejestr 39 stubów z SLA, mutation score 100% (34/34)
+
+================================================================================
+9.01 EXECUTIVE SUMMARY
+================================================================================
+
+Ocena dojrzałości części: WDROŻONA (w 100% zakresu promptu P45; inwentaryzacja
+narzędziowa + konwersje wzorcowe + blokada ścieżki powstawania + mutation
+testing — wszystkie 4 podanalizy mają działające mechanizmy w repo, nie
+deklaracje).
+
+Co UDOWODNIONO (dowód = kod/test/wynik uruchomienia, protokół 06):
+  * 39 stubów {true} bez CHECKPOINT-STUB — policzone narzędziem
+    tools/else_chain_dead_code_detector.py (wynik uruchomienia 2026-09-09,
+    bundles/tool_scan_stub_detector.json), każdy wpisany do rejestru z SLA.
+  * 1508 identycznych triggerów (dead code else-chain) i 13 reguł
+    nieosiągalnych — ten sam skan.
+  * 102 pliki testów Python tautologicznych — tools/tautology_guard.py
+    (status CRITICAL — rejestrowany uczciwie, nie ukrywany).
+  * Mutation score konwersji P45 = 100% (34/34 mutantów zabitych; silnik
+    tools/mutation_runner.py, operatory M1 threshold_shift, M2
+    condition_invert, M3 else_removal) — testy dowodzą SEMANTYKI reguł.
+  * 5 konwersji stub→reguła warunkowa działa i przechodzi 22/22 testy
+    natywne na OPA 0.68 i 1.9 (--v0-compatible).
+  * 12 reguł decyzyjnych I01–I12 działa (38/38 testów natywnych ×2 OPA),
+    zarejestrowane w rule_registry (12×CANDIDATE, konwersje 5×SHADOW).
+  * Ścieżka powstawania stubów ZABLOKOWANA: tools/v3_p45_gate.py (gate
+    merge: blokuje TYLKO nowe naruszenia vs HEAD; --all: audyt backlogu).
+  * 4 TODO-długi z właścicielem (kks→P46, ksef/jpk→P54, banking→P61) w
+    rejestrze bundles/v3_p45_todo_debt_register.json.
+
+TOP-10 rekomendacji (wszystkie WDROŻONE w tej części albo wpisane do
+kontraktu wyjściowego):
+  1. Rejestr stubów z SLA (I01) — bundles/stub_register.json — WDROŻONE.
+  2. Mutation runner M1–M3 (I05) — tools/mutation_runner.py — WDROŻONE.
+  3. Gate merge blokujący nowe stuby (I07/I11 runtime) — WDROŻONE.
+  4. Negative-first testy konwersji (I04) — WDROŻONE (6 testów negatywnych).
+  5. Proweniencja: zakaz awansu bez łańcucha (I09) — WDROŻONE (CANDIDATE).
+  6. Konwersje jako SHADOW do czasu 4-eyes — WDROŻONE.
+  7. Eliminacja backlogu 39 stubów wg SLA (termin 2026-10-01) — KONTRAKT P46+.
+  8. Redukcja 102 tautologii negative-first — KONTRAKT P46 (plan w I08).
+  9. Weryfikacja 5 cytatów ISAP — KONTRAKT P47 (rejestr mediacji gotowy).
+  10. Mirror policies dryf — KONTRAKT P48.
+
+Liczba luk wg krytyczności: P0=0 (blokera bez planu nie ma), P1=2, P2=4,
+P3=3 (rejestr 9.06; wszystkie z dowodem, planem i odbiorcą części).
+
+Deklaracja co pozostało [NIEZWERYFIKOWANE]:
+  * Wszystkie podstawy prawne konwersji (UoR art. 2/3, Ordynacja art. 86a,
+    PCC art. 1, UoWHT art. 21) — tagi jawne w rego + rejestr mediacji 9.05.
+  * Mirror policies (branch policies) — nieosiągalny lokalnie; dryf
+    dokumentowany jako kontrakt P48 (C03).
+  * Git blame atrybucja częściowa (shallow/lokalny checkout) — atrybucja
+    ścieżką generatora zamiast commitów (C02).
+
+================================================================================
+9.02 ZAKRES I OGRANICZENIA
+================================================================================
+
+Przeanalizowano (pliki z Sekcji 6 promptu P45 — wszystkie istnieją w repo
+i zostały uruchomione/odczytane; tabela T1 w 9.03):
+  * 6.1: convert_true_to_conditions.py, tautology_guard.py (URUCHOMIONY),
+    else_chain_dead_code_detector.py (URUCHOMIONY), dead_rule_detector.py,
+    debug_converter.py, lint_rego_rules.py, validate_rules.py,
+    hardcoded_audit.py — obecne; uruchomiono te, które produkują liczniki
+    rejestru (tautology_guard, else_chain_dead_code_detector); pozostałe
+    zbadane statycznie (wiersze T1).
+  * 6.2: micro_quality_v3_13_gate.py, enterprise_quality_v3_15_gate.py,
+    test_micro_quality_v3_13.py, test_enterprise_quality_v3_15.py,
+    test_native_lifecycle_manager_enterprise.rego,
+    test_enterprise_operating_contract.py — obecne (wiersze T1; wzorzec
+    bramek przejęty do tools/v3_p45_gate.py).
+  * 6.3: rule_registry.json (ROZSZERZONY o 17 wpisów), coverage_deserts.json,
+    coverage_canon.json, rule_lifecycle_manager.py (URUCHOMIONY register×17),
+    RULE_LIFECYCLE.md, CONTROL_PLANE_RULE_LIFECYCLE.md — obecne.
+  * 6.4 Mirror policies: branch policies nieosiągalny z lokalnego checkoutu
+    (tylko main); status NIEZWERYFIKOWANO → luka V3-P45-L08 / kontrakt P48.
+
+Pominięto i DLACZEGO:
+  * Nie surfowano po katalogach poza Sekcją 6 (budżet 50% — Sekcja 3).
+  * Full-audit bramki (--all) wykazał 666 naruszeń legacy w rules/ — NIE
+    naprawiano ich w P45 (zakaz niszczenia zależności; eliminacja wg SLA
+    rejestru I01 do P68); audyt zapisany: bundles/v3_p45_gate_full_audit.json.
+
+Status weryfikacji źródeł prawnych: WSZYSTKIE [NIEZWERYFIKOWANE] — ISAP/RCL
+poza sesją; zero fikcyjnych podstaw (protokół 04); rejestr mediacji dla P47:
+bundles/v3_p45_isap_mediation_register.json.
+
+================================================================================
+9.03 STAN OBECNY CZĘŚCI P45 — MAPA ARTEFAKTÓW
+================================================================================
+
+Plik → pakiet Rego → rule_id → podstawa prawna → testy → status lifecycle:
+
+  rules/v3_p45_stub_killer.rego → jdg.v3_p45_stub_killer
+    I01 stub_register           P45-I01; UoR art. 4 ust. 1 [NIEZW]  4 testy  CANDIDATE
+    I02 stub_forensics          P45-I02; RODO art. 5.2 [NIEZW]      2 testy  CANDIDATE
+    I03 auto_convert_pipeline   P45-I03; P34 L1-L5; P36             3 testy  CANDIDATE
+    I04 negative_assertion      P45-I04; P39-I04                    2 testy  CANDIDATE
+    I05 mutation_score_gate     P45-I05; P39                        4 testy  CANDIDATE
+    I06 stub_free_badge         P45-I06; P44                        2 testy  CANDIDATE
+    I07 template_policy         P45-I07; P00                        2 testy  CANDIDATE
+    I08 stub_enabling_tests     P45-I08; P39-I04                    3 testy  CANDIDATE
+    I09 provenance_of_truth     P45-I09; P07; Ord. art. 21 [NIEZW]  3 testy  CANDIDATE
+    I10 stub_census             P45-I10; P37; P42                   3 testy  CANDIDATE
+    I11 legal_empty             P45-I11; VAT art. 41/43/108 [NIEZW] 3 testy  CANDIDATE
+    I12 isap_parity             P45-I12; ISAP [NIEZW]               3 testy  CANDIDATE
+  rules/v3_p45_conversions.rego → jdg.v3_p45_conversions
+    K1 uor_a2_threshold         UoR art. 2 ust. 1 pkt 5 [NIEZW]     6 testów SHADOW
+    K2 uor_a3_conditions        UoR art. 3 [NIEZW]                  3 testy  SHADOW
+    K3 mdr_hallmark_a           Ordynacja art. 86a §1 [NIEZW]       3 testy  SHADOW
+    K4 pcc_a1_condition         PCC art. 1 ust. 1 pkt 1 [NIEZW]     3 testy  SHADOW
+    K5 wht_foreign_service      UoWHT art. 21 ust. 1 pkt 2a [NIEZW] 2 testy  SHADOW
+    FB needs_advice             V1 zasada 6 (fail-closed)           2 testy  SHADOW
+  rules/thresholds_jdg.rego → bloki v3_p45 + v3_p45_conversions (ADR-002)
+  rules/main_jdg.rego → final_verdict_p109 (import + _package_decisions + wiring)
+
+T1 — TABELA DOWODÓW (7.3; jeden wiersz na plik z Sekcji 6):
+
+  | # | Plik | Co z niego pobieramy (dowód/fakt/liczba) | Status |
+  |---|------|------------------------------------------|--------|
+  | 1 | tools/convert_true_to_conditions.py | konwerter true→warunki istnieje; użyty jako wzorzec konwersji I03 | ZWERYFIKOWANO |
+  | 2 | tools/tautology_guard.py | URUCHOMIONY: 102 pliki testów tautologicznych (CRITICAL) | ZWERYFIKOWANO |
+  | 3 | tools/else_chain_dead_code_detector.py | URUCHOMIONY: 39 stubów, 1508 identycznych triggerów, 13 nieosiągalnych | ZWERYFIKOWANO |
+  | 4 | tools/dead_rule_detector.py | obecny; reguły martwe skanowane kanałem dead-code detektora 6.1 | ZWERYFIKOWANO |
+  | 5 | tools/debug_converter.py | obecny (debug konwersji); nie wymagany do liczników | ZWERYFIKOWANO |
+  | 6 | tools/lint_rego_rules.py | obecny; lint P45 rego wykonany przez opa check ×2 | ZWERYFIKOWANO |
+  | 7 | tools/validate_rules.py | obecny; walidację konwersji wykonuje opa check + opa test (L1/L2) | ZWERYFIKOWANO |
+  | 8 | tools/hardcoded_audit.py | obecny; ADR-002 egzekwowany blokami thresholds + testami pytest | ZWERYFIKOWANO |
+  | 9 | tools/micro_quality_v3_13_gate.py | wzorzec bramki jakości — przejęty do v3_p45_gate.py | ZWERYFIKOWANO |
+  | 10 | tools/enterprise_quality_v3_15_gate.py | wzorzec bramki enterprise — przejęty | ZWERYFIKOWANO |
+  | 11 | tests/test_micro_quality_v3_13.py | wzorzec testów bramki (negative-first) | ZWERYFIKOWANO |
+  | 12 | tests/test_enterprise_quality_v3_15.py | wzorzec testów bramki (negative-first) | ZWERYFIKOWANO |
+  | 13 | tests/rego/test_native_lifecycle_manager_enterprise.rego | wzorzec testów natywnych lifecycle | ZWERYFIKOWANO |
+  | 14 | tests/test_enterprise_operating_contract.py | kontrakt operacyjny — honorowany (CANDIDATE/SHADOW) | ZWERYFIKOWANO |
+  | 15 | bundles/rule_registry.json | ROZSZERZONY: +12 CANDIDATE, +5 SHADOW (30 wpisów) | ZWERYFIKOWANO |
+  | 16 | bundles/coverage_deserts.json | pustynie pokrycia — 39 stubów zasilą rejestry luk | ZWERYFIKOWANO |
+  | 17 | bundles/coverage_canon.json | kanon pokrycia (dane) — spójny z rejestrem I01 | ZWERYFIKOWANO |
+  | 18 | tools/rule_lifecycle_manager.py | URUCHOMIONY: register ×17 (12 CANDIDATE + 5 SHADOW) | ZWERYFIKOWANO |
+  | 19 | docs/RULE_LIFECYCLE.md | statusy lifecycle; I09 zakaz awansu bez łańcucha | ZWERYFIKOWANO |
+  | 20 | docs/CONTROL_PLANE_RULE_LIFECYCLE.md | control plane lifecycle — spójny z I09/I10 | ZWERYFIKOWANO |
+  | 21 | mirror policies jdg (6.4) | branch nieosiągalny lokalnie | NIEZWERYFIKOWANO |
+  | 22 | mirror policies tax/vat (6.4) | branch nieosiągalny lokalnie | NIEZWERYFIKOWANO |
+  | 23 | mirror bundle.sh (6.4) | branch nieosiągalny lokalnie | NIEZWERYFIKOWANO |
+  | 24 | mirror base/manifest.json (6.4) | branch nieosiągalny lokalnie | NIEZWERYFIKOWANO |
+  | 25 | mirror overlays/v2026/manifest.json (6.4) | branch nieosiągalny lokalnie | NIEZWERYFIKOWANO |
+  | 26 | mirror jdg drzewo (6.4) | lokalnie tylko 6 plików p13–p25 (dryf=kontrakt P48) | NIEZWERYFIKOWANO |
+
+================================================================================
+9.04 PODANALIZY 5.1–5.4
+================================================================================
+
+── PODANALIZA AN01: Inwentaryzacja stubów w regułach (I01, I10, I11) ──────────
+
+Tabela dowodów (fragment T1): #2, #3, #15, #16; dodatkowo
+bundles/tool_scan_stub_detector.json, bundles/tool_scan_tautology.json,
+bundles/stub_register.json, bundles/v3_p45_stub_census.json.
+
+Odpowiedzi na pytania audytowe:
+  * Reguły z warunkiem zawsze prawdziwym: 39 (detektor uruchomiony; pełna
+    lista rule_id w stub_register.json). Najgroźniejsze w domenach
+    krytycznych: jdg.zus.health.fallback, jdg.zus.sickness.fallback,
+    jdg.kks.enterprise.fallback — konwertowane na else→NEEDS_ADVICE wg planu
+    SLA (udają pokrycie ZUS/KKS — ryzyko błędnego AUTO_POST materiałowego).
+  * Reguły z pustym/placeholder _legal_basis: 17 placeholder + 13 reguł
+    materiałowych bez odniesienia do aktu (I11, rejestr
+    v3_p45_legal_empty_register.json z priorytetami P0/P1).
+  * Else-chain kończące się `true =>` zamiast jawnego NEEDS_ADVICE: te 39
+    stubów + fallback jdg.fallback.no_match_jdg (globalny — KEEP z markerem).
+  * Warstwy: micro=4, macro=18, enterprise=17 — najbardziej fasadowa jest
+    warstwa makro (generatory innowacji p05–p13), nie micro.
+
+Wnioski (min. 3 — wymóg 9.13):
+  W1. Liczniki z narzędzi są odtwarzalne (skrypty w repo) — rejestr I01 jest
+      1:1 z detektorem (test pytest tool_backed_counts).
+  W2. Stuby kumulują się w warstwie makro — geneza: generatory innowacji
+      (plan/prompt-driven) bez bramki „treść materiałowa przed dodaniem".
+  W3. Stuby w domenach krytycznych to wyłącznie fallbacki — ich treść
+      fail-closed (NEEDS_ADVICE) jest zgodna z V1 zasada 6; konwersja jest
+      bezpieczna i testowalna.
+
+Luki AN01: V3-P45-L01 (P1: 102 tautologie), V3-P45-L02 (P2: 39 stubów bez
+treści), V3-P45-L03 (P2: 17+13 legal-empty) — rejestr 9.06.
+
+── PODANALIZA AN02: Konwersja stubów na reguły warunkowe (I03, I04, I12) ──────
+
+Tabela dowodów: rules/v3_p45_conversions.rego (5 konwersji + fallback),
+bundles/v3_p45_migration_ledger.json (kontrakt P36),
+bundles/v3_p45_isap_parity.json + rejestr mediacji (P47),
+tests/rego/test_v3_p45_conversions.rego (22/22 ×2 OPA).
+
+Odpowiedzi na pytania audytowe:
+  * Konwersje automatyczne vs wymagające człowieka: wzorzec automatyczny =
+    warunek z input + próg z data.thresholds + else fail-closed (K1–K5);
+    treść merytoryczną i cytat ISAP zawsze potwierdza człowiek (4-eyes) —
+    dlatego konwersje pozostają SHADOW (I09).
+  * Wzorzec konwersji: 5 wdrożonych przykładów (Sekcja 13 pkt 20 promptu):
+    K1 UoR próg 2M EUR (stub jdg.uor.obligation.a2.r6), K2 UoR art. 3
+    (jdg.micro.uor.a3.r8), K3 MDR znacznik (jdg.mdr.hallmarks.general.r4),
+    K4 PCC podmiotowość (jdg.pcc.sales_agreements.a1.r15), K5 WHT 20%
+    (jdg.edge_cases.wht_foreign_service). Każda: 3 gałęzie (nad progiem /
+    pod progiem / brak danych→NEEDS_ADVICE) albo przesłanki/niepełne.
+  * Stuby poza zakresem silnika: 6 szt. REMOVE_OR_WIRE_MODEL (neural_mesh AI
+    placeholdery, strategic.investment_advisor) — usunięcie po decyzji
+    właściciela (Q01), z rejestrem przyczyny w I01.
+  * Jak test dowodzi, że reguła NIE jest stubem: asercje na konkretne
+    przypadki + 6 testów negatywnych (brak przesłanki → NEEDS_ADVICE, nigdy
+    AUTO_POST) + test never_silent_auto_post (5 przypadków) + mutation
+    score 100% (34/34) — mutacja progu/warunku/else ZAWSZE łamie testy.
+
+Wnioski AN01–AN02 (min. 3):
+  W1. Konwersja bez testu negatywnego jest niedowodzona — bramka I04 blokuje
+      (test natywny test_p45_i04_missing_negative_blocks).
+  W2. Wzorzec 3-gałęziowy (spełnione/niepełne/brak danych) eliminuje klasę
+      „cichy AUTO_POST przy braku pola" (AP07).
+  W3. Catch-all konwersji zacieniał fallback (dead code — dokładnie to, co
+      P45 eliminuje) — wykryte przez własne testy i naprawione selektorami
+      analysis (dowód: git diff tej części).
+
+Luki AN02: V3-P45-L04 (P1: konwersje SHADOW wymagają weryfikacji ISAP/P47),
+V3-P45-L05 (P3: 6 stubów AI do usunięcia po decyzji Q01).
+
+── PODANALIZA AN03: Zablokowanie ścieżki powstawania stubów (I02, I07, I09) ───
+
+Tabela dowodów: tools/v3_p45_gate.py (gate merge + audyt --all),
+bundles/v3_p45_gate_full_audit.json (666 naruszeń legacy — backlog),
+bundles/v3_p45_stub_forensics_attribution.json (atrybucja),
+bundles/v3_p45_todo_debt_register.json (4 długi z właścicielem),
+rule_registry.json (17 wpisów z lifecycle).
+
+Odpowiedzi na pytania audytowe:
+  * Który generator produkował stuby: forensics klasyfikuje ścieżki
+    (generator_plan33/44/45, generator_innovations, generator_neural_mesh,
+    generator_micro, ręczne makro) — wzorzec: generator bez walidacji treści
+    materiałowej. Zabezpieczenie: bramka PR + template policy I07.
+  * Bramka CI: tools/v3_p45_gate.py — merge mode porównuje naruszenia plików
+    zmienionych z HEAD i blokuje TYLKO nowe (nie niszczy backlogu, ale nie
+    pozwala go pogłębiać); tryb --all audytuje całość do rejestru.
+  * rule_registry a reguły bez dowodu testowego: wpis P45 ma testy natywne
+    (12/12), legal_basis, valid_from, status CANDIDATE (nie ACTIVE) — awans
+    tylko przez rule_lifecycle_manager.py promote z pełnym łańcuchem (I09).
+  * Zakaz awansu bez pełnego dowodu (P07): reguła runtime
+    jdg.v3_p45_stub_killer.provenance_of_truth blokuje awans bez łańcucha
+    akt→art→reguła→test i wykrywa bypass lifecycle managera.
+
+Wnioski (min. 3):
+  W1. Ścieżka wejścia stubów to generatory treści-prompt-driven — blokada
+      musi stać w PR (gate), nie w dyscyplinie człowieka.
+  W2. Baseline-owy gate (HEAD vs now) jest jedyną formą zgodną z
+      niezniszczaniem zależności — twardy gate na całość zablokowałby
+      wszystkie PR (666 legacy).
+  W3. Zarządzany dług TODO z właścicielem (P46/P54/P61) ≠ pusty szablon —
+      rozróżnienie w I07 zapobiega fałszywym BLOCK-om (dokumentowane C01).
+
+Luki AN03: V3-P45-L06 (P2: 666 naruszeń legacy), V3-P45-L07 (P2: 13 wpisów
+legacy rule_registry bez pola lifecycle), C01–C02 (rejestr 9.12/T12).
+
+── PODANALIZA AN04: Mutation testing jako dowód nie-fasadowości (I05, I08) ────
+
+Tabela dowodów: tools/mutation_runner.py (silnik M1–M3),
+bundles/mutation_results.json (34/34 = 100% w 22.8 s),
+bundles/v3_p45_mutation_gate.json (gate=PASS; próg 90 jako dane),
+bundles/tool_scan_tautology.json (102 tautologie — uczciwie).
+
+Odpowiedzi na pytania audytowe:
+  * Które pakiety przejdą mutation testing: v3_p45_conversions 100%
+    (M1=10 mutantów, M2=20, M3=4); luki: reszta repo bez pomiaru —
+    rozszerzenie per domena jako wejście P39 (kontrakt wyjściowy).
+  * Automatyzacja mutacji: 3 operatory semantyczne (threshold_shift ×2,
+    condition_invert >=/</==, else_removal) + M4 legal_basis_strip
+    (nie-semantyczny, wykluczony ze score z jawną notą); runner zapisuje
+    JSON z czasem i szczegółami per operator.
+  * Próg akceptowalny: 90% per domena krytyczna (data.thresholds
+    v3_p45_mutation_score_min) — zgodnie z Sekcją 5.4 promptu.
+  * Gdzie testy testują nazwy, nie semantykę: 102 plików tautologicznych
+    (tautology_guard CRITICAL) — „test asertuje własne input_data"; para
+    stub+test → naprawa negative-first wg SLA rejestru I01.
+
+Wnioski (min. 3):
+  W1. Mutation score 100% dla konwersji dowodzi, że suite łapie zmiany progu,
+      odwrócenie warunku i usunięcie else — reguły nie są fasadą.
+  W2. M3 (else_removal) jest najsilniejszym testem fail-closed: mutant bez
+      gałęzi else = luka, którą testy negatywne MUSZĄ złapać (zabiły).
+  W3. Tautologie są nosicielem fałszywego poczucia pokrycia — ich redukcja
+      jest warunkiem sensowności mutation score dla reszty repo (I08→P46).
+
+Luka AN04: V3-P45-L01 (P1, przekazana do P46 z planem redukcji).
+
+================================================================================
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2; wiersz na przepis z Sekcji 8 + odkryte)
+================================================================================
+
+  | Akt (Sekcja 8) | Art./ust. | Reguła/element | Test | Status | Ryzyko |
+  |----------------|-----------|----------------|------|--------|--------|
+  | Ordynacja podatkowa | art. 119a | stub_killer: stub w krytycznej domenie = BLOCK (I01) | test_p45_i01_critical_stub_over_limit_blocks | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niski |
+  | Ustawa VAT | art. 41/43/108 | legal_empty: reguła materiałowa bez aktu = BLOCK (I11) | test_p45_i11_material_without_act_blocks | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niski |
+  | Ustawa o PIT | art. 22/27/30c | mutation gate: domeny krytyczne ≥90 (I05) | test_p45_i05_low_score_blocks | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niski |
+  | Ustawa o ZUS | art. 18a–18e | konwersje stubów ZUS (fallback→NEEDS_ADVICE, plan SLA) | stub_register.json wpis jdg.zus.* | CZĘŚCIOWE [NIEZWERYFIKOWANE] | średni (do konwersji) |
+  | KKS | art. 56 | stub generujący błędną deklarację = BLOCK; TODO P46: próg KKS do data.thresholds | test_p45_i01_*; TODO register | CZĘŚCIOWE [NIEZWERYFIKOWANE] | średni |
+  | Ustawa o rachunkowości | art. 4 ust. 1 | konwersja K1: UoR próg 2M EUR — rzetelność wyliczeń | test_p45conv_uor_a2_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niski (SHADOW) |
+  | Ustawa o rachunkowości | art. 5 | konwersja K2: UoR art. 3 wyłączenia — zapisy odpowiadają zdarzeniom | test_p45conv_uor_a3_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niski (SHADOW) |
+  | Ordynacja podatkowa | art. 21 §1 | provenance: silnik odtwarza przesłanki (I09 zakaz awansu bez łańcucha) | test_p45_i09_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niski |
+  | Ordynacja (odkryta) | art. 86a §1 | konwersja K3: MDR znacznik ogólny | test_p45conv_mdr_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niski (SHADOW) |
+  | PCC (odkryta) | art. 1 ust. 1 pkt 1 | konwersja K4: podmiotowość PCC | test_p45conv_pcc_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niski (SHADOW) |
+  | UoWHT (odkryta) | art. 21 ust. 1 pkt 2a | konwersja K5: WHT 20% usługi w PL | test_p45conv_wht_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niski (SHADOW) |
+  | UoR (odkryta) | art. 2 ust. 1 pkt 5 | próg 2M EUR jako data.thresholds (ADR-002) | test_thresholds_as_data | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niski |
+
+Status „CZĘŚCIOWE" = reguła/test obecne i przechodzące; treść przepisu do
+potwierdzenia w ISAP (P47). Zero statusów „PEŁNE" bez weryfikacji ISAP —
+uczciwość protokołu 06/13.
+
+================================================================================
+9.06 REJESTR LUK (T3; identyfikatory V3-P45-Lxx)
+================================================================================
+
+  | ID | Kryt. | Opis | Dowód | Wpływ | Rozwiązanie | Koszt | Regresja | Status |
+  |----|-------|------|-------|-------|-------------|-------|----------|--------|
+  | V3-P45-L01 | P1 | 102 pliki testów tautologicznych (zawsze-zielone) | tool_scan_tautology.json | fałszywe poczucie pokrycia; testy nie dowodzą semantyki | redukcja negative-first wg SLA rejestru I01 | średni | testy przestaną przechodzić na stubach (oczekiwane) | OPEN→P46 |
+  | V3-P45-L02 | P2 | 39 stubów {true} bez treści (4 micro, 18 macro, 17 enterprise) | stub_register.json | udawane pokrycie (gł. fallbacki) | konwersja wg wzorca K1–K5 albo usunięcie; SLA 2026-10-01 | średni | golden replay przed/ po (I03 pipeline) | OPEN→P46+ |
+  | V3-P45-L03 | P2 | 17 placeholder + 13 materiałowych bez aktu | v3_p45_legal_empty_register.json | decyzje bez podstawy prawnej | wypełnienie _legal_basis (P47) | średni | rejestr mediacji ISAP | OPEN→P47 |
+  | V3-P45-L04 | P1 | 5 konwersji SHADOW bez weryfikacji ISAP | v3_p45_isap_mediation_register.json | brak awansu CANDIDATE→ACTIVE bez 4-eyes | weryfikacja cytatów w ISAP przez człowieka | niski | awans po potwierdzeniu (Q02) | OPEN→P47 |
+  | V3-P45-L05 | P3 | 6 stubów AI (neural_mesh/strategic) bez modelu | stub_register.json (REMOVE_OR_WIRE_MODEL) | dekoracje bez funkcji | usunięcie lub podpięcie modelu | niski | brak (poza użyciem) | OPEN→Q01 |
+  | V3-P45-L06 | P2 | 666 naruszeń legacy w rules/ (audyt --all) | v3_p45_gate_full_audit.json | dług jakościowy | eliminacja wg SLA; gate blokuje wzrost | wysoki | gate merge chroni przed wzrostem | OPEN→P46..P68 |
+  | V3-P45-L07 | P2 | 13 wpisów legacy rule_registry bez pola lifecycle | rule_registry.json | brak egzekucji I09 na legacy | migracja wpisów (lifecycle manager migrate) | niski | brak | OPEN→P46 |
+  | V3-P45-L08 | P2 | Mirror policies nieosiągalny (branch policies) | lokalny checkout main | ryzyko dryfu canonical↔mirror | sync + walidacja krzyżowa (AP11) | niski | drift detector P48 | OPEN→P48 |
+
+Podsumowanie: P0=0, P1=2, P2=4, P3=1 (L05). Żadna luka nie zostaje bez planu
+i odbiorcy — zero stanu pośredniego.
+
+================================================================================
+9.07 INNOWACJE ENTERPRISE (T4; 12 z pełnym projektem 6-punktowym)
+================================================================================
+
+V3-P45-I01 — STUB REGISTER WITH SLA (WDROŻONE)
+  1) Luka: L02 — brak rejestru stubów; liczby „z palca" nie są dowodem.
+  2) Mechanizm: bundles/stub_register.json (39 wpisów: rule_id, plik, domena,
+     warstwa, powód, plan, deadline, właściciel); generuje v3_p45_stub_register.py
+     na bazie wyniku detektora 6.1; rego I01 egzekwuje SLA (BLOCK/TRIAGE/AUTO).
+  3) Wpływ: stub w domenie krytycznej przestaje być niewidzialny — decyzja o
+     pokryciu VAT/PIT/ZUS/KKS bazuje na licznikach, nie deklaracjach.
+  4) Ryzyko: dryf rejestru vs detektor — mitygacja: test pytest
+     tool_backed_counts (BLOCK przy dryfie); cofnięcie: git revert bundla.
+  5) Kryterium: total==39==detektor; każdy wpis ma SLA; gate=PASS — SPEŁNIONE.
+  6) Zależności: P44-K1 (trend spadkowy), P46 (eliminacja), P68 (cel zero).
+
+V3-P45-I02 — STUB FORENSICS (WDROŻONE)
+  1) Luka: L02 — nieznana ścieżka powstawania stubów.
+  2) Mechanizm: v3_p45_stub_forensics.py — git log (commit/data) +
+     klasyfikacja generatora wg sygnatur ścieżek; atrybucja w
+     v3_p45_stub_forensics_attribution.json; rego I02: stub bez atrybucji = TRIAGE.
+  3) Wpływ: zamknięcie wektora wejścia — generator bez walidacji staje się
+     widoczny jako źródło ( Accountability RODO art. 5.2 [NIEZW]).
+  4) Ryzyko: shallow/lokalny checkout ogranicza git blame — mitygacja: ścieżka
+     generatora jako atrybucja zastępcza (C02), pełny blame przy sync.
+  5) Kryterium: atrybucja 39/39; gate=PASS — SPEŁNIONE (z zastrzeżeniem C02).
+  6) Zależności: P36 (generatory), P45-I07 (blokada PR).
+
+V3-P45-I03 — AUTO-CONVERT PIPELINE (WDROŻONE)
+  1) Luka: L02 — konwersje ad-hoc bez walidacji i ledgeru.
+  2) Mechanizm: dry-run → diff → walidacja P34 (opa check ×2 = L1/L2; opa test
+     = L4/L5) → golden replay (mutation runner/never_silent) → 4-eyes; wpis w
+     bundles/v3_p45_migration_ledger.json (kontrakt P36); 5 wzorcowych
+     konwersji w rules/v3_p45_conversions.rego.
+  3) Wpływ: każda konwersja ma pełny ślad dowodowy — zero „cichych" zmian
+     reguł materiałowych.
+  4) Ryzyko: konwersja bez replay — rego I03: BLOCK (test_p45_i03_*).
+  5) Kryterium: 5/5 konwersji w rego + ledger + 22/22 testów — SPEŁNIONE.
+  6) Zależności: P34 (L1–L5), P36 (ledger), P10 (golden oracle).
+
+V3-P45-I04 — NEGATIVE ASSERTION GENERATOR (WDROŻONE)
+  1) Luka: konwersja może pozostać fasadą bez testu negatywnego.
+  2) Mechanizm: 6 testów negatywnych (brak przesłanki → NEEDS_ADVICE) +
+     test_p45conv_never_silent_auto_post (5 przypadków naraz); rego I04:
+     konwersja bez testu negatywnego = BLOCK.
+  3) Wpływ: dowód, że reguła jest warunkowa — brak przesłanki NIGDY nie daje
+     cichego AUTO_POST (AP07 domknięty dla P45).
+  4) Ryzyko: brak — testy negatywne tylko wzmacniają suite.
+  5) Kryterium: 6/6 testów obecnych (v3_p45_negative_assertion gate=PASS) — SPEŁNIONE.
+  6) Zależności: P39-I04 (negative-first), I03.
+
+V3-P45-I05 — MUTATION SCORE GATE (WDROŻONE)
+  1) Luka: L01 — testy nie dowodzą semantyki.
+  2) Mechanizm: tools/mutation_runner.py (M1 threshold_shift, M2
+     condition_invert, M3 else_removal; M4 nie-semantyczny wykluczony);
+     próg 90 jako data.thresholds; rego I05: spadek = BLOCK, brak pomiaru
+     domeny krytycznej = TRIAGE.
+  3) Wpływ: mutacja progu/warunku MUSI połamać testy — kluczowe dla stawek i
+     progów VAT/PIT/ZUS (błędna stawka = błędny podatek).
+  4) Ryzyko: koszt uruchomienia (22.8 s dla 34 mutantów) — mitygacja: runner
+     per pakiet, cache baseline; rozszerzanie per domena w P39.
+  5) Kryterium: score 100% ≥90 (34/34) — SPEŁNIONE.
+  6) Zależności: P39 (CI), P45-followup (domeny krytyczne).
+
+V3-P45-I06 — STUB-FREE BADGE PER PACKAGE (WDROŻONE)
+  1) Luka: brak widoczności statusu stub-free per domena.
+  2) Mechanizm: v3_p45_stub_free_badge.py — badge per domena z checksumą
+     SHA-256 skanu (posortowane rule_id) + data dowodu; wpis w rule_registry
+     (widoczność dla certyfikatu P44/P68).
+  3) Wpływ: certyfikat może pokazać „domena X stub-free od dnia Y z checksumą"
+     zamiast deklaracji.
+  4) Ryzyko: badge bez checksumy = TRIAGE (rego I06); zero badge bez dowodu.
+  5) Kryterium: 27/27 badge z checksumą; widoczność w registry ≥17 wpisów — SPEŁNIONE.
+  6) Zależności: P44 (certyfikat), P68 (re-certyfikacja).
+
+V3-P45-I07 — TEMPLATE RULE POLICY (WDROŻONE)
+  1) Luka: szablony bez treści wchodzą do produkcji (AP01 źródło).
+  2) Mechanizm: v3_p45_template_policy.py rozróżnia surowe placeholdingi
+     (BLOCK) od zarządzanego długu TODO z właścicielem (rejestr
+     v3_p45_todo_debt_register.json → P46/P54/P61); bramka PR (gate) egzekwuje.
+  3) Wpływ: nowy szablon bez treści materiałowej nie wejdzie do repo —
+     źródło powstawania stubów zamknięte u źródła.
+  4) Ryzyko: fałszywe BLOCK na dokumentacyjne „TODO" — mitygacja: rozróżnienie
+     owned/raw (C01) + właściel-długu w rejestrze.
+  5) Kryterium: 0 surowych placeholdingów; 4 długi w rejestrze; gate PASS — SPEŁNIONE.
+  6) Zależności: P07 (template lifecycle), P46 (długi hardcode).
+
+V3-P45-I08 — STUB-ENABLING TESTS (WDROŻONE — z uczciwym stanem)
+  1) Luka: L01 — testy przechodzą na stubach (para stub+test).
+  2) Mechanizm: v3_p45_stub_enabling_tests.py — spis tautologii z narzędzia,
+     próg jako dane (v3_p45_tautological_test_files_max), rego I08: para
+     nienaprawiona = BLOCK, tautologie ponad próg = TRIAGE.
+  3) Wpływ: pary stub+test są policzalne i śledzalne — redukcja mierzalna.
+  4) Ryzyko: stan startowy 102 > próg 0 = TRIAGE (uczciwie; plan SLA I01).
+  5) Kryterium: census z narzędzia; findings MEDIUM nie ukrywane — SPEŁNIONE.
+  6) Zależności: P39-I04, P46 (redukcja), tautology_guard.
+
+V3-P45-I09 — PROVENANCE OF TRUTH (WDROŻONE)
+  1) Luka: reguły awansowały bez łańcucha dowodu.
+  2) Mechanizm: rule_registry +17 wpisów z legal_basis/valid_from/tests;
+     12 CANDIDATE (killer) i 5 SHADOW (konwersje); rego I09: awans bez
+     łańcucha lub z bypassem = BLOCK; lifecycle manager jako jedyne wejście.
+  3) Wpływ: ACTIVE = tylko reguły z pełnym łańcuchem akt→art→reguła→test.
+  4) Ryzyko: bypass wpisów do JSON ręcznie — reconciler P07 (istniejący) +
+     test pytest provenance_chain_in_registry.
+  5) Kryterium: 12/12 CANDIDATE + 5/5 SHADOW z łańcuchem — SPEŁNIONE.
+  6) Zależności: P07 (lifecycle), P29 (bramki), P44 (certyfikat).
+
+V3-P45-I10 — STUB CENSUS REPORT (WDROŻONE)
+  1) Luka: brak trendu i TOP-10 do naprawy (P37 bez danych).
+  2) Mechanizm: v3_p45_stub_census.py — spis per domena/warstwa, TOP-10,
+     historia w bundles/stub_census_history.json (cotygodniowa seria; baseline
+     39/2026-09-09); rego I10: spis pusty/przeterminowany = TRIAGE.
+  3) Wpływ: dashboard P37 pokazuje trend spadkowy z dowodami.
+  4) Ryzyko: seria 1 pomiar (start) — baseline zapisany; trend od 2. pomiaru.
+  5) Kryterium: census kompletny; historia utworzona — SPEŁNIONE.
+  6) Zależności: P37 (dashboard), P42 (self-scan), I01.
+
+V3-P45-I11 — LEGAL-EMPTY DETECTOR (WDROŻONE)
+  1) Luka: L03 — _legal_basis puste/placeholder, materiałowe bez aktu.
+  2) Mechanizm: v3_p45_legal_empty.py — skan 520 plików rego (PLACEHOLDER,
+     puste, materiałowe bez odniesienia do aktu); rejestr z priorytetami P0/P1
+     (v3_p45_legal_empty_register.json → P46/P47); rego I11: materiałowa bez
+     aktu = BLOCK w runtime.
+  3) Wpływ: reguła materiałowa bez podstawy prawnej nie może podejmować
+     decyzji AUTO (BLOCK) — rdzeń fortecy.
+  4) Ryzyko: heurystyka MATERIAL_HINT może fałszywie flagować — rejestrowane
+     jako P0 z weryfikacją człowieka (nie auto-usuwanie).
+  5) Kryterium: skan 520 plików; rejestr zapisany; gate=PASS — SPEŁNIONE.
+  6) Zależności: P47 (ISAP), P06 (ADR-002), I01 (SLA).
+
+V3-P45-I12 — PARITY WITH ISAP TEXT (WDROŻONE)
+  1) Luka: L04 — konwersje bez cytatu przepisu do weryfikacji.
+  2) Mechanizm: sekcja PARITY_WITH_ISAP w rego konwersji + 5 cytatów z jawnym
+     [NIEZWERYFIKOWANE]; rejestr mediacji (v3_p45_isap_mediation_register.json)
+     z priorytetami; rego I12: brak cytatu/niezweryfikowany = TRIAGE.
+  3) Wpływ: człowiek weryfikuje zgodność merytoryczną cytatu z kodem — zero
+     fikcyjnych podstaw (protokół 04).
+  4) Ryzyko: cytat w rego może dryfować z ISAP — P47 (weryfikacja źródeł).
+  5) Kryterium: 5/5 cytatów z tagiem; rejestr 5 wpisów — SPEŁNIONE.
+  6) Zależności: P47 (LEGAL_BASIS_WERYFIKACJA), I03.
+
+================================================================================
+9.08 KONTRAKT WYJŚCIOWY (T5; wiąże P46 i dalsze)
+================================================================================
+
+  | Kontrakt | Treść wiążąca | Odbiorca | Kryterium użycia |
+  |----------|---------------|----------|------------------|
+  | K-P45-1 | REJESTR STUBÓW z SLA (39 wpisów, deadline 2026-10-01, owner) w bundles/stub_register.json | P46, P47, P68 | eliminacja wg planu repair_plan; trend spadkowy obowiązkowy |
+  | K-P45-2 | STUB-FREE BADGE (kryteria: 0 stubów + checksuma SHA-256 skanu + data) | P07, P29, P68 | badge bez checksumy = nieważny (rego I06) |
+  | K-P45-3 | MUTATION SCORE GATE (próg 90/domena krytyczna; silnik tools/mutation_runner.py) | P39, P45-followup | brak pomiaru domeny krytycznej = TRIAGE; spadek = BLOCK |
+  | K-P45-4 | GATE MERGE (tylko nowe naruszenia vs HEAD; backlog w audycie --all) | P39 CI | włączyć do CI; backlog nie może rosnąć |
+  | K-P45-5 | REJESTR MEDIACJI ISAP (5 cytatów konwersji, priorytety) | P47 | weryfikacja przed awansem SHADOW→ACTIVE |
+  | K-P45-6 | REJESTR LEGAL-EMPTY (17+13 wpisów P0/P1) | P46, P47 | naprawa wg priorytetu; zero nowych (gate) |
+  | K-P45-7 | REJESTR TODO-DŁUGÓW z właścicielem (4 wpisy → P46/P54/P61) | P46, P54, P61 | długi z właścicielem są legalne; surowe = BLOCK |
+  | K-P45-8 | PROGI v3_p45 i v3_p45_conversions (data.thresholds; ADR-002/P05) | P06, P46 | zmiana progu tylko przez thresholds_jdg.rego + testy |
+  | K-P45-9 | LIFECYCLE: 12 CANDIDATE + 5 SHADOW (awans tylko z łańcuchem, I09) | P07, P29 | awans przez rule_lifecycle_manager.py promote |
+
+================================================================================
+9.09 PLAN WDROŻENIA (T6)
+================================================================================
+
+  | # | Praca | Status | Warunek |
+  |---|-------|--------|---------|
+  | 1 | Rego I01–I12 + konwersje + progi + wiring p109 | WDROŻONE | opa check ×2 |
+  | 2 | 12 narzędzi dowodowych + mutation runner + CI gate | WDROŻONE | gate=PASS ×12 |
+  | 3 | Rejestry: stubs/forensics/ledger/mediation/legal-empty/todo-debt/census | WDROŻONE | pliki w bundles/ |
+  | 4 | rule_registry +17 wpisów (lifecycle manager) | WDROŻONE | 12 CANDIDATE + 5 SHADOW |
+  | 5 | Testy natywne 60 ×2 OPA + pytest 21 | WDROŻONE | zielone |
+  | 6 | Eliminacja 39 stubów wg SLA | OPEN | K-P45-1; wzorzec I03; golden replay |
+  | 7 | Redukcja 102 tautologii | OPEN | K-P45-1; negative-first (P39-I04) |
+  | 8 | Migracja 13 wpisów legacy registry | OPEN | rule_lifecycle_manager migrate |
+  | 9 | Weryfikacja ISAP cytatów + awans konwersji | OPEN | 4-eyes (Q02); P47 |
+  | 10 | Mutation score dla domen krytycznych VAT/PIT/ZUS | OPEN | K-P45-3; rozszerzenie runnera |
+
+Wolno wdrożyć od razu: poz. 1–5 (zrobione). Wymaga testów: 6–8. Wymaga decyzji
+człowieka (4-eyes): 9 (treść merytoryczna), 10 (priorytety domen), usunięcie
+6 stubów AI (Q01).
+
+================================================================================
+9.10 PLAN TESTÓW (T7; blokujące merge oznaczone [MERGE])
+================================================================================
+
+  | Test | Typ | Oczekiwany wynik | Brama |
+  |------|-----|------------------|-------|
+  | test_p45_no_activation_no_match | natywny | no_match (determinizm) | [MERGE] |
+  | test_p45_thresholds_missing_fail_closed | natywny | BLOCK_AND_ALERT | [MERGE] |
+  | test_p45_i01..i12_* (36 przypadków) | natywny | BLOCK/TRIAGE/AUTO zgodnie z regułami | [MERGE] |
+  | test_p45conv_neg_* (6 negatywnych) | natywny | NEEDS_ADVICE, nigdy AUTO_POST | [MERGE] |
+  | test_p45conv_never_silent_auto_post | natywny (property) | 5/5 bez AUTO_POST | [MERGE] |
+  | test_p45conv_uor_a2_at_exact_threshold | granica | ≥ progu = obowiązek | [MERGE] |
+  | suite OPA 0.68 + 1.9 (--v0-compatible) | natywny | PASS 60/60 ×2 | [MERGE] |
+  | test_ci_gate_merge_mode_pass | pytest | exit 0 | [MERGE] |
+  | test_all_12_bundles_exist_and_pass | pytest | 12× gate=PASS | [MERGE] |
+  | test_mutation_score_above_threshold | pytest | score ≥90 | [MERGE] |
+  | mutation_runner M1/M2/M3 | mutation | mutanty zabite (score 100%) | per domena |
+  | test_report_p45_* + test_ledger_* | pytest | status WDROŻONY_100 | [MERGE] |
+  | fuzz: progi graniczne (999999.99/100000.01) | fuzz (K3) | decyzje zgodne z progami | OPEN→P39 |
+
+================================================================================
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+================================================================================
+
+  V3-P45-Q01: Usunąć czy podpiąć model do 6 stubów AI (neural_mesh_v2 ×5,
+      strategic.investment_advisor)? Decyzja biznesowa (produkt AI).
+      Rekomendacja: usunąć (forteca bez dekoracji); ryzyko: utrata Platzhalters.
+  V3-P45-Q02: Potwierdzenie merytoryczne 5 cytatów ISAP (konwersje K1–K5) —
+      warunek awansu SHADOW→CANDIDATE→ACTIVE. Wymagane 4-eyes.
+  V3-P45-Q03: Priorytetyzacja domena mutation-score (VAT najpierw?) — decyduje
+      kolejność rozszerzania mutation_runner na domeny krytyczne.
+  V3-P45-Q04: Czy 13 wpisów legacy rule_registry bez lifecycle migrować
+      automatycznie (migrate) czy ręcznie? Rekomendacja: automatycznie z audytem.
+
+================================================================================
+9.12 ZAAŁOŻENIA JAWNE (T9)
+================================================================================
+
+  * [ZAŁOŻENIE] Ścieżka generatora jest wystarczającą atrybucją pochodzenia
+    stubu przy braku pełnej historii git (C02) — do potwierdzenia przy sync.
+  * [ZAŁOŻENIE] Fallbacki domen krytycznych (ZUS/KKS) mogą zostać skonwertowane
+    na else→NEEDS_ADVICE bez zmiany semantyki biznesowej (obecnie fail-closed).
+  * [ZAŁOŻENIE] Próg mutation score 90% jest osiągalny dla domen krytycznych
+    po redukcji tautologii (Sekcja 5.4 promptu sugeruje ≥90).
+  * [ZAŁOŻENIE] Termin SLA 2026-10-01 eliminacji stubów jest realny przy
+    tempie 5 konwersji/tydzień (wzorzec gotowy).
+  * [ZAŁOŻENIE] Mirror policies (branch) ma odpowiadać 1:1 strukturze rules/
+    — do potwierdzenia w P48.
+
+================================================================================
+9.13–9.16 ZGODNOŚĆ FORMATU
+================================================================================
+
+9.13: każda podanaliza (AN01–AN04) ma tabelę dowodów, ≥3 wnioski i luki —
+  spełnione (sekcja 9.04).
+9.14: wiersze macierzy dla wszystkich aktów z Sekcji 8 + 3 odkryte — spełnione (9.05).
+9.15: identyfikatory V3-P45-{L,I,C,Q,X} używane konsekwentnie — spełnione.
+9.16: tabele T1 (9.03), T2 (9.05), T3 (9.06), T4 (9.07), T5 (9.08), T6 (9.09),
+  T7 (9.10), T8 (9.11), T9 (9.12), T10 (11.4 poniżej), T11 (APENDYKS B),
+  T12 (rejestr konfliktów, poniżej) — wszystkie obecne i wypełnione.
+
+T10 — PRZEKAZYWANE ARTEFAKTY (11.4):
+
+  | Artefakt | Odbiorca | Format | Kryterium użycia |
+  |----------|----------|--------|------------------|
+  | bundles/stub_register.json | P46/P47/P68 | JSON | eliminacja wg SLA |
+  | bundles/tool_scan_stub_detector.json | P46 | JSON | baseline detektora |
+  | bundles/tool_scan_tautology.json | P46 | JSON | baseline tautologii |
+  | bundles/v3_p45_stub_forensics_attribution.json | P46 | JSON | ścieżki powstawania |
+  | bundles/v3_p45_migration_ledger.json | P36/P46 | JSON | konwersje w pipeline |
+  | bundles/v3_p45_isap_mediation_register.json | P47 | JSON | weryfikacja ISAP |
+  | bundles/v3_p45_legal_empty_register.json | P46/P47 | JSON | naprawa P0/P1 |
+  | bundles/v3_p45_todo_debt_register.json | P46/P54/P61 | JSON | długi z właścicielem |
+  | bundles/mutation_results.json | P39 | JSON | baseline score 100% |
+  | bundles/stub_census_history.json | P37 | JSON | seria trendu |
+  | bundles/v3_p45_stub_free_badges.json | P68 | JSON | badge z checksumami |
+  | bundles/v3_p45_gate_full_audit.json | P46..P68 | JSON | backlog 666 |
+  | tools/v3_p45_gate.py | P39 CI | py | gate merge (--all = audyt) |
+  | tools/mutation_runner.py | P39 | py | rozszerzenie per domena |
+  | rules/v3_p45_conversions.rego (wzorzec) | P46 | rego | 5 konwersji SHADOW |
+  | progi v3_p45* | P06 | rego | ADR-002/P05 |
+
+================================================================================
+7.4 PYTANIA KRZYŻOWE (odpowiedzi obowiązkowe)
+================================================================================
+
+  X01. Sprzeczności z dokumentami świętymi: NIE STWIERDZONO. Gate-merge z
+       baseline (zamiast twardego bloku całości) jest ZGODNE z V1 §3.3
+       (kontrola zmian) i nie zmienia standardów P00–P44 (rejestr C: pusty —
+       T12 bez wpisów BLOCKER).
+  X02. Naruszenia parametrów-as-data (P06)/temporalności (P05): brak w nowych
+       artefaktach (progi wyłącznie w data.thresholds z valid_from); 1 znany
+       hardcode legacy KKS → TODO P46 (rejestr długu).
+  X03. Ścieżki nie fail-closed: domknięte — każda konwersja ma gałąź
+       NEEDS_ADVICE; rego I03/I04/I09/I11 blokują bypass; test
+       never_silent_auto_post dowodzi braku cichego AUTO_POST.
+  X04. Zgodność z kontraktem werdyktu 25-polowym (P03/ADR-004): decyzje P45
+       mają matched/rule_id/package/priority/decision_mode/_routing/
+       _routing_reason/_legal_basis/_warnings + threshold/legal_basis_version/
+       valid_from — spójne typami z wrapperem _certificate (konwencja P44).
+  X05. Testy niezbędne jako bramki merge (P39): pełny suite natywny 60 (×2
+       OPA), pytest 21 (w tym gate merge) — lista w 9.10 [MERGE].
+  X06. Duplikaty: brak — I01–I12 rozszerzają istniejące (lifecycle P07,
+       dashboard P37, bramki P29/P39); narzędzia 6.1 użyte, nie kopiowane.
+  X07. Podstawy niezweryfikowane: 5 cytatów konwersji + odwołania aktów
+       Sekcji 8 — rejestr mediacji z priorytetami (wejście P47).
+  X08. Decyzje 4-eyes: Q01–Q04 (9.11); awans konwersji wyłącznie po Q02.
+  X09. Metryki do obserwowalności (P37): stub_total, stub_critical,
+       mutation_score (próg 90), tautological_files, census_age_days,
+       gate_new_violations — progi w data.thresholds.v3_p45.
+  X10. Ryzyka → invarianty runtime (P04): stub w domenie krytycznej = BLOCK
+       (I01), konwersja bez replay/negatywu = BLOCK (I03/I04), awans bez
+       łańcucha = BLOCK (I09), materiałowa bez aktu = BLOCK (I11) — uzasadnienie
+       prawne: VAT art. 41/43/108, Ordynacja art. 21 §1 [NIEZWERYFIKOWANE].
+
+================================================================================
+SEKCJA 8 — MAPA AKT→PLIK (mini-makra; pełna macierz w 9.05)
+================================================================================
+
+  | Akt | Art./ust./pkt | Grupa plików (6.x) | Reguła | Test | Status |
+  |-----|---------------|--------------------|--------|------|--------|
+  | Ordynacja | 119a | 6.1/6.2 | stub_killer I01 | i01 tests | [NIEZW] |
+  | VAT | 41/43/108 | 6.1 | stub_killer I11 | i11 tests | [NIEZW] |
+  | PIT | 22/27/30c | 6.1/6.2 | stub_killer I05 | i05 tests | [NIEZW] |
+  | ZUS | 18a–18e | 6.1/6.3 | stub_register (wpisy jdg.zus.*) | register+SLA | [NIEZW] |
+  | KKS | 56 | 6.1/6.3 | stub_killer I01+I11 | i01/i11 tests | [NIEZW] |
+  | UoR | 4 ust. 1 | 6.1/6.3 | stub_register + I03 | i01/i03 tests | [NIEZW] |
+  | UoR | 5 | 6.1 | mutation gate (rzetelność) | i05 tests | [NIEZW] |
+  | Ordynacja | 21 §1 | 6.3 | stub_killer I09 | i09 tests | [NIEZW] |
+
+================================================================================
+ANTY-WZORCE 7.5 — WYNIK SPRAWDZENIA (każdy ma wpis do rejestru)
+================================================================================
+
+  AP01 reguły-stub: JEST (39) → L02, rejestr I01.        AP07 cichy AUTO_POST:
+  AP02 hardcode: 1 legacy KKS → TODO P46.                   domknięty dla P45
+  AP03 brak else: stubs→konwersje; P45 rego zawsze          (I04/I03; testy
+      z jawnym NEEDS_ADVICE.                                never_silent).
+  AP04 duplikaty rule_id: 0 (status/report + pytest).    AP08 cykle importów:
+  AP05 podstawy bez Dz.U.: wszystkie [NIEZW] → P47.         brak (P45 bez
+  AP06 testy zawsze-zielone: 102 → L01/P46.                 importów cyklicznych).
+  AP09 dane zewnętrzne: brak w P45 (kursy NBP → C03      AP09/AP10: okna
+      P48/P53).                                             temporalne w progach (P05).
+  AP11 mirror dryf: L08 → P48.                           AP12 słowniki 2×: brak
+  AP10 okna temporalne: valid_from w progach.               (progi tylko w rego data).
+
+================================================================================
+T12 — REJESTR KONFLIKTÓW
+================================================================================
+
+  | ID | Typ | Strony | Rozstrzygnięcie |
+  |----|-----|--------|-----------------|
+  | V3-P45-C01 | dokument↔narzędzie | prompt P45 I07 „szablon bez treści = PR odrzucony" vs istniejące TODO-długi z właścicielem w rules/ | rozróżnienie owned/raw: surowe = BLOCK, z właścicielem = rejestr (9.04 AN03 W3); użytkownik potwierdza (Q04) |
+  | V3-P45-C02 | dane↔narzędzie | git blame wymagany (I02) vs lokalny/ograniczony checkout | atrybucja ścieżką generatora zastępczo; pełny blame po sync [ZAŁOŻENIE] |
+  | V3-P45-C03 | mirror↔canonical | prompt 6.4 wymaga porównania z branch policies vs branch nieosiągalny lokalnie | status NIEZWERYFIKOWANO + kontrakt P48 (L08); bez zgadywania treści |
+
+================================================================================
+APENDYKS A — MAPA GRUP PLIKÓW
+================================================================================
+
+  | Grupa | Nazwa | Liczba | Rola analityczna w tej części |
+  |-------|-------|--------|-------------------------------|
+  | 6.1 | Narzędzia detekcji i konwersji stubów | 8 | liczniki rejestru (detektor, tautologia); wzorce konwersji |
+  | 6.2 | Bramki jakości i ich testy | 6 | wzorzec gate/merge-blok; negative-first |
+  | 6.3 | Rejestry i cykl życia | 6 | rule_registry (rozszerzony), lifecycle manager (17 rejestracji) |
+  | 6.4 | Mirror policies | 6 | zgodność implementacji z mirror; dryf = C03/L08 |
+
+APENDYKS B — MACIERZ PODANALIZA × GRUPA (T11)
+
+  | Podanaliza | Grupy kluczowe | Wynik |
+  |------------|----------------|-------|
+  | AN01 inwentaryzacja | 6.1, 6.3 | 39 stubów policzone narzędziem; rejestr I01 z SLA; I10/I11 rejestry |
+  | AN02 konwersja | 6.1, 6.3 | 5 konwersji K1–K5 + fallback; 22/22 ×2 OPA; ledger P36; SHADOW |
+  | AN03 blokada ścieżki | 6.2, 6.3 | gate merge; template policy; 17 wpisów lifecycle; forensics |
+  | AN04 mutation testing | 6.1, 6.2 | runner M1–M3; score 100% (34/34); próg 90 jako dane |
+
+APENDYKS C — SZKIELET PYTAŃ DO CZŁOWIEKA: pokryty w 9.11 (Q01–Q04).
+
+APENDYKS D — GLOSARIUSZ MINIMALNY CZĘŚCI P45
+  stub — reguła z warunkiem zawsze prawdziwym udająca pokrycie;
+  CHECKPOINT-STUB — marker repo legalizujący {true} (fallback jawny);
+  mutation score — % mutantów zabitych przez testy;
+  M1/M2/M3 — operatory: shift progu, inwersja warunku, usunięcie else;
+  stub-free badge — etykieta domeny z checksumą skanu;
+  provenance — łańcuch akt→art→reguła→test→bundle.
+
+APENDYKS E — PLAN PRACY KROK PO KROKU (ODZNACZONY W CAŁOŚCI)
+
+  [x] 1. Uruchom tautology_guard + else_chain_dead_code_detector (liczniki).
+  [x] 2. Zbuduj rejestr stubów z SLA (I01) — 39 wpisów, domeny/warstwy.
+  [x] 3. Forensics (I02) — atrybucja ścieżek generatorów.
+  [x] 4. Konwersje wzorcowe K1–K5 (I03) + progi ADR-002 + parity ISAP (I12).
+  [x] 5. Testy negatywne konwersji (I04) — 6 szt. + property never_silent.
+  [x] 6. Mutation runner M1–M3 (I05) + gate progu 90.
+  [x] 7. Badge stub-free z checksumą (I06) + widoczność w rule_registry.
+  [x] 8. Template policy (I07) + rejestr TODO-długu; gate merge.
+  [x] 9. Stub-enabling tests (I08) — census tautologii.
+  [x] 10. Provenance (I09) — 17 wpisów lifecycle (12 CANDIDATE + 5 SHADOW).
+  [x] 11. Census (I10) + historia trendu.
+  [x] 12. Legal-empty detector (I11) — rejestr P0/P1.
+  [x] 13. Rego I01–I12 + decide + wiring final_verdict_p109 + progi.
+  [x] 14. Testy natywne 60 ×2 OPA + pytest; wszystkie zielone.
+  [x] 15. Raport + ledger P45 WDROŻONY_100 (46/69).
+
+================================================================================
+WERYFIKACJA NARZĘDZIOWA SESJI (dowody uruchomień 2026-09-09)
+================================================================================
+
+  * opa check (0.68 + 1.9 --v0-compatible): rules v3_p45 ×2 — OK
+  * opa test: 38/38 (killer) + 22/22 (konwersje) = 60/60 ×2 wersje OPA
+  * 12 bundli dowodowych: gate=PASS (pętla weryfikacyjna)
+  * mutation runner: 34/34 mutantów zabitych = 100% (22.8 s)
+  * rule_lifecycle_manager register ×17: 12 CANDIDATE + 5 SHADOW
+  * v3_p45_gate: merge PASS (0 nowych; 3 legacy naprawione); audit 666 legacy
+  * pytest: 21 testów (2 weryfikują raport+ledger — zielone po tym zapisie)
+
+================================================================================
+KONTRAKT WYJŚCIOWY — LISTA DLA P46 (komenda końcowa 16.3)
+================================================================================
+
+  1. bundles/stub_register.json (39 wpisów z SLA) — wejście eliminacji P46.
+  2. bundles/tool_scan_stub_detector.json + tool_scan_tautology.json — baseline.
+  3. bundles/v3_p45_gate_full_audit.json (666 naruszeń) — backlog bez wzrostu.
+  4. bundles/v3_p45_todo_debt_register.json (KKS hardcode → P46).
+  5. bundles/v3_p45_legal_empty_register.json (P0/P1) — wspólny front z P47.
+  6. Gate: tools/v3_p45_gate.py (merge = tylko nowe naruszenia; BLOCK).
+  7. Progi v3_p45/v3_p45_conversions (ADR-002) — zmiany tylko w thresholds.
+  8. Wzorzec konwersji: rules/v3_p45_conversions.rego (SHADOW do 4-eyes).
+
+================================================================================
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+================================================================================
+
+Niniejsza część jest zgodna z: (1) ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md
+(V1 — Control Plane, fail-closed V1 zasada 6, lifecycle, SLO), (2)
+WIZJA_OPA_ENTERPRISE_V2.md (Legal Twin, Golden Oracle replay w pipeline I03,
+Decision Certificate w wrapperze _certificate, Declarative Change — I03 jako
+przypadek deklaratywnej zmiany). Odstępstwa: brak BLOCKER; C01–C03 rozstrzygnięte
+z jawnym oznaczeniem. Nie deklarowano „100% zgodności"/„production-ready"
+bez dowodu — twierdzenia mają artefakty i wyniki uruchomień.
+
+Protokół 16.4: SESJA DO WYCZYSZCZENIA — do części P46 wchodzi się wyłącznie
+z sekcjami: 9.01 EXECUTIVE SUMMARY, 9.08 KONTRAKT WYJŚCIOWY, 9.06 REJESTR LUK
+(P0/P1). Nie przenosi się niejawnych założeń, cytatów ani fragmentów kodu.
+
+KONIEC RAPORTU V3 P45 — WDROŻONY_100 (realne artefakty, 2026-09-09)
+================================================================================

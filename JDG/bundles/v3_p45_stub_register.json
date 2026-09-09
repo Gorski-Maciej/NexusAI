@@ -1,0 +1,50 @@
+{
+  "innovation": "V3-P45-I01",
+  "generated_at": "2026-09-09T18:31:47+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "total_stubs": 39,
+    "critical_domain_stubs": 3,
+    "by_layer": {
+      "macro": 22,
+      "enterprise": 14,
+      "micro": 3
+    },
+    "trend": "declining",
+    "register_file": "bundles/stub_register.json",
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "tool_backed_counts",
+      "status": "OK",
+      "detail": "detektor=39 vs rejestr=39 (rejestr 1:1 z wynikiem narzędzia)"
+    },
+    {
+      "name": "register_written",
+      "status": "OK",
+      "detail": "bundles/stub_register.json: 39 wpisów, domeny=27, warstwy={'macro': 22, 'enterprise': 14, 'micro': 3}"
+    },
+    {
+      "name": "every_entry_has_sla",
+      "status": "OK",
+      "detail": "każdy wpis ma deadline+owner+repair_plan (SLA)"
+    },
+    {
+      "name": "critical_stubs_registered",
+      "status": "OK",
+      "detail": "stuby w domenach krytycznych (VAT/PIT/ZUS/KKS): 3 — zarejestrowane z SLA i planem; poza fallback: 0"
+    },
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p45_stub_killer.stub_register: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p109"
+    }
+  ],
+  "findings": []
+}

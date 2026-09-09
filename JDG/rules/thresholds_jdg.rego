@@ -2657,7 +2657,20 @@ misc := {
 
     # Reprezentacja
     "poa_fee_pln": 17,                           # PLN — opłata skarbowa (P1200)
-}
+
+    # ── V3-P46 MIGRACJA HARDCODE (ADR-002) — KKS jako dane [NIEZWERYFIKOWANE — ISAP, P47] ──
+    # KKS art. 53 §3: próg przestępstwa — uszczuplenie > 26 000 PLN
+    "kks_criminal_threshold": 26000,             # PLN (Dz.U. 2025 poz. 678, ze zm.) [NIEZWERYFIKOWANE]
+    # KKW art. 97 §3: maksymalna wysokość mandatu karnego — 200 stawek dziennych
+    "kks_mandate_tier3_cap": 26000,              # PLN (200 × 130 PLN) [NIEZWERYFIKOWANE]
+    "kks_daily_rate": 130,                       # PLN — stawka dzienna mandatu [NIEZWERYFIKOWANE]
+    # KKW art. 97 §1: mandaty niższe — stawki 1–10 (≤5 200) i 11–20 (≤10 400)
+    "kks_mandate_tier1_cap": 5200,               # PLN — max mandatu, uszczuplenie ≤ 5 200 [NIEZWERYFIKOWANE]
+    "kks_mandate_tier2_cap": 10400,              # PLN — max mandatu, uszczuplenie 5 200–13 000 [NIEZWERYFIKOWANE]
+    "kks_mandate_tier1_loss_max": 5200,          # PLN — górna granica uszczuplenia stawek 1–10 [NIEZWERYFIKOWANE]
+    "kks_mandate_tier2_loss_max": 13000,         # PLN — górna granica uszczuplenia stawek 11–20 [NIEZWERYFIKOWANE]
+    # KKS: orientacyjna stawka odsetek dziennych od zaległości (0.038%/dzień)
+    "kks_daily_interest_rate": 0.00038,          # ułamek dzienny [NIEZWERYFIKOWANE — ISAP, P47]
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # FC THRESHOLDS — Field Confidence progi dla routingu (Recomendacja 6.4)
@@ -3567,6 +3580,23 @@ v3_p45 := {
     "v3_p45_tautological_test_files_max": 0,
     # I10: maksymalny wiek spisu stubów (dni)
     "v3_p45_census_max_age_days": 7,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# V3-P45-CONV — PROGI KONWERSJI STUB→REGUŁA WARUNKOWA (I03; ADR-002, P05)
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p45_conversions := {
+    "v3_p45_conv_threshold_version": "stub-conv-v3p45-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # K1: próg UoR art. 2 ust. 1 pkt 5 (EUR) [NIEZWERYFIKOWANE — ISAP, P47]
+    "v3_p45_conv_uor_threshold_eur": 2000000,
+    # K3: próg MDR znacznik ogólny (PLN) [NIEZWERYFIKOWANE — ISAP, P47]
+    "v3_p45_conv_mdr_main_benefit": 2500000,
+    # K4: minimalna podstawa PCC (PLN, art. 9) [NIEZWERYFIKOWANE — ISAP, P47]
+    "v3_p45_conv_pcc_min_pln": 1000,
+    # K5: stawka WHT 20% (UoWHT art. 21) [NIEZWERYFIKOWANE — ISAP, P47]
+    "v3_p45_conv_wht_rate_pct": 20,
     "no_auto_post": true,
     "manual_review_required": true,
 }

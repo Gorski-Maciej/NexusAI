@@ -1,0 +1,5 @@
+{
+  "tautological_test_files": 102,
+  "tool": "tools/tautology_guard.py",
+  "run_at": "2026-09-09T17:48:57+00:00"
+}

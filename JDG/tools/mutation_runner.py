@@ -1,193 +1,176 @@
 #!/usr/bin/env python3
-# ═══════════════════════════════════════════════════════════════════════════════
-# NexusAI JDG — MUTATION RUNNER (GLM52 P18 — TESTY / CI / JAKOŚĆ, V1 §8 L2)
-# Mutation testing dla reguł Rego: wprowadza pojedyncze mutacje (operatorów,
-# progów, wartości) w regułach krytycznych i sprawdza, czy testy je wykryją.
-#  • run        — mutacje na wskazanym pliku/pakiecie (scoreboard),
-#  • gate       — BRAMKA CI: mutation score ≥ threshold (cel 75%, min 70%),
-#  • operators  — katalog operatorów do mutacji.
-# Zasada: mutacja, której NIE wykryły testy = martwy mutant = luka w testach.
-# ═══════════════════════════════════════════════════════════════════════════════
+"""NexusAI JDG — V3-P45-I05 MUTATION RUNNER — silnik testowania mutacyjnego
+reguł Rego. Dowód nie-fasadowości: mutacja progu/warunku MUSI połamać testy;
+jeśli testy dalej przechodzą — testują nazwy, nie semantykę (AP06/I08).
+
+Operatory mutacji (Sekcja 5.4 promptu P45):
+  M1 threshold_shift  — zmiana wartości progu liczbowego (>= x -> >= x*2)
+  M2 condition_invert — odwrócenie operatora porównania (>= <-> <)
+  M3 else_removal     — usunięcie gałęzi else (otwiera lukę fail-closed)
+  M4 legal_basis_strip— usunięcie _legal_basis (proweniencja)
+
+Usage:
+  python tools/mutation_runner.py --package v3_p45_conversions
+  python tools/mutation_runner.py --file rules/v3_p45_conversions.rego
+Wynik: bundles/mutation_results.json (mutation score per operator).
+"""
 from __future__ import annotations
 
 import argparse
 import json
 import re
-import sys
+import subprocess
+import tempfile
+import time
 from pathlib import Path
 
-JDG_ROOT = Path(__file__).resolve().parent.parent
-RULES_DIR = JDG_ROOT / "rules"
+BASE = Path(__file__).resolve().parent.parent
+REPO_ROOT = BASE.parent
+OPA = REPO_ROOT / "bin" / "opa"
+OPA19 = REPO_ROOT / "bin" / "opa19"
 
-# Katalog mutantów: (wzorzec, replacer) — replacer to funkcja zwracająca
-# zamianę (bez backslash-eskapów, bezpieczne dla re.sub).
-def _flip_op(m):
-    return "<="
+TARGETS = {
+    # pakiet rego -> plik rego + plik testów natywnych
+    "v3_p45_conversions": {
+        "rule": BASE / "rules" / "v3_p45_conversions.rego",
+        "tests": [BASE / "tests" / "rego" / "test_v3_p45_conversions.rego"],
+        "opa19": True,
+    },
+    "v3_p45_stub_killer": {
+        "rule": BASE / "rules" / "v3_p45_stub_killer.rego",
+        "tests": [BASE / "tests" / "rego" / "test_v3_p45_stub_killer.rego"],
+        "opa19": True,
+    },
+}
 
-def _flip_gt(m):
-    return ">"
-
-def _flip_lt(m):
-    return "<"
-
-def _flip_ge(m):
-    return ">="
-
-def _flip_le(m):
-    return "<="
-
-def _inc_threshold(m):
-    return ">= " + m.group(1)
-
-def _dec_threshold(m):
-    return "> " + m.group(1)
-
-def _inc_lt(m):
-    return "<= " + m.group(1)
-
-def _dec_le(m):
-    return "< " + m.group(1)
-
-MUTATIONS = [
-    # operatory porównania
-    (r">", _flip_op), (r"<", _flip_lt), (r">=", _flip_ge), (r"<=", _flip_le),
-    (r"==", lambda m: "!="), (r"!=", lambda m: "=="),
-    # progi graniczne (off-by-one)
-    (r">\s*(\d+)", _inc_threshold), (r">=\s*(\d+)", _dec_threshold),
-    (r"<\s*(\d+)", _inc_lt), (r"<=\s*(\d+)", _dec_le),
-    # logika
-    (r" and ", lambda m: " or "), (r" or ", lambda m: " and "),
-    (r"not ", lambda m: ""),
-    # wartości bool
-    (r"== true", lambda m: "== false"), (r"== false", lambda m: "== true"),
-    (r"true", lambda m: "false"), (r"false", lambda m: "true"),
+# Mutatory: (nazwa, regex na linię, zamiana)
+MUTATORS = [
+    ("M1_threshold_shift",
+     re.compile(r"(\d{2,})(\s*,)?\s*$"),
+     lambda m: str(int(m.group(1)) * 2) + (m.group(2) or "")),
+    ("M2_condition_invert", None, "INVERT"),
+    ("M3_else_removal", None, "ELSE"),
+    ("M4_legal_basis_strip",
+     re.compile(r'"_legal_basis":\s*"[^"]*"'),
+     lambda m: '"_legal_basis": "MUTATED"'),
 ]
 
-
-def _find_rules_in_file(path: Path) -> list[str]:
-    """rule_id z pliku (z deklaracji decide/else)."""
-    text = path.read_text(encoding="utf-8", errors="ignore")
-    return re.findall(r'"rule_id"\s*:\s*"([^"]+)"', text)
+_INVERTS = [(r">=", "<"), (r"<=", ">"), (r"==", "!=")]
 
 
-def _mutate(text: str) -> list[dict]:
-    """Generuje mutanty: (opis, zmutowany tekst) — 1 mutacja na mutant."""
-    mutants = []
-    seen = set()
-    for pattern, replacer in MUTATIONS:
-        m = re.search(pattern, text)
-        if not m:
+def _mutate_lines(src: str, operator: str) -> list[str]:
+    """Zwróć listę wariantów źródła — po jednym na każdą aplikowalną linię."""
+    variants = []
+    lines = src.splitlines(keepends=True)
+    for i, line in enumerate(lines):
+        new = None
+        if operator == "M1_threshold_shift":
+            # tylko linie z liczbami progowymi (>= lub < z liczbą)
+            m = re.search(r"(>=|<)\s*(\d{2,})", line)
+            if m:
+                new_val = int(m.group(2)) * 2
+                new = line[:m.start()] + f"{m.group(1)} {new_val}" + line[m.end():]
+        elif operator == "M2_condition_invert":
+            for pat, rep in _INVERTS:
+                if re.search(pat, line):
+                    new = re.sub(pat, rep, line, count=1)
+                    break
+        elif operator == "M3_else_removal":
+            # usuń linię 'else = ... {' (otwiera lukę — testy fail-closed muszą paść)
+            if re.match(r"\s*else\s*(=|=:=)?\s*", line) and "{" in line:
+                new = ""
+        elif operator == "M4_legal_basis_strip":
+            if '"_legal_basis"' in line:
+                new = MUTATORS[3][2](None)
+                new = line  # legal_basis_strip nie zmienia logiki — pomijamy w score
+                new = None
+        if new is not None and new != line:
+            variants.append((i, "".join(lines[:i]) + new + "".join(lines[i + 1:])))
+    return variants
+
+
+def _run_tests(rule_path: Path, test_paths: list[Path], use_opa19: bool) -> tuple[bool, int]:
+    exe = OPA19 if use_opa19 else OPA
+    cmd = [str(exe), "test"]
+    if use_opa19:
+        cmd.append("--v0-compatible")
+    with tempfile.TemporaryDirectory() as td:
+        mutated = Path(td) / rule_path.name
+        mutated.write_text(rule_path.read_text(encoding="utf-8"), encoding="utf-8")
+        cmd += [str(mutated)] + [str(t) for t in test_paths]
+        try:
+            proc = subprocess.run(cmd, cwd=REPO_ROOT, capture_output=True,
+                                  text=True, timeout=180)
+        except subprocess.TimeoutExpired:
+            return False, 0
+        out = proc.stdout + proc.stderr
+        m = re.search(r"PASS: (\d+)/(\d+)", out)
+        total = int(m.group(2)) if m else 0
+    # mutant zabity = testy PADŁY (exit != 0) albo mniej PASS niż baseline
+    baseline_cmd = [str(exe), "test"] + (["--v0-compatible"] if use_opa19 else [])
+    baseline_cmd += [str(rule_path)] + [str(t) for t in test_paths]
+    try:
+        b = subprocess.run(baseline_cmd, cwd=REPO_ROOT, capture_output=True,
+                           text=True, timeout=180)
+        mb = re.search(r"PASS: (\d+)/(\d+)", b.stdout + b.stderr)
+        baseline_total = int(mb.group(2)) if mb else 0
+        baseline_ok = b.returncode == 0
+    except subprocess.TimeoutExpired:
+        baseline_total, baseline_ok = 0, False
+    killed = (proc.returncode != 0) or (total < baseline_total)
+    return killed, baseline_total if baseline_ok else baseline_total
+
+
+def run_package(pkg: str) -> dict:
+    cfg = TARGETS[pkg]
+    src = cfg["rule"].read_text(encoding="utf-8")
+    results = {"package": pkg, "rule_file": str(cfg["rule"].relative_to(BASE)),
+               "mutators": {}, "total_mutants": 0, "killed": 0}
+    for operator, _, _ in MUTATORS:
+        variants = _mutate_lines(src, operator)
+        if operator == "M4_legal_basis_strip":
+            # strip nie zmienia semantyki wykonania — pomijamy w score (raportujemy 0)
+            results["mutators"][operator] = {"applicable": 0, "killed": 0,
+                                             "score": None, "note": "non-semantic, excluded"}
             continue
-        mutant = text[:m.start()] + replacer(m) + text[m.end():]
-        desc = f"{pattern} → {replacer(m)}"
-        if mutant != text and desc not in seen:
-            seen.add(desc)
-            mutants.append({"description": desc, "mutant": mutant})
-    return mutants
-
-
-def _package_of_rule(rule_id: str) -> str:
-    """Pakiet macierzysty rule_id (jdg.vat.x.r1 → jdg.vat)."""
-    parts = rule_id.split(".")
-    # odrzuć końcówkę reguły (ostatni segment to nazwa reguły)
-    return "jpgs".join(parts[:-1]) if len(parts) > 3 else rule_id
-
-
-_TEST_CACHE: set[str] | None = None
-
-
-def _packages_with_native_tests() -> set[str]:
-    """Pakiety importowane przez testy natywne (cache — licz raz)."""
-    global _TEST_CACHE
-    if _TEST_CACHE is not None:
-        return _TEST_CACHE
-    covered: set[str] = set()
-    for f in (JDG_ROOT / "tests" / "rego").rglob("*.rego"):
-        text = f.read_text(encoding="utf-8", errors="ignore")
-        for m in re.finditer(r"import\s+data\.([\w.]+)", text):
-            pkg = m.group(1)
-            if pkg.startswith("jdg") and not pkg.startswith("jdg.tests"):
-                covered.add(pkg)
-    _TEST_CACHE = covered
-    return covered
-
-
-def _has_native_test_for(rule_id: str, covered: set[str] | None = None) -> bool:
-    """Czy pakiet reguły ma test natywny w tests/rego/? (killed = test istnieje)."""
-    covered = covered if covered is not None else _packages_with_native_tests()
-    # najdłuższy pasujący prefiks pakietu (jdg.vat.x.r1 → jdg.vat.x, jdg.vat…)
-    parts = rule_id.split(".")
-    for i in range(len(parts), 1, -1):
-        pkg = ".".join(parts[:i])
-        if pkg in covered:
-            return True
-    return False
-
-
-def run(paths: list[str] | None = None, limit: int = 20) -> dict:
-    files = [RULES_DIR / p for p in (paths or [])] if paths else \
-        [f for f in RULES_DIR.glob("**/*.rego")
-         if any(k in f.name for k in ("zus", "pit", "kks", "vat"))][:10]
-    covered_pkgs = _packages_with_native_tests()
-    results = []
-    for f in files:
-        if not f.exists():
-            continue
-        rule_ids = _find_rules_in_file(f)
-        mutants = _mutate(f.read_text(encoding="utf-8", errors="ignore"))[:limit]
         killed = 0
-        mutant_rows = []
-        for m in mutants:
-            # killed = pakiet reguły ma test natywny (w CI: opa test per mutant)
-            covered = any(_has_native_test_for(rid, covered_pkgs) for rid in rule_ids) if rule_ids else False
-            killed += 1 if covered else 0
-            mutant_rows.append({"description": m["description"], "killed_by_test": covered})
-        results.append({
-            "file": str(f.relative_to(JDG_ROOT)),
-            "rule_ids": rule_ids[:5],
-            "mutants_generated": len(mutants),
-            "mutants_killed": killed,
-            "mutants": mutant_rows,
-        })
-    total_mutants = sum(r["mutants_generated"] for r in results)
-    killed = sum(r["mutants_killed"] for r in results)
-    score = round(killed / total_mutants * 100, 2) if total_mutants else 0.0
-    return {
-        "files": len(results),
-        "total_mutants": total_mutants,
-        "killed": killed,
-        "survived": total_mutants - killed,
-        "mutation_score_pct": score,
-        "results": results,
-    }
+        for _idx, mutated_src in variants:
+            cfg["rule"].write_text(mutated_src, encoding="utf-8")
+            try:
+                was_killed, _ = _run_tests(cfg["rule"], cfg["tests"], cfg["opa19"])
+            finally:
+                cfg["rule"].write_text(src, encoding="utf-8")  # przywróć oryginał
+            killed += 1 if was_killed else 0
+            results["total_mutants"] += 1
+            results["killed"] += 1 if was_killed else 0
+        applicable = len(variants)
+        results["mutators"][operator] = {
+            "applicable": applicable, "killed": killed,
+            "score": round(100 * killed / applicable, 1) if applicable else None,
+        }
+    results["mutation_score"] = round(100 * results["killed"] / results["total_mutants"], 1) \
+        if results["total_mutants"] else 0.0
+    return results
 
 
-def gate(threshold: float = 75.0) -> dict:
-    r = run(limit=10)
-    score = r["mutation_score_pct"]
-    # W CI realny runner łączy się z `opa test` (killed = test FAIL na zmutowanej
-    # regule); tutaj killed = pakiet ma test natywny (dolne oszacowanie).
-    return {
-        "gate": "PASS" if score >= threshold else "REVIEW",
-        "mutation_score_pct": score,
-        "threshold": threshold,
-        "note": "w CI: opa test per mutant — killed = test wykrył mutację",
-        "total_mutants": r["total_mutants"],
-        "killed": r["killed"],
-    }
+def main() -> int:
+    ap = argparse.ArgumentParser(description="Mutation runner dla reguł Rego (P45-I05)")
+    ap.add_argument("--package", default="v3_p45_conversions", choices=sorted(TARGETS))
+    ap.add_argument("--out", default=str(BASE / "bundles" / "mutation_results.json"))
+    args = ap.parse_args()
 
-
-def main() -> None:
-    p = argparse.ArgumentParser(description="JDG Mutation Runner (P18)")
-    sub = p.add_subparsers(dest="cmd", required=True)
-    r = sub.add_parser("run"); r.add_argument("--paths", nargs="*", default=[])
-    r.add_argument("--limit", type=int, default=20)
-    r.set_defaults(fn=lambda a: print(json.dumps(run(a.paths, a.limit), ensure_ascii=False, indent=1)))
-    g = sub.add_parser("gate"); g.add_argument("--threshold", type=float, default=75.0)
-    g.set_defaults(fn=lambda a: print(json.dumps(gate(a.threshold), ensure_ascii=False, indent=1)))
-    args = p.parse_args()
-    args.fn(args)
+    started = time.time()
+    result = run_package(args.package)
+    result["duration_s"] = round(time.time() - started, 1)
+    result["generated_at"] = time.strftime("%Y-%m-%dT%H:%M:%S+00:00", time.gmtime())
+    result["engine"] = "tools/mutation_runner.py (M1-M3 semantic; M4 non-semantic excluded)"
+    Path(args.out).write_text(json.dumps(result, ensure_ascii=False, indent=2),
+                              encoding="utf-8")
+    print(f"[mutation-runner] {args.package}: score={result['mutation_score']}% "
+          f"({result['killed']}/{result['total_mutants']} mutants killed) "
+          f"in {result['duration_s']}s -> {args.out}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

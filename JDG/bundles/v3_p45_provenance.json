@@ -1,0 +1,53 @@
+{
+  "innovation": "V3-P45-I09",
+  "generated_at": "2026-09-09T18:32:52+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_ids_total": 12,
+    "with_basis": 12,
+    "registry_ok": true,
+    "conversions_lifecycle": "CANDIDATE"
+  },
+  "checks": [
+    {
+      "name": "all_rule_ids_in_rego",
+      "status": "OK",
+      "detail": "rule_id P45 w rego: 12/12 braki=brak"
+    },
+    {
+      "name": "legal_basis_in_rego",
+      "status": "OK",
+      "detail": "reguły z _legal_basis (P45-Ixx): 12/12"
+    },
+    {
+      "name": "native_tests_per_rule",
+      "status": "OK",
+      "detail": "testy natywne per innowacja: 12/12 braki=brak"
+    },
+    {
+      "name": "registry_entries_with_lifecycle",
+      "status": "OK",
+      "detail": "rule_registry.json: wpisy v3_p45 z lifecycle+provenance: True"
+    },
+    {
+      "name": "conversions_stay_candidate",
+      "status": "OK",
+      "detail": "konwersje oznaczone CANDIDATE (awans po 4-eyes): True"
+    }
+  ],
+  "findings": [],
+  "provenance_map": {
+    "stub_register": "P45-I01; UoR art. 4 ust. 1 [NIEZWERYFIKOWANE]; P44-K1",
+    "stub_forensics": "P45-I02; RODO art. 5.2 rozliczalność [NIEZWERYFIKOWANE]",
+    "auto_convert_pipeline": "P45-I03; P34 L1-L5; P36 migration ledger",
+    "negative_assertion": "P45-I04; P39-I04 negative-first",
+    "mutation_score_gate": "P45-I05; P39 testy jako bramki",
+    "stub_free_badge": "P45-I06; P44 certyfikat",
+    "template_policy": "P45-I07; P00 standardy",
+    "stub_enabling_tests": "P45-I08; P39-I04; tautology_guard",
+    "provenance_of_truth": "P45-I09; P07 lifecycle; Ordynacja art. 21 §1 [NIEZWERYFIKOWANE]",
+    "stub_census": "P45-I10; P37 dashboard; P42 self-scan",
+    "legal_empty": "P45-I11; VAT art. 41/43/108 [NIEZWERYFIKOWANE]",
+    "isap_parity": "P45-I12; ISAP jedyne źródło treści ustaw [NIEZWERYFIKOWANE]"
+  }
+}

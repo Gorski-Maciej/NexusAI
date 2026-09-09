@@ -2,31 +2,368 @@
 # NexusAI JDG Policies — KKS: Kodeks Karny Skarbowy (P200-P499)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# METADATA
-# title: KKS Package — Penal Fiscal Code Full Decomposition (200+ rules)
-# description: |
-#   Rozbudowany silnik KKS — 200+ reguł w 4 grupach:
-#   - P200-P229: Czynny żal i przedawnienie karalności (30 reguł, Art. 16-19, 44, 51 KKS)
-#   - P240-P399: Przestępstwa skarbowe (160 reguł, Art. 54-76, 83 KKS)
-#   - P365-P399: Zabezpieczenia majątkowe i pomost przestępstwo→wykroczenie (35 reguł, Art. 22-31, 77-83 KKS)
-#   - P400-P459: Wykroczenia skarbowe (60 reguł, Art. 60-61, 77-83 KKS)
-#   - P460-P499: Sankcje, zabezpieczenia, postępowanie (40 reguł, Art. 22-53 KKS)
-# architecture: First-Match-Wins else-chain, priorytety P200-P499
-# legal_basis: Kodeks Karny Skarbowy (Dz.U. 2024 poz. 628 t.j.)
-# edge_cases:
-#   - Czynny żal: tylko przed rozpoczęciem postępowania przez KAS (Art. 16 § 5)
-#   - Przedawnienie: 5 lat przestępstwa (Art. 44 § 1), 3 lata wykroczenia (Art. 51 § 1)
-#   - Puste faktury: najwyższa kara do 25 lat pozbawienia wolności (Art. 62 § 2)
-#   - Nierzetelne księgi: sankcja do 240 stawek dziennych (Art. 56 § 1)
-#   - Niszczenie dokumentów: Art. 60 KKS (brak ksiąg) + art. 276 KK
-# package: jdg.kks
-# deprecated: false
+# METADANE INFORMACYJNE (YAML OPA wyłączone — V3-P46-C02, zero "klucz: wartosc"
+# w komentarzu nagłówkowym, bo OPA parsuje go jako YAML i pada na listach)
+# KKS Package — Penal Fiscal Code Full Decomposition (200+ rules)
+# Rozbudowany silnik KKS — 200+ reguł w 4 grupach (P200-P499)
+# legal_basis — Kodeks Karny Skarbowy (Dz.U. 2024 poz. 628 t.j.) [NIEZWERYFIKOWANE]
 # ═══════════════════════════════════════════════════════════════════════════════
 
 package jdg.kks
 
+import future.keywords.in
+
 import data.jdg.helpers
 import data.jdg.kks.rates
+
+# ── V3-P46 MIGRACJA HARDCODE — pomocnicze reguły warunkowe (wartości KKW jako
+#    dane z data.jdg.thresholds.bounds; inline "x = n { warunek }" w ciele
+#    reguły jest niepoprawny składniowo w OPA — naprawa V3-P46-C02) ──────────
+
+daily_rates_declaration_overdue(days) := cap {
+    bounds := object.get(data.jdg.thresholds, "bounds", {})
+    cap := object.get(bounds, "kks_mandate_tier1_cap", 5200) / object.get(bounds, "kks_daily_rate", 130) * 1
+    days <= 180
+    cap := object.get(bounds, "kks_declaration_rates_short", 120)
+} else := cap {
+    days > 180
+    cap := object.get(bounds, "kks_declaration_rates_long", 180)
+}
+
+kks_statute_years(offense_type) := years {
+    years := 5
+    offense_type in {"TAX_EVASION", "EMPTY_INVOICE", "FAKE_INVOICE", "UNRELIABLE_BOOKS", "UNRELIABLE_VAT", "VAT_CAROUSEL"}
+} else := years {
+    years := 3
+    offense_type in {"DECLARATION_NOT_FILED", "INCORRECT_DATA", "TAX_UNPAID"}
+}
+
+daily_rates_by_overdue(days) := cap {
+    days <= 30
+    cap := object.get(object.get(data.jdg.thresholds, "bounds", {}), "kks_offense_rates_short", 60)
+} else := cap {
+    days > 30
+    days <= 180
+    cap := object.get(object.get(data.jdg.thresholds, "bounds", {}), "kks_declaration_rates_short", 120)
+} else := cap {
+    days > 180
+    cap := object.get(object.get(data.jdg.thresholds, "bounds", {}), "kks_declaration_rates_long", 180)
+}
+
+daily_rates_by_offense(offense_type) := cap {
+    offense_type == "DECLARATION_NOT_FILED"
+    cap := object.get(object.get(data.jdg.thresholds, "bounds", {}), "kks_declaration_rates_short", 120)
+} else := cap {
+    offense_type == "INCORRECT_DATA"
+    cap := object.get(object.get(data.jdg.thresholds, "bounds", {}), "kks_incorrect_data_rates", 180)
+} else := cap {
+    offense_type in {"UNRELIABLE_BOOKS", "UNRELIABLE_VAT"}
+    cap := object.get(object.get(data.jdg.thresholds, "bounds", {}), "kks_unreliable_rates", 240)
+} else := cap {
+    offense_type in {"TAX_EVASION", "EMPTY_INVOICE", "FAKE_INVOICE"}
+    cap := object.get(object.get(data.jdg.thresholds, "bounds", {}), "kks_evasion_rates", 720)
+}
+
+limitation_max_years(shortfall) := years {
+    shortfall <= 200000
+    years := 5
+} else := years {
+    shortfall <= 5000000
+    years := 10
+} else := years {
+    years := 25
+}
+
+mandate_max_by_offense(offense_type) := amount {
+    offense_type == "INCORRECT_DATA"
+    amount := object.get(object.get(data.jdg.thresholds, "bounds", {}), "kks_mandate_fixed_incorrect", 2000)
+} else := amount {
+    amount := object.get(object.get(data.jdg.thresholds, "bounds", {}), "kks_mandate_fixed_not_filed", 5000)
+}
+
+# ── V3-P46: dalsze reguły klasyfikacyjne (bandy wartości/sewerości) ─────────
+
+value_band_by_amount(amount) := band {
+    amount <= 200000
+    band := "MALA_WARTOSC"
+} else := band {
+    amount <= 1000000
+    band := "DUZA_WARTOSC"
+} else := band {
+    band := "WIELKA_WARTOSC"
+}
+
+penalty_info_by_band(band) := info {
+    band == "MALA_WARTOSC"
+    info := "grzywna do 720 stawek"
+} else := info {
+    band == "DUZA_WARTOSC"
+    info := "kara do 5 lat pozbawienia wolnosci"
+} else := info {
+    info := "kara do 10 lat pozbawienia wolnosci"
+}
+
+risk_level_by_score(score) := level {
+    score <= 20
+    level := "LOW"
+} else := level {
+    score <= 50
+    level := "MEDIUM"
+} else := level {
+    score <= 80
+    level := "HIGH"
+} else := level {
+    level := "CRITICAL"
+}
+
+routing_by_risk_level(level) := action {
+    level == "LOW"
+    action := ""
+} else := action {
+    level in {"MEDIUM", "HIGH"}
+    action := "TRIAGE_QUEUE"
+} else := action {
+    action := "BLOCK_AND_ALERT"
+}
+
+risk_action_msg(level) := msg {
+    level == "LOW"
+    msg := "Monitoruj"
+} else := msg {
+    level == "MEDIUM"
+    msg := "Zalecany audyt wewnętrzny"
+} else := msg {
+    level == "HIGH"
+    msg := "WYMAGANA weryfikacja manualna"
+} else := msg {
+    msg := "NATYCHMIASTOWA blokada + zgłoszenie do KAS!"
+}
+
+glob_risk_level(score) := level {
+    score <= 25
+    level := "LOW"
+} else := level {
+    score <= 50
+    level := "MEDIUM"
+} else := level {
+    score <= 75
+    level := "HIGH"
+} else := level {
+    level := "CRITICAL"
+}
+
+glob_at_risk(score) := flag {
+    score <= 25
+    flag := false
+} else := flag {
+    flag := true
+}
+
+self_report_advice_for(flag) := msg {
+    flag == true
+    msg := "Możliwy czynny żal — złóż zawiadomienie NATYCHMIAST przed formalnym wszczęciem!"
+} else := msg {
+    msg := "Czynny żal już NIEMOŻLIWY — postępowanie w toku. Skup się na linii obrony."
+}
+
+# P46: samozgłoszalność wg ścieżki wykrycia (v0-legalna forma warunkowa)
+self_reportable_by_path(discovered_by) := flag {
+    discovered_by == "SAMOUJAWNIENIE"
+    flag := true
+} else := flag {
+    discovered_by == "BIURO_RACHUNKOWE"
+    flag := true
+} else := flag {
+    discovered_by in {"KAS_KONTROLA", "KAS_CZYNNOSCI", "POLICJA", "PROKURATURA"}
+    flag := false
+} else := flag {
+    discovered_by != ""
+    flag := false
+}
+
+# P46: klasyfikacja obrony prawnej (v0-legalna forma warunkowa)
+defense_validity(dt) := v {
+    dt in {"BLAD_CO_DO_PRAWA_USPRAWIEDLIWIONY", "STAN_WYZSZEJ_KONIECZNOSCI", "DZIALANIE_NA_POLECENIE", "INTERPRETACJA_INDYWIDUALNA"}
+    v := "WAŻNA"
+} else := v {
+    dt in {"BLAD_CO_DO_PRAWA_NIEUSPRAWIEDLIWIONY", "NIEWIEDZA", "DORADCA_ZAPEWNIL"}
+    v := "SŁABA"
+} else := v {
+    v := "NIEWAŻNA"
+}
+
+defense_effect_for(v) := e {
+    v == "WAŻNA"
+    e := "Może prowadzić do uniewinnienia"
+} else := e {
+    v == "SŁABA"
+    e := "Może złagodzić karę"
+} else := e {
+    e := "Brak skutecznej linii obrony"
+}
+
+defense_recommendation_for(v) := r {
+    v == "WAŻNA"
+    r := "Utrzymuj linię obrony"
+} else := r {
+    v == "SŁABA"
+    r := "Rozważ negocjacje z prokuratorem"
+} else := r {
+    r := "NATYCHMIAST znajdź adwokata specjalizującego się w KKS!"
+}
+
+glob_action(level) := msg {
+    level == "LOW"
+    msg := "Monitoruj sytuację"
+} else := msg {
+    level == "MEDIUM"
+    msg := "Zalecany audyt wewnętrzny"
+} else := msg {
+    level == "CRITICAL"
+    msg := "NATYCHMIASTOWE zgłoszenie do KAS + adwokat!"
+} else := msg {
+    msg := "WYMAGANA interwencja prawnika"
+}
+
+# P46: kaplice mandatowe jako funkcja (v0-legalna forma warunkowa)
+mandate_cap(tax_loss, t1_cap, t2_cap, t3_cap, t1_loss, t2_loss) := c {
+    tax_loss <= t1_loss
+    c := t1_cap
+} else := c {
+    tax_loss <= t2_loss
+    c := t2_cap
+} else := c {
+    c := t3_cap
+}
+
+survival_risk_by_ratio(ratio) := level {
+    ratio <= 0.1
+    level := "LOW"
+} else := level {
+    ratio <= 0.3
+    level := "MEDIUM"
+} else := level {
+    ratio <= 0.5
+    level := "HIGH"
+} else := level {
+    level := "CRITICAL"
+}
+
+survival_recommendation(level) := msg {
+    level in {"LOW", "MEDIUM"}
+    msg := "Kontynuuj z ostrożnością"
+} else := msg {
+    level == "HIGH"
+    msg := "ROZWAŻ ZAWIESZENIE — ryzyko egzekucji >30% przychodu"
+} else := msg {
+    msg := "ZAMKNIJ JDG — egzekucja przekroczy przychody!"
+}
+
+minor_weight_classification(factors) := class {
+    factors >= 3
+    class := "WYKROCZENIE"
+} else := class {
+    class := "PRZESTEPSTWO_MNIEJSZEJ_WAGI"
+}
+
+minor_weight_effect(class) := effect {
+    class == "WYKROCZENIE"
+    effect := "kara jak za wykroczenie"
+} else := effect {
+    effect := "nadzwyczajne złagodzenie kary"
+}
+
+krk_record(convictions) := rec {
+    convictions == 0
+    rec := "CZYSZCZY"
+} else := rec {
+    convictions < 3
+    rec := "WCZEŚNIEJ KARANY"
+} else := rec {
+    rec := "RECYDYWISTA"
+}
+
+krk_impact(convictions, rec) := impact {
+    rec == "CZYSZCZY"
+    impact := "Pierwsze przestępstwo — szansa na warunkowe umorzenie"
+} else := impact {
+    rec == "RECYDYWISTA"
+    impact := "Wielokrotny recydywista — obligatoryjne zaostrzenie kary!"
+} else := impact {
+    impact := sprintf("%d wcześniejszych skazań — utrudnione warunkowe umorzenie", [convictions])
+}
+
+prosecution_likelihood(score) := level {
+    score <= 20
+    level := "NISKIE"
+} else := level {
+    score <= 60
+    level := "ŚREDNIE"
+} else := level {
+    score <= 80
+    level := "WYSOKIE"
+} else := level {
+    level := "NIEMAL PEWNE"
+}
+
+prosecution_recommendation(level) := msg {
+    level in {"NISKIE", "ŚREDNIE"}
+    msg := "Rozważ dobrowolne ujawnienie"
+} else := msg {
+    msg := "NATYCHMIAST skonsultuj z adwokatem karnym skarbowym!"
+}
+
+limitation_status(now_ns, deadline_ns) := status {
+    now_ns > deadline_ns
+    status := "PRZEDAWNIONE"
+} else := status {
+    status := "W TOKU"
+}
+
+screening_result(amount, threshold, severity) := result {
+    amount <= threshold
+    severity in {"LOW", "MEDIUM"}
+    result := "WYKROCZENIE"
+} else := result {
+    result := "PRZESTĘPSTWO"
+}
+
+screening_recommendation(result) := msg {
+    result == "WYKROCZENIE"
+    msg := "Mandat karny wystarczający"
+} else := msg {
+    msg := "Wymagane postępowanie sądowe"
+}
+
+summary_severity(crimes) := sev {
+    crimes <= 2
+    sev := "NISKIE"
+} else := sev {
+    crimes <= 5
+    sev := "ŚREDNIE"
+} else := sev {
+    crimes <= 10
+    sev := "WYSOKIE"
+} else := sev {
+    sev := "KRYTYCZNE"
+}
+
+summary_advice(sev) := msg {
+    sev in {"NISKIE", "ŚREDNIE"}
+    msg := "Rozważ dobrowolne ujawnienie + czynny żal"
+} else := msg {
+    sev == "WYSOKIE"
+    msg := "KONIECZNY adwokat + rozważenie ugody z KAS"
+} else := msg {
+    msg := "STAN KRYTYCZNY — natychmiastowe działanie: adwokat + wniosek o dobrowolne poddanie się karze!"
+}
+
+cumulative_severity(cum_loss) := sev {
+    cum_loss <= 1000000
+    sev := "DUZA_WARTOSC"
+} else := sev {
+    sev := "WIELKA_WARTOSC"
+}
 
 default decide := {
     "matched": false, "rule_id": "jdg.kks.no_match",
@@ -795,8 +1132,7 @@ else := {
     input.invoice.declaration_missing == true
     days_overdue := object.get(input.invoice, "declaration_days_overdue", 0)
     days_overdue > 30
-    max_stawki = 120 { days_overdue <= 180 }
-    max_stawki = 180 { days_overdue > 180 }
+    max_stawki := daily_rates_declaration_overdue(days_overdue)
 }
 
 # P242: tax_evasion_hiding_revenue — Ukrywanie przychodów
@@ -1358,12 +1694,8 @@ else := {
 } {
     amount := object.get(input.invoice, "amount_gross", 0)
     amount > 0
-    value_band = "MALA_WARTOSC" { amount <= 200000 }
-    value_band = "DUZA_WARTOSC" { amount > 200000; amount <= 1000000 }
-    value_band = "WIELKA_WARTOSC" { amount > 1000000 }
-    penalty_info = "grzywna do 720 stawek" { value_band == "MALA_WARTOSC" }
-    penalty_info = "kara do 5 lat pozbawienia wolnosci" { value_band == "DUZA_WARTOSC" }
-    penalty_info = "kara do 10 lat pozbawienia wolnosci" { value_band == "WIELKA_WARTOSC" }
+    value_band := value_band_by_amount(amount)
+    penalty_info := penalty_info_by_band(value_band)
 }
 
 # P316: empty_invoice_cross_border_detailed — Transgraniczne puste faktury
@@ -1643,17 +1975,9 @@ else := { "matched": true, "rule_id": "jdg.kks.vat_section_aggregate_risk_p364",
 } {
     risk_score := object.get(input.jdg_entrepreneur, "kks_vat_aggregate_risk_score", 0)
     risk_score > 0
-    risk_level = "LOW" { risk_score <= 20 }
-    risk_level = "MEDIUM" { risk_score > 20; risk_score <= 50 }
-    risk_level = "HIGH" { risk_score > 50; risk_score <= 80 }
-    risk_level = "CRITICAL" { risk_score > 80 }
-    routing_action = "" { risk_level == "LOW" }
-    routing_action = "TRIAGE_QUEUE" { risk_level in {"MEDIUM", "HIGH"} }
-    routing_action = "BLOCK_AND_ALERT" { risk_level == "CRITICAL" }
-    action_msg = "Monitoruj" { risk_level == "LOW" }
-    action_msg = "Zalecany audyt wewnętrzny" { risk_level == "MEDIUM" }
-    action_msg = "WYMAGANA weryfikacja manualna" { risk_level == "HIGH" }
-    action_msg = "NATYCHMIASTOWA blokada + zgłoszenie do KAS!" { risk_level == "CRITICAL" }
+    risk_level := risk_level_by_score(risk_score)
+    routing_action := routing_by_risk_level(risk_level)
+    action_msg := risk_action_msg(risk_level)
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -1793,8 +2117,7 @@ else := { "matched": true, "rule_id": "jdg.kks.tax_crime_evolution_p380", "packa
 else := { "matched": true, "rule_id": "jdg.kks.cumulative_tax_loss_p381", "package": "jdg.kks", "priority": 381, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_cumulative_loss": cum_loss, "kks_cumulative_severity": severity, "_routing": "BLOCK_AND_ALERT", "_routing_reason": "Skumulowana strata fiskalna", "_legal_basis": "Art. 54-76 KKS — suma uszczupleń", "_warnings": [sprintf("SKUMULOWANA STRATA SP — %.2f PLN (%s). Przekroczono próg wielkiej wartości! Obligatoryjne zawiadomienie KAS.", [cum_loss, severity])] } {
     cum_loss := object.get(input.jdg_entrepreneur, "kks_cumulative_tax_loss", 0)
     cum_loss > 100000
-    severity = "DUZA_WARTOSC" { cum_loss <= 1000000 }
-    severity = "WIELKA_WARTOSC" { cum_loss > 1000000 }
+    severity := cumulative_severity(cum_loss)
 }
 
 # P382: offense_severity_escalation — Eskalacja ciężkości przestępstw
@@ -1822,16 +2145,9 @@ else := {
 } {
     glob_score := object.get(input.jdg_entrepreneur, "kks_global_risk_score", 0)
     glob_score > 0
-    glob_level = "LOW" { glob_score <= 25 }
-    glob_level = "MEDIUM" { glob_score > 25; glob_score <= 50 }
-    glob_level = "HIGH" { glob_score > 50; glob_score <= 75 }
-    glob_level = "CRITICAL" { glob_score > 75 }
-    at_risk = false { glob_score <= 25 }
-    at_risk = true { glob_score > 25 }
-    action = "Monitoruj sytuację" { glob_level == "LOW" }
-    action = "Zalecany audyt wewnętrzny" { glob_level == "MEDIUM" }
-    action = "WYMAGANA interwencja prawnika" { glob_level == "HIGH" }
-    action = "NATYCHMIASTOWE zgłoszenie do KAS + adwokat!" { glob_level == "CRITICAL" }
+    glob_level := glob_risk_level(glob_score)
+    at_risk := glob_at_risk(glob_score)
+    action := glob_action(glob_level)
 }
 
 # P384: risk_to_business_survival — Ryzyko dla przetrwania JDG
@@ -1840,13 +2156,8 @@ else := { "matched": true, "rule_id": "jdg.kks.risk_to_business_survival_p384", 
     annual_revenue := object.get(input.jdg_entrepreneur, "annual_revenue_estimate", 999999999)
     safety_revenue := max([annual_revenue, 1])
     exposure_ratio := total_exposure / safety_revenue
-    survival_risk = "LOW" { exposure_ratio <= 0.1 }
-    survival_risk = "MEDIUM" { exposure_ratio > 0.1; exposure_ratio <= 0.3 }
-    survival_risk = "HIGH" { exposure_ratio > 0.3; exposure_ratio <= 0.5 }
-    survival_risk = "CRITICAL" { exposure_ratio > 0.5 }
-    recommendation = "Kontynuuj z ostrożnością" { survival_risk in {"LOW", "MEDIUM"} }
-    recommendation = "ROZWAŻ ZAWIESZENIE — ryzyko egzekucji >30% przychodu" { survival_risk == "HIGH" }
-    recommendation = "ZAMKNIJ JDG — egzekucja przekroczy przychody!" { survival_risk == "CRITICAL" }
+    survival_risk := survival_risk_by_ratio(exposure_ratio)
+    recommendation := survival_recommendation(survival_risk)
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -1871,10 +2182,14 @@ else := {
     off_type := object.get(input.invoice, "kks_offense_type", "")
     off_type in {"DECLARATION_NOT_FILED", "INCORRECT_DATA", "TAX_UNPAID", "NO_INVOICE"}
     tax_loss := object.get(input.invoice, "tax_shortfall_pln", 0)
-    tax_loss <= 26000
-    mand_max = 5200 { tax_loss <= 5200 }
-    mand_max = 10400 { tax_loss > 5200; tax_loss <= 13000 }
-    mand_max = 26000 { tax_loss > 13000 }
+    bounds := object.get(data.jdg.thresholds, "bounds", {})
+    tier3_cap := object.get(bounds, "kks_mandate_tier3_cap", 26000)
+    tier1_loss := object.get(bounds, "kks_mandate_tier1_loss_max", 5200)
+    tier2_loss := object.get(bounds, "kks_mandate_tier2_loss_max", 13000)
+    tier1_cap := object.get(bounds, "kks_mandate_tier1_cap", 5200)
+    tier2_cap := object.get(bounds, "kks_mandate_tier2_cap", 10400)
+    tax_loss <= tier3_cap
+    mand_max := mandate_cap(tax_loss, tier1_cap, tier2_cap, tier3_cap, tier1_loss, tier2_loss)
 }
 
 # P386: mandate_amount_calculation — Wyliczenie mandatu karnego
@@ -1923,33 +2238,23 @@ else := {
     original_class := object.get(input.invoice, "kks_offense_classification", "PRZESTEPSTWO")
     factors := object.get(input.jdg_entrepreneur, "kks_minor_weight_factors", 0)
     factors >= 2
-    classification = "WYKROCZENIE" { factors >= 3 }
-    classification = "PRZESTEPSTWO_MNIEJSZEJ_WAGI" { factors == 2 }
-    legal_effect = "kara jak za wykroczenie" { classification == "WYKROCZENIE" }
-    legal_effect = "nadzwyczajne złagodzenie kary" { classification == "PRZESTEPSTWO_MNIEJSZEJ_WAGI" }
+    classification := minor_weight_classification(factors)
+    legal_effect := minor_weight_effect(classification)
 }
 
 # P391: criminal_record_check — Sprawdzenie w KRK
 else := { "matched": true, "rule_id": "jdg.kks.criminal_record_check_p391", "package": "jdg.kks", "priority": 391, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_criminal_record": record, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Krajowy Rejestr Karny — wpływ na recydywę", "_legal_basis": "Art. 19 § 3 KKS — recydywa skarbowa", "_warnings": [sprintf("KRK — %s. %s", [record, impact])] } {
     prev_convictions := object.get(input.jdg_entrepreneur, "kks_prior_convictions_5y", 0)
-    record = "CZYSZCZY" { prev_convictions == 0 }
-    record = "WCZEŚNIEJ KARANY" { prev_convictions > 0; prev_convictions < 3 }
-    record = "RECYDYWISTA" { prev_convictions >= 3 }
-    impact = "Pierwsze przestępstwo — szansa na warunkowe umorzenie" { record == "CZYSZCZY" }
-    impact = sprintf("%d wcześniejszych skazań — utrudnione warunkowe umorzenie", [prev_convictions]) { record == "WCZEŚNIEJ KARANY" }
-    impact = "Wielokrotny recydywista — obligatoryjne zaostrzenie kary!" { record == "RECYDYWISTA" }
+    record := krk_record(prev_convictions)
+    impact := krk_impact(prev_convictions, record)
 }
 
 # P392: prosecution_decision_factors — Czynniki decyzji o ściganiu
 else := { "matched": true, "rule_id": "jdg.kks.prosecution_decision_factors_p392", "package": "jdg.kks", "priority": 392, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_prosecution_likelihood": likelihood, "kks_prosecution_factors": factors, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Ocena prawdopodobieństwa ścigania", "_legal_basis": "Art. 54-83 KKS — decyzja prokuratorska", "_warnings": [sprintf("PRAWDOPODOBIEŃSTWO ŚCIGANIA: %s. Czynniki: %s. %s", [likelihood, factors, recommendation])] } {
     factors := object.get(input.jdg_entrepreneur, "kks_prosecution_factors", "")
     score := object.get(input.jdg_entrepreneur, "kks_prosecution_score", 0)
-    likelihood = "NISKIE" { score <= 20 }
-    likelihood = "ŚREDNIE" { score > 20; score <= 60 }
-    likelihood = "WYSOKIE" { score > 60; score <= 80 }
-    likelihood = "NIEMAL PEWNE" { score > 80 }
-    recommendation = "Rozważ dobrowolne ujawnienie" { likelihood in {"NISKIE", "ŚREDNIE"} }
-    recommendation = "NATYCHMIAST skonsultuj z adwokatem karnym skarbowym!" { likelihood in {"WYSOKIE", "NIEMAL PEWNE"} }
+    likelihood := prosecution_likelihood(score)
+    recommendation := prosecution_recommendation(likelihood)
 }
 
 # P393: cross_tax_type_offenses — Przestępstwa wielopodatkowe
@@ -1976,15 +2281,13 @@ else := {
 } {
     off_type := object.get(input.invoice, "kks_offense_type", "")
     off_type in {"TAX_EVASION", "EMPTY_INVOICE", "FAKE_INVOICE", "UNRELIABLE_BOOKS", "UNRELIABLE_VAT", "VAT_CAROUSEL", "DECLARATION_NOT_FILED", "INCORRECT_DATA", "TAX_UNPAID"}
-    statute_years = 5 { off_type in {"TAX_EVASION", "EMPTY_INVOICE", "FAKE_INVOICE", "UNRELIABLE_BOOKS", "UNRELIABLE_VAT", "VAT_CAROUSEL"} }
-    statute_years = 3 { off_type in {"DECLARATION_NOT_FILED", "INCORRECT_DATA", "TAX_UNPAID"} }
+    statute_years := kks_statute_years(off_type)
     off_date := object.get(input.invoice, "kks_offense_date", "")
     off_ns := time.parse_ns("2006-01-02", off_date)
     deadline_ns := off_ns + (statute_years * 365 * 24 * 60 * 60 * 1000000000)
     deadline_date := time.format(time.add_date(off_ns, statute_years, 0, 0))
     now_ns := time.now_ns()
-    status = "PRZEDAWNIONE" { now_ns > deadline_ns }
-    status = "W TOKU" { now_ns <= deadline_ns }
+    status := limitation_status(now_ns, deadline_ns)
 }
 
 # P395: penalty_calculation_input — Dane wejściowe do kalkulacji kary
@@ -2001,23 +2304,15 @@ else := { "matched": true, "rule_id": "jdg.kks.pre_misdemeanor_screening_p396", 
     amount := object.get(input.invoice, "tax_shortfall_pln", 0)
     threshold := object.get(input.jdg_entrepreneur, "kks_crime_threshold_pln", data.jdg.kks.rates.kks_crime_threshold_correct)  # FIXED P09: 200× min_wage (was: hardcoded 200000)
     severity := object.get(input.invoice, "kks_offense_severity", "LOW")
-    result = "WYKROCZENIE" { amount <= threshold; severity in {"LOW", "MEDIUM"} }
-    result = "PRZESTĘPSTWO" { amount > threshold }
-    result = "PRZESTĘPSTWO" { severity in {"HIGH", "CRITICAL"} }
-    recommendation = "Mandat karny wystarczający" { result == "WYKROCZENIE" }
-    recommendation = "Wymagane postępowanie sądowe" { result == "PRZESTĘPSTWO" }
+    result := screening_result(amount, threshold, severity)
+    recommendation := screening_recommendation(result)
 }
 
 # P397: offense_discovery_path — Ścieżka wykrycia przestępstwa
 else := { "matched": true, "rule_id": "jdg.kks.offense_discovery_path_p397", "package": "jdg.kks", "priority": 397, "vat_rate": "", "rounding_level": "", "gtu_code": "", "pit_form": "", "pit_rate": "", "pit_bracket": "", "pit_annual_return_type": "", "kus_qualification": "", "kus_percent": 0, "zus_social_base_type": "", "zus_health_rate": "", "business_status": "", "ceidg_registration_required": false, "kks_discovered_by": discovered_by, "kks_self_reportable": self_reportable, "_routing": "TRIAGE_QUEUE", "_routing_reason": "Ścieżka wykrycia — wpływ na strategię obrony", "_legal_basis": "Art. 16 KKS — czynny żal", "_warnings": [sprintf("WYKRYCIE — %s. %s", [discovered_by, self_report_advice])] } {
     discovered_by := object.get(input.jdg_entrepreneur, "kks_discovery_path", "KAS_KONTROLA")
-    self_reportable = true { discovered_by == "SAMOUJAWNIENIE" }
-    self_reportable = true { discovered_by == "BIURO_RACHUNKOWE" }
-    self_reportable = false { discovered_by in {"KAS_KONTROLA", "KAS_CZYNNOSCI", "POLICJA", "PROKURATURA"} }
-    else = false { discovered_by != "" }
-    self_reportable = self_reportable
-    self_report_advice = "Możliwy czynny żal — złóż zawiadomienie NATYCHMIAST przed formalnym wszczęciem!" { self_reportable == true }
-    self_report_advice = "Czynny żal już NIEMOŻLIWY — postępowanie w toku. Skup się na linii obrony." { self_reportable == false }
+    self_reportable := self_reportable_by_path(discovered_by)
+    self_report_advice := self_report_advice_for(self_reportable)
 }
 
 # P398: legal_defense_validity — Ważność obrony prawnej
@@ -2037,17 +2332,9 @@ else := {
 } {
     defense_type := object.get(input.jdg_entrepreneur, "kks_defense_strategy", "BRAK")
     defense_type != "BRAK"
-    valid = "WAŻNA" { defense_type in {"BLAD_CO_DO_PRAWA_USPRAWIEDLIWIONY", "STAN_WYZSZEJ_KONIECZNOSCI", "DZIALANIE_NA_POLECENIE", "INTERPRETACJA_INDYWIDUALNA"} }
-    valid = "SŁABA" { defense_type in {"BLAD_CO_DO_PRAWA_NIEUSPRAWIEDLIWIONY", "NIEWIEDZA", "DORADCA_ZAPEWNIL"} }
-    valid = "NIEWAŻNA" { defense_type in {"IGNOROWANIE_PRZEPISOW"} }
-    else = "NIEWAŻNA" { defense_type != "" }
-    valid = valid
-    effect = "Może prowadzić do uniewinnienia" { valid == "WAŻNA" }
-    effect = "Może złagodzić karę" { valid == "SŁABA" }
-    effect = "Brak skutecznej linii obrony" { valid == "NIEWAŻNA" }
-    recommendation = "Utrzymuj linię obrony" { valid == "WAŻNA" }
-    recommendation = "Rozważ negocjacje z prokuratorem" { valid == "SŁABA" }
-    recommendation = "NATYCHMIAST znajdź adwokata specjalizującego się w KKS!" { valid == "NIEWAŻNA" }
+    valid := defense_validity(defense_type)
+    effect := defense_effect_for(valid)
+    recommendation := defense_recommendation_for(valid)
 }
 
 # P399: crime_section_summary — Podsumowanie sekcji przestępczej
@@ -2070,13 +2357,8 @@ else := {
     total_crimes > 0
     max_penalty := object.get(input.jdg_entrepreneur, "kks_max_possible_penalty", "nieznana")
     min_penalty := object.get(input.jdg_entrepreneur, "kks_min_possible_penalty", "nieznana")
-    summary_sev = "NISKIE" { total_crimes <= 2 }
-    summary_sev = "ŚREDNIE" { total_crimes > 2; total_crimes <= 5 }
-    summary_sev = "WYSOKIE" { total_crimes > 5; total_crimes <= 10 }
-    summary_sev = "KRYTYCZNE" { total_crimes > 10 }
-    final_advice = "Rozważ dobrowolne ujawnienie + czynny żal" { summary_sev in {"NISKIE", "ŚREDNIE"} }
-    final_advice = "KONIECZNY adwokat + rozważenie ugody z KAS" { summary_sev == "WYSOKIE" }
-    final_advice = "STAN KRYTYCZNY — natychmiastowe działanie: adwokat + wniosek o dobrowolne poddanie się karze!" { summary_sev == "KRYTYCZNE" }
+    summary_sev := summary_severity(total_crimes)
+    final_advice := summary_advice(summary_sev)
 }
 # ║  GRUPA C: P400-P459 — WYKROCZENIA SKARBOWE                              ║
 # ║  Art. 60-61, 77-83 KKS — 60 reguł                                        ║
@@ -2107,9 +2389,7 @@ else := {
     days_overdue := object.get(input.invoice, "declaration_days_overdue", 0)
     period := object.get(input.invoice, "declaration_period", "")
     days_overdue > 0
-    max_stawki = 60 { days_overdue <= 30 }
-    max_stawki = 120 { days_overdue > 30; days_overdue <= 180 }
-    max_stawki = 180 { days_overdue > 180 }
+    max_stawki := daily_rates_by_overdue(days_overdue)
 }
 
 # P401: declaration_not_filed_pit — Niezłożenie deklaracji PIT
@@ -2209,7 +2489,9 @@ else := {
     tax_due > 0
     payment_days_overdue := object.get(input.invoice, "payment_days_overdue", 0)
     payment_days_overdue > 0
-    daily_interest = tax_due * 0.00038 { payment_days_overdue > 0 }
+    bounds := object.get(data.jdg.thresholds, "bounds", {})
+    interest_rate_daily := object.get(bounds, "kks_daily_interest_rate", 0.00038)
+    daily_interest := tax_due * interest_rate_daily
 }
 
 # P412-P419: Stuby — szczegółowe warianty Art. 78-79
@@ -2319,8 +2601,10 @@ else := {
     "_warnings": [sprintf("PRÓG PRZESTĘPSTWA PRZEKROCZONY — uszczuplenie %.2f PLN przekracza ustawowy próg. Czyn kwalifikowany jako PRZESTĘPSTWO, nie wykroczenie!", [total_shortfall])]
 } {
     total_shortfall := object.get(input.jdg_entrepreneur, "kks_total_shortfall_pln", 0)
-    # TODO: data.thresholds.jdg.bounds.kks_criminal_threshold zamiast hardcode
-    total_shortfall > 26000
+    # V3-P46: próg przestępstwa jako dane (ADR-002) — data.thresholds.bounds
+    criminal_threshold := object.get(object.get(data.jdg.thresholds, "bounds", {}),
+                                     "kks_criminal_threshold", 26000)
+    total_shortfall > criminal_threshold
 }
 
 # P434-P439: Stuby agregacji
@@ -2454,10 +2738,7 @@ else := {
     "_warnings": [sprintf("Zakres grzywny KKS: 10 - %d stawek dziennych", [max_stawki])]
 } {
     offense_type := object.get(input.invoice, "kks_offense_type", "")
-    max_stawki = 120 { offense_type == "DECLARATION_NOT_FILED" }
-    max_stawki = 180 { offense_type == "INCORRECT_DATA" }
-    max_stawki = 240 { offense_type in {"UNRELIABLE_BOOKS", "UNRELIABLE_VAT"} }
-    max_stawki = 720 { offense_type in {"TAX_EVASION", "EMPTY_INVOICE", "FAKE_INVOICE"} }
+    max_stawki := daily_rates_by_offense(offense_type)
     offense_type != ""
 }
 
@@ -2519,9 +2800,7 @@ else := {
     offense_type := object.get(input.invoice, "kks_offense_type", "")
     offense_type in {"TAX_EVASION", "EMPTY_INVOICE", "FAKE_INVOICE", "VAT_CAROUSEL"}
     total_shortfall := object.get(input.jdg_entrepreneur, "kks_total_shortfall_pln", 0)
-    max_years = 5 { total_shortfall <= 200000 }
-    max_years = 10 { total_shortfall > 200000; total_shortfall <= 5000000 }
-    max_years = 25 { total_shortfall > 5000000 }
+    max_years := limitation_max_years(total_shortfall)
 }
 
 # P495: mandatory_penalty_notice — Postępowanie mandatowe
@@ -2543,8 +2822,7 @@ else := {
     offense_type in {"DECLARATION_NOT_FILED", "INCORRECT_DATA"}
     kks_count := object.get(input.jdg_entrepreneur, "kks_incidents_12m", 0)
     kks_count <= 1
-    mandate_max = 2000 { offense_type == "INCORRECT_DATA" }
-    mandate_max = 5000 { offense_type == "DECLARATION_NOT_FILED" }
+    mandate_max := mandate_max_by_offense(offense_type)
 }
 
 # P496-P499: Stuby końcowe

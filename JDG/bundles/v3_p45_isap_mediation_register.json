@@ -1,0 +1,46 @@
+{
+  "generated_at": "2026-09-09T18:32:55+00:00",
+  "purpose": "rejestr mediacji ISAP — wejście do P47 (kontrakt P45→P47)",
+  "entries": [
+    {
+      "id": "V3-P45-Q01",
+      "conversion": "jdg.v3_p45_conversions.uor_a2_threshold",
+      "act": "Ustawa o rachunkowości art. 2 ust. 1 pkt 5",
+      "status": "NIEZWERYFIKOWANE",
+      "priority": "P1",
+      "action": "weryfikacja cytatu w ISAP/RCL przez człowieka (4-eyes)"
+    },
+    {
+      "id": "V3-P45-Q02",
+      "conversion": "jdg.v3_p45_conversions.uor_a3_conditions",
+      "act": "Ustawa o rachunkowości art. 3",
+      "status": "NIEZWERYFIKOWANE",
+      "priority": "P2",
+      "action": "weryfikacja cytatu w ISAP/RCL przez człowieka (4-eyes)"
+    },
+    {
+      "id": "V3-P45-Q03",
+      "conversion": "jdg.v3_p45_conversions.mdr_hallmark_a",
+      "act": "Ordynacja podatkowa art. 86a §1 (znacznik ogólny)",
+      "status": "NIEZWERYFIKOWANE",
+      "priority": "P2",
+      "action": "weryfikacja cytatu w ISAP/RCL przez człowieka (4-eyes)"
+    },
+    {
+      "id": "V3-P45-Q04",
+      "conversion": "jdg.v3_p45_conversions.pcc_a1_condition",
+      "act": "Ustawa o PCC art. 1 ust. 1 pkt 1",
+      "status": "NIEZWERYFIKOWANE",
+      "priority": "P2",
+      "action": "weryfikacja cytatu w ISAP/RCL przez człowieka (4-eyes)"
+    },
+    {
+      "id": "V3-P45-Q05",
+      "conversion": "jdg.v3_p45_conversions.wht_foreign_service",
+      "act": "Ustawa o podatku dochodowym od osób prawnych art. 21 ust. 1 pkt 2a",
+      "status": "NIEZWERYFIKOWANE",
+      "priority": "P1",
+      "action": "weryfikacja cytatu w ISAP/RCL przez człowieka (4-eyes)"
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "innovation": "V3-P45-I05",
+  "generated_at": "2026-09-09T18:32:46+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "mutation_score": 100.0,
+    "mutation_score_min": 90,
+    "total_mutants": 34,
+    "killed": 34,
+    "semantic_mutants": 34,
+    "engine": "tools/mutation_runner.py"
+  },
+  "checks": [
+    {
+      "name": "mutation_results_exist",
+      "status": "OK",
+      "detail": "bundles/mutation_results.json: 34/34 mutantów zabitych"
+    },
+    {
+      "name": "mutation_score_above_min",
+      "status": "OK",
+      "detail": "mutation score=100.0% vs próg=90%"
+    },
+    {
+      "name": "semantic_mutants_applied",
+      "status": "OK",
+      "detail": "mutanty semantyczne M1+M2+M3: 34 (M1=0, M2=34, M3=0)"
+    },
+    {
+      "name": "threshold_as_data",
+      "status": "OK",
+      "detail": "data.jdg.thresholds.v3_p45.v3_p45_mutation_score_min: True"
+    },
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p45_stub_killer.mutation_score_gate: True"
+    }
+  ],
+  "findings": []
+}
