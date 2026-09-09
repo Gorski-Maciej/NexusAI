@@ -1,0 +1,45 @@
+{
+  "innovation": "V3-P43-I09",
+  "generated_at": "2026-09-09T11:58:03+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "playbook_stages_complete": true,
+    "rodo_72h_deadline": true,
+    "quarterly_exercise": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p43_security_dr.ransomware_playbook: True"
+    },
+    {
+      "name": "playbook_stages_complete",
+      "status": "OK",
+      "detail": "etapy playbooka: ['isolate', 'assess', 'restore', 'report_72h', 'reconcile'] (wymagane: ['isolate', 'assess', 'restore', 'report_72h', 'reconcile'])"
+    },
+    {
+      "name": "rodo_72h_deadline",
+      "status": "OK",
+      "detail": "deadline raportu (RODO art. 33 [NIEZWERYFIKOWANE]): 72h"
+    },
+    {
+      "name": "quarterly_exercise",
+      "status": "OK",
+      "detail": "ćwiczenie playbooka: quarterly"
+    },
+    {
+      "name": "rodo_aml_doc_exists",
+      "status": "OK",
+      "detail": "docs/RODO_AML_BEZPIECZENSTWO_P16.md: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p107"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P41-I02",
+  "generated_at": "2026-09-09T10:52:56+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "consistency_validator_exists": true,
+    "rego_files_in_rules": 256,
+    "manifest_present": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p41_dokumentacja.ssot_numbers: True"
+    },
+    {
+      "name": "consistency_validator_exists",
+      "status": "OK",
+      "detail": "tools/doc_consistency_validator.py (P34): True"
+    },
+    {
+      "name": "repo_counts_measurable",
+      "status": "OK",
+      "detail": "plików rego w rules/: 256 (policzone z repo; KATALOG_REGUL 604 linii)"
+    },
+    {
+      "name": "manifest_present",
+      "status": "OK",
+      "detail": "MANIFEST_2_0.md obecny (52 linii): True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p105"
+    }
+  ],
+  "findings": []
+}

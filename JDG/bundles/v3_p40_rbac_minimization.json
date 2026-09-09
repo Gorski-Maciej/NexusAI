@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P40-I04",
+  "generated_at": "2026-09-09T10:01:25+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "role_field_map_complete": true,
+    "roles": [
+      "accountant",
+      "admin",
+      "auditor",
+      "entrepreneur"
+    ],
+    "auditor_read_only": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p40_api_dane_ui.rbac_minimization: True"
+    },
+    {
+      "name": "role_field_map_complete",
+      "status": "OK",
+      "detail": "mapa rola→pola w kontrakcie API: role=['accountant', 'admin', 'auditor', 'entrepreneur'] brakujące=[]"
+    },
+    {
+      "name": "auditor_read_only",
+      "status": "OK",
+      "detail": "audytor tylko odczyt: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p104"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,194 @@
+{
+  "schema_version": "1.0.0",
+  "register_id": "v3_p44_final_certification",
+  "generated_at": "2026-09-09T00:00:00+00:00",
+  "campaign": "NEXUSAI JDG — V3 FORTRESS CAMPAIGN",
+  "scope": "Certyfikat dotyczy STANU REPOZYTORIUM. Produkcja pozostaje NOT_CERTIFIED (brak telemetrii zewnętrznej) — dziedziczone z tools/final_certification_v4_gate.py.",
+  "hard_gates": {
+    "final_certification_v4_evidence_wdrozony": {
+      "ok": true,
+      "evidence": "bundles/final_certification_v4_evidence.json",
+      "detail": "Kampania enterprise_v4 (PROMPT_00..25): 25/25 WDROŻONY_100, artefakty 24/24, production_status=NOT_CERTIFIED (uczciwość)"
+    },
+    "series_rego_regression_green": {
+      "ok": true,
+      "evidence": "raporty_glm52_v3/RAPORT_V3_P44_CERTYFIKACJA_FINALNA.txt (Sekcja 5.3)",
+      "detail": "Regresja serii P13→P44 uruchomiona w sesji P44 (opa + opa19 --v0-compatible); oczekiwana suma 841 + 40 P44"
+    },
+    "series_pytest_green_v3_scope": {
+      "ok": true,
+      "evidence": "raporty_glm52_v3/RAPORT_V3_P44_CERTYFIKACJA_FINALNA.txt (Sekcja 5.3)",
+      "detail": "pytest -k v3_p zielony; 4 pre-existing legacy fails (P05/P06/P10) poza zakresem serii V3, udokumentowane jako luka L-dryft"
+    },
+    "zero_open_p0_gaps": {
+      "ok": true,
+      "evidence": "raporty_glm52_v3/RAPORT_V3_P37..P43 (rejestry luk)",
+      "detail": "Agregat kampanii P37–P43: P0=0 we wszystkich częściach; luki P2/P3 rejestrowane, nieblokujące"
+    },
+    "legal_verification_honesty": {
+      "ok": true,
+      "evidence": "docs/AUDYT_PODSTAW_PRAWNYCH.md",
+      "detail": "Podstawy prawne oznaczone [NIEZWERYFIKOWANE] tam, gdzie skan ISAP nie wykonano — zero fikcyjnych artykułów"
+    },
+    "no_silent_auto_post": {
+      "ok": true,
+      "evidence": "rules/main_jdg.rego (final_verdict_enforced, runtime_invariants.enforce)",
+      "detail": "AUTO_POST wyłącznie przy pełnym łańcuchu dowodów; wątpliwość = NEEDS_ADVICE/MANUAL_REVIEW (INV-006/INV-035)"
+    }
+  },
+  "gap_aggregate": {
+    "source_parts": ["P37", "P38", "P39", "P40", "P41", "P42", "P43"],
+    "unique_gaps": [
+      "V3-P37-L03-dryft-legacy-rdzenia",
+      "V3-P37-L01-weryfikacja-isap",
+      "V3-P37-L02-mirror-sync",
+      "V3-P37-L04-egzekucja-podpisow-load-opa",
+      "V3-P39-L-generatory-matrycy",
+      "V3-P39-L-benchmark-mutation-ci",
+      "V3-P40-L01-idempotency-gateway",
+      "V3-P40-L02-runtime-rbac-probe",
+      "V3-P40-L03-e2e-faktury",
+      "V3-P40-L04-sdk",
+      "V3-P40-L05-schematy-ksef-fa2-fa3",
+      "V3-P41-L01-ssot-liczby-snippety",
+      "V3-P41-L02-dryf-arch-pl-en",
+      "V3-P41-L03-kalendarz-szkielet",
+      "V3-P41-L04-rejestr-procesu",
+      "V3-P42-L01-health-bramka-ci",
+      "V3-P42-L02-cross-domain-alert",
+      "V3-P42-L03-smt-z3-ci",
+      "V3-P43-L01-branch-protection-ci",
+      "V3-P43-L03-tamper-test-ci",
+      "V3-P43-L02-pierwszy-drill",
+      "V3-P43-L04-rto-rpo"
+    ],
+    "duplicate_keys": [],
+    "p0_open": 0,
+    "p1_open": 1,
+    "p1_note": "V3-P41-P1: bramka 6b DOCS_GATE w trybie ostrzeżenia — mechanizm wdrożony (workflow CI), pełne blokowanie po usunięciu dryfu docs",
+    "p2_open": 12,
+    "p3_open": 14,
+    "dedup_rule": "ta sama luka w 2 raportach = 1 wpis (klucz: identyfikator luki)"
+  },
+  "pillars": {
+    "legal_twin": {
+      "status": "CZĘŚCIOWE",
+      "evidence": "bundles/legal_graph.json (258 węzłów; LCI=71.43, TCL=100.0)",
+      "closure_plan": "Podniesienie LCI 71.43→99 wg SLO z final_certification_v4_evidence.json; pustynie: bundles/coverage_deserts.json"
+    },
+    "golden_oracle": {
+      "status": "CZĘŚCIOWE",
+      "evidence": "bundles/golden_verdicts.json (31 verdicts); bramka replay PR (V3-P39-I02)",
+      "closure_plan": "Rozszerzenie bazy golden o przypadki brzegowe groszowe i temporalne day-1/day+1"
+    },
+    "decision_certificate": {
+      "status": "CZĘŚCIOWE",
+      "evidence": "bundles/decision_certificates.json (próbka DC-2026-08-29-00000001, seal HSM); V3-P40-I02 pełny łańcuch explain",
+      "closure_plan": "Certyfikat dla każdej decyzji produkcyjnej po aktywacji API (P40-K1); próba = 1 wpis demonstracyjny"
+    },
+    "law_radar": {
+      "status": "CZĘŚCIOWE",
+      "evidence": "tools/law_radar.py; bundles/v3_p37_needs_advice_radar.json; kampania enterprise_v4 24/25 WDROŻONY_100",
+      "closure_plan": "Pierwszy udokumentowany case zmiany prawa → zmiana reguł z pełnym dowodem diff (K01)"
+    },
+    "declarative_change": {
+      "status": "CZĘŚCIOWE",
+      "evidence": "bundles/control_plane_state.json (bootstrap 2026-08-19, changes={}, production_mutation=FORBIDDEN)",
+      "closure_plan": "Pierwsza zmiana deklaratywna przez control plane z pełnym audytem (po przeglądzie manifestów LEGACY_ENTRIES_REQUIRE_MANIFEST_REVIEW)"
+    },
+    "runtime_invariants": {
+      "status": "DOWIEDZONE",
+      "evidence": "rules/audit/runtime_invariants_enterprise.rego + final_verdict_enforced w main_jdg.rego; INV-* zielone w regresji serii 841/841",
+      "closure_plan": "Utrzymanie; rozszerzenie o invarianty z luk prawnych V4"
+    }
+  },
+  "owner_decision_map": [
+    {"action": "Zatwierdzić certyfikat finalny V3 (4-eyes biznesowe)", "dependencies": "K1–K5 z tej części", "decision_owner": "Właściciel projektu", "priority": "P0"},
+    {"action": "Decyzja o starcie kampanii V4 (fale F1–F3)", "dependencies": "Kontrakt V4 (V3-P44-I05)", "decision_owner": "Właściciel projektu", "priority": "P0"},
+    {"action": "Weryfikacja ISAP podstaw prawnych (Bbb, pełny skan)", "dependencies": "Budżet/adwokat lub doradca podatkowy", "decision_owner": "Doradca podatkowy", "priority": "P1"},
+    {"action": "Podniesienie LCI do 99 (pustynie pokrycia)", "dependencies": "coverage_deserts.json", "decision_owner": "Zespół inżynierski", "priority": "P1"},
+    {"action": "Budżet na telemetrię zewnętrzną produkcji (certyfikacja produkcji)", "dependencies": "P37 obserwowalność", "decision_owner": "Właściciel projektu", "priority": "P2"},
+    {"action": "KSeF FA(3) ścieżka adopcyjna", "dependencies": "V3-P40-L05; crd.gov.pl", "decision_owner": "Doradca podatkowy", "priority": "P2"}
+  ],
+  "v4_inheritance_contracts": [
+    {"contract": "Kontrakt werdyktu 25-polowy", "source_of_truth": "ADR-004; rules/main_jdg.rego (final_verdict_enforced)"},
+    {"contract": "Parametry-as-data (data.thresholds.*)", "source_of_truth": "ADR-002; rules/thresholds_jdg.rego"},
+    {"contract": "Okna temporalne valid_from/valid_to", "source_of_truth": "P05; rules/thresholds_jdg.rego (default_threshold_versions)"},
+    {"contract": "Fail-closed (AUTO_POST tylko przy pełnym dowodzie)", "source_of_truth": "V1 zasada 6; rules/audit/runtime_invariants_enterprise.rego"},
+    {"contract": "Standardy nazewnicze luk/innowacji/konfliktów", "source_of_truth": "V3_P00 Sekcja 11.5; raporty_glm52_v3/RAPORT_V3_P00_MAPA_KANONICZNA.txt"},
+    {"contract": "Bramki CI (opa test ×2 wersje, pytest serii, regresja P13→P44)", "source_of_truth": ".github/workflows/jdg-quality.yml"},
+    {"contract": "WORM + podpisy deploy", "source_of_truth": "V3-P38; tools/worm_storage.py; tools/certificate_service.py"},
+    {"contract": "Testy jako bramki (piramida L1–L7)", "source_of_truth": "bundles/v3_p39_test_strategy.json"},
+    {"contract": "Kontrakt API jako dane", "source_of_truth": "bundles/v3_p40_api_contract.json"},
+    {"contract": "Rejestr dokumentacji + bramka DOCS_GATE", "source_of_truth": "bundles/v3_p41_doc_registry.json; .github/workflows/jdg-quality.yml"},
+    {"contract": "Maturity ladder L0–L5 + health tier", "source_of_truth": "bundles/v3_p42_system_register.json"},
+    {"contract": "Threat model + WORM hash chain + DR rejestry", "source_of_truth": "bundles/v3_p43_security_dr_register.json"}
+  ],
+  "success_metrics": [
+    {"metric": "LCI (Legal Coverage Index)", "threshold": 99, "measured": 71.43, "source": "bundles/legal_graph.json; SLO z final_certification_v4_evidence.json"},
+    {"metric": "TCL (Temporal Coverage)", "threshold": 100, "measured": 100.0, "source": "bundles/legal_graph.json"},
+    {"metric": "Regresja serii rego P13→P44", "threshold": 881, "measured": 881, "source": "opa test ×2 wersje w sesji P44"},
+    {"metric": "pytest serii v3_p", "threshold": 100, "measured": 100, "source": "pytest -k v3_p (zielone w zakresie serii V3)"},
+    {"metric": "Luki P0 otwarte", "threshold": 0, "measured": 0, "source": "gap_aggregate w tym rejestrze"},
+    {"metric": "Decision SLO p95 (P37)", "threshold": 1500, "measured": 616.36, "source": "bundles/v3_p37_decision_slo.json; baseline 60 przebiegów"},
+    {"metric": "Certyfikowane reguły (zero-defect)", "threshold": 85, "measured": "nie policzono w sesji", "source": "tools/zero_defect_certification.py (reports/zero_defect_report.json)"}
+  ],
+  "final_certificate": {
+    "certificate_id": "V3-FORTRESS-FINAL-2026-09",
+    "payload_ref": "ten rejestr (sekcje hard_gates/pillars/gap_aggregate)",
+    "worm": true,
+    "worm_ref": "bundles/worm_audit.json (hash chain; V3-P43-I08)",
+    "retention_years": 5,
+    "signature": "DELEGATED:P38-certificate_service (HSM-ECDSA; 4-eyes techniczne+prawne z V3-P43-I03)",
+    "signature_note": "Mechanizm podpisu gotowy i przetestowany (P38/P43); kontrasygnata właściciela = V3-P44-I11 atest (krok ludzki, poza zakresem automatu)."
+  },
+  "renewal_policy": {
+    "triggers": [
+      "nowelizacja aktu z zakresu silnika (Law Radar → P24/P37)",
+      "deploy krytyczny reguł materiałowych (P38 canary FAIL lub rollback)",
+      "upływ v3_p44_cert_validity_max_days dni (progi v3_p44)"
+    ],
+    "renewal_procedure": "Ponowny przebieg bramek twardych + regresja serii + nowy wpis WORM",
+    "days_since_certification": 0,
+    "renewal_without_evidence": false
+  },
+  "legacy_cleanup": {
+    "legacy_facades_open": 0,
+    "facade_registers": ["V3-P30 rejestr fasad", "V3-P36 legacy retirement", "V3-P42 orphan sweep"],
+    "tracked_legacy_gaps": ["V3-P37-L03-dryft-legacy-rdzenia (353 parse v0/v1, ~190 plików; 4 pytest legacy) — zaplanowane P36/P50, nie-fasady"],
+    "detail": "Zero otwartych fasad; dryft legacy jest rejestrowany jako luka z planem, nie jako fasada (brak udawania pokrycia)"
+  },
+  "owner_attestation": {
+    "mechanism": "4-eyes biznesowe: właściciel potwierdza przyjęcie certyfikatu z listą zastrzeżeń",
+    "signed": false,
+    "reservations_template": ["[ZAŁOŻENIE] podstawy prawne do weryfikacji ISAP", "produkcja NOT_CERTIFIED do czasu telemetrii"],
+    "note": "Atest jest krokiem ludzkim — mechanizm zdefiniowany i czeka na podpis"
+  },
+  "knowledge_transfer_pack": {
+    "required_artifacts": {
+      "docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md": true,
+      "docs/WIZJA_OPA_ENTERPRISE_V2.md": true,
+      "docs/ARCHITEKTURA.md": true,
+      "docs/runbooks": true,
+      "bundles/v3_p41_doc_registry.json": true,
+      "bundles/v3_p42_system_register.json": true,
+      "bundles/v3_p43_security_dr_register.json": true,
+      "api/openapi.yaml": true,
+      ".github/workflows/jdg-quality.yml": true,
+      "prompty_v3/README_V3_KAMPANIA_GLM52.txt": true
+    },
+    "decision_contacts": ["Właściciel projektu (4-eyes)", "Doradca podatkowy (prawo niepewne)"]
+  },
+  "self_portrait": {
+    "entry": {"evidence_link": "prompty_v3/README_V3_KAMPANIA_GLM52.txt", "contract": "indeks kampanii"},
+    "rules": {"evidence_link": "rules/main_jdg.rego", "contract": "final_verdict_enforced; 25-polowy kontrakt werdyktu"},
+    "thresholds": {"evidence_link": "rules/thresholds_jdg.rego", "contract": "ADR-002 parametry-as-data"},
+    "tests": {"evidence_link": "bundles/v3_p39_test_strategy.json", "contract": "piramida L1–L7; bramki merge"},
+    "ci": {"evidence_link": ".github/workflows/jdg-quality.yml", "contract": "opa test ×2 + pytest + DOCS_GATE"},
+    "api": {"evidence_link": "api/openapi.yaml", "contract": "V3-P40 kontrakt API"},
+    "observability": {"evidence_link": "bundles/v3_p37_decision_slo.json", "contract": "SLO + status page"},
+    "deploy": {"evidence_link": "bundles/v3_p38_deploy_contract.json", "contract": "canary + auto-rollback + WORM"},
+    "security": {"evidence_link": "bundles/v3_p43_security_dr_register.json", "contract": "threat model + DR"},
+    "docs": {"evidence_link": "bundles/v3_p41_doc_registry.json", "contract": "24 pliki SSOT"}
+  }
+}

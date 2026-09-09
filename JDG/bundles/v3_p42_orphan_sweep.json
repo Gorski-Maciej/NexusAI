@@ -1,0 +1,42 @@
+{
+  "innovation": "V3-P42-I08",
+  "generated_at": "2026-09-09T11:25:49+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "tools_count": 848,
+    "bundles_count": 618,
+    "migrations_count": 13,
+    "migrations_have_decisions": true,
+    "orphan_threshold_as_data": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p42_enterprise_reszta.orphan_sweep: True"
+    },
+    {
+      "name": "directories_scanned",
+      "status": "OK",
+      "detail": "tools=848, bundles=618, migrations=13"
+    },
+    {
+      "name": "migrations_have_decisions",
+      "status": "OK",
+      "detail": "decyzje migracji w rejestrze: 13 wpisów"
+    },
+    {
+      "name": "orphan_threshold_as_data",
+      "status": "OK",
+      "detail": "v3_p42_orphan_max w data.thresholds: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p106"
+    }
+  ],
+  "findings": []
+}

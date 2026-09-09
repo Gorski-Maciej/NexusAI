@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P38-I10",
+  "generated_at": "2026-09-09T08:15:07+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "deployments_registry_exists": true,
+    "legal_record_fields_ok": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p38_bundle_deploy.legal_record: True"
+    },
+    {
+      "name": "deployments_registry_exists",
+      "status": "OK",
+      "detail": "bundles/deployments.json: True (rejestr wdrożeń)"
+    },
+    {
+      "name": "legal_record_fields",
+      "status": "OK",
+      "detail": "pola prawne wpisu: ['version', 'deployed_at', 'deployed_by', 'reason', 'canary_result', 'signature']"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p102"
+    }
+  ],
+  "findings": []
+}

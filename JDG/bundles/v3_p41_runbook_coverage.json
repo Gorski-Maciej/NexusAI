@@ -1,0 +1,46 @@
+{
+  "innovation": "V3-P41-I07",
+  "generated_at": "2026-09-09T10:52:58+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "slo_alerts": 6,
+    "runbooks": 6,
+    "all_alerts_have_runbook": true,
+    "coverage_threshold_as_data": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p41_dokumentacja.runbook_coverage: True"
+    },
+    {
+      "name": "slo_catalog_loaded",
+      "status": "OK",
+      "detail": "alerty w katalogu SLO P37: 6"
+    },
+    {
+      "name": "runbooks_present",
+      "status": "OK",
+      "detail": "runbooki w docs/runbooks/: 6 (['RB01_dostepnosc_silnika.md', 'RB02_latencja_p95.md', 'RB03_golden_drift.md', 'RB04_swiezosc_prawa.md', 'RB05_na_bez_powodu.md', 'RB06_regresja_benchmarku.md'])"
+    },
+    {
+      "name": "all_alerts_have_runbook",
+      "status": "OK",
+      "detail": "alerty bez runbooka: brak"
+    },
+    {
+      "name": "coverage_threshold_as_data",
+      "status": "OK",
+      "detail": "v3_p41_runbook_coverage_min_pct w data.thresholds: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p105"
+    }
+  ],
+  "findings": []
+}

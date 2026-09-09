@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P39-I06",
+  "generated_at": "2026-09-09T09:08:25+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "mutation_threshold_as_data": true,
+    "p29_quality_gates_exist": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p39_testy_ci.mutation_testing: True"
+    },
+    {
+      "name": "mutation_threshold_as_data",
+      "status": "OK",
+      "detail": "v3_p39_mutation_score_min_pct w data.thresholds: True"
+    },
+    {
+      "name": "p29_quality_gates_exist",
+      "status": "OK",
+      "detail": "rules/v3_p29_quality_campaigns_enterprise.rego: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p103"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P42-I01",
+  "generated_at": "2026-09-09T11:25:47+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "engine_and_recalculator_exist": true,
+    "tier_criteria_as_data": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p42_enterprise_reszta.health_tier: True"
+    },
+    {
+      "name": "engine_and_recalculator_exist",
+      "status": "OK",
+      "detail": "health_tier_engine.py + health_tier_recalculator.py: True"
+    },
+    {
+      "name": "tier_criteria_as_data",
+      "status": "OK",
+      "detail": "kryteria tierów w rejestrze: ['tests_passing', 'legal_basis_verified', 'drift_free', 'not_stale'] (wymagane: ['tests_passing', 'legal_basis_verified', 'drift_free', 'not_stale'])"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p106"
+    }
+  ],
+  "findings": []
+}

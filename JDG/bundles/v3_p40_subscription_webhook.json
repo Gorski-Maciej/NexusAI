@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P40-I09",
+  "generated_at": "2026-09-09T10:01:27+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "webhook_hmac_signature": true,
+    "idempotent_retry": true,
+    "required_events_subscribed": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p40_api_dane_ui.subscription_webhook: True"
+    },
+    {
+      "name": "webhook_hmac_signature",
+      "status": "OK",
+      "detail": "podpis webhooków w kontrakcie: HMAC-SHA256"
+    },
+    {
+      "name": "idempotent_retry",
+      "status": "OK",
+      "detail": "retry idempotentny webhooków: True"
+    },
+    {
+      "name": "required_events_subscribed",
+      "status": "OK",
+      "detail": "subskrybowane eventy: ['declaration_created', 'needs_advice', 'deadline_reminder'] (wymagane: ['declaration_created', 'needs_advice', 'deadline_reminder'])"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p104"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,294 @@
+================================================================================
+NEXUSAI JDG — RAPORT V3 P42 — ENTERPRISE — RESZTA LUK SYSTEMOWYCH: HEALTH
+TIERS, SMT, WORM, ZALEŻNOŚCI
+================================================================================
+Seria:            NEXUSAI JDG — V3 FORTRESS CAMPAIGN
+Część:            P42 ENTERPRISE_RESZTA
+Prompt:           JDG/prompty_v3/V3_PROMPT_P42_ENTERPRISE_RESZTA.txt
+Raport:           JDG/raporty_glm52_v3/RAPORT_V3_P42_ENTERPRISE_RESZTA.txt
+Data:             2026-09-09
+Tryb:             WDROŻENIE (pełne, od zera) + raport kontraktowy
+Kampania:         43/69 po tej części (P37 ✅ P38 ✅ P39 ✅ P40 ✅ P41 ✅ P42 ✅)
+
+================================================================================
+9.01 EXECUTIVE SUMMARY
+================================================================================
+Ocena dojrzałości: WARSTWA SYSTEMOWA DOMKNIĘTA ENTERPRISE (health tiers jako
+dane, SMT proof pack, WORM hash chain, retencja, DNA, self-scan, dojrzałość
+L0–L5).
+
+Stan wejściowy: ZERO artefaktów v3_p42 (pełne wdrożenie od zera, konwencja
+P38–P41). Stan wyjściowy: rejestr systemowy + pełny łańcuch dowodowy.
+
+ARTYKUŁY WDROŻONE W TEJ CZĘŚCI:
+  R1. rules/v3_p42_enterprise_reszta.rego — 12 analiz I01–I12, priorytety
+      442001–442012, else-chain, fail-closed.
+  R2. thresholds_jdg.rego — blok v3_p42 (4 klucze + flagi), valid_from (P05).
+  R3. main_jdg.rego — wiring p106: import, registry, final_verdict_p106
+      (pas 18u), konsument.
+  R4. bundles/v3_p42_system_register.json — REJESTR SYSTEMOWY JAKO DANE:
+      kryteria health tiers (4), SMT proofs (3: VAT/PIT/ZUS), spec WORM hash
+      chain + tamper test, retencja 5 lat z kotwicą prawną, łańcuch DNA
+      (7 ogniw), graf zależności + SPOF, decyzje migracji 001–013, wymogi
+      enterprise ze STATUSEM PRAWDZIWYM (multi_tenant/quota/i18n/a11y =
+      missing, rbac/rate_limiting = present — zero kosmetyki), kontrakty
+      zdrowia między domenami, drabina dojrzałości L0–L5 z kryteriami
+      testowalnymi.
+  R5. 13 narzędzi dowodowych + 12 bundli PASS (+rejestr).
+  R6. tests/rego/test_v3_p42_enterprise_reszta.rego — 39 przypadków.
+  R7. tests/auto/test_v3_p42_enterprise_reszta.py — 15 testów.
+
+SELF-SCAN (Sekcja 5.4, wykonany na realnym repo):
+  tools/ = 838 plików, bundles/ = 645 plików, migrations/ = 13 (001–013).
+  Migracje: wszystkie otrzymały wpis decyzyjny "review_pending_P50" (przypisanie
+  właściciela-części w P50) — zero orfanów bez decyzji. SPOF zarejestrowane:
+  main_jdg.rego i thresholds_jdg.rego (mitygacje: git revert + flagi wyłączenia;
+  wersjonowanie progów per okres P05). Łańcuch pasów p104→p105→p106 liniowy
+  (safe_merge, AP08 = brak cykli).
+
+WERYFIKACJA (twarde liczby, uruchomione w tej sesji):
+  * Rego natywne:  39/39 PASS ×2 OPA (./bin/opa, ./bin/opa19 --v0-compatible).
+  * pytest:        15/15 PASS.
+  * Regresja serii P13→P42: 801/801 PASS (762 + 39 nowych).
+  * Regresja pytest serii V3: 553 PASS / 4 FAIL — znany dryft legacy
+    (P00/P05/P06/P10; L-rezydualna serii); ZERO plików P42.
+  * Bundle:        13/13 gate=PASS (12 innowacji + rejestr).
+
+LUKI WG KRYTYCZNOŚCI: P0=0, P1=0, P2=2, P3=4 (rejestr 9.06).
+
+================================================================================
+9.02 ZAKRES I OGRANICZENIA
+================================================================================
+PRZEANALIZOWANO: wszystkie 26 plików Sekcji 6 ISTNIEJE (T1; obecność zmierzona
+w tej sesji). Czytanie celowane (istnienie, mechanizmy kluczowe: prev_hash w
+worm_storage, struktura coverage_canon, legal_graph węzły) wg budżetu 50%.
+Self-scan katalogów wykonany wprost (5.4 wymaga przeglądu katalogów).
+Prawa: [NIEZWERYFIKOWANE] globalnie (konwencja serii; retencja: kotwica UoR
+art. 94 / OP art. 86 §1 — do potwierdzenia w P47/P44).
+
+================================================================================
+9.03 STAN OBECNY CZĘŚCI P42 (MAPA ARTEFAKTÓW)
+================================================================================
+| Artefakt (nowy)                       | Pakiet Rego               | Rule_id/klucz            | Podstawa [NIEZW.]      | Testy                      | Lifecycle |
+|---------------------------------------|---------------------------|--------------------------|------------------------|----------------------------|-----------|
+| rules/v3_p42_enterprise_reszta.rego   | jdg.v3_p42_enterprise_reszta | 12 × (442001–442012)  | UoR 4/94; OP 86§1      | 39 rego + 15 pytest        | ACTIVE (za flagą v3_p42_check) |
+| thresholds (blok v3_p42)              | jdg.thresholds            | 4 progi v3_p42_*         | ADR-002                | test_thresholds_as_data    | ACTIVE    |
+| main_jdg (pas 18u)                    | jdg.main                  | final_verdict_p106       | architektura V1        | test_main_jdg_wired_p106   | ACTIVE    |
+| bundles/v3_p42_system_register.json   | — (dane)                  | health/SMT/WORM/retencja/DNA/SPOF/wymogi/L0–L5 | UoR 94; OP 86 | 7 testów rejestru | ACTIVE    |
+| tools/v3_p42_common.py + 12 tooli     | — (dowody)                | 12 bundli v3_p42_*       | —                      | test_all_12_bundles_pass   | ACTIVE    |
+
+Istniejące (nie duplikowano — zrejestrowano i podpięto jako dane/dowody):
+health_tier_engine/recalculator (P33), smt_z3_verification, worm_storage,
+str_generator, rule_provenance_dna, coverage_unifier, ryczalt_zus harmonizer,
+health_reconciliation_micro, zero_defect_certification, coverage_canon.json,
+legal_graph.json, rule_registry.json, manifest_v2.json, healthy_versions.json,
+3 testy infrastrukturalne z Sekcji 6.2.
+
+================================================================================
+9.04 PODANALIZY 5.1–5.4 (każda: ≥3 wnioski + ≥1 luka)
+================================================================================
+--- P42-AN01: HEALTH TIERS I HARMONIZACJA (grupy 6.1, 6.2) ---
+Dowody: health_tier_engine.py + health_tier_recalculator.py istnieją;
+ryczalt_zus_health_harmonizer.py + health_reconciliation_micro.py istnieją;
+healthy_versions.json (katalog zdrowych wersji — auto-rollback target P38).
+Wnioski:
+  W1. Kryteria tierów zdefiniowane jako dane w rejestrze (4: testy/legal basis/
+      dryf/wiek) — rozstrzyga pytanie 5.1 „realne czy etykiety": kryteria
+      istnieją, egzekucja w CI = P29 bramka → L01.
+  W2. Harmonizer ryczałt↔ZUS istnieje jako narzędzie; kontrakt propagacji
+      zdrowia zdefiniowany w rejestrze (I11) — egzekucja cross-domain alertu
+      w P37 → L02.
+  W3. health_reconciliation_micro pokrywa rozjazdy micro vs macro (narzędzie
+      obecne); wyniki jako wejście do recalculatora.
+Luki: L01 (P2), L02 (P2).
+--- P42-AN02: DOWODY FORMALNE I DNA (grupy 6.1, 6.3) ---
+Dowody: smt_z3_verification.py istnieje; legal_graph.json (zalążek LKG, węzły
+ policzalne); rule_provenance_dna.py; str_generator.py;
+LEGAL_TWIN_TRACEABILITY.md (traceability dokument).
+Wnioski:
+  W1. SMT: 3 dowody zdefiniowane dla reguł krytycznych (VAT stawki, PIT progi,
+      ZUS 30-krotność) — status "defined" (właściwości sformułowane), wykonanie
+      w CI wymaga z3 → L03 (pozostaje TRIAGE, nie fasada: własności jawne).
+  W2. DNA: łańcuch 7 ogniw (act→amendment→article→rule→test→bundle→certificate)
+      jako schemat danych; graf prawny = zalążek (węzły obecne, pełne pokrycie
+      reguł = praca P50) → L04.
+  W3. STR: generator istnieje; spec STR-as-evidence (5 pól) w rejestrze —
+      wpięcie do certyfikatu F4 przy awarii gotowe kontraktowo.
+Luki: L03 (P2), L04 (P3).
+--- P42-AN03: WORM I INTEGRALNOŚĆ (grupa 6.1) ---
+Dowody: worm_storage.py (mechanizm prev_hash/hash chain potwierdzony skanem
+źródła); P43 (WORM część kampanii) NIE_WDROŻONY — egzekucja WORM przyszła;
+retencja: kalkulator wylicza deterministycznie (2025→2030-12-31, test).
+Wnioski:
+  W1. Hash chain w narzędziu obecny (prev_hash w źródle) — mechanizm realny;
+      test tamper-proof w CI = wpis rejestru, egzekucja w P43 → L05 (P2:
+      bez testu CI łańcuch jest deklaratywny).
+  W2. Retencja 5 lat od końca roku obrotowego jako parametr (v3_p42_retention_
+      years=5) — kotwica prawna [NIEZWERYFIKOWANE] zarejestrowana jawnie.
+  W3. Zakres archiwizacji zdefiniowany (5 klas: decyzje, certyfikaty, bundle,
+      eksport dokumentacji P41, logi API P40) — spójny z P43.
+Luki: L05 (P2).
+--- P42-AN04: PRZEGLĄD LUK SYSTEMOWYCH (self-scan; grupy 6.2, 6.3, 6.4) ---
+Dowody: skan tools=838, bundles=645, migrations=13; rule_registry.json,
+manifest_v2.json, COVERAGE_CANON.md, AUDYT_KOMPLETNY_P24.md,
+P00_REMEDIACJA_PODSTAW_PRAWNYCH.md, INWENTARYZACJA_PLIKOW.md,
+KATALOG_NARZEDZI.md — wszystkie obecne.
+Wnioski:
+  W1. Migracje 001–013: WPIS DECYZYJNY dla każdej (review_pending_P50) —
+      zero martwych artefaktów bez decyzji (wymóg 5.4 spełniony procesowo).
+  W2. Wymogi enterprise ze statusem PRAWDZIWYM: multi_tenant/quota/i18n/a11y =
+      missing (świadome: system single-tenant JDG; interfejs PL), rbac/
+      rate_limiting/audit_worm = present/planned — prawdziwa luka widoczna (I09).
+  W3. Drabina dojrzałości L0–L5 z kryteriami testowalnymi per poziom — P44
+      certyfikuje poziom na podstawie kryteriów, nie deklaracji (I12).
+  W4. Zależności: łańcuch pasów liniowy; SPOF zarejestrowane z mitygacjami.
+Luki: L04 (P3), L06 (P3).
+
+================================================================================
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2; akty z Sekcji 8)
+================================================================================
+| Akt | Art. | Grupa | Reguła | Test | Status | Ryzyko |
+|-----|------|-------|--------|------|--------|--------|
+| UoR | 4 (niezmienność) | 6.1 | I03 WORM hash chain (442003) | test_p42_i03_* (4) | CZĘŚCIOWE [NIEZW.] | manipulacja archiwum |
+| UoR | 94 (retencja) | 6.1 | I04 retention (442004) | test_p42_i04_* (3) | CZĘŚCIOWE [NIEZW.] | przedwczesne usunięcie |
+| OP | 86 §1 (retencja) | 6.1 | I04 retention (442004) | test_p42_i04_* | CZĘŚCIOWE [NIEZW.] | jw. |
+| VAT | 108 (stawki) | 6.1 | I02 SMT (442002) | test_p42_i02_* | CZĘŚCIOWE [NIEZW.] | dowód niewykonany |
+| PIT | skala/progi | 6.1 | I02 SMT (442002) | test_p42_i02_* | CZĘŚCIOWE [NIEZW.] | jw. |
+| UZ | 30-krotność | 6.1 | I02 SMT (442002) | test_p42_i02_* | CZĘŚCIOWE [NIEZW.] | jw. |
+| RODO | 5.2 (rozliczalność) | 6.2 | I05 provenance (442005) | test_p42_i05_* | CZĘŚCIOWE [NIEZW.] | brak DNA |
+| eIDAS | pieczęć | 6.1 | I03 (podpis bloków) | test_p42_i03_* | PLAN [NIEZW.] | podważalność |
+| AI Act | 11 (docs) | 6.3 | I09/I12 (442009/442012) | test_p42_i09_*, i12_* | CZĘŚCIOWE [NIEZW.] | brak rejestrów |
+
+================================================================================
+9.06 REJESTR LUK (T3)
+================================================================================
+| ID | Kryt. | Luka | Dowód | Wpływ | Rozwiązanie | Koszt | Regresja |
+|----|-------|------|-------|-------|-------------|-------|----------|
+| L01 | P2 | Egzekucja health tierów w CI (kryteria są, bramka brak) | rejestr I01; bramka P29 bez health step | dryf tierów między recalcami | dodanie kroku do Bramki 6/7 CI | S | niskie |
+| L02 | P2 | Cross-domain alert w P37 (kontrakt jest, alert brak) | rejestr I11; katalog SLO P37 bez par domen | choroba domeny cicha dla sąsiada | wpis do SLO catalog (P37 rozszerzenie) | S | niskie |
+| L03 | P2 | Dowody SMT "defined" (z3 niedostępny w CI) | smt_proofs status=defined | własności bez wykonania | z3 w CI (nightly) — P44 | M | średnie |
+| L04 | P3 | DNA niekompletne dla wszystkich reguł (zalążek grafu) | legal_graph.json węzły | audyt DNA częściowy | pełne DNA w P50 | L | niskie |
+| L05 | P2 | Test tamper-proof WORM nieegzekwowany w CI | rejestr I03; P43 NIE_WDROŻONY | łańcuch deklaratywny | P43 wdroży test CI | S | niskie |
+| L06 | P3 | Wymogi missing bez harmonogramu (quota/i18n/a11y) | rejestr I09 status=missing | luka jawna, bez daty | plan w P44/P50 | S | niskie |
+| L07 | P3 | Dryft legacy rdzenia (4 porażki pytest P00/P05/P06/P10) | regresja serii | nie blokuje V3 | P36/P50 | L | — |
+| L08 | P3 | ISAP weryfikacja (retencja: UoR 94 / OP 86 §1) | [NIEZWERYFIKOWANE] | formalna pewność | P47/P44 | L | — |
+BLOKERY P0: brak. P1: brak.
+
+================================================================================
+9.07 INNOWACJE ENTERPRISE (T4; 12 wdrożonych, szkielet 6-punktowy skrócony)
+================================================================================
+I01 HEALTH TIER AS DATA (442001): kryteria (testy/legal/dryf/wiek) jako dane;
+BLOCK fasady, TRIAGE dryfu/braku CI; test_p42_i01_*; zależności P33/P37/P38.
+I02 SMT PROOF PACK (442002): dowody VAT/PIT/ZUS; BLOCK kontrprzykładu, TRIAGE
+braków; test_p42_i02_*; P29/K04; luka L03.
+I03 WORM HASH CHAIN (442003): prev_hash + podpis; BLOCK przerwania/braku
+łańcucha, TRIAGE braku tamper testu; test_p42_i03_*; P43/P40/P41; L05.
+I04 RETENTION CALCULATOR (442004): 5 lat od końca roku obrotowego; BLOCK
+przedwczesnego usunięcia, TRIAGE braku daty; test obliczenia 2025→2030-12-31;
+UoR 94/OP 86 §1 [NIEZW.].
+I05 PROVENANCE QUERY (442005): DNA 7 ogniw; BLOCK DNA bez aktu, TRIAGE braków;
+test_p42_i05_*; P00/P34/P44; L04.
+I06 COVERAGE UNIFIER (442006): jeden kanon wersjonowany; BLOCK braku kanonu,
+TRIAGE konfliktów; test_p42_i06_*; P34/P37/P39-I09.
+I07 DEPENDENCY GRAPH (442007): cykle=BLOCK, SPOF=TRIAGE; test_p42_i07_*;
+AP08; P02/P38; SPOF main_jdg+thresholds z mitygacjami.
+I08 ORPHAN SWEEP (442008): orfany>0=TRIAGE; decyzje migracji 001–013 w
+rejestrze; test_p42_i08_*; P00/P41/P36.
+I09 COMPLETENESS REGISTER (442009): wymogi jest/brak/plan; TRIAGE braków
+wpisu; test_p42_i09_*; P40/P44; prawdziwe missing: multi_tenant/quota/i18n/a11y.
+I10 STR-AS-EVIDENCE (442010): STR w certyfikacie (5 pól); TRIAGE awarii bez
+STR; test_p42_i10_*; P11/P37.
+I11 CROSS-DOMAIN HEALTH (442011): ryczałt↔ZUS, VAT↔PKPiR z propagacją; TRIAGE
+braku; test_p42_i11_*; P33/P37; L02.
+I12 MATURITY LADDER (442012): L0–L5 testowalne; BLOCK braku kryteriów, TRIAGE
+poziomu>5; test_p42_i12_*; P44 certyfikuje poziom.
+
+================================================================================
+9.08 KONTRAKT WYJŚCIOWY (T5; wiąże P43+)
+================================================================================
+K1 REJESTR SYSTEMOWY: v3_p42_system_register.json jako dane wejściowe dla
+   P43 (WORM/tamper), P44 (maturity certyfikacja), P50 (migracje/DNA).
+K2 MATURITY LADDER: poziom certfikowany wyłącznie na kryteriach testowalnych
+   (L0–L5) — deklaracje nieważne.
+K3 WORM KONTRAKT: hash chain + podpis + tamper test CI + retencja 5 lat
+   (parametr) + zakres 5 klas artefaktów — P43 egzekwuje.
+K4 WYMOGI ENTERPRISE: statusy tylko present/missing/planned; missing wymaga
+   wpisu planu (luka jawna, nie ukryta).
+K5 SELF-SCAN: każdy artefakt bez właściciela-części dostaje wpis decyzyjny
+   w rejestrze (zero orfanów bez decyzji) — standard dla P43+.
+
+================================================================================
+9.09 PLAN WDROŻENIA (T6)
+================================================================================
+Wdrożone od razu: R1–R7 (reguły, progi, wiring, rejestr, narzędzia, testy) —
+zielone. Wymaga testów/CI: L01 (health bramka), L03 (z3 nightly), L05 (tamper
+test — P43). Wymaga decyzji człowieka: Q01–Q03 (9.11).
+Rollback: reguły za flagą v3_p42_check; rejestr = plik danych (git revert).
+
+================================================================================
+9.10 PLAN TESTÓW (T7)
+================================================================================
+Blokujące merge: test_rego_native_suite_passes, test_all_12_bundles_pass,
+test_main_jdg_wired_p106, test_thresholds_as_data,
+test_system_register_enterprise_requirements (przypina PRAWDZIWE statusy:
+multi_tenant=missing — zapobiega kosmetyce), test_priorities_unique.
+Wyniki: rego 39/39 ×2 OPA; pytest 15/15; seria 801/801; negative-first:
+15 asercji BLOCK/TRIAGE.
+
+================================================================================
+9.11 PYTANIA DO CZŁOWIEKA (T8)
+================================================================================
+Q01: Czy quota/multi-tenant mają wejść do zakresu fortecy (obecnie missing,
+system single-tenant JDG), czy formalnie wyłączone decyzją właściciela?
+Q02: Retencja — potwierdzenie kotwicy prawnej 5 lat (UoR art. 94 vs OP
+art. 86 §1) i punktu liczenia (koniec roku obrotowego) w P47.
+Q03: Czy SPOF main_jdg.rego (jedyny punkt składania) akceptowany z mitygacją
+(git revert + flagi), czy wymagany podział na moduły (koszt L)?
+================================================================================
+9.12 ZAŁOŻENIA JAWNE (T9)
+================================================================================
+[ZAŁOŻENIE] Z1: statusy wymogów w rejestrze odzwierciedlają stan repo tej
+sesji (single-tenant; interfejs PL jako decyzja domenowa).
+[ZAŁOŻENIE] Z2: migracje 001–013 — decyzja "review_pending_P50" zastępuje
+natychmiastową archiwizację (brak dowodu użycia/nieużycia tabel w tej sesji).
+[ZAŁOŻENIE] Z3: SMT properties sformułowane jako własności; wykonanie z3
+zostawione P44 (narzędzie z3 nieobecne w środowisku sesji).
+[ZAŁOŻENIE] Z4: liczniki tools/bundles (838/645) zawierają narzędzia dowodowe
+wszystkich części V3 — liczba rośnie z każdą częścią (self-scan powtarzalny).
+
+T10 — ARTEFAKTY PRZEKAZANE DALEJ (11.4)
+================================================================================
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| v3_p42_system_register.json | P43/P44/P50 | JSON | WORM/maturity/migracje/DNA |
+| kontrakt WORM (K3) | P43 | kontrakt | egzekucja tamper test + retencja |
+| maturity ladder kryteria | P44 | dane | certyfikacja poziomu L0–L5 |
+| decyzje migracji | P50 | JSON | domknięcie review 001–013 |
+| kontrakty zdrowia domen | P37 | dane | alerty cross-domain |
+
+APENDYKS B — MACIERZ PODANALIZA×GRUPA
+================================================================================
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik |
+|------------|----------------|-----------------|-------|
+| 5.1 | 6.1, 6.2 | engine+recalculator; harmonizer; kryteria w rejestrze | 9.04-AN01 |
+| 5.2 | 6.1, 6.3 | smt_z3; legal_graph węzły; DNA 7 ogniw; STR 5 pól | 9.04-AN02 |
+| 5.3 | 6.1 | prev_hash w źródle; retencja 2025→2030-12-31; 5 klas | 9.04-AN03 |
+| 5.4 | 6.2, 6.3, 6.4 | tools=838/bundles=645/migrations=13; decyzje 001–013; SPOF; wymogi true-status | 9.04-AN04 |
+
+APENDYKS E — PLAN PRACY: wykonany w całości.
+
+================================================================================
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+================================================================================
+Zgodne z ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (bramki CI → L01/L05 jako
+rozszerzenia; SLO → kontrakty zdrowia; fail-closed → BLOCK na fasadę/cykl/
+przerwanie łańcucha) i WIZJA_OPA_ENTERPRISE_V2.md (Legal Twin → DNA/LKG
+zalążek; Decision Certificate → STR-as-evidence). Odstępstwa: brak.
+Anti-wzorce AP01–AP12: sprawdzone — zero hardcode progów, brak cykli (AP08
+egzekwowany regułą I07), statusy bez kosmetyki (AP07-style ukrywanie luk
+wykluczone testem test_system_register_enterprise_requirements).
+Prawa: [NIEZWERYFIKOWANE] — rejestr L08.
+================================================================================
+KONIEC RAPORTU V3 P42 — KOLEJNA CZĘŚĆ: P43 (czyste okno kontekstowe; przenieść
+wyłącznie: 9.01, 9.08 K1–K5, 9.06 L01–L08).
+================================================================================

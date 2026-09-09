@@ -1,0 +1,29 @@
+{
+  "innovation": "V3-P44-I12",
+  "generated_at": "2026-09-09T12:41:02+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "components": 10,
+    "components_without_evidence": 0,
+    "evidence_links_missing": 0
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p44_certyfikacja_finalna.fortress_self_portrait: True"
+    },
+    {
+      "name": "components_with_evidence",
+      "status": "OK",
+      "detail": "komponenty z dowodem+kontraktem: 10/10 braki=brak"
+    },
+    {
+      "name": "evidence_links_exist",
+      "status": "OK",
+      "detail": "łącza dowodów istniejące fizycznie: braki=brak"
+    }
+  ],
+  "findings": []
+}

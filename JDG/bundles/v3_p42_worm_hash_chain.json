@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P42-I03",
+  "generated_at": "2026-09-09T11:25:48+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "worm_tool_exists": true,
+    "hash_chain_mechanism": true,
+    "tamper_test_in_register": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p42_enterprise_reszta.worm_hash_chain: True"
+    },
+    {
+      "name": "worm_tool_exists",
+      "status": "OK",
+      "detail": "tools/worm_storage.py: True"
+    },
+    {
+      "name": "hash_chain_mechanism",
+      "status": "OK",
+      "detail": "hash chain w worm_storage.py (prev_hash): True"
+    },
+    {
+      "name": "tamper_test_in_register",
+      "status": "OK",
+      "detail": "test tamper-proof w rejestrze (CI): True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p106"
+    }
+  ],
+  "findings": []
+}

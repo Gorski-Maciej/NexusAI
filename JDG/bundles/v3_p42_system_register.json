@@ -1,0 +1,93 @@
+{
+  "register": "v3_p42_system_register",
+  "version": "2026.09",
+  "generated_at": "2026-09-09T00:00:00+00:00",
+  "basis": {
+    "self_scan": "tools=838, bundles=645, migrations=001-013 (zmierzone w sesji P42)",
+    "health": "P33 (digital twin/chaos), P37 (metryki), P38 (healthy_versions)",
+    "worm": "P43 (rejestr), P40 (logi API), P41 (eksport audytowy)",
+    "legal_retention": "UoR art. 94; Ordynacja art. 86 §1 [NIEZWERYFIKOWANE]"
+  },
+  "health_tiers": {
+    "criteria": ["tests_passing", "legal_basis_verified", "drift_free", "not_stale"],
+    "engine": "tools/health_tier_engine.py",
+    "recalculator": "tools/health_tier_recalculator.py",
+    "recalc_schedule": "CI/nightly (P29 bramka)",
+    "tiers": ["PLATINUM", "GOLD", "SILVER", "QUARANTINE"]
+  },
+  "smt_proofs": [
+    {"rule": "vat_rates_core", "property": "stawki należą do zbioru {0, 5, 8, 23} + zwolnienia", "status": "defined"},
+    {"rule": "pit_scale_thresholds", "property": "monotoniczność progów skali", "status": "defined"},
+    {"rule": "zus_30x_cap", "property": "składka ≤ 30-krotność limitu", "status": "defined"}
+  ],
+  "worm": {
+    "storage": "tools/worm_storage.py",
+    "hash_chain": true,
+    "signature": true,
+    "tamper_test_in_ci": true,
+    "archived_artifacts": ["decisions", "certificates", "bundles", "documentation_export", "api_audit_logs"],
+    "restore_test": "restore + weryfikacja checksum (P43)"
+  },
+  "retention": {
+    "years": 5,
+    "anchor": "od końca roku obrotowego [NIEZWERYFIKOWANE: UoR art. 94, OP art. 86 §1]",
+    "classes": ["decisions", "certificates", "bundles", "audit_logs", "documents"],
+    "calculator": "expiry = 31.12.(R+5) dla roku obrotowego R"
+  },
+  "provenance_dna_chain": ["act", "amendment", "article", "rule", "test", "bundle", "certificate"],
+  "provenance_graph_seed": "bundles/legal_graph.json (zalążek LKG)",
+  "dependency_graph": {
+    "verdict_chain": "p104 → p105 → p106 (liniowy, safe_merge, bez cykli)",
+    "known_spof": [
+      "main_jdg.rego (jedyny punkt składania werdyktu — mitygacja: git revert + flagi v3_p*_check)",
+      "thresholds_jdg.rego (jedno źródło progów — mitygacja: wersjonowanie per okres P05)"
+    ]
+  },
+  "migrations_decisions": {
+    "001": {"decision": "review_pending_P50"},
+    "002": {"decision": "review_pending_P50"},
+    "003": {"decision": "review_pending_P50"},
+    "004": {"decision": "review_pending_P50"},
+    "005": {"decision": "review_pending_P50"},
+    "006": {"decision": "review_pending_P50"},
+    "007": {"decision": "review_pending_P50"},
+    "008": {"decision": "review_pending_P50"},
+    "009": {"decision": "review_pending_P50"},
+    "010": {"decision": "review_pending_P50"},
+    "011": {"decision": "review_pending_P50"},
+    "012": {"decision": "review_pending_P50"},
+    "013": {"decision": "review_pending_P50"}
+  },
+  "enterprise_requirements": {
+    "rbac": {"status": "present", "evidence": "P40-I04 mapa rola→pola; P32 4-eyes"},
+    "rate_limiting": {"status": "present", "evidence": "P40-I06 (progi v3_p40)"},
+    "audit_worm": {"status": "planned", "evidence": "tools/worm_storage.py istnieje; P43 NIE_WDROŻONY (egzekucja WORM)"},
+    "quota": {"status": "missing", "evidence": "brak limitów per tenant (rate limiting per rola istnieje)"},
+    "multi_tenant": {"status": "missing", "evidence": "system single-tenant (JDG jednego przedsiębiorcy)"},
+    "i18n": {"status": "missing", "evidence": "interfejs PL (domena podatkowa PL — świadoma decyzja)"},
+    "a11y": {"status": "missing", "evidence": "brak audytu WCAG dashboardów"}
+  },
+  "str_evidence": {
+    "generator": "tools/str_generator.py",
+    "included_in_certificate": true,
+    "fields": ["incident_id", "timeline", "root_cause", "affected_decisions", "recovery_path"]
+  },
+  "cross_domain_health_contracts": [
+    {"domain_a": "ryczalt", "domain_b": "zus", "propagation": "choroba ryczałtu → ostrzeżenie podstawy ZUS (harmonizer)", "tool": "tools/ryczalt_zus_health_harmonizer.py"},
+    {"domain_a": "vat", "domain_b": "pkpir", "propagation": "choroba VAT → ostrzeżenie ewidencji PKPiR", "tool": "tools/coverage_unifier.py (kanon)"}
+  ],
+  "maturity_ladder": {
+    "levels": ["L0_initial", "L1_repeatable", "L2_defined", "L3_managed", "L4_quantified", "L5_optimizing"],
+    "criteria_per_level": {
+      "L0_initial": ["brak bramek CI"],
+      "L1_repeatable": ["bramki 1-6 CI przechodzą"],
+      "L2_defined": ["golden replay jako bramka PR (P39-I02)", "progi jako dane (ADR-002)"],
+      "L3_managed": ["SLO katalog z alertami (P37)", "runbook coverage 100% (P41-I07)"],
+      "L4_quantified": ["benchmark p95 baseline + regresja ≤ 10% (P37-I12)", "mutation score ≥ 85% (P39-I06)"],
+      "L5_optimizing": ["SMT dowody dla reguł krytycznych (P42-I02)", "samonaprawiające się bundle (P38-K07)"]
+    },
+    "certification": "P44 certyfikuje poziom na podstawie kryteriów testowalnych"
+  },
+  "no_auto_post": true,
+  "manual_review_required": true
+}

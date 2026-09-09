@@ -1,0 +1,35 @@
+{
+  "innovation": "V3-P41-I12",
+  "generated_at": "2026-09-09T10:52:59+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "docs_with_status": 24,
+    "current_docs": 24,
+    "no_version_cannibalism": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p41_dokumentacja.legacy_retirement: True"
+    },
+    {
+      "name": "all_docs_have_status",
+      "status": "OK",
+      "detail": "statusy lifecycle: 24/24"
+    },
+    {
+      "name": "no_version_cannibalism",
+      "status": "OK",
+      "detail": "warstwy z wieloma CURRENT: brak"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p105"
+    }
+  ],
+  "findings": []
+}

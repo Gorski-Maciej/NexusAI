@@ -1,0 +1,29 @@
+{
+  "innovation": "V3-P44-I05",
+  "generated_at": "2026-09-09T12:40:59+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "contracts": 12,
+    "contracts_with_sot": 12,
+    "missing_sot_paths": 0
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p44_certyfikacja_finalna.v4_inheritance_contract: True"
+    },
+    {
+      "name": "contracts_with_sot",
+      "status": "OK",
+      "detail": "kontrakty ze źródłem prawdy: 12/12"
+    },
+    {
+      "name": "sot_paths_exist",
+      "status": "OK",
+      "detail": "brakujące pliki source_of_truth: brak"
+    }
+  ],
+  "findings": []
+}

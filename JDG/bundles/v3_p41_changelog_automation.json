@@ -1,0 +1,46 @@
+{
+  "innovation": "V3-P41-I08",
+  "generated_at": "2026-09-09T10:52:58+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "implemented_parts": 41,
+    "changelog_entries": 41,
+    "changelog_not_manual": true,
+    "age_threshold_as_data": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p41_dokumentacja.changelog_automation: True"
+    },
+    {
+      "name": "ledger_history_available",
+      "status": "OK",
+      "detail": "części WDROŻONE_100 w ledgerze: 41"
+    },
+    {
+      "name": "changelog_generated_from_ledger",
+      "status": "OK",
+      "detail": "changelog wygenerowany: 41 wpisów (generated_from=v3_campaign_ledger)"
+    },
+    {
+      "name": "changelog_not_manual",
+      "status": "OK",
+      "detail": "generated_from: v3_campaign_ledger"
+    },
+    {
+      "name": "age_threshold_as_data",
+      "status": "OK",
+      "detail": "v3_p41_changelog_max_age_days w data.thresholds: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p105"
+    }
+  ],
+  "findings": []
+}

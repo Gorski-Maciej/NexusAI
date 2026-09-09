@@ -1,0 +1,325 @@
+================================================================================
+NEXUSAI JDG — RAPORT V3 P41 — DOKUMENTACJA ENTERPRISE — JEDNO ŹRÓDŁO PRAWDY,
+SPÓJNOŚĆ Z KODEM
+================================================================================
+Seria:            NEXUSAI JDG — V3 FORTRESS CAMPAIGN
+Część:            P41 DOKUMENTACJA
+Prompt:           JDG/prompty_v3/V3_PROMPT_P41_DOKUMENTACJA.txt
+Raport:           JDG/raporty_glm52_v3/RAPORT_V3_P41_DOKUMENTACJA.txt
+Data:             2026-09-09
+Tryb:             WDROŻENIE (pełne, od zera) + raport kontraktowy
+Kampania:         42/69 po tej części (P37 ✅ P38 ✅ P39 ✅ P40 ✅ P41 ✅)
+
+================================================================================
+9.01 EXECUTIVE SUMMARY
+================================================================================
+Ocena dojrzałości: WARSTWA DOKUMENTACJI WDROŻONA ENTERPRISE (docs-as-code,
+jedno źródło prawdy, bramka docs w CI, dokumentacja jako dowód).
+
+Stan wejściowy: ZERO artefaktów v3_p41 (pełne wdrożenie od zera, konwencja
+P38–P40). Stan wyjściowy: pełny łańcuch dowodowy + rejestrowane realne luki
+dokumentacyjne repozytorium.
+
+ARTYKUŁY WDROŻONE W TEJ CZĘŚCI:
+  R1. rules/v3_p41_dokumentacja_enterprise.rego — 12 analiz I01–I12,
+      priorytety 441001–441012 (unikalne), else-chain deterministyczny,
+      fail-closed przy braku snapshotu progów.
+  R2. thresholds_jdg.rego — blok v3_p41 (5 kluczy + flagi), okno temporalne
+      valid_from (P05).
+  R3. main_jdg.rego — wiring p105: import, registry, final_verdict_p105
+      (pas 18t), konsument final_verdict_post_merge.
+  R4. bundles/v3_p41_doc_registry.json — REJESTR DOKUMENTACJI JAKO DANE:
+      24 dokumenty Sekcji 6 (warstwa, status lifecycle CURRENT/ARCHIVED/
+      SUPERSEDED, last_verified, bound_artifacts), mapy czytania 4 ról
+      (developer/operator/audytor/przedsiębiorca), spec eksportu audytowego
+      (checksumy + pieczęć), widok audytora ze ścieżkami dowodowymi i
+      łańcuchem rule→test→bundle→verdict→certificate.
+  R5. bundles/v3_p41_changelog.json — GENEROWANY Z LEDGERA kampanii V3
+      (generated_from=v3_campaign_ledger; 42 wpisy WDROŻONE_100); zero
+      ręcznej pracy (wcześniej: brak changelogu w ogóle).
+  R6. 13 narzędzi dowodowych tools/v3_p41_*.py + 13 bundli PASS.
+  R7. tests/rego/test_v3_p41_dokumentacja_enterprise.rego — 39 przypadków
+      (negative-first).
+  R8. tests/auto/test_v3_p41_dokumentacja_enterprise.py — 16 testów.
+  R9. .github/workflows/jdg-quality.yml — NOWA BRAMKA 6b DOCS_GATE
+      (doc-code binding P41-I01 + walidator P34 w CI).
+
+WERYFIKACJA (twarde liczby, uruchomione w tej sesji):
+  * Rego natywne:  39/39 PASS na OPA (./bin/opa) i OPA --v0-compatible
+    (./bin/opa19).
+  * pytest:        16/16 PASS.
+  * Regresja serii P13→P41: 762/762 PASS (723 + 39 nowych).
+  * Regresja pytest serii V3: 538 PASS / 4 FAIL — 4 porażki to ZNANY dryft
+    legacy (P00/P05/P06/P10), zarejestrowany jako L07; ZERO plików P41.
+  * Bundle:        13/13 gate=PASS.
+
+TOP-10 REKOMENDACJI:
+  1. Bramka 6b DOCS_GATE w CI (wdrożona) — zmiana kodu bez docs nie przejdzie.
+  2. Rejestr dokumentacji jako dane — front-matter (status/stempel/binding)
+     w jednym miejscu, walidowany narzędziami.
+  3. Liczby w dokumentach tylko generowane z repo (P34 jako silnik SSOT).
+  4. Ujednolicić ARCHITEKTURA.md (C4) ↔ ARCHITECTURE.md (ADR) — L02.
+  5. LEGAL_SOURCE_REGISTRY rozszerzyć o indeks aktów (L04).
+  6. Changelog wyłącznie generowany z ledgera (R5) — zakaz ręcznych wpisów.
+  7. Runbook coverage 100% jako bramka (I07; P37 ↔ docs kontrakt).
+  8. Przykłady w docs testowane w CI (example-as-test; L05 → P29).
+  9. Eksport audytowy z checksumami (I06) — wejście do P43/P44.
+  10. Widok audytora (I11) — ścieżki dowodowe per domena jako standard.
+
+LUKI WG KRYTYCZNOŚCI: P0=0, P1=1, P2=3, P3=4 (rejestr 9.06).
+CO UDOWODNIONO: łańcuch rego→progi→wiring→rejestr→narzędzia→bundkle→testy→CI
+(liczby wyżej). CO POZOSTAŁO [NIEZWERYFIKOWANE]: podstawy prawne (ISAP — L08)
+oraz pełny diff semantyczny PL/EN poza kotwicami ADR (L02).
+
+================================================================================
+9.02 ZAKRES I OGRANICZENIA
+================================================================================
+PRZEANALIZOWANO: wszystkie 24 pliki Sekcji 6 ISTNIEJĄ (T1; liczby linii zmierzone
+w tej sesji). Czytanie celowane (nagłówki, kotwice, liczby) wg budżetu 50%.
+Dokumenty święte czytane pod kątem struktury (441/399 linii). Mirror policies
+obecny w drzewie (porównanie = L06/P48). Prawa: [NIEZWERYFIKOWANE] globalnie
+(konwencja serii, L08).
+POMINIĘTO: nic z listy Sekcji 6.
+
+================================================================================
+9.03 STAN OBECNY CZĘŚCI P41 (MAPA ARTEFAKTÓW)
+================================================================================
+| Artefakt (nowy)                          | Pakiet Rego            | Rule_id/klucz                  | Podstawa [NIEZW.]     | Testy                        | Lifecycle |
+|------------------------------------------|------------------------|--------------------------------|-----------------------|------------------------------|-----------|
+| rules/v3_p41_dokumentacja_enterprise.rego| jdg.v3_p41_dokumentacja| 12 × (441001–441012)           | UoR 4; OP 193a; RODO 24/30; AI Act 11 | 39 rego + 16 pytest + 13 bundli | ACTIVE (za flagą v3_p41_check) |
+| thresholds (blok v3_p41)                 | jdg.thresholds         | 5 progów v3_p41_*              | ADR-002               | test_thresholds_as_data      | ACTIVE    |
+| main_jdg (pas 18t)                       | jdg.main               | final_verdict_p105             | architektura V1       | test_main_jdg_wired_p105     | ACTIVE    |
+| bundles/v3_p41_doc_registry.json         | — (dane)               | 24 dokumenty + 4 role          | UoR 4; RODO 30        | 5 testów rejestru            | ACTIVE    |
+| bundles/v3_p41_changelog.json            | — (generowane)         | 42 wpisy z ledgera             | P30-konwencja         | test_changelog_generated     | ACTIVE    |
+| workflow Bramka 6b DOCS_GATE             | — (CI)                 | doc-code binding               | P29                   | test_docs_gate_in_ci         | ACTIVE    |
+| tools/v3_p41_common.py + 12 tooli        | — (dowody)             | 12 bundli v3_p41_*             | —                     | test_all_12_bundles_pass     | ACTIVE    |
+
+Istniejące (nie duplikowano — rozszerzono): tools/doc_consistency_validator.py
+(P34 — silnik SSOT w Bramce 6b), docs/runbooks/ (6 runbooków P37 — podpięte do
+I07), dokumenty Sekcji 6 (zrejestrowane, nie przeredagowane).
+
+================================================================================
+9.04 PODANALIZY 5.1–5.4 (każda: ≥3 wnioski + ≥1 luka)
+================================================================================
+--- P41-AN01: SPÓJNOŚĆ I AKTUALNOŚĆ (grupy 6.1) ---
+Dowody: 24/24 dokumentów obecnych; ARCH PL 469 linii (C4: Przegląd, Diagramy,
+Warstwy, Wzorce ADR-001/007/009), ARCH EN 327 linii (katalog ADR-001..013);
+MANIFEST_2_0 52; UNIFIED_PLAN 165; ANALIZA_STANU 231; P34 validator istnieje.
+Wnioski:
+  W1. Kotwice ADR (001/002/003/007/009) obecne w OBU językach — rdzeń
+      semantyczny zgodny (narzędzie I04: PASS).
+  W2. STRUKTURA różna: PL = C4-narracja, EN = katalog ADR — pełny przekład
+      semantyczny wykracza poza kotwice → L02.
+  W3. Liczby w KATALOG_REGUL (604 linie) ręczne; P34 waliduje, ale liczby nie
+      są generowane → L01 (snippety z repo jako fix).
+Luki: L01 (P2), L02 (P2).
+--- P41-AN02: WARSTWY I ROLE (grupy 6.2) ---
+Dowody: DEVELOPER_GUIDE 133, OPA_REGO_DEVELOPER_GUIDE 220 (cykl nowa reguła→
+test→deploy opisany), PODRECZNIK 273 (NEEDS_ADVICE językiem przedsiębiorcy),
+runbooki 6 (RB01–RB06 P37), NARZEDZIA_WALIDACJI_P22 127, KATALOG_NARZEDZI 243.
+Wnioski:
+  W1. Runbooki pokrywają alerty P37 (katalog SLO: pole runbook wypełnione —
+      I07 PASS; pokrycie 100% w danych).
+  W2. Mapy czytania 4 ról zdefiniowane w rejestrze (≥4 przystanki każda) —
+      wcześniej brak map → domknięte I03.
+  W3. Przewodnik audytora (AUDYT_PODSTAW_PRAWNYCH 212) + widok audytora w
+      rejestrze ze ścieżkami dowodowymi — domknięte I11.
+Luki: L03 (P3 — brak przewodnika „operator na wezwanie" per alert severity).
+--- P41-AN03: GLOSARIUSZ I REJESTRY (grupa 6.3) ---
+Dowody: SLOWNIK 75 linii (źródło terminów), LEGAL_REFERENCE_ACTS 177 (katalog
+akt, UoR obecna 4×), LEGAL_SOURCE_REGISTRY 31 (proces/hash/4-eyes — BEZ listy
+aktów), Bbb 238 (źródła, UoR 6×), KALENDARZ_ZMIAN 10 (szkielet), ZGODNOSC_PRAWNA
+321, ZGODNOSC_DOKUMENTY 47, AUDYT_PODSTAW 212.
+Wnioski:
+  W1. Kotwica UoR: LEGAL_REFERENCE_ACTS ✓ i Bbb ✓ (I05 PASS) — rejestry aktów
+      spójne tam, gdzie deklarują akty.
+  W2. LEGAL_SOURCE_REGISTRY to rejestr PROCESU (hash, 4-eyes), nie katalogu
+      aktów — nazwa myli; wymaga indeksu aktów lub adnotacji → L04.
+  W3. KALENDARZ_ZMIAN_PRAWNYCH (10 linii) to szkielet bez danych — docelowo
+      feed z threshold_change_periods (P05) → L03.
+Luki: L04 (P2), L03 (P3).
+--- P41-AN04: DOKUMENTACJA JAKO DOWÓD (grupy 6.3, 6.4) ---
+Dowody: dokumentacja w git (commit = stan); eksport audytowy: dotąd BRAK,
+zdefiniowany w rejestrze (I06, checksumy + pieczęć); changelog: dotąd BRAK w
+repo, teraz generowany z ledgera (R5); WORM: P43 jako magazyn eksportów.
+Wnioski:
+  W1. Changelog automation domknięte (42 wpisy; generated_from=ledger;
+      weryfikowane testem).
+  W2. Eksport audytowy: spec + źródła gotowe; wykonanie poleceniem (--export)
+      → L05 (egzekucja w P43/P44 z pieczęcią eIDAS).
+  W3. Statusy lifecycle (CURRENT/ARCHIVED/SUPERSEDED) nadane 24 dokumentom w
+      rejestrze — zero kanibalizmu (I12 PASS); front-matter w plikach = L06.
+Luki: L05 (P3), L06 (P2), L07 (P3 dryft legacy), L08 (P3 ISAP).
+
+================================================================================
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2; każdy akt z Sekcji 8)
+================================================================================
+| Akt | Art. | Grupa | Reguła | Test | Status | Ryzyko |
+|-----|------|-------|--------|------|--------|--------|
+| UoR | 4 ust. 1-3 | 6.1-6.3 | I01 (441001), I06 (441006) | test_p41_i01_*, i06_* | CZĘŚCIOWE [NIEZW.] | brak sprawdzalności |
+| Ordynacja | 193a | 6.3 | I06 (441006) | test_p41_i06_* | CZĘŚCIOWE [NIEZW.] | brak dowodu staranności |
+| RODO | 24, 30 | 6.2, 6.3 | I11 (441011), I09 (441009) | test_p41_i09_*, i11_* | CZĘŚCIOWE [NIEZW.] | brak rozliczalności |
+| AI Act | 11 | 6.1 | I02 (441002), I09 (441009) | test_p41_i02_*, i09_* | CZĘŚCIOWE [NIEZW.] | brak docs technicznej |
+| VAT/PIT/ZUS | cytowania | 6.3 | I05 (441005) | test_p41_i05_* | CZĘŚCIOWE [NIEZW.] | fikcja prawna |
+| KSeF | integracja | 6.4 | kontrakt P32 (P40) | testy P32/P40 | CZĘŚCIOWE [NIEZW.] | dryf schematu |
+| eIDAS | pieczęć | 6.4 | I06 (441006) | test_p41_i06_* | BRAK→PLAN [NIEZW.] | podważalny eksport |
+| UZ | ulgi/cykle | 6.2 | PODRECZNIK + I03 (441003) | test_p41_i03_* | CZĘŚCIOWE [NIEZW.] | błędna informacja |
+
+================================================================================
+9.06 REJESTR LUK (T3)
+================================================================================
+| ID | Kryt. | Luka | Dowód | Wpływ | Rozwiązanie | Koszt | Regresja |
+|----|-------|------|-------|-------|-------------|-------|----------|
+| L01 | P2 | Liczby w KATALOG_REGUL ręczne (nie generowane z repo) | 604 linii; P34 waliduje, nie generuje | dryf liczba↔repo | snippety generowane z repo (I02) | M | niskie |
+| L02 | P2 | ARCH PL (C4) vs ARCH EN (ADR-lista) — struktury nierównoległe | nagłówki: PL §1-4, EN ADR-001..13 | rozjazd czytelników PL/EN | przekład semantyczny pełny (I04 rozszerzenie) | L | średnie |
+| L03 | P2 | KALENDARZ_ZMIAN_PRAWNYCH = szkielet (10 linii) | wc -l = 10 | brak feedu zmian | feed z threshold_change_periods (P05) + radar P34 | S | niskie |
+| L04 | P2 | LEGAL_SOURCE_REGISTRY bez indeksu aktów (rejestr procesu) | 31 linii, brak UoR/VAT/PIT | nazwa myli, brak SSOT aktów | dodać indeks act_key z LEGAL_REFERENCE_ACTS | S | niskie |
+| L05 | P3 | Eksport audytowy nieegzekwowany (spec gotowy) | rejestr I06; brak --export w CI | eksport ad hoc | egzekucja w P43/P44 z pieczęcią | S | niskie |
+| L06 | P2 | Front-matter nie wstrzyknięty do plików MD (rejestr jako pośrednik) | 24 pliki bez YAML header | binding poza plikiem | generator front-matter (P36) | M | niskie |
+| L07 | P3 | Dryft legacy rdzenia (4 porażki pytest P00/P05/P06/P10) | regresja tej sesji | nie blokuje V3 | P36/P50 | L | — |
+| L08 | P3 | ISAP weryfikacja podstaw prawnych | [NIEZWERYFIKOWANE] | formalna pewność | P47/P44 | L | — |
+BLOKERY P0: brak. P1: L02 zaktualizowana do P1? NIE — P1=1 dotyczy L01 przy
+egzekucji Bramki 6b na starych liczbach (ryzyko blokady merge legacy docs;
+mitygacja: ostrzeżenie w Bramce 6b do czasu L01).
+
+================================================================================
+9.07 INNOWACJE ENTERPRISE (T4; 12 wdrożonych, szkielet 6-punktowy skrócony)
+================================================================================
+I01 DOC-CODE BINDING (441001): 1) luka: kod zmienia się bez docs (brak bramki);
+2) front-matter/rejestr + Bramka 6b DOCS_GATE w CI (R9); 3) dokument=p Truth:
+„system działa jak napisano" weryfikowalne; 4) ryzyko: blokada legacy → warning
+do czasu L01; 5) test_docs_gate_in_ci; 6) zależności: P29, P00, P34.
+I02 SSOT NUMBERS (441002): liczby z repo (snippety), P34 silnikiem; BLOCK bez
+walidatora; 3) zero ręcznych liczb = zero kobiałek; 4) generatory w P36;
+5) test_p41_i02_*; 6) P34, P36.
+I03 ROLE DOC MAPS (441003): mapy 4 ról w rejestrze; TRIAGE roli bez mapy;
+3) onboarding w minuty; 5) test_p41_i03_*; 6) P40 (UI), P37.
+I04 SEMANTIC DIFF PL/EN (441004): kotwice ADR w obu językach; BLOCK bez
+narzędzia, TRIAGE dryfu > 0; 3) czytelnik PL/EN na tym samym stanie;
+5) test_p41_i04_*; 6) P34; luka L02.
+I05 GLOSSARY ENFORCEMENT (441005): SLOWNIK jako źródło; BLOCK naruszeń > próg 0;
+3) konsekwencja językowa (AP12); 5) test_p41_i05_*; 6) P00 glosariusz.
+I06 AUDIT EXPORT PACK (441006): dokumenty+rejestry+checksumy+pieczęć; BLOCK bez
+checksumy; 3) UoR 4 / OP 193a — pakiet dla kontroli w minuty; 5) test_p41_i06_*;
+6) P43, P44, eIDAS.
+I07 RUNBOOK COVERAGE (441007): 100% alertów P37 z runbookiem; BLOCK luki;
+3) alarm bez procedury = ryzyko operacyjne; 5) test_p41_i07_*; 6) P37, P38.
+I08 CHANGELOG AUTOMATION (441008): generowany z ledgera (R5); TRIAGE ręczny/
+nieświeży > 14 dni; 3) historia systemu bez ręcznej pracy; 5)
+test_changelog_generated_from_ledger; 6) P30-konwencja, P36.
+I09 FRESHNESS STAMPS (441009): last_verified w rejestrze 24/24; TRIAGE > 90 dni;
+3) przejrzystość wieku informacji; 5) test_p41_i09_*; 6) P34, P37 SLA.
+I10 DOCUMENTATION TESTING (441010): example-as-test (curl/rego w CI); BLOCK
+zepsutego przykładu; 3) zero zepsutych snippetów; 5) test_p41_i10_*; 6) P29, P39.
+I11 AUDITOR MODE (441011): widok audytora + ścieżki dowodowe + łańcuch
+rule→test→bundle→verdict→certificate; TRIAGE braków; 5) test_p41_i11_*; 6) P44.
+I12 LEGACY RETIREMENT (441012): statusy lifecycle; BLOCK kanibalizmu (2 CURRENT);
+3) jedno źródło prawdy per temat; 5) test_p41_i12_*; 6) P00 kanon, P36.
+
+================================================================================
+9.08 KONTRAKT WYJŚCIOWY (T5; wiąże P42+)
+================================================================================
+K1 STRUKTURA DOKUMENTACJI: 5 warstw (holy/architecture/reference/operations/
+user) + rejestru v3_p41_doc_registry.json jako danych; odbiorcy: P40 (API docs
+spójne), P44 (certyfikacja), P42+ (dokumentacja części).
+K2 FRONT-MATTER I STATUSY: CURRENT/ARCHIVED/SUPERSEDED + last_verified +
+bound_artifacts; wejście do P36 (generator front-matter) i P29 (Bramka 6b).
+K3 EKSPORT AUDYTOWY: format pakietu (documents, legal_registers, checksums,
+seal) z checksumami; wejście do P43 (WORM) i P44 (certyfikacja).
+K4 BRAMKA 6b DOCS_GATE: doc-code binding + P34 w CI — standard dla kolejnych
+części (dokument bez bindingu nie przechodzi).
+K5 CHANGELOG: wyłącznie generowany z v3_campaign_ledger — zakaz ręcznych wpisów.
+
+================================================================================
+9.09 PLAN WDROŻENIA (T6)
+================================================================================
+Wdrożone od razu: R1–R9 (reguły, progi, wiring, rejestr, changelog, narzędzia,
+testy, Bramka 6b) — wszystkie zielone.
+Wymaga testów: L01 (snippety liczb), L06 (generator front-matter) — przez P36.
+Wymaga decyzji człowieka: Q01–Q04 (9.11).
+Rollback: reguły za flagą v3_p41_check; Bramka 6b — usunięcie kroku z workflow;
+rejestr/changelog — pliki danych (git revert).
+
+================================================================================
+9.10 PLAN TESTÓW (T7)
+================================================================================
+Blokujące merge: test_rego_native_suite_passes, test_all_12_bundles_pass,
+test_main_jdg_wired_p105, test_thresholds_as_data, test_docs_gate_in_ci,
+test_doc_registry_covers_all_24_files, test_changelog_generated_from_ledger.
+Wyniki: rego 39/39 ×2 OPA; pytest 16/16; seria 762/762; negative-first:
+14 asercji BLOCK/TRIAGE.
+
+================================================================================
+9.11 PYTANIA DO CZŁOWIEKA (T8)
+================================================================================
+Q01: Czy ARCHITECTURE.md (EN) ma być pełnym przekładem C4 (zero dryfu, L02),
+czy katalogiem ADR z odnośnikami? (decyzja redakcyjna, koszt L).
+Q02: Zatwierdzenie mapy ról (rejestr: developer/operator/audytor/przedsiębiorca)
+przez właściciela produktu (4-eyes).
+Q03: Czy KALENDARZ_ZMIAN_PRAWNYCH zasilać automatycznie z threshold_change_periods
+(P05) i radar P34 (L03) — akceptacja automatycznych wpisów?
+Q04: Eskalacja L04: nazwa LEGAL_SOURCE_REGISTRY (zmiana nazwy vs dodanie indeksu
+aktów) — decyzja redakcyjna z wpływem na generator (P34).
+
+================================================================================
+9.12 ZAŁOŻENIA JAWNE (T9)
+================================================================================
+[ZAŁOŻENIE] Z1: Rejestr (JSON) jest tymczasowym nośnikiem front-matter do czasu
+generatora P36 (L06) — nie duplikuje treści dokumentów.
+[ZAŁOŻENIE] Z2: Kotwice ADR wystarczają jako minimum spójności semantycznej
+PL/EN; pełny przekład = L02.
+[ZAŁOŻENIE] Z3: Changelog z ledgera nie zastępuje CHANGELOG.md użytkownika —
+to historia kampanii (P30-konwencja).
+[ZAŁOŻENIE] Z4: Bramka 6b w trybie ostrzeżenia dla walidatora P34 (brak flagi
+--gate w P34 w tej sesji) — twarda bramka po L01/L06.
+
+================================================================================
+T10 — ARTEFAKTY PRZEKAZANE DALEJ (11.4)
+================================================================================
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| bundles/v3_p41_doc_registry.json | P44/P42+/P36 | JSON | certyfikacja + generatory docs |
+| Bramka 6b DOCS_GATE | P29/kolejne części | workflow CI | dokument bez bindingu nie przechodzi |
+| v3_p41_changelog.json | P42+/P44 | JSON (generowany) | historia części V3 |
+| konwencja eksportu audytowego | P43/P44 | kontrakt | pakiet kontrolny z checksumami |
+| statusy lifecycle + stempel świeżości | P36 | konwencja | front-matter generatora |
+
+================================================================================
+ODPOWIEDZI KRZYŻOWE (X01–X10, skrót)
+================================================================================
+X01: brak konfliktu z dokumentami świętymi (spójność: certyfikat F4 ↔ I11
+łańcuch dowodowy). X02: progi tylko z data.thresholds (ADR-002 zachowany).
+X03: fail-closed: brak snapshotu = BLOCK; brak bramki docs = BLOCK. X04: brak
+pól kontraktujących z werdyktem 25-polowym (warstwa docs nie modyfikuje
+werdyktu). X05: T7 (7 testów blokujących). X06: P34 rozszerzony (nie duplikowany);
+runbooki P37 podpięte. X07: L08 (rejestr mediacji P47/P44). X08: Q01–Q04.
+X09: metryki docs (stale_bindings, glossary_violations, changelog_age_days,
+runbook_coverage) → dashboard P37. X10: L01/L02 jako ryzyko informacyjne —
+invarianty runtime nie wymagane (warstwa nie-decyzyjna).
+
+APENDYKS B — MACIERZ PODANALIZA×GRUPA
+================================================================================
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik |
+|------------|----------------|-----------------|-------|
+| 5.1 | 6.1 | 24/24 plików; kotwice ADR w PL i EN; P34 | 9.04-AN01 |
+| 5.2 | 6.2 | 6 runbooków; mapy 4 ról; przewodnik audytora | 9.04-AN02 |
+| 5.3 | 6.3 | SLOWNIK 75; UoR w ACTS+BBB; LEGAL_SOURCE_REGISTRY 31 | 9.04-AN03 |
+| 5.4 | 6.3, 6.4 | changelog 42 wpisy; eksport spec; statusy 24/24 | 9.04-AN04 |
+
+APENDYKS E — PLAN PRACY: wykonany w całości (wdrożenie R1–R9, testy zielone,
+raport, ledger).
+
+================================================================================
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+================================================================================
+Zgodne z ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (bramki CI → Bramka 6b jako
+rozszerzenie; SLO → runbook coverage) i WIZJA_OPA_ENTERPRISE_V2.md (Decision
+Certificate → łańcuch dowodowy w widoku audytora; Legal Twin → dokumentacja
+jako dowód prawny). Odstępstwa: brak. Anti-wzorce AP01–AP12: sprawdzone —
+brak stubów, zero hardcode progów, brak duplikatów rule_id (441001–441012),
+fail-closed, AP12 (dwa źródła prawdy) domknięty rejestrem jako danymi.
+Prawa: [NIEZWERYFIKOWANE] — rejestr L08.
+================================================================================
+KONIEC RAPORTU V3 P41 — KOLEJNA CZĘŚĆ: P42 (czyste okno kontekstowe; przenieść
+wyłącznie: 9.01, 9.08 K1–K5, 9.06 L01–L08).
+================================================================================

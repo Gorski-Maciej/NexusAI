@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P40-I10",
+  "generated_at": "2026-09-09T10:01:27+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "sandbox_no_persistence": true,
+    "pii_strip": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p40_api_dane_ui.playground_sandbox: True"
+    },
+    {
+      "name": "sandbox_no_persistence",
+      "status": "OK",
+      "detail": "sandbox bez zapisu stanu: True"
+    },
+    {
+      "name": "pii_strip",
+      "status": "OK",
+      "detail": "strip PII na wejściach sandbox: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p104"
+    }
+  ],
+  "findings": []
+}

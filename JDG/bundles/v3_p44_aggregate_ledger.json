@@ -1,0 +1,37 @@
+{
+  "innovation": "V3-P44-I03",
+  "generated_at": "2026-09-09T12:40:59+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "unique_gaps": 22,
+    "p0_open": 0,
+    "p1_open": 1,
+    "p2_open": 12,
+    "p3_open": 14,
+    "gap_ids_in_reports": 241
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p44_certyfikacja_finalna.campaign_aggregate_ledger: True"
+    },
+    {
+      "name": "aggregate_keys_unique",
+      "status": "OK",
+      "detail": "unikalne klucze luk: 22/22 duplikaty=[]"
+    },
+    {
+      "name": "cross_report_gap_scan",
+      "status": "OK",
+      "detail": "identyfikatory V3-Pxx-Lxx wykryte w raportach: 241 (deduplikacja po kluczu)"
+    },
+    {
+      "name": "zero_open_p0",
+      "status": "OK",
+      "detail": "otwarte luki P0 w agregacie: 0"
+    }
+  ],
+  "findings": []
+}

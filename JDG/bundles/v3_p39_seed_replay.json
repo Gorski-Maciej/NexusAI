@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P39-I11",
+  "generated_at": "2026-09-09T09:08:28+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "seed_replay_convention_ok": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p39_testy_ci.seed_replay: True"
+    },
+    {
+      "name": "seed_replay_convention_as_data",
+      "status": "OK",
+      "detail": "seed_replay: seed_recorded=True, replay=True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p103"
+    }
+  ],
+  "findings": []
+}

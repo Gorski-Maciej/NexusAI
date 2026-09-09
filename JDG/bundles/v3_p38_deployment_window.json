@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P38-I06",
+  "generated_at": "2026-09-09T08:15:05+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "p25_calendar_available": true,
+    "deployment_windows_contract_ok": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p38_bundle_deploy.deployment_window: True"
+    },
+    {
+      "name": "p25_calendar_available",
+      "status": "OK",
+      "detail": "bundles/v3_p25_tenant_calendar.json: True (źródło okien)"
+    },
+    {
+      "name": "deployment_windows_contract",
+      "status": "OK",
+      "detail": "deployment_windows: source=P25_master_deadline_calendar, block=True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p102"
+    }
+  ],
+  "findings": []
+}

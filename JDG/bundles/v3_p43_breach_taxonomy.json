@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P43-I10",
+  "generated_at": "2026-09-09T11:58:03+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "breach_classes_complete": true,
+    "legal_paths_per_class": true,
+    "report_72h_ready": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p43_security_dr.breach_taxonomy: True"
+    },
+    {
+      "name": "breach_classes_complete",
+      "status": "OK",
+      "detail": "klasy naruszeń: ['data_confidentiality', 'integrity', 'availability'] (wymagane: ['data_confidentiality', 'integrity', 'availability'])"
+    },
+    {
+      "name": "legal_paths_per_class",
+      "status": "OK",
+      "detail": "ścieżki prawne: 3 (min 3)"
+    },
+    {
+      "name": "report_72h_ready",
+      "status": "OK",
+      "detail": "raport 72h gotowy (RODO art. 33 [NIEZWERYFIKOWANE]): True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p107"
+    }
+  ],
+  "findings": []
+}

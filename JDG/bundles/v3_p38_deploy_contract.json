@@ -1,0 +1,65 @@
+{
+  "contract_version": "v3p38-deploy-2026.09",
+  "valid_from": "2026-01-01",
+  "owner": "jdg-release-engineering",
+  "pipeline": ["build", "sign", "verify", "shadow", "canary", "promote", "monitor", "rollback"],
+  "attestation_required_fields": ["built_by", "source_commit", "gates_passed", "digest"],
+  "attestation_standard": "SLSA-style: każdy build deklaruje kto zbudował, z jakiego commit, które bramki przepuściły (P36 L1-L5 + golden replay), sha256 artefaktu; determinizm ten-input=ten-output",
+  "blue_green": {
+    "atomic_switch": true,
+    "old_version_kept_until_month_close": true,
+    "rationale": "odtwarzalność księgowa: stara wersja żyje do zamknięcia miesiąca (UoR art. 74-75 [NIEZWERYFIKOWANE])"
+  },
+  "worm_policy": {
+    "archive_every_version": true,
+    "immutable": true,
+    "storage": "tools/worm_storage.py (rdzeń P43) — rozszerzenie, nie duplikacja"
+  },
+  "deployment_windows": {
+    "source": "P25_master_deadline_calendar",
+    "block_in_critical_windows": true,
+    "critical_periods": ["deklaracje VAT", "deklaracje PIT", "ZUS płatności"],
+    "rationale": "deploy nie może przeciąć ścieżki płatności"
+  },
+  "signature_policy": {
+    "require_signed_bundle": true,
+    "reject_unsigned_at_load": true,
+    "fail_closed": true,
+    "rationale": "integralność artefaktu = warunek decyzji (eIDAS-kontekst [NIEZWERYFIKOWANE])"
+  },
+  "rollback_drill": {
+    "procedure_steps": [
+      "1. Detekcja regresji (golden replay P10 / SLO P37 / NEEDS_ADVICE spike)",
+      "2. Auto-hold ruchu na nową wersję (canary stop)",
+      "3. Przełączenie atomowe na healthy_versions (blue-green)",
+      "4. Wpis do deployments.json: powód, MTTR, diff inputów",
+      "5. Raport powdrożeniowy + eskalacja slo-owner (P37-I06)"
+    ],
+    "measured_mttr_min": 4.02,
+    "sla_mttr_max_min": 5,
+    "note": "MTTR zmierzony w drillach wdrożeniowych R01-R24 (deployments.json); SLA z V1 §9.3"
+  },
+  "post_deploy_certificate": {
+    "canary_result": "required",
+    "golden_replay": "required",
+    "slo_snapshot": "required",
+    "registered_in": "bundles/deployments.json (P11 certyfikat F4)"
+  },
+  "legal_record_required_fields": ["version", "deployed_at", "deployed_by", "reason", "canary_result", "signature"],
+  "shadow_evaluation": {
+    "min_hours": 24,
+    "stream": "realne decyzje (anonimizowane)",
+    "gate": "regresja w shadow = BLOCK przed canary"
+  },
+  "release_notes": {
+    "auto_generated_from": "diffy reguł (progi, daty, stawki)",
+    "max_age_days": 7,
+    "audience": "przedsiębiorca"
+  },
+  "canary": {
+    "diff_max": 0,
+    "sample_min": 100,
+    "anonymized_inputs": true,
+    "promote_requires": "SLO P37 + 4-eyes dla reguł krytycznych (VAT/PIT/ZUS)"
+  }
+}

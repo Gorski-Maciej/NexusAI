@@ -1,0 +1,39 @@
+{
+  "innovation": "V3-P44-I09",
+  "generated_at": "2026-09-09T12:41:01+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "triggers": 3,
+    "days_since_certification": 0,
+    "time_threshold_present": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p44_certyfikacja_finalna.certification_renewal_policy: True"
+    },
+    {
+      "name": "expiry_policy_defined",
+      "status": "OK",
+      "detail": "wyzwalacze wygaśnięcia (nowelizacja/deploy/czas): 3 → ['nowelizacja aktu z zakresu silnika (Law Radar → P24/P37)', 'deploy krytyczny reguł materiałowych (P38 canary FAIL lub rollback)', 'upływ v3_p44_cert_validity_max_days dni (progi v3_p44)']"
+    },
+    {
+      "name": "renewal_procedure",
+      "status": "OK",
+      "detail": "procedura odnowienia: Ponowny przebieg bramek twardych + regresja serii + nowy wpis WORM"
+    },
+    {
+      "name": "time_threshold_as_data",
+      "status": "OK",
+      "detail": "próg v3_p44_cert_validity_max_days w thresholds_jdg.rego (ADR-002)"
+    },
+    {
+      "name": "within_validity_window",
+      "status": "OK",
+      "detail": "dni od certyfikacji: 0 (okno 90)"
+    }
+  ],
+  "findings": []
+}

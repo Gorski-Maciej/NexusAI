@@ -1,0 +1,35 @@
+{
+  "innovation": "V3-P44-I02",
+  "generated_at": "2026-09-09T12:40:58+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "pillars_total": 6,
+    "pillars_dowiedzone": 1,
+    "pillars_czesciowe": 5,
+    "declared_without_plan": 0
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p44_certyfikacja_finalna.pillar_scoreboard: True"
+    },
+    {
+      "name": "pillars_with_status_and_evidence",
+      "status": "OK",
+      "detail": "filary ze statusem+dowodem: 6/6"
+    },
+    {
+      "name": "no_declared_without_plan",
+      "status": "OK",
+      "detail": "DEKLAROWANE bez planu (BLOCK): []"
+    },
+    {
+      "name": "holy_doc_2_exists",
+      "status": "OK",
+      "detail": "docs/WIZJA_OPA_ENTERPRISE_V2.md (filary): True"
+    }
+  ],
+  "findings": []
+}

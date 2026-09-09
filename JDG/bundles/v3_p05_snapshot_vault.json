@@ -1,11 +1,11 @@
 {
   "current": {
-    "git_head": "f7ced451",
-    "built_at": "2026-09-08T17:06:03+00:00",
+    "git_head": "047793bf",
+    "built_at": "2026-09-09T12:59:17+00:00",
     "components": {
       "rules_rego": {
-        "count": 507,
-        "sha1": "6e245a36a960cc24bcc1040d04ed48fada404cf5"
+        "count": 518,
+        "sha1": "e38c094d3a96e166502be28636a8d6220d6e70cb"
       },
       "bundles/thresholds_data.json": "20655273bee5fdce995e490cb4737142a437e912",
       "bundles/legal_graph.json": "748d25733d79381e89280d457be2ca3fa73d27fe",
@@ -20,7 +20,7 @@
         "replay_rows": 31
       }
     },
-    "snapshot_id": "7a6d04d3be1345588cac8d116d5300da78720a31f03311a4deea6685a7da1751"
+    "snapshot_id": "1f459768980e174ffe6b8629b536a8987eef9d0547195438cba02bb4f42a3957"
   },
   "history": [
     {
@@ -31,6 +31,36 @@
     {
       "snapshot_id": "f9166b8f593b2dc83685246af12566479b628e642c10280830566737e409cc6c",
       "superseded_at": "2026-09-08T16:53:56+00:00",
+      "reason": "zmiana składników snapshotu (rules/parametry/legal nodes/schema)"
+    },
+    {
+      "snapshot_id": "7a6d04d3be1345588cac8d116d5300da78720a31f03311a4deea6685a7da1751",
+      "superseded_at": "2026-09-09T07:45:21+00:00",
+      "reason": "zmiana składników snapshotu (rules/parametry/legal nodes/schema)"
+    },
+    {
+      "snapshot_id": "2a0e200475258b52e6f454cd0d6a49faea7936b1a06394774a113951da62209e",
+      "superseded_at": "2026-09-09T10:15:07+00:00",
+      "reason": "zmiana składników snapshotu (rules/parametry/legal nodes/schema)"
+    },
+    {
+      "snapshot_id": "e39b3177bd3920c9bc733ba3046f5ba9d8a9744a82e49e191d0a97ac53dd79cb",
+      "superseded_at": "2026-09-09T11:05:44+00:00",
+      "reason": "zmiana składników snapshotu (rules/parametry/legal nodes/schema)"
+    },
+    {
+      "snapshot_id": "88f71808fd8937e0b7b602f58eebd54eb250bc5b4e9bea25bd49ceab1a60f55b",
+      "superseded_at": "2026-09-09T11:33:26+00:00",
+      "reason": "zmiana składników snapshotu (rules/parametry/legal nodes/schema)"
+    },
+    {
+      "snapshot_id": "f3f694f9c71196823db70400e2550ddcda057bd9f10341e1956e1818d996d685",
+      "superseded_at": "2026-09-09T12:06:58+00:00",
+      "reason": "zmiana składników snapshotu (rules/parametry/legal nodes/schema)"
+    },
+    {
+      "snapshot_id": "666290b0a6770b9641208ecf44871995d43427a9727bc3cc9351858470232096",
+      "superseded_at": "2026-09-09T12:59:17+00:00",
       "reason": "zmiana składników snapshotu (rules/parametry/legal nodes/schema)"
     }
   ]

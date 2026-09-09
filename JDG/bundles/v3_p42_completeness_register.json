@@ -1,0 +1,43 @@
+{
+  "innovation": "V3-P42-I09",
+  "generated_at": "2026-09-09T11:25:50+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "all_requirements_registered": true,
+    "statuses_valid": true,
+    "requirements": {
+      "rbac": "present",
+      "rate_limiting": "present",
+      "audit_worm": "planned",
+      "quota": "missing",
+      "multi_tenant": "missing",
+      "i18n": "missing",
+      "a11y": "missing"
+    },
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p42_enterprise_reszta.completeness_register: True"
+    },
+    {
+      "name": "all_requirements_registered",
+      "status": "OK",
+      "detail": "wymogi w rejestrze: ['a11y', 'audit_worm', 'i18n', 'multi_tenant', 'quota', 'rate_limiting', 'rbac'] brakujące=[]"
+    },
+    {
+      "name": "statuses_valid",
+      "status": "OK",
+      "detail": "statusy poza zbioru: brak"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p106"
+    }
+  ],
+  "findings": []
+}

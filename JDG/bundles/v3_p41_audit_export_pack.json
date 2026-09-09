@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P41-I06",
+  "generated_at": "2026-09-09T10:52:58+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "export_pack_spec_complete": true,
+    "checksum_required": true,
+    "export_sources_exist": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p41_dokumentacja.audit_export_pack: True"
+    },
+    {
+      "name": "export_pack_spec_complete",
+      "status": "OK",
+      "detail": "zawartość pakietu w rejestrze: ['documents', 'legal_registers', 'checksums', 'seal'] (wymagane: ['documents', 'legal_registers', 'checksums', 'seal'])"
+    },
+    {
+      "name": "checksum_required",
+      "status": "OK",
+      "detail": "checksumy obowiązkowe: True"
+    },
+    {
+      "name": "export_sources_exist",
+      "status": "OK",
+      "detail": "źródła pakietu (24 dokumenty): True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p105"
+    }
+  ],
+  "findings": []
+}

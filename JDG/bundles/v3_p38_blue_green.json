@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P38-I04",
+  "generated_at": "2026-09-09T08:15:03+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "blue_green_contract_ok": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p38_bundle_deploy.blue_green: True"
+    },
+    {
+      "name": "blue_green_contract",
+      "status": "OK",
+      "detail": "blue_green w kontrakcie deploy: atomic_switch=True, retencja do close month=True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p102"
+    }
+  ],
+  "findings": []
+}

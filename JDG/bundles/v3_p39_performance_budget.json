@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P39-I10",
+  "generated_at": "2026-09-09T09:08:28+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "regression_threshold_as_data": true,
+    "benchmark_baseline_measured": true,
+    "benchmark_gate_tool_exists": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p39_testy_ci.performance_budget: True"
+    },
+    {
+      "name": "regression_threshold_as_data",
+      "status": "OK",
+      "detail": "v3_p39_benchmark_regression_max_pct w data.thresholds: True"
+    },
+    {
+      "name": "benchmark_baseline_measured",
+      "status": "OK",
+      "detail": "eval_baseline: runs=60, p95=616.36 ms"
+    },
+    {
+      "name": "benchmark_gate_tool_exists",
+      "status": "OK",
+      "detail": "tools/v3_p37_benchmark_gate.py (P37): True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p103"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,294 @@
+{
+  "changelog": "v3_p41_changelog",
+  "generated_at": "2026-09-09T10:52:58+00:00",
+  "generated_from": "v3_campaign_ledger",
+  "entries": [
+    {
+      "part": "P00",
+      "slug": "MAPA_KANONICZNA",
+      "report": "RAPORT_V3_P00_MAPA_KANONICZNA.txt",
+      "implemented_at": "2026-09-03T05:36:19.553541+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P01",
+      "slug": "LEGAL_TWIN_LKG",
+      "report": "RAPORT_V3_P01_LEGAL_TWIN_LKG.txt",
+      "implemented_at": "2026-09-03T06:52:07.549798+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P02",
+      "slug": "ORKIESTRATOR",
+      "report": "RAPORT_V3_P02_ORKIESTRATOR.txt",
+      "implemented_at": "2026-09-03T11:40:31.506152+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P03",
+      "slug": "KONTRAKT_WERDYKTU",
+      "report": "RAPORT_V3_P03_KONTRAKT_WERDYKTU.txt",
+      "implemented_at": "2026-09-03T11:40:32.191161+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P04",
+      "slug": "INVARIANTY_RUNTIME",
+      "report": "RAPORT_V3_P04_INVARIANTY_RUNTIME.txt",
+      "implemented_at": "2026-09-03T11:40:32.977976+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P05",
+      "slug": "TEMPORALNOSC",
+      "report": "RAPORT_V3_P05_TEMPORALNOSC.txt",
+      "implemented_at": "2026-09-03T10:02:32.628775+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P06",
+      "slug": "PARAMETRY_DANE",
+      "report": "RAPORT_V3_P06_PARAMETRY_DANE.txt",
+      "implemented_at": "2026-09-03T10:17:13.704591+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P07",
+      "slug": "RULE_LIFECYCLE",
+      "report": "RAPORT_V3_P07_RULE_LIFECYCLE.txt",
+      "implemented_at": "2026-09-03T10:30:28.395244+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P08",
+      "slug": "LAW_RADAR",
+      "report": "RAPORT_V3_P08_LAW_RADAR.txt",
+      "implemented_at": "2026-09-03T10:56:12.920905+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P09",
+      "slug": "DECLARATIVE_CHANGE",
+      "report": "RAPORT_V3_P09_DECLARATIVE_CHANGE.txt",
+      "implemented_at": "2026-09-03T11:40:33.626481+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P10",
+      "slug": "GOLDEN_ORACLE",
+      "report": "RAPORT_V3_P10_GOLDEN_ORACLE.txt",
+      "implemented_at": "2026-09-03T11:53:41.244806+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P11",
+      "slug": "DECISION_CERTIFICATE",
+      "report": "RAPORT_V3_P11_DECISION_CERTIFICATE.txt",
+      "implemented_at": "2026-09-03T12:00:00.000001+00:00",
+      "innovations": 0
+    },
+    {
+      "part": "P12",
+      "slug": "VAT_STAWKI_ZWOLNIENIA",
+      "report": "RAPORT_V3_P12_VAT_STAWKI_ZWOLNIENIA.txt",
+      "implemented_at": "2026-09-03T12:00:00.000002+00:00",
+      "innovations": 0
+    },
+    {
+      "part": "P13",
+      "slug": "VAT_ODLICZENIA_MPP",
+      "report": "RAPORT_V3_P13_VAT_ODLICZENIA_MPP.txt",
+      "implemented_at": "2026-09-04T10:35:16.157667+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P14",
+      "slug": "PIT_ULGI_OPTYMALIZACJA",
+      "report": "RAPORT_V3_P14_PIT_ULGI_OPTYMALIZACJA.txt",
+      "implemented_at": "2026-09-04T12:10:17.747289+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P15",
+      "slug": "",
+      "report": "",
+      "implemented_at": "2026-09-04T12:27:26.978520+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P16",
+      "slug": "KSEF_JPK",
+      "report": "RAPORT_V3_P16_KSEF_JPK.txt",
+      "implemented_at": "2026-09-04T13:11:37.511635+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P17",
+      "slug": "ORDYNACJA_OBRONA",
+      "report": "RAPORT_V3_P17_ORDYNACJA_OBRONA.txt",
+      "implemented_at": "2026-09-04T13:35:30.857583+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P18",
+      "slug": "RYCZALT",
+      "report": "RAPORT_V3_P18_RYCZALT.txt",
+      "implemented_at": "2026-09-04T13:48:31.436071+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P19",
+      "slug": "PCC_AKCYZA_BDO",
+      "report": "RAPORT_V3_P19_PCC_AKCYZA_BDO.txt",
+      "implemented_at": "2026-09-04T14:18:12.555409+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P20",
+      "slug": "KSIEGOWOSC_PKPIR_UOR",
+      "report": "RAPORT_V3_P20_KSIEGOWOSC_PKPIR_UOR.txt",
+      "implemented_at": "2026-09-05T10:00:00.000000+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P21",
+      "slug": "KKS_SANKCJE",
+      "report": "RAPORT_V3_P21_KKS_SANKCJE.txt",
+      "implemented_at": "2026-09-05T14:00:00.000000+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P22",
+      "slug": "RODO_AML_SECURITY",
+      "report": "RAPORT_V3_P22_RODO_AML_SECURITY.txt",
+      "implemented_at": "2026-09-05T15:00:00.000000+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P23",
+      "slug": "PRAWO_PRZEDSIEBIORCOW",
+      "report": "RAPORT_V3_P23_PRAWO_PRZEDSIEBIORCOW.txt",
+      "implemented_at": "2026-09-05T19:00:00.000000+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P24",
+      "slug": "PRACA_SWIADCZENIA",
+      "report": "RAPORT_V3_P24_PRACA_SWIADCZENIA.txt",
+      "implemented_at": "2026-09-05T17:26:39.438583+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P25",
+      "slug": "KALENDARZ_ZBIORCZY",
+      "report": "RAPORT_V3_P25_KALENDARZ_ZBIORCZY.txt",
+      "implemented_at": "2026-09-05T18:00:00.000000+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P26",
+      "slug": "ZUS_SKLADKI",
+      "report": "RAPORT_V3_P26_ZUS_SKLADKI.txt",
+      "implemented_at": "2026-09-06T08:01:38.670517+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P27",
+      "slug": "CFC_EXIT_MDG",
+      "report": "RAPORT_V3_P27_CFC_EXIT_MDG.txt",
+      "implemented_at": "2026-09-07T00:00:00.000000+00:00",
+      "innovations": 13
+    },
+    {
+      "part": "P28",
+      "slug": "HYPER_PLAN45",
+      "report": "RAPORT_V3_P28_HYPER_PLAN45.txt",
+      "implemented_at": "2026-09-07T00:00:00.000000+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P29",
+      "slug": "KAMPANIE_JAKOSCI_V3",
+      "report": "RAPORT_V3_P29_KAMPANIE_JAKOSCI_V3.txt",
+      "implemented_at": "2026-09-08T00:00:00.000000+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P30",
+      "slug": "FALE_INNOWACJI_GATES",
+      "report": "RAPORT_V3_P30_FALE_INNOWACJI_GATES.txt",
+      "implemented_at": "2026-09-08T12:00:00.000000+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P31",
+      "slug": "ETAPY_AUDYTOW_12_28",
+      "report": "RAPORT_V3_P31_ETAPY_AUDYTOW_12_28.txt",
+      "implemented_at": "2026-09-08T12:00:00.000000+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P32",
+      "slug": "AUTOMATYZACJA_KSIEGOWOSCI",
+      "report": "RAPORT_V3_P32_AUTOMATYZACJA_KSIEGOWOSCI.txt",
+      "implemented_at": "2026-09-08T12:00:00.000000+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P33",
+      "slug": "NEURAL_MESH_AI",
+      "report": "RAPORT_V3_P33_NEURAL_MESH_AI.txt",
+      "implemented_at": "2026-09-08T17:25:46.298067+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P34",
+      "slug": "WALIDACJA_NARZEDZIA",
+      "report": "RAPORT_V3_P34_WALIDACJA_NARZEDZIA.txt",
+      "implemented_at": "2026-09-08T18:07:13.584520+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P35",
+      "slug": "AUDYTORY_DOMENOWE",
+      "report": "RAPORT_V3_P35_AUDYTORY_DOMENOWE.txt",
+      "implemented_at": "2026-09-08T18:35:50.853306+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P36",
+      "slug": "GENERATORY_MIGRATORY",
+      "report": "RAPORT_V3_P36_GENERATORY_MIGRATORY.txt",
+      "implemented_at": "2026-09-08T19:23:29.757266+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P37",
+      "slug": "OBSERWOWALNOSC",
+      "report": "RAPORT_V3_P37_OBSERWOWALNOSC.txt",
+      "implemented_at": "2026-09-09T08:30:00.000000+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P38",
+      "slug": "BUNDLE_DEPLOY",
+      "report": "RAPORT_V3_P38_BUNDLE_DEPLOY.txt",
+      "implemented_at": "2026-09-09T10:30:00.000000+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P39",
+      "slug": "TESTY_CI",
+      "report": "RAPORT_V3_P39_TESTY_CI.txt",
+      "implemented_at": "2026-09-09T12:30:00.000000+00:00",
+      "innovations": 12
+    },
+    {
+      "part": "P40",
+      "slug": "API_DANE_UI",
+      "report": "RAPORT_V3_P40_API_DANE_UI.txt",
+      "implemented_at": "2026-09-09T15:00:00.000000+00:00",
+      "innovations": 12
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "contract": "v3_p40_api_contract",
+  "version": "2026.09",
+  "generated_at": "2026-09-09T00:00:00+00:00",
+  "valid_from": "2026-01-01",
+  "basis": {
+    "verdict_contract": "P03 (werdykt 25-polowy, ADR-004)",
+    "certificate": "P11 (Decision Certificate F4)",
+    "pipeline": "P32 (statusy pipeline dokumentów)",
+    "worm": "P43 (audyt WORM)",
+    "slo": "P37 (latency budget, SLA świeżości)",
+    "law_radar": "P34 (ISAP — data ostatniej weryfikacji)"
+  },
+  "endpoints": [
+    {"path": "/v1/evaluate", "method": "POST", "schema": "VerdictRequest/VerdictResponse", "rbac": ["entrepreneur", "accountant", "auditor", "admin"], "idempotency": true, "rate_limit_per_min": 120, "audit": "WORM", "test": "tests/auto/test_v3_p40_api_dane_ui_enterprise.py::test_evaluate_full_certificate"},
+    {"path": "/v1/explain", "method": "GET", "schema": "ExplainGraph", "rbac": ["entrepreneur", "accountant", "auditor", "admin"], "idempotency": false, "rate_limit_per_min": 60, "audit": "WORM", "test": "tests/auto/test_v3_p40_api_dane_ui_enterprise.py::test_explain_chain_complete"},
+    {"path": "/v1/advice", "method": "GET", "schema": "AdviceQueue", "rbac": ["accountant", "admin"], "idempotency": false, "rate_limit_per_min": 60, "audit": "WORM", "test": "tests/auto/test_v3_p40_api_dane_ui_enterprise.py::test_advice_rbac_accountant_only"},
+    {"path": "/v1/calendar", "method": "GET", "schema": "CalendarEntries", "rbac": ["entrepreneur", "accountant", "auditor", "admin"], "idempotency": false, "rate_limit_per_min": 120, "audit": "WORM", "test": "tests/auto/test_v3_p40_api_dane_ui_enterprise.py::test_calendar_entries"},
+    {"path": "/v1/documents", "method": "POST", "schema": "DocumentPipelineRequest", "rbac": ["accountant", "admin"], "idempotency": true, "rate_limit_per_min": 60, "audit": "WORM", "test": "tests/auto/test_v3_p40_api_dane_ui_enterprise.py::test_documents_idempotent"},
+    {"path": "/v1/rules", "method": "GET", "schema": "RuleRegistry", "rbac": ["accountant", "auditor", "admin"], "idempotency": false, "rate_limit_per_min": 30, "audit": "WORM", "test": "tests/auto/test_v3_p40_api_dane_ui_enterprise.py::test_rules_registry_auditor"},
+    {"path": "/v1/playground/evaluate", "method": "POST", "schema": "PlaygroundRequest", "rbac": ["entrepreneur", "accountant", "admin"], "idempotency": false, "rate_limit_per_min": 30, "audit": "WORM", "test": "tests/auto/test_v3_p40_api_dane_ui_enterprise.py::test_playground_no_persistence"},
+    {"path": "/v1/decisions/{id}/evidence-pack", "method": "GET", "schema": "EvidencePack", "rbac": ["accountant", "auditor", "admin"], "idempotency": false, "rate_limit_per_min": 30, "audit": "WORM", "test": "tests/auto/test_v3_p40_api_dane_ui_enterprise.py::test_evidence_pack_checksum"},
+    {"path": "/v1/webhooks/subscriptions", "method": "POST", "schema": "WebhookSubscription", "rbac": ["admin"], "idempotency": true, "rate_limit_per_min": 30, "audit": "WORM", "test": "tests/auto/test_v3_p40_api_dane_ui_enterprise.py::test_webhook_subscription_admin_only"}
+  ],
+  "rbac": {
+    "role_field_map": {
+      "entrepreneur": ["decision", "confidence", "reason", "legal_basis", "actions", "next_deadline", "x_legal_freshness"],
+      "accountant": ["decision", "confidence", "reason", "legal_basis", "actions", "certificates", "documents", "calendar", "x_legal_freshness"],
+      "auditor": ["*read_only_full_evidence"],
+      "admin": ["*full"]
+    },
+    "auditor_read_only": true,
+    "data_minimization": "RODO art. 5 — rola widzi wyłącznie pola niezbędne do swojej funkcji",
+    "internal_metrics_hidden_from": ["entrepreneur"]
+  },
+  "api_audit_worm": {
+    "entry_fields": ["actor", "endpoint", "timestamp", "result", "checksum"],
+    "worm_storage": true,
+    "basis": "P43 WORM; RODO art. 5 ust. 2 rozliczalność [NIEZWERYFIKOWANE]"
+  },
+  "rate_limiting": {
+    "unlimited_endpoints": [],
+    "throttle_on_breach": true,
+    "default_per_min": "data.jdg.thresholds.v3_p40.v3_p40_rate_limit_default_per_min"
+  },
+  "degradation_ladder": {
+    "modes": ["FULL", "CACHE_ONLY", "OFFLINE_QUEUES", "READ_ONLY"],
+    "response_header": "X-API-Mode",
+    "offline_transport": "kolejki P32",
+    "dr_entry": "P43"
+  },
+  "freshness": {
+    "response_header": "X-Legal-Freshness",
+    "sla_max_days": "data.jdg.thresholds.v3_p40.v3_p40_freshness_sla_max_days",
+    "source": "P34 law radar (data ostatniej weryfikacji ISAP per domena)"
+  },
+  "webhooks": {
+    "signature": "HMAC-SHA256",
+    "idempotent_retry": true,
+    "events": ["declaration_created", "needs_advice", "deadline_reminder"],
+    "event_source": "P32 pipeline + P25 kalendarz"
+  },
+  "playground": {
+    "persists_state": false,
+    "pii_strip": true,
+    "fictional_data_only": true
+  },
+  "schema_first_sdk": {
+    "spec": "api/openapi.yaml",
+    "generators": ["python", "typescript"],
+    "schema_pin": "x-schema-version (P38 deploy + P39-I08 pinning)"
+  },
+  "evidence_pack": {
+    "contents": ["decision_certificate", "input_snapshot", "rule_ids", "bundle_hash", "signatures"],
+    "checksum_required": true,
+    "format": "ZIP (JSON w środku)",
+    "basis": "UoR art. 4 ust. 1 sprawdzalność [NIEZWERYFIKOWANE]"
+  },
+  "ui_screens": [
+    {"screen": "decision_screen", "elements": ["decyzja", "pewność %", "powód (język człowieka)", "podstawy prawne z linkami ISAP", "akcje: zaakceptuj / skieruj do doradcy"], "source": "P35 pewność + P11 certyfikat"},
+    {"screen": "confidence_dashboard", "elements": ["filtry domen", "typy decyzji", "trend"], "source": "P35 confidence_dashboard.py"},
+    {"screen": "calendar_screen", "elements": ["terminy ZUS/VAT/PIT", "liczba dni do terminu"], "source": "P25 zus_calendar.py"},
+    {"screen": "invoice_e2e", "elements": ["dokument → ewidencja → deklaracja → płatność → archiwum"], "source": "P32 pipeline"}
+  ],
+  "no_auto_post": true,
+  "manual_review_required": true
+}

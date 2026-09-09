@@ -1,0 +1,41 @@
+{
+  "innovation": "V3-P42-I02",
+  "generated_at": "2026-09-09T11:25:47+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "smt_tool_exists": true,
+    "critical_proofs_defined": true,
+    "proof_count": 3,
+    "proof_threshold_as_data": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p42_enterprise_reszta.smt_proof_pack: True"
+    },
+    {
+      "name": "smt_tool_exists",
+      "status": "OK",
+      "detail": "tools/smt_z3_verification.py: True"
+    },
+    {
+      "name": "critical_proofs_defined",
+      "status": "OK",
+      "detail": "dowody w rejestrze: 3 (['vat_rates_core', 'pit_scale_thresholds', 'zus_30x_cap'])"
+    },
+    {
+      "name": "proof_threshold_as_data",
+      "status": "OK",
+      "detail": "v3_p42_smt_min_proofs w data.thresholds: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p106"
+    }
+  ],
+  "findings": []
+}

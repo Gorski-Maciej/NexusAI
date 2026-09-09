@@ -1,0 +1,35 @@
+{
+  "innovation": "V3-P41-I10",
+  "generated_at": "2026-09-09T10:52:59+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "curl_examples": 19,
+    "rego_examples": 0,
+    "api_example_tests_exist": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p41_dokumentacja.doc_testing: True"
+    },
+    {
+      "name": "examples_present",
+      "status": "OK",
+      "detail": "przykłady w API_REFERENCJA.md: curl=19, rego=0"
+    },
+    {
+      "name": "api_example_tests_exist",
+      "status": "OK",
+      "detail": "tests/test_risk_api.py (testy przykładów API): True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p105"
+    }
+  ],
+  "findings": []
+}

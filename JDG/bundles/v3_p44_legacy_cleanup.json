@@ -1,0 +1,33 @@
+{
+  "innovation": "V3-P44-I10",
+  "generated_at": "2026-09-09T12:41:01+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "legacy_facades_open": 0,
+    "tracked_legacy_gaps": 1
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p44_certyfikacja_finalna.legacy_cleanup_closure: True"
+    },
+    {
+      "name": "zero_open_facades",
+      "status": "OK",
+      "detail": "otwarte fasady/martwe artefakty: 0 (rejestry: ['V3-P30 rejestr fasad', 'V3-P36 legacy retirement', 'V3-P42 orphan sweep'])"
+    },
+    {
+      "name": "legacy_drift_tracked_not_hidden",
+      "status": "OK",
+      "detail": "dryft legacy śledzony z planem (nie-fasada): 1 wpis(y)"
+    },
+    {
+      "name": "p42_orphan_sweep_reference",
+      "status": "OK",
+      "detail": "rejestr P42 (orphan sweep/self-scan) dostępny: True"
+    }
+  ],
+  "findings": []
+}

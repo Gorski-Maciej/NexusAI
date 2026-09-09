@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P39-I02",
+  "generated_at": "2026-09-09T09:08:23+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "golden_verdicts_available": true,
+    "golden_in_ci_workflow": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p39_testy_ci.golden_replay_gate: True"
+    },
+    {
+      "name": "golden_verdicts_available",
+      "status": "OK",
+      "detail": "bundles/golden_verdicts.json: True"
+    },
+    {
+      "name": "golden_in_ci_workflow",
+      "status": "OK",
+      "detail": "golden w .github/workflows/jdg-quality.yml: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p103"
+    }
+  ],
+  "findings": []
+}

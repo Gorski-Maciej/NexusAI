@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P42-I12",
+  "generated_at": "2026-09-09T11:25:51+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "ladder_levels_complete": true,
+    "criteria_testable_per_level": true,
+    "level_threshold_as_data": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p42_enterprise_reszta.maturity_ladder: True"
+    },
+    {
+      "name": "ladder_levels_complete",
+      "status": "OK",
+      "detail": "poziomy w rejestrze: ['L0_initial', 'L1_repeatable', 'L2_defined', 'L3_managed', 'L4_quantified', 'L5_optimizing']"
+    },
+    {
+      "name": "criteria_testable_per_level",
+      "status": "OK",
+      "detail": "kryteria testowalne dla każdego poziomu: True"
+    },
+    {
+      "name": "level_threshold_as_data",
+      "status": "OK",
+      "detail": "v3_p42_maturity_level_max w data.thresholds: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p106"
+    }
+  ],
+  "findings": []
+}

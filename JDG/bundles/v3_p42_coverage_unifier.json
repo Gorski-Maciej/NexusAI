@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P42-I06",
+  "generated_at": "2026-09-09T11:28:02+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "coverage_canon_exists": true,
+    "unifier_tool_exists": true,
+    "unifier_test_exists": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p42_enterprise_reszta.coverage_unifier: True"
+    },
+    {
+      "name": "coverage_canon_exists",
+      "status": "OK",
+      "detail": "bundles/coverage_canon.json: True"
+    },
+    {
+      "name": "unifier_tool_exists",
+      "status": "OK",
+      "detail": "tools/coverage_unifier.py: True"
+    },
+    {
+      "name": "unifier_test_exists",
+      "status": "OK",
+      "detail": "tests/test_coverage_unifier.py: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p106"
+    }
+  ],
+  "findings": []
+}

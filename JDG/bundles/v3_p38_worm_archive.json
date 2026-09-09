@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P38-I05",
+  "generated_at": "2026-09-09T08:15:04+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "core_worm_storage_exists": true,
+    "worm_policy_ok": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p38_bundle_deploy.worm_archive: True"
+    },
+    {
+      "name": "core_worm_storage_exists",
+      "status": "OK",
+      "detail": "tools/worm_storage.py: True (rdzeń, P43)"
+    },
+    {
+      "name": "worm_policy_in_contract",
+      "status": "OK",
+      "detail": "worm_policy: archive_every_version=True, immutable=True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p102"
+    }
+  ],
+  "findings": []
+}

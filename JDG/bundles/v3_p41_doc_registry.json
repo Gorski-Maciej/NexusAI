@@ -1,0 +1,63 @@
+{
+  "registry": "v3_p41_doc_registry",
+  "version": "2026.09",
+  "generated_at": "2026-09-09T00:00:00+00:00",
+  "basis": {
+    "canon": "P00 (mapa kanoniczna — dokumentacja opisuje realny stan)",
+    "docs_gate": "P29 (docs-as-code w CI)",
+    "consistency": "P34 (doc_consistency_validator)",
+    "observability": "P37 (runbook coverage)",
+    "legal_basis": "UoR art. 4 ust. 1-3; Ordynacja art. 193a; RODO art. 24/30; AI Act art. 11 [NIEZWERYFIKOWANE]"
+  },
+  "documents": {
+    "ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md": {"layer": "holy_target", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["rules/", "bundles/", ".github/workflows/"]},
+    "WIZJA_OPA_ENTERPRISE_V2.md": {"layer": "holy_vision", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["rules/v3_p*", "bundles/v3_campaign_ledger.json"]},
+    "ARCHITEKTURA.md": {"layer": "architecture_pl", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["rules/main_jdg.rego", "rules/thresholds_jdg.rego"]},
+    "ARCHITECTURE.md": {"layer": "architecture_en", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["docs/ARCHITEKTURA.md"], "note": "mirror EN — spójność semantyczna egzekwowana przez I04"},
+    "STRUKTURA_PROJEKTU.md": {"layer": "project_structure", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["docs/", "tools/", "tests/"]},
+    "MANIFEST_2_0.md": {"layer": "manifest", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["docs/", "rules/"]},
+    "UNIFIED_PLAN.md": {"layer": "planning", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["bundles/v3_campaign_ledger.json", "prompts_status.yaml"]},
+    "ANALIZA_STANU_OPA_JAKO_SYSTEM.md": {"layer": "state_analysis", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["rules/", "docs/STRUKTURA_PROJEKTU.md"]},
+    "DEVELOPER_GUIDE.md": {"layer": "guide_developer", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["docs/OPA_REGO_DEVELOPER_GUIDE.md", "tests/"]},
+    "OPA_REGO_DEVELOPER_GUIDE.md": {"layer": "guide_rego", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["rules/", "tests/rego/"]},
+    "PODRECZNIK_UZYTKOWNIKA.md": {"layer": "guide_user", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["docs/FAQ.md", "tools/confidence_dashboard.py"]},
+    "API_REFERENCJA.md": {"layer": "reference_api", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["api/openapi.yaml", "docs/api.md"]},
+    "FAQ.md": {"layer": "reference_faq", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["docs/PODRECZNIK_UZYTKOWNIKA.md"]},
+    "NARZEDZIA_WALIDACJI_P22.md": {"layer": "reference_validation", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["tools/", "tests/"]},
+    "KATALOG_NARZEDZI.md": {"layer": "catalog_tools", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["tools/"]},
+    "KATALOG_REGUL.md": {"layer": "catalog_rules", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["rules/", "bundles/"]},
+    "SLOWNIK_REFERENCJI_PRAWNYCH.md": {"layer": "glossary", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["docs/LEGAL_REFERENCE_ACTS.md"]},
+    "LEGAL_REFERENCE_ACTS.md": {"layer": "legal_acts", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["docs/LEGAL_SOURCE_REGISTRY.md", "docs/Bbb"]},
+    "LEGAL_SOURCE_REGISTRY.md": {"layer": "legal_registry", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["docs/LEGAL_REFERENCE_ACTS.md"]},
+    "KALENDARZ_ZMIAN_PRAWNYCH.md": {"layer": "legal_calendar", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["docs/LEGAL_REFERENCE_ACTS.md", "tools/law_radar.py"]},
+    "ZGODNOSC_PRAWNA.md": {"layer": "legal_compliance", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["docs/AUDYT_PODSTAW_PRAWNYCH.md", "rules/"]},
+    "ZGODNOSC_DOKUMENTY_KSIEGOWE.md": {"layer": "legal_accounting_docs", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["docs/ZGODNOSC_PRAWNA.md"]},
+    "Bbb": {"layer": "legal_sources_doc", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["docs/LEGAL_SOURCE_REGISTRY.md"]},
+    "AUDYT_PODSTAW_PRAWNYCH.md": {"layer": "legal_audit", "status": "CURRENT", "last_verified": "2026-09-09", "bound_artifacts": ["docs/Bbb", "docs/LEGAL_REFERENCE_ACTS.md"]}
+  },
+  "role_reading_maps": {
+    "developer": ["docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md", "docs/DEVELOPER_GUIDE.md", "docs/OPA_REGO_DEVELOPER_GUIDE.md", "docs/KATALOG_REGUL.md", "docs/FAQ.md"],
+    "operator": ["docs/ARCHITEKTURA.md", "docs/NARZEDZIA_WALIDACJI_P22.md", "docs/runbooks/", "docs/KATALOG_NARZEDZI.md"],
+    "auditor": ["docs/ZGODNOSC_PRAWNA.md", "docs/AUDYT_PODSTAW_PRAWNYCH.md", "docs/API_REFERENCJA.md", "docs/LEGAL_SOURCE_REGISTRY.md"],
+    "entrepreneur": ["docs/PODRECZNIK_UZYTKOWNIKA.md", "docs/FAQ.md", "docs/API_REFERENCJA.md"]
+  },
+  "audit_export_pack": {
+    "contents": ["documents", "legal_registers", "checksums", "seal"],
+    "checksum_required": true,
+    "format": "ZIP (Markdown + JSON w środku)",
+    "command": "python3 tools/v3_p41_audit_export_pack.py --export",
+    "basis": "UoR art. 4; Ordynacja art. 193a; eIDAS pieczęć [NIEZWERYFIKOWANE]"
+  },
+  "auditor_mode": {
+    "auditor_view_doc": "docs/AUDYT_PODSTAW_PRAWNYCH.md",
+    "evidence_paths": {
+      "vat": "docs/ZGODNOSC_PRAWNA.md",
+      "accounting": "docs/ZGODNOSC_DOKUMENTY_KSIEGOWE.md",
+      "legal_basis": "docs/AUDYT_PODSTAW_PRAWNYCH.md",
+      "api_evidence": "docs/API_REFERENCJA.md"
+    },
+    "evidence_chain": ["rule", "test", "bundle", "verdict", "certificate"]
+  },
+  "no_auto_post": true,
+  "manual_review_required": true
+}

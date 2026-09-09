@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P44-I11",
+  "generated_at": "2026-09-09T12:41:01+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "signed": false,
+    "reservations": 2
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p44_certyfikacja_finalna.owner_attestation: True"
+    },
+    {
+      "name": "attestation_mechanism_defined",
+      "status": "OK",
+      "detail": "mechanizm 4-eyes biznesowe: 4-eyes biznesowe: właściciel potwierdza przyjęcie certyfikatu z listą zastrzeżeń"
+    },
+    {
+      "name": "reservations_template",
+      "status": "OK",
+      "detail": "szablon zastrzeżeń (jawne założenia): 2 wpis(y)"
+    },
+    {
+      "name": "attestation_state_honest",
+      "status": "OK",
+      "detail": "stan atestu jawny (signed=False) — krok ludzki poza zakresem automatu"
+    }
+  ],
+  "findings": [
+    {
+      "severity": "INFO",
+      "message": "atest właściciela oczekuje na podpis (krok ludzki, mechanizm gotowy)"
+    }
+  ]
+}

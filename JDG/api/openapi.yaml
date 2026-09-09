@@ -32,6 +32,11 @@ info:
       Kontekst: tax_form × transaction_type × entity_flags × evaluation_date.
       Latency p95: < 5 ms per shard.
   version: 1.0.0
+  # V3-P40-I11: pin wersji kontraktu danych (werdykt P03 + certyfikat P11).
+  # Zmiana wartości wymaga PR migracyjnego (P39-I08 contract pinning).
+  x-schema-version: "1.0.0"
+  x-legal-freshness-header: "X-Legal-Freshness"
+  x-api-mode-header: "X-API-Mode"
   contact:
     name: NexusAI JDG Team
     url: https://github.com/Gorski-Maciej/NexusAI

@@ -1,0 +1,45 @@
+{
+  "innovation": "V3-P43-I11",
+  "generated_at": "2026-09-09T11:58:04+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "jit_model_defined": true,
+    "session_ttl_bounded": true,
+    "usage_proof_required": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p43_security_dr.zero_standing_access: True"
+    },
+    {
+      "name": "jit_model_defined",
+      "status": "OK",
+      "detail": "model dostępu: JIT (wymagane JIT)"
+    },
+    {
+      "name": "session_ttl_bounded",
+      "status": "OK",
+      "detail": "maksymalna sesja JIT: 120 min"
+    },
+    {
+      "name": "usage_proof_required",
+      "status": "OK",
+      "detail": "dowód użycia (kto/co/kiedy → WORM): True"
+    },
+    {
+      "name": "audit_destination_present",
+      "status": "OK",
+      "detail": "tools/certificate_service.py (P11/P40 audit chain): True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p107"
+    }
+  ],
+  "findings": []
+}

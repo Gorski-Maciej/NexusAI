@@ -1,0 +1,46 @@
+{
+  "innovation": "V3-P43-I05",
+  "generated_at": "2026-09-09T11:58:02+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "chaos_tools_exist": true,
+    "drill_scenario_defined": true,
+    "full_pipeline_path": true,
+    "drill_age_threshold_as_data": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p43_security_dr.chaos_drill: True"
+    },
+    {
+      "name": "chaos_tools_exist",
+      "status": "OK",
+      "detail": "chaos_runner.py + chaos_engineering.py: True"
+    },
+    {
+      "name": "drill_scenario_defined",
+      "status": "OK",
+      "detail": "scenariusz drillu: bad_rule_through_pipeline"
+    },
+    {
+      "name": "full_pipeline_path",
+      "status": "OK",
+      "detail": "ścieżka drillu (pr→gates→deploy): ['pr', 'gates', 'deploy', 'detection', 'rollback']"
+    },
+    {
+      "name": "drill_age_threshold_as_data",
+      "status": "OK",
+      "detail": "v3_p43_chaos_drill_max_age_days w data.thresholds: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p107"
+    }
+  ],
+  "findings": []
+}

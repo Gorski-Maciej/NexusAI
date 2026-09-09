@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P39-I07",
+  "generated_at": "2026-09-09T09:08:26+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "quarantine_convention_ok": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p39_testy_ci.flake_quarantine: True"
+    },
+    {
+      "name": "quarantine_convention_as_data",
+      "status": "OK",
+      "detail": "flake_quarantine: separate_job=True, deadline=14 dni"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p103"
+    }
+  ],
+  "findings": []
+}

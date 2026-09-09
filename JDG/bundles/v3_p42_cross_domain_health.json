@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P42-I11",
+  "generated_at": "2026-09-09T11:25:50+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "harmonizer_tools_exist": true,
+    "health_contracts_defined": true,
+    "propagation_defined": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p42_enterprise_reszta.cross_domain_health: True"
+    },
+    {
+      "name": "harmonizer_tools_exist",
+      "status": "OK",
+      "detail": "ryczalt_zus_health_harmonizer.py + health_reconciliation_micro.py: True"
+    },
+    {
+      "name": "health_contracts_defined",
+      "status": "OK",
+      "detail": "kontrakty w rejestrze: [\"('ryczalt', 'zus')\", \"('vat', 'pkpir')\"] brakujące=[]"
+    },
+    {
+      "name": "propagation_defined",
+      "status": "OK",
+      "detail": "propagacja ostrzeżeń zdefiniowana: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p106"
+    }
+  ],
+  "findings": []
+}

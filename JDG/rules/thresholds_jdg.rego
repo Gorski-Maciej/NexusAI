@@ -3422,7 +3422,155 @@ v3_p37 := {
     "manual_review_required": true,
 }
 
+# ═════════════════════════════════════════════════════════════════════════
+# V3-P39 — TESTY I CI (piramida L1-L7, bramki merge, benchmark, niezmienniki)
+# ═════════════════════════════════════════════════════════════════════════
+v3_p39 := {
+    "v3_p39_threshold_version": "testy-ci-v3p39-2026.09",
+    "legal_basis_version": "testy-ci-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: minimalne pokrycie matrycy aktów granicami (grosze/data/waluta) %
+    "v3_p39_matrix_coverage_min_pct": 80,
+    # I06: minimalna czułość mutacyjna suite'a % (spójne z P29/v3_17)
+    "v3_p39_mutation_score_min_pct": 85,
+    # I09: minimalne pokrycie testami per akt prawny %
+    "v3_p39_act_coverage_min_pct": 90,
+    # I10: maksymalna regresja benchmarku p95 % (spójne z P37-I12)
+    "v3_p39_benchmark_regression_max_pct": 10,
+    # I12: maksymalna nieświeżość test impact map (dni)
+    "v3_p39_impact_map_max_stale_days": 7,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
 # ═══════════════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════
+# V3-P38 — BUNDLE, DEPLOY I CYKL ŻYCIA WERSJI (canary, rollback, immutabilność)
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p38 := {
+    "v3_p38_threshold_version": "bundle-deploy-v3p38-2026.09",
+    "legal_basis_version": "bundle-deploy-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I02: maksymalny rozjazd canary vs produkcja (decyzje na próbce)
+    "v3_p38_canary_diff_max": 0,
+    # I02: minimalna próbka canary przed awansem
+    "v3_p38_canary_sample_min": 100,
+    # I03: SLA rollback (V1: powrót do stabilnego w minuty)
+    "v3_p38_rollback_mttr_max_min": 5,
+    # I05: limit wersji bundle bez archiwum WORM
+    "v3_p38_worm_missing_max": 0,
+    # I11: minimalny czas shadow evaluation przed canary (godziny)
+    "v3_p38_shadow_hours_min": 24,
+    # I12: maksymalny wiek changelogu release notes (dni)
+    "v3_p38_changelog_max_age_days": 7,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# V3-P40 — API, DANE I UI (kontrakt decyzyjny, RBAC, eksplikacja, degradacja)
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p40 := {
+    "v3_p40_threshold_version": "api-dane-ui-v3p40-2026.09",
+    "legal_basis_version": "api-dane-ui-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I02: maksymalna liczba węzłów explain chain bez linku do przepisu/ISAP
+    "v3_p40_explain_nodes_without_link_max": 0,
+    # I06: domyślny limit wywołań API per rola/endpoint (na minutę)
+    "v3_p40_rate_limit_default_per_min": 60,
+    # I08: maksymalny wiek weryfikacji ISAP dla domeny (dni) — X-Legal-Freshness
+    "v3_p40_freshness_sla_max_days": 7,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# V3-P41 — DOKUMENTACJA ENTERPRISE (docs-as-code, bramka docs, glosariusz, eksport)
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p41 := {
+    "v3_p41_threshold_version": "dokumentacja-v3p41-2026.09",
+    "legal_basis_version": "dokumentacja-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I04: maksymalna liczba dryfów semantycznych PL/EN (ARCHITEKTURA vs ARCHITECTURE)
+    "v3_p41_plen_diff_max_findings": 0,
+    # I05: maksymalna liczba naruszeń glosariusza (BLOCK przy przekroczeniu)
+    "v3_p41_glossary_violations_max": 0,
+    # I07: minimalne pokrycie alertów P37 runbookami %
+    "v3_p41_runbook_coverage_min_pct": 100,
+    # I08: maksymalny wiek changelogu (dni) — generowany z rejestrów
+    "v3_p41_changelog_max_age_days": 14,
+    # I09: maksymalny wiek dokumentu bez rewizji (dni)
+    "v3_p41_doc_freshness_max_days": 90,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# V3-P42 — ENTERPRISE RESZTA (health tiers, SMT, WORM, zależności, dojrzałość)
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p42 := {
+    "v3_p42_threshold_version": "enterprise-reszta-v3p42-2026.09",
+    "legal_basis_version": "enterprise-reszta-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I02: minimalna liczba dowodów formalnych dla reguł krytycznych
+    "v3_p42_smt_min_proofs": 3,
+    # I04: retencja artefaktów (lata; 5 lat od końca roku obrotowego)
+    "v3_p42_retention_years": 5,
+    # I08: maksymalna liczba artefaktów bez właściciela (orfany)
+    "v3_p42_orphan_max": 0,
+    # I12: maksymalny poziom skali dojrzałości L0–L5
+    "v3_p42_maturity_level_max": 5,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# V3-P43 — SECURITY I DR (threat model, integralność, ciągłość, naruszenia)
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p43 := {
+    "v3_p43_threshold_version": "security-dr-v3p43-2026.09",
+    "legal_basis_version": "security-dr-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: maksymalna liczba kontrol threat modelu bez testu w CI
+    "v3_p43_controls_without_test_max": 0,
+    # I05: maksymalny wiek chaos legal drill (dni)
+    "v3_p43_chaos_drill_max_age_days": 90,
+    # I09: maksymalny wiek ćwiczenia ransomware playbook (dni)
+    "v3_p43_playbook_exercise_max_days": 90,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# V3-P44 — CERTYFIKACJA FINALNA FORTECY (hard gates, WORM+podpis, odnowienie)
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p44 := {
+    "v3_p44_threshold_version": "cert-final-v3p44-2026.09",
+    "legal_basis_version": "cert-final-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I07: minimalna retencja certyfikatu finalnego (lata; UoR art. 74-75 [NIEZWERYFIKOWANE])
+    "v3_p44_certificate_retention_min_years": 5,
+    # I09: maksymalna ważność certyfikatu (dni; odnowienie po nowelizacji/deploy/czasie)
+    "v3_p44_cert_validity_max_days": 90,
+    # I10: maksymalna liczba otwartych fasad/martwych artefaktów na start V4
+    "v3_p44_legacy_facades_max": 0,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# V3-P45 — ELIMINACJA STUBÓW I FASAD (stub register, mutation gate, forensics)
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p45 := {
+    "v3_p45_threshold_version": "stub-killer-v3p45-2026.09",
+    "legal_basis_version": "stub-killer-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: maksymalna liczba stubów w domenach krytycznych (VAT/PIT/ZUS/KKS)
+    "v3_p45_critical_domain_stubs_max": 0,
+    # I05: minimalny mutation score per domena (procent)
+    "v3_p45_mutation_score_min": 90,
+    # I08: maksymalna liczba plików testów tautologicznych (tautology_guard)
+    "v3_p45_tautological_test_files_max": 0,
+    # I10: maksymalny wiek spisu stubów (dni)
+    "v3_p45_census_max_age_days": 7,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
 # P01 SEK. 3 — WERSJONOWANIE THRESHOLDÓW PER OKRES ROZLICZENIOWY (A2+) ENTERPRISE
 # ═══════════════════════════════════════════════════════════════════════════════
 # System wersjonowania progów: każdy próg może mieć N wersji z oknami

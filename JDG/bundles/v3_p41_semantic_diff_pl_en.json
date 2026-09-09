@@ -1,0 +1,41 @@
+{
+  "innovation": "V3-P41-I04",
+  "generated_at": "2026-09-09T10:57:36+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "both_files_exist": true,
+    "semantic_anchors_aligned": true,
+    "drift_findings": 0,
+    "diff_threshold_as_data": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p41_dokumentacja.semantic_diff_pl_en: True"
+    },
+    {
+      "name": "both_files_exist",
+      "status": "OK",
+      "detail": "PL 469 linii, EN 327 linii"
+    },
+    {
+      "name": "semantic_anchors_aligned",
+      "status": "OK",
+      "detail": "kotwice semantyczne (ADR) rozjazd: brak"
+    },
+    {
+      "name": "diff_threshold_as_data",
+      "status": "OK",
+      "detail": "v3_p41_plen_diff_max_findings w data.thresholds: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p105"
+    }
+  ],
+  "findings": []
+}

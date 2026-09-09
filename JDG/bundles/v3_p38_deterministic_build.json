@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P38-I01",
+  "generated_at": "2026-09-09T08:15:02+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "rego_sha256": "70d8c82e1c98e0a26704f8efb813e0f53ef0ea8fbeec4911442d053411ed7b51",
+    "attestation_fields_ok": true,
+    "thresholds_as_data": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p38_bundle_deploy.deterministic_build: True"
+    },
+    {
+      "name": "build_input_digest",
+      "status": "OK",
+      "detail": "sha256(rego)=70d8c82e1c98e0a2… — ten input = ten output"
+    },
+    {
+      "name": "attestation_fields_in_contract",
+      "status": "OK",
+      "detail": "pola attestation w kontrakcie deploy: ['built_by', 'source_commit', 'gates_passed', 'digest']"
+    },
+    {
+      "name": "thresholds_as_data",
+      "status": "OK",
+      "detail": "progi v3_p38 w data.thresholds: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p102"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P44-I01",
+  "generated_at": "2026-09-09T12:40:58+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "hard_gates_total": 6,
+    "hard_gates_open": 0,
+    "production_status": "NOT_CERTIFIED",
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p44_certyfikacja_finalna.hard_gate_certificate: True"
+    },
+    {
+      "name": "hard_gates_closed",
+      "status": "OK",
+      "detail": "bramki twarde: 6/6 zamknięte, otwarte=[]"
+    },
+    {
+      "name": "v4_gate_tool_exists",
+      "status": "OK",
+      "detail": "tools/final_certification_v4_gate.py: True"
+    },
+    {
+      "name": "production_honesty",
+      "status": "OK",
+      "detail": "rejestr deklaruje produkcję NOT_CERTIFIED (uczciwość, zero marketingu)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p108"
+    }
+  ],
+  "findings": []
+}

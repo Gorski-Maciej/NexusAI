@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P42-I07",
+  "generated_at": "2026-09-09T11:25:49+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "v3_imports": 26,
+    "verdict_chain_acyclic": true,
+    "spof_register_present": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p42_enterprise_reszta.dependency_graph: True"
+    },
+    {
+      "name": "v3_import_graph_measurable",
+      "status": "OK",
+      "detail": "importy v3_p* w main_jdg: 26 (['v3_p13_vat_deductions', 'v3_p14_pit_reliefs', 'v3_p15_crossborder', 'v3_p16_ksef_jpk', 'v3_p17_ordynacja_obrona', 'v3_p18_ryczalt', 'v3_p19_pcc_akcyza_bdo', 'v3_p20_ksiegowosc', 'v3_p25_kalendarz', 'v3_p26_zus_skladki', 'v3_p27_cfc_exit_mdr', 'v3_p28_hyper_plan45', 'v3_p29_quality_campaigns', 'v3_p30_innovation_waves', 'v3_p31_audit_stages', 'v3_p32_ksiegowosc_automation', 'v3_p33_neural_mesh_ai', 'v3_p34_walidacja_narzedzia', 'v3_p35_audyutory_domenowe', 'v3_p36_generatory_migratory', 'v3_p37_obserwowalnosc', 'v3_p38_bundle_deploy', 'v3_p39_testy_ci', 'v3_p40_api_dane_ui', 'v3_p41_dokumentacja', 'v3_p42_enterprise_reszta'])"
+    },
+    {
+      "name": "verdict_chain_acyclic",
+      "status": "OK",
+      "detail": "łańcuch pasów liniowy (bez cykli): True"
+    },
+    {
+      "name": "spof_register_present",
+      "status": "OK",
+      "detail": "rejestr SPOF w rejestrze systemowym: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p106"
+    }
+  ],
+  "findings": []
+}

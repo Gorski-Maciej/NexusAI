@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P43-I03",
+  "generated_at": "2026-09-09T11:58:01+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "two_approvals_required": true,
+    "technical_plus_legal_roles": true,
+    "codeowners_present": false,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p43_security_dr.dual_control: True"
+    },
+    {
+      "name": "two_approvals_required",
+      "status": "OK",
+      "detail": "zatwierdzenia wymagane (rejestr): 2"
+    },
+    {
+      "name": "technical_plus_legal_roles",
+      "status": "OK",
+      "detail": "role zatwierdzające: ['technical', 'legal'] (wymagane: technical+legal)"
+    },
+    {
+      "name": "ci_enforcement_anchor",
+      "status": "OK",
+      "detail": "CODEOWNERS obecny (wymuszacz review w CI): False; pełna egzekucja = konfiguracja branch protection [ZAŁOŻENIE Z2]"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p107"
+    }
+  ],
+  "findings": []
+}

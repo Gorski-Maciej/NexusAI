@@ -1,0 +1,46 @@
+{
+  "innovation": "V3-P43-I06",
+  "generated_at": "2026-09-09T11:59:44+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "dr_snapshots": 1,
+    "weekly_ci_schedule": true,
+    "checksum_verify_required": true,
+    "self_healing_engine_present": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p43_security_dr.restore_drill: True"
+    },
+    {
+      "name": "dr_snapshots_present",
+      "status": "OK",
+      "detail": "snapshoty w bundles/dr_snapshots/: 1 (['dr-20260822-112954.json'])"
+    },
+    {
+      "name": "weekly_ci_schedule",
+      "status": "OK",
+      "detail": "harmonogram restore drill: weekly_ci"
+    },
+    {
+      "name": "checksum_verify_required",
+      "status": "OK",
+      "detail": "weryfikacja checksum po restore obowiązkowa: True"
+    },
+    {
+      "name": "self_healing_engine_present",
+      "status": "OK",
+      "detail": "tools/self_healing_engine.py: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p107"
+    }
+  ],
+  "findings": []
+}

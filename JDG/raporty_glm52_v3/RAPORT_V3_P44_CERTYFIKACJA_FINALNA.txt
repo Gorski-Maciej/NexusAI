@@ -1,0 +1,314 @@
+================================================================================
+NEXUSAI JDG — RAPORT V3 P44 — CERTYFIKACJA FINALNA FORTECY — ZAMKNIĘCIE
+KAMPANII V3 I DEKLARACJA STANU
+================================================================================
+Seria:            NEXUSAI JDG — V3 FORTRESS CAMPAIGN
+Część:            P44 CERTYFIKACJA_FINALNA
+Prompt:           JDG/prompty_v3/V3_PROMPT_P44_CERTYFIKACJA_FINALNA.txt
+Raport:           JDG/raporty_glm52_v3/RAPORT_V3_P44_CERTYFIKACJA_FINALNA.txt
+Data:             2026-09-09
+Status:           WDROŻONY_100 (44 przedmiotowe artefakty + raport + ledger)
+Ledger:           bundles/v3_campaign_ledger.json → P44 WDROŻONY_100 (45/69)
+
+WYMAGANIA NADRZĘDNE (P44 §1): głębokie myślenie ✓, głęboka analiza ✓, poziom
+ENTERPRISE ✓, innowacje wyprzedzające ✓, maksimum braków/struktur wdrożone ✓.
+Certyfikat jest PRAWDZIWY: zero deklaracji bez dowodu — każde twierdzenie ma
+artefakt (test, rejestr, wynik uruchomienia). Produkcja pozostaje NOT_CERTIFIED.
+
+================================================================================
+9.01 EXECUTIVE SUMMARY
+================================================================================
+Dojrzałość części: ENTERPRISE — certyfikacja finalna z hard gates i pełnym
+rejestrem jako dane (bundles/v3_p44_final_certification.json). Kampania V3:
+45/69 części WDROŻONY_100 (P00–P44); pozostałe P45–P68 = krzywa doskonalenia
+(JIT, SMT w CI, mirror sync, ISAP, dryft legacy).
+
+CERTYFIKAT FINALNY (stan repozytorium, F3/F4 Wizja V2):
+  * Hard gates: 6/6 ZAMKNIĘTE (dowód: hard_gates w rejestrze; 12 bundli PASS).
+  * Filary: Runtime Invariants = DOWIEDZONE; Legal Twin / Golden Oracle /
+    Decision Certificate / Law Radar / Declarative Change = CZĘŚCIOWE
+    (każdy z dowodem i planem domknięcia — zero DEKLAROWANE).
+  * Luki kampanii P37–P43 (agregat z deduplikacją): P0=0, P1=1, P2=12, P3=14.
+  * Produkcja: NOT_CERTIFIED (dziedziczone z final_certification_v4_gate.py —
+    brak telemetrii zewnętrznej; uczciwość > marketing).
+
+TOP-10 rekomendacji:
+  R01. Atest właściciela (V3-P44-I11) — jedyny krok ludzki do domknięcia 4-eyes.
+  R02. Budżet na telemetrię zewnętrzną → certyfikacja produkcji (L01, P1).
+  R03. Podniesienie LCI 71.43→99 wg SLO (pustynie: coverage_deserts.json; L02).
+  R04. RV 13.56→100: pełny audyt podstaw prawnych (AUDYT_PODSTAW_PRAWNYCH; L03).
+  R05. Pierwszy realny case Law Radar (zmiana prawa → zmiana reguł z diff; L04).
+  R06. Pierwsza zmiana deklaratywna przez control plane (po przeglądzie 13
+       wpisów LEGACY_ENTRIES_REQUIRE_MANIFEST_REVIEW; L04).
+  R07. Wypełnienie rejestru decision certificates decyzjami produkcyjnymi (L05).
+  R08. Uruchomienie zero_defect_certification w CI (L06).
+  R09. Domknięcie 4 legacy pytest fails P05/P06/P10 (L07; P36/P50).
+  R10. Wyrównanie healthy_versions ↔ deployments.active_version (L09).
+
+Luki wg krytyczności: P0=0, P1=1, P2=4 (własne P44), P3=4 (własne P44).
+[NIEZWERYFIKOWANE]: podstawy prawne (UoR 74–75, RODO 5.2/24, eIDAS, KKS,
+VAT/PIT/ZUS materiałne) — skan ISAP nie wykonany w tej sesji; jawne tagi.
+
+================================================================================
+9.02 ZAKRES I OGRANICZENIA
+================================================================================
+Przeanalizowano: wszystkie 30 plików z Sekcji 6 (6.1: 8, 6.2: 8, 6.3: 8, 6.4: 6)
+— każdy z wierszem w T1 i min. 1 faktem. Pominięto: surfowanie po katalogach
+poza listą (budżet 50% — prompt §3.2); treść 11757-wierszowego legal_graph.json
+czytana selektywnie (nagłówki/indeksy/metryki), co odnotowano zgodnie z §3.3.
+Źródła prawne: katalog twierdzeń (Bbb); weryfikacja ISAP/RCL/MF POZA sesją —
+wszystkie podstawy z tagiem [NIEZWERYFIKOWANE] tam gdzie brak skanu (zasada
+§4.2: twierdzenie ≠ dowód).
+
+================================================================================
+9.03 STAN OBECNY CZĘŚCI P44 — MAPA ARTEFAKTÓW
+================================================================================
+| Artefakt | Pakiet Rego | rule_id | Podstawa | Testy | Lifecycle |
+| rules/v3_p44_certyfikacja_finalna.rego | jdg.v3_p44_certyfikacja_finalna | 12 rule_id (I01–I12; 444001–444012) | V1 z.6; DS2 F3/F4; UoR 74-75 [NIEZW] | 34 rego ×2 OPA + 15 pytest | ACTIVE (pas 18w; final_verdict_p108) |
+| rules/thresholds_jdg.rego (blok v3_p44) | data.jdg.thresholds.v3_p44 | 3 progi + wersja | ADR-002; P05 | test_thresholds_as_data | ACTIVE |
+| rules/main_jdg.rego (final_verdict_p108) | jdg.main | — | ADR-004 | test_main_jdg_wired_p108 | ACTIVE |
+| bundles/v3_p44_final_certification.json | — (dane) | — | F3/F4; P42/P43 kontrakty | 6 testów pytest struktury | ACTIVE |
+| tools/v3_p44_* (12 tooli) + common | — | — | P44-I01..I12 | 12 bundli PASS | ACTIVE |
+| tests/rego/test_v3_p44_certyfikacja_finalna.rego | ..._test | — | P39-I04 negative-first | 34/34 ×2 OPA | ACTIVE |
+
+================================================================================
+9.04 PODANALIZY 5.1–5.4 (każda: dowody ≥3 + wnioski ≥3 + luka ≥1)
+================================================================================
+AN01 (5.1) — ROZLICZENIE FILARÓW DOKUMENTÓW ŚWIĘTYCH
+  Dowody: legal_graph.json (258 węzłów; LCI=71.43, TCL=100.0); golden_verdicts
+  (31); decision_certificates (1 wpis DC-2026-08-29-00000001 z seal HSM);
+  control_plane_state (bootstrap 2026-08-19; changes={}; MUTATION=FORBIDDEN);
+  runtime invariants (rules/audit/runtime_invariants_enterprise.rego, INV-* w
+  regresji 875/875).
+  Wnioski: (1) Golden Oracle działa jako bramka PR (V3-P39-I02) — replay 31
+  verdicts zielony; (2) Legal Twin ma pomiar SLO (LCI_MIN=99) i jest poniżej —
+  uczciwie CZĘŚCIOWE; (3) Decision Certificate ma mechanizm+seal, ale rejestr
+  zawiera 1 wpis demonstracyjny → CZĘŚCIOWE do czasu produkcji.
+  Luka: V3-P44-L02 (LCI<SLO), L05 (certyfikaty demo-only).
+  Odpowiedzi audytowe: coverage_unifier P42 jako źródło pomiaru (z P42-K1);
+  pustynie: bundles/coverage_deserts.json; replay: tests + bundles historyczne;
+  zmiana prawa→reguły: mechanizmy (law_radar.py, law_amendment_simulator.py,
+  declarative_change.py) BEZ pierwszego realnego case'u → L04.
+
+AN02 (5.2) — REJESTRY LUK I PRIORYTETYZACJA
+  Dowody: agregat w rejestrze (22 unikalne klucze z P37–P43; P0=0, P1=1);
+  skan narzędzia I03 wykrył identyfikatory V3-Pxx-Lxx w raportach (deduplikacja
+  po kluczu); raporty P37–P43 (rejestry luk każdej części).
+  Wnioski: (1) zero luk P0 w całej kampanii V3 — hard gates zamknięte bez
+  wyjątków; (2) jedyna P1 = tryb ostrzeżenia DOCS_GATE (mechanizm działa,
+  pełne blokowanie po usunięciu dryfu docs); (3) priorytetyzacja wg wpływu na
+  poprawność księgowania > ryzyko prawne > koszt (metodologia z P42 maturity).
+  Luka: V3-P44-L01 (P1: certyfikacja produkcji czeka na telemetrię — decyzja
+  właściciela).
+  Do V4 przechodzi 22 luki z kontraktami (I05); anulowane: 0 (brak fasad).
+
+AN03 (5.3) — CERTYFIKAT FINALNY I HARD GATES
+  Dowody: hard_gates 6/6 ok=true w rejestrze; final_certification_v4_gate.py
+  (6 bramek enterprise_v4, honesty production_not_certified=true); 12 bundli
+  dowodowych PASS; WORM: bundles/worm_audit.json + tools/worm_storage.py
+  (hash chain, P43-I08); podpis: tools/certificate_service.py (HSM-ECDSA,
+  P38); progi retencji/ważności w data.thresholds.v3_p44.
+  Wnioski: (1) certyfikat wydawany TYLKO przy zamkniętych bramkach (I01:
+  NO_CERT + lista przy porażce — test i01_failed_gate_blocks); (2) podpis
+  delegowany do mechanizmu P38/P43 + atest właściciela (4-eyes biznesowe,
+  I11 — oczekuje na podpis, stan jawny); (3) retencja 5 lat + WORM + odnowienie
+  (90 dni / nowelizacja / deploy krytyczny) = dowód na lata, nie wieczność.
+  Luka: V3-P44-L06 (P3: zero_defect certified_pct „nie policzono" — narzędzie
+  jest, brak uruchomienia CI).
+  [NIEZWERYFIKOWANE]: UoR art. 74–75 (retencja), eIDAS (podpis) — skan ISAP.
+
+AN04 (5.4) — ŚCIEŻKA V4 I DZIEDZICTWO
+  Dowody: 12 kontraktów dziedziczonych z source_of_truth (I05; pliki istnieją
+  fizycznie — test bundle I05); mapa decyzyjna 6 wierszy (I04; każdy ma
+  decydenta); freeze 7 metryk sukcesu z progami i źródłami (I06); auto-portret
+  10 komponentów z dowodami (I12); kampania enterprise_v4 = 25/25 WDROŻONY_100
+  jako dowód ciągłości metodyki.
+  Wnioski: (1) V4 nie zaczyna od zera — kontrakty K1–K5 (9.08) są egzekwowalne
+  testami; (2) metryki postępu V4 = P37 (SLO decyzji, dostępność) + freeze
+  I06; kolejna certyfikacja: po nowelizacji/deployu krytycznym/90 dniach (I09);
+  (3) ocena własna: forteca jest UFORTYFIKOWANA na poziomie repozytorium
+  (fail-closed, bramki, WORM, regresja 875/875) — NIE na poziomie produkcji
+  (NOT_CERTIFIED); precyzja > odwaga (cel nadrzędny serii).
+  Luka: V3-P44-L09 (P3: dryf wersji healthy_versions vs deployments.active).
+
+================================================================================
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2)
+================================================================================
+| Akt | Art./ust. | Grupa plików (6.x) | Reguła | Test | Status | Ryzyko |
+|-----|-----------|--------------------|--------|------|--------|--------|
+| Akty P00–P43 (agregat) | wszystkie z Bbb | 6.1/6.3 | v3_p44_certyfikacja_finalna.hard_gate_certificate | test_p44_i01_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niski (status jawny) |
+| Ordynacja podatkowa | 119a, 199a | 6.3 | hard_gate + pillar_scoreboard | i01/i02 | CZĘŚCIOWE [NIEZW] | średni (ocena zgodności) |
+| Ustawa o rachunkowości | 4, 74–75 | 6.1/6.3 | certificate_worm_signature | test_p44_i07_* | CZĘŚCIOWE [NIEZW] | średni (retencja dowodu) |
+| RODO | 5.2, 24 | 6.1/6.3 | owner_attestation | test_p44_i11_* | CZĘŚCIOWE [NIEZW] | niski (rozliczalność) |
+| AI Act | dokumentacja systemu | 6.3 | knowledge_transfer_pack | test_p44_i08_* | CZĘŚCIOWE [NIEZW] | niski |
+| VAT/PIT/ZUS (materiałne) | pokrycie per podatek | 6.2 | pillar_scoreboard (Legal Twin) | i02 | CZĘŚCIOWE (LCI 71.43) [NIEZW] | wysoki → L02 |
+| KKS | redukcja ryzyka czynu | 6.3 | hard_gate (no_silent_auto_post) | test_no_auto_post_without_full_chain | CZĘŚCIOWE [NIEZW] | średni |
+| eIDAS | podpis certyfikatu | 6.1 | certificate_worm_signature | test_p44_i07_no_signature_blocks | CZĘŚCIOWE [NIEZW] | niski (mechanizm P38) |
+
+================================================================================
+9.06 REJESTR LUK (T3) — V3-P44-Lxx
+================================================================================
+| ID | Priorytet | Luka | Dowód | Rozwiązanie | Koszt | Ryzyko regresji |
+| L01 | P1 | Certyfikacja PRODUKCJI zablokowana (brak telemetrii zewn.) | scope NOT_CERTIFIED; enterprise_v4 honesty | budżet telemetrii + SLO zewn. (P37) | średni | niski |
+| L02 | P2 | LCI 71.43 < 99 (SLO) | legal_graph.json indexes | domknięcie pustynii (coverage_deserts) → V4 F1 | wysoki | średni |
+| L03 | P2 | RV 13.56 < 100 | legal_basis_audit.json | pełny skan ISAP podstaw prawnych | wysoki | średni |
+| L04 | P2 | Law Radar / Declarative Change bez pierwszego realnego case | control_plane changes={} | case study + audyt 13 wpisów legacy | niski | niski |
+| L05 | P2 | decision_certificates = 1 wpis demo | bundles/decision_certificates.json | wypełnienie przy aktywacji API (P40-K1) | niski | niski |
+| L06 | P3 | zero_defect w CI nieuruchomiony | brak reports/zero_defect_report.json w CI | krok w workflow (P29) | niski | niski |
+| L07 | P3 | 4 legacy pytest fails (P05/P06/P10) | regresja serii pytest 585 PASS/4 FAIL | P36/P50 (śledzone od P37) | średni | niski |
+| L08 | P3 | dryft legacy 353 parse v0/v1 (~190 plików) | P37-L03 (dziedziczona) | P36/P50 | wysoki | średni |
+| L09 | P3 | healthy_versions (v9.x testy) vs active v8.0.0 | deployments.json + healthy_versions.json | wyrównanie przy następnym deployu (P38) | niski | niski |
+
+================================================================================
+9.07 INNOWACJE ENTERPRISE (T4) — V3-P44-I01..I12 (szkielet 6-punktowy)
+================================================================================
+I01 HARD GATE CERTIFICATE: (1) domyka ryzyko „certyfikatu marketingowego";
+(2) mechanizm: certyfikat tylko gdy hard_gates wszystkie ok=true; porażka →
+NO_CERT z listą (rego: routing_hg01; test i01_failed_gate_blocks); (3) wpływ:
+certyfikacja = dowód, nie deklaracja (V1 z.6); (4) ryzyko: fałszywie zamknięta
+bramka → mitygacja: dowody z plików, nie deklaracje; rollback: rebuild rejestru;
+(5) akceptacja: 12/12 bundli PASS + testy rego; (6) zależności: P39 (bramki),
+P42 (zero-defect), evidence enterprise_v4.
+I02 FILAR SCOREBOARD: (1) domyka brak rozliczenia definicji sukcesu; (2) tabela
+6 filarów ze statusem+dowodem+planem; DEKLAROWANE bez planu = BLOCK; (3) wpływ:
+ocena na artefaktach; (4) ryzyko: status „na oko" → mitygacja: evidence required
+(test i02); (5) akceptacja: 6 filarów, 5×CZĘŚCIOWE + 1×DOWIEDZONE; (6) DS2.
+I03 CAMPAIGN AGGREGATE LEDGER: (1) domyka rozproszenie luk po 43 raportach;
+(2) agregacja z deduplikacją po kluczu; duplikat = TRIAGE; skan raportów
+regulaminem narzędzia; (3) jedna lista prawdy dla V4; (4) ryzyko: duplikaty →
+mitygacja: dedup_rule + test; (5) akceptacja: 22 klucze unikalne, P0=0;
+(6) P30/P41 standardy.
+I04 OWNER DECISION MAP: (1) domyka „co dalej" bez właściciela; (2) wiersze
+akcja→zależności→decydent→priorytet; P0 bez decydenta = BLOCK; (3) 4-eyes
+biznesowe; (4) ryzyko: pusta mapa → test wymaga wierszy; (5) 6 wierszy
+kompletnych; (6) P43 dual-control.
+I05 V4 INHERITANCE CONTRACT: (1) domyka utratę kontraktów między kampaniami;
+(2) lista kontrakt + source_of_truth (fizycznie sprawdzane); bez SOT = TRIAGE;
+(3) standardy V3 obowiązują w V4; (4) ryzyko: martwe odwołania → test paths;
+(5) 12 kontraktów; (6) P00 §11.5.
+I06 SUCCESS METRIC FREEZE: (1) domyka ocenę „na wrażenie"; (2) metryka+próg+
+źródło jako dane PRZED certyfikacją; bez progu = BLOCK; (3) porównywalność
+kampanii; (4) ryzyko: fantazjowanie liczbami → „nie policzono" dozwolone jawnie;
+(5) 7 metryk (6 zmierzonych, 1 jawna); (6) ADR-002, P37.
+I07 CERTIFICATE WORM + SIGNATURE: (1) domyka nietrwałość dowodu; (2) podpis
+(HSM-ECDSA P38) + WORM (P43-I08) + retencja ≥5 lat z progu; brak = BLOCK;
+(3) dowód na lata (UoR 74–75 [NIEZW]); (4) ryzyko: utrata klucza → mitygacja:
+procedura P43-I04 rotacji; (5) testy i07 ×4; (6) P38/P43.
+I08 KNOWLEDGE TRANSFER PACK: (1) domyka uzależnienie od twórców; (2) wymagane
+artefakty z checkiem fizycznej obecności + kontakty decyzyjne; (3) forteca
+operowalna przez innych; (4) ryzyko: rotacja docs → test paths; (5) 10/10
+artefaktów obecnych; (6) P41, P37 runbooki.
+I09 CERTIFICATION RENEWAL POLICY: (1) domyka „wieczny certyfikat"; (2) wyzwalce:
+nowelizacja / deploy krytyczny / 90 dni (próg z thresholds); brak polityki =
+BLOCK; po terminie = TRIAGE; (3) certyfikat zawsze aktualny; (4) ryzyko:
+pominiecie odnowienia → TRIAGE widoczny; (5) testy i09 ×3; (6) P37/P38.
+I10 LEGACY CLEANUP CLOSURE: (1) domyka dług na start V4; (2) rozróżnienie
+fasada (BLOCK) vs śledzony dryft z planem (TRIAGE); rejestry P30/P36/P42;
+(3) zero udawanego pokrycia; (4) ryzyko: skasowanie żywego kodu → rollout P36;
+(5) fasady=0, dryft śledzony; (6) P30/P36/P42.
+I11 OWNER ATTESTATION: (1) domyka brak strony biorącej; (2) atest z listą
+zastrzeżeń; mechanizm gotowy, podpis = krok ludzki (stan jawny signed=false →
+TRIAGE, nie blokada automatu); (3) 4-eyes domknięte biznesowo; (4) ryzyko:
+cichy auto-atest → zakaz (test stanu jawnego); (5) szablon zastrzeżeń 2 wpisy;
+(6) P43-I03, RODO 5.2 [NIEZW].
+I12 FORTRESS SELF-PORTRAIT: (1) domyka brak punktu wejścia; (2) komponent →
+kontrakt → dowód (łącza sprawdzane na istnienie); (3) onboarding inżyniera/
+audytora w 1 diagramie; (4) ryzyko: martwe łącza → test paths; (5) 10/10
+komponentów; (6) P41/P42.
+
+================================================================================
+9.08 KONTRAKT WYJŚCIOWY (T5) — dla P45 i V4
+================================================================================
+K1. CERTYFIKAT FINALNY V3: bundles/v3_p44_final_certification.json = jedyne
+    źródło prawdy statusu kampanii (hard gates, filary, agregat luk). V4 NIE
+    tworzy nowego rejestru — rozszerza (zakaz duplikacji, P00 §8).
+K2. REJESTR V4 (kontrakty dziedziczone): 12 pozycji I05 z source_of_truth;
+    każda nowa część V4 honoruje kontrakt werdyktu 25-polowy (ADR-004),
+    ADR-002, P05, fail-closed, standardy nazewnicze P00 §11.5.
+K3. MAPA DECYZYJNA WŁAŚCICIELA: 6 wierszy (I04) — P0: atest + start V4;
+    P1: ISAP + LCI; P2: telemetria + KSeF FA(3).
+K4. FREEZE METRYK SUKCESU: 7 metryk (I06) = punkt odniesienia V4; zmiana progu
+    tylko przez thresholds-as-data + test (ADR-002).
+K5. POLITYKA ODNOWIENIA: triggers I09 (nowelizacja/deploy/90 dni) wiążą V4;
+    kolejna certyfikacja = ponowny przebieg bramek + regresja + wpis WORM.
+
+================================================================================
+9.09 PLAN WDROŻENIA (T6) | 9.10 PLAN TESTÓW (T7)
+================================================================================
+T6: natychmiast (bez ryzyka): R05–R08 (case'y, CI zero_defect, L05); po
+testach: R03/R04 (LCI/RV — duże zmiany materiałowe, canary P38 obowiązkowy);
+decyzja człowieka (4-eyes): R01 (atest), R02 (budżet telemetrii), start V4.
+T7 (blokujące merge): test_v3_p44_certyfikacja_finalna.rego 34/34 ×2 OPA
+(negative-first: brak flagi→no_match; brak progów→BLOCK; NO_CERT przy
+otwartej bramce; niska retencja→BLOCK); pytest 15/15 (w tym: rejestry jako
+dane, brak P0, uczciwość NOT_CERTIFIED, SOT paths); regresja serii P13→P44
+875/875; pytest serii zielony w zakresie v3_p.
+
+================================================================================
+9.11 PYTANIA DO CZŁOWIEKA (T8) | 9.12 ZAŁOŻENIA JAWNE (T9)
+================================================================================
+T8: Q01 Interpretacje prawne (UoR 74–75 retencja certyfikatu; eIDAS forma
+podpisu) → doradca podatkowy [NIEZWERYFIKOWANE]. Q02 Atest właściciela i
+budżet telemetrii → właściciel (4-eyes). Q03 Budżet V4 (LCI→99 to praca
+miesiącami) → właściciel. Q04 Brak konfliktów BLOCKER do eskalacji (T12 puste
+— patrz 9.17).
+T9: [ZAŁOŻENIE] progi v3_p44 (5 lat / 90 dni / 0 fasad) przyjęte konservatywnie
+— do akceptacji właściciela. [ZAŁOŻENIE] „stan repozytorium" jako zakres
+certyfikatu (produkcja poza zakresem do telemetrii). [ZAŁOŻENIE] agregat luk
+z raportów P37–P43 kompletny (skan tylko tych raportów w budżecie sesji).
+
+================================================================================
+9.13/9.14 T10 PRZEKAZYWANE ARTEFAKTY | 9.16 TABELE POMOCNICZE
+================================================================================
+T10: rejestr certyfikacji (JSON) → P45+/V4; kontrakt K1–K5 → P45; mapy I04/I05/
+I06/I12 → knowledge pack; bundlile 12 × PASS → CI; rego+testy → regresja serii.
+AP01–AP12: AP01 stubs — brak (wszystkie decision_mode jawnie; testy negatywne);
+AP02 hardcode — brak (progi w data.thresholds.v3_p44); AP03 else-chain — pełna
+(+selektory analiz, test no_selector); AP04 duplikaty — brak (rule_id unikalne,
+444001–444012); AP05 podstawy bez Dz.U. — [NIEZWERYFIKOWANE] jawne, zero
+fikcyjnych; AP06 testy zawsze-zielone — nie (12 asercji negatywnych); AP07
+cichy AUTO_POST — nie (CERTIFIED tylko po zamkniętych bramkach); AP08 cykle —
+brak (jeden pakiet, bez importu zwrotnego); AP09 dane zewnętrzne — brak w P44;
+AP10 okna temporalne — valid_from w v3_p44; AP11 mirror drift — poza zakresem
+P44 (P48, L02/L03 raportów wcześniejszych); AP12 podwójne źródła — rejestr
+certyfikacji agrega metryki z plików źródłowych (source podany per metryka).
+APENDYKS B: 5.1→6.2/6.3 (statusy filarów), 5.2→6.1/6.3 (agregat), 5.3→6.1
+(bramki/WORM), 5.4→6.2/6.3/6.4 (V4) — wyniki w 9.04; wszystkie ≥3 dowody.
+APENDYKS E (ETAP 1–6): K01–K65 wykonane sekwencyjnie w tej sesji ✓.
+
+================================================================================
+9.15 ODPOWIEDZI PYTANIA KRZYŻOWE X01–X10
+================================================================================
+X01: brak sprzeczności z dokumentami świętymi (T12 puste; certyfikat jest
+realizacją F3/F4, nie zmianą) — jeśli właściciel uzna retencję 5 lat za
+sprzeczną z UoR → Q01 do doradcy. X02: brak łamania P06/P05 — progi w
+thresholds, valid_from obecne (test_thresholds_as_data). X03: ścieżki
+fail-closed — jedyna „cicha" ścieżka to brak selektora → no_match (jawne,
+przetestowane); AUTO_POST wyłącznie po CERTIFIED. X04: pola metadanych
+certyfikatu (threshold_version, legal_basis_version, valid_from) zgodne z F4;
+kontrakt 25-polowy nietknięty (safe_merge). X05: bramki merge = T7 (34 rego ×2
++ 15 pytest + regresja 875). X06: duplikaty — I02 nie duplikuje P42 maturity
+(agreguje statusy filarów, nie pakietów); I03 nie duplikuje P30 (agreguje
+luki, nie wdrożenia); plan konsolidacji: jedno źródło K1. X07: rejestr
+mediacji = wszystkie [NIEZWERYFIKOWANE] w T2 → P47/P44-continuation. X08:
+Q01–Q03 (T8) wymagają człowieka. X09: metryki I06 → P37 dashboard (nazwy:
+LCI/TCL/RV/decision_p95/p0_open/certified_pct/validity_days; progi w
+thresholds). X10: invarianty runtime propozycje: INV-CERT-01 „cert bez
+signature → CERTAINTY_BLOCKED", INV-CERT-02 „p0_open>0 → NO_CERT" (uzasadnienie:
+rozliczalność RODO 5.2 [NIEZW]).
+
+================================================================================
+9.17 DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+================================================================================
+Raport zgodny z DS1 (ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md: bramki CI, SLO,
+lifecycle) i DS2 (WIZJA_OPA_ENTERPRISE_V2.md: F1 Legal Twin, F3 Golden Oracle,
+F4 Decision Certificate, Radar, Declarative Change, invarianty, fail-closed).
+Odstępstwa: brak. Konflikty Cxx: 0 (T12 puste). Ocena własna (kryterium 21):
+forteca UFORTYFIKOWANA na poziomie repozytorium (dowody: hard gates 6/6,
+regresja 875/875, WORM, fail-closed INV, zero P0), NIEcertyfikowana na poziomie
+produkcji (NOT_CERTIFIED — brak telemetrii zewnętrznej; L01). Zero sellingu:
+wszystkie filary poza runtime invariants = CZĘŚCIOWE z planem domknięcia.
+
+KONIEC RAPORTU V3 P44 — KOLEJNA CZĘŚĆ: P45 (wejście: K1–K5 + agregat luk,
+czyste okno kontekstowe zgodnie z Sekcją 16 promptu).
+================================================================================

@@ -1,0 +1,617 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT V3 P37 — OBSERWOWALNOŚĆ — METRYKI, SLO, DASHBOARDY I WCZESNE OSTRZEGANIE
+═══════════════════════════════════════════════════════════════════════════════
+Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN | Status: WDROŻONY_100
+Data: 2026-09-09 | Kampania: 38/69 WDROŻONY_100 (55.07%)
+Prompt: JDG/prompty_v3/V3_PROMPT_P37_OBSERWOWALNOSC.txt
+Raport: JDG/raporty_glm52_v3/RAPORT_V3_P37_OBSERWOWALNOSC.txt (ten plik)
+
+Status: WDROŻONY_100 (realne artefakty w repo, 2026-09-09):
+rules/v3_p37_obserwowalnosc_enterprise.rego (pakiet jdg.v3_p37_obserwowalnosc,
+12 analiz I01–I12, decide fail-closed, priorytety 437001–437012); thresholds
+v3_p37 (13 kluczy: SLA świeżości 7 dni, skok NA 3×, budżet p95 500 ms, dryf
+golden 0, alarmy bez runbooka 0, status page max 1 dzień, limit kosztu AI 1.0,
+regresja benchmarku 10%, valid_from 2026-01-01 — ADR-002/P05); wiring main_jdg
+final_verdict_p101 (post-merge anchor przesunięty z p100 na p101); 13 narzędzi
+tools/v3_p37_*.py (12 silników + benchmark gate); 13 bundli gate PASS (12 +
+v3_p37_slo_catalog.json — 6 SLO kompletnych); katalog SLO jako dane z polityką
+error budget (freeze_below_pct=0, okno 30 dni); runbook-as-code RB01–RB06
+(docs/runbooks/, każdy alarm ma runbook); benchmark baseline ZMIERZONY
+(.benchmarks/eval_baseline.json, 60 przebiegów, p50=558.14 ms, p95=616.36 ms,
+regression gate max 10%). Testy: 32/32 native rego (OPA 0.68 i 1.9
+--v0-compatible) + 23/23 pytest + regresja P13–P37 zielona (620/620 rego).
+Luki otwarte: P2=2 (L03 legacy pytest drift P00/P05/P06/P10; L04 brak pomiaru
+in-process eval — baseline cold-start e2e), P3=2 (L01 weryfikacja ISAP →
+P47/P44; L02 mirror sync → P48).
+
+───────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+───────────────────────────────────────────────────────────────────────────────
+Ocena dojrzałości części P37: DOJRZAŁA ENTERPRISE (wdrożenie pełne, 12/12
+innowacji z realnym dowodem testowym; 2 luki P2 to dryft legacy i luka
+pomiarowa, nie braki P37).
+
+TOP-10 rekomendacji (wszystkie WDROŻONE w tej części):
+  R1. Decision SLO contract jako dane (I01) — 6 SLO z metryką/progiem/oknem/
+      akcją/runbookiem w bundles/v3_p37_slo_catalog.json; walidacja w regule
+      (SLO bez progu/akcji = BLOCK) i w pytest (test_slo_catalog_complete).
+  R2. Freshness SLA dla prawa (I02) — wiek weryfikacji ISAP per akt; akt
+      niezweryfikowany = BLOCK, stale > 7 dni = TRIAGE; wejście Law Radar P08.
+  R3. Needs-advice radar (I03) — NEEDS_ADVICE bez powodu = BLOCK; skok > 3×
+      baseline = TRIAGE z auto-ticketem do P08/P30.
+  R4. Latency budget per domena (I04) — p95 > 500 ms = TRIAGE, > 2× = BLOCK;
+      rejestr per_case_max_ms w baseline (najcięższa: latency_budget 634.12 ms
+      cold-start e2e).
+  R5. Decision Certificate jako telemetria (I05) — decyzja bez certyfikatu =
+      BLOCK; certyfikat niekompletny = TRIAGE; zero telemetrii bez dowodu.
+  R6. Error budget freeze (I06) — deploys_during_freeze > 0 = BLOCK; budżet
+      wyczerpany = TRIAGE z eskalacją do slo-owner; polityka w katalogu SLO.
+  R7. Anomaly detection z sezonowością księgową (I07) — anomalie nieuwzględnione
+      = BLOCK; fałszywe alarmy bez sezonowości = TRIAGE (mniej szumu).
+  R8. Golden drift watch (I08) — rozjazd produkcja vs golden P10 > 0 = BLOCK
+      z diffem inputów; watch wyłączony = BLOCK (obserwowalność dokładności
+      obowiązkowa).
+  R9. Runbook-as-code (I09) — alarm bez runbooka = BLOCK (limit 0); RB01–RB06
+      w docs/runbooks/; test istnienia i powiązania z SLO w CI (pytest).
+  R10. Benchmark regression gate (I12) — baseline zmierzony (60 przebiegów);
+      regresja > 10% = BLOCK przed deployem bundle; gate tool + rule 437012.
+
+Liczba luk wg krytyczności: P0=0, P1=0, P2=2, P3=2 (sekcja 9.06).
+Innowacje Enterprise: 12/12 WDROŻONE (+ 1 dodatkowe narzędzie v3_p37_benchmark_
+gate.py i katalog SLO jako dane — artefakty ponad minimum).
+
+Co UDOWODNIONO (dowód = kod + test + wynik uruchomienia, 2026-09-09):
+  * 32/32 testów natywnych Rego PASS na OPA 0.68 (bin/opa) i OPA 1.9.0
+    (bin/opa19 --v0-compatible),
+  * 23/23 testów pytest PASS (tests/auto/test_v3_p37_obserwowalnosc_enterprise.py),
+  * regresja serii V3: 620/620 testów rego P13→P37 PASS (OPA 1.9),
+  * 13/13 bundli v3_p37 z gate=PASS (w tym slo_catalog),
+  * wiring p101 w main_jdg.rego (import L109, rejestr L1502, safe_merge ~L3065),
+  * snapshot progów v3_p37 w thresholds_jdg.rego (L3399+, 13 kluczy, valid_from).
+
+Co pozostało [NIEZWERYFIKOWANE] / otwarte:
+  * Weryfikacja ISAP aktów sekcji 8 promptu — nie wykonana w tej sesji (pełny
+    skan); podstawy oznaczone [NIEZWERYFIKOWANE] (luka P3, rejestrowana w
+    P27–P36, domknięcie w P47/P44).
+  * Mirror policies sync (P48) — parity hash zrobiona w P26, pełny sync w P48.
+  * Pomiar latencji in-process eval (SLO-02 dotyczy in-process; baseline
+    zmierzony jako cold-start e2e z jawną metodyką) — luka P2 (L04).
+  * 4 przedistniejące porażki pytest w częściach legacy (P00/P05/P06/P10) —
+    dryft sprzed tej części, zarejestrowany jako luka P2 (L03) dla P39/P36.
+
+───────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+───────────────────────────────────────────────────────────────────────────────
+Przeanalizowano (pliki z Sekcji 6 promptu + artefakty implementacji P37):
+  * Grupa 6.1 (9 narzędzi legacy): metrics_generator.py, pewnosc_metrics.py,
+    health_tier_engine.py, health_tier_recalculator.py,
+    health_reconciliation_micro.py, enterprise_dashboard.py,
+    confidence_dashboard.py, drift_dashboard.py, holographic_viz.py —
+    egzystencja zweryfikowana testem test_legacy_obs_tools_exist (pytest);
+    health_tier_engine audytowany: to TIERY ZUS (TIER_LIMITS + przychód
+    60k/300k) — domena biznesowa, NIE health tiers SRE (dowód:
+    test_health_tier_is_zus_domain_not_sre) — kluczowy wniosek anty-duplikacyjny.
+  * Grupa 6.2 (5 bundli + benchmarki): metrics_pewnosci.json,
+    healthy_versions.json, control_plane_state.json, deployments.json,
+    bundle_catalog.json — istnienie zweryfikowane test_legacy_obs_bundles_exist;
+    .benchmarks/ — utworzono eval_baseline.json (60 przebiegów zmierzonych).
+  * Grupa 6.3 (dokumenty): PEWNOSC_DASHBOARD.md, LEGAL_TWIN_RAPORT.md,
+    LEGAL_TWIN_TRACEABILITY.md, API_REFERENCJA.md, INWENTARYZACJA_PLIKOW.md —
+    kontekst; nie duplikowano (ZAKAZ duplikacji, protokół §08).
+  * Grupa 6.4 (mirror policies): polityka zgodności — parity per P26; pełny
+    sync → P48 (luka L02).
+  * Pliki nieczytelne/brak: brak (wszystkie grupy obsłużone dowodem istnienia
+    lub jawną adnotacją; protokół §16 nie zadziałał — zero pustych).
+
+Ograniczenia:
+  * Budżet kontekstu 50% — czytano wyłącznie pliki z listy 6.x + kontrakty
+    (P10/P11/P02/P08/P30/P33/P35/P36/P39 przez nagłówki reguły i testów).
+  * Weryfikacja ISAP/RCL/MF nie wykonana (brak dostępu w sesji wdrożeniowej) —
+    wszystkie podstawy prawne tagowane [NIEZWERYFIKOWANE] (zasada 4.2).
+  * Pomiar cold-start e2e vs in-process: metodyka jawna w baseline
+    (measurement_scope); regresja % porównywalna 1:1 (ta sama metodyka),
+    wartość absolutna p95 500 ms SLO-02 dotyczy in-process (L04).
+
+───────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P37 — MAPA ARTEFAKTÓW
+───────────────────────────────────────────────────────────────────────────────
+| Plik | Pakiet/rola | rule_id | Podstawa | Testy | Lifecycle |
+|------|-------------|---------|----------|-------|-----------|
+| rules/v3_p37_obserwowalnosc_enterprise.rego | jdg.v3_p37_obserwowalnosc | 12 publicznych (437001–437012) + fail_closed + no_match | V3_P37 §10; UoR art. 4; RODO 5.2/32; OrdPU 119a [NIEZWERYFIKOWANE] | 32/32 rego ×2 OPA; 23/23 pytest | CANDIDATE→ACTIVE (wired p101) |
+| rules/thresholds_jdg.rego (blok v3_p37) | data.jdg.thresholds.v3_p37 | — | ADR-002/P06; P05 valid_from | test_v3p37_block_complete; test_p37_thresholds_snapshot_complete | ACTIVE |
+| rules/main_jdg.rego | import + rejestr decide + final_verdict_p101 | — | ADR-022 (safe_merge F2) | test_main_jdg_wired_p101 | ACTIVE |
+| tools/v3_p37_common.py + 12 silników I01–I12 | dowody JSON per innowacja | — | kontrakty P03/P10/P11/P02/P08/P30/P33/P35/P36/P39 | test_p37_tools_present | ACTIVE |
+| tools/v3_p37_benchmark_gate.py | gate regresji benchmarku (I12) | — | V3_P37-I12 | test_gate_tool_present | ACTIVE |
+| bundles/v3_p37_*.json (12) + v3_p37_slo_catalog.json | evidence gate PASS ×13 | — | I01–I12 | test_p37_bundles_all_pass | ACTIVE |
+| .benchmarks/eval_baseline.json | baseline zmierzony 60 przebiegów | — | I12; RB06 | test_benchmark_baseline_measured | ACTIVE |
+| docs/runbooks/RB01–RB06.md | runbook-as-code (I09) | — | I09; ISO 27001 [NIEZWERYFIKOWANE] | test_runbooks_exist; test_runbooks_link_slos | ACTIVE |
+| tests/rego/test_v3_p37_obserwowalnosc_enterprise.rego | 32 scenariuszy | — | P39 | PASS 32/32 (OPA 0.68 i 1.9) | ACTIVE |
+| tests/auto/test_v3_p37_obserwowalnosc_enterprise.py | 23 testów | — | P39 | PASS 23/23 | ACTIVE |
+
+Priorytety: 437001 decision_slo, 437002 law_freshness_sla, 437003
+needs_advice_radar, 437004 latency_budget, 437005 certificate_telemetry,
+437006 error_budget_freeze, 437007 anomaly_detection, 437008
+golden_drift_watch, 437009 runbook_as_code, 437010 status_page, 437011
+decision_cost, 437012 benchmark_regression — unikalne globalnie
+(test_p37_unique_priorities).
+
+───────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4
+───────────────────────────────────────────────────────────────────────────────
+Wymagania nadrzędne (powtórzenie przed każdą podanalizą): głębokie myślenie,
+głęboka analiza, poziom ENTERPRISE, innowacje wyprzedzające, maksimum domkniętych
+braków — zastosowane w każdej z poniższych.
+
+── 5.1 Metryki istniejące i luki (P37-AN01) ───────────────────────────────────
+Tabela dowodów (fragment T1; pełna T1 niżej):
+| Plik | Fakt/dowód | Status |
+| tools/metrics_generator.py | istnieje (test_legacy_obs_tools_exist); LCI/TCL/RV/UVR | ZWERYFIKOWANO |
+| tools/pewnosc_metrics.py | istnieje; metryki pewności rdzenia | ZWERYFIKOWANO |
+| tools/health_tier_engine.py | tiery ZUS (TIER_LIMITS, przychód 60k/300k) — NIE SRE | ZWERYFIKOWANO (audyt 9.04) |
+| bundles/metrics_pewnosci.json | istnieje; źródło SLO-01 (health_score) | ZWERYFIKOWANO |
+| .benchmarks/eval_baseline.json | UTWORZONY: 60 przebiegów, p50/p95/per-case | ZWERYFIKOWANO (zmierzony) |
+
+Wnioski (≥3):
+  W-AN01 (1): Katalog metryk istniejących jest dwuwarstwowy — rdzeń
+  (metrics_generator/pewnosc_metrics: LCI/TCL/RV/UVR) + kampanijne bramki
+  (P35 audytory, P31 risk-of-fortress); P37 NIE dubluje (AP04/AP12) —
+  dyscyplina egzekwowana testem test_health_tier_is_zus_domain_not_sre.
+  W-AN01 (2): Nowe metryki zdefiniowane wyłącznie przez SLO jako dane
+  (engine_eval_success_ratio, eval_latency_p95_ms, golden_drift_count,
+  max_isap_check_age_days, needs_advice_without_reason_ratio,
+  benchmark_regression_pct) — każda z progiem, akcją i runbookiem; metryka
+  bez progu = vanity (polityka vanity_metrics_review w katalogu).
+  W-AN01 (3): Braki przed P37 (latencja p95, wskaźnik NEEDS_ADVICE, wiek ISAP,
+  dryf mirror) domknięte: I04/I03/I02 + drift_dashboard legacy (istnieje).
+Luki podanalizy: L04 (pomiar in-process), L03 (dryft legacy) — 9.06.
+
+── 5.2 SLO i error budget (P37-AN02) ─────────────────────────────────────────
+Tabela dowodów (fragment):
+| bundles/v3_p37_slo_catalog.json | 6 SLO: 0.995 dostępność / 500 ms p95 / dryf 0 / 7 dni ISAP / 0 NA bez powodu / 10% regresja; error_budget_policy freeze_below_pct=0, okno 30 dni | ZWERYFIKOWANO |
+| rules/v3_p37...rego I01 | SLO bez progu/akcji = BLOCK (slos_without_threshold_or_action > 0) | ZWERYFIKOWANO (test_p37_i01_*) |
+| I06 | deploys_during_freeze > 0 = BLOCK; exhausted = TRIAGE | ZWERYFIKOWANO (test_p37_i06_*) |
+
+Wnioski:
+  W-AN02 (1): Dokładność mierzalna bez ground truth na żywo — przez golden
+  drift watch (I08): każda decyzja produkcyjna porównywana z golden verdicts
+  P10 w oknie 1 dnia; rozjazd > 0 = BLOCK z diffem inputów (to realny
+  ground-truth loop, nie vanity).
+  W-AN02 (2): Wyczerpanie budżetu → freeze wdrożeń reguł (CI odmawia merge:
+  I06 + RB01/RB06); eskalacja do slo-owner; odbudowa przez naprawę SLO z
+  runbookiem — brak ścieżki „awaryjnego ominięcia" (fail-closed).
+  W-AN02 (3): SLO kanarkowe dla nowych reguł (P07): reguła CANDIDATE dostaje
+  okno próbne — egzekwowane przez strukturę deploymentów (canary→shadow→
+  ramped→soak, deployments.json) i gate I12 przed ACTIVE.
+Luki podanalizy: L01 (ISAP), L04 (in-process) — 9.06.
+
+── 5.3 Alerting i runbooki (P37-AN03) ────────────────────────────────────────
+Tabela dowodów (fragment):
+| docs/runbooks/RB01–RB06.md | 6 runbooków: dostępność, latencja, golden drift, świeżość prawa, NA bez powodu, regresja benchmarku | ZWERYFIKOWANO (test_runbooks_*) |
+| I09 rego | alarm bez runbooka = BLOCK (limit 0); stale = TRIAGE | ZWERYFIKOWANO (test_p37_i09_*) |
+| I03/I10 | radar NA (spike 3×) + status page (stale > 1 dzień) | ZWERYFIKOWANO (test_p37_i03/i10_*) |
+
+Wnioski:
+  W-AN03 (1): Każdy z 6 SLO ma runbook; alarm bez runbooka to BLOCK (limit 0)
+  — „alarm bez runbooka = luka" jest teraz niezmiennikiem, nie życzeniem.
+  W-AN03 (2): Zmęczenie alertami ograniczone strukturalnie: sezonowość w
+  anomalii (I07 — mniej fałszywych alarmów koniec mies./kwart.), priorytety
+  BLOCK>TRIAGE>SUGGEST, cicha godzina nie potrzebna dla BLOCK (krytyczne
+  zawsze dzwonią — decyzja projektowa, patrz Q03).
+  W-AN03 (3): Alarmy trafiają do rejestrów kampanii: radar NA (I03) robi
+  auto-ticket do P08 (Law Radar) i P30 (fale innowacji) — pętla luka→kampania.
+Luki podanalizy: L02 (mirror) — 9.06.
+
+── 5.4 Telemetria decyzji i benchmarki (P37-AN04) ────────────────────────────
+Tabela dowodów (fragment):
+| .benchmarks/eval_baseline.json | 60 pomiarów; p50=558.14, p95=616.36, max=634.12 ms (cold-start e2e); per-case rejestrem domeny najcięższej | ZWERYFIKOWANO (zmierzono) |
+| I05 rego | decyzja bez certyfikatu = BLOCK; certyfikat = źródło metryk (domena, pewność, tryb) | ZWERYFIKOWANO (test_p37_i05_*) |
+| I11/I12 | koszt AI bez telemetrii = BLOCK; regresja > 10% = BLOCK | ZWERYFIKOWANO (test_p37_i11/i12_*) |
+
+Wnioski:
+  W-AN04 (1): Decision Certificate P11 jest JEDYNYM źródłem telemetrii decyzji
+  (I05) — zero dodatkowej instrumentacji, zero duplikacji ścieżek (AP12).
+  W-AN04 (2): Koszt eval per domena mierzalny (per_case_max_ms); routing O(1)
+  z P02 chroni budżet — reguła ponad 2× budżetu blokuje deploy (I04).
+  W-AN04 (3): Trend liczby reguł obserwowalny przez snapshoty P00
+  (12676 rule_id unikalnych) + regresję benchmarku (I12) — przewidywanie
+  przekroczenia budżetu latencji przez per-case rejestr (K06).
+Luki podanalizy: L03 (dryft legacy) — 9.06.
+
+───────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2 — akty z Sekcji 8 promptu; wszystkie
+     podstawy [NIEZWERYFIKOWANE] — ISAP pełnym skanem nie wykonano, L01)
+───────────────────────────────────────────────────────────────────────────────
+| Akt | Art. | Reguła (P37) | Test | Status | Ryzyko |
+|-----|------|--------------|------|--------|--------|
+| Ustawa o rachunkowości | art. 4 ust. 1 (telemetria jako dowód rzetelności) | I05 certificate_telemetry; I06 error_budget_freeze | test_p37_i05_*; test_p37_i06_* | PEŁNE [NIEZWERYFIKOWANE] | niskie |
+| RODO | art. 5 ust. 2 (rozliczalność) | I05; I03 (powód każdej NEEDS_ADVICE) | test_p37_i05_*; test_p37_i03_* | PEŁNE [NIEZWERYFIKOWANE] | niskie |
+| RODO | art. 32 (bezpieczeństwo: monitorowanie) | I10 status_page; I02 freshness | test_p37_i10_*; test_p37_i02_* | PEŁNE [NIEZWERYFIKOWANE] | niskie |
+| Ordynacja podatkowa | art. 119a (obserwowalność ścieżek agresywnych) | I03 needs_advice_radar | test_p37_i03_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] — brak profilowania agresywności per ścieżka (dalszy rozwój I03) | średnie |
+| Ustawa VAT | art. 109e (terminy deklaracji; świeżość pipeline) | I02 law_freshness_sla | test_p37_i02_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] — kalendarz VAT po stronie P25 | średnie |
+| Ustawa o ZUS | terminy składek (kalendarz płatności) | I02 (metryki świeżości kalendarza); wejście P25/P26 | test_p37_i02_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] | średnie |
+| Ustawa o rachunkowości | art. 74–75 (archiwum i retencja telemetrii) | I05 (certyfikat jako telemetria; retencja przez P11 WORM) | test_p37_i05_*; test_p37_certificate_fields | PEŁNE [NIEZWERYFIKOWANE] | niskie |
+| ISO/IEC 27001 (kontekst) | monitoring jako kontrola | I09 runbook-as-code; I10 status page | test_runbooks_*; test_p37_i09/i10_* | PEŁNE (kontekst, nie wymóg prawny) | niskie |
+| Sarbanes-Oxley (kontekst) | audytowalność procesów automatycznych | I05 + decision_hash (P11 F4) | test_p37_certificate_fields | PEŁNE (kontekst) | niskie |
+| [ODKRYTY] V1/V2 dokumenty święte | zasada fail-closed (V1 zas. 6), F4 (certyfikat) | fail_closed_decision; I05; I08 | test_p37_fail_closed_no_silent_auto_post; test_p37_fail_closed_no_snapshot | PEŁNE | niskie |
+
+───────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (T3)
+───────────────────────────────────────────────────────────────────────────────
+| ID | Kryt. | Opis | Dowód | Wpływ | Rozwiązanie | Koszt | Regresja | Status |
+|----|-------|------|-------|-------|-------------|-------|----------|--------|
+| V3-P37-L01 | P3 | Weryfikacja ISAP aktów sekcji 8 nie wykonana w sesji | tagi [NIEZWERYFIKOWANE] w regule i T2 | dokumentacyjne | pełny skan ISAP → P47/P44 (rejestrowane od P27) | średni | brak | OTWARTA → P47/P44 |
+| V3-P37-L02 | P3 | Mirror policies pełny sync (parity hash OK per P26; sync treści → P48) | kontrakt P48 | niskie | mirror sync w P48 | średni | brak | OTWARTA → P48 |
+| V3-P37-L03 | P2 | Dryft legacy przed P37: 4 porażki pytest (P00 test_snapshot_idempotent; P05/P10 test_tools_cli_run_clean — TypeError None<str w ścieżce Termux; P06 test_i09_freshness_dashboard — params 8 vs 1) + 2 błędy parse rego v0/v1 (test_vat_audyt_r03_enterprise.rego:399; zus_micro_etap13_v1.rego:159) | wynik pytest 2026-09-09 (457 passed / 4 failed), opa test JDG/rules | nie blokuje P37 (brak zależności); psuje sygnał CI | naprawa w P39 (CI) / P36 (generatory) / P50 (dead code); ścieżka: runpakiet runner per-part jak w P13–P35 | średni | niskie | OTWARTA → P39/P36/P50 |
+| V3-P37-L04 | P2 | Latencja in-process eval nie zmierzona (baseline = cold-start e2e; SLO-02 500 ms dotyczy in-process) | .benchmarks/eval_baseline.json measurement_scope | średnie — SLO-02 nieegzekwowalny w produkcji do czasu instrumentacji hosta | instrumentacja runtime hosta (telemetria I04 in-process) → P38 (deploy) | średni | niskie | OTWARTA → P38 |
+
+Luki P0/P1: ZERO. Zamknięte w tej części (wcześniejsze zgłoszenia): brak
+katalogu SLO jako dane (zamknięte I01), brak runbooków (zamknięte I09), brak
+baseline benchmarków (zamknięte I12), brak bramki freeze (zamknięte I06).
+
+───────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (T4) — 12/12 WDROŻONE (szkielet 6-punktowy)
+───────────────────────────────────────────────────────────────────────────────
+V3-P37-I01 — DECISION SLO CONTRACT (SLO jako dane)
+  1) Luka: brak formalnych SLO dla decyzji podatkowych; zmiana SLO bez
+     kontroli (K: P06).
+  2) Mechanizm: 6 SLO w bundles/v3_p37_slo_catalog.json (metric/target/
+     window_days/action/runbook/actionable); walidacja w regule 437001
+     (SLO bez progu/akcji = BLOCK) i w pytest; SLO zmieniane jak parametr.
+  3) Bezpieczeństwo: każde twierdzenie o jakości decyzji ma próg i akcję —
+     zero vanity bez akcji.
+  4) Ryzyko: zbyt restrykcyjne progi → TRIAGE szum; mitygacja: okna 1/7/30 dni
+     + error budget policy; rollback: edycja katalogu (dane) + re-test.
+  5) Akceptacja: test_slo_catalog_complete; test_p37_i01_invalid_slo_block.
+     Zależności: P06 (parametry-as-data), P39 (CI).
+  Dowód: gate PASS bundles/v3_p37_decision_slo.json; 3 ścieżki routing.
+
+V3-P37-I02 — FRESHNESS SLA DLA PRAWA
+  1) Luka: brak metryki wieku weryfikacji ISAP per akt; nieświeży akt mógł
+     podpierać AUTO_POST.
+  2) Mechanizm: acts_unverified/acts_stale → BLOCK/TRIAGE z listą aktów do
+     re-checku (Law Radar P08); próg 7 dni z thresholds (v3_p37_law_freshness_
+     sla_days).
+  3) Bezpieczeństwo: akt niezweryfikowany nie podpiera automatycznej decyzji
+     księgowej (fail-closed po stronie prawa).
+  4) Ryzyko: lawa SLA wymaga rejestru dat weryfikacji — mitygacja: wejście z
+     Law Radar; rollback: próg w thresholds.
+  5) Akceptacja: test_p37_i02_unverified_block; test_p37_i02_stale_boundary
+     (granica 7 dni). Zależności: P08, P47/P44.
+  Dowód: gate PASS v3_p37_law_freshness_sla.json.
+
+V3-P37-I03 — NEEDS-ADVICE RADAR
+  1) Luka: skok NEEDS_ADVICE niewidoczny (luka prawna/awaria danych wykrywana
+     ręcznie).
+  2) Mechanizm: needs_advice_without_reason = BLOCK; spike_detected (> 3×
+     baseline) = TRIAGE z auto-ticketem do P08/P30.
+  3) Bezpieczeństwo: każdy fail-closed z powodem (wskaźnik fail-closed jako
+     SLO-05) — nie da się „przemycać" NEEDS_ADVICE bez uzasadnienia.
+  4) Ryzyko: false-positive skoków przy sezonowości — mitygacja: baseline
+     okna + I07 (sezonowość w anomalii).
+  5) Akceptacja: test_p37_i03_no_reason_block; test_p37_i03_spike_triage.
+     Zależności: P30, P08.
+  Dowód: gate PASS v3_p37_needs_advice_radar.json.
+
+V3-P37-I04 — LATENCY BUDGET PER DOMENA
+  1) Luka: brak budżetu latencji; reguła O(n) mogła zadusić eval.
+  2) Mechanizm: domains_over_budget = TRIAGE (rejestr + analiza else-chain →
+     routing O(1) z P02); > 2× = BLOCK; próg 500 ms p95.
+  3) Bezpieczeństwo: degradacja wydajności nie może wymusić ścieżki
+     uproszczonej pomijającej invariants — blokada zamiast cichego skrótu.
+  4) Ryzyko: cold-start vs in-process rozjazd (L04) — mitygacja: jawna
+     metodyka w baseline; rollback: próg w thresholds.
+  5) Akceptacja: test_p37_i04_over2x_block; test_p37_i04_over_triage.
+     Zależności: P02, P36.
+  Dowód: gate PASS v3_p37_latency_budget.json; per_case_max_ms w baseline.
+
+V3-P37-I05 — DECISION CERTIFICATE AS TELEMETRY
+  1) Luka: telemetria decyzji budowana obok certyfikatu (duplikacja, AP12).
+  2) Mechanizm: certyfikat P11 = jedyne źródło metryk (domena, pewność, tryb,
+     podstawa prawna); decisions_without_certificate = BLOCK; incomplete =
+     TRIAGE.
+  3) Bezpieczeństwo: zero telemetrii bez dowodu — każda metryka prowadzi do
+     certyfikatu z decision_hash (audytowalność end-to-end).
+  4) Ryzyko: zmiana schematu certyfikatu — mitygacja: kontrakt P03/P11,
+     testy pól (test_p37_certificate_fields).
+  5) Akceptacja: test_p37_i05_missing_block; test_p37_i05_incomplete_triage.
+     Zależności: P11, P03.
+  Dowód: gate PASS v3_p37_certificate_telemetry.json.
+
+V3-P37-I06 — ERROR BUDGET FREEZE
+  1) Luka: wyczerpany error budget nie blokował wdrożeń reguł.
+  2) Mechanizm: deploys_during_freeze = BLOCK; exhausted = TRIAGE z
+     eskalacją slo-owner; polityka freeze_below_pct=0, okno 30 dni.
+  3) Bezpieczeństwo: nośność procesu księgowego chroniona formalnie —
+     wdrożenia zatrzymywane zanim jakość spadnie.
+  4) Ryzyko: freeze blokuje also hotfix — mitygacja: ścieżka 4-eyes awaryjna
+     (RB01 krok odblokowania z decyzją człowieka, Q02).
+  5) Akceptacja: test_p37_i06_deploy_during_freeze_block;
+     test_p37_i06_exhausted_triage. Zależności: P39, P07.
+  Dowód: gate PASS v3_p37_error_budget_freeze.json.
+
+V3-P37-I07 — ANOMALY DETECTION Z SEZONOWOŚCIĄ
+  1) Luka: fałszywe alarmy na koniec miesiąca/kwartału (sezonowość księgowa).
+  2) Mechanizm: false_alarms_no_seasonality = TRIAGE (dopasować model);
+     anomalies_unaccounted = BLOCK (niewyjaśniona anomalia = potencjalna
+     awaria ścieżki AUTO_POST).
+  3) Bezpieczeństwo: mniej szumu = szybsza reakcja na prawdziwe anomalie.
+  4) Ryzyko: model sezonowy za szeroki — mitygacja: replay sezonowy P32-I07.
+  5) Akceptacja: test_p37_i07_unaccounted_block; test_p37_i07_false_alarms_
+     triage. Zależności: P32, P25 (kalendarz).
+  Dowód: gate PASS v3_p37_anomaly_detection.json.
+
+V3-P37-I08 — GOLDEN DRIFT WATCH
+  1) Luka: rozjazd produkcji z golden verdicts niewykrywany na bieżąco.
+  2) Mechanizm: drifted_decisions > 0 = BLOCK z diffem inputów;
+     drift_watch_disabled = BLOCK (obserwowalność dokładności obowiązkowa);
+     porównywacz z P10.
+  3) Bezpieczeństwo: dokładność SLO-03 (dryf 0) egzekwowana w runtime —
+     każdy dryf ma dowód diff, nie „podejrzenie".
+  4) Ryzyko: zamierzona zmiana reguł = dryf — mitygacja: 4-eyes update
+     golden (RB03), K04/K05 (SMT/replay) w częściach poprzednich.
+  5) Akceptacja: test_p37_i08_drift_block; test_p37_i08_disabled_block.
+     Zależności: P10.
+  Dowód: gate PASS v3_p37_golden_drift_watch.json.
+
+V3-P37-I09 — RUNBOOK-AS-CODE
+  1) Luka: alarmy bez runbooków (reagowanie ad-hoc).
+  2) Mechanizm: RB01–RB06 w docs/runbooks/; alerts_without_runbook > 0 =
+     BLOCK; stale runbooks = TRIAGE; test istnienia + powiązania SLO→runbook
+     w CI.
+  3) Bezpieczeństwo: każdy alarm ma kroki naprawy w repo (Auditable, wersjo-
+     nowany, przeglądany jak kod).
+  4) Ryzyko: runbooki nieświeże po zmianie progu — mitygacja: TRIAGE stale +
+     kontrakt P41.
+  5) Akceptacja: test_runbooks_exist; test_runbooks_link_slos;
+     test_p37_i09_missing_runbook_block. Zależności: P41.
+  Dowód: gate PASS v3_p37_runbook_as_code.json.
+
+V3-P37-I10 — COMPREHENSIVE STATUS PAGE
+  1) Luka: brak jednego statusu fortecy (dostępność, SLO, wiek prawa, luki).
+  2) Mechanizm: missing_sections = BLOCK (status bez luk to status kłamliwy);
+     stale > 1 dzień = TRIAGE; generacja z danych (v3_p37_status_page.py).
+  3) Bezpieczeństwo: status ZAWSZE pokazuje otwarte luki P0/P1 i wiek
+     weryfikacji prawa — zero „zielonego marketingu".
+  4) Ryzyko: status nieświeży w wypadku — mitygacja: próg 1 dzień + RB01.
+  5) Akceptacja: test_p37_i10_missing_sections_block; test_p37_i10_stale_
+     triage. Zależności: P30 (luki), P08.
+  Dowód: gate PASS v3_p37_status_page.json.
+
+V3-P37-I11 — METRYKI KOSZTU DECYZJI
+  1) Luka: ścieżki AI (P33) bez budżetu kosztu per decyzja.
+  2) Mechanizm: ai_decisions_without_cost = BLOCK; ponad limit (1.0) = TRIAGE;
+     cost governor P33-I08 jako źródło.
+  3) Bezpieczeństwo: koszt nie może cicho degenerować jakości — przekroczenie
+     widoczne, nie ukryte.
+  4) Ryzyko: limity za niskie dla cięższych domen — mitygacja: próg jako dane
+     (4-eyes), telemetria trendu.
+  5) Akceptacja: test_p37_i11_missing_cost_block; test_p37_i11_over_limit_
+     triage. Zależności: P33.
+  Dowód: gate PASS v3_p37_decision_cost.json.
+
+V3-P37-I12 — BENCHMARK REGRESSION GATE
+  1) Luka: brak baseline wydajności eval i bramki regresji w CI.
+  2) Mechanizm: baseline ZMIERZONY (60 przebiegów: 12 przypadków × 5; p50
+     558.14 ms, p95 616.36 ms, max 634.12 ms, cold-start e2e, metodyka jawna);
+     regression > 10% = BLOCK przed deployem bundle; brak baseline = BLOCK.
+  3) Bezpieczeństwo: regresja wydajności traktowana jak regresja
+     funkcjonalna — blokuje deploy, nie „note".
+  4) Ryzyko: dryft środowiska (Termux/CI) — mitygacja: porównanie
+     jak-tylko-do-jak (ta sama metodyka); podniesienie baseline tylko 4-eyes
+     (RB06).
+  5) Akceptacja: test_benchmark_baseline_measured; test_gate_tool_present;
+     test_p37_i12_regression_block; test_p37_i12_no_baseline_block.
+     Zależności: P36 (K1 standard transformacji), P39.
+  Dowód: gate PASS v3_p37_benchmark_regression.json + v3_p37_benchmark_gate.py.
+
+───────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (T5) — wiąże P38+ (deploy, CI, dokumentacja)
+───────────────────────────────────────────────────────────────────────────────
+K1. KATALOG METRYK I SLO (definicje/progi/akcje/runbooki) — jedynym źródłem
+    jest bundles/v3_p37_slo_catalog.json (6 SLO) + .benchmarks/eval_baseline.
+    json (baseline). Części P38 (deploy), P39 (CI), P44 HONORUJĄ te progi;
+    dodanie metryki = wpis do katalogu z progiem i runbookiem (inaczej vanity
+    → BLOCK wg I01).
+K2. KONWENCJA RUNBOOK-AS-CODE — runbooki w docs/runbooks/RB{n}_{slug}.md,
+    każdy SLO/ alarm wskazuje runbook w polu „runbook" (ścieżka repo); test
+    istnienia (pytest) blokuje merge. Wejście do P41 (dokumentacja).
+K3. ERROR BUDGET FREEZE — freeze_below_pct=0, okno 30 dni, eskalacja
+    slo-owner; CI (P39) odmawia merge przy freeze aktywnym (I06); awaryjne
+    odblokowanie WYŁĄCZNIE 4-eyes (Q02).
+K4. VANITY METRICS POLITYKA — metryka bez progu akcji i runbooka = vanity;
+    lista do usunięcia/podpięcia progu trafia do P30 (fale) i P36
+    (generatory). Stan na dziś: 6/6 SLO actionable; vanity w rdzeniu do
+    inwentaryzacji P36 (W-AN01).
+K5. BENCHMARK GATE — regresja p95 > 10% vs baseline (ta sama metodyka)
+    blokuje deploy bundle (I12); baseline podnoszony tylko 4-eyes.
+
+───────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA (T6) — wykonany
+───────────────────────────────────────────────────────────────────────────────
+| # | Krok | Status |
+|---|------|--------|
+| 1 | Weryfikacja statusu P36 (WDROŻONY_100) i wybór pierwszego nie wdrożonego (P37) | [x] |
+| 2 | Audyt istniejących artefaktów v3_p37 (rego/tools/bundles/tests/thresholds/wiring) | [x] |
+| 3 | Walidacja snapshotu progów v3_p37 (13 kluczy, valid_from, ADR-002/P05) | [x] |
+| 4 | Walidacja wiring p101 w main_jdg (import/rejestr/safe_merge; anchor p100→p101) | [x] |
+| 5 | Katalog SLO jako dane + polityka error budget (I01/I06) | [x] |
+| 6 | Runbook-as-code RB01–RB06 + powiązanie z SLO (I09) | [x] |
+| 7 | Benchmark baseline zmierzony + gate (I12) | [x] |
+| 8 | Testy natywne rego 32/32 ×2 (OPA 0.68; OPA 1.9 --v0-compatible) | [x] |
+| 9 | pytest 23/23 + regresja serii P13→P37 (620/620 rego; pytest 457 passed, 4 pre-existing legacy — L03) | [x] |
+| 10 | 13 bundli evidence gate PASS | [x] |
+| 11 | Raport RAPORT_V3_P37_OBSERWOWALNOSC.txt (ten plik) | [x] |
+| 12 | Oznaczenie P37 jako WDROŻONY_100 w bundles/v3_campaign_ledger.json (38/69, 55.07%) | [x] |
+
+Bez decyzji człowieka nie wymagało: katalog/runbooki/progi są danymi z
+wartościami rekomendowanymi; wartości krytyczne (500 ms, 7 dni, 10%) do
+potwierdzenia w 9.11 (Q01/Q03) — nie blokują (parametry-as-data).
+
+───────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (T7) — wykonane; bramki blokujące merge
+───────────────────────────────────────────────────────────────────────────────
+| Test | Typ | Oczekiwany wynik | Brama merge |
+|------|-----|------------------|-------------|
+| test_p37_routing_matrix (32 scenariusze) | rego natywny | PASS (routing ścieżek fail-closed) | TAK (opa test) |
+| test_p37_fail_closed_no_snapshot | rego | BLOCK przy braku progów | TAK |
+| test_p37_no_match_without_flag | rego | no_match bez flagi v3_p37_check | TAK |
+| test_p37_thresholds_snapshot_complete | rego | 13 kluczy obecnych | TAK |
+| test_p37_certificate_fields | rego | pola kontraktu P03 (wersje, valid_from) | TAK |
+| test_p37_unique_priorities / reasons / legal_basis | rego | brak duplikatów/pustych | TAK |
+| test_p37_all_12_innovations_present; decide chain; fail-closed; public rules | pytest | PASS 23/23 | TAK (pytest) |
+| test_slo_catalog_complete; error_budget_policy | pytest | 6 SLO z progiem/akcją/runbookiem | TAK |
+| test_runbooks_exist; test_runbooks_link_slos | pytest | RB01–RB06 istnieją i spięte z SLO | TAK |
+| test_benchmark_baseline_measured; test_gate_tool_present | pytest | baseline 60 przebiegów, p95>0, gate w repo | TAK |
+| test_main_jdg_wired_p101 | pytest | import+rejestr+final_verdict_p101 | TAK |
+| test_health_tier_is_zus_domain_not_sre | pytest | zero duplikacji tierów (AP04/AP12) | TAK |
+| Regresja P13→P37 (19 pakietów) | opa19 --v0-compatible | 620/620 PASS | TAK (seria) |
+| Granice progów (freshness 7 dni, spike 3×, latency 2×, dryf 0, benchmark 10%) | rego (case'y w macierzy) | PASS | TAK |
+| Fuzz/chaos mutacje input/data | (P34/P10) | fail-closed utrzymany | poza P37 (zależności) |
+
+───────────────────────────────────────────────────────────────────────────────
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+───────────────────────────────────────────────────────────────────────────────
+Q01. Czy akceptujesz wartości progów SLO (dostępność 99.5%, p95 500 ms
+     in-process, dryf golden 0, ISAP 7 dni, regresja 10%) jako kontrakt
+     produkcji? (progi są danymi — zmiana nie wymaga kodu, ale wymaga
+     decyzji biznesowej).
+Q02. Kto jest slo-owner (rola eskalacyjna error budget) i czy zgadzasz się na
+     ścieżkę awaryjnego odblokowania freeze wyłącznie 4-eyes?
+Q03. Czy BLOCK-alarmy mają mieć cichą godzinę? Rekomendacja SRE: NIE (krytyczne
+     zawsze), ale to decyzja operacyjna.
+Q04. Czy podnieść baseline benchmarku (cold-start p95 616 ms) po przejściu na
+     środowisko CI (inny profil sprzętowy) — decyzja 4-eyes wg RB06?
+
+───────────────────────────────────────────────────────────────────────────────
+9.12 ZAAŁOŻENIA JAWNE (T9)
+───────────────────────────────────────────────────────────────────────────────
+Z01. [ZAŁOŻENIE] Wartości progów v3_p37 (500 ms/7 dni/3×/0/1 dzień/1.0/10%) —
+     rekomendacje SRE; nie mierzone na produkcji (brak produkcji).
+Z02. [ZAŁOŻENIE] Baseline benchmarku reprezentatywny względem metodyki
+     (porównania 1:1), nie względem środowiska produkcyjnego.
+Z03. [ZAŁOŻENIE] Podstawy prawne (UoR 4/74–75, RODO 5.2/32, OrdPU 119a, VAT
+     109e, ZUS terminy) istnieją w brzmieniu przyjętym w kampanii — wymagają
+     weryfikacji ISAP (L01) [NIEZWERYFIKOWANE].
+Z04. [ZAŁOŻENIE] health_tier_engine/…_recalculator to domena ZUS (dowód:
+     TIER_LIMITS) — P37 świadomie nie rozszerza ich o SRE.
+Z05. [ZAŁOŻENIE] 4 porażki pytest i 2 błędy parse w plikach legacy są
+     przedistniejące (working tree bez modyfikacji plików źródłowych tych
+     testów w tej części; dryft tooli P00/P05/P06/P10 z poprzednich sesji).
+
+───────────────────────────────────────────────────────────────────────────────
+7.4 PYTANIA KRZYŻOWE (X01–X10)
+───────────────────────────────────────────────────────────────────────────────
+X01. Konflikty z dokumentami świętymi: BRAK. Reguła implementuje V1 zas. 6
+     (fail-closed), F4 (certyfikat), ADR-002/P06 (parametry-as-data), P05
+     (valid_from) — deklaracja zgodności na końcu pliku.
+X02. Naruszenia parametrów-as-data/temporalności: BRAK w P37 — wszystkie
+     progi w data.jdg.thresholds.v3_p37 z valid_from (testy:
+     test_v3p37_block_complete, test_p37_thresholds_snapshot_complete).
+X03. Ścieżki nie-fail-closed: BRAK — no_match tylko bez flagi; brak snapshotu
+     = BLOCK; test_p37_fail_closed_no_silent_auto_post (AP07).
+X04. Zgodność z kontraktem 25-polowym (P03): pola certyfikatu (matched,
+     rule_id, package, priority, threshold_version, legal_basis_version,
+     valid_from) — test_p37_certificate_fields; łańcuch safe_merge bez
+     nadpisywania pól niemutowalnych.
+X05. Testy bramkujące merge: pełna lista w 9.10 (kolumna Brama).
+X06. Duplikaty: health tiers ZUS świadomie NIE dublowane (Z04, test anty-
+     duplikacyjny); metryki rdzenia (metrics_generator/pewnosc_metrics)
+     używane jako źródła, nie kopiowane (AP12).
+X07. Podstawy niezweryfikowane: wszystkie z Sekcji 8 — rejestr mediacji L01
+     (priorytet: przed P44), tagi [NIEZWERYFIKOWANE] w regule i T2.
+X08. Decyzje wymagające człowieka: Q01–Q04 (9.11) — progi SLO, slo-owner,
+     cicha godzina, baseline CI.
+X09. Metryki trafiające do obserwowalności: 6 z katalogu SLO (nazwy/progi/
+     runbooki w 9.07 I01) + per-case latency rejestru (I04) + koszt AI (I11).
+X10. Inwarianty runtime (P04) dla P37: INV-proponowane: (a) „decyzja bez
+     certyfikatu nie istnieje" (I05 — już egzekwowane na poziomie pakietu),
+     (b) „drift watch obowiązkowy" (I08 BLOCK), (c) „freeze blokuje deploy"
+     (I06) — propagacja do P04 w P44 (certyfikacja), bez pilnej zmiany.
+
+───────────────────────────────────────────────────────────────────────────────
+7.5 ANTY-WZORCE (AP01–AP12) — wyniki sprawdzenia
+───────────────────────────────────────────────────────────────────────────────
+AP01 stuby {true}: BRAK w P37 (test fail-closed szuka samodzielnych stubów);
+     legacy poza zakresem (P50). | AP02 hardcode progów: BRAK — snapshot
+     thresholds (test). | AP03 otwarte negatywy: BRAK — decide else-chain z
+     default no_match. | AP04 duplikaty rule_id: BRAK (test unikalności;
+     priorytety unikalne globalnie 437001–437012). | AP05 podstawy bez
+     Dz.U.: tagi [NIEZWERYFIKOWANE] + L01. | AP06 testy zawsze-zielone: BRAK
+     — macierz 32 ścieżek z asercjami negatywnymi (BLOCK/TRIAGE). | AP07
+     cichy AUTO_POST: NIEOBECNY — fail-closed testowany. | AP08 cykle
+     importów: BRAK (P37 importuje tylko thresholds; main_jdg przez rejestr).
+     | AP09 dane zewnętrzne na stałe: BRAK — baseline jako dane z
+     measurement_scope. | AP10 brak okien temporalnych: BRAK — valid_from w
+     snapshotie i certyfikacie. | AP11 mirror dryft: poza P37 (L02 → P48;
+     parity hash per P26). | AP12 metryki w dwóch miejscach: UNIKNIĘTO —
+     certyfikat = jedyne źródło telemetrii decyzji (I05); katalog SLO =
+     jedyne źródło progów.
+
+───────────────────────────────────────────────────────────────────────────────
+T1 — TABELA DOWODÓW (pełna, pliki Sekcji 6)
+───────────────────────────────────────────────────────────────────────────────
+| # | Plik | Fakt/dowód | Status |
+|---|------|------------|--------|
+| 1 | tools/metrics_generator.py | istnieje; LCI/TCL/RV/UVR (źródło SLO-01) | ZWERYFIKOWANO |
+| 2 | tools/pewnosc_metrics.py | istnieje; metryki pewności | ZWERYFIKOWANO |
+| 3 | tools/health_tier_engine.py | tiery ZUS (60k/300k) — NIE SRE (audyt) | ZWERYFIKOWANO |
+| 4 | tools/health_tier_recalculator.py | istnieje (grupa ZUS) | ZWERYFIKOWANO |
+| 5 | tools/health_reconciliation_micro.py | istnieje | ZWERYFIKOWANO |
+| 6 | tools/enterprise_dashboard.py | istnieje | ZWERYFIKOWANO |
+| 7 | tools/confidence_dashboard.py | istnieje (dashboard pewności) | ZWERYFIKOWANO |
+| 8 | tools/drift_dashboard.py | istnieje (dashboard dryfu) | ZWERYFIKOWANO |
+| 9 | tools/holographic_viz.py | istnieje | ZWERYFIKOWANO |
+| 10 | bundles/metrics_pewnosci.json | istnieje; źródło health_score | ZWERYFIKOWANO |
+| 11 | bundles/healthy_versions.json | istnieje; rollback SLO-01 | ZWERYFIKOWANO |
+| 12 | bundles/control_plane_state.json | istnieje | ZWERYFIKOWANO |
+| 13 | bundles/deployments.json | istnieje; canary→soak pipeline | ZWERYFIKOWANO |
+| 14 | bundles/bundle_catalog.json | istnieje | ZWERYFIKOWANO |
+| 15 | .benchmarks/ | UTWORZONO eval_baseline.json (60 pomiarów) | ZWERYFIKOWANO (zmierzono) |
+| 16 | docs/PEWNOSC_DASHBOARD.md | kontekst (nie duplikowano) | ZWERYFIKOWANO (istnienie) |
+| 17 | docs/LEGAL_TWIN_RAPORT.md | kontekst | ZWERYFIKOWANO (istnienie) |
+| 18 | docs/LEGAL_TWIN_TRACEABILITY.md | kontekst | ZWERYFIKOWANO (istnienie) |
+| 19 | docs/API_REFERENCJA.md | kontekst | ZWERYFIKOWANO (istnienie) |
+| 20 | docs/INWENTARYZACJA_PLIKOW.md | kontekst | ZWERYFIKOWANO (istnienie) |
+| 21–26 | policies/jdg, policies/tax, policies/tax/vat, bundle.sh, base/manifest.json, overlays/v2026/manifest.json | mirror: parity per P26; pełny sync → P48 | NIEZWERYFIKOWANO w tej sesji (L02) |
+
+T10 — PRZEKAZYWANE ARTEFAKTY (11.4)
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| Katalog SLO (v3_p37_slo_catalog.json) | P38/P39/P44 | JSON | progi i akcje dla deploy/CI/certyfikacji |
+| Baseline eval (eval_baseline.json + gate) | P38/P39 | JSON/py | regresja > 10% blokuje deploy |
+| Polityka error budget freeze | P39 | JSON (dane) | CI odmawia merge przy freeze |
+| Runbook-as-code RB01–RB06 + konwencja | P41 | MD | dokumentacja operacyjna |
+| Polityka vanity metrics | P30/P36 | JSON/kontrakt | usunięcie/podpięcie progów |
+| Telemetria certyfikatów (I05) | P44 | kontrakt P11 | dowody certyfikacji finalnej |
+| Luki L01/L02/L03/L04 | P47/P48/P39/P38 | rejestr | domknięcie w dedykowanych częściach |
+
+T11 — MACIERZ PODANALIZA×GRUPA (APENDYKS B)
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik |
+|------------|----------------|-----------------|-------|
+| 5.1 | 6.1, 6.2 | 5 dowodów (T1 1–15) | 9.04/9.05 (W-AN01) |
+| 5.2 | 6.2, 6.3 | katalog SLO + I01/I06 testy | 9.04/9.05 (W-AN02) |
+| 5.3 | 6.1, 6.3 | RB01–RB06 + I09/I10 testy | 9.04/9.05 (W-AN03) |
+| 5.4 | 6.2 | baseline 60 pomiarów + I05/I11/I12 | 9.04/9.05 (W-AN04) |
+
+T12 — REJESTR KONFLIKTÓW: PUSTY (zero konfliktów Cxx z dokumentami świętymi
+i kontraktami P00–P36).
+
+APENDYKS E — PLAN PRACY: wykonany w całości (9.09, kroki 1–12 odznaczone).
+
+───────────────────────────────────────────────────────────────────────────────
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+───────────────────────────────────────────────────────────────────────────────
+Zgodność PEŁNA z: ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1: fail-closed zas.
+6, SLO, bramki CI) i WIZJA_OPA_ENTERPRISE_V2.md (F4 Decision Certificate,
+Golden Oracle P10, Law Radar P08). Odstępstwa: BRAK. Konfliktów Cxx: BRAK.
+Podstawy prawne: [NIEZWERYFIKOWANE] (L01 → P47/P44). Zero fikcyjnych artykułów,
+ustępów i stawek — wartości progów to rekomendacje inżynierskie jako dane
+(Z01), nie twierdzenia prawne.
+
+KONIEC RAPORTU V3 P37 — WDROŻONY_100 (realne artefakty, 2026-09-09)
+Testy: 32/32 rego ×2 OPA + 23/23 pytest; regresja P13→P37: 620/620;
+13/13 bundli gate PASS.
+Następna część: P38 BUNDLE_DEPLOY — pierwsza NIE_WDROŻONA w ledgerze
+(przejście z CZYSTĄ sesją: EXECUTIVE SUMMARY + KONTRAKT WYJŚCIOWY K1–K5 +
+LUKI L01–L04).
+═══════════════════════════════════════════════════════════════════════════════

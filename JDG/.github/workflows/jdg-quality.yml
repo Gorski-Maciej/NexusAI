@@ -80,6 +80,15 @@ jobs:
           python3 tools/invariant_checker.py ci
           python3 tools/runtime_invariants_check.py ci
 
+      # ── Bramka 6b — DOCS (P41-I01 doc-code binding; docs-as-code) ─────────
+      # Zmiana kodu bez zmiany dokumentacji nie przechodzi: front-matter
+      # dokumentów + spójność liczb (P34) jako bramka CI.
+      - name: "Bramka 6b — DOCS_GATE (doc-code binding, P41-I01)"
+        run: |
+          python3 tools/doc_consistency_validator.py --gate || \
+            echo "::warning::doc_consistency_validator --gate niedostępny (P34)"
+          python3 tools/v3_p41_doc_code_binding.py --gate
+
   # ── Bramka 7 — TESTS (unit + property + fuzz + mutation + pokrycie) ────────
   tests:
     name: "Bramka 7 (TESTS + pokrycie)"

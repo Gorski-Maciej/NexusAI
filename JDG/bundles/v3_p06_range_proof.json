@@ -1,9 +1,9 @@
 {
   "innovation": "V3-P06-I11",
-  "generated_at": "2026-09-08T17:06:05.048391+00:00",
+  "generated_at": "2026-09-09T12:59:20.498959+00:00",
   "gate": "PASS",
   "metrics": {
-    "leafs_checked": 808,
+    "leafs_checked": 867,
     "finite_ok": true,
     "negative_values": 0,
     "legal_violations": 0,
@@ -27,7 +27,7 @@
     {
       "name": "finite_values",
       "status": "OK",
-      "detail": "wszystkie wartości skończone: 808 (NaN/Inf: 0)"
+      "detail": "wszystkie wartości skończone: 867 (NaN/Inf: 0)"
     },
     {
       "name": "non_negative_values",

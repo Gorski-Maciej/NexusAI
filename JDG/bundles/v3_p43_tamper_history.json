@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P43-I08",
+  "generated_at": "2026-09-09T11:58:03+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "hash_chain_in_worm_source": true,
+    "rule_history_in_worm_scope": true,
+    "tamper_test_contract": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p43_security_dr.tamper_rule_history: True"
+    },
+    {
+      "name": "hash_chain_in_worm_source",
+      "status": "OK",
+      "detail": "hash chain (prev_hash) w tools/worm_storage.py: True"
+    },
+    {
+      "name": "rule_history_in_worm_scope",
+      "status": "OK",
+      "detail": "rule_history w zakresie archiwizacji: ['decisions', 'certificates', 'bundles', 'documentation_export', 'api_audit_logs', 'rule_history']"
+    },
+    {
+      "name": "tamper_test_contract",
+      "status": "OK",
+      "detail": "test tamper-proof w CI (P42-K3): True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p107"
+    }
+  ],
+  "findings": []
+}

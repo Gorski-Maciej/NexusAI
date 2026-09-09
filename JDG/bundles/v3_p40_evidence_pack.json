@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P40-I12",
+  "generated_at": "2026-09-09T10:01:28+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "evidence_pack_contents": true,
+    "export_checksum_required": true,
+    "certificate_service_exists": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p40_api_dane_ui.evidence_pack: True"
+    },
+    {
+      "name": "evidence_pack_contents",
+      "status": "OK",
+      "detail": "zawartość pakietu: ['decision_certificate', 'input_snapshot', 'rule_ids', 'bundle_hash', 'signatures'] (wymagane: ['decision_certificate', 'input_snapshot', 'rule_ids', 'bundle_hash', 'signatures'])"
+    },
+    {
+      "name": "export_checksum_required",
+      "status": "OK",
+      "detail": "checksum eksportu obowiązkowa: True"
+    },
+    {
+      "name": "certificate_service_exists",
+      "status": "OK",
+      "detail": "tools/certificate_service.py (P11): True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p104"
+    }
+  ],
+  "findings": []
+}

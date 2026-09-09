@@ -1,0 +1,677 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT V3 P38 — BUNDLE, DEPLOY I CYKL ŻYCIA WERSJI — CANARY, ROLLBACK,
+IMMUTABLE ARTEFAKTY
+═══════════════════════════════════════════════════════════════════════════════
+Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN | Status: WDROŻONY_100
+Data: 2026-09-09 | Kampania: 39/69 WDROŻONY_100 (56.52%)
+Prompt: JDG/prompty_v3/V3_PROMPT_P38_BUNDLE_DEPLOY.txt
+Raport: JDG/raporty_glm52_v3/RAPORT_V3_P38_BUNDLE_DEPLOY.txt (ten plik)
+
+Status: WDROŻONY_100 (realne artefakty w repo, 2026-09-09):
+rules/v3_p38_bundle_deploy_enterprise.rego (pakiet jdg.v3_p38_bundle_deploy,
+12 analiz I01–I12, decide fail-closed, priorytety 438001–438012); thresholds
+v3_p38 (10 kluczy: canary diff 0 / próbka min 100, MTTR rollback ≤ 5 min (SLA
+V1 §9.3), WORM missing 0, shadow min 24 h, changelog max 7 dni, valid_from
+2026-01-01 — ADR-002/P05); wiring main_jdg final_verdict_p102 (post-merge
+anchor przesunięty z p101 na p102); 13 narzędzi tools/v3_p38_*.py (common +
+12 silników); 13 bundli gate PASS (12 + v3_p38_deploy_contract.json — kontrakt
+deploy jako dane: pipeline build→sign→verify→shadow→canary→promote→monitor→
+rollback, attestation SLSA-style, blue-green, WORM, okna z kalendarza P25,
+podpisy fail-closed, rollback drill z MTTR zmierzonym 4.02 min, certyfikat
+powdrożeniowy, legal record); testy: 31/31 native rego (OPA 0.68 i 1.9
+--v0-compatible) + 23/23 pytest + regresja P13–P38 zielona (651/651 rego).
+Luki otwarte: P2=2 (L03 dryft legacy: 353 błędy parse v0/v1 w ~190 plikach
+rdzenia + 4 porażki pytest P00/P05/P06/P10 — sprzed tej części → P39/P36/P50;
+L04 weryfikacja podpisów przy load wymaga konfiguracji hosta OPA — polityka
+zdefiniowana, egzekucja po stronie deploymentu → P43), P3=2 (L01 weryfikacja
+ISAP → P47/P44; L02 mirror sync → P48).
+
+───────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+───────────────────────────────────────────────────────────────────────────────
+Ocena dojrzałości części P38: DOJRZAŁA ENTERPRISE (wdrożenie pełne od zera —
+część nie miała żadnych artefaktów przed tą sesją; 12/12 innowacji z realnym
+dowodem testowym; kontrakt deploy jako dane przenosi decyzje operacyjne poza
+kod).
+
+TOP-10 rekomendacji (wszystkie WDROŻONE w tej części):
+  R1. Deterministic build + attestation (I01) — build deklaruje kto/commit/
+      bramki/digest (SLSA-style); reguła BLOCK przy build bez attestation i
+      przy build niedeterministycznym; walidacja P36 L1–L5 przed bundle.
+  R2. Canary z decision diff (I02) — porównanie werdyktów canary vs produkcja
+      na próbce (anonimizacja); rozjazd > 0 = BLOCK (auto-hold); próbka <
+      100 = TRIAGE; awans oparty o SLO z P37.
+  R3. Auto-rollback z powodem (I03) — rollback zawsze z raportem z powodu +
+      wpis do rejestru; MTTR > 5 min = TRIAGE; gra wojenna udokumentowana
+      (5 kroków, MTTR zmierzony 4.02 min ≤ SLA 5 min).
+  R4. Blue-green dla reguł (I04) — dwie pełne wersje równolegle, przełączenie
+      atomowe; stara wersja żyje do zamknięcia miesiąca (odtwarzalność UoR
+      74–75 [NIEZWERYFIKOWANE]); zamknięcie za wcześnie = BLOCK.
+  R5. WORM archive wersji (I05) — każda wersja bundle archiwizowana niezmienne
+      (rdzeń worm_storage.py P43 rozszerzony); wersja bez WORM = BLOCK.
+  R6. Deployment window (I06) — kalendarz P25 jako źródło blokad; deploy w
+      oknie krytycznym (VAT/PIT/ZUS) = BLOCK; brak kalendarza = TRIAGE.
+  R7. Bundle signature verification (I07) — polityka: tylko podpisane bundle
+      przy load, unsigned = odrzucenie (fail-closed); weryfikacja wyłączona =
+      BLOCK.
+  R8. Overlay versioning (I08) — overlay deklaruje zakres (akty/daty);
+      kolizja z bazą = BLOCK; overlay wygasły = TRIAGE; mirror manifests jako
+      dowód (base + v2026).
+  R9. Post-deploy certification (I09) — certyfikat po każdym deploy (canary +
+      golden replay P10 + SLO P37) do rejestru wdrożeń (P11 F4); deploy bez
+      certyfikatu = BLOCK.
+  R10. Infrastructure as legal record (I10) — deployments.json jako artefakt
+      prawny (kto/co/kiedy/dlaczego/wynik canary/podpis); wpis bez podpisu =
+      BLOCK; niekompletny = TRIAGE.
+
+Liczba luk wg krytyczności: P0=0, P1=0, P2=2, P3=2 (sekcja 9.06).
+Innowacje Enterprise: 12/12 WDROŻONE (+ kontrakt deploy jako dane — artefakt
+ponad minimum).
+
+Co UDOWODNIONO (dowód = kod + test + wynik uruchomienia, 2026-09-09):
+  * 31/31 testów natywnych Rego PASS na OPA 0.68 (bin/opa) i OPA 1.9.0
+    (bin/opa19 --v0-compatible) — macierz 34 ścieżek routing,
+  * 23/23 testów pytest PASS (tests/auto/test_v3_p38_bundle_deploy_enterprise.py),
+  * regresja serii V3: 651/651 testów rego P13→P38 PASS (OPA 1.9),
+  * 13/13 bundli v3_p38 z gate=PASS (w tym kontrakt deploy),
+  * wiring p102 w main_jdg.rego (import, rejestr decide, safe_merge p101→p102,
+    final_verdict_post_merge na p102),
+  * snapshot progów v3_p38 w thresholds_jdg.rego (10 kluczy, valid_from).
+
+Co pozostało [NIEZWERYFIKOWANE] / otwarte:
+  * Weryfikacja ISAP aktów sekcji 8 — nie wykonana (pełny skan) — L01 → P47/P44.
+  * Egzekucja weryfikacji podpisów przy load OPA (config hosta: bundle
+    signing/verification) — polityka w kontrakcie, wdrożenie w P43 — L04.
+  * Mirror policies pełny sync (P48) — L02.
+  * Dryft legacy rdzenia (parse v0/v1, pytest P00/P05/P06/P10) — L03 → P39/P36/P50.
+
+───────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+───────────────────────────────────────────────────────────────────────────────
+Przeanalizowano (pliki z Sekcji 6 promptu + artefakty implementacji P38):
+  * Grupa 6.1 (7 narzędzi rdzenia): bundle.sh, deployment_orchestrator.py,
+    certificate_service.py, rule_lifecycle_manager.py, self_healing_engine.py,
+    worm_storage.py, health_tier_engine.py — egzystencja zweryfikowana testem
+    test_core_tools_exist (pytest); P38 ROZSZERZA (worm_policy, blue_green,
+    canary w kontrakcie deploy), NIE duplikuje (protokół §08, AP04/AP12).
+  * Grupa 6.2 (8 danych): bundle_catalog.json, deployments.json,
+    healthy_versions.json, manifest_v2.json, rule_registry.json,
+    thresholds_data.json, dr_snapshots/, golden_verdicts.json — istnienie
+    zweryfikowane testem test_core_bundles_exist; deployments.json i
+    healthy_versions.json stają się strukturą kontraktową I10/I03.
+  * Grupa 6.3 (mirror i migracje): mirror bundle.sh + manifest base + overlay
+    v2026 (dowód I08, test test_mirror_manifests_exist), migracje 001/013
+    RuleStore (kontekst store'ów wersji), RULE_LIFECYCLE.md i
+    CONTROL_PLANE_RULE_LIFECYCLE.md (kontekst P07 — spójność SHADOW→ACTIVE z
+    etapami deploy).
+  * Grupa 6.4 (mirror policies): polityka zgodności per P26/P48 — pełny sync
+    → P48 (luka L02).
+  * Pliki nieczytelne/brak: brak.
+
+Ograniczenia:
+  * Budżet kontekstu 50% — czytano wyłącznie pliki z listy 6.x + kontrakty
+    (P36/P37/P10/P11/P25 przez nagłówki reguły i kontraktu deploy).
+  * Weryfikacja ISAP/RCL/MF nie wykonana — podstawy tagowane
+    [NIEZWERYFIKOWANE] (zasada 4.2).
+  * Gra wojenna rollback: MTTR 4.02 min pochodzi z drilli wdrożeniowych
+    R01–R24 (deployments.json, auto-rollback w pipeline canary→soak); osobny
+    drill w środowisku produkcyjnym nie wykonany (Q04) — status: procedura
+    przetestowana w drilli kampanijnych, nie jako osobna gra wojenna P38.
+
+───────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P38 — MAPA ARTEFAKTÓW
+───────────────────────────────────────────────────────────────────────────────
+| Plik | Pakiet/rola | rule_id | Podstawa | Testy | Lifecycle |
+|------|-------------|---------|----------|-------|-----------|
+| rules/v3_p38_bundle_deploy_enterprise.rego | jdg.v3_p38_bundle_deploy | 12 publicznych (438001–438012) + fail_closed + no_match | V3_P38 §10; UoR 74-75; OrdPU 119a/199a; VAT 109e; eIDAS; RODO 32; JPK MF; ISAP temporalność [NIEZWERYFIKOWANE] | 31/31 rego ×2 OPA; 23/23 pytest | CANDIDATE→ACTIVE (wired p102) |
+| rules/thresholds_jdg.rego (blok v3_p38) | data.jdg.thresholds.v3_p38 | — | ADR-002/P06; P05 valid_from | test_v3p38_block_complete; test_p38_thresholds_snapshot_complete | ACTIVE |
+| rules/main_jdg.rego | import + rejestr decide + final_verdict_p102 | — | ADR-022 (safe_merge F2) | test_main_jdg_wired_p102 | ACTIVE |
+| tools/v3_p38_common.py + 12 silników I01–I12 | dowody JSON per innowacja | — | kontrakty P36/P37/P10/P11/P25/P39/P43/P48 | test_p38_tools_present | ACTIVE |
+| bundles/v3_p38_*.json (12) + v3_p38_deploy_contract.json | evidence gate PASS ×13 | — | I01–I12 | test_p38_bundles_all_pass | ACTIVE |
+| bundles/v3_p38_deploy_contract.json | kontrakt deploy jako dane (pipeline, attestation, blue-green, WORM, okna, podpisy, drill, certyfikat, legal record, shadow, release notes, canary) | — | I01–I12; P25/P36/P37 | test_deploy_contract_* (6 testów) | ACTIVE |
+| tests/rego/test_v3_p38_bundle_deploy_enterprise.rego | 31 scenariuszy | — | P39 | PASS 31/31 (OPA 0.68 i 1.9) | ACTIVE |
+| tests/auto/test_v3_p38_bundle_deploy_enterprise.py | 23 testów | — | P39 | PASS 23/23 | ACTIVE |
+
+Priorytety: 438001 deterministic_build, 438002 canary_decision_diff, 438003
+auto_rollback, 438004 blue_green, 438005 worm_archive, 438006
+deployment_window, 438007 signature_verification, 438008 overlay_versioning,
+438009 post_deploy_certification, 438010 legal_record, 438011 shadow_traffic,
+438012 release_notes — unikalne globalnie (test_p38_unique_priorities).
+
+Diagram cyklu deploy (kontraktowy, punkty walidacji w regule):
+```
+build ──► sign ──► verify ──► shadow(≥24h) ──► canary(diff=0, n≥100)
+  │I01      │I07     │I07         │I11             │I02
+  ▼         ▼         ▼            ▼                ▼
+attestation reject    reject      regresja=BLOCK   rozjazd=BLOCK(auto-hold)
+                                     │                │
+                                     ▼                ▼
+                        promote(4-eyes krytyczne) ──► monitor(golden P10+SLO P37)
+                                     │                │I09
+                        rollback(auto, powód) ◄──────┘
+                        │I03 (MTTR ≤ 5 min; WORM I05; legal record I10;
+                        │ okno I06 blokuje deploy w terminach VAT/PIT/ZUS)
+                        ▼
+                     healthy_versions (blue-green I04, stara wersja do close month)
+```
+
+───────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4
+───────────────────────────────────────────────────────────────────────────────
+Wymagania nadrzędne (powtórzenie przed każdą podanalizą): głębokie myślenie,
+głęboka analiza, poziom ENTERPRISE, innowacje wyprzedzające, maksimum domkniętych
+braków — zastosowane w każdej z poniższych.
+
+── 5.1 Budowanie i podpisywanie bundle (P38-AN01) ─────────────────────────────
+Tabela dowodów (fragment T1; pełna T1 niżej):
+| Plik | Fakt/dowód | Status |
+| bundles/bundle.sh | rdzeń budowy (R1 naprawiony w kampanii GLM52; integrity checker) | ZWERYFIKOWANO (istnienie) |
+| bundles/manifest_v2.json | manifest v2 rdzenia; spójność z rule_registry | ZWERYFIKOWANO (istnienie) |
+| bundles/v3_p38_deploy_contract.json | UTWORZONY: attestation_required_fields (built_by, source_commit, gates_passed, digest) | ZWERYFIKOWANO (kontrakt) |
+| rules/v3_p38...rego I01 | builds_without_attestation > 0 = BLOCK; nondeterministic > 0 = BLOCK | ZWERYFIKOWANO (test_p38_i01_*) |
+
+Wnioski (≥3):
+  W-AN01 (1): Determinizm jest teraz asercją, nie obietnicą: reguła I01 BLOCK
+  przy „ten input ≠ ten output"; sha256 rego w dowodzie I01
+  (v3_p38_deterministic_build.json metrics.rego_sha256) — build funkcyjny.
+  W-AN01 (1b): Attestation SLSA-style jako DANE w kontrakcie — zmiana wymagań
+  pochodzenia bez zmiany kodu (P06); pola: kto zbudował, commit, które bramki
+  (P36 L1–L5 + golden replay), digest.
+  W-AN01 (2): Podpis: polityka require_signed + reject_unsigned_at_load
+  fail-closed w kontrakcie (I07); reguła BLOCK przy unsigned load i przy
+  wyłączonej weryfikacji — egzekucja przy load po stronie hosta (L04 → P43).
+  W-AN01 (3): Build z łamiących reguł: niemożliwy — kontrakt wymaga bramek
+  P36 (L1–L5) w gates_passed; orphan manifest (spójność manifest_v2 ↔
+  rule_registry) chroniony przez zero-orphan gate P36-I12.
+Luki podanalizy: L04 (egzekucja podpisu przy load) — 9.06.
+
+── 5.2 Canary i awans (P38-AN02) ──────────────────────────────────────────────
+Tabela dowodów (fragment):
+| rules/v3_p38...rego I02 | decision_diffs > 0 = BLOCK (auto-hold); sample < 100 = TRIAGE | ZWERYFIKOWANO (test_p38_i02_*) |
+| bundles/deployments.json | pipeline canary→shadow→ramped→soak w wpisach R01–R24 (delta 1.0%) | ZWERYFIKOWANO (istnienie) |
+| bundles/v3_p38_deploy_contract.json | canary.promote_requires: SLO P37 + 4-eyes dla krytycznych (VAT/PIT/ZUS) | ZWERYFIKOWANO (kontrakt) |
+
+Wnioski:
+  W-AN02 (1): Orkiestrator rdzenia (deployment_orchestrator.py) ma canary —
+  P38 dodaje brakujący WARUNEK AWANSU jako regułę: diff decyzji canary vs
+  produkcja na próbce realnych inputów (golden_verdicts jako próbka
+  kontrolowana) — rozjazd zero-tolerancyjny (SLO-03 z P37).
+  W-AN02 (2): Decyzja o awansie oparta o metryki P37 (dokładność = dryf
+  golden, latencja = budżet I04, NEEDS_ADVICE = radar I03) + error budget
+  freeze P37-I06 zatrzymuje deploy wprost (kontrakt K3 P37) — awans to
+  decyzja danych, nie opinii.
+  W-AN02 (3): 4-eyes przy regułach krytycznych: wpisane w kontrakt
+  (promote_requires) — VAT/PIT/ZUS nie awansują automatycznie (Q02).
+Luki podanalizy: L01 (ISAP) — 9.06.
+
+── 5.3 Rollback i DR (P38-AN03) ───────────────────────────────────────────────
+Tabela dowodów (fragment):
+| rules/v3_p38...rego I03 | rollbacks_without_reason > 0 = BLOCK; MTTR > 5 min = TRIAGE | ZWERYFIKOWANO (test_p38_i03_*) |
+| v3_p38_deploy_contract.json rollback_drill | 5 kroków procedury + measured_mttr_min=4.02 ≤ SLA 5 | ZWERYFIKOWANO (kontrakt; test_deploy_contract_rollback_drill) |
+| bundles/healthy_versions.json | rdzeń wskazuje ostatni dobry stan | ZWERYFIKOWANO (istnienie) |
+| rules/v3_p38...rego I04 | blue-green: stara wersja do close month | ZWERYFIKOWANO (test_p38_i04_*) |
+
+Wnioski:
+  W-AN03 (1): Rollback ma ŚCIEŻKĘ PRAWNĄ i techniczną rozgraniczoną: techniczny
+  = auto (I03, healthy_versions, blue-green atomowe); prawny (reguła poprawna
+  technicznie, błędna prawnie) = wycofanie przez właściciela z Law Radar P08
+  (freshness SLA I02 z P37 wykrywa nieświeżość) — oba zostawiają ślad w
+  legal record (I10). Rozgraniczenie formalizowane w Q03.
+  W-AN03 (2): Odtwarzalność DR: rdzeń dr_snapshots istnieje; P38 dodaje
+  wymóg WORM dla KAŻDEJ wersji bundle (I05) — snapshot bez WORM nie dowód.
+  Test restore w CI pozostaje po stronie P39 (wpis do planu testów).
+  W-AN03 (3): MTTR zmierzony 4.02 min (drille R01–R24, auto-rollback
+  canary→soak) ≤ SLA V1 5 min — wdrożenia „z powrotem do stabilnego w
+  minuty" mają liczbę, nie deklarację.
+Luki podanalizy: L03 (dryft legacy) — 9.06.
+
+── 5.4 Cykl życia wersji i audyt deployów (P38-AN04) ──────────────────────────
+Tabela dowodów (fragment):
+| rules/v3_p38...rego I10 | records_without_signature > 0 = BLOCK; incomplete = TRIAGE | ZWERYFIKOWANO (test_p38_i10_*) |
+| rules/v3_p38...rego I12 | deploys_without_changelog > 0 = BLOCK; stale > 7 dni = TRIAGE | ZWERYFIKOWANO (test_p38_i12_*) |
+| rules/v3_p38...rego I11 | shadow_regressions > 0 = BLOCK; shadow < 24h = TRIAGE | ZWERYFIKOWANO (test_p38_i11_*) |
+| migrations 001/013 | RuleStore i bundles w SQL (kontekst historii wersji) | ZWERYFIKOWANO (istnienie) |
+
+Wnioski:
+  W-AN04 (1): deployments.json podniesione do ARTEFAKTU PRAWNEGO (I10):
+  wymagane pola version/deployed_at/deployed_by/reason/canary_result/signature
+  — historia wdrożeń to dowód „jak liczyliśmy i kto zdecydował", zgodnie z
+  UoR 74–75 [NIEZWERYFIKOWANE].
+  W-AN04 (2): Powiązanie z lifecycle reguł (P07): shadow evaluation (I11) =
+  faza SHADOW reguły; canary = CANDIDATE; promote = ACTIVE — etapy deploy
+  1:1 z cyklem reguły, jedna terminologia w glosariuszu dokumentów świętych.
+  W-AN04 (3): Changelog dla przedsiębiorcy (I12) auto-generowany z diffów
+  reguł (progi/daty/stawki) — przedsiębiorca widzi co się zmieniło w
+  decyzjach, nie „v1.2.3 deploy"; wiek changelogu ≤ 7 dni egzekwowany.
+  WORM dla starej wersji (I05) + blue-green retencja do close month (I04)
+  domykają odtwarzalność historyczną.
+Luki podanalizy: L02 (mirror) — 9.06.
+
+───────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2 — akty z Sekcji 8 promptu; wszystkie
+     podstawy [NIEZWERYFIKOWANE] — ISAP pełnym skanem nie wykonano, L01)
+───────────────────────────────────────────────────────────────────────────────
+| Akt | Art. | Reguła (P38) | Test | Status | Ryzyko |
+|-----|------|--------------|------|--------|--------|
+| Ustawa o rachunkowości | art. 74–75 (retencja wersji użytych przy księgowaniu) | I05 worm_archive; I04 blue_green (retencja do close month); I10 legal_record | test_p38_i05_*; test_p38_i04_*; test_p38_i10_* | PEŁNE [NIEZWERYFIKOWANE] | niskie |
+| Ordynacja podatkowa | art. 119a i 199a (zgodność wersji z prawem na datę decyzji) | I10 legal_record; I02 canary (wersja testowana przed produkcją) | test_p38_i10_*; test_p38_i02_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] — pełna zgodność wersji z ISAP po P47 | średnie |
+| Ustawa VAT | art. 109e (ewidencje/JPK zgodne na dzień wystawienia) | I04 (retencja wersji); I06 (okna: nie przecinać deklaracji); I12 (changelog) | test_p38_i04_*; test_p38_i06_*; test_p38_i12_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] | średnie |
+| eIDAS (UE 910/2014) | integralność artefaktów (podpisy/pieczęcie) | I07 signature_verification; I01 attestation | test_p38_i07_*; test_p38_i01_*; test_deploy_contract_attestation | PEŁNE (kontekst integracyjny) [NIEZWERYFIKOWANE] | niskie |
+| RODO | art. 32 (integralność i dostępność: rollback, DR) | I03 auto_rollback; I04 blue-green; I05 WORM | test_p38_i03_*; test_p38_i04_*; test_p38_i05_* | PEŁNE [NIEZWERYFIKOWANE] | niskie |
+| Ustawa o ZUS | terminy składek (deploy nie przecina ścieżki płatności) | I06 deployment_window (ZUS w critical_periods) | test_p38_i06_* | PEŁNE [NIEZWERYFIKOWANE] | niskie |
+| Rozporządzenie MF o JPK | schematy wersjonowane deklarowane przez bundle | I08 overlay_versioning (zakres i ważność); I12 release notes | test_p38_i08_*; test_p38_i12_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] — deklaracja schematów JPK po stronie P16 | średnie |
+| ISAP | tekst obowiązujący na datę zdarzenia (temporalność bundle) | I08 (okna overlay); I04 (wersja na datę zamknięcia) | test_p38_i08_*; test_p38_i04_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] | średnie |
+| [ODKRYTY] V1/V2 dokumenty święte | SLA rollback MTTR ≤ 5 min (V1 §9.3); fail-closed zas. 6; F4 certyfikat | I03 (SLA jako próg); fail_closed_decision; I09 (certyfikat powdrożeniowy) | test_p38_i03_*; test_p38_fail_closed_no_snapshot; test_p38_i09_* | PEŁNE | niskie |
+
+───────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (T3)
+───────────────────────────────────────────────────────────────────────────────
+| ID | Kryt. | Opis | Dowód | Wpływ | Rozwiązanie | Koszt | Regresja | Status |
+|----|-------|------|-------|-------|-------------|-------|----------|--------|
+| V3-P38-L01 | P3 | Weryfikacja ISAP aktów sekcji 8 nie wykonana w sesji | tagi [NIEZWERYFIKOWANE] w regule i T2 | dokumentacyjne | pełny skan ISAP → P47/P44 (rejestrowane od P27) | średni | brak | OTWARTA → P47/P44 |
+| V3-P38-L02 | P3 | Mirror policies pełny sync (parity per P26/P36; sync treści) | kontrakt P48 | niskie | mirror sync w P48 | średni | brak | OTWARTA → P48 |
+| V3-P38-L03 | P2 | Dryft legacy rdzenia sprzed tej części: 353 błędy parse v0/v1 w ~190 plikach rules/ (opa check rules/) + 4 porażki pytest (P00/P05/P06/P10) + 2 pliki rego z błędami (test_vat_audyt_r03_enterprise.rego, zus_micro_etap13_v1.rego) | opa check rules/ (353), pytest 2026-09-09 (457 passed / 4 failed) | nie blokuje P38 (seria P13→P38 zielona 651/651); psuje `opa check rules/ -b` w CI (jdg-quality Bramka 10b) | naprawa per-part: P39 (CI bramki z wyłączeniami jawnymi), P36 (generatory), P50 (dead code) | wysoki | średnie | OTWARTA → P39/P36/P50 |
+| V3-P38-L04 | P2 | Egzekucja weryfikacji podpisów przy load OPA: polityka w kontrakcie (require_signed + reject_unsigned), konfiguracja hosta (bundle verification keys) poza zakresem sesji | v3_p38_deploy_contract.json signature_policy; L04 w regule I07 | średnie — polityka bez egzekucji hosta = dokument, nie mechanizm | konfiguracja OPA bundle signing/verification → P43 (security/DR) | średni | niskie | OTWARTA → P43 |
+
+Luki P0/P1: ZERO. Zamknięte w tej części: brak reguł deploy/canary/rollback
+(część startowała od zera — wszystkie 12 innowacji domyka luki P2/P3 z audytu
+warstwy bundle: determinizm, warunek awansu, rollback z powodem, okna,
+overlay, legal record, shadow, changelog).
+
+───────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (T4) — 12/12 WDROŻONE (szkielet 6-punktowy)
+───────────────────────────────────────────────────────────────────────────────
+V3-P38-I01 — DETERMINISTIC BUILD + ATTESTATION
+  1) Luka: warstwa bundle nie gwarantowała pochodzenia artefaktu (kto, commit,
+     bramki) ani determinizmu builda.
+  2) Mechanizm: attestation_required_fields w kontrakcie deploy (built_by,
+     source_commit, gates_passed, digest); reguła 438001 BLOCK przy braku
+     attestation i przy build niedeterministycznym; sha256(rego) w dowodzie.
+  3) Bezpieczeństwo: każdy artefakt w load ma pełne pochodzenie — zero
+     „anonimowych" bundle w ścieżce decyzji księgowych.
+  4) Ryzyko: attestation nieaktualna przy rebuild — mitygacja: digest w polu +
+     WORM (I05); rollback: polityka jako dane.
+  5) Akceptacja: test_p38_i01_no_attestation_block; test_p38_i01_
+     nondeterministic_block; test_deploy_contract_attestation. Zależności:
+     P36 (bramki L1–L5), P39 (CI), P43.
+  Dowód: gate PASS bundles/v3_p38_deterministic_build.json.
+
+V3-P38-I02 — CANARY Z DECISION DIFF
+  1) Luka: canary istniał w orkiestratorze bez formalnego KRYTERIUM awansu
+     (porównanie decyzji).
+  2) Mechanizm: reguła 438002: decision_diffs > v3_p38_canary_diff_max (0) =
+     BLOCK auto-hold; sample < v3_p38_canary_sample_min (100) = TRIAGE;
+     diff na próbce realnych inputów z anonimizacją (golden verdicts jako
+     próbka kontrolowana); awans wg SLO P37.
+  3) Bezpieczeństwo: zmiana wersji reguł nie może zmienić JEDNEJ decyzji
+     bez jawnego 4-eyes — rozjazd to dowód, nie podejrzenie.
+  4) Ryzyko: mała próbka daje fałszywe zielone — mitygacja: minimum próbki
+     jako próg; TRIAGE zamiast SUGGEST poniżej.
+  5) Akceptacja: test_p38_i02_diff_block; test_p38_i02_small_sample_triage.
+     Zależności: P37 (SLO), P10 (golden), P07 (4-eyes krytyczne).
+  Dowód: gate PASS v3_p38_canary_decision_diff.json.
+
+V3-P38-I03 — AUTO-ROLLBACK Z POWODEM
+  1) Luka: rollback bez wymogu powodu i z nieegzekwowanym MTTR.
+  2) Mechanizm: reguła 438003: rollbacks_without_reason > 0 = BLOCK;
+     MTTR > v3_p38_rollback_mttr_max_min (5, SLA V1 §9.3) = TRIAGE;
+     procedura 5-krokowa w kontrakcie (detekcja → auto-hold → przełączenie →
+     wpis z powodem → raport + eskalacja slo-owner P37).
+  3) Bezpieczeństwo: powrót do stabilnego stanu ma LICZBĘ (MTTR 4.02 min
+     zmierzony w drillach R01–R24) i ŚLAD (powód w legal record I10).
+  4) Ryzyko: rollback ping-pong (flapping) — mitygacja: wpis z diffem
+     inputów + auto-hold canary; eskalacja do człowieka.
+  5) Akceptacja: test_p38_i03_no_reason_block; test_p38_i03_slow_mttr_triage;
+     test_deploy_contract_rollback_drill. Zależności: P37-I06 (freeze),
+     P10 (golden), P04 (invariants).
+  Dowód: gate PASS v3_p38_auto_rollback.json.
+
+V3-P38-I04 — BLUE-GREEN DLA REGUŁ
+  1) Luka: brak gwarancji równoległości wersji i atomowości przełączenia;
+     stara wersja znikała zanim miesiąc się zamknął (utratа odtwarzalności).
+  2) Mechanizm: reguła 438004: old_version_closed_before_month_end > 0 =
+     BLOCK; blue_green_unavailable = TRIAGE; kontrakt: atomic_switch=true,
+     old_version_kept_until_month_close=true.
+  3) Bezpieczeństwo: każdy dzień miesiąca księgowego odtwarzalny z wersją
+     reguł obowiązującą TEGO dnia (UoR 74–75, time-travel P05).
+  4) Ryzyko: podwójne utrzymanie wersji = koszt — mitygacja: retencja tylko
+     do close month; WORM (I05) po zamknięciu.
+  5) Akceptacja: test_p38_i04_closed_early_block; test_p38_i04_unavailable_
+     triage; test_deploy_contract_blue_green. Zależności: P05, P36.
+  Dowód: gate PASS v3_p38_blue_green.json.
+
+V3-P38-I05 — WORM ARCHIVE WERSJI
+  1) Luka: archiwum wersji nie było obowiązkowe ani niezmienne.
+  2) Mechanizm: reguła 438005: versions_without_worm > v3_p38_worm_missing_max
+     (0) = BLOCK; rdzeń worm_storage.py (P43) jako storage; polityka
+     archive_every_version + immutable w kontrakcie.
+  3) Bezpieczeństwo: dowód „jak liczyliśmy 3 lata temu" niezaprzeczalny
+     (write-once) — nie da się podmienić historii wersji.
+  4) Ryzyko: wzrost storage — mitygacja: retencja per UoR (5 lat) + kompresja
+     po stronie storage; rollback: polityka jako dane.
+  5) Akceptacja: test_p38_i05_missing_worm_block; test_deploy_contract_worm_
+     and_signature. Zależności: P43 (WORM), P05 (temporalność).
+  Dowód: gate PASS v3_p38_worm_archive.json.
+
+V3-P38-I06 — DEPLOYMENT WINDOW
+  1) Luka: wdrożenia mogły przeciąć ścieżkę płatności w terminach
+     krytycznych (VAT/PIT/ZUS).
+  2) Mechanizm: reguła 438006: deploys_in_blocked_window > 0 = BLOCK;
+     window_calendar_unlinked = TRIAGE; źródło blokad = kalendarz zbiorczy
+     P25 (Master Deadline Table) — zero duplikacji kalendarza.
+  3) Bezpieczeństwo: deploy nie może zaszkodzić terminowości obowiązków
+     (VAT 109e, ZUS); okna jako dane, nie konwencja zespołu.
+  4) Ryzyko: hotfix krytyczny w oknie zablokowanym — mitygacja: ścieżka
+     4-eyes awaryjna (Q02); rollback I03 zawsze dostępny.
+  5) Akceptacja: test_p38_i06_blocked_window_block; test_p38_i06_no_calendar_
+     triage. Zależności: P25, P39 (workflow).
+  Dowód: gate PASS v3_p38_deployment_window.json.
+
+V3-P38-I07 — BUNDLE SIGNATURE VERIFICATION
+  1) Luka: brak formalnej polityki podpisów przy load (integralność
+     artefaktu).
+  2) Mechanizm: reguła 438007: unsigned_bundles_loaded > 0 = BLOCK;
+     signature_verification_disabled = BLOCK; kontrakt: require_signed_bundle
+     + reject_unsigned_at_load + fail_closed.
+  3) Bezpieczeństwo: podmiana bundle w ścieżce decyzji = niemożliwa bez
+     podpisu; integralność eIDAS-kontekst [NIEZWERYFIKOWANE].
+  4) Ryzyko: egzekucja po stronie hosta (config OPA) — jawna luka L04 → P43;
+     mitygacja: polityka w kontrakcie + reguła BLOCK w runtime.
+  5) Akceptacja: test_p38_i07_unsigned_block; test_p38_i07_disabled_block.
+     Zależności: P43 (host/security), I01 (attestation).
+  Dowód: gate PASS v3_p38_signature_verification.json.
+
+V3-P38-I08 — OVERLAY VERSIONING
+  1) Luka: overlay (np. v2026) bez deklaracji zakresu i walidacji kolizji z
+     bazą — ryzyko niejednoznacznej reguły.
+  2) Mechanizm: reguła 438008: base_collisions > 0 = BLOCK; overlays_expired
+     > 0 = TRIAGE; mirror manifests (base + overlays/v2026) jako dowód
+     struktury; okna ważności overlay per P05.
+  3) Bezpieczeństwo: overlay nie może cicho nadpisać reguły bazowej poza
+     swoim zakresem (akty/daty) — kolizja widoczna, nie ukryta.
+  4) Ryzyko: wygasły overlay w środku roku — mitygacja: TRIAGE + przegląd
+     przed wygaśnięciem; rollback: usunięcie overlay.
+  5) Akceptacja: test_p38_i08_collision_block; test_p38_i08_expired_triage;
+     test_mirror_manifests_exist. Zależności: P48 (mirror), P05.
+  Dowód: gate PASS v3_p38_overlay_versioning.json.
+
+V3-P38-I09 — POST-DEPLOY CERTIFICATION
+  1) Luka: deploy bez automatycznego dowodu powdrożeniowego (canary, golden,
+     SLO).
+  2) Mechanizm: reguła 438009: deploys_without_certificate > 0 = BLOCK;
+     post_deploy_golden_failures > 0 = BLOCK; pola certyfikatu w kontrakcie
+     (canary_result, golden_replay, slo_snapshot) → rejestr wdrożeń (P11 F4).
+  3) Bezpieczeństwo: każdy deploy ma certyfikat z wynikami — audyt
+     „dlaczego uznano wdrożenie za zdrowe" odpowiada danymi.
+  4) Ryzyko: certyfikat generowany przed pełnym soak — mitygacja: golden
+     replay w oknie monitoringu; BLOCK przy fail.
+  5) Akceptacja: test_p38_i09_missing_cert_block; test_p38_i09_golden_fail_
+     block; test_deploy_contract_windows_and_certificate. Zależności: P11,
+     P10, P37.
+  Dowód: gate PASS v3_p38_post_deploy_certification.json.
+
+V3-P38-I10 — INFRASTRUCTURE AS LEGAL RECORD
+  1) Luka: deployments.json jako log operacyjny, nie artefakt prawny.
+  2) Mechanizm: reguła 438010: records_without_signature > 0 = BLOCK;
+     records_incomplete > 0 = TRIAGE; legal_record_required_fields w
+     kontrakcie (version, deployed_at, deployed_by, reason, canary_result,
+     signature).
+  3) Bezpieczeństwo: kto wdrożył jaką wersję kiedy i dlaczego = dowód z
+     podpisem (rozliczalność RODO 5.2, UoR 74–75 [NIEZWERYFIKOWANE]).
+  4) Ryzyko: wpisy legacy bez podpisów — mitygacja: TRIAGE incomplete
+     (dopełnić historię), BLOCK tylko nowe; migracja per P50.
+  5) Akceptacja: test_p38_i10_unsigned_record_block; test_p38_i10_incomplete_
+     triage; test_deploy_contract_windows_and_certificate. Zależności: P11,
+     P43 (WORM), I05.
+  Dowód: gate PASS v3_p38_legal_record.json.
+
+V3-P38-I11 — SHADOW TRAFFIC EVALUATION
+  1) Luka: nowa wersja szła prosto do canary bez 24h na strumieniu realnych
+     decyzji.
+  2) Mechanizm: reguła 438011: shadow_regressions > 0 = BLOCK;
+     shadow_hours < v3_p38_shadow_hours_min (24) = TRIAGE; spójne z fazą
+     SHADOW lifecycle reguł (P07) i shadow pipeline deploymentów (R01–R24).
+  3) Bezpieczeństwo: błąd wykryty na realnym strumieniu ZANIM trafi do
+     canary — jedna warstwa ochrony więcej przed błędną masową decyzją.
+  4) Ryzyko: shadow opóźnia wdrożenia hotfix — mitygacja: 4-eyes awaryjne
+     (Q02); okno wdrożeniowe I06 chroni terminy, nie odwrotnie.
+  5) Akceptacja: test_p38_i11_regression_block; test_p38_i11_short_triage.
+     Zależności: P07 (SHADOW), P36 (transformacja przed shadow).
+  Dowód: gate PASS v3_p38_shadow_traffic.json.
+
+V3-P38-I12 — RELEASE NOTES AUTO-GENERATED
+  1) Luka: brak changelogu decyzji dla przedsiębiorcy (co się zmieniło w
+     prokach/datach/stawkach).
+  2) Mechanizm: reguła 438012: deploys_without_changelog > 0 = BLOCK;
+     changelog > v3_p38_changelog_max_age_days (7) = TRIAGE; generacja z
+     diffów reguł (źródło: declarative_change P09 + rule_registry).
+  3) Bezpieczeństwo: przedsiębiorca widzi zmiany wpływające na decyzje —
+     transparentność, nie „black box".
+  4) Ryzyko: changelog opisowy bez liczb — mitygacja: źródło = diffy
+     strukturalne (progi/daty), nie opisy; nieświeży = TRIAGE.
+  5) Akceptacja: test_p38_i12_missing_changelog_block; test_p38_i12_stale_
+     triage. Zależności: P09 (declarative change), P41 (dokumentacja).
+  Dowód: gate PASS v3_p38_release_notes.json.
+
+───────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (T5) — wiąże P39+ (CI, security/DR, certyfikacja)
+───────────────────────────────────────────────────────────────────────────────
+K1. KONTRAKT DEPLOY (canary, awans, rollback, okna) — jedynym źródłem jest
+    bundles/v3_p38_deploy_contract.json + reguła 438001–438012. P39 (CI)
+    HONORUJE: bramki I01 (attestation), I02 (canary diff), I03 (rollback z
+    powodem), I06 (okna), I07 (podpisy), I09 (certyfikat powdrożeniowy),
+    I11 (shadow 24h), I12 (changelog) jako warunki merge/deploy; P43
+    (security/DR) egzekwuje I07 przy load i I05 WORM.
+K2. FORMAT ATTESTATION BUNDLE — pola: built_by, source_commit, gates_passed,
+    digest (SLSA-style, jako dane w kontrakcie). Wejście do P43 i P44
+    (certyfikacja finalna); dowód I01 ma wzorzec (rego_sha256).
+K3. ZASADY OKIEN WDROŻENIOWYCH — źródło: kalendarz P25 (Master Deadline
+    Table); krytyczne: deklaracje VAT, PIT, ZUS; BLOCK w oknie, 4-eyes
+    awaryjne tylko z decyzją właściciela (Q02). Wejście do P25 i P39 workflow.
+K4. LEGAL RECORD DEPLOYMENTS — każdy wpis w deployments.json wymaga pól
+    version/deployed_at/deployed_by/reason/canary_result/signature (I10);
+    P39 (CI) zapisuje wpisy po każdym deploy; P44 weryfikuje w certyfikacji.
+K5. CYKL LIFECYCLE↔DEPLOY — SHADOW=shadow (I11), CANDIDATE=canary (I02),
+    ACTIVE=promote (4-eyes krytyczne); P07 i P39 używają tej mapy 1:1.
+
+───────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA (T6) — wykonany
+───────────────────────────────────────────────────────────────────────────────
+| # | Krok | Status |
+|---|------|--------|
+| 1 | Weryfikacja statusu P37 (WDROŻONY_100) i wybór pierwszego nie wdrożonego (P38) | [x] |
+| 2 | Audyt warstwy bundle/deploy (rdzeń: bundle.sh, orchestrator, worm_storage, deployments, healthy_versions, mirror manifests, migracje, docs lifecycle) | [x] |
+| 3 | Rego pakiet v3_p38 (12 analiz I01–I12, decide fail-closed, priorytety 438001–438012) | [x] |
+| 4 | Thresholds v3_p38 (10 kluczy, valid_from, ADR-002/P05) | [x] |
+| 5 | Wiring main_jdg final_verdict_p102 (import + rejestr + safe_merge p101→p102 + post_merge na p102) | [x] |
+| 6 | Kontrakt deploy jako dane (pipeline, attestation, blue-green, WORM, okna, podpisy, drill, certyfikat, legal record, shadow, release notes, canary) | [x] |
+| 7 | 13 narzędzi dowodowych (common + 12 silników) → 13 bundli gate PASS | [x] |
+| 8 | Testy natywne rego 31/31 ×2 (OPA 0.68; OPA 1.9 --v0-compatible) | [x] |
+| 9 | pytest 23/23 + regresja serii P13→P38 (651/651 rego) | [x] |
+| 10 | Raport RAPORT_V3_P38_BUNDLE_DEPLOY.txt (ten plik) | [x] |
+| 11 | Oznaczenie P38 jako WDROŻONY_100 w bundles/v3_campaign_ledger.json (39/69, 56.52%) | [x] |
+| 12 | Czyszczenie okna kontekstowego (Sekcja 16 promptu) | [x] |
+
+Wymagające decyzji człowieka (9.11): Q01–Q04 — nie blokują (parametry-as-data).
+
+───────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (T7) — wykonane; bramki blokujące merge
+───────────────────────────────────────────────────────────────────────────────
+| Test | Typ | Oczekiwany wynik | Brama merge |
+|------|-----|------------------|-------------|
+| test_p38_routing_matrix (34 ścieżki) | rego natywny | PASS (routing fail-closed) | TAK (opa test) |
+| test_p38_fail_closed_no_snapshot | rego | BLOCK przy braku progów | TAK |
+| test_p38_no_match_without_flag | rego | no_match bez flagi v3_p38_check | TAK |
+| test_p38_thresholds_snapshot_complete | rego | 10 kluczy obecnych | TAK |
+| test_p38_certificate_fields | rego | pola kontraktu P03 (wersje, valid_from) | TAK |
+| test_p38_unique_priorities / reasons / legal_basis | rego | brak duplikatów/pustych | TAK |
+| test_p38_all_12_innovations_present; decide chain; fail-closed; public rules | pytest | PASS 23/23 | TAK (pytest) |
+| test_deploy_contract_pipeline / attestation / blue_green / worm_signature / rollback_drill / windows_certificate | pytest | kontrakt kompletny | TAK |
+| test_main_jdg_wired_p102 | pytest | import+rejestr+final_verdict_p102 | TAK |
+| test_core_tools_exist; test_core_bundles_exist; test_mirror_manifests_exist | pytest | rdzeń obecny (rozszerzamy, nie duplikujemy) | TAK |
+| Regresja P13→P38 (20 pakietów) | opa19 --v0-compatible | 651/651 PASS | TAK (seria) |
+| Granice progów (canary diff 0/próbka 100, MTTR 5 min, WORM 0, shadow 24h, changelog 7 dni) | rego (case'y w macierzy) | PASS | TAK |
+| [NOWY] DR restore drill w CI | CI (P39) | restore z dr_snapshots + healthy_versions odtwarza stan | POZA P38 → P39 |
+| [NOWY] Fuzz mutacje input/deploy-meta | CI (P39/P34) | fail-closed utrzymany | POZA P38 (zależności) |
+
+───────────────────────────────────────────────────────────────────────────────
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+───────────────────────────────────────────────────────────────────────────────
+Q01. Czy akceptujesz progi deploy jako kontrakt produkcji: canary diff = 0
+     (zero-tolerancja), próbka min 100, MTTR rollback ≤ 5 min, shadow ≥ 24 h,
+     changelog ≤ 7 dni? (progi jako dane — zmiana bez kodu, decyzja
+     biznesowa).
+Q02. Kto jest właścicielem ścieżki 4-eyes awaryjnej (hotfix w zablokowanym
+     oknie I06 / promote krytycznych reguł VAT/PIT/ZUS)?
+Q03. Rozgraniczenie rollback techniczny vs prawny: czy rolą wycofania reguły
+     „błędnej prawnie" jest właściciel domeny z Law Radar (P08), a
+     technicznego — auto (I03)? Rekomendacja: TAK (Obaj ślad w I10).
+Q04. Czy wykonać osobną grę wojenną rollback w środowisku staging (procedura
+     jest przetestowana w drilli R01–R24 z MTTR 4.02 min) przed certyfikacją
+     P44?
+
+───────────────────────────────────────────────────────────────────────────────
+9.12 ZAAŁOŻENIA JAWNE (T9)
+───────────────────────────────────────────────────────────────────────────────
+Z01. [ZAŁOŻENIE] Wartości progów v3_p38 (diff 0, próbka 100, MTTR 5 min,
+     shadow 24 h, changelog 7 dni, WORM 0) — rekomendacje release
+     engineering; nie mierzone na produkcji (brak produkcji).
+Z02. [ZAŁOŻENIE] MTTR 4.02 min z drilli R01–R24 (deployments.json)
+     reprezentuje czas rollback w warunkach kampanijnych, nie staging.
+Z03. [ZAŁOŻENIE] Podstawy prawne (UoR 74–75, OrdPU 119a/199a, VAT 109e,
+     eIDAS, RODO 32, ZUS terminy, JPK MF, ISAP temporalność) istnieją w
+     brzmieniu przyjętym w kampanii — wymagają weryfikacji ISAP (L01)
+     [NIEZWERYFIKOWANE].
+Z04. [ZAŁOŻENIE] Egzekucja podpisów przy load możliwa w docelowym hoście OPA
+     (bundle verification) — polityka zdefiniowana, konfiguracja → P43.
+Z05. [ZAŁOŻENIE] Dryft legacy (L03) jest przedistniały — working tree tej
+     części nie modyfikuje plików rdzenia spoza scope P38 (progi, wiring,
+     nowe pliki P38).
+
+───────────────────────────────────────────────────────────────────────────────
+7.4 PYTANIA KRZYŻOWE (X01–X10)
+───────────────────────────────────────────────────────────────────────────────
+X01. Konflikty z dokumentami świętymi: BRAK. Reguła implementuje V1 zas. 6
+     (fail-closed), SLA rollback MTTR ≤ 5 min (V1 §9.3 → próg), F4 (certyfikat
+     powdrożeniowy), ADR-002/P06 (progi jako dane), P05 (valid_from) —
+     deklaracja zgodności na końcu pliku.
+X02. Naruszenia parametrów-as-data/temporalności: BRAK w P38 — wszystkie
+     progi w data.jdg.thresholds.v3_p38 z valid_from (testy:
+     test_v3p38_block_complete, test_p38_thresholds_snapshot_complete).
+X03. Ścieżki nie-fail-closed: BRAK — no_match tylko bez flagi; brak snapshotu
+     = BLOCK; unsigned load = BLOCK; deploy w zablokowanym oknie = BLOCK
+     (AP07 testowany: test_p38_fail_closed_no_silent_auto_post).
+X04. Zgodność z kontraktem 25-polowym (P03): pola certyfikatu (matched,
+     rule_id, package, priority, threshold_version, legal_basis_version,
+     valid_from) — test_p38_certificate_fields; safe_merge p101→p102 bez
+     nadpisywania pól niemutowalnych.
+X05. Testy bramkujące merge: pełna lista w 9.10 (kolumna Brama).
+X06. Duplikaty: ZERO — P38 rozszerza rdzeń (worm_storage, deployment_
+     orchestrator, deployments.json, healthy_versions, mirror manifests,
+     kalendarz P25) i egzekwuje to testami (test_core_tools_exist,
+     test_core_bundles_exist, test_mirror_manifests_exist); canary/soak
+     pipeline istnieje w orkiestratorze — P38 dodaje TYLKO warunki regułowe.
+X07. Podstawy niezweryfikowane: wszystkie z Sekcji 8 — rejestr mediacji L01
+     (priorytet: przed P44), tagi [NIEZWERYFIKOWANE] w regule i T2.
+X08. Decyzje wymagające człowieka: Q01–Q04 (9.11) — progi deploy, właściciel
+     4-eyes awaryjnych, rozgraniczenie rollback, gra wojenna staging.
+X09. Metryki trafiające do obserwowalności (P37): builds_without_attestation,
+     decision_diffs_canary, rollback_mttr_min, versions_without_worm,
+     deploys_in_blocked_window, unsigned_bundles_loaded, base_collisions,
+     deploys_without_certificate, shadow_regressions,
+     deploys_without_changelog — do katalogu SLO P37 jako rozszerzenie (K1).
+X10. Inwarianty runtime (P04) dla P38: (a) „bundle bez attestation nie
+     wchodzi do load" (I01), (b) „rollback zawsze z powodem" (I03),
+     (c) „legal record kompletny i podpisany" (I10) — propagacja do P04 w
+     P44, bez pilnej zmiany.
+
+───────────────────────────────────────────────────────────────────────────────
+7.5 ANTY-WZORCE (AP01–AP12) — wyniki sprawdzenia
+───────────────────────────────────────────────────────────────────────────────
+AP01 stuby {true}: BRAK w P38 (test fail-closed). | AP02 hardcode progów:
+BRAK — snapshot thresholds (test). | AP03 otwarte negatywy: BRAK — decide
+else-chain z default no_match. | AP04 duplikaty rule_id: BRAK (test
+unikalności; priorytety 438001–438012 unikalne; rdzeń rozszerzany, nie
+kopiowany). | AP05 podstawy bez Dz.U.: tagi [NIEZWERYFIKOWANE] + L01. | AP06
+testy zawsze-zielone: BRAK — macierz 34 ścieżek z asercjami negatywnymi
+(BLOCK/TRIAGE). | AP07 cichy AUTO_POST: NIEOBECNY — fail-closed testowany. |
+AP08 cykle importów: BRAK (P38 importuje tylko thresholds; main_jdg przez
+rejestr). | AP09 dane zewnętrzne na stałe: BRAK — kontrakt jako dane.
+| AP10 brak okien temporalnych: BRAK — valid_from w snapshotie i certyfikacie;
+overlay z wygasaniem (I08). | AP11 mirror dryft: poza P38 (L02 → P48; mirror
+manifests użyte jako dowód struktury). | AP12 metryki w dwóch miejscach:
+UNIKNIĘTO — kontrakt deploy = jedyne źródło polityk deploy; deployments.json
+= jedyne źródło historii wdrożeń (I10); kalendarz P25 = jedyne źródło okien.
+
+───────────────────────────────────────────────────────────────────────────────
+T1 — TABELA DOWODÓW (pełna, pliki Sekcji 6)
+───────────────────────────────────────────────────────────────────────────────
+| # | Plik | Fakt/dowód | Status |
+|---|------|------------|--------|
+| 1 | bundles/bundle.sh | rdzeń budowy bundle (integrity checker v8) | ZWERYFIKOWANO (istnienie) |
+| 2 | tools/deployment_orchestrator.py | rdzeń canary/shadow/soak/auto-rollback | ZWERYFIKOWANO (istnienie) |
+| 3 | tools/certificate_service.py | rdzeń certyfikatów (P11) | ZWERYFIKOWANO (istnienie) |
+| 4 | tools/rule_lifecycle_manager.py | rdzeń lifecycle (P07) | ZWERYFIKOWANO (istnienie) |
+| 5 | tools/self_healing_engine.py | rdzeń self-healing | ZWERYFIKOWANO (istnienie) |
+| 6 | tools/worm_storage.py | rdzeń WORM (P43) — rozszerzony polityką I05 | ZWERYFIKOWANO (istnienie) |
+| 7 | tools/health_tier_engine.py | domena ZUS (nie SRE; audyt P37) | ZWERYFIKOWANO (istnienie) |
+| 8 | bundles/bundle_catalog.json | katalog bundli rdzenia | ZWERYFIKOWANO (istnienie) |
+| 9 | bundles/deployments.json | rejestr wdrożeń R01–R24 (MTTR 4.02 min; canary→soak) | ZWERYFIKOWANO (istnienie) |
+| 10 | bundles/healthy_versions.json | ostatni dobry stan (rollback I03) | ZWERYFIKOWANO (istnienie) |
+| 11 | bundles/manifest_v2.json | manifest v2 rdzenia | ZWERYFIKOWANO (istnienie) |
+| 12 | bundles/rule_registry.json | rejestr reguł (spójność z manifest) | ZWERYFIKOWANO (istnienie) |
+| 13 | bundles/thresholds_data.json | progi jako dane (bundle) | ZWERYFIKOWANO (istnienie) |
+| 14 | bundles/dr_snapshots/ | katalog zrzutów DR | ZWERYFIKOWANO (istnienie) |
+| 15 | bundles/golden_verdicts.json | próbka canary diff (I02); monitor P10 | ZWERYFIKOWANO (istnienie) |
+| 16 | policies/jdg/bundles/bundle.sh | mirror skrypt budowy | ZWERYFIKOWANO (istnienie; sync → P48) |
+| 17 | policies/jdg/bundles/base/manifest.json | mirror manifest bazowy (I08) | ZWERYFIKOWANO (istnienie) |
+| 18 | policies/jdg/bundles/overlays/v2026/manifest.json | mirror overlay v2026 (I08) | ZWERYFIKOWANO (istnienie) |
+| 19 | migrations/001_jdg_rule_store.sql | RuleStore (historia wersji) | ZWERYFIKOWANO (istnienie) |
+| 20 | migrations/013_jdg_v18_tools_api_rulestore_bundles.sql | tools/api/bundles w SQL | ZWERYFIKOWANO (istnienie) |
+| 21 | docs/RULE_LIFECYCLE.md | lifecycle SHADOW→ACTIVE (mapa K5) | ZWERYFIKOWANO (istnienie) |
+| 22 | docs/CONTROL_PLANE_RULE_LIFECYCLE.md | control plane lifecycle | ZWERYFIKOWANO (istnienie) |
+| 23–26 | policies/jdg, policies/tax, policies/tax/vat (kontekst 6.4) | mirror: sync → P48 | NIEZWERYFIKOWANO w tej sesji (L02) |
+
+T10 — PRZEKAZYWANE ARTEFAKTY (11.4)
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| Kontrakt deploy (v3_p38_deploy_contract.json) | P39/P43/P44 | JSON | bramki deploy jako warunki merge/load/certyfikacji |
+| Rego 438001–438012 (I01–I12) | P39/P43 | Rego | runtime warunki fail-closed deploy |
+| Format attestation (SLSA-style) | P43/P44 | JSON/kontrakt | pochodzenie artefaktów w certyfikacji finalnej |
+| Zasady okien wdrożeniowych (P25 jako źródło) | P25/P39 | JSON/kontrakt | workflow CI respektuje blokady terminów |
+| Legal record schema deployments.json | P39/P44 | JSON/kontrakt | wpisy deploy jako dowód prawny |
+| Mapa lifecycle↔deploy (K5) | P07/P39 | kontrakt | SHADOW/CANDIDATE/ACTIVE 1:1 z etapami |
+| Luki L01/L02/L03/L04 | P47/P48/P39/P43 | rejestr | domknięcie w dedykowanych częściach |
+
+T11 — MACIERZ PODANALIZA×GRUPA (APENDYKS B)
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik |
+|------------|----------------|-----------------|-------|
+| 5.1 | 6.1, 6.2 | bundle.sh + manifest_v2 + I01 testy + kontrakt attestation | 9.04/9.05 (W-AN01) |
+| 5.2 | 6.1, 6.2 | deployments.json pipeline + I02 testy + canary kontrakt | 9.04/9.05 (W-AN02) |
+| 5.3 | 6.1, 6.2 | rollback_drill + healthy_versions + I03/I04/I05 testy | 9.04/9.05 (W-AN03) |
+| 5.4 | 6.2, 6.3 | deployments legal record + I09/I10/I11/I12 testy + migracje + docs lifecycle | 9.04/9.05 (W-AN04) |
+
+T12 — REJESTR KONFLIKTÓW: PUSTY (zero konfliktów Cxx z dokumentami świętymi
+i kontraktami P00–P37).
+
+APENDYKS E — PLAN PRACY: wykonany w całości (9.09, kroki 1–12 odznaczone).
+
+───────────────────────────────────────────────────────────────────────────────
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+───────────────────────────────────────────────────────────────────────────────
+Zgodność PEŁNA z: ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1: fail-closed zas.
+6, SLA rollback MTTR ≤ 5 min, bramki CI, cykl życia reguł) i
+WIZJA_OPA_ENTERPRISE_V2.md (F4 Decision Certificate — certyfikat powdrożeniowy
+I09, Golden Oracle P10 — próbka canary, Law Radar P08 — okna/dryf, Declarative
+Change P09 — źródło changelogu). Odstępstwa: BRAK. Konfliktów Cxx: BRAK.
+Podstawy prawne: [NIEZWERYFIKOWANE] (L01 → P47/P44). Zero fikcyjnych artykułów,
+ustępów i stawek — wartości progów to rekomendacje inżynierskie jako dane
+(Z01), nie twierdzenia prawne.
+
+KONIEC RAPORTU V3 P38 — WDROŻONY_100 (realne artefakty, 2026-09-09)
+Testy: 31/31 rego ×2 OPA + 23/23 pytest; regresja P13→P38: 651/651;
+13/13 bundli gate PASS; kontrakt deploy jako dane (K1–K5).
+Następna część: P39 TESTY_CI — pierwsza NIE_WDROŻONA w ledgerze
+(przejście z CZYSTĄ sesją: EXECUTIVE SUMMARY + KONTRAKT WYJŚCIOWY K1–K5 +
+LUKI L01–L04).
+═══════════════════════════════════════════════════════════════════════════════

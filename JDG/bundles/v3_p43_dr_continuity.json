@@ -1,0 +1,46 @@
+{
+  "innovation": "V3-P43-I12",
+  "generated_at": "2026-09-09T11:58:04+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "cautious_parameters_mode": true,
+    "dr_decision_marking_required": true,
+    "threshold_source_defined": true,
+    "deploy_orchestrator_present": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p43_security_dr.dr_continuity: True"
+    },
+    {
+      "name": "cautious_parameters_mode",
+      "status": "OK",
+      "detail": "tryb ostrożnych parametrów (najbezpieczniejsze wartości progów): True"
+    },
+    {
+      "name": "dr_decision_marking_required",
+      "status": "OK",
+      "detail": "oznaczenie decyzji jako DR obowiązkowe: True"
+    },
+    {
+      "name": "threshold_source_defined",
+      "status": "OK",
+      "detail": "źródło ostrożnych progów: 'P05 thresholds (najbezpieczniejsze: ostatnia zwalidowana wersja progu)'"
+    },
+    {
+      "name": "deploy_orchestrator_present",
+      "status": "OK",
+      "detail": "tools/deployment_orchestrator.py (przełączenie trybu): True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p107"
+    }
+  ],
+  "findings": []
+}

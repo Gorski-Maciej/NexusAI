@@ -1,0 +1,35 @@
+{
+  "innovation": "V3-P38-I02",
+  "generated_at": "2026-09-09T08:15:02+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "canary_diff_max_as_data": true,
+    "canary_sample_min_as_data": true,
+    "golden_sample_available": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p38_bundle_deploy.canary_decision_diff: True"
+    },
+    {
+      "name": "canary_thresholds",
+      "status": "OK",
+      "detail": "diff_max=True, sample_min=True (ADR-002)"
+    },
+    {
+      "name": "golden_sample_available",
+      "status": "OK",
+      "detail": "bundles/golden_verdicts.json: True (próbka diff)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p102"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P38-I09",
+  "generated_at": "2026-09-09T08:15:06+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "certificate_fields_ok": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p38_bundle_deploy.post_deploy_certification: True"
+    },
+    {
+      "name": "post_deploy_certificate_fields",
+      "status": "OK",
+      "detail": "pola certyfikatu powdrożeniowego: ['canary_result', 'golden_replay', 'slo_snapshot', 'registered_in']"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p102"
+    }
+  ],
+  "findings": []
+}

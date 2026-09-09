@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P44-I07",
+  "generated_at": "2026-09-09T12:41:00+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "signed": true,
+    "worm": true,
+    "retention_years": 5,
+    "retention_min": 5
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p44_certyfikacja_finalna.certificate_worm_signature: True"
+    },
+    {
+      "name": "certificate_signed",
+      "status": "OK",
+      "detail": "podpis certyfikatu: DELEGATED:P38-certificate_service (HSM-ECDSA; 4-eyes techniczne+prawne z V3-P43-I03)"
+    },
+    {
+      "name": "certificate_worm",
+      "status": "OK",
+      "detail": "WORM: True; ref: bundles/worm_audit.json (hash chain; V3-P43-I08)"
+    },
+    {
+      "name": "retention_meets_minimum",
+      "status": "OK",
+      "detail": "retencja 5 lat ≥ 5 (UoR art. 74-75 [NIEZWERYFIKOWANE])"
+    },
+    {
+      "name": "worm_and_signature_mechanism",
+      "status": "OK",
+      "detail": "tools/worm_storage.py + tools/certificate_service.py: True"
+    }
+  ],
+  "findings": []
+}

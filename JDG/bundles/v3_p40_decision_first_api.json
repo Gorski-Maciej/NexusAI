@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P40-I01",
+  "generated_at": "2026-09-09T10:01:24+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "openapi_evaluate_path": true,
+    "certificate_service_exists": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p40_api_dane_ui.decision_first: True"
+    },
+    {
+      "name": "openapi_evaluate_path",
+      "status": "OK",
+      "detail": "api/openapi.yaml zawiera endpoint decyzyjny (/jdg/decide): True"
+    },
+    {
+      "name": "certificate_service_exists",
+      "status": "OK",
+      "detail": "tools/certificate_service.py (P11): True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p104"
+    }
+  ],
+  "findings": []
+}

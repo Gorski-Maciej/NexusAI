@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P41-I11",
+  "generated_at": "2026-09-09T10:52:59+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "auditor_view_defined": true,
+    "evidence_paths": 4,
+    "evidence_chain_documented": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p41_dokumentacja.auditor_mode: True"
+    },
+    {
+      "name": "auditor_view_defined",
+      "status": "OK",
+      "detail": "dokument widoku audytora w rejestrze: 'docs/AUDYT_PODSTAW_PRAWNYCH.md'"
+    },
+    {
+      "name": "evidence_paths_complete",
+      "status": "OK",
+      "detail": "ścieżki dowodowe per domena: 4 (min 3)"
+    },
+    {
+      "name": "evidence_chain_documented",
+      "status": "OK",
+      "detail": "łańcuch dowodowy w rejestrze: ['rule', 'test', 'bundle', 'verdict', 'certificate'] (wymagane: ['rule', 'test', 'bundle', 'verdict', 'certificate'])"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p105"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,352 @@
+================================================================================
+NEXUSAI JDG — RAPORT V3 P40 — API, DANE I UI — ORKIESTRATOR DLA PRZEDSIĘBIORCY
+I KSIĘGOWEGO
+================================================================================
+Seria:            NEXUSAI JDG — V3 FORTRESS CAMPAIGN
+Część:            P40 API_DANE_UI
+Prompt:           JDG/prompty_v3/V3_PROMPT_P40_API_DANE_UI.txt
+Raport:           JDG/raporty_glm52_v3/RAPORT_V3_P40_API_DANE_UI.txt
+Data:             2026-09-09
+Tryb:             WDROŻENIE (pełne, od zera) + raport kontraktowy
+Kampania:         41/69 po tej części (P37 ✅ P38 ✅ P39 ✅ P40 ✅)
+
+================================================================================
+9.01 EXECUTIVE SUMMARY
+================================================================================
+Ocena dojrzałości: WARSTWA API/UI WDROŻONA ENTERPRISE (fail-closed, progi jako
+dane, decyzja → wyjaśnienie → działanie jako kontrakt).
+
+Stan wejściowy: ZERO artefaktów v3_p40 (pełne wdrożenie od zera, konwencja
+P38/P39). Stan wyjściowy: pełny łańcuch dowodowy.
+
+ARTYKUŁY WDROŻONE W TEJ CZĘŚCI:
+  R1. rules/v3_p40_api_dane_ui_enterprise.rego — 12 analiz I01–I12,
+      priorytety 440001–440012 (unikalne), else-chain deterministyczny,
+      fail-closed przy braku snapshotu progów.
+  R2. thresholds_jdg.rego — blok v3_p40 (5 kluczy + flagi no_auto_post /
+      manual_review_required), okno temporalne valid_from (P05).
+  R3. main_jdg.rego — wiring p104: import L112, registry L1509,
+      final_verdict_p104 (pas 18s), konsument final_verdict_post_merge L3151.
+  R4. bundles/v3_p40_api_contract.json — KONTRAKT API JAKO DANE: 9 endpointów
+      (ścieżka → metoda → schema → RBAC → idempotencja → rate limit → audyt →
+      test), mapa rola→pola (4 role), WORM audyt, drabinka degradacji,
+      webhooki HMAC, playground, evidence pack, 4 ekrany UI.
+  R5. 13 narzędzi dowodowych tools/v3_p40_*.py + 13 bundli PASS (12 innowacji
+      + kontrakt).
+  R6. tests/rego/test_v3_p40_api_dane_ui_enterprise.rego — 40 przypadków
+      (negative-first, P39-I04).
+  R7. tests/auto/test_v3_p40_api_dane_ui_enterprise.py — 20 testów.
+  R8. api/openapi.yaml — rozszerzony: x-schema-version (pin kontraktu, I11),
+      x-legal-freshness-header (I08), x-api-mode-header (I07).
+
+WERYFIKACJA (twarde liczby, uruchomione w tej sesji):
+  * Rego natywne:  40/40 PASS na OPA 1.9 (./bin/opa) i OPA 1.9 --v0-compatible
+    (./bin/opa19).
+  * pytest:        20/20 PASS (JDG/tests/auto/test_v3_p40_api_dane_ui_enterprise.py).
+  * Regresja serii P13→P40: 723/723 PASS (683 + 40 nowych; ./bin/opa19
+    --v0-compatible, test_v3_p*.rego + v3_p*.rego + thresholds).
+  * Regresja pytest serii V3: 522 PASS / 4 FAIL — 4 porażki to ZNANY dryft
+    legacy (P05/P06/P10 Termux TypeError + P06 count drift), zarejestrowany
+    w P37/P38/P39 jako rezydualny (L03); ZERO plików P40 w porażkach.
+  * Bundle:        13/13 gate=PASS.
+
+TOP-10 REKOMENDACJI (kontrakt wyjściowy skrócony; pełny w 9.08):
+  1. /v1/evaluate ZAWSZE z pełnym Decision Certificate (P11/F4) — zero skrótów.
+  2. Kontrakt API jako dane (bundles/v3_p40_api_contract.json) — jedyne źródło
+     prawdy dla gateway/SDK/testów; openapi.yaml generowany z kontraktu.
+  3. Idempotency-Key obowiązkowy na wszystkich zapisach (openapi JUŻ deklaruje
+     7×; egzekwować w gateway).
+  4. RBAC = mapa rola→pola jako dane; audytor read-only; minimalizacja RODO.
+  5. Audyt API do WORM (P43) z checksumą per wpis.
+  6. Rate limiting per rola/endpoint z progów data.thresholds (domyślnie 60/min).
+  7. X-Legal-Freshness z radaru P34; SLA 7 dni (BLOCK przy przekroczeniu).
+  8. X-API-Mode z drabinki FULL→CACHE_ONLY→OFFLINE_QUEUES→READ_ONLY (P32/P38).
+  9. Webhooki HMAC-SHA256 + retry idempotentny (eventy z P32/P25).
+  10. Evidence pack z checksumą obowiązkową (UoR art. 4 ust. 1).
+
+LUKI WG KRYTYCZNOŚCI: P0=0, P1=0, P2=3, P3=2 (rejestr 9.06).
+CO UDOWODNIONO: łańcuch rego→progi→wiring→kontrakt→narzędzia→bundkle→testy,
+uruchomiony i zielony (liczby wyżej). CO POZOSTAŁO [NIEZWERYFIKOWANE]:
+wszystkie podstawy prawne (ISAP pełnym skanem nie wykonano w tej sesji —
+konwencja serii; rejestr mediacji 9.06/L05).
+
+================================================================================
+9.02 ZAKRES I OGRANICZENIA
+================================================================================
+PRZEANALIZOWANO (wszystkie 20 plików Sekcji 6 istnieje — tabela dowodów 9.03/T1):
+  * Specyfikacje i kontrakty API (8): api/openapi.yaml (1433 linii),
+    docs/ORCHESTRATOR_DATA_CONTRACT.md (91), docs/API_REFERENCJA.md (596),
+    docs/api.md (191), tools/api_doc_generator.py (173),
+    tools/certificate_service.py (146), bundles/control_plane_state.json (28),
+    bundles/api_spec_consistency.json (184).
+  * UI, dashboardy i kalendarz (7): tools/enterprise_dashboard.py (286),
+    tools/confidence_dashboard.py (146), tools/drift_dashboard.py (75),
+    docs/PEWNOSC_DASHBOARD.md (34), tools/zus_calendar.py (181),
+    docs/PODRECZNIK_UZYTKOWNIKA.md (273), docs/FAQ.md (184).
+  * Testy API (5): tests/test_risk_api.py (614),
+    tests/test_orchestrator_data_contract.py (222),
+    tests/test_p01_control_plane.py (739),
+    tests/test_api_ui_quality_v3_19.py (74), tools/api_doc_generator.py (173).
+  * Mirror policies (6): policies/jdg, policies/tax, policies/tax/vat,
+    policies/jdg/bundles/bundle.sh, base/manifest.json, overlays/v2026 —
+    katalog lustrzany obecny w drzewie roboczym (porównanie dryfu = L06/P48).
+
+POMINIĘTO: nic z listy Sekcji 6. Czytanie pełnych treści 20 plików ograniczono
+do skanów celowanych (nagłówki, ścieżki, klucze kontraktowe) zgodnie z budżetem
+50% — adnotacja przy wierszach T1. Prawa: [NIEZWERYFIKOWANE] globalnie (ISAP
+niedostępny w sesji; ZAKAZ fantazjowania — konwencja serii).
+
+================================================================================
+9.03 STAN OBECNY CZĘŚCI P40 (MAPA ARTEFAKTÓW)
+================================================================================
+| Artefakt (nowy)                                   | Pakiet Rego              | Rule_id / klucz                        | Podstawa prawna [NIEZW.]     | Testy                                | Lifecycle |
+|---------------------------------------------------|--------------------------|----------------------------------------|------------------------------|--------------------------------------|-----------|
+| rules/v3_p40_api_dane_ui_enterprise.rego          | jdg.v3_p40_api_dane_ui   | 12 × jdg.v3_p40_api_dane_ui.*          | RODO 15/22, 5, 32; UoR 4; eIDAS | 40 rego + 20 pytest + 13 bundli    | ACTIVE (za flagą v3_p40_check) |
+| rules/thresholds_jdg.rego (blok v3_p40)           | jdg.thresholds           | v3_p40_* (5 progów)                    | ADR-002                      | test_thresholds_as_data              | ACTIVE    |
+| rules/main_jdg.rego (pas 18s)                     | jdg.main                 | final_verdict_p104                     | architektura V1              | test_main_jdg_wired_p104             | ACTIVE    |
+| bundles/v3_p40_api_contract.json                  | — (dane)                 | 9 endpointów + 4 ekrany UI             | UoR 4.1; RODO 5              | 11 testów kontraktowych pytest       | ACTIVE    |
+| api/openapi.yaml (rozszerzenie)                   | — (spec)                 | x-schema-version, x-*-header           | P39-I08 pin                  | test_openapi_schema_pin_present      | ACTIVE    |
+| tools/v3_p40_common.py + 12 tooli                 | — (dowody)               | 12 bundli v3_p40_*                     | —                            | test_all_12_bundles_pass             | ACTIVE    |
+
+Istniejące (nie duplikowano — rozszerzono): api/openapi.yaml (+4 linie pinów),
+dashboardy P35, kalendarz P25, certificate_service P11 — podpięte jako odbiorcy
+reguł I01/I08/I12 i jako dane kontraktu.
+
+================================================================================
+9.04 PODANALIZY 5.1–5.4 (każda: tabela dowodów + ≥3 wnioski + ≥1 luka)
+================================================================================
+--- P40-AN01: KONTRAKT API I WERSJONOWANIE (grupy 6.1, 6.3) ---
+Dowody:
+  * api/openapi.yaml: 18 ścieżek /jdg/* i /bundles/* (decide, simulate, audit,
+    explain, thresholds, manifest, coverage, rules, legal-coverage, change,
+    cert, health, ready, dr/restore); openapi 3.0.3; version 1.0.0;
+    7 deklaracji Idempotency (skan grep).
+  * ORCHESTRATOR_DATA_CONTRACT.md (91 linii): statusy pipeline z NEEDS_ADVICE —
+    /documents musi odzwierciedlać te same statusy (kontrakt P32).
+  * api_spec_consistency.json (184 linie): mechanizm spójności spec↔kod.
+  * test_orchestrator_data_contract.py (222), test_risk_api.py (614):
+    testy kontraktowe istnieją.
+Wnioski:
+  W1. API jest wersjonowane (openapi 3.0.3, info.version, x-api-versioning),
+      ale BRAK pinu kontraktu danych — dodano x-schema-version (I11; P39-I08).
+  W2. Odpowiedź /jdg/decide opisuje pełny werdykt z proweniencją (A1/A2) —
+      spójna z P03; pełny certyfikat P11 w strumieniu /jdg/cert — kontrakt
+      decision-first (I01) egzekwowany regułą 440001 (skrót = TRIAGE).
+  W3. Idempotency-Key jest w spec (7 wystąpień), ale nie na KAŻDEJ operacji
+      zapisu — luka L01; reguła 440003 blokuje zapis bez klucza.
+Luki: L01 (P2), L04 (P3 — SDK niegenerowane; schemat gotowy).
+
+--- P40-AN02: RBAC, AUDYT I LIMITY (grupy 6.1, 6.3) ---
+Dowody:
+  * Kontrakt v3_p40_api_contract.json: role_field_map 4 role; auditor_read_only
+    = true; internal_metrics_hidden_from = [entrepreneur] (RODO art. 5).
+  * test_p01_control_plane.py (739 linii): kontrola dostępu control plane.
+  * Reguła 440004: wyciek pola poza rolę = BLOCK; 440005: brak wpisu WORM =
+    BLOCK; 440006: endpoint ∞ = BLOCK, limit z data.thresholds (60/min).
+Wnioski:
+  W1. RBAC jako dane (nie kod) — zmiana mapy bez redeployu reguł; audyt zmiany
+      mapy w WORM.
+  W2. Audyt API ma 5 obowiązkowych pól (actor, endpoint, timestamp, result,
+      checksum) i cel WORM (P43) — rozliczalność RODO art. 5.2.
+  W3. Rate limiting chroni silnik (eval kosztowny) i dane (exfiltration);
+      progi z ADR-002, zero hardcode.
+Luki: L02 (P2 — egzekucja RBAC w gateway do potwierdzenia runtime; reguły
+gotowe, brak runtime probe).
+
+--- P40-AN03: EKSPLIKACJA I UI PEWNOŚCI (grupy 6.2) ---
+Dowody:
+  * /jdg/explain w openapi (L355) + /jdg/audit/{verdict_id} (L282) — graf
+      dowodu dla człowieka.
+  * confidence_dashboard.py (146) + PEWNOSC_DASHBOARD.md (34): ekran pewności
+      z filtrami domen (P35).
+  * enterprise_dashboard.py (286), drift_dashboard.py (75), zus_calendar.py
+      (181), PODRECZNIK_UZYTKOWNIKA.md (273), FAQ.md (184).
+Wnioski:
+  W1. Łańcuch explain: fakt → reguła(rule_id) → przepis(art./ISAP) → decyzja;
+      reguła 440002: brak grafu = BLOCK, węzeł bez linku = TRIAGE (próg 0).
+  W2. Ekran decyzji zdefiniowany w kontrakcie (UI): decyzja, pewność %, powód
+      w języku człowieka, podstawy z linkami, akcje zaakceptuj/doradca.
+  W3. Tryb audytora: read-only + pełny dowód + evidence pack (I12) — eksport
+      z checksumą obowiązkową.
+Luki: L03 (P2 — e2e ekran faktury łączy statusy P32; mockup gotowy, integracja
+przyszła).
+
+--- P40-AN04: INTEGRACJE ZEWNĘTRZNE (grupy 6.4) ---
+Dowody:
+  * KSeF P32: ksef_offline_queue_enterprise.rego, ksef_sandbox_harness,
+    ksef_resilience — kolejki offline jako transport degradacji (I07).
+  * ISAP P34: law_radar.py (istnieje) — źródło X-Legal-Freshness (I08);
+    SLA 7 dni z progów; przekroczenie = BLOCK (440008).
+  * Bank feed: idempotent ingest — I03 (retry bez duplikatów; 440003).
+  * Mirror policies: drzewo policies/ obecne (bundle.sh, base + v2026
+    manifesty) — porównanie canonical↔mirror = L06 (P48).
+Wnioski:
+  W1. Drabinka degradacji jako dane (4 tryby) + nagłówek X-API-Mode; tryb
+      nieznany = BLOCK (440007) — spójne z P38 deploy i P43 DR.
+  W2. Webhooki: HMAC-SHA256, retry idempotentny, eventy declaration_created /
+      needs_advice / deadline_reminder (440009; brak HMAC = BLOCK).
+  W3. Sandbox playground: bez zapisu, bez PII (440010; zapis = BLOCK) —
+      szkolenie księgowych bez ryzyka.
+Luki: L05 (P3 — schematy FA(2)/FA(3) KSeF do pinowania w kontrakcie testów;
+      [NIEZWERYFIKOWANE]), L06 (P3 — mirror sync).
+
+================================================================================
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2)
+================================================================================
+| Akt | Art./ust. | Grupa plików | Reguła | Test | Status | Ryzyko |
+|-----|-----------|--------------|--------|------|--------|--------|
+| RODO | art. 15, 22 | 6.1, 6.2 | I02 explain_chain (440002) | test_p40_i02_* (3) | CZĘŚCIOWE [NIEZW.] | brak wyjaśnienia = naruszenie |
+| RODO | art. 5 (minim.) | 6.1 | I04 rbac (440004) | test_p40_i04_* (4) | CZĘŚCIOWE [NIEZW.] | wyciek metryk |
+| RODO | art. 5.2 (rozlicz.) | 6.1 | I05 audit WORM (440005) | test_p40_i05_* (3) | CZĘŚCIOWE [NIEZW.] | brak rozliczalności |
+| RODO | art. 32 | 6.1 | I06 rate_limiting (440006) | test_p40_i06_* (3) | CZĘŚCIOWE [NIEZW.] | exfiltration |
+| eIDAS | podpisy | 6.4 | I09 webhook HMAC (440009) | test_p40_i09_* (3) | CZĘŚCIOWE [NIEZW.] | spoofing eventu |
+| UoR VAT | art. 106b | 6.4 | kontrakt /documents (P32) | test_documents_idempotent | CZĘŚCIOWE [NIEZW.] | schemat KSeF |
+| UoR | art. 4 ust. 1 | 6.1, 6.2 | I12 evidence_pack (440012); I01 (440001) | test_p40_i12_* (3); test_p40_i01_* | CZĘŚCIOWE [NIEZW.] | dowód podważalny |
+| UZ | terminy | 6.2 | /v1/calendar (kontrakt) | test_calendar_entries | CZĘŚCIOWE [NIEZW.] | błędny termin |
+| Prawo przeds. | art. 15f | 6.2 | ekran kalendarza (UI) | kontrakt UI | CZĘŚCIOWE [NIEZW.] | brak informacji |
+| AI Act | przejrzystość | 6.1 | oznaczenie AI w odpowiedzi (kontrakt: basis.certificate) | test_api_contract_* | BRAK→PLAN [NIEZW.] | brak oznaczenia |
+
+================================================================================
+9.06 REJESTR LUK (T3)
+================================================================================
+| ID | Kryt. | Luka | Dowód | Wpływ | Rozwiązanie | Koszt | Ryzyko regresji |
+|----|-------|------|-------|-------|-------------|-------|-----------------|
+| L01 | P2 | Idempotency-Key nie na każdej operacji zapisu | openapi: 7 wystąpień vs 9 endpointów (2 zapisy bez) | duplikat księgowania przy retry | gateway wymusza nagłówek; reguła 440003 już BLOCK | S | niskie |
+| L02 | P2 | Egzekucja RBAC w runtime gateway nieprzetestowana probe'em | brak runtime probe w repo | fail-open przy błędzie gateway | dodanie runtime probe do P43/P44 | M | niskie |
+| L03 | P2 | Ekran faktury e2e zależny od statusów P32 (integracja przyszła) | kontrakt UI invoice_e2e | UI bez pełnego e2e | podpięcie statusów w P41/P48 | M | niskie |
+| L04 | P3 | SDK Python/TS nie wygenerowane | brak katalogu sdk/ | ręczne integracje | generatory z openapi (I11) | S | niskie |
+| L05 | P3 | Schematy KSeF FA(2)/FA(3) nieprzypięte w testach kontraktowych | brak pinu w kontrakcie | dryf schematu | pin + testy kontraktowe; [NIEZWERYFIKOWANE] | S | średnie |
+| L06 | P3 | Mirror policies sync (dryft canonical↔mirror) | drzewo policies/ bez CI diff | rozjazd wdrożeń | detekcja w CI (P48) | M | średnie |
+| L07 | P3→kontynuacja serii | Dryft legacy rdzenia (353 błędy parse v0/v1 w ~190 plikach; 4 porażki pytest P05/P06/P10/P00) | potwierdzony w P37/P38/P39 i tej sesji | nie blokuje V3 | P36/P50 | L | — |
+| L08 | P3 | ISAP weryfikacja podstaw prawnych części | [NIEZWERYFIKOWANE] globalnie | formalna pewność | P47/P44 | L | — |
+
+BLOKERY P0: brak. P1: brak.
+
+================================================================================
+9.07 INNOWACJE ENTERPRISE (T4; 12 wdrożonych z pełnym 6-punktowym projektem)
+================================================================================
+I01 DECISION-FIRST API (440001): 1) luka: skrócone certyfikaty = luka audytowa;
+2) mechanizm: /v1/evaluate zwraca pełny F4 (P11); reguła BLOCK bez certyfikatu,
+TRIAGE przy skrócie; 3) wpływ: front-end i audytor na tym samym dowodzie;
+4) ryzyko: większy payload → mitygacja: rate limit I06 + kompresja;
+5) akceptacja: test_p40_i01_* (3) zielone; 6) zależności: P11, P03.
+I02 EXPLAIN CHAIN (440002): graf fakt→reguła→przepis→decyzja; BLOCK bez grafu,
+TRIAGE bez linku ISAP (próg 0 z progów); RODO 15/22; test_p40_i02_*;
+zależności: P34, P41.
+I03 IDEMPOTENT WRITES (440003): Idempotency-Key na zapisach; BLOCK przy braku
+klucza i przy duplikacie; UoR 4; test_p40_i03_*; zależności: P32.
+I04 RBAC+MINIMIZATION (440004): mapa rola→pola jako dane; BLOCK wycieku i braku
+mapy; TRIAGE zapisu audytora; RODO 5/32; test_p40_i04_*; zależności: P32 (4-eyes).
+I05 API AUDIT WORM (440005): 5 pól wpisu + checksuma → WORM P43; BLOCK braku
+wpisu; RODO 5.2; test_p40_i05_*; zależności: P43.
+I06 RATE LIMITING (440006): limity per rola/endpoint z progów; BLOCK ∞;
+RODO 32; test_p40_i06_*; zależności: P37.
+I07 DEGRADATION LADDER (440007): FULL→CACHE_ONLY→OFFLINE_QUEUES→READ_ONLY;
+X-API-Mode; BLOCK nieznany tryb; test_p40_i07_*; zależności: P32, P38, P43.
+I08 FRESHNESS HEADER (440008): X-Legal-Freshness z P34; SLA 7 dni; BLOCK przy
+przekroczeniu; test_p40_i08_*; zależności: P34, P37.
+I09 SUBSCRIPTION WEBHOOK (440009): HMAC-SHA256 + idempotent retry + 3 eventy;
+BLOCK braku HMAC; eIDAS; test_p40_i09_*; zależności: P32, P25.
+I10 PLAYGROUND SANDBOX (440010): fikcyjny input, bez zapisu, strip PII;
+BLOCK zapisu i braku stripu; RODO 5; test_p40_i10_*; zależności: —.
+I11 SCHEMA-FIRST SDK (440011): x-schema-version pin w openapi; BLOCK klienta
+bez pinu; P38/P39; test_p40_i11_*; zależności: P38, P39-I08.
+I12 EXPORT EVIDENCE PACK (440012): 5 części pakietu + checksuma obowiązkowa;
+BLOCK eksportu bez checksumy; UoR 4.1; test_p40_i12_*; zależności: P11, P43.
+
+================================================================================
+9.08 KONTRAKT WYJŚCIOWY (T5; wiąże P41+)
+================================================================================
+K1 KONTRAKT API: endpointy/schematy/RBAC/idempotencja/audyt = dane w
+   bundles/v3_p40_api_contract.json; odbiorcy: P43 (security), P41 (docs),
+   P44 (certyfikacja). Zmiana = PR + pin x-schema-version bump.
+K2 EKSPLIKACJA: /explain zwraca graf ExplainGraph (fakt→reguła→przepis→decyzja,
+   linki ISAP); wejście do P11 (certyfikat) i P41 (podręcznik).
+K3 DEGRADATION LADDER: tryby FULL/CACHE_ONLY/OFFLINE_QUEUES/READ_ONLY w
+   X-API-Mode; wejście do P38 (deploy) i P43 (DR).
+K4 NAGŁÓWKI ODPOWIEDZI: X-Legal-Freshness (P34/P37) i X-API-Mode obowiązkowe
+   na endpointach decyzyjnych.
+K5 WEBHOOKI: tylko HMAC-SHA256, tylko idempotent retry; eventy z P32/P25.
+
+================================================================================
+9.09 PLAN WDROŻENIA (T6)
+================================================================================
+Od razu (wdrożone w tej części): R1–R8 (Executive Summary), reguły+progi+wiring,
+kontrakt, narzędzia, testy — wszystkie zielone.
+Wymaga testów przed produkcją: L01 (gateway idempotency), L02 (runtime RBAC
+probe) — bramki P39.
+Wymaga decyzji człowieka (4-eyes): Q01–Q04 (9.11).
+Rollback: reguły za flagą v3_p40_check (wyłączenie = usunięcie flagi; wiring
+safe_merge nie usuwa wcześniejszych pasów); kontrakt = plik danych (git revert).
+
+================================================================================
+9.10 PLAN TESTÓW (T7) — blokujące merge: test_rego_native_suite_passes,
+test_all_12_bundles_pass, test_main_jdg_wired_p104, test_thresholds_as_data,
+test_api_contract_endpoints_complete. Wyniki: rego 40/40 ×2 OPA; pytest 20/20;
+seria 723/723. Negative-first: 15 asercji BLOCK/TRIAGE.
+
+================================================================================
+9.11 PYTANIA DO CZŁOWIEKA (T8)
+================================================================================
+Q01 (V3-P40-Q01): Czy przedsiębiorca (rola) może widzieć kwoty podatków innych
+   niż własne w widoku audytora współdzielonym? (RODO vs operacyjność) —
+   wymaga decyzji właściciela produktu.
+Q02 (V3-P40-Q02): Zatwierdzenie mapy rola→pola (kontrakt RBAC) przez właściciela
+   (4-eyes) przed produkcją.
+Q03 (V3-P40-Q03): Limity rate (60/min domyślnie) — czy biznes akceptuje dla
+   dużych biur księgowych? (limit = parametr, decyzja = biznesowa).
+Q04 (V3-P40-Q04): Eskalacja L05 (schematy KSeF) do części P32/P44 — czy pinować
+   FA(2), FA(3), czy obie? [NIEZWERYFIKOWANE]
+
+================================================================================
+9.12 ZAŁOŻENIA JAWNE (T9)
+================================================================================
+[ZAŁOŻENIE] Z1: Nagłówki X-API-Mode/X-Legal-Freshness będą wstawiane przez
+   gateway, nie przez rego (rego egzekwuje KONTRAKT, nie transport).
+[ZAŁOŻENIE] Z2: Idempotency-Key przechowywany 24 h (okno retry) — do potwierdzenia z P32.
+[ZAŁOŻENIE] Z3: Mapa RBAC obejmuje 4 role z promptu; nowe role wymagają PR.
+[ZAŁOŻENIE] Z4: SLA świeżości 7 dni z P37 spójne z radar P34.
+
+================================================================================
+9.13/9.14/9.15 — SPEŁNIONE: podanalizy mają własne tabele/wnioski/luki (9.04),
+macierz kompletna (9.05), identyfikatory wg standardu P00.
+
+================================================================================
+T10 — ARTEFAKTY PRZEKAZANE DALEJ (11.4)
+================================================================================
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| bundles/v3_p40_api_contract.json | P43/P41/P44 | JSON | gateway/SDK/dokumentacja z jednego źródła |
+| reguły I01–I12 + progi v3_p40 | P43/P44 | Rego | audyt bezpieczeństwa API, certyfikacja |
+| ExplainGraph konwencja | P11/P41 | kontrakt | certyfikat i podręcznik |
+| Degradation ladder | P38/P43 | dane | deploy i DR |
+| x-schema-version pin | P39/P44 | openapi | bramka breaking change |
+
+================================================================================
+APENDYKS B — MACIERZ PODANALIZA×GRUPA
+================================================================================
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik |
+|------------|----------------|-----------------|-------|
+| 5.1 | 6.1, 6.3 | openapi 1433 linie, kontrakt 9 endpointów, 7× Idempotency | 9.04-AN01 |
+| 5.2 | 6.1, 6.3 | RBAC 4 role, WORM 5 pól, limit 60/min | 9.04-AN02 |
+| 5.3 | 6.2 | /jdg/explain, 3 dashboardy, 4 ekrany UI | 9.04-AN03 |
+| 5.4 | 6.4 | P32 kolejki, P34 radar, mirror policies | 9.04-AN04 |
+
+APENDYKS E — PLAN PRACY: wykonany w całości (wdrożenie R1–R8, testy zielone,
+raport, ledger).
+
+================================================================================
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+================================================================================
+Zgodne z ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (Control Plane/Data Plane, SLO,
+fail-closed) i WIZJA_OPA_ENTERPRISE_V2.md (Decision Certificate F4 w każdej
+odpowiedzi — I01; Legal Twin: freshness header — I08). Odstępstwa: brak.
+Anti-wzorce AP01–AP12: sprawdzone — brak stubów {true}, zero hardcode progów
+(ADR-002), else-chain jawny, brak duplikatów rule_id (440001–440012 unikalne),
+fail-closed (AP07: cichy AUTO_POST niemożliwy — no_auto_post=true w progach
+i kontrakcie). Prawa: [NIEZWERYFIKOWANE] — rejestr L08.
+================================================================================
+KONIEC RAPORTU V3 P40 — KOLEJNA CZĘŚĆ: P41 (czyste okno kontekstowe; przenieść
+wyłącznie: 9.01, 9.08 K1–K5, 9.06 L01–L08).
+================================================================================
+<!-- APPEND_MARKER -->

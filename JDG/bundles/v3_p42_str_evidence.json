@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P42-I10",
+  "generated_at": "2026-09-09T11:25:50+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "str_generator_exists": true,
+    "str_in_certificate_spec": true,
+    "str_fields_complete": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p42_enterprise_reszta.str_evidence: True"
+    },
+    {
+      "name": "str_generator_exists",
+      "status": "OK",
+      "detail": "tools/str_generator.py: True"
+    },
+    {
+      "name": "str_in_certificate_spec",
+      "status": "OK",
+      "detail": "STR w certyfikacie decyzji (rejestr): True"
+    },
+    {
+      "name": "str_fields_complete",
+      "status": "OK",
+      "detail": "pola STR w rejestrze: ['incident_id', 'timeline', 'root_cause', 'affected_decisions', 'recovery_path'] (wymagane: incident_id/timeline/root_cause)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p106"
+    }
+  ],
+  "findings": []
+}

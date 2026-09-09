@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P41-I05",
+  "generated_at": "2026-09-09T10:57:36+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "glossary_source_exists": true,
+    "legal_registries_consistent": true,
+    "glossary_threshold_as_data": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p41_dokumentacja.glossary_enforcement: True"
+    },
+    {
+      "name": "glossary_source_exists",
+      "status": "OK",
+      "detail": "SLOWNIK_REFERENCJI_PRAWNYCH.md: 75 linii"
+    },
+    {
+      "name": "legal_registries_consistent",
+      "status": "OK",
+      "detail": "UoR w LEGAL_REFERENCE_ACTS: True, w Bbb: True (LEGAL_SOURCE_REGISTRY = rejestr procesu, nie akt)"
+    },
+    {
+      "name": "glossary_threshold_as_data",
+      "status": "OK",
+      "detail": "v3_p41_glossary_violations_max w data.thresholds: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p105"
+    }
+  ],
+  "findings": []
+}

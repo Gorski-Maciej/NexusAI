@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P39-I03",
+  "generated_at": "2026-09-09T09:08:23+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "core_temporal_tests_exist": true,
+    "temporal_windows_count": 81,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p39_testy_ci.temporal_pairs: True"
+    },
+    {
+      "name": "core_temporal_tests_exist",
+      "status": "OK",
+      "detail": "tests/test_core_guards_temporal_thresholds.py: True"
+    },
+    {
+      "name": "temporal_windows_in_thresholds",
+      "status": "OK",
+      "detail": "bloki valid_from w thresholds_jdg.rego: 81"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p103"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P40-I11",
+  "generated_at": "2026-09-09T10:02:51+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "openapi_versioned": true,
+    "schema_pin_available": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p40_api_dane_ui.schema_first_sdk: True"
+    },
+    {
+      "name": "openapi_versioned",
+      "status": "OK",
+      "detail": "openapi.yaml wersjonowane (info.version): True"
+    },
+    {
+      "name": "schema_pin_available",
+      "status": "OK",
+      "detail": "pin wersji schematu w openapi: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p104"
+    }
+  ],
+  "findings": []
+}

@@ -107,6 +107,14 @@ import data.jdg.v3_p34_walidacja_narzedzia as v3_p34_walidacja_narzedzia
 import data.jdg.v3_p35_audyutory_domenowe as v3_p35_audyutory_domenowe
 import data.jdg.v3_p36_generatory_migratory as v3_p36_generatory_migratory
 import data.jdg.v3_p37_obserwowalnosc as v3_p37_obserwowalnosc
+import data.jdg.v3_p38_bundle_deploy as v3_p38_bundle_deploy
+import data.jdg.v3_p39_testy_ci as v3_p39_testy_ci
+import data.jdg.v3_p40_api_dane_ui as v3_p40_api_dane_ui
+import data.jdg.v3_p41_dokumentacja as v3_p41_dokumentacja
+import data.jdg.v3_p42_enterprise_reszta as v3_p42_enterprise_reszta
+import data.jdg.v3_p43_security_dr as v3_p43_security_dr
+import data.jdg.v3_p44_certyfikacja_finalna as v3_p44_certyfikacja_finalna
+import data.jdg.v3_p45_stub_killer as v3_p45_stub_killer
 import data.jdg.micro.quality_v3_13 as micro_quality_v3_13
 import data.jdg.hyper.quality_v3_14 as hyper_quality_v3_14
 import data.jdg.enterprise.quality_v3_15 as enterprise_quality_v3_15
@@ -1500,6 +1508,16 @@ _package_decisions := {
     "jdg.v3_p36_generatory_migratory": v3_p36_generatory_migratory.decide,
     # ── V3-P37: OBSERWOWALNOŚĆ (SLO, freshness SLA, drift watch, benchmark gate) ──
     "jdg.v3_p37_obserwowalnosc": v3_p37_obserwowalnosc.decide,
+    # ── V3-P38: BUNDLE DEPLOY (canary, rollback, WORM, okna wdrożeniowe) ──
+    "jdg.v3_p38_bundle_deploy": v3_p38_bundle_deploy.decide,
+    # ── V3-P39: TESTY CI (piramida L1-L7, golden gate, benchmark, niezmienniki) ──
+    "jdg.v3_p39_testy_ci": v3_p39_testy_ci.decide,
+    "jdg.v3_p40_api_dane_ui": v3_p40_api_dane_ui.decide,
+    "jdg.v3_p41_dokumentacja": v3_p41_dokumentacja.decide,
+    "jdg.v3_p42_enterprise_reszta": v3_p42_enterprise_reszta.decide,
+    "jdg.v3_p43_security_dr": v3_p43_security_dr.decide,
+    "jdg.v3_p44_certyfikacja_finalna": v3_p44_certyfikacja_finalna.decide,
+    "jdg.v3_p45_stub_killer": v3_p45_stub_killer.decide,
     "jdg.international": international.decide,
     "jdg.tp": tp.decide,
     "jdg.tp.hyper": tp_hyper.decide,
@@ -3067,6 +3085,107 @@ final_verdict_p101 = safe_merge(final_verdict_p100,
     ))
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18q: V3-P38 — BUNDLE DEPLOY (post-merge, p101 → p102)
+# Bundle, deploy i cykl życia wersji: deterministic build + attestation (I01),
+# canary z decision diff (I02), auto-rollback z powodem (I03), blue-green (I04),
+# WORM archive wersji (I05), deployment window z kalendarza P25 (I06), bundle
+# signature verification fail-closed (I07), overlay versioning (I08), post-deploy
+# certification (I09), infrastructure as legal record (I10), shadow traffic
+# evaluation (I11), release notes auto-generated (I12).
+# Fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p38_check nie jest
+# true.
+final_verdict_p102 = safe_merge(final_verdict_p101,
+    safe_merge(v3_p38_bundle_deploy.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18r: V3-P39 — TESTY I CI (post-merge, p102 → p103)
+# Piramida testów L1-L7 jako bramki: test matrix from acts (I01), golden replay
+# jako bramka PR (I02), temporal pair tests (I03), negative-first (I04),
+# property invariants pack (I05), mutation testing (I06), flake quarantine
+# (I07), contract version pinning (I08), coverage by legal act (I09),
+# performance budget CI (I10), seed-replay determinism (I11), test impact map
+# (I12). Fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p39_check nie
+# jest true.
+final_verdict_p103 = safe_merge(final_verdict_p102,
+    safe_merge(v3_p39_testy_ci.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18s: V3-P40 — API, DANE I UI (post-merge, p103 → p104)
+# Warstwa API/UI: decision-first API z pełnym certyfikatem (I01), explain chain
+# fakt→reguła→przepis→decyzja (I02), idempotent writes (I03), RBAC + data
+# minimization (I04), API audit WORM (I05), rate limiting (I06), degradation
+# ladder (I07), freshness header (I08), subscription webhook (I09), playground
+# sandbox (I10), schema-first SDK (I11), export evidence pack (I12). Fail-closed;
+# nieaktywny dopóki input.jdg_entrepreneur.v3_p40_check nie jest true.
+final_verdict_p104 = safe_merge(final_verdict_p103,
+    safe_merge(v3_p40_api_dane_ui.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18t: V3-P41 — DOKUMENTACJA ENTERPRISE (post-merge, p104 → p105)
+# Docs-as-code: doc-code binding z bramką CI (I01), SSOT numbers (I02),
+# role doc maps (I03), semantic diff PL/EN (I04), glossary enforcement (I05),
+# audit export pack (I06), runbook coverage (I07), changelog automation (I08),
+# freshness stamps (I09), documentation testing (I10), auditor mode (I11),
+# legacy retirement (I12). Fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p41_check nie jest true.
+final_verdict_p105 = safe_merge(final_verdict_p104,
+    safe_merge(v3_p41_dokumentacja.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18u: V3-P42 — ENTERPRISE RESZTA (post-merge, p105 → p106)
+# Domknięcie reszty luk systemowych: health tier as data (I01), SMT proof pack
+# (I02), WORM hash chain (I03), retention calculator (I04), provenance query
+# (I05), coverage unifier (I06), dependency graph health (I07), orphan sweep
+# (I08), completeness register (I09), STR-as-evidence (I10), cross-domain
+# health contracts (I11), maturity ladder (I12). Fail-closed; nieaktywny
+# dopóki input.jdg_entrepreneur.v3_p42_check nie jest true.
+final_verdict_p106 = safe_merge(final_verdict_p105,
+    safe_merge(v3_p42_enterprise_reszta.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18v: V3-P43 — SECURITY I DR (post-merge, p106 → p107)
+# Bezpieczeństwo i ciągłość: threat model as code (I01), rule quarantine (I02),
+# dual-control deploys (I03), secrets rotation (I04), chaos legal drill (I05),
+# restore drills w CI (I06), paper-mode runbook (I07), tamper-evident rule
+# history (I08), ransomware playbook (I09), breach taxonomy (I10), zero
+# standing access (I11), DR legal continuity (I12). Fail-closed; nieaktywny
+# dopóki input.jdg_entrepreneur.v3_p43_check nie jest true.
+final_verdict_p107 = safe_merge(final_verdict_p106,
+    safe_merge(v3_p43_security_dr.decide,
+        fallback.decide
+    ))
+
+# ── PAS 18w: V3-P44 CERTYFIKACJA FINALNA (hard gates, scoreboard filarów,
+# agregat luk z deduplikacją, mapa decyzyjna właściciela, kontrakt V4,
+# freeze metryk sukcesu, WORM+podpis certyfikatu, pakiet przekazania,
+# polityka odnowienia, domknięcie legacy, atest właściciela, auto-portret).
+# Fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p44_check nie jest true.
+final_verdict_p108 = safe_merge(final_verdict_p107,
+    safe_merge(v3_p44_certyfikacja_finalna.decide,
+        fallback.decide
+    ))
+
+# ── PAS 18x: V3-P45 ELIMINACJA STUBÓW (stub register z SLA, forensics,
+# auto-convert pipeline, negative assertion generator, mutation score gate,
+# stub-free badge, template policy, stub-enabling tests, provenance of truth,
+# stub census, legal-empty detector, ISAP parity). Fail-closed; nieaktywny
+# dopóki input.jdg_entrepreneur.v3_p45_check nie jest true.
+final_verdict_p109 = safe_merge(final_verdict_p108,
+    safe_merge(v3_p45_stub_killer.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
 #   • _invariant_report  — wynik evaluate() (invariant_failed, failed, levels),
@@ -3098,7 +3217,7 @@ final_verdict_p101 = safe_merge(final_verdict_p100,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p101
+    final_verdict_p109
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

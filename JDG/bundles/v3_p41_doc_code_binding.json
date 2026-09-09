@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P41-I01",
+  "generated_at": "2026-09-09T10:57:36+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "section6_docs_exist": true,
+    "registry_bindings": 24,
+    "docs_gate_in_ci_workflow": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p41_dokumentacja.doc_code_binding: True"
+    },
+    {
+      "name": "section6_docs_exist",
+      "status": "OK",
+      "detail": "24/24 plików Sekcji 6 istnieje: True"
+    },
+    {
+      "name": "registry_bindings_complete",
+      "status": "OK",
+      "detail": "bindowania w rejestrze: 24/24"
+    },
+    {
+      "name": "docs_gate_in_ci_workflow",
+      "status": "OK",
+      "detail": "workflow CI wspomina docs gate: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p105"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,28 @@
+{
+  "innovation": "V3-P38-I07",
+  "generated_at": "2026-09-09T08:15:05+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "signature_policy_ok": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p38_bundle_deploy.signature_verification: True"
+    },
+    {
+      "name": "signature_policy_fail_closed",
+      "status": "OK",
+      "detail": "signature_policy: require_signed=True, reject_unsigned=True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p102"
+    }
+  ],
+  "findings": []
+}

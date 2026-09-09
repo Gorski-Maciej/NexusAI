@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P43-I01",
+  "generated_at": "2026-09-09T11:58:00+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "threat_entries": 6,
+    "threat_model_complete": true,
+    "rule_admin_in_scope": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p43_security_dr.threat_model: True"
+    },
+    {
+      "name": "threat_model_complete",
+      "status": "OK",
+      "detail": "wpisy pełne (atak/wektor/kontrola/test): 6/6 fasada=False"
+    },
+    {
+      "name": "rule_admin_in_scope",
+      "status": "OK",
+      "detail": "wektor 'rule_admin' (kto zmienia regułę produkcyjną) w modelu: True"
+    },
+    {
+      "name": "rodo_aml_doc_exists",
+      "status": "OK",
+      "detail": "docs/RODO_AML_BEZPIECZENSTWO_P16.md: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p107"
+    }
+  ],
+  "findings": []
+}

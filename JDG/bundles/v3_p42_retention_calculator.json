@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P42-I04",
+  "generated_at": "2026-09-09T11:25:48+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "retention_threshold_as_data": true,
+    "expiry_calculation_deterministic": true,
+    "retention_classes_defined": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p42_enterprise_reszta.retention_calculator: True"
+    },
+    {
+      "name": "retention_threshold_as_data",
+      "status": "OK",
+      "detail": "v3_p42_retention_years w data.thresholds: True"
+    },
+    {
+      "name": "expiry_calculation_deterministic",
+      "status": "OK",
+      "detail": "przykład: koniec roku 2025 → wygaśnięcie 2030-12-31 (oczekiwane 2030-12-31)"
+    },
+    {
+      "name": "retention_classes_defined",
+      "status": "OK",
+      "detail": "klasy retencji w rejestrze: ['decisions', 'certificates', 'bundles', 'audit_logs', 'documents']"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p106"
+    }
+  ],
+  "findings": []
+}

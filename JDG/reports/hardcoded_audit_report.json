@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-09-03T10:06:38.353744",
-  "total_hardcoded": 26373,
-  "current_thresholds": 809,
-  "target_thresholds": 7376,
+  "generated_at": "2026-09-09T13:14:19.026717",
+  "total_hardcoded": 27055,
+  "current_thresholds": 1036,
+  "target_thresholds": 7942,
   "categories": {
-    "large_integer": 23197,
-    "decimal_rate": 2370,
-    "time_period": 806
+    "large_integer": 23732,
+    "decimal_rate": 2493,
+    "time_period": 830
   },
   "findings": [
     {

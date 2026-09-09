@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P41-I03",
+  "generated_at": "2026-09-09T10:52:56+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "role_maps_complete": true,
+    "maps_have_reading_paths": true,
+    "roles": [
+      "auditor",
+      "developer",
+      "entrepreneur",
+      "operator"
+    ],
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p41_dokumentacja.role_doc_maps: True"
+    },
+    {
+      "name": "role_maps_complete",
+      "status": "OK",
+      "detail": "mapy ról w rejestrze: ['auditor', 'developer', 'entrepreneur', 'operator'] brakujące=[]"
+    },
+    {
+      "name": "maps_have_reading_paths",
+      "status": "OK",
+      "detail": "każda mapa ma ≥3 przystanki: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p105"
+    }
+  ],
+  "findings": []
+}

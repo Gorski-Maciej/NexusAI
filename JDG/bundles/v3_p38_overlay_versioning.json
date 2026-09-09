@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P38-I08",
+  "generated_at": "2026-09-09T08:15:06+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "mirror_base_manifest": true,
+    "mirror_overlay_v2026": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p38_bundle_deploy.overlay_versioning: True"
+    },
+    {
+      "name": "mirror_base_manifest",
+      "status": "OK",
+      "detail": "policies/jdg/bundles/base/manifest.json: True"
+    },
+    {
+      "name": "mirror_overlay_v2026",
+      "status": "OK",
+      "detail": "policies/jdg/bundles/overlays/v2026/manifest.json: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p102"
+    }
+  ],
+  "findings": []
+}

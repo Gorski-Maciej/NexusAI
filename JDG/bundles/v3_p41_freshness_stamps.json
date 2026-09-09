@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P41-I09",
+  "generated_at": "2026-09-09T10:52:59+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "stamps_in_registry": 24,
+    "freshness_threshold_as_data": true,
+    "refresh_mechanism_exists": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p41_dokumentacja.freshness_stamps: True"
+    },
+    {
+      "name": "stamps_in_registry",
+      "status": "OK",
+      "detail": "stemple last_verified: 24/24"
+    },
+    {
+      "name": "freshness_threshold_as_data",
+      "status": "OK",
+      "detail": "v3_p41_doc_freshness_max_days w data.thresholds: True"
+    },
+    {
+      "name": "refresh_mechanism_exists",
+      "status": "OK",
+      "detail": "tools/doc_consistency_validator.py (P34): True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p105"
+    }
+  ],
+  "findings": []
+}

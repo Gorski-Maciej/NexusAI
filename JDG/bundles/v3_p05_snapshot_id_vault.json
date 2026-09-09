@@ -1,14 +1,14 @@
 {
   "innovation": "V3-P05-I02",
-  "generated_at": "2026-09-08T17:06:03+00:00",
+  "generated_at": "2026-09-09T12:59:17+00:00",
   "gate": "FAIL",
-  "snapshot_id": "7a6d04d3be1345588cac8d116d5300da78720a31f03311a4deea6685a7da1751",
+  "snapshot_id": "1f459768980e174ffe6b8629b536a8987eef9d0547195438cba02bb4f42a3957",
   "components": {
-    "rules_files": 507,
+    "rules_files": 518,
     "thresholds_data_sha1": "20655273bee5fdce995e490cb4737142a437e912",
     "legal_graph_sha1": "748d25733d79381e89280d457be2ca3fa73d27fe",
     "migrations_count": 13,
-    "git_head": "f7ced451"
+    "git_head": "047793bf"
   },
   "checks": [
     {
@@ -19,7 +19,7 @@
     {
       "name": "vault_worm",
       "status": "OK",
-      "detail": "identyczny snapshot (repo niezmienione)"
+      "detail": "nowy snapshot (poprzedni: 666290b0a677… — w rejestrze)"
     }
   ],
   "findings": [

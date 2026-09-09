@@ -1,0 +1,35 @@
+{
+  "innovation": "V3-P38-I03",
+  "generated_at": "2026-09-09T08:15:03+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "mttr_sla_as_data": true,
+    "rollback_drill_documented": true,
+    "measured_mttr_min": 4.02,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p38_bundle_deploy.auto_rollback: True"
+    },
+    {
+      "name": "mttr_sla_as_data",
+      "status": "OK",
+      "detail": "v3_p38_rollback_mttr_max_min w data.thresholds: True"
+    },
+    {
+      "name": "rollback_war_game_procedure",
+      "status": "OK",
+      "detail": "rollback_drill w kontrakcie: kroki=5, MTTR zmierzony=4.02 min"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p102"
+    }
+  ],
+  "findings": []
+}

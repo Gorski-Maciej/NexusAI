@@ -1,0 +1,56 @@
+{
+  "strategy_version": "v3p39-test-strategy-2026.09",
+  "valid_from": "2026-01-01",
+  "owner": "jdg-quality",
+  "test_pyramid": [
+    {"level": "L1", "name": "unit rego", "scope": "per reguła: granice grosze (0.00/0.01), daty day-0/day+1, waluty, kwoty negatywne", "runs": "PR", "threshold": "0 fail", "blocks_merge": true},
+    {"level": "L2", "name": "integracyjne pytest", "scope": "domeny łączone, wiring main_jdg", "runs": "PR", "threshold": "0 fail", "blocks_merge": true},
+    {"level": "L3", "name": "kontraktowe", "scope": "werdykt 25-polowy (P03) + certyfikat F4 (P11)", "runs": "PR", "threshold": "0 fail", "blocks_merge": true},
+    {"level": "L4", "name": "golden replay", "scope": "golden verdicts (P10): przeszłość nie zmienia decyzji", "runs": "PR", "threshold": "regresja = 0", "blocks_merge": true},
+    {"level": "L5", "name": "temporal", "scope": "day-1/day-0/day+1 na granicach nowelizacji (P05)", "runs": "PR (zmiany progów/dat) + nightly", "threshold": "0 fail", "blocks_merge": true},
+    {"level": "L6", "name": "fuzz/property", "scope": "niezmienniki fail-closed: mutacje input i data (P33 chaos)", "runs": "nightly", "threshold": "0 naruszeń niezmienników", "blocks_merge": false},
+    {"level": "L7", "name": "wydajnościowe", "scope": "benchmark eval vs baseline (P37)", "runs": "PR + nightly", "threshold": "regresja p95 <= 10%", "blocks_merge": true}
+  ],
+  "invariants_pack": [
+    "invariant_totals_non_negative",
+    "invariant_vat_rate_from_set",
+    "invariant_currency_stable",
+    "invariant_fail_closed_on_missing_field"
+  ],
+  "invariants_note": "niezmienniki jako dane; używane przez property-based i fuzz (chaos P33); naruszenie = BLOCK",
+  "flake_quarantine": {
+    "separate_job": true,
+    "repair_deadline_days": 14,
+    "owner_required": true,
+    "merge_path_policy": "flak nie blokuje PR; zero trwałych flaków — deadline + owner",
+    "note": "konwencja wiąże P36 (generatory testów) i P41 (dokumentacja)"
+  },
+  "contract_pinning": {
+    "verdict_schema_pinned": true,
+    "certificate_schema_pinned": true,
+    "source": "P03 werdykt 25-polowy + P11 certyfikat F4",
+    "breaking_policy": "breaking change = jawny PR migracyjny z 4-eyes"
+  },
+  "seed_replay": {
+    "seed_recorded": true,
+    "replay_on_failure": true,
+    "note": "każdy test z losowością zapisuje seed; CI replays 1:1 po awarii (determinizm)"
+  },
+  "impact_map": {
+    "source": "P02_routing_registry",
+    "golden_always_runs": true,
+    "note": "zmiana pliku → dotknięte testy z rejestru routingu; golden i kontrakty zawsze na PR"
+  },
+  "merge_gates": [
+    "L1-L5 fail = BLOCK",
+    "golden regresja = BLOCK",
+    "benchmark regresja > 10% = BLOCK",
+    "suita bez asercji negatywnych = BLOCK (AP06)",
+    "test losowy bez seeda = BLOCK"
+  ],
+  "vanity_tests_policy": "test zawsze-zielony bez asercji negatywnej = fasada; wykrycie = luka P39 + naprawa w P36",
+  "always_green_audit": {
+    "policy": "min. 5 przykładów testów fasad z planem naprawy w raporcie 9.10",
+    "tool": "tools/test_rego_ci_auditor.py (rdzeń — rozszerzany, nie duplikowany)"
+  }
+}

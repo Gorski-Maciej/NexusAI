@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P43-I07",
+  "generated_at": "2026-09-09T11:58:02+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "operational_runbooks": 6,
+    "paper_mode_sections_complete": true,
+    "offline_calendar_source": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p43_security_dr.paper_mode: True"
+    },
+    {
+      "name": "operational_runbooks_present",
+      "status": "OK",
+      "detail": "runbooki P37: 6 (RB01-RB06)"
+    },
+    {
+      "name": "paper_mode_sections_complete",
+      "status": "OK",
+      "detail": "sekcje paper-mode: ['forms', 'deadlines', 'reconciliation_after_dr'] (wymagane: ['forms', 'deadlines', 'reconciliation_after_dr'])"
+    },
+    {
+      "name": "offline_calendar_source",
+      "status": "OK",
+      "detail": "źródło terminów offline: 'P25 zus_calendar.py eksport danych (offline)' (P25 zus_calendar jako dane)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p107"
+    }
+  ],
+  "findings": []
+}

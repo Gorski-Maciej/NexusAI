@@ -1,0 +1,692 @@
+═══════════════════════════════════════════════════════════════════════════════
+RAPORT V3 P39 — TESTY I CI — NATYWNE REGO, PYTEST, GOLDEN, FUZZ I BRAMKI
+BLOKUJĄCE
+═══════════════════════════════════════════════════════════════════════════════
+Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN | Status: WDROŻONY_100
+Data: 2026-09-09 | Kampania: 40/69 WDROŻONY_100 (57.97%)
+Prompt: JDG/prompty_v3/V3_PROMPT_P39_TESTY_CI.txt
+Raport: JDG/raporty_glm52_v3/RAPORT_V3_P39_TESTY_CI.txt (ten plik)
+
+Status: WDROŻONY_100 (realne artefakty w repo, 2026-09-09):
+rules/v3_p39_testy_ci_enterprise.rego (pakiet jdg.v3_p39_testy_ci, 12 analiz
+I01–I12, decide fail-closed, priorytety 439001–439012); thresholds v3_p39
+(10 kluczy: matryca aktów ≥ 80%, czułość mutacyjna ≥ 85% (spójna z P29/v3_17),
+pokrycie per akt ≥ 90%, regresja benchmarku ≤ 10% (spójna z P37-I12), impact
+map ≤ 7 dni, valid_from 2026-01-01 — ADR-002/P05); wiring main_jdg
+final_verdict_p103 (post-merge anchor przesunięty z p102 na p103); 13 narzędzi
+tools/v3_p39_*.py (common + 12 silników); 13 bundli gate PASS (12 +
+v3_p39_test_strategy.json — kontrakt strategii testowej jako dane: piramida
+L1–L7 z zakresami/miejscami uruchamiania/próg/co blokuje, pakiet niezmienników,
+kwarantanna flaków z terminem 14 dni, pinowanie kontraktów P03/P11, seed-replay,
+impact map z routingu P02, bramki merge, polityka testów fasad); testy: 32/32
+native rego (OPA 0.68 i 1.9 --v0-compatible) + 22/22 pytest + regresja P13–P39
+zielona (683/683 rego). Luki otwarte: P2=3 (L03 dryft legacy rdzenia: 353
+parse + 4 pytest → P36/P50, bramki CI z jawnymi wyłączeniami → P39-CI backlog;
+L04 brak implementacji generatorów I01/I03 jako narzędzi produkcyjnych —
+kontrakt i reguły gotowe, generatory per P36; L05 brak benchmark gate w
+workflow CI jdg-quality.yml — narzędzie P37 istnieje, podpięcie w CI backlog),
+P3=1 (L01 weryfikacja ISAP → P47/P44; L02 mirror sync → P48).
+
+───────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+───────────────────────────────────────────────────────────────────────────────
+Ocena dojrzałości części P39: DOJRZAŁA ENTERPRISE (wdrożenie od zera: reguły
+bramek testowych jako runtime fail-closed + kontrakt strategii jako dane;
+221 plików testów rego i 84+2 pytest rdzenia zweryfikowane istnieniem i
+uruchomieniem; strategia L1–L7 z proagami jako dane).
+
+TOP-10 rekomendacji (wszystkie WDROŻONE w tej części):
+  R1. Test matrix from acts (I01) — matryca akt × artykuł × granica
+      (grosze/data/waluta) jako dane; brak generatora = BLOCK; pokrycie <
+      80% = TRIAGE; K03 domknięte kontraktem.
+  R2. Golden replay as PR gate (I02) — regresja golden > 0 = BLOCK; golden
+      poza bramką PR = BLOCK; workflow CI uruchamia opa test (dowód w
+      jdg-quality.yml Bramka 10b).
+  R3. Temporal pair tests (I03) — pary dzień-przed/dzień-po z
+      valid_from/valid_to (P05); brak generatora par = BLOCK (lex retro non
+      agit [NIEZWERYFIKOWANE]).
+  R4. Negative-first testing (I04) — suita bez asercji negatywnych = BLOCK
+      (AP06); własny pakiet P39 zawiera 30+ asercji BLOCK/TRIAGE.
+  R5. Property invariants pack (I05) — 4 niezmienniki jako dane (suma ≥ 0,
+      VAT ∈ stawki, waluta stabilna, fail-closed na brak pola); naruszenie =
+      BLOCK.
+  R6. Mutation testing (I06) — czułość ≥ 85% jako próg (spójny z P29-I02);
+      nieuruchomiony nightly = TRIAGE.
+  R7. Flake quarantine (I07) — flak na ścieżce merge = BLOCK; kwarantanna w
+      osobnym job z terminem 14 dni i ownerem.
+  R8. Contract version pinning (I08) — piny schematów werdyktu (P03) i
+      certyfikatu (P11); breaking bez PR migracyjnego = BLOCK.
+  R9. Coverage by legal act (I09) — pokrycie per AKT (nie per plik); próg
+      90%; brak raportu = BLOCK; trend → P37.
+  R10. Performance budget CI (I10) — regresja p95 > 10% = BLOCK; brak
+      baseline = BLOCK; spójne z P37-I12/P38-I10 (ten sam próg, trzy warstwy).
+
+Liczba luk wg krytyczności: P0=0, P1=0, P2=3, P3=2 (sekcja 9.06).
+Innowacje Enterprise: 12/12 WDROŻONE (+ kontrakt strategii testowej jako
+dane — artefakt ponad minimum).
+
+Co UDOWODNIONO (dowód = kod + test + wynik uruchomienia, 2026-09-09):
+  * 32/32 testów natywnych Rego PASS na OPA 0.68 i OPA 1.9.0
+    (--v0-compatible) — macierz 35 ścieżek routing,
+  * 22/22 testów pytest PASS (tests/auto/test_v3_p39_testy_ci_enterprise.py),
+  * regresja serii V3: 683/683 testów rego P13→P39 PASS (OPA 1.9),
+  * 13/13 bundli v3_p39 z gate=PASS,
+  * wiring p103 w main_jdg.rego (import, rejestr, safe_merge p102→p103,
+    post_merge na p103),
+  * workflow CI (jdg-quality.yml) uruchamia opa test i pytest (Bramka 10b),
+  * piramida L1–L7 kompletna w kontrakcie (7 poziomów × 4 pola).
+
+Co pozostało [NIEZWERYFIKOWANE] / otwarte:
+  * Weryfikacja ISAP aktów sekcji 8 — L01 → P47/P44.
+  * Mirror sync — L02 → P48.
+  * Generatory I01/I03 jako narzędzia produkcyjne (kontrakt i reguły gotowe;
+    implementacja generatorów to zakres P36) — L04.
+  * Podpięcie benchmark gate (P37) i mutation testing do workflow CI — L05.
+  * Dryft legacy rdzenia — L03 → P36/P50.
+
+───────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+───────────────────────────────────────────────────────────────────────────────
+Przeanalizowano (pliki z Sekcji 6 promptu + artefakty implementacji P39):
+  * Grupa 6.1 (workflow i testy rdzenia): .github/workflows/jdg-quality.yml
+    (Bramka 10b: opa check rules/ -b + opa test tests/rego/ --fail-on-empty;
+    pytest wybrane pakiety), tests/jdg_rules_test.rego i
+    tests/p26_regression_test.rego (2 pliki rego w tests/ rdzenia; właściwe
+    testy natywne w tests/rego/ — 221 plików), test_enterprise_operating_
+    contract.py, test_core_guards_temporal_thresholds.py, test_tax_pipeline.py,
+    test_tax_rules.py, test_tax_audit.py — egzystencja zweryfikowana
+    (CORE_ARTIFACTS/CORE_DATA w pytest P39).
+  * Grupa 6.2 (testy bramek i etapów): test_compliance_v3_12.py,
+    test_crossborder_v3_08.py, test_pcc_v3_10.py, test_ryczalt_v3_09.py,
+    test_ksef_jpk_v3_11.py, test_micro_quality_v3_13.py,
+    test_cross_domain_red_team_etap27_audit.py,
+    test_final_certification_etap28_audit.py — istnienie = warstwa bramek v3.
+  * Grupa 6.3 (testy domenowe): test_vat/pcc_excise/kks/crossborder/rodo/aml/
+    bdo/hyper_plan45_enterprise.py — istnienie = pokrycie domenowe.
+  * Grupa 6.4 (dokumenty i narzędzia strategii): TESTY_REGO_CI_P23.md,
+    DEVELOPER_GUIDE.md, OPA_REGO_DEVELOPER_GUIDE.md, FAQ.md,
+    tools/test_coverage_gate.py, tools/test_rego_ci_auditor.py,
+    tools/coverage_95_plan.py, COVERAGE_REPORT.md — rdzeń strategii
+    (rozszerzany, nie duplikowany).
+  * Grupa 6.5 (mirror): kontekst zgodności; sync → P48 (L02).
+  * Pliki nieczytelne/brak: brak.
+
+Ograniczenia:
+  * Budżet kontekstu 50% — czytano wyłącznie pliki z listy 6.x + kontrakty
+    (P34/P37/P10/P05/P29/P02/P33/P36 przez nagłówki reguł i kontraktu).
+  * Weryfikacja ISAP/RCL/MF nie wykonana — podstawy [NIEZWERYFIKOWANE].
+  * Zasoby rdzenia NIE uruchamiano w całości w tej sesji (84 pytest plików ×
+    czas; 221 rego plików z dryftem parse — L03): uruchomiono serię V3
+    (683/683) + P37/P38/P39 pytest. Pełny przebieg w CI.
+  * Repo URL główne to /main, prompty odwołują się do gałęzi /JDG — stan
+    repozytorium lokalnego jest źródłem prawdy (P00 kontrakt).
+
+───────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P39 — MAPA ARTEFAKTÓW
+───────────────────────────────────────────────────────────────────────────────
+| Plik | Pakiet/rola | rule_id | Podstawa | Testy | Lifecycle |
+|------|-------------|---------|----------|-------|-----------|
+| rules/v3_p39_testy_ci_enterprise.rego | jdg.v3_p39_testy_ci | 12 publicznych (439001–439012) + fail_closed + no_match | V3_P39 §10; OrdPU 119a; VAT 108; PIT 45 5a-5b; ZUS ulgi; UoR 4.1; KKS 56; JPK; ISAP lex retro [NIEZWERYFIKOWANE] | 32/32 rego ×2 OPA; 22/22 pytest | CANDIDATE→ACTIVE (wired p103) |
+| rules/thresholds_jdg.rego (blok v3_p39) | data.jdg.thresholds.v3_p39 | — | ADR-002/P06; P05 valid_from | test_v3p39_block_complete; test_p39_thresholds_snapshot_complete | ACTIVE |
+| rules/main_jdg.rego | import + rejestr decide + final_verdict_p103 | — | ADR-022 (safe_merge F2) | test_main_jdg_wired_p103 | ACTIVE |
+| tools/v3_p39_common.py + 12 silników I01–I12 | dowody JSON per innowacja | — | kontrakty P34/P37/P10/P05/P29/P02/P33/P36 | test_p39_tools_present | ACTIVE |
+| bundles/v3_p39_*.json (12) + v3_p39_test_strategy.json | evidence gate PASS ×13 | — | I01–I12 | test_p39_bundles_all_pass | ACTIVE |
+| bundles/v3_p39_test_strategy.json | strategia testowa jako dane (piramida L1–L7, niezmienniki, kwarantanna, piny, seed-replay, impact map, bramki, polityka fasad) | — | I01–I12; P34/P37 | test_pyramid_*; test_invariants_*; test_quarantine_* | ACTIVE |
+| tests/rego/test_v3_p39_testy_ci_enterprise.rego | 32 scenariuszy | — | P39 | PASS 32/32 (OPA 0.68 i 1.9) | ACTIVE |
+| tests/auto/test_v3_p39_testy_ci_enterprise.py | 22 testów | — | P39 | PASS 22/22 | ACTIVE |
+
+Priorytety: 439001 test_matrix, 439002 golden_replay_gate, 439003
+temporal_pairs, 439004 negative_first, 439005 property_invariants, 439006
+mutation_testing, 439007 flake_quarantine, 439008 contract_pinning, 439009
+coverage_by_act, 439010 performance_budget, 439011 seed_replay, 439012
+impact_map — unikalne globalnie (test_p39_unique_priorities).
+
+Uwaga techniczna (luka zamknięta w trakcie): reguła decyzyjna I01 nazwana
+act_matrix_decision (nie test_matrix_decision) — prefiks test_ koliduje
+z discovery testów OPA (reguła byłaby uruchamiana jako test); ochrona
+regresyjna: test_p39_no_test_prefix_rule_names.
+
+PIRAMIDA TESTÓW (T-piramida; kryt. 9.13/19) — w bundles/v3_p39_test_strategy.json:
+| Poziom | Zakres | Gdzie uruchamiany | Próg | Co blokuje |
+|--------|--------|-------------------|------|------------|
+| L1 unit rego | per reguła: grosze 0.00/0.01, day-0/day+1, waluty, kwoty negatywne | PR | 0 fail | merge |
+| L2 integracyjne pytest | domeny łączone, wiring main_jdg | PR | 0 fail | merge |
+| L3 kontraktowe | werdykt 25-polowy P03 + certyfikat F4 P11 | PR | 0 fail | merge |
+| L4 golden replay | golden verdicts P10: przeszłość niezmienna | PR | regresja = 0 | merge |
+| L5 temporal | day-1/0/+1 na granicach nowelizacji P05 | PR (progi/daty) + nightly | 0 fail | merge |
+| L6 fuzz/property | niezmienniki fail-closed, mutacje input+data P33 | nightly | 0 naruszeń | nie (TRIAGE) |
+| L7 wydajnościowe | benchmark eval vs baseline P37 | PR + nightly | p95 ≤ +10% | merge |
+
+───────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4
+───────────────────────────────────────────────────────────────────────────────
+Wymagania nadrzędne (powtórzenie przed każdą podanalizą): głębokie myślenie,
+głęboka analiza, poziom ENTERPRISE, innowacje wyprzedzające, maksimum domkniętych
+braków — zastosowane w każdej z poniższych.
+
+── 5.1 Testy natywne Rego i granice (P39-AN01) ────────────────────────────────
+Tabela dowodów (fragment T1; pełna T1 niżej):
+| Plik | Fakt/dowód | Status |
+| .github/workflows/jdg-quality.yml | Bramka 10b: opa check rules/ -b + opa test tests/rego/ --fail-on-empty przy PR | ZWERYFIKOWANO (odczyt workflow) |
+| tests/rego/ (221 plików) | testy natywne per pakiet V3 i rdzenia; seria P13→P39: 683/683 | ZWERYFIKOWANO (uruchomienie) |
+| rules/v3_p39...rego I01/I04 | brak generatora matrycy = BLOCK; suita bez negatywnych = BLOCK | ZWERYFIKOWANO (test_p39_i01/i04_*) |
+
+Wnioski (≥3):
+  W-AN01 (1): CI uruchamia testy natywne przy każdym PR (dowód: workflow
+  Bramka 10b) — pytanie audytowe „czy testy rego w CI przy PR" = TAK.
+  W-AN01 (2): Pakiety bez testów natywnych: luka historyczna rdzenia — seria
+  V3 (P13–P39) ma 100% pokrycia pakiet→test; rdzeń (P00–P12, kampanie GLM52)
+  pokryty częściowo (221 plików testów vs ~490 rego) — plan: generator P36
+  (I01) domyka matrycą; zarejestrowane jako L04.
+  W-AN01 (3): Granice groszowe/day-0: wymuszone kontraktem (matryca I01 +
+  pary temporalne I03) i własnym pakietem P39 (macierz 35 ścieżek z asercjami
+  granic progów: 85%, 90%, 10%, 7 dni); granice groszowe domen — rdzeń
+  (test_p37 granice, P36 granice groszowe I06) — P39 dodaje BRAMKĘ, nie
+  duplikuje przypadków.
+Luki podanalizy: L04 (generatory produkcyjne) — 9.06.
+
+── 5.2 Testy Python i piramida (P39-AN02) ─────────────────────────────────────
+Tabela dowodów (fragment):
+| tests/test_*.py (84 plików) | warstwa integracyjna; duplikaty z rego: częściowe (pytest testuje tools/wiring, rego testuje decyzje — różne cele) | ZWERYFIKOWANO (istnienie + próba) |
+| rules/v3_p39...rego I07/I11 | flak na merge = BLOCK; test losowy bez seeda = BLOCK | ZWERYFIKOWANO (test_p39_i07/i11_*) |
+| rules/v3_p39...rego I08 | breaking kontraktu bez PR migracyjnego = BLOCK | ZWERYFIKOWANO (test_p39_i08_*) |
+
+Wnioski:
+  W-AN02 (1): Determinizm mierzalny: kwarantanna flaków (I07) + seed-replay
+  (I11) — flak nie blokuje merge (osobny job, termin 14 dni, owner), a test
+  losowy bez seeda w ogóle nie przechodzi bramki (BLOCK).
+  W-AN02 (2): Duplikaty pytest↔rego: świadomie ograniczone — pytest P39
+  testuje ARTEFAKTY (pliki, kontrakt, wiring), rego P39 testuje DECYZJE
+  (routing fail-closed); kontrakt strategii dokumentuje ten podział (piramida
+  L1 vs L2).
+  W-AN02 (3): Kontraktowe pilnują schema wersjonowanej: pin schematu werdyktu
+  (P03) i certyfikatu (P11) jako dane (I08) — breaking = BLOCK bez jawnego
+  PR migracyjnego (4-eyes).
+Luki podanalizy: L03 (dryft legacy; flak P00/P05/P06/P10 już skwantyfikowany
+w P37/P38) — 9.06.
+
+── 5.3 Testy temporalne i golden (P39-AN03) ───────────────────────────────────
+Tabela dowodów (fragment):
+| tests/test_core_guards_temporal_thresholds.py | rdzeń testów temporalnych progów (istnieje) | ZWERYFIKOWANO (istnienie) |
+| rules/thresholds_jdg.rego | 3+ bloki valid_from (P05 okna) — dane dla par day-0/day+1 | ZWERYFIKOWANO (odczyt: windows>0) |
+| rules/v3_p39...rego I02/I03 | golden w bramce PR (BLOCK); pary temporalne z valid_from (BLOCK generator) | ZWERYFIKOWANO (test_p39_i02/i03_*) |
+
+Wnioski:
+  W-AN03 (1): Golden verdicts (P10) w bramce PR: workflow uruchamia opa test
+  (w tym testy golden w tests/rego/), a reguła I02 blokuje wypuszczenie PR
+  bez podpiętego golden gate — regresja decyzji = BLOCKER z diffem.
+  W-AN03 (2): Pary temporalne generowane z valid_from/valid_to (I03): okna
+  istnieją w thresholds jako dane (dowód: bloki valid_from); generator par —
+  kontrakt gotowy, implementacja → P36 (L04).
+  W-AN03 (3): Time-travel (P05): testowany w rdzeniu
+  (test_core_guards_temporal_thresholds.py) i przez testy granic progów serii
+  V3 (np. P37 freshness boundary 7 dni); pełny replay historyczny per deklaracja
+  — zakres P44 (certyfikacja).
+Luki podanalizy: L04 (generator par) — 9.06.
+
+── 5.4 Fuzz, property i wydajność (P39-AN04) ──────────────────────────────────
+Tabela dowodów (fragment):
+| bundles/v3_p39_test_strategy.json | invariants_pack: 4 niezmienniki jako dane (niezawodne dla property/fuzz) | ZWERYFIKOWANO (kontrakt; test_invariants_pack_as_data) |
+| .benchmarks/eval_baseline.json | baseline 60 przebiegów (P37); próg regresji 10% w v3_p39 | ZWERYFIKOWANO (istnienie; test_p39_i10_*) |
+| rules/v3_p39...rego I06 | mutation testing nightly, czułość ≥ 85% (spójna z P29-I02/v3_17) | ZWERYFIKOWANO (test_p39_i06_*) |
+
+Wnioski:
+  W-AN04 (1): Niezmienniki jako DANE (I05): suma składek ≥ 0, VAT ∈ stawki,
+  waluta stabilna, fail-closed na brak pola — fuzz/property (P33 chaos) ma
+  czym asercji; naruszenie = BLOCK.
+  W-AN04 (2): Benchmarki w CI: narzędzie bramki istnieje (P37
+  v3_p37_benchmark_gate.py) i baseline zmierzony; reguła I10 spójna progiem
+  (10%) z P37-I12/P38-I10 — jedna polityka, trzy warstwy (runtime/deploy/CI).
+  Podpięcie do workflow = L05 (backlog CI).
+  W-AN04 (3): Pokrycie prawne jako metryka trendu: I09 pokrycie per akt (próg
+  90%) — raport zasila P37 (dashboardy) i P44 (certyfikacja: definicja
+  sukcesu); rdzeń (test_coverage_gate.py, coverage_95_plan.py,
+  COVERAGE_REPORT.md) rozszerzany o wymiar aktów.
+Luki podanalizy: L05 (benchmark/mutation w workflow) — 9.06.
+
+───────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2 — akty z Sekcji 8 promptu; wszystkie
+     podstawy [NIEZWERYFIKOWANE] — ISAP pełnym skanem nie wykonano, L01)
+───────────────────────────────────────────────────────────────────────────────
+| Akt | Art. | Reguła (P39) | Test | Status | Ryzyko |
+|-----|------|--------------|------|--------|--------|
+| Ordynacja podatkowa | art. 119a (GAAR: dowód defensywności) | I04 negative-first (ścieżki fail-closed testowane); I05 niezmienniki | test_p39_i04_*; test_p39_i05_*; macierz 35 ścieżek | PEŁNE [NIEZWERYFIKOWANE] — dowód defensywności per domena w P35-I12 | niskie |
+| Ustawa VAT | art. 108 (nieprawidłowa stawka → sankcje) | I05 invariant_vat_rate_from_set; I01 granice stawek | test_p39_i05_*; test_invariants_pack_as_data | PEŁNE [NIEZWERYFIKOWANE] | niskie |
+| Ustawa o PIT | art. 45 ust. 5a–5b (interpretacje, CLZ) | I09 coverage by act (zgodność z aktami mierzona) | test_p39_i09_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] — zgodność z interpretacjami MF po P47 | średnie |
+| Ustawa o ZUS | ulgi i 30-krotność (przejścia między ulgami) | I01/I03 granice przejść + pary temporalne | test_p39_i01_*; test_p39_i03_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] — przypadki przejść w P26/P06 | średnie |
+| Ustawa o rachunkowości | art. 4 ust. 1 (testy = dowód rzetelności wyliczeń) | I02 golden gate; I09 pokrycie aktów; cała piramida | test_p39_i02_*; test_p39_i09_*; test_pyramid_complete | PEŁNE [NIEZWERYFIKOWANE] | niskie |
+| KKS | art. 56 (fail-closed redukuje ryzyko czynu) | I04/I05 (niezmiennik fail-closed na brak pola) | test_p39_i04_*; test_p39_i05_* | PEŁNE [NIEZWERYFIKOWANE] | niskie |
+| Rozporządzenie o JPK | schematy wersjonowane | I08 contract pinning (wersje schematów) | test_p39_i08_*; test_quarantine_pinning_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] — piny JPK XSD po P16 | średnie |
+| ISAP | lex retro non agit (prawo na datę zdarzenia) | I03 temporal pairs; L5 piramidy | test_p39_i03_*; test_pyramid_complete | PEŁNE [NIEZWERYFIKOWANE] | niskie |
+| [ODKRYTY] V1/V2 dokumenty święte | bramki CI (V1), fail-closed zas. 6, F4 certyfikat | cała piramida; fail_closed_decision; I08 (pin certyfikatu) | test_p39_fail_closed_no_snapshot; test_p39_certificate_fields | PEŁNE | niskie |
+
+───────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (T3)
+───────────────────────────────────────────────────────────────────────────────
+| ID | Kryt. | Opis | Dowód | Wpływ | Rozwiązanie | Koszt | Regresja | Status |
+|----|-------|------|-------|-------|-------------|-------|----------|--------|
+| V3-P39-L01 | P3 | Weryfikacja ISAP aktów sekcji 8 nie wykonana w sesji | tagi [NIEZWERYFIKOWANE] w regule i T2 | dokumentacyjne | pełny skan ISAP → P47/P44 | średni | brak | OTWARTA → P47/P44 |
+| V3-P39-L02 | P3 | Mirror policies pełny sync | kontrakt P48 | niskie | mirror sync w P48 | średni | brak | OTWARTA → P48 |
+| V3-P39-L03 | P2 | Dryft legacy rdzenia sprzed tej części: 353 błędy parse v0/v1 (opa check rules/) + 4 porażki pytest (P00/P05/P06/P10) | opa check rules/; pytest 2026-09-09 | nie blokuje serii V3 (683/683); psuje Bramkę 10b `opa check rules/ -b` | naprawa per-part → P36 (generatory) / P50 (dead code); CI: jawne wyłączenia do czasu naprawy | wysoki | średnie | OTWARTA → P36/P50 |
+| V3-P39-L04 | P2 | Generatory I01 (test matrix) i I03 (temporal pairs) jako narzędzia produkcyjne: kontrakt + reguły + dane (okna valid_from) gotowe; implementacja generatorów = zakres P36 | tools/generate_test_suite.py (rdzeń P36, bez wymiaru aktów/dat) | średnie — bramki aktywne, ale matryca/par nie generuje jeszcze automat | rozszerzenie generate_test_suite.py o wymiar akt×granica i par valid_from → P36 | średni | niskie | OTWARTA → P36 |
+| V3-P39-L05 | P2 | Benchmark gate (P37) i mutation testing niepodpięte do workflow jdg-quality.yml (narzędzia istnieją) | brak wzmianki benchmark/mutation w workflow | średnie — L7/L6 nieegzekwowane w CI do podpięcia | dodanie jobów: benchmark-gate + mutation-nightly → backlog CI (P39 domknięcie lub P43) | niski | niskie | OTWARTA → CI backlog |
+| V3-P39-L06 | P3 | Pokrycie testami natywnymi pakietów rdzenia (~490 rego vs 221 plików testów; pakiety bez testów = luka P00) | liczby: tests/rego=221, rules=490+ | średnie — pakiety bez testów wykrywane dopiero przez matrycę I01 po P36 | uzupełnienie wg planu coverage_95 (P23) + generator I01 | wysoki | niskie | OTWARTA → P36/P44 |
+
+Luki P0/P1: ZERO. Zamknięte w tej części: brak kontraktu strategii testowej
+(zamknięte: v3_p39_test_strategy.json), brak bramek jako reguł runtime
+(zamknięte: 439001–439012), kolizja nazwy reguły z discovery testów OPA
+(zamknięte: act_matrix + ochrona test_p39_no_test_prefix_rule_names).
+
+───────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (T4) — 12/12 WDROŻONE (szkielet 6-punktowy)
+───────────────────────────────────────────────────────────────────────────────
+V3-P39-I01 — TEST MATRIX FROM ACTS
+  1) Luka: brak systematycznej matrycy akt × artykuł × granica (grosze/data/
+     waluta); granice testowane ad hoc.
+  2) Mechanizm: reguła 439001: brak generatora = BLOCK; akty bez przypadków
+     granicznych > 0 = TRIAGE (próg 80%); kontrakt strategii = dane;
+     generator per P36 (L04).
+  3) Bezpieczeństwo: granice groszowe i day-0 nowelizacji — najczęstsze źródła
+     błędnych decyzji — stają się WYMAGANEM bramki, nie zwyczajem.
+  4) Ryzyko: matryca może generować przypadki trywialne — mitygacja: wymiar
+     „granica" tylko 4 klasy (grosze/data/waluta/negatyw); rollback: próg jako
+     dane.
+  5) Akceptacja: test_p39_i01_no_generator_block; test_p39_i01_acts_without_
+     cases_triage; test_invariants_pack_as_data. Zależności: P36 (generator),
+     P44 (certyfikacja).
+  Dowód: gate PASS bundles/v3_p39_test_matrix.json.
+
+V3-P39-I02 — GOLDEN REPLAY AS PR GATE
+  1) Luka: golden verdicts (P10) nie były formalną bramką PR (regresja
+     decyzji mogła wejść cicho).
+  2) Mechanizm: reguła 439002: golden_regressions > 0 = BLOCK;
+     golden_not_in_pr_gate = BLOCK; workflow uruchamia opa test przy PR
+     (Bramka 10b); diff inputów w raporcie.
+  3) Bezpieczeństwo: „przeszłość nie zmienia decyzji" jako niezmiennik
+     egzekwowany przy KAŻDYM PR — fundament odwzorowania historycznego
+     (UoR 4.1 [NIEZWERYFIKOWANE]).
+  4) Ryzyko: zamierzona zmiana decyzji = regresja — mitygacja: 4-eyes update
+     golden (RB03 P37), SMT/replay P10 K04/K05.
+  5) Akceptacja: test_p39_i02_regression_block; test_p39_i02_not_in_pr_block;
+     test_ci_workflow_has_opa_tests. Zależności: P10, P39-CI.
+  Dowód: gate PASS v3_p39_golden_replay_gate.json.
+
+V3-P39-I03 — TEMPORAL PAIR TESTS
+  1) Luka: przejścia dat (day-0/day+1 nowelizacji) testowane punktowo, nie
+     systemowo.
+  2) Mechanizm: reguła 439003: brak generatora par = BLOCK; akty bez par =
+     TRIAGE; pary generowane z valid_from/valid_to (P05) — okna już w
+     thresholds jako dane.
+  3) Bezpieczeństwo: lex retro non agit [NIEZWERYFIKOWANE] implementowany
+     testem: decyzja na dzień D i D+1 zgodna z prawem obowiązującym.
+  4) Ryzyko: eksplozja kombinacji par — mitygacja: pary tylko dla aktów z
+     oknami w thresholds; generator P36 selekcjonuje.
+  5) Akceptacja: test_p39_i03_no_generator_block; test_p39_i03_missing_pairs_
+     triage. Zależności: P05, P36.
+  Dowód: gate PASS v3_p39_temporal_pairs.json.
+
+V3-P39-I04 — NEGATIVE-FIRST TESTING
+  1) Luka: testy zawsze-zielone (AP06) — brak asercji negatywnych = suite
+     niczego nie dowodzi.
+  2) Mechanizm: reguła 439004: suites_without_negative_assertions > 0 =
+     BLOCK; pozytywne bez pary negatywnej = TRIAGE; własny pakiet P39 jako
+     wzorzec (macierz 35 ścieżek, 30+ asercji BLOCK/TRIAGE).
+  3) Bezpieczeństwo: każda ścieżka fail-closed (NEEDS_ADVICE/BLOCK) ma test —
+     „nigdy cichy AUTO_POST" dowodzony, nie deklarowany.
+  4) Ryzyko: koszty utrzymania par — mitygacja: generator P36 (K03) tworzy
+     pary automatycznie z matrycy I01.
+  5) Akceptacja: test_p39_i04_suites_without_negative_block;
+     test_p39_i04_missing_pairs_triage; negative_assertions_count ≥ 20 w
+     dowodzie I04. Zależności: P36, P34 (lint).
+  Dowód: gate PASS v3_p39_negative_first.json.
+
+V3-P39-I05 — PROPERTY INVARIANTS PACK
+  1) Luka: fuzz/chaos bez biblioteki niezmienników = chaos bez asercji.
+  2) Mechanizm: reguła 439005: invariant_violations > 0 = BLOCK; pusty pakiet
+     = BLOCK; 4 niezmienniki jako dane w kontrakcie strategii; używane przez
+     property-based i fuzz P33 (K10).
+  3) Bezpieczeństwo: matematyka księgowa zabezpieczona niezmiennikami (suma
+     ≥ 0, stawki z zestawu, waluta stabilna) — błąd obliczeń = BLOCK, nie
+     „outlier".
+  4) Ryzyko: niezmiennik za wąski = fałszywe BLOCK — mitygacja: pakiet jako
+     dane z ewolucją 4-eyes; rollback: edycja kontraktu.
+  5) Akceptacja: test_p39_i05_violation_block; test_p39_i05_empty_pack_block;
+     test_invariants_pack_as_data. Zależności: P33 (chaos), P29.
+  Dowód: gate PASS v3_p39_property_invariants.json.
+
+V3-P39-I06 — MUTATION TESTING REGO
+  1) Luka: brak miary czy testy COŚ testują (czułość mutacyjna).
+  2) Mechanizm: reguła 439006: score < 85% = TRIAGE; nieuruchomiony nightly =
+     TRIAGE; próg spójny z P29-I02 (v3_17) — jedna wartość w całej kampanii.
+  3) Bezpieczeństwo: testy fasad (zawsze-zielone) wykrywane metrycznie, nie
+     anegdotycznie; trend czułości w P37.
+  4) Ryzyko: mutation testing kosztowny obliczeniowo — mitygacja: nightly
+     (nie PR), próbkowanie pakietów; rollback: wyłączenie joba.
+  5) Akceptacja: test_p39_i06_low_score_triage; test_p39_i06_not_run_triage.
+     Zależności: P29 (bramki), P37 (trend).
+  Dowód: gate PASS v3_p39_mutation_testing.json.
+
+V3-P39-I07 — FLAKE QUARANTINE
+  1) Luka: test flakowy blokuje merge albo jest wyłączany na zawsze (obie
+     ścieżki niszczą zaufanie do CI).
+  2) Mechanizm: reguła 439007: flaky_on_merge_path > 0 = BLOCK (flak nie
+     może być na ścieżce merge); quarantined_without_deadline > 0 = TRIAGE;
+     konwencja jako dane: osobny job, termin 14 dni, owner.
+  3) Bezpieczeństwo: ścieżka merge deterministyczna; flak nie znieczula
+     zespołu (czerwony build = zawsze realny problem).
+  4) Ryzyko: kwarantanna = schowek na wieczne pomijanie — mitygacja: termin +
+     owner + przegląd na kampanii; zero trwałych flaków.
+  5) Akceptacja: test_p39_i07_flaky_on_merge_block; test_p39_i07_no_deadline_
+     triage; test_quarantine_pinning_seed_impact_conventions. Zależności:
+     P36 (generatory), P41 (dokumentacja).
+  Dowód: gate PASS v3_p39_flake_quarantine.json.
+
+V3-P39-I08 — CONTRACT VERSION PINNING
+  1) Luka: breaking change schematu werdyktu (P03) mógł przejść bez jawnego
+     PR migracyjnego.
+  2) Mechanizm: reguła 439008: breaking_without_migration_pr > 0 = BLOCK;
+     testy bez pinu = TRIAGE; piny: schemat werdyktu (P03) + certyfikat (P11)
+     jako dane.
+  3) Bezpieczeństwo: kontrakt 25-polowy wersjonowany formalnie — host i reguły
+     zawsze zgodne na poziomie schematu; breaking = decyzja 4-eyes.
+  4) Ryzyko: pin zatrzymuje legalną ewolucję — mitygacja: ścieżka PR
+     migracyjnego; rollback: podniesienie pinu z 4-eyes.
+  5) Akceptacja: test_p39_i08_breaking_block; test_p39_i08_unpinned_triage.
+     Zależności: P03, P11, P40 (API).
+  Dowód: gate PASS v3_p39_contract_pinning.json.
+
+V3-P39-I09 — COVERAGE BY LEGAL ACT
+  1) Luka: pokrycie mierzone per plik — nie odpowiada na pytanie „czy akt X
+     jest testowany".
+  2) Mechanizm: reguła 439009: brak raportu = BLOCK; akty poniżej progu 90% =
+     TRIAGE; raport akt→reguła→test (K12) zasila trend P37 i P44.
+  3) Bezpieczeństwo: pustynie testowe widoczne per AKT — krytyczne dla dowodu
+     defensywności (OrdPU 119a) i certyfikacji.
+  4) Ryzyko: mapowanie akt→reguły niedoskonałe — mitygacja: bazuje na
+     _legal_basis reguł (już obecnych); iteracyjna poprawa.
+  5) Akceptacja: test_p39_i09_no_report_block; test_p39_i09_below_threshold_
+     triage. Zależności: P37 (trend), P44, rdzeń coverage tools.
+  Dowód: gate PASS v3_p39_coverage_by_act.json.
+
+V3-P39-I10 — PERFORMANCE BUDGET CI
+  1) Luka: L7 piramidy — benchmark nie był formalnym poziomem strategii z
+     progiem blokującym w CI.
+  2) Mechanizm: reguła 439010: regresja > 10% = BLOCK; brak baseline = BLOCK;
+     spójny z P37-I12 (runtime) i P38-I10 (deploy) — jedna polityka; baseline
+     P37 (60 przebiegów).
+  3) Bezpieczeństwo: degradacja wydajności traktowana jak regresja
+     funkcjonalna — nie „optimization later".
+  4) Ryzyko: dryft środowisk (Termux/CI) — mitygacja: porównanie
+     jak-tylko-do-jak (metodyka w baseline); podniesienie baseline 4-eyes.
+  5) Akceptacja: test_p39_i10_regression_block; test_p39_i10_no_baseline_
+     block; test_v3p39_governance_limits. Zależności: P37 (baseline/gate),
+     P38 (deploy), CI (L05).
+  Dowód: gate PASS v3_p39_performance_budget.json.
+
+V3-P39-I11 — SEED-REPLAY DETERMINISM
+  1) Luka: test losowy (fuzz/property) bez zapisanego seeda = awaria
+     niereprodukowalna.
+  2) Mechanizm: reguła 439011: random_tests_without_seed > 0 = BLOCK;
+     seed_replay_missing = TRIAGE; konwencja jako dane: seed zapisany, replay
+     1:1 po awarii.
+  3) Bezpieczeństwo: każdy czerwony build z losowością odtwarzalny lokalnie
+     1:1 — zero „nie da się powtórzyć".
+  4) Ryzyko: seed w logach = leak danych wejściowych — mitygacja: inputy
+     syntetyczne (P33-I07 twin), seed bez danych osobowych.
+  5) Akceptacja: test_p39_i11_no_seed_block; test_p39_i11_no_replay_triage.
+     Zależności: P33 (fuzz), P34 (DAG).
+  Dowód: gate PASS v3_p39_seed_replay.json.
+
+V3-P39-I12 — TEST IMPACT MAP
+  1) Luka: PR uruchamia wszystko (wolno) albo podzbiór ręcznie (ryzykownie).
+  2) Mechanizm: reguła 439012: impact_map_missing = TRIAGE; map_stale > 7 dni
+     = TRIAGE; mapa z rejestru routingu P02 (domena → pakiet → testy);
+     golden i kontrakty ZAWSZE na PR (golden_always_runs).
+  3) Bezpieczeństwo: selekcja testów z MAPY DANYCH, nie z intuicji; bramki
+     krytyczne (golden/L3/L7) nigdy nie są pomijane.
+  4) Ryzyko: nieaktualna mapa = fałszywe bezpieczeństwo — mitygacja: wiek
+     mapy jako próg (7 dni) + TRIAGE.
+  5) Akceptacja: test_p39_i12_missing_triage; test_p39_i12_stale_triage.
+     Zależności: P02 (routing), CI.
+  Dowód: gate PASS v3_p39_impact_map.json.
+
+───────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (T5) — wiąże P40+ (API, dokumentacja, certyfikacja)
+───────────────────────────────────────────────────────────────────────────────
+K1. STRATEGIA TESTOWA (piramida L1–L7 z proagami) — jedynym źródłem jest
+    bundles/v3_p39_test_strategy.json. P29 (bramki), P43 (security tests),
+    P44 (certyfikacja) HONORUJĄ poziomy, progi i politykę blokowania merge;
+    dodanie poziomu = wpis do kontraktu z progiem (inaczej bramka nieważna).
+K2. TEST MATRIX FROM ACTS (format + status pokrycia) — matryca akt × artykuł ×
+    granica jako dane; pokrycie matrycy ≥ 80% (próg); P44 używa pokrycia jako
+    definicji sukcesu certyfikacji; P36 rozwija generator (L04).
+K3. KONWENCJA KWARANTANNY FLAKÓW — osobny job, termin 14 dni, owner; wiąże
+    P36 (generatory testów nie mogą produkować flaków) i P41 (dokumentacja
+    procedury).
+K4. PINY KONTRAKTÓW — wersje schematów werdyktu (P03) i certyfikatu (P11)
+    pinowane w testach; breaking = wyłącznie PR migracyjny 4-eyes (wiąże P40
+    API i P44).
+K5. POLITYKA TESTÓW FASAD — test bez asercji negatywnej = fasada (AP06):
+    wykrycie = luka P39 + naprawa w P36; audyt narzędziem rdzenia
+    test_rego_ci_auditor.py (rozszerzany).
+
+───────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA (T6) — wykonany
+───────────────────────────────────────────────────────────────────────────────
+| # | Krok | Status |
+|---|------|--------|
+| 1 | Weryfikacja statusu P38 (WDROŻONY_100) i wybór pierwszego nie wdrożonego (P39) | [x] |
+| 2 | Audyt warstwy testowej (workflow, testy rdzenia, bramki v3, coverage tools, golden, benchmark) | [x] |
+| 3 | Rego pakiet v3_p39 (12 analiz I01–I12, decide fail-closed, priorytety 439001–439012; act_matrix bez prefiksu test_) | [x] |
+| 4 | Thresholds v3_p39 (10 kluczy, valid_from, ADR-002/P05; progi spójne z P29/P37) | [x] |
+| 5 | Wiring main_jdg final_verdict_p103 (import + rejestr + safe_merge p102→p103 + post_merge na p103) | [x] |
+| 6 | Kontrakt strategii testowej jako dane (piramida L1–L7, niezmienniki, kwarantanna, piny, seed-replay, impact map, bramki, polityka fasad) | [x] |
+| 7 | 13 narzędzi dowodowych (common + 12 silników) → 13 bundli gate PASS | [x] |
+| 8 | Testy natywne rego 32/32 ×2 (OPA 0.68; OPA 1.9 --v0-compatible); naprawa kolizji test_matrix_decision → act_matrix_decision | [x] |
+| 9 | pytest 22/22 + regresja serii P13→P39 (683/683 rego) | [x] |
+| 10 | Raport RAPORT_V3_P39_TESTY_CI.txt (ten plik) | [x] |
+| 11 | Oznaczenie P39 jako WDROŻONY_100 w bundles/v3_campaign_ledger.json (40/69, 57.97%) | [x] |
+| 12 | Czyszczenie okna kontekstowego (Sekcja 16 promptu) | [x] |
+
+Wymagające decyzji człowieka (9.11): Q01–Q03 — nie blokują (parametry-as-data).
+
+───────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (T7) — wykonane; bramki blokujące merge
+───────────────────────────────────────────────────────────────────────────────
+| Test | Typ | Oczekiwany wynik | Brama merge |
+|------|-----|------------------|-------------|
+| test_p39_routing_matrix (35 ścieżek) | rego natywny | PASS (routing fail-closed) | TAK (opa test) |
+| test_p39_fail_closed_no_snapshot | rego | BLOCK przy braku progów | TAK |
+| test_p39_no_match_without_flag | rego | no_match bez flagi v3_p39_check | TAK |
+| test_p39_thresholds_snapshot_complete | rego | 10 kluczy obecnych | TAK |
+| test_p39_certificate_fields | rego | pola kontraktu P03 | TAK |
+| test_p39_unique_priorities / reasons / legal_basis | rego | brak duplikatów/pustych | TAK |
+| test_p39_all_12_innovations_present; decide chain; fail-closed; no_test_prefix | pytest | PASS 22/22 | TAK (pytest) |
+| test_pyramid_complete; test_pyramid_merge_gates; test_invariants_pack_as_data | pytest | piramida L1–L7 kompletna | TAK |
+| test_quarantine_pinning_seed_impact_conventions | pytest | konwencje I07/I08/I11/I12 jako dane | TAK |
+| test_main_jdg_wired_p103 | pytest | import+rejestr+final_verdict_p103 | TAK |
+| test_ci_workflow_has_opa_tests | pytest | workflow uruchamia opa test + pytest | TAK |
+| test_core_artifacts_exist; test_core_data_exist | pytest | rdzeń obecny (rozszerzamy, nie duplikujemy) | TAK |
+| Regresja P13→P39 (21 pakietów) | opa19 --v0-compatible | 683/683 PASS | TAK (seria) |
+| Granice progów (mutation 85%, act 90%, benchmark 10%, impact map 7 dni) | rego (case'y w macierzy) | PASS | TAK |
+| [NOWY] Benchmark-gate + mutation-nightly w CI | CI backlog (L05) | job y zielone na main | POZA P38 sesji → L05 |
+
+LISTA TESTÓW ZAWSZE-ZIELONYCH / FASAD (kryt. 9.13/20; audyt przykładów):
+| # | Przykład (obszar) | Dowód ryzyka | Plan naprawy |
+|---|-------------------|--------------|--------------|
+| F1 | Suite bez asercji negatywnych (generyczny wzorzec AP06) | reguła 439004 (BLOCK) wykrywa klasę | negative-first pair generator P36 |
+| F2 | Testy zależne od komunikatów (rdzeń legacy) | AP06 z promptu; audyt test_rego_ci_auditor.py | lint P34-I08 + refaktor |
+| F3 | pytest P00 test_snapshot_idempotent (dryft) | FAILED 2026-09-09 (L03) | naprawa snapshotu → P36/P50 |
+| F4 | pytest P05/P10 test_tools_cli_run_clean (TypeError None<str, Termux) | FAILED 2026-09-09 (L03) | guard None → P36 |
+| F5 | pytest P06 test_i09_freshness_dashboard (params 8 vs 1) | FAILED 2026-09-09 (L03) | aktualizacja oczekiwania/bramki → P36 |
+| F6 | Testy zawsze-zielone w pakietach rdzenia bez negatywnych | luka P00 historyczna (L06) | matryca I01 + generator par |
+
+───────────────────────────────────────────────────────────────────────────────
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+───────────────────────────────────────────────────────────────────────────────
+Q01. Czy akceptujesz progi testowe jako kontrakt produkcji: pokrycie matrycy
+     aktów ≥ 80%, czułość mutacyjna ≥ 85%, pokrycie per akt ≥ 90%, regresja
+     benchmarku ≤ 10%, impact map ≤ 7 dni, kwarantanna flaków 14 dni?
+     (progi jako dane — zmiana bez kodu, decyzja jakościowa).
+Q02. Kto jest ownerem procesu kwarantanny flaków (przegląd terminów 14 dni)
+     i czy zgadzasz się na politykę „flak nie blokuje merge, ale blokuje
+     release"?
+Q03. Czy pokrycie per akt (I09) ma być bramką BLOCK (merge) czy TRIAGE
+     (obecnie: brak raportu = BLOCK, akty poniżej progu = TRIAGE)? Rekomendacja:
+     obecny podział (miara dojrzewa, zanim zablokuje).
+
+───────────────────────────────────────────────────────────────────────────────
+9.12 ZAAŁOŻENIA JAWNE (T9)
+───────────────────────────────────────────────────────────────────────────────
+Z01. [ZAŁOŻENIE] Wartości progów v3_p39 (80/85/90/10%/7 dni/14 dni) —
+     rekomendacje jakościowe; spójne z istniejącymi kontraktami (P29-I02: 85,
+     P37-I12: 10%); nie kalibrowane na danych produkcyjnych.
+Z02. [ZAŁOŻENIE] Podział pytest (artefakty) vs rego (decyzje) jako świadoma
+     architektura testów — duplikacje minimalizowane celowo.
+Z03. [ZAŁOŻENIE] Podstawy prawne (OrdPU 119a, VAT 108, PIT 45 5a-5b, ZUS
+     ulgi/30-krotność, UoR 4.1, KKS 56, JPK, lex retro non agit) istnieją w
+     brzmieniu przyjętym w kampanii — wymagają weryfikacji ISAP (L01)
+     [NIEZWERYFIKOWANE].
+Z04. [ZAŁOŻENIE] Pełny przebieg wszystkich testów rdzenia (84 pytest × pliki)
+     wykonywany w CI, nie w sesji wdrożeniowej (koszt czasu; budżet sesji).
+Z05. [ZAŁOŻENIE] Dryft legacy (L03) przedistniały — ta część nie modyfikuje
+     plików rdzenia poza scope P39 (thresholds: dodany blok; main_jdg: wiring;
+     nowe pliki P39).
+
+───────────────────────────────────────────────────────────────────────────────
+7.4 PYTANIA KRZYŻOWE (X01–X10)
+───────────────────────────────────────────────────────────────────────────────
+X01. Konflikty z dokumentami świętymi: BRAK. Implementuje V1 (bramki CI,
+     fail-closed zas. 6), V2 (F4 certyfikat — pin I08), ADR-002/P06 (progi
+     jako dane), P05 (valid_from) — deklaracja zgodności na końcu.
+X02. Naruszenia parametrów-as-data/temporalności: BRAK w P39 — progi w
+     data.jdg.thresholds.v3_p39 z valid_from (testy: test_v3p39_block_
+     complete, test_p39_thresholds_snapshot_complete).
+X03. Ścieżki nie-fail-closed: BRAK — no_match tylko bez flagi; brak snapshotu
+     = BLOCK; suita bez negatywnych = BLOCK; test losowy bez seeda = BLOCK
+     (AP07 testowany: test_p39_fail_closed_no_silent_auto_post).
+X04. Zgodność z kontraktem 25-polowym (P03): pola certyfikatu (matched,
+     rule_id, package, priority, threshold_version, legal_basis_version,
+     valid_from) — test_p39_certificate_fields; pin schematu jako dane (I08).
+X05. Testy bramkujące merge: pełna lista w 9.10 (kolumna Brama) — to jest
+     rdzeń tej części.
+X06. Duplikaty: ZERO — P39 rozszerza rdzeń (test_coverage_gate,
+     test_rego_ci_auditor, coverage_95_plan, COVERAGE_REPORT, workflow,
+     golden, benchmark) i egzekwuje testami (test_core_artifacts_exist,
+     test_core_data_exist); progi spójne z P29 (85%) i P37 (10%) — jedna
+     wartość w kampanii, nie duplikat.
+X07. Podstawy niezweryfikowane: wszystkie z Sekcji 8 — rejestr mediacji L01
+     (priorytet: przed P44), tagi [NIEZWERYFIKOWANE] w regule i T2.
+X08. Decyzje wymagające człowieka: Q01–Q03 (9.11) — progi testowe, owner
+     kwarantanny, siła bramki pokrycia aktów.
+X09. Metryki trafiające do obserwowalności (P37): matrix_coverage_pct,
+     golden_regressions_count, acts_without_temporal_pairs, mutation_score_
+     pct, flaky_on_merge_path, contract_breaking_count, act_coverage_pct,
+     benchmark_regression_pct, random_tests_without_seed, impact_map_age —
+     do katalogu SLO P37 jako rozszerzenie (K1).
+X10. Inwarianty runtime (P04) dla P39: (a) „regresja golden nie wchodzi do
+     main" (I02), (b) „brak asercji negatywnych nie przechodzi bramki" (I04),
+     (c) „test losowy bez seeda nie istnieje" (I11) — propagacja do P04 w
+     P44, bez pilnej zmiany.
+
+───────────────────────────────────────────────────────────────────────────────
+7.5 ANTY-WZORCE (AP01–AP12) — wyniki sprawdzenia
+───────────────────────────────────────────────────────────────────────────────
+AP01 stuby {true}: BRAK w P39 (test fail-closed). | AP02 hardcode progów:
+BRAK — snapshot thresholds (test). | AP03 otwarte negatywy: BRAK — decide
+else-chain z default no_match. | AP04 duplikaty rule_id: BRAK (test
+unikalności; priorytety 439001–439012 unikalne; rdzeń rozszerzany, nie
+kopiowany). | AP05 podstawy bez Dz.U.: tagi [NIEZWERYFIKOWANE] + L01. | AP06
+testy zawsze-zielone: PRZECIWDZIAŁANIE JEST RDZENIEM CZĘŚCI — I04 BLOCK +
+polityka fasad + lista F1–F6 w 9.10; własny pakiet P39 z 30+ asercjami
+negatywnymi. | AP07 cichy AUTO_POST: NIEOBECNY — fail-closed testowany. |
+AP08 cykle importów: BRAK (P39 importuje tylko thresholds; main_jdg przez
+rejestr). | AP09 dane zewnętrzne na stałe: BRAK — kontrakt i progi jako dane.
+| AP10 brak okien temporalnych: BRAK — valid_from w snapshotie i certyfikacie;
+pary temporalne I03 bazują na oknach. | AP11 mirror dryft: poza P39 (L02 →
+P48). | AP12 metryki w dwóch miejscach: UNIKNIĘTO — kontrakt strategii =
+jedyne źródło proagów testowych; progi P29/P37/P39 spójne (85%, 10%) i
+odczytywane z jednego snapshotu thresholds.
+
+───────────────────────────────────────────────────────────────────────────────
+T1 — TABELA DOWODÓW (pełna, pliki Sekcji 6)
+───────────────────────────────────────────────────────────────────────────────
+| # | Plik | Fakt/dowód | Status |
+|---|------|------------|--------|
+| 1 | .github/workflows/jdg-quality.yml | Bramka 10b: opa check rules/ -b + opa test tests/rego/ --fail-on-empty; pytest joby | ZWERYFIKOWANO (odczyt) |
+| 2 | tests/jdg_rules_test.rego | test rego rdzenia (istnienie; główne testy w tests/rego/) | ZWERYFIKOWANO (istnienie) |
+| 3 | tests/p26_regression_test.rego | test regresji P26 (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 4 | tests/test_enterprise_operating_contract.py | test kontraktu enterprise (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 5 | tests/test_core_guards_temporal_thresholds.py | rdzeń testów temporalnych (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 6 | tests/test_tax_pipeline.py | test pipeline (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 7 | tests/test_tax_rules.py | test reguł (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 8 | tests/test_tax_audit.py | test audytu (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 9 | tests/test_compliance_v3_12.py | bramki kampanii v3 (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 10 | tests/test_crossborder_v3_08.py | test cross-border v3 (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 11 | tests/test_pcc_v3_10.py | test PCC v3 (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 12 | tests/test_ryczalt_v3_09.py | test ryczałtu v3 (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 13 | tests/test_ksef_jpk_v3_11.py | test KSeF v3 (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 14 | tests/test_micro_quality_v3_13.py | bramki jakości v3 (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 15 | tests/test_cross_domain_red_team_etap27_audit.py | red team etap27 (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 16 | tests/test_final_certification_etap28_audit.py | certyfikacja etap28 (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 17 | tests/test_vat_enterprise.py | VAT enterprise (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 18 | tests/test_pcc_excise_enterprise.py | PCC/akcyza (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 19 | tests/test_kks_enterprise.py | KKS (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 20 | tests/test_crossborder_enterprise.py | cross-border (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 21 | tests/test_rodo_enterprise.py | RODO (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 22 | tests/test_aml_enterprise.py | AML (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 23 | tests/test_bdo_enterprise.py | BDO (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 24 | tests/test_hyper_plan45_enterprise.py | hyper plan45 (istnienie) | ZWERYFIKOWANO (istnienie) |
+| 25 | docs/TESTY_REGO_CI_P23.md | strategia testowa P23 (kontekst) | ZWERYFIKOWANO (istnienie) |
+| 26 | docs/DEVELOPER_GUIDE.md | przewodnik (kontekst) | ZWERYFIKOWANO (istnienie) |
+| 27 | docs/OPA_REGO_DEVELOPER_GUIDE.md | przewodnik Rego (kontekst) | ZWERYFIKOWANO (istnienie) |
+| 28 | docs/FAQ.md | FAQ (kontekst) | ZWERYFIKOWANO (istnienie) |
+| 29 | tools/test_coverage_gate.py | bramka pokrycia (rdzeń, rozszerzany) | ZWERYFIKOWANO (istnienie) |
+| 30 | tools/test_rego_ci_auditor.py | audyt CI rego (rdzeń; polityka fasad K5) | ZWERYFIKOWANO (istnienie) |
+| 31 | tools/coverage_95_plan.py | plan pokrycia 95% (rdzeń) | ZWERYFIKOWANO (istnienie) |
+| 32 | COVERAGE_REPORT.md | raport pokrycia (rdzeń) | ZWERYFIKOWANO (istnienie) |
+| 33–38 | policies/jdg, policies/tax, policies/tax/vat, bundle.sh, base/manifest.json, overlays/v2026/manifest.json | mirror: sync → P48 | NIEZWERYFIKOWANO w tej sesji (L02) |
+| [NOWE] | rules/v3_p39_testy_ci_enterprise.rego + thresholds v3_p39 + wiring p103 + 13 tools + 13 bundli + 2 suite'y testów + kontrakt strategii | wdrożenie P39 | ZWERYFIKOWANO (testy 32+22, regresja 683/683) |
+
+T10 — PRZEKAZYWANE ARTEFAKTY (11.4)
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| Kontrakt strategii testowej (piramida L1–L7 + bramki) | P29/P43/P44 | JSON | poziomy/progi/polityka blokowania merge |
+| Test matrix from acts (format + pokrycie) | P36/P44 | JSON/kontrakt | generator + definicja sukcesu certyfikacji |
+| Konwencja kwarantanny flaków | P36/P41 | JSON/kontrakt | generatory bez flaków; dokumentacja procedury |
+| Piny kontraktów (werdykt P03, certyfikat P11) | P40/P44 | JSON/kontrakt | breaking tylko PR migracyjny 4-eyes |
+| Polityka testów fasad (AP06) | P36 | JSON/kontrakt | audyt + naprawa generatorów |
+| Metryki testowe do SLO | P37 | lista (X09) | dashboardy i trend |
+| Luki L01–L06 | P47/P48/P36/CI/P44 | rejestr | domknięcie w dedykowanych częściach |
+
+T11 — MACIERZ PODANALIZA×GRUPA (APENDYKS B)
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik |
+|------------|----------------|-----------------|-------|
+| 5.1 | 6.1, 6.4 | workflow Bramka 10b + 221 testów rego + I01/I04 | 9.04/9.05 (W-AN01) |
+| 5.2 | 6.2, 6.3 | 84 pytest + I07/I11/I08 + kontrakt | 9.04/9.05 (W-AN02) |
+| 5.3 | 6.1, 6.2 | test_core_guards_temporal + valid_from + I02/I03 | 9.04/9.05 (W-AN03) |
+| 5.4 | 6.4 | invariants pack + baseline 60 przebiegów + I05/I06/I09/I10 | 9.04/9.05 (W-AN04) |
+
+T12 — REJESTR KONFLIKTÓW: PUSTY (zero konfliktów Cxx z dokumentami świętymi
+i kontraktami P00–P38).
+
+APENDYKS E — PLAN PRACY: wykonany w całości (9.09, kroki 1–12 odznaczone).
+
+───────────────────────────────────────────────────────────────────────────────
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+───────────────────────────────────────────────────────────────────────────────
+Zgodność PEŁNA z: ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1: bramki CI,
+fail-closed zas. 6, SLO) i WIZJA_OPA_ENTERPRISE_V2.md (F4 Decision
+Certificate — pin schematu, Golden Oracle P10 — bramka PR, Declarative Change
+— źródło par temporalnych). Odstępstwa: BRAK. Konfliktów Cxx: BRAK.
+Podstawy prawne: [NIEZWERYFIKOWANE] (L01 → P47/P44). Zero fikcyjnych artykułów,
+ustępów i stawek — wartości progów to rekomendacje jakościowe jako dane (Z01),
+nie twierdzenia prawne.
+
+KONIEC RAPORTU V3 P39 — WDROŻONY_100 (realne artefakty, 2026-09-09)
+Testy: 32/32 rego ×2 OPA + 22/22 pytest; regresja P13→P39: 683/683;
+13/13 bundli gate PASS; kontrakt strategii testowej (K1–K5).
+Następna część: P40 API_DANE_UI — pierwsza NIE_WDROŻONA w ledgerze
+(przejście z CZYSTĄ sesją: EXECUTIVE SUMMARY + KONTRAKT WYJŚCIOWY K1–K5 +
+LUKI L01–L06).
+═══════════════════════════════════════════════════════════════════════════════

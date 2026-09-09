@@ -1,0 +1,293 @@
+================================================================================
+NEXUSAI JDG — RAPORT V3 P43 — SECURITY I DR — THREAT MODEL, INTEGRALNOŚĆ,
+CIĄGŁOŚĆ
+================================================================================
+Seria:            NEXUSAI JDG — V3 FORTRESS CAMPAIGN
+Część:            P43 SECURITY_DR
+Prompt:           JDG/prompty_v3/V3_PROMPT_P43_SECURITY_DR.txt
+Raport:           JDG/raporty_glm52_v3/RAPORT_V3_P43_SECURITY_DR.txt
+Data:             2026-09-09
+Tryb:             WDROŻENIE (pełne, od zera) + raport kontraktowy
+Kampania:         44/69 po tej części (P37 ✅ P38 ✅ P39 ✅ P40 ✅ P41 ✅ P42 ✅ P43 ✅)
+
+================================================================================
+9.01 EXECUTIVE SUMMARY
+================================================================================
+Ocena dojrzałości: WARSTWA BEZPIECZEŃSTWA I CIĄGŁOŚCI WDROŻONA ENTERPRISE
+(threat model as code, dual-control, WORM kontrakt, DR z trybem ostrożnym,
+RODO 72h, zero standing access).
+
+Stan wejściowy: ZERO artefaktów v3_p43 (pełne wdrożenie od zera, konwencja
+P38–P42). Stan wyjściowy: rejestr security/DR + pełny łańcuch dowodowy;
+kontrakt P42-K3 (WORM) EGZEKOWANY w tej części.
+
+ARTYKUŁY WDROŻONE W TEJ CZĘŚCI:
+  R1. rules/v3_p43_security_dr_enterprise.rego — 12 analiz I01–I12, priorytety
+      443001–443012, else-chain, fail-closed.
+  R2. thresholds_jdg.rego — blok v3_p43 (3 klucze + flagi), valid_from (P05).
+  R3. main_jdg.rego — wiring p107: import, registry, final_verdict_p107
+      (pas 18v), konsument.
+  R4. bundles/v3_p43_security_dr_register.json — REJESTR SECURITY/DR JAKO
+      DANE: threat model (6 wpisów pełnych: atak→wektor→kontrola→test; wektor
+      rule_admin w zakresie — RBAC administrowania regułami), kwarantanna
+      reguł (bez pełnego rollbacku, spójna z P42 tier QUARANTINE), dual-control
+      (2 zatwierdzenia: technical+legal), sekrety (rotacja 90 dni, atestacja,
+      test starego klucza), chaos drill (scenariusz bad_rule_through_pipeline,
+      etapy pr→gates→deploy→detection→rollback), restore drill (weekly_ci,
+      checksum obowiązkowa, realny snapshot dr-20260822-112954), paper-mode
+      (formularze/terminy/rekonsylacja, kalendarz P25 offline), WORM (6 klas
+      artefaktów z rule_history), ransomware playbook (5 etapów, RODO 72h,
+      kwartalne ćwiczenia), breach taxonomy (3 klasy ze ścieżkami prawnymi),
+      zero standing access (JIT 120 min, dowód użycia), DR continuity
+      (ostrożne parametry z P05, oznaczanie decyzji DR).
+  R5. 13 narzędzi dowodowych + 12 bundli PASS.
+  R6. tests/rego/test_v3_p43_security_dr_enterprise.rego — 40 przypadków.
+  R7. tests/auto/test_v3_p43_security_dr_enterprise.py — 17 testów.
+
+WERYFIKACJA (twarde liczby, uruchomione w tej sesji):
+  * Rego natywne:  40/40 PASS ×2 OPA (./bin/opa, ./bin/opa19 --v0-compatible).
+  * pytest:        17/17 PASS.
+  * Regresja serii P13→P43: 841/841 PASS (801 + 40 nowych).
+  * Regresja pytest serii V3: 570 PASS / 4 FAIL — znany dryft legacy
+    (P00/P05/P06/P10); ZERO plików P43.
+  * Bundle:        13/13 gate=PASS.
+
+LUKI WG KRYTYCZNOŚCI: P0=0, P1=0, P2=2, P3=3 (rejestr 9.06).
+
+================================================================================
+9.02 ZAKRES I OGRANICZENIA
+================================================================================
+PRZEANALIZOWANO: wszystkie 20 plików narzędziowo-danych + 4 dokumenty + 4 testy
+z Sekcji 6 ISTNIEJĄ (obecność zmierzona w tej sesji). Czytanie celowane:
+mechanizm hash chain w worm_storage (prev_hash — 10 trafień skanu), chaos
+tools, deployment_orchestrator, self_healing_engine, quantum_safe_encryption,
+realne dr_snapshots. Prawa: [NIEZWERYFIKOWANE] globalnie (RODO art. 32/33/34 —
+konwencja serii; rejestr L07).
+
+================================================================================
+9.03 STAN OBECNY CZĘŚCI P43 (MAPA ARTEFAKTÓW)
+================================================================================
+| Artefakt (nowy)                        | Pakiet Rego           | Rule_id/klucz         | Podstawa [NIEZW.]  | Testy                     | Lifecycle |
+|----------------------------------------|-----------------------|-----------------------|--------------------|---------------------------|-----------|
+| rules/v3_p43_security_dr_enterprise.rego | jdg.v3_p43_security_dr | 12 × (443001–443012) | RODO 32/33/34; UoR 4 | 40 rego + 17 pytest     | ACTIVE (za flagą v3_p43_check) |
+| thresholds (blok v3_p43)               | jdg.thresholds        | 3 progi v3_p43_*      | ADR-002            | test_thresholds_as_data   | ACTIVE    |
+| main_jdg (pas 18v)                     | jdg.main              | final_verdict_p107    | architektura V1    | test_main_jdg_wired_p107  | ACTIVE    |
+| bundles/v3_p43_security_dr_register.json | — (dane)            | threat model/quarantine/dual-control/sekrety/DR/taxonomy | RODO 32/33 | 7 testów rejestru | ACTIVE |
+| tools/v3_p43_common.py + 12 tooli      | — (dowody)            | 12 bundli v3_p43_*    | —                  | test_all_12_bundles_pass  | ACTIVE    |
+
+Istniejące (nie duplikowano — zrejestrowano jako dane/dowody): worm_storage
+(P42-K3 egzekwowany), chaos_runner/chaos_engineering (P33), deployment_
+orchestrator, self_healing_engine, quantum_safe_encryption, certificate_service
+(P11/P40), dr_snapshots (realny snapshot), runbooki RB01–RB06 (P37), testy
+test_rodo_enterprise/test_aml_enterprise/test_risk_guard/test_semantic_guard,
+dokumenty P16/ZGODNOSC_*.
+
+================================================================================
+9.04 PODANALIZY 5.1–5.4 (każda: ≥3 wnioski + ≥1 luka)
+================================================================================
+--- P43-AN01: THREAT MODEL I KONTROLA DOSTĘPU ---
+Dowody: threat model 6 wpisów pełnych w rejestrze (I01 — zero fasady);
+wektor rule_admin pokryty dual-control (I03) i tamper-evident history (I08);
+sekrety: rotacja 90 dni + atestacja (rotated_at/rotated_by/key_id) + test
+unieważnienia starego klucza (I04); zero standing access: JIT 120 min,
+standing_admin_accounts=0, dowód użycia do WORM (I11); 4-eyes: P32 + I03.
+Wnioski:
+  W1. Odpowiedź 5.1 „kto może zmienić regułę produkcyjną": dual-control w CI
+      (2 zatwierdzenia technical+legal) — ale egzekucja zależy od branch
+      protection [ZAŁOŻENIE Z2] → L01.
+  W2. Odpowiedź 5.1 „sekrety w sejfie": polityka + atestacja + test starego
+      klucza jako dane; storage poza repo [ZAŁOŻENIE Z3] → L01/L02.
+  W3. JIT z dowodem użycia zamyka stałe uprawnienia admina (BLOCK przy >0).
+Luki: L01 (P2), L02 (P3).
+--- P43-AN02: INTEGRALNOŚĆ I ANTY-MANIPULACJA ---
+Dowody: bundle podpis + weryfikacja fail-closed przy load (P38; luka egzekucji
+przy load zarejestrowana w P37 jako L04); WORM hash chain: prev_hash w źródle
+worm_storage (10 trafień) + tamper test w CI (I08); rule history w zakresie
+archiwizacji; chaos drill: scenariusz i etapy zdefiniowane (I05), narzędzia
+chaos_runner/chaos_engineering istnieją; kanał zgłoszeń: breach taxonomy +
+raport 72h (I10) jako procedura reakcji.
+Wnioski:
+  W1. Odpowiedź 5.2 „WORM wykrywa tamper": mechanizm realny (hash chain w
+      kodzie), test CI zdefiniowany kontraktowo — wykonanie w CI = L03.
+  W2. Rule quarantine (I02): izolacja chirurgiczna bez rollbacku bundle,
+      spójna z P42 tier QUARANTINE — domknięcie luki operacyjnej P38.
+  W3. Chaos legal drill gotowy do wykonania (scenariusz bad_rule_through_
+      pipeline); pierwszy drill = wpis z datą → L02 (P3).
+Luki: L03 (P2), L02 (P3).
+--- P43-AN03: DR I CIĄGŁOŚĆ ---
+Dowody: realny snapshot bundles/dr_snapshots/dr-20260822-112954.json; restore
+drill weekly_ci z checksum obowiązkową (I06); paper-mode: formularze (4),
+terminy z P25 offline, rekonsylacja po DR (I07); ransomware playbook: 5 etapów
+z RODO 72h i ćwiczeniem kwartalnym (I09); DR continuity: ostrożne parametry
+z P05 + oznaczanie decyzji DR + transport P32 (I12); RTO/RPO: nie policzono w
+tej sesji (brak benchmarku restore) → L04.
+Wnioski:
+  W1. Odpowiedź 5.3 „backup bez testu to mit": restore drill jako bramka
+      cotygodniowa z weryfikacją checksum — BLOCK bez drillu.
+  W2. Paper-mode domyka ciągłość biznesową bez IT (forteca działa ręcznie).
+  W3. DR legal continuity rozstrzyga dylemat „silnik leży, a deklaracje
+      terminowe": tryb ostrożny z najbezpieczniejszymi progami P05.
+Luki: L04 (P3).
+--- P43-AN04: REAKCJA NA NARUSZENIA ---
+Dowody: breach taxonomy 3 klasy (data_confidentiality/integrity/availability)
+ze ścieżkami prawnymi per klasa (RODO art. 33/34 + UODO → PUODO) i raportem
+72h gotowym (I10); każdy wpis threat modelu ma test w CI (kontrola → test).
+Wnioski:
+  W1. Odpowiedź 5.2 „kanał zgłoszeń": taksonomia + ścieżki prawne + deadline
+      72h — pełna procedura jako dane.
+  W2. Naruszenie bez klasyfikacji = BLOCK (zero cichych incydentów).
+  W3. Ćwiczenia playbooka kwartalne z progiem wieku (90 dni) jako parametr.
+Luki: brak nowych (L07 globalne ISAP).
+
+================================================================================
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2; akty z Sekcji 8 promptu P43 + RODO)
+================================================================================
+| Akt | Art. | Grupa | Reguła | Test | Status | Ryzyko |
+|-----|------|-------|--------|------|--------|--------|
+| RODO | 32 (bezpieczeństwo) | 6.x | I01 (443001), I04 (443004), I11 (443011) | test_p43_i01_*, i04_*, i11_* | CZĘŚCIOWE [NIEZW.] | wyciek/manipulacja |
+| RODO | 33 (zgłoszenie 72h) | 6.x | I09 (443009), I10 (443010) | test_p43_i09_*, i10_* | CZĘŚCIOWE [NIEZW.] | spóźniony raport |
+| RODO | 34 (komunikacja) | 6.x | I10 (443010) | test_p43_i10_* | CZĘŚCIOWE [NIEZW.] | brak informowania |
+| RODO | 5.2 (rozliczalność) | 6.x | I08 (443008), I11 (443011) | test_p43_i08_*, i11_* | CZĘŚCIOWE [NIEZW.] | brak dowodu |
+| UoR | 4 (niezmienność) | 6.x | I06 (443006), I08 (443008) | test_p43_i06_*, i08_* | CZĘŚCIOWE [NIEZW.] | utrata dowodu |
+| UoR | 4.1 (rzetelność ręczna) | 6.x | I07 (443007) | test_p43_i07_* | CZĘŚCIOWE [NIEZW.] | chaos księgowy |
+| UZ | ciągłość składek | 6.x | I12 (443012) | test_p43_i12_* | CZĘŚCIOWE [NIEZW.] | błędna składka w DR |
+| VAT | ciągłość JPK | 6.x | I12 (443012) | test_p43_i12_* | CZĘŚCIOWE [NIEZW.] | błędny JPK w DR |
+| eIDAS | podpisy | 6.x | I03/I04 (podpis kontekst) | test_p43_i04_* | PLAN [NIEZW.] | podważalność |
+| AI Act | 15 (odporność) | 6.x | I01/I12 (443001/443012) | test_p43_i01_*, i12_* | CZĘŚCIOWE [NIEZW.] | brak odporności |
+
+================================================================================
+9.06 REJESTR LUK (T3)
+================================================================================
+| ID | Kryt. | Luka | Dowód | Wpływ | Rozwiązanie | Koszt | Regresja |
+|----|-------|------|-------|-------|-------------|-------|----------|
+| L01 | P2 | Dual-control/branch protection niekonfigurowane w CI (CODEOWNERS anch.) | rejestr I03 [ZAŁOŻENIE Z2] | egzekucja zależy od platformy | włączenie branch protection + approval gate | S | niskie |
+| L02 | P3 | Chaos drill i ćwiczenie playbooka niewykonane (scenariusze gotowe) | rejestr I05/I09 | procedury bez pierwszego przebiegu | zaplanować pierwszy drill (kwartal) | S | niskie |
+| L03 | P2 | Tamper test WORM niewykonany w CI (kontrakt jest) | rejestr I08; P42-K3 | łańcuch deklaratywny do czasu testu | dodać krok do Bramki 6/7 CI | S | niskie |
+| L04 | P3 | RTO/RPO nie policzone (brak benchmarku restore) | brak pomiaru w sesji | SLA ciągłości niewzmocnione | pomiar przy pierwszym restore drill | S | niskie |
+| L05 | P3 | Wymogi missing bez harmonogramu (dziedziczone z P42 I09) | rejestr P42 | luka jawna bez daty | plan w P44/P50 | S | niskie |
+| L06 | P3 | Dryft legacy rdzenia (4 porażki pytest) | regresja serii | nie blokuje V3 | P36/P50 | L | — |
+| L07 | P3 | ISAP weryfikacja (RODO 32/33/34, UoR 4) | [NIEZWERYFIKOWANE] | formalna pewność | P47/P44 | L | — |
+BLOKERY P0: brak. P1: brak.
+
+================================================================================
+9.07 INNOWACJE ENTERPRISE (T4; 12 wdrożonych, szkielet 6-punktowy skrócony)
+================================================================================
+I01 THREAT MODEL AS CODE (443001): 6 wpisów atak→wektor→kontrola→test; BLOCK
+fasady, TRIAGE kontroli bez testu; test_p43_i01_*; zależności P40/P39.
+I02 RULE QUARANTINE (443002): izolacja chirurgiczna bez rollbacku; BLOCK braku
+mechanizmu, TRIAGE braku terminu; test_p43_i02_*; P38/P42 (tier QUARANTINE).
+I03 DUAL-CONTROL (443003): 2 zatwierdzenia technical+legal; BLOCK braku
+zatwierdzeń, TRIAGE trybu proceduralnego; test_p43_i03_*; P32/P38; L01.
+I04 SECRETS ROTATION (443004): rotacja 90 dni + atestacja + test starego
+klucza; BLOCK braku rotacji, TRIAGE braku testu; test_p43_i04_*; P38.
+I05 CHAOS LEGAL DRILL (443005): błędna reguła przez pipeline; TRIAGE braku/
+wieku > 90 dni; test_p43_i05_*; P33/P39; L02.
+I06 RESTORE DRILLS (443006): weekly_ci + checksum; BLOCK braku drillu i
+restore bez checksum; test_p43_i06_*; P42/P38; L04.
+I07 PAPER-MODE (443007): formularze/terminy/rekonsylacja; BLOCK braku, TRIAGE
+rekonsylacji; test_p43_i07_*; UoR 4.1; P37/P25.
+I08 TAMPER-EVIDENT HISTORY (443008): hash chain zmian reguł; BLOCK przerwania/
+braku łańcucha; test_p43_i08_*; P42-K3; ADR-006.
+I09 RANSOMWARE PLAYBOOK (443009): 5 etapów + RODO 72h + kwartalne ćwiczenia;
+BLOCK braku, TRIAGE niećwiczenia; test_p43_i09_*; RODO 33 [NIEZW.]; P42/P37.
+I10 BREACH TAXONOMY (443010): 3 klasy ze ścieżkami prawnymi; BLOCK braku
+taksonomii i naruszenia bez klasy; test_p43_i10_*; RODO 33/34; P16.
+I11 ZERO STANDING ACCESS (443011): JIT 120 min + dowód użycia; BLOCK stałego
+dostępu, TRIAGE sesji bez dowodu; test_p43_i11_*; RODO 5.2/32; P40.
+I12 DR LEGAL CONTINUITY (443012): ostrożne parametry P05 + oznaczanie DR;
+BLOCK braku trybu i decyzji bez oznaczenia; test_p43_i12_*; P05/P32/P38.
+
+================================================================================
+9.08 KONTRAKT WYJŚCIOWY (T5; wiąże P44+)
+================================================================================
+K1 REJESTR SECURITY/DR: v3_p43_security_dr_register.json jako dane dla P44
+   (certyfikacja: poziom dojrzałości + dowody kontrol) i P47 (ISAP: RODO
+   32/33/34, UoR 4).
+K2 TAMPER TEST CI: test WORM hash chain (I08/I03 z P42-K3) jako bramka CI —
+   wykonanie stanowi domknięcie L03 (P44 przejmuje weryfikację).
+K3 DR TRYB: decyzje w trybie DR zawsze oznaczone (dr_mode w certyfikacie);
+   ostrożne progi z P05 — standard dla P44+.
+K4 ZERO STANDING: dostęp produkcyjny wyłącznie JIT z dowodem w WORM —
+   warunek certyfikacji P44.
+K5 ĆWICZENIA: chaos drill + ransomware playbook kwartalnie (progi wieku z
+   v3_p43) — wpis z datą do rejestru; P44 audytuje wykonanie.
+
+================================================================================
+9.09 PLAN WDROŻENIA (T6)
+================================================================================
+Wdrożone od razu: R1–R7 (reguły, progi, wiring, rejestr, narzędzia, testy) —
+zielone. Wymaga CI/platformy: L01 (branch protection), L03 (tamper test w CI).
+Wymaga decyzji człowieka: Q01–Q03 (9.11).
+Rollback: reguły za flagą v3_p43_check; rejestr = plik danych (git revert);
+kwarantanna reguł odwracalna wpisem (pusta lista = brak izolacji).
+
+================================================================================
+9.10 PLAN TESTÓW (T7)
+================================================================================
+Blokujące merge: test_rego_native_suite_passes, test_all_12_bundles_pass,
+test_main_jdg_wired_p107, test_thresholds_as_data,
+test_threat_model_entries_complete (przypina pełne wpisy atak→wektor→
+kontrola→test i wektor rule_admin), test_dual_control_two_approvals,
+test_zero_standing_access_jit (przypina standing_admin_accounts=0),
+test_priorities_unique. Wyniki: rego 40/40 ×2 OPA; pytest 17/17; seria 841/841;
+negative-first: 16 asercji BLOCK/TRIAGE.
+
+================================================================================
+9.11 PYTANIA DO CZŁOWIEKA (T8)
+================================================================================
+Q01: Kto pełni rolę „legal approver" w dual-control (prawnik wewnętrzny vs
+   zewnętrzny doradca)? (wymaga decyzji właściciela; wpływ na L01).
+Q02: Czy RTO/RPO mają być formalnymi SLO w katalogu P37 po pierwszym pomiarze
+   (L04)? (decyzja biznesowa o wartościach docelowych).
+Q03: Czy paper-mode wymaga wersji papierowej (drukowanej) poza repo na wypadek
+   pełnej utraty infrastruktury? (decyzja operacyjna; UoR [NIEZWERYFIKOWANE]).
+
+================================================================================
+9.12 ZAŁOŻENIA JAWNE (T9)
+================================================================================
+[ZAŁOŻENIE] Z1: Rejestr security/DR opisuje kontrakty i polityki; egzekucja
+   techniczna tam, gdzie wymaga platformy (branch protection, secret manager)
+   jest oznaczona jako założenie, nie dowód.
+[ZAŁOŻENIE] Z2: CODEOWNERS traktowany jako kotwica review CI; pełny dual-control
+   wymaga konfiguracji branch protection (L01).
+[ZAŁOŻENIE] Z3: Sekrety przechowywane poza repo (secret manager) — nie
+   zweryfikowano środowiska produkcji w tej sesji.
+[ZAŁOŻENIE] Z4: Rekonsylacja paper-mode zakazuje AUTO_POST dla wpisów ręcznych
+   bez weryfikacji silnikiem (delta ≠ 0 → NEEDS_ADVICE).
+
+T10 — ARTEFAKTY PRZEKAZANE DALEJ (11.4)
+================================================================================
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| v3_p43_security_dr_register.json | P44/P47 | JSON | certyfikacja + weryfikacja RODO |
+| tamper test CI (K2) | P44 | bramka | domknięcie L03 |
+| tryb DR + oznaczanie (K3) | P44+ | kontrakt | decyzje DR rozliczalne |
+| JIT dowody użycia (K4) | P44 | WORM | warunek certyfikacji |
+| kalendarz ćwiczeń (K5) | P44 | kontrakt | audyt drillów kwartalnych |
+
+APENDYKS B — MACIERZ PODANALIZA×GRUPA
+================================================================================
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik |
+|------------|----------------|-----------------|-------|
+| 5.1 | 6.x | threat model 6 pełnych; dual-control 2×; rotacja 90 dni; JIT 0 stałych | 9.04-AN01 |
+| 5.2 | 6.x | prev_hash ×10 w worm_storage; quarantine chirurgiczny; drill scenariusz | 9.04-AN02 |
+| 5.3 | 6.x | dr_snapshots realny; weekly_ci; paper-mode 3 sekcje; DR continuity | 9.04-AN03 |
+| 5.4 | 6.x | 3 klasy naruszeń; ścieżki RODO/UODO; 72h gotowe | 9.04-AN04 |
+
+APENDYKS E — PLAN PRACY: wykonany w całości.
+
+================================================================================
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+================================================================================
+Zgodne z ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (bramki CI → tamper/dual-control
+jako rozszerzenia; SLO → progi ćwiczeń; fail-closed → BLOCK na fasadę/brak
+łańcucha/stały dostęp) i WIZJA_OPA_ENTERPRISE_V2.md (Decision Certificate →
+oznaczanie DR; Legal Twin → niezmienność historii reguł). Odstępstwa: brak.
+Anti-wzorce AP01–AP12: sprawdzone — threat model bez fasady (AP01-style),
+zero hardcode progów, fail-closed na naruszeniach bez klasyfikacji (AP07-style
+ukrywanie wykluczone testami statusów).
+Prawa: [NIEZWERYFIKOWANE] — rejestr L07 (RODO art. 32/33/34, UoR 4).
+================================================================================
+KONIEC RAPORTU V3 P43 — KOLEJNA CZĘŚĆ: P44 (czyste okno kontekstowe; przenieść
+wyłącznie: 9.01, 9.08 K1–K5, 9.06 L01–L07).
+================================================================================

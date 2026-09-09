@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P40-I07",
+  "generated_at": "2026-09-09T10:01:26+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "degradation_ladder_as_data": true,
+    "api_mode_header": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p40_api_dane_ui.degradation_ladder: True"
+    },
+    {
+      "name": "degradation_ladder_as_data",
+      "status": "OK",
+      "detail": "drabinka degradacji w kontrakcie: ['FULL', 'CACHE_ONLY', 'OFFLINE_QUEUES', 'READ_ONLY'] (oczekiwane: ['FULL', 'CACHE_ONLY', 'OFFLINE_QUEUES', 'READ_ONLY'])"
+    },
+    {
+      "name": "api_mode_header",
+      "status": "OK",
+      "detail": "nagłówek trybu w kontrakcie: 'X-API-Mode' (oczekiwane X-API-Mode)"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p104"
+    }
+  ],
+  "findings": []
+}

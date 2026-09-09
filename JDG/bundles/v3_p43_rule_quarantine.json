@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P43-I02",
+  "generated_at": "2026-09-09T11:59:44+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "quarantine_mechanism_defined": true,
+    "quarantine_tier_from_p42": true,
+    "surgical_isolation": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p43_security_dr.rule_quarantine: True"
+    },
+    {
+      "name": "quarantine_mechanism_defined",
+      "status": "OK",
+      "detail": "mechanizm (lista + procedura) w rejestrze: True"
+    },
+    {
+      "name": "quarantine_tier_from_p42",
+      "status": "OK",
+      "detail": "tier QUARANTINE (P42 health tiers): True"
+    },
+    {
+      "name": "surgical_isolation",
+      "status": "OK",
+      "detail": "izolacja bez pełnego rollbacku bundle: True"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p107"
+    }
+  ],
+  "findings": []
+}

@@ -1,0 +1,94 @@
+{
+  "register": "v3_p43_security_dr_register",
+  "version": "2026.09",
+  "generated_at": "2026-09-09T00:00:00+00:00",
+  "basis": {
+    "worm_contract": "P42-K3 (hash chain + tamper test CI + retencja 5 lat)",
+    "rbac": "P40-I04 (rozszerzenie o administrowanie regułami)",
+    "deploy": "P38 (podpisy, healthy_versions, dr/restore endpoint)",
+    "rodo": "art. 32/33/34 [NIEZWERYFIKOWANE]",
+    "runbooks": "P37 RB01-RB06 + paper-mode (I07)"
+  },
+  "threat_model": [
+    {"attack": "nieautoryzowana zmiana reguły produkcyjnej", "vector": "rule_admin (kto może zmienić regułę)", "control": "dual-control CI (I03) + tamper-evident history (I08)", "test": "test_v3_p43_dual_control_approvals"},
+    {"attack": "podmiana bundle w drodze", "vector": "transport/load", "control": "podpis bundle + weryfikacja fail-closed przy load (P38)", "test": "test_v3_p43_signature_verification"},
+    {"attack": "cicha edycja historii decyzji", "vector": "worm_write", "control": "hash chain WORM (P42-K3, I08)", "test": "test_v3_p43_tamper_history_chain"},
+    {"attack": "ransomware na danych księgowych", "vector": "storage", "control": "playbook I09 + restore drill I06 + dr_snapshots", "test": "test_v3_p43_restore_drill_snapshots"},
+    {"attack": "exfiltration przez API", "vector": "api_abuse", "control": "rate limiting P40-I06 + RBAC P40-I04 + audit WORM", "test": "test_v3_p43_zero_standing_jit"},
+    {"attack": "wyciek sekretów", "vector": "repo/env", "control": "sekrety poza repo + rotacja z atestacją (I04)", "test": "test_v3_p43_secrets_rotation_policy"}
+  ],
+  "rule_quarantine": {
+    "quarantined_rules": [],
+    "procedure": "flaga input.v3_p43.quarantine + wpis z deadline/owner do rejestru; reguła pomijana w decide bez rollbacku bundle",
+    "without_full_rollback": true,
+    "link": "P42 health tier QUARANTINE"
+  },
+  "dual_control": {
+    "approvals_required": 2,
+    "roles": ["technical", "legal"],
+    "scope": "reguły krytyczne (stawki, progi, ulgi) i deploy bundle",
+    "enforcement": "CODEOWNERS + approval gate w CI [ZAŁOŻENIE Z2: branch protection poza zasięgiem sesji]"
+  },
+  "secrets": {
+    "rotation_days": 90,
+    "attestation_fields": ["rotated_at", "rotated_by", "key_id", "reason"],
+    "old_key_invalid_test": true,
+    "storage": "poza repo (secret manager); zero sekretów w env plikach [ZAŁOŻENIE Z3]"
+  },
+  "chaos_drill": {
+    "scenario": "bad_rule_through_pipeline",
+    "stages": ["pr", "gates", "deploy", "detection", "rollback"],
+    "tools": ["tools/chaos_runner.py", "tools/chaos_engineering.py"],
+    "expected_outcome": "błędna reguła ZABLOKOWANA na bramkach; raport luk procesowych"
+  },
+  "restore_drill": {
+    "schedule": "weekly_ci",
+    "source": "bundles/dr_snapshots + WORM (P42)",
+    "checksum_verify_required": true,
+    "target": "środowisko test",
+    "existing_snapshot": "dr-20260822-112954.json"
+  },
+  "paper_mode": {
+    "sections": ["forms", "deadlines", "reconciliation_after_dr"],
+    "calendar_source": "P25 zus_calendar.py eksport danych (offline)",
+    "forms": ["ewidencja sprzedaży", "ewidencja zakupów", "rejestr VAT", "lista płac ZUS"],
+    "reconciliation": "po powrocie IT: rekonsylacja wpisów ręcznych vs silnik (delta = 0) [ZAŁOŻENIE Z4]"
+  },
+  "worm": {
+    "archived_artifacts": ["decisions", "certificates", "bundles", "documentation_export", "api_audit_logs", "rule_history"],
+    "hash_chain": true,
+    "tamper_test_in_ci": true,
+    "retention_years": 5
+  },
+  "ransomware_playbook": {
+    "stages": ["isolate", "assess", "restore", "report_72h", "reconcile"],
+    "report_deadline_hours": 72,
+    "exercise_schedule": "quarterly",
+    "rodo_basis": "art. 33 [NIEZWERYFIKOWANE]"
+  },
+  "breach_taxonomy": {
+    "classes": ["data_confidentiality", "integrity", "availability"],
+    "legal_paths": {
+      "data_confidentiality": "RODO art. 33/34 + UODO zgłoszenie do PUODO [NIEZWERYFIKOWANE]",
+      "integrity": "RODO art. 32 + audyt WORM diff + procedura kwarantanny reguł (I02)",
+      "availability": "DR plan + restore drills (I06) + paper-mode (I07)"
+    },
+    "report_72h_ready": true
+  },
+  "zero_standing_access": {
+    "model": "JIT",
+    "max_session_minutes": 120,
+    "usage_proof_required": true,
+    "proof_destination": "WORM (kto/co/kiedy)",
+    "standing_admin_accounts": 0
+  },
+  "dr_continuity": {
+    "cautious_parameters_mode": true,
+    "decision_marking_required": true,
+    "threshold_source": "P05 thresholds (najbezpieczniejsze: ostatnia zwalidowana wersja progu)",
+    "marking_field": "dr_mode: true w certyfikacie decyzji",
+    "queue_transport": "P32 kolejki offline (tryb CACHE_ONLY/OFFLINE_QUEUES z P40-I07)"
+  },
+  "no_auto_post": true,
+  "manual_review_required": true
+}

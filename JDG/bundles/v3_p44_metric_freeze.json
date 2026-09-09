@@ -1,0 +1,29 @@
+{
+  "innovation": "V3-P44-I06",
+  "generated_at": "2026-09-09T12:41:00+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "metrics_total": 7,
+    "measured_numeric": 6,
+    "metrics_without_threshold": 0
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p44_certyfikacja_finalna.success_metric_freeze: True"
+    },
+    {
+      "name": "metrics_with_threshold",
+      "status": "OK",
+      "detail": "metryki z progiem+źródłem: 7/7 bez_progu=[]"
+    },
+    {
+      "name": "honest_measurements",
+      "status": "OK",
+      "detail": "metryki ze zmierzoną wartością liczbową: 6/7 (reszta jawna)"
+    }
+  ],
+  "findings": []
+}

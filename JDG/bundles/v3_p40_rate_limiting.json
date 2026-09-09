@@ -1,0 +1,34 @@
+{
+  "innovation": "V3-P40-I06",
+  "generated_at": "2026-09-09T10:01:26+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rule_present": true,
+    "rate_limit_threshold_as_data": true,
+    "no_unlimited_endpoints": true,
+    "wiring_main_jdg": true
+  },
+  "checks": [
+    {
+      "name": "rule_present",
+      "status": "OK",
+      "detail": "reguła jdg.v3_p40_api_dane_ui.rate_limiting: True"
+    },
+    {
+      "name": "rate_limit_threshold_as_data",
+      "status": "OK",
+      "detail": "v3_p40_rate_limit_default_per_min w data.thresholds: True"
+    },
+    {
+      "name": "no_unlimited_endpoints",
+      "status": "OK",
+      "detail": "endpointy bez limitu w kontrakcie: []"
+    },
+    {
+      "name": "wiring_main_jdg",
+      "status": "OK",
+      "detail": "main_jdg.rego: final_verdict_p104"
+    }
+  ],
+  "findings": []
+}
