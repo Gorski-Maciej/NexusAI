@@ -36,7 +36,13 @@ PLACEHOLDER = re.compile(r"\b(TODO(?! P\d\d)|TBD|PLACEHOLDER_[A-Z_]+)\b")
 
 
 def _violations(path: Path) -> list[str]:
-    """Zwróć listę naruszeń polityki stub-free w pojedynczym pliku."""
+    """Zwróć listę naruszeń polityki stub-free w pojedynczym pliku.
+
+    Sygnatura naruszenia jest CONTENT-BASED (bez numeru linii): porównanie
+    HEAD↔now keyed on line numbers karało każdy wstawiony wiersz powyżej
+    komentarza jako "nowy stub" — sprzeczne z kontraktem bramki (blokowane
+    są TYLKO treściowo nowe naruszenia).
+    """
     violations: list[str] = []
     if not path.exists():
         return violations
@@ -46,10 +52,10 @@ def _violations(path: Path) -> list[str]:
         if STUB_RE.search(line):
             context = "\n".join(lines[max(0, lineno - 4):lineno])
             if not CHECKPOINT_RE.search(context):
-                violations.append(f"{lineno}: reguła-stub {{true}} bez CHECKPOINT-STUB")
+                violations.append(f"reguła-stub {{true}} bez CHECKPOINT-STUB :: {line.strip()[:90]}")
         if (MATERIAL_HINT.search(line) and '"_legal_basis"' in line
                 and not ACT_REF.search(line)):
-            violations.append(f"{lineno}: reguła materiałowa bez aktu w _legal_basis (I11)")
+            violations.append(f"reguła materiałowa bez aktu w _legal_basis (I11) :: {line.strip()[:90]}")
     if PLACEHOLDER.search(src):
         violations.append("szablon bez treści materiałowej (surowe TODO/TBD/PLACEHOLDER — I07)")
     return violations
@@ -87,10 +93,10 @@ def _head_violations(path: Path) -> list[str]:
             if STUB_RE.search(line):
                 context = "\n".join(lines[max(0, lineno - 4):lineno])
                 if not CHECKPOINT_RE.search(context):
-                    violations.append(f"{lineno}: reguła-stub {{true}} bez CHECKPOINT-STUB")
+                    violations.append(f"reguła-stub {{true}} bez CHECKPOINT-STUB :: {line.strip()[:90]}")
             if (MATERIAL_HINT.search(line) and '"_legal_basis"' in line
                     and not ACT_REF.search(line)):
-                violations.append(f"{lineno}: reguła materiałowa bez aktu w _legal_basis (I11)")
+                violations.append(f"reguła materiałowa bez aktu w _legal_basis (I11) :: {line.strip()[:90]}")
         if PLACEHOLDER.search(src):
             violations.append("szablon bez treści materiałowej (surowe TODO/TBD/PLACEHOLDER — I07)")
         return violations

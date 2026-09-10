@@ -2671,6 +2671,7 @@ misc := {
     "kks_mandate_tier2_loss_max": 13000,         # PLN — górna granica uszczuplenia stawek 11–20 [NIEZWERYFIKOWANE]
     # KKS: orientacyjna stawka odsetek dziennych od zaległości (0.038%/dzień)
     "kks_daily_interest_rate": 0.00038,          # ułamek dzienny [NIEZWERYFIKOWANE — ISAP, P47]
+}
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # FC THRESHOLDS — Field Confidence progi dla routingu (Recomendacja 6.4)
@@ -3683,4 +3684,112 @@ threshold_change_periods(threshold_key) = periods {
     ]
 } else = [] {
     true
+}
+
+# V3-P46 — ELIMINACJA HARDCODE: parametry jako podpisany, wersjonowany dokument
+# (A2+ ADR-002; P06 parametry-as-data; P05 okna temporalne) — ENTERPRISE
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p46 := {
+    "v3_p46_threshold_version": "hardcode-elim-v3p46-2026.09",
+    "legal_basis_version": "hardcode-elim-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: maksymalny wiek rejestru parametrów (dni; odświeżenie po każdej migracji)
+    "v3_p46_parameter_registry_max_age_days": 30,
+    # I02: minimalna głębokość łańcucha provenance wartości (akt→art→nowela→diff)
+    "v3_p46_provenance_chain_min_depth": 3,
+    # I03: parametr zmienny prawnie bez valid_from/valid_to = BLOCK (P05)
+    "v3_p46_temporal_gate_enabled": true,
+    # I04: walidacja JSON-schema thresholds_data w CI (0 błędów dozwolone)
+    "v3_p46_schema_errors_max": 0,
+    # I08: jednostka parametru jawnie w schemacie; nieznana jednostka = TRIAGE
+    "v3_p46_known_units": ["PLN", "PLN_MIN", "EUR", "PERCENT", "RATIO", "MULTIPLIER", "DAYS", "YEARS", "COUNT", "RATE", "M2", "TEXT"],
+    # I10: limit „osieroconych" wartości prawnych w kodzie po migracji (audyt P46)
+    "v3_p46_orphan_values_max": 0,
+    # I10: limit wartości o ekstremalnej wielkości (heurystyka stawek/progów)
+    "v3_p46_extreme_literal_max": 0,
+    # I11: maksymalny dryf golden replay przy zmianie parametru (liczba zmienionych decyzji AUTO_POST)
+    "v3_p46_replay_drift_max_auto_changes": 0,
+    # I11: replays z dryfem wymagające 4-eyes ponad ten próg = BLOCK
+    "v3_p46_replay_drift_four_eyes_min": 1,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# V3-P46-MIGR — MAPA MIGRACJI HARDCODE (kierunkowe cele migracji; wartości = ścieżki
+# docelowe w data dokumentach, NIE stawki — stawki trzymają fe:N (I09) [NIEZWERYFIKOWANE — ISAP, P47])
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p46_migration_map := {
+    "v3_p46_mig_threshold_version": "mig-map-v3p46-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: standard nazw parametrów <domena>.<znaczenie>_<jednostka>; zero magicznych kluczy (I12)
+    "v3_p46_mig_naming_pattern": "^[a-z][a-z0-9_]*[.][a-z][a-z0-9_]*$",
+    # I09: fe:N — stawki ZUS 2026-01→2026-03-31 (zaokrąglenie do grosza) [NIEZWERYFIKOWANE — ISAP/ZUS, P47]
+    "v3_p46_mig_zus_2026q1_spotykane": ["fe:N", "fe:N", "fe:N"],
+    # I09: fe:N — próg ZUS preferencyjny przychodu 2026 [NIEZWERYFIKOWANE — ISAP/ZUS, P47]
+    "v3_p46_mig_zus_preferential_revenue_pln": "fe:N",
+    # I09: fe:N — kwota wolna PIT (roczna, PLN) [NIEZWERYFIKOWANE — ISAP/PIT, P47]
+    "v3_p46_mig_pit_tax_free_pln": "fe:N",
+    # I09: fe:N — drugi próg skali PIT 2026 (PLN) [NIEZWERYFIKOWANE — ISAP/PIT, P47]
+    "v3_p46_mig_pit_scale_second_bracket_pln": "fe:N",
+    # I09: fe:N — stawka liniowa PIT 19% [NIEZWERYFIKOWANE — ISAP/PIT, P47]
+    "v3_p46_mig_pit_linear_rate": "fe:N",
+    # I09: fe:N — próg MPP 15 000 PLN [NIEZWERYFIKOWANE — ISAP/VAT, P47]
+    "v3_p46_mig_vat_mpp_threshold_pln": "fe:N",
+    # I09: fe:N — odsetki za rok podatkowy (Ordynacja art. 56) [NIEZWERYFIKOWANE — ISAP/MF, P47]
+    "v3_p46_mig_interest_annual_rate": "fe:N",
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P47 WERYFIKACJA PODSTAW PRAWNYCH — progi (ADR-002 parametry-as-data)
+# Zero fikcji: każdy akt z identyfikatorem ISAP, status weryfikacji jawny.
+# Honory kontrakty: P45 (rejestr mediacji → P47), P46 (drift tracker, orphan
+# backlog 16 581 z SLA ustalanym tutaj), P34 (linter), P08 (Law Radar).
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p47 := {
+    "v3_p47_threshold_version": "legal-basis-v3p47-2026.09",
+    "legal_basis_version": "lb-canon-v3p47-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I02: cytowania niezgodne z kanonem na PR = 0 dozwolonych (linter prawny)
+    "v3_p47_lint_errors_max": 0,
+    # I08: pełny łańcuch akt→art→ust→pkt; poniżej = BRAK_KOMPLETNOŚCI (TRIAGE)
+    "v3_p47_min_chain_depth": 3,
+    # I01: maksymalny wiek spisu legal basis (dni; odświeżenie po każdym re-check)
+    "v3_p47_census_max_age_days": 30,
+    # I03: minimum aktów w rejestrze źródeł (sanity; poniżej = TRIAGE)
+    "v3_p47_min_acts_registry": 1,
+    # I06: SLA mediacji reguła↔ISAP (dni); po terminie = BLOCK awansu CANDIDATE→ACTIVE
+    "v3_p47_mediation_sla_days": 14,
+    # I05: świeżość re-checku aktu (dni); powyżej = STALE → SHADOW przegląd
+    "v3_p47_freshness_stale_days": 92,
+    # I05: kadencja re-checku aktów reguł ACTIVE (dni; codziennie wg promptu)
+    "v3_p47_active_recheck_days": 1,
+    # I08: cel kompletności łańcuchów dla reguł ACTIVE (%); poniżej = TRIAGE
+    "v3_p47_completeness_target_pct": 100,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ── Mapa aktów P47 (Sekcja 8 promptu): identyfikator ISAP + status weryfikacji ──
+# TWIERDZENIA, nie dowody (protokół 04): Dz.U./daty do weryfikacji w ISAP/RCL.
+# Zakaz fikcyjnych pozycji — wszystkie [NIEZWERYFIKOWANE — ISAP] aż do weryfikacji
+# 4-eyes (I10); zero wymyślonych numerów pozycji.
+v3_p47_acts := {
+    "v3_p47_acts_version": "acts-v3p47-2026.09",
+    "valid_from": "2026-01-01",
+    "v3_p47_act_ordynacja": {"title": "Ordynacja podatkowa", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU20180002169", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "2019-01-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_vat": {"title": "Ustawa o VAT", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU2004019093", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "2004-05-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_pit": {"title": "Ustawa o PIT", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19910900193", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "1992-01-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_cit": {"title": "Ustawa o CIT", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19920110203", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "1992-01-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_zus": {"title": "Ustawa systemowa ZUS", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19981370887", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "1999-01-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_ksht": {"title": "Ustawa o rachunkowości", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19940121591", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "1995-01-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_kks": {"title": "Kodeks karny skarbowy", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19990830930", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "2000-01-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_ksef": {"title": "KSeF (ustawa o VAT art. 106na i nast.)", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU2004019093", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "2026-02-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_pcc": {"title": "Ustawa o PCC", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU20001490843", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "2001-01-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_ryczalt": {"title": "Ustawa o zryczałtowanym podatku dochodowym", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19981440930", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "1999-01-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_mdr": {"title": "MDR (Ordynacja art. 86a i nast.)", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU20180002169", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "2019-07-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_informacja": {"title": "RCL — proces legislacyjny (daty wejścia w życie)", "isap_url": "https://legislacja.gov.pl", "dz_u": "[NIEZWERYFIKOWANE — RCL]", "valid_from_claim": null, "verification": "NIEZWERYFIKOWANE"},
+    "no_auto_post": true,
+    "manual_review_required": true,
 }

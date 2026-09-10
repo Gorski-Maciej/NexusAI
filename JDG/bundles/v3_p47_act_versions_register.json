@@ -1,0 +1,89 @@
+{
+  "generated_at": "2026-09-10T10:53:36.004394+00:00",
+  "versions": {
+    "v3_p47_act_ordynacja": {
+      "version": "v1-claim",
+      "valid_from": "2019-01-01",
+      "valid_to": null,
+      "verification": "NIEZWERYFIKOWANE",
+      "isap_url_present": true
+    },
+    "v3_p47_act_vat": {
+      "version": "v1-claim",
+      "valid_from": "2004-05-01",
+      "valid_to": null,
+      "verification": "NIEZWERYFIKOWANE",
+      "isap_url_present": true
+    },
+    "v3_p47_act_pit": {
+      "version": "v1-claim",
+      "valid_from": "1992-01-01",
+      "valid_to": null,
+      "verification": "NIEZWERYFIKOWANE",
+      "isap_url_present": true
+    },
+    "v3_p47_act_cit": {
+      "version": "v1-claim",
+      "valid_from": "1992-01-01",
+      "valid_to": null,
+      "verification": "NIEZWERYFIKOWANE",
+      "isap_url_present": true
+    },
+    "v3_p47_act_zus": {
+      "version": "v1-claim",
+      "valid_from": "1999-01-01",
+      "valid_to": null,
+      "verification": "NIEZWERYFIKOWANE",
+      "isap_url_present": true
+    },
+    "v3_p47_act_ksht": {
+      "version": "v1-claim",
+      "valid_from": "1995-01-01",
+      "valid_to": null,
+      "verification": "NIEZWERYFIKOWANE",
+      "isap_url_present": true
+    },
+    "v3_p47_act_kks": {
+      "version": "v1-claim",
+      "valid_from": "2000-01-01",
+      "valid_to": null,
+      "verification": "NIEZWERYFIKOWANE",
+      "isap_url_present": true
+    },
+    "v3_p47_act_ksef": {
+      "version": "v1-claim",
+      "valid_from": "2026-02-01",
+      "valid_to": null,
+      "verification": "NIEZWERYFIKOWANE",
+      "isap_url_present": true
+    },
+    "v3_p47_act_pcc": {
+      "version": "v1-claim",
+      "valid_from": "2001-01-01",
+      "valid_to": null,
+      "verification": "NIEZWERYFIKOWANE",
+      "isap_url_present": true
+    },
+    "v3_p47_act_ryczalt": {
+      "version": "v1-claim",
+      "valid_from": "1999-01-01",
+      "valid_to": null,
+      "verification": "NIEZWERYFIKOWANE",
+      "isap_url_present": true
+    },
+    "v3_p47_act_mdr": {
+      "version": "v1-claim",
+      "valid_from": "2019-07-01",
+      "valid_to": null,
+      "verification": "NIEZWERYFIKOWANE",
+      "isap_url_present": true
+    },
+    "v3_p47_act_informacja": {
+      "version": "v1-claim",
+      "valid_from": null,
+      "valid_to": null,
+      "verification": "NIEZWERYFIKOWANE",
+      "isap_url_present": true
+    }
+  }
+}

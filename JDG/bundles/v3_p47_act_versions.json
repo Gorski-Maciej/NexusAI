@@ -1,0 +1,121 @@
+{
+  "innovation": "V3-P47-I04",
+  "generated_at": "2026-09-10T10:53:36.009482+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "versions_total": 12,
+    "versions_without_window": 1,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "versions": {
+      "v3_p47_act_ordynacja": {
+        "version": "v1-claim",
+        "valid_from": "2019-01-01",
+        "valid_to": null,
+        "verification": "NIEZWERYFIKOWANE",
+        "isap_url_present": true
+      },
+      "v3_p47_act_vat": {
+        "version": "v1-claim",
+        "valid_from": "2004-05-01",
+        "valid_to": null,
+        "verification": "NIEZWERYFIKOWANE",
+        "isap_url_present": true
+      },
+      "v3_p47_act_pit": {
+        "version": "v1-claim",
+        "valid_from": "1992-01-01",
+        "valid_to": null,
+        "verification": "NIEZWERYFIKOWANE",
+        "isap_url_present": true
+      },
+      "v3_p47_act_cit": {
+        "version": "v1-claim",
+        "valid_from": "1992-01-01",
+        "valid_to": null,
+        "verification": "NIEZWERYFIKOWANE",
+        "isap_url_present": true
+      },
+      "v3_p47_act_zus": {
+        "version": "v1-claim",
+        "valid_from": "1999-01-01",
+        "valid_to": null,
+        "verification": "NIEZWERYFIKOWANE",
+        "isap_url_present": true
+      },
+      "v3_p47_act_ksht": {
+        "version": "v1-claim",
+        "valid_from": "1995-01-01",
+        "valid_to": null,
+        "verification": "NIEZWERYFIKOWANE",
+        "isap_url_present": true
+      },
+      "v3_p47_act_kks": {
+        "version": "v1-claim",
+        "valid_from": "2000-01-01",
+        "valid_to": null,
+        "verification": "NIEZWERYFIKOWANE",
+        "isap_url_present": true
+      },
+      "v3_p47_act_ksef": {
+        "version": "v1-claim",
+        "valid_from": "2026-02-01",
+        "valid_to": null,
+        "verification": "NIEZWERYFIKOWANE",
+        "isap_url_present": true
+      },
+      "v3_p47_act_pcc": {
+        "version": "v1-claim",
+        "valid_from": "2001-01-01",
+        "valid_to": null,
+        "verification": "NIEZWERYFIKOWANE",
+        "isap_url_present": true
+      },
+      "v3_p47_act_ryczalt": {
+        "version": "v1-claim",
+        "valid_from": "1999-01-01",
+        "valid_to": null,
+        "verification": "NIEZWERYFIKOWANE",
+        "isap_url_present": true
+      },
+      "v3_p47_act_mdr": {
+        "version": "v1-claim",
+        "valid_from": "2019-07-01",
+        "valid_to": null,
+        "verification": "NIEZWERYFIKOWANE",
+        "isap_url_present": true
+      },
+      "v3_p47_act_informacja": {
+        "version": "v1-claim",
+        "valid_from": null,
+        "valid_to": null,
+        "verification": "NIEZWERYFIKOWANE",
+        "isap_url_present": true
+      }
+    },
+    "checks": [
+      {
+        "name": "versions_registered",
+        "status": "OK",
+        "detail": "rejestr wersji aktów: 12 wpisów (bundles/v3_p47_act_versions_register.json)"
+      },
+      {
+        "name": "temporal_windows_honest",
+        "status": "OK",
+        "detail": "wersje bez potwierdzonego okna (claim null): 1 — jawnie NIEZWERYFIKOWANE, nie fikcyjnie wypełnione (protokół 04): ['v3_p47_act_informacja']"
+      },
+      {
+        "name": "append_only_regenerated",
+        "status": "OK",
+        "detail": "rejestr regenerowalny idempotentnie; aktualizacja = nowa wersja, nie nadpisanie historii"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p47_legal_basis_weryfikacja_enterprise.temporal_act_versions: True"
+      }
+    ],
+    "findings": []
+  }
+}

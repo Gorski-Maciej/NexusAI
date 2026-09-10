@@ -1,0 +1,56 @@
+{
+  "innovation": "V3-P47-I03",
+  "generated_at": "2026-09-10T10:45:35.542081+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "acts_total": 12,
+    "acts_without_anchor": 0,
+    "lsr_records": 30,
+    "lsr_blocked_unverified": 30,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "acts": [
+      "v3_p47_act_ordynacja",
+      "v3_p47_act_vat",
+      "v3_p47_act_pit",
+      "v3_p47_act_cit",
+      "v3_p47_act_zus",
+      "v3_p47_act_ksht",
+      "v3_p47_act_kks",
+      "v3_p47_act_ksef",
+      "v3_p47_act_pcc",
+      "v3_p47_act_ryczalt",
+      "v3_p47_act_mdr",
+      "v3_p47_act_informacja"
+    ],
+    "checks": [
+      {
+        "name": "acts_map_present",
+        "status": "OK",
+        "detail": "v3_p47_acts (thresholds_jdg.rego): 12 aktów"
+      },
+      {
+        "name": "every_act_has_isap_url",
+        "status": "OK",
+        "detail": "akty z anchorem ISAP/RCL: 12/12"
+      },
+      {
+        "name": "unverified_honestly_tagged",
+        "status": "OK",
+        "detail": "tagi [NIEZWERYFIKOWANE — ISAP] w mapie aktów: 24 (zero fikcyjnych Dz.U. — protokół 04)"
+      },
+      {
+        "name": "lsr_registry_coverage",
+        "status": "OK",
+        "detail": "LEGAL_SOURCE_REGISTRY: 30 rekordów, BLOCKED_UNVERIFIED: 30 (spójnie — nic nie udaje zweryfikowanego)"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p47_legal_basis_weryfikacja_enterprise.isap_anchor: True"
+      }
+    ],
+    "findings": []
+  }
+}

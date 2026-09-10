@@ -1,12 +1,12 @@
 {
   "innovation": "V3-P06-I12",
-  "generated_at": "2026-09-09T12:59:22.520420+00:00",
+  "generated_at": "2026-09-10T11:40:13.591349+00:00",
   "gate": "PASS",
   "metrics": {
-    "maps_used": 10,
-    "refs_total": 129,
+    "maps_used": 9,
+    "refs_total": 128,
     "block_contexts": 93,
-    "files_with_refs": 22,
+    "files_with_refs": 21,
     "high_priority": 3
   },
   "usage_top": [
@@ -44,11 +44,6 @@
       "map": "rodo_aml_bdo",
       "refs": 7,
       "impact": "MED"
-    },
-    {
-      "map": "bounds",
-      "refs": 1,
-      "impact": "LOW"
     },
     {
       "map": "local_taxes",
@@ -99,7 +94,7 @@
     {
       "name": "usage_measured",
       "status": "OK",
-      "detail": "map używanych: 10; odwołań: 129; kontekstów BLOCK/fallback: 93"
+      "detail": "map używanych: 9; odwołań: 128; kontekstów BLOCK/fallback: 93"
     },
     {
       "name": "audit_priority_defined",

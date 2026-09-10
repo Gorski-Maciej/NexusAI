@@ -1,0 +1,72 @@
+{
+  "innovation": "V3-P47-I10",
+  "generated_at": "2026-09-10T11:17:52.694877+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "acts_verified_by_human": 0,
+    "acts_total": 30,
+    "routing": "TRIAGE_QUEUE"
+  },
+  "evidence": {
+    "pending_4_eyes": [
+      "LSR-0001",
+      "LSR-0002",
+      "LSR-0003",
+      "LSR-0004",
+      "LSR-0005",
+      "LSR-0006",
+      "LSR-0007",
+      "LSR-0008",
+      "LSR-0009",
+      "LSR-0010",
+      "LSR-0011",
+      "LSR-0012",
+      "LSR-0013",
+      "LSR-0014",
+      "LSR-0015",
+      "LSR-0016",
+      "LSR-0017",
+      "LSR-0018",
+      "LSR-0019",
+      "LSR-0020",
+      "LSR-0021",
+      "LSR-0022",
+      "LSR-0023",
+      "LSR-0024",
+      "LSR-0025",
+      "LSR-0026",
+      "LSR-0027",
+      "LSR-0028",
+      "LSR-0029",
+      "LSR-0030"
+    ],
+    "checks": [
+      {
+        "name": "lsr_review_states",
+        "status": "OK",
+        "detail": "LEGAL_SOURCE_REGISTRY: 30 rekordów — PENDING_4_EYES: 30, VERIFIED_4_EYES: 0 (zero udawanych weryfikacji)"
+      },
+      {
+        "name": "stamp_register_written",
+        "status": "OK",
+        "detail": "bundles/v3_p47_human_stamps_register.json: 30 oczekujących na 4-eyes"
+      },
+      {
+        "name": "p47_acts_pending_stamp",
+        "status": "OK",
+        "detail": "mapa aktów v3_p47_acts: 12 aktów [NIEZWERYFIKOWANE — ISAP] — wszystkie oczekują na stempel człowieka"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p47_legal_basis_weryfikacja_enterprise.human_verification_stamp: True"
+      }
+    ],
+    "findings": [
+      {
+        "severity": "HIGH",
+        "message": "rekordy bez weryfikacji człowieka: 30 — Q03 (4-eyes) w sekcji pytań do człowieka"
+      }
+    ]
+  }
+}

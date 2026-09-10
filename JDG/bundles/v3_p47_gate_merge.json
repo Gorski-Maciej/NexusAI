@@ -1,0 +1,11 @@
+{
+  "generated_at": "2026-09-10T11:29:04.413007+00:00",
+  "gate": "PASS",
+  "mode": "MERGE_GATE",
+  "first_adoption": false,
+  "known_violations": 3,
+  "backlog_violations": 3,
+  "new_violations": 0,
+  "verdict": "PASS",
+  "new": []
+}

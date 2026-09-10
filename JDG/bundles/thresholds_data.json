@@ -15,7 +15,8 @@
       "schema": {
         "min": "0",
         "max": "1",
-        "type": "number"
+        "type": "number",
+        "unit": "RATIO"
       }
     },
     "vat.reduced_rate_8": {
@@ -34,7 +35,8 @@
       "schema": {
         "min": "0",
         "max": "1",
-        "type": "number"
+        "type": "number",
+        "unit": "RATIO"
       }
     },
     "vat.reduced_rate_5": {
@@ -53,7 +55,8 @@
       "schema": {
         "min": "0",
         "max": "1",
-        "type": "number"
+        "type": "number",
+        "unit": "RATIO"
       }
     },
     "vat.zero_rate": {
@@ -72,7 +75,8 @@
       "schema": {
         "min": "0",
         "max": "1",
-        "type": "number"
+        "type": "number",
+        "unit": "RATIO"
       }
     },
     "vat.np_rate": {
@@ -90,7 +94,8 @@
       ],
       "schema": {
         "type": "string",
-        "allowed": ["NP"]
+        "allowed": ["NP"],
+        "unit": "TEXT"
       }
     },
     "vat.limit_113": {
@@ -109,7 +114,8 @@
       "schema": {
         "min": "0",
         "max": "10000000",
-        "type": "number"
+        "type": "number",
+        "unit": "PLN"
       }
     },
     "vat.exemption_suspended_years": {
@@ -128,7 +134,8 @@
       "schema": {
         "min": "0",
         "max": "10",
-        "type": "number"
+        "type": "number",
+        "unit": "YEARS"
       }
     },
     "vat.exemption_housing_area_m2_max": {
@@ -147,7 +154,8 @@
       "schema": {
         "min": "0",
         "max": "1000",
-        "type": "number"
+        "type": "number",
+        "unit": "M2"
       }
     }
   },

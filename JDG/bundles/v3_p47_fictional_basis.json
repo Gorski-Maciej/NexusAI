@@ -1,0 +1,38 @@
+{
+  "innovation": "V3-P47-I07",
+  "generated_at": "2026-09-10T10:45:39.611651+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "fictional_detected": 0,
+    "rules_shadowed": 0,
+    "decisions_reexamined": 0,
+    "scanned_files": 522,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "suspects": [],
+    "checks": [
+      {
+        "name": "live_suspect_scan",
+        "status": "OK",
+        "detail": "przeskanowano 522 plików rego; podejrzane cytowania (niemożliwe pozycje/daty/artykuły): 0"
+      },
+      {
+        "name": "no_fiction_polish",
+        "status": "OK",
+        "detail": "protokół 04: zero wymyślonych artykułów/Dz.U.; wszystkie nowe wpisy [NIEZWERYFIKOWANE — ISAP] aż do stempla 4-eyes (I10)"
+      },
+      {
+        "name": "emergency_mode_defined",
+        "status": "OK",
+        "detail": "tryb awaryjny: BŁĄD_PODSTAWY_PRAWNEJ → SHADOW + RE-EXAMINE (reguła jdg.v3_p47...fictional_basis_blocker, routing BLOCK_AND_ALERT)"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p47_legal_basis_weryfikacja_enterprise.fictional_basis_blocker: True"
+      }
+    ],
+    "findings": []
+  }
+}

@@ -1,11 +1,11 @@
 {
   "innovation": "V3-P07-I08",
-  "generated_at": "2026-09-09T12:59:24.326448+00:00",
+  "generated_at": "2026-09-10T11:40:15.361729+00:00",
   "gate": "PASS",
   "metrics": {
-    "versions_total": 13,
-    "aligned_0101": 0,
-    "not_aligned": 13,
+    "versions_total": 54,
+    "aligned_0101": 12,
+    "not_aligned": 42,
     "year_boundary_tests": 21
   },
   "not_aligned": [
@@ -64,7 +64,7 @@
     {
       "name": "registry_alignment_0101",
       "status": "WARN",
-      "detail": "wersje z valid_from=01.01: 0/13 (wymóg dotyczy wersji ROCZNYCH; seed mid-year dopuszczalny)"
+      "detail": "wersje z valid_from=01.01: 12/54 (wymóg dotyczy wersji ROCZNYCH; seed mid-year dopuszczalny)"
     },
     {
       "name": "year_boundary_tests",

@@ -1,0 +1,28 @@
+{
+  "generated_at": "2026-09-10T10:49:42.402517+00:00",
+  "gate": "PASS",
+  "mode": "FULL_AUDIT",
+  "total_violations": 3,
+  "new_violations": 0,
+  "verdict": "AUDIT_ONLY",
+  "violations": [
+    {
+      "file": "calendar/plan44_calendar.rego",
+      "line": 17,
+      "citation": "Kalendarz dynamiczny — skala (mies.), liniowy (mies.), ryczałt (mies./kwart.)",
+      "signature": "2a4c9f4cce39da16"
+    },
+    {
+      "file": "p22_innovations_enterprise.rego",
+      "line": 17,
+      "citation": "Automatyczne stosowanie przedłużonych terminów na podstawie komunikatów MF. Monitoruj Dz.Urz. MF",
+      "signature": "f297d7c56f2c8eba"
+    },
+    {
+      "file": "procurement/plan45_procurement.rego",
+      "line": 103,
+      "citation": "Próg unijny PZP 2025: dostawy/usługi ≥ 209 000 EUR netto. Powyżej tego progu — pełna procedura unijna (Dz.U. UE).",
+      "signature": "80a382205316570c"
+    }
+  ]
+}

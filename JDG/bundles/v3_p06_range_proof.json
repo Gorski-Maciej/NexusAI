@@ -1,14 +1,14 @@
 {
   "innovation": "V3-P06-I11",
-  "generated_at": "2026-09-09T12:59:20.498959+00:00",
+  "generated_at": "2026-09-10T11:40:11.670673+00:00",
   "gate": "PASS",
   "metrics": {
-    "leafs_checked": 867,
+    "leafs_checked": 898,
     "finite_ok": true,
     "negative_values": 0,
     "legal_violations": 0,
     "boundary_rejections": 12,
-    "ambiguous_units": 46
+    "ambiguous_units": 47
   },
   "violations": [],
   "legal_sets": {
@@ -27,7 +27,7 @@
     {
       "name": "finite_values",
       "status": "OK",
-      "detail": "wszystkie wartości skończone: 867 (NaN/Inf: 0)"
+      "detail": "wszystkie wartości skończone: 898 (NaN/Inf: 0)"
     },
     {
       "name": "non_negative_values",
@@ -47,7 +47,7 @@
     {
       "name": "unit_convention_report",
       "status": "WARN",
-      "detail": "klucze z niejednoznaczną jednostką (nazwa vs wartość): 46"
+      "detail": "klucze z niejednoznaczną jednostką (nazwa vs wartość): 47"
     }
   ],
   "findings": [

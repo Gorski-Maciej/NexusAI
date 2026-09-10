@@ -1,0 +1,59 @@
+{
+  "innovation": "V3-P47-I02",
+  "generated_at": "2026-09-10T10:47:22.537510+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "citations_total": 12934,
+    "canon_ok": 3,
+    "canon_violations": 12931,
+    "rules_without_legal_basis": 0,
+    "routing": "BLOCK_AND_ALERT"
+  },
+  "evidence": {
+    "sample_violations": [
+      "_legal_basis",
+      "_legal_basis",
+      "_legal_basis",
+      "_legal_basis",
+      "_legal_basis",
+      "_legal_basis",
+      "_legal_basis",
+      "_legal_basis",
+      "_legal_basis",
+      "_legal_basis"
+    ],
+    "sample_ok": [
+      "art55_to_art62",
+      "Art. 9a PIT (wybór formy opodatkowania)",
+      "Art. 108b VAT"
+    ],
+    "checks": [
+      {
+        "name": "citations_scanned",
+        "status": "OK",
+        "detail": "cytowań w _legal_basis (żywy skan): 12934"
+      },
+      {
+        "name": "canon_compliance",
+        "status": "FAIL",
+        "detail": "zgodnych z kanonem: 3/12934; przykłady naruszeń: ['_legal_basis', '_legal_basis', '_legal_basis']"
+      },
+      {
+        "name": "rules_without_legal_basis",
+        "status": "OK",
+        "detail": "reguły MISSING (bez żadnej podstawy): 0 (AP01; rejestr defektów prawnych P45)"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p47_legal_basis_weryfikacja_enterprise.citation_linter: True"
+      }
+    ],
+    "findings": [
+      {
+        "severity": "HIGH",
+        "message": "cytowania poza kanonem: 12931 — wymagana migracja do kanonu (I12 style guide)"
+      }
+    ]
+  }
+}

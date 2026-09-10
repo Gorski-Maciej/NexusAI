@@ -1,0 +1,24 @@
+{
+  "register_version": "v3_p46_param_versions-2026.09",
+  "append_only": true,
+  "records": [
+    {
+      "recorded_at": "2026-09-10T07:55:27.345511+00:00",
+      "sha256": "bcda84a78557d163ef1baac5a2ecba10a5b75411d4a2bdb661d1b40efff3efcf",
+      "algorithm": "SHA-256",
+      "worm_append_only": true
+    },
+    {
+      "recorded_at": "2026-09-10T08:23:12.577164+00:00",
+      "sha256": "f3319e8cba02744e01226f36e33b106bfeda05ed4645660baaaaf8cfa50bc548",
+      "algorithm": "SHA-256",
+      "worm_append_only": true
+    },
+    {
+      "recorded_at": "2026-09-10T08:26:22.059240+00:00",
+      "sha256": "612942806f4b6b80f7aa6a2a72789661d140cb4660f8e11e3272e3705bee3eb9",
+      "algorithm": "SHA-256",
+      "worm_append_only": true
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "measured_at": "2026-09-10T07:55:40.338934+00:00",
+    "orphan_total": 16581,
+    "findings_total": 26570,
+    "sha256_thresholds": "c9524e20233386b4c42c93a96571cc008f9a00426719a51f587689b28595fb5a"
+  },
+  {
+    "measured_at": "2026-09-10T08:26:36.334232+00:00",
+    "orphan_total": 16581,
+    "findings_total": 26570,
+    "sha256_thresholds": "c9524e20233386b4c42c93a96571cc008f9a00426719a51f587689b28595fb5a"
+  }
+]

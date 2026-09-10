@@ -1,0 +1,17 @@
+{
+  "innovation": "V3-P46-I03",
+  "generated_at": "2026-09-10T08:26:24.847391+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "missing_valid_from": 0,
+    "missing_valid_from_data": 0,
+    "missing_valid_from_blocks": 0,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "thresholds_data": "bundles/thresholds_data.json",
+    "thresholds_rego": "rules/thresholds_jdg.rego",
+    "violations": [],
+    "note": "P05: obowiązek podatkowy na datę zdarzenia — parametr bez okna = luka temporalna."
+  }
+}

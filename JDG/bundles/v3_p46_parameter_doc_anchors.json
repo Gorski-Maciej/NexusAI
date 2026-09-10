@@ -1,0 +1,61 @@
+{
+  "anchors": {
+    "vat.exemption_housing_area_m2_max": {
+      "meaning": "Parametr vat.exemption_housing_area_m2_max (generowane przez I12 — do uzupełnienia człowieka).",
+      "origin": "Art. 43 ust. 1 pkt 7-8 ustawy o VAT (zwolnienie budownictwo mieszkaniowe, powierzchnia do 80 m2)",
+      "expires": null,
+      "owner": "v3_p12_exemption_matrix",
+      "generated_by": "v3_p46_doc_anchor.py"
+    },
+    "vat.exemption_suspended_years": {
+      "meaning": "Parametr vat.exemption_suspended_years (generowane przez I12 — do uzupełnienia człowieka).",
+      "origin": "Art. 113 ust. 14 ustawy o VAT (zakaz ponownego zwolnienia po utracie) [uwaga: raport V3_P12 Q01 - ust. 11 vs ust. 14 do weryfikacji ISAP]",
+      "expires": null,
+      "owner": "v3_p12_waiver_tracker",
+      "generated_by": "v3_p46_doc_anchor.py"
+    },
+    "vat.limit_113": {
+      "meaning": "Parametr vat.limit_113 (generowane przez I12 — do uzupełnienia człowieka).",
+      "origin": "Art. 113 ust. 1 ustawy o VAT (zwolnienie podmiotowe 200 000 PLN)",
+      "expires": null,
+      "owner": "v3_p12_limit113_sentinel",
+      "generated_by": "v3_p46_doc_anchor.py"
+    },
+    "vat.np_rate": {
+      "meaning": "Parametr vat.np_rate (generowane przez I12 — do uzupełnienia człowieka).",
+      "origin": "Art. 41 ust. 1 ustawy o VAT (nie podlega opodatkowaniu); JPK_V7 pole P_NP",
+      "expires": null,
+      "owner": "v3_p12_rates_as_data",
+      "generated_by": "v3_p46_doc_anchor.py"
+    },
+    "vat.reduced_rate_5": {
+      "meaning": "Parametr vat.reduced_rate_5 (generowane przez I12 — do uzupełnienia człowieka).",
+      "origin": "Art. 41 ust. 10 ustawy o VAT w zw. z zal. 10 (wykaz towarow/uslug 5%)",
+      "expires": null,
+      "owner": "v3_p12_rates_as_data",
+      "generated_by": "v3_p46_doc_anchor.py"
+    },
+    "vat.reduced_rate_8": {
+      "meaning": "Parametr vat.reduced_rate_8 (generowane przez I12 — do uzupełnienia człowieka).",
+      "origin": "Art. 41 ust. 2 ustawy o VAT w zw. z zal. 10 (wykaz towarow/uslug 8%)",
+      "expires": null,
+      "owner": "v3_p12_rates_as_data",
+      "generated_by": "v3_p46_doc_anchor.py"
+    },
+    "vat.standard_rate": {
+      "meaning": "Parametr vat.standard_rate (generowane przez I12 — do uzupełnienia człowieka).",
+      "origin": "Art. 41 ustawy o VAT",
+      "expires": null,
+      "owner": "system",
+      "generated_by": "v3_p46_doc_anchor.py"
+    },
+    "vat.zero_rate": {
+      "meaning": "Parametr vat.zero_rate (generowane przez I12 — do uzupełnienia człowieka).",
+      "origin": "Art. 41 ust. 2-13 ustawy o VAT (przypadki stawki 0%)",
+      "expires": null,
+      "owner": "v3_p12_rates_as_data",
+      "generated_by": "v3_p46_doc_anchor.py"
+    }
+  },
+  "generated_at": "2026-09-10T08:26:23.532042+00:00"
+}

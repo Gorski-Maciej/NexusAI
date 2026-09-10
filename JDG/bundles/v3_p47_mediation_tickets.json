@@ -1,0 +1,66 @@
+{
+  "generated_at": "2026-09-10T10:45:37.308955+00:00",
+  "sla_days": 14,
+  "tickets": [
+    {
+      "ticket_id": "V3-P47-MED-01",
+      "inherited_from": "V3-P45-Q01",
+      "subject": "jdg.v3_p45_conversions.uor_a2_threshold",
+      "act": "Ustawa o rachunkowości art. 2 ust. 1 pkt 5",
+      "status": "NIEZWERYFIKOWANE",
+      "priority": "P1",
+      "sla_days": 14,
+      "due_at": "2026-09-23T18:32:55+00:00",
+      "overdue": false,
+      "blocks_promotion": "CANDIDATE→ACTIVE wstrzymany do rozstrzygnięcia (fail-closed prawny)"
+    },
+    {
+      "ticket_id": "V3-P47-MED-02",
+      "inherited_from": "V3-P45-Q02",
+      "subject": "jdg.v3_p45_conversions.uor_a3_conditions",
+      "act": "Ustawa o rachunkowości art. 3",
+      "status": "NIEZWERYFIKOWANE",
+      "priority": "P2",
+      "sla_days": 14,
+      "due_at": "2026-09-23T18:32:55+00:00",
+      "overdue": false,
+      "blocks_promotion": "CANDIDATE→ACTIVE wstrzymany do rozstrzygnięcia (fail-closed prawny)"
+    },
+    {
+      "ticket_id": "V3-P47-MED-03",
+      "inherited_from": "V3-P45-Q03",
+      "subject": "jdg.v3_p45_conversions.mdr_hallmark_a",
+      "act": "Ordynacja podatkowa art. 86a §1 (znacznik ogólny)",
+      "status": "NIEZWERYFIKOWANE",
+      "priority": "P2",
+      "sla_days": 14,
+      "due_at": "2026-09-23T18:32:55+00:00",
+      "overdue": false,
+      "blocks_promotion": "CANDIDATE→ACTIVE wstrzymany do rozstrzygnięcia (fail-closed prawny)"
+    },
+    {
+      "ticket_id": "V3-P47-MED-04",
+      "inherited_from": "V3-P45-Q04",
+      "subject": "jdg.v3_p45_conversions.pcc_a1_condition",
+      "act": "Ustawa o PCC art. 1 ust. 1 pkt 1",
+      "status": "NIEZWERYFIKOWANE",
+      "priority": "P2",
+      "sla_days": 14,
+      "due_at": "2026-09-23T18:32:55+00:00",
+      "overdue": false,
+      "blocks_promotion": "CANDIDATE→ACTIVE wstrzymany do rozstrzygnięcia (fail-closed prawny)"
+    },
+    {
+      "ticket_id": "V3-P47-MED-05",
+      "inherited_from": "V3-P45-Q05",
+      "subject": "jdg.v3_p45_conversions.wht_foreign_service",
+      "act": "Ustawa o podatku dochodowym od osób prawnych art. 21 ust. 1 pkt 2a",
+      "status": "NIEZWERYFIKOWANE",
+      "priority": "P1",
+      "sla_days": 14,
+      "due_at": "2026-09-23T18:32:55+00:00",
+      "overdue": false,
+      "blocks_promotion": "CANDIDATE→ACTIVE wstrzymany do rozstrzygnięcia (fail-closed prawny)"
+    }
+  ]
+}

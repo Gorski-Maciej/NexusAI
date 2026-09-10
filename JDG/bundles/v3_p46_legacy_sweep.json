@@ -1,0 +1,175 @@
+{
+  "innovation": "V3-P46-I10",
+  "generated_at": "2026-09-10T08:26:36.337730+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "scanned_files": 520,
+    "findings_total": 26570,
+    "orphan_values": 16581,
+    "extreme_literals": 2489,
+    "by_category": {
+      "large_integer": 23475,
+      "time_period": 775,
+      "decimal_rate": 2320
+    },
+    "trend": "baseline",
+    "previous_total": 16581,
+    "routing": "TRIAGE_QUEUE"
+  },
+  "evidence": {
+    "orphan_register_sample": [
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 69,
+        "value": "14 dni",
+        "category": "time_period"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 84,
+        "value": "0.30",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 86,
+        "value": "0.60",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 94,
+        "value": "120000",
+        "category": "large_integer"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 104,
+        "value": "200000",
+        "category": "large_integer"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 105,
+        "value": "2000000",
+        "category": "large_integer"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 106,
+        "value": "2000000",
+        "category": "large_integer"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 108,
+        "value": "0.75",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 132,
+        "value": "0.10",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 133,
+        "value": "0.23",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 140,
+        "value": "0.08",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 140,
+        "value": "0.085",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 141,
+        "value": "0.08",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 141,
+        "value": "0.085",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 142,
+        "value": "0.08",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 142,
+        "value": "0.03",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 143,
+        "value": "0.08",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 143,
+        "value": "0.03",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 144,
+        "value": "0.08",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 144,
+        "value": "0.085",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 145,
+        "value": "0.08",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 145,
+        "value": "0.03",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 146,
+        "value": "0.08",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 146,
+        "value": "0.03",
+        "category": "decimal_rate"
+      },
+      {
+        "file": "_business_lifecycle_rates.rego",
+        "line": 158,
+        "value": "0.12",
+        "category": "decimal_rate"
+      }
+    ],
+    "history": "bundles/v3_p46_orphan_history.json",
+    "note": "Backlog rejestrowany uczciwie (honesty protokół 14): licznik z narzędzia, migracja value-po-value wg mapy I01; gate merge P45 blokuje wzrost w plikach zmienianych."
+  }
+}

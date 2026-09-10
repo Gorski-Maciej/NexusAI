@@ -1,0 +1,51 @@
+{
+  "innovation": "V3-P47-I12",
+  "generated_at": "2026-09-10T10:45:44.292435+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "guide_present": true,
+    "examples_valid": 6,
+    "examples_invalid": 3,
+    "routing": "TRIAGE_QUEUE"
+  },
+  "evidence": {
+    "guide_path": "/data/data/com.termux/files/home/NexusAI/JDG/docs/V3_P47_CITATION_STYLE_GUIDE.md",
+    "valid_examples": [
+      "Ustawa o VAT art. 109 ust. 6",
+      "Ordynacja podatkowa art. 24b",
+      "Ustawa o PIT art. 22a ust. 1 pkt 1",
+      "Dz.U. 2024 poz. 1557 ze zm.",
+      "[NIEZWERYFIKOWANE — ISAP]",
+      "[BŁĄD_PODSTAWY_PRAWNEJ? — weryfikacja 4-eyes]"
+    ],
+    "invalid_examples": [
+      "art. 12 i tak dalej",
+      "Ustawa o VAT bez artykułu",
+      "poz. 1557",
+      "art. 0"
+    ],
+    "checks": [
+      {
+        "name": "guide_document_written",
+        "status": "OK",
+        "detail": "docs/V3_P47_CITATION_STYLE_GUIDE.md (kontrakt → P41/P36)"
+      },
+      {
+        "name": "valid_examples_recognized",
+        "status": "OK",
+        "detail": "przykłady poprawne rozpoznane przez kanon: 6/6"
+      },
+      {
+        "name": "invalid_examples_rejected",
+        "status": "FAIL",
+        "detail": "przykłady niepoprawne odrzucone przez kanon: 1/4"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p47_legal_basis_weryfikacja_enterprise.citation_style_guide: True"
+      }
+    ],
+    "findings": []
+  }
+}

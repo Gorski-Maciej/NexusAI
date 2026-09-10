@@ -1,0 +1,19 @@
+{
+  "innovation": "V3-P46-I01",
+  "generated_at": "2026-09-10T08:26:22.833293+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "total": 15,
+    "documented": 8,
+    "without_anchor": 7,
+    "migration_targets": 7,
+    "registry_age_days": 0,
+    "thresholds_data_sha256": "612942806f4b6b80f7aa6a2a72789661d140cb4660f8e11e3272e3705bee3eb9"
+  },
+  "evidence": {
+    "registry": "bundles/v3_p46_parameter_registry_data.json",
+    "thresholds_data": "bundles/thresholds_data.json",
+    "thresholds_data_sha256": "612942806f4b6b80f7aa6a2a72789661d140cb4660f8e11e3272e3705bee3eb9",
+    "note": "fe:N — stawki nie są trzymane w kodzie; cel weryfikacji ISAP w P47."
+  }
+}

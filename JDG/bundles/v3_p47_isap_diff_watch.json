@@ -1,0 +1,59 @@
+{
+  "innovation": "V3-P47-I09",
+  "generated_at": "2026-09-10T10:53:37.225721+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "unreported_diffs": 0,
+    "reported_diffs": 1,
+    "rules_shadowed": 1,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "changes": [
+      {
+        "id": "DRL-0001",
+        "title": "Nowelizacja testowa",
+        "source": "RCL",
+        "expected_enactment": "2099-06-01",
+        "status": "DRAFT_LAW",
+        "confidence_draft": 0.7,
+        "rules_prepared": [],
+        "countdown_days": 26569,
+        "lead_ok": true
+      }
+    ],
+    "checks": [
+      {
+        "name": "change_calendar_source",
+        "status": "OK",
+        "detail": "bundles/legal_change_calendar.json: 1 zmian zarejestrowanych"
+      },
+      {
+        "name": "impact_analyzer_integration",
+        "status": "OK",
+        "detail": "tools/legal_change_impact_analyzer.py: True — zmiana treści artykułu → lista reguł"
+      },
+      {
+        "name": "p46_drift_contract",
+        "status": "OK",
+        "detail": "drift tracker P46: unreported_drifts=0 — niezaraportowany dryf = BLOCK (reguła isap_diff_watch)"
+      },
+      {
+        "name": "change_calendar_tool",
+        "status": "OK",
+        "detail": "tools/legal_change_calendar.py: True (rozszerzany, nie duplikowany)"
+      },
+      {
+        "name": "p46_orphan_backlog_trend",
+        "status": "OK",
+        "detail": "orphan backlog (P46→P47): 16581 — SLA per domena ustalany w P47 (Q02, 4-eyes)"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p47_legal_basis_weryfikacja_enterprise.isap_diff_watch: True"
+      }
+    ],
+    "findings": []
+  }
+}

@@ -1,29 +1,30 @@
 {
   "innovation": "V3-P07-I07",
-  "generated_at": "2026-09-09T12:59:23.254962+00:00",
+  "generated_at": "2026-09-10T11:40:14.434725+00:00",
   "gate": "PASS",
   "metrics": {
-    "rules": 13,
-    "domains": 9,
+    "rules": 54,
+    "domains": 10,
     "lock_mechanism": true,
-    "multi_rule_domains": 2
+    "multi_rule_domains": 7
   },
   "per_domain": {
-    "other": 4,
+    "other": 28,
     "kks": 1,
     "ksef": 1,
-    "pcc": 1,
-    "ordpu": 1,
-    "crossborder": 1,
+    "pcc": 2,
+    "ordpu": 2,
+    "crossborder": 2,
     "rodo": 1,
     "pit": 2,
-    "uor": 1
+    "uor": 3,
+    "compliance": 12
   },
   "checks": [
     {
       "name": "domain_density",
       "status": "OK",
-      "detail": "domeny w rejestrze: {'other': 4, 'kks': 1, 'ksef': 1, 'pcc': 1, 'ordpu': 1, 'crossborder': 1, 'rodo': 1, 'pit': 2, 'uor': 1}"
+      "detail": "domeny w rejestrze: {'other': 28, 'kks': 1, 'ksef': 1, 'pcc': 2, 'ordpu': 2, 'crossborder': 2, 'rodo': 1, 'pit': 2, 'uor': 3, 'compliance': 12}"
     },
     {
       "name": "change_lock_mechanism",
@@ -33,14 +34,14 @@
     {
       "name": "simultaneous_change_risk",
       "status": "WARN",
-      "detail": "domeny z >1 regułą (ryzyko zmian równoległych): ['other', 'pit']"
+      "detail": "domeny z >1 regułą (ryzyko zmian równoległych): ['other', 'pcc', 'ordpu', 'crossborder', 'pit', 'uor', 'compliance']"
     }
   ],
   "findings": [
     {
       "id": "V3-P07-L11",
       "severity": "P2",
-      "evidence": "brak kolejki zmian i blokad per domena — dwie równoległe zmiany w tej samej domenie mogą wejść bez sekwencjonowania (domeny z >1 regułą: ['other', 'pit'])",
+      "evidence": "brak kolejki zmian i blokad per domena — dwie równoległe zmiany w tej samej domenie mogą wejść bez sekwencjonowania (domeny z >1 regułą: ['other', 'pcc', 'ordpu', 'crossborder', 'pit', 'uor', 'compliance'])",
       "fix": "Change Queue & Locks (I07): lock per domena na czas zmiany (register→awans), kolejka FIFO, konflikt = HOLD [BM]"
     }
   ],

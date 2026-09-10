@@ -718,5 +718,581 @@
         "version": "1.0.0"
       }
     ]
+  },
+  "jdg.v3_p46_hardcode_eliminacja_enterprise.day0_test_generation": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P46-I06; ADR-002 parametry-as-data; P05/P06",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.day0_test_generation",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "P46-I06 day0_test_generation (V3-P46)",
+        "valid_from": "2026-09-10",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p46_hardcode_eliminacja_enterprise.documentation_anchor": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P46-I12; ADR-002 parametry-as-data; P05/P06",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.documentation_anchor",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "P46-I12 documentation_anchor (V3-P46)",
+        "valid_from": "2026-09-10",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p46_hardcode_eliminacja_enterprise.golden_replay_per_change": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P46-I11; ADR-002 parametry-as-data; P05/P06",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.golden_replay_per_change",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "P46-I11 golden_replay_per_change (V3-P46)",
+        "valid_from": "2026-09-10",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p46_hardcode_eliminacja_enterprise.legacy_value_sweeper": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P46-I10; ADR-002 parametry-as-data; P05/P06",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.legacy_value_sweeper",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "P46-I10 legacy_value_sweeper (V3-P46)",
+        "valid_from": "2026-09-10",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p46_hardcode_eliminacja_enterprise.parameter_change_workflow": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P46-I07; ADR-002 parametry-as-data; P05/P06",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.parameter_change_workflow",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "P46-I07 parameter_change_workflow (V3-P46)",
+        "valid_from": "2026-09-10",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p46_hardcode_eliminacja_enterprise.parameter_drift_alarm": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P46-I09; ADR-002 parametry-as-data; P05/P06",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.parameter_drift_alarm",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "P46-I09 parameter_drift_alarm (V3-P46)",
+        "valid_from": "2026-09-10",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p46_hardcode_eliminacja_enterprise.parameter_registry": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P46-I01; ADR-002 parametry-as-data; P05/P06",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.parameter_registry",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "P46-I01 parameter_registry (V3-P46)",
+        "valid_from": "2026-09-10",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p46_hardcode_eliminacja_enterprise.schema_validation": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P46-I04; ADR-002 parametry-as-data; P05/P06",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.schema_validation",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "P46-I04 schema_validation (V3-P46)",
+        "valid_from": "2026-09-10",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p46_hardcode_eliminacja_enterprise.signed_parameter_bundles": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P46-I05; ADR-002 parametry-as-data; P05/P06",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.signed_parameter_bundles",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "P46-I05 signed_parameter_bundles (V3-P46)",
+        "valid_from": "2026-09-10",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p46_hardcode_eliminacja_enterprise.temporal_parameter_gate": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P46-I03; ADR-002 parametry-as-data; P05/P06",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.temporal_parameter_gate",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "P46-I03 temporal_parameter_gate (V3-P46)",
+        "valid_from": "2026-09-10",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p46_hardcode_eliminacja_enterprise.unit_semantics": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P46-I08; ADR-002 parametry-as-data; P05/P06",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.unit_semantics",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "P46-I08 unit_semantics (V3-P46)",
+        "valid_from": "2026-09-10",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p46_hardcode_eliminacja_enterprise.value_provenance": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "other",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P46-I02; ADR-002 parametry-as-data; P05/P06",
+        "owner": "policy-engineer",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.value_provenance",
+        "severity": "WARNING",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "P46-I02 value_provenance (V3-P46)",
+        "valid_from": "2026-09-10",
+        "valid_to": null,
+        "version": "1.0.0"
+      }
+    ]
+  },
+  "jdg.v3_p47_legal_basis_weryfikacja_enterprise.acts_heatmap": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10",
+        "owner": "P47-campaign",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.acts_heatmap",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "V3-P47 I11: acts_heatmap",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.47.11"
+      }
+    ]
+  },
+  "jdg.v3_p47_legal_basis_weryfikacja_enterprise.citation_linter": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10",
+        "owner": "P47-campaign",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.citation_linter",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "V3-P47 I02: citation_linter",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.47.2"
+      }
+    ]
+  },
+  "jdg.v3_p47_legal_basis_weryfikacja_enterprise.citation_style_guide": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10",
+        "owner": "P47-campaign",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.citation_style_guide",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "V3-P47 I12: citation_style_guide",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.47.12"
+      }
+    ]
+  },
+  "jdg.v3_p47_legal_basis_weryfikacja_enterprise.completeness_score": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10",
+        "owner": "P47-campaign",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.completeness_score",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "V3-P47 I08: completeness_score",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.47.8"
+      }
+    ]
+  },
+  "jdg.v3_p47_legal_basis_weryfikacja_enterprise.fictional_basis_blocker": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10",
+        "owner": "P47-campaign",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.fictional_basis_blocker",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "V3-P47 I07: fictional_basis_blocker",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.47.7"
+      }
+    ]
+  },
+  "jdg.v3_p47_legal_basis_weryfikacja_enterprise.human_verification_stamp": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10",
+        "owner": "P47-campaign",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.human_verification_stamp",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "V3-P47 I10: human_verification_stamp",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.47.10"
+      }
+    ]
+  },
+  "jdg.v3_p47_legal_basis_weryfikacja_enterprise.isap_anchor": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10",
+        "owner": "P47-campaign",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.isap_anchor",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "V3-P47 I03: isap_anchor",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.47.3"
+      }
+    ]
+  },
+  "jdg.v3_p47_legal_basis_weryfikacja_enterprise.isap_diff_watch": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10",
+        "owner": "P47-campaign",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.isap_diff_watch",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "V3-P47 I09: isap_diff_watch",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.47.9"
+      }
+    ]
+  },
+  "jdg.v3_p47_legal_basis_weryfikacja_enterprise.legal_basis_census": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10",
+        "owner": "P47-campaign",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.legal_basis_census",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "V3-P47 I01: legal_basis_census",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.47.1"
+      }
+    ]
+  },
+  "jdg.v3_p47_legal_basis_weryfikacja_enterprise.mediation_workflow": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10",
+        "owner": "P47-campaign",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.mediation_workflow",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "V3-P47 I06: mediation_workflow",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.47.6"
+      }
+    ]
+  },
+  "jdg.v3_p47_legal_basis_weryfikacja_enterprise.recheck_scheduler": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10",
+        "owner": "P47-campaign",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.recheck_scheduler",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "V3-P47 I05: recheck_scheduler",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.47.5"
+      }
+    ]
+  },
+  "jdg.v3_p47_legal_basis_weryfikacja_enterprise.temporal_act_versions": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10",
+        "owner": "P47-campaign",
+        "registered_at": "2026-09-10",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.temporal_act_versions",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [],
+        "thresholds": [],
+        "title": "V3-P47 I04: temporal_act_versions",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.47.4"
+      }
+    ]
   }
 }

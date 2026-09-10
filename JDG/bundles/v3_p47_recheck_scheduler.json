@@ -1,0 +1,65 @@
+{
+  "innovation": "V3-P47-I05",
+  "generated_at": "2026-09-10T10:54:35.730528+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "acts_total": 12,
+    "stale_acts": 12,
+    "fresh_acts": 0,
+    "schedule": {
+      "ACTIVE": 1,
+      "CANDIDATE": 7
+    },
+    "routing": "TRIAGE_QUEUE"
+  },
+  "evidence": {
+    "stale_acts": [
+      "v3_p47_act_ordynacja",
+      "v3_p47_act_vat",
+      "v3_p47_act_pit",
+      "v3_p47_act_cit",
+      "v3_p47_act_zus",
+      "v3_p47_act_ksht",
+      "v3_p47_act_kks",
+      "v3_p47_act_ksef",
+      "v3_p47_act_pcc",
+      "v3_p47_act_ryczalt",
+      "v3_p47_act_mdr",
+      "v3_p47_act_informacja"
+    ],
+    "fresh_acts": [],
+    "checks": [
+      {
+        "name": "schedule_defined",
+        "status": "OK",
+        "detail": "kadencje (dni): {\"ACTIVE\": 1, \"CANDIDATE\": 7} — ACTIVE codziennie, CANDIDATE co tydzień (prompt P47 5.4)"
+      },
+      {
+        "name": "acts_in_scope",
+        "status": "OK",
+        "detail": "akty w zakresie re-checku: 12 (z rejestru wersji I04)"
+      },
+      {
+        "name": "freshness_honest",
+        "status": "OK",
+        "detail": "STALE (bez weryfikacji ISAP): 12; świeże: 0 — STALE = przegląd SHADOW (I09), nie ukrywanie"
+      },
+      {
+        "name": "isap_crawler_integration",
+        "status": "OK",
+        "detail": "tools/isap_crawler.py (P34): True — P47 dodaje kadencję, nie nowy crawler"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p47_legal_basis_weryfikacja_enterprise.recheck_scheduler: True"
+      }
+    ],
+    "findings": [
+      {
+        "severity": "MEDIUM",
+        "message": "akty STALE (wymagają re-checku w ISAP): 12 — pierwsza kolejność: ACTIVE"
+      }
+    ]
+  }
+}

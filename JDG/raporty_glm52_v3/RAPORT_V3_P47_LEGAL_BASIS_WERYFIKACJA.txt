@@ -1,0 +1,426 @@
+================================================================================
+NEXUSAI JDG — RAPORT V3-P47 WERYFIKACJA PODSTAW PRAWNYCH
+ZERO FIKCJI, KAŻDY CYTAT W ISAP — V3 FORTRESS CAMPAIGN (ENTERPRISE)
+================================================================================
+Plik raportu:   JDG/raporty_glm52_v3/RAPORT_V3_P47_LEGAL_BASIS_WERYFIKACJA.txt
+Prompt części:  JDG/prompty_v3/V3_PROMPT_P47_LEGAL_BASIS_WERYFIKACJA.txt
+Data:           2026-09-10   Wersja kampanii: V3.0
+Tryb:           WDROŻENIE + AUDYT (konwencja P00–P46: raport = kontrakt
+wdrożeniowy; każdy wniosek ma dowód w repozytorium)
+
+────────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+────────────────────────────────────────────────────────────────────────────────
+Dojrzałość części P47 przed wdrożeniem: NISKA (walidatory istniały, ale brak
+runtime fail-closed, brak SLA mediacji, brak kadencji re-checku, brak mapy
+aktów z anchorami ISAP). Po wdrożeniu: WARSTWA ENTERPRISE z 12 analizami
+I01–I12, 13 narzędziami dowodowymi, 42 testami natywnymi (OPA 0.68 i 1.9),
+22 testami pytest, 12 regułami CANDIDATE w rejestrze cyklu życia.
+
+Stan zdrowia prawnego fortecy (dowód: bundles/legal_basis_v2_report.json +
+żywa partycja I01):
+  * 12 439 reguł; pełne łańcuchy akt→art→ust/pkt: 3 582 (28.8%),
+  * partycja reguł: OK=251, NIEZWERYFIKOWANE=12 129, MISSING=59 (suma=12 439),
+  * rv_metric v2: 2.02 (do migracji; SLA Q02),
+  * LEGAL_SOURCE_REGISTRY: 30/30 rekordów BLOCKED_UNVERIFIED / PENDING_4_EYES,
+  * mapa aktów v3_p47_acts: 12 aktów, wszystkie [NIEZWERYFIKOWANE — ISAP]
+    (zero fikcyjnych Dz.U. — protokół 04),
+  * pustynie prawne: 20 punktów UNCOVERED z 70 (coverage gaps) → P51.
+
+TOP-10 rekomendacji (wszystkie WDROŻONE w tej części):
+  1. Runtime fail-closed 12 analiz I01–I12 (reguła + decide else-chain).
+  2. Mapa aktów z anchorami ISAP jako DANE (v3_p47_acts w thresholds).
+  3. Linter cytowań z kanonem (współczesny + historyczny format publikatora).
+  4. Bramka CI adoptująca backlog (blokuje tylko GENUINIE NOWE naruszenia).
+  5. Mediacje z SLA 14 dni; po terminie blokada awansu CANDIDATE→ACTIVE.
+  6. Kadencja re-checku: ACTIVE codziennie, CANDIDATE co tydzień.
+  7. Tryb awaryjny fikcji: BŁĄD_PODSTAWY_PRAWNEJ → SHADOW + RE-EXAMINE.
+  8. Rejestr wersji aktów (time-travel na wersjach prawa, P05).
+  9. Stempel 4-eyes (weryfikacja AI nie zastępuje człowieka).
+ 10. Przejęcie kontraktów P45 (5 mediacji) i P46 (drift tracker + backlog
+    16 581 orphan) — zero utraconych rejestrów.
+
+Luki wg krytyczności: P0=0, P1=3, P2=4, P3=2 (rejestr 9.06 / T3).
+Innowacje: 12 (I01–I12, pełne projekty 6-punktowe — 9.07 / T4).
+Deklaracja dowodowa: udowodniono mechanizmy weryfikacji i ich testy; TREŚCI
+aktów NIE zweryfikowano (ISAP poza sesją) — wszystkie cytaty [NIEZWERYFIKOWANE],
+weryfikacja 4-eyes = Q01–Q04.
+
+────────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+────────────────────────────────────────────────────────────────────────────────
+Przeanalizowano (pliki z Sekcji 6 promptu — wszystkie odczytane lokalnie,
+statusem NIEZWERYFIKOWANO oznaczono jedynie TREŚCI prawne, nie pliki):
+  * Rejestry/dokumenty: LEGAL_SOURCE_REGISTRY.md, legal_source_registry.json
+    (30 rekordów), legal_reference_canon.json (30 aktów), SLOWNIK_REFERENCJI_
+    PRAWNYCH.md, AUDYT_PODSTAW_PRAWNYCH.md, Bbb/Bbb.md, P00_REMEDIACJA_PODSTAW_
+    PRAWNYCH.md, KALENDARZ_ZMIAN_PRAWNYCH.md + legal_change_calendar.json,
+  * Narzędzia: validate_legal_basis.py, validate_legal_basis_v2.py (+ raport
+    v2: 12 439 reguł, rv_metric 2.02), isap_crawler.py, isap_rule_update_
+    pipeline.py, isap_drift_alarm.py, validate_p24_legal_basis.py,
+    legal_change_impact_analyzer.py, fix_hyper_legal_basis.py,
+  * Testy: test_legal_source_registry.py, test_legal_twin_traceability.py,
+    test_legal_twin_infrastructure.py, LEGAL_TWIN_TRACEABILITY.md,
+    ZGODNOSC_PRAWNA.md, legal_graph.json,
+  * Nowe artefakty P47 (utworzone): rego, 13 narzędzi, 17 bundli/rejestrów,
+    testy, przewodnik cytowań.
+Pominięto i DLACZEGO:
+  * Treści ustaw w ISAP/RCL/MF — publikatory niedostępne w sesji (protokół 04:
+    zakaz przyjmowania treści „z pamięci"); wszędzie tag [NIEZWERYFIKOWANE].
+  * Katalogi mirror policies (branch policies/) — nieosiągalny lokalnie
+    (jak w P45/P46); zarejestrowane jako L08, rozstrzyga P48 MIRROR_SYNC.
+  * legal_graph_seed.sql — podglądowo; graf LKG rozwija P01-tor (bez duplikacji).
+Status weryfikacji źródeł prawnych: 100% twierdzeń oznakowanych; 0 fikcyjnych
+podstaw dodanych; 10+ pozycji z analizą podejrzeń — patrz lista PODEJRZANE (9.10).
+
+────────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P47 — MAPA ARTEFAKTÓW (T1)
+────────────────────────────────────────────────────────────────────────────────
+| Artefakt | Pakiet/rule_id | Podstawa (status) | Testy | Lifecycle |
+|---|---|---|---|---|
+| rules/v3_p47_legal_basis_weryfikacja_enterprise.rego | jdg.v3_p47_...{12 reguł} | ADR-002/P05/prot.04 [mechanizm: ZWERYFIKOWANY kodem; treści: NIEZWERYFIKOWANE] | 42 natywne ×2 OPA + 22 pytest | 12× CANDIDATE |
+| thresholds v3_p47 (11 progów) | data.jdg.thresholds.v3_p47 | ADR-002, P05 valid_from | opa check ×2 + suite | dane ACTIVE-tor |
+| mapa aktów v3_p47_acts (12) | data.jdg.thresholds.v3_p47_acts | ISAP [NIEZWERYFIKOWANE] | test_p47_acts_map | dane |
+| 13 narzędzi tools/v3_p47_*.py | I01–I12 + common + gate | kontrakty P34/P45/P46 | uruchomione, 17 bundli | CI-tor |
+| docs/V3_P47_CITATION_STYLE_GUIDE.md | kanon cytowań | kontrakt → P41/P36 | test i12 | dokument |
+| bundles/v3_p47_* (17 plików) | evidence gate=PASS | honesty liczników | pytest | rejestry |
+
+────────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4 (każda: dowody + ≥3 wnioski + luki)
+────────────────────────────────────────────────────────────────────────────────
+AN01 — Audyt podstaw w regułach (5.1)
+Dowody: legal_basis_v2_report.json (12 439 wierszy; 3 582 pełnych łańcuchów);
+żywa partycja I01 (251/12 129/59); linter I02 (kanon, 3 naruszenia backlogu);
+skaner fikcji I07 (0 podejrzeń niemożliwych pozycji/dat).
+Wnioski:
+  1. Pokrycie _legal_basis jest niemal pełne (3 355 wystąpień w 497 plikach),
+     ale JAKOŚĆ niska — 28.8% pełnych łańcuchów; to ryzyko weryfikowalności,
+     nie fikcji (AP05 zweryfikowany zerem podejrzeń strukturalnych).
+  2. Brak runtime egzekucji przed P47: walidator v2 działał offline; teraz
+     decyna TRIAGE/BLOCK na bazie metryk z narzędzi (never-silent).
+  3. Rejestr stubów P45 i podstawy prawne to wspólny rejestr defektów prawnych
+     (kontrakt 11.1) — P47 nie tworzy nowego rejestru, tylko wpina ścieżki.
+Luki: L01 (SLA migracji łańcuchów), L02 (59 MISSING).
+
+AN02 — Rejestr źródeł jako dane (5.2)
+Dowody: LSR 30 rekordów (pełne metadane: publication, effective_interval,
+provenance, confidence 0.55, hash_scope jawnie metadane — nie tekst aktu);
+mapa v3_p47_acts (12 aktów z isap_url); rejestr wersji 12 wpisów.
+Wnioski:
+  1. LSR jest wzorcowy strukturalnie (provenance + 4-eyes), ale 100% rekordów
+     czeka na weryfikację — silnik działa na TWIERDZENIACH, co jest teraz
+     jawnie widoczne na każdym poziomie (mapa aktów, rejestry, certyfikaty).
+  2. Rozporządzenia wykonawcze (PKPiR/JPK/KSeF XSD) są w kanonie (30 aktów),
+     ale heatmapa pokazuje 20 pustynii punktowych — pokrycie ≠ istnienie wpisu.
+  3. Time-travel na wersjach prawa wymagał rejestru wersji — utworzony
+     (I04), scalenie z P05 parametrami pozostaje do P53 TEMPORALNOSC.
+Luki: L03 (WORM dla wersji), L08 (mirror).
+
+AN03 — Walidacja formatu i proces PR (5.3)
+Dowody: kanon z przykładami (docs/V3_P47_CITATION_STYLE_GUIDE.md: 6 poprawnych,
+4 niepoprawnych — wszystkie rozpoznane przez linter zgodnie z etykietą);
+bramka v3_p47_gate.py (adoptacja backlogu 3 naruszeń: 2× proza zamiast cytatu,
+1× Dz.Urz. MF bez publikatora); PR-contract wymaga pola weryfikacji ISAP.
+Wnioski:
+  1. Kanon musi rozróżniać format współczesny (Dz.U. RRRR poz. N) i historyczny
+     (Dz.U. RRRR nr N poz. M — np. UPO PL-US 1976 nr 31 poz. 178) — pierwszy
+     wariant bramki blokował prawidłowe cytowania UPO (test dowodu).
+  2. Zero tolerancji dla NOWYCH naruszeń jest wdrażalne bez fałszywych blokad
+     dzięki adoptacji backlogu (lekcja P46: sygnatury treściowe, nie linie).
+  3. Akty niepubliczne/konsolidacje w toku: ścieżka [NIEZWERYFIKOWANE] + ticket
+     mediacji — proces nie zgaduje (I06).
+Luki: L04 (Dz.Urz. MF jako publikator — rozszerzenie kanonu).
+
+AN04 — Cyclic re-check i mediacje (5.4)
+Dowody: kadencje ACTIVE=1d / CANDIDATE=7d (I05, spójne z promptem 5.4);
+świeżość: 12/12 aktów STALE (uczciwie — brak potwierdzenia ISAP); kalendarz
+zmian (1 wpis) + impact analyzer (integracja, nie duplikacja); drift tracker
+P46 (0 unreported) jako kontrakt wejściowy; SLA 14 dni; fail-closed: zmiana
+treści → SHADOW dotkniętych reguł (I09 TRIAGE jeśli brak SHADOW).
+Wnioski:
+  1. Crawler P34 istnieje, ale nie ma dowodu harmonogramu uruchomień — P47
+     definiuje kadencję i świeżość jako DANE (progi), egzekwowane runtime.
+  2. Rozbieżność reguła↔ISAP bez SLA byłaby zawieszona w nieskończoność;
+     SLA + blokada awansu domyka pętlę fail-closed prawnie.
+  3. Orphan backlog P46 (16 581) i pustynie P51 są dziś jedną listą priorytetów
+     migracji — SLA per domena = Q02 (4-eyes).
+Luki: L05 (uruchomienie crawlera w CI), L06 (auto-SHADOW przez impact analyzer).
+
+────────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2; wszystkie akty Sekcji 8 + 2 odkryte)
+────────────────────────────────────────────────────────────────────────────────
+| Akt | Art./jednostki | Reguła (P47) | Test | Status | Ryzyko |
+|---|---|---|---|---|---|
+| Zasada pisania prawa (ISAP publikator) | wymóg promulgacji | I03 anchor | suite i03 | CZĘŚCIOWE | niskie (mechanizm gotowy) |
+| Ordynacja podatkowa | 24b–24e | I04 wersje aktów | suite i04 | CZĘŚCIOWE | średnie (okna = claims) |
+| Ordynacja podatkowa | 189a–189e (interpretacje) | I01 spis / I06 mediacje | suite i01/i06 | CZĘŚCIOWE | średnie |
+| Ustawa o TK (wyroki jako wykładnia) | kontekst | I06 (kanał rozbieżności) | suite i06 | CZĘŚCIOWE | niskie |
+| Ustawa VAT | 106na i nast. (KSeF) | mapa aktów + I11 heatmap | suite i11 | CZĘŚCIOWE | wysokie (2026 KSeF) |
+| Ustawa PIT | 22a i nast. | I08 score (łańcuchy) | pytest i08 | CZĘŚCIOWE | średnie |
+| Regulamin Sejmu / RCL | proces legislacyjny | I05 re-check (daty) | suite i05 | CZĘŚCIOWE | średnie |
+| AI Act | identyfikowalność źródeł | I10 stempel 4-eyes | suite i10 | CZĘŚCIOWE | niskie |
+| KKS | fikcyjna podstawa = czyn zabroniony | I07 blocker | suite i07 | CZĘŚCIOWE | krytyczne → priorytet 1 |
+| Ustawa o rachunkowości | art. 2/3 (P45 mediacje) | I06 tickety MED-01/02 | bundle i06 | CZĘŚCIOWE | średnie |
+| CIT art. 21 (WHT) [odkryty] | 21 ust. 1 pkt 2a | I06 tickety MED-05 | bundle i06 | CZĘŚCIOWE | średnie |
+| PCC art. 1 [odkryty] | 1 ust. 1 pkt 1 | I06 tickety MED-04 | bundle i06 | CZĘŚCIOWE | średnie |
+Uwaga: wszystkie statusy CZĘŚCIOWE = mechanizm ZWERYFIKOWANY testami, TREŚCI
+prawne [NIEZWERYFIKOWANE — ISAP] (protokół 04; weryfikacja = Q01–Q04).
+
+────────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (T3)
+────────────────────────────────────────────────────────────────────────────────
+| ID | P | Dowód | Wpływ | Rozwiązanie | Koszt | Ryzyko regresji |
+|---|---|---|---|---|---|---|
+| V3-P47-L01 | P1 | 8 857 reguł z łańcuchem <3 | decyzje trudne do audytu | SLA migracji per domena (Q02) | wysoki | średnie |
+| V3-P47-L02 | P1 | 59 reguł MISSING | brak jakiejkolwiek podstawy | ręczna weryfikacja 4-eyes | niski | niskie |
+| V3-P47-L03 | P2 | rejestr wersji w JSON | wersje bez WORM | WORM storage P38 | średni | niskie |
+| V3-P47-L04 | P2 | Dz.Urz. MF w prozie | kanon bez MF-publikatora | rozszerzenie kanonu (I12) | niski | niskie |
+| V3-P47-L05 | P1 | brak dowodu harmonogramu crawlera | świeżość niezagwarantowana | job CI codzienny (I05 progów) | średni | niskie |
+| V3-P47-L06 | P2 | impact analyzer bez hooka SHADOW | zmiana bez auto-SHADOW | podpięcie I09→lifecycle P07 | średni | średnie |
+| V3-P47-L07 | P3 | LSR confidence 0.55 | ranking niepewności | re-cal po weryfikacji ISAP | niski | niskie |
+| V3-P47-L08 | P3 | branch policies nieosiągalny | dryf mirror niezmierzony | P48 MIRROR_SYNC | niski | niskie |
+Krytyczność P0: brak (zero BLOCKERÓW — dokumenty święte nienaruszone).
+
+────────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (T4) — pełne projekty (szkielet 6-punktowy)
+────────────────────────────────────────────────────────────────────────────────
+I01 LEGAL BASIS CENSUS — (1) luka: brak jednej metryki zdrowia prawnego;
+(2) mechanizm: partycja reguł OK/NIEZWERYFIKOWANE/MISSING z raportu v2 +
+żywy skan; spis jako dane; (3) wpływ: zarządzanie backlogiem prawnym liczbą,
+nie deklaracją; (4) ryzyko: nakładanie kategorii issues v2 → partycja na
+poziomie reguł (test); (5) akceptacja: suma partycji = rules_total (test);
+(6) zależności: P06, P37 (trend rv_metric).
+I02 CITATION LINTER — (1) luka: cytowania poza kanonem na PR; (2) mechanizm:
+kanon (jednostki redakcyjne, Dz.U. współczesny + historyczny, tagi jawne);
+blokada nowości; (3) wpływ: zero nowych podstaw w złym formacie; (4) ryzyko:
+fałszywe blokady → historyczny format rozpoznany (dowód UPO); (5) akceptacja:
+6/6 poprawnych rozpoznanych, 4/4 niepoprawnych odrzuconych (test); (6) zależności:
+P39 bramki, P41.
+I03 ISAP ANCHORS — (1) luka: akty bez klikalnego dowodu; (2) mechanizm: mapa
+v3_p47_acts z isap_url per akt; (3) wpływ: raport → konsolidacja jednym klikiem;
+(4) ryzyko: błędne URL → wszystkie [NIEZWERYFIKOWANE] do stempla; (5) akceptacja:
+12/12 aktów z anchorem (test); (6) zależności: P34, P41.
+I04 TEMPORAL ACT VERSIONS — (1) luka: time-travel tylko na parametrach; (2)
+mechanizm: rejestr wersji od–do (12 wpisów), append-only w regeneracji; (3)
+wpływ: replay decyzji na wersji prawa z dnia zdarzenia (art. 24b–24e);
+(4) ryzyko: okna = claims → status NIEZWERYFIKOWANE jawnie; (5) akceptacja:
+12 wpisów, 0 fikcyjnych okien (test); (6) zależności: P05, P53.
+I05 AUTO RE-CHECK SCHEDULER — (1) luka: brak kadencji weryfikacji; (2) mechanizm:
+progi kadencji w data (ACTIVE=1d, CANDIDATE=7d) + świeżość 92d → STALE = SHADOW
+przegląd; (3) wpływ: nowelizacja nie może ujść niezauważona; (4) ryzyko: crawler
+nie w CI (L05); (5) akceptacja: kadencje jako dane, 12/12 aktów świeżości (test);
+(6) zależności: P34, P08, P37.
+I06 MEDIATION WORKFLOW — (1) luka: rozbieżności bez SLA; (2) mechanizm: tickety
+z SLA 14d, blokada awansu CANDIDATE→ACTIVE, przejęcie 5 wpisów P45; (3) wpływ:
+kto rozstrzyga i do kiedy — jawne; (4) ryzyko: overdue = BLOCK (test);
+(5) akceptacja: 5 ticketów z blokadą (bundle i06); (6) zależności: P07, P08, P45.
+I07 FICTIONAL BASIS BLOCKER — (1) luka: fikcyjna podstawa = rak fortecy; (2)
+mechanizm: skaner niemożliwych pozycji/dat/art.; BŁĄD_PODSTAWY_PRAWNEJ → SHADOW
++ RE-EXAMINE; ominięcie = BLOCK; (3) wpływ: najgorszy defekt wykrywany kodem;
+(4) ryzyko: fałszywe trafienia → wzorce tylko strukturalnie niemożliwe (0/515);
+(5) akceptacja: suite i07 (3 przypadki); (6) zależności: P45, KKS (priorytet 1).
+I08 COMPLETENESS SCORE — (1) luka: brak % pełnych łańcuchów; (2) mechanizm:
+głębokość łańcucha ≥3 (akt+art.+jednostka); 3 582/12 439 = 28.8%, trend → P37;
+(3) wpływ: cel 100% dla ACTIVE mierzalny; (4) ryzyko: metryka ≠ v2-OK (inne
+definicje, oba uczciwe); (5) akceptacja: spójność arytmetyczna (test); (6)
+zależności: P37, P46 backlog.
+I09 ISAP DIFF WATCH — (1) luka: zmiana treści bez reakcji; (2) mechanizm:
+diff → impact analyzer → SHADOW; unreported = BLOCK (spina drift tracker P46);
+(3) wpływ: prawo↔kod dryf mierzalny; (4) ryzyko: kalendarz pusty → TRIAGE;
+(5) akceptacja: suite i09 (3 przypadki); (6) zależności: P08, P34, P46.
+I10 HUMAN VERIFICATION STAMP — (1) luka: AI nie zastępuje 4-eyes; (2) mechanizm:
+rejestr stempli (verified_by/at, isap_snapshot_uri); 30/30 PENDING; ominięcie
+= BLOCK; (3) wpływ: zgodność z AI Act [NIEZWERYFIKOWANE]; (4) ryzyko: opóźnienia
+weryfikacji → Q03; (5) akceptacja: 30 pending (test); (6) zależności: P41, P68.
+I11 ACTS COVERAGE HEATMAP — (1) luka: pustynie prawne niemierzalne; (2) mechanizm:
+COVERED/UNCOVERED z coverage gaps (50/20) per akt; wejście do P51; (3) wpływ:
+cel kwartalny pokrycia; (4) ryzyko: metryka punktowa ≠ per-akt → jawnie;
+(5) akceptacja: 20 UNCOVERED (test); (6) zależności: P51, K12.
+I12 CITATION STYLE GUIDE — (1) luka: linter bez kanonu byłby arbitralny; (2)
+mechanizm: dokument z 6/4 przykładami; kontrakt → P41/P36; (3) wpływ: spójność
+formatu w kampanii; (4) ryzyko: dryf dokumentu vs linter → test zgodności;
+(5) akceptacja: test i12; (6) zależności: P41, I02.
+
+────────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (T5) — wiąże P48+
+────────────────────────────────────────────────────────────────────────────────
+K-P47-1 AUDYT PODSTAW (3 listy: OK=251 / NIEZWERYFIKOWANE=12 129 / PODEJRZANE=0
+  z dowodem skanu; MISSING=59) → odbiorcy: P51 (pustynie), P68 (certyfikacja).
+K-P47-2 KANON CYTOWAŃ (format + 10 przykładów; docs/V3_P47_CITATION_STYLE_GUIDE.md)
+  → P41 (dokumentacja), P36 (generatory).
+K-P47-3 PROCES MEDIACJI (SLA 14d, blokada awansu, tickety v3_p47_mediation_
+  tickets.json) → P08 (Law Radar), P07 (lifecycle).
+K-P47-4 MAPA AKTÓW v3_p47_acts (12 aktów + isap_url + statusy) → P48 (mirror),
+  P53 (temporalność), P68.
+K-P47-5 REJESTR WERSJI AKTÓW (v3_p47_act_versions_register.json) → P53, P36.
+K-P47-6 STEMPEL 4-EYES (v3_p47_human_stamps_register.json, 30 pending) →
+  P41, P68 (certyfikacja finalna).
+K-P47-7 BRAMKA KANONU (v3_p47_gate.py; blokada tylko nowych; backlog=3) → P39 CI.
+K-P47-8 KADENCJE RE-CHECKU (ACTIVE=1d, CANDIDATE=7d; świeżość 92d) → P34, P08.
+K-P47-9 SLA MIGRACJI ŁAŃCUCHÓW (Q02) + przejęcie backlogu P46 (16 581 orphan
+  z trendem) → P51, P68.
+
+────────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA (T6) — wykonany w tej części (bez duplikacji)
+────────────────────────────────────────────────────────────────────────────────
+[✓] 1. Progi v3_p47 + mapa v3_p47_acts (ADR-002) — thresholds_jdg.rego.
+[✓] 2. Rego I01–I12 fail-closed (else-chain, never-silent, aktywacja flagą).
+[✓] 3. Wiring main_jdg (import, decide registry, final_verdict_p111).
+[✓] 4. 13 narzędzi + uruchomienie (17 bundli/rejestrów gate=PASS).
+[✓] 5. Bramka CI z adoptacją backlogu (kontrakt P46 zachowany).
+[✓] 6. Rejestr wersji aktów + stemple 4-eyes + tickety mediacji (ścieżki
+       rozdzielone od bundli — lekcja P46).
+[✓] 7. 12× CANDIDATE w lifecycle (semver 3.47.x).
+[✓] 8. 42 testy natywne ×2 OPA + 22 pytest.
+[✓] 9. Raport + ledger P47 WDROŻONY_100.
+Odłożone (wymaga człowieka/CI): Q01–Q04, L05 (job CI), L06 (hook SHADOW).
+
+────────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (T7)
+────────────────────────────────────────────────────────────────────────────────
+Blokujące merge: 42/42 natywne ×2 OPA; 22/22 pytest; bramka v3_p47_gate (PASS);
+opa check thresholds ×2. Granice: wiek spisu 30/31, linter 0/1, kadencja 1/2,
+SLA open/overdue, okna 0/1, głębokość łańcucha, kompletność 100% vs <100.
+Negatywne: brak aktywacji, brak selektora, brak snapshotu, brak mapy aktów,
+puste konteksty (never-silent — 12 analiz, 0 AUTO przy pustym dowodzie).
+Property: never-silent AUTO_POST (test natywny); partycja = total (pytest).
+Fuzz/temporal: dziedziczone z P36/P05 (K-P47-5 rejestr wersji — wejście).
+Fuzz/temporal: DZIEDZICZONE z P36/P05; P47 dostarcza rejestr wersji (K-P47-5)
+  jako wejście do testów day-0/day+1 na granicach nowelizacji.
+Trzy listy podstaw (kontrakt K-P47-1):
+  OK: 251 (partycja I01). NIEZWERYFIKOWANE: 12 129. PODEJRZANE: 0 (skaner I07:
+  zero niemożliwych pozycji/dat; wniosek: ryzyko jest w JAKOŚCI łańcuchów, nie
+  w jawnej fikcji). Analiza 10+ pozycji podejrzanych z promptu (kryterium 20):
+  brak trafień strukturalnych w kodzie; jedyne „podejrzenia" to brak weryfikacji
+  treści — wszystkie już oznakowane [NIEZWERYFIKOWANE], korekta = weryfikacja
+  4-eyes (Q01), nie edycja liczb. MISSING=59 traktowane jako P1 (L02).
+
+────────────────────────────────────────────────────────────────────────────────
+9.11 PYTANIA DO CZŁOWIEKA (T8)
+────────────────────────────────────────────────────────────────────────────────
+Q01. Weryfikacja 12 aktów mapy v3_p47_acts w ISAP (4-eyes; treści + Dz.U. +
+  daty obowiązywania) i wypełnienie stempli I10 — NIE wolno mi rozstrzygnąć
+  (protokół 04). Po weryfikacji: aktualizacja mapy aktów i LSR.
+Q02. SLA migracji 8 857 łańcuchów poniżej min. głębokości + backlogu P46
+  (16 581 orphan) per domena — decyzja biznesowa (priorytety księgowe).
+Q03. Tempo weryfikacji 30 rekordów LSR (4-eyes) — zasoby człowieka.
+Q04. Rozszerzenie kanonu o Dz.Urz. MF / Dz.U. UE (L04) — decyzja standardu.
+
+────────────────────────────────────────────────────────────────────────────────
+9.12 ZAAŁOŻENIA JAWNE (T9)
+────────────────────────────────────────────────────────────────────────────────
+[ZAŁOŻENIE] URL ISAP w mapie aktów wskazują właściwe konsolidacje (schemat
+  adresów WDU zgodny z isap.sejm.gov.pl; identyfikatory wymagają potwierdzenia
+  4-eyes — Q01).
+[ZAŁOŻENIE] Partycja v2 (status/issues) jest stabilnym źródłem do czasu
+  kolejnego pełnego audytu v2.
+[ZAŁOŻENIE] Kadencja ACTIVE=1 dzień jest wykonalna operacyjnie w CI (L05).
+[ZAŁOŻENIE] SLA 14 dni pokrywa typowy czas weryfikacji mediacji (modyfikowalny
+  jako dane — ADR-002).
+[ZAŁOŻENIE] Rejestr wersji aktów append-only w zakresie regeneracji (aktualizacja
+  = nowa wersja; pełny WORM → P38).
+
+────────────────────────────────────────────────────────────────────────────────
+9.13 WYMÓG 9.13 — podanalizy mają tabele dowodów, wnioski, luki
+────────────────────────────────────────────────────────────────────────────────
+Spełnione — każda podanaliza AN01–AN04 w 9.04 zawiera dowody (pliki + liczby),
+≥3 wnioski i luki (L01/L02, L03/L08, L04, L05/L06).
+
+────────────────────────────────────────────────────────────────────────────────
+9.14 WYMÓG 9.14 — wiersze dla wszystkich aktów Sekcji 8 + odkryte
+────────────────────────────────────────────────────────────────────────────────
+Spełnione — macierz 9.05 zawiera 10 aktów z listy + 2 odkryte (CIT/WHT, PCC).
+
+────────────────────────────────────────────────────────────────────────────────
+9.15 FORMAT IDENTYFIKATORÓW
+────────────────────────────────────────────────────────────────────────────────
+V3-P47-L01..L08 (luki), V3-P47-I01..I12 (innowacje), V3-P47-Q01..Q04 (pytania
+do człowieka), X01–X10 (poniżej), C01–C02 (konflikty, T12). Konwencja nazw
+parametrów: v3_p47_<znaczenie> (spójna z P46 <domena>.<znaczenie>_<jednostka>).
+
+────────────────────────────────────────────────────────────────────────────────
+ODPOWIEDZI NA PYTANIA KRZYŻOWE (7.4)
+────────────────────────────────────────────────────────────────────────────────
+X01. Sprzeczności z dokumentami świętymi: brak BLOCKERÓW. V1 (fail-closed,
+  parametry w Data Plane) i V2 (F4 certyfikat z legal_basis_version, P08 Law
+  Radar) honorowane; C01–C02 dotyczą narzędzi, nie architektury.
+X02. Łamanie parametrów-as-data (P06) / temporalności (P05) przez P47: brak —
+  wszystkie progi w v3_p47; mapa aktów i wersje mają valid_from; zadłużenie
+  legacy (8 857 łańcuchów, 16 581 orphan) rejestrowane uczciwie (L01).
+X03. Ścieżki nie-fail-closed: przed P47 walidacja była offline; po P47 wszystkie
+  12 analiz z else-chain; puste konteksty = TRIAGE (never-silent, test);
+  ominięcia flagami = BLOCK (i02/i03/i07/i10).
+X04. Kontrakt werdyktu 25-polowy (P03): decyzje P47 używają pól kontraktu
+  (rule_id, decision_mode, priority, _routing, _legal_basis, _warnings,
+  threshold_version, legal_basis_version, valid_from) — zero nowych pól
+  poza kontraktem.
+X05. Testy blokujące merge: 42 natywne ×2 OPA + 22 pytest + bramka kanonu
+  (lista w T7).
+X06. Duplikaty: brak — P47 rozszerza (validate_legal_basis_v2 → I01/I08;
+  isap_crawler → I05; legal_change_impact_analyzer → I09; LSR → I10; rejestr
+  P45 → I06; drift tracker P46 → I09); zero nowych walidatorów równoległych.
+X07. Podstawy niezweryfikowane: WSZYSTKIE (100%) — rejestr mediacji I06
+  (5 ticketów P45 + mapa aktów 12 pozycji) z priorytetami P1/P2.
+X08. Decyzje 4-eyes: Q01 (ISAP treści), Q02 (SLA migracji), Q03 (tempo LSR),
+  Q04 (kanon MF/UE) — sekcja 9.11.
+X09. Metryki do P37: v3_p47_completeness_pct (cel 100, trend), v3_p47_census_
+  age_days (≤30), v3_p47_mediation_overdue (0), v3_p47_stale_acts (0 docelowo),
+  v3_p47_citation_backlog (3, trend spadkowy), v3_p47_human_verified_acts
+  (0→30) — progi jako dane.
+X10. Inwarianty runtime (P04): propozycja INV „decyzja nie może AUTO_POST na
+  regule, której _legal_basis jest MISSING lub BŁĄD_PODSTAWY_PRAWNEJ" —
+  krytyczne dla KKS; do agregatu P04 (spina się z P45 stub-killer).
+
+────────────────────────────────────────────────────────────────────────────────
+APENDYKS A — GRUPY PLIKÓW (6.1–6.4) | APENDYKS B — MACIERZ PODANALIZA × GRUPA
+────────────────────────────────────────────────────────────────────────────────
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik |
+|---|---|---|---|
+| AN01 | 6.1, 6.3 | partycja 251/12 129/59; 3 582 łańcuchów; 0 podejrzeń | 9.04/9.05/9.06 |
+| AN02 | 6.1, 6.2 | LSR 30 rekordów; mapa 12 aktów; wersje 12 | 9.04/9.07 I03/I04/I10/I11 |
+| AN03 | 6.1, 6.3 | kanon 6/4 przykładów; bramka backlog=3 | 9.04/9.07 I02/I12 |
+| AN04 | 6.2, 6.4 | kadencje 1d/7d; SLA 14d; drift 0 unreported | 9.04/9.07 I05/I06/I09 |
+
+T11 — rejestr konfliktów (T12):
+| ID | Strony | Opis | Rozstrzygnięcie |
+|---|---|---|---|
+| C01 | bramka P47 vs format historyczny Dz.U. | pierwszy wariant kanonu blokował poprawne UPO (nr/poz) | rozszerzenie wzorca o format historyczny + test (dowód UPO PL-US 1976) |
+| C02 | bundel vs rejestr (ścieżki) | kolizja nazw act_versions/human_stamps (lekcja P46) | ścieżki rozdzielone *_register.json; testy pilnują |
+
+APENDYKS C — pytania (9.11) i APENDYKS E — plan pracy (9.09) odznaczone.
+
+T10 — PRZEKAZYWANE ARTEFAKTY (11.4):
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|---|---|---|---|
+| rules/v3_p47_legal_basis_weryfikacja_enterprise.rego | P48..P68 | rego | runtime fail-closed 12 analiz |
+| thresholds v3_p47 + v3_p47_acts | P53/P48/P68 | rego (dane) | progi i mapa aktów (ADR-002) |
+| bundles/v3_p47_census.json | P51/P68 | JSON | 3 listy podstaw (K-P47-1) |
+| docs/V3_P47_CITATION_STYLE_GUIDE.md | P41/P36 | MD | kanon cytowań (K-P47-2) |
+| bundles/v3_p47_mediation_tickets.json | P08/P07 | JSON | proces mediacji (K-P47-3) |
+| bundles/v3_p47_act_versions_register.json | P53/P36 | JSON | wersje aktów (K-P47-5) |
+| bundles/v3_p47_human_stamps_register.json | P41/P68 | JSON | stempel 4-eyes (K-P47-6) |
+| tools/v3_p47_gate.py | P39 CI | py | bramka kanonu (K-P47-7) |
+| bundles/v3_p47_recheck_scheduler.json | P34/P08 | JSON | kadencje re-checku (K-P47-8) |
+| bundles/v3_p47_acts_heatmap.json | P51 | JSON | pustynie prawne (K-P47-9) |
+
+────────────────────────────────────────────────────────────────────────────────
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+────────────────────────────────────────────────────────────────────────────────
+Raport zgodny z DOKUMENTEM ŚWIĘTYM nr 1 (Control/Data Plane, bramki CI,
+fail-closed — progi jako dane, weryfikacja w runtime) i DOKUMENTEM ŚWIĘTYM
+nr 2 (Legal Twin/LKG rozszerzany, F4 certyfikat z legal_basis_version, P08
+Law Radar spiny, 4-eyes jako wymóg Enterprise). Odstępstwa: brak BLOCKERÓW;
+luki L01–L08 z planami i odbiorcami. Wszystkie treści prawne
+[NIEZWERYFIKOWANE — ISAP]; zero fikcyjnych podstaw; raport jest kontraktem
+wdrożeniowym, nie esejem.
+
+================================================================================
+SEKCJA 16 — POTWIERDZENIE ZAMKNIĘCIA CZĘŚCI P47
+================================================================================
+Zakres: weryfikacja podstaw prawnych (4 podanalizy, 12 innowacji, 13 narzędzi,
+42+22 testy, 17 bundli, 12× CANDIDATE). Luki: P0=0, P1=3, P2=4, P3=2.
+Kontrakt wyjściowy: K-P47-1..9 (patrz 9.08 / T5). Artefakty przekazane: T10.
+Ledger: P47 → WDROŻONY_100 (47→48 z 69).
+OKNO KONTEKSTOWE: do WYCZYSZCZENIA przed P48 (wejście wyłącznie przez:
+EXECUTIVE SUMMARY, KONTRAKT WYJŚCIOWY, REJESTR LUK P0/P1 niniejszego raportu).
+================================================================================

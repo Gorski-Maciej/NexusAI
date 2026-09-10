@@ -1,0 +1,17 @@
+{
+  "innovation": "V3-P46-I11",
+  "generated_at": "2026-09-10T08:26:37.082296+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "replay_runs": 0,
+    "drift_over_limit": 0,
+    "missing_old_params": 0,
+    "drift_auto_max": 0,
+    "routing": "TRIAGE_QUEUE"
+  },
+  "evidence": {
+    "runs": "bundles/v3_p46_replay_runs.json",
+    "oracle": "P10 golden oracle; certyfikaty decyzji OLD vs NEW (F4)",
+    "four_eyes": "dryf ponad v3_p46_replay_drift_max_auto_changes wymaga zatwierdzenia właściciela przed deployem"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "innovation": "V3-P46-I06",
+  "generated_at": "2026-09-10T08:26:25.485123+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "generated": 0,
+    "transitions": 0,
+    "missing_transitions": 0,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "plan": "bundles/v3_p46_day0_test_plan.json",
+    "note": "Testy day-1/day-0/day+1 (P05); generator podmienialny przez P36."
+  }
+}

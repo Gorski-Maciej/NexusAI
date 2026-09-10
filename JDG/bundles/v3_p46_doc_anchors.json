@@ -1,0 +1,15 @@
+{
+  "innovation": "V3-P46-I12",
+  "generated_at": "2026-09-10T08:26:23.547110+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "documented": 8,
+    "without_anchor": 0,
+    "doc": "docs/V3_P46_PARAMETER_ANCHORS.md",
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "anchors": "bundles/v3_p46_parameter_doc_anchors.json",
+    "documentation": "docs/V3_P46_PARAMETER_ANCHORS.md"
+  }
+}

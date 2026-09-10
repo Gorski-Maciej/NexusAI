@@ -1,0 +1,18 @@
+{
+  "innovation": "V3-P46-I07",
+  "generated_at": "2026-09-10T08:26:26.141264+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "requests_total": 0,
+    "version_records": 3,
+    "without_citation": 0,
+    "without_day0_tests": 0,
+    "deployed_without_validation": 0,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "requests": "bundles/v3_p46_change_requests.json",
+    "versions": "bundles/v3_p46_parameter_versions.json",
+    "deploy_fast_path": "zmiana DANYCH bez deployu reguł (ADR-002 cel nadrzędny)"
+  }
+}

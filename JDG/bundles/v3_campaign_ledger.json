@@ -650,29 +650,29 @@
       "slug": "HARDCODE_ELIMINACJA",
       "prompt": "V3_PROMPT_P46_HARDCODE_ELIMINACJA.txt",
       "report": "RAPORT_V3_P46_HARDCODE_ELIMINACJA.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
-      "luki_p1": 0,
-      "luki_p2": 0,
-      "luki_p3": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": "",
-      "auto_recheck": true
+      "luki_p1": 1,
+      "luki_p2": 3,
+      "luki_p3": 3,
+      "innovations": 12,
+      "implemented_at": "2026-09-10T08:56:32.128138+00:00",
+      "notes": "P46 HARDCODE_ELIMINACJA: WDROZONE_100 (2026-09-10). rules/v3_p46_hardcode_eliminacja_enterprise.rego (12 analiz I01-I12, decide fail-closed); thresholds v3_p46 (11 progow) + v3_p46_migration_map (cele fe:N, ADR-002/P05); wiring main_jdg final_verdict_p110; 14 tooli (12 silnikow + common + CI gate); 12 bundli gate PASS + rejestry (registry data, schema, param versions append-only, orphan history, doc anchors); 12x CANDIDATE w rule_registry; testy 38/38 rego (OPA 0.68 i 1.9 --v0-compatible) + pytest P46; naprawa pre-existing parse misc{} w thresholds; backlog 16581 osieroconych wartosci z trendem (merge gate blokuje wzrost); raport RAPORT_V3_P46_HARDCODE_ELIMINACJA.txt",
+      "auto_recheck": false
     },
     "P47": {
       "slug": "LEGAL_BASIS_WERYFIKACJA",
       "prompt": "V3_PROMPT_P47_LEGAL_BASIS_WERYFIKACJA.txt",
       "report": "RAPORT_V3_P47_LEGAL_BASIS_WERYFIKACJA.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
-      "luki_p1": 0,
-      "luki_p2": 0,
-      "luki_p3": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": "",
-      "auto_recheck": true
+      "luki_p1": 3,
+      "luki_p2": 4,
+      "luki_p3": 2,
+      "innovations": 12,
+      "implemented_at": "2026-09-10T11:27:49.382362+00:00",
+      "notes": "P47 LEGAL_BASIS_WERYFIKACJA: 12 innowacji I01-I12 (census partycja 251/12129/59, linter kanonu z formatem historycznym, 12 aktow z anchorami ISAP [NIEZWERYFIKOWANE], wersje aktow, kadencje re-checku 1d/7d, mediacje SLA 14d dziedzicza P45, fictional basis blocker 0 podejrzen, completeness 28.8%, diff watch spina P46, stempel 4-eyes 30 pending, heatmapa 20 pustyn, style guide) - rego fail-closed 42/42 x2 OPA, pytest 22/22, 13 narzedzi, 17 bundli, 12x CANDIDATE, bramka adoptuje backlog 3",
+      "auto_recheck": false
     },
     "P48": {
       "slug": "MIRROR_SYNC",
@@ -971,8 +971,8 @@
   },
   "summary": {
     "total": 69,
-    "wdrozony_100": 46,
-    "nie_wdrozony": 23,
-    "progress_pct": 66.67
+    "wdrozony_100": 48,
+    "nie_wdrozony": 21,
+    "progress_pct": 69.57
   }
 }

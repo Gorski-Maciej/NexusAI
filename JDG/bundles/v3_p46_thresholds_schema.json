@@ -1,0 +1,57 @@
+{
+  "schema_id": "v3_p46_thresholds_data_schema-2026.09",
+  "valid_from": "2026-01-01",
+  "type_rules": {
+    "number": {
+      "python_types": [
+        "int",
+        "float"
+      ],
+      "forbid": [
+        "str",
+        "bool",
+        "None"
+      ]
+    },
+    "string": {
+      "python_types": [
+        "str"
+      ],
+      "forbid": [
+        "int",
+        "float",
+        "bool"
+      ]
+    }
+  },
+  "unit_catalog": [
+    "PLN",
+    "PLN_MIN",
+    "EUR",
+    "PERCENT",
+    "RATIO",
+    "MULTIPLIER",
+    "DAYS",
+    "YEARS",
+    "COUNT",
+    "RATE",
+    "M2",
+    "TEXT"
+  ],
+  "required_fields": [
+    "value",
+    "valid_from"
+  ],
+  "optional_fields": [
+    "valid_to",
+    "source_act",
+    "changed_by",
+    "changed_at",
+    "isap_status"
+  ],
+  "range_semantics": {
+    "PERCENT_RATIO": "wartości rate w [0,1] mają unit RATIO; PERCENT w [0,100]",
+    "PLN": "kwoty ≥ 0",
+    "DAYS": "liczby całkowite ≥ 0"
+  }
+}

@@ -1,0 +1,295 @@
+{
+  "generated_at": "2026-09-10T08:26:22.830430+00:00",
+  "total": 15,
+  "registry_age_days": 0,
+  "documented": 8,
+  "without_anchor": 7,
+  "migration_targets": 7,
+  "entries": {
+    "vat.exemption_housing_area_m2_max": {
+      "current_value": 80,
+      "unit": "M2",
+      "versions_count": 1,
+      "history": [
+        {
+          "value": 80,
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "source_act": "Art. 43 ust. 1 pkt 7-8 ustawy o VAT (zwolnienie budownictwo mieszkaniowe, powierzchnia do 80 m2)",
+          "changed_by": "v3_p12_exemption_matrix",
+          "changed_at": "2026-09-03T00:00:00+00:00"
+        }
+      ],
+      "temporal_window": true,
+      "source_act": "Art. 43 ust. 1 pkt 7-8 ustawy o VAT (zwolnienie budownictwo mieszkaniowe, powierzchnia do 80 m2)",
+      "isap_status": "NIEZWERYFIKOWANE",
+      "owner": "v3_p12_exemption_matrix",
+      "schema": {
+        "min": "0",
+        "max": "1000",
+        "type": "number",
+        "unit": "M2"
+      }
+    },
+    "vat.exemption_suspended_years": {
+      "current_value": 2,
+      "unit": "YEARS",
+      "versions_count": 1,
+      "history": [
+        {
+          "value": 2,
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "source_act": "Art. 113 ust. 14 ustawy o VAT (zakaz ponownego zwolnienia po utracie) [uwaga: raport V3_P12 Q01 - ust. 11 vs ust. 14 do weryfikacji ISAP]",
+          "changed_by": "v3_p12_waiver_tracker",
+          "changed_at": "2026-09-03T00:00:00+00:00"
+        }
+      ],
+      "temporal_window": true,
+      "source_act": "Art. 113 ust. 14 ustawy o VAT (zakaz ponownego zwolnienia po utracie) [uwaga: raport V3_P12 Q01 - ust. 11 vs ust. 14 do weryfikacji ISAP]",
+      "isap_status": "NIEZWERYFIKOWANE",
+      "owner": "v3_p12_waiver_tracker",
+      "schema": {
+        "min": "0",
+        "max": "10",
+        "type": "number",
+        "unit": "YEARS"
+      }
+    },
+    "vat.limit_113": {
+      "current_value": 200000,
+      "unit": "PLN",
+      "versions_count": 1,
+      "history": [
+        {
+          "value": 200000,
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "source_act": "Art. 113 ust. 1 ustawy o VAT (zwolnienie podmiotowe 200 000 PLN)",
+          "changed_by": "v3_p12_limit113_sentinel",
+          "changed_at": "2026-09-03T00:00:00+00:00"
+        }
+      ],
+      "temporal_window": true,
+      "source_act": "Art. 113 ust. 1 ustawy o VAT (zwolnienie podmiotowe 200 000 PLN)",
+      "isap_status": "NIEZWERYFIKOWANE",
+      "owner": "v3_p12_limit113_sentinel",
+      "schema": {
+        "min": "0",
+        "max": "10000000",
+        "type": "number",
+        "unit": "PLN"
+      }
+    },
+    "vat.np_rate": {
+      "current_value": "NP",
+      "unit": "TEXT",
+      "versions_count": 1,
+      "history": [
+        {
+          "value": "NP",
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "source_act": "Art. 41 ust. 1 ustawy o VAT (nie podlega opodatkowaniu); JPK_V7 pole P_NP",
+          "changed_by": "v3_p12_rates_as_data",
+          "changed_at": "2026-09-03T00:00:00+00:00"
+        }
+      ],
+      "temporal_window": true,
+      "source_act": "Art. 41 ust. 1 ustawy o VAT (nie podlega opodatkowaniu); JPK_V7 pole P_NP",
+      "isap_status": "NIEZWERYFIKOWANE",
+      "owner": "v3_p12_rates_as_data",
+      "schema": {
+        "type": "string",
+        "allowed": [
+          "NP"
+        ],
+        "unit": "TEXT"
+      }
+    },
+    "vat.reduced_rate_5": {
+      "current_value": 0.05,
+      "unit": "RATIO",
+      "versions_count": 1,
+      "history": [
+        {
+          "value": 0.05,
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "source_act": "Art. 41 ust. 10 ustawy o VAT w zw. z zal. 10 (wykaz towarow/uslug 5%)",
+          "changed_by": "v3_p12_rates_as_data",
+          "changed_at": "2026-09-03T00:00:00+00:00"
+        }
+      ],
+      "temporal_window": true,
+      "source_act": "Art. 41 ust. 10 ustawy o VAT w zw. z zal. 10 (wykaz towarow/uslug 5%)",
+      "isap_status": "NIEZWERYFIKOWANE",
+      "owner": "v3_p12_rates_as_data",
+      "schema": {
+        "min": "0",
+        "max": "1",
+        "type": "number",
+        "unit": "RATIO"
+      }
+    },
+    "vat.reduced_rate_8": {
+      "current_value": 0.08,
+      "unit": "RATIO",
+      "versions_count": 1,
+      "history": [
+        {
+          "value": 0.08,
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "source_act": "Art. 41 ust. 2 ustawy o VAT w zw. z zal. 10 (wykaz towarow/uslug 8%)",
+          "changed_by": "v3_p12_rates_as_data",
+          "changed_at": "2026-09-03T00:00:00+00:00"
+        }
+      ],
+      "temporal_window": true,
+      "source_act": "Art. 41 ust. 2 ustawy o VAT w zw. z zal. 10 (wykaz towarow/uslug 8%)",
+      "isap_status": "NIEZWERYFIKOWANE",
+      "owner": "v3_p12_rates_as_data",
+      "schema": {
+        "min": "0",
+        "max": "1",
+        "type": "number",
+        "unit": "RATIO"
+      }
+    },
+    "vat.standard_rate": {
+      "current_value": 0.23,
+      "unit": "RATIO",
+      "versions_count": 1,
+      "history": [
+        {
+          "value": 0.23,
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "source_act": "Art. 41 ustawy o VAT",
+          "changed_by": "system",
+          "changed_at": "2026-08-08T11:34:34"
+        }
+      ],
+      "temporal_window": true,
+      "source_act": "Art. 41 ustawy o VAT",
+      "isap_status": "NIEZWERYFIKOWANE",
+      "owner": "system",
+      "schema": {
+        "min": "0",
+        "max": "1",
+        "type": "number",
+        "unit": "RATIO"
+      }
+    },
+    "vat.zero_rate": {
+      "current_value": 0.0,
+      "unit": "RATIO",
+      "versions_count": 1,
+      "history": [
+        {
+          "value": 0.0,
+          "valid_from": "2026-01-01",
+          "valid_to": null,
+          "source_act": "Art. 41 ust. 2-13 ustawy o VAT (przypadki stawki 0%)",
+          "changed_by": "v3_p12_rates_as_data",
+          "changed_at": "2026-09-03T00:00:00+00:00"
+        }
+      ],
+      "temporal_window": true,
+      "source_act": "Art. 41 ust. 2-13 ustawy o VAT (przypadki stawki 0%)",
+      "isap_status": "NIEZWERYFIKOWANE",
+      "owner": "v3_p12_rates_as_data",
+      "schema": {
+        "min": "0",
+        "max": "1",
+        "type": "number",
+        "unit": "RATIO"
+      }
+    },
+    "migration.interest_annual_rate": {
+      "current_value": "fe:N",
+      "unit": "fe:N",
+      "versions_count": 0,
+      "history": [],
+      "temporal_window": true,
+      "source_act": "kandydat do weryfikacji ISAP (P47) — zero wartości z pamięci",
+      "isap_status": "NIEZWERYFIKOWANE",
+      "owner": "p46-migration",
+      "schema": {},
+      "migration_target": true
+    },
+    "migration.pit_linear_rate": {
+      "current_value": "fe:N",
+      "unit": "fe:N",
+      "versions_count": 0,
+      "history": [],
+      "temporal_window": true,
+      "source_act": "kandydat do weryfikacji ISAP (P47) — zero wartości z pamięci",
+      "isap_status": "NIEZWERYFIKOWANE",
+      "owner": "p46-migration",
+      "schema": {},
+      "migration_target": true
+    },
+    "migration.pit_scale_second_bracket_pln": {
+      "current_value": "fe:N",
+      "unit": "fe:N",
+      "versions_count": 0,
+      "history": [],
+      "temporal_window": true,
+      "source_act": "kandydat do weryfikacji ISAP (P47) — zero wartości z pamięci",
+      "isap_status": "NIEZWERYFIKOWANE",
+      "owner": "p46-migration",
+      "schema": {},
+      "migration_target": true
+    },
+    "migration.pit_tax_free_pln": {
+      "current_value": "fe:N",
+      "unit": "fe:N",
+      "versions_count": 0,
+      "history": [],
+      "temporal_window": true,
+      "source_act": "kandydat do weryfikacji ISAP (P47) — zero wartości z pamięci",
+      "isap_status": "NIEZWERYFIKOWANE",
+      "owner": "p46-migration",
+      "schema": {},
+      "migration_target": true
+    },
+    "migration.vat_mpp_threshold_pln": {
+      "current_value": "fe:N",
+      "unit": "fe:N",
+      "versions_count": 0,
+      "history": [],
+      "temporal_window": true,
+      "source_act": "kandydat do weryfikacji ISAP (P47) — zero wartości z pamięci",
+      "isap_status": "NIEZWERYFIKOWANE",
+      "owner": "p46-migration",
+      "schema": {},
+      "migration_target": true
+    },
+    "migration.zus_2026q1_spotykane": {
+      "current_value": "fe:N",
+      "unit": "fe:N",
+      "versions_count": 0,
+      "history": [],
+      "temporal_window": true,
+      "source_act": "kandydat do weryfikacji ISAP (P47) — zero wartości z pamięci",
+      "isap_status": "NIEZWERYFIKOWANE",
+      "owner": "p46-migration",
+      "schema": {},
+      "migration_target": true
+    },
+    "migration.zus_preferential_revenue_pln": {
+      "current_value": "fe:N",
+      "unit": "fe:N",
+      "versions_count": 0,
+      "history": [],
+      "temporal_window": true,
+      "source_act": "kandydat do weryfikacji ISAP (P47) — zero wartości z pamięci",
+      "isap_status": "NIEZWERYFIKOWANE",
+      "owner": "p46-migration",
+      "schema": {},
+      "migration_target": true
+    }
+  }
+}

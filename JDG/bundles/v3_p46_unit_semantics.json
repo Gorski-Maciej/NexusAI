@@ -1,0 +1,16 @@
+{
+  "innovation": "V3-P46-I08",
+  "generated_at": "2026-09-10T08:26:21.244628+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "unit_mismatch": 0,
+    "unknown_unit_values": 0,
+    "parameters_scanned": 8,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "mismatches": [],
+    "unknown_units": [],
+    "note": "Katalog jednostek: data.thresholds.v3_p46.v3_p46_known_units."
+  }
+}

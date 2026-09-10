@@ -1,0 +1,17 @@
+{
+  "innovation": "V3-P46-I09",
+  "generated_at": "2026-09-10T08:26:26.788596+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "tracked_parameters": 0,
+    "unreported_drifts": 0,
+    "reported_drifts": 0,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "tracker": "bundles/v3_p46_isap_drift_tracker.json",
+    "unreported": [],
+    "reported": [],
+    "note": "Law Radar (P08) przyjmuje zgłoszenie dryfu z twardym dowodem diff."
+  }
+}

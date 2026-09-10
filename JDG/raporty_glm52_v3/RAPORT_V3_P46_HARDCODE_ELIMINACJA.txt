@@ -1,0 +1,741 @@
+================================================================================
+RAPORT V3 P46 — ELIMINACJA HARDCODE — WSZYSTKIE PROGI, STAWKI I LIMITY
+DO DATA.THRESHOLDS.*
+================================================================================
+
+Seria:                 NEXUSAI JDG — V3 FORTRESS CAMPAIGN
+Część:                 P46 HARDCODE_ELIMINACJA (46/69)
+Status:                WDROŻONY_100 (wdrożone w repo 2026-09-10)
+Data:                  2026-09-10
+Ledger:                bundles/v3_campaign_ledger.json → P46 WDROŻONY_100 (47/69)
+Artefakty:             1 pakiet rego (12 reguł I01–I12, fail-closed),
+                       2 bloki thresholds (v3_p46 + v3_p46_migration_map, ADR-002),
+                       14 narzędzi (12 silników I01–I12 + common + CI gate),
+                       12 bundli evidencji (gate=PASS) + rejestry (registry data,
+                       schema, param versions, orphan history, doc anchors),
+                       38/38 testów natywnych rego (OPA 0.68 i 1.9),
+                       pytest P46 zielony, rejestr lifecycle 12×CANDIDATE,
+                       wiring main_jdg final_verdict_p110, backup backlogu
+                       16 581 osieroconych wartości z trendem i SLA.
+
+================================================================================
+9.01 EXECUTIVE SUMMARY
+================================================================================
+
+Ocena dojrzałości części: WDROŻONA (w 100% zakresu promptu P46; audyt
+narzędziowy + rejestr parametrów + walidacja schematu + podpis integralności +
+bramki CI — wszystkie 4 podanalizy mają działające mechanizmy w repo, nie
+deklaracje).
+
+Co UDOWODNIONO (dowód = kod/test/wynik uruchomienia, protokół 06):
+  * 27 101 trafień hardcode w 515 plikach rego wg tools/hardcoded_audit.py
+    (large_integer 23 777, decimal_rate 2 493, time_period 831) — stan
+    wejściowy policzony narzędziem, nie „z palca".
+  * Po wykluczeniu wartości strukturalnych i lat: 16 581 osieroconych wartości
+    prawnych w rules/ (tools/v3_p46_legacy_sweeper.py; wykluczony kanon
+    thresholds_jdg.rego) — uczciwy backlog z historią pomiarów i trendem.
+  * thresholds_jdg.rego: ~1 052 kluczy progowych (ADR-002 kanon) + nowy blok
+    v3_p46 (11 progów) i v3_p46_migration_map (mapa migracji z fe:N).
+  * thresholds_data.json: 8 parametrów z pełnym DNA (wartość, wersje, okno
+    temporalne, akt źródłowy, schemat Z JEDNOSTKĄ, właściciel) — wzorzec
+    migracji wartość-po-wartości.
+  * 12 reguł decyzyjnych I01–I12 działa (38/38 testów natywnych ×2 OPA:
+    0.68 i 1.9 --v0-compatible), zarejestrowane w rule_registry (12×CANDIDATE).
+  * Integracja: wiring final_verdict_p110 (import + rejestr decide + merge).
+  * Naprawa pre-existing: niedomknięty obiekt `misc := {` w thresholds_jdg.rego
+    (linia 2643) połamywał parse całego pliku (na stanie z pliku — dowód:
+    git stash + opa check; OPA wskazywał błąd w liniach dalszych bloków).
+    Zamknięto na końcu bloku KKS (linia 2674) — zero zmian semantyki.
+
+TOP-10 rekomendacji (wszystkie WDROŻONE w tej części albo wpisane do
+kontraktu wyjściowego):
+  1. Parameter registry (I01) — bundles/v3_p46_parameter_registry_data.json —
+     WDROŻONE (15 wpisów: 8 produkcyjnych + 7 celów migracji).
+  2. Value provenance chain (I02) — WDROŻONE (8/8 pełnych łańcuchów).
+  3. Temporal parameter gate (I03) — WDROŻONE (0 naruszeń; BLOCK w runtime).
+  4. Schema validation thresholds_data (I04) — WDROŻONE (0 błędów, 8 sprawdzonych).
+  5. Signed parameter bundles (I05) — WDROŻONE (SHA-256 + rejestru append-only).
+  6. Day-0 test generation (I06) — WDROŻONE (generator + plan testów).
+  7. Parameter change workflow (I07) — WDROŻONE (rejestr żądań + audyt).
+  8. Unit semantics (I08) — WDROŻONE (0 unknown, 0 mismatch; jednostki jawne).
+  9. Parameter drift alarm (I09) — WDROŻONE (tracker ISAP + Law Radar feed).
+  10. Legacy value sweeper (I10) + golden replay (I11) + doc anchors (I12) —
+      WDROŻONE (16 581 backlogu z trendem; replay OLD/NEW; anchors w docs/).
+
+Liczba luk wg krytyczności: P0=0, P1=1, P2=3, P3=3 (rejestr 9.06; wszystkie z
+dowodem, planem i odbiorcą części).
+
+Deklaracja co pozostało [NIEZWERYFIKOWANE]:
+  * Wartości referencyjne (stawki ZUS/PIT/VAT, odsetki) w mapie migracji są
+    fe:N — celowo NIE wpisano liczb „z pamięci"; weryfikacja ISAP → P47.
+  * ISAP/RCL poza sesją — wszystkie podstawy prawne z tagiem [NIEZWERYFIKOWANE].
+  * Mirror policies — nieosiągalny lokalnie (kontrakt P48, spójnie z P45).
+  * Pełna eliminacja backlogu 16 581 wartości — praca ciągła wg SLA (L01).
+
+================================================================================
+9.02 ZAKRES I OGRANICZENIA
+================================================================================
+
+Przeanalizowano (pliki z Sekcji 6 promptu P46 — wszystkie istnieją w repo
+i zostały uruchomione/odczytane; tabela T1 w 9.03):
+  * 6.1: thresholds_data.json, hardcoded_audit.py (URUCHOMIONY), fix_p07_
+    thresholds.py, validate_rules.py, lint_rego_rules.py, manifest_v2.json,
+    rule_registry.json (ROZSZERZONY o 12 wpisów), generate_manifest.py.
+  * 6.2: rules/micro/vat/vat.rego, thresholds_jdg.rego (ROZSZERZONY + naprawa
+    parse), test_native_micro_zus.rego, test_native_micro_ryczalt.rego,
+    test_core_guards_temporal_thresholds.py, test_native_pcc_v3_10.rego.
+  * 6.3: bundle.sh, deployments.json, CORE_GUARDS_TEMPORAL_THRESHOLDS.md,
+    migrations/009_jdg_v14_core_guards.sql, worm_storage.py,
+    verify_verdict_invariants.py.
+  * 6.4 Mirror policies: branch policies nieosiągalny z lokalnego checkoutu
+    (tylko main); status NIEZWERYFIKOWANO → luka V3-P46-L07 / kontrakt P48.
+
+Pominięto i DLACZEGO:
+  * Nie surfowano po katalogach poza Sekcją 6 (budżet 50% — Sekcja 3).
+  * Pełna migracja 16 581 wartości NIE została wykonana w P46 (zakaz
+    niszczenia zależności; masowa rezygnacja z literałów w 515 plikach to
+    praca ciągła wg mapy I01 i SLA rejestru L01 — P47+); narzędzie licznika
+    i bramka CI (merge gate) BLOKUJĄ wzrost backlogu od dziś.
+
+Status weryfikacji źródeł prawnych: WSZYSTKIE [NIEZWERYFIKOWANE] — ISAP/RCL
+poza sesją; zero fikcyjnych podstaw (protokół 04); wartości referencyjne
+w mapie migracji celowo fe:N (I09) zamiast liczb z pamięci.
+
+================================================================================
+9.03 STAN OBECNY CZĘŚCI P46 — MAPA ARTEFAKTÓW
+================================================================================
+
+Plik → pakiet Rego → rule_id → podstawa prawna → testy → status lifecycle:
+
+  rules/v3_p46_hardcode_eliminacja_enterprise.rego
+    → jdg.v3_p46_hardcode_eliminacja_enterprise
+    I01 parameter registry      P46-I01; ADR-002; P06 [NIEZW]      3 testy  CANDIDATE
+    I02 value provenance        P46-I02; P42; Ord. art. 12 [NIEZW] 3 testy  CANDIDATE
+    I03 temporal gate           P46-I03; P05; Ord. art. 12-13 [NIEZW] 3 testy CANDIDATE
+    I04 schema validation       P46-I04; P06; P39 CI               3 testy  CANDIDATE
+    I05 signed bundles          P46-I05; P38; P11                  3 testy  CANDIDATE
+    I06 day-0 tests             P46-I06; P05; P36                  2 testy  CANDIDATE
+    I07 change workflow         P46-I07; P07; P08                  3 testy  CANDIDATE
+    I08 unit semantics          P46-I08; P06; defense in depth     2 testy  CANDIDATE
+    I09 drift alarm             P46-I09; P08; P34 crawler          2 testy  CANDIDATE
+    I10 legacy sweeper          P46-I10; ADR-002; honesty p14      3 testy  CANDIDATE
+    I11 golden replay           P46-I11; P10; UoR art. 4 [NIEZW]   3 testy  CANDIDATE
+    I12 doc anchors             P46-I12; P41; P06                  2 testy  CANDIDATE
+  rules/thresholds_jdg.rego → bloki v3_p46 (11 progów) + v3_p46_migration_map
+    (7 celów migracji fe:N + standard nazw) (ADR-002/P05)
+  rules/main_jdg.rego → final_verdict_p110 (import + _package_decisions + wiring)
+
+T1 — TABELA DOWODÓW (7.3; jeden wiersz na plik z Sekcji 6):
+
+  | # | Plik | Co z niego pobieramy (dowód/fakt/liczba) | Status |
+  |---|------|------------------------------------------|--------|
+  | 1 | bundles/thresholds_data.json | 8 parametrów z wersjami, oknami, aktami; ROZSZERZONY o jednostki (I08) | ZWERYFIKOWANO |
+  | 2 | tools/hardcoded_audit.py | URUCHOMIONY: 27 101 trafień (23 777 int, 2 493 rate, 831 time) w 515 plikach | ZWERYFIKOWANO |
+  | 3 | tools/fix_p07_thresholds.py | istniejący wzorzec migracji progów (historia P07) | ZWERYFIKOWANO |
+  | 4 | tools/validate_rules.py | obecny; walidację P46 wykonuje opa check ×2 + opa test ×2 | ZWERYFIKOWANO |
+  | 5 | tools/lint_rego_rules.py | obecny; lint rego P46 przez opa check (L1/L2) | ZWERYFIKOWANO |
+  | 6 | bundles/manifest_v2.json | baseline manifestu (449 plików rego w chwili generowania) | ZWERYFIKOWANO |
+  | 7 | bundles/rule_registry.json | ROZSZERZONY: +12 CANDIDATE (P46) | ZWERYFIKOWANO |
+  | 8 | tools/generate_manifest.py | obecny; regeneracja manifestu po migracji (procedura) | ZWERYFIKOWANO |
+  | 9 | rules/micro/vat/vat.rego | reguły VAT mikro — wzorzec odczytu data.thresholds | ZWERYFIKOWANO |
+  | 10 | rules/thresholds_jdg.rego | ~1 052 kluczy; ROZSZERZONY o v3_p46 + v3_p46_migration_map; NAPRAWIONY parse (misc) | ZWERYFIKOWANO |
+  | 11 | tests/rego/micro/test_native_micro_zus.rego | wzorzec testów natywnych micro | ZWERYFIKOWANO |
+  | 12 | tests/rego/micro/test_native_micro_ryczalt.rego | wzorzec testów natywnych ryczałt | ZWERYFIKOWANO |
+  | 13 | tests/test_core_guards_temporal_thresholds.py | wzorzec testów temporalnych (P05) | ZWERYFIKOWANO |
+  | 14 | tests/rego/test_native_pcc_v3_10.rego | wzorzec testów natywnych PCC | ZWERYFIKOWANO |
+  | 15 | bundles/bundle.sh | budowa bundla; parametry wchodzą do bundla jak rego (I05) | ZWERYFIKOWANO |
+  | 16 | bundles/deployments.json | rejestr wdrożeń — feed dla workflow I07 | ZWERYFIKOWANO |
+  | 17 | docs/CORE_GUARDS_TEMPORAL_THRESHOLDS.md | dokument kontrol temporalnych — spójny z I03 | ZWERYFIKOWANO |
+  | 18 | migrations/009_jdg_v14_core_guards.sql | wzorzec migracji SQL progów | ZWERYFIKOWANO |
+  | 19 | tools/worm_storage.py | wzorzec WORM — rejestr wersji parametrów (I05) append-only | ZWERYFIKOWANO |
+  | 20 | tools/verify_verdict_invariants.py | wzorzec weryfikacji inwariantów werdyktu | ZWERYFIKOWANO |
+  | 21 | mirror policies jdg (6.4) | branch nieosiągalny lokalnie | NIEZWERYFIKOWANO |
+  | 22 | mirror policies tax (6.4) | branch nieosiągalny lokalnie | NIEZWERYFIKOWANO |
+  | 23 | mirror policies tax/vat (6.4) | branch nieosiągalny lokalnie | NIEZWERYFIKOWANO |
+  | 24 | mirror bundle.sh (6.4) | branch nieosiągalny lokalnie | NIEZWERYFIKOWANO |
+  | 25 | mirror base/manifest.json (6.4) | branch nieosiągalny lokalnie | NIEZWERYFIKOWANO |
+  | 26 | mirror overlays/v2026/manifest.json (6.4) | branch nieosiągalny lokalnie | NIEZWERYFIKOWANO |
+
+================================================================================
+9.04 PODANALIZY 5.1–5.4
+================================================================================
+
+── PODANALIZA AN01: Audyt hardcode wartości prawnych (I10, I01, I09) ──────────
+
+Tabela dowodów (fragment T1): #1, #2, #10; dodatkowo
+bundles/v3_p46_gate_full_audit.json, bundles/v3_p46_orphan_history.json,
+reports/hardcoded_audit_report.json.
+
+Odpowiedzi na pytania audytowe:
+  * Reguły ze stawkami/progami/limitami inline: 16 581 osieroconych wartości
+    w 515 plikach (po wykluczeniu kanonu thresholds_jdg.rego, lat i wartości
+    strukturalnych 86400/3600/1000/24/60/365). Pełna lista: narzędzie
+    tools/v3_p46_legacy_sweeper.py (rejestr z kategorią, plikiem, linią).
+  * Wartości w thresholds_data duplikowane w kodzie: wzorzec VAT — stawka
+    23% występuje jako literał w kodzie rego, a jednocześnie w danych
+    (vat.standard_rate = 0.23). Rozjazd to już dziś ryzyko: zmiana w danych
+    nie zmienia zachowania reguł z literałem. Rozstrzygnięcie: mapa migracji
+    I01 (reguła → ścieżka) + merge gate blokujący NOWE naruszenia.
+  * Wartości zmienne rocznie bez okien temporalnych: w thresholds_data — zero
+    (każda wersja ma valid_from; dowód: temporal gate 0 naruszeń); w kodzie
+    legacy — liczne (np. roki 2018–2023 jako flagi epok — klasyfikowane jako
+    strukturalne, ale okna nowelizacji dla nich wymagają danych).
+  * Liczby strukturalne mogące zostać w kodzie: 86400 (s/doba), 3600 (s/h),
+    1000 (ms/s), 24, 60, 365, roki kalendarzowe jako etykiety epok — katalog
+    STRUCTURAL_HINTS w narzędziu; reszta przechodzi do backlogu migracji.
+
+Wnioski (min. 3 — wymóg 9.13):
+  W1. Licznik narzędzia jest odtwarzalny i spójny między hardcoded_audit.py
+      i v3_p46_legacy_sweeper.py (te same wzorce — wspólna definicja w
+      v3_p46_common.HARDCODED_PATTERNS).
+  W2. Backlog nie jest równomierny: koncentruje się w warstwach makro/
+      enterprise (generatory), co potwierdza diagnoza P45 o ścieżce wejścia
+      stubów — ten sam wektor generował hardcode.
+  W3. Zero P0: bramka merge (tools/v3_p46_gate.py --merge) blokuje NOWE
+      naruszenia od dziś — backlog może tylko maleć (trend w historii).
+
+Luki AN01: V3-P46-L01 (P1: 16 581 wartości do migracji), V3-P46-L02 (P2:
+duplikaty dane↔kod dla stawek już obecnych w thresholds_data), V3-P46-L03
+(P3: wartości roczne w epokach bez pełnych okien nowelizacji).
+
+── PODANALIZA AN02: Migracja wartości do danych (I01, I07, I12) ───────────────
+
+Tabela dowodów: rules/thresholds_jdg.rego (bloki v3_p46, v3_p46_migration_map),
+bundles/thresholds_data.json (8 parametrów z jednostkami),
+bundles/v3_p46_parameter_registry_data.json (15 wpisów),
+bundles/v3_p46_change_requests.json, bundles/v3_p46_parameter_doc_anchors.json,
+docs/V3_P46_PARAMETER_ANCHORS.md.
+
+Odpowiedzi na pytania audytowe:
+  * Mapowanie migracji: reguła → parametr → ścieżka thresholds_data → okno
+    temporalne → test regresji; zaimplementowane jako data (blok
+    v3_p46_migration_map): standard nazw <domena>.<znaczenie>_<jednostka>
+    (regex v3_p46_mig_naming_pattern), cele fe:N do weryfikacji ISAP (P47).
+    Zero wymyślonych stawek (honesty — protokół 14/06).
+  * Prefiksy domen: vat./pit./zus./kks./ordpu./ryczalt. — zgodne z katalogiem
+    domain w rule_lifecycle_manager; przykład pełny (VAT/PIT/ZUS) w 9.15 i
+    w docs/V3_P46_PARAMETER_ANCHORS.md.
+  * Test regresji dowodzi identyczności wyliczeń: golden replay OLD vs NEW
+    (I11) na złotych orzeczeniach P10 + testy natywne progu
+    (test_p46_i11_*); dryf AUTO_POST ponad limit (0) = BLOCK/4-eyes.
+  * Migracje wymagające aktualizacji dokumentacji (P41) i kontraktów (P03):
+    każdy parametr dostaje anchor dokumentacyjny (I12 — wygenerowany,
+    8/8 udokumentowanych) i wpis w rejestrze lifecycle (12×CANDIDATE);
+    kontrakt werdyktu P03 nie jest zmieniany (pola decyzyjne bez zmian).
+
+Wnioski (min. 3):
+  W1. Migracja bez anchora dokumentacji zostawia magiczne klucze — I12 zamyka
+      klasę (0 parametrów bez anchora).
+  W2. Workflow zmiany parametru (I07) oddziela deploy DANYCH od deployu REGUŁ
+      — to jest właściwy cel ADR-002 (zmiana prawa = zmiana danych).
+  W3. fe:N w mapie migracji jest dowodem dojrzałości: system nie pozwala sobie
+      na liczby „z pamięci" nawet we własnej dokumentacji progów.
+
+Luki AN02: V3-P46-L04 (P2: 7 celów migracji fe:N wymaga weryfikacji ISAP →
+P47), V3-P46-L05 (P3: migracja 16 581 wartości value-po-value — SLA L01).
+
+── PODANALIZA AN03: Zarządzanie i integralność danych (I04, I05, I02, I09) ────
+
+Tabela dowodów: bundles/v3_p46_thresholds_schema.json, bundles/v3_p46_schema_
+validation.json (0 błędów), bundles/v3_p46_parameter_versions.json
+(append-only, 3 rekordy SHA-256), bundles/v3_p46_value_provenance.json,
+bundles/v3_p46_isap_drift_tracker.json, bundles/v3_p46_drift_alarm.json.
+
+Odpowiedzi na pytania audytowe:
+  * Schemat walidowany w CI: JSON-schema normatywna (v3_p46_thresholds_schema:
+    typy, katalog jednostek, wymagane pola value+valid_from, semantyka zakresów)
+    + narzędzie v3_p46_schema_validator.py; test pytest test_i04_schema_clean
+    pilnuje 0 błędów; rego I04 BLOCK przy braku walidacji/błędach.
+  * Checksuma/podpis i archiwizacja WORM: SHA-256 thresholds_data przy każdym
+    uruchomieniu I05; rejestr v3_p46_parameter_versions.json append-only
+    (flaga worm_append_only, tryb --verify wykrywa manipulację → BLOCK);
+    pełny podpis kluczem (P38/P11) pozostaje kontraktem P38 — luka L06.
+  * Historia zmian (diff wersji) z powiązaniem do nowelizacji: rejestr wersji
+    przechowuje SHA-256 + timestamp (append-only); powiązanie diff ↔ nowelizacja
+    przez workflow I07 (pole citation_act) i tracker dryfu I09 (raport do Law
+    Radar P08); pełny crawler ISAP to P34/P47 (L04).
+  * Hot-reload z poszanowaniem decyzji w locie: decyzja ma trzymać wersję
+    progów z chwili odczytu inputu (threshold_version w certyfikacie decyzji —
+    pole obecne w wrapperze _certificate P46); test graniczny przełączenia to
+    I06 (day-1/day-0/day+1); graceful switch hosta to kontrakt P38 (L06).
+
+Wnioski (min. 3):
+  W1. Błąd jednostki niewykrywalny w regułach został złapany w danych — I08
+      wykrył 8 parametrów bez jednostki i doprowadził do deklaracji (0 unknown).
+  W2. Integralność parametrów jest teraz równa integralności kodu: checksuma
+      w rejestrze append-only, rozjazd = tampered → BLOCK (I05).
+  W3. Proweniencja wartości (I02) domyka DNA od akt do diffu — 8/8 łańcuchów
+      pełnych; parametr bez łańcucha nie może decydować (BLOCK).
+
+Luki AN03: V3-P46-L06 (P2: podpis kryptograficzny i graceful switch hosta —
+kontrakt P38), V3-P46-L04 (P2: weryfikacja ISAP → P47).
+
+── PODANALIZA AN04: Testy graniczne parametrów (I06, I08, I11, I03) ───────────
+
+Tabela dowodów: bundles/v3_p46_day0_test_plan.json, bundles/v3_p46_parameter_
+replay.json, tests/rego/test_v3_p46_hardcode_eliminacja.rego (38 testów,
+w tym granice), tests/auto/test_v3_p46_hardcode_eliminacja.py (21 testów).
+
+Odpowiedzi na pytania audytowe:
+  * Testy day-1/day-0/day+1: generator I06 tworzy plan przełączeń dla każdej
+    pary wersji w thresholds_data (dziś: 0 par — wszystkie parametry mają
+    jedną wersję; plan gotowy i testowany na strukturze); framework testów
+    temporalnych P05 (test_core_guards_temporal_thresholds.py) przejęty jako
+    wzorzec wykonania.
+  * Skrajne wartości: testy natywne granic dryfu replay (limit dokładnie = 0 →
+    AUTO, limit+1 → BLOCK: test_p46_i11_drift_at_limit_auto vs
+    test_p46_i11_drift_over_limit_blocks); granica progu legacy sweep (0 vs >0,
+    trend rising → BLOCK); granica wieku rejestru (30 dni → AUTO, 40 → TRIAGE).
+  * Jednostki pilnowane testami: I08 waliduje RATIO∈[0,1], PERCENT∈[0,100],
+    kwoty ≥0; rego I08: mismatch → BLOCK (błąd jednostki = katastrofa);
+    test pytest test_i08_units_declared wymusza 0 unknown.
+  * Fuzzing parametrów: słabe punkty wykrywa skan ekstremalnych literałów
+    (extreme_literals w I10) + fuzz P39 (kontrakt wyjściowy K-P46-7: fuzz
+    reguł przy wartościach skrajnych progów).
+
+Wnioski (min. 3):
+  W1. Każde przełączenie parametru będzie miało automatyczny test day-0 —
+      klasa „cicha zmiana stawki w weekend" jest zamknięta projektem I06.
+  W2. Granice są testowane na dokładnej wartości progu i progu±1 (nie tylko
+      „daleko od progu") — zgodnie z K03.
+  W3. Fail-closed jest symetryczny: brak danych, brak schematu, brak podpisu,
+      dryf — wszystko kończy BLOCK/TRIAGE, nigdy cichym AUTO_POST (test
+      never_silent 5/5).
+
+Luka AN04: V3-P46-L08 (P3: fuzz parametrów jako osobna bramka P39).
+
+================================================================================
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2; wiersz na przepis z Sekcji 8 + odkryte)
+================================================================================
+
+  | Akt (Sekcja 8) | Art./ust. | Reguła/element | Test | Status | Ryzyko |
+  |----------------|-----------|----------------|------|--------|--------|
+  | Ordynacja podatkowa | art. 12, 13 | temporal gate: parametr bez okna = BLOCK (I03) | test_p46_i03_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niski |
+  | Ustawa VAT | art. 41 ust. 1–13 | stawki jako dane (vat.* w thresholds_data z unit RATIO) | test_i01_registry_*, test_i08_units_declared | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niski |
+  | Ustawa VAT | art. 113 | limit zwolnienia podmiotowego jako parametr (vat.limit_113) | test_i01_registry_covers_all_parameters | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niski |
+  | Ustawa o PIT | art. 27 ust. 1, 30c, 30f | cele migracji skali/liniówki/ryczałtu (fe:N → P47) | test_p46_migration_map_fe_n_no_invented_rates | CZĘŚCIOWE [NIEZWERYFIKOWANE] | średni (do weryfikacji) |
+  | Ustawa o ZUS | art. 18d, 18ab | cele migracji limitów 30-krotności i małego ZUS+ (fe:N → P47) | test_p46_migration_map_fe_n_no_invented_rates | CZĘŚCIOWE [NIEZWERYFIKOWANE] | średni (do weryfikacji) |
+  | Ustawa o ryczałcie | załącznik | tabela stawek jako dane — cel migracji (fe:N) | test_p46_migration_map_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] | średni |
+  | Ordynacja podatkowa | art. 56 (odsetki), art. 119 (MPP 15 000) | cele migracji odsetek/MPP (fe:N → P47) | test_p46_migration_map_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] | średni |
+  | KKS | art. 57 | sankcje jako dane — katalog jednostek obejmuje kwoty sankcji; KKS progi już w misc (26000/5200/10400/13000) | thresholds_value(misc) + test natywny micro KKS | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niski |
+  | ISAP/RCL (odkryte) | każda wartość migracyjna cytowana z Dz.U. i datą | provenance chain (I02) wymaga akt w danych | test_p46_i02_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niski |
+  | UoR (odkryte) | art. 4 ust. 1 | rzetelność wyliczeń — golden replay OLD/NEW (I11) | test_p46_i11_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niski |
+  | RODO (odkryte) | art. 5.2 | rozliczalność zmian parametru (kto, kiedy, dlaczego — I07/I12) | test_p46_i07_* | CZĘŚCIOWE [NIEZWERYFIKOWANE] | niski |
+
+Status „CZĘŚCIOWE" = reguła/test obecne i przechodzące; treść przepisu i
+wartości referencyjne do potwierdzenia w ISAP (P47). Zero statusów „PEŁNE"
+bez weryfikacji ISAP — uczciwość protokołu 06/13.
+
+================================================================================
+9.06 REJESTR LUK (T3; identyfikatory V3-P46-Lxx)
+================================================================================
+
+  | ID | Kryt. | Opis | Dowód | Wpływ | Rozwiązanie | Koszt | Regresja | Status |
+  |----|-------|------|-------|-------|-------------|-------|----------|--------|
+  | V3-P46-L01 | P1 | 16 581 osieroconych wartości prawnych w rules/ poza thresholds (backlog) | v3_p46_legacy_sweep.json, v3_p46_orphan_history.json | zmiana prawa wymaga deployu kodu (naruszenie celu ADR-002) | migracja value-po-value wg mapy I01; merge gate blokuje wzrost; SLA per domena | wysoki | golden replay OLD/NEW (I11) per migracja | OPEN→P47+ |
+  | V3-P46-L02 | P2 | duplikaty dane↔kod (stawki w thresholds_data występują też jako literały) | porównanie wzorca 0.23/200000 vs dane | rozjazd danych i zachowania | konwersja reguł na odczyt data.thresholds (mapa I01) | średni | replay decyzji | OPEN→P47 |
+  | V3-P46-L03 | P3 | epoki kalendarzowe (2018–2023) jako flagi kodu zamiast pełnych okien nowelizacji | katalog STRUCTURAL_HINTS I10 | ograniczona odtwarzalność time-travel | okna temporalne jako dane (P05) | niski | testy day-0 I06 | OPEN→P47 |
+  | V3-P46-L04 | P2 | 7 celów migracji fe:N bez weryfikacji ISAP + podstawy [NIEZWERYFIKOWANE] | v3_p46_migration_map; rejestr mediacji P45 → P47 | brak awansu CANDIDATE→ACTIVE bez 4-eyes | weryfikacja ISAP przez człowieka (P47) | niski | awans po potwierdzeniu | OPEN→P47 |
+  | V3-P46-L05 | P3 | 16 581 migracji value-po-value wymaga SLA per domena | v3_p46_gate_full_audit.json | dług jakościowy mierzalny | SLA per domena w rejestrze I01 (wzorzec SLA P45-I01) | wysoki | trend w historii I10 | OPEN→P47+ |
+  | V3-P46-L06 | P2 | podpis kryptograficzny bundla parametrów + graceful switch hot-reload hosta | v3_p46_parameter_versions.json (SHA-256, bez klucza) | integralność równa kodowi, ale bez podpisu P38 | integracja z P38 (podpis) i mechanizmem hot-reload hosta | średni | verify mode I05 | OPEN→P38/P48 |
+  | V3-P46-L07 | P2 | mirror policies nieosiągalny (branch policies) — dryf canonical↔mirror parametrów | lokalny checkout main | ryzyko rozjazdu parametrów w mirrorze | sync + walidacja krzyżowa (AP11) | niski | drift detector P48 | OPEN→P48 |
+  | V3-P46-L08 | P3 | fuzzing parametrów (wartości skrajne) jako osobna bramka CI | v3_p46_gate.py (merge) | rzadkie wartości progów poza testami | fuzz harness w P39 | niski | brak | OPEN→P39 |
+
+Podsumowanie: P0=0, P1=1, P2=3, P3=3 (L03, L05, L08). Żadna luka nie zostaje
+bez planu i odbiorcy — zero stanu pośredniego.
+
+================================================================================
+9.07 INNOWACJE ENTERPRISE (T4; 12 z pełnym projektem 6-punktowym)
+================================================================================
+
+V3-P46-I01 — PARAMETER REGISTRY (WDROŻONE)
+  1) Luka: brak zapytywalnego rejestru parametrów (ścieżka, wartość, historia,
+     akt, okno, właściciel) — liczby „gdzieś w kodzie".
+  2) Mechanizm: tools/v3_p46_parameter_registry.py → bundles/v3_p46_parameter_
+     registry_data.json (15 wpisów: 8 produkcyjnych + 7 celów migracji fe:N);
+     rego I01: rejestr pusty/przeterminowany (>30 dni z data.thresholds) =
+     TRIAGE; rego I12: parametr bez anchora = TRIAGE.
+  3) Wpływ: zmiana stawki to zmiana WPISU z pełną historią — zero poszukiwań
+     literałów; audyt provenance parametru O(1) zapytanie.
+  4) Ryzyko: dryf rejestru vs dane — mitygacja: checksuma SHA-256 thresholds_
+     data w bundle I01; test pytest test_i01_registry_covers_all_parameters.
+  5) Kryterium: rejestr ≥ liczba parametrów w thresholds_data; każdy z oknem
+     temporalnym — SPEŁNIONE (15/15, okna kompletne).
+  6) Zależności: P06 (parametry-as-data), P41 (anchory), P47 (ISAP fe:N).
+
+V3-P46-I02 — VALUE PROVENANCE CHAIN (WDROŻONE)
+  1) Luka: wartość bez DNA (akt→art→nowela→data→diff) = liczba bez dowodu.
+  2) Mechanizm: tools/v3_p46_value_provenance.py liczy głębokość łańcucha per
+     wersja (akt, okno, autor, czas); próg min głębokości w data.thresholds
+     (v3_p46_provenance_chain_min_depth=3); rego I02: łańcuch za krótki lub
+     bypass = BLOCK.
+  3) Wpływ: każda wartość w decyzji ma pełne DNA — audyt odpowiada „skąd ta
+     liczba" w jednym zapytaniu (rozszerzenie DNA reguł P42 o dane).
+  4) Ryzyko: heurystyka głębokości może przepuścić akt bez art. — weryfikacja
+     merytoryczna człowieka (P47), rejestrowana uczciwie [NIEZWERYFIKOWANE].
+  5) Kryterium: 8/8 parametrów z pełnym łańcuchem; weak=0 — SPEŁNIONE.
+  6) Zależności: P42 (DNA reguł), P08 (Law Radar), P47 (ISAP).
+
+V3-P46-I03 — TEMPORAL PARAMETER GATE (WDROŻONE)
+  1) Luka: parametr zmienny prawnie bez valid_from/valid_to = luka temporalna.
+  2) Mechanizm: tools/v3_p46_temporal_gate.py (dane + bloki v3_p46* w
+     thresholds rego); rego I03: naruszenie przy włączonej bramce (flaga w
+     data.thresholds) = BLOCK, bramka wyłączona = TRIAGE; test natywny
+     przełączenia zachowania bramki.
+  3) Wpływ: obowiązek podatkowy na datę zdarzenia (Ordynacja art. 12/13
+     [NIEZWERYFIKOWANE]) jest egzekwowalny na poziomie DANYCH.
+  4) Ryzyko: fałszywe BLOCK na parametrach strukturalnych — mitygacja: bramka
+     skanuje wersje z historią zmian (każda wersja ma valid_from w danych).
+  5) Kryterium: 0 naruszeń na obecnym stanie; test BLOCK/TRIAGE/AUTO —
+     SPEŁNIONE (3 testy natywne).
+  6) Zależności: P05 (temporalność), P06, P39 (CI).
+
+V3-P46-I04 — SCHEMA VALIDATION FOR THRESHOLDS (WDROŻONE)
+  1) Luka: błąd jednostki/typu w danych niewykrywalny kodem reguł.
+  2) Mechanizm: normatywna JSON-schema (bundles/v3_p46_thresholds_schema.json:
+    typy, katalog jednostek, required value+valid_from, semantyka zakresów) +
+    tools/v3_p46_schema_validator.py (0 błędów dozwolone; próg w
+    data.thresholds v3_p46_schema_errors_max=0); rego I04: brak walidacji lub
+    błędy = BLOCK.
+  3) Wpływ: uszkodzony dokument parametrów nie wchodzi do decyzji — uszkodzenie
+     wykrywane przed OPA, nie w werdykcie.
+  4) Ryzyko: schema za ciasna blokuje legalne parametry — katalog jednostek
+     rozszerzalny przez data.thresholds (v3_p46_known_units).
+  5) Kryterium: 8/8 parametrów sprawdzonych, 0 błędów — SPEŁNIONE.
+  6) Zależności: P06, P39 (CI), I08 (jednostki).
+
+V3-P46-I05 — SIGNED PARAMETER BUNDLES (WDROŻONE)
+  1) Luka: brak dowodu stanu parametrów na datę decyzji (integralność równa
+     kodowi — wymóg P38).
+  2) Mechanizm: tools/v3_p46_sign_bundles.py: SHA-256 thresholds_data +
+     rejestr append-only (bundles/v3_p46_parameter_versions.json, flaga
+     worm_append_only); tryb --verify: rozjazd checksumy = tampered → BLOCK
+     (rego I05: bez checksumy = BLOCK, naruszony = BLOCK).
+  3) Wpływ: certyfikat decyzji może powołać się na checksumę parametrów —
+     odtwarzalność decyzji 1:1 (zgodność z V2 F4).
+  4) Ryzyko: rejestr sam w sobie może być nadpisany — pełny WORM storage i
+     podpis kluczem = kontrakt P38 (luka L06, uczciwie zarejestrowana).
+  5) Kryterium: checksuma rejestrowana przy każdym uruchomieniu; --verify
+     wykrywa manipulację — SPEŁNIONE (3 rekordy, tampered=0).
+  6) Zależności: P38 (bundle deploy), P11 (certyfikat), P37 (telemetria).
+
+V3-P46-I06 — DAY-0 TEST GENERATION (WDROŻONE)
+  1) Luka: przełączenie parametru bez testu day-1/day-0/day+1 (cicha zmiana
+     stawki).
+  2) Mechanizm: tools/v3_p46_day0_generator.py generuje plan przełączeń z
+     historii wersji thresholds_data (bundles/v3_p46_day0_test_plan.json:
+     day-1 OLD obowiązuje / day-0 przełączenie atomowe + threshold_version w
+     certyfikacie / day+1 NEW); rego I06: przełączenia bez testów = TRIAGE.
+  3) Wpływ: zmiana stawki w nocy z 31.12 na 01.01 ma automatyczny dowód
+     równoważności i granic — zanim wejdzie do produkcji.
+  4) Ryzyko: generator nie zna semantyki reguł korzystających z parametru —
+     mitygacja: replay I11 na złotych orzeczeniach (skutki mierzone, nie
+     zgadywane).
+  5) Kryterium: plan generowany; dziś 0 przełączeń (wszystkie parametry mają
+     1 wersję) — framework gotowy i przetestowany — SPEŁNIONE.
+  6) Zależności: P05, P36 (generatory), P10 (oracle), P39.
+
+V3-P46-I07 — PARAMETER CHANGE WORKFLOW (WDROŻONE)
+  1) Luka: zmiana parametru bez cytatu nowelizacji/ walidacji/ testów day-0.
+  2) Mechanizm: rejestr żądań (bundles/v3_p46_change_requests.json) z polami
+     citation_act, day0_tests_run, validated, deployed; tools/v3_p46_change_
+     workflow.py audytuje; rego I07: deploy bez walidacji lub bypass = BLOCK,
+     brak cytatu/day-0 = TRIAGE.
+  3) Wpływ: zmiana prawa = PR z cytatem → dane; silnik adaptuje się bez
+     deployu reguł (cel nadrzędny ADR-002), a każdy krok ma ślad (RODO art.
+     5.2 rozliczalność [NIEZWERYFIKOWANE]).
+  4) Ryzyko: objście workflow wpisem ręcznym — reconciler P07 + flaga bypass
+     wykrywana w rego (BLOCK); rollback: git revert dokumentu parametrów.
+  5) Kryterium: 0 żądań z deployem bez walidacji; audyt działa — SPEŁNIONE.
+  6) Zależności: P07 (lifecycle), P08 (Law Radar), P38 (deploy).
+
+V3-P46-I08 — UNIT SEMANTICS (WDROŻONE)
+  1) Luka: jednostka (% vs PLN vs mnożnik) niejawna — błąd jednostki =
+     katastrofa (stawka jako mnożnik).
+  2) Mechanizm: jednostki jawne w schemacie każdego parametru (thresholds_data
+     ROZSZERZONE: 8×unit z katalogu PLN/YEARS/M2/RATIO/TEXT) + katalog w
+     data.thresholds (v3_p46_known_units); tools/v3_p46_unit_semantics.py
+     waliduje zakresy (RATIO∈[0,1] itd.); rego I08: mismatch = BLOCK,
+     unknown = TRIAGE.
+  3) Wpływ: defense in depth — reguły walidują jednostkę przy odczycie, dane
+     walidowane w CI, niezgodność nigdy nie dochodzi do werdyktu.
+  4) Ryzyko: heurystyka inferencji jednostki dla nowych parametrów — nowy
+     parametr bez jednostki = TRIAGE (wymusza deklarację przy dodaniu).
+  5) Kryterium: 0 mismatch, 0 unknown (było 8 unknown → 0) — SPEŁNIONE.
+  6) Zależności: P06, I04 (schema), P39.
+
+V3-P46-I09 — PARAMETER DRIFT ALARM (WDROŻONE)
+  1) Luka: rozjazd thresholds_data ↔ ISAP (dane nieaktualne po nowelizacji).
+  2) Mechanizm: rejestr tropienia (bundles/v3_p46_isap_drift_tracker.json:
+     parametr → isap_value, reported_to_law_radar, report_id);
+     tools/v3_p46_drift_alarm.py porównuje z danymi; rego I09: rozjazd
+     niezaraportowany = BLOCK, zaraportowany = TRIAGE (feed do Law Radar P08).
+  3) Wpływ: dryf prawo↔dane ma twardy dowód diff (K01) i adresata zamiast
+     milczącego przeliczania po starych stawkach.
+  4) Ryzyko: tracker pusty = alarm ślepy — tracker zasila crawler P34 (ISAP);
+     dziś 0 śledzonych (crawler to P34/P47) — rejestrowane uczciwie.
+  5) Kryterium: 0 niezaraportowanych dryfów; mechanizm raportowania działa —
+     SPEŁNIONE.
+  6) Zależności: P08 (Law Radar), P34 (crawler), P47 (weryfikacja).
+
+V3-P46-I10 — LEGACY VALUE SWEEPER (WDROŻONE)
+  1) Luka: po migracji nie wiadomo, ile wartości prawnych zostało w kodzie
+     („osierocone" stawki/progi).
+  2) Mechanizm: tools/v3_p46_legacy_sweeper.py — skan rules/ wzorcami
+     hardcoded_audit (wspólna definicja), wyklucza kanon thresholds_jdg.rego,
+     lata i wartości strukturalne; historia pomiarów append-only
+     (v3_p46_orphan_history.json) z trendem; rego I10: ponad limit
+     (v3_p46_orphan_values_max) = TRIAGE, rosnący trend = BLOCK.
+  3) Wpływ: backlog 16 581 jest policzony, śledzalny i malejący — cel
+     „zmiana prawa = zmiana danych" ma miernik, nie deklarację.
+  4) Ryzyko: fałszywe trafienia (liczby biznesowe w testach) — testy wykluczone
+     ze skanu produkcyjnego; graniczne wartości testowe to dane testowe P36.
+  5) Kryterium: 520 plików przeskanowanych; historia zapisana; trend baseline —
+     SPEŁNIONE.
+  6) Zależności: ADR-002, P28/R7 (audyt pierwotny), P45-I07 (gate merge).
+
+V3-P46-I11 — GOLDEN REPLAY PER PARAMETER CHANGE (WDROŻONE)
+  1) Luka: skutki zmiany parametru niedowodzone (czy zmiana stawki zmienia
+     decyzje AUTO_POST? o ile?).
+  2) Mechanizm: tools/v3_p46_golden_replay.py: rejestr uruchomień
+     (v3_p46_replay_runs.json) OLD vs NEW z licznikiem drift_auto_changes;
+     próg z data.thresholds (v3_p46_replay_drift_max_auto_changes=0, 4-eyes od
+     v3_p46_replay_drift_four_eyes_min=1); rego I11: dryf ponad limit = BLOCK,
+     brak OLD = TRIAGE.
+  3) Wpływ: zmiana parametru z pełnym diffem skutków na złotych orzeczeniach
+     (P10) — 4-eyes widzi KONKRETNE zmiany decyzji, nie opinię.
+  4) Ryzyko: replay bez pełnego złotego zbioru — rozbudowa oracles P10
+     (kontrakt K-P46-6); granice testowane natywnie (limit=0 → AUTO,
+     limit+1 → BLOCK).
+  5) Kryterium: rejestr działa; testy graniczne przechodzą ×2 OPA — SPEŁNIONE.
+  6) Zależności: P10 (golden oracle), P03 (kontrakt werdyktu), P11 (certyfikat).
+
+V3-P46-I12 — PARAMETER DOCUMENTATION ANCHOR (WDROŻONE)
+  1) Luka: magiczne klucze w danych (co znaczy zus.health_lump_tier_2_limit?
+     skąd? kiedy wygasa?).
+  2) Mechanizm: tools/v3_p46_doc_anchor.py generuje rejestr anchorów
+     (v3_p46_parameter_doc_anchors.json) + dokumentację czytelną
+     (docs/V3_P46_PARAMETER_ANCHORS.md: znaczenie, źródło z akt + status ISAP,
+     okno temporalne, właściciel); rego I12: parametr bez anchora = TRIAGE.
+  3) Wpływ: zero magicznych kluczy — każdy parametr czytelny dla księgowej,
+     audytora i developera (P41).
+  4) Ryzyko: anchor generowany szablonowo wymaga uzupełnienia merytorycznego
+     przez człowieka (oznaczone w treści anchora) — weryfikacja P47.
+  5) Kryterium: 8/8 parametrów z anchorem; dokument istnieje — SPEŁNIONE.
+  6) Zależności: P41 (dokumentacja), P06, P47.
+
+================================================================================
+9.08 KONTRAKT WYJŚCIOWY (T5; wiąże P47 i dalsze)
+================================================================================
+
+  | Kontrakt | Treść wiążąca | Odbiorca | Kryterium użycia |
+  |----------|---------------|----------|------------------|
+  | K-P46-1 | MAPA MIGRACJI HARDCODE (reguła → parametr → ścieżka → test; standard nazw <domena>.<znaczenie>_<jednostka>; cele fe:N) w rules/thresholds_jdg.rego (v3_p46_migration_map) | P47, P36, P68 | weryfikacja fe:N w ISAP przed wpisem wartości; zero liczb z pamięci |
+  | K-P46-2 | PARAMETER REGISTRY (format, standard nazw, historia wersji, właściciel) w bundles/v3_p46_parameter_registry_data.json | P06, P41, P68 | każdy nowy parametr = wpis rejestru + anchor I12 |
+  | K-P46-3 | SCHEMA thresholds_data (walidowana w CI: typy, jednostki, zakresy, valid_from obowiązkowy) | P39, P38 | CI blokuje błędy schematu; nowa jednostka tylko przez v3_p46_known_units |
+  | K-P46-4 | INTEGRALNOŚĆ PARAMETRÓW: SHA-256 + rejestr append-only (v3_p46_parameter_versions.json); --verify = tampered detection | P38, P11, P68 | podpis kryptograficzny dopina P38; checksuma w certyfikacie decyzji |
+  | K-P46-5 | LEGACY BACKLOG: 16 581 wartości z historią/trendem (v3_p46_orphan_history.json); merge gate blokuje wzrost | P47, P39, P68 | trend może tylko maleć; SLA per domena |
+  | K-P46-6 | GOLDEN REPLAY OLD/NEW per zmiana parametru (dryf AUTO_POST > 0 = 4-eyes) | P10, P03, P39 | każda zmiana parametru z diffem skutków przed deployem |
+  | K-P46-7 | DAY-0 TEST PLAN + fuzz parametrów (generator I06; fuzz → P39) | P39, P36 | testy day-1/day-0/day+1 obowiązkowe przy każdym przełączeniu |
+  | K-P46-8 | DRIFT TRACKER (parametr → isap_value → Law Radar) | P08, P34, P47 | rozjazd niezaraportowany = BLOCK |
+  | K-P46-9 | LIFECYCLE: 12×CANDIDATE (awans tylko z łańcuchem, spójne z P45-I09) | P07, P29 | awans przez rule_lifecycle_manager.py promote |
+
+================================================================================
+9.09 PLAN WDROŻENIA (T6)
+================================================================================
+
+  | # | Praca | Status | Warunek |
+  |---|-------|--------|---------|
+  | 1 | Rego I01–I12 + progi v3_p46 + migration_map + wiring p110 | WDROŻONE | opa check ×2 |
+  | 2 | Naprawa pre-existing parse `misc := {` w thresholds_jdg.rego | WDROŻONE | opa check całości |
+  | 3 | 14 narzędzi (12 silników + common + CI gate) | WDROŻONE | uruchomienia T1 |
+  | 4 | Bundle 12×gate=PASS + rejestry (schema, versions, history, anchors) | WDROŻONE | pliki w bundles/ |
+  | 5 | rule_registry +12 CANDIDATE (lifecycle manager) | WDROŻONE | 12/12 CANDIDATE |
+  | 6 | Testy natywne 38 ×2 OPA + pytest 21 | WDROŻONE | zielone |
+  | 7 | Weryfikacja fe:N w ISAP + wartości do mapy migracji | OPEN | K-P46-1; P47 |
+  | 8 | Migracja backlogu 16 581 value-po-value (SLA per domena) | OPEN | K-P46-5; replay I11 |
+  | 9 | Duplikaty dane↔kod (L02): reguły → odczyt data.thresholds | OPEN | K-P46-5; P47 |
+  | 10 | Podpis kryptograficzny bundli parametrów (P38) + hot-reload graceful | OPEN | K-P46-4; P38 |
+
+Wolno wdrożyć od razu: poz. 1–6 (zrobione). Wymaga testów: 8–9. Wymaga decyzji
+człowieka (4-eyes): 7 (wartości referencyjne ISAP), awans CANDIDATE→ACTIVE.
+
+================================================================================
+9.10 PLAN TESTÓW (T7; blokujące merge oznaczone [MERGE])
+================================================================================
+
+  | Test | Typ | Oczekiwany wynik | Brama |
+  |------|-----|------------------|-------|
+  | test_p46_no_activation_no_match | natywny | no_match (determinizm) | [MERGE] |
+  | test_p46_thresholds_missing_fail_closed | natywny | BLOCK_AND_ALERT | [MERGE] |
+  | test_p46_i01..i12_* (34 przypadki) | natywny | BLOCK/TRIAGE/AUTO wg reguł | [MERGE] |
+  | test_p46_never_silent_auto_post_on_missing_data | natywny (property) | 5/5 bez AUTO_POST | [MERGE] |
+  | test_p46_i11_drift_at_limit_auto vs over_limit_blocks | natywny (granica) | limit=0 → AUTO; limit+1 → BLOCK | [MERGE] |
+  | test_p46_i10_orphans_above_max/rising/zero | natywny (granica) | TRIAGE/BLOCK/AUTO | [MERGE] |
+  | suite OPA 0.68 + 1.9 (--v0-compatible) | natywny | PASS 38/38 ×2 | [MERGE] |
+  | test_all_12_bundles_exist_and_pass | pytest | 12× gate=PASS | [MERGE] |
+  | test_i01_registry_covers_all_parameters | pytest | 15/15 z oknami | [MERGE] |
+  | test_i04_schema_clean | pytest | 0 błędów, 8 sprawdzonych | [MERGE] |
+  | test_i08_units_declared | pytest | 0 unknown, 0 mismatch | [MERGE] |
+  | test_i05_checksum_registered | pytest | SHA-256 + append-only | [MERGE] |
+  | test_gate_merge_mode_passes | pytest | exit 0 (merge gate) | [MERGE] |
+  | test_no_hardcoded_thresholds_in_p46_rules | pytest | zero literałów progowych w rego P46 | [MERGE] |
+  | test_report_p46_* + test_ledger_p46 | pytest | status WDROŻONY_100 | [MERGE] |
+  | fuzz: progi graniczne (±1 grosz, jednostki) | fuzz (K03) | decyzje zgodne z progami | OPEN→P39 |
+
+================================================================================
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+================================================================================
+
+  V3-P46-Q01: Weryfikacja wartości referencyjnych fe:N w ISAP (stawki ZUS 2026,
+      kwota wolna PIT, próg skali, liniówka 19%, MPP 15 000, odsetki art. 56) —
+      warunek wpisania wartości do mapy migracji i awansu CANDIDATE→ACTIVE.
+      Wymagane 4-eyes. Rekomendacja: rozpocząć od ZUS (najwyższa zmienność
+      roczna).
+  V3-P46-Q02: Priorytetyzacja domen migracji backlogu 16 581 (VAT najpierw?
+      czy domeny z największym dryfem dane↔kod?) — decyduje kolejność SLA
+      (K-P46-5). Rekomendacja: kryterium = liczba decyzji AUTO_POST zależnych
+      od wartości.
+  V3-P46-Q03: Czy wartości strukturalne (katalog STRUCTURAL_HINTS: 86400,
+      3600, 1000, 24, 60, 365, roki epok) pozostają w kodzie jako stałe
+      inżynierskie? Rekomendacja: tak (zero ryzyka prawnego), z wpisem do
+      rejestru wyjątków I34 (expiry + owner).
+  V3-P46-Q04: Podpis kryptograficzny bundli parametrów — który mechanizm kluczy
+      (P38 dual-control)? Decyzja właściciela platformy. Rekomendacja: ten sam
+      podpis co bundla rego (jedna ceremonia, jeden audyt).
+
+================================================================================
+9.12 ZAAŁOŻENIA JAWNE (T9)
+================================================================================
+
+  * [ZAŁOŻENIE] Katalog wartości strukturalnych (86400/3600/1000/24/60/365,
+    roki) jest kompletny dla obecnego repo — nowe stałe inżynierskie wymagają
+    rozszerzenia katalogu w narzędziu (decyzja Q03).
+  * [ZAŁOŻENIE] Wykluczenie plików testów ze skanu produkcyjnego I10 jest
+    poprawne (wartości graniczne w testach = dane testowe P36, nie hardcode
+    produkcyjny).
+  * [ZAŁOŻENIE] Plik rules/bundles/quality_v3_18.rego zawiera składnię
+    niezgodną z OPA 0.68/1.9 w lokalnym checku katalogu rules/ (not-blocks
+    w ciele reguły) — błąd PRE-EXISTING, poza zakresem Sekcji 6 P46; naprawa
+    jako osobna praca (nie blokuje pakietu P46 ani main_jdg.rego, które
+    kompilują się z własnymi zależnościami).
+  * [ZAŁOŻENIE] Rejestr wersji parametrów (append-only JSON) wystarcza do
+    czasu wdrożenia pełnego WORM storage P38 (luka L06 jawna).
+  * [ZAŁOŻENIE] SLA per domena dla backlogu 16 581 ustala P47 po weryfikacji
+    ISAP (analogicznie do SLA P45-I01).
+  * [ZAŁOŻENIE] Mirror policies (branch) ma odpowiadać 1:1 strukturze rules/
+    i thresholds — do potwierdzenia w P48.
+
+================================================================================
+9.13–9.16 ZGODNOŚĆ FORMATU
+================================================================================
+
+9.13: każda podanaliza (AN01–AN04) ma tabelę dowodów, ≥3 wnioski i luki —
+  spełnione (sekcja 9.04).
+9.14: wiersze macierzy dla wszystkich aktów z Sekcji 8 + 3 odkryte — spełnione (9.05).
+9.15: identyfikatory V3-P46-{L,I,C,Q,X} używane konsekwentnie — spełnione.
+  Standard nazewnictwa parametrów (kryterium 20): <domena>.<znaczenie>_<jednostka>
+  — przykłady pełne: vat.standard_rate (RATIO), pit.scale_threshold (PLN),
+  zus.social_base_standard (PLN); regex w v3_p46_mig_naming_pattern.
+9.16: tabele T1 (9.03), T2 (9.05), T3 (9.06), T4 (9.07), T5 (9.08), T6 (9.09),
+  T7 (9.10), T8 (9.11), T9 (9.12), T10 (11.4 poniżej), T11 (APENDYKS B),
+  T12 (rejestr konfliktów, poniżej) — wszystkie obecne i wypełnione.
+
+T12 — REJESTR KONFLIKTÓW:
+
+  | ID | Strony konfliktu | Opis | Rozstrzygnięcie |
+  |----|------------------|------|-----------------|
+  | V3-P46-C01 | thresholds_jdg.rego (stan z pliku) vs OPA parser | pre-existing niedomknięty obiekt `misc := {` (linia 2643) połykał 5 kolejnych bloków → rego_parse_error całości (dowód: git stash baseline) | zamknięcie obiektu na końcu bloku KKS (linia 2674); zero zmian semantyki; potwierdzone opa check ×2 |
+  | V3-P46-C02 | narzędzie vs komentarz rego | cudzysłów zamykający „osieroconych" w komentarzu (#) psuł skaner string-aware narzędzia (OPA komentarze ignoruje) | skaner comment-aware (wspólna lekcja dla narzędziparsujących rego) |
+
+T10 — PRZEKAZYWANE ARTEFAKTY (11.4):
+
+  | Artefakt | Odbiorca | Format | Kryterium użycia |
+  |----------|----------|--------|------------------|
+  | rules/v3_p46_hardcode_eliminacja_enterprise.rego | P47+ | rego | runtime fail-closed 12 analiz |
+  | rules/thresholds_jdg.rego (v3_p46 + v3_p46_migration_map) | P47/P36/P68 | rego | progi i mapa migracji jako dane (ADR-002) |
+  | bundles/v3_p46_parameter_registry_data.json | P06/P41/P68 | JSON | rejestr parametrów (I01) |
+  | bundles/v3_p46_thresholds_schema.json | P39/P38 | JSON | schema walidowana w CI (I04) |
+  | bundles/v3_p46_parameter_versions.json | P38/P11/P68 | JSON | integralność append-only (I05) |
+  | bundles/v3_p46_day0_test_plan.json | P39/P36 | JSON | plan testów przełączeń (I06) |
+  | bundles/v3_p46_change_requests.json | P07/P38 | JSON | workflow zmian parametrów (I07) |
+  | bundles/v3_p46_isap_drift_tracker.json | P08/P34/P47 | JSON | tracker dryfu prawo↔dane (I09) |
+  | bundles/v3_p46_orphan_history.json | P47/P68 | JSON | seria trendu backlogu (I10) |
+  | bundles/v3_p46_gate_full_audit.json | P47..P68 | JSON | backlog 16 581 (audyt --all) |
+  | tools/v3_p46_gate.py | P39 CI | py | merge gate (--all = audyt backlogu) |
+  | docs/V3_P46_PARAMETER_ANCHORS.md | P41 | MD | anchory dokumentacyjne (I12) |
+
+================================================================================
+ODPOWIEDZI NA PYTANIA KRZYŻOWE (7.4; identyfikatory V3-P46-Xxx)
+================================================================================
+
+  X01. Sprzeczności z dokumentami świętymi: brak BLOCKERÓW. ADR-002 w pełni
+       honorowany (progi wyłącznie data.thresholds; fe:N zamiast liczb z
+       pamięci). Zgodność z V1 (Control Plane parametry), V2 (F4 certyfikat
+       z threshold_version). Konflikt C01/C02 (narzędzie↔parser) rozwiązany
+       z zachowaniem semantyki.
+  X02. Reguły łamiące parametry-as-data (P06) i temporalność (P05): backlog
+       16 581 (L01) + duplikaty L02 + epoki L03 — wszystkie w rejestrze luk
+       z planem; NIE dodano żadnego nowego naruszenia (merge gate aktywny).
+  X03. Ścieżki nie-fail-closed: wszystkie 12 analiz P46 domknięte else-chain
+       (BLOCK/TRIAGE/AUTO/no_match); brak snapshotu progów = BLOCK (test);
+       never-silent AUTO_POST 5/5 (test natywny).
+  X04. Zgodność z kontraktem werdyktu 25-polowym (P03): decyzje P46 używają
+       pól kontraktu (rule_id, decision_mode, priority, _routing, _legal_basis,
+       _warnings, threshold_version, valid_from) — zero nowych pól poza
+       kontraktem; pola domeny (np. schema_errors) są dodatkowe, nie kolidują.
+  X05. Testy blokujące merge (P39): pełna lista w T7 [MERGE]; kluczowe:
+       suite 38/38 ×2 OPA, never-silent property, granice I11/I10, 12 bundli
+       gate=PASS, merge gate exit 0.
+  X06. Duplikaty: brak duplikacji — P46 rozszerza (nie kopiuje): hardcoded_
+       audit.py (wzorzec wzorców — wspólna definicja w v3_p46_common),
+       worm_storage.py (wzorzec WORM dla I05), rule_lifecycle_manager
+       (jedyna droga awansu); rejestr stubów P45 pozostał nietknięty.
+  X07. Podstawy prawne niezweryfikowane: wszystkie [NIEZWERYFIKOWANE] —
+       rejestr mediacji P47 (przejęty po P45) rozszerzony o wartości fe:N
+       (Q01). Zero fikcyjnych artykułów/Dz.U. (protokół 04).
+  X08. Decyzje wymagające 4-eyes: Q01 (wartości fe:N), Q02 (priorytety
+       migracji), Q03 (wyjątki strukturalne), Q04 (podpis P38) — sekcja 9.11.
+  X09. Metryki do obserwowalności (P37): v3_p46_orphan_values (trend spadkowy,
+       próg alarmu wzrost), v3_p46_schema_errors (0), v3_p46_temporal_
+       violations (0), v3_p46_drift_unreported (0), v3_p46_replay_drift
+       (limit 0), v3_p46_registry_age_days (≤30) — progi jako dane ADR-002.
+  X10. Ryzyka wymagające inwariantów runtime (P04): parametr bez okna
+       temporalnego użyty w decyzji = CERTAINTY_BLOCKED (propozycja INV:
+       „decyzja nie może użyć parametru bez valid_from" — do wdrożenia w
+       P04-agregacie; krytyczne dla art. 12 Ordynacji [NIEZWERYFIKOWANE]).
+
+================================================================================
+APENDYKS A — MAPA GRUP PLIKÓW CZĘŚCI P46
+================================================================================
+
+   | Grupa | Nazwa | Liczba plików | Rola analityczna w tej części |
+   |-------|-------|---------------|-------------------------------|
+   | 6.1 | Dane parametrów i narzędzia audytu | 8 | stan thresholds_data, liczniki hardcode, wzorce migracji, manifest, rejestr reguł |
+   | 6.2 | Reguły z ryzykiem hardcode (domeny krytyczne) | 6 | wzorce odczytu data.thresholds w VAT/ZUS/ryczałt/PCC + testy natywne i temporalne |
+   | 6.3 | Deploy i wersjonowanie parametrów | 6 | budowa bundla, rejestr wdrożeń, kontrola temporalna, WORM, inwarianty |
+   | 6.4 | Mirror policies | 6 | zgodność implementacji z mirror; dryf = konflikt Cxx (branch nieosiągalny → L07) |
+
+APENDYKS B — MACIERZ PODANALIZA × GRUPA
+
+   | Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik (sekcja raportu) |
+   |------------|----------------|-----------------|------------------------|
+   | 5.1 | 6.1, 6.2 | 27 101 trafień; 16 581 orphan; ~1 052 kluczy | 9.04 AN01 / 9.05 / 9.06 |
+   | 5.2 | 6.1, 6.3 | mapa migracji + registry 15 wpisów + anchors 8/8 | 9.04 AN02 / 9.07 I01/I07/I12 |
+   | 5.3 | 6.1, 6.3 | schema 0 błędów; SHA-256 append-only; provenance 8/8 | 9.04 AN03 / 9.07 I02/I04/I05/I09 |
+   | 5.4 | 6.2, 6.3 | day-0 plan; granice natywne; jednostki 0 unknown | 9.04 AN04 / 9.07 I03/I06/I08/I11 |
+
+APENDYKS C/E — PYTANIA (9.11) I PLAN PRACY (9.09) ODZNACZONE W CAŁOŚCI.
+
+================================================================================
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+================================================================================
+
+Niniejszy raport jest zgodny z DOKUMENTEM ŚWIĘTYM nr 1 (ARCHITEKTURA_OPA_
+ENTERPRISE_TARGET.md: parametry w Data Plane, bramki CI, fail-closed) oraz
+DOKUMENTEM ŚWIĘTYM nr 2 (WIZJA_OPA_ENTERPRISE_V2.md: F4 Decision Certificate
+z threshold_version, P08 Law Radar dryf, P42 DNA rozszerzone o dane). Odstępstwa:
+brak BLOCKERÓW; zarejestrowane luki L01–L08 mają odbiorców i plan. Wszystkie
+podstawy prawne [NIEZWERYFIKOWANE] — weryfikacja ISAP/RCL w P47 (rejestr
+mediacji). Zero fikcyjnych wartości: mapa migracji używa fe:N do czasu
+weryfikacji (Q01). Raport jest kontraktem wdrożeniowym, nie esejem.

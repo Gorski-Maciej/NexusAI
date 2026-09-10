@@ -1,0 +1,17 @@
+{
+  "innovation": "V3-P46-I04",
+  "generated_at": "2026-09-10T08:26:20.617665+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "checked": true,
+    "parameters_checked": 8,
+    "errors": 0,
+    "schema_id": "v3_p46_thresholds_data_schema-2026.09",
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "schema": "bundles/v3_p46_thresholds_schema.json",
+    "validated_document": "bundles/thresholds_data.json",
+    "error_list": []
+  }
+}

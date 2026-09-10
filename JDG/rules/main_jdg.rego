@@ -115,6 +115,8 @@ import data.jdg.v3_p42_enterprise_reszta as v3_p42_enterprise_reszta
 import data.jdg.v3_p43_security_dr as v3_p43_security_dr
 import data.jdg.v3_p44_certyfikacja_finalna as v3_p44_certyfikacja_finalna
 import data.jdg.v3_p45_stub_killer as v3_p45_stub_killer
+import data.jdg.v3_p46_hardcode_eliminacja_enterprise as v3_p46_hardcode_eliminacja_enterprise
+import data.jdg.v3_p47_legal_basis_weryfikacja_enterprise as v3_p47_legal_basis_weryfikacja_enterprise
 import data.jdg.micro.quality_v3_13 as micro_quality_v3_13
 import data.jdg.hyper.quality_v3_14 as hyper_quality_v3_14
 import data.jdg.enterprise.quality_v3_15 as enterprise_quality_v3_15
@@ -1518,6 +1520,8 @@ _package_decisions := {
     "jdg.v3_p43_security_dr": v3_p43_security_dr.decide,
     "jdg.v3_p44_certyfikacja_finalna": v3_p44_certyfikacja_finalna.decide,
     "jdg.v3_p45_stub_killer": v3_p45_stub_killer.decide,
+    "jdg.v3_p46_hardcode_eliminacja_enterprise": v3_p46_hardcode_eliminacja_enterprise.decide,
+    "jdg.v3_p47_legal_basis_weryfikacja_enterprise": v3_p47_legal_basis_weryfikacja_enterprise.decide,
     "jdg.international": international.decide,
     "jdg.tp": tp.decide,
     "jdg.tp.hyper": tp_hyper.decide,
@@ -3185,6 +3189,26 @@ final_verdict_p109 = safe_merge(final_verdict_p108,
         fallback.decide
     ))
 
+# ── PAS 18y: V3-P46 ELIMINACJA HARDCODE (parameter registry, value provenance
+# chain, temporal parameter gate, schema validation, signed parameter bundles,
+# day-0 test generation, parameter change workflow, unit semantics, drift alarm,
+# legacy value sweeper, golden replay per change, documentation anchors).
+# Fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p46_check nie jest true.
+final_verdict_p110 = safe_merge(final_verdict_p109,
+    safe_merge(v3_p46_hardcode_eliminacja_enterprise.decide,
+        fallback.decide
+    ))
+
+# ── PAS 18z: V3-P47 WERYFIKACJA PODSTAW PRAWNYCH (legal basis census, citation
+# linter, ISAP anchors, temporal act versions, re-check scheduler, mediation
+# workflow, fictional basis blocker, completeness score, ISAP diff watch, human
+# verification stamp, acts coverage heatmap, citation style guide).
+# Fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p47_check nie jest true.
+final_verdict_p111 = safe_merge(final_verdict_p110,
+    safe_merge(v3_p47_legal_basis_weryfikacja_enterprise.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -3217,7 +3241,7 @@ final_verdict_p109 = safe_merge(final_verdict_p108,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p109
+    final_verdict_p111
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

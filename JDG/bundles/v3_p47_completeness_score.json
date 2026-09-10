@@ -1,0 +1,56 @@
+{
+  "innovation": "V3-P47-I08",
+  "generated_at": "2026-09-10T10:45:41.835762+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "complete_chains": 3582,
+    "active_rules": 12439,
+    "completeness_pct": 28.8,
+    "chains_below_min_depth": 8798,
+    "routing": "TRIAGE_QUEUE"
+  },
+  "evidence": {
+    "v2_stats": {
+      "NO_LKG_REF": 11964,
+      "NO_ARTICLE": 4731,
+      "UNKNOWN_ACT": 1327,
+      "MISSING": 59,
+      "LKG_OK": 416,
+      "OK": 251,
+      "NO_DZU": 165
+    },
+    "checks": [
+      {
+        "name": "v2_rows_processed",
+        "status": "OK",
+        "detail": "reguł w raporcie v2: 12439"
+      },
+      {
+        "name": "full_chains",
+        "status": "OK",
+        "detail": "pełne łańcuchy akt→art→ust/pkt: 3582/12439 (28.8% — cel 100% dla ACTIVE, trend → P37)"
+      },
+      {
+        "name": "chains_below_min_depth",
+        "status": "TRIAGE",
+        "detail": "łańcuchy poniżej min. głębokości 3: 8798 (AP05 — cytowanie niepełne = niezweryfikowalne)"
+      },
+      {
+        "name": "live_basis_occurrences",
+        "status": "OK",
+        "detail": "żywy skan: 12946 wystąpień _legal_basis w 495 plikach"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p47_legal_basis_weryfikacja_enterprise.completeness_score: True"
+      }
+    ],
+    "findings": [
+      {
+        "severity": "HIGH",
+        "message": "kompletność łańcuchów 28.8% poniżej celu 100% — SLA migracji (spina z P46 orphan backlog 16 581 i P51 pustynie)"
+      }
+    ]
+  }
+}

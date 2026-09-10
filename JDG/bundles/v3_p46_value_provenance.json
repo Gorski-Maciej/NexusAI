@@ -1,0 +1,17 @@
+{
+  "innovation": "V3-P46-I02",
+  "generated_at": "2026-09-10T08:26:24.184427+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "parameters_with_provenance": 8,
+    "weak_chain_count": 0,
+    "audit_rows": 8,
+    "min_depth_observed": 4,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "weak_chain": [],
+    "thresholds_data": "bundles/thresholds_data.json",
+    "note": "chain_depth = liczba niepustych ogniw (akt, okno, autor, czas)."
+  }
+}

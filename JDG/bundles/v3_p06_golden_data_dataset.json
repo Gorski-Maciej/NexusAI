@@ -1,8 +1,8 @@
 {
-  "certified_at": "2026-09-09T12:59:18.745427+00:00",
-  "checksum_sha256": "06d7f21e8195402db3dadefc333ca599108bb21840a084714d39eca3d2e8fe37",
-  "leaf_count": 814,
-  "boundary_rows": 3415,
+  "certified_at": "2026-09-10T11:40:09.942593+00:00",
+  "checksum_sha256": "38b5d2880ed046dffc3cabe9b908ad5017fa1fc5784174272891678f7dc921bf",
+  "leaf_count": 845,
+  "boundary_rows": 3532,
   "legal_sets": {
     "vat": [
       0.0,

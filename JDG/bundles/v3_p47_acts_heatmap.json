@@ -1,0 +1,72 @@
+{
+  "innovation": "V3-P47-I11",
+  "generated_at": "2026-09-10T10:45:43.657274+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "covered_acts": 50,
+    "desert_acts": 20,
+    "desert_acts_with_active_rules": 0,
+    "articles_total": 27,
+    "routing": "TRIAGE_QUEUE"
+  },
+  "evidence": {
+    "by_status": {
+      "COVERED": 50,
+      "UNCOVERED": 20
+    },
+    "acts": [
+      "v3_p47_act_ordynacja",
+      "v3_p47_act_vat",
+      "v3_p47_act_pit",
+      "v3_p47_act_cit",
+      "v3_p47_act_zus",
+      "v3_p47_act_ksht",
+      "v3_p47_act_kks",
+      "v3_p47_act_ksef",
+      "v3_p47_act_pcc",
+      "v3_p47_act_ryczalt",
+      "v3_p47_act_mdr",
+      "v3_p47_act_informacja"
+    ],
+    "priorities": {
+      "P1_KKS": 0,
+      "P1_VAT_odliczenia": 0,
+      "P1_amortyzacja": 0,
+      "P2_UoR": 0,
+      "P2_PCC_lokalne_akcyza": 0
+    },
+    "checks": [
+      {
+        "name": "coverage_gaps_source",
+        "status": "OK",
+        "detail": "legal_coverage_gaps.json: 27 artykułów, COVERED=50, UNCOVERED=20"
+      },
+      {
+        "name": "acts_in_map",
+        "status": "OK",
+        "detail": "akty w mapie v3_p47_acts: 12 — heatmapa łączy pokrycie punktów z rejestrem aktów"
+      },
+      {
+        "name": "deserts_identified",
+        "status": "OK",
+        "detail": "pustynie prawne (punkty UNCOVERED): 20 — wejście do P51; spina z orphan backlog P46 (16 581)"
+      },
+      {
+        "name": "priorities_honest",
+        "status": "OK",
+        "detail": "priorytety pustyni z gaps: {\"P1_KKS\": 0, \"P1_VAT_odliczenia\": 0, \"P1_amortyzacja\": 0, \"P2_UoR\": 0, \"P2_PCC_lokalne_akcyza\": 0}"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p47_legal_basis_weryfikacja_enterprise.acts_heatmap: True"
+      }
+    ],
+    "findings": [
+      {
+        "severity": "MEDIUM",
+        "message": "punkty prawne UNCOVERED: 20 — pustynie do P51 z pełną identyfikacją przepisów"
+      }
+    ]
+  }
+}

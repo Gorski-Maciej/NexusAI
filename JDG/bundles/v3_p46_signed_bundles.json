@@ -1,0 +1,19 @@
+{
+  "innovation": "V3-P46-I05",
+  "generated_at": "2026-09-10T08:26:22.060749+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "signed_bundles": 1,
+    "without_checksum": 0,
+    "tampered": 0,
+    "records": 3,
+    "sha256": "612942806f4b6b80f7aa6a2a72789661d140cb4660f8e11e3272e3705bee3eb9",
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "document": "bundles/thresholds_data.json",
+    "register": "bundles/v3_p46_parameter_versions.json",
+    "verify_mode": false,
+    "note": "Integralność wartości = integralność reguł (P38); rozjazd checksum = tampered."
+  }
+}
