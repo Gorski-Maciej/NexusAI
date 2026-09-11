@@ -1,0 +1,117 @@
+{
+  "innovation": "V3-P48-I01",
+  "generated_at": "2026-09-11T05:57:53.548931+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "sync_manifest_present": true,
+    "sync_age_days": 4.69,
+    "hand_edits": 101,
+    "drift_pct": 9.75,
+    "packages": 54,
+    "routing": "BLOCK_AND_ALERT"
+  },
+  "evidence": {
+    "sync_manifest": {
+      "last_sync": "2026-09-06T13:25:53.461987+00:00",
+      "files_copied": 500,
+      "source": "JDG/rules/",
+      "target": "policies/",
+      "mode": "mirror-single-source-of-truth"
+    },
+    "hand_edit_candidates": [
+      "accounting/depreciation_enterprise_complete.rego",
+      "cfc_auto_classifier.rego",
+      "crossborder/exit_tax_cfc_complete.rego",
+      "exit_tax_mdr_enterprise.rego",
+      "kks.rego",
+      "local_taxes/akcyza_alcohol.rego",
+      "main_jdg.rego",
+      "mdr/mdr_enterprise.rego",
+      "mdr_auto_generator.rego",
+      "mdr_dac6_enterprise.rego",
+      "p14_pcc_lokalne_akcyza_innovations_v9.rego",
+      "thresholds_jdg.rego",
+      "v3_p13_vat_deductions_enterprise.rego",
+      "v3_p14_pit_reliefs_enterprise.rego",
+      "v3_p15_crossborder_enterprise.rego",
+      "v3_p16_ksef_jpk_enterprise.rego",
+      "v3_p17_ordynacja_obrona_enterprise.rego",
+      "v3_p18_ryczalt_enterprise.rego",
+      "v3_p19_pcc_akcyza_bdo_enterprise.rego",
+      "v3_p25_kalendarz_zbiorczy_enterprise.rego",
+      "v3_p26_zus_skladki_enterprise.rego",
+      "data/thresholds_sc.rego",
+      "jdg/_helpers_jdg.rego",
+      "jdg/_metadata_jdg.rego",
+      "jdg/accounting.rego",
+      "jdg/allowances.rego",
+      "jdg/business.rego",
+      "jdg/compliance.rego",
+      "jdg/conflicts.rego",
+      "jdg/corrections.rego",
+      "jdg/crossborder.rego",
+      "jdg/digital.rego",
+      "jdg/edge_cases.rego",
+      "jdg/employer.rego",
+      "jdg/environmental.rego",
+      "jdg/fallback.rego",
+      "jdg/international.rego",
+      "jdg/kks.rego",
+      "jdg/ksef_jpk.rego",
+      "jdg/liability.rego",
+      "jdg/local_taxes.rego",
+      "jdg/main_jdg.rego",
+      "jdg/mpips.rego",
+      "jdg/pit/advances_returns.rego",
+      "jdg/pit/exemptions.rego",
+      "jdg/pit/forms.rego",
+      "jdg/pit/kup.rego",
+      "jdg/pit/transitions.rego",
+      "jdg/representation.rego",
+      "jdg/restructuring.rego",
+      "jdg/retention.rego",
+      "jdg/risk.rego",
+      "jdg/rodo.rego",
+      "jdg/routing.rego",
+      "jdg/rules/v3_p13_vat_deductions_enterprise.rego",
+      "jdg/rules/v3_p14_pit_reliefs_enterprise.rego",
+      "jdg/rules/v3_p16_ksef_jpk_enterprise.rego",
+      "jdg/rules/v3_p19_pcc_akcyza_bdo_enterprise.rego",
+      "jdg/rules/v3_p20_ksiegowosc_pkpir_uor_enterprise.rego",
+      "jdg/rules/v3_p25_kalendarz_zbiorczy_enterprise.rego"
+    ],
+    "checks": [
+      {
+        "name": "sync_manifest_present",
+        "status": "OK",
+        "detail": ".sync_manifest_v2.json: obecny, ostatni sync: 2026-09-06T13:25:53.461987+00:00"
+      },
+      {
+        "name": "sync_age",
+        "status": "OK",
+        "detail": "wiek synchronizacji: 4.69 dni (próg v3_p48_sync_max_age_days=7)"
+      },
+      {
+        "name": "hand_edit_candidates",
+        "status": "TRIAGE",
+        "detail": "pliki różniące się od canonical (kandydaci ręcznej edycji mirror): 101 (semantyczne 21 + osierocone 80)"
+      },
+      {
+        "name": "build_command_available",
+        "status": "OK",
+        "detail": "python JDG/tools/policies_sync_gate.py sync — mirror jako build output (jedno źródło prawdy: JDG/rules/, kontrakt P00)"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p48_mirror_sync.mirror_build_output: True"
+      }
+    ],
+    "findings": [
+      {
+        "severity": "HIGH",
+        "message": "mirror nie jest czystym build output — dryf strukturalny (BLOCK_AND_ALERT wg reguły I01)"
+      }
+    ]
+  }
+}

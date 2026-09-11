@@ -1,0 +1,162 @@
+{
+  "innovation": "V3-P48-I09",
+  "generated_at": "2026-09-11T06:01:43.543256+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "deploys_checked": 44,
+    "source_mismatches": 44,
+    "routing": "BLOCK_AND_ALERT"
+  },
+  "evidence": {
+    "mismatch_detail": [
+      {
+        "deployment": "jdg-acc-bundle-v9.0.0",
+        "phase": "ROLLED_BACK",
+        "rollback_reason": "fail-closed certification: no production telemetry stream for ACCOUNTING; exercise rollback SLA boundary",
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-acc2-bundle-v9.0.0",
+        "phase": "COMPLETE_SOAK",
+        "rollback_reason": null,
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-bap-bundle-v9.0.0",
+        "phase": "ROLLED_BACK",
+        "rollback_reason": "RAPORT_22 fail-closed: no production telemetry for bundle/API/migrations control plane; exercise rollback SLA boundary",
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-bap2-bundle-v9.0.0",
+        "phase": "COMPLETE_SOAK",
+        "rollback_reason": null,
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-bundle-v8.0.0",
+        "phase": "FULL_SOAK",
+        "rollback_reason": null,
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-doc-bundle-v9.0.0",
+        "phase": "ROLLED_BACK",
+        "rollback_reason": "RAPORT_23 fail-closed: no production telemetry for documentation artifacts; exercise rollback SLA boundary",
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-doc2-bundle-v9.0.0",
+        "phase": "COMPLETE_SOAK",
+        "rollback_reason": null,
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-eai-bundle-v9.0.0",
+        "phase": "ROLLED_BACK",
+        "rollback_reason": "RAPORT_17 fail-closed: no production telemetry for Enterprise-AI (adaptive trust/neural mesh/PSD2); exercise rollback SLA boundary",
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-eai2-bundle-v9.0.0",
+        "phase": "COMPLETE_SOAK",
+        "rollback_reason": null,
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-hp-bundle-v9.0.0",
+        "phase": "ROLLED_BACK",
+        "rollback_reason": "G-06 fail-closed verification: incident SLA 5 min",
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-hp2-bundle-v9.0.0",
+        "phase": "COMPLETE_SOAK",
+        "rollback_reason": null,
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-kjp-bundle-v9.0.0",
+        "phase": "ROLLED_BACK",
+        "rollback_reason": "RAPORT_15 fail-closed: no production telemetry for KSeF/JPK/e-Deklaracje; exercise rollback SLA boundary",
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-kjp2-bundle-v9.0.0",
+        "phase": "COMPLETE_SOAK",
+        "rollback_reason": null,
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-kks-bundle-v9.0.0",
+        "phase": "ROLLED_BACK",
+        "rollback_reason": "fail-closed certification: no production telemetry stream for KKS; exercise rollback SLA boundary",
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-kks7-bundle-v9.0.0",
+        "phase": "ROLLED_BACK",
+        "rollback_reason": "RAPORT_07 fail-closed: KKS innovations (czynny żal one-click with documentation pack, temporal penalty calculator art. 44, transaction criminal risk predictor art. 54/56/57/62) require host inputs (disclosure_pack, penalty_calc, txn_risk) before production activation; exercise rollback SLA boundary",
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-lc-bundle-v9.0.0",
+        "phase": "ROLLED_BACK",
+        "rollback_reason": "G-06 fail-closed verification: incident SLA 5 min",
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-lc2-bundle-v9.0.0",
+        "phase": "COMPLETE_SOAK",
+        "rollback_reason": null,
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-orc-bundle-v9.0.0",
+        "phase": "ROLLED_BACK",
+        "rollback_reason": "RAPORT_01 fail-closed: orchestrator core (routing path trace, 25-field verdict, decision cache, time-travel guard) requires host telemetry before production activation; exercise rollback SLA boundary",
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-ord-bundle-v9.0.0",
+        "phase": "ROLLED_BACK",
+        "rollback_reason": "fail-closed certification: no production telemetry stream for ORD; exercise rollback SLA boundary",
+        "semantic_drift_files": 21
+      },
+      {
+        "deployment": "jdg-ord-obr-bundle-v9.0.0",
+        "phase": "COMPLETE_SOAK",
+        "rollback_reason": null,
+        "semantic_drift_files": 21
+      }
+    ],
+    "checks": [
+      {
+        "name": "deployments_checked",
+        "status": "OK",
+        "detail": "wdrożenia w rejestrze: 44"
+      },
+      {
+        "name": "source_checksum_match",
+        "status": "BLOCK",
+        "detail": "deploy z dryfującego źródła (dryf semantyczny w repo / rollback flag): 44"
+      },
+      {
+        "name": "canonical_authority",
+        "status": "OK",
+        "detail": "jedno źródło prawdy: JDG/rules/; bundle Canonical Authority — checksum SHA-256 rego w bundle musi == canonical"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p48_mirror_sync.post_deploy_check: True"
+      }
+    ],
+    "findings": [
+      {
+        "severity": "HIGH",
+        "message": "deploy z dryfującego źródła — ROLLBACK i przebudowa z canonical (BLOCK_AND_ALERT wg reguły I09)"
+      }
+    ]
+  }
+}

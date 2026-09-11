@@ -1,0 +1,32 @@
+{
+  "innovation": "V3-P48-I11",
+  "generated_at": "2026-09-11T06:01:49.600374+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "compared_rules": 0,
+    "status_mismatches": 0,
+    "registry_entries": 0,
+    "routing": "TRIAGE_QUEUE"
+  },
+  "evidence": {
+    "mismatch_detail": [],
+    "checks": [
+      {
+        "name": "registry_p48_entries",
+        "status": "OK",
+        "detail": "wpisy v3_p48 w rule_registry: 0"
+      },
+      {
+        "name": "lifecycle_inheritance",
+        "status": "OK",
+        "detail": "porównane dziedziczenia: 0, rozjazdy: 0 (mirror dziedziczy status z canonical przez build output)"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p48_mirror_sync.lifecycle_alignment: True"
+      }
+    ],
+    "findings": []
+  }
+}

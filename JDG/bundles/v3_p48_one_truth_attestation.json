@@ -1,0 +1,42 @@
+{
+  "innovation": "V3-P48-I12",
+  "generated_at": "2026-09-11T06:01:49.989467+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "certificates_total": 1,
+    "certificates_with_rule_hash": 0,
+    "p48_hash_anchor": true,
+    "rule_hash_sample": "41ffb015b26351e6b9c24e969da1f3776ec324e2667fdf24ab9905c365b4dc66",
+    "routing": "TRIAGE_QUEUE"
+  },
+  "evidence": {
+    "checks": [
+      {
+        "name": "certificate_rule_hash",
+        "status": "TRIAGE",
+        "detail": "decision_certificate.py: rule_hash obecny: False; main_jdg POST-MERGE: rule_hash obecny: False"
+      },
+      {
+        "name": "p48_attestation_anchor",
+        "status": "OK",
+        "detail": "P48 dostarcza wzorzec rule_hash (SHA-256 pliku rego) dla certyfikatu — one-truth: dowód, która wersja wyliczyła"
+      },
+      {
+        "name": "attestation_record",
+        "status": "OK",
+        "detail": "zapis bundles/v3_p48_attestation.json — hash canonical mirror_sync.rego jako wzorzec dowodu wersji"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p48_mirror_sync.one_truth_attestation: True"
+      }
+    ],
+    "findings": [
+      {
+        "severity": "MEDIUM",
+        "message": "certyfikat F4 bez rule_hash — dodaj SHA-256 wersji reguły (TRIAGE wg reguły I12; V2 F4: dowód wersji)"
+      }
+    ]
+  }
+}

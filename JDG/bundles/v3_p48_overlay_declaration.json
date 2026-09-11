@@ -1,0 +1,49 @@
+{
+  "innovation": "V3-P48-I05",
+  "generated_at": "2026-09-11T05:58:11.882230+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "declared_overlays": 0,
+    "undeclared_overlays": 4,
+    "expired_overlays": 0,
+    "orphan_packages": 4,
+    "routing": "BLOCK_AND_ALERT"
+  },
+  "evidence": {
+    "declarations": [],
+    "undeclared_packages": [
+      "data",
+      "jdg",
+      "tax",
+      "tests"
+    ],
+    "checks": [
+      {
+        "name": "overlay_declarations",
+        "status": "OK",
+        "detail": "deklaracje overlay w mirror: 0 (brak)"
+      },
+      {
+        "name": "undeclared_orphans",
+        "status": "BLOCK",
+        "detail": "pakiety osierocone bez deklaracji overlay: 4 (data, jdg, tax, tests)"
+      },
+      {
+        "name": "expired_reviews",
+        "status": "OK",
+        "detail": "overlay po terminie przeglądu: 0"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p48_mirror_sync.overlay_declaration: True"
+      }
+    ],
+    "findings": [
+      {
+        "severity": "HIGH",
+        "message": "pakiety mirror bez deklaracji overlay: ['data', 'jdg', 'tax', 'tests'] — jawne, nie ukryte (prompt P48 I05)"
+      }
+    ]
+  }
+}

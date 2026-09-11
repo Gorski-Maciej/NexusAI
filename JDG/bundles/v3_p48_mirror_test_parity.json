@@ -1,0 +1,105 @@
+{
+  "innovation": "V3-P48-I06",
+  "generated_at": "2026-09-11T05:58:17.074377+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "parity_runs": 1,
+    "result_mismatches": 0,
+    "mirror_tests_total": 230,
+    "at_risk_tests": 2,
+    "mirror_packages_dirty": 5,
+    "routing": "TRIAGE_QUEUE"
+  },
+  "evidence": {
+    "checks": [
+      {
+        "name": "native_tests_inventory",
+        "status": "OK",
+        "detail": "natywne suit testowe tests/rego: 230 (konwencja R21: kontrola strukturalna — OPA niedostępny w środowisku)"
+      },
+      {
+        "name": "parity_portability",
+        "status": "TRIAGE",
+        "detail": "testy dotyczące pakietów z dryfem semantycznym (ryzyko rozjazdu wyników): 2 z 230"
+      },
+      {
+        "name": "mirror_packages_clean",
+        "status": "TRIAGE",
+        "detail": "pakiety mirror gotowe do parity 1:1: 49, z dryfem: 5 ((root), accounting, crossborder, local_taxes, mdr)"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p48_mirror_sync.mirror_test_parity: True"
+      }
+    ],
+    "findings": [
+      {
+        "severity": "HIGH",
+        "message": "testy pakietów z dryfem mogą dawać inne wyniki na mirror — uruchom parity po sync (BLOCKER dopóki dryf istnieje)"
+      }
+    ],
+    "native_tests": [
+      "test_akcyza_depreciation_mdr_exittax.rego",
+      "test_business_audyt_r02_enterprise.rego",
+      "test_missing_reliefs_enterprise.rego",
+      "test_native_aml.rego",
+      "test_native_amortyzacja.rego",
+      "test_native_annual_declaration_enterprise.rego",
+      "test_native_api_ui_quality_v3_19.rego",
+      "test_native_audit_defense_enterprise.rego",
+      "test_native_banking_automation_enterprise.rego",
+      "test_native_bdo.rego",
+      "test_native_bundles_quality_v3_18.rego",
+      "test_native_business_lifecycle_etap18.rego",
+      "test_native_calendar.rego",
+      "test_native_cashflow_tax_predictor_enterprise.rego",
+      "test_native_compliance_v3_12.rego",
+      "test_native_conflicts_enterprise.rego",
+      "test_native_cross_declaration_validator_enterprise.rego",
+      "test_native_cross_domain_intelligence_enterprise.rego",
+      "test_native_cross_domain_red_team_etap27.rego",
+      "test_native_crossborder.rego",
+      "test_native_crossborder_etap17.rego",
+      "test_native_crossborder_v3_08.rego",
+      "test_native_deadline_monitor_enterprise.rego",
+      "test_native_decision_composer_enterprise.rego",
+      "test_native_defense_builder_enterprise.rego",
+      "test_native_docs_quality_v3_20.rego",
+      "test_native_edelivery_gateway_enterprise.rego",
+      "test_native_edge_cases_enterprise.rego",
+      "test_native_enterprise_ai_neural_etap23.rego",
+      "test_native_enterprise_quality_v3_15.rego",
+      "test_native_epuap_enterprise.rego",
+      "test_native_esig_auto_applicator_enterprise.rego",
+      "test_native_exit_tax_mdr_enterprise.rego",
+      "test_native_final_certification_etap28.rego",
+      "test_native_form_optimizer_enterprise.rego",
+      "test_native_form_transition_simulator_enterprise.rego",
+      "test_native_gaar_shield_enterprise.rego",
+      "test_native_gtu_completeness_checker_enterprise.rego",
+      "test_native_hyper.rego",
+      "test_native_hyper_enterprise_contexts_etap22.rego",
+      "test_native_hyper_plan45_meta_enterprise.rego",
+      "test_native_hyper_quality_v3_14.rego",
+      "test_native_innovations2_enterprise.rego",
+      "test_native_innovations_enterprise.rego",
+      "test_native_interest_calculator_enterprise.rego",
+      "test_native_jdg_advertising.rego",
+      "test_native_jdg_esig.rego",
+      "test_native_jdg_force_majeure.rego",
+      "test_native_jdg_fx.rego",
+      "test_native_jdg_jpk.rego",
+      "test_native_jdg_ord.rego",
+      "test_native_jdg_pcc.rego",
+      "test_native_jdg_seasonal.rego",
+      "test_native_jdg_security.rego",
+      "test_native_jdg_taxfree.rego",
+      "test_native_jdg_uor.rego",
+      "test_native_jpk.rego",
+      "test_native_jpk_corrections_workflow_enterprise.rego",
+      "test_native_jpk_kr_st_generator_enterprise.rego",
+      "test_native_jpk_v7_autogen_enterprise.rego"
+    ]
+  }
+}

@@ -3793,3 +3793,49 @@ v3_p47_acts := {
     "no_auto_post": true,
     "manual_review_required": true,
 }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P48 SYNCHRONIZACJA MIRROR POLICIES — progi (ADR-002 parametry-as-data)
+# Zero dryfu canonical↔mirror: mirror jako build output, AST diff gate,
+# sync-in-PR, heatmapa dryfu, overlay jawne, parity testów, golden replay,
+# własność pakietów, post-deploy checksum, case study, lifecycle alignment,
+# one-truth attestation. Honory kontrakty: P00 (jedno źródło prawdy), P36
+# (sync w tej samej transakcji), P38 (post-deploy), P10 (golden), P39 (CI),
+# P07 (lifecycle), P45/P46/P47 (konwencje fali naprawczej).
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p48 := {
+    "v3_p48_threshold_version": "mirror-sync-v3p48-2026.09",
+    "legal_basis_version": "lb-mirror-v3p48-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: maksymalny wiek synchronizacji mirror (dni; po tym = TRIAGE przegląd)
+    "v3_p48_sync_max_age_days": 7,
+    # I02: dryf semantyczny AST na PR = 0 dozwolonych (tekstowy — dozwolony)
+    "v3_p48_semantic_drift_max": 0,
+    # I04: cel: 100% pakietów czystych; próg blokady dryfu najgorszego pakietu (%)
+    "v3_p48_heatmap_target_pct": 100,
+    "v3_p48_drift_block_pct": 20,
+    # I06: minimum przebiegów parity testów na mirror per cykl CI
+    "v3_p48_min_parity_runs": 1,
+    # I07: maksymalna delta decyzji golden replay mirror vs canonical (0 = zero)
+    "v3_p48_replay_delta_max": 0,
+    # I08: maksymalny wiek przeglądu własności pakietu mirror (dni)
+    "v3_p48_review_max_age_days": 90,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ── Mapa pakietów mirror (I08 własność; I04 heatmapa): właściciel + kadencja ──
+# Baseline pomiaru 2026-09-11 (tools/v3_p48_semantic_ast_diff.py): canonical
+# 522 plików rego, mirror 580, wspólnych 500 — 472 identycznych, 3 tekstowych,
+# 25 semantycznych, 22 brakujących w mirror, 80 osieroconych legacy w mirror.
+# Wszystkie statusy weryfikacji: [NIEZWERYFIKOWANE — 4-eyes] do stempla człowieka.
+v3_p48_packages := {
+    "v3_p48_packages_version": "packages-v3p48-2026.09",
+    "valid_from": "2026-01-01",
+    "v3_p48_pkg_root": {"path": "policies/", "owner": "P48-campaign", "review_days": 30, "drift_pct": 9.58, "verification": "NIEZWERYFIKOWANE"},
+    "v3_p48_pkg_jdg": {"path": "policies/jdg", "owner": "P48-campaign", "review_days": 30, "drift_pct": 100.0, "verification": "NIEZWERYFIKOWANE"},
+    "v3_p48_pkg_tax": {"path": "policies/tax", "owner": "P48-campaign", "review_days": 30, "drift_pct": 100.0, "verification": "NIEZWERYFIKOWANE"},
+    "v3_p48_pkg_vat": {"path": "policies/tax/vat", "owner": "P48-campaign", "review_days": 30, "drift_pct": 100.0, "verification": "NIEZWERYFIKOWANE"},
+    "no_auto_post": true,
+    "manual_review_required": true,
+}

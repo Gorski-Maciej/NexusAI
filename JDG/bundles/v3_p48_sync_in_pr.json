@@ -1,0 +1,51 @@
+{
+  "innovation": "V3-P48-I03",
+  "generated_at": "2026-09-11T05:58:01.285335+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "canonical_changed": 2,
+    "mirror_changed": 0,
+    "out_of_pr_sync": 1,
+    "sync_age_days": 4.69,
+    "routing": "BLOCK_AND_ALERT"
+  },
+  "evidence": {
+    "checks": [
+      {
+        "name": "canonical_dirty_rego",
+        "status": "OK",
+        "detail": "zmienione pliki rego w JDG/rules (stan roboczy PR): 2"
+      },
+      {
+        "name": "mirror_dirty_rego",
+        "status": "OK",
+        "detail": "zmienione pliki rego w policies/ (stan roboczy PR): 0"
+      },
+      {
+        "name": "sync_in_pr_coherent",
+        "status": "BLOCK",
+        "detail": "canonical zmieniony bez synchronicznego mirror — PR odrzucona (I03)"
+      },
+      {
+        "name": "no_out_of_pr_sync",
+        "status": "BLOCK",
+        "detail": "sync poza PR wykryty: 1 (manifest świeży przy niespójnym PR)"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p48_mirror_sync.sync_in_pr: True"
+      }
+    ],
+    "findings": [
+      {
+        "severity": "HIGH",
+        "message": "sync-in-PR: dołóż mirror do tej samej PR albo deklarację OVERLAY.md"
+      },
+      {
+        "severity": "HIGH",
+        "message": "dryf czasowy: sync wykonany poza PR ze zmianą canonical"
+      }
+    ]
+  }
+}
