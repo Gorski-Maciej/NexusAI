@@ -1,0 +1,15 @@
+{
+  "innovation": "V3-P49-I09",
+  "generated_at": "2026-09-11T12:28:14.185349+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "weekly_replay_done": true,
+    "decisions_replayed": 30,
+    "decisions_to_revise": 0,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "revise_list": [],
+    "note": "Replay AUTO_POST z tygodnia na obecnych regułach (I09); decyzja, która dziś byłaby NEEDS_ADVICE → lista rewizji. Dowód = OPA eval na złotych orzeczeniach."
+  }
+}

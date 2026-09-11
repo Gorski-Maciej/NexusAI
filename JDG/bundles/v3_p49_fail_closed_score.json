@@ -1,0 +1,17 @@
+{
+  "innovation": "V3-P49-I10",
+  "generated_at": "2026-09-11T12:28:14.659024+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "paths_total": 131,
+    "paths_explicit_else": 119,
+    "paths_fail_open": 12,
+    "fail_closed_score_pct": 90.84,
+    "target_pct": 100.0,
+    "routing": "BLOCK_AND_ALERT"
+  },
+  "evidence": {
+    "source": "v3_p49_fail_open_registry.json (skaner I02/I10)",
+    "note": "Fail-closed score: % ścieżek z jawnym else → NEEDS_ADVICE. Cel 100% (próg ADR-002); trend → P37; fail-open > 0 = BLOCK."
+  }
+}

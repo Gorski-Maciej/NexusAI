@@ -6,7 +6,7 @@ dryfu; przeglądy po terminie = TRIAGE, pakiety bez właściciela = BLOCK.
 """
 from __future__ import annotations
 
-from v3_p48_common import (drift_by_package, extract_threshold_block,
+from v3_p48_common import (BUNDLES_DIR, drift_by_package, extract_threshold_block,
                            measure_drift, rule_present, utcnow_iso, write_bundle,
                            write_json)
 
@@ -54,7 +54,7 @@ def main() -> int:
     orphan_files_pkgs = [r["package"] for r in register if r["orphan_files"] > 0 and r["owner"] is None]
     orphan_packages += len(orphan_files_pkgs)
 
-    write_json(__import__("pathlib").Path("bundles/v3_p48_ownership_register.json"),
+    write_json(BUNDLES_DIR / "v3_p48_ownership_register.json",
                {"generated_at": utcnow_iso(), "register": register,
                 "note": "weryfikacja AI nie zastępuje człowieka (4-eyes, lekcja P47-I10)"})
 

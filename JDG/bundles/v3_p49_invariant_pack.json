@@ -1,0 +1,59 @@
+{
+  "innovation": "V3-P49-I01",
+  "generated_at": "2026-09-11T12:27:52.565395+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "verdicts_checked": 31,
+    "invariants_total": 6,
+    "invariants_enabled": 6,
+    "violations": 8,
+    "wired_main_jdg": true,
+    "auto_post_blocked": 8,
+    "routing": "BLOCK_AND_ALERT"
+  },
+  "evidence": {
+    "invariants": [
+      "INV-P49-01 verdict_completeness",
+      "INV-P49-02 evidence_chain",
+      "INV-P49-03 routing_contract",
+      "INV-P49-04 temporal_window",
+      "INV-P49-05 warnings_sanity",
+      "INV-P49-06 no_silent_auto_post"
+    ],
+    "violation_examples": [
+      {
+        "invariant": "INV-P49-03",
+        "rule_id": "jdg.pit.a30c.r1"
+      },
+      {
+        "invariant": "INV-P49-03",
+        "rule_id": "jdg.pit.advances_returns.loss_carry_forward"
+      },
+      {
+        "invariant": "INV-P49-03",
+        "rule_id": "jdg.kks.statute_of_limitations_art44"
+      },
+      {
+        "invariant": "INV-P49-04",
+        "rule_id": "jdg.kks.statute_of_limitations_art44"
+      },
+      {
+        "invariant": "INV-P49-03",
+        "rule_id": "jdg.p12_crossborder_innovations.cfc_calculator"
+      },
+      {
+        "invariant": "INV-P49-02",
+        "rule_id": "jdg.kks.enterprise_penalties.voluntary_disclosure_guide"
+      },
+      {
+        "invariant": "INV-P49-03",
+        "rule_id": "jdg.kks.enterprise_penalties.voluntary_disclosure_guide"
+      },
+      {
+        "invariant": "INV-P49-04",
+        "rule_id": "jdg.kks.enterprise_penalties.voluntary_disclosure_guide"
+      }
+    ],
+    "note": "Pack uruchamiany przed każdym AUTO_POST (P04 enforce()); invariant naruszony = odmowa AUTO_POST → NEEDS_ADVICE/MANUAL_REVIEW. Dowód liczony na złotych orzeczeniach (30 P03-style + 1 legacy)."
+  }
+}

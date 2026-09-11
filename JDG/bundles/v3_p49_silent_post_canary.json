@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P49-I11",
+  "generated_at": "2026-09-11T12:28:17.244233+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "canary_run": true,
+    "probes_total": 4,
+    "silent_posts_detected": 0,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "probe_results": [
+      {
+        "id": "P49-SC-01",
+        "desc": "brak pola rule_id (kontrakt P03)",
+        "decision_mode": "BLOCK",
+        "silent_post": false
+      },
+      {
+        "id": "P49-SC-02",
+        "desc": "brak _legal_basis (łańcuch dowodów)",
+        "decision_mode": "BLOCK",
+        "silent_post": false
+      },
+      {
+        "id": "P49-SC-03",
+        "desc": "kwota ponad limit bez 4-eyes",
+        "decision_mode": "TRIAGE",
+        "silent_post": false
+      },
+      {
+        "id": "P49-SC-04",
+        "desc": "bypass flag (invariants_bypassed)",
+        "decision_mode": "BLOCK",
+        "silent_post": false
+      }
+    ],
+    "note": "Syntetyczne inputy z brakami NA ŻYWO (OPA eval na polityce P49): cichy AUTO_POST na probe = incydent (BLOCK). Interwał canary: v3_p49_canary_interval_hours."
+  }
+}

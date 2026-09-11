@@ -1,12 +1,12 @@
 {
   "innovation": "V3-P48-I11",
-  "generated_at": "2026-09-11T07:43:30.297516+00:00",
+  "generated_at": "2026-09-11T09:59:58.479592+00:00",
   "gate": "PASS",
   "metrics": {
-    "compared_rules": 0,
+    "compared_rules": 12,
     "status_mismatches": 0,
-    "registry_entries": 0,
-    "routing": "TRIAGE_QUEUE"
+    "registry_entries": 12,
+    "routing": "AUTO_FILE"
   },
   "evidence": {
     "mismatch_detail": [],
@@ -14,12 +14,12 @@
       {
         "name": "registry_p48_entries",
         "status": "OK",
-        "detail": "wpisy v3_p48 w rule_registry: 0"
+        "detail": "wpisy v3_p48 w rule_registry: 12"
       },
       {
         "name": "lifecycle_inheritance",
         "status": "OK",
-        "detail": "porównane dziedziczenia: 0, rozjazdy: 0 (mirror dziedziczy status z canonical przez build output)"
+        "detail": "porównane dziedziczenia: 12, rozjazdy: 0 (mirror dziedziczy status z canonical przez build output)"
       },
       {
         "name": "rule_present",

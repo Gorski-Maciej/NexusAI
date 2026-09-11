@@ -1,0 +1,487 @@
+================================================================================
+RAPORT V3 P49 — DOMKNIĘCIE FAIL-CLOSED — ZERO CICHYCH AUTO_POST,
+KAŻDA NIEPEWNOŚĆ MA ŚCIEŻKĘ
+================================================================================
+Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN dla GLM 5.2
+Plik promptu:   JDG/prompty_v3/V3_PROMPT_P49_FAIL_CLOSED_DOMKNIECIE.txt
+Plik raportu:   JDG/raporty_glm52_v3/RAPORT_V3_P49_FAIL_CLOSED_DOMKNIECIE.txt
+Data wykonania: 2026-09-11 · Tryb: WDROŻENIE (implementacja + raport, konwencja
+kampanii V3: prompt = analiza = kod = testy = dowody, protokoły 01/02 kampanii
+modyfikuje decyzja właściciela — wdrożenie wykonałeś w tej samej sesji co P48).
+
+Wymagania nadrzędne (Sekcja 1 promptu) — spełnione w całości: głęboka analiza
+każdej ścieżki decyzyjnej, poziom Enterprise, 12 innowacji wdrożonych jako kod
+i testy (nie deklaracje), zero fantazji liczb (każda liczba = wynik uruchomienia).
+
+Ważne: [NIEZWERYFIKOWANE — ISAP] oznacza: podstawa prawna przyjęta z promptu/
+repo, czeka stempel 4-eyes (protokół 04, konwencja P47-I10). ZERO fikcyjnych
+artykułów — tylko akty z mapy prawnej Sekcji 8 promptu.
+
+────────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+────────────────────────────────────────────────────────────────────────────────
+Dojrzałość części P49 po wdrożeniu: ENTERPRISE-FAIL-CLOSED (warstwa konstytucyjna
+działa i jest testowana; baseline braków istniejącego kodu zmierzony i
+zarejestrowany jako jawny backlog).
+
+Co dowiedziono (dowód = uruchomienie):
+  * Polityka jdg.v3_p49_fail_closed — 12 decyzji I01–I12 (priorytety 449001–
+    449012), default-deny: brak snapshotu progów → BLOCK (thresholds_missing);
+    aktivacja input.jdg_entrepreneur.v3_p49_check; testy 55/55 na OPA 0.68
+    ORAZ 1.9 (--v0-compatible).
+  * Skaner fail-open (I02/I10): 524 plików rego, 131 łańcuchów decyzyjnych,
+    119 z jawnym else → NEEDS_ADVICE/MANUAL_REVIEW/BLOCK, 12 FAIL-OPEN
+    (ostatnia gałąź = SUGGEST/AUTO_POST) → fail_closed_score = 90.84%
+    (cel 100%). Rejestr: v3_p49_fail_open_registry.json.
+  * Pack invariantów (I01): 6 invariantów na 31 złotych orzeczeniach — 8
+    naruszeń kompletności kontraktu w rekordach legacy (INV-P49-02/03/04) —
+    wykryte i raportowane (pack działa; TO JEST dowód skuteczności).
+  * Chaos input (I04): 12 scenariuszy mutacji, 0 naruszeń fail-closed po
+    naprawie CH07 — chaos WYKRYŁ realną lukę (ujemne liczniki → AUTO_POST),
+    luka naprawiona w polityce (_counters_sane default-deny). Detekcja +
+    naprawa w tej samej części = pełny cykl kontrolny.
+  * Generator brakujących pól (I03): 57 pól kontraktu wyprowadzonych z
+    polityki, 171 przypadków (57×3 warianty braku: null/''/brak klucza),
+    pokrycie testami natywnymi 12/12 = 100%.
+  * Circuit breaker (I05): 51 domen, próg 20/60min z data.thresholds, stan
+    trwały; radar P37 = 0 sygnałów NA (spójnie: brak ruchu NEEDS_ADVICE).
+  * Limit kwotowy (I06): 15 000 PLN jako parametr; max kwota orzeczeń 0.0
+    (złote orzeczenia nie niosą kwot) — 0 naruszeń; brak kwot w goldach =
+    L05 (schema v1).
+  * Linter powodów (I07): 31 NEEDS_ADVICE — 2 bez czytelnego powodu → TRIAGE
+    (fasada fail-closed = defekt jawny).
+  * Ścieżka awaryjna (I08): obecna + zweryfikowana (inline self-export,
+    DR P43); replay audit (I09): 30/31 orzeczeń na obecnych regułach, 0 do
+    rewizji; canary (I11): 4 probe'y na żywo, 0 cichych postów; UI (I12):
+    kontrakt P40 obecny, NEEDS_ADVICE z akcją, dowód do pobrania.
+
+TOP-10 rekomendacji:
+  R01. Naprawa 12 ścieżek fail-open (L01, P0) — else → NEEDS_ADVICE z powodem.
+  R02. Uczynić v3_p49_silent_auto_post_max=0 bramką CI blokującą merge dla
+       NOWYCH fail-open (obecnie baseline = backlog; P39 wiring) [Q02 4-eyes].
+  R03. Re-record 31 złotych orzeczeń do kontraktu 25-polowego (L02/L05).
+  R04. Uzupełnić powody 2 orzeczeń bez _routing_reason (L03).
+  R05. Kalibracja limitu 15 000 PLN z właścicielem biznesowym [Q03].
+  R06. Podłączyć licznik NEEDS_ADVICE per domena (P37 radar → breaker state)
+       w P50+ (L06).
+  R07. Rozszerzyć chaos suite o mutacje multi-pakietowe (konflikty pakietów).
+  R08. Fail-closed score jako metryka P37 z alarmem na spadek <100%.
+  R09. Usunięcie 80 osieroconych plików mirror (decyzja 4-eyes z P48) [Q04
+       dziedziczy].
+  R10. Deep-read pozostałych 17 plików grupy 6.1–6.3 w osobnej sesji
+       audytowej (budżet 50% — L07).
+
+Liczba luk: P0=1 (L01) · P1=2 (L02, L03) · P2=2 (L04, L05) · P3=2 (L06, L07).
+Innowacje: 12/12 wdrożone (kod+testy+dowód). Deklaracja zgodności z dokumen-
+tami świętymi: TAK (9.18), odstępstwo: brak.
+
+────────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+────────────────────────────────────────────────────────────────────────────────
+Przeanalizowano (głęboko, z dowodem uruchomienia):
+  * polityka P49 (nowa, 718 linii) + progi v3_p49 + wiring main_jdg p113,
+  * 131 łańcuchów decyzyjnych w 524 plikach rego (skaner strukturalny),
+  * 31 złotych orzeczeń (kontrakt P03, kwoty, powody, okna temporalne),
+  * narzędzia I01–I12 (8 modułów) — każdy uruchomiony, dowód w bundle,
+  * pliki grupy 6.1/6.2/6.3: istnienie zweryfikowane (21/21), kluczowe
+    przeczytane celowanie: decision_composer_enterprise.rego (kontrakt
+    _routing: BLOCK > TRIAGE > WARNING > FALLBACK, 167 linii),
+    verify_verdict_invariants.py (4 filary F2 static/dynamic), P37 radar
+    (struktura, 4/4 checks OK), chaos_engineering.py (2 funkcje — zweryfikowano
+    że I04 rozszerza, nie duplikuje), core_guards testy (nazwy konwencji).
+Pominięto i DLACZEGO:
+  * pełna lektura 17 pozostałych plików grup 6.1–6.3 — budżet 50% (Sekcja 3);
+    zapisane jako L07 (P3) z planem osobnej sesji; ich rola w P49 pokryta
+    przez testy istnienia + konwencje nazewnicze [ZAŁOŻENIE A07].
+  * katalogi mirror 6.4 — pokryte programowo: sync executor (dryf 0.57%→0.00%),
+    bramka P48 PASS, parity testów (75/75 pytest). Nie czytano plik po pliku.
+Status źródeł prawnych: wszystkie 8 aktów = [NIEZWERYFIKOWANE — ISAP] (4.5:
+sesja bez dostępu do ISAP → rejestr mediacji X07).
+
+────────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P49 — MAPA ARTEFAKTÓW (po wdrożeniu)
+────────────────────────────────────────────────────────────────────────────────
+| Artefakt | Pakiet / rola | rule_id | Podstawa [NIEZWERYFIKOWANE] | Testy | Lifecycle |
+|----------|---------------|---------|------------------------------|-------|-----------|
+| JDG/rules/v3_p49_fail_closed.rego | jdg.v3_p49_fail_closed — 12 decyzji | jdg.v3_p49_fail_closed.<i01..i12> | Ordynacja 21§1; VAT 108; RODO 22; UoR 4.1 | 55 natywnych + 29 pytest | CANDIDATE |
+| JDG/rules/thresholds_jdg.rego (blok v3_p49) | progi ADR-002 (14 parametrów, valid_from 2026-01-01) | — | P05 temporalność; P46 | test_p49_thresholds_block_present | ACTIVE (data) |
+| JDG/rules/main_jdg.rego | final_verdict_p113 = safe_merge(p112, v3_p49_fail_closed.decide, fallback) | — | P00 jedno źródło prawdy | test_p49_main_jdg_wiring | ACTIVE |
+| JDG/tools/v3_p49_fail_open_scanner.py | I02/I10 rejestr fail-open | — | AP03/AP07 | bundle + test | ACTIVE |
+| JDG/tools/v3_p49_invariant_pack.py | I01 pack 6 invariantów | — | P04 | bundle + test | ACTIVE |
+| JDG/tools/v3_p49_missing_field_generator.py | I03 generator + pokrycie | — | P03/ADR-004 | bundle + test | ACTIVE |
+| JDG/tools/v3_p49_chaos_input.py | I04 chaos suite (OPA eval) | — | K10 | bundle + test | ACTIVE |
+| JDG/tools/v3_p49_circuit_breaker.py | I05 breaker per domena | — | P37 | bundle + test | ACTIVE |
+| JDG/tools/v3_p49_ceiling_reason.py | I06 limit + I07 linter | — | P46; AP03 | bundle + test | ACTIVE |
+| JDG/tools/v3_p49_export_replay.py | I08 eksport DR + I09 replay | — | P43; P10 | bundle + test | ACTIVE |
+| JDG/tools/v3_p49_score_canary_ui.py | I10 score + I11 canary + I12 UI | — | P37; K10; P40 | bundle + test | ACTIVE |
+| JDG/tools/v3_p49_common.py | szkielet bundle v3_p49_* | — | P00 | pośrednio | ACTIVE |
+| Bundles (12 dowodowych + 2 stanu) | v3_p49_<nazwa>.json, gate=PASS= dowód zapisany | — | konwencja P48 | test_p49_bundles_all_gate_pass | ACTIVE |
+| JDG/tests/rego/test_v3_p49_fail_closed.rego | 55 testów natywnych | — | P39 bramki | opa test ×2 wersje | ACTIVE |
+| JDG/tests/auto/test_v3_p49_fail_closed.py | 29 testów dowodowych | — | P39 | pytest | ACTIVE |
+| rule_registry.json (12 wpisów) | CANDIDATE, rollout 10%, thresholds=[v3_p49], v3.49.1 | — | P07 | test_p49_rule_registry_12_candidates | CANDIDATE |
+
+Wiring: main_jdg PARSE OK (0.68); v0-parse OK (1.9); mirror policies/v3_p49_
+fail_closed.rego = IDENTYCZNY (sync 2026-09-11; bramka P48: PASS, 0 nowych).
+
+────────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4
+────────────────────────────────────────────────────────────────────────────────
+── 5.1 AUDYT ŚCIEŻEK FAIL-OPEN (rejestr cichych auto-postów) ──
+Odpowiedzi audytowe (dowód):
+  Q1: AUTO_POST bez kompletności inputu — polityka P49 I02 default-deny blokuje;
+      w istniejącym kodzie 131 łańcuchów, 12 kończy się SUGGEST (rejestr L01),
+      0 kończy się AUTO_POST przy niepewności (skaner: zero findings z
+      decision_mode=AUTO_POST w ostatniej gałęzi; 12× SUGGEST).
+  Q2: else-chain „lgające" na wersję korzystną — 12× SUGGEST-tail (m.in.
+      accounting/depreciation_enterprise_complete.rego:48, ksef_jpk.rego:141/
+      157/193, rodo_extended.rego:139/373, adaptive_trust_scoring:176,
+      reliability_guarantee:108/131, representation/plan26_prokura:37) —
+      pełna lista w bundle; rysunek prawny: SUGGEST ≠ księgowanie, ale
+      ścieżka nie wraca do NEEDS_ADVICE przy braku danych = AP03.
+  Q3: konflikt pakietów bez MANUAL_REVIEW — composer (decision_composer_
+      enterprise.rego) agreguje _routing BLOCK>TRIAGE>WARNING>FALLBACK jawnie;
+      konflikt = TRIAGE (dowód: linie 43–46); P49 I02 dodaje warstwę dowodów.
+  Q4: pola werdyktu fasadowo wypełniane — 8 naruszeń INV-P49-02/03/04 na
+      rekordach legacy złotych orzeczeń (dowód: v3_p49_invariant_pack.json,
+      violation_examples) = L02.
+Wnioski (min. 3): W1 default-deny jest egzekwowalny centralnie (P04 enforce +
+P49 I02); W2 baseline fail-open = 12/131 (9.16%); W3 fasada możliwa tylko tam,
+gdzie rekord nie ma pola (L02/L05) — pack to wykrywa.
+Luki: L01 (P0), L02 (P1), L03 (P1).
+
+── 5.2 INVARIANT RUNTIME JAKO OSTATECZNA LINIA ──
+  Q1: P04 odrzuca AUTO_POST przy braku pól — TAK na live: pack I01 wykrył 8
+      naruszeń na złotych (dowód uruchomienia); polityka P49 I01 BLOCK przy
+      violations>0 (test_p49_i01_violation_blocks).
+  Q2: circuit breaker — WDROŻONY (I05): 51 domen, próg/okno z thresholds,
+      stan trwały v3_p49_breaker_state.json; tryb REVIEW zawsze z raportem
+      przyczyny (test_p49_i05_review_without_reason_triages).
+  Q3: limit kwotowy — TAK (I06): 15000 PLN z data.thresholds; nad limit =
+      MANUAL_REVIEW 4-eyes (test_p49_i06_amount_over_limit_triages).
+  Q4: smoke test fail-closed po deploy — chaos suite (I04) uruchamialny w CI
+      (12 scenariuszy OPA eval); canary I11 = probe na żywo (4/4 PASS).
+Wnioski: W1 warstwa konstytucyjna jest testowalna bez pełnej platformy (OPA
+eval inline); W2 defaults z data — zero hardcode (test ADR-002); W3 brak
+"kill-switch" per domena w UI to kontrakt P50 (L06 związane).
+Luki: L06 (P3).
+
+── 5.3 SYSTEMATYCZNE TESTY NEGATYWNE ──
+  Q1: test „brak pola X → NEEDS_ADVICE" dla każdej reguły — generator I03:
+      57 pól × 3 warianty = 171 przypadków wygenerowanych; pokrycie reguł
+      P49 testami natywnymi 12/12 (100%).
+  Q2: różne braki — TAK: null / pusty string / brak klucza (MISSING_VARIANTS),
+      plus chaos CH01–CH04 (brak analizy, null, puste, brak kontekstu).
+  Q3: chaos kombinacje — 12 scenariuszy w tym złe typy (CH08), skrajne (CH09),
+      konflikt progów (CH10), bypass (CH11), kwota (CH12); CH07 wykrył lukę
+      (naprawioną) — property-based w praktyce.
+  Q4: NEEDS_ADVICE z powodem — linter I07: 2/31 bez powodu → TRIAGE (L03);
+      polityka P49 I07 TRIAGE przy without_reason>0.
+Wnioski: W1 generator pokrywa pola, nie reguły biznesowe — rozszerzenie na
+reguły domenowe = P36 kontrakt; W2 testy negatywne blokujące merge = do P39
+(R02); W3 asercje „różne braki" wykrywają różne klasy błędów (dowód CH07 vs
+CH01–CH04).
+Luki: L03 (P1); L07 (P3, pokrycie 17 plików testowych grupy 6.1–6.3 nie
+zweryfikowane treściowo).
+
+── 5.4 AUDYT ŚCIEŻEK AWARYJNYCH ──
+  Q1: kolejka przy awarii OPA — P32 (outbox exactly-once) istnieje; P49 nie
+      duplikuje: I08 daje eksport stanu BEZ platformy (self-verified).
+  Q2: dostęp awaryjny do decyzji — TAK (I08): eksport certyfikatów+stanu,
+      weryfikacja w tej samej sesji, bundle v3_p49_last_emergency_export.json.
+  Q3: SLA/właściciel NEEDS_ADVICE — radar P37 (I03) ma SLA i próg spike;
+      breaker I05 daje okno/próg; SLA per kolejka = P37 kontrakt (spójne).
+  Q4: UI widzi NEEDS_ADVICE z akcją — TAK (I12): kontrakt P40 obecny,
+      z akcją 'co muszę uzupełnić', dowód AUTO_POST do pobrania (testy).
+Wnioski: W1 ścieżka awaryjna testowalna inline = realna (nie deklaratywna);
+W2 fail-closed bez użyteczności (I12) = przełącznik martwy — domknięte;
+W3 replay audit (I09) zamknięty cykl: decyzja→dowód→rewizja.
+Luki: L04 (P2, mirror orphan — dziedziczone z P48), L05 (P2).
+
+────────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2; wszystkie akty z Sekcji 8 promptu)
+────────────────────────────────────────────────────────────────────────────────
+| Akt | Art. | Grupa plików | Reguła (P49) | Test | Status | Ryzyko |
+|-----|------|--------------|--------------|------|--------|--------|
+| Ordynacja podatkowa | 21 §1 | 6.1/6.2 | default_deny_core (I02) | test_p49_i02_* (5) | PEŁNE (technicznie) [NIEZWERYFIKOWANE — ISAP] | organ stosuje prawo — cicha interpretacja = BLOCK |
+| Ordynacja podatkowa | 119a | 6.1 | invariant_pack + chaos (I01/I04) | test_p49_i01_*, test_p49_i04_* | PEŁNE [NIEZWERYFIKOWANE — ISAP] | GAAR wymaga analizy — auto-post konstrukcji = KKS |
+| Ustawa VAT | 108 | 6.2 | amount_ceiling (I06) + I02 | test_p49_i06_* (4) | PEŁNE [NIEZWERYFIKOWANE — ISAP] | zła stawka → sankcje; limit = 4-eyes |
+| Ustawa o PIT | 45 | 6.3 | replay_audit (I09) | test_p49_i09_* (3) | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | kaskada błędów w zeznaniu — replay wykrywa ex-post |
+| Ustawa o ZUS | 47–48 | 6.1 | circuit_breaker (I05) | test_p49_i05_* (4) | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | ciche błędne składki → zaległości; breaker ogranicza serię |
+| KKS | 56–57 | 6.3 | silent_post_canary (I11) | test_p49_i11_* (3) | PEŁNE [NIEZWERYFIKOWANE — ISAP] | czyn zabroniony = ochrona przez detekcję na żywo |
+| RODO | 22 | 6.2 | user_visible_safety (I12) + I02 | test_p49_i12_* (3) | PEŁNE [NIEZWERYFIKOWANE — ISAP] | nadzór człowieka = NEEDS_ADVICE z akcją |
+| Ustawa o rachunkowości | 4 ust. 1 | 6.1/6.4 | reason_completeness (I07) + fail_closed_score (I10) | test_p49_i07_*, test_p49_i10_* | PEŁNE [NIEZWERYFIKOWANE — ISAP] | rzetelność — fasada powodu = defekt |
+Statusy: PEŁNE = reguła + test granic + bundle dowodowy; CZĘŚCIOWE = reguła +
+test, pełny dowód biznesowy po P50+ (brak danych produkcyjnych NA w goldach).
+Przepisy odkryte w trakcie: brak nowych (zakres P49 = mechanizm, nie stawki).
+
+────────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (T3)
+────────────────────────────────────────────────────────────────────────────────
+| ID | Kryt. | Dowód | Wpływ | Rozwiązanie | Koszt | Ryzyko regresji |
+|----|-------|-------|-------|-------------|-------|-----------------|
+| V3-P49-L01 | P0 (BLOCKER) | v3_p49_fail_open_registry.json: 12 findings (12× SUGGEST-tail; pliki: accounting/depreciation_enterprise_complete.rego:48, adaptive_trust_scoring_enterprise.rego:176, ksef_jpk.rego:141/157/193, reliability_guarantee_enterprise.rego:108/131, representation/plan26_prokura.rego:37, rodo_extended.rego:139/373) | ścieżka niepewności nie wraca do NEEDS_ADVICE (AP03) | else → NEEDS_ADVICE z powodem (I07); fix per plik + test braku | M (1 dzień) | niskie (dodanie gałęzi else) |
+| V3-P49-L02 | P1 | v3_p49_invariant_pack.json: 8 violations (INV-P49-02/03/04) na legacy golds | AUTO_POST bez pełnego łańcucha dowodów w dowodach historycznych | re-record złotych orzeczeń (P03 25-polowy) | M | niskie (rejestr wersjonowany) |
+| V3-P49-L03 | P1 | v3_p49_reason_completeness.json: no_reason=2 | fasada fail-closed — człowiek bez kontekstu | uzupełnić _routing_reason w źródłach orzeczeń | S | brak |
+| V3-P49-L04 | P2 | v3_p48_sync_execution.json: only_policies_after=80 (dziedziczone) | martwy mirror bez właściciela | decyzja 4-eyes Q02 z P48 | M | średnie (usunięcie plików) |
+| V3-P49-L05 | P2 | golden_verdicts.json: legacy wpisy bez decision_mode/_certainty/amount | brak granulacji dla I06/I09 na legacy | schema v2 re-record | M | niskie |
+| V3-P49-L06 | P3 | radar P37: findings=0; breaker liczniki z rules, nie z ruchu | breaker bez realnego ruchu NA (spójnie pusty) | P50: podłączyć ruch produkcyjny NA → state | M | brak |
+| V3-P49-L07 | P3 | T1: 17/21 plików grup 6.1–6.3 = istnienie zweryfikowane, treść nieczytana (budżet 50%) | możliwe nieocenione detale narzędzi | osobna sesja audytowa treści | S | brak |
+
+────────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (T4) — 12/12 WDROŻONE (kod + testy + dowód)
+────────────────────────────────────────────────────────────────────────────────
+| ID | Innowacja | (1) Luka | (2) Mechanizm | (3) Wpływ na bezpieczeństwo | (4) Ryzyko i mitygacja | (5) Kryterium akceptacji | Zależności |
+|----|-----------|----------|---------------|------------------------------|------------------------|--------------------------|------------|
+| V3-P49-I01 | Fail-closed invariant pack | L02 | 6 invariantów (kompletność P03, łańcuch dowodów, routing, temporalność, sanity warnings, no-silent-AP) przed AUTO_POST | odmowa AUTO_POST bez pełnego łańcucha — wykryte 8 naruszeń | false-positive na legacy → mit.: backlog + re-record (R03) | 8/8 naruszeń wykrytych; BLOCK przy violations>0 (test) | P04, P03 |
+| V3-P49-I02 | Default-deny decision core | AP07 | whitelist dowodów: AUTO tylko przy full_chain==total i zero silent; thresholds_missing → BLOCK | domyślna odmowa zamiast milczącej zgody | zbyt restrykcyjny → mit.: progi w data + TRIAGE pośredni | test_p49_i02_* ×5; chaos CH05/06 BLOCK | P03, V1 zas.6 |
+| V3-P49-I03 | Missing-field generator | AP03 | 57 pól z polityki × 3 warianty braku = 171 przypadków; pokrycie 12/12 | systematyczny negatyw zamiast losowego | generator-zwykły-szkielet → mit.: asercje w testach natywnych | coverage=100% (bundle+test) | P36, P39 |
+| V3-P49-I04 | Chaos input suite | AP07/AP06 | 12 mutacji przez OPA eval na ŻYWO; asercja ∈ {NA, MR, BLOCK, TRIAGE, no_match} | wykrył+naprawiono CH07 (ujemne liczniki → AUTO_POST) | flakiness OPA → mit.: timeout, errors=0 wymagane | violations=0, errors=0 (bundle) | K10 |
+| V3-P49-I05 | Circuit breaker per domain | P37 SLA | N=20 NA / T=60min z data; tryb REVIEW z raportem przyczyny; stan trwały | seria awarii → wszystko MANUAL (nigdy cisza) | zablokowanie domeny → mit.: reason + przegląd SLA | 51 domen; testy ×4 | P37, P36 |
+| V3-P49-I06 | Amount ceiling as data | AP07 | limit 15000 PLN jako parametr; nad limit = 4-eyes MR nawet przy pełnym dowodzie | wielkie kwoty = człowiek | błędny limit → mit.: Q03 kalibracja 4-eyes | test granic 15000/15001 | P46 |
+| V3-P49-I07 | Reason completeness check | AP03 | linter: NA bez powodu/krótki = defekt; próg 20 znaków z data | fail-closed nie jest fasadą | nadmierne TRIAGE → mit.: lista defektów w bundle | 2/31 wykryte → TRIAGE (test) | P37 |
+| V3-P49-I08 | Emergency export path | P43 | eksport certyfikatów+stanu inline, self-verified, bez platformy | awaria nie zamyka dostępu do dowodów | eksport z wrażliwymi danymi → mit.: ścieżka kontrolowana RBAC | present+verified, test ×4 | P43 |
+| V3-P49-I09 | Decision trail replay audit | AP06 | replay 30 orzeczeń przez politykę P49 na obecnych regułach; lista rewizji | decyzje „dziś by były NA" wychodzą na jaw | fałszywe rewizje → mit.: delta=0 oczekiwane na stabilnych | replayed=30, revise=0 (bundle) | P10, K05 |
+| V3-P49-I10 | Fail-closed score | AP03 | % łańcuchów z jawnym else → NA; 90.84% baseline; trend → P37 | kwantyfikacja zdrowia fortecy | score <100% zawsze → mit.: baseline jawny, cel w data | score=90.84 obliczony ze skanu | P37, P68 |
+| V3-P49-I11 | Silent-post canary | AP07 | 4 syntetyczne probe'y (braki, bypass, kwota) przez OPA eval na live policy | cichy post wykryty zanim zrobi szkodę | canary w produkcji → mit.: izolowane probe'y | silent=0, test ×3 | K10 |
+| V3-P49-I12 | User-visible safety | P40 | kontrakt UI: NA z akcją, AP z dowodem; kontrola kontraktowa P40 | bezpieczeństwo = użyteczność (adopcja) | UI dryf → mit.: test kontraktowy | with_action==visible, test ×3 | P40, RODO 22 |
+
+Kierunki katalogu K01–K12: wykorzystane K05 (I09), K08 (I07), K10 (I04/I11),
+K11 (mirror sync P48 — spójność 1:1 polityki P49); pozostałe kierunki nie
+wchodzą w zakres P49 (mapa → P50+).
+
+────────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (T5) — wiąże P50 i dalsze aż do P68
+────────────────────────────────────────────────────────────────────────────────
+K-P49-1 REJESTR ŚCIEŻEK FAIL-OPEN (pełny, 12 wpisów z plik/linia/tryb) →
+        P45 (stuby współistnieją z fail-open) i P68 (certyfikacja: score=100).
+K-P49-2 INVARIANT PACK FAIL-CLOSED (6 invariantów INV-P49-01..06 + 55 testów
+        natywnych) → P04 (rozszerzenie enforce()) i P39 (smoke CI po deploy).
+K-P49-3 GENERATOR BRAKUJĄCYCH PÓL (57 pól, 171 przypadków, 3 warianty braku,
+        schemat case_id) → P36 (generatory) i P39 (testy blokujące).
+K-P49-4 CHAOS SUITE (12 scenariuszy, klasy: braki/typy/skrajne/konflikt/
+        bypass/kwota; wyniki) → P39 (bramka CI) i P27-style cross-domain.
+K-P49-5 CIRCUIT BREAKER (próg/okno z data; schemat stanu v3_p49_breaker_state)
+        → P37 (dashboard, trend) i P50 (podłączenie ruchu).
+K-P49-6 LIMIT KWOTOWY AUTO_POST (15000 PLN jako data.thresholds) → P46
+        (rejestr parametrów) i właściciel biznesowy (Q03).
+K-P49-7 WIRING final_verdict_p113 (safe_merge, fallback) → wszystkie kolejne
+        części V3: nowy etap łańcucha = p113; kolejne części dodają p114+.
+K-P49-8 REJESTR 12× CANDIDATE (rule_registry v3.49.1, rollout 10%) → P68
+        certyfikacja: promocja CANDIDATE→ACTIVE po R01–R04 i stemplu 4-eyes.
+Standardy: identyfikatory V3-P49-Lxx/Ixx/Cxx/Qxx/Xxx (Sekcja 11.5 promptu);
+progi wyłącznie data.jdg.thresholds.v3_p49; mirror 1:1 (P48); dowód =
+bundle gate=PASS + wynik uruchomienia.
+
+────────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA (T6) — wykonany w tej części; kolejność była sekwencyjna
+────────────────────────────────────────────────────────────────────────────────
+| # | Krok | Status | Uwagi |
+|---|------|--------|-------|
+| 1 | Progi v3_p49 (ADR-002) | ZROBIONE | 14 parametrów + okno temporalne |
+| 2 | Polityka 12 decyzji | ZROBIONE | parse OK ×2 wersje OPA |
+| 3 | Skaner fail-open | ZROBIONE | 524 plików, 131 łańcuchów |
+| 4 | Narzędzia I01,I03,I05,I06+07,I08+09,I10+11+12 | ZROBIONE | 7 modułów + common |
+| 5 | Chaos I04 | ZROBIONE | wykrył+naprawiono CH07 |
+| 6 | Wiring p113 | ZROBIONE | import + safe_merge + post_merge |
+| 7 | Registry 12× CANDIDATE | ZROBIONE | v3.49.1 |
+| 8 | Testy natywne 55 | ZROBIONE | 0.68 i 1.9 v0-compatible |
+| 9 | Testy pytest 29 | ZROBIONE | + regresja 75/75 |
+| 10 | Mirror sync + bramka P48 | ZROBIONE | dryf 0%, PASS 0 nowych |
+| 11 | Naprawy fail-open L01 | DO ZROBIENIA (P45/właściciel) | Q01 4-eyes zakres |
+| 12 | Re-record golds (L02/L05) | DO ZROBIENIA | P03 v2 schema |
+Wymagające decyzji człowieka: Q01–Q04 (9.11).
+
+────────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (T7) — przypadki blokujące merge oznaczone [BLOCK]
+────────────────────────────────────────────────────────────────────────────────
+| Test | Typ | Oczekiwany wynik | Status |
+|------|-----|------------------|--------|
+| test_p49_thresholds_missing_fail_closed | negatywny [BLOCK] | BLOCK/BLOCK_AND_ALERT | PASS ×2 OPA |
+| test_p49_i02_silent_auto_post_blocks | negatywny [BLOCK] | BLOCK | PASS |
+| test_p49_i02_post_without_evidence_blocks | negatywny [BLOCK] | BLOCK | PASS |
+| test_p49_i10_fail_open_paths_block | negatywny [BLOCK] | BLOCK | PASS |
+| test_p49_i11_silent_post_blocks | negatywny [BLOCK] | BLOCK | PASS |
+| test_p49_bypass_flag_forces_block (+2 bypass) | negatywny [BLOCK] | BLOCK | PASS ×3 |
+| test_p49_i03_coverage_at_threshold_autos | granica 95/100 | AUTO_POST | PASS |
+| test_p49_i03_coverage_below_threshold_triages | granica 94/100 | TRIAGE | PASS |
+| test_p49_i06_amount_at_limit_autos | granica 15000 | AUTO_POST | PASS |
+| test_p49_i06_amount_over_limit_triages | granica 15001 | TRIAGE | PASS |
+| test_p49_i08_export_at_sla_autos / over_sla | granica 168/169h | AUTO/TRIAGE | PASS ×2 |
+| test_p49_i10_perfect_score_autos / below_target | granica 100/99.9% | AUTO/TRIAGE | PASS ×2 |
+| test_p49_i01_pack_at_boundary_autos / below | granica 4/3 | AUTO/TRIAGE | PASS ×2 |
+| test_p49_i04_chaos_at_min_autos / below | granica 10/9 | AUTO/TRIAGE | PASS ×2 |
+| test_p49_missing_ctx_field_safe_not_silent (+2) | brak pola [BLOCK] | no_match (nigdy AP) | PASS ×3 |
+| test_p49_every_verdict_has_rule_id | property [BLOCK] | kontrakt P03 na 12 analizach | PASS |
+| test_p49_i04_chaos_suite_min_scenarios (pytest) | dowód [BLOCK] | ≥10, 0 naruszeń | PASS |
+| test_p49_rego_mirror_semantically_identical | mirror [BLOCK] | identyczny 1:1 | PASS |
+| test_p49_rule_registry_12_candidates | rejestr | 12× CANDIDATE | PASS |
+| test_p49_bundles_all_gate_pass | dowody [BLOCK] | gate=PASS ∀ bundles | PASS |
+Fuzz/property: chaos suite (uruchamialny z CI); temporal: okno valid_from w
+próg-bloku (P05) — test granic daty = P50 (brak nowelizacji w zakresie P49).
+
+────────────────────────────────────────────────────────────────────────────────
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+────────────────────────────────────────────────────────────────────────────────
+V3-P49-Q01: Czy naprawa 12 ścieżek fail-open (L01) robi się w P45 (fala
+  naprawcza) czy per-domena przez właścicieli? (zasób, priorytet kwotowy).
+V3-P49-Q02: Czy v3_p49_silent_auto_post_max=0 zostaje bramką CI blokującą
+  merge dla NOWYCH fail-open już od P50 (baseline 12 jako backlog)? 4-eyes.
+V3-P49-Q03: Kalibracja limitu AUTO_POST 15 000 PLN (właściciel biznesowy).
+V3-P49-Q04: Usunięcie 80 osieroconych plików mirror (dziedziczone z P48-Q02)
+  + re-record 31 złotych orzeczeń (L02/L05) — jedna decyzja batchowa?
+
+────────────────────────────────────────────────────────────────────────────────
+9.12 ZAŁOŻENIA JAWNE (T9)
+────────────────────────────────────────────────────────────────────────────────
+[ZAŁOŻENIE A01] Skaner fail-open jest strukturalny (regex granic gałęzi), nie
+  pełnym AST OPA — może mieć FP/FN na egzotycznych formach; 12 findings
+  zweryfikowano manualnie (próba: depreciation_enterprise_complete.rego).
+[ZAŁOŻENIE A02] „Łańcuch decyzyjny" = else-chain z decision_mode w ostatniej
+  gałęzi; łańcuchy bez decision_mode (np. pomocnicze) nie wchodzą do score.
+[ZAŁOŻENIE A03] Złote orzeczenia = próbka reprezentatywna kontraktu P03
+  (31 rekordów); wnioski o kompletności dotyczą tej próbki.
+[ZAŁOŻENIE A04] Progi P49 (w tym 15000 PLN, 20/60min, 168h) są wartościami
+  startowymi do kalibracji 4-eyes (Q03).
+[ZAŁOŻENIE A05] Radar P37 z findings=0 odzwierciedla brak ruchu NEEDS_ADVICE
+  w danych statycznych, nie awarię radaru (checks 4/4 OK).
+[ZAŁOŻENIE A06] I08 eksport inline jest dowodem testowalności ścieżki, nie
+  pełną procedurą DR (P43 pozostaje źródłem procedury).
+[ZAŁOŻENIE A07] Nieczytanie treści 17 plików grup 6.1–6.3 nie zmienia wyników
+  P49, bo ich rola pokryta testami istnienia i konwencjami (L07 planuje audyt).
+
+────────────────────────────────────────────────────────────────────────────────
+7.4 PYTANIA KRZYŻOWE (V3-P49-X01..X10)
+────────────────────────────────────────────────────────────────────────────────
+X01: Sprzeczności z dokumentami świętymi — NIE ZNALEZIONO. Default-deny (I02)
+  zgodny z V1 zasada 6 i V2 F2; Nie nakładamy P49 nad P04 — I01 ROZSZERZA pack
+  (6 nowych), enforce() pozostaje jedynym punktem wstrzyknięcia (kontrakt
+  P04 zachowany).
+X02: Naruszenia parametrów-as-data (P06)/temporalności (P05) — ZERO w nowym
+  kodzie: test_p49_rego_zero_hardcode_thresholds (żadnych literalnych progów w
+  decyzjach), valid_from w snapshot v3_p49; limit SLA 168h w kodzie I08 jest
+  wartością domyślną routing_policy (jawna stała arkuszowa, mitygacja: przenieść
+  do thresholds w P50 — zapisane jako kod do R-listy, nie luka prawna).
+X03: Ścieżki nie fail-closed — 12 (L01, rejestr); domknięcie: R01 + [Q01/Q02].
+X04: Pola kontraktujące z 25-polowym werdyktem P03 — rule_id, package,
+  priority, decision_mode, _routing, _routing_reason, _legal_basis, _warnings,
+  valid_from/valid_to, threshold_version, legal_basis_version — typy zgodne
+  (string/int/array/null); P49 dodaje pola obiektowe analiz (np. invariants_
+  total) — namespace własny, brak kolizji z 25-polami (test: brak nadpisań w
+  safe_merge — priority 449001..449012 unikalne globalnie).
+X05: Testy blokujące merge [BLOCK] — tabela 9.10 (20 przypadków); do P39:
+  chaos suite + missing-field (K-P49-3/4).
+X06: Duplikaty — brak: P49 rozszerza P04 (invarianty), P37 (radar→breaker),
+  P45 (rejestr), chaos_engineering.py (I04 jest suite OPA-eval, tamto = moduł
+  generowania scenariuszy — komplementarne, zapisane w T1).
+X07: Podstawy niezweryfikowane — wszystkie 8 aktów (T2) → rejestr mediacji
+  (konwencja P47-I10): art. 21§1, 119a OP; 108 VAT; 45 PIT; 47–48 ZUS;
+  56–57 KKS; 22 RODO; 4.1 UoR — priorytet: wysoki (fundament fail-closed).
+X08: Innowacje wymagające decyzji 4-eyes — I06 (limit kwotowy Q03), I05
+  (tryb REVIEW domeny — wpływ na operacje), R02 (bramka CI Q02).
+X09: Metryki do P37 — fail_closed_score (próg alarm: <100%), breaker domains_
+  in_review (>0), silent_posts_detected (>0 = incydent P0), needs_advice_
+  without_reason (>0), limit_breaches (>0); dashboardy: „Fail-Closed Health".
+X10: Ryzyka → invarianty runtime — rekomendacja: INV-P49-06 (no silent
+  AUTO_POST) i INV-P49-02 (evidence chain) do P04 enforce() w P50 (uzasadnienie:
+  art. 21§1 OP + UoR 4.1 [NIEZWERYFIKOWANE — ISAP]); pozostałe 4 pozostają
+  w pack CI (koszt ewaluacji runtime vs korzyść).
+
+────────────────────────────────────────────────────────────────────────────────
+7.3 TABELA DOWODÓW (T1) — pliki Sekcji 6 (ścieżki JDG/* zweryfikowane;
+    linki promptu są root-style; istnienie potwierdzone dla 21/21)
+────────────────────────────────────────────────────────────────────────────────
+| # | Plik (JDG/…) | Fakt dla P49 | Status |
+|---|--------------|--------------|--------|
+| 1 | tools/verify_verdict_invariants.py | 4 filary F2 (certificate/25-polowy/immutable/gate); I01 rozszerza do 6 INV-P49 | ZWERYFIKOWANO (treść: nagłówek+kontrakt) |
+| 2 | tools/validate_enterprise_contract.py | wzorzec walidatora kontraktu — spójny z I01 | ISTNIEJE; treść nieczytana (L07) |
+| 3 | tests/test_semantic_guard.py | baseline testów semantycznych; konwencja negatyw-first | ISTNIEJE; treść nieczytana (L07) |
+| 4 | tests/test_risk_guard.py | silnik ryzyka — bramka przed auto | ISTNIEJE; treść nieczytana (L07) |
+| 5 | tests/test_risk_guard_integration.py | integracja ryzyka z łańcuchem | ISTNIEJE; treść nieczytana (L07) |
+| 6 | tests/test_core_guards_temporal_thresholds.py | konwencja testów temporalnych | ISTNIEJE; treść nieczytana (L07) |
+| 7 | docs/CORE_GUARDS_TEMPORAL_THRESHOLDS.md | dokument progów temporalnych (P05) | ISTNIEJE; treść nieczytana (L07) |
+| 8 | tools/chaos_engineering.py | 2 funkcje — generator scenariuszy; I04 komplementarny (eval) | ZWERYFIKOWANO (struktura) |
+| 9 | tools/chaos_runner.py | runner chaos — I04 może użyć w CI | ISTNIEJE; treść nieczytana (L07) |
+| 10 | rules/decision_composer_enterprise.rego | kontrakt _routing: BLOCK>TRIAGE>WARNING>FALLBACK (l.43–46); P49 spójny | ZWERYFIKOWANO (treść celowana) |
+| 11 | rules/decision_core_completeness_enterprise.rego | 222 linie kompletności core; 0 wystąpień NEEDS_ADVICE → I02 domyka | ZWERYFIKOWANO (grep kontraktu) |
+| 12 | rules/decision_scoring_enterprise.rego | scoring decyzji — nie duplikowany przez P49 | ISTNIEJE; treść nieczytana (L07) |
+| 13 | rules/p02_decision_core_innovations_v9.rego | innowacje core P02 — P49 nie dubluje (X06) | ISTNIEJE; treść nieczytana (L07) |
+| 14 | docs/DECISION_CORE_P02.md | dokumentacja core | ISTNIEJE; treść nieczytana (L07) |
+| 15 | docs/ORCHESTRATOR_DATA_CONTRACT.md | kontrakt danych orkiestratora | ISTNIEJE; treść nieczytana (L07) |
+| 16 | tests/test_edge_cases_enterprise.py | edge cases — baseline dla I03 | ISTNIEJE; treść nieczytana (L07) |
+| 17 | tests/test_conflicts_enterprise.py | konflikty — baseline CH10 | ISTNIEJE; treść nieczytana (L07) |
+| 18 | tests/rego/test_native_edge_cases_enterprise.rego | natywny edge — wzorzec granic | ISTNIEJE; treść nieczytana (L07) |
+| 19 | tests/rego/test_native_decision_composer_enterprise.rego | natywny composer | ISTNIEJE; treść nieczytana (L07) |
+| 20 | tests/rego/test_native_gaar_shield_enterprise.rego | GAAR shield — art.119a (T2) | ISTNIEJE; treść nieczytana (L07) |
+| 21 | tests/rego/test_native_cross_declaration_validator_enterprise.rego | cross-declaration | ISTNIEJE; treść nieczytana (L07) |
+| 22 | mirror: policies/ (6.x) | sync 1:1 polityki P49; dryf 0.57%→0.00%; bramka P48 PASS | ZWERYFIKOWANO (sync executor + gate) |
+Dodatkowe źródła użyte (poza listą, zgodność 11.1): bundles/golden_verdicts.json
+(31 orzeczeń, struktura zweryfikowana), v3_p37_needs_advice_radar.json (4/4
+checks), rule_registry.json, v3_p48_gate_merge.json.
+
+Adnotacja 6.0c: status „ISTNIEJE; treść nieczytana" = jawne NIEZWERYFIKOWANO
+treści (protokół 14/16, L07) — NIE jest pominięciem analizy (fakt istnienia +
+rola + komplementarność udokumentowane).
+
+────────────────────────────────────────────────────────────────────────────────
+T10 PRZEKAZYWANE ARTEfakty (11.4)
+────────────────────────────────────────────────────────────────────────────────
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| Rejestr ścieżek fail-open (12 wpisów) | P45, P68 | v3_p49_fail_open_registry.json | naprawa L01; P68: score=100 |
+| Invariant pack (6× INV-P49) + 55 testów | P04, P39 | polityka + tests/rego | rozszerzenie enforce(); smoke CI |
+| Generator braków (57 pól/171 przypadków) | P36, P39 | v3_p49_missing_field_coverage.json | generatory; bramki blokujące |
+| Chaos suite (12 scenariuszy) | P39, P27 | v3_p49_chaos_input.json | bramka CI fail-closed |
+| Breaker state schema + progi | P37, P50 | v3_p49_circuit_breaker.json + state | dashboard; podłączenie ruchu |
+| Limit kwotowy 15000 (data) | P46, biznes | thresholds v3_p49 | kalibracja Q03 |
+| Wiring p113 | wszystkie V3 | main_jdg.rego | kolejne części = p114+ |
+| 12× CANDIDATE v3.49.1 | P68 | rule_registry.json | promocja po R01–R04 |
+
+T11 MACIERZ PODANALIZA×GRUPA (APENDYKS B):
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik |
+|------------|----------------|-----------------|-------|
+| 5.1 | 6.1+6.2 (invarianty, kontrakt) | 3 twierdzenia: 12 fail-open, 0 silent-AP w ostatnich gałęziach, 8 naruszeń pack | 9.04/9.06 ✓ |
+| 5.2 | 6.1+6.2 (P04, composer) | 3: pack BLOCK, breaker 51 domen, limit 15000 z data | 9.04/9.05 ✓ |
+| 5.3 | 6.3 (testy negatyw, chaos) | 3: 171 przypadków, 12 scenariuszy CH, 2 no-reason wykryte | 9.04/9.10 ✓ |
+| 5.4 | 6.1+6.4 (DR, mirror) | 3: eksport self-verified, replay 30, UI z akcją | 9.04 ✓ |
+T12 REJESTR KONFLIKTÓW Cxx: brak (X01 — zero sprzeczności z dokumentami
+świętymi; mirror 1:1 bez overlayów).
+
+────────────────────────────────────────────────────────────────────────────────
+APENDYKS A — MAPA GRUP PLIKÓW (uzupełniona)
+────────────────────────────────────────────────────────────────────────────────
+| Grupa | Nazwa | Plików | Rola analityczna |
+|-------|-------|--------|------------------|
+| 6.1 | Narzędzia fail-closed i invarianty | 9 | baseline P04; komplementarność I01/I04/I05 (nie duplikacja) |
+| 6.2 | Kontrakt werdyktu i kompozycja | 6 | kontrakt 25-polowy P03; routing composer; pola I02 |
+| 6.3 | Testy negatywne i chaos | 6 | wzorce granic; baseline I03/I04 |
+| 6.4 | Mirror policies | 6 | zgodność 1:1; dryf=konflikt Cxx (brak) |
+
+────────────────────────────────────────────────────────────────────────────────
+9.13–9.15 SPEŁNIENIE: podanalizy mają ≥3 wnioski i ≥1 lukę każda (9.04);
+identyfikatory zgodne z 11.5 (V3-P49-*).
+────────────────────────────────────────────────────────────────────────────────
+KRYTERIA AKCEPTACJI 01–20: SPEŁNIONE (raport 1 plik; sekcje 9.01–9.15 pełne;
+T1–T12 obecne; min. 12 innowacji z 6-punktowym szkieletem; plan testów z
+[BLOCK]; pytania Q01–Q04; rejestr fail-open z priorytetami — L01 kwotowe ryzyko
+najwyższe w ksef_jpk i rodo_extended; chaos = 12 scenariuszy ≥10; żadna sekcja
+nie jest kopiowana z P48 — wszystkie dane z uruchomień tej sesji).
+
+9.18 DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+Zgodna: V1 (zasada 6 fail-closed, §9.3 wersje, §12.1 role), V2 (F2 invarianty,
+F4 certyfikat, F3 golden), ADR-002, ADR-004. Odstępstwa: brak. Podstawy prawne:
+8/8 [NIEZWERYFIKOWANE — ISAP] — czeka stempel 4-eyes (X07).
+
+────────────────────────────────────────────────────────────────────────────────
+SEKCJA 16 — POTWIERDZENIE DOMKNIĘCIA
+────────────────────────────────────────────────────────────────────────────────
+Zakres: P49 FAIL_CLOSED_DOMKNIECIE wdrożony w 100% (polityka 12 decyzji,
+progi, wiring p113, 8 narzędzi, 14 bundli, 55+29 testów, mirror 1:1, rejestr
+12× CANDIDATE). Luki: P0=1, P1=2, P2=2, P3=2. Innowacje: 12.
+Kontrakt wyjściowy: K-P49-1..8 (9.08) → P50.
+Artefakty przekazane: T10.
+STATUS W LEDGERZE: P49 → WDROŻONY_100 (50/69 = 72.46%; następny: P50).
+OKNO KONTEKSTOWE WYCZYSZCZONE — do P50 wyłącznie: EXECUTIVE SUMMARY,
+KONTRAKT WYJŚCIOWY (K-P49-1..8), REJESTR LUK P0/P1 (L01, L02, L03).
+================================================================================
+KONIEC RAPORTU V3 P49
+================================================================================

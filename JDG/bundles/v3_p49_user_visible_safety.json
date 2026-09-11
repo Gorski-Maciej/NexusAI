@@ -1,0 +1,16 @@
+{
+  "innovation": "V3-P49-I12",
+  "generated_at": "2026-09-11T12:28:17.255246+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "needs_advice_visible": 1,
+    "needs_advice_with_action": 1,
+    "auto_post_evidence_downloadable": true,
+    "p40_contract_present": true,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "source": "v3_p40_api_contract.json + polityka P49 I12",
+    "note": "Fail-closed użyteczny (P40): NEEDS_ADVICE zawsze z akcją 'co muszę uzupełnić'; AUTO_POST z dowodem do pobrania."
+  }
+}

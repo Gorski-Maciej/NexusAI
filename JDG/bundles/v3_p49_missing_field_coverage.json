@@ -1,0 +1,214 @@
+{
+  "innovation": "V3-P49-I03",
+  "generated_at": "2026-09-11T12:32:28.441814+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "fields_derived": 57,
+    "cases_total": 171,
+    "missing_variants": 3,
+    "rules_total": 12,
+    "rules_covered": 12,
+    "coverage_pct": 100.0,
+    "missing_field_assertions": 3,
+    "generator_run": true,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "fields": [
+      "amount_ceiling",
+      "analysis",
+      "auto_post_amount",
+      "auto_post_blocked",
+      "auto_post_evidence_downloadable",
+      "auto_post_full_evidence_chain",
+      "auto_post_total",
+      "auto_post_without_evidence",
+      "canary_run",
+      "cases_total",
+      "chaos_input",
+      "circuit_breaker",
+      "decisions_replayed",
+      "decisions_to_revise",
+      "default_deny_core",
+      "domains_in_review",
+      "domains_total",
+      "emergency_export",
+      "export_path_present",
+      "fail_closed_score",
+      "fail_closed_violations",
+      "generator_run",
+      "hours_since_last_export",
+      "invariant_pack",
+      "invariants_enabled",
+      "invariants_total",
+      "jdg_entrepreneur",
+      "last_export_verified",
+      "legal_basis_version",
+      "limit_breaches",
+      "limit_configured",
+      "missing_field_coverage",
+      "needs_advice_in_window",
+      "needs_advice_short_reason",
+      "needs_advice_total",
+      "needs_advice_visible",
+      "needs_advice_with_action",
+      "needs_advice_without_reason",
+      "paths_explicit_else",
+      "paths_fail_open",
+      "paths_total",
+      "probes_total",
+      "reason_completeness",
+      "replay_audit",
+      "review_domains_with_reason",
+      "rules_covered",
+      "rules_total",
+      "silent_auto_posts",
+      "silent_post_canary",
+      "silent_posts_detected",
+      "suite_run",
+      "user_visible_safety",
+      "v3_p49",
+      "v3_p49_threshold_version",
+      "valid_from",
+      "violations",
+      "weekly_replay_done"
+    ],
+    "p03_required": [
+      "rule_id",
+      "package",
+      "priority",
+      "valid_from",
+      "_legal_basis"
+    ],
+    "case_count": 171,
+    "cases_sample": [
+      {
+        "case_id": "P49-MF-amount_ceiling-null",
+        "missing_field": "amount_ceiling",
+        "missing_variant": "null",
+        "expected_decision_mode": "NEEDS_ADVICE",
+        "expected_routing": "TRIAGE_QUEUE",
+        "input_patch": {
+          "amount_ceiling": null
+        }
+      },
+      {
+        "case_id": "P49-MF-amount_ceiling-empty_string",
+        "missing_field": "amount_ceiling",
+        "missing_variant": "empty_string",
+        "expected_decision_mode": "NEEDS_ADVICE",
+        "expected_routing": "TRIAGE_QUEUE",
+        "input_patch": {
+          "amount_ceiling": ""
+        }
+      },
+      {
+        "case_id": "P49-MF-amount_ceiling-absent",
+        "missing_field": "amount_ceiling",
+        "missing_variant": "absent",
+        "expected_decision_mode": "NEEDS_ADVICE",
+        "expected_routing": "TRIAGE_QUEUE",
+        "input_patch": {}
+      },
+      {
+        "case_id": "P49-MF-analysis-null",
+        "missing_field": "analysis",
+        "missing_variant": "null",
+        "expected_decision_mode": "NEEDS_ADVICE",
+        "expected_routing": "TRIAGE_QUEUE",
+        "input_patch": {
+          "analysis": null
+        }
+      },
+      {
+        "case_id": "P49-MF-analysis-empty_string",
+        "missing_field": "analysis",
+        "missing_variant": "empty_string",
+        "expected_decision_mode": "NEEDS_ADVICE",
+        "expected_routing": "TRIAGE_QUEUE",
+        "input_patch": {
+          "analysis": ""
+        }
+      },
+      {
+        "case_id": "P49-MF-analysis-absent",
+        "missing_field": "analysis",
+        "missing_variant": "absent",
+        "expected_decision_mode": "NEEDS_ADVICE",
+        "expected_routing": "TRIAGE_QUEUE",
+        "input_patch": {}
+      },
+      {
+        "case_id": "P49-MF-auto_post_amount-null",
+        "missing_field": "auto_post_amount",
+        "missing_variant": "null",
+        "expected_decision_mode": "NEEDS_ADVICE",
+        "expected_routing": "TRIAGE_QUEUE",
+        "input_patch": {
+          "auto_post_amount": null
+        }
+      },
+      {
+        "case_id": "P49-MF-auto_post_amount-empty_string",
+        "missing_field": "auto_post_amount",
+        "missing_variant": "empty_string",
+        "expected_decision_mode": "NEEDS_ADVICE",
+        "expected_routing": "TRIAGE_QUEUE",
+        "input_patch": {
+          "auto_post_amount": ""
+        }
+      },
+      {
+        "case_id": "P49-MF-auto_post_amount-absent",
+        "missing_field": "auto_post_amount",
+        "missing_variant": "absent",
+        "expected_decision_mode": "NEEDS_ADVICE",
+        "expected_routing": "TRIAGE_QUEUE",
+        "input_patch": {}
+      },
+      {
+        "case_id": "P49-MF-auto_post_blocked-null",
+        "missing_field": "auto_post_blocked",
+        "missing_variant": "null",
+        "expected_decision_mode": "NEEDS_ADVICE",
+        "expected_routing": "TRIAGE_QUEUE",
+        "input_patch": {
+          "auto_post_blocked": null
+        }
+      },
+      {
+        "case_id": "P49-MF-auto_post_blocked-empty_string",
+        "missing_field": "auto_post_blocked",
+        "missing_variant": "empty_string",
+        "expected_decision_mode": "NEEDS_ADVICE",
+        "expected_routing": "TRIAGE_QUEUE",
+        "input_patch": {
+          "auto_post_blocked": ""
+        }
+      },
+      {
+        "case_id": "P49-MF-auto_post_blocked-absent",
+        "missing_field": "auto_post_blocked",
+        "missing_variant": "absent",
+        "expected_decision_mode": "NEEDS_ADVICE",
+        "expected_routing": "TRIAGE_QUEUE",
+        "input_patch": {}
+      }
+    ],
+    "covered_rules": [
+      "amount_ceiling",
+      "chaos_input",
+      "circuit_breaker",
+      "default_deny_core",
+      "emergency_export",
+      "fail_closed_score",
+      "invariant_pack",
+      "missing_field_coverage",
+      "reason_completeness",
+      "replay_audit",
+      "silent_post_canary",
+      "user_visible_safety"
+    ],
+    "note": "Generator: dla każdego pola kontraktu P03/P49 3 warianty braku (null/''/brak klucza) → oczekiwane NEEDS_ADVICE (I02 default-deny). Pokrycie = reguły P49 z natywną asercją braku pola; rozszerzenie pokrycia = wejście do P36 (generatory) i P39 (testy CI)."
+  }
+}

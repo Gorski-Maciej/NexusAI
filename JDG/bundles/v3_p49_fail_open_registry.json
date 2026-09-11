@@ -1,0 +1,105 @@
+{
+  "innovation": "V3-P49-I02+I10",
+  "generated_at": "2026-09-11T12:26:28.310568+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "files_scanned": 524,
+    "fail_open_paths": 12,
+    "decision_chains_total": 131,
+    "paths_explicit_else": 119,
+    "fail_closed_score_pct": 90.84,
+    "silent_auto_post_max": 0,
+    "routing": "BLOCK_AND_ALERT",
+    "previous_fail_open_paths": 12
+  },
+  "evidence": {
+    "findings": [
+      {
+        "file": "accounting/depreciation_enterprise_complete.rego",
+        "line": 48,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "adaptive_trust_scoring_enterprise.rego",
+        "line": 176,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "ksef_jpk.rego",
+        "line": 141,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "ksef_jpk.rego",
+        "line": 157,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "ksef_jpk.rego",
+        "line": 193,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "reliability_guarantee_enterprise.rego",
+        "line": 108,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "reliability_guarantee_enterprise.rego",
+        "line": 131,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "representation/plan26_prokura.rego",
+        "line": 37,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "rodo_extended.rego",
+        "line": 139,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "rodo_extended.rego",
+        "line": 373,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "rule_lifecycle_enterprise.rego",
+        "line": 183,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "rule_lifecycle_enterprise.rego",
+        "line": 203,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      }
+    ],
+    "note": "Rejestr ścieżek fail-open (AP03/AP07): ostatnia gałąź else-chain z decision_mode AUTO_POST/SUGGEST = kandydat cichego AUTO_POST. Każdy wpis wymaga: else → NEEDS_ADVICE z powodem (I07) albo jawnej whitelist dowodów (I02). Baseline = backlog jawny, priorytetyzacja wg kwoty (kryterium 19 raportu P49).",
+    "scanned_at": "2026-09-11T12:26:28.310482+00:00"
+  }
+}

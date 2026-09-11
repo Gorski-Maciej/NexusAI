@@ -117,6 +117,8 @@ import data.jdg.v3_p44_certyfikacja_finalna as v3_p44_certyfikacja_finalna
 import data.jdg.v3_p45_stub_killer as v3_p45_stub_killer
 import data.jdg.v3_p46_hardcode_eliminacja_enterprise as v3_p46_hardcode_eliminacja_enterprise
 import data.jdg.v3_p47_legal_basis_weryfikacja_enterprise as v3_p47_legal_basis_weryfikacja_enterprise
+import data.jdg.v3_p48_mirror_sync as v3_p48_mirror_sync
+import data.jdg.v3_p49_fail_closed as v3_p49_fail_closed
 import data.jdg.micro.quality_v3_13 as micro_quality_v3_13
 import data.jdg.hyper.quality_v3_14 as hyper_quality_v3_14
 import data.jdg.enterprise.quality_v3_15 as enterprise_quality_v3_15
@@ -1522,6 +1524,7 @@ _package_decisions := {
     "jdg.v3_p45_stub_killer": v3_p45_stub_killer.decide,
     "jdg.v3_p46_hardcode_eliminacja_enterprise": v3_p46_hardcode_eliminacja_enterprise.decide,
     "jdg.v3_p47_legal_basis_weryfikacja_enterprise": v3_p47_legal_basis_weryfikacja_enterprise.decide,
+    "jdg.v3_p48_mirror_sync": v3_p48_mirror_sync.decide,
     "jdg.international": international.decide,
     "jdg.tp": tp.decide,
     "jdg.tp.hyper": tp_hyper.decide,
@@ -3209,6 +3212,28 @@ final_verdict_p111 = safe_merge(final_verdict_p110,
         fallback.decide
     ))
 
+# ── PAS 18aa: V3-P48 SYNCHRONIZACJA MIRROR POLICIES (mirror as build output,
+# semantic AST diff gate, sync-in-PR rule, drift heatmap, overlay declaration,
+# mirror test parity, golden replay on mirror, ownership register, post-deploy
+# checksum check, case-study template, lifecycle alignment, one-truth
+# attestation). Fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p48_check
+# nie jest true.
+final_verdict_p112 = safe_merge(final_verdict_p111,
+    safe_merge(v3_p48_mirror_sync.decide,
+        fallback.decide
+    ))
+
+# ── PAS 18ab: V3-P49 DOMKNIĘCIE FAIL-CLOSED (invariant pack przed AUTO_POST,
+# default-deny decision core, missing-field coverage gate, chaos input suite,
+# circuit breaker per domain, amount ceiling as data, reason completeness
+# linter, emergency export path, decision trail replay audit, fail-closed
+# score, silent-post canary, user-visible safety). Fail-closed; nieaktywny
+# dopóki input.jdg_entrepreneur.v3_p49_check nie jest true.
+final_verdict_p113 = safe_merge(final_verdict_p112,
+    safe_merge(v3_p49_fail_closed.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -3241,7 +3266,7 @@ final_verdict_p111 = safe_merge(final_verdict_p110,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p111
+    final_verdict_p113
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

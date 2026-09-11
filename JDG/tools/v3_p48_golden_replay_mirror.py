@@ -26,9 +26,11 @@ def main() -> int:
 
     # Paryta strukturalna: czy mirror zawiera wszystkie pakiety referencjonowane
     # w złotych orzeczeniach (dryf = mirror nie odtworzy decyzji).
+    # Schematy obsługiwane: v2 {hash: {verdict: {rule_id,...}}} oraz lista [{rule_id}].
     referenced = set()
-    for v in verdicts:
-        rid = str(v.get("rule_id", ""))
+    for v in (verdicts.values() if isinstance(verdicts, dict) else verdicts):
+        inner = v.get("verdict", v) if isinstance(v, dict) else {}
+        rid = str(inner.get("rule_id", "") if isinstance(inner, dict) else "")
         pkg = rid.rsplit(".", 1)[0] if "." in rid else rid
         if pkg:
             referenced.add(pkg)

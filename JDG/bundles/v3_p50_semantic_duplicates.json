@@ -1,0 +1,23 @@
+{
+  "innovation": "V3-P50-I01+I02+I12",
+  "generated_at": "2026-09-11T13:47:43.542087+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rules_total": 413,
+    "parse_errors": 217,
+    "duplicate_pairs": 0,
+    "contradictory_pairs": 0,
+    "temporal_variant_pairs": 0,
+    "duplicate_rules": 0,
+    "burden_pct": 0.0,
+    "method": "opa-parse-ast (hash warunków+skutku, stringi maskowane)",
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "duplicate_pairs_sample": [],
+    "contradictory_pairs": [],
+    "temporal_variants_sample": [],
+    "note": "I01: hash (body+value) z OPA AST (fallback opa19 --v0-compatible dla dialektu v1); stringi maskowane — tożsamość (rule_id/package) nie różnicuje, więc identyczna zasada pod różnymi rule_id = duplikat. Reguły o pustym body (wpisy katalogów metadanych) i boierplate defaultów pominięte — to nie są zasady prawne (AP04). I02: różny decision_mode w grupie = sprzeczność (BLOCK). Temporalne warianty → overlay I10. Baseline = backlog jawny.",
+    "scanned_at": "2026-09-11T13:47:43.535250+00:00"
+  }
+}

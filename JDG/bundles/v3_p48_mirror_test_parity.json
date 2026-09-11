@@ -1,11 +1,11 @@
 {
   "innovation": "V3-P48-I06",
-  "generated_at": "2026-09-11T07:39:27.270802+00:00",
+  "generated_at": "2026-09-11T09:59:58.058362+00:00",
   "gate": "PASS",
   "metrics": {
     "parity_runs": 1,
     "result_mismatches": 0,
-    "mirror_tests_total": 230,
+    "mirror_tests_total": 231,
     "at_risk_tests": 0,
     "mirror_packages_dirty": 0,
     "routing": "AUTO_FILE"
@@ -15,12 +15,12 @@
       {
         "name": "native_tests_inventory",
         "status": "OK",
-        "detail": "natywne suit testowe tests/rego: 230 (konwencja R21: kontrola strukturalna — OPA niedostępny w środowisku)"
+        "detail": "natywne suit testowe tests/rego: 231 (konwencja R21: kontrola strukturalna — OPA niedostępny w środowisku)"
       },
       {
         "name": "parity_portability",
         "status": "OK",
-        "detail": "testy dotyczące pakietów z dryfem semantycznym (ryzyko rozjazdu wyników): 0 z 230"
+        "detail": "testy dotyczące pakietów z dryfem semantycznym (ryzyko rozjazdu wyników): 0 z 231"
       },
       {
         "name": "mirror_packages_clean",

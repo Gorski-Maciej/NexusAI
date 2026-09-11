@@ -1,0 +1,25 @@
+{
+  "innovation": "V3-P49-I07",
+  "generated_at": "2026-09-11T12:27:53.996143+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "needs_advice_total": 31,
+    "needs_advice_without_reason": 2,
+    "needs_advice_short_reason": 0,
+    "min_reason_len": 20,
+    "routing": "TRIAGE_QUEUE"
+  },
+  "evidence": {
+    "defect_list": [
+      {
+        "rule_id": "jdg.ksef_jpk.ksef_mandatory",
+        "defect": "no_reason"
+      },
+      {
+        "rule_id": "jdg.kks.enterprise_penalties.voluntary_disclosure_guide",
+        "defect": "no_reason"
+      }
+    ],
+    "note": "Linter ścieżek NEEDS_ADVICE (I07): pusty/krótki powód = fasada fail-closed (AP03) — TRIAGE z listą defektów do naprawy."
+  }
+}

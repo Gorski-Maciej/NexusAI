@@ -1654,5 +1654,353 @@
         "version": "3.48.12"
       }
     ]
+  },
+  "jdg.v3_p49_fail_closed.invariant_pack": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 21 §1; VAT art. 108; RODO art. 22; UoR art. 4 ust. 1",
+        "owner": "P49-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p49_fail_closed.rego",
+          "tests/auto/test_v3_p49_fail_closed.py"
+        ],
+        "thresholds": [
+          "v3_p49"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.49.1",
+        "rule_id": "jdg.v3_p49_fail_closed.invariant_pack",
+        "title": "V3-P49 I01: fail-closed invariant pack przed AUTO_POST"
+      }
+    ]
+  },
+  "jdg.v3_p49_fail_closed.default_deny_core": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 21 §1; VAT art. 108; RODO art. 22; UoR art. 4 ust. 1",
+        "owner": "P49-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p49_fail_closed.rego",
+          "tests/auto/test_v3_p49_fail_closed.py"
+        ],
+        "thresholds": [
+          "v3_p49"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.49.1",
+        "rule_id": "jdg.v3_p49_fail_closed.default_deny_core",
+        "title": "V3-P49 I02: default-deny decision core (whitelist dowodow)"
+      }
+    ]
+  },
+  "jdg.v3_p49_fail_closed.missing_field_coverage": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 21 §1; VAT art. 108; RODO art. 22; UoR art. 4 ust. 1",
+        "owner": "P49-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p49_fail_closed.rego",
+          "tests/auto/test_v3_p49_fail_closed.py"
+        ],
+        "thresholds": [
+          "v3_p49"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.49.1",
+        "rule_id": "jdg.v3_p49_fail_closed.missing_field_coverage",
+        "title": "V3-P49 I03: missing-field coverage gate"
+      }
+    ]
+  },
+  "jdg.v3_p49_fail_closed.chaos_input": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 21 §1; VAT art. 108; RODO art. 22; UoR art. 4 ust. 1",
+        "owner": "P49-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p49_fail_closed.rego",
+          "tests/auto/test_v3_p49_fail_closed.py"
+        ],
+        "thresholds": [
+          "v3_p49"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.49.1",
+        "rule_id": "jdg.v3_p49_fail_closed.chaos_input",
+        "title": "V3-P49 I04: chaos input suite (mutacje fail-closed)"
+      }
+    ]
+  },
+  "jdg.v3_p49_fail_closed.circuit_breaker": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 21 §1; VAT art. 108; RODO art. 22; UoR art. 4 ust. 1",
+        "owner": "P49-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p49_fail_closed.rego",
+          "tests/auto/test_v3_p49_fail_closed.py"
+        ],
+        "thresholds": [
+          "v3_p49"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.49.1",
+        "rule_id": "jdg.v3_p49_fail_closed.circuit_breaker",
+        "title": "V3-P49 I05: circuit breaker per domain"
+      }
+    ]
+  },
+  "jdg.v3_p49_fail_closed.amount_ceiling": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 21 §1; VAT art. 108; RODO art. 22; UoR art. 4 ust. 1",
+        "owner": "P49-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p49_fail_closed.rego",
+          "tests/auto/test_v3_p49_fail_closed.py"
+        ],
+        "thresholds": [
+          "v3_p49"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.49.1",
+        "rule_id": "jdg.v3_p49_fail_closed.amount_ceiling",
+        "title": "V3-P49 I06: amount ceiling as data (4-eyes)"
+      }
+    ]
+  },
+  "jdg.v3_p49_fail_closed.reason_completeness": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 21 §1; VAT art. 108; RODO art. 22; UoR art. 4 ust. 1",
+        "owner": "P49-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p49_fail_closed.rego",
+          "tests/auto/test_v3_p49_fail_closed.py"
+        ],
+        "thresholds": [
+          "v3_p49"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.49.1",
+        "rule_id": "jdg.v3_p49_fail_closed.reason_completeness",
+        "title": "V3-P49 I07: reason completeness linter"
+      }
+    ]
+  },
+  "jdg.v3_p49_fail_closed.emergency_export": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 21 §1; VAT art. 108; RODO art. 22; UoR art. 4 ust. 1",
+        "owner": "P49-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p49_fail_closed.rego",
+          "tests/auto/test_v3_p49_fail_closed.py"
+        ],
+        "thresholds": [
+          "v3_p49"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.49.1",
+        "rule_id": "jdg.v3_p49_fail_closed.emergency_export",
+        "title": "V3-P49 I08: emergency export path (DR P43)"
+      }
+    ]
+  },
+  "jdg.v3_p49_fail_closed.replay_audit": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 21 §1; VAT art. 108; RODO art. 22; UoR art. 4 ust. 1",
+        "owner": "P49-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p49_fail_closed.rego",
+          "tests/auto/test_v3_p49_fail_closed.py"
+        ],
+        "thresholds": [
+          "v3_p49"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.49.1",
+        "rule_id": "jdg.v3_p49_fail_closed.replay_audit",
+        "title": "V3-P49 I09: decision trail replay audit"
+      }
+    ]
+  },
+  "jdg.v3_p49_fail_closed.fail_closed_score": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 21 §1; VAT art. 108; RODO art. 22; UoR art. 4 ust. 1",
+        "owner": "P49-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p49_fail_closed.rego",
+          "tests/auto/test_v3_p49_fail_closed.py"
+        ],
+        "thresholds": [
+          "v3_p49"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.49.1",
+        "rule_id": "jdg.v3_p49_fail_closed.fail_closed_score",
+        "title": "V3-P49 I10: fail-closed score (cel 100%)"
+      }
+    ]
+  },
+  "jdg.v3_p49_fail_closed.silent_post_canary": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 21 §1; VAT art. 108; RODO art. 22; UoR art. 4 ust. 1",
+        "owner": "P49-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p49_fail_closed.rego",
+          "tests/auto/test_v3_p49_fail_closed.py"
+        ],
+        "thresholds": [
+          "v3_p49"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.49.1",
+        "rule_id": "jdg.v3_p49_fail_closed.silent_post_canary",
+        "title": "V3-P49 I11: silent-post canary (probe zywy)"
+      }
+    ]
+  },
+  "jdg.v3_p49_fail_closed.user_visible_safety": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 21 §1; VAT art. 108; RODO art. 22; UoR art. 4 ust. 1",
+        "owner": "P49-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p49_fail_closed.rego",
+          "tests/auto/test_v3_p49_fail_closed.py"
+        ],
+        "thresholds": [
+          "v3_p49"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.49.1",
+        "rule_id": "jdg.v3_p49_fail_closed.user_visible_safety",
+        "title": "V3-P49 I12: user-visible safety (P40)"
+      }
+    ]
   }
 }

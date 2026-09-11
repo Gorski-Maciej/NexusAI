@@ -8,7 +8,8 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from v3_p48_common import measure_drift, rule_present, utcnow_iso, write_bundle, write_json
+from v3_p48_common import (BUNDLES_DIR, measure_drift, rule_present, utcnow_iso,
+                           write_bundle, write_json)
 
 INNOVATION = "V3-P48-I10"
 RULE = "jdg.v3_p48_mirror_sync.case_study"
@@ -48,7 +49,7 @@ def main() -> int:
     has_plan = all(case[f] for f in TEMPLATE_FIELDS)
     overdue = False  # termin naprawy 2026-09-30 > dziś (2026-09-11)
 
-    write_json(__import__("pathlib").Path("bundles/v3_p48_case_register.json"),
+    write_json(BUNDLES_DIR / "v3_p48_case_register.json",
                {"generated_at": utcnow_iso(),
                 "template_fields": TEMPLATE_FIELDS,
                 "cases": [dict(case, status="OPEN", overdue=overdue)]})

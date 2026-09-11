@@ -3839,3 +3839,41 @@ v3_p48_packages := {
     "no_auto_post": true,
     "manual_review_required": true,
 }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P49 DOMKNIĘCIE FAIL-CLOSED — progi (ADR-002 parametry-as-data)
+# Zero cichych AUTO_POST: rejestr ścieżek fail-open (skaner rego), default-deny
+# decision core, pack invariantów runtime, generator brakujących pól, chaos
+# input, circuit breaker per domena, limit kwotowy AUTO_POST, kompletność
+# powodów NEEDS_ADVICE, replay audyt, fail-closed score, canary cichego posta,
+# widoczność fail-closed w UI. Honory kontrakty: P03 (kontrakt werdyktu),
+# P04 (invarianty runtime), P36/P37 (radar NEEDS_ADVICE, SLA), P40 (UI), P45
+# (rejestr), P46 (parametry-as-data), P47 (kanon cytowań), P48 (zero dryfu
+# mirror — polityka P49 lustrzana 1:1).
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p49 := {
+    "v3_p49_threshold_version": "fail-closed-v3p49-2026.09",
+    "legal_basis_version": "lb-failclosed-v3p49-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: minimalna liczba invariantów runtime przed AUTO_POST (fail-closed pack)
+    "v3_p49_invariants_min": 4,
+    # I02: silent_auto_post_max = 0 — pojedynczy cichy AUTO_POST = BLOCK (AP07)
+    "v3_p49_silent_auto_post_max": 0,
+    # I03: minimalne pokrycie generatora brakujących pól (% reguł z testem braku)
+    "v3_p49_field_coverage_min_pct": 95,
+    # I04: minimalna liczba scenariuszy chaos input (mutacje z asercją fail-closed)
+    "v3_p49_chaos_cases_min": 10,
+    # I05: circuit breaker — próg NEEDS_ADVICE i okno (P37 radar; N w oknie T)
+    "v3_p49_breaker_threshold": 20,
+    "v3_p49_breaker_window_min": 60,
+    # I06: limit kwotowy AUTO_POST (PLN; powyżej = MANUAL_REVIEW — 4-eyes)
+    "v3_p49_auto_post_amount_limit": 15000,
+    # I07: minimalna długość powodu NEEDS_ADVICE (fasada fail-closed = defekt)
+    "v3_p49_min_reason_len": 20,
+    # I10: cel jawnie fail-closed ścieżek reguł (%; trend w P37)
+    "v3_p49_fail_closed_score_target_pct": 100,
+    # I11: interwał canary cichego posta (godziny między probe'ami)
+    "v3_p49_canary_interval_hours": 24,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}

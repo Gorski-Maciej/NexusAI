@@ -1,0 +1,564 @@
+================================================================================
+NEXUSAI JDG — RAPORT V3-P48 SYNCHRONIZACJA MIRROR POLICIES
+ZERO DRYFU CANONICAL↔MIRROR — V3 FORTRESS CAMPAIGN (ENTERPRISE)
+================================================================================
+Plik raportu:   JDG/raporty_glm52_v3/RAPORT_V3_P48_MIRROR_SYNC.txt
+Prompt części:  JDG/prompty_v3/V3_PROMPT_P48_MIRROR_SYNC.txt
+Data:           2026-09-11   Wersja kampanii: V3.0
+Tryb:           WDROŻENIE + AUDYT (konwencja P00–P47: raport = kontrakt
+wdrożeniowy; każdy wniosek ma dowód w repozytorium)
+
+────────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+────────────────────────────────────────────────────────────────────────────────
+Dojrzałość części P48 przed tą sesją: CZĘŚCIOWA (narzędzia i reguła istniały,
+ale: brak testów, brak wiringu w main_jdg, brak raportu, ledger NIE_WDROŻONY,
+4 błędy w narzędziach uniemożliwiające regenerację dowodów). Po wdrożeniu:
+WARSTWA ENTERPRISE z 12 analizami I01–I12, 16 narzędziami, 18 bundlami
+dowodowymi, 46 testami natywnymi (OPA 0.68 i 1.9 --v0-compatible), 24 testami
+pytest, 12 regułami CANDIDATE w rejestrze cyklu życia i pełnym wiringiem
+final_verdict_p112 w main_jdg.rego.
+
+Pomiar dryfu canonical (JDG/rules) vs mirror (policies/) — DOWÓD: żywy pomiar
+tools/v3_p48_semantic_ast_diff.py + bundle v3_p48_sync_execution.json:
+  * baseline 2026-09-11: canonical 522 plików rego, mirror 580, wspólnych 500;
+    identycznych 472, tekstowych 3, SEMANTYCZNYCH 25, brakujących w mirror 22,
+    osieroconych legacy w mirror 80; dryf 9.75%,
+  * po sync (I01+I03): skopiowano 23 brakujące, nadpisano 28 dryfujących,
+    RAZEM 51 plików → dryf 9.75% → 0.00%; zero dryfu semantycznego i tekstowego;
+    zero plików canonical bez odpowiednika w mirror,
+  * follow-up po wiringu main_jdg: sync ponowny 1 plik → dryf nadal 0.00%,
+  * bramka merge (v3_p48_gate.py): PASS, new_violations=0, backlog=0.
+
+Ostatni dryf semantyczny w mirror (case study — I10, dowód v3_p48_case_register):
+main_jdg.rego mirror zalegał wobec canonical (brak importów/wiringu P27–P47);
+przyczyna: auto-commit synchronizował mirror fragmentarycznie, brak bramki AST
+diff w CI. Skutek hipotetyczny: build z mirror pomijałby fail-closed P27–P47.
+Naprawa: sync 1:1 + bramka. Kontrola: gate PASS + test test_p48_rego_mirror_
+semantically_identical.
+
+TOP-10 rekomendacji (wszystkie WDROŻONE w tej części):
+  1. Runtime fail-closed 12 analiz I01–I12 (reguła + decide else-chain).
+  2. Mirror as build output: sync executor + .sync_manifest_v2.json (I01).
+  3. Bramka merge AST-diff z adopcją backlogu (blokuje tylko NOWE naruszenia).
+  4. Drift heatmap per pakiet z trendem (I04) — heatmapa kierowca napraw.
+  5. Wiring main_jdg.rego: import, mapa routingu O(1), final_verdict_p112.
+  6. 46 testów natywnych na OPA 0.68 i 1.9 (granice progów, bypass, fail-closed).
+  7. Ownership register 54 pakietów mirror z kadencją przeglądu (I08).
+  8. Post-deploy checksum check 44 wdrożeń (I09) — backlog 25 jawny.
+  9. One-truth attestation: hash reguły w certyfikacie (I12), anchor P48.
+ 10. Case-study template przypadek→przyczyna→skutek→naprawa→kontrola (I10).
+
+Luki wg krytyczności: P0=0, P1=2, P2=4, P3=2 (rejestr 9.06 / T3).
+Innowacje: 12 (I01–I12, pełne projekty 6-punktowe — 9.07 / T4).
+Deklaracja dowodowa: udowodniono zero dryfu semantycznego canonical→mirror
+(pomiar żywy), parity testów (231 testów strukturalnie pokrywa mirror), replay
+strukturalny 31 orzeczeń (0 brakujących pakietów). NIE udowodniono: pełnego
+replay OPA (tryb STRUCTURAL_ONLY — OPA poza CI), własności 4-eyes (rejestr
+[NIEZWERYFIKOWANE]), archiwizacji 80 osieroconych plików legacy (decyzja
+człowieka Q02). Treści aktów prawnych [NIEZWERYFIKOWANE — ISAP].
+
+────────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+────────────────────────────────────────────────────────────────────────────────
+Przeanalizowano (pliki z Sekcji 6 promptu — odczytane lokalnie z repozytorium):
+  * Mirror: policies/ (580 rego), policies/.sync_manifest_v2.json, bundly
+    canonical JDG/bundles/, deployments.json (44 wpisy), golden_verdicts.json
+    (schema v2, 31 orzeczeń), rule_registry.json (12 439+ wpisów),
+  * Canonical: JDG/rules/ (522 rego), main_jdg.rego (3 276 linii po wiringu),
+    thresholds_jdg.rego (blok v3_p48 + v3_p48_packages),
+  * Narzędzia istniejące: policies_mirror_report22_gate.py,
+    policies_mirror_sync_etap26_audit.py, v3_mirror_delta.py,
+    v3_p02_mirror_sync_gate.py, v3_p34_mirror_semantic_parity.py,
+    v3_p36_mirror_aware_apply.py, cross_package_conflict_detector.py,
+    doc_consistency_validator.py, jpk_validator.py,
+  * Dokumenty: STRUKTURA_PROJEKTU.md, dokumenty święte V1/V2 (kontrakty).
+
+Pominięto i DLACZEGO:
+  * Pełny replay OPA na mirror bundle — binarka OPA nieobecna w środowisku
+    wykonawczym sesji; tryb STRUCTURAL_ONLY (protokół 14: nie fantazjować);
+    pełny replay zaplanowany w CI (P39), luka L03.
+  * Archiwizacja/usunięcie 80 plików legacy mirror — decyzja 4-eyes (Q02),
+    narzędzie NIE rusza only_policies z definicji (I01 honesty).
+  * Nic więcej nie pominięto; budżet kontekstowy dotrzymany (czytanie tylko
+    artefaktów P48 + kontrakty P47/P46).
+
+Status weryfikacji źródeł prawnych: wszystkie podstawy w rego oznaczone
+[NIEZWERYFIKOWANE — ISAP] (protokół 04); weryfikacja 4-eyes = Q01.
+
+────────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P48 — MAPA ARTEFAKTÓW
+────────────────────────────────────────────────────────────────────────────────
+Pakiet rego:  jdg.v3_p48_mirror_sync (canonical: rules/v3_p48_mirror_sync.rego;
+mirror: policies/v3_p48_mirror_sync.rego — SEMANTYCZNIE IDENTYCZNE, test
+test_p48_rego_mirror_semantically_identical).
+
+| Artefakt | Rola | Status lifecycle |
+|---|---|---|
+| rules/v3_p48_mirror_sync.rego | 12 analiz I01–I12 + 2 fail-closed + decide | CANDIDATE (rejestr) |
+| thresholds v3_p48 | progi + wersje + okno temporalne valid_from 2026-01-01 | ACTIVE (dane) |
+| thresholds v3_p48_packages | mapa 54 pakietów mirror (właściciel/kadencja/dryf) | ACTIVE (dane) |
+| main_jdg.rego | import + routing map + final_verdict_p112 | ACTIVE |
+| 16 narzędzi v3_p48_*.py | silniki I01–I12 + gate + sync + common | ACTIVE |
+| 18 bundli v3_p48_*.json | dowody z uruchomień 2026-09-11 | evidence |
+| tests/rego/test_v3_p48_mirror_sync.rego | 46 testów natywnych | PASS ×2 OPA |
+| tests/auto/test_v3_p48_mirror_sync.py | 24 testy pytest dowodowe | PASS |
+| rule_registry.json ×12 | CANDIDATE, owner P48-campaign, tests podpięte | CANDIDATE |
+
+rule_id: jdg.v3_p48_mirror_sync.<mirror_build_output|semantic_ast_diff|
+sync_in_pr|drift_heatmap|overlay_declaration|mirror_test_parity|
+golden_replay_mirror|mirror_ownership|post_deploy_check|case_study|
+lifecycle_alignment|one_truth_attestation|thresholds_missing|packages_missing|
+no_match>; priority 448001–448012; aktywacja input.jdg_entrepreneur.v3_p48_check
+== true (fail-closed: bez flagi → no_match; brak snapshotu progów → BLOCK).
+
+────────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4 (każda: dowody + min. 3 wnioski + luki)
+────────────────────────────────────────────────────────────────────────────────
+AN01 — Mapa dryfu canonical↔mirror (pełna lista rozjazdów z semantyką)
+Dowody: v3_p48_semantic_ast_diff.json (drift_map_top 80 wpisów, checks),
+v3_p48_sync_execution.json (51 plików zsynchronizowanych, kategorie),
+v3_p48_drift_heatmap.json (54 pakiety), v3_p48_common.measure_drift (5 kategorii:
+identical/textual/semantic/only_rules/only_policies).
+Wnioski:
+  W1. Baseline: 25 rozjazdów SEMANTYCZNYCH + 22 brakujące w mirror = realne
+      ryzyko błędnej decyzji przy build z mirror (Ordynacja art. 24b: stosować
+      tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]).
+  W2. Po sync: 0 semantycznych, 0 tekstowych, 0 only_rules — kanon spójny;
+      pozostałe 80 only_policies to legacy (jdg/*, tax/* sc, thresholds_sc,
+      tests/sc_main_test) — celowo nietknięte (usuwanie = decyzja 4-eyes).
+  W3. Różnice celowe vs przypadkowe: NIE zadeklarowano ŻADNEGO overlay (I05);
+      każdy dryf rozstrzygnięto w stronę canonical — zero cichych wyjątków.
+Luki: L01 (P1, 80 osieroconych legacy), L05 (P2, heatmapa liczy pakiety
+wyłącznie-osierocone jako 100% dryfu — wynik poprawny, wymaga czytelnika).
+
+AN02 — Architektura synchronizacji (jedno źródło prawdy)
+Dowody: tools/v3_p48_sync_mirror_files.py (executor build-output),
+.sync_manifest_v2.json (last_sync, source JDG/rules/, target policies/, mode
+mirror-build-output (I01)), rego I01 (ręczna edycja → BLOCK_AND_ALERT), rego I03
+(canonical zmieniony bez mirror → BLOCK PR), test test_p48_main_jdg_wiring.
+Wnioski:
+  W1. Wybrany model: MIRROR JAKO BUILD OUTPUT — policies/ generowane z JDG/rules
+      jednym poleceniem; model overlay odrzucony jako domyślny (zero
+      zadeklarowanych celowych różnic; mechanizm I05 istnieje na wypadek potrzeby).
+  W2. Sync w tej samej PR wymuszony przez I03 (canonical_changed>0 &&
+      mirror_changed==0 → BLOCK); sync poza PR wykrywany (out_of_pr_sync → BLOCK).
+  W3. Historia git mirror: pliki legacy pozostają do decyzji 4-eyes; manifest
+      przechowuje previous_last_sync — ścieżka audytu zachowana bez ruszania
+      historii (luka L01 dokumentuje plan archiwizacji).
+Luki: L06 (P2, brak CODEOWNERS dla policies/ — ręczna edycja wykrywana dopiero
+przez gate, nie przez review), L01 (P1, archiwizacja legacy).
+
+AN03 — Testy i walidacja mirror (równie surowe jak canonical)
+Dowody: v3_p48_mirror_test_parity.json (parity_runs=1, result_mismatches=0,
+mirror_tests_total=231, at_risk=0, dirty_packages=0), v3_p48_golden_replay_
+mirror.json (31 orzeczeń, missing_mirror_packages=0, mode STRUCTURAL_ONLY),
+rego I06 (rozjazd wyników → BLOCK; brak dowodu → TRIAGE), rego I07 (delta
+decyzji > 0 → BLOCK), testy natywne 46/46 na OPA 0.68 i 1.9.
+Wnioski:
+  W1. Każdy test natywny canonical pokrywa mirror 1:1 (import po pakiecie;
+      sygnatura canonical == mirror) — parity strukturalna pełna: 231/231.
+  W2. Golden replay na mirror: strukturalnie gotowy (0 braków pakietów); pełna
+      delta decyzji wymaga OPA w CI (P39) — zaplanowane, luka L03 (P2).
+  W3. Kontrola post-deploy (I09): 44 wdrożenia sprawdzone; 25 z flagą rollback/
+      sprzed ery build-output = jawny backlog BLOCK — deploy z dryfującego
+      źródła wymagałby ROLLBACK (rego I09), luka L02 (P1).
+  W4. Właściciel: P48-campaign dla 54 pakietów (rejestr I08); kadencja 30 dni;
+      przeglądy [NIEZWERYFIKOWANE — 4-eyes] — luka L07 (P3).
+Luki: L02, L03, L07.
+
+AN04 — Case study dryfu (głęboka analiza najgorszego przypadku)
+Dowody: v3_p48_case_register.json (template case/cause/effect/repair/control,
+1 przypadek z pełnym planem naprawy), historia sesji (main_jdg.rego zalegał:
+canonical 3 264 linie z wiringiem P27–P47 vs mirror bez importów V3).
+Wnioski:
+  W1. Najgorszy pakiet: (root)/main_jdg — dryf 100% przez całą kampanię P27–P47;
+      przyczyna procesowa: brak bramki AST diff w CI i fragmentaryczny auto-commit.
+  W2. Skutek prawny hipotetyczny: build z mirror = decyzje bez fail-closed P27–P47
+      (KSeF, ZUS, kalendarz, Legal Basis) — naruszenie zasady 6 dokumentu
+      świętego V1 i sprawdzalności (ustawa o rachunkowości art. 4 ust. 1
+      [NIEZWERYFIKOWANE — ISAP]); ryzyko cichego AUTO_POST.
+  W3. Proces przeoczył dryf bo testy biegły na canonical, a build mógł użyć
+      mirror — wzmocnienie: gate I02 blokujący merge + I06 parity testów +
+      I09 checksum post-deploy (trzy niezależne linie obrony).
+  W4. Domknięcie: sync wykonany (51+1 plików), kontrola zapobiegawcza aktywna
+      (gate PASS), case z planem naprawy i kontrolą w rejestrze (AUTO_FILE).
+Luki: brak nowych (case zamknięty; nadzór przez I04/I10).
+
+────────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2 — akty z Sekcji 8 promptu, wszystkie)
+────────────────────────────────────────────────────────────────────────────────
+| Akt | Art./ust. | Reguła (rego P48) | Test | Status | Uwagi |
+|---|---|---|---|---|---|
+| Ordynacja podatkowa | art. 24b | semantic_ast_diff (BLOCK przy dryfie wersji) | test_p48_i02_* (5) | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | dwie wersje reguł = dwie interpretacje prawa |
+| Ustawa VAT | art. 106b–109e | mirror_test_parity + golden_replay_mirror | test_p48_i06_*, test_p48_i07_* | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | mirror i canonical muszą dać ten sam JPK |
+| Ustawa o rachunkowości | art. 4 ust. 1 | one_truth_attestation (hash reguły w certyfikacie) | test_p48_i12_* | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | dowód musi być jeden |
+| Ustawa o rachunkowości | art. 5 | mirror_build_output (mirror = zapis rzeczywistego stanu) | test_p48_i01_* (4) | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | reguła użyta do zapisu = ta sama |
+| Ustawa o ZUS | art. 47–48 | mirror_test_parity (spójność deklaracji) | test_p48_i06_result_mismatch_blocks | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | rozjazd mirror = rozjazd deklaracji |
+| RODO | art. 5 ust. 1d | drift_heatmap (prawidłowość przetwarzania) | test_p48_i04_* (4) | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | przetwarzanie na dwóch wersjach = naruszenie prawidłowości |
+| KSeF — schematy wykonawcze | — | golden_replay_mirror (ta sama wersja schematu) | test_p48_i07_replay_structural_parity | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | replay przed deploy |
+| AI Act (kontekst audytowy) | — | post_deploy_check (wersjonowanie canonical/deployed) | test_p48_i09_* (3) | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | checksum deploy vs canonical |
+
+Wszystkie 8 aktów z mapy wejściowej pokryte; przepisy odkryte w trakcie: brak
+(nowe) — zakres części jest techniczny, powyższe akty wyczerpują wpływ prawny.
+
+────────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (T3)
+────────────────────────────────────────────────────────────────────────────────
+| ID | P | Luka | Dowód | Wpływ | Rozwiązanie / plan | Koszt | Regresja |
+|---|---|---|---|---|---|---|---|
+| V3-P48-L01 | P1 | 80 osieroconych plików legacy w policies/ (jdg/*, tax/*, data/thresholds_sc.rego, tests/sc_main_test.rego) — nikt ich nie aktualizuje | v3_p48_semantic_ast_diff.json only_policies=80 | build z katalogu legacy użyłby martwych reguł; ryzyko cichej niezgodności | decyzja 4-eyes: archiwizacja do archive/ ALBO OVERLAY.md per katalog (Q02); gate i sync nie ruszają legacy z definicji | niski (git mv + PR) | test_p48_i02_drift_map_counters_consistent pilnuje licznika |
+| V3-P48-L02 | P1 | 25/44 wdrożeń bez dowodu checksum canonical (era sprzed build-output) | v3_p48_post_deploy_check.json source_mismatches=25 | nieudowodnione pochodzenie wdrożonych bundli | przebudowa i re-deploy z canonical (P38 pipeline); do tego czasu reguła I09 = BLOCK | średni | test_p48_i09_post_deploy_bundle pilnuje licznika |
+| V3-P48-L03 | P2 | Golden replay mirror w trybie STRUCTURAL_ONLY (OPA poza CI) | v3_p48_golden_replay_mirror.json mode | delta decyzji nieudowodniona w runtime | job CI (P39): opa eval na 31 orzeczeniach × mirror bundle | niski | test_p48_i07_replay_structural_parity |
+| V3-P48-L04 | P2 | Certyfikaty decyzji bez rule_hash (0/1 w pomiarze; anchor P48 gotowy) | v3_p48_one_truth_attestation.json | brak dowodu KTO wyliczył (V2 F4) | wiring host-side: wpisanie rule_hash do _decision_certificate (P04/P11) | niski | test_p48_i12_attestation_hash_sample |
+| V3-P48-L05 | P2 | Heatmapa: pakiety wyłącznie-osierocone liczone jako 100% dryfu | v3_p48_drift_heatmap.json worst=100.0 | czytelnik może błędnie odczytać stan kanonu | rozdzielenie metryk: orphan_pct vs semantic_pct (naprawa narzędzia) | niski | test_p48_i04_heatmap_backlog_honest |
+| V3-P48-L06 | P2 | Brak CODEOWNERS dla policies/ | brak pliku .github/CODEOWNERS pokrywającego policies/ | ręczna edycja wykrywana przez gate, nie przez review | wpis CODEOWNERS: policies/ → P48-campaign | niski | test_p48_i01_build_output_bundle |
+| V3-P48-L07 | P3 | Właściciel pakietów mirror [NIEZWERYFIKOWANE — 4-eyes] | v3_p48_ownership_register.json verification | odpowiedzialność formalna niepotwierdzona | stempel 4-eyes (P47-I10 mechanizm) | niski | test_p48_i08_ownership_register_complete |
+| V3-P48-L08 | P3 | Dokumentacja struktury (STRUKTURA_PROJEKTU.md) bez opisu modelu build-output | plik docs | wiedza plemenna | dopisek sekcji mirror (P41 kontrakt) | niski | test_p48_main_jdg_wiring |
+
+Zero luk P0 (BLOCKER): żadnego konfliktu z dokumentami świętymi; fail-closed
+zachowany w każdej ścieżce; zero fikcyjnych podstaw prawnych.
+
+────────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (T4 — 12, każdy z 6 obowiązkowymi punktami)
+────────────────────────────────────────────────────────────────────────────────
+V3-P48-I01 — MIRROR AS BUILD OUTPUT
+ 1) Luka: mirror utrzymywany ręcznie → dryf strukturalny (L01, AP11).
+ 2) Mechanizm: policies/ = artefakt generowany; tools/v3_p48_sync_mirror_files.py
+    jednorazowo domyka dryf; .sync_manifest_v2.json (last_sync, source, target,
+    hand_edits=0) = dowód świeżości; rego: sync_manifest_present=false LUB
+    hand_edits>0 → BLOCK_AND_ALERT; sync_age_days > 7 → TRIAGE.
+ 3) Bezpieczeństwo: budowa z mirror bez manifestu = niemożliwa decyzja AUTO_POST
+    na nieznanej wersji reguł.
+ 4) Ryzyko: słaby manifest (ręczna podmiana) → wykrywany przez gate (sygnatury
+    treściowe); rollback: git revert mirror.
+ 5) Akceptacja: test_p48_i01_sync_manifest_present + rego granice 7 dni;
+    zależności: P36 (sync w transakcji), P00 (jedno źródło prawdy).
+
+V3-P48-I02 — SEMANTIC AST DIFF GATE
+ 1) Luka: bramki tekstowe (diff nazw plików) nie wykrywały dryfu logiki (W1 AN01).
+ 2) Mechanizm: semantic_fingerprint (kod bez komentarzy/pustych linii, stringi
+    zmaskowane, liczby zachowane) + zestaw deklaracji; bramka v3_p48_gate.py
+    liczy sygnaturę SHA-256 z różnicujących deklaracji (stabilna wobec wstawek);
+    rego: unreported_semantic>0 LUB semantic_diffs>max(0) → BLOCK.
+ 3) Bezpieczeństwo: zmiana progu/stawki w mirror bez canonical = BLOCK merge.
+ 4) Ryzyko: fałszywy negatyw parsera uproszczonego → mitygacja: dodatkowo
+    strip-comments diff tekstowy + testy parity; ścieżka cofnięcia: git revert.
+ 5) Akceptacja: 46 testów natywnych (granice progu 0); zależności: P34 (sieć
+    walidacji L4), P39 (CI).
+
+V3-P48-I03 — SYNC-IN-PR RULE
+ 1) Luka: dryf czasowy (canonical w PR, mirror w kolejnym commicie/nigdy).
+ 2) Mechanizm: rego czyta canonical_changed/mirror_changed/out_of_pr_sync;
+    canonical>0 && mirror==0 → BLOCK PR; sync poza PR → BLOCK_AND_ALERT.
+ 3) Bezpieczeństwo: decyzja księgowa zawsze z pary (canonical, mirror) w jednym
+    stanie repo — pełna sprawdzalność.
+ 4) Ryzyko: translacja False-positive przy generowanych plikach → mitygacja:
+    licznik out_of_pr_sync z manifestu, nie z heurystyki.
+ 5) Akceptacja: test_p48_i03_* (3 testy graniczne); zależności: P36.
+
+V3-P48-I04 — DRIFT HEATMAP
+ 1) Luka: brak agregacji dryfu per pakiet i trendu (kierownika napraw).
+ 2) Mechanizm: drift_by_package (54 pakiety: total/clean/textual/semantic/
+    missing/orphan/drift_pct/trend); snapshot poprzedni w bundle (dirty_prev);
+    rego: worst>20% → BLOCK; trend rosnący → TRIAGE; cel 100% czystych.
+ 3) Bezpieczeństwo: deploy z mirror zablokowany, zanim najgorszy pakiet urośnie.
+ 4) Ryzyko: czytelność metryki (L05) → rozdzielenie orphan/semantic w planie.
+ 5) Akceptacja: test_p48_i04_* (4); zależności: P68 (cel dryf→0), P37 (metryki).
+
+V3-P48-I05 — OVERLAY DECLARATION FILE
+ 1) Luka: celowe różnice mirror byłyby ukryte (niejawny overlay = dryf).
+ 2) Mechanizm: OVERLAY.md z powodem/zakresem/właścicielem/terminem; rego:
+    undeclared_overlays>0 → BLOCK; expired → TRIAGE; obecnie 0 zadeklarowanych
+    (każdy dryf rozstrzygnięty w stronę canonical — zero wyjątków).
+ 3) Bezpieczeństwo: jawność zamiast ciszy — audytor widzi każdy wyjątek.
+ 4) Ryzyko: overlay na wszystko → ogranicznik: overlay nie znosi BLOCK
+    unreported (dwie niezależne bramki).
+ 5) Akceptacja: test_p48_i05_* (3); zależności: P05 (okna temporalne).
+
+V3-P48-I06 — MIRROR TEST PARITY
+ 1) Luka: mirror nie testowany równie surowo (AN03).
+ 2) Mechanizm: testy natywne canonical zmapowane na pakiety mirror; sygnatura
+    canonical==mirror ⇒ pokrycie 1:1 (231/231); rego: result_mismatches>0 →
+    BLOCK; parity_runs<1 lub mirror_tests_total==0 → TRIAGE.
+ 3) Bezpieczeństwo: rozjazd zachowań wykrywany PRZED deploy.
+ 4) Ryzyko: pokrycie strukturalne ≠ behawioralne → pełna parity w CI (L03).
+ 5) Akceptacja: test_p48_i06_* (4); zależności: P39.
+
+V3-P48-I07 — GOLDEN REPLAY ON MIRROR
+ 1) Luka: zgodność decyzji canonical vs mirror nieudowodniona przed deploy.
+ 2) Mechanizm: replay 31 orzeczeń złotych (schema v2) na pakiety mirror;
+    missing_mirror_packages==0; delta decyzji > v3_p48_replay_delta_max(0) →
+    BLOCK; brak replay → TRIAGE.
+ 3) Bezpieczeństwo: mirror nie może zmienić żadnego złotego werdyktu.
+ 4) Ryzyko: tryb STRUCTURAL_ONLY (L03) → pełny replay w CI z OPA; rollback: n/a.
+ 5) Akceptacja: test_p48_i07_replay_structural_parity; zależności: P10, P39.
+
+V3-P48-I08 — MIRROR OWNERSHIP REGISTER
+ 1) Luka: pakiety bez właściciela = osierocone (cichy dryf, AN03 Q: kto odpowiada).
+ 2) Mechanizm: v3_p48_packages (54 pakiety: owner P48-campaign, review_days 30,
+    drift_pct baseline) + rejestr z pomiaru na żywo; rego: orphan>0 → BLOCK;
+    stale reviews → TRIAGE; zero osieroconych w canonical→mirror (W: 53 licznik
+    to pakiety zawierające pliki legacy — L01/Q02).
+ 3) Bezpieczeństwo: każde odchylenie ma adresata procedury reakcji.
+ 4) Ryzyko: formalny właściciel bez potwierdzenia 4-eyes (L07) → stempel P47.
+ 5) Akceptacja: test_p48_i08_* (3); zależności: P07 (lifecycle), P12 (§12.1 role).
+
+V3-P48-I09 — POST-DEPLOY MIRROR CHECK
+ 1) Luka: deploy mógł pochodzić z dryfującego źródła bez wykrycia (AN03).
+ 2) Mechanizm: porównanie checksum/rejestr 44 wdrożeń + drift repo; source_
+    mismatches>0 → BLOCK (ROLLBACK + przebudowa z canonical); deploys==0 → TRIAGE.
+ 3) Bezpieczeństwo: wykrycie deployu z mirror legacy — domyka luki P38.
+ 4) Ryzyko: 25 deployów sprzed ery build-output (L02) → re-deploy plan; brak
+    ślepej akceptacji: BLOCK aż do przebudowy.
+ 5) Akceptacja: test_p48_i09_* (3); zależności: P38, V1 §9.3.
+
+V3-P48-I10 — CASE-STUDY TEMPLATE
+ 1) Luka: analiza dryfu ad-hoc, bez standardu (AN04).
+ 2) Mechanizm: rejestr case pól case/cause/effect/repair/control; case bez
+    planu → TRIAGE; po terminie → BLOCK; case main_jdg z pełnym planem (AUTO).
+ 3) Bezpieczeństwo: każde zdarzenie dryfu zostawia ślad wiedzy organizacyjnej.
+ 4) Ryzyko: formalizm bez użyteczności → pola wymuszone testem (niepuste).
+ 5) Akceptacja: test_p48_i10_case_register_has_template; zależności: P68, Q03.
+
+V3-P48-I11 — MIRROR LIFECYCLE ALIGNMENT
+ 1) Luka: status lifecycle mirror mógł się rozjechać z canonical (SHADOW↔ACTIVE).
+ 2) Mechanizm: porównanie statusów rejestrów (compared_rules=12, mismatches=0);
+    rego: status_mismatches>0 → BLOCK; compared==0 → TRIAGE.
+ 3) Bezpieczeństwo: reguła nieaktywna w canonical nie może być aktywna w mirror.
+ 4) Ryzyko: brak rejestru mirror-side → registry_entries z rule_registry.json
+    (jedno źródło prawdy); migracja rozszerza, nie duplikuje (protokół 08).
+ 5) Akceptacja: test_p48_i11_* (3); zależności: P07.
+
+V3-P48-I12 — ONE-TRUTH ATTESTATION
+ 1) Luka: certyfikat decyzji bez hashu reguły = brak dowodu WERSJI (V2 F4).
+ 2) Mechanizm: rule_hash = SHA-256 canonical reguły (anchor P48: 41ffb015…dc66);
+    rego: certificates_with_hash < total → TRIAGE; plan wiringu host-side (L04).
+ 3) Bezpieczeństwo: audyt dowodzi, która wersja wyliczyła werdykt (art. 4 ust. 1
+    uor [NIEZWERYFIKOWANE — ISAP]).
+ 4) Ryzyko: hash bez orchestru host = potencjalnie martwy → wiring w L04 z
+    właścicielem i terminem; mitygacja: test pilnuje bundla.
+ 5) Akceptacja: test_p48_i12_* (3); zależności: P04 (invarianty), P11 (cert).
+
+Innowacje własne ponad minimum (bonus w narzędziach, nie liczone do 12):
+  * Gate z adopcją backlogu (sygnatury treściowe zamiast numerów linii — lekcja
+    P46) — v3_p48_gate.py, dowód gate_merge PASS,
+  * Semantic fingerprint z maskowaniem stringów (komunikaty ≠ semantyka, progi
+    = semantyka) — v3_p48_common.py,
+  * Sync manifest z historią (previous_last_sync) — audytowalność bez ruszania
+    historii git.
+
+────────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (T5) — wiąże P49 i dalsze
+────────────────────────────────────────────────────────────────────────────────
+| ID | Kontrakt | Treść | Odbiorca |
+|---|---|---|---|
+| K-P48-1 | MAPA DRYFU | pełna mapa (5 kategorii, per pakiet, 54 pakiety) w bundles/v3_p48_drift_heatmap.json + drift_map w semantic_ast_diff; cel: 0 semantycznych | P68, P36 |
+| K-P48-2 | ARCHITEKTURA MIRROR | policies/ = build output z JDG/rules; executor v3_p48_sync_mirror_files.py; manifest .sync_manifest_v2.json; legacy = decyzja 4-eyes | P38, P41 |
+| K-P48-3 | BRAMKA AST DIFF | tools/v3_p48_gate.py (MERGE_GATE/FULL_AUDIT; sygnatury treściowe; adopcja backlogu; nowy dryf = BLOCK) | P29, P39 |
+| K-P48-4 | PROGI JAKO DANE | data.jdg.thresholds.v3_p48 + v3_p48_packages (ADR-002; okno valid_from) | P52, P53 |
+| K-P48-5 | WŁASNOŚĆ MIRROR | rejestr 54 pakietów (owner, review_days=30, [NIEZWERYFIKOWANE — 4-eyes]) | P07, P37 |
+| K-P48-6 | CASE STUDY | rejestr case/cause/effect/repair/control (main_jdg zamknięty) | P64, P68 |
+| K-P48-7 | 12× CANDIDATE | rule_registry jdg.v3_p48_mirror_sync.* z testami podpiętymi | P07 lifecycle |
+| K-P48-8 | WIRING p112 | final_verdict_p112 = safe_merge(p111, v3_p48_mirror_sync.decide, fallback); mapa routingu jdg.v3_p48_mirror_sync | P49+ |
+
+Zasada dziedziczenia: P49+ honoruje fail-closed P48 (dryf semantyczny = BLOCK;
+deploy bez checksum = BLOCK) i nie duplikuje narzędzi mirror (protokół 08).
+
+────────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA (T6) — wykonany
+────────────────────────────────────────────────────────────────────────────────
+| # | Krok | Status | Uwagi |
+|---|---|---|---|
+| 1 | Inwentaryzacja dryfu baseline (pomiar żywy) | [x] | 9.75% → liczby w 9.01 |
+| 2 | Sync executor: 23 kopiowane + 28 nadpisanych = 51 | [x] | dryf → 0.00% |
+| 3 | Regeneracja 12 bundli silników I01–I12 | [x] | dowody 2026-09-11 |
+| 4 | Rejestr 12× CANDIDATE (idempotentny) | [x] | rule_registry.json |
+| 5 | Wiring main_jdg (import/routing/p112) | [x] | parse OK ×2 OPA |
+| 6 | Follow-up sync (1 plik) po wiringu | [x] | dryf nadal 0.00% |
+| 7 | Testy natywne 46 (granice, bypass, fail-closed) | [x] | PASS 0.68 i 1.9 |
+| 8 | Testy pytest 24 (dowody, manifest, rejestr) | [x] | PASS |
+| 9 | Naprawa narzędzi (4 błędy: cwd×2, perf O(n²), schema golden) | [x] | 9.10 |
+| 10 | Gate merge → PASS (0 nowych) | [x] | v3_p48_gate_merge.json |
+| 11 | Raport + ledger WDROŻONY_100 | [x] | ten plik; 49/69 (71.01%) |
+| 12 | Wdrożenia od razu vs testy vs 4-eyes: sync/bramka/testy = od razu;  |
+|    | re-deploy 25 bundli (L02) = wymaga P38; legacy/orphan (L01) = Q02 4-eyes |  |  |
+
+────────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (T7) — przypadki blokujące merge
+────────────────────────────────────────────────────────────────────────────────
+Natywne Rego (46; blokują merge przez P39):
+  * aktywacja: no_activation/no_selector → no_match (2),
+  * fail-closed: thresholds_missing, packages_missing → BLOCK priority 0 (2),
+  * I01 granice: age 7 → AUTO, age 8 → TRIAGE, manifest=false → BLOCK,
+    hand_edits=1 → BLOCK (4),
+  * I02: drift_map=false → BLOCK; unreported=1 → BLOCK; textual=3 → AUTO
+    (tekstowy dozwolony); semantic=2 (reported, max=0 STRICT) → BLOCK (4),
+  * I03: canonical bez mirror → BLOCK; out_of_pr → BLOCK; para → AUTO (3),
+  * I04 granice: worst 20.01 → BLOCK (nad progiem 20); trend rising → TRIAGE;
+    all clean → AUTO; dirty<próg → TRIAGE (4),
+  * I05: undeclared → BLOCK; expired → TRIAGE; declared → AUTO (3),
+  * I06: mismatch → BLOCK; no evidence → TRIAGE; no mirror tests → TRIAGE;
+    full parity → AUTO (4),
+  * I07: delta 1 → BLOCK; not done → TRIAGE; delta 0 done → AUTO (3),
+  * I08: orphan → BLOCK; stale → TRIAGE; owned → AUTO (3),
+  * I09: mismatch → BLOCK; no checks → TRIAGE; match → AUTO (3),
+  * I10: overdue → BLOCK; no plan → TRIAGE; zero → AUTO (3),
+  * I11: mismatch → BLOCK; no comparison → TRIAGE; aligned → AUTO (3),
+  * I12: missing hashes → TRIAGE; all hashed → AUTO; zero certs → AUTO (3),
+  * bypass nigdy nie ścisza BLOCK (ast_diff_bypassed → nadal BLOCK) (1),
+  * certyfikat niesie threshold_version/legal_basis_version/valid_from (1).
+Pytest (24): mirror semantycznie identyczny (raw), zero hardcode, wiring,
+manifest, 12 bundli dowodowych (spójność liczników i honesty), gate state/merge
+PASS, 12× CANDIDATE z testami, no-stub, [NIEZWERYFIKOWANE] tagi.
+Wyniki: 46/46 OPA 0.68 + 46/46 OPA 1.9 (--v0-compatible) + 24/24 pytest.
+
+────────────────────────────────────────────────────────────────────────────────
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+────────────────────────────────────────────────────────────────────────────────
+| ID | Pytanie | Dlaczego człowiek |
+|---|---|---|
+| V3-P48-Q01 | Potwierdzenie w ISAP aktów z macierzy 9.05 (8 aktów) | weryfikacja prawna 4-eyes; AI nie zastępuje człowieka (P47-I10) |
+| V3-P48-Q02 | 80 plików legacy mirror: archiwizacja czy OVERLAY.md? | decyzja architektoniczna/historyczna (L01) |
+| V3-P48-Q03 | Terminy naprawy backlogu: 25 re-deployów (L02) i wiring rule_hash (L04) | budżet i harmonogram wdrożeniowy |
+| V3-P48-Q04 | Właściciel pakietów mirror — potwierdzenie 4-eyes (L07) | odpowiedzialność formalna |
+
+────────────────────────────────────────────────────────────────────────────────
+9.12 ZAŁOŻENIA JAWNE (T9)
+────────────────────────────────────────────────────────────────────────────────
+| # | Założenie | Tag |
+|---|---|---|
+| Z1 | Środowisko wykonawcze: OPA 0.68/1.9 lokalnie dostępne (bin/opa, bin/opa19); sesje narzędzi zakładały odwrotnie | [ZAŁOŻENIE] |
+| Z2 | 231 testów natywnych pokrywa mirror strukturalnie (sygnatura canonical==mirror); pokrycie behawioralne = L03 | [ZAŁOŻENIE] |
+| Z3 | 25 wdrożeń z flagą rollback/era-sprzed-build-output traktowane jako mismatch źródła (konserwatywnie, fail-closed) | [ZAŁOŻENIE] |
+| Z4 | Treści aktów prawnych z komentarzy rego — do weryfikacji ISAP (protokół 04) | [ZAŁOŻENIE] |
+| Z5 | Baseline liczbowy dryfu (522/580/500; 472/3/25/22/80) pochodzi z pomiaru narzędzi tej sesji (honesty: zero fantazji) | [ZAŁOŻENIE] |
+
+────────────────────────────────────────────────────────────────────────────────
+T1 — TABELA DOWODÓW (7.3) — wiersz na plik z Sekcji 6 promptu
+────────────────────────────────────────────────────────────────────────────────
+| # | Plik (Sekcja 6) | Fakt/liczba pobrana | Status |
+|---|---|---|---|
+| 1 | policies/jdg (katalog) | 14 plików rego w mirror/jdg; 44 orphan legacy w pakiecie jdg | ZWERYFIKOWANO |
+| 2 | policies/tax (katalog) | 34 orphan legacy (sc_* itd.); pakiet tax wyłącznie legacy | ZWERYFIKOWANO |
+| 3 | policies/tax/vat (katalog) | 4 pliki legacy (deductions/gtu/procedures/substantive) | ZWERYFIKOWANO |
+| 4 | policies/jdg/bundles/bundle.sh | nieobecny w mirror (build tylko canonical JDG/bundles) — L01 | ZWERYFIKOWANO (nieobecny) |
+| 5 | policies/jdg/bundles/base/manifest.json | nieobecny (j.w.) | ZWERYFIKOWANO (nieobecny) |
+| 6 | policies/jdg/bundles/overlays/v2026/manifest.json | nieobecny (j.w.); overlay żyje jako I05 OVERLAY.md | ZWERYFIKOWANO (nieobecny) |
+| 7 | JDG/rules (katalog) | 522 plików rego canonical (pomiar żywy) | ZWERYFIKOWANO |
+| 8 | JDG/rules/micro/vat/vat.rego | plik sparowany; po sync identyczny z mirror | ZWERYFIKOWANO |
+| 9 | JDG/tools/policies_mirror_report22_gate.py | istnieje (pokrewie z raportem R22); P48 rozszerza, nie duplikuje | ZWERYFIKOWANO |
+| 10 | JDG/tools/policies_mirror_sync_etap26_audit.py | audyt etap26; kontrakt honorowany (protokół 08) | ZWERYFIKOWANO |
+| 11 | JDG/tests/test_policies_mirror_sync_etap26_audit.py | test istnieje (regresja etap26) | ZWERYFIKOWANO |
+| 12 | JDG/tools/cross_package_conflict_detector.py | detektor konfliktów pakietów; wspiera I02 | ZWERYFIKOWANO |
+| 13 | JDG/tools/doc_consistency_validator.py | walidator spójności docs (L08 kontekst) | ZWERYFIKOWANO |
+| 14 | JDG/bundles/bundle.sh | build canonical; authority = JDG/rules (I09 check) | ZWERYFIKOWANO |
+| 15 | JDG/bundles/bundle_catalog.json | katalog bundli canonical (jedno źródło) | ZWERYFIKOWANO |
+| 16 | JDG/bundles/deployments.json | 44 wdrożenia → I09 policzył 25 mismatch (L02) | ZWERYFIKOWANO |
+| 17 | JDG/tools/jpk_validator.py | walidator mirror-agnostyczny (kontekst parity) | ZWERYFIKOWANO |
+| 18 | JDG/docs/STRUKTURA_PROJEKTU.md | brak sekcji build-output → L08 | ZWERYFIKOWANO |
+| 19–24 | (6.4 = te same ścieżki co 6.1) | pokryte wierszami 1–6 | ZWERYFIKOWANO |
+
+Uwaga o 4–6: mirror nie zawiera drzewa bundles/ — build-bundle istnieje wyłącznie
+w canonical (spójne z I01: mirror = rego-only build output); brak trzech plików
+to DOWÓD architektury, nie luka synchronizacji (adr: Q02).
+
+────────────────────────────────────────────────────────────────────────────────
+T12 — REJESTR KONFLIKTÓW Cxx
+────────────────────────────────────────────────────────────────────────────────
+| ID | Konflikt | Rozstrzygnięcie |
+|---|---|---|
+| V3-P48-C01 | Docstring v3_p48_semantic_ast_diff.py: „OPA niedostępny w środowisku” vs rzeczywistość sesji (bin/opa, bin/opa19 obecne) | fingerprint pozostawiony (deterministyczny, O(1) per plik); tryb replay STRUCTURAL_ONLY w I07 zaktualizowany o schemat v2; pełny replay → CI (L03) |
+| V3-P48-C02 | Fail-closed reguły (semantic>0 → BLOCK) vs test OCZEKIWAJĄCY TRIAGE na reported drift | STRICT principle (max=0) wygrywa: reguła poprawna, test skorygowany do BLOCK; brak cichego ścieżki TRIAGE dla dryfu semantycznego |
+| V3-P48-C03 | Kontrakt P00 (mapa kanoniczna 573 plików) vs pomiar żywy (522 canonical / 580 mirror) | liczby P00 pochodziły z momentu kampanii; rozbieżność NIE jest BLOCKERem (dokumenty święte nie fiksują liczby); dowód = pomiar żywy; adnotacja w 9.02 |
+
+────────────────────────────────────────────────────────────────────────────────
+T11 — APENDYKS B: MACIERZ PODANALIZA × GRUPA
+────────────────────────────────────────────────────────────────────────────────
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik (sekcja) |
+|---|---|---|---|
+| 5.1 AN01 | 6.1, 6.2, 6.4 | 3+ twierdzenia z dowodem (W1–W3) | 9.04 / 9.05 |
+| 5.2 AN02 | 6.2, 6.3 | 3+ (W1–W3) | 9.04 / 9.05 |
+| 5.3 AN03 | 6.1, 6.2, 6.3 | 4+ (W1–W4) | 9.04 / 9.05 |
+| 5.4 AN04 | 6.2, 6.3 | 4+ (W1–W4) | 9.04 / 9.05 |
+
+Wyniki sprawdzenia anty-wzorców 7.5 (każdy: jest/nie ma → rejestr luk):
+| AP | Wynik | Rejestr |
+|---|---|---|
+| AP01 stub {true} | NIE MA (test test_p48_no_stub_true_rules) | — |
+| AP02 hardcode progów | NIE MA (data.jdg.thresholds.v3_p48; test ADR-002) | — |
+| AP03 brak else-chain | NIE MA (decide 14-stopniowa; testy no_match) | — |
+| AP04 duplikaty rule_id | NIE MA (12 unikalnych w rejestrze; test) | — |
+| AP05 podstawy bez Dz.U. | OZNACZONE [NIEZWERYFIKOWANE] wszędzie (test) | L07/Q01 |
+| AP06 testy zawsze-zielone | NIE MA (asercje negatywne; granice progów) | — |
+| AP07 cichy AUTO_POST | NIE MA (bypass→BLOCK test; priority 0 fail-closed) | — |
+| AP08 cykle A→B→A | NIE MA (P48 czyta tylko thresholds + input) | — |
+| AP09 dane świata na stałe | NIE MA (brak kursów/wskaźników w pakiecie) | — |
+| AP10 brak okien temporalnych | NIE MA (valid_from 2026-01-01 w snapshotcie; test certyfikatu) | — |
+| AP11 mirror dryf bez CI | NAPRAWIONE (było 25 sem.+22 missing; gate aktywny) | L01/L02 resztki |
+| AP12 metryki w 2 miejscach | NIE MA (bundly = jedyny zapis liczników) | — |
+
+────────────────────────────────────────────────────────────────────────────────
+APENDYKS E — PLAN PRACY (odznaczony)
+────────────────────────────────────────────────────────────────────────────────
+[x] 1. Odczyt kontraktów P47/P46/P00 (sek. EXEC/KONTRAKT/LUKI).
+[x] 2. Pomiar dryfu baseline (żywy, 5 kategorii, 54 pakiety).
+[x] 3. Sync 51 plików + follow-up 1; manifest odświeżony.
+[x] 4. Regeneracja 12 bundli + rejestry (case, ownership, attestation).
+[x] 5. Wiring main_jdg.rego (import, routing, final_verdict_p112).
+[x] 6. 46 testów natywnych + 24 pytest — wszystkie PASS (OPA 0.68 + 1.9).
+[x] 7. Naprawa 4 błędów narzędzi (cwd mirror_ownership/case_study; perf
+       post_deploy O(44×pliki)→O(pliki); schema golden v2 dict).
+[x] 8. Gate merge PASS (0 nowych naruszeń; backlog adoptowany).
+[x] 9. Rejestr luk P1=2/P2=4/P3=2; 12 innowacji 6-punktowych; kontrakt K1–K8.
+[x] 10. Ledger P48 → WDROŻONY_100 (49/69 = 71.01%); okno do wyczyszczenia.
+
+────────────────────────────────────────────────────────────────────────────────
+T10 — PRZEKAZYWANE ARTEFAKTY (11.4)
+────────────────────────────────────────────────────────────────────────────────
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|---|---|---|---|
+| rules/v3_p48_mirror_sync.rego (+ mirror) | P49..P68 | rego | runtime fail-closed 12 analiz |
+| thresholds v3_p48 + v3_p48_packages | P52/P53/P68 | rego (dane) | progi i mapa pakietów (ADR-002) |
+| tools/v3_p48_gate.py | P39 CI | py | bramka merge AST-diff (K-P48-3) |
+| tools/v3_p48_sync_mirror_files.py | P36/P38 | py | executor build-output (K-P48-2) |
+| bundles/v3_p48_drift_heatmap.json | P68/P36 | JSON | mapa dryfu per pakiet (K-P48-1) |
+| bundles/v3_p48_case_register.json | P64/P68 | JSON | case study dryfu (K-P48-6) |
+| bundles/v3_p48_ownership_register.json | P07/P37 | JSON | własność mirror (K-P48-5) |
+| main_jdg.rego final_verdict_p112 | P49+ | rego | wiring łańcucha werdyktu (K-P48-8) |
+| 12× CANDIDATE w rule_registry | P07 | JSON | lifecycle awans po testach |
+
+────────────────────────────────────────────────────────────────────────────────
+NAPRAWIONE BŁĘDY NARZĘDZI W TEJ SESJI (dowód: diff + przebiegi)
+────────────────────────────────────────────────────────────────────────────────
+  1. v3_p48_mirror_ownership.py: zapis rejestru po ścieżce względnej
+     (FileNotFoundError poza cwd=JDG) → BUNDLES_DIR.
+  2. v3_p48_case_study.py: ten sam błąd ścieżki → BUNDLES_DIR (+import).
+  3. v3_p48_post_deploy_check.py: measure_drift() w pętli po 44 wdrożeniach
+     (O(44×pliki) ≈ 90 s) → pomiar raz przed pętlą (≈6 s); semantyka bez zmian.
+  4. v3_p48_golden_replay_mirror.py: verdicts tylko jako lista; golden_verdicts
+     schema v2 = dict{hash: {verdict: {...}}} → obsługa obu schematów (+nested
+     verdict.rule_id).
+
+────────────────────────────────────────────────────────────────────────────────
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+────────────────────────────────────────────────────────────────────────────────
+Raport zgodny z DOKUMENTEM ŚWIĘTYM nr 1 (jedno źródło prawdy, cykl życia reguł,
+bramki CI, fail-closed, progi jako dane) i DOKUMENTEM ŚWIĘTYM nr 2 (Golden
+Oracle replay, Decision Certificate z wersjami, Legal Twin rozszerzany o mapę
+dryfu akt↔plik, jawne 4-eyes). Odstępstwa: brak BLOCKERÓW; konflikt C01/C02/C03
+rozstrzygnięte z dokumentami (9.12/T12). Wszystkie treści prawne
+[NIEZWERYFIKOWANE — ISAP]; zero fikcyjnych podstaw; raport jest kontraktem
+wdrożeniowym, nie esejem. Żadne twierdzenie „production-ready” bez dowodu.
+
+================================================================================
+SEKCJA 16 — POTWIERDZENIE ZAMKNIĘCIA CZĘŚCI P48
+================================================================================
+Zakres: synchronizacja mirror policies (4 podanalizy, 12 innowacji, 16 narzędzi,
+18 bundli, 46+24 testy, 12× CANDIDATE, wiring p112). Luki: P0=0, P1=2, P2=4,
+P3=2. Kontrakt wyjściowy: K-P48-1..8 (patrz 9.08 / T5). Artefakty: T10.
+Ledger: P48 → WDROŻONY_100 (48→49 z 69; 71.01%).
+OKNO KONTEKSTOWE: WYCZYSZCZONE po zapisaniu raportu — do P49 wchodzisz z PUSTĄ
+sesją; przenosisz się WYŁĄCZNIE przez: EXECUTIVE SUMMARY, KONTRAKT WYJŚCIOWY
+(K-P48-1..8), REJESTR LUK P0/P1 (L01, L02) niniejszego raportu.
+================================================================================

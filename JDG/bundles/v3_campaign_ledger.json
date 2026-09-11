@@ -678,28 +678,28 @@
       "slug": "MIRROR_SYNC",
       "prompt": "V3_PROMPT_P48_MIRROR_SYNC.txt",
       "report": "RAPORT_V3_P48_MIRROR_SYNC.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
-      "luki_p1": 0,
-      "luki_p2": 0,
-      "luki_p3": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": "",
-      "auto_recheck": true
+      "luki_p1": 2,
+      "luki_p2": 4,
+      "luki_p3": 2,
+      "innovations": 12,
+      "implemented_at": "2026-09-11T09:55:00+00:00",
+      "notes": "P48 MIRROR_SYNC: WDROZONE_100 (2026-09-11). Sync mirror: baseline dryf 9.75% (25 sem+22 missing+3 tekstowych, canonical 522/mirror 580) -> 0.00% (51+1 plikow, .sync_manifest_v2). Wiring main_jdg (import/routing/final_verdict_p112) + follow-up sync. 46 testow natywnych OPA 0.68 i 1.9 --v0-compatible + 24 pytest (granice progow, bypass->BLOCK, fail-closed, mirror==canonical). Naprawa 4 bugow narzedzi (cwd x2, perf O(44xpliki)->O(pliki), schema golden v2 dict). 18 bundli dowodowych, 12x CANDIDATE z testami, gate merge PASS (0 nowych). Luki: P1=2 (80 legacy orphan, 25/44 deploy bez checksum), P2=4 (replay STRUCTURAL_ONLY, rule_hash wiring, heatmapa orphan-100%, CODEOWNERS), P3=2. Raport RAPORT_V3_P48_MIRROR_SYNC.txt",
+      "auto_recheck": false
     },
     "P49": {
       "slug": "FAIL_CLOSED_DOMKNIECIE",
       "prompt": "V3_PROMPT_P49_FAIL_CLOSED_DOMKNIECIE.txt",
       "report": "RAPORT_V3_P49_FAIL_CLOSED_DOMKNIECIE.txt",
-      "status": "NIE_WDROŻONY",
-      "luki_p0": 0,
-      "luki_p1": 0,
-      "luki_p2": 0,
-      "luki_p3": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": "",
+      "status": "WDROŻONY_100",
+      "luki_p0": 1,
+      "luki_p1": 2,
+      "luki_p2": 2,
+      "luki_p3": 2,
+      "innovations": 12,
+      "implemented_at": "2026-09-11",
+      "notes": "12 decyzji I01-I12 (priorytety 449001-449012), progi v3_p49 ADR-002, wiring final_verdict_p113, 8 narzedzi, 14 bundli dowodowych, 55 testow natywnych (OPA 0.68+1.9), 29 pytest (regresja 75/75), mirror 1:1, gate P48 PASS. Rejestr fail-open: 12 sciezek (L01 P0). K-P49-1..8 -> P50.",
       "auto_recheck": true
     },
     "P50": {
@@ -971,8 +971,8 @@
   },
   "summary": {
     "total": 69,
-    "wdrozony_100": 48,
-    "nie_wdrozony": 21,
-    "progress_pct": 69.57
+    "wdrozony_100": 50,
+    "nie_wdrozony": 19,
+    "progress_pct": 72.46
   }
 }

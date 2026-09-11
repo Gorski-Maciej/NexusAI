@@ -1,10 +1,10 @@
 {
-  "last_sync": "2026-09-11T07:37:26.749009+00:00",
-  "files_copied": 523,
-  "files_changed_this_run": 51,
+  "last_sync": "2026-09-11T12:26:24.390364+00:00",
+  "files_copied": 524,
+  "files_changed_this_run": 3,
   "source": "JDG/rules/",
   "target": "policies/",
   "mode": "mirror-build-output (I01)",
-  "previous_last_sync": "2026-09-06T13:25:53.461987+00:00",
-  "previous_hand_edits": 500
+  "previous_last_sync": "2026-09-11T09:29:45.233863+00:00",
+  "previous_hand_edits": 523
 }

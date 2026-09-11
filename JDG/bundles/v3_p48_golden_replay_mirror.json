@@ -1,0 +1,77 @@
+{
+  "innovation": "V3-P48-I07",
+  "generated_at": "2026-09-11T12:35:06.841835+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "verdicts_total": 31,
+    "replay_done": false,
+    "decision_deltas": 0,
+    "missing_mirror_packages": 0,
+    "mode": "STRUCTURAL_ONLY",
+    "routing": "TRIAGE_QUEUE"
+  },
+  "evidence": {
+    "referenced_packages": [
+      "jdg.adaptive_trust",
+      "jdg.kks",
+      "jdg.kks.enterprise_penalties",
+      "jdg.ksef_jpk",
+      "jdg.local_taxes.pcc",
+      "jdg.p11_ordynacja_podatkowa_innovations",
+      "jdg.p12_crossborder_innovations",
+      "jdg.p13_ryczalt_cykl_zycia_innovations",
+      "jdg.p16_rodo_aml_security_innovations",
+      "jdg.pit.a30c",
+      "jdg.pit.advances_returns",
+      "jdg.r01_orchestrator_core_innovations",
+      "jdg.r02_vat_core_innovations",
+      "jdg.r03_vat_micro_innovations",
+      "jdg.r04_pit_core_innovations",
+      "jdg.r05_pit_enterprise_innovations",
+      "jdg.r06_zus_innovations",
+      "jdg.r07_kks_innovations",
+      "jdg.r08_ordynacja_obrona_innovations",
+      "jdg.r09_ksiegowosc_pkpir_uor_innovations",
+      "jdg.r10_crossborder_innovations",
+      "jdg.r11_pcc_lokalne_akcyza_innovations",
+      "jdg.r12_ryczalt_cykl_zycia_innovations",
+      "jdg.r13_hyper_konteksty_innovations",
+      "jdg.r14_rodo_aml_bdo_innovations",
+      "jdg.r15_ksef_jpk_edeklaracje_innovations",
+      "jdg.r16_system_opa_innovations",
+      "jdg.r17_enterprise_ai_innovations",
+      "jdg.rule_lifecycle",
+      "jdg.solidarity.hyper",
+      "jdg.uor_live"
+    ],
+    "missing_in_mirror": [],
+    "checks": [
+      {
+        "name": "golden_verdicts_loaded",
+        "status": "OK",
+        "detail": "bundles/golden_verdicts.json: 31 orzeczeń (schema 2)"
+      },
+      {
+        "name": "mirror_package_parity",
+        "status": "OK",
+        "detail": "pakiety z orzeczeń nieobecne w mirror: 0 (brak)"
+      },
+      {
+        "name": "replay_mode",
+        "status": "TRIAGE",
+        "detail": "tryb STRUCTURAL_ONLY — OPA niedostępny w środowisku; delta decyzji nie policzono (protokół 14); pełny replay na mirror PRZED deploy"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p48_mirror_sync.golden_replay_mirror: True"
+      }
+    ],
+    "findings": [
+      {
+        "severity": "MEDIUM",
+        "message": "replay pełny wymaga OPA — uruchom w CI (P39) przed deploy"
+      }
+    ]
+  }
+}

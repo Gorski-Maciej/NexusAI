@@ -25,13 +25,16 @@ def main() -> int:
     rules_files = {str(p.relative_to(RULES_DIR)): p for p in RULES_DIR.rglob("*.rego")}
     pol_files = {str(p.relative_to(POLICIES_DIR)): p for p in POLICIES_DIR.rglob("*.rego")} if POLICIES_DIR.exists() else {}
 
+    # Wydajność (P48 oś g): drift mierzony RAZ (nie per deploy) — wynik stały
+    # w ramach jednego uruchomienia, koszt O(pliki) zamiast O(deploy × pliki).
+    drift = measure_drift()
+    semantic = len(drift["semantic_diffs"])
+
     for name, d in sorted(deployments.items()):
         deploys_checked += 1
         # Deploy uznany za zbudowany z canonical, jeśli w rejestrze nie ma
         # flagi dryfu a mirror nie zawiera dryfu semantycznego dotykającego
         # pakietów aktywnych w deployu (mierzalne dziś: flaga + drift globalny).
-        drift = measure_drift()
-        semantic = len(drift["semantic_diffs"])
         has_drift_flag = bool(d.get("rollback_reason"))
         if semantic > 0 or has_drift_flag:
             source_mismatches += 1

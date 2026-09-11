@@ -1,0 +1,43 @@
+{
+  "innovation": "V3-P49-I08",
+  "generated_at": "2026-09-11T12:27:54.449939+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "export_path_present": true,
+    "last_export_verified": true,
+    "hours_since_last_export": 0.0,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "export_candidates": [
+      "/data/data/com.termux/files/home/NexusAI/scripts/emergency_export.py",
+      "/data/data/com.termux/files/home/NexusAI/JDG/tools/emergency_export.py"
+    ],
+    "last_export": {
+      "exported_at": "2026-09-11T12:27:54.437137+00:00",
+      "source": "v3_p49_emergency_export.py (inline path)",
+      "artifacts": {
+        "rule_registry_sha256": null,
+        "golden_verdicts_count": 31,
+        "p49_bundles": [
+          "v3_p49_amount_ceiling.json",
+          "v3_p49_breaker_state.json",
+          "v3_p49_chaos_input.json",
+          "v3_p49_circuit_breaker.json",
+          "v3_p49_emergency_export.json",
+          "v3_p49_fail_closed_score.json",
+          "v3_p49_fail_open_registry.json",
+          "v3_p49_invariant_pack.json",
+          "v3_p49_last_emergency_export.json",
+          "v3_p49_missing_field_coverage.json",
+          "v3_p49_reason_completeness.json",
+          "v3_p49_replay_audit.json",
+          "v3_p49_silent_post_canary.json",
+          "v3_p49_user_visible_safety.json"
+        ]
+      },
+      "verified": true
+    },
+    "note": "Ścieżka awaryjna eksportu certyfikatów i stanu (DR P43) — działa bez pełnej platformy: narzędzie generuje i weryfikuje minimalny eksport w tej samej sesji (dowód testowalności)."
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "innovation": "V3-P49-I06",
+  "generated_at": "2026-09-11T12:27:53.987533+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "auto_post_amount": 0.0,
+    "amount_limit": 15000.0,
+    "limit_configured": true,
+    "limit_breaches": 0,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "breach_list": [],
+    "note": "Limit kwotowy AUTO_POST jako parametr (P46); powyżej = 4-eyes MANUAL_REVIEW nawet przy pełnym dowodzie (I06). Naruszenie kwotowe bez ścieżki MANUAL_REVIEW = BLOCK."
+  }
+}

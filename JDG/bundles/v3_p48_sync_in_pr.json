@@ -1,12 +1,12 @@
 {
   "innovation": "V3-P48-I03",
-  "generated_at": "2026-09-11T07:39:10.190514+00:00",
+  "generated_at": "2026-09-11T09:59:34.245889+00:00",
   "gate": "PASS",
   "metrics": {
-    "canonical_changed": 0,
-    "mirror_changed": 51,
+    "canonical_changed": 1,
+    "mirror_changed": 1,
     "out_of_pr_sync": 0,
-    "sync_age_days": 0.0,
+    "sync_age_days": 0.02,
     "routing": "AUTO_FILE"
   },
   "evidence": {
@@ -14,12 +14,12 @@
       {
         "name": "canonical_dirty_rego",
         "status": "OK",
-        "detail": "zmienione pliki rego w JDG/rules (stan roboczy PR): 0"
+        "detail": "zmienione pliki rego w JDG/rules (stan roboczy PR): 1"
       },
       {
         "name": "mirror_dirty_rego",
         "status": "OK",
-        "detail": "zmienione pliki rego w policies/ (stan roboczy PR): 51"
+        "detail": "zmienione pliki rego w policies/ (stan roboczy PR): 1"
       },
       {
         "name": "sync_in_pr_coherent",

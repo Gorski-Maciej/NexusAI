@@ -1,0 +1,718 @@
+{
+  "innovation": "V3-P49-I02+I10",
+  "generated_at": "2026-09-11T11:48:41.888283+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "files_scanned": 524,
+    "fail_open_paths": 141,
+    "silent_auto_post_max": 0,
+    "routing": "BLOCK_AND_ALERT",
+    "previous_fail_open_paths": 0
+  },
+  "evidence": {
+    "findings": [
+      {
+        "file": "accounting/depreciation_enterprise_complete.rego",
+        "line": 48,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "accounting/uor_enterprise_live.rego",
+        "line": 89,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"none\" if { true }"
+      },
+      {
+        "file": "adaptive_trust_scoring_enterprise.rego",
+        "line": 176,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "api_ui/quality_v3_19.rego",
+        "line": 156,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"TRIAGE_QUEUE\""
+      },
+      {
+        "file": "bundles/quality_v3_18.rego",
+        "line": 83,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"TRIAGE_QUEUE\""
+      },
+      {
+        "file": "calendar/plan45_calendar.rego",
+        "line": 37,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {\"matched\":true,\"rule_id\":\"jdg.calendar.hyper.pit_annual_return_30april\",\"_legal_basis\":\"Art. 45 ust. 1 ustawy z"
+      },
+      {
+        "file": "cross_domain_red_team_etap27_v1.rego",
+        "line": 153,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "docs/quality_v3_20.rego",
+        "line": 82,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"TRIAGE_QUEUE\""
+      },
+      {
+        "file": "enterprise/quality_v3_15.rego",
+        "line": 104,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"TRIAGE_QUEUE\""
+      },
+      {
+        "file": "final_certification_etap28_v1.rego",
+        "line": 163,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "hyper/quality_v3_14.rego",
+        "line": 139,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"TRIAGE_QUEUE\" if {"
+      },
+      {
+        "file": "hyper_enterprise_contexts_etap22_v1.rego",
+        "line": 164,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "ksef_jpk.rego",
+        "line": 141,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "ksef_jpk.rego",
+        "line": 157,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "ksef_jpk.rego",
+        "line": 193,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "ksef_jpk_etap20_v1.rego",
+        "line": 179,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "policies_mirror_sync_etap26_v1.rego",
+        "line": 94,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r08_ordynacja_obrona_innovations_v9.rego",
+        "line": 115,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := 0"
+      },
+      {
+        "file": "r08_ordynacja_obrona_innovations_v9.rego",
+        "line": 199,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r09_ksiegowosc_pkpir_uor_innovations_v9.rego",
+        "line": 117,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r09_ksiegowosc_pkpir_uor_innovations_v9.rego",
+        "line": 190,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"TRIAGE_QUEUE\" if {"
+      },
+      {
+        "file": "r09_ksiegowosc_pkpir_uor_innovations_v9.rego",
+        "line": 267,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r09_ksiegowosc_pkpir_uor_innovations_v9.rego",
+        "line": 343,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r09_ksiegowosc_pkpir_uor_innovations_v9.rego",
+        "line": 395,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"TRIAGE_QUEUE\" if {"
+      },
+      {
+        "file": "r10_crossborder_innovations_v9.rego",
+        "line": 99,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r10_crossborder_innovations_v9.rego",
+        "line": 184,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r10_crossborder_innovations_v9.rego",
+        "line": 249,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r10_crossborder_innovations_v9.rego",
+        "line": 308,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r10_crossborder_innovations_v9.rego",
+        "line": 383,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r11_pcc_lokalne_akcyza_innovations_v9.rego",
+        "line": 105,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r11_pcc_lokalne_akcyza_innovations_v9.rego",
+        "line": 278,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r12_ryczalt_cykl_zycia_innovations_v9.rego",
+        "line": 96,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r12_ryczalt_cykl_zycia_innovations_v9.rego",
+        "line": 154,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r12_ryczalt_cykl_zycia_innovations_v9.rego",
+        "line": 210,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r12_ryczalt_cykl_zycia_innovations_v9.rego",
+        "line": 270,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r12_ryczalt_cykl_zycia_innovations_v9.rego",
+        "line": 329,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"KONTYNUUJ\" if {"
+      },
+      {
+        "file": "r13_hyper_konteksty_innovations_v9.rego",
+        "line": 85,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r13_hyper_konteksty_innovations_v9.rego",
+        "line": 128,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r13_hyper_konteksty_innovations_v9.rego",
+        "line": 182,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r13_hyper_konteksty_innovations_v9.rego",
+        "line": 239,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r13_hyper_konteksty_innovations_v9.rego",
+        "line": 282,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r14_rodo_aml_bdo_innovations_v9.rego",
+        "line": 85,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r14_rodo_aml_bdo_innovations_v9.rego",
+        "line": 130,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r14_rodo_aml_bdo_innovations_v9.rego",
+        "line": 178,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r14_rodo_aml_bdo_innovations_v9.rego",
+        "line": 232,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r14_rodo_aml_bdo_innovations_v9.rego",
+        "line": 284,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r15_ksef_jpk_edeklaracje_innovations_v9.rego",
+        "line": 78,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r15_ksef_jpk_edeklaracje_innovations_v9.rego",
+        "line": 120,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r15_ksef_jpk_edeklaracje_innovations_v9.rego",
+        "line": 176,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r15_ksef_jpk_edeklaracje_innovations_v9.rego",
+        "line": 229,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r15_ksef_jpk_edeklaracje_innovations_v9.rego",
+        "line": 270,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r16_system_opa_innovations_v9.rego",
+        "line": 83,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r16_system_opa_innovations_v9.rego",
+        "line": 126,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r16_system_opa_innovations_v9.rego",
+        "line": 171,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r16_system_opa_innovations_v9.rego",
+        "line": 215,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r16_system_opa_innovations_v9.rego",
+        "line": 263,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r17_enterprise_ai_innovations_v9.rego",
+        "line": 69,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r17_enterprise_ai_innovations_v9.rego",
+        "line": 109,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r17_enterprise_ai_innovations_v9.rego",
+        "line": 153,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r17_enterprise_ai_innovations_v9.rego",
+        "line": 198,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "r17_enterprise_ai_innovations_v9.rego",
+        "line": 243,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "reliability_guarantee_enterprise.rego",
+        "line": 108,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "reliability_guarantee_enterprise.rego",
+        "line": 131,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "rodo_aml_bdo_hr_etap21_v1.rego",
+        "line": 184,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "rodo_extended.rego",
+        "line": 139,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "rodo_extended.rego",
+        "line": 373,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "rule_lifecycle_enterprise.rego",
+        "line": 183,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "rule_lifecycle_enterprise.rego",
+        "line": 203,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "else := {"
+      },
+      {
+        "file": "tests_ci/quality_v3_17.rego",
+        "line": 95,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"TRIAGE_QUEUE\""
+      },
+      {
+        "file": "tests_ci_quality_etap24_v1.rego",
+        "line": 95,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "tools/quality_v3_16.rego",
+        "line": 93,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"TRIAGE_QUEUE\""
+      },
+      {
+        "file": "tools_api_rulestore_bundles_etap25_v1.rego",
+        "line": 131,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "SUGGEST",
+        "context": "} else := \"\" if {"
+      },
+      {
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "line": 204,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"SUGGEST\" {"
+      },
+      {
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "line": 263,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"SUGGEST\" {"
+      },
+      {
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "line": 324,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"SUGGEST\" {"
+      },
+      {
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "line": 371,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"SUGGEST\" {"
+      },
+      {
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "line": 418,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"SUGGEST\" {"
+      },
+      {
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "line": 466,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"AUTO_FILE\" {"
+      },
+      {
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "line": 516,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"SUGGEST\" {"
+      },
+      {
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "line": 616,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"AUTO_FILE\" {"
+      },
+      {
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "line": 658,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"AUTO_FILE\" {"
+      },
+      {
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "line": 703,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"SUGGEST\" {"
+      },
+      {
+        "file": "v3_p45_stub_killer.rego",
+        "line": 152,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"SUGGEST\" {"
+      },
+      {
+        "file": "v3_p45_stub_killer.rego",
+        "line": 209,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"SUGGEST\" {"
+      },
+      {
+        "file": "v3_p45_stub_killer.rego",
+        "line": 259,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"SUGGEST\" {"
+      },
+      {
+        "file": "v3_p45_stub_killer.rego",
+        "line": 302,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"SUGGEST\" {"
+      },
+      {
+        "file": "v3_p45_stub_killer.rego",
+        "line": 350,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"SUGGEST\" {"
+      },
+      {
+        "file": "v3_p45_stub_killer.rego",
+        "line": 409,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"SUGGEST\" {"
+      },
+      {
+        "file": "v3_p45_stub_killer.rego",
+        "line": 448,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"AUTO_FILE\" {"
+      },
+      {
+        "file": "v3_p45_stub_killer.rego",
+        "line": 490,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"AUTO_FILE\" {"
+      },
+      {
+        "file": "v3_p45_stub_killer.rego",
+        "line": 554,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"SUGGEST\" {"
+      },
+      {
+        "file": "v3_p45_stub_killer.rego",
+        "line": 598,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"AUTO_FILE\" {"
+      },
+      {
+        "file": "v3_p45_stub_killer.rego",
+        "line": 641,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"AUTO_FILE\" {"
+      },
+      {
+        "file": "v3_p45_stub_killer.rego",
+        "line": 698,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"SUGGEST\" {"
+      },
+      {
+        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
+        "line": 147,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"AUTO_FILE\" {"
+      },
+      {
+        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
+        "line": 200,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"SUGGEST\" {"
+      },
+      {
+        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
+        "line": 245,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"AUTO_FILE\" {"
+      },
+      {
+        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
+        "line": 301,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"AUTO_FILE\" {"
+      },
+      {
+        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
+        "line": 347,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"SUGGEST\" {"
+      },
+      {
+        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
+        "line": 391,
+        "kind": "else_chain_fail_open",
+        "decision_mode": "AUTO_POST",
+        "context": "} else = \"SUGGEST\" {"
+      }
+    ],
+    "note": "Rejestr ścieżek fail-open (AP03/AP07). Ostatnia gałąź else-chain z decision_mode AUTO_POST/SUGGEST = kandydat cichego AUTO_POST. Każdy wpis wymaga: else → NEEDS_ADVICE z powodem (I07) albo deklaracji whitelist dowodów (I02). Baseline = backlog jawny, naprawa wg priorytetu kwoty (kryterium 19).",
+    "scanned_at": "2026-09-11T11:48:41.888185+00:00"
+  }
+}

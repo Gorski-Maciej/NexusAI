@@ -1,0 +1,116 @@
+{
+  "innovation": "V3-P49-I04",
+  "generated_at": "2026-09-11T12:25:34.453213+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "cases_total": 12,
+    "fail_closed_violations": 0,
+    "eval_errors": 0,
+    "suite_run": true,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "results": [
+      {
+        "id": "CH01-missing-analysis",
+        "status": "PASS",
+        "fail_closed": true,
+        "rule_id": "jdg.v3_p49_fail_closed.no_match",
+        "decision_mode": null
+      },
+      {
+        "id": "CH02-null-analysis",
+        "status": "PASS",
+        "fail_closed": true,
+        "rule_id": "jdg.v3_p49_fail_closed.no_match",
+        "decision_mode": null
+      },
+      {
+        "id": "CH03-empty-analysis",
+        "status": "PASS",
+        "fail_closed": true,
+        "rule_id": "jdg.v3_p49_fail_closed.no_match",
+        "decision_mode": null
+      },
+      {
+        "id": "CH04-missing-context",
+        "status": "PASS",
+        "fail_closed": true,
+        "rule_id": "jdg.v3_p49_fail_closed.no_match",
+        "decision_mode": null
+      },
+      {
+        "id": "CH05-silent-auto-post",
+        "status": "PASS",
+        "fail_closed": true,
+        "rule_id": "jdg.v3_p49_fail_closed.default_deny_core",
+        "decision_mode": "BLOCK"
+      },
+      {
+        "id": "CH06-partial-evidence",
+        "status": "PASS",
+        "fail_closed": true,
+        "rule_id": "jdg.v3_p49_fail_closed.default_deny_core",
+        "decision_mode": "BLOCK"
+      },
+      {
+        "id": "CH07-negative-counts",
+        "status": "PASS",
+        "fail_closed": true,
+        "rule_id": "jdg.v3_p49_fail_closed.default_deny_core",
+        "decision_mode": "TRIAGE"
+      },
+      {
+        "id": "CH08-wrong-types",
+        "status": "PASS",
+        "fail_closed": true,
+        "rule_id": "jdg.v3_p49_fail_closed.default_deny_core",
+        "decision_mode": "BLOCK"
+      },
+      {
+        "id": "CH09-extreme-values",
+        "status": "PASS",
+        "fail_closed": true,
+        "rule_id": "jdg.v3_p49_fail_closed.default_deny_core",
+        "decision_mode": "BLOCK"
+      },
+      {
+        "id": "CH10-thresholds-conflict",
+        "status": "PASS",
+        "fail_closed": true,
+        "rule_id": "jdg.v3_p49_fail_closed.thresholds_missing",
+        "decision_mode": "BLOCK"
+      },
+      {
+        "id": "CH11-bypass-flag",
+        "status": "PASS",
+        "fail_closed": true,
+        "rule_id": "jdg.v3_p49_fail_closed.default_deny_core",
+        "decision_mode": "BLOCK"
+      },
+      {
+        "id": "CH12-amount-ceiling-breach",
+        "status": "PASS",
+        "fail_closed": true,
+        "rule_id": "jdg.v3_p49_fail_closed.amount_ceiling",
+        "decision_mode": "TRIAGE"
+      }
+    ],
+    "scenarios": [
+      "CH01-missing-analysis",
+      "CH02-null-analysis",
+      "CH03-empty-analysis",
+      "CH04-missing-context",
+      "CH05-silent-auto-post",
+      "CH06-partial-evidence",
+      "CH07-negative-counts",
+      "CH08-wrong-types",
+      "CH09-extreme-values",
+      "CH10-thresholds-conflict",
+      "CH11-bypass-flag",
+      "CH12-amount-ceiling-breach"
+    ],
+    "note": "Asercja chaos: każda mutacja (braki, złe typy, skrajne wartości, konflikt progów, bypass) kończy się NEEDS_ADVICE/MANUAL_REVIEW/BLOCK/TRIAGE albo no_match — nigdy cichym AUTO_POST (AP07).",
+    "evaluated_at": "2026-09-11T12:25:34.453013+00:00"
+  }
+}
