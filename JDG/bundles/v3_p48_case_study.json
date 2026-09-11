@@ -1,0 +1,46 @@
+{
+  "innovation": "V3-P48-I10",
+  "generated_at": "2026-09-11T07:43:29.897444+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "open_cases": 1,
+    "cases_without_repair_plan": 0,
+    "overdue_cases": 0,
+    "semantic_drift_files": 0,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "cases": [
+      {
+        "case": "main_jdg.rego mirror zalega: canonical 3264 linii vs mirror 3264 linii (brak importów/wiringu V3 P27–P47 w mirror)",
+        "cause": "historia git: auto-commit synchronizował mirror fragmentarycznie; brak bramki AST diff w CI — dryf nieblockujący przez całą kampanię",
+        "effect": "build z mirror pomijałby PASS-y fail-closed P27–P47: routing O(1) bez 21+ pakietów V3 — błędne decyzje AUTO_POST przy pełnym canonical (Ordynacja art. 24b [NIEZWERYFIKOWANE — ISAP])",
+        "repair": "python JDG/tools/policies_sync_gate.py sync (mirror jako build output, I01) + sync-in-PR (I03) + bramka AST diff w CI (I02) — właściciel: P48-campaign, termin: 2026-09-30",
+        "control": "bramka v3_p48_semantic_ast_diff (I02) + heatmapa (I04) + sync-in-PR (I03) — dryf niemożliwy strukturalnie; przegląd miesięczny (I08)"
+      }
+    ],
+    "checks": [
+      {
+        "name": "template_present",
+        "status": "OK",
+        "detail": "szablon 5-polowy: przypadek→przyczyna→skutek→naprawa→kontrola (bundles/v3_p48_case_register.json)"
+      },
+      {
+        "name": "case_has_repair_plan",
+        "status": "OK",
+        "detail": "case study baseline z właścicielem i terminem (2026-09-30)"
+      },
+      {
+        "name": "overdue_cases",
+        "status": "OK",
+        "detail": "przypadki po terminie naprawy: 0"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p48_mirror_sync.case_study: True"
+      }
+    ],
+    "findings": []
+  }
+}

@@ -11,17 +11,6 @@ package jdg.mdr.hallmarks
 import data.jdg.helpers
 import future.keywords.if
 
-default decide := {
-    "matched": false,
-    "rule_id": "jdg.mdr.hallmarks.no_match",
-    "package": "jdg.mdr.hallmarks",
-    "priority": 999999
-}
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# MDR GENERAL — Obowiązek raportowania (10 reguł)
-# ═══════════════════════════════════════════════════════════════════════════════
-
 decide := {
     "matched": true,
     "rule_id": "jdg.mdr.hallmarks.general.r1",
@@ -68,38 +57,6 @@ else := {
 } {
     object.get(input.jdg_entrepreneur, "has_implemented_mdr_scheme", false) == true
 }
-
-else := {
-    "matched": true,
-    "rule_id": "jdg.mdr.hallmarks.general.r4",
-    "package": "jdg.mdr.hallmarks",
-    "priority": 350004,
-    "_routing": "",
-    "_routing_reason": "",
-    "_legal_basis": "Art. 86o OrdPU",
-    "_warnings": ["[MDR] Sankcja za brak MDR-3: do 5 000 PLN/dzień (max 21 000 000 PLN)!"],
-    "daily_penalty_pln": 5000,
-    "max_penalty_pln": 21000000
-} {
-    true
-}
-
-else := {
-    "matched": true,
-    "rule_id": "jdg.mdr.hallmarks.general.r5",
-    "package": "jdg.mdr.hallmarks",
-    "priority": 350005,
-    "_routing": "",
-    "_routing_reason": "",
-    "_legal_basis": "Art. 86a § 4 OrdPU (transgraniczność)",
-    "_warnings": ["[MDR] MDR dotyczy TYLKO schematów TRANSGRANICZNYCH (UE/EOG). Krajowe = NIE podlegają MDR."]
-} {
-    object.get(input.invoice, "is_cross_border", false) == false
-}
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# HALLMARK A — Ogólne kryterium głównej korzyści (MBT) (8 reguł)
-# ═══════════════════════════════════════════════════════════════════════════════
 
 else := {
     "matched": true,
@@ -314,3 +271,35 @@ else := {
 } {
     object.get(input.invoice, "mdr_hallmark", "") == "E3"
 }
+else := {
+    "matched": true,
+    "rule_id": "jdg.mdr.hallmarks.general.r5",
+    "package": "jdg.mdr.hallmarks",
+    "priority": 350005,
+    "_routing": "",
+    "_routing_reason": "",
+    "_legal_basis": "Art. 86a § 4 OrdPU (transgraniczność)",
+    "_warnings": ["[MDR] MDR dotyczy TYLKO schematów TRANSGRANICZNYCH (UE/EOG). Krajowe = NIE podlegają MDR."]
+} {
+    object.get(input.invoice, "is_cross_border", false) == false
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# HALLMARK A — Ogólne kryterium głównej korzyści (MBT) (8 reguł)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+else := {
+    "matched": true,
+    "rule_id": "jdg.mdr.hallmarks.general.r4",
+    "package": "jdg.mdr.hallmarks",
+    "priority": 350004,
+    "_routing": "",
+    "_routing_reason": "",
+    "_legal_basis": "Art. 86o OrdPU",
+    "_warnings": ["[MDR] Sankcja za brak MDR-3: do 5 000 PLN/dzień (max 21 000 000 PLN)!"],
+    "daily_penalty_pln": 5000,
+    "max_penalty_pln": 21000000
+} {
+    true
+}
+

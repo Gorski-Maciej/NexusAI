@@ -1417,6 +1417,92 @@ crossborder := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# V3-P27 CROSSBORDER GOVERNANCE (kampania V3 FORTRESS, jdg.v3_p27_cfc_exit_mdr)
+# Governance CFC/EXIT/MDR jako dane (ADR-002/P06) + okno temporalne (P05).
+# Wartości rdzenia (progi exit tax, MDR 30 dni, CFC, rezydencja) — w bloku
+# crossborder powyżej (jedno źródło prawdy); poniżej wyłącznie v3_p27_*.
+# Statusy weryfikacji: 2M/4M exit tax i 10M/2.5M EUR MDR [ZWERYFIKOWANO-WEB,
+# 2026-09-06]; de minimis CFC 250k EUR [NIEZWERYFIKOWANE] — kaucja I03/I07.
+# ═══════════════════════════════════════════════════════════════════════════════
+
+crossborder27 := {
+    "v3_p27_threshold_version": "crossborder-v3p27-2026.09",
+    "legal_basis_version": "PIT+OrdPU-v3p27-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I02/I03: exit tax — progi/lock/raty (2M art. 24cg ust. 5; 4M rdzeń; lock 5 lat)
+    "v3_p27_exit_tax_property_threshold_pln": 2000000,
+    "v3_p27_exit_tax_reinvestment_lock_years": 5,
+    "v3_p27_exit_tax_installments_eea": 5,
+    "v3_p27_exit_tax_signal_deadline": "7th_of_next_month",   # info-rule (art. 30da ust. 9)
+    # I03: weryfikator progów (ISAP gate)
+    "v3_p27_verifier_version": "v3p27-verify-2026.09",
+    "v3_p27_verifier_drift_pln": 0.01,                        # groszowa czułość (golden P26)
+    # I04: MDR hallmark scorer v2 (human review)
+    "v3_p27_mdr_human_review_score": 70,
+    # I05: MDR 30-day gate (kalendarz P25)
+    "v3_p27_mdr_warn_days": 7,
+    "v3_p27_mdr_weekend_shift": true,
+    "v3_p27_mdr_zero_silence": true,
+    # I06: MDR funkcja pomocnicza / kryterium kwalifikowanego korzystającego
+    "v3_p27_mdr_qualified_beneficiary_eur": 10000000,
+    "v3_p27_mdr_arrangement_value_eur": 2500000,
+    "v3_p27_mdr_auxiliary_excludes": false,
+    # I07: CFC signal detector (sygnały, nie rachunek)
+    "v3_p27_cfc_ownership_min_pct": 25,
+    "v3_p27_cfc_passive_signal_pct": 50,
+    "v3_p27_cfc_de_minimis_eur": 250000,                      # [NIEZWERYFIKOWANE]
+    # I09: katalog metod wyceny exit tax
+    "v3_p27_valuation_methods": ["MARKET_COMPARABLE", "INCOME_APPROACH", "COST_APPROACH"],
+    # I11/I12: golden + stress
+    "v3_p27_golden_version": "intl-golden-2026.09",
+    "v3_p27_golden_tolerance": 0.01,
+    "v3_p27_stress_required_scenarios": 3,
+    # I08: konstytucja międzynarodowa (P04)
+    "v3_p27_invariants_active": true,
+    "v3_p27_mdr_human_only": true,
+    "v3_p27_exit_tax_advisor_only": true,
+    "v3_p27_cfc_needs_advice_only": true,
+}
+
+hyper45 := {
+    "v3_p28_threshold_version": "hyper-v3p28-2026.09",
+    "legal_basis_version": "OP+VAT+PZP-v3p28-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I03: force majeure — katalog zdarzeń + limit trwania + kalendarz P25
+    "v3_p28_force_majeure_max_days": 90,
+    "v3_p28_force_majeure_calendar_p25_linked": true,
+    "v3_p28_force_majeure_degradation": "NEEDS_ADVICE",
+    # I04: sanctions gate — wersje list + human review + AML P22
+    "v3_p28_sanctions_list_version": "eu-un-2026.09",
+    "v3_p28_sanctions_human_review_required": true,
+    "v3_p28_sanctions_aml_p22_linked": true,
+    # I05: rejestr domen marginalnych (decyzje jawne)
+    "v3_p28_marginal_register_version": "v3p28-md-2026.09",
+    # I06: esig — próg podpisu kwalifikowanego + kontrakt kluczy
+    "v3_p28_esig_qualified_threshold_pln": 10000,
+    "v3_p28_esig_contract_p11_p16": true,
+    # I07: crisis drill — komplet scenariuszy (P04 K10)
+    "v3_p28_crisis_required_scenarios": 3,
+    "v3_p28_crisis_zero_silence": true,
+    # I08: network consistency — oczekiwana liczba hiperkontekstów
+    "v3_p28_network_expected_contexts": 14,
+    "v3_p28_network_gap_blocker": true,
+    # I09: konstytucja hiperkontekstów (P04)
+    "v3_p28_invariants_active": true,
+    "v3_p28_sanctions_human_only": true,
+    "v3_p28_fm_calendar_only": true,
+    "v3_p28_fx_single_engine": true,
+    "v3_p28_hyper_no_silent_auto_post": true,
+    # I10: golden set granic (P10)
+    "v3_p28_golden_version": "hyper-golden-2026.09",
+    "v3_p28_golden_tolerance": 0.01,
+    # I11: pustynie testowe domen marginalnych
+    "v3_p28_cleanup_max_untested": 3,
+    # I01: mapa kontekstów
+    "v3_p28_context_map_version": "v3p28-hcm-2026.09",
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # PCC / PODATKI LOKALNE / AKCYZĄ THRESHOLDS — RAPORT_11 (ADR-002)
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -1444,7 +1530,8 @@ pcc_local_excise := {
 
     # Akcyza — alkohol (zł/hl, 2026)
     "excise_ethanol_per_hl": 6900,              # etanol 100%
-    "excise_beer_per_plato": 8.57,              # piwo za °Plato    "excise_wine_per_hl": 185,                 # wino
+    "excise_beer_per_plato": 8.57,              # piwo za °Plato
+    "excise_wine_per_hl": 185,                  # wino (stawka do weryfikacji ISAP — P27 fix AP02)
     # V3-10 (kampania) — wersjonowanie snapshotu dla Decision Certificates
     "threshold_version": "pcc-local-2026.08",
     "legal_basis_version": "isap-lkg-2026.08",
@@ -2570,6 +2657,20 @@ misc := {
 
     # Reprezentacja
     "poa_fee_pln": 17,                           # PLN — opłata skarbowa (P1200)
+
+    # ── V3-P46 MIGRACJA HARDCODE (ADR-002) — KKS jako dane [NIEZWERYFIKOWANE — ISAP, P47] ──
+    # KKS art. 53 §3: próg przestępstwa — uszczuplenie > 26 000 PLN
+    "kks_criminal_threshold": 26000,             # PLN (Dz.U. 2025 poz. 678, ze zm.) [NIEZWERYFIKOWANE]
+    # KKW art. 97 §3: maksymalna wysokość mandatu karnego — 200 stawek dziennych
+    "kks_mandate_tier3_cap": 26000,              # PLN (200 × 130 PLN) [NIEZWERYFIKOWANE]
+    "kks_daily_rate": 130,                       # PLN — stawka dzienna mandatu [NIEZWERYFIKOWANE]
+    # KKW art. 97 §1: mandaty niższe — stawki 1–10 (≤5 200) i 11–20 (≤10 400)
+    "kks_mandate_tier1_cap": 5200,               # PLN — max mandatu, uszczuplenie ≤ 5 200 [NIEZWERYFIKOWANE]
+    "kks_mandate_tier2_cap": 10400,              # PLN — max mandatu, uszczuplenie 5 200–13 000 [NIEZWERYFIKOWANE]
+    "kks_mandate_tier1_loss_max": 5200,          # PLN — górna granica uszczuplenia stawek 1–10 [NIEZWERYFIKOWANE]
+    "kks_mandate_tier2_loss_max": 13000,         # PLN — górna granica uszczuplenia stawek 11–20 [NIEZWERYFIKOWANE]
+    # KKS: orientacyjna stawka odsetek dziennych od zaległości (0.038%/dzień)
+    "kks_daily_interest_rate": 0.00038,          # ułamek dzienny [NIEZWERYFIKOWANE — ISAP, P47]
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -3055,6 +3156,452 @@ docs_quality_v3_20 := {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# V3-29 — KAMPANIE JAKOŚCI V3 / 8 BRAMEK (MICRO/HYPER/ENTERPRISE/TOOLS/TESTS_CI/
+# BUNDLES/API_UI/DOCS) SNAPSHOT (ADR-002)
+# Progi spójne z v3_13..v3_20 (mutation 85, coverage 95) i kontraktem P29.
+# Rejestr bramek jako dane (I06) — definicje bramek bez deployu kodu (P06).
+v3_p29 := {
+    "v3_p29_threshold_version": "quality-v3p29-2026.09",
+    "legal_basis_version": "quality-gates-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I02: mutation testing — czułość suite'a (nie linie pokrycia)
+    "v3_p29_min_mutation_score": 85,
+    # I03: quality debt ledger — limit otwartych długów P1
+    "v3_p29_max_open_debts_p1": 0,
+    # I04: deterministyczny seed — replay 1:1
+    "v3_p29_seed_required": true,
+    # I05: profil czasowy bramek — limit i dryf
+    "v3_p29_max_gate_seconds": 120,
+    "v3_p29_perf_drift_pct": 50,
+    # I08: heatmapa domen — progi RED/AMBER/GREEN
+    "v3_p29_heatmap_red_below": 60,
+    "v3_p29_heatmap_green_from": 80,
+    # I09: fasady — zero fasad w testach blokujących merge
+    "v3_p29_max_blocking_facades": 0,
+    # I06: rejestr bramek jako dane (katalog kontraktów v3_13..v3_20)
+    "v3_p29_gate_registry": {
+        "v3_13": {"name": "micro", "package": "jdg.micro.quality_v3_13", "checks": ["syntax", "duplicates", "stubs", "hardcode"], "blocking": true},
+        "v3_14": {"name": "hyper", "package": "jdg.hyper.quality_v3_14", "checks": ["context_catalog", "deadline_statuses", "sanction_maps"], "blocking": true},
+        "v3_15": {"name": "enterprise", "package": "jdg.enterprise.quality_v3_15", "checks": ["verdict_25field", "mesh_nodes", "calibration"], "blocking": true},
+        "v3_16": {"name": "tools", "package": "jdg.tools.quality_v3_16", "checks": ["linters", "validators", "gap_reports"], "blocking": true},
+        "v3_17": {"name": "tests_ci", "package": "jdg.tests_ci.quality_v3_17", "checks": ["coverage", "mutation", "fuzz", "chaos", "golden"], "blocking": true},
+        "v3_18": {"name": "bundles", "package": "jdg.bundles.quality_v3_18", "checks": ["manifest_vs_registry", "mirror_drift", "rollback"], "blocking": true},
+        "v3_19": {"name": "api_ui", "package": "jdg.api_ui.quality_v3_19", "checks": ["openapi_validation", "breaking_change", "decision_modes"], "blocking": true},
+        "v3_20": {"name": "docs", "package": "jdg.docs.quality_v3_20", "checks": ["legal_twin", "docs_rules_gate", "manifest", "certification"], "blocking": true},
+    },
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-30 — FALE INNOWACJI / 24 GATE'Y RAPORTÓW R01–R24 SNAPSHOT (ADR-002)
+# Progi spójne z kontraktem P30 (rejestr wdrożeń, adopt-rate, golden replay,
+# budżet wdrożeniowy) i P29 (bramki jakości).
+v3_p30 := {
+    "v3_p30_threshold_version": "waves-v3p30-2026.09",
+    "legal_basis_version": "waves-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I02: adopt-rate — minimalny próg per domena
+    "v3_p30_adopt_rate_min_pct": 60,
+    # I04: kontrakt selekcji V4 — próg wysokiego ROI
+    "v3_p30_v4_high_roi_min": 80,
+    # I09: budżet wdrożeniowy — maks. reguł w jednym wdrożeniu
+    "v3_p30_max_rules_per_deployment": 20,
+    # I01: dozwolone statusy rejestru wdrożeń
+    "v3_p30_registry_statuses": ["OPEN", "IN_PROGRESS", "DONE", "REJECTED"],
+    # I07: klasy ryzyka rekomendacji
+    "v3_p30_risk_classes": ["TRIVIAL", "IMPORTANT", "CRITICAL"],
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-31 — ETAPY AUDYTÓW 12–28 SNAPSHOT (ADR-002)
+# Progi spójne z kontraktem P31 (supersynteza, risk-of-fortress, frontier
+# matrix, red team pack) i P29/P30 (wspólny JSON, rejestr wdrożeń).
+v3_p31 := {
+    "v3_p31_threshold_version": "audit-v3p31-2026.09",
+    "legal_basis_version": "audit-stages-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I03: red team pack — minimalna liczba ataków
+    "v3_p31_min_red_team_attacks": 10,
+    # I04: risk-of-fortress — maksymalny score
+    "v3_p31_max_risk_of_fortress": 30,
+    # I08: frontier matrix — wiek dowodu (dni)
+    "v3_p31_evidence_stale_days": 90,
+    # I11: kampania domknięcia — limit etapów bez dowodów
+    "v3_p31_max_stages_without_evidence": 0,
+    # I05: rejestr etapów jako dane (17 etapów, kontrole i zakres)
+    "v3_p31_stage_registry": {
+        "etap12": {"domain": "zus_core", "controls": ["rates", "reliefs", "30x_cap"], "blocking": true},
+        "etap13": {"domain": "zus_micro", "controls": ["micro_rego", "benefits"], "blocking": true},
+        "etap14": {"domain": "pkpir", "controls": ["month_close", "columns"], "blocking": true},
+        "etap15": {"domain": "uor", "controls": ["corrections", "pkpir_diff"], "blocking": true},
+        "etap16": {"domain": "kks_ord", "controls": ["limitation", "penalty"], "blocking": true},
+        "etap17": {"domain": "crossborder", "controls": ["fx", "wdt", "2026"], "blocking": true},
+        "etap18": {"domain": "lifecycle", "controls": ["suspension", "succession"], "blocking": true},
+        "etap19": {"domain": "local_excise", "controls": ["pcc", "akcyza"], "blocking": true},
+        "etap20": {"domain": "ksef_jpk", "controls": ["ksef2", "jpk_v7"], "blocking": true},
+        "etap21": {"domain": "rodo_aml_bdo_hr", "controls": ["ppk", "hr_dates"], "blocking": true},
+        "etap22": {"domain": "hyper_contexts", "controls": ["plan45_coherence"], "blocking": true},
+        "etap23": {"domain": "ai_neural", "controls": ["hitl_auto_post"], "blocking": true},
+        "etap24": {"domain": "tests_ci", "controls": ["coverage", "mutation"], "blocking": true},
+        "etap25": {"domain": "tools_api_rulestore", "controls": ["rulestore_migrations"], "blocking": true},
+        "etap26": {"domain": "mirror_sync", "controls": ["drift_detection"], "blocking": true},
+        "etap27": {"domain": "red_team", "controls": ["input_mutations", "fail_closed"], "blocking": true},
+        "etap28": {"domain": "final_certification", "controls": ["reconciliation", "slo"], "blocking": true},
+    },
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P32 — AUTOMATYZACJA KSIĘGOWOŚCI (pipeline faktura→archiwum) — ADR-002/P05
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p32 := {
+    "v3_p32_threshold_version": "ksiegowosc-v3p32-2026.09",
+    "legal_basis_version": "ksiegowosc-automation-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: minimalna pewność zaksięgowania automatycznego (AUTO_POST)
+    "v3_p32_auto_post_min_confidence": 95,
+    # I04: kolejka NEEDS_ADVICE — wiek wpisu i przepełnienie
+    "v3_p32_advice_max_age_days": 14,
+    "v3_p32_advice_overflow": 200,
+    # I05: reconciliation z wyciągiem bankowym
+    "v3_p32_recon_unmatched_max": 0,
+    "v3_p32_recon_amount_gap_max": 0.01,
+    # I07: replay sezonowy — maksymalny dryf decyzji
+    "v3_p32_replay_drift_max": 0,
+    # I08: okno korekt pre-deadline (dni przed terminem deklaracji)
+    "v3_p32_correction_window_days": 7,
+    # I09: próg kwotowy 4-eyes dla krytycznych AUTO_POST
+    "v3_p32_four_eyes_min_amount": 5000,
+    # I10: limit dokumentów z zerwanym łańcuchem traceability
+    "v3_p32_trace_broken_max": 0,
+    # I11: domeny dozwolone do auto-księgowania (limity jako dane)
+    "v3_p32_automation_limits": {
+        "domeny_auto": ["zakupy_vat23", "zakupy_vat8", "sprzedaz_vat23", "zus_skladki"],
+        "max_kwota_auto_post": 5000,
+        "wymagany_hash_dokumentu": true,
+    },
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P33 — WARSTWA AI ENTERPRISE (neural mesh, LLM bridge, human-in-the-loop)
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p33 := {
+    "v3_p33_threshold_version": "ai-enterprise-v3p33-2026.09",
+    "legal_basis_version": "ai-enterprise-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: formalna ścieżka awansu propozycji AI (kolejność wiążąca)
+    "v3_p33_pipeline_stages": ["llm_output", "syntax_validate", "smt_z3_proof",
+                               "golden_replay", "four_eyes", "shadow"],
+    # I02: tryb sandboxa AI (read_only | write_sandbox)
+    "v3_p33_ai_sandbox_mode": "read_only",
+    # I03: weryfikacja podstaw prawnych z LLM w ISAP obowiązkowa
+    "v3_p33_isap_verification_required": true,
+    # I04: ledger promptów w WORM + algorytm checksumy jako dane
+    "v3_p33_prompt_ledger_worm": true,
+    "v3_p33_prompt_ledger_checksum_alg": "sha256",
+    # I05: red-team prompt suite — kategorie ataków jako dane + minimum kategorii
+    "v3_p33_red_team_attacks": ["injection", "jailbreak", "exfiltration",
+                                "role_escape", "key_phishing"],
+    "v3_p33_red_team_min_categories": 3,
+    # I06: AUTO_POST zawsze przez AI-gate (trust score odcięty od decyzji)
+    "v3_p33_ai_gate_required": true,
+    # I07: digital twin wyłącznie na danych syntetycznych (RODO by design)
+    "v3_p33_twin_synthetic_only": true,
+    # I08: budżet tokenów i kosztu per sesja AI (cost governor)
+    "v3_p33_token_budget": 1000000,
+    "v3_p33_cost_limit_pln": 500,
+    # I09: wyjaśnienie propozycji AI obowiązkowe (explain-first)
+    "v3_p33_explanation_required": true,
+    # I10: federated mesh — tylko zanonimizowane agregaty (kontrakt prywatności)
+    "v3_p33_mesh_aggregates_only": true,
+    "v3_p33_mesh_min_k": 5,
+    "v3_p33_mesh_aggregate_violation_max": 0,
+    # I11: quantum-safe — docelowy rok migracji post-quantum (harmonogram jako dane)
+    "v3_p33_quantum_migration_year": 2030,
+    # I12: predictor triage — minimalny percentyl pewności sugestii
+    "v3_p33_judgment_min_percentile": 80,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P34 — WALIDACJA NARZĘDZI (walidacja jako governance, poziomy DAG L1-L5)
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p34 := {
+    "v3_p34_threshold_version": "walidacja-v3p34-2026.09",
+    "legal_basis_version": "walidacja-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: poziomy DAG walidacji jako dane (kolejność wiążąca)
+    "v3_p34_dag_levels": ["L1_syntax", "L2_lint", "L3_tests", "L4_semantic", "L5_legal"],
+    # I04: property-based fuzzing — minimalna liczba inputów per reguła
+    "v3_p34_fuzz_min_inputs": 1000,
+    # I06: mirror parity — limit reguł bez porównania AST
+    "v3_p34_mirror_unchecked_max": 0,
+    # I07: doc-numbers — limit liczb bez anchora [DEKLARACJA]
+    "v3_p34_doc_unanchored_max": 0,
+    # I10: heatmapa pokrycia — maksymalna niemłodość i limit spadku punktów
+    "v3_p34_heatmap_max_stale_days": 1,
+    "v3_p34_coverage_drop_block": 5,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P35 — AUDYTORY DOMENOWE (trust score, auditor-as-data, golden cases, skew)
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p35 := {
+    "v3_p35_threshold_version": "audytory-v3p35-2026.09",
+    "legal_basis_version": "audytory-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: trust score — podłoga pewności domeny i próg spadku (telemetria)
+    "v3_p35_trust_score_floor": 70,
+    "v3_p35_trust_drop_triage": 10,
+    # I02: definicje audytów bez kontroli — limit
+    "v3_p35_missing_controls_max": 0,
+    # I03: golden cases — minimum per domena i maksymalny wiek replay
+    "v3_p35_golden_cases_min_per_domain": 3,
+    "v3_p35_golden_replay_max_age_days": 30,
+    # I08: audyt nocny — maksymalna liczba pominiętych dni
+    "v3_p35_nightly_missed_max_days": 1,
+    # I09: pętla feedback operatora — maksymalny wiek
+    "v3_p35_feedback_max_age_days": 14,
+    # I10: SLA reakcji na alarm (godziny)
+    "v3_p35_alert_sla_hours": 4,
+    # I11: maksymalny wiek dowodu aktualności prawa (ISAP check)
+    "v3_p35_law_freshness_max_days": 7,
+    # I12: audyt inverse — minimum przypadków negatywnej przestrzeni per domena
+    "v3_p35_inverse_cases_min": 3,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P36 — GENERATORY MIGRATORY (transformacje jako transakcje, zero-orphan)
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p36 := {
+    "v3_p36_threshold_version": "generatory-v3p36-2026.09",
+    "legal_basis_version": "generatory-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I02: certyfikat idempotencji — drugi run = zero diff (bramka P29)
+    "v3_p36_idempotency_required": true,
+    # I03/I05: generatory produkują reguły+testy jednocześnie; reguła bez testu = BLOCK
+    "v3_p36_rule_without_test_max": 0,
+    # I05: guard rails — wymagane pola wygenerowanej reguły (legal basis, rule_id, okno, test)
+    "v3_p36_generator_required_fields": ["_legal_basis", "rule_id", "valid_from", "test_id"],
+    "v3_p36_guard_rail_violations_max": 0,
+    # I06: golden replay po migracji — maksymalny dryf werdyktów (P10)
+    "v3_p36_replay_drift_max": 0,
+    # I07: mirror-aware apply — dryf mirror po aplikacji (sync P39/P48)
+    "v3_p36_mirror_divergence_max": 0,
+    # I08: generator testów granicznych — minimalne pokrycie reguł wyliczania (%)
+    "v3_p36_boundary_rules_min_covered": 100,
+    # I12: zero-orphan guarantee — łączny limit orphanów po transformacji
+    "v3_p36_orphans_max": 0,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P37 — OBSERWOWALNOŚĆ (SLO, freshness SLA, alerting, benchmark gate)
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p37 := {
+    "v3_p37_threshold_version": "obserwowalnosc-v3p37-2026.09",
+    "legal_basis_version": "obserwowalnosc-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I02: SLA świeżości weryfikacji prawa (ISAP check) per akt
+    "v3_p37_law_freshness_sla_days": 7,
+    # I03: radar NEEDS_ADVICE — próg skoku względem baseline
+    "v3_p37_na_spike_ratio": 3,
+    # I04: budżet latencji p95 per domena (ms)
+    "v3_p37_latency_p95_max_ms": 500,
+    # I06: error budget — freeze wdrożeń poniżej tego poziomu (%)
+    "v3_p37_error_budget_min_pct": 0,
+    # I08: maksymalny rozjazd produkcja vs golden verdicts (P10)
+    "v3_p37_golden_drift_max": 0,
+    # I09: runbook-as-code — limit alarmów bez runbooka
+    "v3_p37_alert_without_runbook_max": 0,
+    # I10: status page — maksymalna niemłodość (dni)
+    "v3_p37_status_page_max_stale_days": 1,
+    # I11: limit kosztu decyzji AI (jednostki kosztu per decyzja)
+    "v3_p37_ai_cost_limit_per_decision": 1.0,
+    # I12: benchmark gate — maksymalna regresja p95 (%)
+    "v3_p37_benchmark_regression_max_pct": 10,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═════════════════════════════════════════════════════════════════════════
+# V3-P39 — TESTY I CI (piramida L1-L7, bramki merge, benchmark, niezmienniki)
+# ═════════════════════════════════════════════════════════════════════════
+v3_p39 := {
+    "v3_p39_threshold_version": "testy-ci-v3p39-2026.09",
+    "legal_basis_version": "testy-ci-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: minimalne pokrycie matrycy aktów granicami (grosze/data/waluta) %
+    "v3_p39_matrix_coverage_min_pct": 80,
+    # I06: minimalna czułość mutacyjna suite'a % (spójne z P29/v3_17)
+    "v3_p39_mutation_score_min_pct": 85,
+    # I09: minimalne pokrycie testami per akt prawny %
+    "v3_p39_act_coverage_min_pct": 90,
+    # I10: maksymalna regresja benchmarku p95 % (spójne z P37-I12)
+    "v3_p39_benchmark_regression_max_pct": 10,
+    # I12: maksymalna nieświeżość test impact map (dni)
+    "v3_p39_impact_map_max_stale_days": 7,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════════════════════════
+# V3-P38 — BUNDLE, DEPLOY I CYKL ŻYCIA WERSJI (canary, rollback, immutabilność)
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p38 := {
+    "v3_p38_threshold_version": "bundle-deploy-v3p38-2026.09",
+    "legal_basis_version": "bundle-deploy-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I02: maksymalny rozjazd canary vs produkcja (decyzje na próbce)
+    "v3_p38_canary_diff_max": 0,
+    # I02: minimalna próbka canary przed awansem
+    "v3_p38_canary_sample_min": 100,
+    # I03: SLA rollback (V1: powrót do stabilnego w minuty)
+    "v3_p38_rollback_mttr_max_min": 5,
+    # I05: limit wersji bundle bez archiwum WORM
+    "v3_p38_worm_missing_max": 0,
+    # I11: minimalny czas shadow evaluation przed canary (godziny)
+    "v3_p38_shadow_hours_min": 24,
+    # I12: maksymalny wiek changelogu release notes (dni)
+    "v3_p38_changelog_max_age_days": 7,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# V3-P40 — API, DANE I UI (kontrakt decyzyjny, RBAC, eksplikacja, degradacja)
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p40 := {
+    "v3_p40_threshold_version": "api-dane-ui-v3p40-2026.09",
+    "legal_basis_version": "api-dane-ui-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I02: maksymalna liczba węzłów explain chain bez linku do przepisu/ISAP
+    "v3_p40_explain_nodes_without_link_max": 0,
+    # I06: domyślny limit wywołań API per rola/endpoint (na minutę)
+    "v3_p40_rate_limit_default_per_min": 60,
+    # I08: maksymalny wiek weryfikacji ISAP dla domeny (dni) — X-Legal-Freshness
+    "v3_p40_freshness_sla_max_days": 7,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# V3-P41 — DOKUMENTACJA ENTERPRISE (docs-as-code, bramka docs, glosariusz, eksport)
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p41 := {
+    "v3_p41_threshold_version": "dokumentacja-v3p41-2026.09",
+    "legal_basis_version": "dokumentacja-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I04: maksymalna liczba dryfów semantycznych PL/EN (ARCHITEKTURA vs ARCHITECTURE)
+    "v3_p41_plen_diff_max_findings": 0,
+    # I05: maksymalna liczba naruszeń glosariusza (BLOCK przy przekroczeniu)
+    "v3_p41_glossary_violations_max": 0,
+    # I07: minimalne pokrycie alertów P37 runbookami %
+    "v3_p41_runbook_coverage_min_pct": 100,
+    # I08: maksymalny wiek changelogu (dni) — generowany z rejestrów
+    "v3_p41_changelog_max_age_days": 14,
+    # I09: maksymalny wiek dokumentu bez rewizji (dni)
+    "v3_p41_doc_freshness_max_days": 90,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# V3-P42 — ENTERPRISE RESZTA (health tiers, SMT, WORM, zależności, dojrzałość)
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p42 := {
+    "v3_p42_threshold_version": "enterprise-reszta-v3p42-2026.09",
+    "legal_basis_version": "enterprise-reszta-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I02: minimalna liczba dowodów formalnych dla reguł krytycznych
+    "v3_p42_smt_min_proofs": 3,
+    # I04: retencja artefaktów (lata; 5 lat od końca roku obrotowego)
+    "v3_p42_retention_years": 5,
+    # I08: maksymalna liczba artefaktów bez właściciela (orfany)
+    "v3_p42_orphan_max": 0,
+    # I12: maksymalny poziom skali dojrzałości L0–L5
+    "v3_p42_maturity_level_max": 5,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# V3-P43 — SECURITY I DR (threat model, integralność, ciągłość, naruszenia)
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p43 := {
+    "v3_p43_threshold_version": "security-dr-v3p43-2026.09",
+    "legal_basis_version": "security-dr-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: maksymalna liczba kontrol threat modelu bez testu w CI
+    "v3_p43_controls_without_test_max": 0,
+    # I05: maksymalny wiek chaos legal drill (dni)
+    "v3_p43_chaos_drill_max_age_days": 90,
+    # I09: maksymalny wiek ćwiczenia ransomware playbook (dni)
+    "v3_p43_playbook_exercise_max_days": 90,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# V3-P44 — CERTYFIKACJA FINALNA FORTECY (hard gates, WORM+podpis, odnowienie)
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p44 := {
+    "v3_p44_threshold_version": "cert-final-v3p44-2026.09",
+    "legal_basis_version": "cert-final-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I07: minimalna retencja certyfikatu finalnego (lata; UoR art. 74-75 [NIEZWERYFIKOWANE])
+    "v3_p44_certificate_retention_min_years": 5,
+    # I09: maksymalna ważność certyfikatu (dni; odnowienie po nowelizacji/deploy/czasie)
+    "v3_p44_cert_validity_max_days": 90,
+    # I10: maksymalna liczba otwartych fasad/martwych artefaktów na start V4
+    "v3_p44_legacy_facades_max": 0,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# V3-P45 — ELIMINACJA STUBÓW I FASAD (stub register, mutation gate, forensics)
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p45 := {
+    "v3_p45_threshold_version": "stub-killer-v3p45-2026.09",
+    "legal_basis_version": "stub-killer-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: maksymalna liczba stubów w domenach krytycznych (VAT/PIT/ZUS/KKS)
+    "v3_p45_critical_domain_stubs_max": 0,
+    # I05: minimalny mutation score per domena (procent)
+    "v3_p45_mutation_score_min": 90,
+    # I08: maksymalna liczba plików testów tautologicznych (tautology_guard)
+    "v3_p45_tautological_test_files_max": 0,
+    # I10: maksymalny wiek spisu stubów (dni)
+    "v3_p45_census_max_age_days": 7,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# V3-P45-CONV — PROGI KONWERSJI STUB→REGUŁA WARUNKOWA (I03; ADR-002, P05)
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p45_conversions := {
+    "v3_p45_conv_threshold_version": "stub-conv-v3p45-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # K1: próg UoR art. 2 ust. 1 pkt 5 (EUR) [NIEZWERYFIKOWANE — ISAP, P47]
+    "v3_p45_conv_uor_threshold_eur": 2000000,
+    # K3: próg MDR znacznik ogólny (PLN) [NIEZWERYFIKOWANE — ISAP, P47]
+    "v3_p45_conv_mdr_main_benefit": 2500000,
+    # K4: minimalna podstawa PCC (PLN, art. 9) [NIEZWERYFIKOWANE — ISAP, P47]
+    "v3_p45_conv_pcc_min_pln": 1000,
+    # K5: stawka WHT 20% (UoWHT art. 21) [NIEZWERYFIKOWANE — ISAP, P47]
+    "v3_p45_conv_wht_rate_pct": 20,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
 # P01 SEK. 3 — WERSJONOWANIE THRESHOLDÓW PER OKRES ROZLICZENIOWY (A2+) ENTERPRISE
 # ═══════════════════════════════════════════════════════════════════════════════
 # System wersjonowania progów: każdy próg może mieć N wersji z oknami
@@ -3137,4 +3684,158 @@ threshold_change_periods(threshold_key) = periods {
     ]
 } else = [] {
     true
+}
+
+# V3-P46 — ELIMINACJA HARDCODE: parametry jako podpisany, wersjonowany dokument
+# (A2+ ADR-002; P06 parametry-as-data; P05 okna temporalne) — ENTERPRISE
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p46 := {
+    "v3_p46_threshold_version": "hardcode-elim-v3p46-2026.09",
+    "legal_basis_version": "hardcode-elim-legal-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: maksymalny wiek rejestru parametrów (dni; odświeżenie po każdej migracji)
+    "v3_p46_parameter_registry_max_age_days": 30,
+    # I02: minimalna głębokość łańcucha provenance wartości (akt→art→nowela→diff)
+    "v3_p46_provenance_chain_min_depth": 3,
+    # I03: parametr zmienny prawnie bez valid_from/valid_to = BLOCK (P05)
+    "v3_p46_temporal_gate_enabled": true,
+    # I04: walidacja JSON-schema thresholds_data w CI (0 błędów dozwolone)
+    "v3_p46_schema_errors_max": 0,
+    # I08: jednostka parametru jawnie w schemacie; nieznana jednostka = TRIAGE
+    "v3_p46_known_units": ["PLN", "PLN_MIN", "EUR", "PERCENT", "RATIO", "MULTIPLIER", "DAYS", "YEARS", "COUNT", "RATE", "M2", "TEXT"],
+    # I10: limit „osieroconych" wartości prawnych w kodzie po migracji (audyt P46)
+    "v3_p46_orphan_values_max": 0,
+    # I10: limit wartości o ekstremalnej wielkości (heurystyka stawek/progów)
+    "v3_p46_extreme_literal_max": 0,
+    # I11: maksymalny dryf golden replay przy zmianie parametru (liczba zmienionych decyzji AUTO_POST)
+    "v3_p46_replay_drift_max_auto_changes": 0,
+    # I11: replays z dryfem wymagające 4-eyes ponad ten próg = BLOCK
+    "v3_p46_replay_drift_four_eyes_min": 1,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# V3-P46-MIGR — MAPA MIGRACJI HARDCODE (kierunkowe cele migracji; wartości = ścieżki
+# docelowe w data dokumentach, NIE stawki — stawki trzymają fe:N (I09) [NIEZWERYFIKOWANE — ISAP, P47])
+# ═══════════════════════════════════════════════════════════════════════════
+v3_p46_migration_map := {
+    "v3_p46_mig_threshold_version": "mig-map-v3p46-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: standard nazw parametrów <domena>.<znaczenie>_<jednostka>; zero magicznych kluczy (I12)
+    "v3_p46_mig_naming_pattern": "^[a-z][a-z0-9_]*[.][a-z][a-z0-9_]*$",
+    # I09: fe:N — stawki ZUS 2026-01→2026-03-31 (zaokrąglenie do grosza) [NIEZWERYFIKOWANE — ISAP/ZUS, P47]
+    "v3_p46_mig_zus_2026q1_spotykane": ["fe:N", "fe:N", "fe:N"],
+    # I09: fe:N — próg ZUS preferencyjny przychodu 2026 [NIEZWERYFIKOWANE — ISAP/ZUS, P47]
+    "v3_p46_mig_zus_preferential_revenue_pln": "fe:N",
+    # I09: fe:N — kwota wolna PIT (roczna, PLN) [NIEZWERYFIKOWANE — ISAP/PIT, P47]
+    "v3_p46_mig_pit_tax_free_pln": "fe:N",
+    # I09: fe:N — drugi próg skali PIT 2026 (PLN) [NIEZWERYFIKOWANE — ISAP/PIT, P47]
+    "v3_p46_mig_pit_scale_second_bracket_pln": "fe:N",
+    # I09: fe:N — stawka liniowa PIT 19% [NIEZWERYFIKOWANE — ISAP/PIT, P47]
+    "v3_p46_mig_pit_linear_rate": "fe:N",
+    # I09: fe:N — próg MPP 15 000 PLN [NIEZWERYFIKOWANE — ISAP/VAT, P47]
+    "v3_p46_mig_vat_mpp_threshold_pln": "fe:N",
+    # I09: fe:N — odsetki za rok podatkowy (Ordynacja art. 56) [NIEZWERYFIKOWANE — ISAP/MF, P47]
+    "v3_p46_mig_interest_annual_rate": "fe:N",
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P47 WERYFIKACJA PODSTAW PRAWNYCH — progi (ADR-002 parametry-as-data)
+# Zero fikcji: każdy akt z identyfikatorem ISAP, status weryfikacji jawny.
+# Honory kontrakty: P45 (rejestr mediacji → P47), P46 (drift tracker, orphan
+# backlog 16 581 z SLA ustalanym tutaj), P34 (linter), P08 (Law Radar).
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p47 := {
+    "v3_p47_threshold_version": "legal-basis-v3p47-2026.09",
+    "legal_basis_version": "lb-canon-v3p47-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I02: cytowania niezgodne z kanonem na PR = 0 dozwolonych (linter prawny)
+    "v3_p47_lint_errors_max": 0,
+    # I08: pełny łańcuch akt→art→ust→pkt; poniżej = BRAK_KOMPLETNOŚCI (TRIAGE)
+    "v3_p47_min_chain_depth": 3,
+    # I01: maksymalny wiek spisu legal basis (dni; odświeżenie po każdym re-check)
+    "v3_p47_census_max_age_days": 30,
+    # I03: minimum aktów w rejestrze źródeł (sanity; poniżej = TRIAGE)
+    "v3_p47_min_acts_registry": 1,
+    # I06: SLA mediacji reguła↔ISAP (dni); po terminie = BLOCK awansu CANDIDATE→ACTIVE
+    "v3_p47_mediation_sla_days": 14,
+    # I05: świeżość re-checku aktu (dni); powyżej = STALE → SHADOW przegląd
+    "v3_p47_freshness_stale_days": 92,
+    # I05: kadencja re-checku aktów reguł ACTIVE (dni; codziennie wg promptu)
+    "v3_p47_active_recheck_days": 1,
+    # I08: cel kompletności łańcuchów dla reguł ACTIVE (%); poniżej = TRIAGE
+    "v3_p47_completeness_target_pct": 100,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ── Mapa aktów P47 (Sekcja 8 promptu): identyfikator ISAP + status weryfikacji ──
+# TWIERDZENIA, nie dowody (protokół 04): Dz.U./daty do weryfikacji w ISAP/RCL.
+# Zakaz fikcyjnych pozycji — wszystkie [NIEZWERYFIKOWANE — ISAP] aż do weryfikacji
+# 4-eyes (I10); zero wymyślonych numerów pozycji.
+v3_p47_acts := {
+    "v3_p47_acts_version": "acts-v3p47-2026.09",
+    "valid_from": "2026-01-01",
+    "v3_p47_act_ordynacja": {"title": "Ordynacja podatkowa", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU20180002169", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "2019-01-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_vat": {"title": "Ustawa o VAT", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU2004019093", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "2004-05-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_pit": {"title": "Ustawa o PIT", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19910900193", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "1992-01-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_cit": {"title": "Ustawa o CIT", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19920110203", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "1992-01-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_zus": {"title": "Ustawa systemowa ZUS", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19981370887", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "1999-01-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_ksht": {"title": "Ustawa o rachunkowości", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19940121591", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "1995-01-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_kks": {"title": "Kodeks karny skarbowy", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19990830930", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "2000-01-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_ksef": {"title": "KSeF (ustawa o VAT art. 106na i nast.)", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU2004019093", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "2026-02-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_pcc": {"title": "Ustawa o PCC", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU20001490843", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "2001-01-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_ryczalt": {"title": "Ustawa o zryczałtowanym podatku dochodowym", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU19981440930", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "1999-01-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_mdr": {"title": "MDR (Ordynacja art. 86a i nast.)", "isap_url": "https://isap.sejm.gov.pl/isap.nsf/DocDetails.xsp?id=WDU20180002169", "dz_u": "[NIEZWERYFIKOWANE — ISAP]", "valid_from_claim": "2019-07-01", "verification": "NIEZWERYFIKOWANE"},
+    "v3_p47_act_informacja": {"title": "RCL — proces legislacyjny (daty wejścia w życie)", "isap_url": "https://legislacja.gov.pl", "dz_u": "[NIEZWERYFIKOWANE — RCL]", "valid_from_claim": null, "verification": "NIEZWERYFIKOWANE"},
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P48 SYNCHRONIZACJA MIRROR POLICIES — progi (ADR-002 parametry-as-data)
+# Zero dryfu canonical↔mirror: mirror jako build output, AST diff gate,
+# sync-in-PR, heatmapa dryfu, overlay jawne, parity testów, golden replay,
+# własność pakietów, post-deploy checksum, case study, lifecycle alignment,
+# one-truth attestation. Honory kontrakty: P00 (jedno źródło prawdy), P36
+# (sync w tej samej transakcji), P38 (post-deploy), P10 (golden), P39 (CI),
+# P07 (lifecycle), P45/P46/P47 (konwencje fali naprawczej).
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p48 := {
+    "v3_p48_threshold_version": "mirror-sync-v3p48-2026.09",
+    "legal_basis_version": "lb-mirror-v3p48-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: maksymalny wiek synchronizacji mirror (dni; po tym = TRIAGE przegląd)
+    "v3_p48_sync_max_age_days": 7,
+    # I02: dryf semantyczny AST na PR = 0 dozwolonych (tekstowy — dozwolony)
+    "v3_p48_semantic_drift_max": 0,
+    # I04: cel: 100% pakietów czystych; próg blokady dryfu najgorszego pakietu (%)
+    "v3_p48_heatmap_target_pct": 100,
+    "v3_p48_drift_block_pct": 20,
+    # I06: minimum przebiegów parity testów na mirror per cykl CI
+    "v3_p48_min_parity_runs": 1,
+    # I07: maksymalna delta decyzji golden replay mirror vs canonical (0 = zero)
+    "v3_p48_replay_delta_max": 0,
+    # I08: maksymalny wiek przeglądu własności pakietu mirror (dni)
+    "v3_p48_review_max_age_days": 90,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ── Mapa pakietów mirror (I08 własność; I04 heatmapa): właściciel + kadencja ──
+# Baseline pomiaru 2026-09-11 (tools/v3_p48_semantic_ast_diff.py): canonical
+# 522 plików rego, mirror 580, wspólnych 500 — 472 identycznych, 3 tekstowych,
+# 25 semantycznych, 22 brakujących w mirror, 80 osieroconych legacy w mirror.
+# Wszystkie statusy weryfikacji: [NIEZWERYFIKOWANE — 4-eyes] do stempla człowieka.
+v3_p48_packages := {
+    "v3_p48_packages_version": "packages-v3p48-2026.09",
+    "valid_from": "2026-01-01",
+    "v3_p48_pkg_root": {"path": "policies/", "owner": "P48-campaign", "review_days": 30, "drift_pct": 9.58, "verification": "NIEZWERYFIKOWANE"},
+    "v3_p48_pkg_jdg": {"path": "policies/jdg", "owner": "P48-campaign", "review_days": 30, "drift_pct": 100.0, "verification": "NIEZWERYFIKOWANE"},
+    "v3_p48_pkg_tax": {"path": "policies/tax", "owner": "P48-campaign", "review_days": 30, "drift_pct": 100.0, "verification": "NIEZWERYFIKOWANE"},
+    "v3_p48_pkg_vat": {"path": "policies/tax/vat", "owner": "P48-campaign", "review_days": 30, "drift_pct": 100.0, "verification": "NIEZWERYFIKOWANE"},
+    "no_auto_post": true,
+    "manual_review_required": true,
 }

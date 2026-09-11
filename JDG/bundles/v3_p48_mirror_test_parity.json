@@ -1,14 +1,14 @@
 {
   "innovation": "V3-P48-I06",
-  "generated_at": "2026-09-11T05:58:17.074377+00:00",
+  "generated_at": "2026-09-11T07:39:27.270802+00:00",
   "gate": "PASS",
   "metrics": {
     "parity_runs": 1,
     "result_mismatches": 0,
     "mirror_tests_total": 230,
-    "at_risk_tests": 2,
-    "mirror_packages_dirty": 5,
-    "routing": "TRIAGE_QUEUE"
+    "at_risk_tests": 0,
+    "mirror_packages_dirty": 0,
+    "routing": "AUTO_FILE"
   },
   "evidence": {
     "checks": [
@@ -19,13 +19,13 @@
       },
       {
         "name": "parity_portability",
-        "status": "TRIAGE",
-        "detail": "testy dotyczące pakietów z dryfem semantycznym (ryzyko rozjazdu wyników): 2 z 230"
+        "status": "OK",
+        "detail": "testy dotyczące pakietów z dryfem semantycznym (ryzyko rozjazdu wyników): 0 z 230"
       },
       {
         "name": "mirror_packages_clean",
-        "status": "TRIAGE",
-        "detail": "pakiety mirror gotowe do parity 1:1: 49, z dryfem: 5 ((root), accounting, crossborder, local_taxes, mdr)"
+        "status": "OK",
+        "detail": "pakiety mirror gotowe do parity 1:1: 54, z dryfem: 0 (brak)"
       },
       {
         "name": "rule_present",
@@ -33,12 +33,7 @@
         "detail": "reguła jdg.v3_p48_mirror_sync.mirror_test_parity: True"
       }
     ],
-    "findings": [
-      {
-        "severity": "HIGH",
-        "message": "testy pakietów z dryfem mogą dawać inne wyniki na mirror — uruchom parity po sync (BLOCKER dopóki dryf istnieje)"
-      }
-    ],
+    "findings": [],
     "native_tests": [
       "test_akcyza_depreciation_mdr_exittax.rego",
       "test_business_audyt_r02_enterprise.rego",

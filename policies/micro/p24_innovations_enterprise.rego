@@ -9,6 +9,7 @@
 
 package jdg.p24.innovations
 
+import future.keywords.in
 import data.jdg.helpers
 
 default decide := {

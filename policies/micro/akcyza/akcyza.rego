@@ -251,7 +251,7 @@ else := {
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.akcyza.a26.r1: akcyza_a26_r1_eligibility
-decide := {
+else := {
     "matched": true,
     "rule_id": "jdg.micro.akcyza.a26.r1",
     "package": "jdg.micro.akcyza",
@@ -480,7 +480,7 @@ else := {
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.akcyza.a30.r1: akcyza_a30_r1_eligibility
-decide := {
+else := {
     "matched": true,
     "rule_id": "jdg.micro.akcyza.a30.r1",
     "package": "jdg.micro.akcyza",
@@ -709,7 +709,7 @@ else := {
 # ╚══════════════════════════════════════════════════════════════════════════════╝
 
 # jdg.micro.akcyza.a99.r1: akcyza_a99_r1_eligibility
-decide := {
+else := {
     "matched": true,
     "rule_id": "jdg.micro.akcyza.a99.r1",
     "package": "jdg.micro.akcyza",

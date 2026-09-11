@@ -1,0 +1,404 @@
+{
+  "innovation": "V3-P48-I08",
+  "generated_at": "2026-09-11T07:39:33.559483+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "packages_total": 54,
+    "orphan_packages": 53,
+    "stale_reviews": 0,
+    "review_max_age_days": 90,
+    "routing": "BLOCK_AND_ALERT"
+  },
+  "evidence": {
+    "register_top": [
+      {
+        "package": "(root)",
+        "path": "policies/",
+        "owner": "P48-campaign",
+        "review_days": 30,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "accounting",
+        "path": "policies/accounting",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "advertising",
+        "path": "policies/advertising",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "allowances",
+        "path": "policies/allowances",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "api_ui",
+        "path": "policies/api_ui",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "audit",
+        "path": "policies/audit",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "bundles",
+        "path": "policies/bundles",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "business",
+        "path": "policies/business",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "calendar",
+        "path": "policies/calendar",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "compliance",
+        "path": "policies/compliance",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "conviction",
+        "path": "policies/conviction",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "crossborder",
+        "path": "policies/crossborder",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "data",
+        "path": "policies/data",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 1,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "docs",
+        "path": "policies/docs",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "edelivery",
+        "path": "policies/edelivery",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "enterprise",
+        "path": "policies/enterprise",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "environmental",
+        "path": "policies/environmental",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "esig",
+        "path": "policies/esig",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "family",
+        "path": "policies/family",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "force_majeure",
+        "path": "policies/force_majeure",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "fx",
+        "path": "policies/fx",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "hyper",
+        "path": "policies/hyper",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "insurance",
+        "path": "policies/insurance",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "jdg",
+        "path": "policies/jdg",
+        "owner": "P48-campaign",
+        "review_days": 30,
+        "dirty": 0,
+        "orphan_files": 44,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "jpk",
+        "path": "policies/jpk",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "kks",
+        "path": "policies/kks",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "ksef_jpk",
+        "path": "policies/ksef_jpk",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "local_taxes",
+        "path": "policies/local_taxes",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "mdr",
+        "path": "policies/mdr",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "micro",
+        "path": "policies/micro",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "ord",
+        "path": "policies/ord",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "payments",
+        "path": "policies/payments",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "pcc",
+        "path": "policies/pcc",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "pit",
+        "path": "policies/pit",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "procurement",
+        "path": "policies/procurement",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "regulated",
+        "path": "policies/regulated",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "representation",
+        "path": "policies/representation",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "residency",
+        "path": "policies/residency",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "risk",
+        "path": "policies/risk",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      },
+      {
+        "package": "rodo",
+        "path": "policies/rodo",
+        "owner": null,
+        "review_days": null,
+        "dirty": 0,
+        "orphan_files": 0,
+        "verification": "NIEZWERYFIKOWANE — 4-eyes"
+      }
+    ],
+    "checks": [
+      {
+        "name": "packages_in_register",
+        "status": "OK",
+        "detail": "pakiety w rejestrze właścicieli: 54 ((root), accounting, advertising, allowances, api_ui, audit)"
+      },
+      {
+        "name": "orphan_packages",
+        "status": "BLOCK",
+        "detail": "pakiety bez właściciela (osierocone): 53"
+      },
+      {
+        "name": "stale_reviews",
+        "status": "OK",
+        "detail": "przeglądy po kadencji (90 dni): 0"
+      },
+      {
+        "name": "rule_present",
+        "status": "OK",
+        "detail": "reguła jdg.v3_p48_mirror_sync.mirror_ownership: True"
+      }
+    ],
+    "findings": [
+      {
+        "severity": "HIGH",
+        "message": "pakiety osierocone: 53 — przypisz właściciela i kadencję przeglądu (BLOCK_AND_ALERT wg reguły I08)"
+      }
+    ]
+  }
+}

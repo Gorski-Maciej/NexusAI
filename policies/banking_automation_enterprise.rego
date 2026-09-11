@@ -913,7 +913,7 @@ else := {
     # Batch strategy based on count
     batch_strategy := batch_strategy_for(batch_count)
 
-    # pain.001.001.03 XML header for Elixir batch (TODO: add PmtInf entries per payment)
+    # pain.001.001.03 XML header for Elixir batch (TODO P61: add PmtInf entries per payment)
     pain001_xml := build_pain001_header(payments, debtor_iban, debtor_name, execution_date, batch_total)
 
     # PolishAPI premium batch JSON

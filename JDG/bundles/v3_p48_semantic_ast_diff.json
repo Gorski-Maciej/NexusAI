@@ -1,460 +1,20 @@
 {
   "innovation": "V3-P48-I02",
-  "generated_at": "2026-09-11T05:57:59.733117+00:00",
+  "generated_at": "2026-09-11T07:39:08.338136+00:00",
   "gate": "PASS",
   "metrics": {
-    "semantic_diffs": 21,
-    "textual_diffs": 7,
+    "semantic_diffs": 0,
+    "textual_diffs": 0,
     "unreported_semantic": 0,
     "drift_map_present": true,
-    "only_rules": 23,
+    "only_rules": 0,
     "only_policies": 80,
-    "drift_pct": 9.75,
+    "drift_pct": 0.0,
     "packages": 54,
-    "routing": "BLOCK_AND_ALERT"
+    "routing": "TRIAGE_QUEUE"
   },
   "evidence": {
     "drift_map_top": [
-      {
-        "file": "accounting/depreciation_enterprise_complete.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "_dep_low_value_snapshot",
-          "dep",
-          "low_limit"
-        ],
-        "only_in_mirror": [],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "cfc_auto_classifier.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "cb",
-          "cb27",
-          "cfc_rate",
-          "de_minimis_bench",
-          "ownership_min",
-          "pit_rate",
-          "tax_estimate"
-        ],
-        "only_in_mirror": [
-          "tax_due"
-        ],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "crossborder/exit_tax_cfc_complete.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "threshold",
-          "wht_threshold"
-        ],
-        "only_in_mirror": [],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "exit_tax_mdr_enterprise.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "_eu_eea_countries",
-          "_thresholds_root",
-          "t"
-        ],
-        "only_in_mirror": [
-          "eu_eea_countries"
-        ],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "kks.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "band",
-          "bounds",
-          "c",
-          "cap",
-          "class",
-          "convictions",
-          "criminal_threshold",
-          "e",
-          "flag",
-          "info",
-          "interest_rate_daily",
-          "level"
-        ],
-        "only_in_mirror": [],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "local_taxes/akcyza_alcohol.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "ent"
-        ],
-        "only_in_mirror": [
-          "has_permit",
-          "has_warehouse"
-        ],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "main_jdg.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "final_verdict_p100",
-          "final_verdict_p101",
-          "final_verdict_p102",
-          "final_verdict_p103",
-          "final_verdict_p104",
-          "final_verdict_p105",
-          "final_verdict_p106",
-          "final_verdict_p107",
-          "final_verdict_p108",
-          "final_verdict_p109",
-          "final_verdict_p110",
-          "final_verdict_p111"
-        ],
-        "only_in_mirror": [],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "mdr/mdr_enterprise.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "a",
-          "b",
-          "ent13",
-          "ent9",
-          "p"
-        ],
-        "only_in_mirror": [],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "mdr_auto_generator.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "all_h",
-          "current_ts",
-          "d",
-          "inv",
-          "inv5",
-          "k",
-          "ks"
-        ],
-        "only_in_mirror": [
-          "days_remaining_impl"
-        ],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "mdr_dac6_enterprise.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "a",
-          "all_pairs",
-          "b",
-          "h"
-        ],
-        "only_in_mirror": [
-          "hallmark_a1",
-          "hallmark_a2",
-          "hallmark_a3",
-          "hallmark_b1",
-          "hallmark_b2",
-          "hallmark_b3",
-          "hallmark_c1",
-          "hallmark_c2",
-          "hallmark_c3",
-          "hallmark_c4",
-          "hallmark_d1",
-          "hallmark_d2"
-        ],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "p14_pcc_lokalne_akcyza_innovations_v9.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "_inn13_amount",
-          "_th_snapshot",
-          "a",
-          "audit",
-          "b",
-          "c",
-          "d",
-          "dep",
-          "e",
-          "f",
-          "from_private",
-          "k"
-        ],
-        "only_in_mirror": [
-          "thresholds"
-        ],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "thresholds_jdg.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "crossborder27",
-          "hyper45",
-          "v3_p29",
-          "v3_p30",
-          "v3_p31",
-          "v3_p32",
-          "v3_p33",
-          "v3_p34",
-          "v3_p35",
-          "v3_p36",
-          "v3_p37",
-          "v3_p38"
-        ],
-        "only_in_mirror": [],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "v3_p13_vat_deductions_enterprise.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "_no_match_id"
-        ],
-        "only_in_mirror": [],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "v3_p14_pit_reliefs_enterprise.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "_no_match_id"
-        ],
-        "only_in_mirror": [],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "v3_p15_crossborder_enterprise.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "_no_match_id"
-        ],
-        "only_in_mirror": [],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "v3_p16_ksef_jpk_enterprise.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "_no_match_id"
-        ],
-        "only_in_mirror": [],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "v3_p17_ordynacja_obrona_enterprise.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "_no_match_id"
-        ],
-        "only_in_mirror": [],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "v3_p18_ryczalt_enterprise.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "_no_match_id"
-        ],
-        "only_in_mirror": [],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "v3_p19_pcc_akcyza_bdo_enterprise.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "_no_match_id"
-        ],
-        "only_in_mirror": [],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "v3_p25_kalendarz_zbiorczy_enterprise.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "_no_match_id"
-        ],
-        "only_in_mirror": [],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "v3_p26_zus_skladki_enterprise.rego",
-        "kind": "semantic",
-        "only_in_canonical": [
-          "_no_match_id"
-        ],
-        "only_in_mirror": [],
-        "risk": "błędna decyzja przy build z mirror (inna logika reguł) — Ordynacja art. 24b: stosować tekst obowiązujący na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
-        "action": "sync mirror z canonical (python JDG/tools/policies_sync_gate.py sync) albo jawna deklaracja OVERLAY.md (I05)"
-      },
-      {
-        "file": "v3_p27_cfc_exit_mdr_enterprise.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p28_hyper_plan45_enterprise.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p29_quality_campaigns_enterprise.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p30_innovation_waves_enterprise.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p31_audit_stages_enterprise.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p32_ksiegowosc_automation_enterprise.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p33_neural_mesh_ai_enterprise.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p34_walidacja_narzedzia_enterprise.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p35_audyutory_domenowe_enterprise.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p36_generatory_migratory_enterprise.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p37_obserwowalnosc_enterprise.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p38_bundle_deploy_enterprise.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p39_testy_ci_enterprise.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p40_api_dane_ui_enterprise.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p41_dokumentacja_enterprise.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p42_enterprise_reszta.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p43_security_dr_enterprise.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p44_certyfikacja_finalna.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p45_conversions.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p45_stub_killer.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p47_legal_basis_weryfikacja_enterprise.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
-      {
-        "file": "v3_p48_mirror_sync.rego",
-        "kind": "missing_in_mirror",
-        "risk": "mirror zalega — build z mirror pomija nowe reguły canonical",
-        "action": "sync mirror (build output) w tej samej PR (I03)"
-      },
       {
         "file": "data/thresholds_sc.rego",
         "kind": "orphan_in_mirror",
@@ -670,28 +230,292 @@
         "kind": "orphan_in_mirror",
         "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
         "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "jdg/rules/v3_p19_pcc_akcyza_bdo_enterprise.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "jdg/rules/v3_p20_ksiegowosc_pkpir_uor_enterprise.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "jdg/rules/v3_p25_kalendarz_zbiorczy_enterprise.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "jdg/temporal.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "jdg/validation.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "jdg/vat/deductions.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "jdg/vat/procedures.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "jdg/vat/substantive.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "jdg/zus.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/_helpers.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/_helpers_sc.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/_metadata.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/accounting.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/allowances.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/anomaly.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/cit_deductions.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/compliance.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/crossborder.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/direct/cit.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/direct/pit.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/fallback.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/labor_extended.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/main_sc.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/ordynacja_extended.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/partner_mirror.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/pit_withholding.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/risk.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/routing.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/sc_fallback.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/sc_ksef_jpk.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/sc_liability.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/sc_partnership.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/temporal.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/uor_books.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/uor_reports.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/uor_valuation.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/vat/deductions.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/vat/gtu.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/vat/procedures.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/vat/substantive.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/vat_registration.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/what_if.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tax/zus.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
+      },
+      {
+        "file": "tests/sc_main_test.rego",
+        "kind": "orphan_in_mirror",
+        "risk": "osierocony plik mirror — nikt go nie aktualizuje (legacy)",
+        "action": "archiwizacja starej struktury albo OVERLAY.md (I05)"
       }
     ],
     "checks": [
       {
         "name": "drift_map_present",
         "status": "OK",
-        "detail": "mapa dryfu: 131 wpisów (bundles/v3_p48_drift_map.json)"
+        "detail": "mapa dryfu: 80 wpisów (bundles/v3_p48_drift_map.json)"
       },
       {
         "name": "semantic_diffs",
-        "status": "BLOCK",
-        "detail": "dryf semantyczny: 21 (próg v3_p48_semantic_drift_max=0)"
+        "status": "OK",
+        "detail": "dryf semantyczny: 0 (próg v3_p48_semantic_drift_max=0)"
       },
       {
         "name": "textual_diffs_allowed",
         "status": "OK",
-        "detail": "dryf tekstowy (komentarze/nagłówki): 7 — bramka ignoruje"
+        "detail": "dryf tekstowy (komentarze/nagłówki): 0 — bramka ignoruje"
       },
       {
         "name": "one_sided_files",
         "status": "TRIAGE",
-        "detail": "tylko canonical: 23, tylko mirror: 80"
+        "detail": "tylko canonical: 0, tylko mirror: 80"
       },
       {
         "name": "rule_present",
@@ -699,11 +523,6 @@
         "detail": "reguła jdg.v3_p48_mirror_sync.semantic_ast_diff: True"
       }
     ],
-    "findings": [
-      {
-        "severity": "HIGH",
-        "message": "niezaraportowany wcześniej dryf semantyczny: 21 plików — merge BLOCKED do czasu sync lub overlay"
-      }
-    ]
+    "findings": []
   }
 }

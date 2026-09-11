@@ -2,7 +2,7 @@
 # NexusAI JDG Enterprise Policies — MDR/DAC6 Enterprise (P1950-P1965)
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# METADATA
+# Documentation metadata (kept as ordinary comments; not parsed by OPA)
 # title: MDR Enterprise — Mandatory Disclosure Rules / DAC6 for JDG
 # description: |
 #   Rozbudowany pakiet Enterprise dla MDR/DAC6 — schematy podatkowe w JDG.
@@ -185,8 +185,7 @@ else := {
 } {
     object.get(input.mdr, "mdr4_due", false) == true
     quarter := object.get(input.calendar, "quarter", 2)
-    deadline = "30 kwietnia" { quarter == 1 }; deadline = "31 lipca" { quarter == 2 }
-    deadline = "31 października" { quarter == 3 }; deadline = "31 stycznia" { quarter == 4 }
+    deadline := _q_deadline(quarter)
     scheme_count := object.get(input.mdr, "mdr_schemes_this_quarter", 0)
 }
 
@@ -274,13 +273,12 @@ else := {
     "_legal_basis": "Art. 86a OP (Hallmark A5, B2) + Art. 27, 30c PIT",
     "_warnings": [sprintf("[MDR] CROSS-PIT: konwersja %s (%.2f PLN). Zmiana formy opodatkowania + optymalizacja transgraniczna. Jeśli główną korzyścią jest podatkowa → MBT = TRUE → MDR obowiązkowy!", [conversion_type, amount])]
 } {
-    object.get(input.jdg_entrepreneur, "mdr_scheme_detected", false) == true
-    tax_form_changed := object.get(input.jdg_entrepreneur, "mdr_tax_form_conversion", false)
-    income_to_capital := object.get(input.jdg_entrepreneur, "mdr_income_to_capital", false)
-    tax_form_changed or income_to_capital
-    conversion_type = "forma opodatkowania" { tax_form_changed }
-    conversion_type = "dochód → kapitał" { income_to_capital }
-    amount := object.get(input.invoice, "amount_net", 0)
+    ent9 := object.get(input, "jdg_entrepreneur", {})
+    tax_form_changed := object.get(ent9, "mdr_tax_form_conversion", false)
+    income_to_capital := object.get(ent9, "mdr_income_to_capital", false)
+    _or2(tax_form_changed, income_to_capital)
+    conversion_type := _pick_conversion(tax_form_changed, income_to_capital)
+    amount := object.get(object.get(input, "invoice", {}), "amount_net", 0)
 }
 
 # ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -374,9 +372,10 @@ else := {
     "_legal_basis": "Art. 86a § 4 OrdPU, Art. 86c OrdPU",
     "_warnings": [sprintf("[MDR] TAJEMNICA ZAWODOWA — %s. NIE składasz MDR-3. Obowiązek zgłoszenia przechodzi na KLIENTA (Art. 86c). POINFORMUJ klienta pisemnie + zachowaj kopię pisma przez 6 lat!", [profession])]
 } {
-    profession := object.get(input.jdg_entrepreneur, "profession", "")
-    profession in {"ATTORNEY", "RADCA_PRAWNY", "DORADCA_PODATKOWY"}
-    object.get(input.jdg_entrepreneur, "mdr_legal_privilege_claimed", false) == true
+    ent13 := object.get(input, "jdg_entrepreneur", {})
+    profession := object.get(ent13, "profession", "")
+    _privileged_profession(profession)
+    object.get(ent13, "mdr_legal_privilege_claimed", false) == true
 }
 
 # P1964: mdr_retention_6years — Retencja dokumentacji MDR przez 6 lat
@@ -420,8 +419,34 @@ else := {
     object.get(input.jdg_entrepreneur, "mdr_scheme_detected", false) == true
     doc_count := object.get(input.mdr, "mdr_audit_documents_count", 0)
     is_complete := object.get(input.mdr, "mdr_audit_trail_complete", false)
-    audit_status = "KOMPLETNY — OK" { is_complete == true }
-    audit_status = "NIEKOMPLETNY — uzupełnij!" { is_complete == false }
+    audit_status := _audit_status(is_complete)
 }
 
 # ── INV-018: brak catch-all {true} — brak dopasowania → default no_match (linia 25) ──
+
+_q_deadline(q) = "30 kwietnia" { q == 1 }
+else = "31 lipca" { q == 2 }
+else = "31 października" { q == 3 }
+else = "31 stycznia" { q == 4 }
+else = "unknown" { true }
+
+_or2(a, b) = true {
+    a == true
+} else = true {
+    b == true
+} else = false { true }
+
+_pick_conversion(a, b) = "forma opodatkowania" { a == true }
+else = "dochod -> kapital" { b == true }
+else = "-" { true }
+
+_privileged_profession(p) = true {
+    p == "ATTORNEY"
+} else = true {
+    p == "RADCA_PRAWNY"
+} else = true {
+    p == "DORADCA_PODATKOWY"
+} else = false { true }
+
+_audit_status(complete) = "KOMPLETNY — OK" { complete == true }
+else = "NIEKOMPLETNY — uzupelnij!" { true }

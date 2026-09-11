@@ -24,8 +24,27 @@ package jdg.exit_tax_mdr
 
 import future.keywords.in
 
+# ADR-002: snapshot progów (wzorzec repo) — poprawny root data.jdg.thresholds,
+# odporny na izolowany zbiór danych (default {}). data.thresholds (bez jdg.)
+# nigdy nie istniało → gałęzie TP/EST były niezdefiniowane.
+default _thresholds_root = {}
+
+_thresholds_root = t {
+    t := data.jdg.thresholds
+}
+
+# UE/EOG — deferral exit tax (art. 30da-30dh PIT) — zbiór na poziomie pakietu
+_eu_eea_countries := {"AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IS","IE","IT","LV",
+                      "LI","LT","LU","MT","NL","NO","PL","PT","RO","SK","SI","ES","SE","CH"}
+
+_in_eu_eea(country) = true {
+    _eu_eea_countries[country]
+} else = false {
+    true
+}
+
 # Conditional values are expressed as deterministic functions so the module
-# remains compatible with the repository's strict OPA parser.
+# remains compatible with the repository is strict OPA parser.
 exit_tax_amount_for(gain) = amount {
     gain > 0
     amount := gain * 0.19
@@ -167,7 +186,8 @@ estonian_cit_available_for(small_taxpayer, employees, reinvested) = true {
 
 default decide := {
     "matched": false, "rule_id": "jdg.exit_tax_mdr.no_match",
-    "valid_from":"2024-01-01","valid_to":"9999-12-31","temporal_source":"Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osob fizycznych"
+    "valid_from": "2024-01-01", "valid_to": "9999-12-31",
+    "temporal_source": "Ustawa z dnia 26 lipca 1991 r. o podatku dochodowym od osob fizycznych",
     "package": "jdg.exit_tax_mdr", "priority": 9999
 }
 
@@ -219,10 +239,8 @@ decide := {
     unrealized_gain := asset_fmv - asset_tax_basis
     exit_tax_amount := exit_tax_amount_for(unrealized_gain)
     
-    # Deferral: possible if transfer to EU/EEA country
-    eu_eea_countries := {"AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IS","IE","IT","LV",
-                         "LI","LT","LU","MT","NL","NO","PL","PT","RO","SK","SI","ES","SE","CH"}
-    deferral_available := destination in eu_eea_countries
+    # Deferral: possible if transfer to EU/EEA country (boolean — art. 30da ust. 4-8)
+    deferral_available := _in_eu_eea(destination)
     
     deferral_msg := deferral_message_for(deferral_available)
 }
@@ -348,7 +366,7 @@ else := {
     tx_value > 0
     
     # TP documentation thresholds for JDG (from thresholds or fallback)
-    tp_doc_threshold := object.get(object.get(data.thresholds, "tp", {}), "documentation_threshold_pln", 2000000)
+    tp_doc_threshold := object.get(object.get(_thresholds_root, "tp", {}), "documentation_threshold_pln", 2000000)
     tp_doc_required := tx_value > tp_doc_threshold
     
     recommended_method := tp_method_for(tx_value)
@@ -401,7 +419,7 @@ else := {
     reinvests_profits := object.get(input.jdg_entrepreneur, "reinvests_profits", false)
     has_3_employees := object.get(input.jdg_entrepreneur, "employee_count", 0) >= 3
     # 2M EUR threshold for small taxpayer (use threshold data)
-    eur_pln_rate := object.get(object.get(data.thresholds, "bounds", {}), "eur_pln", 4.5)
+    eur_pln_rate := object.get(object.get(_thresholds_root, "bounds", {}), "eur_pln", 4.5)
     small_taxpayer_limit_eur := 2000000
     small_taxpayer_limit_pln := small_taxpayer_limit_eur * eur_pln_rate
     is_small_taxpayer := annual_revenue < small_taxpayer_limit_pln

@@ -1294,5 +1294,365 @@
         "version": "3.47.4"
       }
     ]
+  },
+  "jdg.v3_p48_mirror_sync.mirror_build_output": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; P48-I05 overlay deklaracja",
+        "owner": "P48-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p48_mirror_sync.mirror_build_output",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p48_mirror_sync.rego",
+          "tests/auto/test_v3_p48_mirror_sync.py"
+        ],
+        "thresholds": [
+          "v3_p48",
+          "v3_p48_packages"
+        ],
+        "title": "V3-P48 I01: mirror as build output",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.48.1"
+      }
+    ]
+  },
+  "jdg.v3_p48_mirror_sync.semantic_ast_diff": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; P48-I05 overlay deklaracja",
+        "owner": "P48-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p48_mirror_sync.semantic_ast_diff",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p48_mirror_sync.rego",
+          "tests/auto/test_v3_p48_mirror_sync.py"
+        ],
+        "thresholds": [
+          "v3_p48",
+          "v3_p48_packages"
+        ],
+        "title": "V3-P48 I02: semantic AST diff gate",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.48.2"
+      }
+    ]
+  },
+  "jdg.v3_p48_mirror_sync.sync_in_pr": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; P48-I05 overlay deklaracja",
+        "owner": "P48-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p48_mirror_sync.sync_in_pr",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p48_mirror_sync.rego",
+          "tests/auto/test_v3_p48_mirror_sync.py"
+        ],
+        "thresholds": [
+          "v3_p48",
+          "v3_p48_packages"
+        ],
+        "title": "V3-P48 I03: sync-in-PR rule",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.48.3"
+      }
+    ]
+  },
+  "jdg.v3_p48_mirror_sync.drift_heatmap": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; P48-I05 overlay deklaracja",
+        "owner": "P48-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p48_mirror_sync.drift_heatmap",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p48_mirror_sync.rego",
+          "tests/auto/test_v3_p48_mirror_sync.py"
+        ],
+        "thresholds": [
+          "v3_p48",
+          "v3_p48_packages"
+        ],
+        "title": "V3-P48 I04: drift heatmap",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.48.4"
+      }
+    ]
+  },
+  "jdg.v3_p48_mirror_sync.overlay_declaration": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; P48-I05 overlay deklaracja",
+        "owner": "P48-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p48_mirror_sync.overlay_declaration",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p48_mirror_sync.rego",
+          "tests/auto/test_v3_p48_mirror_sync.py"
+        ],
+        "thresholds": [
+          "v3_p48",
+          "v3_p48_packages"
+        ],
+        "title": "V3-P48 I05: overlay declaration file",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.48.5"
+      }
+    ]
+  },
+  "jdg.v3_p48_mirror_sync.mirror_test_parity": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; P48-I05 overlay deklaracja",
+        "owner": "P48-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p48_mirror_sync.mirror_test_parity",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p48_mirror_sync.rego",
+          "tests/auto/test_v3_p48_mirror_sync.py"
+        ],
+        "thresholds": [
+          "v3_p48",
+          "v3_p48_packages"
+        ],
+        "title": "V3-P48 I06: mirror test parity",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.48.6"
+      }
+    ]
+  },
+  "jdg.v3_p48_mirror_sync.golden_replay_mirror": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; P48-I05 overlay deklaracja",
+        "owner": "P48-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p48_mirror_sync.golden_replay_mirror",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p48_mirror_sync.rego",
+          "tests/auto/test_v3_p48_mirror_sync.py"
+        ],
+        "thresholds": [
+          "v3_p48",
+          "v3_p48_packages"
+        ],
+        "title": "V3-P48 I07: golden replay on mirror",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.48.7"
+      }
+    ]
+  },
+  "jdg.v3_p48_mirror_sync.mirror_ownership": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; P48-I05 overlay deklaracja",
+        "owner": "P48-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p48_mirror_sync.mirror_ownership",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p48_mirror_sync.rego",
+          "tests/auto/test_v3_p48_mirror_sync.py"
+        ],
+        "thresholds": [
+          "v3_p48",
+          "v3_p48_packages"
+        ],
+        "title": "V3-P48 I08: mirror ownership register",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.48.8"
+      }
+    ]
+  },
+  "jdg.v3_p48_mirror_sync.post_deploy_check": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; P48-I05 overlay deklaracja",
+        "owner": "P48-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p48_mirror_sync.post_deploy_check",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p48_mirror_sync.rego",
+          "tests/auto/test_v3_p48_mirror_sync.py"
+        ],
+        "thresholds": [
+          "v3_p48",
+          "v3_p48_packages"
+        ],
+        "title": "V3-P48 I09: post-deploy mirror check",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.48.9"
+      }
+    ]
+  },
+  "jdg.v3_p48_mirror_sync.case_study": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; P48-I05 overlay deklaracja",
+        "owner": "P48-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p48_mirror_sync.case_study",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p48_mirror_sync.rego",
+          "tests/auto/test_v3_p48_mirror_sync.py"
+        ],
+        "thresholds": [
+          "v3_p48",
+          "v3_p48_packages"
+        ],
+        "title": "V3-P48 I10: case-study template",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.48.10"
+      }
+    ]
+  },
+  "jdg.v3_p48_mirror_sync.lifecycle_alignment": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; P48-I05 overlay deklaracja",
+        "owner": "P48-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p48_mirror_sync.lifecycle_alignment",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p48_mirror_sync.rego",
+          "tests/auto/test_v3_p48_mirror_sync.py"
+        ],
+        "thresholds": [
+          "v3_p48",
+          "v3_p48_packages"
+        ],
+        "title": "V3-P48 I11: mirror lifecycle alignment",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.48.11"
+      }
+    ]
+  },
+  "jdg.v3_p48_mirror_sync.one_truth_attestation": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; P48-I05 overlay deklaracja",
+        "owner": "P48-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "rule_id": "jdg.v3_p48_mirror_sync.one_truth_attestation",
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p48_mirror_sync.rego",
+          "tests/auto/test_v3_p48_mirror_sync.py"
+        ],
+        "thresholds": [
+          "v3_p48",
+          "v3_p48_packages"
+        ],
+        "title": "V3-P48 I12: one-truth attestation",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.48.12"
+      }
+    ]
   }
 }

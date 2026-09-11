@@ -96,6 +96,27 @@ import data.jdg.v3_p19_pcc_akcyza_bdo as v3_p19_pcc_akcyza_bdo
 import data.jdg.v3_p20_ksiegowosc as v3_p20_ksiegowosc
 import data.jdg.v3_p25_kalendarz as v3_p25_kalendarz
 import data.jdg.v3_p26_zus_skladki as v3_p26_zus_skladki
+import data.jdg.v3_p27_cfc_exit_mdr as v3_p27_cfc_exit_mdr
+import data.jdg.v3_p28_hyper_plan45 as v3_p28_hyper_plan45
+import data.jdg.v3_p29_quality_campaigns as v3_p29_quality_campaigns
+import data.jdg.v3_p30_innovation_waves as v3_p30_innovation_waves
+import data.jdg.v3_p31_audit_stages as v3_p31_audit_stages
+import data.jdg.v3_p32_ksiegowosc_automation as v3_p32_ksiegowosc_automation
+import data.jdg.v3_p33_neural_mesh_ai as v3_p33_neural_mesh_ai
+import data.jdg.v3_p34_walidacja_narzedzia as v3_p34_walidacja_narzedzia
+import data.jdg.v3_p35_audyutory_domenowe as v3_p35_audyutory_domenowe
+import data.jdg.v3_p36_generatory_migratory as v3_p36_generatory_migratory
+import data.jdg.v3_p37_obserwowalnosc as v3_p37_obserwowalnosc
+import data.jdg.v3_p38_bundle_deploy as v3_p38_bundle_deploy
+import data.jdg.v3_p39_testy_ci as v3_p39_testy_ci
+import data.jdg.v3_p40_api_dane_ui as v3_p40_api_dane_ui
+import data.jdg.v3_p41_dokumentacja as v3_p41_dokumentacja
+import data.jdg.v3_p42_enterprise_reszta as v3_p42_enterprise_reszta
+import data.jdg.v3_p43_security_dr as v3_p43_security_dr
+import data.jdg.v3_p44_certyfikacja_finalna as v3_p44_certyfikacja_finalna
+import data.jdg.v3_p45_stub_killer as v3_p45_stub_killer
+import data.jdg.v3_p46_hardcode_eliminacja_enterprise as v3_p46_hardcode_eliminacja_enterprise
+import data.jdg.v3_p47_legal_basis_weryfikacja_enterprise as v3_p47_legal_basis_weryfikacja_enterprise
 import data.jdg.micro.quality_v3_13 as micro_quality_v3_13
 import data.jdg.hyper.quality_v3_14 as hyper_quality_v3_14
 import data.jdg.enterprise.quality_v3_15 as enterprise_quality_v3_15
@@ -1468,6 +1489,39 @@ _package_decisions := {
     "jdg.v3_p20_ksiegowosc": v3_p20_ksiegowosc.decide,
     "jdg.v3_p25_kalendarz": v3_p25_kalendarz.decide,
     "jdg.v3_p26_zus_skladki": v3_p26_zus_skladki.decide,
+    # ── V3-P27: CFC/EXIT/MDR (rejestr decyzji, sygnały, gate'y — human-only) ──
+    "jdg.v3_p27_cfc_exit_mdr": v3_p27_cfc_exit_mdr.decide,
+    # ── V3-P28: HYPER/PLAN45 (mapa kontekstów, force majeure, sanctions gate) ──
+    "jdg.v3_p28_hyper_plan45": v3_p28_hyper_plan45.decide,
+    # ── V3-P29: KAMPANIE JAKOŚCI V3 (8 bramek, mutation, debt ledger, heatmapa) ──
+    "jdg.v3_p29_quality_campaigns": v3_p29_quality_campaigns.decide,
+    # ── V3-P30: FALE INNOWACJI (rejestr wdrożeń, adopt-rate, golden replay) ──
+    "jdg.v3_p30_innovation_waves": v3_p30_innovation_waves.decide,
+    # ── V3-P31: ETAPY AUDYTÓW 12-28 (supersynteza, risk-of-fortress, frontier) ──
+    "jdg.v3_p31_audit_stages": v3_p31_audit_stages.decide,
+    "jdg.v3_p32_ksiegowosc_automation": v3_p32_ksiegowosc_automation.decide,
+    # ── V3-P33: WARSTWA AI (sandbox, ścieżka awansu AI, audyt promptów, red-team) ──
+    "jdg.v3_p33_neural_mesh_ai": v3_p33_neural_mesh_ai.decide,
+    # ── V3-P34: WALIDACJA NARZĘDZI (DAG L1-L5, semantic diff, tautologia, wyjątki) ──
+    "jdg.v3_p34_walidacja_narzedzia": v3_p34_walidacja_narzedzia.decide,
+    # ── V3-P35: AUDYTORY DOMENOWE (trust score, golden cases, skew, freshness) ──
+    "jdg.v3_p35_audyutory_domenowe": v3_p35_audyutory_domenowe.decide,
+    # ── V3-P36: GENERATORY MIGRATORY (transform transaction, zero-orphan, ledger) ──
+    "jdg.v3_p36_generatory_migratory": v3_p36_generatory_migratory.decide,
+    # ── V3-P37: OBSERWOWALNOŚĆ (SLO, freshness SLA, drift watch, benchmark gate) ──
+    "jdg.v3_p37_obserwowalnosc": v3_p37_obserwowalnosc.decide,
+    # ── V3-P38: BUNDLE DEPLOY (canary, rollback, WORM, okna wdrożeniowe) ──
+    "jdg.v3_p38_bundle_deploy": v3_p38_bundle_deploy.decide,
+    # ── V3-P39: TESTY CI (piramida L1-L7, golden gate, benchmark, niezmienniki) ──
+    "jdg.v3_p39_testy_ci": v3_p39_testy_ci.decide,
+    "jdg.v3_p40_api_dane_ui": v3_p40_api_dane_ui.decide,
+    "jdg.v3_p41_dokumentacja": v3_p41_dokumentacja.decide,
+    "jdg.v3_p42_enterprise_reszta": v3_p42_enterprise_reszta.decide,
+    "jdg.v3_p43_security_dr": v3_p43_security_dr.decide,
+    "jdg.v3_p44_certyfikacja_finalna": v3_p44_certyfikacja_finalna.decide,
+    "jdg.v3_p45_stub_killer": v3_p45_stub_killer.decide,
+    "jdg.v3_p46_hardcode_eliminacja_enterprise": v3_p46_hardcode_eliminacja_enterprise.decide,
+    "jdg.v3_p47_legal_basis_weryfikacja_enterprise": v3_p47_legal_basis_weryfikacja_enterprise.decide,
     "jdg.international": international.decide,
     "jdg.tp": tp.decide,
     "jdg.tp.hyper": tp_hyper.decide,
@@ -2877,6 +2931,284 @@ final_verdict_p90 = safe_merge(final_verdict_p89,
         fallback.decide
     ))
 
+# ═══════════════════════════════════════════════════════════════════════════
+# V3-P27 (kampania V3 FORTRESS): CFC, EXIT TAX, MDR I PRZEPŁYWY
+# MIĘDZYJURYSDYKCYJNE — 13 analiz I01–I13 (rejestr decyzji architektonicznych
+# CFC/PAiN/rulingi — input P44, monitoring exit tax → zawsze NEEDS_ADVICE,
+# weryfikator progów 2M/4M [ZWERYFIKOWANO-WEB], MDR hallmark scorer v2 z
+# HUMAN REVIEW, 30-day gate z kalendarzem P25, funkcja pomocnicza 10M/2.5M
+# EUR, detektor sygnałów CFC, konstytucja międzynarodowa INV-X01..X04 (P04),
+# checklista wyceny, ścieżka rulingów, golden set granic, stress lab i
+# bramka harmonizacji przepływów P15/P17/P22/P25). SUGGEST/NEEDS_ADVICE i
+# fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p27_check nie
+# jest true.
+final_verdict_p91 = safe_merge(final_verdict_p90,
+    safe_merge(v3_p27_cfc_exit_mdr.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 17p: V3-P28 HYPERKONTEKSTY PLAN44/45 I KRYTYCZNE ŚCIEŻKI DZIAŁANIA —
+# 12 analiz I01–I12 (mapa hiperkontekst→domeny→kontrakty, detektor duplikatów
+# fx/limits, force majeure framework z kalendarzem P25, sanctions gate z
+# HUMAN REVIEW i AML P22, rejestr domen marginalnych, warstwa esig P11/P16,
+# crisis drill zero-ciszy, bramka spójności sieci, konstytucja hiperkontekstów
+# INV-H01..H04 (P04), golden set granic, plan domknięcia pustyni, silnik
+# wyjaśnień). SUGGEST/NEEDS_ADVICE i fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p28_check nie jest true.
+final_verdict_p92 = safe_merge(final_verdict_p91,
+    safe_merge(v3_p28_hyper_plan45.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18o: V3-P29 KAMPANIE JAKOŚCI V3 — 8 BRAMEK (MICRO/HYPER/ENTERPRISE/TOOLS/
+# TESTS_CI/BUNDLES/API_UI/DOCS) — 12 analiz I01–I12 (bramka łączna composite,
+# mutation testing contract, quality debt ledger, deterministyczny seed,
+# profil czasowy bramek, gate-as-data P06, auto-kwit blokujący merge, heatmapa
+# jakości domen, detekcja fasad AP06, powiązanie bramek z Decision Certificate
+# F4, pipeline testów granicznych CANDIDATE→ACTIVE, raport zgodności z
+# dokumentami świętymi). SUGGEST/NEEDS_ADVICE i fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p29_check nie jest true.
+final_verdict_p93 = safe_merge(final_verdict_p92,
+    safe_merge(v3_p29_quality_campaigns.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18p: V3-P30 FALE INNOWACJI — 24 GATE'Y RAPORTÓW R01–R24 I SPÓJNOŚĆ
+# WDROŻEŃ — 12 analiz I01–I12 (rejestr wdrożeń jako dane z dowodem DONE,
+# adopt-rate dashboard, diff semantyczny fasad, kontrakt selekcji V4,
+# traceability rekomendacja→PR, wind-down fasad, triage ryzyka 4-eyes,
+# golden replay po wdrożeniu (P10), budżet wdrożeniowy, changelog z danych,
+# detekcja sprzecznych wdrożeń, zamknięcie pętli Law Radar (P08)).
+# SUGGEST/NEEDS_ADVICE i fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p30_check nie jest true.
+final_verdict_p94 = safe_merge(final_verdict_p93,
+    safe_merge(v3_p30_innovation_waves.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18q: V3-P31 ETAPY AUDYTÓW 12–28 — DOMKNIĘCIE CYKLU KAMPANII ETAPOWEJ —
+# 12 analiz I01–I12 (unified audit schema, cross-etap conflict detector,
+# red team pack, risk-of-fortress score, etapy jako dane P06, auto-rerun po
+# nowelizacji (P08), WORM audit trail (P43), frontier matrix, rozstrzyganie
+# sprzeczności, certification pack generator (P44), kampania domknięcia etapów,
+# feed do rejestru wdrożeń P30). SUGGEST/NEEDS_ADVICE i fail-closed; nieaktywny
+# dopóki input.jdg_entrepreneur.v3_p31_check nie jest true.
+final_verdict_p95 = safe_merge(final_verdict_p94,
+    safe_merge(v3_p31_audit_stages.decide,
+        fallback.decide
+    ))
+
+final_verdict_p96 = safe_merge(final_verdict_p95,
+    safe_merge(v3_p32_ksiegowosc_automation.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18r: V3-P33 WARSTWA AI ENTERPRISE — NEURAL MESH, LLM BRIDGE I
+# HUMAN-IN-THE-LOOP — 12 analiz I01–I12 (AI proposal pipeline: LLM→walidacja→
+# SMT/Z3→golden replay→4-eyes→SHADOW; sandbox uprawnień AI bez zapisu do
+# produkcji; halucynacja prawna guard (ISAP przed człowiekiem); prompt audit
+# ledger WORM z checksumą; red-team prompt suite; trust score jako telemetria
+# odcięta od AUTO_POST; digital twin na danych syntetycznych; cost governor;
+# explain-first UI; federated learning guard (k-anonymity); quantum-safe plan;
+# AI w triage NEEDS_ADVICE — predictor tylko sortuje). SUGGEST/NEEDS_ADVICE i
+# fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p33_check nie jest true.
+final_verdict_p97 = safe_merge(final_verdict_p96,
+    safe_merge(v3_p33_neural_mesh_ai.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18s: V3-P34 WALIDACJA NARZĘDZI — WALIDACJA JAKO GOVERNANCE — 12 analiz
+# I01–I12 (walidacja jako sieć DAG L1-L5 z lokalnym retry; semantic diff Rego
+# z klasyfikacją zmian; legal basis linter online PR+nightly; tautologia
+# fuzzing property-based; cross-write detector bez precedence = BLOCKER;
+# mirror semantic parity AST diff; doc-numbers invariant [DEKLARACJA];
+# auto-fix z 4-eyes jako PR; walidacja jako usługa ad hoc; coverage heatmap
+# ciągła z trendem do Law Radar; snapshot walidacji w Decision Certificate;
+# rejestr wyjątków z expiry i właścicielem — zero wiecznych wyłączeń).
+# SUGGEST/NEEDS_ADVICE i fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p34_check nie jest true.
+final_verdict_p98 = safe_merge(final_verdict_p97,
+    safe_merge(v3_p34_walidacja_narzedzia.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18t: V3-P35 AUDYTORY DOMENOWE — ZAUFANIE DOMEN JAKO GOVERNANCE — 12
+# analiz I01–I12 (domain trust score z metodologią jako telemetria; auditor
+# as data; golden case registry per domena (P10); unified audit report;
+# drill-down do dowodu; skew detection pewność vs pokrycie; dashboardy jako
+# dane; audyt ciągły vs per-PR; ocena operatora (feedback loop); alert
+# routing z SLA jako dane; legal freshness stamp (ISAP check date); audyt
+# inverse — negatywna przestrzeń AUTO_POST). SUGGEST/NEEDS_ADVICE i
+# fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p35_check nie
+# jest true.
+final_verdict_p99 = safe_merge(final_verdict_p98,
+    safe_merge(v3_p35_audyutory_domenowe.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18o: V3-P36 — GENERATORY MIGRATORY (post-merge, p99 → p100)
+# Generatory reguł i migracje rule_id jako transakcje: transform transaction
+# (dry-run diff → apply z dziennikiem → auto-walidacja → auto-rollback;
+# analizy I01–I12 (idempotency certificate wymuszony w bramkach P29; plan-to-
+# rules pipeline — reguła bez testu = BLOCK; migration ledger z checksumami;
+# guard rails generatora — fail-fast bez legal basis/rule_id/okna/testu;
+# golden replay po migracji (P10); mirror-aware apply (P39/P48); generator
+# testów granicznych groszowych i day-0/day+1 z tabeli aktów; dry-run report
+# z 4-eyes dla zmian krytycznych; naming convention enforcer (kanon P00);
+# migracja jako dane (ADR-002); zero-orphan guarantee — żadna reguła bez
+# testu, żaden test bez reguły, żaden manifest bez pliku). Fail-closed;
+# nieaktywny dopóki input.jdg_entrepreneur.v3_p36_check nie jest true.
+final_verdict_p100 = safe_merge(final_verdict_p99,
+    safe_merge(v3_p36_generatory_migratory.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18p: V3-P37 — OBSERWOWALNOŚĆ (post-merge, p100 → p101)
+# Decyzje z telemetrią jak kod z coverage: decision SLO contract (SLO jako
+# dane: metryka/próg/okno/akcja/runbook; analizy I01–I12 (freshness SLA dla
+# prawa — wiek weryfikacji ISAP per akt; needs-advice radar — skok fail-closed
+# = sygnał luki; latency budget per domena — routing O(1); decision
+# certificate jako telemetria (P11); error budget freeze — CI odmawia merge;
+# anomaly detection z sezonowością księgową; golden drift watch (P10);
+# runbook-as-code — alarm bez runbooka = BLOCK; comprehensive status page;
+# metryki kosztu decyzji (ścieżki AI P33); benchmark regression gate).
+# Fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p37_check nie jest
+# true.
+final_verdict_p101 = safe_merge(final_verdict_p100,
+    safe_merge(v3_p37_obserwowalnosc.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18q: V3-P38 — BUNDLE DEPLOY (post-merge, p101 → p102)
+# Bundle, deploy i cykl życia wersji: deterministic build + attestation (I01),
+# canary z decision diff (I02), auto-rollback z powodem (I03), blue-green (I04),
+# WORM archive wersji (I05), deployment window z kalendarza P25 (I06), bundle
+# signature verification fail-closed (I07), overlay versioning (I08), post-deploy
+# certification (I09), infrastructure as legal record (I10), shadow traffic
+# evaluation (I11), release notes auto-generated (I12).
+# Fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p38_check nie jest
+# true.
+final_verdict_p102 = safe_merge(final_verdict_p101,
+    safe_merge(v3_p38_bundle_deploy.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18r: V3-P39 — TESTY I CI (post-merge, p102 → p103)
+# Piramida testów L1-L7 jako bramki: test matrix from acts (I01), golden replay
+# jako bramka PR (I02), temporal pair tests (I03), negative-first (I04),
+# property invariants pack (I05), mutation testing (I06), flake quarantine
+# (I07), contract version pinning (I08), coverage by legal act (I09),
+# performance budget CI (I10), seed-replay determinism (I11), test impact map
+# (I12). Fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p39_check nie
+# jest true.
+final_verdict_p103 = safe_merge(final_verdict_p102,
+    safe_merge(v3_p39_testy_ci.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18s: V3-P40 — API, DANE I UI (post-merge, p103 → p104)
+# Warstwa API/UI: decision-first API z pełnym certyfikatem (I01), explain chain
+# fakt→reguła→przepis→decyzja (I02), idempotent writes (I03), RBAC + data
+# minimization (I04), API audit WORM (I05), rate limiting (I06), degradation
+# ladder (I07), freshness header (I08), subscription webhook (I09), playground
+# sandbox (I10), schema-first SDK (I11), export evidence pack (I12). Fail-closed;
+# nieaktywny dopóki input.jdg_entrepreneur.v3_p40_check nie jest true.
+final_verdict_p104 = safe_merge(final_verdict_p103,
+    safe_merge(v3_p40_api_dane_ui.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18t: V3-P41 — DOKUMENTACJA ENTERPRISE (post-merge, p104 → p105)
+# Docs-as-code: doc-code binding z bramką CI (I01), SSOT numbers (I02),
+# role doc maps (I03), semantic diff PL/EN (I04), glossary enforcement (I05),
+# audit export pack (I06), runbook coverage (I07), changelog automation (I08),
+# freshness stamps (I09), documentation testing (I10), auditor mode (I11),
+# legacy retirement (I12). Fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p41_check nie jest true.
+final_verdict_p105 = safe_merge(final_verdict_p104,
+    safe_merge(v3_p41_dokumentacja.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18u: V3-P42 — ENTERPRISE RESZTA (post-merge, p105 → p106)
+# Domknięcie reszty luk systemowych: health tier as data (I01), SMT proof pack
+# (I02), WORM hash chain (I03), retention calculator (I04), provenance query
+# (I05), coverage unifier (I06), dependency graph health (I07), orphan sweep
+# (I08), completeness register (I09), STR-as-evidence (I10), cross-domain
+# health contracts (I11), maturity ladder (I12). Fail-closed; nieaktywny
+# dopóki input.jdg_entrepreneur.v3_p42_check nie jest true.
+final_verdict_p106 = safe_merge(final_verdict_p105,
+    safe_merge(v3_p42_enterprise_reszta.decide,
+        fallback.decide
+    ))
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PAS 18v: V3-P43 — SECURITY I DR (post-merge, p106 → p107)
+# Bezpieczeństwo i ciągłość: threat model as code (I01), rule quarantine (I02),
+# dual-control deploys (I03), secrets rotation (I04), chaos legal drill (I05),
+# restore drills w CI (I06), paper-mode runbook (I07), tamper-evident rule
+# history (I08), ransomware playbook (I09), breach taxonomy (I10), zero
+# standing access (I11), DR legal continuity (I12). Fail-closed; nieaktywny
+# dopóki input.jdg_entrepreneur.v3_p43_check nie jest true.
+final_verdict_p107 = safe_merge(final_verdict_p106,
+    safe_merge(v3_p43_security_dr.decide,
+        fallback.decide
+    ))
+
+# ── PAS 18w: V3-P44 CERTYFIKACJA FINALNA (hard gates, scoreboard filarów,
+# agregat luk z deduplikacją, mapa decyzyjna właściciela, kontrakt V4,
+# freeze metryk sukcesu, WORM+podpis certyfikatu, pakiet przekazania,
+# polityka odnowienia, domknięcie legacy, atest właściciela, auto-portret).
+# Fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p44_check nie jest true.
+final_verdict_p108 = safe_merge(final_verdict_p107,
+    safe_merge(v3_p44_certyfikacja_finalna.decide,
+        fallback.decide
+    ))
+
+# ── PAS 18x: V3-P45 ELIMINACJA STUBÓW (stub register z SLA, forensics,
+# auto-convert pipeline, negative assertion generator, mutation score gate,
+# stub-free badge, template policy, stub-enabling tests, provenance of truth,
+# stub census, legal-empty detector, ISAP parity). Fail-closed; nieaktywny
+# dopóki input.jdg_entrepreneur.v3_p45_check nie jest true.
+final_verdict_p109 = safe_merge(final_verdict_p108,
+    safe_merge(v3_p45_stub_killer.decide,
+        fallback.decide
+    ))
+
+# ── PAS 18y: V3-P46 ELIMINACJA HARDCODE (parameter registry, value provenance
+# chain, temporal parameter gate, schema validation, signed parameter bundles,
+# day-0 test generation, parameter change workflow, unit semantics, drift alarm,
+# legacy value sweeper, golden replay per change, documentation anchors).
+# Fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p46_check nie jest true.
+final_verdict_p110 = safe_merge(final_verdict_p109,
+    safe_merge(v3_p46_hardcode_eliminacja_enterprise.decide,
+        fallback.decide
+    ))
+
+# ── PAS 18z: V3-P47 WERYFIKACJA PODSTAW PRAWNYCH (legal basis census, citation
+# linter, ISAP anchors, temporal act versions, re-check scheduler, mediation
+# workflow, fictional basis blocker, completeness score, ISAP diff watch, human
+# verification stamp, acts coverage heatmap, citation style guide).
+# Fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p47_check nie jest true.
+final_verdict_p111 = safe_merge(final_verdict_p110,
+    safe_merge(v3_p47_legal_basis_weryfikacja_enterprise.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -2909,7 +3241,7 @@ final_verdict_p90 = safe_merge(final_verdict_p89,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p90
+    final_verdict_p111
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached
