@@ -1,0 +1,19 @@
+{
+  "innovation": "V3-P51-I07",
+  "generated_at": "2026-09-12T14:34:36.625089+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "law_radar_block",
+    "routing": "AUTO_FILE",
+    "radar_present": true,
+    "changes_total": 0,
+    "calendar_real_rows": 0,
+    "changes_without_rule_plan": 0,
+    "sla_tickets_open": 0
+  },
+  "evidence": {
+    "contract": "I07: zmiana prawa bez planu reguły → ticket z SLA; brak law_radar.json = TRIAGE (fail-closed bramki).",
+    "unplanned_sample": [],
+    "calendar_seed_note": "DRL-0001 (2099-06-01) = seed procesowy; liczone realne wpisy = rows minus seed."
+  }
+}

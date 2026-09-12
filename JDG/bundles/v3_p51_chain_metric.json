@@ -1,0 +1,23 @@
+{
+  "innovation": "V3-P51-I04",
+  "generated_at": "2026-09-12T14:34:35.565775+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "chain_metric",
+    "routing": "TRIAGE_QUEUE",
+    "article_nodes": 251,
+    "chain_complete": 92,
+    "missing_rule_leg": 118,
+    "missing_test_leg": 41,
+    "missing_act_leg": 0,
+    "CCR_pct": 36.65,
+    "LCI_context_pct": 100.0
+  },
+  "evidence": {
+    "definition": "CCR = węzły ARTICLE z ≥1 regułą kanoniczną ORAZ ≥1 regułą z natywnym testem Rego / wszystkie węzły ARTICLE.",
+    "campaign_target_pct": 90.0,
+    "campaign_target_source": "prompt P51 Sekcja 5.4 (cel kwantyfikowany kampanii; do potwierdzenia 4-eyes Q02)",
+    "note": "LCI (coverage_unifier) liczy tylko nogę reguły; CCR wymaga nogi testowej — cel kampanii liczony CCR, nie LCI.",
+    "entries_total": null
+  }
+}

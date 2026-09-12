@@ -1,0 +1,16 @@
+{
+  "analysis": "I06_epoch_registry",
+  "epochs": [
+    {
+      "epoch_id": "EPOCH-BASE",
+      "start": "2026-01-01",
+      "end": null,
+      "params_snapshot_hash": "d602ac37edd507ce6a03800f1fc37462047fd250a485c6860587c37cc3619c65",
+      "params_count": 8
+    }
+  ],
+  "epoch_count": 1,
+  "legal_basis": "Ordynacja art. 24b: stan prawa na datę zdarzenia [NIEZWERYFIKOWANE — ISAP]",
+  "gate": "PASS",
+  "generated_at": "2026-09-12T17:52:41.231662+00:00"
+}

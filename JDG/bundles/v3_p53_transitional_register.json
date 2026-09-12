@@ -1,0 +1,67 @@
+{
+  "analysis": "I04_transitional_rules_register",
+  "entries": [
+    {
+      "id": "TR-01",
+      "act": "Ustawa o ZUS",
+      "article": "art. 18a",
+      "rule": "Ulga na start — 6 mies., warunki praw nabytych (brak JDG w 60 mies. wcześniej)",
+      "modelled": true,
+      "source": "tools/preferential_period_tracker.py (requirements)",
+      "isap_status": "NIEZWERYFIKOWANE"
+    },
+    {
+      "id": "TR-02",
+      "act": "Ustawa o ZUS",
+      "article": "art. 18c",
+      "rule": "Preferencyjny ZUS — 24 mies. na 30% podstawy; prawa nabyte przy zmianie limitów",
+      "modelled": true,
+      "source": "tools/preferential_period_tracker.py",
+      "isap_status": "NIEZWERYFIKOWANE"
+    },
+    {
+      "id": "TR-03",
+      "act": "Ustawa o ZUS",
+      "article": "art. 18ab",
+      "rule": "Mały ZUS+ — kontynuacja (warunek przychodu z poprzedniego roku, prawa nabyte przy zmianie progu)",
+      "modelled": true,
+      "source": "tools/preferential_period_tracker.py",
+      "isap_status": "NIEZWERYFIKOWANE"
+    },
+    {
+      "id": "TR-04",
+      "act": "Ustawa o ZUS",
+      "article": "art. 18d ust. 2",
+      "rule": "Roczny limit podstawy — reset kalendarzowy 1.01",
+      "modelled": true,
+      "source": "thresholds zus_30x multiplier (kalendarz I09)",
+      "isap_status": "NIEZWERYFIKOWANE"
+    },
+    {
+      "id": "TR-05",
+      "act": "Ustawa o VAT",
+      "article": "art. 113",
+      "rule": "Zwolnienie podmiotowe 200k — licznik narastający per podmiot, reset roczny",
+      "modelled": false,
+      "source": "brak licznika w regułach (luka L-200k)",
+      "isap_status": "NIEZWERYFIKOWANE"
+    },
+    {
+      "id": "TR-06",
+      "act": "Ordynacja podatkowa",
+      "article": "art. 24b/24c",
+      "rule": "Prawo właściwe: stan na datę powstania obowiązku; zasady przejściowe nowelizacji",
+      "modelled": true,
+      "source": "epoki prawne I06 + replay I03",
+      "isap_status": "NIEZWERYFIKOWANE"
+    }
+  ],
+  "total": 6,
+  "modelled": 5,
+  "not_modelled": [
+    "TR-05"
+  ],
+  "legal_basis": "ZUS art. 18a/18c/18ab/18d ust. 2; VAT art. 113; Ordynacja art. 24c [NIEZWERYFIKOWANE — ISAP]",
+  "gate": "PASS",
+  "generated_at": "2026-09-12T17:52:40.512406+00:00"
+}

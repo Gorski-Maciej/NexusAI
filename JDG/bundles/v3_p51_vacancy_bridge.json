@@ -1,0 +1,227 @@
+{
+  "innovation": "V3-P51-I11",
+  "generated_at": "2026-09-12T14:34:40.037268+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "vacancy_bridge",
+    "routing": "TRIAGE_QUEUE",
+    "deserts": 159,
+    "stubs_total": 39,
+    "domains_with_both": 30,
+    "combined_register_rows": 159
+  },
+  "evidence": {
+    "top20": [
+      {
+        "legal_node_id": "LKG-0074",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 64,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0075",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 64,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0076",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 64,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0077",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 64,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0094",
+        "domain": "ordpu",
+        "desert_class": "rule_no_test",
+        "risk_score": 64,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 64,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0095",
+        "domain": "ordpu",
+        "desert_class": "rule_no_test",
+        "risk_score": 64,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 64,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0102",
+        "domain": "ordpu",
+        "desert_class": "rule_no_test",
+        "risk_score": 64,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 64,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0225",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 64,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0226",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 64,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0227",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 64,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0228",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 64,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0014",
+        "domain": "vat",
+        "desert_class": "no_rule",
+        "risk_score": 60,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 60,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0016",
+        "domain": "vat",
+        "desert_class": "rule_no_test",
+        "risk_score": 60,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 60,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0078",
+        "domain": "vat",
+        "desert_class": "no_rule",
+        "risk_score": 60,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 60,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0079",
+        "domain": "vat",
+        "desert_class": "no_rule",
+        "risk_score": 60,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 60,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0080",
+        "domain": "vat",
+        "desert_class": "no_rule",
+        "risk_score": 60,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 60,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0081",
+        "domain": "vat",
+        "desert_class": "no_rule",
+        "risk_score": 60,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 60,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0082",
+        "domain": "vat",
+        "desert_class": "no_rule",
+        "risk_score": 60,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 60,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0083",
+        "domain": "vat",
+        "desert_class": "no_rule",
+        "risk_score": 60,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 60,
+        "source": "desert+stub"
+      },
+      {
+        "legal_node_id": "LKG-0084",
+        "domain": "vat",
+        "desert_class": "no_rule",
+        "risk_score": 60,
+        "stubs_in_domain": 0,
+        "combined_risk_index": 60,
+        "source": "desert+stub"
+      }
+    ],
+    "stub_domains": {
+      "accounting": 2,
+      "conflicts": 1,
+      "edge_cases": 1,
+      "fallback": 1,
+      "international": 3,
+      "kks": 1,
+      "local_taxes": 1,
+      "mdr": 1,
+      "micro": 3,
+      "neural_mesh_v2": 6,
+      "p05_innovations": 1,
+      "p06_innovations": 1,
+      "p07_innovations": 1,
+      "p08_innovations": 1,
+      "p09_innovations": 1,
+      "p10_innovations": 1,
+      "p11_innovations": 1,
+      "p12_innovations": 1,
+      "p13_innovations": 1,
+      "p24_innovations": 1,
+      "p34_innovations": 1,
+      "p34_remaining": 1,
+      "pcc": 1,
+      "reliability_guarantee": 1,
+      "strategic": 2,
+      "uor": 1,
+      "zus": 2
+    },
+    "contract": "P45-I01 (rejestr stubów) + P51-I01 (rejestr pustyni) = jeden rejestr ryzyka dla P37/P68."
+  }
+}

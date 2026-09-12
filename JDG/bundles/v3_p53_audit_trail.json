@@ -1,0 +1,19 @@
+{
+  "analysis": "I12_temporal_audit_trail",
+  "certificate_design": {
+    "certificate_field": "_decision_certificate.legal_epoch",
+    "content": {
+      "epoch_id": "EPOCH-BASE",
+      "epoch_hash": "d602ac37edd507ce6a03800f1fc37462047fd250a485c6860587c37cc3619c65",
+      "bundle_version": "jdg-bundle-v8.0.0",
+      "params_snapshot_hash": "d602ac37edd507ce6a03800f1fc37462047fd250a485c6860587c37cc3619c65",
+      "fx_provenance": "tabela NBP-A + data [kontrakt P52-I03]"
+    },
+    "invariant": "certyfikat bez legal_epoch = NEEDS_ADVICE (fail-closed)"
+  },
+  "epochs_available": 1,
+  "worm_integrated": true,
+  "legal_basis": "Decision Certificate F4 (V2); Ordynacja art. 24b [NIEZWERYFIKOWANE — ISAP]",
+  "gate": "PASS",
+  "generated_at": "2026-09-12T17:52:43.325653+00:00"
+}

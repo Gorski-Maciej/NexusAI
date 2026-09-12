@@ -1,0 +1,11 @@
+{
+  "analysis": "I05_interval_validator",
+  "gaps": [],
+  "overlaps": [],
+  "params_without_any_window": [],
+  "gaps_count": 0,
+  "overlaps_count": 0,
+  "legal_basis": "INV-037 (zero luk + zero nakładek) — CORE_GUARDS_TEMPORAL_THRESHOLDS.md §4",
+  "gate": "PASS",
+  "generated_at": "2026-09-12T17:52:40.862361+00:00"
+}

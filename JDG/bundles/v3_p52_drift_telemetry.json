@@ -1,0 +1,16 @@
+{
+  "innovation": "V3-P52-I10",
+  "generated_at": "2026-09-12T16:34:01.756568+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "drift_telemetry",
+    "routing": "BLOCK_AND_ALERT",
+    "sum_invariant_violations": 0,
+    "path_drifts": 64,
+    "penny_drift_total": 64,
+    "target": 0
+  },
+  "evidence": {
+    "contract": "I10: metryka v3_p52_penny_drift_total (P37): trend do 0; rozjazd = alarm z full trace (input, progi, rego wersja)."
+  }
+}

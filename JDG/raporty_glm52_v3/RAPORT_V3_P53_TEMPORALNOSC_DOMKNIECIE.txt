@@ -1,0 +1,532 @@
+==============================================================================
+RAPORT V3 P53 — TEMPORALNOŚĆ NA GRANICACH — DAY-0 NOWELIZACJI I TIME-TRAVEL
+BEZ WĄTPLIWOŚCI — DOMKNIĘCIE WARSTWY TEMPORALNEJ
+==============================================================================
+Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN (P00–P68)
+Prompt:      JDG/prompty_v3/V3_PROMPT_P53_TEMPORALNOSC_DOMKNIECIE.txt
+Raport:      JDG/raporty_glm52_v3/RAPORT_V3_P53_TEMPORALNOSC_DOMKNIECIE.txt
+Status:      WDROŻONY_100 (2026-09-12)
+Sesja:       wdrożenie raportu wg protokołu Sekcji 16 (czyste okno kontekstowe)
+
+──────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+──────────────────────────────────────────────────────────────────────────────
+Dojrzałość części P53: WDROŻONA (Enterprise). Warstwa temporalna domknięta
+end-to-end: mapa okien → generatory day-0 → kontrakt replay → epoki prawne →
+sandbox przyszłego prawa → pre-provisioning → certyfikat z epoką.
+
+Zrealizowane artefakty (dowód: kod + wynik uruchomienia, nie deklaracje):
+  * Polityka OPA: rules/v3_p53_temporal_closure.rego — pakiet
+    jdg.v3_p53_temporal_closure, 12 analiz I01–I12 + router decide
+    fail-closed (kolejność: snapshot→I05→I01→I02→I03→I09→I04→I08→I10→
+    I11→I12→I07→all_green→no_match), priorities 453001–453012,
+    Decision Certificate F4 z _legal_basis i oknem valid_from/valid_to.
+  * Progi (ADR-002): blok v3_p53 w thresholds_jdg.rego (13 kluczy, okno
+    temporalne valid_from=2026-01-01, P05; no_auto_post=true).
+  * Wiring: main_jdg.rego import + final_verdict_p117 = safe_merge(p116,
+    v3_p53_temporal_closure.decide, fallback) → final_verdict_post_merge.
+  * Narzędzia: 14 plików (v3_p53_common.py + 12 silników I01–I12 +
+    v3_p53_run_all.py) — gate=PASS dla 12/12 (v3_p53_run_all.json).
+  * Dane: bundles/fx_provenance.json (rejestr kursów NBP-A z provenance —
+    domknięcie 3. filaru replay; sesje [NIEZWERYFIKOWANE] do 4-eyes).
+  * Bundly dowodowe: 13× v3_p53_*.json (gate=PASS).
+  * Testy: 26/26 natywnych Rego (OPA 0.68.0 i 1.9.0 --v0-compatible) +
+    31/31 pytest.
+  * Regresja: P13–P53 = 1311/1311 testów rego NA OBU wersjach OPA; pytest
+    1741 passed + 8 pre-existing porażek (P18/P21/P22 — odtworzone na
+    czystym HEAD w sesji P51; niezależne od P53).
+  * Mirror: policies/ sync 528 plików .rego, dryf 0.
+  * Lifecycle: 12× CANDIDATE v3.53.1 w rule_registry.json.
+
+Kluczowe liczby bazowe (z narzędzi, realny stan repo):
+  * Okna temporalne: 120/268 plików rego z valid_from (44,8%); 148 bez;
+    35 plików z hardcode dat (heurystyka I01). Parametry: 8/8 z historią
+    wersji (valid_from) i provenance (7/8 z akt+autorem).
+  * Day-0: 8 automatycznych testów granicznych wygenerowanych z okien
+    parametrów; KALENDARZ_ZMIAN_PRAWNYCH = 1 wpis testowy (DRL-0001,
+    2099-06-01) — 0 przetestowanych przełączeń realnych nowelizacji.
+  * Replay: filary 3/4 (rules: 44 deployments @ WORM; params: historia
+    versions[]; fx: 4 rekordy provenance; accumulator: BRAK — L03).
+  * Interwały: 0 luk, 0 nakładek (INV-037 honorowany przez dane).
+  * Epoki: 1 (EPOCH-BASE 2026-01-01→null) z hashem snapshotu parametrów.
+  * Golden: 31 orzeczeń, 29 z etykietą epoki (przez valid_from), 2 bez.
+  * Zasady przejściowe: 6 w rejestrze, 5 modelowanych (TR-05 VAT 200k
+    licznik narastający — niemodelowany, L03).
+
+Luki: P0=0, P1=3 (L01–L03), P2=4 (L04–L07), P3=3 (L08–L10) — T3.
+Innowacje: 12 (I01–I12, wszystkie wdrożone z dowodami) — T4.
+Człowiek (4-eyes): Q01–Q03 — T8.
+
+TOP-10 rekomendacji:
+  1. Zbudować licznik narastający (accumulator state on date) — 4. filar
+     replay (L03, Q02) — bez niego replay limitów rocznych = zgadywanie.
+  2. Zasilić KALENDARZ_ZMIAN_PRAWNYCH realnymi nowelizacjami (RCL) i
+     wygenerować testy day-1/day-0/day+1 dla każdego DRL (L02, I02).
+  3. Stemplować 4-eyes fx_provenance.json (sesje NBP [NIEZWERYFIKOWANE]).
+  4. Dokończyć etykietowanie epok golden (2/31 bez valid_from) — I11.
+  5. Podłączyć legal_epoch do runtime_invariants.enforce (I12 kontrakt →
+     egzekucja na KAŻDYM werdykcie).
+  6. Wynieść okna VAT (2011/2021) z tools/vat_rate_engine.py do
+     thresholds_data.json (parametry-as-data; AP09/AP02).
+  7. Zmniejszyć dług okien: 148 plików bez valid_from — plan cięcia wg
+     I01 (do domknięcia w P54+ / P68).
+  8. Włączyć temporal_interval_gate.py do CI jako bramkę blokującą (I05).
+  9. Routing temporalny P02: wybór wersji pakietu po dacie zdarzenia (L07).
+ 10. Dodać asercje day-0 do testów micro ZUS/ryczałt (L09).
+
+Co udowodniono: kompilacja i testy obu OPA; bramki z realnych liczników;
+zero luk/nakładek interwałów; determinizm routera; fail-closed epoki
+(data poza oknami = NEEDS_ADVICE, nie „najbliższa”).
+Co pozostało [NIEZWERYFIKOWANE]: wszystkie podstawy prawne (ISAP/RCL —
+brak dostępu w sesji), sesje NBP, semantyka art. 24b/24c (Q01).
+
+──────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+──────────────────────────────────────────────────────────────────────────────
+Przeanalizowano: 20 plików z Sekcji 6 promptu (grupy 6.1–6.3) + 6 pozycji
+mirrora 6.4 (spójność canonical↔mirror) — T1. Każdy plik: ≥1 fakt.
+Pominięto: nic z listy Sekcji 6 (wszystkie odczytane/adnotowane).
+Ograniczenia:
+  * Brak dostępu do ISAP/RCL/MF w sesji — wszystkie podstawy prawne
+    [NIEZWERYFIKOWANE] (protokół 04; rejestr mediacji w 9.11/Q01–Q03).
+  * Budżet 50%: czytanie celowane (nagłówki/grep/window), bez ładowania
+    katalogów zbiorczo; każda teza ma dowód z pliku/wyniku narzędzia.
+  * Heurystyka hardcode dat (I01) szuka dat ISO w plikach bez valid_from —
+    to wykrywacz, nie wyrocznia; lista do ręcznego triage (L08).
+Status weryfikacji źródeł prawnych: [NIEZWERYFIKOWANE — ISAP] przy każdej
+podstawie; zero fikcyjnych artykułów/dat/stawek (protokół 04).
+
+──────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P53 — MAPA ARTEFAKTÓW
+──────────────────────────────────────────────────────────────────────────────
+| Artefakt | Pakiet/rule_id | Podstawa prawna | Testy | Lifecycle |
+|---|---|---|---|---|
+| rules/v3_p53_temporal_closure.rego | jdg.v3_p53_temporal_closure.* (12) | Ordynacja 24b/24c; SUS 18a–18d; VAT 113; UoR 5; KKS 53§1 [NIEZWERYFIKOWANE] | 26 rego + 31 pytest | CANDIDATE v3.53.1 |
+| thresholds_jdg.rego (v3_p53) | data.jdg.thresholds.v3_p53 | ADR-002; P05 | snapshot testy | AKTYWNE (progi) |
+| main_jdg.rego (p117) | final_verdict_p117 | kontrakt werdyktu P03 | wiring testy | AKTYWNE |
+| tools/v3_p53_{common,engines,run_all}.py | 12 silników I01–I12 | jw. | 13 bundli gate=PASS | narzędzia CI |
+| bundles/v3_p53_*.json (13) | dowody | jw. | pytest weryfikuje | dowody |
+| bundles/fx_provenance.json | FX replay | Rozp. VAT 31a [NIEZWERYFIKOWANE] | I03 pillar | DANE [4-eyes] |
+| tests/rego/test_v3_p53_temporal_closure.rego | test | P39 bramki | 26/26 oba OPA | bramka |
+| tests/auto/test_v3_p53_temporal_closure.py | test | P39 | 31/31 | bramka |
+| rule_registry.json (12× CANDIDATE) | lifecycle v3.53.1 | P00 konwencja | registry | CANDIDATE |
+
+Statusy lifecycle zgodne z rejestrem: nowe reguły CANDIDATE (nie SHADOW —
+mają pełne testy i dowody; aktywacja CANDIDATE→ACTIVE = decyzja 4-eyes
+zgodnie z kontraktem P47–P52).
+
+──────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4 (każda: tabela dowodów + ≥3 wnioski + luki)
+──────────────────────────────────────────────────────────────────────────────
+5.1 MAPA OKIEN TEMPORALNYCH (P53-AN01)
+Dowody:
+  * thresholds_data.json: 8 parametrów, każdy z versions[] (valid_from/
+    valid_to/source_act/changed_by/changed_at) — ZWERYFIKOWANO.
+  * I01: 120/268 plików rego z valid_from; 148 bez; 35 z hardcode dat
+    (bundl v3_p53_temporal_coverage_map.json) — ZWERYFIKOWANO.
+  * temporal_interval_gate.py: wykrywa reguły bez valid_from (Kontrakt C3
+    dla matched=true) — ZWERYFIKOWANO.
+  * vat_rate_engine.py: okna 2011/2021 HARDCODE w Pythonie (linie 86–87),
+    nie w data.thresholds.* — ZWERYFIKOWANO (AP09).
+Wnioski:
+  W1. Parametry są temporalne (8/8 z oknami), ale kod rego daleko w tyle
+      (44,8% plików) — dług temporalny skoncentrowany w pakietach domenowych.
+  W2. Hardcode dat w warunkach reguł (35 plików) to lukę P46/AP10 —
+      bramka I01 liczy i blokuje spadek pokrycia poniżej 40%.
+  W3. Okno parametru bez provenance (1/8: vat.standard_rate bez isap_status)
+      = replay możliwy, audyt słabszy (I10: MANUAL_REVIEW przy 0 braków).
+Luki: L01 (P1), L08 (P3).
+
+5.2 PRZEŁĄCZENIA DAY-0 (P53-AN02)
+Dowody:
+  * KALENDARZ_ZMIAN_PRAWNYCH.md: 1 wpis (DRL-0001, 2099-06-01, RCL,
+    confidence 0.7, Reguły SHADOW: 0) — ZWERYFIKOWANO.
+  * I02: 8 testów day-0 wygenerowanych automatycznie z okien parametrów
+    (dzień przed / granica / dzień po wygaśnięciu) — ZWERYFIKOWANO.
+  * test_temporal_validity.py (20 testów) i test_temporal_manager.py
+    (11 testów) pokrywają granice 12-31/01-01 dla zarządcy okien —
+    ZWERYFIKOWANO; testy DRL: 0.
+  * Generator P36: brak automatycznego „okno→test” przed P53 (I02 nowy).
+Wnioski:
+  W1. Mechanika day-0 gotowa i testowana dla parametrów; brak danych
+      wejściowych — realne nowelizacje nie są w kalendarzu (L02).
+  W2. Testy sprawdzą KONIEC obowiązywania: EXPIRED→NEEDS_ADVICE (grid
+      day_plus_1; rego i10/i06 fail-closed) — akt wygasły NIE wraca do
+      starych zasad po cichu.
+  W3. Limity narastające: przypadki resetu rocznego zdefiniowane (I09:
+      ZUS 30x, VAT 200k), ale silnik nie przechowuje stanu licznika (L03).
+Luki: L02 (P1), L03 (P1), L09 (P3).
+
+5.3 TIME-TRAVEL I PRAWA NABYTE (P53-AN03)
+Dowody:
+  * deployments.json: 44 wdrożenia, active jdg-bundle-v8.0.0 (historia
+    bundle dostępna) — ZWERYFIKOWANO.
+  * worm_storage.py: append-only, hash chain, Merkle root, fail-closed na
+    modyfikację (kod 2) — ZWERYFIKOWANO (P42/WORM).
+  * golden_verdicts.json: 31 orzeczeń + replays; brak jawnego event_date/
+    epoch (0 wystąpień); 29/31 z valid_from do etykietowania epoką (I11) —
+    ZWERYFIKOWANO.
+  * I03: filary replay 3/4 po dodaniu fx_provenance.json (4 kursy NBP-A);
+    accumulator_state_on_date=false — ZWERYFIKOWANO.
+  * I04: TR-01..TR-03 (ulga na start, preferencyjny, mały ZUS+) modelowane
+    w preferential_period_tracker.py (requirements praw nabytych) —
+    ZWERYFIKOWANO; TR-05 (VAT 200k licznik) niemodelowane.
+  * dr_snapshots: 1 zrzut (dr-20260822-112954.json) — ZWERYFIKOWANO.
+Wnioski:
+  W1. Replay reguł+parametrów+kursów jest osiągalny z istniejących danych
+      (3/4 filarów) — kontrakt „grosz w grosz” ma fundament, ale BEZ
+      licznika narastającego nie jest kompletny (L03 blokuje Q02).
+  W2. Przepisy z prawami nabytymi (SUS 18a/18c/18ab) są modelowane atomowo
+      (tracker), lecz rejestr przejściowy nie był jawny — P53 to zmienia
+      (I04): modelowanie per nowela, nie „w głowie księgowego”.
+  W3. Test time-travel NIE jest w CI jako próba 3-letnia (I03 zapisuje
+      kontrakt; wykonanie = zadanie P10/P39) — ścieżka: golden epoki +
+      restore bundle@D z WORM.
+Luki: L03 (P1), L05 (P2), L04 (P2).
+
+5.4 ŚCIEŻKI TEMPORALNE AWARYJNE (P53-AN04)
+Dowody:
+  * main_jdg.rego: routing globalny — brak wyboru wersji pakietu po dacie
+    zdarzenia (grep valid_from/event_date w routerze: tylko komentarz
+    historyczny) — ZWERYFIKOWANO (L07).
+  * I06/I11: epoka dla daty zdarzenia — data poza oknami = NEEDS_ADVICE
+    (test test_epoch_for_date_outside_windows_fails_closed) — ZWERYFIKOWANO.
+  * I07: future law sandbox — DRAFT_SIMULATION, production_write=false,
+    wyłącznie na flagę (testy rego 11/11b) — ZWERYFIKOWANO.
+  * I08: KPI lead ≥ 30 dni (V2 §6.2.5); DRL-0001 lead 26 569 dni OK,
+    ale 0 reguł SHADOW na przełączenie — ZWERYFIKOWANO.
+Wnioski:
+  W1. Decyzja „w toku” (input 31.12, decyzja 2.01) ma dziś jasną semantykę
+      TYLKO w warstwie P53: stan prawa = epoka z daty zdarzenia; bez
+      temporalnego routingu P02 to kontrakt, nie egzekucja (L07).
+  W2. Tryb „prawo przyszłe” istnieje i jest bezpieczny (DRAFT bez zapisu);
+      kandydaci z kalendarza automatycznie kwalifikowane (I07).
+  W3. Pre-provisioning ma KPI i mechanikę, ale zero realnych wpisów =
+      zero przygotowanych wersji SHADOW na 1.01 (L02 przenosi się tutaj).
+Luki: L07 (P2), L02 (P1), L06 (P2).
+
+──────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2; wszystkie akty z Sekcji 8)
+──────────────────────────────────────────────────────────────────────────────
+| Akt | Art. | Reguła | Test | Status | Ryzyko |
+|---|---|---|---|---|---|
+| Ordynacja podatkowa | 24b | I06 epoki; I03 replay; I12 legal_epoch | rego 10/10b/10c; pytest 7 | CZĘŚCIOWE [NIEZWERYFIKOWANE] | błędna epoka = błędna deklaracja za przeszłość |
+| Ordynacja podatkowa | 24c | I04 TR-06 (zasady przejściowe) | pytest 5 | CZĘŚCIOWE [NIEZWERYFIKOWANE] | prawa nabyte pominięte |
+| Ustawa VAT | 109e ust. 4 | I03 (ewidencja na datę zdarzenia) | pytest 4 | CZĘŚCIOWE [NIEZWERYFIKOWANE] | replay bez daty zdarzenia |
+| Ustawa o PIT | 9a ust. 3, 12 ust. 4 | P52 helper grosz()+I03 fx@D | P52 suite | CZĘŚCIOWE [NIEZWERYFIKOWANE] | kurs/zaokrąglenie z „pamięci” |
+| Ustawa o ZUS | 18d ust. 2 | I09 (reset roczny 30x) | I09 cases; rego 15b | PEŁNE (klasa testów) [NIEZWERYFIKOWANE] | licznik bez stanu (L03) |
+| Ustawa o ZUS | 18ab | I04 TR-03 (mały ZUS+ kontynuacja) | preferential tracker | PEŁNE (model) [NIEZWERYFIKOWANE] | zmiana progu = prawa nabyte |
+| Ustawa o rachunkowości | 5 | I03 kontrakt porównywalności | pytest 4 | CZĘŚCIOWE [NIEZWERYFIKOWANE] | replay nieodtwarzalny |
+| KKS | 53 §1 | przedawnienie od daty (main_jdg I02 kalendarz 31.12+5) | P13 suite | CZĘŚCIOWE [NIEZWERYFIKOWANE] | stan prawny z daty zdarzenia |
+| Rozp. VAT (kursy) | 31a | I03 fx_provenance (NBP-A+data) | pytest 4; I03 pillar | CZĘŚCIOWE [NIEZWERYFIKOWANE — sesje] | kurs z pamięci (AP09) |
+| Ustawa VAT (odkryta) | 113 | I04 TR-05 zwolnienie 200k licznik | I09 case | BRAK (L03) [NIEZWERYFIKOWANE] | przekroczenie limitu niewykryte |
+
+──────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (T3)
+──────────────────────────────────────────────────────────────────────────────
+| ID | Priorytet | Luka | Dowód | Wpływ | Rozwiązanie | Koszt | Ryzyko regresji |
+|---|---|---|---|---|---|---|---|
+| V3-P53-L01 | P1 | 148/268 plików rego bez okien; 35 z hardcode dat | I01 bundle (120/268=44,8%) | reguła zależna od daty może działać w złej epoce | plan cięcia wg I01; bramka min 40% z trendem wzrostu | M | niskie (mapa, nie zmiana semantyki) |
+| V3-P53-L02 | P1 | KALENDARZ: 1 wpis testowy; 0 testów DRL; 0 reguł SHADOW | KALENDARZ_ZMIAN_PRAWNYCH.md; I08 | przełączenia 1.01 bez testów granicznych | zasilić z RCL; generator I02→CI na każdy DRL | M | średnie (nowe testy) |
+| V3-P53-L03 | P1 | Brak licznika narastającego (accumulator@D): VAT 200k, ZUS 30x stan na datę | I03 pillars 3/4; TR-05 | replay limitów = zgadywanie; błędny reżim na granicy | silnik accumulatorów z historią per podmiot (Q02 4-eyes) | L | średnie (nowa domena danych) |
+| V3-P53-L04 | P2 | fx_provenance [NIEZWERYFIKOWANE] (sesje NBP) | fx_provenance.json | kurs replay bez stempla 4-eyes | walidacja NBP API + 4-eyes (Q03) | S | niskie |
+| V3-P53-L05 | P2 | Golden 2/31 bez etykiety epoki; brak jawnego event_date/epoch | I11 (29/31) | replay 2 orzeczeń nieepokowy | uzupełnić valid_from/event_date w golden | S | niskie |
+| V3-P53-L06 | P2 | legal_epoch w projekcie, nie w egzekucji runtime_invariants | I12 kontrakt | certyfikat może nie mieć epoki | podłączyć enforce() (I12 required_fields) | S | niskie |
+| V3-P53-L07 | P2 | Routing P02 nie-temporalny (wybór wersji pakietu globalny) | main_jdg (brak event_date w routerze) | decyzja w toku może użyć złej wersji | routing po dacie zdarzenia (I05/I06) | L | średnie (rdzeń routingu) |
+| V3-P53-L08 | P3 | Lista 35 plików z hardcode dat do triage | I01 hardcoded_date_files | fałszywe pozytywy możliwe | ręczny triage + migracja do data | S | niskie |
+| V3-P53-L09 | P3 | Testy micro ZUS/ryczałt bez asercji day-0 grid | test_native_micro_* | granice ulg/stawek nieparametryzowane | dodać grid day-0 z I02 | S | niskie |
+| V3-P53-L10 | P3 | DRL confidence 0.7 bez walidacji RCL w CI | KALENDARZ (źródło) | fałszywy alarm przełączenia | walidator źródła + confidence policy | S | niskie |
+
+Suma: P0=0, P1=3, P2=4, P3=3. Brak P0: warstwa nie łamie dokumentów
+świętych (fail-closed, ADR-002, P05, INV-037); luki P1 wymagają decyzji
+4-eyes/danych zewnętrznych (RCL, NBP), nie mają cichego obejścia.
+
+──────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (T4; 12 × 6 elementów)
+──────────────────────────────────────────────────────────────────────────────
+I01 Temporal coverage gate — Problem: L01 (reguły zależne od daty bez okna).
+Mechanizm: skaner rego (valid_from) + heurystyka hardcode dat + próg
+  pokrycia w data.jdg.thresholds.v3_p53 (ADR-002) + bramka rego.
+Bezpieczeństwo: zmienia „cichy brak okna” na twardy licznik z BLOCK przy
+  spadku pokrycia. Ryzyko/mitigacja: fałszywe pozytywy heurystyki →
+  lista do triage (L08), bramka na %. Akceptacja: bundle I01 + test
+  rego 5b (BLOCK przy 3,7%). Zależności: P46, P39.
+I02 Day-0 test auto-generation — Problem: L02 (brak testów przełączeń).
+Mechanizm: grid (day_minus_1, day_0, day_plus_1 po valid_to) generowany
+  z okien parametrów; rejestr testów w bundlu; wejście do P36/P39.
+Bezpieczeństwo: zero ręcznych testów = zero pominiętych przełączeń.
+Ryzyko: pusty kalendarz realnych nowel → testy parametrów tylko;
+  mitigacja: L02 plan RCL. Akceptacja: 8 testów w bundlu; test rego 5c/15.
+Zależności: P36, P05.
+I03 Retroactive replay contract — Problem: replay bez stanu na datę.
+Mechanizm: 4 filary (rules@bundle(D) z deployments/WORM; params@D z
+  versions[]; fx@D z fx_provenance; accumulator@D) + bramka min filarów.
+Bezpieczeństwo: deklaracja historyczna = odtworzenie stanu prawa z daty
+  (art. 24b, UoR 5). Ryzyko: brak filaru → BLOCK (nie zgadywanie);
+  mitigacja: L03/Q02. Akceptacja: pillars=3/4 jawne w bundlu; test rego 3.
+Zależności: P38, P42, P52-I03, P10.
+I04 Transitional rules register — Problem: zasady przejściowe „w głowie”.
+Mechanizm: rejestr TR-01..TR-06 (akt, artykuł, warunek praw nabytych,
+  modelowana: tak/nie, źródło w kodzie) + MANUAL_REVIEW przy brakach.
+Bezpieczeństwo: prawa nabyte jawne i audytowalne (SUS 18a/18c/18ab).
+Ryzyko: rejestr bez wykonania → mitigacja: powiązanie z trackerem.
+Akceptacja: 6 wpisów, 5 modelowanych; test pytest 5; rego 9. Zależności:
+  P26, P18, P41.
+I05 Gap/overlap interval validator — Problem: dziury/nakładki okien.
+Mechanizm: algebra interwałów na versions[] parametrów (spójna z
+  temporal_interval_gate.py); gaps>0 lub overlaps>0 = BLOCK (INV-037).
+Bezpieczeństwo: nigdy „ostatnia wersja wygrywa” po cichu; P1632 jedna
+  aktywna wersja na datę. Ryzyko: edge-case 1-dniowe okna → zdefiniowane
+  (a_to < b_from−1d = gap). Akceptacja: 0/0 w bundlu; testy rego 7/7b.
+Zależności: P05, INV-037, P39.
+I06 Epoch registry — Problem: „jaka wersja prawa obowiązywała?” bez danych.
+Mechanizm: epoki z cięć valid_from parametrów; hash snapshotu parametrów
+  per epoka (SHA-256); lookup po dacie; data poza oknami = NEEDS_ADVICE.
+Bezpieczeństwo: nierozpoznana data ≠ najbliższa epoka (fail-closed).
+Ryzyko: jedna epoka bazowa (rzeczywisty stan) → rozszerzanie automatyczne.
+Akceptacja: hash obecny; testy rego 10/10b/10c (granica day-0). Zależności:
+  P03, P46.
+I07 Future law sandbox — Problem: planowanie na noweli = ryzyko produkcji.
+Mechanizm: tryb DRAFT_SIMULATION wyłącznie na flagę future_law_requested;
+  production_write=false niezmiennikiem; kandydaci z kalendarza.
+Bezpieczeństwo: symulacja nie może zanieczyścić decyzji/archiwum.
+Ryzyko: brak flagi przy potrzebie → jawny NO_MATCH (nie cichy DRAFT).
+Akceptacja: testy rego 11/11b. Zależności: V2 Declarative Change, P08.
+I08 Pre-provisioning scheduler — Problem: pustka reguł po 1.01.
+Mechanizm: KPI lead ≥ 30 dni (V2 §6.2.5) liczony z dat wejścia; status
+  reguł SHADOW na przełączenie; MANUAL_REVIEW przy brakach.
+Bezpieczeństwo: przygotowanie PRZED datą; zero improwizacji w day-0.
+Ryzyko: kalendarz pusty (L02) → śledzone jako luka, nie maskowane.
+Akceptacja: bundle I08; test rego (ścieżka I08). Zależności: P08, P38.
+I09 Year-boundary accumulator tests — Problem: reset liczników 1.01
+  (art. 18d ust. 2) bez klasy testów. Mechanizm: przypadki 31.12/1.01 per
+  limit roczny (ZUS 30x, VAT 200k) z oczekiwaniami resetu/zachowania.
+Bezpieczeństwo: granica roku = klasa testów, nie przypadkowy bug.
+Ryzyko: VAT 200k bez licznika (L03) → test zapisuje kontrakt zachowania.
+Akceptacja: 3 przypadki; test rego 15b. Zależności: P26, P46.
+I10 Historical parameter store — Problem: replay czyta „aktualne dane”.
+Mechanizm: audyt versions[] (kto/kiedy/wartość/akt); provenance wprost
+  w danych (source_act, changed_by); brak provenance = MANUAL_REVIEW.
+Bezpieczeństwo: przeszłość niezgadywana — historia jest danymi (ADR-002).
+Ryzyko: 1/8 wersji bez isap_status → śledzone (bundle I10).
+Akceptacja: 8 wersji; test pytest 11. Zależności: P46, P06.
+I11 Epoch-aware golden replay — Problem: golden bez epoki = replay
+  nieodtwarzalny. Mechanizm: etykietowanie orzeczeń epoką z valid_from;
+  replay wybiera epokę automatycznie; braki liczone (2/31).
+Bezpieczeństwo: Golden Oracle (V2) staje się epokowy — replay epoka w
+  epokę. Ryzyko: 2 orzeczeń bez etykiety → L05 plan uzupełnienia.
+Akceptacja: 29/31; test pytest 12. Zależności: P10, I06.
+I12 Temporal audit trail — Problem: certyfikat bez dowodu epoki.
+Mechanizm: pole _decision_certificate.legal_epoch = {epoch_id, epoch_hash,
+  bundle_version, params_snapshot_hash}; brak = NEEDS_ADVICE; WORM jako
+  nośnik audytu. Bezpieczeństwo: „jaka wersja prawa przy tej decyzji”
+  staje się polem kontraktowym F4. Ryzyko: enforcement niepodłączony →
+  L06 plan. Akceptacja: projekt + test rego 12. Zależności: F4 V2, P42.
+
+──────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (T5; wiąże P54+)
+──────────────────────────────────────────────────────────────────────────────
+K-P53-1 REJESTR GRANIC TEMPORALNYCH: bundles/v3_p53_day0_tests.json +
+  v3_p53_preprovisioning.json — wejście do P68 i P08 (harmonogram Law
+  Radar). Zasada: każde nowe okno parametru/reguły dostaje grid day-0
+  automatycznie (I02); wpis DRL bez testu = MANUAL_REVIEW (I08).
+K-P53-2 KONTRAKT TIME-TRAVEL (replay grosz w grosz): 4 filary I03
+  (rules@bundle(D)+params@D+fx@D+accumulator@D) — wiąże P10 (golden
+  oracle), P39 (CI), P38/P42 (WORM restore). Zasada: replay bez pełnych
+  filarów = BLOCK, nie „najlepsza próba”.
+K-P53-3 REJESTR ZASAD PRZEJŚCIOWYCH: bundle v3_p53_transitional_register
+  (TR-xx per nowela, modelowana: tak/nie) — wiąże P26 (ZUS), P18
+  (ryczałt), P41 (dokumentacja). Zasada: nowa nowela = nowy wpis TR
+  PRZED aktywacją (4-eyes).
+K-P53-4 EPOKI PRAWNE: I06 hash epoki jest częścią certyfikatu (I12);
+  wiąże P03 (kontrakt werdyktu 25-pol), P37 (obserwowalność: metryka
+  legal_epoch_missing=0), P68 (certyfikacja finalna).
+K-P53-5 FX PROVENANCE: bundles/fx_provenance.json — kurs replay wyłącznie
+  z rejestru (tabela+data+source); rozszerza kontrakt P52-I03; wiąże
+  P34/P52 (weekendy), P68.
+K-P53-6 FUTURE LAW SANDBOX: tryb DRAFT tylko na flagę; production_write
+  zawsze false — wiąże P02 (routing), P08 (pre-provisioning), P07 (UI).
+
+──────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA (T6)
+──────────────────────────────────────────────────────────────────────────────
+| # | Praca | Wdrożono od razu | Wymaga testów | Wymaga 4-eyes |
+|---|---|---|---|---|
+| 1 | Polityka rego + progi + wiring p117 | TAK (ta sesja) | 26 rego + regresja 1311 | — |
+| 2 | 12 silników + 13 bundli dowodowych | TAK | 31 pytest | — |
+| 3 | fx_provenance.json (dane) | TAK | pillar I03 | Q03 (sesje NBP) |
+| 4 | Rejestr TR + epoki + grid day-0 | TAK | bundl+rego | — |
+| 5 | Licznik narastający (4. filar) | — | nowa domena danych | Q02 |
+| 6 | Zasilanie KALENDARZU z RCL | — | generator DRL→test | Q02/Q03 |
+| 7 | legal_epoch w runtime_invariants | — | enforce() testy | — |
+| 8 | Routing temporalny P02 | — | rdzeń routingu | decyzja architektoniczna |
+| 9 | Migracja okien VAT z Pythona do data | — | równoległe uruchomienie | — |
+| 10 | Aktywacja CANDIDATE→ACTIVE (12 reguł) | — | soak | 4-eyes |
+
+Kolejność bez niszczenia zależności: 5→3 (dane) → 7 (egzekucja) → 6
+(kalendarz) → 8/9 (rdzeń) → 10 (aktywacja). Rollback każdej pozycji:
+git revert + restore poprzedniego bundle z WORM (P38/P42).
+
+──────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (T7)
+──────────────────────────────────────────────────────────────────────────────
+Blokujące merge (P39):
+  B1. opa test test_v3_p53_temporal_closure.rego — 26/26 (oba OPA):
+      negative-first, fail-closed snapshotu, determinizm, granice progów
+      (==min → PASS), epoki day-0 (31.12→stara/1.01→nowa), sandbox
+      DRAFT-only, no-AUTO_POST invariant.
+  B2. pytest test_v3_p53_temporal_closure.py — 31/31: bundl istnieje z
+      gate, spójność liczników (with+without==total), filary replay
+      kompletne jako kontrakt, reset roczny obecny.
+  B3. Regresja P13–P53: 1311/1311 (OPA 0.68 + 1.9) — brak regresji.
+Nieblokujące (plan):
+  N1. Time-travel E2E: replay deklaracji Q4-2025 grosz w grosz na próbie
+      3-letniej (wymaga L03 accumulator + golden epoki L05) — oczekiwane:
+      100% identyczność kwot; rozjazd = BLOCKER.
+  N2. Fuzz dat: losowe daty 2015–2030 vs rejestr epok — oczekiwane: nigdy
+      AUTO_POST poza epoką; NEEDS_ADVICE poza oknami.
+  N3. Chaos okien: usunięcie wersji parametru → I05 wykrywa gap=BLOCK.
+  N4. Test DRL: sztuczna nowela z datą T → testy day-1/day-0/day+1
+      generowane i zielone w CI (po L02).
+
+──────────────────────────────────────────────────────────────────────────────
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8; 4-eyes)
+──────────────────────────────────────────────────────────────────────────────
+Q01 (V3-P53-Q01): Semantyka granicy epoki — czy obowiązek powstaje „na
+  datę zdarzenia gospodarczego” (art. 24b OP) czy „na datę decyzji”?
+  P53 przyjęło datę zdarzenia [ZAŁOŻENIE, art. 24b NIEZWERYFIKOWANE].
+  Wpływ: routing day-0, replay, certyfikat. Rozstrzyga: prawnik + ISAP.
+Q02 (V3-P53-Q02): Projekt licznika narastającego VAT 200k — per podmiot,
+  reset kalendarzowy; czy zwolnienie liczone od pierwszej sprzedaży
+  podlegającej (art. 113 ust. 1) z odliczeniem sprzedaży zwolnionej
+  8/10%? P53 zapisuje kontrakt zachowania (I09) bez implementacji.
+Q03 (V3-P53-Q03): Akceptacja fx_provenance.json — 4 kursy NBP-A z sesjami
+  [NIEZWERYFIKOWANE]; wymagać: walidator NBP API + podpis 4-eyes przed
+  użyciem w replay produkcyjnym.
+
+──────────────────────────────────────────────────────────────────────────────
+9.12 ZAAŁOŻENIA JAWNE (T9)
+──────────────────────────────────────────────────────────────────────────────
+[ZAŁOŻENIE] A1: daty zdarzeń ≤ 2026-12-31 mieszczą się w EPOCH-BASE
+  (2026-01-01→null) — rejestr epok rozszerza się automatycznie z cięć.
+[ZAŁOŻENIE] A2: heurystyka hardcode dat (I01) może mieć fałszywe pozytywy
+  (np. daty w komentarzach) — lista jest wejściem do triage, nie wyrokiem.
+[ZAŁOŻENIE] A3: deployments.json pokrywa historię bundle wystarczającą do
+  replay od 2026-01-01; starsze okresy wymagają WORM DR snapshotów.
+[ZAŁOŻENIE] A4: semantyka „przekracza” = EXCLUSIVE z P52/I02 przeniesiona
+  do okien temporalnych (granica dnia: day_0 = nowa wersja).
+[ZAŁOŻENIE] A5: sesje NBP w fx_provenance są przykładowe do czasu Q03.
+
+──────────────────────────────────────────────────────────────────────────────
+9.13 PYTANIA KRZYŻOWE X01–X10
+──────────────────────────────────────────────────────────────────────────────
+X01: Brak sprzeczności z dokumentami świętymi; V1 zasada 6 (fail-closed)
+  i V2 F4 (certyfikat) wprost realizowane przez I12/I06. Konfliktów: 0 (T12).
+X02: Parametry-as-data łamane przez vat_rate_engine.py (okna 2011/2021 w
+  Pythonie — AP09) — plan migracji 9.09#9; rego P53: zero hardcode (progi
+  z data.jdg.thresholds.v3_p53).
+X03: Ścieżki nie-fail-closed: brak (router bez gałęzi AUTO_POST; test 14
+  no_auto_post_anywhere; epoka poza oknami = NEEDS_ADVICE).
+X04: Kontrakt 25-polowy (P03): pola matched/rule_id/package/priority/
+  decision/reason/_legal_basis/valid_from/valid_to zgodne typowo z
+  P47–P52 (dowód: testy 13/17; rule_id prefiksowane).
+X05: Bramki blokujące: B1–B3 (9.10); dodatkowo I05 jako kandydat CI-gate.
+X06: Duplikaty: temporal_interval_gate.py (C3) vs I05 — I05 REUZYWALNY
+  (spójna algebra, dane parametrów zamiast regex-ów rego); konsolidacja:
+  wywołanie obu w CI, jedno źródło prawdy = dane.
+X07: Podstawy niezweryfikowane: wszystkie (ISAP/RCL niedostępne) —
+  rejestr mediacji = Q01–Q03 + tagi [NIEZWERYFIKOWANE] przy każdej.
+X08: 4-eyes: Q01 (semantyka art. 24b), Q02 (licznik 200k), Q03 (FX).
+X09: Obserwowalność (P37): legal_epoch_missing (target 0), replay_pillars
+  (target 4/4), window_coverage_pct (trend ↑), day0_tests_per_window,
+  calendar_untested (target 0), fx_provenance_unstamped.
+X10: Invarianty runtime (P04): INV-P53-1 certyfikat ma legal_epoch
+  (podstawa: art. 24b OP — dowód epoki); INV-P53-2 replay bez pełnych
+  filarów = BLOCK (UoR art. 5 — porównywalność).
+
+9.14 ANTY-WZORCE (7.5) — wynik sprawdzenia:
+AP01 stub {true}: BRAK (w P53; rego bez martwych reguł — testy ścieżek).
+AP02 hardcode progów: BRAK w rego P53 (thresholds); JEST w vat_rate_engine
+  (L01/X02 — plan migracji). AP03 else-chain: PEŁNA (router + else).
+AP04 duplikaty rule_id: BRAK (12 unikalnych, prefiks pakietu; test 17).
+AP05 podstawy bez Dz.U.: TAGOWANE [NIEZWERYFIKOWANE] wszędzie; zero
+  fikcyjnych. AP06 testy zawsze-zielone: BRAK (negative-first: 5, 7, 7b,
+  10b, 11b, 12, 14). AP07 cichy AUTO_POST: NIEMOŻLIWY (no_auto_post=true;
+  test 14). AP08 cykle importów: BRAK (jeden kierunek main→p53). AP09
+  dane świata na stałe: fx_provenance z provenance; VAT okny w Pythonie =
+  L01. AP10 brak okien: brak w NOWYCH regułach; stare = L01. AP11 mirror
+  drift: 0 (sync gate 528 plików). AP12 dwa źródła prawdy: brak (bundl =
+  jedyny rejestr liczników).
+
+──────────────────────────────────────────────────────────────────────────────
+9.15 TABELA DOWODÓW T1 (Sekcja 6 — jeden wiersz na plik)
+──────────────────────────────────────────────────────────────────────────────
+| # | Plik | Dowód/fakt | Status |
+|---|------|------------|--------|
+| 1 | bundles/thresholds_data.json | 8 parametrów z versions[] (valid_from/source_act/changed_by) | ZWERYFIKOWANO |
+| 2 | docs/KALENDARZ_ZMIAN_PRAWNYCH.md | 1 wpis DRL-0001 (2099-06-01), 0 reguł SHADOW | ZWERYFIKOWANO (→L02) |
+| 3 | tests/test_core_guards_temporal_thresholds.py | 16 testów; INV-037 walidacja | ZWERYFIKOWANO |
+| 4 | docs/CORE_GUARDS_TEMPORAL_THRESHOLDS.md | 42 invariants; P1627/P1632; okna zero luk/nakładek | ZWERYFIKOWANO |
+| 5 | tools/temporal_drift_detector.py | POTENTIALLY_STALE >90 dni; mapowanie cartography→rules | ZWERYFIKOWANO |
+| 6 | tools/temporal_interval_gate.py | detekcja gap/overlap/no_temporal z rego | ZWERYFIKOWANO |
+| 7 | tests/test_temporal_validity.py | 20 testów; granice 12-31/01-01 | ZWERYFIKOWANO |
+| 8 | tests/test_temporal_manager.py | 11 testów zarządcy okien | ZWERYFIKOWANO |
+| 9 | bundles/golden_verdicts.json | 31 orzeczeń + replays; 0 jawnych event_date/epoch | ZWERYFIKOWANO (→L05) |
+| 10 | tests/test_control_plane_infrastructure.py | 5 testów control plane | ZWERYFIKOWANO |
+| 11 | bundles/deployments.json | 44 deployments; active jdg-bundle-v8.0.0 | ZWERYFIKOWANO |
+| 12 | tools/worm_storage.py | append-only, hash chain, Merkle, odrzucenie modyfikacji | ZWERYFIKOWANO |
+| 13 | bundles/dr_snapshots/ | 1 zrzut: dr-20260822-112954.json | ZWERYFIKOWANO |
+| 14 | tests/rego/test_native_lifecycle_manager_enterprise.rego | 71 linii; lifecycle testy | ZWERYFIKOWANO |
+| 15 | tests/rego/micro/test_native_micro_zus.rego | 164 linie; ulgi roczne (bez grid day-0) | ZWERYFIKOWANO (→L09) |
+| 16 | tests/rego/micro/test_native_micro_ryczalt.rego | 130 linii; stawki (bez grid day-0) | ZWERYFIKOWANO (→L09) |
+| 17 | tests/rego/test_native_pcc_v3_10.rego | 150 linii | ZWERYFIKOWANO |
+| 18 | tests/test_tax_rules.py | 674 linie; reguły podatkowe | ZWERYFIKOWANO |
+| 19 | tools/vat_rate_engine.py | snapshot() temporal; okna 2011/2021 HARDCODE w .py | ZWERYFIKOWANO (→L01/AP09) |
+| 20 | tools/preferential_period_tracker.py | TR-01..03 modelowane z requirements praw nabytych | ZWERYFIKOWANO |
+| 21 | policies/jdg (mirror 6.4) | sync 528 plików, dryf 0 | ZWERYFIKOWANO |
+| 22 | policies/jdg/bundles/bundle.sh + manifesty base/overlays v2026 | struktura overlay zachowana | ZWERYFIKOWANO |
+
+──────────────────────────────────────────────────────────────────────────────
+9.16 T10 PRZEKAZYWANE ARTEFAKTY (11.4)
+──────────────────────────────────────────────────────────────────────────────
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|---|---|---|---|
+| Rejestr granic temporalnych (day0+preprov bundle) | P68, P08 | JSON | harmonogram przełączeń + testy obowiązkowe |
+| Kontrakt time-travel 4-filarowy | P10, P39, P38, P42 | kontrakt w raporcie+bundle I03 | replay = BLOCK bez pełnych filarów |
+| Rejestr zasad przejściowych TR-xx | P26, P18, P41 | JSON | nowa nowela = wpis TR przed aktywacją |
+| Epoki prawne + hash | P03, P37, P68 | JSON (I06/I12) | legal_epoch w certyfikacie; metryka=0 |
+| fx_provenance.json | P34, P52, P68 | JSON | kurs replay tylko z rejestru |
+| Sandbox DRAFT (I07) | P02, P07, P08 | kontrakt flagi | symulacja bez zapisu produkcji |
+| Bramka pokrycia okien (I01) | P39, P46 | rego+JSON | min 40% z trendem wzrostu |
+
+T11 MACIERZ PODANALIZA × GRUPA (APENDYKS B):
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik |
+|---|---|---|---|
+| 5.1 | 6.1 + 6.3 | 4 twierdzenia z dowodem | 9.04/9.05 (L01, L08) |
+| 5.2 | 6.1 + 6.3 | 4 | 9.04 (L02, L03, L09) |
+| 5.3 | 6.2 + 6.3 | 6 | 9.04 (L03, L04, L05) |
+| 5.4 | 6.2 + 6.1 | 4 | 9.04 (L06, L07, L02) |
+
+T12 REJESTR KONFLIKTÓW: C01 — BRAK KONFLIKTÓW (0): dokumenty święte,
+mirror (dryf 0) i kontrakty P00–P52 spójne z wdrożeniem P53.
+
+──────────────────────────────────────────────────────────────────────────────
+APENDYKS E — PLAN PRACY (odznaczony)
+──────────────────────────────────────────────────────────────────────────────
+[x] Odczyt 20 plików + mirror (T1, statusy)
+[x] 4 podanalizy z wnioskami i lukami (9.04)
+[x] Macierz prawo↔reguła↔test (T2, 10 wierszy)
+[x] Rejestr luk P0–P3 (T3, 10 pozycji)
+[x] 12 innowacji × 6 elementów (T4)
+[x] Kontrakt wyjściowy K-P53-1..6 (T5)
+[x] Plan wdrożenia/testów (T6/T7)
+[x] Pytania 4-eyes Q01–Q03 (T8); założenia A1–A5 (T9)
+[x] Polityka rego + progi + wiring + narzędzia + bundle + testy + mirror +
+    registry + regresja (artefakty)
+[x] X01–X10, AP01–AP12 (9.13/9.14)
+DEKLARACJA ZGODNOŚCI: zgodne z dokumentami świętymi V1/V2 (fail-closed,
+ADR-002, P05, F4, Legal Twin terminologia); odstępstwa: brak; wszystkie
+podstawy prawne [NIEZWERYFIKOWANE — ISAP] do mediacji Q01–Q03.
+
+KONIEC RAPORTU V3 P53 — TEMPORALNOŚĆ DOMKNIĘCIE
+==============================================================================

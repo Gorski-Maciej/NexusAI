@@ -1,0 +1,46 @@
+{
+  "innovation": "V3-P51-I05",
+  "generated_at": "2026-09-12T14:34:35.902922+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "semi_auto_drafting",
+    "routing": "TRIAGE_QUEUE",
+    "generators_total": 4,
+    "generators_guarded": 0,
+    "legacy_stub_factories": 1,
+    "ap01_risk": true
+  },
+  "evidence": {
+    "generators": [
+      {
+        "generator": "generate_missing_rules.py",
+        "exists": true,
+        "duplicate_guard_wired": false,
+        "legacy_stub_factory": false,
+        "desert_card_integration": false
+      },
+      {
+        "generator": "parse_plan33_and_generate.py",
+        "exists": true,
+        "duplicate_guard_wired": false,
+        "legacy_stub_factory": true,
+        "desert_card_integration": false
+      },
+      {
+        "generator": "generate_from_plan50.py",
+        "exists": true,
+        "duplicate_guard_wired": false,
+        "legacy_stub_factory": false,
+        "desert_card_integration": false
+      },
+      {
+        "generator": "coverage_95_plan.py",
+        "exists": true,
+        "duplicate_guard_wired": false,
+        "legacy_stub_factory": false,
+        "desert_card_integration": false
+      }
+    ],
+    "contract": "K-P50-5 (guard przed zapisem) + P51-I03 (szkic z testem granicznym); szkielet bez testu ≠ pokrycie (AP01)."
+  }
+}

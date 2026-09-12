@@ -1,0 +1,1254 @@
+{
+  "innovation": "V3-P51-I09",
+  "generated_at": "2026-09-12T14:34:39.337622+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "testless_sweep",
+    "routing": "TRIAGE_QUEUE",
+    "rules_scanned": 12938,
+    "rules_without_test": 11282,
+    "ghost_tests": 24,
+    "uvr_canon_context": 11125,
+    "domains": 302
+  },
+  "evidence": {
+    "untested_by_domain": {
+      "accounting": {
+        "rules_total": 151,
+        "untested": null
+      },
+      "allowances": {
+        "rules_total": 32,
+        "untested": null
+      },
+      "business": {
+        "rules_total": 46,
+        "untested": null
+      },
+      "compliance": {
+        "rules_total": 23,
+        "untested": null
+      },
+      "conflicts": {
+        "rules_total": 28,
+        "untested": null
+      },
+      "corrections": {
+        "rules_total": 20,
+        "untested": null
+      },
+      "crossborder": {
+        "rules_total": 55,
+        "untested": null
+      },
+      "digital": {
+        "rules_total": 7,
+        "untested": null
+      },
+      "edge_cases": {
+        "rules_total": 188,
+        "untested": null
+      },
+      "employer": {
+        "rules_total": 28,
+        "untested": null
+      },
+      "environmental": {
+        "rules_total": 38,
+        "untested": null
+      },
+      "fallback": {
+        "rules_total": 3,
+        "untested": null
+      },
+      "international": {
+        "rules_total": 41,
+        "untested": null
+      },
+      "kks": {
+        "rules_total": 453,
+        "untested": null
+      },
+      "ksef_jpk": {
+        "rules_total": 21,
+        "untested": null
+      },
+      "liability": {
+        "rules_total": 16,
+        "untested": null
+      },
+      "local_taxes": {
+        "rules_total": 110,
+        "untested": null
+      },
+      "local": {
+        "rules_total": 46,
+        "untested": null
+      },
+      "mpips": {
+        "rules_total": 13,
+        "untested": null
+      },
+      "representation": {
+        "rules_total": 15,
+        "untested": null
+      },
+      "restructuring": {
+        "rules_total": 13,
+        "untested": null
+      },
+      "retention": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "risk": {
+        "rules_total": 23,
+        "untested": null
+      },
+      "rodo": {
+        "rules_total": 17,
+        "untested": null
+      },
+      "routing": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "temporal": {
+        "rules_total": 30,
+        "untested": null
+      },
+      "validation": {
+        "rules_total": 9,
+        "untested": null
+      },
+      "zus": {
+        "rules_total": 117,
+        "untested": null
+      },
+      "rodo_extended": {
+        "rules_total": 17,
+        "untested": null
+      },
+      "tax_opt": {
+        "rules_total": 11,
+        "untested": null
+      },
+      "limitations": {
+        "rules_total": 19,
+        "untested": null
+      },
+      "api_fallback": {
+        "rules_total": 7,
+        "untested": null
+      },
+      "cross_domain": {
+        "rules_total": 16,
+        "untested": null
+      },
+      "judicial": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "audit_defense": {
+        "rules_total": 5,
+        "untested": null
+      },
+      "strategic_advisor": {
+        "rules_total": 1,
+        "untested": null
+      },
+      "strategic": {
+        "rules_total": 16,
+        "untested": null
+      },
+      "ksef_resilience": {
+        "rules_total": 8,
+        "untested": null
+      },
+      "ppk_pfron": {
+        "rules_total": 8,
+        "untested": null
+      },
+      "cashflow": {
+        "rules_total": 7,
+        "untested": null
+      },
+      "jpk_cit": {
+        "rules_total": 5,
+        "untested": null
+      },
+      "form_transition": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "banking": {
+        "rules_total": 15,
+        "untested": null
+      },
+      "annual_decl": {
+        "rules_total": 7,
+        "untested": null
+      },
+      "jpk_v7": {
+        "rules_total": 8,
+        "untested": null
+      },
+      "legislative": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "neural_mesh": {
+        "rules_total": 20,
+        "untested": null
+      },
+      "nkup": {
+        "rules_total": 60,
+        "untested": null
+      },
+      "exit_tax_mdr": {
+        "rules_total": 1,
+        "untested": null
+      },
+      "exit_tax": {
+        "rules_total": 7,
+        "untested": null
+      },
+      "vat_complete": {
+        "rules_total": 12,
+        "untested": null
+      },
+      "tax_interaction": {
+        "rules_total": 7,
+        "untested": null
+      },
+      "sanctions": {
+        "rules_total": 5,
+        "untested": null
+      },
+      "lifecycle": {
+        "rules_total": 5,
+        "untested": null
+      },
+      "mdr_dac6": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "meta": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "wis_api": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "epuap": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "form_optimizer": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "p34_remaining": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "p34": {
+        "rules_total": 13,
+        "untested": null
+      },
+      "p34_innovations": {
+        "rules_total": 17,
+        "untested": null
+      },
+      "p35_coherence": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "p35": {
+        "rules_total": 19,
+        "untested": null
+      },
+      "p35_gaps": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "p35_innovations": {
+        "rules_total": 17,
+        "untested": null
+      },
+      "p33_uor_supplement": {
+        "rules_total": 8,
+        "untested": null
+      },
+      "p33_pcc_complete": {
+        "rules_total": 7,
+        "untested": null
+      },
+      "p33_excise_supplement": {
+        "rules_total": 8,
+        "untested": null
+      },
+      "p33_ordpu_kks_supplement": {
+        "rules_total": 8,
+        "untested": null
+      },
+      "p3233_innovations": {
+        "rules_total": 8,
+        "untested": null
+      },
+      "p05": {
+        "rules_total": 30,
+        "untested": null
+      },
+      "p05_innovations": {
+        "rules_total": 1,
+        "untested": null
+      },
+      "p06_innovations": {
+        "rules_total": 35,
+        "untested": null
+      },
+      "p07_innovations": {
+        "rules_total": 20,
+        "untested": null
+      },
+      "p08_innovations": {
+        "rules_total": 16,
+        "untested": null
+      },
+      "p09_innovations": {
+        "rules_total": 15,
+        "untested": null
+      },
+      "p10_innovations": {
+        "rules_total": 12,
+        "untested": null
+      },
+      "p11_innovations": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "p01_innovations": {
+        "rules_total": 8,
+        "untested": null
+      },
+      "p02_innovations": {
+        "rules_total": 8,
+        "untested": null
+      },
+      "p03_innovations": {
+        "rules_total": 8,
+        "untested": null
+      },
+      "p04_innovations": {
+        "rules_total": 8,
+        "untested": null
+      },
+      "cbam_full": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "exit_tax_interest_calculator": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "vida_drr_full": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "dac8_report_generator": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "entrepreneur_test": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "banking_sca": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "ksef_innovations": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "ksef_upo_tracker": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "ksef_sanction_monitor": {
+        "rules_total": 3,
+        "untested": null
+      },
+      "ksef_outbox": {
+        "rules_total": 5,
+        "untested": null
+      },
+      "vat_cashflow": {
+        "rules_total": 5,
+        "untested": null
+      },
+      "jpk_kr_st": {
+        "rules_total": 5,
+        "untested": null
+      },
+      "cross_validator": {
+        "rules_total": 5,
+        "untested": null
+      },
+      "gaar_shield": {
+        "rules_total": 3,
+        "untested": null
+      },
+      "interest_calculator": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "p23_innovations": {
+        "rules_total": 21,
+        "untested": null
+      },
+      "rule_lifecycle": {
+        "rules_total": 5,
+        "untested": null
+      },
+      "conflict_declaration": {
+        "rules_total": 5,
+        "untested": null
+      },
+      "decision_core_completeness": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "vat_rates_audit": {
+        "rules_total": 5,
+        "untested": null
+      },
+      "vat_deductions_audit": {
+        "rules_total": 8,
+        "untested": null
+      },
+      "vat_fraud_detection": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "p07_zus_macro_innovations": {
+        "rules_total": 24,
+        "untested": null
+      },
+      "p09_ksiegowosc_pkpir_uor_innovations": {
+        "rules_total": 28,
+        "untested": null
+      },
+      "p11_ordynacja_podatkowa_innovations": {
+        "rules_total": 27,
+        "untested": null
+      },
+      "p15_srodowisko_bdo_innovations": {
+        "rules_total": 33,
+        "untested": null
+      },
+      "p16_rodo_aml_security_innovations": {
+        "rules_total": 34,
+        "untested": null
+      },
+      "p18_automatyzacja_ksiegowosci_innovations": {
+        "rules_total": 31,
+        "untested": null
+      },
+      "p19_hr_swiadczenia_innovations": {
+        "rules_total": 27,
+        "untested": null
+      },
+      "p20_neural_mesh_innovations": {
+        "rules_total": 29,
+        "untested": null
+      },
+      "p21_opa_system_innovations": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "p22_validation_tools_innovations": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "p23_test_rego_ci_innovations": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "p03_orchestrator_innovations": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "p07_pit_micro_atomic": {
+        "rules_total": 21,
+        "untested": null
+      },
+      "r02_vat_core_innovations": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "r03_vat_micro_innovations": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "r04_pit_core_innovations": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "r07_kks_innovations": {
+        "rules_total": 5,
+        "untested": null
+      },
+      "r09_ksiegowosc_pkpir_uor_innovations": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "r15_ksef_jpk_edeklaracje_innovations": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "r17_enterprise_ai_innovations": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "pit_macro_etap10": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "zus_micro_etap13": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "uor_etap15": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "crossborder_etap17": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "ksef_jpk_etap20": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "policies_mirror_sync_etap26": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "v3_p13_vat_deductions": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p14_pit_reliefs": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p16_ksef_jpk": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p19_pcc_akcyza_bdo": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p20_ksiegowosc_pkpir_uor": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p27_cfc_exit_mdr": {
+        "rules_total": 15,
+        "untested": null
+      },
+      "v3_p30_innovation_waves": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p32_ksiegowosc_automation": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p35_audyutory_domenowe": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p37_obserwowalnosc": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p39_testy_ci": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p40_api_dane_ui": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p41_dokumentacja": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p43_security_dr": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p44_certyfikacja_finalna": {
+        "rules_total": 29,
+        "untested": null
+      },
+      "v3_p46_hardcode_eliminacja_enterprise": {
+        "rules_total": 32,
+        "untested": null
+      },
+      "v3_p47_legal_basis_weryfikacja_enterprise": {
+        "rules_total": 38,
+        "untested": null
+      },
+      "v3_p48_mirror_sync": {
+        "rules_total": 37,
+        "untested": null
+      },
+      "v3_p51_coverage_deserts": {
+        "rules_total": 38,
+        "untested": null
+      },
+      "p12_innovations": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "p13_innovations": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "p14_innovations": {
+        "rules_total": 13,
+        "untested": null
+      },
+      "p15_innovations": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "p16_innovations": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "pkpir_to_uor_transformer": {
+        "rules_total": 7,
+        "untested": null
+      },
+      "mdr_auto_generator": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "wdt_document_tracker": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "cfc_auto_classifier": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "autoform": {
+        "rules_total": 8,
+        "untested": null
+      },
+      "estonian_cit": {
+        "rules_total": 5,
+        "untested": null
+      },
+      "p17_innovations": {
+        "rules_total": 13,
+        "untested": null
+      },
+      "ksef_receipt_digest": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "gtu_checker": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "jpk_corrections": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "decision_composer": {
+        "rules_total": 3,
+        "untested": null
+      },
+      "ksef_offline_queue": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "ksef_firewall": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "edelivery_gateway": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "esig_auto": {
+        "rules_total": 5,
+        "untested": null
+      },
+      "ksef_sandbox": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "overpayment_claimer": {
+        "rules_total": 3,
+        "untested": null
+      },
+      "proceeding_tracker": {
+        "rules_total": 3,
+        "untested": null
+      },
+      "poa_manager": {
+        "rules_total": 3,
+        "untested": null
+      },
+      "defense_builder": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "deadline_monitor": {
+        "rules_total": 3,
+        "untested": null
+      },
+      "p21_innovations": {
+        "rules_total": 49,
+        "untested": null
+      },
+      "p22_innovations": {
+        "rules_total": 49,
+        "untested": null
+      },
+      "p24_innovations": {
+        "rules_total": 30,
+        "untested": null
+      },
+      "neural_mesh_v2": {
+        "rules_total": 16,
+        "untested": null
+      },
+      "reliability_guarantee": {
+        "rules_total": 5,
+        "untested": null
+      },
+      "p01_fundament_innovations": {
+        "rules_total": 3,
+        "untested": null
+      },
+      "adaptive_trust": {
+        "rules_total": 4,
+        "untested": null
+      },
+      "p02_decision_core_innovations": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "vat_mpp_split_payment": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "p03_vat_macro_innovations": {
+        "rules_total": 9,
+        "untested": null
+      },
+      "p04_vat_micro_innovations": {
+        "rules_total": 10,
+        "untested": null
+      },
+      "p05_pit_macro_innovations": {
+        "rules_total": 15,
+        "untested": null
+      },
+      "p06_pit_micro_innovations": {
+        "rules_total": 12,
+        "untested": null
+      },
+      "p06_pit_macro_innovations": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "p08_zus_micro_innovations": {
+        "rules_total": 22,
+        "untested": null
+      },
+      "p10_kks_innovations": {
+        "rules_total": 24,
+        "untested": null
+      },
+      "p12_crossborder_innovations": {
+        "rules_total": 27,
+        "untested": null
+      },
+      "p13_ryczalt_cykl_zycia_innovations": {
+        "rules_total": 26,
+        "untested": null
+      },
+      "p14_pcc_lokalne_akcyza_innovations": {
+        "rules_total": 25,
+        "untested": null
+      },
+      "p17_ksef_jpk_edeklaracje_innovations": {
+        "rules_total": 30,
+        "untested": null
+      },
+      "p24_audyt_kompletny_innovations": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "p04_vat_macro_enterprise": {
+        "rules_total": 15,
+        "untested": null
+      },
+      "p05_vat_micro_atomic": {
+        "rules_total": 11,
+        "untested": null
+      },
+      "p06_pit_macro_enterprise": {
+        "rules_total": 15,
+        "untested": null
+      },
+      "p08_zus_macro_enterprise": {
+        "rules_total": 16,
+        "untested": null
+      },
+      "vat": {
+        "rules_total": 972,
+        "untested": null
+      },
+      "pit": {
+        "rules_total": 956,
+        "untested": null
+      },
+      "ord": {
+        "rules_total": 316,
+        "untested": null
+      },
+      "r01_orchestrator_core_innovations": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "r05_pit_enterprise_innovations": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "r06_zus_innovations": {
+        "rules_total": 5,
+        "untested": null
+      },
+      "r08_ordynacja_obrona_innovations": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "r10_crossborder_innovations": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "r11_pcc_lokalne_akcyza_innovations": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "r12_ryczalt_cykl_zycia_innovations": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "r13_hyper_konteksty_innovations": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "r14_rodo_aml_bdo_innovations": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "r16_system_opa_innovations": {
+        "rules_total": 6,
+        "untested": null
+      },
+      "pit_micro_reliefs_etap11": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "zus_core_etap12": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "pkpir_etap14": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "kks_ord_etap16": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "business_lifecycle_etap18": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "local_excise_etap19": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "rodo_aml_bdo_hr_etap21": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "hyper_enterprise_contexts_etap22": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "enterprise_ai_neural_etap23": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "cross_domain_red_team_etap27": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "final_certification_etap28": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "v3_p15_crossborder": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p17_ordynacja_obrona": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p25_kalendarz_zbiorczy": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p28_hyper_plan45": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p29_quality_campaigns": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p31_audit_stages": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p34_walidacja_narzedzia": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p42_enterprise_reszta": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p49_fail_closed": {
+        "rules_total": 33,
+        "untested": null
+      },
+      "tests_ci_quality_etap24": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "tools_api_rulestore_bundles_etap25": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "v3_p18_ryczalt": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p26_zus_skladki": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p33_neural_mesh_ai": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p36_generatory_migratory": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p38_bundle_deploy": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p45_stub_killer": {
+        "rules_total": 30,
+        "untested": null
+      },
+      "v3_p45_conversions": {
+        "rules_total": 14,
+        "untested": null
+      },
+      "v3_p50_dead_code": {
+        "rules_total": 38,
+        "untested": null
+      },
+      "micro": {
+        "rules_total": 3722,
+        "untested": null
+      },
+      "agricultural_tax": {
+        "rules_total": 5,
+        "untested": null
+      },
+      "cb": {
+        "rules_total": 140,
+        "untested": null
+      },
+      "ceidg": {
+        "rules_total": 15,
+        "untested": null
+      },
+      "est": {
+        "rules_total": 15,
+        "untested": null
+      },
+      "health": {
+        "rules_total": 40,
+        "untested": null
+      },
+      "jpk": {
+        "rules_total": 72,
+        "untested": null
+      },
+      "ksef": {
+        "rules_total": 74,
+        "untested": null
+      },
+      "mdr": {
+        "rules_total": 102,
+        "untested": null
+      },
+      "pcc": {
+        "rules_total": 152,
+        "untested": null
+      },
+      "prop": {
+        "rules_total": 30,
+        "untested": null
+      },
+      "prop_transport": {
+        "rules_total": 5,
+        "untested": null
+      },
+      "ryc": {
+        "rules_total": 208,
+        "untested": null
+      },
+      "succ": {
+        "rules_total": 20,
+        "untested": null
+      },
+      "tax_trans": {
+        "rules_total": 15,
+        "untested": null
+      },
+      "tp": {
+        "rules_total": 78,
+        "untested": null
+      },
+      "uor": {
+        "rules_total": 278,
+        "untested": null
+      },
+      "p24": {
+        "rules_total": 30,
+        "untested": null
+      },
+      "pkpir_live": {
+        "rules_total": 13,
+        "untested": null
+      },
+      "uor_live": {
+        "rules_total": 12,
+        "untested": null
+      },
+      "solidarity": {
+        "rules_total": 35,
+        "untested": null
+      },
+      "wis": {
+        "rules_total": 45,
+        "untested": null
+      },
+      "audit": {
+        "rules_total": 72,
+        "untested": null
+      },
+      "force_majeure": {
+        "rules_total": 42,
+        "untested": null
+      },
+      "family": {
+        "rules_total": 63,
+        "untested": null
+      },
+      "edelivery": {
+        "rules_total": 51,
+        "untested": null
+      },
+      "procurement": {
+        "rules_total": 47,
+        "untested": null
+      },
+      "fx": {
+        "rules_total": 57,
+        "untested": null
+      },
+      "residency": {
+        "rules_total": 60,
+        "untested": null
+      },
+      "payments": {
+        "rules_total": 61,
+        "untested": null
+      },
+      "advertising": {
+        "rules_total": 48,
+        "untested": null
+      },
+      "exit_tax_cfc": {
+        "rules_total": 15,
+        "untested": null
+      },
+      "statute": {
+        "rules_total": 10,
+        "untested": null
+      },
+      "akcyza": {
+        "rules_total": 40,
+        "untested": null
+      },
+      "esig": {
+        "rules_total": 45,
+        "untested": null
+      },
+      "calendar": {
+        "rules_total": 43,
+        "untested": null
+      },
+      "taxfree": {
+        "rules_total": 46,
+        "untested": null
+      },
+      "seasonal": {
+        "rules_total": 37,
+        "untested": null
+      },
+      "conviction": {
+        "rules_total": 38,
+        "untested": null
+      },
+      "regulated": {
+        "rules_total": 42,
+        "untested": null
+      },
+      "insurance": {
+        "rules_total": 36,
+        "untested": null
+      },
+      "security": {
+        "rules_total": 20,
+        "untested": null
+      },
+      "enterprise": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "tools": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "tests_ci": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "api_ui": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "hyper": {
+        "rules_total": 505,
+        "untested": null
+      },
+      "bundles": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "docs": {
+        "rules_total": 2,
+        "untested": null
+      },
+      "pcc_akc": {
+        "rules_total": 100,
+        "untested": null
+      },
+      "aml": {
+        "rules_total": 1,
+        "untested": null
+      },
+      "aml_full": {
+        "rules_total": 80,
+        "untested": null
+      },
+      "pp": {
+        "rules_total": 50,
+        "untested": null
+      },
+      "suk": {
+        "rules_total": 84,
+        "untested": null
+      },
+      "final": {
+        "rules_total": 51,
+        "untested": null
+      },
+      "gaar": {
+        "rules_total": 1,
+        "untested": null
+      },
+      "vida": {
+        "rules_total": 1,
+        "untested": null
+      },
+      "zdr": {
+        "rules_total": 74,
+        "untested": null
+      }
+    },
+    "ghost_tests_sample": [
+      "jdg.business.gig_economy",
+      "jdg.micro.bdo_ewc.fallback",
+      "jdg.micro.pit",
+      "jdg.micro.pit.plan33",
+      "jdg.micro.pit.plan34",
+      "jdg.micro.plan33_agricultural_tax",
+      "jdg.micro.vat.a42a",
+      "jdg.micro.vat.a42h",
+      "jdg.micro.zus.a24.nadplata",
+      "jdg.micro.zus.a24.zaleglosc",
+      "jdg.micro.zus.a8.zgloszenie",
+      "jdg.pit.kup.kup_general",
+      "jdg.risk.fraud",
+      "jdg.risk.x",
+      "jdg.v3_p40_api_dane_ui.test_",
+      "jdg.v3_p41_dokumentacja.test_",
+      "jdg.v3_p42_enterprise_reszta.test_",
+      "jdg.v3_p43_security_dr.test_",
+      "jdg.v3_p49_fail_closed.",
+      "jdg.v3_p50_dead_code.",
+      "jdg.vat.a113",
+      "jdg.vat.fraud",
+      "jdg.vat.place_of_supply",
+      "jdg.x.y"
+    ],
+    "plan": "generator testów (P36) domyka rule_no_test szybciej niż pisanie reguł; ghost testy → usunięcie albo re-wiring.",
+    "note": "UVR canon = reguły dowodne bez testu natywnego (mianownik inny niż ten skan — kontekst, nie porównanie wprost)."
+  }
+}

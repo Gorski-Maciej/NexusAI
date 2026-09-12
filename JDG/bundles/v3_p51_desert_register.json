@@ -1,0 +1,505 @@
+{
+  "innovation": "V3-P51-I01",
+  "generated_at": "2026-09-12T14:34:34.869531+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "desert_register",
+    "routing": "TRIAGE_QUEUE",
+    "article_nodes": 251,
+    "nodes_total": 251,
+    "covered_nodes": 92,
+    "desert_nodes": 159,
+    "desert_pct": 63.3,
+    "no_rule": 118,
+    "rule_no_test": 41,
+    "test_no_rule": 0,
+    "p0_count": 34,
+    "p1_count": 68,
+    "p2_count": 56,
+    "p3_count": 1,
+    "sla_registered": 159,
+    "ghost_rule_refs": 2
+  },
+  "evidence": {
+    "entries_top20": [
+      {
+        "legal_node_id": "LKG-0074",
+        "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów (PKPiR) – uproszczona księgowość dla JDG Całość rozporządzenia – struktura PKPiR, zasady ewidencji",
+        "act_dz_u": "",
+        "article": "24a",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "risk_weights": {
+          "frequency": 4,
+          "amount": 4,
+          "uncertainty": 4
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0075",
+        "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów (PKPiR) – uproszczona księgowość dla JDG Całość rozporządzenia – struktura PKPiR, zasady ewidencji",
+        "act_dz_u": "",
+        "article": "15",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "risk_weights": {
+          "frequency": 4,
+          "amount": 4,
+          "uncertainty": 4
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0076",
+        "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów (PKPiR) – uproszczona księgowość dla JDG Całość rozporządzenia – struktura PKPiR, zasady ewidencji",
+        "act_dz_u": "",
+        "article": "109",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "risk_weights": {
+          "frequency": 4,
+          "amount": 4,
+          "uncertainty": 4
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0077",
+        "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów (PKPiR) – uproszczona księgowość dla JDG Całość rozporządzenia – struktura PKPiR, zasady ewidencji",
+        "act_dz_u": "",
+        "article": "99",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "risk_weights": {
+          "frequency": 4,
+          "amount": 4,
+          "uncertainty": 4
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0094",
+        "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
+        "act_dz_u": "2025 poz. 234",
+        "article": "48",
+        "domain": "ordpu",
+        "desert_class": "rule_no_test",
+        "risk_score": 64,
+        "risk_weights": {
+          "frequency": 4,
+          "amount": 4,
+          "uncertainty": 4
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [
+          "jdg.edge_cases.force_majeure_tax_deadline",
+          "jdg.edge_cases.force_majeure_tax_exemption",
+          "jdg.liability.deferral_active",
+          "jdg.ord.a47.r7",
+          "jdg.ord.a48.r1",
+          "jdg.ord.a48.r2",
+          "jdg.statute.deferral_active_interest_suspended"
+        ],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0095",
+        "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
+        "act_dz_u": "2025 poz. 234",
+        "article": "51",
+        "domain": "ordpu",
+        "desert_class": "rule_no_test",
+        "risk_score": 64,
+        "risk_weights": {
+          "frequency": 4,
+          "amount": 4,
+          "uncertainty": 4
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [
+          "jdg.hyper.fx.eus.platform.payment_history",
+          "jdg.liability.tax_remission_active",
+          "jdg.ord.a49.r2",
+          "jdg.ord.a51.r1",
+          "jdg.ord.a51.r2",
+          "jdg.statute.tax_remission_liability_extinguished"
+        ],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0102",
+        "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
+        "act_dz_u": "2025 poz. 234",
+        "article": "87",
+        "domain": "ordpu",
+        "desert_class": "rule_no_test",
+        "risk_score": 64,
+        "risk_weights": {
+          "frequency": 4,
+          "amount": 4,
+          "uncertainty": 4
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [
+          "jdg.hyper.family.audit.cross_border.presence_foreign_officials"
+        ],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0225",
+        "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm.)",
+        "act_dz_u": null,
+        "article": "16-193a",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "risk_weights": {
+          "frequency": 4,
+          "amount": 4,
+          "uncertainty": 4
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0226",
+        "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm.)",
+        "act_dz_u": null,
+        "article": "70",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "risk_weights": {
+          "frequency": 4,
+          "amount": 4,
+          "uncertainty": 4
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0227",
+        "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm.)",
+        "act_dz_u": null,
+        "article": "81",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "risk_weights": {
+          "frequency": 4,
+          "amount": 4,
+          "uncertainty": 4
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0228",
+        "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm.)",
+        "act_dz_u": null,
+        "article": "117ba",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "risk_weights": {
+          "frequency": 4,
+          "amount": 4,
+          "uncertainty": 4
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0014",
+        "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
+        "act_dz_u": "2025 poz. 456",
+        "article": "42a-42h",
+        "domain": "vat",
+        "desert_class": "no_rule",
+        "risk_score": 60,
+        "risk_weights": {
+          "frequency": 5,
+          "amount": 4,
+          "uncertainty": 3
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0016",
+        "act": "Ustawa z dnia 11 marca 2004 r. o podatku od towarów i usług",
+        "act_dz_u": "2025 poz. 456",
+        "article": "82",
+        "domain": "vat",
+        "desert_class": "rule_no_test",
+        "risk_score": 60,
+        "risk_weights": {
+          "frequency": 5,
+          "amount": 4,
+          "uncertainty": 3
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [
+          "jdg.kks.unpaid_vat_penalty_30pct_p452",
+          "jdg.p17_ksef_jpk_edeklaracje_innovations.jpk_v7_auto_generator",
+          "jdg.p17_ksef_jpk_edeklaracje_innovations.jpk_audit",
+          "jdg.p17_ksef_jpk_edeklaracje_innovations.jpk_cross_validation",
+          "jdg.p17_ksef_jpk_edeklaracje_innovations.jpk_deadline_calendar"
+        ],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0078",
+        "act": "Rozporządzenie Ministra Finansów z dnia 15 lipca 2025 r. w sprawie JPK_VAT z deklaracją Struktura JPK_V7M (miesięczny) i JPK_V7K",
+        "act_dz_u": "",
+        "article": "45",
+        "domain": "vat",
+        "desert_class": "no_rule",
+        "risk_score": 60,
+        "risk_weights": {
+          "frequency": 5,
+          "amount": 4,
+          "uncertainty": 3
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0079",
+        "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej (schemat XSD dla KSeF) Schemat XSD dla faktur KSeF Całość rozporządzenia",
+        "act_dz_u": "",
+        "article": "89b",
+        "domain": "vat",
+        "desert_class": "no_rule",
+        "risk_score": 60,
+        "risk_weights": {
+          "frequency": 5,
+          "amount": 4,
+          "uncertainty": 3
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0080",
+        "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej (schemat XSD dla KSeF) Schemat XSD dla faktur KSeF Całość rozporządzenia",
+        "act_dz_u": "",
+        "article": "87",
+        "domain": "vat",
+        "desert_class": "no_rule",
+        "risk_score": 60,
+        "risk_weights": {
+          "frequency": 5,
+          "amount": 4,
+          "uncertainty": 3
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0081",
+        "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej (schemat XSD dla KSeF) Schemat XSD dla faktur KSeF Całość rozporządzenia",
+        "act_dz_u": "",
+        "article": "96",
+        "domain": "vat",
+        "desert_class": "no_rule",
+        "risk_score": 60,
+        "risk_weights": {
+          "frequency": 5,
+          "amount": 4,
+          "uncertainty": 3
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0082",
+        "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej (schemat XSD dla KSeF) Schemat XSD dla faktur KSeF Całość rozporządzenia",
+        "act_dz_u": "",
+        "article": "96b",
+        "domain": "vat",
+        "desert_class": "no_rule",
+        "risk_score": 60,
+        "risk_weights": {
+          "frequency": 5,
+          "amount": 4,
+          "uncertainty": 3
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0083",
+        "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej (schemat XSD dla KSeF) Schemat XSD dla faktur KSeF Całość rozporządzenia",
+        "act_dz_u": "",
+        "article": "103",
+        "domain": "vat",
+        "desert_class": "no_rule",
+        "risk_score": 60,
+        "risk_weights": {
+          "frequency": 5,
+          "amount": 4,
+          "uncertainty": 3
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      },
+      {
+        "legal_node_id": "LKG-0084",
+        "act": "Rozporządzenie Ministra Finansów z dnia 5 października 2025 r. w sprawie wzoru faktury ustrukturyzowanej (schemat XSD dla KSeF) Schemat XSD dla faktur KSeF Całość rozporządzenia",
+        "act_dz_u": "",
+        "article": "106e",
+        "domain": "vat",
+        "desert_class": "no_rule",
+        "risk_score": 60,
+        "risk_weights": {
+          "frequency": 5,
+          "amount": 4,
+          "uncertainty": 3
+        },
+        "priority": "P0",
+        "sla_deadline": "2026-09-26",
+        "owner": "P51-campaign",
+        "rule_ids": [],
+        "tested_rule_ids": [],
+        "legal_basis_verified": false,
+        "status": "OPEN"
+      }
+    ],
+    "entries_total": 159,
+    "by_domain": {
+      "other": 40,
+      "pit": 39,
+      "vat": 23,
+      "business": 12,
+      "zus": 11,
+      "ordpu": 11,
+      "kks": 10,
+      "uor": 8,
+      "health": 4,
+      "pcc": 1
+    },
+    "reconciliation": {
+      "legal_graph": {
+        "nodes_total": 258,
+        "covered_nodes": 155,
+        "article_nodes": 251
+      },
+      "coverage_canon": {
+        "LCI": 100.0,
+        "UVR": 11125,
+        "lkg_material_nodes": 70
+      },
+      "deserts_snapshot": {
+        "generated_at": "2026-08-08T12:11:26.035091+00:00",
+        "desert_nodes": 72,
+        "desert_pct": 69.9
+      },
+      "drift_flags": {
+        "canon_lci_100_vs_graph_7143": true,
+        "snapshot_stale_vs_fresh": true
+      }
+    },
+    "legal_note": "Akty i Dz.U. z legal_graph.json są TWIERDZENIAMI [NIEZWERYFIKOWANE — ISAP] do stempla 4-eyes (P47-I10)."
+  }
+}

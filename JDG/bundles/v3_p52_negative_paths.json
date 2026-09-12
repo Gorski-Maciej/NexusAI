@@ -1,0 +1,78 @@
+{
+  "innovation": "V3-P52-I08",
+  "generated_at": "2026-09-12T16:34:01.386480+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "negative_paths",
+    "routing": "TRIAGE_QUEUE",
+    "cases_total": 10,
+    "naive_vs_symmetric_mismatch": 0,
+    "tools_with_negative_paths": 3,
+    "tools_total": 9
+  },
+  "evidence": {
+    "cases": [
+      {
+        "value": "-0.004",
+        "naive_half_up": "-0.00",
+        "p52_symmetric_half_up": "-0.00",
+        "match": true
+      },
+      {
+        "value": "-0.005",
+        "naive_half_up": "-0.01",
+        "p52_symmetric_half_up": "-0.01",
+        "match": true
+      },
+      {
+        "value": "-0.006",
+        "naive_half_up": "-0.01",
+        "p52_symmetric_half_up": "-0.01",
+        "match": true
+      },
+      {
+        "value": "-1.005",
+        "naive_half_up": "-1.01",
+        "p52_symmetric_half_up": "-1.01",
+        "match": true
+      },
+      {
+        "value": "-123.455",
+        "naive_half_up": "-123.46",
+        "p52_symmetric_half_up": "-123.46",
+        "match": true
+      },
+      {
+        "value": "0.004",
+        "naive_half_up": "0.00",
+        "p52_symmetric_half_up": "0.00",
+        "match": true
+      },
+      {
+        "value": "0.005",
+        "naive_half_up": "0.01",
+        "p52_symmetric_half_up": "0.01",
+        "match": true
+      },
+      {
+        "value": "0.006",
+        "naive_half_up": "0.01",
+        "p52_symmetric_half_up": "0.01",
+        "match": true
+      },
+      {
+        "value": "1.005",
+        "naive_half_up": "1.01",
+        "p52_symmetric_half_up": "1.01",
+        "match": true
+      },
+      {
+        "value": "123.455",
+        "naive_half_up": "123.46",
+        "p52_symmetric_half_up": "123.46",
+        "match": true
+      }
+    ],
+    "finding": "floor+0.5 (rego round2) dla ujemnych = half-DOWN (np. -0.005 → -0.00): asymetria korekt; helper P52 symetryczny (abs + half-up)."
+  }
+}

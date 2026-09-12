@@ -1,0 +1,59 @@
+{
+  "schema": "jdg.v3_p53.run_all.v1",
+  "part": "P53",
+  "slug": "TEMPORALNOSC_DOMKNIECIE",
+  "generated_at": "2026-09-12T17:52:37.990992+00:00",
+  "engines_run": 12,
+  "failures": [],
+  "gate": "PASS",
+  "results": {
+    "I01": {
+      "exit": 0,
+      "output": "[P53:I01] I01_temporal_coverage_map gate=PASS bundle=OK"
+    },
+    "I02": {
+      "exit": 0,
+      "output": "[P53:I02] I02_day0_test_autogeneration gate=PASS bundle=OK"
+    },
+    "I03": {
+      "exit": 0,
+      "output": "[P53:I03] I03_retroactive_replay_contract gate=PASS bundle=OK"
+    },
+    "I04": {
+      "exit": 0,
+      "output": "[P53:I04] I04_transitional_rules_register gate=PASS bundle=OK"
+    },
+    "I05": {
+      "exit": 0,
+      "output": "[P53:I05] I05_interval_validator gate=PASS bundle=OK"
+    },
+    "I06": {
+      "exit": 0,
+      "output": "[P53:I06] I06_epoch_registry gate=PASS bundle=OK"
+    },
+    "I07": {
+      "exit": 0,
+      "output": "[P53:I07] I07_future_law_sandbox gate=PASS bundle=OK"
+    },
+    "I08": {
+      "exit": 0,
+      "output": "[P53:I08] I08_preprovisioning_scheduler gate=PASS bundle=OK"
+    },
+    "I09": {
+      "exit": 0,
+      "output": "[P53:I09] I09_year_boundary_tests gate=PASS bundle=OK"
+    },
+    "I10": {
+      "exit": 0,
+      "output": "[P53:I10] I10_historical_parameter_store gate=PASS bundle=OK"
+    },
+    "I11": {
+      "exit": 0,
+      "output": "[P53:I11] I11_epoch_aware_golden_replay gate=PASS bundle=OK"
+    },
+    "I12": {
+      "exit": 0,
+      "output": "[P53:I12] I12_temporal_audit_trail gate=PASS bundle=OK"
+    }
+  }
+}

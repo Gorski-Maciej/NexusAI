@@ -1,0 +1,410 @@
+{
+  "analysis": "I01_temporal_coverage_map",
+  "rule_files_total": 269,
+  "rule_files_with_window": 121,
+  "rule_files_without_window": 148,
+  "without_window_list": [
+    "_business_lifecycle_rates.rego",
+    "_compliance_rates.rego",
+    "_crossborder_rates.rego",
+    "_edge_cases_conflicts_rates.rego",
+    "_kks_micro_rates.rego",
+    "_pcc_local_excise_rates.rego",
+    "_pkpir_rates.rego",
+    "_uor_rates.rego",
+    "accounting.rego",
+    "allowances.rego",
+    "api_fallback.rego",
+    "audit_defense_enterprise.rego",
+    "calendar_notifier_enterprise.rego",
+    "cbam_full.rego",
+    "cfc_auto_classifier.rego",
+    "compliance.rego",
+    "conflict_declaration_enterprise.rego",
+    "conviction_checker_enterprise.rego",
+    "corrections.rego",
+    "cross_declaration_validator_enterprise.rego",
+    "cross_domain_intelligence_enterprise.rego",
+    "cross_jurisdiction_ruling_enterprise.rego",
+    "dac8_report_generator.rego",
+    "deadline_monitor_enterprise.rego",
+    "decision_composer_enterprise.rego",
+    "decision_core_completeness_enterprise.rego",
+    "decision_scoring_enterprise.rego",
+    "defense_builder_enterprise.rego",
+    "digital.rego",
+    "edelivery_gateway_enterprise.rego",
+    "edelivery_gateway_v2_enterprise.rego",
+    "edge_cases.rego",
+    "employer.rego",
+    "environmental.rego",
+    "epuap_enterprise.rego",
+    "exit_tax_interest_calculator.rego",
+    "fallback.rego",
+    "financial_hardship_scorer_enterprise.rego",
+    "gaar_shield_enterprise.rego",
+    "gtu_completeness_checker_enterprise.rego",
+    "hyper_plan45_meta_enterprise.rego",
+    "insurance_tracker_enterprise.rego",
+    "interest_calculator_enterprise.rego",
+    "international.rego",
+    "international_expanded.rego",
+    "jpk_cit.rego",
+    "jpk_corrections_workflow_enterprise.rego",
+    "jpk_kr_st_generator_enterprise.rego",
+    "jpk_v7_autogen_enterprise.rego",
+    "judicial_interpretations_enterprise.rego",
+    "judicial_trend_enterprise.rego",
+    "kks.rego",
+    "kks_ord_etap16_v1.rego",
+    "ksef_firewall_enterprise.rego",
+    "ksef_innovations_enterprise.rego",
+    "ksef_offline_queue_enterprise.rego",
+    "ksef_outbox_enterprise.rego",
+    "ksef_receipt_digest_enterprise.rego",
+    "ksef_resilience_enterprise.rego",
+    "ksef_sanction_monitor_enterprise.rego",
+    "ksef_sandbox_harness_enterprise.rego",
+    "ksef_upo_tracker_enterprise.rego",
+    "legislative_impact_analyzer_enterprise.rego",
+    "liability.rego",
+    "lifecycle_manager_enterprise.rego",
+    "local_taxes.rego",
+    "mdr_auto_generator.rego",
+    "mdr_dac6_enterprise.rego",
+    "mpips.rego",
+    "neural_mesh_v2_enterprise.rego",
+    "ord_supplements_enterprise.rego",
+    "overpayment_auto_claimer_enterprise.rego",
+    "p01_core_architecture_innovations_v8.rego",
+    "p02_decision_core_innovations_v9.rego",
+    "p02_vat_macro_innovations_v8.rego",
+    "p03_orchestrator_innovations_v9.rego",
+    "p03_vat_micro_innovations_v8.rego",
+    "p04_pit_macro_innovations_v8.rego",
+    "p04_vat_macro_enterprise_v9.rego",
+    "p04_vat_micro_innovations_v9.rego",
+    "p05_pit_innovations_v8.rego",
+    "p05_pit_macro_innovations_v9.rego",
+    "p06_pit_macro_enterprise_v9.rego",
+    "p06_pit_micro_innovations_v9.rego",
+    "p07_pit_micro_atomic_v9.rego",
+    "p07_zus_macro_innovations_v8.rego",
+    "p07_zus_macro_innovations_v9.rego",
+    "p08_zus_macro_enterprise_v9.rego",
+    "p08_zus_micro_innovations_v8.rego",
+    "p08_zus_micro_innovations_v9.rego",
+    "p09_kks_macro_innovations_v8.rego",
+    "p10_kks_micro_innovations_v8.rego",
+    "p11_accounting_pkpir_innovations_v8.rego",
+    "p12_uor_innovations_v8.rego",
+    "p13_crossborder_innovations_v8.rego",
+    "p14_compliance_innovations_v8.rego",
+    "p15_pcc_local_excise_innovations_v8.rego",
+    "p16_business_lifecycle_innovations_v8.rego",
+    "p17_edge_conflicts_innovations_v8.rego",
+    "p18_automatyzacja_ksiegowosci_innovations_v9.rego",
+    "p19_hr_swiadczenia_innovations_v9.rego",
+    "p20_neural_mesh_innovations_v9.rego",
+    "p21_innovations_enterprise.rego",
+    "p22_innovations_enterprise.rego",
+    "p24_audyt_kompletny_innovations_v9.rego",
+    "p24_innovations_enterprise.rego",
+    "p3233_innovations.rego",
+    "p33_excise_supplement.rego",
+    "p33_ordpu_kks_supplement.rego",
+    "p33_pcc_complete.rego",
+    "p33_uor_supplement.rego",
+    "penalty_ai_enterprise.rego",
+    "pkpir_etap14_v1.rego",
+    "pkpir_to_uor_transformer.rego",
+    "poa_manager_enterprise.rego",
+    "ppk_pfron_enterprise.rego",
+    "proceeding_tracker_enterprise.rego",
+    "regulated_compliance_enterprise.rego",
+    "representation.rego",
+    "restructuring.rego",
+    "retention.rego",
+    "risk.rego",
+    "rodo.rego",
+    "routing.rego",
+    "sanctions_optimization_enterprise.rego",
+    "sanctions_supplements_enterprise.rego",
+    "solidarity_auto_calc_enterprise.rego",
+    "statute_of_limitations.rego",
+    "strategic_roadmap_enterprise.rego",
+    "tax_authority_interaction_enterprise.rego",
+    "tax_correspondence_engine_enterprise.rego",
+    "tax_ruling_autodrafter_enterprise.rego",
+    "uor_etap15_v1.rego",
+    "v3_p45_conversions.rego",
+    "validation.rego",
+    "vat_cashflow_predictor_enterprise.rego",
+    "vat_deductions_corrections_enterprise.rego",
+    "vat_fraud_detection_enterprise.rego",
+    "vat_mpp_split_payment_enterprise.rego",
+    "vat_rates_exemptions_audit_enterprise.rego",
+    "vat_substantive_complete_enterprise.rego",
+    "vida_drr_full.rego",
+    "wdt_document_tracker.rego",
+    "wis_api_enterprise.rego",
+    "wis_autorequester_enterprise.rego",
+    "zus.rego",
+    "zus_core_etap12_v1.rego",
+    "zus_micro_etap13_v1.rego"
+  ],
+  "hardcoded_date_files": [
+    {
+      "file": "_business_lifecycle_rates.rego",
+      "sample_dates": [
+        "2026-02-01",
+        "2026-08-01"
+      ]
+    },
+    {
+      "file": "_crossborder_rates.rego",
+      "sample_dates": [
+        "2021-01-01"
+      ]
+    },
+    {
+      "file": "_edge_cases_conflicts_rates.rego",
+      "sample_dates": [
+        "2026-02-01"
+      ]
+    },
+    {
+      "file": "_kks_micro_rates.rego",
+      "sample_dates": [
+        "2026-07-29"
+      ]
+    },
+    {
+      "file": "_pcc_local_excise_rates.rego",
+      "sample_dates": [
+        "2026-08-01",
+        "2027-01-01"
+      ]
+    },
+    {
+      "file": "accounting.rego",
+      "sample_dates": [
+        "2025-01-01"
+      ]
+    },
+    {
+      "file": "allowances.rego",
+      "sample_dates": [
+        "2000-01-01",
+        "2099-12-31"
+      ]
+    },
+    {
+      "file": "corrections.rego",
+      "sample_dates": [
+        "2026-12-31"
+      ]
+    },
+    {
+      "file": "decision_core_completeness_enterprise.rego",
+      "sample_dates": [
+        "2026-01-01"
+      ]
+    },
+    {
+      "file": "edge_cases.rego",
+      "sample_dates": [
+        "2006-01-02",
+        "2026-07-01"
+      ]
+    },
+    {
+      "file": "epuap_enterprise.rego",
+      "sample_dates": [
+        "2026-07-01"
+      ]
+    },
+    {
+      "file": "jpk_cit.rego",
+      "sample_dates": [
+        "2027-03-31"
+      ]
+    },
+    {
+      "file": "judicial_interpretations_enterprise.rego",
+      "sample_dates": [
+        "2019-11-25"
+      ]
+    },
+    {
+      "file": "kks.rego",
+      "sample_dates": [
+        "2006-01-02"
+      ]
+    },
+    {
+      "file": "lifecycle_manager_enterprise.rego",
+      "sample_dates": [
+        "2006-01-02",
+        "2026-01-01"
+      ]
+    },
+    {
+      "file": "overpayment_auto_claimer_enterprise.rego",
+      "sample_dates": [
+        "2026-01-01"
+      ]
+    },
+    {
+      "file": "p01_core_architecture_innovations_v8.rego",
+      "sample_dates": [
+        "2023-07-01",
+        "2025-07-01"
+      ]
+    },
+    {
+      "file": "p03_orchestrator_innovations_v9.rego",
+      "sample_dates": [
+        "2026-01-01"
+      ]
+    },
+    {
+      "file": "p04_vat_macro_enterprise_v9.rego",
+      "sample_dates": [
+        "2026-02-01",
+        "2026-08-02"
+      ]
+    },
+    {
+      "file": "p05_pit_innovations_v8.rego",
+      "sample_dates": [
+        "2026-01-01",
+        "2026-06-30",
+        "2026-07-29"
+      ]
+    },
+    {
+      "file": "p05_pit_macro_innovations_v9.rego",
+      "sample_dates": [
+        "2026-01-01",
+        "2026-02-28",
+        "2026-04-30"
+      ]
+    },
+    {
+      "file": "p13_crossborder_innovations_v8.rego",
+      "sample_dates": [
+        "2027-01-01",
+        "2028-01-01"
+      ]
+    },
+    {
+      "file": "p14_compliance_innovations_v8.rego",
+      "sample_dates": [
+        "2018-05-25",
+        "2018-10-13",
+        "2019-01-01",
+        "2023-09-24"
+      ]
+    },
+    {
+      "file": "p15_pcc_local_excise_innovations_v8.rego",
+      "sample_dates": [
+        "2026-12-31",
+        "2027-01-01"
+      ]
+    },
+    {
+      "file": "p16_business_lifecycle_innovations_v8.rego",
+      "sample_dates": [
+        "2006-01-02",
+        "2026-01-01"
+      ]
+    },
+    {
+      "file": "p17_edge_conflicts_innovations_v8.rego",
+      "sample_dates": [
+        "2006-01-02",
+        "2026-01-01",
+        "2026-08-01"
+      ]
+    },
+    {
+      "file": "p18_automatyzacja_ksiegowosci_innovations_v9.rego",
+      "sample_dates": [
+        "2026-04-30"
+      ]
+    },
+    {
+      "file": "p24_innovations_enterprise.rego",
+      "sample_dates": [
+        "2027-01-01"
+      ]
+    },
+    {
+      "file": "p33_excise_supplement.rego",
+      "sample_dates": [
+        "2026-07-01"
+      ]
+    },
+    {
+      "file": "ppk_pfron_enterprise.rego",
+      "sample_dates": [
+        "2026-04-01",
+        "2026-10-01",
+        "2027-01-01"
+      ]
+    },
+    {
+      "file": "solidarity_auto_calc_enterprise.rego",
+      "sample_dates": [
+        "2027-04-30"
+      ]
+    },
+    {
+      "file": "tax_authority_interaction_enterprise.rego",
+      "sample_dates": [
+        "2026-01-01",
+        "2026-07-19",
+        "2099-12-31"
+      ]
+    },
+    {
+      "file": "validation.rego",
+      "sample_dates": [
+        "2006-01-02",
+        "2026-02-01"
+      ]
+    },
+    {
+      "file": "vat_cashflow_predictor_enterprise.rego",
+      "sample_dates": [
+        "2026-09-25"
+      ]
+    },
+    {
+      "file": "vida_drr_full.rego",
+      "sample_dates": [
+        "2026-07-01",
+        "2027-01-01",
+        "2028-01-01",
+        "2028-07-01"
+      ]
+    }
+  ],
+  "params_total": 8,
+  "params_with_window": [
+    "vat.standard_rate",
+    "vat.reduced_rate_8",
+    "vat.reduced_rate_5",
+    "vat.zero_rate",
+    "vat.np_rate",
+    "vat.limit_113",
+    "vat.exemption_suspended_years",
+    "vat.exemption_housing_area_m2_max"
+  ],
+  "params_without_window": [],
+  "legal_basis": "Ordynacja art. 24b (prawo właściwe w czasie) [NIEZWERYFIKOWANE — ISAP]; P05 temporalność; ADR-002 parametry-as-data",
+  "gate": "PASS",
+  "generated_at": "2026-09-12T17:52:39.463413+00:00"
+}

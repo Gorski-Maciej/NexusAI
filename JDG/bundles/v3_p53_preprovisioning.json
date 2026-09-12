@@ -1,0 +1,19 @@
+{
+  "analysis": "I08_preprovisioning_scheduler",
+  "calendar_entries": [
+    {
+      "id": "DRL-0001",
+      "entry_date": "2099-06-01",
+      "lead_days": "26569 dni",
+      "shadow_rules": "0",
+      "computed_lead_days": 26560,
+      "lead_ok": true
+    }
+  ],
+  "lead_ok_count": 1,
+  "kpi": "lead >= 30 dni przed wejściem w życie (V2 §6.2.5)",
+  "gap": "KALENDARZ ma 1 wpis testowy (DRL-0001) — brak realnych nowelizacji (L02)",
+  "legal_basis": "V2 §6.2.5 KPI lead; WIZJA_OPA_ENTERPRISE_V2",
+  "gate": "PASS",
+  "generated_at": "2026-09-12T17:52:41.923911+00:00"
+}

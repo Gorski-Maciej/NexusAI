@@ -1,0 +1,37 @@
+{
+  "analysis": "I09_year_boundary_tests",
+  "cases": [
+    {
+      "case": "zus_30x_reset_2025",
+      "limit_kind": "annual_30x",
+      "date_before": "2025-12-31",
+      "expect_before": "accumulator_active",
+      "date_after": "2026-01-01",
+      "expect_after": "accumulator_reset",
+      "legal_basis": "ZUS art. 18d ust. 2 [NIEZWERYFIKOWANE — ISAP]"
+    },
+    {
+      "case": "zus_30x_reset_2026",
+      "limit_kind": "annual_30x",
+      "date_before": "2026-12-31",
+      "expect_before": "accumulator_active",
+      "date_after": "2027-01-01",
+      "expect_after": "accumulator_reset",
+      "legal_basis": "ZUS art. 18d ust. 2 [NIEZWERYFIKOWANE — ISAP]"
+    },
+    {
+      "case": "vat_200k_exemption_counter",
+      "limit_kind": "cumulative_per_taxpayer",
+      "date_before": "2026-12-31",
+      "expect_before": "counter_state_preserved_in_year",
+      "date_after": "2027-01-01",
+      "expect_after": "counter_reset",
+      "legal_basis": "VAT art. 113 ust. 1 [NIEZWERYFIKOWANE — ISAP]",
+      "gap_note": "brak licznika narastającego w silniku (L05) — test zapisuje oczekiwane zachowanie"
+    }
+  ],
+  "cases_count": 3,
+  "legal_basis": "ZUS art. 18d ust. 2; VAT art. 113 [NIEZWERYFIKOWANE — ISAP]",
+  "gate": "PASS",
+  "generated_at": "2026-09-12T17:52:42.287432+00:00"
+}

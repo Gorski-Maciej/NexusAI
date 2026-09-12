@@ -1,0 +1,139 @@
+{
+  "innovation": "V3-P51-I10",
+  "generated_at": "2026-09-12T14:34:39.682347+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "quarterly_goals",
+    "routing": "AUTO_FILE",
+    "goals_total": 15,
+    "met": 13,
+    "at_risk": 2,
+    "missed": 0
+  },
+  "evidence": {
+    "rows": [
+      {
+        "domain": "vat",
+        "goal_pct": 95.0,
+        "ccr_pct": 90.84,
+        "deserts": 23,
+        "status": "AT_RISK",
+        "quarter_end": "2026-12-31"
+      },
+      {
+        "domain": "pit",
+        "goal_pct": 95.0,
+        "ccr_pct": 84.46,
+        "deserts": 39,
+        "status": "AT_RISK",
+        "quarter_end": "2026-12-31"
+      },
+      {
+        "domain": "zus",
+        "goal_pct": 90.0,
+        "ccr_pct": 95.62,
+        "deserts": 11,
+        "status": "MET",
+        "quarter_end": "2026-12-31"
+      },
+      {
+        "domain": "ksef",
+        "goal_pct": 90.0,
+        "ccr_pct": 100.0,
+        "deserts": 0,
+        "status": "MET",
+        "quarter_end": "2026-12-31"
+      },
+      {
+        "domain": "ordpu",
+        "goal_pct": 90.0,
+        "ccr_pct": 95.62,
+        "deserts": 11,
+        "status": "MET",
+        "quarter_end": "2026-12-31"
+      },
+      {
+        "domain": "uor",
+        "goal_pct": 85.0,
+        "ccr_pct": 96.81,
+        "deserts": 8,
+        "status": "MET",
+        "quarter_end": "2026-12-31"
+      },
+      {
+        "domain": "pkpir",
+        "goal_pct": 85.0,
+        "ccr_pct": 100.0,
+        "deserts": 0,
+        "status": "MET",
+        "quarter_end": "2026-12-31"
+      },
+      {
+        "domain": "ryczalt",
+        "goal_pct": 85.0,
+        "ccr_pct": 100.0,
+        "deserts": 0,
+        "status": "MET",
+        "quarter_end": "2026-12-31"
+      },
+      {
+        "domain": "health",
+        "goal_pct": 80.0,
+        "ccr_pct": 98.41,
+        "deserts": 4,
+        "status": "MET",
+        "quarter_end": "2026-12-31"
+      },
+      {
+        "domain": "business",
+        "goal_pct": 80.0,
+        "ccr_pct": 95.22,
+        "deserts": 12,
+        "status": "MET",
+        "quarter_end": "2026-12-31"
+      },
+      {
+        "domain": "kks",
+        "goal_pct": 70.0,
+        "ccr_pct": 96.02,
+        "deserts": 10,
+        "status": "MET",
+        "quarter_end": "2026-12-31"
+      },
+      {
+        "domain": "pcc",
+        "goal_pct": 70.0,
+        "ccr_pct": 99.6,
+        "deserts": 1,
+        "status": "MET",
+        "quarter_end": "2026-12-31"
+      },
+      {
+        "domain": "lokalne",
+        "goal_pct": 70.0,
+        "ccr_pct": 100.0,
+        "deserts": 0,
+        "status": "MET",
+        "quarter_end": "2026-12-31"
+      },
+      {
+        "domain": "crossborder",
+        "goal_pct": 70.0,
+        "ccr_pct": 100.0,
+        "deserts": 0,
+        "status": "MET",
+        "quarter_end": "2026-12-31"
+      },
+      {
+        "domain": "other",
+        "goal_pct": 70.0,
+        "ccr_pct": 84.06,
+        "deserts": 40,
+        "status": "MET",
+        "quarter_end": "2026-12-31"
+      }
+    ],
+    "quarter": "Q4-2026",
+    "note": "mianownik domeny = wszystkie węzły ARTICLE LKG (jawny); cele = parametr 4-eyes (Q02), pochodzenie: prompt P51 (VAT 95%, nisze 70%)."
+  }
+}

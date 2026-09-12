@@ -1,0 +1,18 @@
+{
+  "innovation": "V3-P51-I06",
+  "generated_at": "2026-09-12T14:34:36.286988+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "systemic_sweep",
+    "routing": "AUTO_FILE",
+    "systemic_classes": 0,
+    "active_systemic_classes": 0,
+    "systemic_deserts": 0
+  },
+  "evidence": {
+    "per_class": {},
+    "active": {},
+    "rows_sample": [],
+    "method": "artykuł→klasa po regexie article_label; pustynia = węzeł z rejestru I01 (no_rule / rule_no_test)."
+  }
+}

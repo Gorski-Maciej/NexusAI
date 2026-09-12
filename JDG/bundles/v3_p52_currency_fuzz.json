@@ -1,0 +1,20 @@
+{
+  "innovation": "V3-P52-I11",
+  "generated_at": "2026-09-12T16:34:02.133805+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "currency_fuzz",
+    "routing": "AUTO_FILE",
+    "trials": 300,
+    "violations": 0
+  },
+  "evidence": {
+    "violations_sample": [],
+    "invariants": [
+      "kwota≥0 przeliczona ≥0",
+      "|pln| ≤ 2×|amount|×rate",
+      "penny-exact",
+      "brak wyjątków bez NEEDS_ADVICE"
+    ]
+  }
+}

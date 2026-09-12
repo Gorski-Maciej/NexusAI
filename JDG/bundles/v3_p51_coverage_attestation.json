@@ -1,0 +1,40 @@
+{
+  "innovation": "V3-P51-I12",
+  "generated_at": "2026-09-12T14:34:40.378311+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "coverage_attestation",
+    "routing": "TRIAGE_QUEUE",
+    "attested": false,
+    "caveats_count": 4,
+    "counter_consistent": true,
+    "CCR_pct": 36.65
+  },
+  "evidence": {
+    "attestation": {
+      "generated_at": "2026-09-12T14:34:40.378133+00:00",
+      "data_version": "legal_graph 2026-08-30 + canon 2026-08-30",
+      "threshold_version": "v3_p51 (data.jdg.thresholds.v3_p51)",
+      "metrics": {
+        "CCR_pct": 36.65,
+        "LCI_context_pct": 100.0,
+        "UVR_context": 11125,
+        "desert_nodes": 159,
+        "p0": 34,
+        "p1": 68,
+        "p2": 56,
+        "p3": 1
+      },
+      "counter_consistency": true,
+      "attested": false,
+      "caveats": [
+        "LCI canon=100% (mianownik 70) vs legal_graph covered<nodes — dryf mianowników (V3-P51-L02).",
+        "coverage_deserts.json starszy niż bieżący skan (snapshot archiwalny; liczby z I01).",
+        "ghost rule_refs w LKG: 2 (rule_ids nieobecne w canonical).",
+        "ghost testy (rule_id bez reguły): 24."
+      ],
+      "consumer": "P68 final certification (I12: enterprises widzą dokładnie, co silnik wie).",
+      "campaign_target_date": "2026-09-12"
+    }
+  }
+}

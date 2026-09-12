@@ -1,0 +1,121 @@
+{
+  "innovation": "V3-P51-I02",
+  "generated_at": "2026-09-12T14:34:34.872713+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "desert_risk",
+    "routing": "TRIAGE_QUEUE",
+    "scored": 159,
+    "unscored": 0,
+    "top_risk_score": 64,
+    "p0_count": 34,
+    "p1_count": 68
+  },
+  "evidence": {
+    "methodology": "score = frequency × amount × uncertainty (wagi 1–5 per domena, evidence: RISK_WEIGHTS w narzędziu); P0>=50, P1>=24, P2>=12, P3<12; SLA P0=14d, P1=30d, P2=90d, P3=180d (I01).",
+    "top10": [
+      {
+        "legal_node_id": "LKG-0074",
+        "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów (PKPiR) – uproszczona księgowość dla JDG Całość rozporządzenia – struktura PKPiR, zasady ewidencji",
+        "article": "24a",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "priority": "P0"
+      },
+      {
+        "legal_node_id": "LKG-0075",
+        "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów (PKPiR) – uproszczona księgowość dla JDG Całość rozporządzenia – struktura PKPiR, zasady ewidencji",
+        "article": "15",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "priority": "P0"
+      },
+      {
+        "legal_node_id": "LKG-0076",
+        "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów (PKPiR) – uproszczona księgowość dla JDG Całość rozporządzenia – struktura PKPiR, zasady ewidencji",
+        "article": "109",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "priority": "P0"
+      },
+      {
+        "legal_node_id": "LKG-0077",
+        "act": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów (PKPiR) – uproszczona księgowość dla JDG Całość rozporządzenia – struktura PKPiR, zasady ewidencji",
+        "article": "99",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "priority": "P0"
+      },
+      {
+        "legal_node_id": "LKG-0094",
+        "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
+        "article": "48",
+        "domain": "ordpu",
+        "desert_class": "rule_no_test",
+        "risk_score": 64,
+        "priority": "P0"
+      },
+      {
+        "legal_node_id": "LKG-0095",
+        "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
+        "article": "51",
+        "domain": "ordpu",
+        "desert_class": "rule_no_test",
+        "risk_score": 64,
+        "priority": "P0"
+      },
+      {
+        "legal_node_id": "LKG-0102",
+        "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa",
+        "article": "87",
+        "domain": "ordpu",
+        "desert_class": "rule_no_test",
+        "risk_score": 64,
+        "priority": "P0"
+      },
+      {
+        "legal_node_id": "LKG-0225",
+        "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm.)",
+        "article": "16-193a",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "priority": "P0"
+      },
+      {
+        "legal_node_id": "LKG-0226",
+        "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm.)",
+        "article": "70",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "priority": "P0"
+      },
+      {
+        "legal_node_id": "LKG-0227",
+        "act": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm.)",
+        "article": "81",
+        "domain": "ordpu",
+        "desert_class": "no_rule",
+        "risk_score": 64,
+        "priority": "P0"
+      }
+    ],
+    "by_domain": {
+      "business": 12,
+      "vat": 23,
+      "pit": 39,
+      "other": 40,
+      "zus": 11,
+      "health": 4,
+      "ordpu": 11,
+      "kks": 10,
+      "pcc": 1,
+      "uor": 8
+    }
+  }
+}

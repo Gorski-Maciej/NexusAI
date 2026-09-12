@@ -83,6 +83,8 @@ def load_tested_rule_ids() -> set:
         try:
             for tid in TEST_ID_RE.findall(fp.read_text(encoding="utf-8",
                                                        errors="replace")):
+                if tid.count(".") < 2:
+                    continue
                 if ".test." in tid or tid.split(".")[2].endswith("_test"):
                     continue  # pakiety testowe, nie reguły produkcyjne
                 ids.add(tid)

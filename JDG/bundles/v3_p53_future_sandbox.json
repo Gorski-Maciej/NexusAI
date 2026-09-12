@@ -1,0 +1,18 @@
+{
+  "analysis": "I07_future_law_sandbox",
+  "candidates": [
+    {
+      "id": "DRL-0001",
+      "entry_date": "2099-06-01",
+      "confidence": "0.7",
+      "sandbox_eligible": true,
+      "mode": "DRAFT_SIMULATION_ONLY",
+      "production_write": false
+    }
+  ],
+  "eligible_count": 1,
+  "invariant": "decyzje w trybie DRAFT nigdy nie trafiają do produkcji/archiwum",
+  "legal_basis": "V2 Wizja: Declarative Change + Law Radar (pre-provisioning)",
+  "gate": "PASS",
+  "generated_at": "2026-09-12T17:52:41.544246+00:00"
+}

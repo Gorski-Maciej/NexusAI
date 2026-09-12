@@ -1,6 +1,6 @@
 {
-  "last_sync": "2026-09-11T22:37:19.993110+00:00",
-  "files_copied": 525,
+  "last_sync": "2026-09-12T17:51:41.729915+00:00",
+  "files_copied": 528,
   "source": "JDG/rules/",
   "target": "policies/",
   "mode": "mirror-single-source-of-truth"

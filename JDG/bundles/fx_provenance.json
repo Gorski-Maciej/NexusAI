@@ -1,0 +1,39 @@
+{
+  "schema": "jdg.v3_p53.fx_provenance.v1",
+  "description": "Rejestr kursów z provenance (tabela NBP-A + data publikacji) dla replay temporalnego; kontrakt P52-I03/P53-I03",
+  "rates": [
+    {
+      "table": "NBP-A",
+      "currency": "EUR",
+      "rate": 4.35,
+      "published_at": "2025-12-31",
+      "source": "nbp.pl [NIEZWERYFIKOWANE — sesja]",
+      "valid_from": "2025-12-31"
+    },
+    {
+      "table": "NBP-A",
+      "currency": "EUR",
+      "rate": 4.36,
+      "published_at": "2026-01-02",
+      "source": "nbp.pl [NIEZWERYFIKOWANE — sesja]",
+      "valid_from": "2026-01-02"
+    },
+    {
+      "table": "NBP-A",
+      "currency": "USD",
+      "rate": 4.1,
+      "published_at": "2025-12-31",
+      "source": "nbp.pl [NIEZWERYFIKOWANE — sesja]",
+      "valid_from": "2025-12-31"
+    },
+    {
+      "table": "NBP-A",
+      "currency": "USD",
+      "rate": 4.12,
+      "published_at": "2026-01-02",
+      "source": "nbp.pl [NIEZWERYFIKOWANE — sesja]",
+      "valid_from": "2026-01-02"
+    }
+  ],
+  "policy": "brak kursu na datę zdarzenia = ostatni dzień roboczy z provenance; weekendy wg P52-I04; [NIEZWERYFIKOWANE] do stempla 4-eyes"
+}

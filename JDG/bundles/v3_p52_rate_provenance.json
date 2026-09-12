@@ -1,0 +1,23 @@
+{
+  "innovation": "V3-P52-I03",
+  "generated_at": "2026-09-12T16:33:59.349473+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "rate_provenance",
+    "routing": "TRIAGE_QUEUE",
+    "tools_with_fx": 0,
+    "tools_with_provenance": 0,
+    "rego_provenance_required": false,
+    "rego_hardcoded_rates": 0
+  },
+  "evidence": {
+    "rows": [],
+    "rego": {
+      "file": "r10_crossborder_innovations_v9.rego",
+      "fx_from_input": true,
+      "provenance_required": false,
+      "hardcoded_rates": 0
+    },
+    "contract": "I03: kurs = {value, currency, table: 'NBP-A', table_date, fetched_at, checksum}; brak provenance = NEEDS_ADVICE (AP09). Replay walutowy: kurs odtwarzany z table_date."
+  }
+}

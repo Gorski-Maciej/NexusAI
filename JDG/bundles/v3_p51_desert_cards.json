@@ -1,0 +1,180 @@
+{
+  "innovation": "V3-P51-I03",
+  "generated_at": "2026-09-12T14:34:35.223503+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "desert_cards",
+    "routing": "TRIAGE_QUEUE",
+    "cards_total": 10,
+    "cards_required": 10,
+    "template_present": true
+  },
+  "evidence": {
+    "cards": [
+      {
+        "card_id": "CARD-LKG-0074",
+        "legal_node_id": "LKG-0074",
+        "przepis": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów (PKPiR) – uproszczona księgowość dla JDG Całość rozporządzenia – struktura PKPiR, zasady ewidencji — Art. 24a (Dz.U. ) [NIEZWERYFIKOWANE — ISAP]",
+        "warunki_materialne": "package jdg.<domena>\n# warunki materiałne z treści przepisu (art. 24a): do wypełnienia\n# przez człowieka (4-eyes, protokół 04); szkielet NIE jest pokryciem.\n",
+        "proponowane_testy": [
+          "granica progu (day-1/day-0/day+1 względem valid_from)",
+          "negatywna (próg nieosiągnięty → NEEDS_ADVICE / brak dopasowania)",
+          "fail-closed (brak input → NEEDS_ADVICE, nigdy cichy AUTO_POST)"
+        ],
+        "koszt": "S",
+        "kolejnosc": "P0",
+        "sla_deadline": "2026-09-26",
+        "generator_eligible": false
+      },
+      {
+        "card_id": "CARD-LKG-0075",
+        "legal_node_id": "LKG-0075",
+        "przepis": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów (PKPiR) – uproszczona księgowość dla JDG Całość rozporządzenia – struktura PKPiR, zasady ewidencji — Art. 15 (Dz.U. ) [NIEZWERYFIKOWANE — ISAP]",
+        "warunki_materialne": "package jdg.<domena>\n# warunki materiałne z treści przepisu (art. 15): do wypełnienia\n# przez człowieka (4-eyes, protokół 04); szkielet NIE jest pokryciem.\n",
+        "proponowane_testy": [
+          "granica progu (day-1/day-0/day+1 względem valid_from)",
+          "negatywna (próg nieosiągnięty → NEEDS_ADVICE / brak dopasowania)",
+          "fail-closed (brak input → NEEDS_ADVICE, nigdy cichy AUTO_POST)"
+        ],
+        "koszt": "S",
+        "kolejnosc": "P0",
+        "sla_deadline": "2026-09-26",
+        "generator_eligible": false
+      },
+      {
+        "card_id": "CARD-LKG-0076",
+        "legal_node_id": "LKG-0076",
+        "przepis": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów (PKPiR) – uproszczona księgowość dla JDG Całość rozporządzenia – struktura PKPiR, zasady ewidencji — Art. 109 (Dz.U. ) [NIEZWERYFIKOWANE — ISAP]",
+        "warunki_materialne": "package jdg.<domena>\n# warunki materiałne z treści przepisu (art. 109): do wypełnienia\n# przez człowieka (4-eyes, protokół 04); szkielet NIE jest pokryciem.\n",
+        "proponowane_testy": [
+          "granica progu (day-1/day-0/day+1 względem valid_from)",
+          "negatywna (próg nieosiągnięty → NEEDS_ADVICE / brak dopasowania)",
+          "fail-closed (brak input → NEEDS_ADVICE, nigdy cichy AUTO_POST)"
+        ],
+        "koszt": "S",
+        "kolejnosc": "P0",
+        "sla_deadline": "2026-09-26",
+        "generator_eligible": false
+      },
+      {
+        "card_id": "CARD-LKG-0077",
+        "legal_node_id": "LKG-0077",
+        "przepis": "Rozporządzenie Ministra Finansów z dnia 15 listopada 2025 r. w sprawie prowadzenia uproszczonej ewidencji przychodów i kosztów Podatkowa Księga Przychodów i Rozchodów (PKPiR) – uproszczona księgowość dla JDG Całość rozporządzenia – struktura PKPiR, zasady ewidencji — Art. 99 (Dz.U. ) [NIEZWERYFIKOWANE — ISAP]",
+        "warunki_materialne": "package jdg.<domena>\n# warunki materiałne z treści przepisu (art. 99): do wypełnienia\n# przez człowieka (4-eyes, protokół 04); szkielet NIE jest pokryciem.\n",
+        "proponowane_testy": [
+          "granica progu (day-1/day-0/day+1 względem valid_from)",
+          "negatywna (próg nieosiągnięty → NEEDS_ADVICE / brak dopasowania)",
+          "fail-closed (brak input → NEEDS_ADVICE, nigdy cichy AUTO_POST)"
+        ],
+        "koszt": "S",
+        "kolejnosc": "P0",
+        "sla_deadline": "2026-09-26",
+        "generator_eligible": false
+      },
+      {
+        "card_id": "CARD-LKG-0094",
+        "legal_node_id": "LKG-0094",
+        "przepis": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa — Art. 48 (Dz.U. 2025 poz. 234) [NIEZWERYFIKOWANE — ISAP]",
+        "warunki_materialne": "package jdg.<domena>\n# warunki materiałne z treści przepisu (art. 48): do wypełnienia\n# przez człowieka (4-eyes, protokół 04); szkielet NIE jest pokryciem.\n",
+        "proponowane_testy": [
+          "granica progu (day-1/day-0/day+1 względem valid_from)",
+          "negatywna (próg nieosiągnięty → NEEDS_ADVICE / brak dopasowania)",
+          "fail-closed (brak input → NEEDS_ADVICE, nigdy cichy AUTO_POST)"
+        ],
+        "koszt": "S",
+        "kolejnosc": "P0",
+        "sla_deadline": "2026-09-26",
+        "generator_eligible": true
+      },
+      {
+        "card_id": "CARD-LKG-0095",
+        "legal_node_id": "LKG-0095",
+        "przepis": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa — Art. 51 (Dz.U. 2025 poz. 234) [NIEZWERYFIKOWANE — ISAP]",
+        "warunki_materialne": "package jdg.<domena>\n# warunki materiałne z treści przepisu (art. 51): do wypełnienia\n# przez człowieka (4-eyes, protokół 04); szkielet NIE jest pokryciem.\n",
+        "proponowane_testy": [
+          "granica progu (day-1/day-0/day+1 względem valid_from)",
+          "negatywna (próg nieosiągnięty → NEEDS_ADVICE / brak dopasowania)",
+          "fail-closed (brak input → NEEDS_ADVICE, nigdy cichy AUTO_POST)"
+        ],
+        "koszt": "S",
+        "kolejnosc": "P0",
+        "sla_deadline": "2026-09-26",
+        "generator_eligible": true
+      },
+      {
+        "card_id": "CARD-LKG-0102",
+        "legal_node_id": "LKG-0102",
+        "przepis": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa — Art. 87 (Dz.U. 2025 poz. 234) [NIEZWERYFIKOWANE — ISAP]",
+        "warunki_materialne": "package jdg.<domena>\n# warunki materiałne z treści przepisu (art. 87): do wypełnienia\n# przez człowieka (4-eyes, protokół 04); szkielet NIE jest pokryciem.\n",
+        "proponowane_testy": [
+          "granica progu (day-1/day-0/day+1 względem valid_from)",
+          "negatywna (próg nieosiągnięty → NEEDS_ADVICE / brak dopasowania)",
+          "fail-closed (brak input → NEEDS_ADVICE, nigdy cichy AUTO_POST)"
+        ],
+        "koszt": "S",
+        "kolejnosc": "P0",
+        "sla_deadline": "2026-09-26",
+        "generator_eligible": true
+      },
+      {
+        "card_id": "CARD-LKG-0225",
+        "legal_node_id": "LKG-0225",
+        "przepis": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm.) — Art. 16-193a (Dz.U. None) [NIEZWERYFIKOWANE — ISAP]",
+        "warunki_materialne": "package jdg.<domena>\n# warunki materiałne z treści przepisu (art. 16-193a): do wypełnienia\n# przez człowieka (4-eyes, protokół 04); szkielet NIE jest pokryciem.\n",
+        "proponowane_testy": [
+          "granica progu (day-1/day-0/day+1 względem valid_from)",
+          "negatywna (próg nieosiągnięty → NEEDS_ADVICE / brak dopasowania)",
+          "fail-closed (brak input → NEEDS_ADVICE, nigdy cichy AUTO_POST)"
+        ],
+        "koszt": "S",
+        "kolejnosc": "P0",
+        "sla_deadline": "2026-09-26",
+        "generator_eligible": false
+      },
+      {
+        "card_id": "CARD-LKG-0226",
+        "legal_node_id": "LKG-0226",
+        "przepis": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm.) — Art. 70 (Dz.U. None) [NIEZWERYFIKOWANE — ISAP]",
+        "warunki_materialne": "package jdg.<domena>\n# warunki materiałne z treści przepisu (art. 70): do wypełnienia\n# przez człowieka (4-eyes, protokół 04); szkielet NIE jest pokryciem.\n",
+        "proponowane_testy": [
+          "granica progu (day-1/day-0/day+1 względem valid_from)",
+          "negatywna (próg nieosiągnięty → NEEDS_ADVICE / brak dopasowania)",
+          "fail-closed (brak input → NEEDS_ADVICE, nigdy cichy AUTO_POST)"
+        ],
+        "koszt": "S",
+        "kolejnosc": "P0",
+        "sla_deadline": "2026-09-26",
+        "generator_eligible": false
+      },
+      {
+        "card_id": "CARD-LKG-0227",
+        "legal_node_id": "LKG-0227",
+        "przepis": "Ustawa z dnia 29 sierpnia 1997 r. – Ordynacja podatkowa (tekst jednolity: Dz.U. 2025 poz. 234, ze zm.) — Art. 81 (Dz.U. None) [NIEZWERYFIKOWANE — ISAP]",
+        "warunki_materialne": "package jdg.<domena>\n# warunki materiałne z treści przepisu (art. 81): do wypełnienia\n# przez człowieka (4-eyes, protokół 04); szkielet NIE jest pokryciem.\n",
+        "proponowane_testy": [
+          "granica progu (day-1/day-0/day+1 względem valid_from)",
+          "negatywna (próg nieosiągnięty → NEEDS_ADVICE / brak dopasowania)",
+          "fail-closed (brak input → NEEDS_ADVICE, nigdy cichy AUTO_POST)"
+        ],
+        "koszt": "S",
+        "kolejnosc": "P0",
+        "sla_deadline": "2026-09-26",
+        "generator_eligible": false
+      }
+    ],
+    "empty_template": {
+      "card_id": "CARD-<legal_node_id>",
+      "przepis": "<akt> — Art. <n> (Dz.U. <poz>) [NIEZWERYFIKOWANE — ISAP]",
+      "warunki_materialne": "package jdg.<domena>\n# warunki materiałne z treści przepisu (art. {article}): do wypełnienia\n# przez człowieka (4-eyes, protokół 04); szkielet NIE jest pokryciem.\n",
+      "proponowane_testy": [
+        "granica progu (day-1/day-0/day+1 względem valid_from)",
+        "negatywna (próg nieosiągnięty → NEEDS_ADVICE / brak dopasowania)",
+        "fail-closed (brak input → NEEDS_ADVICE, nigdy cichy AUTO_POST)"
+      ],
+      "koszt": "S|M|L",
+      "kolejnosc": "P0|P1|P2|P3",
+      "sla_deadline": "YYYY-MM-DD",
+      "generator_eligible": false
+    }
+  }
+}

@@ -1,0 +1,254 @@
+{
+  "innovation": "V3-P51-I08",
+  "generated_at": "2026-09-12T14:34:36.999941+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "desert_heatmap",
+    "routing": "TRIAGE_QUEUE",
+    "scored_deserts": 159,
+    "quadrants": {
+      "HIGH": 34,
+      "MED": 49,
+      "LOW": 63,
+      "COLD": 13
+    },
+    "top_quadrant": "LOW",
+    "assumption_flow_proxy": "[ZAŁOŻENIE] proxy przepływu = udział domeny w pustyniach (brak danych przepływów w repo)."
+  },
+  "evidence": {
+    "top25": [
+      {
+        "legal_node_id": "LKG-0014",
+        "domain": "vat",
+        "article": "42a-42h",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0016",
+        "domain": "vat",
+        "article": "82",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0078",
+        "domain": "vat",
+        "article": "45",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0079",
+        "domain": "vat",
+        "article": "89b",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0080",
+        "domain": "vat",
+        "article": "87",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0081",
+        "domain": "vat",
+        "article": "96",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0082",
+        "domain": "vat",
+        "article": "96b",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0083",
+        "domain": "vat",
+        "article": "103",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0084",
+        "domain": "vat",
+        "article": "106e",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0190",
+        "domain": "vat",
+        "article": "5-14",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0191",
+        "domain": "vat",
+        "article": "15-18",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0192",
+        "domain": "vat",
+        "article": "19a-21",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0193",
+        "domain": "vat",
+        "article": "29a-32",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0194",
+        "domain": "vat",
+        "article": "41-42",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0195",
+        "domain": "vat",
+        "article": "43",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0196",
+        "domain": "vat",
+        "article": "86-96",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0197",
+        "domain": "vat",
+        "article": "106a-106n",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0198",
+        "domain": "vat",
+        "article": "108a-108f",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0199",
+        "domain": "vat",
+        "article": "113",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0200",
+        "domain": "vat",
+        "article": "120",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0249",
+        "domain": "vat",
+        "article": "109",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0250",
+        "domain": "vat",
+        "article": "99",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0255",
+        "domain": "vat",
+        "article": "96b",
+        "risk_score": 60,
+        "flow_proxy": 0.1447,
+        "money_impact_score": 68.68,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0074",
+        "domain": "ordpu",
+        "article": "24a",
+        "risk_score": 64,
+        "flow_proxy": 0.0692,
+        "money_impact_score": 68.43,
+        "quadrant": "HIGH"
+      },
+      {
+        "legal_node_id": "LKG-0075",
+        "domain": "ordpu",
+        "article": "15",
+        "risk_score": 64,
+        "flow_proxy": 0.0692,
+        "money_impact_score": 68.43,
+        "quadrant": "HIGH"
+      }
+    ],
+    "quadrant_thresholds": {
+      "HIGH": ">=60",
+      "MED": ">=30",
+      "LOW": ">=15",
+      "COLD": "<15"
+    },
+    "method": "money = risk_score(I02) × (1 + flow_proxy)."
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "analysis": "I03_retroactive_replay_contract",
+  "deployments_count": 44,
+  "active_version": "jdg-bundle-v8.0.0",
+  "params_history_versions": 8,
+  "fx_records": 4,
+  "pillars": {
+    "rules_bundle_history": true,
+    "params_history": true,
+    "fx_history": true,
+    "accumulator_state_on_date": false
+  },
+  "pillars_met": 3,
+  "pillars_total": 4,
+  "contract": "deklaracja z dnia D replikowana grosz w grosz = rules@bundle(D) + params@D + fx@D + accumulator@D",
+  "legal_basis": "UoR art. 5 (porównywalność okresów) [NIEZWERYFIKOWANE — ISAP]; Ordynacja art. 24b",
+  "gate": "PASS",
+  "generated_at": "2026-09-12T17:52:40.141982+00:00"
+}

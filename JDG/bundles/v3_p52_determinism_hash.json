@@ -1,0 +1,16 @@
+{
+  "innovation": "V3-P52-I06",
+  "generated_at": "2026-09-12T16:34:00.557134+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "determinism_hash",
+    "routing": "TRIAGE_QUEUE",
+    "trials": 50,
+    "determinism_failures": 0,
+    "unique_hashes": 50,
+    "tools_with_hash": 0
+  },
+  "evidence": {
+    "contract": "I06: hash = sha256(input + parametry + wersje progów + wersja reguł); dwa wywołania = ten sam hash; rozjazd = BLOCKER (CI); hash w Decision Certificate (F4)."
+  }
+}

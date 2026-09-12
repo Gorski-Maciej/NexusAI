@@ -1,0 +1,131 @@
+{
+  "analysis": "I02_day0_test_autogeneration",
+  "auto_tests_generated": 8,
+  "tests": [
+    {
+      "param": "vat.standard_rate",
+      "window": {
+        "valid_from": "2026-01-01",
+        "valid_to": null
+      },
+      "expect_at": {
+        "day_minus_1": "previous_version_or_NONE",
+        "day_0": "new_value_active"
+      },
+      "grid": {
+        "day_minus_1": "2025-12-31",
+        "day_0": "2026-01-01"
+      }
+    },
+    {
+      "param": "vat.reduced_rate_8",
+      "window": {
+        "valid_from": "2026-01-01",
+        "valid_to": null
+      },
+      "expect_at": {
+        "day_minus_1": "previous_version_or_NONE",
+        "day_0": "new_value_active"
+      },
+      "grid": {
+        "day_minus_1": "2025-12-31",
+        "day_0": "2026-01-01"
+      }
+    },
+    {
+      "param": "vat.reduced_rate_5",
+      "window": {
+        "valid_from": "2026-01-01",
+        "valid_to": null
+      },
+      "expect_at": {
+        "day_minus_1": "previous_version_or_NONE",
+        "day_0": "new_value_active"
+      },
+      "grid": {
+        "day_minus_1": "2025-12-31",
+        "day_0": "2026-01-01"
+      }
+    },
+    {
+      "param": "vat.zero_rate",
+      "window": {
+        "valid_from": "2026-01-01",
+        "valid_to": null
+      },
+      "expect_at": {
+        "day_minus_1": "previous_version_or_NONE",
+        "day_0": "new_value_active"
+      },
+      "grid": {
+        "day_minus_1": "2025-12-31",
+        "day_0": "2026-01-01"
+      }
+    },
+    {
+      "param": "vat.np_rate",
+      "window": {
+        "valid_from": "2026-01-01",
+        "valid_to": null
+      },
+      "expect_at": {
+        "day_minus_1": "previous_version_or_NONE",
+        "day_0": "new_value_active"
+      },
+      "grid": {
+        "day_minus_1": "2025-12-31",
+        "day_0": "2026-01-01"
+      }
+    },
+    {
+      "param": "vat.limit_113",
+      "window": {
+        "valid_from": "2026-01-01",
+        "valid_to": null
+      },
+      "expect_at": {
+        "day_minus_1": "previous_version_or_NONE",
+        "day_0": "new_value_active"
+      },
+      "grid": {
+        "day_minus_1": "2025-12-31",
+        "day_0": "2026-01-01"
+      }
+    },
+    {
+      "param": "vat.exemption_suspended_years",
+      "window": {
+        "valid_from": "2026-01-01",
+        "valid_to": null
+      },
+      "expect_at": {
+        "day_minus_1": "previous_version_or_NONE",
+        "day_0": "new_value_active"
+      },
+      "grid": {
+        "day_minus_1": "2025-12-31",
+        "day_0": "2026-01-01"
+      }
+    },
+    {
+      "param": "vat.exemption_housing_area_m2_max",
+      "window": {
+        "valid_from": "2026-01-01",
+        "valid_to": null
+      },
+      "expect_at": {
+        "day_minus_1": "previous_version_or_NONE",
+        "day_0": "new_value_active"
+      },
+      "grid": {
+        "day_minus_1": "2025-12-31",
+        "day_0": "2026-01-01"
+      }
+    }
+  ],
+  "calendar_entries": 1,
+  "calendar_tested_entries": 0,
+  "legal_basis": "P36 generatory; P05 okna; KPI lead >= 30 dni (V2 §6.2.5)",
+  "gate": "PASS",
+  "generated_at": "2026-09-12T17:52:39.812576+00:00"
+}

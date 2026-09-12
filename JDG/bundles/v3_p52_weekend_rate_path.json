@@ -1,0 +1,121 @@
+{
+  "innovation": "V3-P52-I04",
+  "generated_at": "2026-09-12T16:33:59.728655+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "weekend_rate_path",
+    "routing": "TRIAGE_QUEUE",
+    "cases_total": 26,
+    "no_table_days": 10,
+    "holidays_registered": 25
+  },
+  "evidence": {
+    "cases": [
+      {
+        "date": "2026-12-20",
+        "expected_path": "LAST_AVAILABLE_WORKDAY"
+      },
+      {
+        "date": "2026-12-21",
+        "expected_path": "SAME_DAY_TABLE"
+      },
+      {
+        "date": "2026-12-22",
+        "expected_path": "SAME_DAY_TABLE"
+      },
+      {
+        "date": "2026-12-23",
+        "expected_path": "SAME_DAY_TABLE"
+      },
+      {
+        "date": "2026-12-24",
+        "expected_path": "SAME_DAY_TABLE"
+      },
+      {
+        "date": "2026-12-25",
+        "expected_path": "LAST_AVAILABLE_WORKDAY"
+      },
+      {
+        "date": "2026-12-26",
+        "expected_path": "LAST_AVAILABLE_WORKDAY"
+      },
+      {
+        "date": "2026-12-27",
+        "expected_path": "LAST_AVAILABLE_WORKDAY"
+      },
+      {
+        "date": "2026-12-28",
+        "expected_path": "SAME_DAY_TABLE"
+      },
+      {
+        "date": "2026-12-29",
+        "expected_path": "SAME_DAY_TABLE"
+      },
+      {
+        "date": "2026-12-30",
+        "expected_path": "SAME_DAY_TABLE"
+      },
+      {
+        "date": "2026-12-31",
+        "expected_path": "SAME_DAY_TABLE"
+      },
+      {
+        "date": "2027-01-01",
+        "expected_path": "LAST_AVAILABLE_WORKDAY"
+      },
+      {
+        "date": "2027-01-02",
+        "expected_path": "LAST_AVAILABLE_WORKDAY"
+      },
+      {
+        "date": "2027-01-03",
+        "expected_path": "LAST_AVAILABLE_WORKDAY"
+      },
+      {
+        "date": "2027-01-04",
+        "expected_path": "SAME_DAY_TABLE"
+      },
+      {
+        "date": "2027-01-05",
+        "expected_path": "SAME_DAY_TABLE"
+      },
+      {
+        "date": "2027-01-06",
+        "expected_path": "LAST_AVAILABLE_WORKDAY"
+      },
+      {
+        "date": "2027-01-07",
+        "expected_path": "SAME_DAY_TABLE"
+      },
+      {
+        "date": "2027-01-08",
+        "expected_path": "SAME_DAY_TABLE"
+      },
+      {
+        "date": "2027-01-09",
+        "expected_path": "LAST_AVAILABLE_WORKDAY"
+      },
+      {
+        "date": "2027-01-10",
+        "expected_path": "LAST_AVAILABLE_WORKDAY"
+      },
+      {
+        "date": "2027-01-11",
+        "expected_path": "SAME_DAY_TABLE"
+      },
+      {
+        "date": "2027-01-12",
+        "expected_path": "SAME_DAY_TABLE"
+      },
+      {
+        "date": "2027-01-13",
+        "expected_path": "SAME_DAY_TABLE"
+      },
+      {
+        "date": "2027-01-14",
+        "expected_path": "SAME_DAY_TABLE"
+      }
+    ],
+    "policy": "brak kursu na datę: path=LAST_AVAILABLE_WORKDAY z provenance table_date + ostrzeżenie; brak JAKIEGOKOLWIEK kursu w data = NEEDS_ADVICE (fail-closed, AP09)."
+  }
+}

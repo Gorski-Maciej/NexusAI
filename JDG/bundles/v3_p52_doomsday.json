@@ -1,0 +1,47 @@
+{
+  "innovation": "V3-P52-I12",
+  "generated_at": "2026-09-12T16:34:02.537914+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "doomsday",
+    "routing": "AUTO_FILE",
+    "cases_total": 6,
+    "failures": 0,
+    "div_zero_path": "NEEDS_ADVICE"
+  },
+  "evidence": {
+    "results": [
+      {
+        "case": "max_long",
+        "ok": true,
+        "result": "9223372036854775807.00"
+      },
+      {
+        "case": "min_long",
+        "ok": true,
+        "result": "-9223372036854775808.00"
+      },
+      {
+        "case": "tiny",
+        "ok": true,
+        "result": "0.00"
+      },
+      {
+        "case": "negative_tiny",
+        "ok": true,
+        "result": "-0.00"
+      },
+      {
+        "case": "zero",
+        "ok": true,
+        "result": "0.00"
+      },
+      {
+        "case": "overflow_product",
+        "ok": true,
+        "result": "9999899999999999999900001.00"
+      }
+    ],
+    "note": "silnik NIE MOŻE się wysypać na arytmetyce; overflow → fail-closed (BLOCK/NEEDS_ADVICE), nigdy cichy AUTO_POST."
+  }
+}

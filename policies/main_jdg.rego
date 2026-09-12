@@ -120,6 +120,9 @@ import data.jdg.v3_p47_legal_basis_weryfikacja_enterprise as v3_p47_legal_basis_
 import data.jdg.v3_p48_mirror_sync as v3_p48_mirror_sync
 import data.jdg.v3_p49_fail_closed as v3_p49_fail_closed
 import data.jdg.v3_p50_dead_code as v3_p50_dead_code
+import data.jdg.v3_p51_coverage_deserts as v3_p51_coverage_deserts
+import data.jdg.v3_p52_penny_granularity as v3_p52_penny_granularity
+import data.jdg.v3_p53_temporal_closure as v3_p53_temporal_closure
 import data.jdg.micro.quality_v3_13 as micro_quality_v3_13
 import data.jdg.hyper.quality_v3_14 as hyper_quality_v3_14
 import data.jdg.enterprise.quality_v3_15 as enterprise_quality_v3_15
@@ -3246,6 +3249,33 @@ final_verdict_p114 = safe_merge(final_verdict_p113,
         fallback.decide
     ))
 
+# ── PAS 18ad: V3-P51 PUSTYNIE PRAWNE (desert register with SLA, risk-weighted
+# prioritization, desert card template, coverage chain metric, semi-auto rule
+# drafting, cross-domain desert sweep, coverage regression block, desert
+# heatmap by money impact, testless rule sweep, quarterly coverage goal,
+# desert→vacancy mapping, legal coverage attestation). Fail-closed;
+# nieaktywny dopóki input.jdg_entrepreneur.v3_p51_check nie jest true.
+final_verdict_p115 = safe_merge(final_verdict_p114,
+    safe_merge(v3_p51_coverage_deserts.decide,
+        fallback.decide
+    ))
+
+# ── PAS 18ae: V3-P52 GRANICE GROSZOWE (arithmetic standards register,
+# penny boundary test matrix, currency rate provenance, weekend/holiday rate
+# path, sum invariants suite, determinism hash, rounding interaction tests,
+# negative amount paths, threshold calendar audit, penny drift telemetry,
+# currency fuzz, arithmetic doomsday suite). Fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p52_check nie jest true.
+final_verdict_p116 = safe_merge(final_verdict_p115,
+    safe_merge(v3_p52_penny_granularity.decide,
+        fallback.decide
+    ))
+
+final_verdict_p117 = safe_merge(final_verdict_p116,
+    safe_merge(v3_p53_temporal_closure.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -3278,7 +3308,7 @@ final_verdict_p114 = safe_merge(final_verdict_p113,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p114
+    final_verdict_p117
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

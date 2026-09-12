@@ -1,0 +1,177 @@
+{
+  "innovation": "V3-P52-I01",
+  "generated_at": "2026-09-12T16:34:02.962925+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "standards_register",
+    "routing": "BLOCK_AND_ALERT",
+    "tools_total": 9,
+    "tools_compliant": 1,
+    "tools_noncompliant": 8,
+    "rego_round2_duplicates": 6,
+    "rego_round2_files": 6,
+    "legal_standard": "HALF_UP_TO_GROSZ"
+  },
+  "evidence": {
+    "rows": [
+      {
+        "tool": "vat_rate_engine.py",
+        "exists": true,
+        "rounding_standard": "BANKERS(builtin round)",
+        "consistency": "NON_COMPLIANT",
+        "bankers_round_calls": 1,
+        "truncations": 0,
+        "decimal_used": false,
+        "negative_amount_paths": false,
+        "determinism_hash": false,
+        "legal_requirement": "Ordynacja podatkowa art. 107 (kwoty zaokrąglane do pełnych groszy); PIT art. 63 [NIEZWERYFIKOWANE — ISAP]"
+      },
+      {
+        "tool": "zus_calculator.py",
+        "exists": true,
+        "rounding_standard": "BANKERS(builtin round)",
+        "consistency": "NON_COMPLIANT",
+        "bankers_round_calls": 3,
+        "truncations": 0,
+        "decimal_used": false,
+        "negative_amount_paths": false,
+        "determinism_hash": false,
+        "legal_requirement": "Ordynacja podatkowa art. 107 (kwoty zaokrąglane do pełnych groszy); PIT art. 63 [NIEZWERYFIKOWANE — ISAP]"
+      },
+      {
+        "tool": "zus_zasilkowa_calculator.py",
+        "exists": true,
+        "rounding_standard": "BANKERS(builtin round)",
+        "consistency": "NON_COMPLIANT",
+        "bankers_round_calls": 2,
+        "truncations": 0,
+        "decimal_used": false,
+        "negative_amount_paths": false,
+        "determinism_hash": false,
+        "legal_requirement": "Ordynacja podatkowa art. 107 (kwoty zaokrąglane do pełnych groszy); PIT art. 63 [NIEZWERYFIKOWANE — ISAP]"
+      },
+      {
+        "tool": "sanction_calculator.py",
+        "exists": true,
+        "rounding_standard": "BANKERS(builtin round)",
+        "consistency": "NON_COMPLIANT",
+        "bankers_round_calls": 4,
+        "truncations": 0,
+        "decimal_used": false,
+        "negative_amount_paths": false,
+        "determinism_hash": false,
+        "legal_requirement": "Ordynacja podatkowa art. 107 (kwoty zaokrąglane do pełnych groszy); PIT art. 63 [NIEZWERYFIKOWANE — ISAP]"
+      },
+      {
+        "tool": "kks_penalty_simulator.py",
+        "exists": true,
+        "rounding_standard": "MIXED(bankers+other)",
+        "consistency": "MIXED",
+        "bankers_round_calls": 4,
+        "truncations": 3,
+        "decimal_used": false,
+        "negative_amount_paths": false,
+        "determinism_hash": false,
+        "legal_requirement": "Ordynacja podatkowa art. 107 (kwoty zaokrąglane do pełnych groszy); PIT art. 63 [NIEZWERYFIKOWANE — ISAP]"
+      },
+      {
+        "tool": "tax_form_whatif_simulator.py",
+        "exists": true,
+        "rounding_standard": "HALF_UP",
+        "consistency": "CONSISTENT",
+        "bankers_round_calls": 0,
+        "truncations": 0,
+        "decimal_used": true,
+        "negative_amount_paths": true,
+        "determinism_hash": false,
+        "legal_requirement": "Ordynacja podatkowa art. 107 (kwoty zaokrąglane do pełnych groszy); PIT art. 63 [NIEZWERYFIKOWANE — ISAP]"
+      },
+      {
+        "tool": "p13_crossborder_toolkit.py",
+        "exists": true,
+        "rounding_standard": "BANKERS(builtin round)",
+        "consistency": "NON_COMPLIANT",
+        "bankers_round_calls": 7,
+        "truncations": 0,
+        "decimal_used": false,
+        "negative_amount_paths": false,
+        "determinism_hash": false,
+        "legal_requirement": "Ordynacja podatkowa art. 107 (kwoty zaokrąglane do pełnych groszy); PIT art. 63 [NIEZWERYFIKOWANE — ISAP]"
+      },
+      {
+        "tool": "jpk_validator.py",
+        "exists": true,
+        "rounding_standard": "MIXED(bankers+other)",
+        "consistency": "MIXED",
+        "bankers_round_calls": 5,
+        "truncations": 2,
+        "decimal_used": false,
+        "negative_amount_paths": true,
+        "determinism_hash": false,
+        "legal_requirement": "Ordynacja podatkowa art. 107 (kwoty zaokrąglane do pełnych groszy); PIT art. 63 [NIEZWERYFIKOWANE — ISAP]"
+      },
+      {
+        "tool": "jpk_generator.py",
+        "exists": true,
+        "rounding_standard": "BANKERS(builtin round)",
+        "consistency": "NON_COMPLIANT",
+        "bankers_round_calls": 8,
+        "truncations": 0,
+        "decimal_used": false,
+        "negative_amount_paths": true,
+        "determinism_hash": false,
+        "legal_requirement": "Ordynacja podatkowa art. 107 (kwoty zaokrąglane do pełnych groszy); PIT art. 63 [NIEZWERYFIKOWANE — ISAP]"
+      }
+    ],
+    "rego_rows": [
+      {
+        "file": "r09_ksiegowosc_pkpir_uor_innovations_v9.rego",
+        "round2_definition_duplicated": 1,
+        "standard": "HALF_UP_POSITIVE (floor+0.5)",
+        "risk": "ujemne kwoty (korekty) zaokrąglane half-DOWN — brak abs()",
+        "negative_amount_paths": true
+      },
+      {
+        "file": "r08_ordynacja_obrona_innovations_v9.rego",
+        "round2_definition_duplicated": 1,
+        "standard": "HALF_UP_POSITIVE (floor+0.5)",
+        "risk": "ujemne kwoty (korekty) zaokrąglane half-DOWN — brak abs()",
+        "negative_amount_paths": false
+      },
+      {
+        "file": "r10_crossborder_innovations_v9.rego",
+        "round2_definition_duplicated": 1,
+        "standard": "HALF_UP_POSITIVE (floor+0.5)",
+        "risk": "ujemne kwoty (korekty) zaokrąglane half-DOWN — brak abs()",
+        "negative_amount_paths": false
+      },
+      {
+        "file": "r11_pcc_lokalne_akcyza_innovations_v9.rego",
+        "round2_definition_duplicated": 1,
+        "standard": "HALF_UP_POSITIVE (floor+0.5)",
+        "risk": "ujemne kwoty (korekty) zaokrąglane half-DOWN — brak abs()",
+        "negative_amount_paths": false
+      },
+      {
+        "file": "r12_ryczalt_cykl_zycia_innovations_v9.rego",
+        "round2_definition_duplicated": 1,
+        "standard": "HALF_UP_POSITIVE (floor+0.5)",
+        "risk": "ujemne kwoty (korekty) zaokrąglane half-DOWN — brak abs()",
+        "negative_amount_paths": true
+      },
+      {
+        "file": "r13_hyper_konteksty_innovations_v9.rego",
+        "round2_definition_duplicated": 1,
+        "standard": "HALF_UP_POSITIVE (floor+0.5)",
+        "risk": "ujemne kwoty (korekty) zaokrąglane half-DOWN — brak abs()",
+        "negative_amount_paths": false
+      }
+    ],
+    "legal_standard": {
+      "standard": "HALF_UP_TO_GROSZ",
+      "legal_basis": "Ordynacja podatkowa art. 107 (kwoty zaokrąglane do pełnych groszy); PIT art. 63 [NIEZWERYFIKOWANE — ISAP]",
+      "note": "half-up do grosza = standard wymagany; banker's rounding zabroniony"
+    },
+    "note": "standard wykryty z kodu (nie deklaracji); rejestr zapytywalny dla P41/P68; naprawa = jeden helper (I01) + testy groszowe."
+  }
+}

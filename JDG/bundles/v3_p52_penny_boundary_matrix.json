@@ -1,0 +1,153 @@
+{
+  "innovation": "V3-P52-I02",
+  "generated_at": "2026-09-12T16:33:58.936770+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "penny_boundary_matrix",
+    "routing": "TRIAGE_QUEUE",
+    "cases_total": 15,
+    "thresholds_covered": 3,
+    "cases_at_threshold": 3,
+    "exclusive_boundary_is_below": true
+  },
+  "evidence": {
+    "cases": [
+      {
+        "threshold_key": "mpp_mandatory_threshold",
+        "threshold": 15000.0,
+        "amount": 15000.0,
+        "delta": 0.0,
+        "expected_regime": "MPP_OFF",
+        "legal_basis": "VAT art. 119 ('przekracza' = próg WYŁĄCZNIE) [NIEZWERYFIKOWANE — ISAP]",
+        "semantics": "EXCLUSIVE"
+      },
+      {
+        "threshold_key": "mpp_mandatory_threshold",
+        "threshold": 15000.0,
+        "amount": 14999.99,
+        "delta": -0.01,
+        "expected_regime": "MPP_OFF",
+        "legal_basis": "VAT art. 119 ('przekracza' = próg WYŁĄCZNIE) [NIEZWERYFIKOWANE — ISAP]",
+        "semantics": "EXCLUSIVE"
+      },
+      {
+        "threshold_key": "mpp_mandatory_threshold",
+        "threshold": 15000.0,
+        "amount": 15000.01,
+        "delta": 0.01,
+        "expected_regime": "MPP_ON",
+        "legal_basis": "VAT art. 119 ('przekracza' = próg WYŁĄCZNIE) [NIEZWERYFIKOWANE — ISAP]",
+        "semantics": "EXCLUSIVE"
+      },
+      {
+        "threshold_key": "mpp_mandatory_threshold",
+        "threshold": 15000.0,
+        "amount": 14850.0,
+        "delta": -150.0,
+        "expected_regime": "MPP_OFF",
+        "legal_basis": "VAT art. 119 ('przekracza' = próg WYŁĄCZNIE) [NIEZWERYFIKOWANE — ISAP]",
+        "semantics": "EXCLUSIVE"
+      },
+      {
+        "threshold_key": "mpp_mandatory_threshold",
+        "threshold": 15000.0,
+        "amount": 15150.0,
+        "delta": 150.0,
+        "expected_regime": "MPP_ON",
+        "legal_basis": "VAT art. 119 ('przekracza' = próg WYŁĄCZNIE) [NIEZWERYFIKOWANE — ISAP]",
+        "semantics": "EXCLUSIVE"
+      },
+      {
+        "threshold_key": "vat_exemption_limit",
+        "threshold": 200000.0,
+        "amount": 200000.0,
+        "delta": 0.0,
+        "expected_regime": "EXEMPT",
+        "legal_basis": "VAT art. 113 (sprzedaż poukładana; 'przekroczy' = WYŁĄCZNIE) [NIEZWERYFIKOWANE — ISAP]",
+        "semantics": "EXCLUSIVE"
+      },
+      {
+        "threshold_key": "vat_exemption_limit",
+        "threshold": 200000.0,
+        "amount": 199999.99,
+        "delta": -0.01,
+        "expected_regime": "EXEMPT",
+        "legal_basis": "VAT art. 113 (sprzedaż poukładana; 'przekroczy' = WYŁĄCZNIE) [NIEZWERYFIKOWANE — ISAP]",
+        "semantics": "EXCLUSIVE"
+      },
+      {
+        "threshold_key": "vat_exemption_limit",
+        "threshold": 200000.0,
+        "amount": 200000.01,
+        "delta": 0.01,
+        "expected_regime": "NON_EXEMPT",
+        "legal_basis": "VAT art. 113 (sprzedaż poukładana; 'przekroczy' = WYŁĄCZNIE) [NIEZWERYFIKOWANE — ISAP]",
+        "semantics": "EXCLUSIVE"
+      },
+      {
+        "threshold_key": "vat_exemption_limit",
+        "threshold": 200000.0,
+        "amount": 198000.0,
+        "delta": -2000.0,
+        "expected_regime": "EXEMPT",
+        "legal_basis": "VAT art. 113 (sprzedaż poukładana; 'przekroczy' = WYŁĄCZNIE) [NIEZWERYFIKOWANE — ISAP]",
+        "semantics": "EXCLUSIVE"
+      },
+      {
+        "threshold_key": "vat_exemption_limit",
+        "threshold": 200000.0,
+        "amount": 202000.0,
+        "delta": 2000.0,
+        "expected_regime": "NON_EXEMPT",
+        "legal_basis": "VAT art. 113 (sprzedaż poukładana; 'przekroczy' = WYŁĄCZNIE) [NIEZWERYFIKOWANE — ISAP]",
+        "semantics": "EXCLUSIVE"
+      },
+      {
+        "threshold_key": "whitelist_check_threshold_pln",
+        "threshold": 15000.0,
+        "amount": 15000.0,
+        "delta": 0.0,
+        "expected_regime": "NO_CHECK",
+        "legal_basis": "VAT art. 22p/117ba OP (przelew > 15 000) [NIEZWERYFIKOWANE — ISAP]",
+        "semantics": "EXCLUSIVE"
+      },
+      {
+        "threshold_key": "whitelist_check_threshold_pln",
+        "threshold": 15000.0,
+        "amount": 14999.99,
+        "delta": -0.01,
+        "expected_regime": "NO_CHECK",
+        "legal_basis": "VAT art. 22p/117ba OP (przelew > 15 000) [NIEZWERYFIKOWANE — ISAP]",
+        "semantics": "EXCLUSIVE"
+      },
+      {
+        "threshold_key": "whitelist_check_threshold_pln",
+        "threshold": 15000.0,
+        "amount": 15000.01,
+        "delta": 0.01,
+        "expected_regime": "CHECK_REQUIRED",
+        "legal_basis": "VAT art. 22p/117ba OP (przelew > 15 000) [NIEZWERYFIKOWANE — ISAP]",
+        "semantics": "EXCLUSIVE"
+      },
+      {
+        "threshold_key": "whitelist_check_threshold_pln",
+        "threshold": 15000.0,
+        "amount": 14850.0,
+        "delta": -150.0,
+        "expected_regime": "NO_CHECK",
+        "legal_basis": "VAT art. 22p/117ba OP (przelew > 15 000) [NIEZWERYFIKOWANE — ISAP]",
+        "semantics": "EXCLUSIVE"
+      },
+      {
+        "threshold_key": "whitelist_check_threshold_pln",
+        "threshold": 15000.0,
+        "amount": 15150.0,
+        "delta": 150.0,
+        "expected_regime": "CHECK_REQUIRED",
+        "legal_basis": "VAT art. 22p/117ba OP (przelew > 15 000) [NIEZWERYFIKOWANE — ISAP]",
+        "semantics": "EXCLUSIVE"
+      }
+    ],
+    "note": "generator deterministyczny; przypadki @ próg = teza o rozbieżności MPP >= vs art. 119 'przekracza' (do testu A/B)."
+  }
+}

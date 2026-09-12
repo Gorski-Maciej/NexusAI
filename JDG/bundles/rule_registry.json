@@ -2350,5 +2350,941 @@
         "title": "V3-P50 I12: duplicate burden metric (cel 0%, trend P37)"
       }
     ]
+  },
+  "jdg.v3_p51_coverage_deserts.desert_register": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; UoR art. 4 ust. 1; Ordynacja art. 180, 199a-199c; Ordynacja art. 56, 70; VAT art. 41-43, 86-109e; PIT art. 22-30c; ZUS art. 18a-18f; KKS art. 56-57",
+        "owner": "P51-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p51_coverage_deserts.rego",
+          "tests/auto/test_v3_p51_coverage_deserts.py"
+        ],
+        "thresholds": [
+          "v3_p51"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.51.1",
+        "rule_id": "jdg.v3_p51_coverage_deserts.desert_register",
+        "title": "V3-P51 I01: desert register with SLA (rejestr pustyni)"
+      }
+    ]
+  },
+  "jdg.v3_p51_coverage_deserts.desert_risk": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; UoR art. 4 ust. 1; Ordynacja art. 180, 199a-199c; Ordynacja art. 56, 70; VAT art. 41-43, 86-109e; PIT art. 22-30c; ZUS art. 18a-18f; KKS art. 56-57",
+        "owner": "P51-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p51_coverage_deserts.rego",
+          "tests/auto/test_v3_p51_coverage_deserts.py"
+        ],
+        "thresholds": [
+          "v3_p51"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.51.1",
+        "rule_id": "jdg.v3_p51_coverage_deserts.desert_risk",
+        "title": "V3-P51 I02: risk-weighted prioritization (score pustyni)"
+      }
+    ]
+  },
+  "jdg.v3_p51_coverage_deserts.desert_cards": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; UoR art. 4 ust. 1; Ordynacja art. 180, 199a-199c; Ordynacja art. 56, 70; VAT art. 41-43, 86-109e; PIT art. 22-30c; ZUS art. 18a-18f; KKS art. 56-57",
+        "owner": "P51-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p51_coverage_deserts.rego",
+          "tests/auto/test_v3_p51_coverage_deserts.py"
+        ],
+        "thresholds": [
+          "v3_p51"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.51.1",
+        "rule_id": "jdg.v3_p51_coverage_deserts.desert_cards",
+        "title": "V3-P51 I03: desert card template (karta pustyni)"
+      }
+    ]
+  },
+  "jdg.v3_p51_coverage_deserts.chain_metric": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; UoR art. 4 ust. 1; Ordynacja art. 180, 199a-199c; Ordynacja art. 56, 70; VAT art. 41-43, 86-109e; PIT art. 22-30c; ZUS art. 18a-18f; KKS art. 56-57",
+        "owner": "P51-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p51_coverage_deserts.rego",
+          "tests/auto/test_v3_p51_coverage_deserts.py"
+        ],
+        "thresholds": [
+          "v3_p51"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.51.1",
+        "rule_id": "jdg.v3_p51_coverage_deserts.chain_metric",
+        "title": "V3-P51 I04: coverage chain metric (CCR akt→art→reguła→test)"
+      }
+    ]
+  },
+  "jdg.v3_p51_coverage_deserts.semi_auto_drafting": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; UoR art. 4 ust. 1; Ordynacja art. 180, 199a-199c; Ordynacja art. 56, 70; VAT art. 41-43, 86-109e; PIT art. 22-30c; ZUS art. 18a-18f; KKS art. 56-57",
+        "owner": "P51-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p51_coverage_deserts.rego",
+          "tests/auto/test_v3_p51_coverage_deserts.py"
+        ],
+        "thresholds": [
+          "v3_p51"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.51.1",
+        "rule_id": "jdg.v3_p51_coverage_deserts.semi_auto_drafting",
+        "title": "V3-P51 I05: semi-auto rule drafting (guard K-P50-5)"
+      }
+    ]
+  },
+  "jdg.v3_p51_coverage_deserts.systemic_sweep": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; UoR art. 4 ust. 1; Ordynacja art. 180, 199a-199c; Ordynacja art. 56, 70; VAT art. 41-43, 86-109e; PIT art. 22-30c; ZUS art. 18a-18f; KKS art. 56-57",
+        "owner": "P51-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p51_coverage_deserts.rego",
+          "tests/auto/test_v3_p51_coverage_deserts.py"
+        ],
+        "thresholds": [
+          "v3_p51"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.51.1",
+        "rule_id": "jdg.v3_p51_coverage_deserts.systemic_sweep",
+        "title": "V3-P51 I06: cross-domain desert sweep (pustynie systemowe)"
+      }
+    ]
+  },
+  "jdg.v3_p51_coverage_deserts.law_radar_block": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; UoR art. 4 ust. 1; Ordynacja art. 180, 199a-199c; Ordynacja art. 56, 70; VAT art. 41-43, 86-109e; PIT art. 22-30c; ZUS art. 18a-18f; KKS art. 56-57",
+        "owner": "P51-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p51_coverage_deserts.rego",
+          "tests/auto/test_v3_p51_coverage_deserts.py"
+        ],
+        "thresholds": [
+          "v3_p51"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.51.1",
+        "rule_id": "jdg.v3_p51_coverage_deserts.law_radar_block",
+        "title": "V3-P51 I07: coverage regression block (Law Radar)"
+      }
+    ]
+  },
+  "jdg.v3_p51_coverage_deserts.desert_heatmap": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; UoR art. 4 ust. 1; Ordynacja art. 180, 199a-199c; Ordynacja art. 56, 70; VAT art. 41-43, 86-109e; PIT art. 22-30c; ZUS art. 18a-18f; KKS art. 56-57",
+        "owner": "P51-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p51_coverage_deserts.rego",
+          "tests/auto/test_v3_p51_coverage_deserts.py"
+        ],
+        "thresholds": [
+          "v3_p51"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.51.1",
+        "rule_id": "jdg.v3_p51_coverage_deserts.desert_heatmap",
+        "title": "V3-P51 I08: desert heatmap by money impact (kwadranty)"
+      }
+    ]
+  },
+  "jdg.v3_p51_coverage_deserts.testless_sweep": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; UoR art. 4 ust. 1; Ordynacja art. 180, 199a-199c; Ordynacja art. 56, 70; VAT art. 41-43, 86-109e; PIT art. 22-30c; ZUS art. 18a-18f; KKS art. 56-57",
+        "owner": "P51-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p51_coverage_deserts.rego",
+          "tests/auto/test_v3_p51_coverage_deserts.py"
+        ],
+        "thresholds": [
+          "v3_p51"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.51.1",
+        "rule_id": "jdg.v3_p51_coverage_deserts.testless_sweep",
+        "title": "V3-P51 I09: testless rule sweep (reguła bez testu)"
+      }
+    ]
+  },
+  "jdg.v3_p51_coverage_deserts.quarterly_goals": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; UoR art. 4 ust. 1; Ordynacja art. 180, 199a-199c; Ordynacja art. 56, 70; VAT art. 41-43, 86-109e; PIT art. 22-30c; ZUS art. 18a-18f; KKS art. 56-57",
+        "owner": "P51-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p51_coverage_deserts.rego",
+          "tests/auto/test_v3_p51_coverage_deserts.py"
+        ],
+        "thresholds": [
+          "v3_p51"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.51.1",
+        "rule_id": "jdg.v3_p51_coverage_deserts.quarterly_goals",
+        "title": "V3-P51 I10: quarterly coverage goal (cele per domena)"
+      }
+    ]
+  },
+  "jdg.v3_p51_coverage_deserts.vacancy_bridge": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; UoR art. 4 ust. 1; Ordynacja art. 180, 199a-199c; Ordynacja art. 56, 70; VAT art. 41-43, 86-109e; PIT art. 22-30c; ZUS art. 18a-18f; KKS art. 56-57",
+        "owner": "P51-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p51_coverage_deserts.rego",
+          "tests/auto/test_v3_p51_coverage_deserts.py"
+        ],
+        "thresholds": [
+          "v3_p51"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.51.1",
+        "rule_id": "jdg.v3_p51_coverage_deserts.vacancy_bridge",
+        "title": "V3-P51 I11: desert→vacancy mapping (stuby P45)"
+      }
+    ]
+  },
+  "jdg.v3_p51_coverage_deserts.coverage_attestation": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; UoR art. 4 ust. 1; Ordynacja art. 180, 199a-199c; Ordynacja art. 56, 70; VAT art. 41-43, 86-109e; PIT art. 22-30c; ZUS art. 18a-18f; KKS art. 56-57",
+        "owner": "P51-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p51_coverage_deserts.rego",
+          "tests/auto/test_v3_p51_coverage_deserts.py"
+        ],
+        "thresholds": [
+          "v3_p51"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.51.1",
+        "rule_id": "jdg.v3_p51_coverage_deserts.coverage_attestation",
+        "title": "V3-P51 I12: legal coverage attestation (P68)"
+      }
+    ]
+  },
+  "jdg.v3_p52_penny_granularity.standards_register": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; OP art. 107; PIT art. 63; VAT art. 119, 113, 31a; PIT art. 11a; ZUS art. 18d; UoR art. 28 ust. 1 pkt 11, art. 30; NBP tabela A",
+        "owner": "P52-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p52_penny_granularity.rego",
+          "tests/auto/test_v3_p52_penny_granularity.py"
+        ],
+        "thresholds": [
+          "v3_p52"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.52.1",
+        "rule_id": "jdg.v3_p52_penny_granularity.standards_register",
+        "title": "V3-P52 I01: arithmetic standards register (art. 107 OP)"
+      }
+    ]
+  },
+  "jdg.v3_p52_penny_granularity.penny_boundary_matrix": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; OP art. 107; PIT art. 63; VAT art. 119, 113, 31a; PIT art. 11a; ZUS art. 18d; UoR art. 28 ust. 1 pkt 11, art. 30; NBP tabela A",
+        "owner": "P52-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p52_penny_granularity.rego",
+          "tests/auto/test_v3_p52_penny_granularity.py"
+        ],
+        "thresholds": [
+          "v3_p52"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.52.1",
+        "rule_id": "jdg.v3_p52_penny_granularity.penny_boundary_matrix",
+        "title": "V3-P52 I02: penny boundary test matrix (próg±0.01)"
+      }
+    ]
+  },
+  "jdg.v3_p52_penny_granularity.rate_provenance": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; OP art. 107; PIT art. 63; VAT art. 119, 113, 31a; PIT art. 11a; ZUS art. 18d; UoR art. 28 ust. 1 pkt 11, art. 30; NBP tabela A",
+        "owner": "P52-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p52_penny_granularity.rego",
+          "tests/auto/test_v3_p52_penny_granularity.py"
+        ],
+        "thresholds": [
+          "v3_p52"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.52.1",
+        "rule_id": "jdg.v3_p52_penny_granularity.rate_provenance",
+        "title": "V3-P52 I03: currency rate provenance (NBP-A + checksuma)"
+      }
+    ]
+  },
+  "jdg.v3_p52_penny_granularity.weekend_rate_path": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; OP art. 107; PIT art. 63; VAT art. 119, 113, 31a; PIT art. 11a; ZUS art. 18d; UoR art. 28 ust. 1 pkt 11, art. 30; NBP tabela A",
+        "owner": "P52-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p52_penny_granularity.rego",
+          "tests/auto/test_v3_p52_penny_granularity.py"
+        ],
+        "thresholds": [
+          "v3_p52"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.52.1",
+        "rule_id": "jdg.v3_p52_penny_granularity.weekend_rate_path",
+        "title": "V3-P52 I04: weekend/holiday rate path (fail-closed)"
+      }
+    ]
+  },
+  "jdg.v3_p52_penny_granularity.sum_invariants": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; OP art. 107; PIT art. 63; VAT art. 119, 113, 31a; PIT art. 11a; ZUS art. 18d; UoR art. 28 ust. 1 pkt 11, art. 30; NBP tabela A",
+        "owner": "P52-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p52_penny_granularity.rego",
+          "tests/auto/test_v3_p52_penny_granularity.py"
+        ],
+        "thresholds": [
+          "v3_p52"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.52.1",
+        "rule_id": "jdg.v3_p52_penny_granularity.sum_invariants",
+        "title": "V3-P52 I05: sum invariants suite (pozycje=total)"
+      }
+    ]
+  },
+  "jdg.v3_p52_penny_granularity.determinism_hash": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; OP art. 107; PIT art. 63; VAT art. 119, 113, 31a; PIT art. 11a; ZUS art. 18d; UoR art. 28 ust. 1 pkt 11, art. 30; NBP tabela A",
+        "owner": "P52-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p52_penny_granularity.rego",
+          "tests/auto/test_v3_p52_penny_granularity.py"
+        ],
+        "thresholds": [
+          "v3_p52"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.52.1",
+        "rule_id": "jdg.v3_p52_penny_granularity.determinism_hash",
+        "title": "V3-P52 I06: determinism hash (reprodukcja grosz po groszu)"
+      }
+    ]
+  },
+  "jdg.v3_p52_penny_granularity.rounding_interactions": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; OP art. 107; PIT art. 63; VAT art. 119, 113, 31a; PIT art. 11a; ZUS art. 18d; UoR art. 28 ust. 1 pkt 11, art. 30; NBP tabela A",
+        "owner": "P52-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p52_penny_granularity.rego",
+          "tests/auto/test_v3_p52_penny_granularity.py"
+        ],
+        "thresholds": [
+          "v3_p52"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.52.1",
+        "rule_id": "jdg.v3_p52_penny_granularity.rounding_interactions",
+        "title": "V3-P52 I07: rounding interaction tests (łańcuchy)"
+      }
+    ]
+  },
+  "jdg.v3_p52_penny_granularity.negative_paths": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; OP art. 107; PIT art. 63; VAT art. 119, 113, 31a; PIT art. 11a; ZUS art. 18d; UoR art. 28 ust. 1 pkt 11, art. 30; NBP tabela A",
+        "owner": "P52-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p52_penny_granularity.rego",
+          "tests/auto/test_v3_p52_penny_granularity.py"
+        ],
+        "thresholds": [
+          "v3_p52"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.52.1",
+        "rule_id": "jdg.v3_p52_penny_granularity.negative_paths",
+        "title": "V3-P52 I08: negative amount paths (symetria half-up)"
+      }
+    ]
+  },
+  "jdg.v3_p52_penny_granularity.threshold_calendar": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; OP art. 107; PIT art. 63; VAT art. 119, 113, 31a; PIT art. 11a; ZUS art. 18d; UoR art. 28 ust. 1 pkt 11, art. 30; NBP tabela A",
+        "owner": "P52-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p52_penny_granularity.rego",
+          "tests/auto/test_v3_p52_penny_granularity.py"
+        ],
+        "thresholds": [
+          "v3_p52"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.52.1",
+        "rule_id": "jdg.v3_p52_penny_granularity.threshold_calendar",
+        "title": "V3-P52 I09: threshold calendar audit (limity roczne)"
+      }
+    ]
+  },
+  "jdg.v3_p52_penny_granularity.drift_telemetry": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; OP art. 107; PIT art. 63; VAT art. 119, 113, 31a; PIT art. 11a; ZUS art. 18d; UoR art. 28 ust. 1 pkt 11, art. 30; NBP tabela A",
+        "owner": "P52-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p52_penny_granularity.rego",
+          "tests/auto/test_v3_p52_penny_granularity.py"
+        ],
+        "thresholds": [
+          "v3_p52"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.52.1",
+        "rule_id": "jdg.v3_p52_penny_granularity.drift_telemetry",
+        "title": "V3-P52 I10: penny drift telemetry (trend → 0)"
+      }
+    ]
+  },
+  "jdg.v3_p52_penny_granularity.currency_fuzz": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; OP art. 107; PIT art. 63; VAT art. 119, 113, 31a; PIT art. 11a; ZUS art. 18d; UoR art. 28 ust. 1 pkt 11, art. 30; NBP tabela A",
+        "owner": "P52-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p52_penny_granularity.rego",
+          "tests/auto/test_v3_p52_penny_granularity.py"
+        ],
+        "thresholds": [
+          "v3_p52"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.52.1",
+        "rule_id": "jdg.v3_p52_penny_granularity.currency_fuzz",
+        "title": "V3-P52 I11: currency fuzz (property-based)"
+      }
+    ]
+  },
+  "jdg.v3_p52_penny_granularity.doomsday": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; OP art. 107; PIT art. 63; VAT art. 119, 113, 31a; PIT art. 11a; ZUS art. 18d; UoR art. 28 ust. 1 pkt 11, art. 30; NBP tabela A",
+        "owner": "P52-campaign",
+        "registered_at": "2026-09-12",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p52_penny_granularity.rego",
+          "tests/auto/test_v3_p52_penny_granularity.py"
+        ],
+        "thresholds": [
+          "v3_p52"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.52.1",
+        "rule_id": "jdg.v3_p52_penny_granularity.doomsday",
+        "title": "V3-P52 I12: arithmetic doomsday suite (fail-closed)"
+      }
+    ]
+  },
+  "jdg.v3_p53_temporal_closure.temporal_coverage_gate": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P05 temporalność; P46 parametry; Ordynacja art. 24b [NIEZWERYFIKOWANE — ISAP]",
+        "notes": "V3-P53 I01: temporal coverage gate (okna vs reguły zależne od daty)",
+        "priority": 453001,
+        "rule_id": "jdg.v3_p53_temporal_closure.temporal_coverage_gate",
+        "source_rule_file": "rules/v3_p53_temporal_closure.rego",
+        "status": "CANDIDATE",
+        "threshold_version": "temporal-v3p53-2026.09",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.53.1"
+      }
+    ]
+  },
+  "jdg.v3_p53_temporal_closure.day0_tests": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "P36 generatory; P05; KPI lead V2 §6.2.5",
+        "notes": "V3-P53 I02: day-0 test auto-generation (dzień przed/granica/dzień po)",
+        "priority": 453002,
+        "rule_id": "jdg.v3_p53_temporal_closure.day0_tests",
+        "source_rule_file": "rules/v3_p53_temporal_closure.rego",
+        "status": "CANDIDATE",
+        "threshold_version": "temporal-v3p53-2026.09",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.53.1"
+      }
+    ]
+  },
+  "jdg.v3_p53_temporal_closure.replay_contract": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "UoR art. 5; Ordynacja art. 24b [NIEZWERYFIKOWANE — ISAP]; P38 WORM",
+        "notes": "V3-P53 I03: retroactive replay contract (rules+params+fx+accumulator)",
+        "priority": 453003,
+        "rule_id": "jdg.v3_p53_temporal_closure.replay_contract",
+        "source_rule_file": "rules/v3_p53_temporal_closure.rego",
+        "status": "CANDIDATE",
+        "threshold_version": "temporal-v3p53-2026.09",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.53.1"
+      }
+    ]
+  },
+  "jdg.v3_p53_temporal_closure.transitional_register": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "SUS art. 18a/18c/18ab/18d ust. 2; VAT art. 113; Ordynacja art. 24c [NIEZWERYFIKOWANE — ISAP]",
+        "notes": "V3-P53 I04: transitional rules register (prawa nabyte)",
+        "priority": 453004,
+        "rule_id": "jdg.v3_p53_temporal_closure.transitional_register",
+        "source_rule_file": "rules/v3_p53_temporal_closure.rego",
+        "status": "CANDIDATE",
+        "threshold_version": "temporal-v3p53-2026.09",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.53.1"
+      }
+    ]
+  },
+  "jdg.v3_p53_temporal_closure.interval_validation": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "INV-037 zero luk + zero nakładek; P05 [NIEZWERYFIKOWANE — ISAP]",
+        "notes": "V3-P53 I05: gap/overlap interval validator (INV-037)",
+        "priority": 453005,
+        "rule_id": "jdg.v3_p53_temporal_closure.interval_validation",
+        "source_rule_file": "rules/v3_p53_temporal_closure.rego",
+        "status": "CANDIDATE",
+        "threshold_version": "temporal-v3p53-2026.09",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.53.1"
+      }
+    ]
+  },
+  "jdg.v3_p53_temporal_closure.epoch_registry": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "Ordynacja art. 24b [NIEZWERYFIKOWANE — ISAP]",
+        "notes": "V3-P53 I06: legal epoch registry z hashem snapshotu",
+        "priority": 453006,
+        "rule_id": "jdg.v3_p53_temporal_closure.epoch_registry",
+        "source_rule_file": "rules/v3_p53_temporal_closure.rego",
+        "status": "CANDIDATE",
+        "threshold_version": "temporal-v3p53-2026.09",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.53.1"
+      }
+    ]
+  },
+  "jdg.v3_p53_temporal_closure.future_sandbox": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "V2 Wizja: Declarative Change; planowanie bez ryzyka produkcji",
+        "notes": "V3-P53 I07: future law sandbox (DRAFT, bez produkcji)",
+        "priority": 453007,
+        "rule_id": "jdg.v3_p53_temporal_closure.future_sandbox",
+        "source_rule_file": "rules/v3_p53_temporal_closure.rego",
+        "status": "CANDIDATE",
+        "threshold_version": "temporal-v3p53-2026.09",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.53.1"
+      }
+    ]
+  },
+  "jdg.v3_p53_temporal_closure.preprovisioning": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "V2 §6.2.5 KPI lead >= 30 dni",
+        "notes": "V3-P53 I08: pre-provisioning by Law Radar (lead KPI)",
+        "priority": 453008,
+        "rule_id": "jdg.v3_p53_temporal_closure.preprovisioning",
+        "source_rule_file": "rules/v3_p53_temporal_closure.rego",
+        "status": "CANDIDATE",
+        "threshold_version": "temporal-v3p53-2026.09",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.53.1"
+      }
+    ]
+  },
+  "jdg.v3_p53_temporal_closure.year_boundary": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "SUS art. 18d ust. 2; VAT art. 113 [NIEZWERYFIKOWANE — ISAP]",
+        "notes": "V3-P53 I09: year-boundary accumulator tests (31.12/1.01)",
+        "priority": 453009,
+        "rule_id": "jdg.v3_p53_temporal_closure.year_boundary",
+        "source_rule_file": "rules/v3_p53_temporal_closure.rego",
+        "status": "CANDIDATE",
+        "threshold_version": "temporal-v3p53-2026.09",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.53.1"
+      }
+    ]
+  },
+  "jdg.v3_p53_temporal_closure.param_history": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "ADR-002 parametry-as-data; UoR art. 5 [NIEZWERYFIKOWANE — ISAP]",
+        "notes": "V3-P53 I10: historical parameter store (provenance)",
+        "priority": 453010,
+        "rule_id": "jdg.v3_p53_temporal_closure.param_history",
+        "source_rule_file": "rules/v3_p53_temporal_closure.rego",
+        "status": "CANDIDATE",
+        "threshold_version": "temporal-v3p53-2026.09",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.53.1"
+      }
+    ]
+  },
+  "jdg.v3_p53_temporal_closure.epoch_golden": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "Golden Oracle (V2); P10",
+        "notes": "V3-P53 I11: epoch-aware golden replay",
+        "priority": 453011,
+        "rule_id": "jdg.v3_p53_temporal_closure.epoch_golden",
+        "source_rule_file": "rules/v3_p53_temporal_closure.rego",
+        "status": "CANDIDATE",
+        "threshold_version": "temporal-v3p53-2026.09",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.53.1"
+      }
+    ]
+  },
+  "jdg.v3_p53_temporal_closure.temporal_audit_trail": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "Decision Certificate F4 (V2); Ordynacja art. 24b [NIEZWERYFIKOWANE — ISAP]",
+        "notes": "V3-P53 I12: temporal audit trail (legal_epoch w certyfikacie)",
+        "priority": 453012,
+        "rule_id": "jdg.v3_p53_temporal_closure.temporal_audit_trail",
+        "source_rule_file": "rules/v3_p53_temporal_closure.rego",
+        "status": "CANDIDATE",
+        "threshold_version": "temporal-v3p53-2026.09",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.53.1"
+      }
+    ]
   }
 }

@@ -1,0 +1,47 @@
+{
+  "innovation": "V3-P52-I09",
+  "generated_at": "2026-09-12T16:34:03.201456+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "analysis": "threshold_calendar",
+    "routing": "AUTO_FILE",
+    "thresholds_params_total": 8,
+    "calendar_candidates": 2,
+    "annual_rules_detected": 20
+  },
+  "evidence": {
+    "candidates_sample": [
+      {
+        "key": "vat.exemption_housing_area_m2_max",
+        "has_versions": true
+      },
+      {
+        "key": "vat.limit_113",
+        "has_versions": true
+      }
+    ],
+    "annual_rules": [
+      "_compliance_rates.rego",
+      "_edge_cases_conflicts_rates.rego",
+      "_metadata_jdg.rego",
+      "_pcc_local_excise_rates.rego",
+      "_uor_rates.rego",
+      "accounting.rego",
+      "allowances.rego",
+      "annual_declaration_enterprise.rego",
+      "cashflow_tax_predictor_enterprise.rego",
+      "compliance.rego",
+      "corrections.rego",
+      "cross_domain_intelligence_enterprise.rego",
+      "edge_cases.rego",
+      "employer.rego",
+      "environmental.rego",
+      "exit_tax_mdr_enterprise.rego",
+      "form_optimizer_enterprise.rego",
+      "jpk_cit.rego",
+      "jpk_kr_st_generator_enterprise.rego",
+      "kks.rego"
+    ],
+    "plan": "audyt roczny kwot narastających per podatnik vs limity (zwolnienie 200k VAT art. 113, 30-krotność ZUS art. 18d) z korektami w locie [NIEZWERYFIKOWANE — ISAP]."
+  }
+}

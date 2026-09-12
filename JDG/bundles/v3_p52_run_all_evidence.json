@@ -1,0 +1,108 @@
+{
+  "innovation": "V3-P52-RUNNER",
+  "generated_at": "2026-09-12T16:34:03+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "steps": 12,
+    "failed": 0,
+    "total_seconds": 5.35
+  },
+  "log": [
+    {
+      "step": "I01",
+      "script": "v3_p52_standards_register.py",
+      "ok": true,
+      "seconds": 0.71,
+      "stdout_tail": "[V3-P52] V3-P52-I01: v3_p52_standards_register.json gate=PASS\n[V3-P52] V3-P52-I09: v3_p52_threshold_calendar.json gate=PASS\n",
+      "stderr_tail": ""
+    },
+    {
+      "step": "I02",
+      "script": "v3_p52_engines.py I02",
+      "ok": true,
+      "seconds": 0.39,
+      "stdout_tail": "[V3-P52] V3-P52-I02: v3_p52_penny_boundary_matrix.json gate=PASS\n",
+      "stderr_tail": ""
+    },
+    {
+      "step": "I03",
+      "script": "v3_p52_engines.py I03",
+      "ok": true,
+      "seconds": 0.41,
+      "stdout_tail": "[V3-P52] V3-P52-I03: v3_p52_rate_provenance.json gate=PASS\n",
+      "stderr_tail": ""
+    },
+    {
+      "step": "I04",
+      "script": "v3_p52_engines.py I04",
+      "ok": true,
+      "seconds": 0.37,
+      "stdout_tail": "[V3-P52] V3-P52-I04: v3_p52_weekend_rate_path.json gate=PASS\n",
+      "stderr_tail": ""
+    },
+    {
+      "step": "I05",
+      "script": "v3_p52_engines.py I05",
+      "ok": true,
+      "seconds": 0.47,
+      "stdout_tail": "[V3-P52] V3-P52-I05: v3_p52_sum_invariants.json gate=PASS\n",
+      "stderr_tail": ""
+    },
+    {
+      "step": "I06",
+      "script": "v3_p52_engines.py I06",
+      "ok": true,
+      "seconds": 0.37,
+      "stdout_tail": "[V3-P52] V3-P52-I06: v3_p52_determinism_hash.json gate=PASS\n",
+      "stderr_tail": ""
+    },
+    {
+      "step": "I07",
+      "script": "v3_p52_engines.py I07",
+      "ok": true,
+      "seconds": 0.41,
+      "stdout_tail": "[V3-P52] V3-P52-I07: v3_p52_rounding_interactions.json gate=PASS\n",
+      "stderr_tail": ""
+    },
+    {
+      "step": "I08",
+      "script": "v3_p52_engines.py I08",
+      "ok": true,
+      "seconds": 0.41,
+      "stdout_tail": "[V3-P52] V3-P52-I08: v3_p52_negative_paths.json gate=PASS\n",
+      "stderr_tail": ""
+    },
+    {
+      "step": "I10",
+      "script": "v3_p52_engines.py I10",
+      "ok": true,
+      "seconds": 0.37,
+      "stdout_tail": "[V3-P52] V3-P52-I10: v3_p52_drift_telemetry.json gate=PASS\n",
+      "stderr_tail": ""
+    },
+    {
+      "step": "I11",
+      "script": "v3_p52_engines.py I11",
+      "ok": true,
+      "seconds": 0.39,
+      "stdout_tail": "[V3-P52] V3-P52-I11: v3_p52_currency_fuzz.json gate=PASS\n",
+      "stderr_tail": ""
+    },
+    {
+      "step": "I12",
+      "script": "v3_p52_engines.py I12",
+      "ok": true,
+      "seconds": 0.4,
+      "stdout_tail": "[V3-P52] V3-P52-I12: v3_p52_doomsday.json gate=PASS\n",
+      "stderr_tail": ""
+    },
+    {
+      "step": "I09",
+      "script": "v3_p52_standards_register.py --calendar-only",
+      "ok": true,
+      "seconds": 0.65,
+      "stdout_tail": "[V3-P52] V3-P52-I01: v3_p52_standards_register.json gate=PASS\n[V3-P52] V3-P52-I09: v3_p52_threshold_calendar.json gate=PASS\n",
+      "stderr_tail": ""
+    }
+  ]
+}

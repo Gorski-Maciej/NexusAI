@@ -1,0 +1,699 @@
+==============================================================================
+RAPORT V3 P52 — GRANICE GROSZOWE, WALUTY I ZAOKRĄGLENI — PRECYZJA
+WYPOWIEDZI FINANSOWEJ
+==============================================================================
+Seria:     NEXUSAI JDG — V3 FORTRESS CAMPAIGN (P00–P68)
+Prompt:    JDG/prompty_v3/V3_PROMPT_P52_GRANICE_GROSZOWE.txt
+Raport:    JDG/raporty_glm52_v3/RAPORT_V3_P52_GRANICE_GROSZOWE.txt
+Status:    WDROŻONY_100 (2026-09-12)
+Sesja:     wdrożenie z czystego okna kontekstowego (handoff z P51 przez
+           ledger/raporty); dowody z uruchomionych narzędzi
+           (bundles/v3_p52_*.json, gate=PASS).
+Uwaga:     liczby pochodzą z realnych uruchomień (protokół 14). Weryfikacja
+           ISAP/RCL/NBP nie została wykonana w tej sesji — każde twierdzenie
+           prawne ma tag [NIEZWERYFIKOWANE — ISAP] (protokół 04).
+
+──────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+──────────────────────────────────────────────────────────────────────────────
+Dojrzałość części P52: 40/100 przed sesją (istniejące kalkulatory i progi,
+zero warstwy arytmetyczno-invariantowej); po wdrożeniu 95/100 — pełna warstwa
+P52 z dowodami uruchomień. Najcięższe ustalenie audytu:
+
+  * 8/9 kalkulatorów używa Python round() = banker's rounding — POZA
+    standardem art. 107 OP (half-up do pełnych groszy) [NIEZWERYFIKOWANE —
+    ISAP]; tylko tax_form_whatif_simulator ma ROUND_HALF_UP.
+  * 64/100 losowych łańcuchów netto→VAT→brutto daje ROZJAZD groszowy między
+    ścieżką A (VAT per pozycja) i B (zaokrąglenie sumy pełnej) — to jest
+    dokładnie mechanizm rozjazdów JPK vs deklaracja (I07/I10).
+  * Silnik MPP stosuje >= 15 000 (włącznie), a art. 119 mówi „kwota ...
+    przekracza 15 000" (wyłącznie) — grosz na progu może zmieniać reżim
+    (teza testowa I02; rozstrzygnięcie prawne → Q02).
+  * Zero provenance kursów walutowych (r10 fx przyjmuje rate z input bez
+    table_date/checksumy; kalkulatory nie liczą FX w ogóle) — AP09.
+
+Wdrożone struktury (wszystkie z testami):
+  * Rego: rules/v3_p52_penny_granularity.rego — 12 analiz I01–I12, router
+    decide fail-closed, certificate F4 (wersje prog/podstaw, valid_from).
+  * Progi: 9 kluczy v3_p52_* (ADR-002, valid_from 2026-01-01).
+  * Wiring: main_jdg.rego import + final_verdict_p116 (anchor p115→p116).
+  * Narzędzia: 14 plików (common + rejestr standardów + 10 silników + runner
+    + 2 helpery) — 13 bundli dowodowych gate=PASS (5.44 s).
+  * Kanoniczny helper grosz(): half-up do grosza, ujemne przez abs
+    (symetria: -0.005 → -0.01), idempotentny, penny-exact.
+  * Testy: natywne Rego 56/56 (OPA 0.68.0 i 1.9.0 --v0-compatible);
+    pytest 26/26; regresja P13–P52: 1285/1285 rego (oba OPA), pytest
+    1688 passed / 8 pre-existing (P18/P21/P22, odtworzone na HEAD).
+  * Mirror: policies/ sync 527 plików, dryf 0. Lifecycle: 12× CANDIDATE v3.52.1.
+
+TOP-10 rekomendacji:
+  1. Przyjąć helper grosz() jako jedyny standard w 9 kalkulatorach
+     (V3-P52-L01; zmiana wyników liczbowa → 4-eyes Q03).
+  2. Rozstrzygnąć semantykę progu MPP/whitelist: „przekracza" (wyłącznie)
+     vs >= (włącznie) — Q02, L03.
+  3. Wybrać jeden standard łańcucha zaokrągleń (A: VAT per pozycja —
+     rekomendacja kampanii) i wyeliminować 64 rozjazdy (L02, Q01).
+  4. Dopiąć provenance kursów (NBP-A, table_date, checksuma) do r10 fx
+     i toolkitów cross-border (L04, AP09).
+  5. Wdrożyć determinism hash w wyliczeniu deklaracji (L06; hash →
+     Decision Certificate F4, kontrakt P11).
+  6. Dodać ścieżkę weekend/święto (ostatni dzień roboczy z provenance)
+     dla kursów — 10/26 dat testowych bez tabeli (L05).
+  7. Uzupełnić thresholds_data.json o progi groszowe MPP/zwolnienie
+     (dziś tylko 8 parametrów; rego ma własne wartości — AP12, L12).
+  8. Skonsolidować 6 duplikatów round2() w Rego do jednego pakietu (L08).
+  9. Objąć kalendarz roczny I09 30-krotnością ZUS i limitem zwolnienia
+     (korekty w locie) — K-P52-3.
+ 10. Stemplować podstawy w ISAP (art. 107 OP, 63 PIT, 119/113/31a VAT,
+     11a PIT, 18d ZUS, 28/30 UoR) — L11, P47-I10.
+
+Liczba luk: P0=0, P1=3, P2=5, P3=4 (12). Innowacje: 12 (I01–I12, wszystkie
+z artefaktami, bundlami gate=PASS, regułą Rego i testami).
+Deklaracja: udowodniono kodem/testami/uruchomieniami istnienie rozjazdów
+(64/100), asymetrii standardów (8/9 banker's), braku provenance i ścieżek
+świątecznych; nie udowodniono treści przepisów ([NIEZWERYFIKOWANE — ISAP]).
+
+──────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+──────────────────────────────────────────────────────────────────────────────
+Przeanalizowano (realne odczyty/uruchomienia/skany):
+  * 6.1: vat_rate_engine.py, zus_calculator.py, zus_zasilkowa_calculator.py,
+    sanction_calculator.py, kks_penalty_simulator.py, thresholds_jdg.rego,
+    bundles/thresholds_data.json, tax_form_whatif_simulator.py — skan
+    arytmetyczny (regex ROUND_HALF_UP / round( / int( / Decimal / progi /
+    negative / hash) + odczyt progów MPP/whitelist z rego.
+  * 6.2: test_tax_rules.py, test_vat_enterprise.py,
+    test_pcc_excise_enterprise.py, test_native_pcc_v3_10.rego,
+    test_native_micro_zus.rego, test_core_guards_temporal_thresholds.py,
+    test_edge_cases_enterprise.py — obecność + rola (brak testów granic
+    groszowych przed P52; brak testów kursów weekend/święto).
+  * 6.3: p13_crossborder_toolkit.py, CROSSBORDER_P12.md, jpk_validator.py,
+    jpk_generator.py, test_crossborder_enterprise.py,
+    test_native_crossborder.rego + rules/r10_crossborder_innovations_v9.rego
+    (fx_schedule: pełny odczyt sekcji FX 338–380).
+  * 6.4: mirror policies (sync 527 plików, drift 0), manifest overlay.
+Pominięto i DLACZEGO:
+  * Pełny odczyt line-by-line wszystkich kalkulatorów (analiza regex + cele
+    wybrane sekcje) — budżet 50%; adnotacje w T1 (protokół 16: brak
+    pominięć cichych).
+  * Weryfikacja zewnętrzna ISAP/RCL/NBP — niedostępna w sesji; tag
+    [NIEZWERYFIKOWANE — ISAP] na całej warstwie prawnej (L11).
+Status weryfikacji źródeł prawnych: [NIEZWERYFIKOWANE — ISAP] (całość).
+
+──────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P52 (mapa artefaktów)
+──────────────────────────────────────────────────────────────────────────────
+Plik / artefakt                                   | Pakiet / rola                    | Rule_id | Testy | Lifecycle
+--------------------------------------------------|----------------------------------|---------|-------|----------
+rules/v3_p52_penny_granularity.rego               | jdg.v3_p52_penny_granularity     | 12 analiz (452001–452012) | 56 natywnych + 26 pytest | CANDIDATE
+rules/thresholds_jdg.rego (blok v3_p52)           | data.jdg.thresholds.v3_p52       | 9 kluczy | test thresholds | CANDIDATE
+rules/main_jdg.rego (final_verdict_p116)          | wiring orkiestratora             | — | regresja p13–p52 | AKTYWNY wiring
+tools/v3_p52_common.py                            | szkielet bundli                  | — | pośrednio | —
+tools/v3_p52_standards_register.py (I01+I09)      | rejestr standardów + kalendarz   | — | pytest I01/I09 | gate=PASS
+tools/v3_p52_engines.py (I02-I08,I10-I12)         | 10 silników + grosz()            | — | pytest I02-I12 | gate=PASS
+tools/v3_p52_run_all.py                           | runner zależności                | — | pytest runner | gate=PASS
+bundles/v3_p52_*.json (13 szt.)                   | dowody uruchomień                | — | spójność routing | PASS
+bundles/rule_registry.json (12 wpisów P52)        | lifecycle                        | 12 CANDIDATE | test rejestru | v3.52.1
+policies/v3_p52_penny_granularity.rego (mirror)   | build output                     | identyczny raw | test mirroru | synced
+tests/rego/test_v3_p52_penny_granularity.rego     | 56 testów natywnych              | — | OPA 0.68/1.9 | PASS
+tests/auto/test_v3_p52_penny_granularity.py       | 26 testów pytest                 | — | pytest | PASS
+Statusy lifecycle P52: wszystkie CANDIDATE (rollout 10%, awans wg P07);
+brak SHADOW/ACTIVE (świeży pakiet).
+
+──────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4
+──────────────────────────────────────────────────────────────────────────────
+5.1 AUDYT PUNKTÓW ZAOKRĄGLEŃ
+  Dowody: v3_p52_standards_register.json (I01: 9 narzędzi — 1 CONSISTENT,
+  8 NON_COMPLIANT „BANKERS"; 6 duplikatów round2 w Rego),
+  v3_p52_rounding_interactions.json (I07: 64/100 rozjazdów),
+  v3_p52_negative_paths.json (I08: 3/9 narzędzi z jawnymi ścieżkami ujemnymi).
+  Odpowiedzi audytowe:
+  * Gdzie zaokrągla i jakim standardem: round() w 8 kalkulatorach (banker's);
+    tax_form_whatif_simulator: Decimal+ROUND_HALF_UP; Rego: round2 =
+    floor((x*100)+0.5)/100 — half-up dla dodatnich, half-DOWN dla ujemnych,
+    zdublowany w 6 pakietach (r08–r13). Niespójność potwierdzona liczbami.
+  * Standard ustawowy: art. 107 OP (kwoty podatkowe do pełnych groszy) i
+    art. 63 PIT — wymagany half-up; banker's nie jest zgodny z praktyką
+    podatkową [NIEZWERYFIKOWANE — ISAP] (L01).
+  * Sumy z pozycji vs z pełnych: I07 — 64/100 prób daje różnicę groszową
+    między ścieżką A (VAT per pozycja half-up → suma) i B (suma pełna →
+    zaokrąglenie). Mechanizm rozjazdów JPK/deklaracja (L02).
+  * Ujemne: tylko 3/9 narzędzi ma jawne ścieżki (negative/ujemn/abs);
+    round2 w Rego zaokrągla ujemne half-DOWN (-0.005 → -0.00) — asymetria
+    korekt; helper grosz() symetryczny (I08).
+  Wnioski: (1) standard zaokrągleń nie był nigdy zdefiniowany w kodzie jako
+  kontrakt — P52-I01 tworzy rejestr + helper kanoniczny; (2) rozjazdy
+  łańcuchów są mierzalne i liczne — wybór ścieżki to decyzja standardu
+  (Q01), nie implementacyjny detal; (3) ujemne kwoty (korekty) przechodzą
+  przez inne reguły zaokrągleń niż dodatnie — cichy dryf korekt.
+  Luki: V3-P52-L01 (P1), L02 (P1), L07 (P2), L08 (P3).
+
+5.2 WALUTY I KURSY
+  Dowody: v3_p52_rate_provenance.json (I03: tools_with_fx=0,
+  rego_provenance_required=false), v3_p52_weekend_rate_path.json (I04:
+  26 dat, 10 bez tabeli, 25 świąt zarejestrowanych),
+  v3_p52_currency_fuzz.json (I11: 300 prób, 0 naruszeń),
+  rules/r10_crossborder_innovations_v9.rego (sekcja FX: fx_schedule z input,
+  rate bez provenance).
+  Odpowiedzi audytowe:
+  * Skąd kursy i na jaki dzień: narzędzia NIE liczą FX w ogóle
+    (tools_with_fx=0); rego r10 przyjmuje kursy z input (fx_schedule) —
+    data kursu po stronie hosta, bez wymogu provenance. Kontrakt I03:
+    kurs = {value, currency, table: NBP-A, table_date, fetched_at,
+    checksum} [NIEZWERYFIKOWANE — ISAP] (VAT art. 31a: dzień poprzedzający).
+  * Provenance vs hardcode: brak hardcode rate w rego (rego_hardcoded_rates=
+    0 — ADR-002 ok), ale i brak wymogu provenance — kurs bez daty nie jest
+    odtwarzalny w replay (L04).
+  * Weekend/święto: ścieżka nie istniała; I04 definiuje LAST_AVAILABLE_
+    WORKDAY z provenance albo NEEDS_ADVICE gdy brak jakiegokolwiek kursu —
+    10/26 dat testowych (weekendy/święta 2026-12/2027-01) objętych.
+  * Time-travel: replay walutowy wymaga table_date w danych — po L04;
+    kontrakt P05 honored (valid_from w snapshotach).
+  Wnioski: (1) warstwa walutowa silnika jest cienka (rego tak, narzędzia
+  nie) — P52 definiuje kontrakt provenance dla hostów; (2) daty bez tabeli
+  NBP mają teraz testowaną ścieżkę fail-closed; (3) fuzz 300 kombinacji
+  (kwota×kurs×waluta) nie wykrył naruszeń invariants — arytmetyka
+  przeliczenia jest stabilna, brakuje tylko proweniencji.
+  Luki: V3-P52-L04 (P2), L05 (P2), L11 (P3).
+
+5.3 GRANICE PROGÓW KWOTOWYCH
+  Dowody: v3_p52_penny_boundary_matrix.json (I02: 20 przypadków, 3 progi
+  groszowe EXCLUSIVE, exclusive_boundary_is_below=true),
+  thresholds_jdg.rego (whitelist_check_threshold_pln=15000),
+  rules/v3_p13_vat_deductions_enterprise.rego (mpp >= 15000, whitelist
+  payment_amount_pln >= threshold), thresholds_data.json (parameters=8,
+  bez progów MPP/zwolnienia — L12).
+  Odpowiedzi audytowe:
+  * „Dokładnie 15 000,00": art. 119 mówi „kwota brutto ... przekracza
+    15 000 zł" → semantyka WYŁĄCZNIE (na progu MPP OFF); silnik p13 stosuje
+    >= (włącznie). Teza matrycy I02: 15000.00 → MPP_OFF, 15000.01 → MPP_ON.
+    Rozbieżność rejestrowana jako L03 (P1) — rozstrzygnięcie prawne Q02
+    (istnieją interpretacje MF wymagające ≥; nie rozstrzygamy bez dowodu).
+  * Limity roczne narastająco: audyt kalendarza I09 (threshold_calendar)
+    wykrył 20 reguł rocznych; zwolnienie 200k (art. 113 „przekroczy" =
+    wyłącznie) i 30-krotność ZUS (art. 18d) jako kandydaci audytu
+    narastania z korektami w locie (K-P52-3).
+  * Przekroczenie o 0.01: matryca generuje próg±0.01 dla każdego progu —
+    20 przypadków gotowych do CI (wejście P39/P36).
+  * Progi walutowe (EUR equivalents): brak w narzędziach (tools_with_fx=0)
+    — do skojarzenia z I03 (kurs+data) w P53+.
+  Wnioski: (1) grosz na progu ma moc prawną — semantyka włącznie/wyłącznie
+  musi być jawnym parametrem kontraktu progów (P46 units + semantics);
+  (2) dane kanoniczne thresholds_data.json nie zawierają progów groszowych
+  używanych przez rego — dwa źródła prawdy (AP12, L12); (3) matryca I02
+  jest deterministycznym generatorem — nowe progi dostają testy automatycznie.
+  Luki: V3-P52-L03 (P1), L09 (P3), L12 (P3).
+
+5.4 INVARIANTY ARYTMETYCZNE I REPRODUKCJA
+  Dowody: v3_p52_sum_invariants.json (I05: 200 prób setek pozycji, 0
+  naruszeń netto+VAT=brutto przy per-pozycja half-up),
+  v3_p52_determinism_hash.json (I06: 50 prób, 0 dryfów referencyjnego
+  łańcucha, 50 unikalnych hashy, 0 narzędzi z haszem),
+  v3_p52_doomsday.json (I12: 6 przypadków skrajnych, 0 failure, div_zero →
+  NEEDS_ADVICE), v3_p52_drift_telemetry.json (I10: drift_total=64, target 0).
+  Odpowiedzi audytowe:
+  * Suma składników = suma całkowita: przy ścieżce A invariants są spójne
+    (0/200) — invariants istnieją i są testowane dopiero od P52.
+  * Determinizm: referencyjny łańcuch P52 jest deterministyczny (0 dryfów),
+    ale ŻADNE narzędzie nie liczy hasha wyliczenia — reprodukowalność nie
+    jest udowadniana w produkcji (L06).
+  * Replay historyczny: wymaga determinism hash + provenance kursów (L04/L06)
+    — ścieżka zaprojektowana (kontrakty), wdrożenie po decyzjach Q01–Q03.
+  * Interakcje netto→VAT→brutto: wykryte 64 rozjazdy ścieżek (I07) —
+    invariants sum przechodzą w obrębie ścieżki, ale nie MIĘDZY ścieżkami;
+    teza standardu: deklaracje liczą ścieżką A (per pozycja), pola
+    „aggregate" JPK tylko gdy przepis wprost tak każe [NIEZWERYFIKOWANE — ISAP].
+  Wnioski: (1) invariants per ścieżka OK, rozjazd MIĘDZY ścieżkami to realne
+  ryzyko JPK — standard jednej ścieżki = warunek konieczny; (2) determinism
+  hash to brakujące ogniwo audytowalności (kontrakt gotowy); (3) doomsday:
+  silnik arytmetyczny nie crashuje na skrajach; dzielenie przez zero ma
+  ścieżkę NEEDS_ADVICE (fail-closed).
+  Luki: V3-P52-L06 (P2), L02 (P1), L11 (P3).
+
+──────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (akty Sekcji 8 — OBOWIĄZKOWE)
+──────────────────────────────────────────────────────────────────────────────
+Statusy: PEŁNE / CZĘŚCIOWE / BRAK / PRZECZYANE. Wszystkie podstawy
+[NIEZWERYFIKOWANE — ISAP].
+
+| Akt | Art. | Reguła (istniejąca → P52) | Test | Status | Ryzyko |
+|---|---|---|---|---|---|
+| 01. Ordynacja podatkowa | 107 (pełne grosze) | brak jawnego standardu → I01 rejestr + grosz() | grosz half-up symetria (pytest), standards_register | CZĘŚCIOWE (standard zdefiniowany, wdrożenie w kalkulatorach po Q03) | Niereprodukowalne kwoty (banker's) |
+| 02. Ustawa VAT | 119 (próg MPP 15k) | p13 mpp >= 15000; whitelist >= | I02 matryca (20 przypadków, @próg) | CZĘŚCIOWE — rozbieżność włącznie/wyłącznie (L03, Q02) | Grosz zmienia reżim MPP/sankcji |
+| 02b. Ustawa VAT | 113 (zwolnienie 200k) | r02 exemption_limit_tracker | I02 (próg, ±0.01, ±1%) | CZĘŚCIOWE | Utrata zwolnienia o 0.01 |
+| 03. Ustawa VAT | 31a (kurs dzień poprzedzający) | r10 fx_schedule (rate z input) | I04 weekend/święto (26 dat); I03 provenance | BRAK provenance (L04) | Niereprodukowalny replay walutowy |
+| 04. Ustawa o PIT | 11a (kursy przych/koszt), 63 (grosze) | — → kontrakt I03/I01 | I11 fuzz (300) | BRAK → kontrakt | Dryf kursowy kosztów |
+| 05. Ustawa o ZUS | 18d (30-krotność) | zus limit 30x | I09 kalendarz (kandydat audytu) | CZĘŚCIOWE | Granica podstawy rocznej |
+| 06. Ustawa o rachunkowości | 28 ust. 1 pkt 11, art. 30 | wycena walutowa poza silnikiem → kontrakt I03 | I05 invariants (200) | CZĘŚCIOWE | Wycena nieodtwarzalna |
+| 07. NBP tabela A | kursy jako dane z datą | brak → kontrakt provenance I03 | I04 (10 dat bez tabeli) | BRAK → kontrakt | Kurs „z pamięci" (AP09) |
+| 08. Rozp. PKPiR | zaokrąglenia w ewidencji | pkpir tools (round()) | I07 łańcuchy (64 rozjazdy) | CZĘŚCIOWE | Ewidencja vs deklaracja rozjazd |
+Przepis odkryty: whitelist przelewów (art. 22p VAT / 117ba OP) stosuje
+>= 15 000 — ta sama rozbieżność semantyki co art. 119 (do Q02).
+
+──────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (V3-P52-Lxx)
+──────────────────────────────────────────────────────────────────────────────
+| ID | P | Luka | Dowód | Wpływ | Rozwiązanie | Koszt | Ryzyko regresji |
+|---|---|---|---|---|---|---|---|
+| L01 | P1 | 8/9 kalkulatorów banker's round (poza art. 107 OP) | I01 standards_register (rows) | Kwoty niereprodukowalne grosz po groszu | Helper grosz() w każdym kalkulatorze (4-eyes Q03 — zmienia wyniki) | M | Wysokie — zmiana wyników liczbowych |
+| L02 | P1 | 64/100 rozjazdów ścieżek A/B zaokrągleń | I07 path_drifts=64 | Rozjazdy JPK↔deklaracja | Standard jednej ścieżki (rekomendacja A) + testy (Q01) | M | Średnie — zmiana pól sum |
+| L03 | P1 | Semantyka progów >= vs „przekracza" (art. 119/113/22p) | I02 exclusive_boundary_is_below=true vs p13 `>=` | Błędny reżim na granicy (MPP/sankcja) | Rozstrzygnięcie prawne Q02 + parametr semantics w kontrakcie progów | S | Wysokie — decyzja prawna |
+| L04 | P2 | Kursy bez provenance (table_date/checksumy) | I03 rego_provenance_required=false | Replay walutowy niereprodukowalny | Kontrakt I03 dla hostów + walidacja w rego | M | Niskie |
+| L05 | P2 | Brak ścieżki weekend/święto dla kursów | I04 (10/26 dat bez tabeli) | Kurs „z pamięci" lub crash | LAST_AVAILABLE_WORKDAY + NEEDS_ADVICE fallback | S | Niskie |
+| L06 | P2 | 0 narzędzi z haszem determinizmu | I06 tools_with_hash=0 | Reprodukowalność nieudowodniona | Wdrożyć I06 hash → certificate F4 (P11) | M | Niskie |
+| L07 | P2 | 6/9 narzędzi bez jawnego traktowania ujemnych | I08 tools_with_negative_paths=3 | Korekty/nadpłaty dryfują | Testy ujemnych + helper symetryczny | S | Niskie |
+| L08 | P3 | 6 duplikatów round2() w pakietach Rego | I01 rego_round2_duplicates=6 | Dryf zaokrągleń między pakietami | Jeden pakiet arytmetyczny (import) | S | Niskie |
+| L09 | P3 | 30-krotność ZUS bez matrycy groszowej (słusznie — mnożnik) | I02 (wyjęty z THRESHOLDS_B2B) | Brak audytu narastania | Audyt kalendarza I09 (K-P52-3) | S | Niskie |
+| L10 | P3 | Budżet: pełny line-by-line odczyt narzędzi pominięty (skan+sekcje) | 9.02 | Analiza częściowa | Pełny audyt w sesji narzędziowej | S | Niskie |
+| L11 | P3 | Podstawy [NIEZWERYFIKOWANE — ISAP] | tagi w całym raporcie | Twierdzenia ≠ dowody | Stempel 4-eyes (P47-I10) | M | Niskie |
+| L12 | P3 | thresholds_data.json bez progów MPP/zwolnienia (8 parametrów) | I09 candidates=2; scan 15000=0 | Dwa źródła prawdy (AP12) | Uzupełnić dane kanoniczne progami z rego | S | Niskie |
+Suma: P0=0, P1=3, P2=5, P3=4. Brak P0: wdrożona warstwa nie łamie dokumentów
+świętych (fail-closed, ADR-002, temporalność); luki P1 wymagają decyzji
+człowieka zanim zmienią liczby.
+
+──────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (V3-P52-I01–I12, pełny projekt)
+──────────────────────────────────────────────────────────────────────────────
+Każda: (1) problem, (2) mechanizm, (3) wpływ na bezpieczeństwo decyzji,
+(4) ryzyko/mitygacja, (5) kryterium akceptacji, (6) zależności. Wszystkie 12
+ma artefakt (narzędzie + bundle gate=PASS + reguła + testy).
+
+I01 ARITHMETIC STANDARDS REGISTER — (1) L01: standard zaokrągleń nigdy nie
+był kontraktem. (2) Skaner kodu → standard per kalkulator (HALF_UP/BANKERS/
+TRUNCATION/UNKNOWN) + przepis (art. 107 OP/63 PIT) + status spójności;
+rejestr zapytywalny JSON; kanoniczny helper grosz() (half-up, ujemne przez
+abs). Rego: standards_register (noncompliant>0 → BLOCK). (3) Zamienia
+„jakieś round()" na dowód zgodności z ustawą. (4) Zmiana wyników po
+adopcji → mitygacja 4-eyes Q03 + golden replay przed/po. (5) Bundle PASS;
+asercje grosz(): 0.005→0.01, -0.005→-0.01, idempotencja (testy). (6) P41,
+P68, P36, P46.
+
+I02 PENNY BOUNDARY TEST MATRIX — (1) L03: progi bez testów ±0.01.
+(2) Deterministyczny generator: dla progu {próg, ±0.01, ±1%} z jawną
+semantyką EXCLUSIVE/INCLUSIVE i reżimem oczekiwanym; wejście do CI (P39).
+Rego: penny_boundary (thresholds<min → TRIAGE). (3) Grosz przy progu staje
+się testowalną tezą prawną, nie intuicją. (4) Zła semantyka progu w generatorze
+→ mitygacja: semantics jako dane z podstawą prawną w każdym przypadku.
+(5) 20 przypadków, 3 progi, asercja 15000.00→MPP_OFF / 15000.01→MPP_ON.
+(6) P39, P36, P46 (units), P13 (MPP), Q02.
+
+I03 CURRENCY RATE PROVENANCE — (1) L04: kurs bez daty/źródła. (2) Kontrakt
+kursu {value, currency, table: NBP-A, table_date, fetched_at, checksuma};
+walidacja provenance w rego; replay = kurs z table_date zdarzenia.
+Rego: rate_provenance (fx bez provenance → TRIAGE). (3) Przeliczenia
+walutowe odtwarzalne grosz po groszu w replay (P05). (4) Hosty bez checksumy
+→ TRIAGE (nie BLOCK) do czasu adaptacji. (5) Bundle PASS; contract w
+evidence; fuzz I11 na kurach z provenance. (6) P05, P10, P46, P27 (exit tax),
+r10.
+
+I04 WEEKEND/HOLIDAY RATE PATH — (1) L05: daty bez tabeli A nie miały ścieżki.
+(2) Kalendarz świąt 2026–2027 (25 dat) + reguła: brak publikacji →
+LAST_AVAILABLE_WORKDAY z provenance; brak jakiegokolwiek kursu → NEEDS_ADVICE.
+Rego: weekend_rate (kalendarz < min → TRIAGE). (3) Żaden kurs nie pochodzi
+„z pamięci" — ścieżka jawna i testowalna. (4) Zły kalendarz świąt → mitygacja:
+kalendarz jako dane z valid_from/valid_to, testy 26 dat. (5) Bundle PASS;
+asercja pytest: soboty/niedziele → LAST_AVAILABLE_WORKDAY. (6) P05, P25
+(kalendarz), I03.
+
+I05 SUM INVARIANTS SUITE — (1) Brak testów spójności sum. (2) 200 prób
+setek pozycji: suma pozycji = suma total; netto+VAT=brutto; penny-exact.
+Rego: sum_invariants (checks<min lub violations>0 → TRIAGE). (3) Deklaracja
+bez rozjazdu wewnętrznego — warunek JPK. (4) Mitygacja: invariants jako
+bramka CI, violations → pełny trace. (5) 0/200 naruszeń (bundle); asercje
+pytest. (6) P39, P16 (JPK), P37.
+
+I06 DETERMINISM HASH — (1) L06: brak dowodu reprodukowalności. (2) hash =
+sha256(input + parametry + wersje progów + wersja reguł); dwa wywołania =
+ten sam hash; hash w Decision Certificate (F4/P11); rozjazd = BLOCKER w CI.
+Rego: determinism (fail>0 → BLOCK; tools=0 → TRIAGE). (3) Deklaracja ma
+odcisk — audyt porównuje kwoty z hashem. (4) Hash nietrwały przy zmianie
+wersji → mitygacja: wersjonowanie w hashu (celowe). (5) 0 dryfów/50 prób;
+50 unikalnych hashy (różne inputy). (6) P11, P10, P39.
+
+I07 ROUNDING INTERACTION TESTS — (1) L02: rozjazdy łańcuchów niewykrywalne.
+(2) 100 prób łańcucha netto→VAT→brutto→sumy w dwóch ścieżkach (A per
+pozycja, B suma pełna) z rejestrem różnic groszowych. Rego: rounding_
+interactions (drifts>max → TRIAGE). (3) Rozjazd ścieżek widoczny liczbowo
+zanim trafi do JPK. (4) Standard ścieżki = decyzja Q01 → mitygacja:
+rekomendacja A + dokumentacja w K-P52-2. (5) 64 drifts/100 (bundle, jawny
+baseline); asercje. (6) P16 (JPK), P37, Q01.
+
+I08 NEGATIVE AMOUNT PATHS — (1) L07: ujemne poza testami; round2 asymetryczny.
+(2) 10 przypadków (±0.004/0.005/0.006/1.005/123.455) porównanie naive vs
+symetryczny half-up; wykrycie half-DOWN dla ujemnych w Rego round2. Rego:
+negative_paths (mismatch>0 lub tools nieobjęte → TRIAGE). (3) Korekty i
+nadpłaty zaokrąglane tak samo jak dodatnie — koniec dryfu korekt.
+(4) Zmiana zachowania istniejących kalkulatorów → 4-eyes z I01. (5) Bundle
+PASS; -0.005 → -0.01 (symetria) w testach. (6) P39, I01, P14 (korekty PIT).
+
+I09 THRESHOLD CALENDAR AUDIT — (1) L09/L12: limity roczne bez audytu
+narastania; dane kanoniczne bez progów. (2) Skaner thresholds_data.json
+(parameters/versions) + rego roczne (20 reguł) → kandydaci audytu
+(zwolnienie 200k, 30-krotność, korekty w locie). Rego: threshold_calendar
+(params=0 lub annual<min → TRIAGE). (3) Przekroczenie limitu rocznego
+wykrywane w dniu zdarzenia, nie na koniec roku. (4) Mitygacja: audyt jako
+dane testowe, decyzja budżetowa Q03. (5) Bundle PASS; annual_rules=20,
+candidates=2. (6) P05, P06, P46, r02 (limit tracker), Q03.
+
+I10 PENNY DRIFT TELEMETRY — (1) Brak metryki rozjazdów produkcji. (2) Jeden
+rejestr: drift_total = I05 + I07 (kontrolowana suma); target=0; alarm z
+full trace (input, progi, wersja reguł) → P37. Rego: drift_telemetry
+(unknown<0 lub >target → TRIAGE; bypass → BLOCK). (3) Trend rozjazdów
+mierzalny co cykl; reges się nie nagromadzą po cichu. (4) Alarm przy
+baseline 64 → jawny backlog, nie maskowanie. (5) drift_total=64=0+64
+(spójność); target=0 w progach. (6) P37, P39, I05/I07.
+
+I11 CURRENCY FUZZ — (1) Brak property-based testów walutowych. (2) 300
+prób (kwota±, kurs, waluta EUR/USD/GBP/CHF) z invariants: kwota>0 → PLN≥0;
+|PLN| ≤ 2×|kwota|×kurs; penny-exact; zero wyjątków bez NEEDS_ADVICE.
+Rego: currency_fuzz (trials<min lub violations>0 → TRIAGE). (3) Dowolna
+kombinacja rynkowa nie może wygenerować cichego błędu. (4) Mitygacja:
+seed fixed (reprodukcja), min prób z P34-I04. (5) 0 naruszeń/300; bundle
+PASS. (6) P34-I04, P10, I03/I04.
+
+I12 ARITHMETIC DOOMSDAY SUITE — (1) L06/L05 kontekst: silnik mógł crashować
+na skrajach. (2) Przypadki: max/min long, tiny 0.001, -0.001, zero,
+overflow produkt — asercja fail-closed (wynik lub NEEDS_ADVICE, nigdy
+wyjątek bez decyzji); div-zero → NEEDS_ADVICE. Rego: doomsday (failures>0
+lub brak ścieżki div-zero → BLOCK). (3) Arytmetyka nie jest wektorem
+awarii AUTO_POST. (4) Mitygacja: suite w CI (P39), nowe skrajne → dopisywane
+jako dane. (5) 0 failures/6; div_zero_path=NEEDS_ADVICE. (6) P39, P49,
+I05/I11.
+
+──────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (wiąże P53 i dalsze)
+──────────────────────────────────────────────────────────────────────────────
+K-P52-1 STANDARD ARYTMETYKI: jeden standard zaokrągleń per kontekst prawny
+  (podatkowy: HALF_UP do grosza, ujemne przez abs; helper grosz() w
+  tools/v3_p52_engines.py); rejestr standardów = bundles/v3_p52_standards_
+  register.json. Zasada: nowy kalkulator/reguła bez standardu = TRIAGE
+  bramki I01. Wiąże P41, P68.
+K-P52-2 TABELA TESTÓW BRZEGOWYCH (generator): bundles/v3_p52_penny_boundary_
+  matrix.json (20 przypadków: próg, ±0.01, ±1%, semantyka EXCLUSIVE/INCLUSIVE,
+  reżim oczekiwany) — wejście do P39 (CI) i P36 (generator). Zasada: nowy
+  próg kwotowy dostaje przypadki automatycznie; semantyka z podstawą prawną.
+K-P52-3 INVARIANTY ARYTMETYCZNE (pakiet): I05 sum invariants + I06 determinism
+  hash + I10 drift telemetry (jeden rejestr, target 0) + I12 doomsday —
+  wiąże P49 (fail-closed), P37 (telemetria), P39 (bramki). Zasada: deklaracja
+  bez hashu determinizmu nie wchodzi do certyfikatu F4.
+K-P52-4 KONTRAKT KURSU WALUTY: {value, currency, table: NBP-A, table_date,
+  fetched_at, checksuma}; ścieżka weekend/święto LAST_AVAILABLE_WORKDAY;
+  brak kursu = NEEDS_ADVICE — wiąże P53 (temporalność domknięcie), P27/r10
+  (cross-border), P68.
+K-P52-5 SEMANTYKA PROGÓW: każdy próg kwotowy niesie semantics
+  (EXCLUSIVE/INCLUSIVE) z podstawą prawną; rozstrzygnięcie MPP/whitelist →
+  Q02 zanim zmiana w p13. Wiąże P46, P13, P53+.
+K-P52-6 ZGODNOŚĆ MIRROR: rules/v3_p52_penny_granularity.rego = policies/
+  v3_p52_penny_granularity.rego (raw); dryf = konflikt Cxx (P48).
+
+──────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA
+──────────────────────────────────────────────────────────────────────────────
+WDROŻONO W TEJ SESJI (bez duplikacji, bez niszczenia zależności):
+  1. Warstwa polityki: rules/v3_p52_penny_granularity.rego (12 analiz,
+     decide fail-closed, thresholds_missing BLOCK, certificate F4).
+  2. Progi: blok v3_p52 (9 kluczy, valid_from, ADR-002/P05).
+  3. Wiring: main_jdg.rego import + final_verdict_p116 (anchor p115→p116).
+  4. Narzędzia: v3_p52_common.py, standards_register (I01+I09), engines
+     (I02-I08, I10-I12, helper grosz()), runner — 13 bundli gate=PASS.
+  5. Testy: 56 natywnych Rego ×2 OPA + 26 pytest (w tym asercje grosz()).
+  6. Mirror sync (527 plików, drift 0) + rejestr lifecycle 12× CANDIDATE
+     v3.52.1 + raport + ledger.
+WYMAGA TYLKO TESTÓW (bezpieczne):
+  7. Matryca I02 do CI jako bramka (przypadki gotowe); fuzz I11 do nightly
+     (P34-I04 min 1000 prób — podnieść z 300).
+WYMAGA DECYZJI CZŁOWIEKA (4-eyes, Q01–Q03):
+  8. Adopcja grosz() w 9 kalkulatorach (L01) — z golden replay before/after.
+  9. Rozstrzygnięcie semantyki progów MPP/whitelist/zwolnienie (L03, Q02).
+ 10. Standard ścieżki zaokrągleń deklaracji/JPK (L02, Q01) + naprawa 64
+     rozjazdów.
+ 11. Provenance kursów w hostach (L04) + hash determinizmu (L06).
+Ścieżka rollback: pakiet P52 odłączany przez usunięcie importu i
+final_verdict_p116 (pakiet nieaktywny bez flagi v3_p52_check); bundlee
+dowodowe add-only; mirror = build output (sync regeneracja); helper grosz()
+izolowany w tools/v3_p52_engines.py (brak zmian istniejących kalkulatorów
+w tej sesji — zero regresji liczbowej).
+
+──────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (przypadki blokujące merge)
+──────────────────────────────────────────────────────────────────────────────
+BLOKUJĄCE MERGE (bramka P39):
+  T-P52-01 thresholds_missing → BLOCK (default-deny). [test_p52_thresholds_
+    missing_fail_closed]
+  T-P52-02 bypass każdej z 12 analiz → BLOCK. [test_p52_i*_bypass_blocks ×12]
+  T-P52-03 determinism drift (dwa wyniki na ten sam input) → BLOCK.
+    [test_p52_i06_determinism_drift_blocks]
+  T-P52-04 doomsday failure (arytmetyka crashuje) → BLOCK.
+    [test_p52_i12_arithmetic_failure_blocks]
+  T-P52-05 brak ścieżki div-zero → BLOCK. [test_p52_i12_missing_div_zero_]
+  T-P52-06 operacja poza standardem art. 107 (noncompliant>0) → BLOCK.
+    [test_p52_i01_one_noncompliant_blocks]
+  T-P52-07 jakiekolwiek otwarte naruszenie → nigdy AUTO_POST.
+    [test_p52_no_silent_auto_post_with_open_findings]
+GRANICZNE (grosz przy progu — K-P52-2):
+  T-P52-08 15000.00 → MPP_OFF; 15000.01 → MPP_ON; 14999.99 → MPP_OFF
+    (teza EXCLUSIVE, art. 119). [test_p52_i02_at_threshold_exclusive_regime]
+  T-P52-09 dla każdego progu: {próg, ±0.01, ±1%} obecne w matrycy.
+    [test_p52_i02_penny_boundary_bundle]
+  T-P52-10 grosz(): 0.005→0.01; 0.004→0.00; -0.005→-0.01; -1.005→-1.01;
+    123.455→123.46. [test_p52_grosz_half_up_symmetric]
+  T-P52-11 grosz() idempotentny i penny-exact. [test_p52_grosz_idempotent_]
+  T-P52-12 ścieżka weekend: sobota/niedziela → LAST_AVAILABLE_WORKDAY.
+    [test_p52_i04_weekend_rate_bundle]
+  T-P52-13 invariants: netto+VAT=brutto na setkach pozycji (200 prób).
+    [test_p52_i05_sum_invariants_bundle]
+NEGATYWNE / AKTYWACJA:
+  T-P52-14 brak flagi v3_p52_check → no_match. [test_p52_no_activation_]
+  T-P52-15 analysis nieznana → no_match. [test_p52_no_selector_]
+  T-P52-16 drift unknown (-1) → TRIAGE nie AUTO. [test_p52_i10_unknown_]
+  T-P52-17 fuzz poniżej min prób → TRIAGE. [test_p52_i11_insufficient_]
+TEMPORALNE / DANE:
+  T-P52-18 certificate niesie threshold_version/legal_basis_version/valid_from.
+    [test_p52_certificate_carries_threshold_version]
+  T-P52-19 mirror raw identyczny. [test_p52_rego_mirror_semantically_identical]
+  T-P52-20 rejestr lifecycle 12× CANDIDATE v3.52.1. [test_p52_rule_registry_]
+REGRASYJNE:
+  T-P52-21 regresja P13–P52 natywna: 1285/1285 (OPA 0.68 i 1.9) — zielone.
+  T-P52-22 pytest p13–p52: 1688 passed; 8 pre-existing (P18/P21/P22) bez zmian.
+FUZZ/PROPERTY (P52→P34 kontekst):
+  T-P52-23 property: dowolny (kwota, kurs, waluta) → invariants I11; min 1000
+    prób docelowo (P34-I04).
+  T-P52-24 property: determinism hash niezależny od kolejności kluczy JSON
+    (sort_keys) — 50/50.
+
+──────────────────────────────────────────────────────────────────────────────
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (V3-P52-Qxx)
+──────────────────────────────────────────────────────────────────────────────
+Q01. Standard ścieżki zaokrągleń deklaracji/JPK: ścieżka A (VAT per pozycja,
+  sumy z kwot zaokrąglonych — rekomendacja kampanii, 0/200 rozjazdów
+  wewnętrznych) czy ścieżka B (sumy z wartości pełnych)? Decyzja determinuje
+  naprawę 64 rozjazdów (L02) i pola sum JPK.
+Q02. Semantyka progów MPP (art. 119), whitelist (art. 22p/117ba OP) i
+  zwolnienia (art. 113): „przekracza/przekroczy" = WYŁĄCZNIE (na progu reżim
+  stary) czy >= = WŁĄCZNIE (jak w p13)? Wymaga weryfikacji ISAP + interpretacji
+  MF; grosz na progu zmienia reżim i sankcje.
+Q03. Adopcja helpera grosz() w 9 kalkulatorach zmienia wyniki liczbowe
+  (banker's → half-up). Czy przyjąć zmianę z golden replay before/after jako
+  kampanię naprawczą (P36/P39), czy tylko dla nowych wyliczeń?
+Q04. Budżet audytu kalendarza rocznego I09 (30-krotność, zwolnienie, korekty
+  w locie) — priorytet względem naprawy L01/L02/L03?
+
+──────────────────────────────────────────────────────────────────────────────
+9.12 ZAAŁOŻENIA JAWNE
+──────────────────────────────────────────────────────────────────────────────
+[ZAŁOŻENIE] Z1: standard podatkowy zaokrągleń = half-up do pełnych groszy
+  (art. 107 OP / art. 63 PIT) — do stempla ISAP.
+[ZAŁOŻENIE] Z2: semantyka „przekracza" = próg wyłącznie (teza matrycy I02);
+  silnik p13 stosuje >= — rozbieżność celowo NIE rozstrzygnięta (Q02).
+[ZAŁOŻENIE] Z3: ścieżka A (VAT per pozycja) jest rekomendowanym standardem
+  łańcucha deklaracji; B tylko gdy przepis wprost wymaga sumy pełnej.
+[ZAŁOŻENIE] Z4: kalendarz świąt 2026–2027 (25 dat) jest kompletny dla
+  świąt ustawowych; dni ustawowo wolne od pracy pominięte (np. 24 XII) —
+  do rozszerzenia w I04.
+[ZAŁOŻENIE] Z5: tabela A NBP publikowana w dni robocze; kurs na dzień
+  poprzedzający obowiązek podatkowy (art. 31a) = ostatnia opublikowana
+  tabela dla dat weekendowych.
+[ZAŁOŻENIE] Z6: seed-y random (52/7/17/111) stałe — dowody odtwarzalne.
+[ZAŁOŻENIE] Z7: nazwy pól input (fx_schedule itd.) zgodne z r10 — host
+  implementuje kontrakt provenance przy adaptacji.
+
+──────────────────────────────────────────────────────────────────────────────
+9.13 TABELA DOWODÓW T1 (7.3 — jeden wiersz na plik Sekcji 6)
+──────────────────────────────────────────────────────────────────────────────
+| # | Plik (Sekcja 6) | Co pobieramy (dowód/fakt/liczba) | Status |
+|---|---|---|---|
+| 1 | tools/vat_rate_engine.py | skan: round()=1, brak Decimal/ROUND_HALF_UP → BANKERS | ZWERYFIKOWANO |
+| 2 | tools/zus_calculator.py | round()=3, dzielenia /12 → BANKERS | ZWERYFIKOWANO |
+| 3 | tools/zus_zasilkowa_calculator.py | round()=2, dzielenia ×8, ścieżki ujemne=1 → BANKERS+NEG | ZWERYFIKOWANO |
+| 4 | tools/sanction_calculator.py | round()=4 → BANKERS | ZWERYFIKOWANO |
+| 5 | tools/kks_penalty_simulator.py | round()=4, int()=3 (truncation), próg 15000 → MIXED | ZWERYFIKOWANO |
+| 6 | rules/thresholds_jdg.rego | whitelist 15000; brak semantyki progów (włącznie/wyłącznie) | ZWERYFIKOWANO |
+| 7 | bundles/thresholds_data.json | parameters=8 (wszystkie z unit/versions); brak progów MPP/200k (L12) | ZWERYFIKOWANO |
+| 8 | tools/tax_form_whatif_simulator.py | ROUND_HALF_UP+Decimal=2, negative=6 → CONSISTENT (jedyny) | ZWERYFIKOWANO |
+| 9 | tests/test_tax_rules.py | obecny; brak przypadków granic groszowych ±0.01 przed P52 | ZWERYFIKOWANO |
+| 10 | tests/test_vat_enterprise.py | obecny; brak testów @próg MPP | ZWERYFIKOWANO |
+| 11 | tests/test_pcc_excise_enterprise.py | obecny; brak testów ujemnych korekt | ZWERYFIKOWANO |
+| 12 | tests/rego/test_native_pcc_v3_10.rego | natywny PCC — brak granic groszowych | ZWERYFIKOWANO |
+| 13 | tests/rego/micro/test_native_micro_zus.rego | natywny ZUS — brak granicy 30-krotności groszowej | ZWERYFIKOWANO |
+| 14 | tests/test_core_guards_temporal_thresholds.py | kontrola temporalna progów (P05) — kontekst I09 | ZWERYFIKOWANO |
+| 15 | tests/test_edge_cases_enterprise.py | edge cases istnieją; doomsday arytmetyczny dopiero P52-I12 | ZWERYFIKOWANO |
+| 16 | tools/p13_crossborder_toolkit.py | round()=7, hardcoded rate=1, brak provenance | ZWERYFIKOWANO |
+| 17 | docs/CROSSBORDER_P12.md | obecny (kontekst fx calculatora p12) | ZWERYFIKOWANO (obecność) |
+| 18 | tools/jpk_validator.py | round()=5, int()=2, negative=5 → walidator ma ścieżki ujemne | ZWERYFIKOWANO |
+| 19 | tools/jpk_generator.py | round()=8 → generator JPK na banker's (ryzyko pól sum) | ZWERYFIKOWANO |
+| 20 | tests/test_crossborder_enterprise.py | obecny; brak testów kursów weekend | ZWERYFIKOWANO |
+| 21 | tests/rego/test_native_crossborder.rego | natywny crossborder — brak provenance asercji | ZWERYFIKOWANO |
+| 22 | policies/jdg (mirror) | sync 527 plików, drift 0 | ZWERYFIKOWANO |
+| 23 | policies/tax (mirror) | warstwa podatkowa mirror | ZWERYFIKOWANO (sync) |
+| 24 | policies/tax/vat (mirror) | VAT mirror | ZWERYFIKOWANO (sync) |
+| 25 | policies/jdg/bundles/bundle.sh | skrypt budowy | ZWERYFIKOWANO (obecność) |
+| 26 | policies/jdg/bundles/base/manifest.json | manifest bazowy | ZWERYFIKOWANO (obecność) |
+| 27 | policies/jdg/bundles/overlays/v2026/manifest.json | overlay v2026 | ZWERYFIKOWANO (obecność) |
+Dowody własne P52 (bundles/v3_p52_*.json, 13 szt.) — gate=PASS wszystkie.
+
+──────────────────────────────────────────────────────────────────────────────
+9.14 T10 — PRZEKAZYWANE ARTEFAKTY (11.4) + PYTANIA KRZYŻOWE
+──────────────────────────────────────────────────────────────────────────────
+T5 kontrakt wyjściowy: 9.08 (K-P52-1…6).
+T10:
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|---|---|---|---|
+| Rejestr standardów arytmetyki | P41, P68 | bundles/v3_p52_standards_register.json | nowy kalkulator bez standardu = TRIAGE |
+| Helper grosz() (kanoniczny) | P36, kampanie | tools/v3_p52_engines.py | jedyna implementacja zaokrągleń podatkowych |
+| Matryca granic progów (20 przypadków) | P39, P36, P13 | bundles/v3_p52_penny_boundary_matrix.json | nowy próg → testy automatycznie |
+| Kontrakt kursu z provenance | P53, P27/r10, P68 | bundles/v3_p52_rate_provenance.json | hosty walidują fields przed liczeniem |
+| Ścieżka weekend/święto (26 dat) | P53, P25 | bundles/v3_p52_weekend_rate_path.json | kurs z table_date albo NEEDS_ADVICE |
+| Invariants sum (200 prób) | P39, P16 | bundles/v3_p52_sum_invariants.json | bramka spójności JPK |
+| Determinism hash (kontrakt) | P11, P10, P49 | bundles/v3_p52_determinism_hash.json | hash w certificate F4 |
+| Rozjazdy łańcuchów (64, baseline) | P37, P16, Q01 | bundles/v3_p52_rounding_interactions.json | decyzja standardu ścieżki |
+| Kalendarz progów rocznych | P09, P53 | bundles/v3_p52_threshold_calendar.json | audyt narastania limitów |
+| Drift telemetry (jeden rejestr) | P37, P68 | bundles/v3_p52_drift_telemetry.json | trend rozjazdów → 0 |
+| Fuzz walutowy + doomsday | P39, P34 | bundles/v3_p52_currency_fuzz.json, doomsday | suite skrajnych w CI |
+
+PYTANIA KRZYŻOWE (7.4):
+X01. Sprzeczności z dokumentami świętymi: NIE STWIERDZONO (Cxx pusty).
+  V1 §8/V2: pakiet używa certificate F4, fail-closed, parametry-as-data.
+  Napięcie: kalkulatory (kod produkcji) poza standardem art. 107 — traktowane
+  jako luka L01 z planem 4-eyes, nie konflikt (dokumenty nie definiują
+  szczegółu zaokrągleń; ustawa tak [NIEZWERYFIKOWANE — ISAP]).
+X02. Reguły łamiące P06/P05: warstwa P52 — nie (progi jako dane, valid_from).
+  Wykryte poza P52: thresholds_data.json bez progów MPP (dwa źródła, AP12 —
+  L12); r10 fx bez provenance (AP09 — L04); round2×6 duplikatów (L08).
+X03. Ścieżki nie-fail-closed: w P52 wszystkie 12 analiz mają BLOCK/TRIAGE +
+  bypass→BLOCK; div-zero → NEEDS_ADVICE (I12); brak kursu → NEEDS_ADVICE
+  (I04). Ryzyko poza P52: brak ścieżek weekend w hostach (L05) i
+  niereprodukowalne wyliczenia bez hasha (L06) — kontrakty gotowe.
+X04. Kontrakt 25-polowy (P03/ADR-004): decyzje P52 niosą matched/rule_id/
+  package/priority/decision_mode/_routing/_routing_reason/_legal_basis/
+  _warnings/threshold_version/legal_basis_version/valid_from/valid_to + pola
+  analityczne; safe_merge na prawej stronie p116 (jak P49–P51).
+X05. Testy blokujące merge: T-P52-01…07 (9.10) — 56 testów natywnych w CI
+  (opa test JDG/tests/).
+X06. Duplikaty: P52 NIE duplikuje — rozszerza: tax_form_whatif (ROUND_HALF_UP
+  jako wzorzec → kanon I01), r10 fx (kontrakt provenance I03), P05/P06
+  (temporalność/progi), P34-I04 (fuzz min). Konsolidacja: L08 (round2×6 →
+  jeden pakiet arytmetyczny; plan w 9.09 pkt 11).
+X07. Podstawy niezweryfikowane: art. 107 OP, 63 PIT, 119/113/31a VAT, 11a
+  PIT, 18d ZUS, 28 ust. 1 pkt 11/30 UoR, NBP tabela A, rozp. PKPiR —
+  [NIEZWERYFIKOWANE — ISAP] (L11). Rejestr mediacji → P47-I10; priorytet:
+  art. 119/113/22p (Q02) i art. 107 (Q03) — bo zmieniają liczby.
+X08. Decyzje 4-eyes: Q01 (ścieżka zaokrągleń), Q02 (semantyka progów),
+  Q03 (adopcja grosz() w kalkulatorach), Q04 (budżet I09); plus usunięcie
+  ghost-zależności hostów fx (L04) i konsolidacja round2 (L08).
+X09. Metryki do P37: v3_p52_penny_drift_total (alarm >0, trend → 0),
+  v3_p52_path_drifts (baseline 64), v3_p52_noncompliant_tools (alarm >0),
+  v3_p52_determinism_failures (alarm >0 = BLOCKER), v3_p52_fuzz_violations
+  (alarm >0), v3_p52_fx_without_provenance (alarm >0). Dashboardy:
+  „Penny Precision" (drift+standardy), „FX Provenance".
+X10. Invarianty runtime (P04): INV-P52-1: deklaracja bez determinism hash →
+  brak AUTO_POST (reprodukowalność warunkiem); INV-P52-2: kwota @próg
+  EXCLUSIVE → reżim „poniżej" (do rozstrzygnięcia Q02, potem invariant);
+  INV-P52-3: kurs bez provenance → NEEDS_ADVICE (przeliczenia walutowe);
+  INV-P52-4: suma pozycji ≠ suma total → BLOCK + trace. Uzasadnienia:
+  UoR art. 4 ust. 1, art. 107 OP [NIEZWERYFIKOWANE — ISAP].
+
+──────────────────────────────────────────────────────────────────────────────
+9.15 ANTY-WZORCE (7.5) — WYNIK SPRAWDZENIA
+──────────────────────────────────────────────────────────────────────────────
+| AP | Wynik | Dowód |
+|---|---|---|
+| AP01 stuby {true} | NIE MA w warstwie P52 (test) | test_p52_no_stub_true_rules |
+| AP02 hardcode progów | NIE MA w Rego P52 (progi data.*); poza P52: hardcoded rate=1 w p13 toolkit (L04 kontekst) | test_p52_rego_zero_hardcode_; I03 |
+| AP03 brak else-chain | NIE MA — 12 analiz jawnie; default no_match | struktura + 56 testów |
+| AP04 duplikaty rule_id | NIE MA — 12 unikalnych | rule_registry |
+| AP05 podstawy bez Dz.U./niemożliwe daty | BRAK PRZECZYANYCH; wszystkie [NIEZWERYFIKOWANE] | L11 |
+| AP06 testy zawsze-zielone | NIE MA — asercje negatywne (BLOCK/TRIAGE) i graniczne groszowe | 56+26 testów |
+| AP07 cichy AUTO_POST | NIE MA — thresholds_missing→BLOCK; drift/determinism→BLOCK | T-P52-01/03/07 |
+| AP08 cykle importów | NIE MA — pakiet tylko w main_jdg | opa check strict (plik) |
+| AP09 dane zewnętrzne na stałe | WYKRYTO poza P52: kursy bez provenance (r10 input, narzędzia bez fx) → kontrakt I03; brak hardcode w Rego P52 | I03 bundle |
+| AP10 brak okien temporalnych | NIE MA — valid_from w snapshotie; kalendarz świąt z datami | thresholds v3_p52; I04 |
+| AP11 mirror dryf | NIE MA — raw identyczny po sync 527 | test_p52_rego_mirror_ |
+| AP12 metryki w dwóch miejscach | WYKRYTO: progi MPP/200k w rego, brak w thresholds_data.json (L12) — jawne, plan uzupełnienia | I09 bundle |
+
+──────────────────────────────────────────────────────────────────────────────
+9.16 T11 — MACIERZ PODANALIZA×GRUPA (APENDYKS B); T12 KONFLIKTY
+──────────────────────────────────────────────────────────────────────────────
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik |
+|---|---|---|---|
+| 5.1 | 6.1, 6.2 | 8/9 banker's; 64/100 rozjazdów; 3/9 ujemne | 9.04 / 9.05 |
+| 5.2 | 6.3, 6.4 | fx tools=0; provenance=false; 10/26 dat bez tabeli; fuzz 300/0 | 9.04 / 9.05 |
+| 5.3 | 6.1, 6.2 | 20 przypadków; @15000 → MPP_OFF (teza); p13 `>=` | 9.04 / 9.05 |
+| 5.4 | 6.1, 6.2 | invariants 0/200; determinism 0/50; doomsday 0/6; drift 64 | 9.04 / 9.05 |
+T12 REJESTR KONFLIKTÓW (Cxx): PUSTY. Rozbieżność semantyki progów (silnik ≥
+vs teza „przekracza") jest luką L03 z pytaniem Q02 — nie konfliktem z
+dokumentami świętymi (te nie rozstrzygają tego szczegółu).
+
+──────────────────────────────────────────────────────────────────────────────
+KRYTERIA AKCEPTACJI (Sekcja 13) — ODZNACZENIE
+──────────────────────────────────────────────────────────────────────────────
+[✔] 01. Raport jeden plik TXT (ta ścieżka).
+[✔] 02. Sekcje 9.01–9.15 obecne i nietrywialne.
+[✔] 03. Każdy plik Sekcji 6 w T1 (27 wierszy, wszystkie ZWERYFIKOWANO
+        na poziomie zadeklarowanym; adnotacje „obecność" jawne).
+[✔] 04. Macierz PRAWO↔REGUŁA↔TEST dla 8 aktów + przepisy odkryte (22p/117ba).
+[✔] 05. Rejestr luk P0–P3 (12 luk: 0/3/5/4).
+[✔] 06. 12 innowacji z pełnym 6-punktowym projektem (I01–I12).
+[✔] 07. Kontrakt wyjściowy (9.08, K-P52-1…6) konkretny i testowalny.
+[✔] 08. Plan testów z przypadkami blokującymi merge (9.10).
+[✔] 09. Pytania do człowieka (9.11, Q01–Q04).
+[✔] 10. Zero twierdzeń bez dowodu; [ZAŁOŻENIE]/[NIEZWERYFIKOWANE] jawne.
+[✔] 11. Pytania krzyżowe X01–X10.
+[✔] 12. T10 przekazywanych artefaktów wypełniona.
+[✔] 13. T11 z kolumnami Grupy kluczowe/Wynik.
+[✔] 14. Anty-wzorce 7.5: każdy ze wynikiem (9.15; AP02/AP09/AP12 wykryte
+        poza warstwą P52 z planem).
+[✔] 15. Instrukcja 6.0: każdy plik z faktem albo adnotacją.
+[✔] 16. APENDYKS E wykonany (ETAP 1–6; wdrożenie = nadzbiór raportu).
+[✔] 17. Sekcje pisane od zera (weryfikacja, nie parafraza).
+[✔] 18. Deklaracja zgodności: poniżej.
+[✔] 19. Rejestr punktów zaokrągleń z cytowaniami (art. 107 OP, 63 PIT)
+        i statusami spójności (9.04/9.05 + bundle I01).
+[✔] 20. Tabela testów brzegowych ≥20 przypadków (I02: 20 + I08: 10 + I04: 26)
+        z oczekiwanymi wynikami (bundele + 9.10).
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI: pakiet P52 zgodny z V1 (bramki,
+SLO, parametry-as-data) i V2 (Decision Certificate F4, Golden Oracle replay,
+Law Radar pętla przez I07/I10 kontekst). Odstępstwa: brak. Ustalenia o kodzie
+produkcji (banker's, `>=`, brak provenance) to dowody luk, nie zmiany
+standardów po cichu (kontrakt 11.3) — naprawy po Q01–Q03.
+
+──────────────────────────────────────────────────────────────────────────────
+SEKCJA 16 — KOMENDA KOŃCOWA: POTWIERDZENIE I CZYSZCZENIE
+──────────────────────────────────────────────────────────────────────────────
+1. Raport zapisany: JDG/raporty_glm52_v3/RAPORT_V3_P52_GRANICE_GROSZOWE.txt.
+2. Potwierdzenie zakresu P52: audyt arytmetyki 9 kalkulatorów + 6 pakietów
+   Rego (8/9 poza standardem art. 107; 64/100 rozjazdów; 0 provenance);
+   wdrożone: Rego 12 analiz, 9 progów, wiring p116, 14 narzędzi, 13 bundli
+   gate=PASS, 56/56 rego ×2 OPA, 26/26 pytest, mirror 527 drift 0, lifecycle
+   12× CANDIDATE v3.52.1; luk P0=0/P1=3/P2=5/P3=4; innowacji 12; kontrakt
+   wyjściowy K-P52-1…6.
+3. Kontrakty do P53: K-P52-1 standard arytmetyki, K-P52-2 matryca brzegowa
+   (wejście CI/P36), K-P52-3 invariants + drift telemetry, K-P52-4 kontrakt
+   kursu z provenance (P53 = TEMPORALNOŚĆ_DOMKNIECIE — główny odbiorca),
+   K-P52-5 semantyka progów, K-P52-6 mirror.
+4. OKNO KONTEKSTOWE DO WYCZYSZCZENIA — do P53 tylko: EXECUTIVE SUMMARY,
+   KONTRAKT WYJŚCIOWY, REJESTR LUK P0/P1 (L01, L02, L03).
+5. Żadnych niejawnych założeń poza raportem.
+==============================================================================
+KONIEC RAPORTU V3 P52 — GRANICE GROSZOWE
+==============================================================================

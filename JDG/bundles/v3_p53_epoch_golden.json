@@ -1,0 +1,42 @@
+{
+  "analysis": "I11_epoch_aware_golden_replay",
+  "verdicts_total": 31,
+  "verdicts_with_epoch_label": 29,
+  "verdicts_without_epoch_label": 2,
+  "epoch_assignment_samples": [
+    {
+      "hash": "4380febb2a16",
+      "rule_id": "jdg.pit.a30c.r1",
+      "valid_from": "2026-01-01",
+      "epoch": "EPOCH-BASE"
+    },
+    {
+      "hash": "93ef2b2582b1",
+      "rule_id": "jdg.pit.advances_returns.loss_carry_forward",
+      "valid_from": "2026-01-01",
+      "epoch": "EPOCH-BASE"
+    },
+    {
+      "hash": "a5b6c7d8e9f0",
+      "rule_id": "jdg.ksef_jpk.ksef_mandatory",
+      "valid_from": "2026-02-01",
+      "epoch": "EPOCH-BASE"
+    },
+    {
+      "hash": "c7d8e9f0a1b2",
+      "rule_id": "jdg.rule_lifecycle.auto_rollback",
+      "valid_from": "2026-01-01",
+      "epoch": "EPOCH-BASE"
+    },
+    {
+      "hash": "e8f9a0b1c2d3",
+      "rule_id": "jdg.adaptive_trust.auto_post_gate",
+      "valid_from": "2026-01-01",
+      "epoch": "EPOCH-BASE"
+    }
+  ],
+  "gap": "golden bez jawnych event_date/epoch (L06) — etykietowanie przez valid_from",
+  "legal_basis": "Golden Oracle (V2); replay wybiera epokę automatycznie",
+  "gate": "PASS",
+  "generated_at": "2026-09-12T17:52:42.982019+00:00"
+}

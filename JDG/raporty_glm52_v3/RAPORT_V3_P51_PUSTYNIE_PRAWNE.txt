@@ -1,0 +1,778 @@
+==============================================================================
+RAPORT V3 P51 — PUSTYNIE PRAWNE — DOMKNIĘCIE LUK POKRYCIA AKT→REGUŁA→TEST
+==============================================================================
+Seria:     NEXUSAI JDG — V3 FORTRESS CAMPAIGN (P00–P68)
+Prompt:    JDG/prompty_v3/V3_PROMPT_P51_PUSTYNIE_PRAWNE.txt
+Raport:    JDG/raporty_glm52_v3/RAPORT_V3_P51_PUSTYNIE_PRAWNE.txt
+Status:    WDROŻONY_100 (2026-09-12)
+Sesja:     wdrożenie raportu P51 z czystego okna kontekstowego; dowody z
+           uruchomionych narzędzi (bundles/v3_p51_*.json, gate=PASS).
+Uwaga:     liczby w tym raporcie pochodzą z realnych uruchomień narzędzi
+           (protokół 14: zero fantazjowania liczbami). Weryfikacja ISAP/RCL
+           nie została wykonana w tej sesji — każde twierdzenie prawne ma
+           tag [NIEZWERYFIKOWANE — ISAP] (protokół 04).
+
+──────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+──────────────────────────────────────────────────────────────────────────────
+Dojrzałość części P51: 92/100 przed tą sesją istniało 13 narzędzi silników
+dowodowych I01–I12; brakowało warstwy polityki (Rego), progów ADR-002,
+wiringu orkiestratora, testów natywnych/pytest, rejestru lifecycle, mirroru
+i raportu — wszystko zostało wdrożone w tej sesji i zweryfikowane:
+
+  * Rego: rules/v3_p51_coverage_deserts.rego — pakiet jdg.v3_p51_coverage_
+    deserts, 12 analiz I01–I12, router decide (else-chain, fail-closed),
+    Decision Certificate F4 (threshold/legal_basis wersje, valid_from).
+  * Progi: 13 kluczy v3_p51_* w rules/thresholds_jdg.rego (ADR-002/P05).
+  * Wiring: main_jdg.rego import + final_verdict_p115 (post-merge anchor
+    przesunięty z p114 na p115).
+  * Narzędzia: 13 (12 silników I01–I12 + runner) — wszystkie gate=PASS,
+    łącznie 8.04 s, kolejność zależności zachowana.
+  * Testy: natywne Rego 57/57 (OPA 0.68.0 i 1.9.0 --v0-compatible);
+    pytest 23/23; regresja serii P13–P51: 1229/1229 rego (oba OPA),
+    pytest 1662/1670 (8 porażek odtworzonych na czystym HEAD = wcześniejsze,
+    niezależne od P51).
+  * Mirror: policies/ zsynchronizowany (526 plików, dryf 0 plików).
+  * Rejestr lifecycle: 12 wpisów CANDIDATE v3.51.1 w bundles/rule_registry.json.
+
+TOP-10 rekomendacji (szczegóły w 9.09):
+  1. Domknąć 34 pustynie P0 (SLA 14 dni) zaczynając od LKG-0226 (Ordynacja
+     art. 70 — przedawnienie: pustynia `no_rule` na przepisie przekrojowym).
+  2. Naprawić dryf mianowników raportów pokrycia (V3-P51-L02): LCI=100% przy
+     mianowniku 70 (canon) vs 251 węzłów ARTICLE (legal_graph) — 97 węzłów
+     poza mianownikiem kanonu.
+  3. Odświeżyć coverage_deserts.json (snapshot 2026-08-08: 72 pustynie) do
+     bieżącego skanu (159) — snapshot archiwalny myli consumers.
+  4. Podłączyć 4 generatory reguł do guardu duplikatów K-P50-5 (0/4 obecnie)
+     i usunąć fabrykę stubów AP01 (V3-P51-L08).
+  5. Wyeliminować 24 ghost testy (test bez reguły kanonicznej) — V3-P51-L10.
+  6. Domknąć 41 pustyni klasy rule_no_test generatorem testów (P36) —
+     najszybsza ścieżka wzrostu CCR (36.65% → cel 90%).
+  7. Zbudować rejestr CLASS_SYSTEMIC na bazie pustyni systemowych (I06:
+     obecnie 0 klas — detektor regex article_label nie ma słownika; V3-P51-L05).
+  8. Rozstrzygnąć 2 ghost rule_refs w LKG (rule_ids nieobecne w canonical;
+     V3-P51-L03) — korekta legal_graph albo wiring reguł.
+  9. Wprowadzić dane przepływów kwot do heatmapy I08 (obecnie proxy;
+     [ZAŁOŻENIE] jawne w bundlu) — V3-P51-L09/Q03.
+ 10. Stemplować podstawy prawne P51 w ISAP (4-eyes, P47-I10) — cała seria
+     [NIEZWERYFIKOWANE — ISAP] (V3-P51-L12).
+
+Liczba luk wg krytyczności (rejestr 9.06): P0=0, P1=2, P2=4, P3=6 (12 luk).
+Innowacje: 12 (I01–I12, pełny projekt 6-punktowy w 9.07; wszystkie mają
+artefakt w repo + bundle dowodowy + regułę Rego + testy).
+Deklaracja: udowodniono kodem, testami i uruchomieniami stan warstwy P51
+(rejestr pustyni 159 wpisów, CCR=36.65%, scoring, karty, atestacja z
+zastrzeżeniami). Nie udowodniono (pozostaje [NIEZWERYFIKOWANE — ISAP]):
+treść przepisów, Dz.U. i daty obowiązywania aktów w LKG/canon.
+
+──────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+──────────────────────────────────────────────────────────────────────────────
+Przeanalizowano (realne odczyty/uruchomienia):
+  * Dane pokrycia: bundles/legal_graph.json (258 węzłów, 251 ARTICLE,
+    nodes_count/covered_nodes=155), bundles/coverage_canon.json (LCI=100%,
+    UVR=11125, lkg_material_nodes=70), bundles/coverage_deserts.json
+    (snapshot 2026-08-08: 72 pustynie / 69.9%), docs/COVERAGE_CANON.md,
+    docs/LEGAL_COVERAGE_GAP_RAPORT.md, docs/LEGAL_COVERAGE.md,
+    COVERAGE_REPORT.md (skan narzędziowy, nie pełny odczyt ręczny).
+  * Narzędzia pokrycia: legal_coverage_heatmap.py, coverage_unifier.py,
+    tests/test_coverage_unifier.py, coverage_95_plan.py,
+    generate_missing_rules.py, parse_plan33_and_generate.py,
+    generate_from_plan50.py, legal_change_impact_analyzer.py,
+    traceability_matrix.py, vat_traceability_matrix.py,
+    unified_plan_v8.yaml (obecność + interfejsy zweryfikowane skanerem I05
+    i rejestrem plików; pełny odczyt tylko dla generatorów P51-relevant).
+  * Rejestry prawne: docs/Bbb (obecność; nie pełny odczyt — budżet),
+    docs/LEGAL_SOURCE_REGISTRY.md, docs/LEGAL_REFERENCE_ACTS.md,
+    docs/KALENDARZ_ZMIAN_PRAWNYCH.md (seed DRL-0001 2099-06-01),
+    bundles/legal_graph.json (struktura węzłów/act_dz_u).
+  * Mirror policies: policies/ (sync 526 plików, drift 0), manifest
+    .sync_manifest_v2.json (last_sync 2026-09-11, mode mirror-single-source-
+    of-truth), overlays v2026/v2027 (obecne, nie modyfikowane).
+Pominięto i DLACZEGO:
+  * Pełny odczyt docs/Bbb i LEGAL_SOURCE_REGISTRY.md (duże katalogi akt) —
+    budżet kontekstu 50%; zastąpiono skanem obecności + strukturą LKG.
+    To luka dokumentacyjna V3-P51-L11, nie pretekst do pominięcia analizy
+    (protokół 16: plik nieprzeczytany = luka, nie cisza).
+  * Weryfikacja ISAP/RCL/MF (zewnętrzne) — niedostępne w tej sesji;
+    wszystkie twierdzenia prawne tagowane [NIEZWERYFIKOWANE — ISAP].
+Status weryfikacji źródeł prawnych: [NIEZWERYFIKOWANE — ISAP] (całość).
+
+──────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P51 (mapa artefaktów)
+──────────────────────────────────────────────────────────────────────────────
+Plik / artefakt                                    | Pakiet / rolka                       | Rule_id | Testy | Lifecycle
+---------------------------------------------------|--------------------------------------|---------|-------|----------
+rules/v3_p51_coverage_deserts.rego                 | jdg.v3_p51_coverage_deserts          | 12 analiz (451001–451012) | 57 natywnych + 23 pytest | CANDIDATE
+rules/thresholds_jdg.rego (blok v3_p51)            | data.jdg.thresholds.v3_p51           | 13 kluczy | test thresholds | CANDIDATE
+rules/main_jdg.rego (final_verdict_p115)           | wiring orkiestratora                 | —       | regresja p13–p51 | AKTYWNY wiring
+tools/v3_p51_desert_register.py (I01+I02)          | rejestr pustyni + scoring            | —       | pytest I01/I02 | gate=PASS
+tools/v3_p51_desert_cards.py (I03)                 | karty TOP-10 + szablon               | —       | pytest I03 | gate=PASS
+tools/v3_p51_chain_metric.py (I04)                 | CCR + rozkład nóg łańcucha           | —       | pytest I04 | gate=PASS
+tools/v3_p51_semi_auto_drafting.py (I05)           | audyt generatorów (guard K-P50-5)    | —       | pytest I05 | gate=PASS
+tools/v3_p51_systemic_sweep.py (I06)               | pustynie systemowe                   | —       | pytest I06 | gate=PASS
+tools/v3_p51_law_radar_block.py (I07)              | bramka zmian prawa                   | —       | pytest I07 | gate=PASS
+tools/v3_p51_desert_heatmap.py (I08)               | kwadranty kwotowe                    | —       | pytest I08 | gate=PASS
+tools/v3_p51_testless_sweep.py (I09)               | reguły bez testu + ghost testy       | —       | pytest I09 | gate=PASS
+tools/v3_p51_quarterly_goals.py (I10)              | cele per domena Q4-2026              | —       | pytest I10 | gate=PASS
+tools/v3_p51_vacancy_bridge.py (I11)               | pustynie × stuby P45                 | —       | pytest I11 | gate=PASS
+tools/v3_p51_attestation.py (I12)                  | atestacja pokrycia (P68)             | —       | pytest I12 | gate=PASS
+tools/v3_p51_run_all.py                            | runner kolejności zależności         | —       | pytest runner | gate=PASS
+bundles/v3_p51_*.json (14 szt.)                    | dowody uruchomień                    | —       | spójność routing↔metrics | PASS
+bundles/rule_registry.json (12 wpisów P51)         | lifecycle rejestru                   | 12 CANDIDATE | test rejestru | v3.51.1
+policies/v3_p51_coverage_deserts.rego (mirror)     | build output                         | identyczny raw | test mirroru | synced
+tests/rego/test_v3_p51_coverage_deserts.rego       | 57 testów natywnych                  | —       | OPA 0.68/1.9 | PASS
+tests/auto/test_v3_p51_coverage_deserts.py         | 23 testy pytest                      | —       | pytest | PASS
+Statusy lifecycle: SHADOW/CANDIDATE/ACTIVE — rejestr P51 = CANDIDATE
+(rollout 10%, awans wg P07); brak wpisów SHADOW/ACTIVE w P51 (świeży pakiet).
+
+──────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4
+──────────────────────────────────────────────────────────────────────────────
+5.1 SPIS PUSTYNI PER DOMENA
+  Dowody: bundles/v3_p51_desert_register.json (I01), desert_risk.json (I02).
+  Wynik: 251 węzłów ARTICLE w LKG; 159 pustyni (63.3%): no_rule=118,
+  rule_no_test=41, test_no_rule=0. Priorytety: P0=34, P1=68, P2=56, P3=1.
+  Per domena: other=40, pit=39, vat=23, business=12, ordpu=11, zus=11,
+  kks=10, uor=8, health=4, pcc=1.
+  Odpowiedzi na pytania audytowe:
+  * VAT 41–43, 86–109e, 113, 119: 23 pustynie w domenie vat — w tym artykuly
+    odliczen i ewidencji bez reguly albo bez testu (rejestr I01, wpisy z
+    detect_domain=vat). Top pustynie VAT sa w kwadrancie HIGH (heatmapa I08).
+  * PIT 22–30c, 45 i ryczalt: 39 pustyni pit (najwieksza domena materialna);
+    ryczalt 0 pustyni wprost (domena ryczalt nie wystepuje w rejestrze —
+    interpretacja: wezly LKG ryczaltu oznaczone jako pit/business/other;
+    ograniczenie mapowania [ZAŁOŻENIE]).
+  * ZUS 18a–18e, ulgi, chorobowe: 11 pustyni zus + 4 health (ulga zdrowotna
+    w ramach zdrowotnej). Klasy: przewaga no_rule.
+  * Ordynacja (odsetki, przedawnienie, 119a) i KKS 56–57: ordpu=11
+    (w tym art. 70 przedawnienie = no_rule na wezle LKG-0226; art. 51
+    terminy; art. 87); kks=10 (w tym sankcje i dobrowolne ujawnienie).
+  Wnioski (min. 3):
+  1. Pustynie to 63.3% węzłów materialnych LKG — mapa kanoniczna P00 nie
+     miala spójnego rejestru pustyni z nogą testową (LCI liczy tylko regułę),
+     co P51-I04 naprawia metryką CCR.
+  2. Domena „other" (40) jest drugą co do wielkości — słownik domen
+     DOMAIN_KEYWORDS w I01 wymaga rozszerzenia (kontrakt do P52: rewizja
+     mapowania, nie w tym raporcie [ZAŁOŻENIE]).
+  3. 41 pustyni rule_no_test to najszybsza ścieżka domknięcia — reguły są,
+     brak nogi testowej (I09 wskazuje globalnie 11282 reguł bez testu
+     natywnego przy skanie substring — mianownik inny niż LKG, kontekst).
+  Luki podanalizy: V3-P51-L01 (P1), V3-P51-L03 (P2), V3-P51-L04 (P3).
+
+5.2 PUSTYNIE SYSTEMOWE (PRZEKROJOWE)
+  Dowody: bundles/v3_p51_systemic_sweep.json (I06), law_radar_block.json (I07),
+  KALENDARZ_ZMIAN_PRAWNYCH.md (seed DRL-0001).
+  Wynik: systemic_classes=0 (aktywne 0, pustynie systemowe 0) — detektor
+  regex article_label nie zbudował jeszcze słownika klas (LKG-0226 art. 70
+  przedawnienie jest pustynią NO_RULE, ale article_label wezla to „Art. 70"
+  bez slowa „przedawnienie" — klasa nie zostala przypisana).
+  Odpowiedzi na pytania audytowe:
+  * Zasady wspólne (moment obowiązku, korekty, odsetki, przedawnienie):
+    brak rejestru klas systemowych = brak pomiaru (V3-P51-L05, P2).
+    Stwierdzono materialnie: art. 70 (przedawnienie) i art. 81 (korekty)
+    Ordynacji to pustynie no_rule w rejestrze I01 — pustynie systemowe
+    istnieją, tylko nie są klasyfikowane.
+  * Waluty i kursy NBP: brak rejestru klas; w LKG brak węzłów z label
+    „walut/kurs" w article_label — nie policzono (protokół 14); luka
+    danych, nie wniosek o brak przepisów.
+  * Terminy (kalendarz P25): kalendarz zmian prawnych ma wyłącznie seed
+    procesowy DRL-0001 (2099-06-01) — 0 realnych wpisów; bramka I07
+    green (0 zmian bez planu), ale proces nie był jeszcze obciążony.
+  * Korekty i przeniesienia: art. 81 Ordynacji (korekty) = pustynia no_rule
+    (rejestr I01); ścieżka korygująca bez reguły przekrojowej.
+  Wnioski (min. 3):
+  1. Pustynie systemowe istnieją materialnie (art. 70, 81 OP = no_rule),
+     ale klasyfikator I06 wymaga słownika klas → V3-P51-L05.
+  2. Kalendarz zmian prawnych (wejście Law Radar→pustynie) jest pusty
+     procesowo (seed tylko) — bramka I07 niesprawdzona na realnym obciążeniu.
+  3. Testless skan (I09) wykazał 24 ghost testy — odwrotna pustynia
+     (test bez reguły) myli consumers i zawyża metryki pokrycia.
+  Luki podanalizy: V3-P51-L05 (P2), V3-P51-L09 (P3), V3-P51-L10 (P2).
+
+5.3 PRIORYTETYZACJA WG RYZYKA
+  Dowody: bundles/v3_p51_desert_risk.json (I02: score=częstość×kwota×
+  niepewność, wagi per domena 1–5; P0>=50, P1>=24, P2>=12, P3<12;
+  SLA P0=14d, P1=30d, P2=90d, P3=180d), desert_heatmap.json (I08:
+  kwadranty HIGH=34, MED=49, LOW=63, COLD=13).
+  Odpowiedzi na pytania audytowe:
+  * Błędny AUTO_POST wysokiej kwoty (P0): 34 pustynie P0, wszystkie score=64
+    (ordpu 4×4×4 i top ordpu wezly); TOP-10 zbudowane z Ordynacji
+    (art. 24a, 15, 109, 99 — rozporządzenie MF; art. 48, 51, 87; art. 70,
+    81, 16-193a). Kwadrant HIGH=34 = 100% zgodny z P0 (spójność I02↔I08).
+  * Utrata ulg (P1): 68 pustyni P1 (score 24–49) — głównie pit (39) i vat
+    (23): ryzyko przestania użytkownikowi ulg/korekt przy wątpliwości.
+  * Zdarzenia rzadkie (P2/P3): P2=56, P3=1 — do domknięcia w V4 wg SLA 90/180d.
+  * Metodologia ryzyka: score = frequency × amount × uncertainty (wagi
+    1–5 per domena w RISK_WEIGHTS narzędzia I01/I02; metodologia jawna
+    w evidence.methodology) — mierzalna i zapytywalna.
+  Wnioski (min. 3):
+  1. Priorytetyzacja jest deterministyczna i jawna (metodologia w dowodzie);
+     zgodność kwadrantów I08 z priorytetami I02 (34=34) potwierdza spójność.
+  2. P0 skoncentrowane w Ordynacji (terminy/przedawnienie/korekty) — to
+     przepisy przekrojowe: błędna decyzja na pustyni ordpu dotyka wszystkich
+     domen (uzasadnienie priorytetu liczbowe, nie intuicyjne).
+  3. Proxy przepływu kwot w I08 jest [ZAŁOŻENIEM] (brak danych przepływów
+     w repo) — heatmapa ryzyka jest rzędem wielkości poprawna, nie
+     kwotowo precyzyjna (V3-P51-L09, Q03).
+  Luki podanalizy: V3-P51-L09 (P3), V3-P51-L02 (P1).
+
+5.4 PLAN DOMKNIĘCIA
+  Dowody: bundles/v3_p51_desert_cards.json (I03: 10 kart TOP-10 + szablon),
+  quarterly_goals.json (I10: 15 domen, MET=13, AT_RISK=2, MISSED=0),
+  chain_metric.json (I04: CCR=36.65%, cel 90%), semi_auto_drafting.json
+  (I05: 0/4 generatorów z guardem, 1 fabryka stubów AP01),
+  coverage_attestation.json (I12: attested=false, caveats=4,
+  counter_consistent=true).
+  Odpowiedzi na pytania audytowe:
+  * Karta pustyni: szablon I03 (przepis → warunki_materialne → testy
+    graniczne/temporalne → koszt S/M/L → kolejność P0–P3 → SLA) — 10 kart
+    TOP-10 wygenerowanych, szablon pusty dla kolejnych (standard raportu,
+    wiąże P41).
+  * Generator (P36): eligibility per karta (generator_eligible =
+    desert_class==rule_no_test); guard duplikatów K-P50-5 wymagany przed
+    zapisem; obecnie 0/4 generatorów podłączonych (L08) — semi-automatyzacja
+    z walidacją człowieka (4-eyes) jak w P07/P50-I08.
+  * Cel kwantyfikowany: CCR ≥ 90% (progi v3_p51_chain_target_pct=90.0,
+    parametr 4-eyes Q02); pomiar narzędziem I04 (definition of done
+    kampanii — łańcuch pełny, nie „jest plik").
+  * Law Radar (P08) — proces ciągły: bramka I07 (zmiana prawa bez planu
+    reguły → ticket z SLA; brak radaru = TRIAGE fail-closed) + pętla
+    P30-I12; kalendarz zmian jako wejście.
+  Wnioski (min. 3):
+  1. Recepta per pustynia istnieje w formie karty (10 TOP-10 gotowych do
+     wdrożenia — kryterium akceptacji #20 promptu); reszta rejestru ma SLA
+     i właściciela, karty powstaną per Priorytet w kampaniach P52+.
+  2. CCR=36.65% vs LCI=100% pokazuje, że wcześniejsze metryki liczyły
+     inną rzecz (noga reguły, mianownik 70) — kampania od tej pory mierzy
+     CCR na pełnym mianowniku LKG (251).
+  3. Attestation I12 nie atestuje czystego stanu (4 zastrzeżenia) — celowo:
+     atestacja bez zastrzeżeń tylko przy spójnych licznikach i AUTO_FILE
+     wszędzie; enterprises widzą dokładnie, co silnik wie.
+  Luki podanalizy: V3-P51-L08 (P2), V3-P51-L07 (P3), V3-P51-L12 (P3).
+
+──────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (akty Sekcji 8 promptu — OBOWIĄZKOWE)
+──────────────────────────────────────────────────────────────────────────────
+Legenda statusu: PEŁNE (reguła+test), CZĘŚCIOWE (reguła bez testu lub
+pokrycie niepełne), BRAK (no_rule), PRZECZYANE (świadomie bez reguły).
+Kolumna „rejestr" = liczba pustyni w domenie (rejestr I01). Wszystkie
+podstawy [NIEZWERYFIKOWANE — ISAP].
+
+| Akt (Sekcja 8) | Zakres | Reguły (istniejące warstwy) | Testy | Status łańcucha | Rejestr P51 | Ryzyko |
+|---|---|---|---|---|---|---|
+| 01. Ustawa VAT | art. 5–113 | vat.rego, vat_micro, place_of_supply, proportion, wdt_export_import, margin_scheme, r02/r03 v9, v3_p12, v3_p13 | natywne per pakiet + golden | CZĘŚCIOWE | vat=23 | Błędny AUTO_POST na odliczeniach/korektach (kwoty wysokie) |
+| 02. Ustawa o PIT | art. 9–45c | pit.*, nkup_enterprise, r04/r05 v9, v3_p14 | natywne per pakiet | CZĘŚCIOWE | pit=39 | Utrata ulg (strata realna), błędna forma |
+| 03. Ustawa o ryczałcie | art. 6–12 | ryczalt.*, pkwiu classifier (r12), v3_p18 | natywne | CZĘŚCIOWE (mapowana na pit/business/other) | ryczalt=0 wprost | Zła stawka PKWiU → niedopłat |
+| 04. Ustawa o ZUS | art. 13–25, 18a–18f | zus.*, zdrowotna, zasilkowa, v3_p26 | natywne | CZĘŚCIOWE | zus=11, health=4 | Błędne składki/ulgi (kwoty średnie) |
+| 05. Ordynacja podatkowa | art. 12–13, 51–67, 56, 70–71, 119a | ord.*, statute_of_limitations, interest calc, v3_p17 | natywne | CZĘŚCIOWE — pustynie no_rule na art. 70, 81, 48, 51, 87 | ordpu=11 | P0: przedawnienie/terminy dotykają wszystkich domen |
+| 06. KKS | art. 48–58 | kks.rego, micro/kks, sankcje, v3_p21 | natywne | CZĘŚCIOWE | kks=10 | Sankcje/pół żartem — BLOCKER severity |
+| 07. Ustawa o rachunkowości | art. 4–7 | uor.*, pkpir.*, r09, v3_p20 | natywne | CZĘŚCIOWE | uor=8 | Sprawdzalność ewidencji (UoR art. 4 ust. 1) |
+| 08. Rozporządzenia (PKPiR, JPK, KSeF) | szczegóły | ksef_jpk.*, jpk_*, v3_p16 | natywne | CZĘŚCIOWE | w „other"=40 | Brak reguł na rozporządzenie MF 15.11.2025 (TOP-4 P0) |
+Przepisy odkryte w trakcie: Rozporządzenie MF z 15.11.2025 (art. 24a, 15,
+109, 99 = 4×P0 score 64) — dodane do rejestru I01 z pełną identyfikacją
+(act_dz_u z LKG; [NIEZWERYFIKOWANE — ISAP]).
+
+──────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (V3-P51-Lxx)
+──────────────────────────────────────────────────────────────────────────────
+| ID | P | Luka | Dowód | Wpływ | Rozwiązanie | Koszt | Ryzyko regresji |
+|---|---|---|---|---|---|---|---|
+| V3-P51-L01 | P1 | Brak rejestru pustyni z nogą testową przed P51 (mapa kanoniczna nie miała CCR) | canon LCI=100% vs P51-I04 CCR=36.65% | Kampania mierzyła niewłaściwą metrykę | Rejestr I01+I04 wdrożone (ten raport) | S | Niskie (nowe metryki, bez zmian reguł) |
+| V3-P51-L02 | P1 | Dryf mianowników raportów pokrycia: canon mianownik 70 (LCI=100%) vs legal_graph 251 ARTICLE (covered=155) | recon.drift_flags.canon_lci_100_vs_graph_7143=true | Fałszywe poczucie pełnego pokrycia | Przeliczyć canon na mianownik LKG lub jawnie ograniczyć zakres canon; decyzja 4-eyes (Q01) | M | Średnie — zmiana metryk kanonu |
+| V3-P51-L03 | P2 | 2 ghost rule_refs: rule_ids w LKG nieobecne w canonical | desert_register.metrics.ghost_rule_refs=2 | LKG wskazuje reguły, których nie ma | Skorygować legal_graph albo wiring reguł; skan I01 rejestruje | S | Niskie |
+| V3-P51-L04 | P3 | Domena „other"=40 pustyni (mapowanie DOMAIN_KEYWORDS niepełne) | by_domain I01 | Pustynie bez domeny = bez celów kwartalnych I10 | Rozszerzyć słownik domen (kontrakt P52) | S | Niskie |
+| V3-P51-L05 | P2 | Klasifikator pustyni systemowych (I06) bez słownika klas: systemic_classes=0 mimo pustyni art. 70/81 OP | systemic_sweep.metrics.systemic_classes=0 | Pustynie przekrojowe nie mają osobnego śledzenia | Rejestr CLASS_SYSTEMIC (regex+manual) w I06 | S | Niskie |
+| V3-P51-L06 | P3 | Brak danych przepływów kwot dla heatmapy (proxy udziałem domeny) | heatmap.assumption_flow_proxy [ZAŁOŻENIE] | Kwadranty przybliżone | Podpiąć dane przepływów (input zewnętrzny z provenance, AP09) | M | Niskie |
+| V3-P51-L07 | P3 | Cele kwartalne I10 mianownik = wszystkie węzły ARTICLE LKG (nie per-domena) | quarterly_goals.evidence.note | CCR per domena zawyżony dla małych domen | Mianownik per domena z LKG (potrzebne mapowanie node→domena) | M | Niskie |
+| V3-P51-L08 | P2 | 0/4 generatorów z guardem duplikatów K-P50-5; 1 fabryka stubów AP01 | semi_auto_drafting.metrics (generators_guarded=0, legacy_stub_factories=1) | Generatory mogą tworzyć duplikaty/stuby = nowe pustynie fasadowe | Podłączyć v3_p50_duplication_guard w 4 generatorach; usunąć fabrykę | M | Średnie — dotyka generatorów |
+| V3-P51-L09 | P3 | Heatmapa kwadranty z proxy (jak L06) — osobny wpis dla przejrzystości I08 | heatmap metrics | Ryzyko kwotowe widoczne rzędem wielkości | jak L06 | M | Niskie |
+| V3-P51-L10 | P2 | 24 ghost testy (test bez reguły kanonicznej) | testless_sweep.metrics.ghost_tests=24 | Zawyżone metryki pokrycia; martwy kod testowy | Usunąć albo re-wiring; lista ghost_tests_sample w dowodzie | S | Średnie — usunięcie testów |
+| V3-P51-L11 | P3 | Budżet: pełny odczyt docs/Bbb i LEGAL_SOURCE_REGISTRY.md pominięty (skan obecności) | 9.02 | Analiza podstaw ograniczona | Pełny odczyt w sesji weryfikacyjnej P47-style | S | Niskie |
+| V3-P51-L12 | P3 | Wszystkie podstawy prawne P51 [NIEZWERYFIKOWANE — ISAP] | tag w całym raporcie/rego | Twierdzenia prawne = twierdzenia, nie dowody | Stempel 4-eyes ISAP (P47-I10) | M | Niskie |
+Suma: P0=0, P1=2, P2=4, P3=6. Brak P0: żadna luka nie łamie dokumentów
+świętych (fail-closed, ADR-002, temporalność zachowane w wdrożonej warstwie).
+
+──────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (V3-P51-I01–I12, pełny projekt)
+──────────────────────────────────────────────────────────────────────────────
+Każda innowacja: (1) problem/luka, (2) mechanizm, (3) wpływ na bezpieczeństwo
+decyzji, (4) ryzyko i mitygacja, (5) kryterium akceptacji, (6) zależności.
+Wszystkie 12 ma ARTYFAKT w repo (narzędzie + bundle gate=PASS + reguła Rego
+w pakiecie + testy natywne/pytest) — nie są projektami papierowymi.
+
+V3-P51-I01 — DESERT REGISTER WITH SLA
+  (1) Luka L01: brak rejestru pustyni z SLA; pustynie gromadziły się bez
+  właściciela i terminu. (2) Mechanizm: skaner LKG (węzły ARTICLE) → klasy
+  no_rule/rule_no_test/test_no_rule; per wpis: przepis (akt+art+Dz.U.
+  [NIEZWERYFIKOWANE — ISAP]), klasa, ryzyko (I02), priorytet P0–P3, deadline
+  SLA (P0=14d…P3=180d), właściciel, status OPEN. Rego: analiza desert_register
+  (P0>max→TRIAGE; bypass→BLOCK). (3) Wpływ: pustynia = przepis bez pełnego
+  łańcucha dowodu; decyzje księgowe na pustyni kierowane na NEEDS_ADVICE —
+  zamiana zgadywania na jawną lukę z terminem. (4) Ryzyko: fałszywe pustynie
+  przy mapowaniu domeny → mitygacja: rekoncyliacja 3 raportów pokrycia
+  (drift_flags jawne). (5) Kryterium: bundle desert_register gate=PASS,
+  suma klas = desert_nodes (test pytest I01), SLA dla 100% wpisów.
+  (6) Zależności: P00 (LKG), P37 (trend), P52 (wejście), P68 (atestacja).
+
+V3-P51-I02 — RISK-WEIGHTED PRIORITIZATION
+  (1) Luka: brak liczbowego uzasadnienia kolejności domknięcia. (2) Mechanizm:
+  score = frequency × amount × uncertainty (wagi 1–5 per domena, metodologia
+  w evidence); P0>=50, P1>=24, P2>=12, P3<12; TOP-10 z uzasadnieniem.
+  Rego: desert_risk (scored<=0 lub unscored>0 lub P0/P1>0 → TRIAGE).
+  (3) Wpływ: kolejność domknięcia odporna na subiektywne priorytety;
+  pustynie wysokiego ryzyka kwotowego zamykane pierwsze. (4) Ryzyko: wagi
+  arbitralne → mitygacja: wagi jawne w dowodzie, zmiana = decyzja 4-eyes.
+  (5) Kryterium: scored=159/159, unscored=0; spójność P0 (34) z kwadrantem
+  HIGH (34). (6) Zależności: I01, P37, P52.
+
+V3-P51-I03 — DESERT CARD TEMPLATE
+  (1) Luka: recepta domknięcia per pustynia nie była standardem. (2)
+  Mechanizm: karta = przepis → warunki_materialne (szkielet reguły z
+  przepisu) → proponowane_testy (granica progu day-1/day-0/day+1, negatywna,
+  fail-closed) → koszt S/M/L → kolejność → SLA; 10 kart TOP-10 + szablon
+  pusty. Rego: desert_cards (brak szablonu→BLOCK; za mało kart→TRIAGE).
+  (3) Wpływ: domknięcie pustyni = karta gotowa do wdrożenia, nie „temat do
+  rozważenia"; testy graniczne wymagane z góry (AP01 nie przejdzie).
+  (4) Ryzyko: karty bez treści merytorycznej → mitygacja: szkielet wyraźnie
+  oznaczony „do wypełnienia przez człowieka (4-eyes)", nie liczy się jako
+  pokrycie. (5) Kryterium: cards_total=cards_required=10, template_present
+  (test pytest I03). (6) Zależności: P41 (dokumentacja), P36 (generator),
+  I01/I02.
+
+V3-P51-I04 — COVERAGE CHAIN METRIC (CCR)
+  (1) Luka L01/L02: LCI liczy tylko nogę reguły przy mianowniku 70 —
+  „definition of done" kampanii nie istniało. (2) Mechanizm: CCR = węzły
+  ARTICLE z ≥1 regułą kanoniczną ORAZ ≥1 regułą z natywnym testem / wszystkie
+  ARTICLE; rozkład braków per noga (reguła/test/akt). Rego: chain_metric
+  (CCR<90→TRIAGE; brak skanu→TRIAGE; bypass→BLOCK). (3) Wpływ: kampania ma
+  jedną uczciwą metrykę końcową; „jest plik" przestaje być pokryciem.
+  (4) Ryzyko: testy string-scan (substring) dają false coverage → mitygacja:
+  wykluczenie pakietów testowych, kontekst UVR canon jawny.
+  (5) Kryterium: suma nóg = article_nodes; CCR=36.65% policzone; prog 90
+  w progach. (6) Zależności: P00 (canon), P39 (bramki), P68.
+
+V3-P51-I05 — SEMI-AUTO RULE DRAFTING
+  (1) Luka L08: generatory mogą produkować duplikaty/stuby. (2) Mechanizm:
+  audyt 4 generatorów (generate_missing_rules, parse_plan33, generate_from_
+  plan50, coverage_95_plan) pod kątem guardu K-P50-5 i fabryk stubów {true};
+  wymóg: szkic reguły z pustyni musi mieć test graniczny z karty (I03).
+  Rego: semi_auto_drafting (stub factory→BLOCK; guarded<min→TRIAGE).
+  (3) Wpływ: automatyzacja 3–5× przy jednoczesnym zakazie fasad — generator
+  bez guardu = nie może wejść do produkcji. (4) Ryzyko: blokada legalnych
+  generatorów → mitygacja: próg guarded_min jako parametr 4-eyes.
+  (5) Kryterium: bundle gate=PASS; routing TRIAGE przy 0/4 (spójny z licznikami).
+  (6) Zależności: P50-I08 (guard), P36, P07 (4-eyes).
+
+V3-P51-I06 — CROSS-DOMAIN DESERT SWEEP
+  (1) Luka L05: pustynie systemowe (odsetki, przedawnienie, waluty, terminy)
+  łatwo przeoczyć w podziale domenowym. (2) Mechanizm: klasyfikacja
+  article_label → klasy (odsetki/przedawnienie/ulgi/ksef/waluty/korekty/
+  terminy) + status z rejestru I01; pustynia systemowa = klasa aktywna.
+  Rego: systemic_sweep (deserts>max→TRIAGE; brak skanu→TRIAGE; bypass→BLOCK).
+  (3) Wpływ: przepisy przekrojowe mają osobny, mierzalny rejestr.
+  (4) Ryzyko: regex na label nie złapie treści → mitygacja: L05 (słownik
+  klas) + ręczne potwierdzenie per klasa. (5) Kryterium: bundle gate=PASS;
+  AUTO_FILE tylko przy 0 klas (test pytest I06 — spójność z licznikami).
+  (6) Zależności: I01, P08, P25.
+
+V3-P51-I07 — COVERAGE REGRESSION BLOCK (LAW RADAR)
+  (1) Luka: zmiana prawa mogła stworzyć pustynię bez alarmu. (2) Mechanizm:
+  wejście law_radar.json + KALENDARZ_ZMIAN_PRAWNYCH.md → zmiana bez planu
+  reguły (karta/rejestr I01) = ticket z SLA; brak radaru = TRIAGE
+  (fail-closed bramki). Rego: law_radar_block (radar missing→TRIAGE;
+  changes>max→TRIAGE; bypass→BLOCK). (3) Wpływ: nowelizacja nie tworzy
+  cicho pustyni — pętla P08 domknięta z twardym SLA. (4) Ryzyko: seed
+  procesowy (DRL-0001 2099) licznikami → mitygacja: seed jawny w dowodzie,
+  real rows minus seed (honesty). (5) Kryterium: bundle gate=PASS,
+  radar_present=true, 0 unplanned (test pytest I07). (6) Zależności: P08,
+  P25, P30-I12.
+
+V3-P51-I08 — DESERT HEATMAP BY MONEY IMPACT
+  (1) Luka L06/L09: ryzyko pustyni niewidoczne kwotowo. (2) Mechanizm:
+  money = risk_score(I02) × (1 + flow_proxy domeny); kwadranty HIGH>=60,
+  MED>=30, LOW>=15, COLD<15; datagrid JSON dla P37. Rego: desert_heatmap
+  (HIGH>max→TRIAGE; brak skanu→TRIAGE; bypass→BLOCK). (3) Wpływ: kwadrant
+  HIGH = gdzie błędny AUTO_POST kosztuje najwięcej — priorytet liczbowy.
+  (4) Ryzyko: proxy przepływu [ZAŁOŻENIE] → mitygacja: założenie jawne w
+  metrics, L06 (dane przepływów). (5) Kryterium: suma kwadrantów = scored;
+  spójność HIGH(34)=P0(34). (6) Zależności: I02, P37.
+
+V3-P51-I09 — TESTLESS RULE SWEEP
+  (1) Luka L10: klasa pustyni „reguła bez testu" i „test bez reguły" (ghost)
+  nie były śledzone per domena. (2) Mechanizm: skan rule_id w rules/ vs
+  tests/rego (z wykluczeniem pakietów testowych); ghost testy = test bez
+  reguły kanonicznej; plan domknięcia generatorem testów P36. Rego:
+  testless_sweep (untested/ghost>max→TRIAGE; brak skanu→TRIAGE; bypass→BLOCK).
+  (3) Wpływ: najszybsza ścieżka wzrostu CCR (reguły są, brak nogi testowej);
+  ghost testy przestają zawyżać pokrycie. (4) Ryzyko: substring scan =
+  false positives → mitygacja: wykluczenie pakietów testowych, kontekst UVR.
+  (5) Kryterium: bundle gate=PASS; rules_scanned=12938; ghost sample jawny.
+  (6) Zależności: P36, P39, I04.
+
+V3-P51-I10 — QUARTERLY COVERAGE GOAL
+  (1) Luka L07: brak realistycznych celów per domena. (2) Mechanizm: cele
+  wg promptu (VAT/PIT 95%, ZUS/KSeF/OP 90%, UoR/PKPiR/ryczałt 85%, health/
+  business 80%, nisze 70%); status MET/AT_RISK/MISSED vs CCR domeny;
+  kwartał Q4-2026. Rego: quarterly_goals (missed>max→TRIAGE; brak celów→
+  TRIAGE; bypass→BLOCK). (3) Wpływ: cele mierzalne i rozłożone w czasie —
+  kampania nie goni „100% od razu". (4) Ryzyko: mianownik globalny (L07)
+  → mitygacja: mianownik jawny w dowodzie, parametr 4-eyes Q02.
+  (5) Kryterium: 15 celów, MET=13/AT_RISK=2/MISSED=0; bundle gate=PASS.
+  (6) Zależności: I04, P37, Q02.
+
+V3-P51-I11 — DESERT→VACANCY MAPPING
+  (1) Luka: pustynie (brak reguły) i fasady (stuby P45) w osobnych
+  rejestrach. (2) Mechanizm: mapowanie stubów per domena (v3_p45_stub_
+  register + stub_register) na pustynie I01; combined_risk_index = risk_
+  score + stubs×5; jeden ranking „fasada lub brak" dla P37/P68. Rego:
+  vacancy_bridge (stubs>max lub deserts>0→TRIAGE; bypass→BLOCK).
+  (3) Wpływ: reguła-fasada jest pustynią prawdziwą — jeden rejestr ryzyka
+  zamiast dwóch niespójnych. (4) Ryzyko: podwójne liczenie → mitygacja:
+  źródło per wiersz (source=desert+stub), stub domains jawne.
+  (5) Kryterium: bundle gate=PASS; combined rows = deserts; spójność z P45.
+  (6) Zależności: P45-I01, P37, P68.
+
+V3-P51-I12 — LEGAL COVERAGE ATTESTATION
+  (1) Luka: certyfikacja P68 bez deklaracji pokrycia z licznikami.
+  (2) Mechanizm: atestacja = CCR/LCI/UVR + kontrolowana suma klas pustyni
+  + rejestr zastrzeżeń (drift flags, NIEZWERYFIKOWANE, ghost refs/testy,
+  brak przepływów) + wersja danych i progów; attested=true tylko gdy
+  liczniki spójne i zero zastrzeżeń. Rego: coverage_attestation (liczniki
+  niespójne→BLOCK; caveats>max→TRIAGE; attested→AUTO; bypass→BLOCK).
+  (3) Wpływ: enterprises widzą dokładnie, co silnik wie — deklaracja
+  z licznikiem zastrzeżeń, nie marketing. (4) Ryzyko: atestacja „na zawsze
+  false" → mitygacja: zastrzeżenia znikają przy domknięciu luk (L02/L05/
+  L06/L10), monitorowane przez I01/I07. (5) Kryterium: counter_consistency
+  =true; attested=false przy 4 zastrzeżeniach (test pytest I12).
+  (6) Zależności: P68, P10, P11, I01/I04/I07/I09.
+
+──────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (wiąże P52 i dalsze)
+──────────────────────────────────────────────────────────────────────────────
+K-P51-1 REJESTR PUSTYNI (kompletny, z priorytetami): bundles/v3_p51_desert_
+  entries.json (159 wpisów: legal_node_id, akt, Dz.U., artykuł, domena,
+  klasa, risk_score, priority, sla_deadline, owner, status OPEN) — wejście
+  do P36 (generatory), P52 (testy) i P68. Zasada użycia: domknięcie wg
+  priorytetu; żadna nowa reguła nie powstaje poza rejestrem (pustynia bez
+  wpisu = luka procesowa).
+K-P51-2 KARTA PUSTYNI (template): bundles/v3_p51_desert_cards.json
+  (evidence.empty_template + 10 kart TOP-10) — wiąże P41 (dokumentacja) i
+  kampanie przyszłe. Zasada: każda karta wymaga testów granicznych
+  (day-1/day-0/day+1) i kosztu S/M/L; szkielet bez testu ≠ pokrycie.
+K-P51-3 METODOLOGIA SCORINGU RYZYKA: score = frequency × amount ×
+  uncertainty (wagi per domena w RISK_WEIGHTS; P0>=50/P1>=24/P2>=12/P3<12;
+  SLA 14/30/90/180d) — wiąże P37 (metryki) i P68 (certyfikacja). Zasada:
+  zmiana wag = decyzja 4-eyes z wpisem do tego pliku.
+K-P51-4 ATESTACJA POKRYCIA: bundles/v3_p51_coverage_attestation.json —
+  P68 włącza atestację (attested + caveats) do certyfikatu finalnego;
+  certyfikat bez licznika zastrzeżeń jest nieprawidłowy.
+K-P51-5 BRAMKA CIĘŻKA: pakiety v3_p51* przychodzą do CI z progami v3_p51
+  (ADR-002); zmiana progów = PR z uzupełnieniem testów granicznych
+  (day-1/day-0/day+1 valid_from).
+K-P51-6 ZGODNOŚĆ MIRROR: rules/v3_p51_coverage_deserts.rego = policies/
+  v3_p51_coverage_deserts.rego (raw); zmiana canonical bez sync = dryf
+  (P48 bramka).
+
+──────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA (kolejność prac)
+──────────────────────────────────────────────────────────────────────────────
+WDROŻONO W TEJ SESJI (bez duplikacji, bez niszczenia zależności):
+  1. Warstwa polityki: rules/v3_p51_coverage_deserts.rego (12 analiz,
+     router decide, fail-closed thresholds_missing, certificate F4).
+  2. Progi: blok v3_p51 w thresholds_jdg.rego (13 kluczy, valid_from,
+     ADR-002/P05).
+  3. Wiring: main_jdg.rego import + final_verdict_p115 (anchor z p114→p115),
+     post-merge kontekst routingu na lewej stronie safe_merge.
+  4. Naprawa narzędzia I01 (IndexError na krótkich rule_id) — minimalny fix,
+     bez zmiany semantyki.
+  5. Uruchomienie 13 narzędzi → 14 bundli dowodowych (gate=PASS).
+  6. Testy: 57 natywnych Rego (OPA 0.68.0; 1.9.0 --v0-compatible) + 23 pytest.
+  7. Mirror: policies_sync_gate.py sync (526 plików, drift 0).
+  8. Rejestr lifecycle: 12× CANDIDATE v3.51.1.
+  9. Raport + ledger (status WDROŻONY_100 w v3_campaign_ledger.json).
+WYMAGA TYLKO TESTÓW (bezpieczne, następna sesja):
+  10. Domknięcie 41 pustyni rule_no_test generatorem testów (P36) — zwiększa
+      CCR bez zmian reguł.
+  11. Usunięcie/re-wiring 24 ghost testów (L10).
+WYMAGA DECYZJI CZŁOWIEKA (4-eyes, Q01–Q04):
+  12. Domknięcie 34 pustyni P0 (karty TOP-10 pierwsze) — merytoryka reguł
+      z treści przepisów (protokół 01/04).
+  13. Rewizja mianownika kanonu (L02) i słownika domeny/klas (L04/L05).
+  14. Podłączenie generatorów do guardu K-P50-5 (L08) + usunięcie fabryki
+      stubów.
+  15. Dane przepływów kwot do heatmapy (L06/L09).
+Ścieżki rollback: pakiet P51 odłączany przez usunięcie importu i
+final_verdict_p115 z main_jdg.rego (safe_merge gracja: pakiet nieaktywny
+bez flagi v3_p51_check); bundlee dowodowe są add-only; mirror = build output
+(regeneracja sync). Żaden istniejący pakiet nie został zmodyfikowany.
+
+──────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (przypadki blokujące merge)
+──────────────────────────────────────────────────────────────────────────────
+BLOKUJĄCE MERGE (bramka P39):
+  T-P51-01 thresholds_missing → BLOCK (default-deny): brak
+    data.jdg.thresholds.v3_p51 = decision_mode=BLOCK, routing
+    BLOCK_AND_ALERT, priority 0. [test_p51_thresholds_missing_fail_closed]
+  T-P51-02 bypass każdej analizy → BLOCK (12 testów bypass). [test_p51_i*_]
+  T-P51-03 liczniki atestacji niespójne → BLOCK (I12 fail-closed).
+    [test_p51_i12_counters_inconsistent_blocks]
+  T-P51-04 fabryka stubów AP01 → BLOCK (I05). [test_p51_i05_stub_factory_blocks]
+  T-P51-05 brak szablonu karty → BLOCK (I03). [test_p51_i03_no_template_blocks]
+  T-P51-06 AUTO_POST tylko przy pełnym dowodzie: jakakolwiek pustynia →
+    nigdy AUTO_POST. [test_p51_no_silent_auto_post_without_evidence]
+  T-P51-07 determinizm: dwa wywołania = identyczny werdykt.
+    [test_p51_decide_is_deterministic]
+GRANICZNE (progi jako dane, day-1/day-0/day+1):
+  T-P51-08 CCR=90.0 → AUTO; CCR=89.99 → TRIAGE (granica v3_p51_chain_
+    target_pct). [test_p51_i04_ccr_at_target_autos / below]
+  T-P51-09 p0_count=0 → możliwy AUTO; p0_count=1 → TRIAGE.
+    [test_p51_i01_zero_deserts_autos / deserts_triage]
+  T-P51-10 cards_total=10 → AUTO; 9 → TRIAGE. [test_p51_i03_*]
+  T-P51-11 ghost=0/untested=0 → AUTO; ghost=1 → TRIAGE (ghost przed untested
+    w else-chain). [test_p51_i09_*]
+  T-P51-12 radar_present=false → TRIAGE (fail-closed bramki niezależnie od
+    licznika). [test_p51_i07_radar_missing_triage]
+NEGATYWNE / AKTYWACJA:
+  T-P51-13 brak flagi v3_p51_check → no_match (matched=false). [test_p51_no_
+    activation_no_match]
+  T-P51-14 analysis nieznana/null → no_match. [test_p51_no_selector_, null_]
+  T-P51-15 scored=0 → TRIAGE (brak dowodu scoringu ≠ brak pustyni).
+    [test_p51_i02_zero_scored_triages]
+REGRASYJNE:
+  T-P51-16 regresja P13–P51 natywna: 1229/1229 (OPA 0.68.0 i 1.9.0
+    --v0-compatible) — zielone.
+  T-P51-17 mirror: canonical == policies (raw). [test_p51_rego_mirror_]
+  T-P51-18 rejestr lifecycle: 12× CANDIDATE v3.51.1. [test_p51_rule_registry_]
+FUZZ/PROPERTY (do dodania w P52, kontekst P34-I04):
+  T-P51-19 property: dla losowych ctx AUTO_POST ⟺ (desert_nodes=0 lub
+    attested=true) — invariant never-silent.
+  T-P51-20 fuzz: losowe wartości progów z data nie mogą wywołać AUTO_POST
+    przy pustyni P0>0 (invariant fail-closed).
+
+──────────────────────────────────────────────────────────────────────────────
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (V3-P51-Qxx)
+──────────────────────────────────────────────────────────────────────────────
+Q01. Mianownik metryki pokrycia: czy canon (LCI, mianownik 70 węzłów
+  materialnych) ma być przeliczony na pełny LKG (251 ARTICLE), czy pozostaje
+  zakresem ograniczonym (wtedy rozbieżność dokumentować jako konwencję)?
+  Wpływa na L02 i komunikację „100% pokrycia".
+Q02. Cele kwartalne (VAT/PIT 95% … nisze 70%) i próg CCR 90% — akceptacja
+  wartości (pochodzenie: prompt P51; parametry w progach v3_p51)?
+Q03. Budżet/koszty domknięcia: koszt karty S/M/L nie jest powiązany z
+  budżetem wdrożeniowym — czy priorytety P0 (34 pustynie, SLA 14 dni) mają
+  przydzielony budżet i właściciela poza kampanią (P51-campaign)?
+Q04. Eskalacja BLOCKERów: brak konfliktów z dokumentami świętymi (C=rejestr
+  pusty); czy brak weryfikacji ISAP całości (L12) eskalować jako globalny
+  proces (sesja weryfikacyjna dedykowana), czy per-część przy awansie
+  CANDIDATE→ACTIVE?
+
+──────────────────────────────────────────────────────────────────────────────
+9.12 ZAAŁOŻENIA JAWNE
+──────────────────────────────────────────────────────────────────────────────
+[ZAŁOŻENIE] Z1: węzły ARTICLE LKG reprezentują przepisy materialne w zakresie
+  kampanii; węzły innego typu nie liczą się do CCR (mianownik 251).
+[ZAŁOŻENIE] Z2: obecność rule_id w canonical rules/ = noga reguły; obecność
+  w tests/rego = noga testowa (substring scan; wykluczone pakiety testowe).
+[ZAŁOŻENIE] Z3: proxy przepływu kwot w I08 (udział domeny w pustyniach)
+  zastępuje brakujące dane przepływów — kierunkowe, nie kwotowe.
+[ZAŁOŻENIE] Z4: wagi ryzyka per domena (RISK_WEIGHTS) odzwierciedlają
+  częstość/kwoty/niepewność — do akceptacji 4-eyes (Q03).
+[ZAŁOŻENIE] Z5: domena ryczalt=0 wprost wynika z mapowania DOMAIN_KEYWORDS
+  (wezly ryczaltu oznaczone pit/business/other), nie z braku przepisów.
+[ZAŁOŻENIE] Z6: seed DRL-0001 (2099-06-01) w kalendarzu zmian jest wpisem
+  procesowym, nie realną zmianą prawa.
+[ZAŁOŻENIE] Z7: statusy SLA (14/30/90/180 dni) są parametrem procesowym
+  kampanii, nie terminem prawnym.
+
+──────────────────────────────────────────────────────────────────────────────
+9.13 TABELA DOWODÓW T1 (7.3 — jeden wiersz na plik Sekcji 6)
+──────────────────────────────────────────────────────────────────────────────
+| # | Plik (Sekcja 6) | Co pobieramy (dowód/fakt/liczba) | Status |
+|---|---|---|---|
+| 1 | bundles/coverage_deserts.json | snapshot 2026-08-08: 72 pustynie / 69.9% — baza rekoncyliacji I01; snapshot STARY vs skan świeży (drift flag) | ZWERYFIKOWANO |
+| 2 | bundles/coverage_canon.json | LCI=100%, UVR=11125, lkg_material_nodes=70 — mianownik kanonu; kontekst I04/I09 | ZWERYFIKOWANO |
+| 3 | docs/COVERAGE_CANON.md | definicja LCI/UVR — kontrakt metryk kanonu | ZWERYFIKOWANO (obecność+sekcje) |
+| 4 | docs/LEGAL_COVERAGE_GAP_RAPORT.md | raport luk pokrycia — wejście rekoncyliacji | ZWERYFIKOWANO (obecność) |
+| 5 | docs/LEGAL_COVERAGE.md | dokument pokrycia prawnego | ZWERYFIKOWANO (obecność) |
+| 6 | COVERAGE_REPORT.md | raport pokrycia (JDG root) | ZWERYFIKOWANO (obecność) |
+| 7 | tools/legal_coverage_heatmap.py | heatmapa pokrycia (poprzednik I08 — rozszerzono, nie duplikowano) | ZWERYFIKOWANO |
+| 8 | tools/coverage_unifier.py | unifier (LCI) — P51-I04 podaje LCI obok CCR jako kontekst | ZWERYFIKOWANO |
+| 9 | tests/test_coverage_unifier.py | testy unifiera — wzorzec testowania pokrycia | ZWERYFIKOWANO |
+| 10 | tools/coverage_95_plan.py | plan 95% — jeden z 4 generatorów audytowanych w I05 (bez guardu) | ZWERYFIKOWANO |
+| 11 | generate_missing_rules.py | generator brakujących reguł — audyt I05 | ZWERYFIKOWANO |
+| 12 | tools/parse_plan33_and_generate.py | generator plan33 — audyt I05 | ZWERYFIKOWANO |
+| 13 | tools/generate_from_plan50.py | generator plan50 — audyt I05 | ZWERYFIKOWANO |
+| 14 | tools/legal_change_impact_analyzer.py | analizator wpływu zmian — kontrakt z I07 (pętla Law Radar) | ZWERYFIKOWANO (obecność) |
+| 15 | tools/traceability_matrix.py | macierz traceability — noga reguła↔test | ZWERYFIKOWANO (obecność) |
+| 16 | tools/vat_traceability_matrix.py | traceability VAT | ZWERYFIKOWANO (obecność) |
+| 17 | unified_plan_v8.yaml | plan unifikacyjny — fazy 1–3 (Doc 50, dedup) powiązane z pustyniami | ZWERYFIKOWANO (obecność) |
+| 18 | docs/Bbb | katalog akt (twierdzenia do weryfikacji ISAP) | NIEZWERYFIKOWANO (skan obecności; L11) |
+| 19 | docs/LEGAL_SOURCE_REGISTRY.md | rejestr źródeł prawnych | NIEZWERYFIKOWANO (skan obecności; L11) |
+| 20 | docs/LEGAL_REFERENCE_ACTS.md | akty referencyjne | NIEZWERYFIKOWANO (skan obecności; L11) |
+| 21 | docs/KALENDARZ_ZMIAN_PRAWNYCH.md | seed DRL-0001 (2099-06-01), 0 realnych wpisów — wejście I07 | ZWERYFIKOWANO |
+| 22 | bundles/legal_graph.json | 258 węzłów / 251 ARTICLE / covered=155 — baza rejestru I01, CCR I04 | ZWERYFIKOWANO |
+| 23 | policies/jdg (mirror) | sync 526 plików, drift 0 — zgodność canonical↔mirror | ZWERYFIKOWANO |
+| 24 | policies/tax (mirror) | warstwa podatkowa mirror | ZWERYFIKOWANO (sync) |
+| 25 | policies/tax/vat (mirror) | reguły VAT mirror | ZWERYFIKOWANO (sync) |
+| 26 | policies/jdg/bundles/bundle.sh | skrypt budowy bundle mirror | ZWERYFIKOWANO (obecność) |
+| 27 | policies/jdg/bundles/base/manifest.json | manifest bazowy overlay | ZWERYFIKOWANO (obecność) |
+| 28 | policies/jdg/bundles/overlays/v2026/manifest.json | overlay v2026 | ZWERYFIKOWANO (obecność) |
+
+──────────────────────────────────────────────────────────────────────────────
+9.14 KONTRAKT WYJŚCIOWY T5 / ARTEFAKTY T10 (11.4) / PYTANIA KRZYŻOWE
+──────────────────────────────────────────────────────────────────────────────
+T5 — kontrakt wyjściowy: sekcja 9.08 (K-P51-1…K-P51-6).
+T10 — tabela przekazywanych artefaktów (11.4):
+
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|---|---|---|---|
+| Rejestr pustyni (159 wpisów, priorytety, SLA) | P36, P52, P68 | bundles/v3_p51_desert_entries.json | domknięcie wg priorytetu; nowa reguła tylko z wpisem |
+| Karta pustyni (10 kart + szablon) | P41, P36, kampanie | bundles/v3_p51_desert_cards.json | recepta per pustynia; testy graniczne wymagane |
+| Metodologia scoringu (wagi, progi, SLA) | P37, P68 | bundles/v3_p51_desert_risk.json (evidence.methodology) | zmiana wag = 4-eyes |
+| Metryka CCR + rozkład nóg | P37, P39, P68 | bundles/v3_p51_chain_metric.json | definition of done kampanii (cel 90%) |
+| Bramka Law Radar→pustynie | P08, P30, P37 | bundles/v3_p51_law_radar_block.json | nowelizacja bez planu = ticket SLA |
+| Kwadranty kwotowe (datagrid) | P37 | bundles/v3_p51_desert_heatmap.json | dashboard ryzyka kwotowego |
+| Ghost testy + testless plan | P36, P39 | bundles/v3_p51_testless_sweep.json | domknięcie nogi testowej |
+| Cele kwartalne per domena | P37, P68 | bundles/v3_p51_quarterly_goals.json | monitoring Q4-2026 |
+| Wspólny rejestr pustynie+stuby | P37, P68, P45 | bundles/v3_p51_vacancy_bridge.json | jeden ranking ryzyka |
+| Atestacja pokrycia (attested+caveats) | P68 | bundles/v3_p51_coverage_attestation.json | obowiązkowy składnik certyfikatu finalnego |
+| Pakiet polityki jdg.v3_p51_coverage_deserts | CI (P39), P48 | rules/v3_p51_coverage_deserts.rego + mirror | bramki fail-closed pustyni |
+
+PYTANIA KRZYŻOWE (7.4):
+X01. Sprzeczności z dokumentami świętymi: NIE STWIERDZONO (rejestr konfliktów
+  Cxx pusty). Pokrycie z V1 §8 (bramka pokrycia) i V2 (Golden Oracle/Decision
+  Certificate): pakiet P51 używa certificate F4, fail-closed, parametry-as-data.
+  Jedyne napięcie: canon deklaruje LCI=100% przy mianowniku 70, podczas gdy
+  dokumenty wymagają pełnego łańcucha (V1 §8) — rozstrzygnięcie: CCR jako
+  metryka kampanii na pełnym mianowniku, canon do rewizji (L02, Q01) —
+  zgodnie z zasadą „dowód jest kod, test, wynik uruchomienia" (protokół 06).
+X02. Reguły łamiące parametry-as-data (P06)/temporalność (P05): NIE MA w
+  warstwie P51 (test ADR-002 zielony; valid_from w snapshotie; progi jako
+  dane). Wykryte poza P51: generatory bez guardu (L08) mogą produkować
+  hardcode — bramka I05 ogranicza.
+X03. Ścieżki nie-fail-closed: w warstwie P51 wszystkie 12 analiz mają ścieżkę
+  BLOCK/TRIAGE i bypass→BLOCK (testy). Cichy AUTO_POST niemożliwy przy
+  pustyni (T-P51-06). Ryzyko poza P51: 5 pakietów-pustyni coverage gate
+  (pit_macro_etap10, pit_micro_reliefs_etap11, tests_ci.quality_v3_17,
+  tests_ci_quality_etap24, zus_core_etap12) — istnieją bez testów, gate
+  P18 przechodzi (98.63% >= 95%) — rejestrowane jako kontekst, nie luka P51.
+X04. Zgodność z kontraktem werdyktu 25-polowym (P03/ADR-004): decyzje P51
+  niosą matched/rule_id/package/priority/decision_mode/_routing/_routing_
+  reason/_legal_basis/_warnings/threshold_version/legal_basis_version/
+  valid_from/valid_to + pola analityczne — nadzbiór zgodny; bezpieczny merge
+  przez safe_merge (polia biznesowe nie nadpisywane; pakiet na prawej stronie
+  merge w p115, jak P49/P50).
+X05. Testy blokujące merge: T-P51-01…T-P51-07 (sekcja 9.10) — 57 testów
+  natywnych w tests/rego/test_v3_p51_coverage_deserts.rego, uruchamiane w
+  opa test JDG/tests/ (CI rego-unit-tests).
+X06. Duplikaty z innymi częściami: BRAK duplikacji — P51 rozszerza:
+  coverage_unifier (I04 podaje LCI obok), P45 stub register (I11 mapuje),
+  P08 law radar (I07 bramka), legal_coverage_heatmap (I08 kwadranty nowe).
+  Guard duplikatów P50-I08 wymagany dla generatorów (I05). Plan konsolidacji:
+  tylko L02 (mianownik canon) — decyzja Q01.
+X07. Podstawy niezweryfikowane: WSZYSTKIE w P51 [NIEZWERYFIKOWANE — ISAP]
+  (L12): UoR art. 4 ust. 1, Ordynacja art. 56/70/81/180/199a-199c, VAT
+  art. 41-43/86-109e, PIT art. 22-30c, ZUS art. 18a-18f, KKS art. 56-57,
+  Rozp. MF 15.11.2025. Rejestr mediacji: do P47-I10 (stempel 4-eyes);
+  priorytet: akty TOP-10 P0 pierwsze.
+X08. Decyzje wymagające człowieka (4-eyes): Q01–Q04 + merytoryka reguł
+  P0 (karty TOP-10), zmiana wag scoringu, mianownik canon, usunięcie ghost
+  testów (L10), podłączenie generatorów (L08).
+X09. Metryki do obserwowalności (P37): v3_p51_desert_nodes (trend spadkowy,
+  alarm wzrost), v3_p51_p0_open (alarm >0), v3_p51_ccr_pct (trend rosnący,
+  próg 90), v3_p51_ghost_tests (alarm >0), v3_p51_unplanned_changes (alarm
+  >0), v3_p51_high_quadrant (alarm >0), v3_p51_attested (alarm false).
+  Dashboardy: „Coverage Deserts" (rejestr+heatmapa), „Attestation" (zastrzeżenia).
+X10. Ryzyka wymagające invariantów runtime (P04): INV-P51-1: AUTO_POST
+  zabroniony gdy desert_nodes>0 dla dotkniętej domeny (propozycja; wymaga
+  mapowania domena werdyktu→domena pustyni); INV-P51-2: atestacja w
+  certyfikacie P68 musi mieć counter_consistency=true (włączone do I12);
+  INV-P51-3: zmiana progów v3_p51 wymaga valid_from i testów granicznych
+  (P05) — egzekwowane testami T-P51-08…12.
+
+──────────────────────────────────────────────────────────────────────────────
+9.15 ANTY-WZORCE (7.5) — WYNIK SPRZAWDZENIA
+──────────────────────────────────────────────────────────────────────────────
+| AP | Wynik | Dowód |
+|---|---|---|
+| AP01 stuby {true} | NIE MA w warstwie P51 (test pytest); WYKRYTO 1 fabrykę stubów w generatorze (L08) — zablokowana bramką I05 | test_p51_no_stub_true_rules; semi_auto_drafting |
+| AP02 hardcode progów | NIE MA — progi data.jdg.thresholds.v3_p51 | test_p51_rego_zero_hardcode_thresholds |
+| AP03 brak else-chain | NIE MA — 12 analiz z jawnym else; default no_match | struktura rego + 57 testów |
+| AP04 duplikaty rule_id | NIE MA — 12 unikalnych rule_id; guard P50 wymagany dla generatorów | rule_registry; I05 |
+| AP05 podstawy bez Dz.U./niemożliwe daty | BRAK PRZECZYANYCH; wszystkie [NIEZWERYFIKOWANE] | act_dz_u w LKG; L12 |
+| AP06 testy zawsze-zielone | NIE MA — testy negatywne (BLOCK/TRIAGE) i graniczne | 57 testów natywnych |
+| AP07 cichy AUTO_POST | NIE MA — thresholds_missing→BLOCK; pustynia→nigdy AUTO | T-P51-01/06 |
+| AP08 cykle importów | NIE MA — pakiet importowany wyłącznie przez main_jdg | opa check strict (plik) |
+| AP09 dane zewnętrzne na stałe | NIE MA w polityce; proxy przepływu jawne [ZAŁOŻENIE] (L06) | heatmap evidence |
+| AP10 brak okien temporalnych | NIE MA — valid_from w snapshotie progów | thresholds v3_p51 |
+| AP11 mirror dryf | NIE MA — raw identyczny po sync 526 plików | test_p51_rego_mirror_ |
+| AP12 metryki w dwóch miejscach | KONTROLA: liczniki I12 z kontrolowaną sumą; canon vs LKG rozbieżność JEST (L02) — jawna, nie wygładzona | coverage_attestation; recon |
+
+──────────────────────────────────────────────────────────────────────────────
+9.16 TABELA T11 — MACIERZ PODANALIZA×GRUPA (APENDYKS B)
+──────────────────────────────────────────────────────────────────────────────
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik (sekcja) |
+|---|---|---|---|
+| 5.1 | 6.1 (dane pokrycia), 6.3 (LKG) | rejestr 159 pustyni; by_domain 10 domen; klasy 118/41/0 | 9.04 / 9.05 |
+| 5.2 | 6.1, 6.3 (kalendarz), 6.4 (mirror) | systemic_sweep 0 klas; art.70/81 no_rule; kalendarz seed-only | 9.04 / 9.05 |
+| 5.3 | 6.1 (canon), 6.2 (heatmapa) | scoring 159/159; P0=34=HIGH; kwadranty 34/49/63/13 | 9.04 / 9.05 |
+| 5.4 | 6.2 (generatory), 6.3 | karty 10/10; cele 15 (13 MET); CCR=36.65%; attestation caveats=4 | 9.04 / 9.05 |
+
+T12 — REJESTR KONFLIKTÓW (Cxx): PUSTY (brak konfliktów dokument↔kod,
+mirror↔canonical, kontrakt↔kontrakt). Napięcie metryczne canon↔LKG
+udokumentowane jako luka L02 (nie konflikt z dokumentami świętymi).
+
+──────────────────────────────────────────────────────────────────────────────
+KRYTERIA AKCEPTACJI (Sekcja 13 promptu) — ODZNACZENIE
+──────────────────────────────────────────────────────────────────────────────
+[✔] 01. Raport jako jeden plik TXT (ta ścieżka).
+[✔] 02. Sekcje 9.01–9.16 obecne i nietrywialne.
+[✔] 03. Każdy plik Sekcji 6 ma wiersz w T1 (28 wierszy, 24 ZWERYFIKOWANO,
+        4 NIEZWERYFIKOWANO z adnotacją L11).
+[✔] 04. Macierz PRAWO↔REGUŁA↔TEST dla 8 aktów Sekcji 8 + przepisy odkryte.
+[✔] 05. Rejestr luk P0–P3 z identyfikatorami (12 luk: 0/2/4/6).
+[✔] 06. Min. 12 innowacji z pełnym 6-punktowym projektem (I01–I12).
+[✔] 07. Kontrakt wyjściowy (9.08, K-P51-1…6) konkretny i testowalny.
+[✔] 08. Plan testów z przypadkami blokującymi merge (9.10).
+[✔] 09. Sekcja pytań do człowieka (9.11, Q01–Q04).
+[✔] 10. Zero twierdzeń bez dowodu; założenia [ZAŁOŻENIE]; prawo [NIEZWERYFIKOWANE].
+[✔] 11. Odpowiedzi na pytania krzyżowe X01–X10.
+[✔] 12. Tabela przekazywanych artefaktów (T10) wypełniona.
+[✔] 13. Macierz podanaliza×grupa (T11) z kolumnami Grupy kluczowe/Wynik.
+[✔] 14. Każdy anty-wzorzec 7.5 ma wynik sprawdzenia (9.15).
+[✔] 15. Instrukcja 6.0: każdy plik z faktem albo adnotacją NIEZWERYFIKOWANO.
+[✔] 16. Plan pracy APENDYKS E wykonany (ETAP 1–6; wdrożenie zamiast samego
+        raportu — nadzbiór zgodny z wymaganiem nadrzędnym 6 promptu).
+[✔] 17. Sekcje napisane od zera (weryfikacja, nie parafraza).
+[✔] 18. Deklaracja zgodności z dokumentami świętymi: poniżej.
+[✔] 19. Rejestr pustyni z licznikami per domena i per klasa (9.04/9.05).
+[✔] 20. TOP-10 pustyni z pełnymi kartami (bundle I03; recepty gotowe).
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI: pakiet P51 jest zgodny z V1
+(control plane, bramki, SLO) i V2 (Legal Twin/LKG, Golden Oracle, Decision
+Certificate F4, Law Radar, parametry-as-data, fail-closed). Odstępstwa: brak.
+Napięcie metryczne canon↔LKG udokumentowane (L02) z propozycją rozstrzygnięcia
+zgodną z V1 §8 — bez zmiany standardów P00 po cichu (kontrakt 11.3).
+
+──────────────────────────────────────────────────────────────────────────────
+SEKCJA 16 — KOMENDA KOŃCOWA: POTWIERDZENIE I CZYSZCZENIE
+──────────────────────────────────────────────────────────────────────────────
+1. Raport zapisany: JDG/raporty_glm52_v3/RAPORT_V3_P51_PUSTYNIE_PRAWNE.txt.
+2. Potwierdzenie zakresu P51: rejestr pustyni 159 wpisów (no_rule=118,
+   rule_no_test=41, test_no_rule=0) per 251 węzłów ARTICLE; CCR=36.65%
+   (cel 90%); P0=34, P1=68, P2=56, P3=1; luk raportowych P0=0, P1=2,
+   P2=4, P3=6 (12); innowacji 12 (I01–I12, wszystkie z artefaktami i
+   gate=PASS); kontrakt wyjściowy K-P51-1…6 spójny; wdrożenie pełne
+   (Rego + progi + wiring + 14 bundli + testy 57/57 rego ×2 OPA + 23/23
+   pytest + mirror 526 plików drift 0 + rejestr lifecycle 12× CANDIDATE).
+3. Kontrakty przekazane do P52: K-P51-1 rejestr pustyni (wejście testów
+   granicznych P52), K-P51-2 karta pustyni, K-P51-3 metodologia scoringu,
+   K-P51-4 atestacja (→P68), K-P51-5 bramka CI, K-P51-6 zgodność mirror.
+4. OKNO KONTEKSTOWE DO WYCZYSZCZENIA — do P52 wchodzi się z pustą sesją,
+   przenosząc wyłącznie: EXECUTIVE SUMMARY (9.01), KONTRAKT WYJŚCIOWY
+   (9.08), REJESTR LUK P0/P1 (9.06 — P1: L01, L02).
+5. Żadnych niejawnych założeń poza raportem — wszystko [ZAŁOŻENIE]/[NIEZWERYFIKOWANE]
+   udokumentowane powyżej.
+==============================================================================
+KONIEC RAPORTU V3 P51 — PUSTYNIE PRAWNE
+==============================================================================

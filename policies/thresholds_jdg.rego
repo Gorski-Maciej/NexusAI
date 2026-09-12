@@ -3911,3 +3911,107 @@ v3_p50 := {
     "no_auto_post": true,
     "manual_review_required": true,
 }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P51 PUSTYNIE PRAWNE — progi (ADR-002 parametry-as-data)
+# Rejestr pustyni z SLA, scoring ryzyka (częstość × kwota × niepewność), karty
+# pustyni, metryka CCR (łańcuch akt→art→reguła→test), generatory z guardem,
+# pustynie systemowe, bramka Law Radar, heatmapa kwotowa, sweep testless,
+# cele kwartalne, mapa pustynie→stuby, atestacja pokrycia. Honory kontrakty:
+# P00 (coverage_canon jako baza), P08 (Law Radar pętla), P36 (generatory),
+# P37 (metryki), P45 (rejestr stubów), P47 (podstawa podejrzana = podwójna
+# luka), P49 (fail-closed), P50 (guard duplikatów), P52 (testy), P68 (atestacja
+# w certyfikacji).
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p51 := {
+    "v3_p51_threshold_version": "deserts-v3p51-2026.09",
+    "legal_basis_version": "lb-deserts-v3p51-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: pustynie P0 (ryzyko błędnego AUTO_POST) — maksimum dopuszczalne (0)
+    "v3_p51_p0_deserts_max": 0,
+    # I03: wymagany komplet kart pustyni (TOP-10 wg ryzyka)
+    "v3_p51_cards_required": 10,
+    # I04: cel kampanii — CCR % aktów z pełnym łańcuchem akt→art→reguła→test
+    "v3_p51_chain_target_pct": 90.0,
+    # I05: minimum generatorów z guardem duplikatów (K-P50-5)
+    "v3_p51_generators_guarded_min": 4,
+    # I06: pustynie systemowe (odsetki/przedawnienie/waluty/terminy) — maksimum
+    "v3_p51_systemic_deserts_max": 0,
+    # I07: zmiany Law Radar bez planu reguły — maksimum (ticket z SLA)
+    "v3_p51_law_radar_changes_max": 0,
+    # I08: pustynie kwadrantu HIGH (mapa kwotowa) — maksimum
+    "v3_p51_heatmap_high_max": 0,
+    # I09: reguły bez testu natywnego — maksimum (baseline jawny, trend → P37)
+    "v3_p51_testless_max": 0,
+    # I09: ghost testy (test bez reguły kanonicznej) — maksimum
+    "v3_p51_ghost_tests_max": 0,
+    # I10: domeny z celem MISSED — maksimum
+    "v3_p51_goals_missed_max": 0,
+    # I11: reguły-fasady (stuby P45) w wspólnym rejestrze — maksimum
+    "v3_p51_stubs_total_max": 0,
+    # I12: maksimum zastrzeżeń atestacji (0 = atestacja czysta albo TRIAGE)
+    "v3_p51_caveats_max": 0,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P52 GRANICE GROSZOWE — progi (ADR-002 parametry-as-data)
+# Standard zaokrągleń HALF_UP (art. 107 OP / art. 63 PIT [NIEZWERYFIKOWANE —
+# ISAP]), matryca granic progów, provenance kursów (NBP-A), ścieżka weekend/
+# święto, invariants sum, determinism hash, interakcje zaokrągleń, ścieżki
+# ujemne, audyt kalendarza progów, telemetria driftu groszowego, fuzz walutowy,
+# doomsday suite. Honory kontrakty: P46 (jednostki), P05 (temporalność kursów
+# i limitów rocznych), P49 (fail-closed), P51 (pustynie testowe), P37 (drift
+# telemetry), P39 (bramki merge), P11 (hash w certyfikacie), P53+ (standard).
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p52 := {
+    "v3_p52_threshold_version": "penny-v3p52-2026.09",
+    "legal_basis_version": "lb-penny-v3p52-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01: operacje poza standardem HALF_UP — maksimum (0 = wszystkie zgodne)
+    "v3_p52_noncompliant_tools_max": 0,
+    # I02: minimum progów GROSZOWYCH z testami granicznymi (MPP 15k,
+    # zwolnienie 200k, whitelist 15k; 30-krotność ZUS → audyt kalendarza I09)
+    "v3_p52_boundary_thresholds_min": 3,
+    # I04: minimum dat świątecznych w kalendarzu kursów (2026–2027)
+    "v3_p52_holidays_registered_min": 20,
+    # I05: minimum prób invariants sum (setki pozycji)
+    "v3_p52_sum_checks_min": 100,
+    # I07: rozjazdy ścieżek zaokrągleń — maksimum (baseline jawny; trend → 0)
+    "v3_p52_path_drifts_max": 0,
+    # I09: minimum reguł limitów rocznych objętych audytem kalendarza
+    "v3_p52_annual_rules_min": 3,
+    # I10: cel rozjazdów groszowych (0 = forteca precyzji)
+    "v3_p52_penny_drift_target": 0,
+    # I11: minimum prób fuzzu walutowego (P34-I04 kontrakt fuzz)
+    "v3_p52_fuzz_trials_min": 100,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════
+# V3-P53 — TEMPORALNOŚĆ DOMKNIĘCIE (ADR-002, P05, INV-037) — okno temporalne
+# Obowiązuje od 2026-01-01 (P05). Progi pokrycia okien, testów day-0, filarów
+# replay, zasad przejściowych, pre-provisioning (lead KPI V2 §6.2.5).
+# Walidacja: JEDNA wersja aktywna na datę (P1632); zero luk/nakładek (INV-037).
+v3_p53 := {
+    "v3_p53_threshold_version": "temporal-v3p53-2026.09",
+    "legal_basis_version": "lb-temporal-v3p53-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    "valid_to": null,
+    # I01: minimum pokrycia plików rego oknami temporalnymi (bazowy stan: 44.8%)
+    "v3_p53_window_coverage_min_pct": 40.0,
+    # I02: minimum automatycznych testów day-0 (okno → dzień przed/granica/dzień po)
+    "v3_p53_day0_tests_min": 8,
+    # I03: wszystkie 4 filary replay (rules+params+fx+accumulator)
+    "v3_p53_replay_pillars_min": 4,
+    # I04: minimum zasad przejściowych w rejestrze (prawa nabyte SUS 18a/18c/18ab)
+    "v3_p53_transitional_rules_min": 5,
+    # I08: KPI lead pre-provisioning (V2 §6.2.5)
+    "v3_p53_preprov_lead_days": 30,
+    # I09: minimum klas testów granicy roku (limity narastające 31.12/1.01)
+    "v3_p53_year_boundary_cases_min": 3,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}

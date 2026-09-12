@@ -1,0 +1,92 @@
+{
+  "analysis": "I10_historical_parameter_store",
+  "rows": [
+    {
+      "param": "vat.standard_rate",
+      "value": 0.23,
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "source_act": "Art. 41 ustawy o VAT",
+      "changed_by": "system",
+      "changed_at": "2026-08-08T11:34:34",
+      "has_provenance": true
+    },
+    {
+      "param": "vat.reduced_rate_8",
+      "value": 0.08,
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "source_act": "Art. 41 ust. 2 ustawy o VAT w zw. z zal. 10 (wykaz towarow/uslug 8%)",
+      "changed_by": "v3_p12_rates_as_data",
+      "changed_at": "2026-09-03T00:00:00+00:00",
+      "has_provenance": true
+    },
+    {
+      "param": "vat.reduced_rate_5",
+      "value": 0.05,
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "source_act": "Art. 41 ust. 10 ustawy o VAT w zw. z zal. 10 (wykaz towarow/uslug 5%)",
+      "changed_by": "v3_p12_rates_as_data",
+      "changed_at": "2026-09-03T00:00:00+00:00",
+      "has_provenance": true
+    },
+    {
+      "param": "vat.zero_rate",
+      "value": 0.0,
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "source_act": "Art. 41 ust. 2-13 ustawy o VAT (przypadki stawki 0%)",
+      "changed_by": "v3_p12_rates_as_data",
+      "changed_at": "2026-09-03T00:00:00+00:00",
+      "has_provenance": true
+    },
+    {
+      "param": "vat.np_rate",
+      "value": "NP",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "source_act": "Art. 41 ust. 1 ustawy o VAT (nie podlega opodatkowaniu); JPK_V7 pole P_NP",
+      "changed_by": "v3_p12_rates_as_data",
+      "changed_at": "2026-09-03T00:00:00+00:00",
+      "has_provenance": true
+    },
+    {
+      "param": "vat.limit_113",
+      "value": 200000,
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "source_act": "Art. 113 ust. 1 ustawy o VAT (zwolnienie podmiotowe 200 000 PLN)",
+      "changed_by": "v3_p12_limit113_sentinel",
+      "changed_at": "2026-09-03T00:00:00+00:00",
+      "has_provenance": true
+    },
+    {
+      "param": "vat.exemption_suspended_years",
+      "value": 2,
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "source_act": "Art. 113 ust. 14 ustawy o VAT (zakaz ponownego zwolnienia po utracie) [uwaga: raport V3_P12 Q01 - ust. 11 vs ust. 14 do weryfikacji ISAP]",
+      "changed_by": "v3_p12_waiver_tracker",
+      "changed_at": "2026-09-03T00:00:00+00:00",
+      "has_provenance": true
+    },
+    {
+      "param": "vat.exemption_housing_area_m2_max",
+      "value": 80,
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "source_act": "Art. 43 ust. 1 pkt 7-8 ustawy o VAT (zwolnienie budownictwo mieszkaniowe, powierzchnia do 80 m2)",
+      "changed_by": "v3_p12_exemption_matrix",
+      "changed_at": "2026-09-03T00:00:00+00:00",
+      "has_provenance": true
+    }
+  ],
+  "total_versions": 8,
+  "with_provenance": 8,
+  "without_provenance": 0,
+  "contract": "replay czyta historię (versions[]) a nie wartość bieżącą",
+  "legal_basis": "ADR-002 parametry-as-data; UoR art. 5 [NIEZWERYFIKOWANE — ISAP]",
+  "gate": "PASS",
+  "generated_at": "2026-09-12T17:52:42.589548+00:00"
+}
