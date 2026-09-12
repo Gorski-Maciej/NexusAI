@@ -119,6 +119,7 @@ import data.jdg.v3_p46_hardcode_eliminacja_enterprise as v3_p46_hardcode_elimina
 import data.jdg.v3_p47_legal_basis_weryfikacja_enterprise as v3_p47_legal_basis_weryfikacja_enterprise
 import data.jdg.v3_p48_mirror_sync as v3_p48_mirror_sync
 import data.jdg.v3_p49_fail_closed as v3_p49_fail_closed
+import data.jdg.v3_p50_dead_code as v3_p50_dead_code
 import data.jdg.micro.quality_v3_13 as micro_quality_v3_13
 import data.jdg.hyper.quality_v3_14 as hyper_quality_v3_14
 import data.jdg.enterprise.quality_v3_15 as enterprise_quality_v3_15
@@ -3234,6 +3235,17 @@ final_verdict_p113 = safe_merge(final_verdict_p112,
         fallback.decide
     ))
 
+# ── PAS 18ac: V3-P50 DEAD CODE I DUPLIKATY (semantic duplicate detector,
+# contradiction check, global rule_id uniqueness gate, single-source-of-truth
+# register, dead tool archive, orphan data sweeper, ghost doc detector,
+# duplication prevention in generators, consolidation ledger, intentful
+# variants, rule reachability map, duplicate burden metric). Fail-closed;
+# nieaktywny dopóki input.jdg_entrepreneur.v3_p50_check nie jest true.
+final_verdict_p114 = safe_merge(final_verdict_p113,
+    safe_merge(v3_p50_dead_code.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -3266,7 +3278,7 @@ final_verdict_p113 = safe_merge(final_verdict_p112,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p113
+    final_verdict_p114
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

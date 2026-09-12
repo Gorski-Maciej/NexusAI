@@ -1,0 +1,18 @@
+{
+  "innovation": "V3-P50-I02",
+  "generated_at": "2026-09-11T22:40:09.301260+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "contradictory_pairs": 0,
+    "unresolved": 0,
+    "resolved": 0,
+    "contradiction_max": 0,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "unresolved_sample": [],
+    "resolved_keys": [],
+    "note": "I02: identyczna semantyka (hash I01) + różny decision_mode = decyzja losowa = BLOCK do rozstrzygnięcia. Rejestr rozstrzygnięć: para → źródło prawdy (I04), owner, data; rozstrzygnięte wypadają z unresolved (ale pozostają w historii I01).",
+    "scanned_at": "2026-09-11T22:40:09.301161+00:00"
+  }
+}

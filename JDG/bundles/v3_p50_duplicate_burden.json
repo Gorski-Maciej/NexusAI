@@ -1,0 +1,30 @@
+{
+  "innovation": "V3-P50-I12",
+  "generated_at": "2026-09-11T22:41:12.250607+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "rules_total": 413,
+    "duplicate_rules": 0,
+    "duplicate_pairs": 0,
+    "temporal_variant_pairs": 0,
+    "contradictory_pairs": 0,
+    "burden_pct": 0.0,
+    "target_pct": 0,
+    "parse_errors": 217,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "method": "opa-parse-ast (hash warunków+skutku, stringi maskowane)",
+    "trend_entries": 3,
+    "trend_first": {
+      "at": "2026-09-11T19:36:35.335164+00:00",
+      "rules_total": 413,
+      "duplicate_rules": 0,
+      "burden_pct": 0.0,
+      "contradictory_pairs": 0,
+      "routing": "AUTO_FILE"
+    },
+    "note": "I12: burden z detektora I01 (jedno źródło prawdy; brak podwójnego liczenia). Cel 0%; trend → P37 dashboard Duplicate Burden. parse_errors>0 = część reguł poza analizą AST (jawny backlog detektora — L).",
+    "scanned_at": "2026-09-11T22:41:12.250552+00:00"
+  }
+}

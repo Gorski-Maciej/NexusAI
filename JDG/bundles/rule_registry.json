@@ -2002,5 +2002,353 @@
         "title": "V3-P49 I12: user-visible safety (P40)"
       }
     ]
+  },
+  "jdg.v3_p50_dead_code.semantic_duplicates": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 24b; VAT art. 41/43; PIT art. 22-30; ZUS art. 18a; UoR art. 4 ust. 1; KKS art. 56; Ordynacja art. 199a-199c; RODO art. 5 ust. 1c",
+        "owner": "P50-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p50_dead_code.rego",
+          "tests/auto/test_v3_p50_dead_code.py"
+        ],
+        "thresholds": [
+          "v3_p50"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.50.1",
+        "rule_id": "jdg.v3_p50_dead_code.semantic_duplicates",
+        "title": "V3-P50 I01: semantic duplicate detector (hash warunkow AST)"
+      }
+    ]
+  },
+  "jdg.v3_p50_dead_code.contradictions": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 24b; VAT art. 41/43; PIT art. 22-30; ZUS art. 18a; UoR art. 4 ust. 1; KKS art. 56; Ordynacja art. 199a-199c; RODO art. 5 ust. 1c",
+        "owner": "P50-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p50_dead_code.rego",
+          "tests/auto/test_v3_p50_dead_code.py"
+        ],
+        "thresholds": [
+          "v3_p50"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.50.1",
+        "rule_id": "jdg.v3_p50_dead_code.contradictions",
+        "title": "V3-P50 I02: contradiction check (rozne wyniki na tym samym input = BLOCK)"
+      }
+    ]
+  },
+  "jdg.v3_p50_dead_code.ruleid_uniqueness": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 24b; VAT art. 41/43; PIT art. 22-30; ZUS art. 18a; UoR art. 4 ust. 1; KKS art. 56; Ordynacja art. 199a-199c; RODO art. 5 ust. 1c",
+        "owner": "P50-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p50_dead_code.rego",
+          "tests/auto/test_v3_p50_dead_code.py"
+        ],
+        "thresholds": [
+          "v3_p50"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.50.1",
+        "rule_id": "jdg.v3_p50_dead_code.ruleid_uniqueness",
+        "title": "V3-P50 I03: global rule_id uniqueness gate (canonical+mirror+rejestry)"
+      }
+    ]
+  },
+  "jdg.v3_p50_dead_code.single_source_register": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 24b; VAT art. 41/43; PIT art. 22-30; ZUS art. 18a; UoR art. 4 ust. 1; KKS art. 56; Ordynacja art. 199a-199c; RODO art. 5 ust. 1c",
+        "owner": "P50-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p50_dead_code.rego",
+          "tests/auto/test_v3_p50_dead_code.py"
+        ],
+        "thresholds": [
+          "v3_p50"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.50.1",
+        "rule_id": "jdg.v3_p50_dead_code.single_source_register",
+        "title": "V3-P50 I04: single-source-of-truth register (zapytywalny)"
+      }
+    ]
+  },
+  "jdg.v3_p50_dead_code.dead_tool_archive": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 24b; VAT art. 41/43; PIT art. 22-30; ZUS art. 18a; UoR art. 4 ust. 1; KKS art. 56; Ordynacja art. 199a-199c; RODO art. 5 ust. 1c",
+        "owner": "P50-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p50_dead_code.rego",
+          "tests/auto/test_v3_p50_dead_code.py"
+        ],
+        "thresholds": [
+          "v3_p50"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.50.1",
+        "rule_id": "jdg.v3_p50_dead_code.dead_tool_archive",
+        "title": "V3-P50 I05: dead tool archive (archiwum zamiast delete)"
+      }
+    ]
+  },
+  "jdg.v3_p50_dead_code.orphan_data": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 24b; VAT art. 41/43; PIT art. 22-30; ZUS art. 18a; UoR art. 4 ust. 1; KKS art. 56; Ordynacja art. 199a-199c; RODO art. 5 ust. 1c",
+        "owner": "P50-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p50_dead_code.rego",
+          "tests/auto/test_v3_p50_dead_code.py"
+        ],
+        "thresholds": [
+          "v3_p50"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.50.1",
+        "rule_id": "jdg.v3_p50_dead_code.orphan_data",
+        "title": "V3-P50 I06: orphan data sweeper (klucze data.* bez odczytu)"
+      }
+    ]
+  },
+  "jdg.v3_p50_dead_code.ghost_docs": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 24b; VAT art. 41/43; PIT art. 22-30; ZUS art. 18a; UoR art. 4 ust. 1; KKS art. 56; Ordynacja art. 199a-199c; RODO art. 5 ust. 1c",
+        "owner": "P50-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p50_dead_code.rego",
+          "tests/auto/test_v3_p50_dead_code.py"
+        ],
+        "thresholds": [
+          "v3_p50"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.50.1",
+        "rule_id": "jdg.v3_p50_dead_code.ghost_docs",
+        "title": "V3-P50 I07: ghost doc detector (dokumenty-widma)"
+      }
+    ]
+  },
+  "jdg.v3_p50_dead_code.generator_prevention": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 24b; VAT art. 41/43; PIT art. 22-30; ZUS art. 18a; UoR art. 4 ust. 1; KKS art. 56; Ordynacja art. 199a-199c; RODO art. 5 ust. 1c",
+        "owner": "P50-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p50_dead_code.rego",
+          "tests/auto/test_v3_p50_dead_code.py"
+        ],
+        "thresholds": [
+          "v3_p50"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.50.1",
+        "rule_id": "jdg.v3_p50_dead_code.generator_prevention",
+        "title": "V3-P50 I08: duplication prevention in generators (fail-fast)"
+      }
+    ]
+  },
+  "jdg.v3_p50_dead_code.consolidation_ledger": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 24b; VAT art. 41/43; PIT art. 22-30; ZUS art. 18a; UoR art. 4 ust. 1; KKS art. 56; Ordynacja art. 199a-199c; RODO art. 5 ust. 1c",
+        "owner": "P50-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p50_dead_code.rego",
+          "tests/auto/test_v3_p50_dead_code.py"
+        ],
+        "thresholds": [
+          "v3_p50"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.50.1",
+        "rule_id": "jdg.v3_p50_dead_code.consolidation_ledger",
+        "title": "V3-P50 I09: consolidation ledger (golden replay per scalenie)"
+      }
+    ]
+  },
+  "jdg.v3_p50_dead_code.intentful_variants": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 24b; VAT art. 41/43; PIT art. 22-30; ZUS art. 18a; UoR art. 4 ust. 1; KKS art. 56; Ordynacja art. 199a-199c; RODO art. 5 ust. 1c",
+        "owner": "P50-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p50_dead_code.rego",
+          "tests/auto/test_v3_p50_dead_code.py"
+        ],
+        "thresholds": [
+          "v3_p50"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.50.1",
+        "rule_id": "jdg.v3_p50_dead_code.intentful_variants",
+        "title": "V3-P50 I10: intentful variants (overlaye P48 zamiast duplikatow)"
+      }
+    ]
+  },
+  "jdg.v3_p50_dead_code.reachability": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 24b; VAT art. 41/43; PIT art. 22-30; ZUS art. 18a; UoR art. 4 ust. 1; KKS art. 56; Ordynacja art. 199a-199c; RODO art. 5 ust. 1c",
+        "owner": "P50-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p50_dead_code.rego",
+          "tests/auto/test_v3_p50_dead_code.py"
+        ],
+        "thresholds": [
+          "v3_p50"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.50.1",
+        "rule_id": "jdg.v3_p50_dead_code.reachability",
+        "title": "V3-P50 I11: rule reachability map (zero regul bez punktu wejscia)"
+      }
+    ]
+  },
+  "jdg.v3_p50_dead_code.duplicate_burden": {
+    "suspend_reason": null,
+    "versions": [
+      {
+        "domain": "compliance",
+        "error_rate": 0.0,
+        "impact_rules": [],
+        "legal_basis": "[NIEZWERYFIKOWANE — ISAP] weryfikacja 4-eyes wg P47-I10; Ordynacja art. 24b; VAT art. 41/43; PIT art. 22-30; ZUS art. 18a; UoR art. 4 ust. 1; KKS art. 56; Ordynacja art. 199a-199c; RODO art. 5 ust. 1c",
+        "owner": "P50-campaign",
+        "registered_at": "2026-09-11",
+        "rollout_pct": 10,
+        "severity": "BLOCKER",
+        "status": "CANDIDATE",
+        "supersedes": null,
+        "tests": [
+          "tests/rego/test_v3_p50_dead_code.rego",
+          "tests/auto/test_v3_p50_dead_code.py"
+        ],
+        "thresholds": [
+          "v3_p50"
+        ],
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "version": "3.50.1",
+        "rule_id": "jdg.v3_p50_dead_code.duplicate_burden",
+        "title": "V3-P50 I12: duplicate burden metric (cel 0%, trend P37)"
+      }
+    ]
   }
 }

@@ -1,0 +1,710 @@
+{
+  "innovation": "V3-P50-I03",
+  "generated_at": "2026-09-11T22:40:14.552074+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "files_scanned": 1130,
+    "rule_ids_canonical": 12383,
+    "rule_ids_mirror": 12501,
+    "rule_ids_registry": 90,
+    "rule_id_collisions": 0,
+    "in_file_redefinitions": 89,
+    "mirror_legacy_collisions": 712,
+    "collision_max": 0,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "collisions_sample": [],
+    "in_file_redefinition_sample": [
+      {
+        "rule_id": "jdg.v3_p44_certyfikacja_finalna.campaign_aggregate_ledger",
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p44_certyfikacja_finalna.certificate_worm_signature",
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p44_certyfikacja_finalna.certification_renewal_policy",
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p44_certyfikacja_finalna.fortress_self_portrait",
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p44_certyfikacja_finalna.hard_gate_certificate",
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p44_certyfikacja_finalna.knowledge_transfer_pack",
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p44_certyfikacja_finalna.legacy_cleanup_closure",
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p44_certyfikacja_finalna.owner_attestation",
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p44_certyfikacja_finalna.owner_decision_map",
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p44_certyfikacja_finalna.pillar_scoreboard",
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p44_certyfikacja_finalna.success_metric_freeze",
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p44_certyfikacja_finalna.v4_inheritance_contract",
+        "file": "v3_p44_certyfikacja_finalna.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p45_conversions.mdr_hallmark_a",
+        "file": "v3_p45_conversions.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p45_conversions.pcc_a1_condition",
+        "file": "v3_p45_conversions.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p45_conversions.uor_a2_threshold",
+        "file": "v3_p45_conversions.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p45_conversions.uor_a3_conditions",
+        "file": "v3_p45_conversions.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p45_conversions.wht_foreign_service",
+        "file": "v3_p45_conversions.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p45_stub_killer.auto_convert_pipeline",
+        "file": "v3_p45_stub_killer.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p45_stub_killer.isap_parity",
+        "file": "v3_p45_stub_killer.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p45_stub_killer.legal_empty",
+        "file": "v3_p45_stub_killer.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p45_stub_killer.mutation_score_gate",
+        "file": "v3_p45_stub_killer.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p45_stub_killer.negative_assertion",
+        "file": "v3_p45_stub_killer.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p45_stub_killer.provenance_of_truth",
+        "file": "v3_p45_stub_killer.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p45_stub_killer.stub_census",
+        "file": "v3_p45_stub_killer.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p45_stub_killer.stub_enabling_tests",
+        "file": "v3_p45_stub_killer.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p45_stub_killer.stub_forensics",
+        "file": "v3_p45_stub_killer.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p45_stub_killer.stub_free_badge",
+        "file": "v3_p45_stub_killer.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p45_stub_killer.stub_register",
+        "file": "v3_p45_stub_killer.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p45_stub_killer.template_policy",
+        "file": "v3_p45_stub_killer.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.day0_test_generation",
+        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.documentation_anchor",
+        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.golden_replay_per_change",
+        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.legacy_value_sweeper",
+        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.parameter_change_workflow",
+        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.parameter_drift_alarm",
+        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.parameter_registry",
+        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.schema_validation",
+        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.signed_parameter_bundles",
+        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.temporal_parameter_gate",
+        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.unit_semantics",
+        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p46_hardcode_eliminacja_enterprise.value_provenance",
+        "file": "v3_p46_hardcode_eliminacja_enterprise.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.acts_heatmap",
+        "file": "v3_p47_legal_basis_weryfikacja_enterprise.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.citation_linter",
+        "file": "v3_p47_legal_basis_weryfikacja_enterprise.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.citation_style_guide",
+        "file": "v3_p47_legal_basis_weryfikacja_enterprise.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.completeness_score",
+        "file": "v3_p47_legal_basis_weryfikacja_enterprise.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.fictional_basis_blocker",
+        "file": "v3_p47_legal_basis_weryfikacja_enterprise.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.human_verification_stamp",
+        "file": "v3_p47_legal_basis_weryfikacja_enterprise.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.isap_anchor",
+        "file": "v3_p47_legal_basis_weryfikacja_enterprise.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.isap_diff_watch",
+        "file": "v3_p47_legal_basis_weryfikacja_enterprise.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.legal_basis_census",
+        "file": "v3_p47_legal_basis_weryfikacja_enterprise.rego",
+        "occurrences": 2,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.mediation_workflow",
+        "file": "v3_p47_legal_basis_weryfikacja_enterprise.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.recheck_scheduler",
+        "file": "v3_p47_legal_basis_weryfikacja_enterprise.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p47_legal_basis_weryfikacja_enterprise.temporal_act_versions",
+        "file": "v3_p47_legal_basis_weryfikacja_enterprise.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p48_mirror_sync.case_study",
+        "file": "v3_p48_mirror_sync.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p48_mirror_sync.drift_heatmap",
+        "file": "v3_p48_mirror_sync.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p48_mirror_sync.golden_replay_mirror",
+        "file": "v3_p48_mirror_sync.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p48_mirror_sync.lifecycle_alignment",
+        "file": "v3_p48_mirror_sync.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p48_mirror_sync.mirror_build_output",
+        "file": "v3_p48_mirror_sync.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p48_mirror_sync.mirror_ownership",
+        "file": "v3_p48_mirror_sync.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      },
+      {
+        "rule_id": "jdg.v3_p48_mirror_sync.mirror_test_parity",
+        "file": "v3_p48_mirror_sync.rego",
+        "occurrences": 3,
+        "kind": "in_file_redefinition"
+      }
+    ],
+    "mirror_legacy_sample": [
+      {
+        "rule_id": "jdg.accounting.depreciation_linear",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.depreciation_one_off",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.depreciation_rate_assignment",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.fx_differences_recognition",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.improvement_threshold_check",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.intangible_assets_classification",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.kst_group_classification",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.one_time_depreciation_eligibility",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.operating_lease_full_kup",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.pkpir_col1_sequential",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.pkpir_col2_date_validation",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.pkpir_col6_7_kup_validation",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.pkpir_column_mapping",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.pkpir_expense_recognition",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.pkpir_income_calculation",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.pkpir_remnant_midyear_check",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.pkpir_retention_5years",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.pkpir_revenue_recognition",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.private_mixed_car",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.private_mixed_home_office",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_annual_summary_report",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_archive_index",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_audit_trail_documentation",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_charity_donation",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_consignment_own",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_consignment_return",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_continuity_validation",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_cross_year_comparison",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_damage_disposal_protocol",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_digital_record",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_fx_foreign_goods",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_goods_in_transit",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_liquidation_inventory",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_market_price_correction",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_multi_warehouse_reconciliation",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_natural_decay",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_physical_count_obligation",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_production_waste",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_sample_giveaway",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      },
+      {
+        "rule_id": "jdg.accounting.remnant_scrap_loss",
+        "locations": [
+          "policies/accounting.rego",
+          "policies/jdg/accounting.rego"
+        ],
+        "kind": "mirror_legacy_internal"
+      }
+    ],
+    "registries": [
+      "rule_registry.json",
+      "enterprise_v3_registry.json",
+      "manifest_v2.json"
+    ],
+    "note": "I03: canonical↔mirror tej samej reguły = wariant 1:1 P48-I02 (nie kolizja). canonical_canonical (2 pliki) = BLOCK (tożsamość reguły). in_file_redefinition = legalne w Rego (complete rule, wiele definicji), rejestrowane do przeglądu (ryzyko cichej podmiany przy kopiach bloków). mirror_legacy_internal = duplikaty wewnątrz drzewa legacy policies/ (backlog P48 only_policies=80, decyzja 4-eyes Q04) → TRIAGE. Boilerplate wykluczony.",
+    "scanned_at": "2026-09-11T22:40:14.551927+00:00"
+  }
+}

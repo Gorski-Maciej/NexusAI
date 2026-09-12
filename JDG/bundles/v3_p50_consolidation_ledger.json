@@ -1,0 +1,18 @@
+{
+  "innovation": "V3-P50-I09",
+  "generated_at": "2026-09-11T22:41:08.381458+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "entries_total": 0,
+    "golden_replay_ok": 0,
+    "entries_missing_replay": 0,
+    "golden_total": 0,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "problems_sample": [],
+    "schema": "wpis: {source_rule_id, target_rule_id, migrated_refs[], golden_replay:{verdicts, ok, drift}, decided_by, date}",
+    "note": "I09: pełna historia konsolidacji — scalenie bez dowodu replay (P10) = TRIAGE (dokończyć dowód albo cofnąć scalenie z backupu; AP06). Baseline: rejestr wpisów pusty — narzędzie gotowe i waliduje każdy przyszły wpis.",
+    "scanned_at": "2026-09-11T22:41:08.381354+00:00"
+  }
+}

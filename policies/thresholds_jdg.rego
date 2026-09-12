@@ -3877,3 +3877,37 @@ v3_p49 := {
     "no_auto_post": true,
     "manual_review_required": true,
 }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P50 DEAD CODE I DUPLIKATY — progi (ADR-002 parametry-as-data)
+# Unikalność rule_id globalna, jedno źródło prawdy per zasada, detekcja
+# duplikatów semantycznych (hash warunków), sprzeczności (BLOCKER), martwe
+# narzędzia/dane/dokumenty-widma, mapa osiągalności, konsolidacja z ledgerem,
+# celowe warianty jako overlaye, metryka burden. Honory kontrakty: P00 (kanon
+# artefaktów), P48 (mapa dryfu = wspólny rejestr canonical↔mirror), P36
+# (zapobieganie w generatorach), P02/P29 (routing + bramki), P41 (dokumentacja),
+# P43 (DR: archiwum), P47 (kanon cytowań), P49 (fail-closed domknięcie).
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p50 := {
+    "v3_p50_threshold_version": "dead-code-v3p50-2026.09",
+    "legal_basis_version": "lb-deadcode-v3p50-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    # I01/I02: duplikaty semantyczne — maksimum dopuszczalne (0 = bez backlogu)
+    "v3_p50_semantic_dup_max": 0,
+    # I02: sprzeczne duplikaty — pojedynczy = BLOCK (decyzja losowa = ryzyko prawne)
+    "v3_p50_contradiction_max": 0,
+    # I03: kolizje rule_id — pojedyncza kolizja = BLOCK (tożsamość reguły)
+    "v3_p50_ruleid_collision_max": 0,
+    # I06: martwe dane data.* — maksimum (baseline jawny, trend → P37)
+    "v3_p50_orphan_data_max": 50,
+    # I07: dokumenty-widma (odwołania do nieistniejących plików) — maksimum
+    "v3_p50_ghost_doc_max": 10,
+    # I11: reguły nieosiągalne z routingu — maksimum (baseline po spisie)
+    "v3_p50_unreachable_rules_max": 100,
+    # I12: burden duplikatów (% reguł będących duplikatami) — cel 0%
+    "v3_p50_duplicate_burden_target_pct": 0,
+    # I05: okres archiwizacji martwych narzędzi (cykle CI bez sprzeciwu)
+    "v3_p50_archive_cycles": 2,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}

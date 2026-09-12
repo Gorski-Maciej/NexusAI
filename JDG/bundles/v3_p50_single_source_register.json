@@ -1,0 +1,44 @@
+{
+  "innovation": "V3-P50-I04",
+  "generated_at": "2026-09-11T22:40:16.240160+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "principles_total": 12383,
+    "principles_single_source": 12379,
+    "principles_declared_variants": 4,
+    "principles_unregistered_variants": 0,
+    "overlays_scanned": 2,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "unregistered_sample": [],
+    "declared_sample": [
+      {
+        "rule_id": "jdg.business.unregistered_activity_limit_exceeded",
+        "overlay": "overlays/v2026/manifest.json",
+        "type": "MODIFY",
+        "reason": "Limit nieewidencjonowanej: 50% → 75% min. wynagrodzenia"
+      },
+      {
+        "rule_id": "jdg.pit.forms.scale",
+        "overlay": "overlays/v2026/manifest.json",
+        "type": "MODIFY",
+        "reason": "Próg podatkowy 120000 → 130000 PLN (propozycja MF)"
+      },
+      {
+        "rule_id": "jdg.zus.health_contribution_rate_matrix",
+        "overlay": "overlays/v2026/manifest.json",
+        "type": "MODIFY",
+        "reason": "Składka zdrowotna 9% → 8.5% (propozycja)"
+      },
+      {
+        "rule_id": "jdg.zus.health_scale",
+        "overlay": "overlays/v2026/manifest.json",
+        "type": "MODIFY",
+        "reason": "Składka zdrowotna 9% → 8.5% (propozycja)"
+      }
+    ],
+    "note": "I04: zasada → pakiet → rule_id → warianty jawne z powodem; overlaye P48 (celowe warianty temporalne/domenowe) = deklaracje I10, nie duplikaty; unregistered_variant = rejestr do decyzji per para (konsoliduj/usuń/deklaruj). Zapytywalny: JSON kluczowany rule_id.",
+    "generated_at": "2026-09-11T22:40:16.240003+00:00"
+  }
+}

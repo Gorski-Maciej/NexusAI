@@ -1,10 +1,7 @@
 {
-  "last_sync": "2026-09-11T12:26:24.390364+00:00",
-  "files_copied": 524,
-  "files_changed_this_run": 3,
+  "last_sync": "2026-09-11T22:37:19.993110+00:00",
+  "files_copied": 525,
   "source": "JDG/rules/",
   "target": "policies/",
-  "mode": "mirror-build-output (I01)",
-  "previous_last_sync": "2026-09-11T09:29:45.233863+00:00",
-  "previous_hand_edits": 523
+  "mode": "mirror-single-source-of-truth"
 }

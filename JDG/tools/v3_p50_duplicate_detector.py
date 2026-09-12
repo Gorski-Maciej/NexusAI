@@ -26,6 +26,7 @@ import json
 import re
 import subprocess
 from collections import defaultdict
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 from v3_p48_common import RULES_DIR, walk_rego
@@ -249,16 +250,38 @@ def extract_units(ast: dict, rel: str) -> list[dict]:
     return units
 
 
+def _parse_one(args):
+    """Worker puli: (rel, path) → (rel, ast|None) + sample błędu."""
+    rel, path = args
+    ast = parse_file(path)
+    err = None
+    if ast is None:
+        try:
+            proc = subprocess.run([str(OPA), "parse", str(path)],
+                                  capture_output=True, text=True, timeout=30)
+            msg = (proc.stderr or "").strip().splitlines()
+            err = msg[0][:120] if msg else "unknown"
+        except (subprocess.TimeoutExpired, OSError):
+            err = "timeout/os-error"
+    return rel, ast, err
+
+
 def main() -> int:
     files = walk_rego(RULES_DIR)
     all_units: list[dict] = []
     parse_errors = 0
-    for rel, path in sorted(files.items()):
-        ast = parse_file(path)
-        if ast is None:
-            parse_errors += 1
-            continue
-        all_units.extend(extract_units(ast, rel))
+    parse_error_files: list[str] = []
+    error_kinds: dict[str, int] = defaultdict(int)
+    items = sorted(files.items())
+    with ProcessPoolExecutor(max_workers=8) as pool:
+        for rel, ast, err in pool.map(_parse_one, items):
+            if ast is None:
+                parse_errors += 1
+                parse_error_files.append(rel)
+                if err:
+                    error_kinds[err] += 1
+                continue
+            all_units.extend(extract_units(ast, rel))
 
     by_fp: dict[str, list[dict]] = defaultdict(list)
     total_rules = 0
@@ -328,6 +351,9 @@ def main() -> int:
         "duplicate_pairs_sample": duplicate_pairs[:60],
         "contradictory_pairs": contradictory[:40],
         "temporal_variants_sample": temporal_variants[:40],
+        "parse_error_files_sample": parse_error_files[:80],
+        "parse_error_kinds": dict(sorted(error_kinds.items(),
+                                         key=lambda kv: -kv[1])[:12]),
         "note": ("I01: hash (body+value) z OPA AST (fallback opa19 --v0-"
                  "compatible dla dialektu v1); stringi maskowane — tożsamość "
                  "(rule_id/package) nie różnicuje, więc identyczna zasada pod "
@@ -342,6 +368,9 @@ def main() -> int:
     print(f"[V3-P50-I01] rules={total_rules} parse_errors={parse_errors} "
           f"dup_pairs={len(duplicate_pairs)} contradictions={len(contradictory)} "
           f"burden={burden}%")
+    if parse_errors:
+        print(f"[V3-P50-I01][BACKLOG] {parse_errors} plików poza analizą AST "
+              f"(parse error — rejestr w evidence.parse_error_files_sample)")
     return 0
 
 

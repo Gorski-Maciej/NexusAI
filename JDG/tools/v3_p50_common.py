@@ -7,11 +7,19 @@ ZAPISANY i spójny; decyzja TRIAGE/BLOCK żyje w metrics.routing.
 """
 from __future__ import annotations
 
-from v3_p48_common import BUNDLES_DIR, RULES_DIR, read_json, utcnow_iso, write_json
+from v3_p48_common import (BUNDLES_DIR, BASE, POLICIES_DIR, REPO_ROOT,
+                           RULES_DIR, THRESHOLDS_REGO, read_json, utcnow_iso,
+                           write_json)
 
 P50_REGO = RULES_DIR / "v3_p50_dead_code.rego"
 P50_RULE = "jdg.v3_p50_dead_code"
 P50_THRESHOLDS_KEY = "v3_p50"
+P50_REGO_MIRROR = POLICIES_DIR / "v3_p50_dead_code.rego"
+JDG_ROOT = BASE
+TOOLS_DIR = BASE / "tools"
+THRESHOLDS_SRC = (THRESHOLDS_REGO.read_text(encoding="utf-8",
+                                              errors="replace")
+                  if THRESHOLDS_REGO.exists() else "")
 
 
 def rule_present(rule_id: str) -> bool:

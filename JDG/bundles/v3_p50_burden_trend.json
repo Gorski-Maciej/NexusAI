@@ -1,0 +1,26 @@
+[
+  {
+    "at": "2026-09-11T19:36:35.335164+00:00",
+    "rules_total": 413,
+    "duplicate_rules": 0,
+    "burden_pct": 0.0,
+    "contradictory_pairs": 0,
+    "routing": "AUTO_FILE"
+  },
+  {
+    "at": "2026-09-11T19:47:17.427142+00:00",
+    "rules_total": 413,
+    "duplicate_rules": 0,
+    "burden_pct": 0.0,
+    "contradictory_pairs": 0,
+    "routing": "AUTO_FILE"
+  },
+  {
+    "at": "2026-09-11T22:41:12.248736+00:00",
+    "rules_total": 413,
+    "duplicate_rules": 0,
+    "burden_pct": 0.0,
+    "contradictory_pairs": 0,
+    "routing": "AUTO_FILE"
+  }
+]

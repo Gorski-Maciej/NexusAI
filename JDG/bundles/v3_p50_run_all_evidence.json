@@ -1,0 +1,120 @@
+{
+  "innovation": "V3-P50-RUNNER",
+  "generated_at": "2026-09-11T22:41:12.367366+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "steps_total": 13,
+    "steps_failed": 0
+  },
+  "evidence": {
+    "steps": [
+      {
+        "innovation": "I01+I02+I12",
+        "script": "v3_p50_duplicate_detector.py",
+        "ok": true,
+        "duration_s": 44.5,
+        "stdout_tail": "[V3-P50-I01] rules=413 parse_errors=217 dup_pairs=0 contradictions=0 burden=0.0%\n[V3-P50-I01][BACKLOG] 217 plików poza analizą AST (parse error — rejestr w evidence.parse_error_files_sample)\n",
+        "stderr_tail": ""
+      },
+      {
+        "innovation": "I02",
+        "script": "v3_p50_contradictions.py",
+        "ok": true,
+        "duration_s": 0.43,
+        "stdout_tail": "[V3-P50-I02] pairs=0 unresolved=0 resolved=0 routing=AUTO_FILE\n",
+        "stderr_tail": ""
+      },
+      {
+        "innovation": "I03",
+        "script": "v3_p50_ruleid_uniqueness.py",
+        "ok": true,
+        "duration_s": 5.27,
+        "stdout_tail": "[V3-P50-I03] files=1130 canon=12383 mirror=12501 collisions=0 in_file=89 mirror_legacy=712 routing=AUTO_FILE\n",
+        "stderr_tail": ""
+      },
+      {
+        "innovation": "I04",
+        "script": "v3_p50_single_source_register.py",
+        "ok": true,
+        "duration_s": 1.76,
+        "stdout_tail": "[V3-P50-I04] principles=12383 single=12379 declared=4 unregistered=0 routing=AUTO_FILE\n",
+        "stderr_tail": ""
+      },
+      {
+        "innovation": "I05",
+        "script": "v3_p50_dead_tool_archive.py",
+        "ok": true,
+        "duration_s": 18.05,
+        "stdout_tail": "[V3-P50-I05] tools=956 alive=891 dead=65 archived=0 routing=TRIAGE_QUEUE\n",
+        "stderr_tail": ""
+      },
+      {
+        "innovation": "I06",
+        "script": "v3_p50_orphan_data.py",
+        "ok": true,
+        "duration_s": 20.05,
+        "stdout_tail": "[V3-P50-I06] keys=1545 used=1545 orphans=0 routing=AUTO_FILE\n",
+        "stderr_tail": ""
+      },
+      {
+        "innovation": "I07",
+        "script": "v3_p50_ghost_docs.py",
+        "ok": true,
+        "duration_s": 9.2,
+        "stdout_tail": "[V3-P50-I07] docs=131 ghosts=36 routing=TRIAGE_QUEUE\n",
+        "stderr_tail": ""
+      },
+      {
+        "innovation": "I08",
+        "script": "v3_p50_duplication_guard.py",
+        "ok": true,
+        "duration_s": 1.84,
+        "stdout_tail": "rebuilt entries: 13067\n",
+        "stderr_tail": ""
+      },
+      {
+        "innovation": "I08",
+        "script": "v3_p50_generator_prevention.py",
+        "ok": true,
+        "duration_s": 2.54,
+        "stdout_tail": "[V3-P50-I08] generators=96 guarded=23 guard_exists=True routing=TRIAGE_QUEUE\n",
+        "stderr_tail": ""
+      },
+      {
+        "innovation": "I09",
+        "script": "v3_p50_consolidation_ledger.py",
+        "ok": true,
+        "duration_s": 0.38,
+        "stdout_tail": "[V3-P50-I09] entries=0 ok=0 missing_replay=0 routing=AUTO_FILE\n",
+        "stderr_tail": ""
+      },
+      {
+        "innovation": "I10",
+        "script": "v3_p50_intentful_variants.py",
+        "ok": true,
+        "duration_s": 1.56,
+        "stdout_tail": "[V3-P50-I10] multi=0 declared=0 undeclared=0 routing=AUTO_FILE\n",
+        "stderr_tail": ""
+      },
+      {
+        "innovation": "I11",
+        "script": "v3_p50_reachability.py",
+        "ok": true,
+        "duration_s": 1.93,
+        "stdout_tail": "[V3-P50-I11] files=524 reachable_files=394 rules=12382 unreachable=2107 routing=TRIAGE_QUEUE\n",
+        "stderr_tail": ""
+      },
+      {
+        "innovation": "I12",
+        "script": "v3_p50_burden_metric.py",
+        "ok": true,
+        "duration_s": 0.39,
+        "stdout_tail": "[V3-P50-I12] rules=413 dup_rules=0 burden=0.0% contra=0 routing=AUTO_FILE\n",
+        "stderr_tail": ""
+      }
+    ],
+    "failed": 0,
+    "scanned_at": "2026-09-11T22:41:12.367294+00:00",
+    "note": "gate=PASS = wszystkie silniki uruchomione i dowody zapisane; decyzje TRIAGE/BLOCK w metrics.routing bundli częśćiowych."
+  }
+}

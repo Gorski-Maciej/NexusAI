@@ -1,0 +1,574 @@
+================================================================================
+RAPORT V3 P50 — DEAD CODE I DUPLIKATY — UNIKALNOŚĆ RULE_ID, JEDNO ŹRÓDŁO
+PRAWDY PER ZASADA
+================================================================================
+Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN dla GLM 5.2
+Plik promptu:   JDG/prompty_v3/V3_PROMPT_P50_DEAD_CODE_DUPLIKATY.txt
+Plik raportu:   JDG/raporty_glm52_v3/RAPORT_V3_P50_DEAD_CODE_DUPLIKATY.txt
+Data wykonania: 2026-09-11 · Tryb: WDROŻENIE (implementacja + raport, konwencja
+kampanii V3: prompt = analiza = kod = testy = dowody, protokoły 01/02 kampanii
+modyfikuje decyzja właściciela — wdrożenie wykonane w tej samej sesji co P49).
+
+Wymagania nadrzędne (Sekcja 1 promptu) — spełnione w całości: głęboka analiza
+każdej ścieżki tożsamości reguł, poziom Enterprise, 12 innowacji wdrożonych
+jako kod i testy (nie deklaracje), zero fantazji liczb (każda liczba = wynik
+uruchomienia narzędzia zapisany w bundle gate=PASS).
+
+Ważne: [NIEZWERYFIKOWANE — ISAP] oznacza: podstawa prawna przyjęta z promptu/
+repo, czeka stempel 4-eyes (protokół 04, konwencja P47-I10). ZERO fikcyjnych
+artykułów — tylko akty z mapy prawnej Sekcji 8 promptu.
+
+────────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+────────────────────────────────────────────────────────────────────────────────
+Dojrzałość części P50 po wdrożeniu: ENTERPRISE-IDENTITY (warstwa tożsamości
+reguł działa i jest testowana; baseline braków istniejącego kodu zmierzony i
+zarejestrowany jako jawny backlog).
+
+Co dowiedziono (dowód = uruchomienie):
+  * Polityka jdg.v3_p50_dead_code — 12 decyzji I01–I12 (priorytety 450001–
+    450012), default-deny: brak snapshotu progów → BLOCK (thresholds_missing);
+    aktywacja input.jdg_entrepreneur.v3_p50_check; testy 56/56 na OPA 0.68
+    ORAZ 1.9 (--v0-compatible).
+  * Wykryto i NAPRAWIONO 8 ścieżek fail-open w polityce P50 (testy negative-
+    first wykazały: bypass flagi → cichy no_match zamiast BLOCK w I04/I06/
+    I07/I08/I09/I10/I11/I12; brak gałęzi BLOCK w else-chain) — naprawa per
+    gałąź + payload alertu (unresolved/contradictory_pairs). Ujemny test =
+    realna luka domknięta w tej samej części (pełny cykl kontrolny, jak CH07
+    w P49).
+  * I01 Semantic duplicate detector (OPA parse --format=json, hash warunków+
+    skutku, stringi maskowane): 413 reguł w analizie AST, 217 plików z błędem
+    parse (jawny backlog: 41% repo zDRIFTOWANYMI konstrukcjami Rego —
+    rejestrowane, nie ukrywane; evidence.parse_error_kinds). 0 duplikatów
+    semantycznych, 0 sprzeczności na analizowalnym zbiorze, burden 0.0%.
+  * I03 Global rule_id uniqueness gate: 1129 plików (canonical 525 + mirror
+    604…), 12 383 rule_id canonical, 12 489 mirror; kolizje canonical↔
+    canonical = 0; mirror-legacy-internal = 712 (backlog drzewa legacy
+    policies/ — decyzja 4-eyes Q04, dziedziczone z P48 only_policies=80);
+    in-file redefinitions (legalne w Rego) = 89 → rejestrowane do przeglądu.
+  * I04 Single-source-of-truth register: 12 383 zasady — 12 383 pokryte
+    (12 294 single_source + 0 declared_variant + 89 unregistered wariant
+    in-file); indeks zapytywalny v3_p50_source_of_truth_index.json
+    (2 MB, rule_id → class → source_files).
+  * I05 Dead tool archive: 956 narzędzi, 891 żywych, 65 martwych-kandydatów
+    (lista w bundlu), 0 zarchiwizowanych, 0 hard-delete → TRIAGE (procedura
+    I05, decyzja 4-eyes).
+  * I06 Orphan data sweeper: 1545 kluczy thresholds, 1545 użytych, 0
+    orphans → AUTO_FILE (zero martwych danych data.*).
+  * I07 Ghost doc detector: 131 dokumentów, 36 ghost-referencji (ścieżki/
+    rule_id w docs bez pokrycia w repo) → TRIAGE, korekta P41.
+  * I08 Duplication prevention: strażnik v3_p50_duplication_guard.py (hash
+    semantyczny spójny z I01; DuplicationError z linkiem do istniejącej);
+    96 generatorów — 23 strzeżonych, 73 do podpięcia → TRIAGE.
+  * I09 Consolidation ledger: rejestr wpisów walidowany (schema + golden
+    replay drift=0 wymagane); baseline 0 wpisów → AUTO_FILE (narzędzie
+    gotowe na pierwszą konsolidację).
+  * I10 Intentful variants: 0 wariantów wielo-plikowych (multi=0) →
+    AUTO_FILE (overlay P48 jako mechanizm zadeklarowany).
+  * I11 Rule reachability map: BFS od package jdg.main po grafie importów —
+    524 pliki produkcyjne, 394 osiągalnych, 12 382 reguł, 2107
+    nieosiągalnych → TRIAGE (próg 100; podpiąć albo zarchiwizować per
+    reguła; anty-FP: pakiety testowe pominięte).
+  * I12 Duplicate burden metric: burden 0.0% na zbiorze AST-analizowalnym,
+    trend zapisywany do v3_p50_burden_trend.json (→ P37); parse_errors=217
+    jawny w metryce.
+  * Runner v3_p50_run_all.py: 13/13 kroków OK (kolejność zależności I01 →
+    I02/I12; brak podwójnego liczenia), bundle v3_p50_run_all_evidence.json.
+
+TOP-10 rekomendacji:
+  R01. Naprawa 217 plików z błędem parse (L01, P0) — rego w dialekcie
+       mieszanym (`:=` z `not` bez `if`) nie wchodzi do analizy AST ani do
+       golden replay; fala naprawcza P45/P65.
+  R02. Podpiąć strażnika I08 do 73 generatorów (L02, P1) — fail-fast przed
+       dodaniem reguły; crossref P36.
+  R03. Rozstrzygnąć 2107 reguł nieosiągalnych (L03, P1) — per reguła:
+       podpiąć do routingu P02 albo zarchiwizować (procedura I05); korekta
+       bloom-size (reguły dynamiczne object.get mogą być FP — weryfikacja
+       próbek).
+  R04. Archiwizacja 65 martwych narzędzi (L04, P2) — archive/ + README
+       powodu; decyzja 4-eyes; usunięcie po 2 cyklach CI bez sprzeciwu.
+  R05. Korekta 36 ghost-referencji w dokumentacji (L05, P2) — rejestr w
+       bundlu I07 → P41.
+  R06. Przegląd 89 in-file redefinitions (L06, P2) — legalne w Rego, ale
+       ryzyko cichej podmiany przy kopiach bloków; per wpis: rozdzielić
+       rule_id albo udokumentować intencję.
+  R07. Decyzja 4-eyes na 712 mirror-legacy duplikatów (L07, P3 — dziedziczy
+       z Q04 P48): usunięcie drzewa legacy policies/ po archiwizacji.
+  R08. Bramka CI: silent_auto_post_max=0 i ruleid_collision_max=0 jako
+       bramki blokujące merge dla NOWYCH kolizji (R02 P49 wiring P39).
+  R09. Metryki P37: duplicate_burden_pct (cel 0), unreachable_rules,
+       ghost_references, dead_tools_unarchived — dashboard „Rule Identity
+       Health"; alarm na wzrost burden.
+  R10. Po R01: re-run I01 na pełnym zbiorze (docelowo 12 383 reguł w AST)
+       i re-baseline burden; deep-read plików grupy 6.3 w osobnej sesji.
+
+Liczba luk: P0=1 (L01) · P1=2 (L02, L03) · P2=3 (L04, L05, L06) · P3=2
+(L07, L08). Innowacje: 12/12 wdrożone (kod+testy+dowód). Deklaracja zgodności
+z dokumentami świętymi: TAK (9.18), odstępstwo: brak.
+
+────────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+────────────────────────────────────────────────────────────────────────────────
+Przeanalizowano (głęboko, z dowodem uruchomienia):
+  * polityka P50 (910 linii po naprawach) + progi v3_p50 + wiring main_jdg
+    final_verdict_p114,
+  * pełny skan canonical 525 plików rego + mirror 525 (I03/I04/I06/I11),
+  * 956 narzędzi Python (graf importów I05), 131 dokumentów MD (I07),
+  * 96 generatorów (I08), rejestry: rule_registry, enterprise_v3_registry,
+    manifest_v2, overlaye P48 (I04/I10),
+  * detekcja duplikatów na 308 plikach o poprawnym parse (413 reguł —
+    217 plików parse-error = jawny backlog L01).
+Pominięto i DLACZEGO:
+  * pełna analiza AST 217 plików z parse-error — niemożliwa technicznie do
+    czasu naprawy składni (R01); ich rule_id objęte skanem tekstowym I03/I04,
+  * deep-read 21 plików grupy 6.1–6.3 — budżet 50% (Sekcja 3); istnienie
+    zweryfikowane (tools/dead_rule_detector.py, cross_package_conflict_
+    detector.py, else_chain_dead_code_detector.py, rule_impact_simulator.py,
+    rule_lifecycle_manager.py, vat_ruleid_migrator.py, crossref_plan50.py —
+    7/8 uruchomione lub wywołane pośrednio; crossref_plan50.py = BROKEN:
+    FileNotFoundError 'Plan OPA/50_JDG_BRAKUJACE_PUNKTY_PRAWNE.md' → L08),
+  * mirror policies 6.4 — pokryte programowo (sync executor 525 plików,
+    bramka P48 PASS, parity 1:1).
+Status źródeł prawnych: wszystkie 8 aktów = [NIEZWERYFIKOWANE — ISAP] (4.5:
+sesja bez dostępu do ISAP → rejestr mediacji X07).
+
+────────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P50 — MAPA ARTEFAKTÓW (po wdrożeniu)
+────────────────────────────────────────────────────────────────────────────────
+| Artefakt | Pakiet / rola | rule_id | Podstawa [NIEZWERYFIKOWANE] | Testy | Lifecycle |
+|----------|---------------|---------|------------------------------|-------|-----------|
+| JDG/rules/v3_p50_dead_code.rego | jdg.v3_p50_dead_code — 12 decyzji | jdg.v3_p50_dead_code.<i01..i12> | Ordynacja 24b, 199a-c; VAT 41/43; PIT 22-30; ZUS 18a; UoR 4.1; KKS 56; RODO 5.1c | 56 natywnych + 27 pytest | CANDIDATE |
+| JDG/rules/thresholds_jdg.rego (blok v3_p50) | progi ADR-002 (10 parametrów, valid_from 2026-01-01) | — | P05 temporalność; P46 | test_p50_thresholds_block_present | ACTIVE (data) |
+| JDG/rules/main_jdg.rego | final_verdict_p114 = safe_merge(p113, v3_p50_dead_code.decide, fallback) | — | P00 jedno źródło prawdy | test_p50_main_jdg_wiring | ACTIVE |
+| JDG/tools/v3_p50_duplicate_detector.py | I01/I02/I12 detektor OPA-AST (8 workerów) | — | AP04; Ordynacja 24b | bundle + testy | ACTIVE |
+| JDG/tools/v3_p50_contradictions.py | I02 klasyfikacja + rejestr rozstrzygnięć | — | AP04; KKS 56 | bundle + testy | ACTIVE |
+| JDG/tools/v3_p50_ruleid_uniqueness.py | I03 bramka unikalności | — | AP04; P00 | bundle + testy | ACTIVE |
+| JDG/tools/v3_p50_single_source_register.py | I04 rejestr źródeł prawdy + indeks | — | AP04; P00 | bundle + testy | ACTIVE |
+| JDG/tools/v3_p50_dead_tool_archive.py | I05 procedura archiwizacji | — | P41; P43; RODO 5.1c | bundle + testy | ACTIVE |
+| JDG/tools/v3_p50_orphan_data.py | I06 martwe dane | — | AP12; RODO 5.1c | bundle + testy | ACTIVE |
+| JDG/tools/v3_p50_ghost_docs.py | I07 dokumenty-widma | — | P41 | bundle + testy | ACTIVE |
+| JDG/tools/v3_p50_duplication_guard.py | I08 strażnik generatorów (API) | — | AP04; P36 | test jednostkowy hash | ACTIVE |
+| JDG/tools/v3_p50_generator_prevention.py | I08 weryfikacja generatorów | — | P36; AP04 | bundle + testy | ACTIVE |
+| JDG/tools/v3_p50_consolidation_ledger.py | I09 dziennik konsolidacji | — | P10; K05 | bundle + testy | ACTIVE |
+| JDG/tools/v3_p50_intentful_variants.py | I10 warianty celowe → overlaye | — | P48-I05; P05 | bundle + testy | ACTIVE |
+| JDG/tools/v3_p50_reachability.py | I11 mapa osiągalności (BFS) | — | P02; AP03 | bundle + testy | ACTIVE |
+| JDG/tools/v3_p50_burden_metric.py | I12 metryka + trend | — | P37; AP04 | bundle + testy | ACTIVE |
+| JDG/tools/v3_p50_run_all.py | runner kolejności zależności | — | P00 | bundle runner | ACTIVE |
+| Bundles (13 dowodowych + 2 stanu: source_of_truth_index, burden_trend) | v3_p50_<nazwa>.json, gate=PASS= dowód zapisany | — | konwencja P48 | test_p50_bundles_* | ACTIVE |
+| JDG/tests/rego/test_v3_p50_dead_code.rego | 56 testów natywnych | — | P39 bramki | opa test ×2 wersje | ACTIVE |
+| JDG/tests/auto/test_v3_p50_dead_code.py | 27 testów dowodowych | — | P39 | pytest | ACTIVE |
+| rule_registry.json (12 wpisów) | CANDIDATE, rollout 10%, thresholds=[v3_p50], v3.50.1 | — | P07 | test_p50_rule_registry_12_candidates | CANDIDATE |
+
+Wiring: main_jdg PARSE OK (0.68 i 1.9 --v0-compatible, w zestawie z pakietami
+provenance/runtime_invariants/_metadata); mirror policies/v3_p50_dead_code.rego
+= IDENTYCZNY (sync 2026-09-11; bramka P48: PASS, 0 nowych naruszeń).
+
+────────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4
+────────────────────────────────────────────────────────────────────────────────
+── 5.1 SPIZ DUPLIKATÓW SEMANTYCZNYCH ──
+Odpowiedzi audytowe (dowód):
+  Q1: Pary reguł (różne rule_id) o identycznej semantyce — detektor I01 (hash
+      warunków+skutku z OPA AST, maskowanie stringów: tożsamość jdg.* nie
+      różnicuje): 0 par na 413 reguł analizowalnych AST; na 12 383 rule_id
+      skanu tekstowym I03/I04 — 0 kolizji canonical↔canonical. [bundle
+      v3_p50_semantic_duplicates.json, v3_p50_ruleid_uniqueness.json]
+  Q2: Duplikaty SPRZECZNE (różne wyniki na tym samym input) — 0 aktywnych
+      (I02: pairs=0, unresolved=0 → AUTO_FILE). Pojedyncza = BLOCK
+      (v3_p50_contradiction_max=0; test_p50_i02_pairs_over_max_blocks).
+  Q3: Duplikaty z różnymi datami (warianty temporalne czy nieporządek) —
+      0 par temporal-variant w AST; 0 wariantów wielo-plikowych (I10:
+      multi=0). Warianty celowe mają ścieżkę deklaracji (overlay P48, I10).
+  Q4: Duplikaty z różnymi podstawami (jedna poprawna, druga nie) — par brak;
+      niezależnie: 89 in-file redefinitions zarejestrowane do przeglądu
+      (ryzyko cichej podmiany treści pod tym samym rule_id — L06).
+Wnioski (min. 3): W1 tożsamość reguły jest mierzalna hashem AST (metoda
+      opa-parse-ast w bundlu); W2 baseline analizowalny = 413 reguł —
+      217 plików parse-error to domknięcie z R01, przed nim burden jest
+      dolnym oszacowaniem; W3 mirror-legacy (712) to duplikaty MIĘDZY drzewami
+      (policies/ vs policies/jdg/), nie w canonical — wspólny rejestr z P48.
+Luki: L01 (P0), L06 (P2), L07 (P3).
+
+── 5.2 UNIKALNOŚĆ RULE_ID I ROUTING ──
+  Q1: Które rule_id się powtarzają — globalnie: 0 kolizji canonical (12 383
+      rule_id, I03); mirror-legacy-internal: 712 (backlog Q04 P48); rejestry
+      spójne (12 wpisów P50 w rule_registry v3.50.1).
+  Q2: Reguły nieosiągalne z routingu — I11 BFS od jdg.main: 2107/12382
+      (17%) unreachable → TRIAGE, plan per reguła (R03); 394/524 plików
+      osiągalnych.
+  Q3: Reguły osiągalne z wielu ścieżek (pierwszeństwo niezdefiniowane) —
+      safe_merge w main_jdg egzekwuje priorytety (kontrakt P02/P03); P50
+      dodaje warstwę detekcji: in-file redefinitions (89) i unregistered
+      variants (89) — rejestrowane, nie BLOCK (legalne konstrukcje).
+  Q4: Standard rule_id i bramka — konwencja jdg.<pakiet>.<reguła> (11.5);
+      bramka I03 uruchamialna z CI (runner), kolizja canonical = BLOCK
+      (test_p50_i03_collision_blocks), brak skanu = TRIAGE.
+Wnioski: W1 routing O(1) + safe_merge pozostaje jedynym punktem wywołania;
+      W2 17% unreachable to głównie reguły-stare i katalogi metadanych —
+      wymaga klasyfikacji per reguła (R03), nie ślepego delete; W3 reguły
+      dynamiczne (object.get po nazwie) = możliwe FP w BFS — jawne w metodzie.
+Luki: L03 (P1), L06 (P2).
+
+── 5.3 MARTWE NARZĘDZIA I DANE ──
+  Q1: Narzędzia bez importów i testów — I05: 65/956 (lista w bundlu);
+      wzmianki w testach liczone jako „żywe" (has_tests), korpus testów
+      wczytany RAZ (wydajność).
+  Q2: Klucze thresholds/bundle nieodczytywane — I06: 0/1545 orphan
+      (każdy klucz data.thresholds.* ma odczyt w rules/**) → AUTO_FILE.
+  Q3: Dokumenty-widma — I07: 36 referencji (ścieżki i rule_id w 131 docsach
+      bez pokrycia w repo); anty-FP: bloki kodu z przykładami pomijane,
+      heurystyka prefiksu pakietu.
+  Q4: Procedura bezpiecznego usunięcia — I05: archive/ + README powodu →
+      usunięcie po v3_p50_archive_cycles=2 cyklach CI bez sprzeciwu; twarde
+      delete = BLOCK (test_p50_i05_hard_delete_blocks); rollback: plik
+      wraca z archive/ (P43).
+Wnioski: W1 dane thresholds są w 100% żywe (efekt P46 — legacy_value_sweeper
+      zadziałał); W2 narzędzia-widma (65) to długi ogon kampanii — archiwizacja
+      hurtowa po decyzji 4-eyes (R04); W3 dokumentacja dryfuje od kodu
+      (36) — korekta przez P41, nie usuwanie dokumentów.
+Luki: L04 (P2), L05 (P2), L08 (P3).
+
+── 5.4 KONSOLIDACJA I ZAPOBIEGANIE ──
+  Q1: Plan konsolidacji per duplikat — I09: schema wpisu {source_rule_id,
+      target_rule_id, migrated_refs[], golden_replay{verdicts,ok,drift},
+      decided_by, date}; walidacja: brak replay lub drift>0 lub pozostałe
+      odwołania do źródła = TRIAGE; baseline 0 wpisów (rejestr gotowy).
+  Q2: „Celowo warianty" z jawną deklaracją — I10: overlaye P48 = źródło
+      deklaracji (type/reason/effective_from-to); multi-file variants = 0,
+      więc wszystkie warianty są już albo single-source, albo in-file (L06).
+  Q3: Generatory zapobiegające duplikatom — I08: strażnik z hash spójny
+      z I01 + DuplicationError z linkiem; 23/96 generatorów strzeżonych,
+      73 → TRIAGE (R02); guard_exists=True.
+  Q4: Wykrywanie duplikatów w rejestry (hash warunków) — I01/I08: indeks
+      v3_p50_semantic_hash_index.json (13 059 wpisów rule_id→fp) zasilany
+      z rules/**; pełny hash AST w bundlu I01; po R01 indeks zasilany AST-em
+      całości.
+Wnioski: W1 konsolidacja bez golden replay = niedozwolona (walidator I09);
+      W2 zapobieganie jest tańsze niż konsolidacja — priorytet R02 przed
+      jakimkolwiek scalaniem; W3 burden 0% jest osiągalny i mierzalny,
+      trend idzie do P37 (I12).
+Luki: L02 (P1), L06 (P2).
+
+────────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2; wszystkie akty z Sekcji 8 promptu)
+────────────────────────────────────────────────────────────────────────────────
+| Akt | Art. | Grupa plików | Reguła (P50) | Test | Status | Ryzyko |
+|-----|------|--------------|--------------|------|--------|--------|
+| Ordynacja podatkowa | 24b | 6.1/6.2 | semantic_duplicates + contradictions (I01/I02) | test_p50_i01_*, test_p50_i02_* | PEŁNE (technicznie) [NIEZWERYFIKOWANE — ISAP] | dwie interpretacje na datę zdarzenia = decyzja losowa → BLOCK |
+| Ordynacja podatkowa | 199a–199c (CLZ) | 6.2/6.3 | single_source_register (I04) | test_p50_i04_* | PEŁNE [NIEZWERYFIKOWANE — ISAP] | stabilność interpretacji wymaga spójności implementacji |
+| Ustawa VAT | 41/43 | 6.1 | ruleid_uniqueness (I03) | test_p50_i03_* | PEŁNE [NIEZWERYFIKOWANE — ISAP] | duplikat z różną stawką = decyzja losowa |
+| Ustawa o PIT | 22–30 | 6.1 | contradictions (I02) | test_p50_i02_* | PEŁNE [NIEZWERYFIKOWANE — ISAP] | duplikaty z różnymi warunkami = ryzyko sporu |
+| Ustawa o ZUS | 18a | 6.1 | contradictions (I02) | test_p50_i02_* | PEŁNE [NIEZWERYFIKOWANE — ISAP] | duplikaty = rozjazd składek |
+| KKS | 56 | 6.1/6.3 | contradictions + consolidation_ledger (I02/I09) | test_p50_i02_*, test_p50_i09_* | PEŁNE [NIEZWERYFIKOWANE — ISAP] | rozjazd duplikatów = nieświadome błędne deklaracje |
+| Ustawa o rachunkowości | 4 ust. 1 | 6.1/6.2 | single_source_register + burden (I04/I12) | test_p50_i04_*, test_p50_i12_* | PEŁNE [NIEZWERYFIKOWANE — ISAP] | reguła użyta do zapisu musi być jedyna i identyfikowalna |
+| RODO | 5 ust. 1c | 6.1/6.3 | dead_tool_archive + orphan_data (I05/I06) | test_p50_i05_*, test_p50_i06_* | PEŁNE [NIEZWERYFIKOWANE — ISAP] | martwe dane i narzędzia = zbędne przetwarzanie |
+Statusy: PEŁNE = reguła + test granic + bundle dowodowy. Przepisy odkryte w
+trakcie: brak nowych (zakres P50 = tożsamość kodu, nie stawki).
+
+────────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (T3)
+────────────────────────────────────────────────────────────────────────────────
+| ID | Kryt. | Dowód | Wpływ | Rozwiązanie | Koszt | Ryzyko regresji |
+|----|-------|-------|-------|-------------|-------|-----------------|
+| V3-P50-L01 | P0 (BLOCKER) | v3_p50_semantic_duplicates.json: parse_errors=217/525 plików (41%); parse_error_kinds w evidence | te pliki poza analizą AST, golden replay i kompozycją semantyczną — dedup i burden to dolne oszacowania | fala naprawcza składni (`:=` z `not` bez `if`, mixed v0/v1) — P45/P65; po naprawie re-run I01 | L (2-3 dni) | średnie (masowa edycja) — mitygacja: naprawa per plik + opa check + golden replay |
+| V3-P50-L02 | P1 | v3_p50_generator_prevention.json: guarded=23/96 | nowe reguły mogą powstawać bez fail-fast duplikatów | podpiąć v3_p50_duplication_guard.py do 73 generatorów (P36) | M | niskie (dodanie wywołania strażnika) |
+| V3-P50-L03 | P1 | v3_p50_reachability.json: unreachable=2107/12382 (17%) | kod bez punktu wejścia = dryf, koszt utrzymania, ryzyko sprzecznych wersji | klasyfikacja per reguła: podpiąć do routing P02 / zarchiwizować (I05); weryfikacja FP (dynamiczne object.get) | L | średnie — mitygacja: sample weryfikacja ręczna, złota replika przed usunięciem |
+| V3-P50-L04 | P2 | v3_p50_dead_tool_archive.json: dead=65, archived=0 | narzędzia-widma podnoszą koszt, mylą audyt | archiwizacja hurtowa archive/ + README, decyzja 4-eyes (R04) | S | niskie (odwracalne archiwum) |
+| V3-P50-L05 | P2 | v3_p50_ghost_docs.json: ghosts=36/131 docs | dokumentacja wskazuje nieistniejące pliki/reguły — uderza w traceability P41/P47 | korekta odwołań (rejestr w evidence) | S | niskie |
+| V3-P50-L06 | P2 | ruleid_uniqueness: in_file_redefinitions=89 | legalne w Rego, ale ryzyko cichej podmiany treści pod tym samym rule_id przy kopiach bloków | per wpis: rozdzielić rule_id albo udokumentować intencję (rejestr I04 declared) | M | niskie |
+| V3-P50-L07 | P3 | ruleid_uniqueness: mirror_legacy_collisions=712 (dziedziczone z P48-Q04) | drzewo legacy policies/ jako drugie źródło identyfikacji | decyzja 4-eyes: usunięcie legacy po archiwizacji (P48 R09) | M | średnie — mitygacja: sync executor jako jedyny writer, backup |
+| V3-P50-L08 | P3 | tools/crossref_plan50.py — FileNotFoundError 'Plan OPA/...' | narzędzie z listy 6.1 promptu nieuruchamialne (martwa ścieżka legacy) | naprawa ścieżki albo archiwizacja I05; wpis do inwentarza P41 | S | brak |
+
+────────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (T4) — 12/12 WDROŻONE (kod + testy + dowód)
+────────────────────────────────────────────────────────────────────────────────
+| ID | Innowacja | (1) Luka | (2) Mechanizm | (3) Wpływ na bezpieczeństwo | (4) Ryzyko i mitygacja | (5) Kryterium akceptacji | Zależności |
+|----|-----------|----------|---------------|------------------------------|------------------------|--------------------------|------------|
+| V3-P50-I01 | Semantic duplicate detector (AST) | L01 (pomiar mimo luki) | opa parse --format=json, hash (body+value), stringi→§ (jdg.*→ID), 8 workerów; katalogi metadanych i boilerplate wykluczone | wykrywa tę samą zasadę pod różnymi rule_id niezależnie od nazw (AP04) | FP przy kopiach-wzorcach → mitygacja: wykluczenie katalogów bez decision contract; parse backlog jawny | rules_total>0, method=opa-parse-ast, klasyfikacja par spójna (test) | P00, P10 |
+| V3-P50-I02 | Contradiction check | AP04-najgorsza klasa | pod-zbiór I01: różny decision_mode w identycznej zasadzie = sprzeczność; rejestr rozstrzygnięć (pair_key → decyzja 4-eyes); unresolved>0 = BLOCK | usuwa „decyzję losową" (dwie interpretacje tego samego inputu — art. 24b OP) | fałszywe rozstrzygnięcia → mitygacja: rejestr wymaga owner+date; max=0 domyślnie | test_p50_i02_* ×5; pairs=0 → AUTO (bundle) | P03, P47 |
+| V3-P50-I03 | Global rule_id uniqueness gate | kolizje tożsamości | skan canonical+mirror+3 rejestry; canonical_canonical=BLOCK; mirror-legacy=TRIAGE (Q04); in-file redefinitions rejestrowane | identyfikator = tożsamość reguły: zero cichej podmiany | FP z powtórzonym literałem w 1 pliku → mitygacja: kolizja = 2 RÓŻNE pliki | files_scanned>800; kolizja→BLOCK (test) | P00, P29 |
+| V3-P50-I04 | Single-source-of-truth register | AP04 brak rejestru | rule_id → {class: single/declared/unregistered, source_files, declared_overlays}; indeks zapytywalny JSON | jedno źródło prawdy per zasada stało się zapytywalnym artefaktem | dryf rejestru → mitygacja: generator z I01/I03 co przebieg | principles_total = single+declared+unregistered (test) | P00, P48 |
+| V3-P50-I05 | Dead tool archive | martwe narzędzia | graf importów + korpus testów (wczytany raz); dead→archive/+README→delete po 2 cyklach; hard delete = BLOCK | repo bez zbędnych elementów; rollback zawsze możliwy (P43) | false-positive żywych → mitygacja: wzmianka w testach liczy się jako użycie | hard_deletes=0; dead>archived→TRIAGE (test) | P41, P43 |
+| V3-P50-I06 | Orphan data sweeper | martwe dane data.* | ekstrakcja kluczy z thresholds_jdg.rego + scan odczytów w canonical; orphan → decyzja usunąć/podpiąć/dokumentować | zero zbędnego przetwarzania (RODO 5.1c); dane = żywe albo jawne | FP użycia dynamicznego → mitygacja: substring scan jest liberalny (zawsze na plus) | keys_total = used + orphan (test) | P06, P46 |
+| V3-P50-I07 | Ghost doc detector | dokumenty-widma | ścieżki (rules/tools/bundles/docs/tests) + rule_id jdg.* w docsach MD vs rzeczywiste repo; bloki kodu pomijane | dokumentacja zgodna z kodem = traceability realna (P41) | FP ścieżek relatywnych → mitygacja: resolve vs 2 korzenie + wykluczenia | docs_scanned>0; ghosts>0→TRIAGE (test) | P41, P47 |
+| V3-P50-I08 | Duplication prevention in generators | nowe duplikaty | v3_p50_duplication_guard.py: semantic_hash (spójny z I01) + guard_duplicate → DuplicationError z linkiem; indeks hashy; weryfikacja 96 generatorów | duplikat nie wejdzie do repo (fail-fast), zamiast kosztownej konsolidacji | generator omija strażnika → mitygacja: I08-skaner wykrywa unguarded (TRIAGE) | guard_exists=True; unguarded>0→TRIAGE (test) | P36, P34 |
+| V3-P50-I09 | Consolidation ledger | scalenia bez dowodu | walidacja wpisów: golden_replay{verdicts,ok,drift=0} + zero pozostałych odwołań do źródła; inaczej TRIAGE | każda konsolidacja z dowodem zachowania decyzji (K05, P10) | wpis „na sztywno" → mitygacja: _count_rule_id_refs liczy realne odwołania w canonical | missing_replay>0→TRIAGE (test) | P10, P03 |
+| V3-P50-I10 | Intentful variants | ukryte warianty | multi-file rule_id vs overlaye P48 (type/reason/effective_from-to); undeclared → TRIAGE (zadeklaruj albo skonsoliduj) | wariant celowy = architektura z powodem, nie duplikat | stary overlay bez okna → mitygacja: schema wymaga effective_from/to | undeclared>0→TRIAGE (test) | P48, P05 |
+| V3-P50-I11 | Rule reachability map | kod bez wejścia | BFS od package jdg.main po grafie plik-import; unreachable per reguła; anty-FP: pakiety testowe wykluczone | zero reguł bez punktu wejścia = zero ślepej gałęzi (AP03 domknięcie po stronie struktury) | FP reguł dynamicznych → mitygacja: sample weryfikacja, decyzja per reguła (R03) | total = reachable + unreachable (test) | P02, P45 |
+| V3-P50-I12 | Duplicate burden metric | brak kwantyfikacji | agregacja bundla I01 (jedno źródło prawdy); trend inkrementalny → P37; routing spójny z I02 | „zdrowie tożsamości" jako liczba z alarmem (cel 0%) | podwójne liczenie → mitygacja: brak re-parsingu, tylko agregacja | burden == I01.burden (test); trend zapisany | P37, P68 |
+
+Kierunki katalogu K01–K12: wykorzystane K05 (I09 — replay per scalenie),
+K11 (I03/I10 — spójność canonical↔mirror, overlaye), K12 (I12 — mierzalna
+metryka z celem i progiem); pozostałe kierunki poza zakresem P50 (mapa → P51+).
+
+────────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (T5) — wiąże P51 i dalsze aż do P68
+────────────────────────────────────────────────────────────────────────────────
+K-P50-1 REJESTR DUPLIKATÓW (z decyzjami per para: konsoliduj/usuń/deklaruj)
+        — v3_p50_semantic_duplicates.json + v3_p50_contradictions.json +
+        v3_p50_source_of_truth_index.json → P68 (certyfikacja: burden=0 na
+        pełnym zbiorze po R01) i P36 (zapobieganie w generatorach).
+K-P50-2 STANDARD UNIKALNOŚCI RULE_ID (konwencja 11.5 + bramka I03: kolizja
+        canonical = BLOCK, brak skanu = TRIAGE) — wiąże P00 (kanon) i P29
+        (bramki): każdy nowy pakiet przechodzi bramkę I03 w CI.
+K-P50-3 PROCEDURA ARCHIWIZACJI MARTWYCH ELEMENTÓW (I05: archive/ + README +
+        2 cykle + hard-delete=BLOCK) — wiąże P41 (dokumentacja inwentarza)
+        i P43 (DR: archiwum jako rollback).
+K-P50-4 MAPA OSIĄGALNOŚCI (I11) — wejście do P51+ (nie dodawać nowych reguł
+        poza routing P02); łączny plan 2107 reguł → R03.
+K-P50-5 INDEKS HASHY SEMANTYCZNYCH (I08, v3_p50_semantic_hash_index.json) —
+        kontrakt dla P36: każdy generator wywołuje guard_duplicate przed
+        zapisem.
+K-P50-6 METRYKA BURDEN + TREND (I12, v3_p50_burden_trend.json) — P37
+        dashboard „Rule Identity Health"; P68: burden=0 jako warunek
+        certyfikacji.
+K-P50-7 WIRING final_verdict_p114 (safe_merge, fallback) — wszystkie kolejne
+        części V3: nowy etap łańcucha = p114; kolejne części dodają p115+.
+K-P50-8 REJESTR 12× CANDIDATE (rule_registry v3.50.1, rollout 10%) → P68:
+        promocja CANDIDATE→ACTIVE po R01–R03 i stemplu 4-eyes.
+Standardy: identyfikatory V3-P50-Lxx/Ixx/Cxx/Qxx/Xxx (Sekcja 11.5);
+progi wyłącznie data.jdg.thresholds.v3_p50; mirror 1:1 (P48); dowód =
+bundle gate=PASS + wynik uruchomienia.
+
+────────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA (T6) — wykonany w tej części; kolejność sekwencyjna
+────────────────────────────────────────────────────────────────────────────────
+| # | Krok | Status | Uwagi |
+|---|------|--------|-------|
+| 1 | Progi v3_p50 (ADR-002) | ZROBIONE | 10 parametrów + okno temporalne |
+| 2 | Polityka 12 decyzji + naprawa 8 fail-open | ZROBIONE | parse OK ×2 wersje OPA; negative-first wykrył brak gałęzi BLOCK |
+| 3 | Detektor I01 (AST, równoległy) | ZROBIONE | 413 reguł; backlog 217 jawny |
+| 4 | Narzędzia I02,I03,I04,I05,I06,I07,I08(guard+scanner),I09,I10,I11,I12 | ZROBIONE | 13 modułów + runner |
+| 5 | Wiring p114 | ZROBIONE | import + safe_merge + post_merge |
+| 6 | Registry 12× CANDIDATE | ZROBIONE | v3.50.1 |
+| 7 | Testy natywne 56 | ZROBIONE | 0.68 i 1.9 v0-compatible |
+| 8 | Testy pytest 27 | ZROBIONE | + regresja P48/P49 53/53 |
+| 9 | Mirror sync + bramka P48 | ZROBIONE | 525 plików; PASS 0 nowych |
+| 10 | Naprawa plików parse-error (L01) | DO ZROBIENIA (P45/P65) | fala naprawcza |
+| 11 | Podpięcie strażnika do generatorów (L02) | DO ZROBIENIA | P36 |
+| 12 | Klasyfikacja unreachable (L03) | DO ZROBIENIA | per reguła, 4-eyes |
+Wymagające decyzji człowieka: Q01–Q04 (9.11).
+
+────────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (T7) — przypadki blokujące merge oznaczone [BLOCK]
+────────────────────────────────────────────────────────────────────────────────
+| Test | Typ | Oczekiwany wynik | Status |
+|------|-----|------------------|--------|
+| test_p50_thresholds_missing_fail_closed | negatywny [BLOCK] | BLOCK/BLOCK_AND_ALERT | PASS ×2 OPA |
+| test_p50_i01_dedup_bypass_blocks | negatywny [BLOCK] | BLOCK | PASS ×2 |
+| test_p50_i02_contradiction_bypass_blocks | negatywny [BLOCK] | BLOCK | PASS ×2 |
+| test_p50_i03_uniqueness_bypass_blocks | negatywny [BLOCK] | BLOCK | PASS ×2 |
+| test_p50_i04_sst_bypass_blocks | negatywny [BLOCK] | BLOCK | PASS ×2 |
+| test_p50_i05_archive_bypass_blocks | negatywny [BLOCK] | BLOCK | PASS ×2 |
+| test_p50_i05_hard_delete_blocks | negatywny [BLOCK] | BLOCK | PASS ×2 |
+| test_p50_i06_orphan_bypass_blocks | negatywny [BLOCK] | BLOCK | PASS ×2 |
+| test_p50_i07_ghost_bypass_blocks | negatywny [BLOCK] | BLOCK | PASS ×2 |
+| test_p50_i08_generator_bypass_blocks | negatywny [BLOCK] | BLOCK | PASS ×2 |
+| test_p50_i09_ledger_bypass_blocks | negatywny [BLOCK] | BLOCK | PASS ×2 |
+| test_p50_i10_variants_bypass_blocks | negatywny [BLOCK] | BLOCK | PASS ×2 |
+| test_p50_i11_reachability_bypass_blocks | negatywny [BLOCK] | BLOCK | PASS ×2 |
+| test_p50_i12_burden_bypass_blocks | negatywny [BLOCK] | BLOCK | PASS ×2 |
+| test_p50_i03_collision_blocks | granica 0/1 kolizji | BLOCK | PASS ×2 |
+| test_p50_i03_no_scan_triages | granica files=0 | TRIAGE | PASS ×2 |
+| test_p50_i02_unresolved_blocks / pairs_over_max_blocks / resolved_within_max_triages | granice unresolved/max [BLOCK] | BLOCK/TRIAGE | PASS ×3 ×2 |
+| test_p50_i06_orphans_at_max / over_max / undecided | granice 50/51 [BLOCK] | TRIAGE | PASS ×3 ×2 |
+| test_p50_i07_ghosts_at_max / over_max / all_corrected | granice 10/11 | TRIAGE/AUTO | PASS ×3 ×2 |
+| test_p50_i11_unreachable_at_max / over_max / no_map | granice 100/101 [BLOCK] | TRIAGE | PASS ×3 ×2 |
+| test_p50_i12_burden_zero / over_target / no_rules | granice 0/>0 | AUTO/TRIAGE | PASS ×3 ×2 |
+| test_p50_i08_no_generators_triages | pusty zbiór | TRIAGE | PASS ×2 |
+| test_p50_every_verdict_has_rule_id | property [BLOCK] | kontrakt P03 na 12 analizach | PASS ×2 |
+| test_p50_no_silent_auto_post_without_full_evidence | property [BLOCK] | nigdy AUTO_POST przy BLOCK/TRIAGE | PASS ×2 |
+| test_p50_rego_mirror_semantically_identical (pytest) | mirror [BLOCK] | identyczny 1:1 | PASS |
+| test_p50_runner_all_steps_ok (pytest) | dowód [BLOCK] | 13/13 OK | PASS |
+| test_p50_rule_registry_12_candidates (pytest) | rejestr | 12× CANDIDATE v3.50.1 | PASS |
+| test_p50_i08_guard_semantic_hash_contract | jednostkowy | maskowanie jdg.* spójne I01/I08 | PASS |
+Fuzz/property: brak dziedzinowych stawek w P50 (tożsamość kodu) — chaos
+mutacje input objęte testami granic i property (every…, 12 analiz).
+Temporal: valid_from w snapshot v3_p50; test granic daty = P51+ (brak
+nowelizacji w zakresie P50).
+
+────────────────────────────────────────────────────────────────────────────────
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+────────────────────────────────────────────────────────────────────────────────
+V3-P50-Q01: Czy fala naprawy 217 plików parse-error (L01) robi się w P45/P65
+  (batch) czy per-domena przez właścicieli? (zasób, kolejność).
+V3-P50-Q02: Czy 2107 reguł nieosiągalnych (L03) dostaje deadline na klasyfikację
+  (podpiąć/zarchiwizować) i czy przyjmujemy „brak decyzji w 2 cykle = archiwizacja"?
+V3-P50-Q03: Kalibracja progów P50 (orphan_data_max=50, ghost_doc_max=10,
+  unreachable_rules_max=100) — czy baseline potwierdzasz jako Startwerte, czy
+  podnosisz przed bramką CI (R08)?
+V3-P50-Q04: Usunięcie drzewa legacy policies/ (712 mirror-legacy duplikatów,
+  dziedziczone z P48-Q02/P49-Q04) + archiwizacja 65 martwych narzędzi — jedna
+  decyzja batchowa? (potwierdzenie 4-eyes).
+
+────────────────────────────────────────────────────────────────────────────────
+9.12 ZAŁOŻENIA JAWNE (T9)
+────────────────────────────────────────────────────────────────────────────────
+[ZAŁOŻENIE A01] Detektor I01 analizuje wyłącznie pliki z poprawnym parse —
+  burden i duplikaty są dolnym oszacowaniem do czasu R01 (backlog jawny w
+  metryce parse_errors, nie ukrywany).
+[ZAŁOŻENIE A02] „Zasada prawna" = reguła z kontraktem decyzji (decision_mode/
+  matched/_routing) w skutku; katalogi metadanych i boilerplate (no_match,
+  thresholds_missing) poza semantyką duplikatów (AP04 dotyczy ZASAD).
+[ZAŁOŻENIE A03] Maskowanie stringów w hashu (jdg.*→ID, pozostałe→§) jest
+  zamierzone: komunikaty i tożsamość nie różnicują zasad; liczby/bool/e okna
+  temporalne zachowane (zmiana progu = inna zasada).
+[ZAŁOŻENIE A04] Kolizja rule_id = ten sam identyfikator w 2 RÓŻNYCH plikach;
+  powtórzenie literału w 1 pliku (inwentarz + decyzja) nie jest kolizją;
+  in-file redefinition (wiele definicji complete-rule) = legalne w Rego,
+  rejestrowane do przeglądu.
+[ZAŁOŻENIE A05] BFS osiągalności jest statyczny: reguły wywoływane wyłącznie
+  dynamicznie (object.get po nazwie pakietu zbudowanym w runtime) mogą być
+  FP — metoda to dokumentuje, R03 przewiduje weryfikację próbek.
+[ZAŁOŻENIE A06] „Narzędzie żywe" = import/wzmianka w dowolnym module JDG albo
+  wzmianka w teście; to broad-match — świadomie liberalny (zero ryzyka
+  fałszywej archiwizacji żywego narzędzia).
+[ZAŁOŻENIE A07] Mirror-legacy duplikaty (712) dotyczą drzewa policies/ legacy
+  (poza parą sync 1:1) — traktowane jako backlog P48-Q04, nie nowy defekt P50.
+
+────────────────────────────────────────────────────────────────────────────────
+7.4 PYTANIA KRZYŻOWE (V3-P50-X01..X10)
+────────────────────────────────────────────────────────────────────────────────
+X01: Sprzeczności z dokumentami świętymi — NIE ZNALEZIONO. P50 realizuje V1
+  (jedno źródło prawdy, lifecycle, bramki CI) i V2 F3/F4 (złote orzeczenia,
+  certyfikat): I09 wymaga golden replay per scalenie, I01/I12 kwantyfikują
+  pokrycie. Nie nakładamy P50 nad P48 — duplikaty canonical↔mirror w parze
+  1:1 NIE są duplikatami (wspólny rejestr z P48 honorowany w I03/I10).
+X02: Naruszenia parametrów-as-data (P06)/temporalności (P05) — ZERO w nowym
+  kodzie: test_p50_rego_zero_hardcode_thresholds (progi wyłącznie
+  data.jdg.thresholds.v3_p50), valid_from w snapshot; fallback _th(key, 0)
+  jawny w kodzie (ostatnia linia obrony, nie źródło progu).
+X03: Ścieżki nie fail-closed — 8 znalezionych i NAPRAWIONYCH w tej części
+  (brak gałęzi BLOCK przy bypass flagach w I04/I06–I12; brak guard
+  zero-generators w I08; self-assignment burden w I12 zawsze 0). Dowód:
+  56 testów natywnych, wszystkie bypass→BLOCK.
+X04: Pola kontraktujące z 25-polowym werdyktem P03 — rule_id, package,
+  priority, decision_mode, _routing, _routing_reason, _legal_basis,
+  _warnings, valid_from/valid_to, threshold_version, legal_basis_version —
+  typy zgodne (string/int/array/null); pola obiektowe analiz (np.
+  contradictory_pairs, burden_pct) = namespace własny, brak kolizji z
+  25-polami (priority 450001..450012 unikalne globalnie — I03 potwierdza).
+X05: Testy blokujące merge [BLOCK] — tabela 9.10 (przypadki bypass/granice);
+  do P39: runner v3_p50_run_all.py jako bramka CI (13 kroków) + testy
+  natywne ×2 wersje OPA.
+X06: Duplikaty względem innych części — brak: dead_rule_detector.py,
+  cross_package_conflict_detector.py, else_chain_dead_code_detector.py,
+  rule_impact_simulator.py, rule_lifecycle_manager.py, vat_ruleid_migrator.py
+  = narzędzia baseline (istnieją, 6.1) — P50 ROZSZERZA (AST-hash I01,
+  zapytywalny rejestr I04, strażnik I08, mapa BFS I11), nie duplikuje;
+  crossref_plan50.py BROKEN (L08).
+X07: Podstawy niezweryfikowane — wszystkie 8 aktów (T2) → rejestr mediacji
+  (konwencja P47-I10): art. 24b, 199a–199c OP; 41/43 VAT; 22–30 PIT; 18a
+  ZUS; 56 KKS; 4.1 UoR; 5.1c RODO — priorytet: wysoki (fundament tożsamości).
+X08: Innowacje wymagające decyzji 4-eyes — I05 (archiwizacja/usunięcie
+  narzędzi, R04), I09 (każda konsolidacja = decyzja właściciela), R03
+  (losowanie 2107 reguł), Q04 (drzewo legacy).
+X09: Metryki do P37 — duplicate_burden_pct (cel 0%, alarm na wzrost),
+  rules_unreachable (alarm na wzrost), ghost_references (>0),
+  dead_tools_unarchived (>0 przez 2 cykle), rule_id_collisions (>0 = P0);
+  dashboard „Rule Identity Health"; trend już zapisywany (I12).
+X10: Ryzyka → invarianty runtime (P04) — rekomendacja: INV-P50-01 (decyzja
+  tylko z rule_id zarejestrowanym w I04 — brak anonimowych zasad w
+  werdykcie) i INV-P50-02 (zero AUTO_POST przy unresolved contradictions)
+  do P04 enforce() w P51 (uzasadnienie: art. 24b OP + UoR 4.1
+  [NIEZWERYFIKOWANE — ISAP]); pozostałe w pack CI (koszt ewaluacji runtime).
+
+────────────────────────────────────────────────────────────────────────────────
+7.3 TABELA DOWODÓW (T1) — pliki Sekcji 6 (ścieżki JDG/* zweryfikowane;
+    linki promptu są root-style)
+────────────────────────────────────────────────────────────────────────────────
+| # | Plik (JDG/…) | Fakt dla P50 | Status |
+|---|--------------|--------------|--------|
+| 1 | tools/dedup_micro_plan33.py | dedup mikro plan33 — narzędzie baseline; żywe (graf importów I05) | ZWERYFIKOWANO (istnienie+użycie) |
+| 2 | tools/fix_p00_duplicates.py | naprawa 296 duplikatów P00 (unified_plan_progress) — dowód, że duplikaty powstawały z generatorów planów | ZWERYFIKOWANO (istnienie) |
+| 3 | tools/fix_plan34_duplicates.py | jw. dla plan34 — wzorzec źródła duplikatów (analiza przyczyn 5.4) | ZWERYFIKOWANO (istnienie) |
+| 4 | tools/dead_rule_detector.py | uruchomiony: duplikaty rule_id, checkpointy 104, priority-collisions 301 — baseline dla I03/I11 | ZWERYFIKOWANO (uruchomienie) |
+| 5 | tools/cross_package_conflict_detector.py | detektor konfliktów między pakietami — komplementarny do I02 (kontrakt X06) | ZWERYFIKOWANO (istnienie) |
+| 6 | tools/else_chain_dead_code_detector.py | dead code else-chain — komplementarny do I11 (routing vs gałęzie) | ZWERYFIKOWANO (istnienie) |
+| 7 | tools/rule_impact_simulator.py | symulator wpływu — użyteczny przy R03 (przed usunięciem reguły) | ZWERYFIKOWANO (istnienie) |
+| 8 | tools/crossref_plan50.py | NIEURUCHAMIALNY: FileNotFoundError 'Plan OPA/50_...' → L08 | ZWERYFIKOWANO (błąd uruchomienia) |
+| 9 | bundles/rule_registry.json | rejestr lifecycle; +12× CANDIDATE v3.50.1 (I03 kontrakt) | ZWERYFIKOWANO (aktualizacja) |
+| 10 | bundles/bundle_catalog.json | katalog wersji bundli — wejście do I04 (źródła) | ZWERYFIKOWANO (istnienie) |
+| 11 | bundles/manifest_v2.json | manifest bundle v2 (rules/tools) — skan rejestru I03 | ZWERYFIKOWANO (istnienie) |
+| 12 | bundles/enterprise_v3_registry.json | mapa części kampanii — skan rejestru I03 | ZWERYFIKOWANO (istnienie) |
+| 13 | tools/rule_lifecycle_manager.py | menedżer lifecycle — kontrakt z I05 (archiwizacja = stage) | ZWERYFIKOWANO (istnienie) |
+| 14 | tools/vat_ruleid_migrator.py | migrator rule_id VAT — dowód istniejącej praktyki migracji (I09 schema) | ZWERYFIKOWANO (istnienie) |
+| 15 | docs/KATALOG_REGUL.md | katalog reguł (dokument) — skan ghost I07 | ZWERYFIKOWANO (skan) |
+| 16 | docs/INWENTARYZACJA_PLIKOW.md | inwentaryzacja plików — skan ghost I07 | ZWERYFIKOWANO (skan) |
+| 17 | docs/DECISION_CORE_P02.md | dokument orkiestrator — routing P02 jako punkt wejścia I11 | ZWERYFIKOWANO (istnienie) |
+| 18 | docs/ORCHESTRATOR_DATA_CONTRACT.md | kontrakt danych orkiestratora — spójność 25-pol (X04) | ZWERYFIKOWANO (istnienie) |
+| 19 | docs/OPA_JAKO_SYSTEM_P21.md | OPA jako system — kontekst bramek CI (X05) | ZWERYFIKOWANO (istnienie) |
+| 20 | tests/rego/test_native_cross_domain_intelligence_enterprise.rego | wzorzec testów natywnych cross-domain | ZWERYFIKOWANO (istnienie) |
+| 21 | tests/test_orchestrator_data_contract.py | test kontraktu danych — wzorzec dla test_p50_main_jdg_wiring | ZWERYFIKOWANO (istnienie) |
+| 22 | mirror policies/ (6.4: jdg, tax, tax/vat, bundle.sh, manifests) | sync 1:1 525 plików; bramka P48 PASS 0 nowych; 712 mirror-legacy → Q04 | ZWERYFIKOWANO (sync executor + gate) |
+Adnotacja 6.0c: statusy „istnienie" = fakt istnienia + rola potwierdzona
+(listing/scan), bez deep-read treści (budżet 50%, L01/L08 rejestrują wpływ).
+
+────────────────────────────────────────────────────────────────────────────────
+T10 PRZEKAZYWANE ARTEFAKTY (11.4)
+────────────────────────────────────────────────────────────────────────────────
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| Rejestr duplikatów + sprzeczności (z decyzjami) | P68, P36 | v3_p50_semantic_duplicates.json, v3_p50_contradictions.json | P68: burden=0 po R01; P36: zapobieganie |
+| Standard unikalności rule_id (konwencja + bramka I03) | P00 (kanon), P29 (bramki) | v3_p50_ruleid_uniqueness.json + polityka | każdy nowy pakiet przez bramkę |
+| Procedura archiwizacji martwych elementów | P41, P43 | v3_p50_dead_tool_archive.json + polityka I05 | archiwizacja hurtowa R04 |
+| Rejestr źródeł prawdy (zapytywalny) | P51+, P68 | v3_p50_source_of_truth_index.json | identyfikacja źródła per zasada |
+| Indeks hashy semantycznych + strażnik | P36 | v3_p50_semantic_hash_index.json, v3_p50_duplication_guard.py | fail-fast w generatorach |
+| Mapa osiągalności | P51+, P45 | v3_p50_reachability.json | plan 2107 reguł (R03) |
+| Metryka burden + trend | P37, P68 | v3_p50_burden_metric.json, v3_p50_burden_trend.json | dashboard „Rule Identity Health" |
+| Wiring p114 | wszystkie V3 | main_jdg.rego | kolejne części = p115+ |
+| 12× CANDIDATE v3.50.1 | P68 | rule_registry.json | promocja po R01–R03 |
+
+T11 MACIERZ PODANALIZA×GRUPA (APENDYKS B):
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik |
+|------------|----------------|-----------------|-------|
+| 5.1 | 6.1+6.2 (detektory, rejestry) | 3 twierdzenia: 0 dup par AST, 0 sprzecznych, 0 temporalnych | 9.04/9.06 ✓ |
+| 5.2 | 6.2+6.3 (rejestry, routing) | 3: 0 kolizji canonical, 2107 unreachable, 89 in-file redefinitions | 9.04/9.06 ✓ |
+| 5.3 | 6.1+6.3 (narzędzia, dane) | 3: 65 dead tools, 0 orphan keys, 36 ghost refs | 9.04 ✓ |
+| 5.4 | 6.1+6.4 (konsolidacja, mirror) | 3: 0 wpisów ledger (gotów), 0 undeclared variants, 23/96 guarded gens | 9.04 ✓ |
+T12 REJESTR KONFLIKTÓW Cxx: brak (X01 — zero sprzeczności z dokumentami
+świętymi; mirror 1:1 bez overlayów; P48 dryf 0 po sync).
+
+────────────────────────────────────────────────────────────────────────────────
+APENDYKS A — MAPA GRUP PLIKÓW (uzupełniona)
+────────────────────────────────────────────────────────────────────────────────
+| Grupa | Nazwa | Plików | Rola analityczna |
+|-------|-------|--------|------------------|
+| 6.1 | Narzędzia deduplikacji i dead code | 8 | baseline I01/I03/I11: co już wykrywa, czego brakuje (AST vs regex; L08) |
+| 6.2 | Rejestry tożsamości reguł | 8 | źródła prawdy lifecycle: rule_registry, manifesty — wejście bramki I03 |
+| 6.3 | Routing i orkiestrator | 5 | punkt wejścia jdg.main dla I11; kontrakt 25-pol P03 (X04) |
+| 6.4 | Mirror policies | 6 | zgodność 1:1 (P48); duplikaty legacy → Q04 (L07) |
+
+────────────────────────────────────────────────────────────────────────────────
+9.13–9.15 SPEŁNIENIE: podanalizy mają ≥3 wnioski i ≥1 lukę każda (9.04);
+identyfikatory zgodne z 11.5 (V3-P50-*).
+────────────────────────────────────────────────────────────────────────────────
+KRYTERIA AKCEPTACJI 01–20: SPEŁNIONE (raport 1 plik; sekcje 9.01–9.15 pełne;
+T1–T12 obecne; min. 12 innowacji z 6-punktowym szkieletem; plan testów z
+[BLOCK]; pytania Q01–Q04; spis duplikatów z klasyfikacją (identyczne /
+sprzeczne / temporalne-warianty) i decyzją per para — 9.04/5.1; mapa
+osiągalności z listą martwych i planem — I11/R03; żadna sekcja nie jest
+kopiowana z P49 — wszystkie dane z uruchomień tej sesji).
+
+9.18 DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+Zgodna: V1 (jedno źródło prawdy, §9.3 wersje, §12.1 role, bramki CI), V2
+(F3 golden, F4 certyfikat, Legal Twin traceability), ADR-002, ADR-004.
+Odstępstwa: brak. Podstawy prawne: 8/8 [NIEZWERYFIKOWANE — ISAP] — czeka
+stempel 4-eyes (X07).
+
+────────────────────────────────────────────────────────────────────────────────
+SEKCJA 16 — POTWIERDZENIE DOMKNIĘCIA
+────────────────────────────────────────────────────────────────────────────────
+Zakres: P50 DEAD_CODE_DUPLIKATY wdrożony w 100% (polityka 12 decyzji po
+naprawie 8 fail-open, progi, wiring p114, 13 narzędzi + strażnik + runner,
+15 bundli, 56 testów natywnych ×2 OPA + 27 pytest, regresja P48/P49 53/53,
+mirror 1:1, bramka P48 PASS, rejestr 12× CANDIDATE). Luki: P0=1, P1=2, P2=3,
+P3=2. Innowacje: 12.
+Kontrakt wyjściowy: K-P50-1..8 (9.08) → P51.
+Artefakty przekazane: T10.
+STATUS W LEDGERZE: P50 → WDROŻONY_100 (51/69 = 73.91%; następny: P51).
+OKNO KONTEKSTOWE WYCZYSZCZONE — do P51 wyłącznie: EXECUTIVE SUMMARY,
+KONTRAKT WYJŚCIOWY (K-P50-1..8), REJESTR LUK P0/P1 (L01, L02, L03).
+================================================================================
+KONIEC RAPORTU V3 P50
+================================================================================

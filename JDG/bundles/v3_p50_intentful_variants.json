@@ -1,0 +1,18 @@
+{
+  "innovation": "V3-P50-I10",
+  "generated_at": "2026-09-11T22:41:09.937039+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "multi_file_rule_ids": 0,
+    "declared_variants": 0,
+    "undeclared_variants": 0,
+    "overlays_scanned": 2,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "undeclared_sample": [],
+    "declared_sample": [],
+    "note": "I10: warianty celowe (temporalne/domenowe) z deklaracją overlay P48 = architektura, nie duplikaty. Undeclared = zadeklarować (overlay z powodem + oknem) albo skonsolidować (I09 z golden replay). Anty-FP: boilerplate no_match/thresholds_missing wykluczony.",
+    "scanned_at": "2026-09-11T22:41:09.936964+00:00"
+  }
+}

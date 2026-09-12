@@ -1,0 +1,18 @@
+{
+  "innovation": "V3-P50-I06",
+  "generated_at": "2026-09-11T22:40:54.417147+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "threshold_keys_total": 1545,
+    "keys_used": 1545,
+    "orphan_keys": 0,
+    "decided": 0,
+    "orphan_max": 50,
+    "routing": "AUTO_FILE"
+  },
+  "evidence": {
+    "orphan_keys_sample": [],
+    "note": "I06: klucze data.thresholds.* nieodczytywane w canonical rego (substring scan). Możliwe false-positive przy użyciu dynamicznym (object.get z konkatenacją, klucze wspólne wielu bloków) — sample do decyzji per klucz (usunąć/podpiąć/dokumentować), zero automatycznego usuwania. Baseline = backlog jawny (AP12, RODO 5.1c).",
+    "scanned_at": "2026-09-11T22:40:54.417077+00:00"
+  }
+}

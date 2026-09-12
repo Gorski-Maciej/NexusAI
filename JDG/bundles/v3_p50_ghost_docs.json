@@ -1,0 +1,309 @@
+{
+  "innovation": "V3-P50-I07",
+  "generated_at": "2026-09-11T22:41:03.631827+00:00",
+  "gate": "PASS",
+  "metrics": {
+    "docs_scanned": 131,
+    "ghost_references": 36,
+    "corrected": 0,
+    "ghost_max": 10,
+    "routing": "TRIAGE_QUEUE"
+  },
+  "evidence": {
+    "ghosts_sample": [
+      {
+        "doc": "JDG/docs/INWENTARYZACJA_PLIKOW.md",
+        "kind": "path",
+        "ref": "bundles/base/manifest.json",
+        "docs": [
+          "JDG/docs/INWENTARYZACJA_PLIKOW.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/VAT_MACRO_P03.md",
+        "kind": "path",
+        "ref": "bundles/mpp_auto_marked.json",
+        "docs": [
+          "JDG/docs/VAT_MACRO_P03.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/INWENTARYZACJA_PLIKOW.md",
+        "kind": "path",
+        "ref": "bundles/overlays/v2026/manifest.json",
+        "docs": [
+          "JDG/docs/INWENTARYZACJA_PLIKOW.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/INWENTARYZACJA_PLIKOW.md",
+        "kind": "path",
+        "ref": "bundles/overlays/v2027/manifest.json",
+        "docs": [
+          "JDG/docs/INWENTARYZACJA_PLIKOW.md"
+        ]
+      },
+      {
+        "doc": "docs/BIBLIOGRAPHY.md",
+        "kind": "path",
+        "ref": "docs/gguf.md",
+        "docs": [
+          "docs/BIBLIOGRAPHY.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/AUDYT_PODSTAW_PRAWNYCH.md",
+        "kind": "path",
+        "ref": "docs/quality_v3_20.rego",
+        "docs": [
+          "JDG/docs/AUDYT_PODSTAW_PRAWNYCH.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/PIT_MICRO_P06.md",
+        "kind": "path",
+        "ref": "rules/micro/amortyzacja/pit_a22a/22i/22k/22n.rego",
+        "docs": [
+          "JDG/docs/PIT_MICRO_P06.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/ZGODNOSC_PRAWNA.md",
+        "kind": "path",
+        "ref": "rules/p15_innovations_enterprise.rego",
+        "docs": [
+          "JDG/docs/ZGODNOSC_PRAWNA.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/ZGODNOSC_PRAWNA.md",
+        "kind": "path",
+        "ref": "rules/uor/uor_valuation.rego",
+        "docs": [
+          "JDG/docs/ZGODNOSC_PRAWNA.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/KATALOG_REGUL.md",
+        "kind": "path",
+        "ref": "tests/sc_main_test.rego",
+        "docs": [
+          "JDG/docs/KATALOG_REGUL.md",
+          "docs/CHANGELOG.md"
+        ]
+      },
+      {
+        "doc": "docs/CONTRIBUTING.md",
+        "kind": "path",
+        "ref": "tests/test_nowy_agent.py",
+        "docs": [
+          "docs/CONTRIBUTING.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/KATALOG_REGUL.md",
+        "kind": "rule_id",
+        "ref": "jdg.enterprise.calendar_notifier",
+        "docs": [
+          "JDG/docs/KATALOG_REGUL.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/KKS_P10.md",
+        "kind": "rule_id",
+        "ref": "jdg.enterprise.conviction_checker",
+        "docs": [
+          "JDG/docs/KKS_P10.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/NEURAL_MESH_INNOWACJE_P20.md",
+        "kind": "rule_id",
+        "ref": "jdg.enterprise.cross_jurisdiction_ruling",
+        "docs": [
+          "JDG/docs/NEURAL_MESH_INNOWACJE_P20.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/NEURAL_MESH_INNOWACJE_P20.md",
+        "kind": "rule_id",
+        "ref": "jdg.enterprise.judicial_trend",
+        "docs": [
+          "JDG/docs/NEURAL_MESH_INNOWACJE_P20.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/KKS_P10.md",
+        "kind": "rule_id",
+        "ref": "jdg.enterprise.penalty_ai",
+        "docs": [
+          "JDG/docs/KKS_P10.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/NEURAL_MESH_INNOWACJE_P20.md",
+        "kind": "rule_id",
+        "ref": "jdg.enterprise.strategic_roadmap",
+        "docs": [
+          "JDG/docs/NEURAL_MESH_INNOWACJE_P20.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/LOGIKA_BIZNESOWA.md",
+        "kind": "rule_id",
+        "ref": "jdg.main.final_verdict",
+        "docs": [
+          "JDG/docs/LOGIKA_BIZNESOWA.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/KATALOG_REGUL.md",
+        "kind": "rule_id",
+        "ref": "jdg.micro.kks_rates",
+        "docs": [
+          "JDG/docs/KATALOG_REGUL.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/KATALOG_REGUL.md",
+        "kind": "rule_id",
+        "ref": "jdg.micro.zus_rates",
+        "docs": [
+          "JDG/docs/KATALOG_REGUL.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/KSIEGOWOSC_PKPIR_UOR_P09.md",
+        "kind": "rule_id",
+        "ref": "jdg.thresholds.accounting",
+        "docs": [
+          "JDG/docs/KSIEGOWOSC_PKPIR_UOR_P09.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/PIT_MICRO_P06.md",
+        "kind": "rule_id",
+        "ref": "jdg.thresholds.amortization_limits",
+        "docs": [
+          "JDG/docs/PIT_MICRO_P06.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/SRODOWISKO_BDO_P15.md",
+        "kind": "rule_id",
+        "ref": "jdg.thresholds.bdo_environment",
+        "docs": [
+          "JDG/docs/SRODOWISKO_BDO_P15.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/RODO_AML_BEZPIECZENSTWO_P16.md",
+        "kind": "rule_id",
+        "ref": "jdg.thresholds.compliance_aml_rodo",
+        "docs": [
+          "JDG/docs/RODO_AML_BEZPIECZENSTWO_P16.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/CROSSBORDER_P12.md",
+        "kind": "rule_id",
+        "ref": "jdg.thresholds.crossborder",
+        "docs": [
+          "JDG/docs/CROSSBORDER_P12.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/KKS_P10.md",
+        "kind": "rule_id",
+        "ref": "jdg.thresholds.kks",
+        "docs": [
+          "JDG/docs/KKS_P10.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/KSEF_JPK_EDEKLARACJE_P17.md",
+        "kind": "rule_id",
+        "ref": "jdg.thresholds.ksef_jpk_edeklaracje",
+        "docs": [
+          "JDG/docs/KSEF_JPK_EDEKLARACJE_P17.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/VAT_AUDYT_R03.md",
+        "kind": "rule_id",
+        "ref": "jdg.thresholds.misc.mpp_mandatory_threshold",
+        "docs": [
+          "JDG/docs/VAT_AUDYT_R03.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/ORDYNACJA_PODATKOWA_P11.md",
+        "kind": "rule_id",
+        "ref": "jdg.thresholds.ordpu",
+        "docs": [
+          "JDG/docs/ORDYNACJA_PODATKOWA_P11.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/PCC_LOKALNE_AKCYZA_P14.md",
+        "kind": "rule_id",
+        "ref": "jdg.thresholds.pcc_local_excise",
+        "docs": [
+          "JDG/docs/PCC_LOKALNE_AKCYZA_P14.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/RYCZALT_CYKL_ZYCIE_P13.md",
+        "kind": "rule_id",
+        "ref": "jdg.thresholds.ryczalt",
+        "docs": [
+          "JDG/docs/RYCZALT_CYKL_ZYCIE_P13.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/PRAWA_PRZEDSIEBIORCOW_AUDYT_R02.md",
+        "kind": "rule_id",
+        "ref": "jdg.thresholds.unregistered_limit_pct",
+        "docs": [
+          "JDG/docs/PRAWA_PRZEDSIEBIORCOW_AUDYT_R02.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/VAT_MACRO_P03.md",
+        "kind": "rule_id",
+        "ref": "jdg.thresholds.vat",
+        "docs": [
+          "JDG/docs/VAT_MACRO_P03.md",
+          "JDG/docs/VAT_MACRO_P03.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/VAT_AUDYT_R03.md",
+        "kind": "rule_id",
+        "ref": "jdg.thresholds.vat.mpp_mandatory_threshold",
+        "docs": [
+          "JDG/docs/VAT_AUDYT_R03.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/DECISION_CORE_P02.md",
+        "kind": "rule_id",
+        "ref": "jdg.trust_feedback.packages",
+        "docs": [
+          "JDG/docs/DECISION_CORE_P02.md"
+        ]
+      },
+      {
+        "doc": "JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md",
+        "kind": "rule_id",
+        "ref": "jdg.vat.a113.r2",
+        "docs": [
+          "JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md"
+        ]
+      }
+    ],
+    "canon_rule_ids": 13467,
+    "note": "I07: dokumenty-widma = ścieżki/reguły w docs bez pokrycia w repo. Anty-FP: bloki kodu z przykładami pomijane, anchor liniowy okaleczany, heurystyka prefiksu pakietu dla rule_id. Korekta przez P41 (poprawa odwołania), nie automatyczne usuwanie dokumentów.",
+    "scanned_at": "2026-09-11T22:41:03.631752+00:00"
+  }
+}
