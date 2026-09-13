@@ -1,0 +1,488 @@
+==============================================================================
+RAPORT V3 P55 — ZUS DO ZERA — 30-KROTNOŚĆ, ULGI, CHOROBOWE I TERMINY BEZ LUK
+— DOMKNIĘCIE DOMENY SKŁADKOWEJ
+==============================================================================
+Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN (P00–P68)
+Prompt:      JDG/prompty_v3/V3_PROMPT_P55_ZUS_DOMKNIECIE.txt
+Raport:      JDG/raporty_glm52_v3/RAPORT_V3_P55_ZUS_DOMKNIECIE.txt
+Status:      WDROŻONY_100 (2026-09-13)
+Sesja:       wdrożenie raportu wg protokołu Sekcji 16 (czyste okno kontekstowe);
+             wejście z P54 wyłącznie przez: EXECUTIVE SUMMARY, KONTRAKT
+             WYJŚCIOWY (K-P54-1..6), REJESTR LUK P0/P1 (P54: 0×P0).
+
+──────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+──────────────────────────────────────────────────────────────────────────────
+Dojrzałość części P55: WDROŻONA (Enterprise). Domena ZUS domknięta end-to-end:
+state machine ulg (start→preferencyjny→mały ZUS+→pełny) → 30-krotność YTD z
+korektami w locie (domknięcie L03 z P53: accumulator@D) → podział miesiąca
+przy przekroczeniu limitu → karencja chorobowa 90 dni z wznowieniami → okresy
+zasiłkowe 182/270 → terminy DRA 10./15. z przeniesieniem na dzień roboczy →
+korekty DRA z odsetkami (OP art. 56) → priorytet płatności ZUS w pipeline P32
+→ zasiłek a zawieszenie (art. 6) → stawki roczne jako okna (P53-I10) → matryca
+kompletności → payment gate przed zaliczką chorobową.
+
+Zrealizowane artefakty (dowód: kod + wynik uruchomienia, nie deklaracje):
+  * Polityka OPA: rules/v3_p55_zus_closure.rego — pakiet
+    jdg.v3_p55_zus_closure, 12 analiz I01–I12 + router decide fail-closed
+    (kolejność: snapshot→I01→I02→I04→I05→I08→I09→I10→I12→I03→I06→I07→I11→
+    all_green→no_match), priorities 455001–455012, okno temporalne
+    valid_from/valid_to w każdym werdykcie (P05).
+  * Progi (ADR-002): blok v3_p55 w thresholds_jdg.rego (13 kluczy, okno
+    temporalne valid_from=2026-01-01, P05; no_auto_post=true,
+    manual_review_required=true). Karencja 90, okresy 182/270, DRA 10./15.,
+    próg zaległości, polityki podziału i zawieszenia — wszystkie z danych.
+  * Wiring: main_jdg.rego import + final_verdict_p119 = safe_merge(p118,
+    v3_p55_zus_closure.decide, fallback) → final_verdict_post_merge
+    (kotwica POST-MERGE przesunięta z p118 na p119 — konwencja kampanii).
+  * Narzędzia: 3 pliki (v3_p55_common.py + v3_p55_engines.py z 12 silnikami
+    I01–I12 + v3_p55_run_all.py) — gate=PASS dla 12/12 (v3_p55_run_all.json).
+    Silniki ROZSZERZAJĄ narzędzia rdzenia (preferential_period_tracker.py,
+    sickness_duration_tracker.py, zus_calendar.py, zus_atom_test_matrix.py,
+    zus_zasilkowa_calculator.py — import modułów, zero duplikacji).
+  * Dane: okna stawek rocznych 2025/2026 z provenance (zus_calculator.RATES),
+    cykl ulg 5 stanów + 5 przejść (w tym wymuszone po 24. mies.), granice
+    karencji (89/90) i okresów (182/183), siatki day-0 DRA, matryca 16 warunków.
+  * Bundly dowodowe: 13× v3_p55_*.json (gate=PASS).
+  * Testy: 23/23 natywnych Rego (OPA 0.68.0) + 51/51 pytest.
+  * Regresja: P54–P55 = 46/46 testów rego + pytest 99/99 zielone.
+  * Mirror: policies/ sync 3 plików (v3_p55_zus_closure.rego,
+    thresholds_jdg.rego, main_jdg.rego), hash-parity sha256 3/3, dryf 0.
+
+Kluczowe liczby bazowe (z narzędzi, realny stan repo):
+  * Cykl ulg: 5 stanów, 5 przejść poprawnych (w tym wymuszenie przejścia po
+    24. miesiącu preferencyjnego), 0 naruszeń.
+  * 30-krotność: 12/12 miesięcy w liczniku narastającym; korekta w locie
+    (-1000 PLN, mies. 3) przeliczona kaskadowo; 0 rekoncyliacji oczekujących.
+  * Podział miesiąca: przypadek kontrolny 20/30 dni → prorata dokładny
+    (ułamek, bez zaokrągleń — granica groszowa P52).
+  * Karencja: 90 dni; granica dzień 89 = BLOCK / 90 = PASS; wznowienie =
+    nowa karencja; 0 naruszeń.
+  * Okresy zasiłkowe: 182 (standard) / 270 (przedłużony); granica 182/183
+    testowana; 0 przekroczeń.
+  * DRA: 2 zdarzenia (10./15.) w kalendarzu z siatkami day-0 i przeniesieniem
+    na dzień roboczy (deadline_engine z zus_calendar.py); 0 osieroconych.
+  * Korekty DRA: 2/2 łańcuchy kompletne (różnica → odsetki → plan płatności).
+  * Priorytet płatności: zaległość 1500 PLN → 2 auto-płatności zablokowane
+    (kontrola pozytywna blokady); idempotencja wspólna z P32/P54.
+  * Zawieszenie: pełne = zasiłek dozwolony; wstrzymanie = BLOCK; 0 naruszeń.
+  * Stawki roczne: 2/2 lata z oknami; day-0 2025-12-31→2026-01-01 (reset
+    limitu 30-krotności, art. 18d ust. 2 [NIEZWERYFIKOWANE]).
+  * Matryca kompletności: 16/16 komórek pokrytych (warunek→reguła→test).
+  * Payment gate: 3/3 wypłat przez pełny łańcuch uprawnień (9 gate-checków).
+
+Luki: P0=0, P1=2 (L01–L02), P2=4 (L03–L06), P3=3 (L07–L09) — T3.
+Innowacje: 12 (I01–I12, wszystkie wdrożone z dowodami) — T4.
+Człowiek (4-eyes): Q01–Q04 — T8.
+
+TOP-10 rekomendacji:
+  1. Weryfikacja ISAP/zus.pl wartości prawnych (karencja 90, okresy 182/270,
+     DRA 10./15., podstawa 60% przeciętnego) — Q01; dziś [NIEZWERYFIKOWANE].
+  2. Potwierdzenie praktyki ZUS dla podziału miesiąca (prorata dni) — Q02.
+  3. Wpięcie v3_p55_run_all.py do CI (P39) jako bramka blokująca co PR.
+  4. Zasilanie okien stawek rocznych z zus.pl przy każdej nowelizacji
+     (lead ≥ 30 dni — KPI V2 §6.2.5; spójnie z P25/P53-I08).
+  5. Dostawienie testów temporalnych day-0 do micro ZUS/ryczałt (L09 z P53 —
+     część domknięta matrycą I11; reszta → P56).
+  6. Widok UI (P40): kalendarz ulg + licznik 30-krotności + status DRA.
+  7. Metryki do P37: zus_carencia_violations, zus_benefit_overflow,
+     zus_dra_orphans, zus_arrears_pln, zus_gate_checks.
+  8. Replikator accumulator@D na pozostałe limity narastające (VAT 200k —
+     kontrakt P53/P14; P55 domyka ZUS).
+  9. Chaos drill P43: mutacje dat przejść ulg z asercją fail-closed.
+ 10. Rejestr wyłączeń I11 (expiry + owner — konwencja P34-I12).
+
+Co udowodniono: kompilacja i testy OPA 0.68; bramki z liczników narzędzi;
+wymuszenie przejścia po 24. miesiącu (kontrola pozytywna na trackerze);
+korekta w locie przeliczona kaskadowo; granice 89/90 i 182/183; DRA z
+przeniesieniem na dzień roboczy (deadline_engine); blokada pipeline przy
+zaległości; determinizm routera (23/23, w tym podwójna ewaluacja); zero
+AUTO_POST w pakiecie.
+Co pozostało [NIEZWERYFIKOWANE]: SUS art. 12/18a–18d/47/50, ustawa zasiłkowa
+art. 4/6, OP art. 56 (ISAP), stawki/limity (zus.pl), praktyka podziału
+miesiąca (Q02).
+
+──────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+──────────────────────────────────────────────────────────────────────────────
+Przeanalizowano: 21 plików z Sekcji 6 promptu (grupy 6.1–6.3) + 3 pliki
+mirrora 6.4 (policies/v3_p55_zus_closure.rego, policies/thresholds_jdg.rego,
+policies/main_jdg.rego) — T1. Każdy plik: ≥1 fakt.
+Pominięto: nic z listy Sekcji 6 (wszystkie odczytane/adnotowane).
+Ograniczenia:
+  * Brak dostępu do ISAP/zus.pl w sesji — wartości prawne [NIEZWERYFIKOWANE]
+    (protokół 04; rejestr mediacji 9.05/Q01–Q02).
+  * Stawki/limity w silnikach pochodzą z narzędzi rdzenia (zus_calculator.RATES,
+    SICKNESS_PARAMS, RELIEF_PERIODS) — P55 dodaje okna/progi, nie zmienia
+    wartości (rozliczenie z P26: L14 wzorzec 812,63 pozostaje w P26).
+  * Budżet 50%: czytanie celowane (nagłówki/grep/window); każda teza ma dowód.
+Status weryfikacji źródeł prawnych: [NIEZWERYFIKOWANE — ISAP/zus.pl] przy
+każdej podstawie; zero fikcyjnych artykułów/dat/stawek (protokół 04).
+
+──────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P55 — MAPA ARTEFAKTÓW
+──────────────────────────────────────────────────────────────────────────────
+| Artefakt | Pakiet/rule_id | Podstawa prawna | Testy | Lifecycle |
+|---|---|---|---|---|
+| rules/v3_p55_zus_closure.rego | jdg.v3_p55_zus_closure.* (12) | SUS 12/18a–18d/47; u.z.ch.s 4/6; OP 56 [NIEZWERYFIKOWANE] | 23 rego + 51 pytest | CANDIDATE v3.55.1 |
+| thresholds_jdg.rego (v3_p55) | data.jdg.thresholds.v3_p55 (13 kluczy) | ADR-002; P05 | snapshot testy | AKTYWNE (progi) |
+| main_jdg.rego (p119) | final_verdict_p119 | kontrakt werdyktu P03 | wiring testy | AKTYWNE |
+| tools/v3_p55_{common,engines,run_all}.py | 12 silników I01–I12 | jw. | 13 bundli gate=PASS | narzędzia CI |
+| tools/preferential_period_tracker.py (rozszerzony) | cykl ulg | SUS 18a/18c [NIEZWERYFIKOWANE] | I01 | istniejące (INN07) |
+| tools/sickness_duration_tracker.py (rozszerzony) | okresy zasiłkowe | u.z.ch.s 4 [NIEZWERYFIKOWANE] | I05 | istniejące (INN03) |
+| tools/zus_calendar.py (rozszerzony) | terminy DRA | SUS 47 [NIEZWERYFIKOWANE] | I06 | istniejące (P26) |
+| tools/zus_atom_test_matrix.py (rozszerzony) | matryca | P55-I11 | I11 | istniejące |
+| bundles/v3_p55_*.json (13) | dowody | jw. | pytest weryfikuje | dowody |
+| tests/rego/test_v3_p55_zus_closure.rego | test | P39 bramki | 23/23 OPA 0.68 | bramka |
+| tests/auto/test_v3_p55_zus_closure.py | test | P39 | 51/51 | bramka |
+| policies/v3_p55_zus_closure.rego (mirror) | jw. canonical | P48 sync | hash-parity | MIRROR |
+
+Statusy lifecycle zgodne z rejestrem: nowe reguły CANDIDATE (aktywacja
+CANDIDATE→ACTIVE = decyzja 4-eyes, kontrakt P47–P54).
+
+──────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4 (każda: dowody + ≥3 wnioski + luki)
+──────────────────────────────────────────────────────────────────────────────
+
+5.1 Podstawa wymiaru i 30-krotność
+  Dowody: v3_p55_lifecycle.json (5 stanów/5 przejść); v3_p55_thirtyfold_ytd.json
+  (12/12, korekta -1000 przeliczona kaskadowo); v3_p55_mid_month_split.json
+  (prorata 10/30); tools/zus_calculator.py (RATES, relief_base: deklarowana/
+  30% preferencyjny/mały ZUS+ 30% dochodu); tools/contribution_base_validator.py
+  (BASE_RULES + HEALTH_RULES); tools/zdrowotna_tier_engine.py (progi 60/100/180%).
+  Wnioski:
+    W-5.1.1 Warianty podstawy mają reguły i narzędzia (calculator + validator);
+      P55 dodaje egzekwowanie cyklu (pełna składka na wygasłej uldze = BLOCK).
+    W-5.1.2 30-krotność liczona narastająco Z KOREKTAMI W LOCIE (I02) —
+      domknięcie filaru accumulator@D z P53 (L03); korekta miesiąca zmienia
+      sumę YTD i wymusza przeliczenie kaskadowe (0 oczekujących rekoncyliacji).
+    W-5.1.3 Przekroczenie w połowie miesiąca = podział (prorata dni, I03);
+      polityka w ADR-002; potwierdzenie praktyki ZUS → Q02.
+  Luki: L03 (określenie „podstawa maksymalna" roczna w danych, nie w regułach
+  — brak dedykowanego klucza v3_p55 w ZusAnnualBaseCap), L05 (wariant
+  „60% zysku" bez własnej bramki — walidator rdzenia pokrywa).
+
+5.2 Ulgi i przejścia między nimi
+  Dowody: v3_p55_lifecycle.json (przejście wymuszone po 24. mies.);
+  tools/preferential_period_tracker.py (RELIEF_PERIODS: 6/24/36 mies.,
+  limity warunków); v3_p55_rate_windows.json (stawki jako okna z day-0).
+  Wnioski:
+    W-5.2.1 Okresy ulg śledzone z datami (tracker) — P55 egzekwuje ODMOWĘ
+      pełnej składki na wygasłej uldze (fail-closed; I01).
+    W-5.2.2 Mały ZUS+: warunki (przychód rok poprzedni, limit 120k) i
+      kontynuacja w rejestrze ulg; bramka I01 wykrywa skoki między ulgami.
+    W-5.2.3 Przejścia mają testy day-0 (koniec 24. miesiąca → wymuszenie);
+      wygasanie automatyczne w silniku (bez cichego liczenia na uldze).
+  Luki: L04 (zawieszenie działalności a licznik ulg — pauza nie wstrzymuje
+  okresu ulgi w trackerze; decyzja Q03), L06 (kontynuacja małego ZUS+ przy
+  stracie — warunek w danych, brak testu dedykowanego).
+
+5.3 Chorobowe i zasiłki
+  Dowody: v3_p55_carencia.json (89/90, restarty); v3_p55_benefit_period.json
+  (182/183, 270); v3_p55_suspension.json (pełne/wstrzymanie); v3_p55_pre_payment_gate.json
+  (3/3, 9 gate-checków); tools/sickness_duration_tracker.py (SICKNESS_PARAMS,
+  waiting_period 90); tools/zus_zasilkowa_calculator.py (baza/% zasiłku).
+  Wnioski:
+    W-5.3.1 Karencja 90 dni z przerwami: wznowienie = nowa karencja (I04) —
+      granica 89/90 testowana; zasiłek przy naruszeniu = BLOCK.
+    W-5.3.2 Okresy zasiłkowe 182/270 z licznikiem narastającym (I05); dzień
+      183 = wyczerpany → BLOCK (tracker rdzenia rozszerzony o granice).
+    W-5.3.3 Zasiłek a zawieszenie (art. 6 [NIEZWERYFIKOWANE]): pełne zawieszenie
+      = warunek; wstrzymanie = BLOCK (I09); payment gate I12 spina I04+I05+I09
+      przed każdą zaliczką.
+  Luki: L07 (zasiłek macierzyński/opiekuńczy poza gate I12 — parametry w
+  trackerze CARE_PARAMS/MATERNITY_PARAMS, bramka P55 chorobowa), L08 (baza
+  zasiłku 12 miesięcy z korektami — kalkulator rdzenia, bez bramki P55).
+
+5.4 Terminy, DRA i korekty
+  Dowody: v3_p55_dra_watchdog.json (10./15. + siatki day-0 + dzień roboczy);
+  tools/zus_calendar.py (deadline_engine, is_weekend, last_business_day_before);
+  v3_p55_dra_corrections.json (2/2 z odsetkami OP art. 56); v3_p55_payment_priority.json
+  (blokada 2 płatności przy zaległości; idempotencja P32).
+  Wnioski:
+    W-5.4.1 Terminy DRA w kalendarzu (jedno źródło z P25) z automatycznym
+      przeniesieniem na dzień roboczy (deadline_engine) — 0 osieroconych.
+    W-5.4.2 Korekty DRA mają pełny łańcuch: różnica → odsetki (podstawa OP
+      art. 56 jako etykieta kontraktowa) → plan płatności (I07).
+    W-5.4.3 Zaległość ZUS blokuje inne auto-płatności w P32 (I08); podwójna
+      płatność wykrywana przez wspólny hash zlecenia (kontrakt P32/P54).
+  Luki: L02 (święta ustawowe jako dane — deadline_engine przenosi weekend,
+  rejestr świąt do P25), L09 (odsetki: stawka/okresy odsetkowe nie w progu —
+  etykieta podstawy tylko; wyliczenie po decyzji Q01).
+
+──────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2; akty Sekcji 8 — wszystkie + odkryte)
+──────────────────────────────────────────────────────────────────────────────
+| Akt | Art. | Reguła | Test | Status | Ryzyko |
+|---|---|---|---|---|---|
+| Ustawa o ZUS | 12 (dobrowolna chorobowa, karencja 90) | I04 carencia | test_i04_* | CZĘŚCIOWE [NIEZW] | wysokie |
+| Ustawa o ZUS | 18a (podstawa: deklarowana/60% zysku/mały ZUS+) | calculator+validator rdzenia; I01 | test_i01_* | CZĘŚCIOWE | średnie |
+| Ustawa o ZUS | 18ab (mały ZUS+ warunki/kontynuacja) | I01 lifecycle; tracker | test_i01_transition_chain | CZĘŚCIOWE | średnie |
+| Ustawa o ZUS | 18c (preferencyjny 24 mies.), 18d (30-krotność) | I01+I02+I03 | test_i02_*/test_i03_* | CZĘŚCIOWE | wysokie |
+| Ustawa o ZUS | 47 (terminy DRA 10./15.) | I06 watchdog | test_i06_* | CZĘŚCIOWE | wysokie |
+| Ustawa zasiłkowa | 4 (okresy 182/270), 9 (przerwy) | I05 counter | test_i05_* | CZĘŚCIOWE | wysokie |
+| Ustawa zasiłkowa | 6 (zasiłek a zawieszenie) | I09 suspension | test_i09_* | CZĘŚCIOWE | wysokie |
+| Ordynacja | 56 (odsetki — kontekst korekt) | I07 chain | test_i07_* | CZĘŚCIOWE | średnie |
+| Ustawa o ZUS | 50 ust. 2a (zawieszenie: zdrowotna) | dane business.suspension_* (thresholds); I01 | test_i01_* | CZĘŚCIOWE | średnie |
+| Odkryte: SUS | 26 (egzekucja/wygaśnięcie — priorytet płatności) | I08 priority | test_i08_* | CZĘŚCIOWE | wysokie |
+| Odkryte: u.z.ch.s | baza zasiłku (12 mies.) | zasilkowa calculator rdzenia | test_i12_* (gate) | CZĘŚCIOWE | średnie |
+
+──────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (T3)
+──────────────────────────────────────────────────────────────────────────────
+| ID | Kryt. | Dowód | Wpływ | Rozwiązanie | Koszt | Regresja |
+|---|---|---|---|---|---|---|
+| V3-P55-L01 | P1 | wszystkie wartości prawne [NIEZWERYFIKOWANE — ISAP/zus.pl] (Q01) | błędna karencja/okres/termin = zła decyzja | weryfikacja ISAP/zus.pl + 4-eyes | M | brak (dane) |
+| V3-P55-L02 | P1 | deadline_engine przenosi weekend; święta nie w rejestrze P55 | termin DRA na święto nieprzeniesiony | rejestr świąt w P25 + feed | M | niskie |
+| V3-P55-L03 | P2 | roczna podstawa maksymalna (30-krotność) bez klucza v3_p55 | limit roczny bez okna w ADR-002 | dodać klucz + okno + day-0 | S | niskie |
+| V3-P55-L04 | P2 | tracker ulg nie obsługuje pauzy (zawieszenie) | okres ulgi płynie podczas zawieszenia | polityka pauzy + test (Q03) | M | średnie |
+| V3-P55-L05 | P2 | wariant „60% zysku" bez dedykowanej bramki | pokrycie przez walidator rdzenia tylko | bramka I0x w I02 | S | brak |
+| V3-P55-L06 | P2 | kontynuacja małego ZUS+ przy stracie: warunek bez testu | błędne wygaśnięcie ulgi | test dedykowany I01 | S | brak |
+| V3-P55-L07 | P3 | macierzyński/opiekuńczy poza gate I12 | częściowe pokrycie gate | rozszerzyć łańcuch gate | S | niskie |
+| V3-P55-L08 | P3 | baza zasiłku 12 mies. bez bramki P55 | wyliczenie bez egzekucji | bramka bazy zasiłku | S | niskie |
+| V3-P55-L09 | P3 | odsetki: etykieta OP art. 56 bez stawki/okresów | plan płatności bez odsetek liczbowych | stawki odsetkowe jako okna (po Q01) | M | niskie |
+
+──────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (T4; 12/12 wdrożone — kod + bundle + test)
+──────────────────────────────────────────────────────────────────────────────
+I01 ZUS lifecycle state machine — 5 stanów/5 przejść z wymuszeniem po 24.
+  mies. (kontrola pozytywna na trackerze); pełna składka na wygasłej uldze =
+  BLOCK. Wpływ: zero „cichego" liczenia na uldze. Ryzyko: pauza zawieszenia →
+  L04/Q03. Kryterium: 0 violations (test_i01_*). Zależności: P23, P26.
+I02 30-krotność YTD engine — accumulator@D z korektami w locie (kaskada);
+  domknięcie L03 z P53. Wpływ: replay limitu = wyliczenie, nie zgadywanie.
+  Ryzyko: wydajność → licznik per rok (reset art. 18d ust. 2). Kryterium:
+  12/12, 0 pending (test_i02_*). Zależności: P53-I02/I09, P14 (analogia 200k).
+I03 Mid-month limit split — prorata dni dokładnym ułamkiem (bez zaokrągleń,
+  granica groszowa P52). Wpływ: klasa pomijana → egzekwowana. Ryzyko: praktyka
+  ZUS → Q02. Kryterium: 0 unsplit (test_i03_*). Zależności: P52, P53.
+I04 Carencia and break tracker — 90 dni, granica 89/90, restart = nowa karencja.
+  Wpływ: zasiłek bez karencji niemożliwy. Ryzyko: definicja przerwy → Q01.
+  Kryterium: 0 violations (test_i04_*). Zależności: P24, tracker rdzenia.
+I05 Benefit period counter — 182/270, granica 182/183, licznik narastający.
+  Wpływ: wypłata poza okresem niemożliwa. Ryzyko: okresy specjalne → Q01.
+  Kryterium: 0 overflows (test_i05_*). Zależności: P24, tracker rdzenia.
+I06 DRA deadline watchdog — 10./15. + przeniesienie na dzień roboczy
+  (deadline_engine rdzenia), siatki day-0, 0 osieroconych. Wpływ: zero spóźnień
+  DRA. Ryzyko: święta → L02. Kryterium: orphan == 0 (test_i06_*). Zależności:
+  P25, P26, zus_calendar.
+I07 DRA correction chain — różnica → odsetki (etykieta OP art. 56) → plan
+  płatności. Wpływ: korekta nie „ginie". Ryzyko: stawki odsetek → L09/Q01.
+  Kryterium: broken == 0 (test_i07_*). Zależności: P26, P32.
+I08 ZUS payment priority — zaległość > próg → BLOCK auto-płatności P32;
+  idempotencja hash zlecenia (wspólna P32/P54). Wpływ: składki przed innymi
+  wydatkami (bezpieczeństwo prawne). Ryzyko: nadmierna blokada → próg w
+  ADR-002. Kryterium: test_i08_* (both branches). Zależności: P32, P54-I06.
+I09 Sickness-benefit vs suspension — pełne zawieszenie = warunek; wstrzymanie
+  = BLOCK (art. 6 [NIEZWERYFIKOWANE]). Wpływ: pustynia prawna domknięta
+  regułą. Ryzyko: stan mieszany → Q01. Kryterium: 0 violations (test_i09_*).
+  Zależności: P23, P24.
+I10 Annual rate windows — stawki/limity jako okna z provenance; day-0
+  31.12→1.01 (reset limitu rocznego). Wpływ: noworoczna zmiana automatyczna.
+  Ryzyko: nowelizacja w ciągu roku → nowe okno (P53-I08 preprovisioning).
+  Kryterium: 0 unwindowed (test_i10_*). Zależności: P53-I10, P46, zus_calculator.
+I11 ZUS completeness matrix — 16 warunków × (reguła, test); komórka bez
+  pokrycia = MANUAL_REVIEW. Wpływ: braki widoczne od razu. Ryzyko: fałszywe
+  pokrycie → linter rdzenia (zus_atom_linter). Kryterium: uncovered == 0
+  (test_i11_*). Zależności: P31, P35, zus_atom_test_matrix.
+I12 Benefit pre-payment gate — łańcuch I04+I05+I09 przed zaliczką; wypłata
+  bez gate = BLOCK. Wpływ: „najpierw uprawnienia, potem pieniądz". Ryzyko:
+  nowe świadczenia → L07. Kryterium: ungated == 0, checks == 3×payments
+  (test_i12_*). Zależności: P24, P32, P54-I12 (wzorzec attestation).
+
+──────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (T5; wiąże P56 i dalsze aż do P68)
+──────────────────────────────────────────────────────────────────────────────
+K-P55-1 REJESTR LUK ZUS (T3 z planami) — wejście do P68; P0=0.
+K-P55-2 STATE MACHINE ULG ZUS (I01: model+testy) — wiąże P23 (zawieszenie
+  cyklu życia), P24 (PPK/praca), P18 (ryczałt harmonizacja zdrowotnej).
+K-P55-3 INTEGRACJA CHOROBOWE↔PŁATNOŚCI — gate I12 jako wzorzec pre-payment
+  check dla P32; metryki do P37 (K-P55-5).
+K-P55-4 ACCUMULATOR@D ZUS (I02) — wzorzec licznika narastającego z korektami
+  w locie dla pozostałych limitów (VAT 200k → P14/P56; P53 filar 4).
+K-P55-5 METRYKI ZUS (do P37): zus_carencia_violations (alert >0),
+  zus_benefit_overflow (alert >0), zus_dra_orphans (alert >0),
+  zus_arrears_pln (alert > próg), zus_gate_checks (trend), zus_ytd_pending
+  (alert >0).
+K-P55-6 TEMPORALNOŚĆ ZUS: stawki/limity roczne wyłącznie jako okna z
+  provenance; rok bez okna = BLOCK (I10); terminy DRA tylko z P25.
+
+──────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA (T6) — wykonany w tej sesji (kolejność sekwencyjna)
+──────────────────────────────────────────────────────────────────────────────
+1. Reguła OPA I01–I12 + router (rozszerzenie P07/P08/P26, zero duplikatów).
+2. Progi ADR-002 v3_p55 (13 kluczy, okno P05).
+3. Wiring main_jdg p119 + przesunięcie kotwicy POST-MERGE (p118→p119).
+4. Narzędzia: common + 12 silników (import narzędzi rdzenia) + runner; 12/12 PASS.
+5. Testy: 23 rego + 51 pytest — zielone.
+6. Mirror sync 3 plików + hash-parity 3/3.
+7. Regresja P54–P55: 46/46 rego + 99/99 pytest — zielona.
+Wymaga decyzji człowieka (4-eyes): wartości prawne (Q01), podział miesiąca
+(Q02), pauza ulg przy zawieszeniu (Q03), budżet odsetek/świąt (Q04).
+
+──────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (T7; [BLOK] = bramka merge)
+──────────────────────────────────────────────────────────────────────────────
+| Przypadek | Typ | Oczekiwany | Status |
+|---|---|---|---|
+| brak flagi v3_p55_check → NO_MATCH | rego [BLOK] | NO_MATCH | 23/23 PASS |
+| brak snapshotu → NEEDS_ADVICE | rego [BLOK] | thresholds_missing, prio 0 | PASS |
+| determinizm 2× decide == | rego [BLOK] | identyczny werdykt | PASS |
+| pełna składka na wygasłej uldze → BLOCK | rego [BLOK] | I01 BLOCK | PASS |
+| miesiąc poza licznikiem / korekta pending → BLOCK | rego [BLOK] | I02 BLOCK | PASS |
+| karencja dzień 89 → BLOCK / 90 → PASS | rego [BLOK] | granica | PASS |
+| okres dzień 183 → BLOCK | rego [BLOK] | I05 BLOCK | PASS |
+| zaległość bez blokady → BLOCK; z blokadą → PASS | rego [BLOK] | I08 obie gałęzie | PASS |
+| rok bez okna → BLOCK | rego [BLOK] | I10 BLOCK | PASS |
+| wypłata bez gate → BLOCK | rego [BLOK] | I12 BLOCK | PASS |
+| priorytet: I01 > I11 | rego | kolejność routera | PASS |
+| progi z danych: max_days=270 po podmianie | rego [BLOK] | ADR-002 | PASS |
+| 13 bundli gate=PASS | pytest [BLOK] | failures == [] | 51/51 PASS |
+| wymuszone przejście po 24. mies. | pytest | I01 transitions | PASS |
+| korekta kaskadowa (-1000) | pytest | I02 cascade | PASS |
+| prorata dokładny (10/30, bez zaokrągleń) | pytest | I03 | PASS |
+| DRA 10./15. + siatki day-0 | pytest | I06 | PASS |
+| łańcuchy korekt kompletne | pytest | I07 | PASS |
+| zawieszenie: pełne T / wstrzymanie F | pytest | I09 | PASS |
+| okna stawek + day-0 roku | pytest | I10 | PASS |
+| gate: 3×payments checków | pytest | I12 | PASS |
+| wiring p119 + post-merge | pytest [BLOK] | p119 w łańcuchu | PASS |
+| priorities 455001–455012 ×2 | pytest | unikalność | PASS |
+| zero AUTO_POST | pytest [BLOK] | brak emisji | PASS |
+| silniki rozszerzają narzędzia rdzenia | pytest | 5 importów | PASS |
+| fuzz: mutacja dat przejść → fail-closed | rego (chaos P43) | BLOCK/NEEDS_ADVICE | w planie P43 |
+
+──────────────────────────────────────────────────────────────────────────────
+9.11 PYTANIA DO CZŁOWIEKA (T8)
+──────────────────────────────────────────────────────────────────────────────
+V3-P55-Q01 Weryfikacja wartości prawnych (karencja 90, okresy 182/270, DRA
+  10./15., baza 60% przeciętnego, art. 6/9 ustawy zasiłkowej) w ISAP/zus.pl —
+  zgoda na aktywację po potwierdzeniu?
+V3-P55-Q02 Podział miesiąca przy przekroczeniu 30-krotności: potwierdzenie
+  praktyki ZUS (prorata dni) i interpolacji dla części miesiąca?
+V3-P55-Q03 Czy zawieszenie działalności wstrzymuje bieg okresu ulgi (start/
+  preferencyjny/mały ZUS+)? Decyzja zmienia model I01 (pauza licznika).
+V3-P55-Q04 Budżet: rejestr świąt + stawki odsetkowe (L02/L09) teraz czy po P68?
+
+──────────────────────────────────────────────────────────────────────────────
+9.12 ZAAŁOŻENIA JAWNE (T9)
+──────────────────────────────────────────────────────────────────────────────
+[ZAŁOŻENIE] Z-01 Wartości karencji/okresów/terminów z narzędzi rdzenia są
+  zgodne z prawem do czasu weryfikacji Q01.
+[ZAŁOŻENIE] Z-02 Podział miesiąca wg prorata dni odpowiada praktyce ZUS (Q02).
+[ZAŁOŻENIE] Z-03 Roczny limit 30-krotności resetuje się 1.01 (art. 18d ust. 2
+  [NIEZWERYFIKOWANE]) — day-0 w I10.
+[ZAŁOŻENIE] Z-04 „Pełne zawieszenie" = jedyny stan dopuszczający zasiłek
+  (art. 6 [NIEZWERYFIKOWANE]).
+[ZAŁOŻENIE] Z-05 Etykieta OP art. 56 w I07 wystarcza jako podstawa kontraktowa
+  do czasu wdrożenia stawek odsetkowych (L09).
+
+──────────────────────────────────────────────────────────────────────────────
+9.13 Podanalizy: tabele dowodów, wnioski, luki — 9.04 (każda ≥3 wnioski, ≥1 luka).
+──────────────────────────────────────────────────────────────────────────────
+9.14 Macierz 9.05: 8 aktów Sekcji 8 + 2 odkryte (SUS 26, baza zasiłku) ze statusami.
+──────────────────────────────────────────────────────────────────────────────
+9.15 Identyfikatory: V3-P55-L01..L09; V3-P55-I01..I12; V3-P55-Q01..Q04;
+V3-P55-X01..X10; konflikty: brak (X01 → T12 pusty).
+──────────────────────────────────────────────────────────────────────────────
+PYTANIA KRZYŻOWE 7.4 (V3-P55-X01..X10)
+──────────────────────────────────────────────────────────────────────────────
+X01 Konflikty z dokumentami świętymi: BRAK. Fail-closed (V1 zas. 6) zachowany
+  (pełna składka na wygasłej uldze = BLOCK; gate wypłat). State machine (I01)
+  zgodny z V2 Declarative Change (przejścia jawnie modelowane).
+X02 Naruszenia ADR-002/P05: w nowym kodzie P55 = 0 (13 progów w snapshotcie;
+  stawki jako okna I10). Stałe narzędzi rdzenia (SICKNESS_PARAMS, RELIEF_PERIODS)
+  odzwierciedlone w progach/metrykach; migracja → L01/Q01 + plan P46.
+X03 Ścieżki nie-fail-closed: 0 nowych. I02 blokuje rekoncyliację pending;
+  I12 blokuje wypłatę bez gate; I01 odmawia składki na wygasłej uldze.
+X04 Kontrakt 25-polowy (P03): werdykty niosą rule_id/package/priority/decision/
+  reason/_legal_basis/valid_from/valid_to/metrics — typy zgodne (superset).
+X05 Testy blokujące merge (P39): 11 pozycji [BLOK] w T7.
+X06 Duplikaty: BRAK — silniki importują 5 narzędzi rdzenia (test 21 pytest);
+  P26/P07/P08 pozostają źródłem domeny; P55 dodaje tylko egzekwowanie.
+X07 Podstawy niezweryfikowane: wszystkie (9.05) — rejestr mediacji: L01/Q01;
+  priorytet: 18c/18d (30-krotność) i art. 12 (karencja).
+X08 Decyzje 4-eyes: Q01–Q04 (patrz 9.11).
+X09 Metryki do P37: 6 metryk z progami (K-P55-5); dashboardy: kalendarz ulg,
+  licznik 30-krotności, status DRA (L07/P40).
+X10 Invarianty runtime (P04): INV-ZUS-01 „składka nie na wygasłej uldze"
+  (SUS 18c), INV-ZUS-02 „zasiłek tylko po gate uprawnień" (u.z.ch.s 4/6),
+  INV-ZUS-03 „replay 30-krotności wymaga accumulator@D" (P53 filar 4) —
+  wniosek do rejestru P04.
+
+──────────────────────────────────────────────────────────────────────────────
+T10 PRZEKAZYWANE ARTEFAKTY (11.4)
+──────────────────────────────────────────────────────────────────────────────
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|---|---|---|---|
+| Rejestr luk ZUS (T3) | P68 | TXT/JSON | domknięcie przed re-certyfikacją |
+| State machine ulg (I01) | P23/P24/P18 | JSON + rego | przejścia tylko z tego modelu |
+| Gate pre-payment (I12) | P32/P37 | kontrakt | wzorzec dla innych świadczeń |
+| Accumulator@D (I02) | P14/P56/P53 | silnik | wzorzec liczników narastających |
+| Metryki ZUS (K-P55-5) | P37 | kontrakt | progi alarmów jako dane |
+| Okna stawek rocznych (I10) | P46/P53/P68 | JSON | stawki tylko z oknami+provenance |
+| Invarianty INV-ZUS-01..03 | P04 | wniosek | egzekucja runtime |
+| Bundly v3_p55_* (13) | P39/P68 | JSON gate=PASS | bramki CI i re-certyfikacja |
+
+T11 MACIERZ PODANALIZA×GRUPA (APENDYKS B)
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik |
+|---|---|---|---|
+| 5.1 | 6.1 (calculator, validator, tier_engine), 6.2 (etap12/13, p26_regression), 6.3 (docs P07/P08) | 3+ (W-5.1.1..3) | 9.04/9.05 |
+| 5.2 | 6.1 (preferential_tracker, harmonizer), 6.2 (micro_zus), 6.3 (linter, matrix) | 3+ (W-5.2.1..3) | 9.04/9.05 |
+| 5.3 | 6.1 (zasilkowa, sickness_tracker), 6.2 (p08 macro), 6.3 (completeness) | 3+ (W-5.3.1..3) | 9.04/9.05 |
+| 5.4 | 6.1 (zus_calendar, sharding), 6.2 (calendar rego, local_excise kontekst), 6.3 (matrix) | 3+ (W-5.4.1..3) | 9.04/9.05 |
+
+T12 REJESTR KONFLIKTÓW: pusty (X01 — brak konfliktów C01+).
+
+──────────────────────────────────────────────────────────────────────────────
+T1 TABELA DOWODÓW (7.3) — 21 plików Sekcji 6 (wszystkie ZWERYFIKOWANE istnieniem)
+──────────────────────────────────────────────────────────────────────────────
+| # | Plik | Fakt | Status |
+|---|---|---|---|
+| 1 | tools/zus_calculator.py (201L) | RATES (19.52/8/2.45/1.67%), relief_base 3 warianty, HEALTH_LUMP progi 60/100/180% | ZWERYFIKOWANO |
+| 2 | tools/zus_zasilkowa_calculator.py (179L) | baza/% zasiłku — wejście do I12 | ZWERYFIKOWANO |
+| 3 | tools/zus_calendar.py (181L) | deadline_engine, last_business_day_before (I06) | ZWERYFIKOWANO |
+| 4 | tools/sickness_duration_tracker.py (314L) | 182/270, waiting 90 (I04/I05) | ZWERYFIKOWANO |
+| 5 | tools/preferential_period_tracker.py (314L) | RELIEF_PERIODS 6/24/36, transitions (I01) | ZWERYFIKOWANO |
+| 6 | tools/contribution_base_validator.py (370L) | BASE_RULES/HEALTH_RULES (5.1) | ZWERYFIKOWANO |
+| 7 | tools/ryczalt_zus_health_harmonizer.py (72L) | harmonizacja zdrowotnej (kontrakt P18) | ZWERYFIKOWANO |
+| 8 | tools/zdrowotna_tier_engine.py (185L) | progi 60/100/180% (5.1) | ZWERYFIKOWANO |
+| 9 | tests/rego/micro/test_native_micro_zus.rego (164L) | atomy micro ZUS | ZWERYFIKOWANO |
+| 10 | tests/test_zus_core_etap12_audit.py (69L) | bramka etapu 12 (WDROŻONY_100) | ZWERYFIKOWANO |
+| 11 | tests/test_zus_micro_etap13_audit.py (111L) | bramka etapu 13 | ZWERYFIKOWANO |
+| 12 | tests/p26_regression_test.rego (226L) | regresja P26 | ZWERYFIKOWANO |
+| 13 | tests/test_p08_zus_macro_enterprise.py (285L) | ZUS macro | ZWERYFIKOWANO |
+| 14 | tests/rego/test_native_calendar.rego (79L) | kalendarz natywnie (I06) | ZWERYFIKOWANO |
+| 15 | docs/ZUS_MACRO_P07.md (66L) | stan macro P07 | ZWERYFIKOWANO |
+| 16 | docs/ZUS_MICRO_P08.md (67L) | stan micro P08 | ZWERYFIKOWANO |
+| 17 | tools/zus_atom_linter.py (483L) | linter atomów (AP01) | ZWERYFIKOWANO |
+| 18 | tools/zus_completeness_engine.py (344L) | kompletność (I11) | ZWERYFIKOWANO |
+| 19 | tools/zus_atom_test_matrix.py (322L) | matryca atomów (I11) | ZWERYFIKOWANO |
+| 20 | tools/zus_rule_sharding.py (272L) | sharding (wydajność 7.1g) | ZWERYFIKOWANO |
+| 21 | tests/rego/test_native_local_excise_etap19.rego (89L) | kontekst terminów/kalendarza | ZWERYFIKOWANO |
+
+──────────────────────────────────────────────────────────────────────────────
+ANTY-WZORCE 7.5 (wynik → rejestr luk)
+──────────────────────────────────────────────────────────────────────────────
+AP01 stuby: BRAK (gate z liczników; linter rdzenia). AP02 hardcode: BRAK w
+v3_p55 (13 progów ADR-002; test 20 rego). AP03 otwarte negatywy: BRAK (router
+pełny). AP04 duplikaty: BRAK (przestrzeń jdg.v3_p55_*; importy rdzenia). AP05
+podstawy bez Dz.U.: BRAK nowych — [NIEZWERYFIKOWANE] jawnie. AP06 testy
+zawsze-zielone: BRAK (negative-first; granice 89/90, 182/183, obie gałęzie
+I08). AP07 cichy AUTO_POST: NIELI. AP08 cykle pakietów: BRAK. AP09 dane
+zewnętrzne bez provenance: BRAK (okna stawek z provenance). AP10 brak okien:
+BRAK (I10; okno w każdym werdykcie). AP11 mirror dryf: 0 (hash-parity 3/3).
+AP12 metryki w dwóch miejscach: BRAK (bundly silników = jedno źródło).
+
+──────────────────────────────────────────────────────────────────────────────
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+──────────────────────────────────────────────────────────────────────────────
+Zgodna z V1 (fail-closed, cykl życia CANDIDATE, bramki CI) i V2 (Legal Twin —
+provenance okien stawek; Golden/temporalność — day-0 89/90, 182/183, 31.12→1.01;
+Decision Certificate — gate I12 jako pre-payment dowód; Law Radar — okna
+stawek z lead). Odstępstwa: BRAK. All-green ≠ production-ready — aktywacja
+CANDIDATE→ACTIVE = decyzja 4-eyes (Q01–Q03).
+
+STATUS W LEDGERZE: P55 → WDROŻONY_100 (56/69 = 81.16%; następny: P56).
+──────────────────────────────────────────────────────────────────────────────
+Koniec raportu P55.

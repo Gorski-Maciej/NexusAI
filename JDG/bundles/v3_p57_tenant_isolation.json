@@ -1,0 +1,21 @@
+{
+  "header": {
+    "schema": "jdg.v3_p57.ingest.audit.v1",
+    "part": "P57",
+    "slug": "INGEST_DANYCH",
+    "generated_at": "2026-09-13T12:45:16.692751+00:00",
+    "analyses": {
+      "I11_multi_tenant_isolation": "PASS"
+    }
+  },
+  "result": {
+    "records_total": 11,
+    "missing_tenant": [],
+    "cross_tenant_leaks": 0,
+    "blocked_attempts": 1,
+    "policy": "required (ADR-002: v3_p57_tenant_isolation_policy)",
+    "provenance": "RODO art. 5 ust. 1f [NIEZWERYFIKOWANE — ISAP]; prompt P57 Sekcja 10-I11",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T12:45:16.692751+00:00"
+  }
+}

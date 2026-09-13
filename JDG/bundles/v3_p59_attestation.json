@@ -1,0 +1,28 @@
+{
+  "header": {
+    "schema": "jdg.v3_p59.security.audit.v1",
+    "part": "P59",
+    "slug": "SECURITY_DOMKNIECIE",
+    "generated_at": "2026-09-13T14:29:00.818939+00:00",
+    "analyses": {
+      "I07_build_attestation_verification": "PASS"
+    }
+  },
+  "result": {
+    "required": true,
+    "deps_total": 44,
+    "production_total": 0,
+    "provenance_mechanism": true,
+    "deps_missing_provenance": [],
+    "provenance_fields": [
+      "canary",
+      "soak",
+      "auto_rollback"
+    ],
+    "active_version": "jdg-bundle-v8.0.0",
+    "source": "bundles/deployments.json (P38)",
+    "provenance": "P38 attestation; P11 certyfikat; prompt P59 Sekcja 10-I07",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T14:29:00.818939+00:00"
+  }
+}

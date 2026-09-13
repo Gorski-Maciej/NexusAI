@@ -1,0 +1,29 @@
+{
+  "schema": "jdg.v3_p55.audit.v1",
+  "part": "P55",
+  "slug": "ZUS_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:27.465009+00:00",
+  "engine": "I02",
+  "context_key": "I02_thirtyfold_ytd_engine",
+  "gate": "PASS",
+  "data": {
+    "months_total": 12,
+    "months_tracked": 12,
+    "reconciliations_pending": 0,
+    "exceeded_month": null,
+    "ytd_final": 61400.0,
+    "correction_applied": true,
+    "cascade_recalculated": true,
+    "source": "silnik I02 (accumulator@D — 4. filar replay P53)",
+    "note": "korekta miesiąca w locie → suma przeliczona kaskadowo (test I02)"
+  },
+  "months_total": 12,
+  "months_tracked": 12,
+  "reconciliations_pending": 0,
+  "exceeded_month": null,
+  "ytd_final": 61400.0,
+  "correction_applied": true,
+  "cascade_recalculated": true,
+  "source": "silnik I02 (accumulator@D — 4. filar replay P53)",
+  "note": "korekta miesiąca w locie → suma przeliczona kaskadowo (test I02)"
+}

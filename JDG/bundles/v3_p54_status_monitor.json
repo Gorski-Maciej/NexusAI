@@ -1,0 +1,25 @@
+{
+  "schema": "jdg.v3_p54.audit.v1",
+  "part": "P54",
+  "slug": "KSEF_JPK_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:33.897786+00:00",
+  "engine": "I05",
+  "context_key": "I05_status_monitor_sla",
+  "gate": "PASS",
+  "data": {
+    "sessions_total": 4,
+    "stale_count": 0,
+    "by_status": {
+      "SENT": 4
+    },
+    "upo_deadline_days": 1,
+    "tool": "tools/ksef_outbox.py reconcile (rozszerzony licznik STALE)"
+  },
+  "sessions_total": 4,
+  "stale_count": 0,
+  "by_status": {
+    "SENT": 4
+  },
+  "upo_deadline_days": 1,
+  "tool": "tools/ksef_outbox.py reconcile (rozszerzony licznik STALE)"
+}

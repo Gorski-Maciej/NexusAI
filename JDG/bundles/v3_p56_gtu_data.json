@@ -1,0 +1,21 @@
+{
+  "header": {
+    "schema": "jdg.v3_p56.vat_pit.audit.v1",
+    "part": "P56",
+    "slug": "VAT_PIT_SZCZEGOLY",
+    "generated_at": "2026-09-13T10:16:35.526351+00:00",
+    "analyses": {
+      "I02": "PASS"
+    }
+  },
+  "result": {
+    "rows_total": 13,
+    "rows_missing_window": [],
+    "pkwiu_years": [
+      2025
+    ],
+    "provenance": "P46 parametry-as-data; VAT art. 109a ust. 10 [NIEZWERYFIKOWANE]",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T10:16:35.526351+00:00"
+  }
+}

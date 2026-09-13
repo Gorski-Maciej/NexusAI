@@ -1,0 +1,34 @@
+{
+  "header": {
+    "schema": "jdg.v3_p57.ingest.audit.v1",
+    "part": "P57",
+    "slug": "INGEST_DANYCH",
+    "generated_at": "2026-09-13T12:45:15.942760+00:00",
+    "analyses": {
+      "I09_ingest_metrics": "PASS"
+    }
+  },
+  "result": {
+    "volume": 11,
+    "rejects": 3,
+    "duplicates": 2,
+    "reject_pct": 27.3,
+    "threshold_pct": 10,
+    "missing_metrics": [],
+    "reject_reasons": [
+      [
+        "missing:amount_gr"
+      ],
+      [
+        "range:amount_gr"
+      ],
+      [
+        "type:doc_number"
+      ]
+    ],
+    "export": "P37 obserwowalność: ksef/ingest dashboard — wolumen, odrzucenia z powodami, duplikaty, czasy",
+    "provenance": "P37 obserwowalność; prompt P57 Sekcja 10-I09",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T12:45:15.942760+00:00"
+  }
+}

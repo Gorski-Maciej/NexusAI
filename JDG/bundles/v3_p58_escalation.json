@@ -1,0 +1,42 @@
+{
+  "header": {
+    "schema": "jdg.v3_p58.observability.audit.v1",
+    "part": "P58",
+    "slug": "OBSERWOWALNOSC_DOMKNIECIE",
+    "generated_at": "2026-09-13T13:31:08.699987+00:00",
+    "analyses": {
+      "I09_escalation_matrix": "PASS"
+    }
+  },
+  "result": {
+    "levels_total": 3,
+    "levels_incomplete": [],
+    "min_levels": 3,
+    "matrix": [
+      {
+        "level": 1,
+        "role": "SRE/on-call",
+        "sla_min": 15,
+        "channel": "alert",
+        "runbook": "RB-P58-xx"
+      },
+      {
+        "level": 2,
+        "role": "prawnik/tax",
+        "sla_min": 60,
+        "channel": "ticket",
+        "runbook": "RB-P58-xx"
+      },
+      {
+        "level": 3,
+        "role": "właściciel (4-eyes)",
+        "sla_min": 240,
+        "channel": "escalation",
+        "runbook": "RB-P58-xx"
+      }
+    ],
+    "provenance": "prompt P58 Sekcja 10-I09; macierz jako dane (ADR-002 duch); prompt P58 Sekcja 10-I09",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T13:31:08.699987+00:00"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "header": {
+    "schema": "jdg.v3_p58.observability.audit.v1",
+    "part": "P58",
+    "slug": "OBSERWOWALNOSC_DOMKNIECIE",
+    "generated_at": "2026-09-13T13:31:09.776324+00:00",
+    "analyses": {
+      "I12_slo_per_domain": "PASS"
+    }
+  },
+  "result": {
+    "domains_total": 6,
+    "domains_missing_slo": [],
+    "slo_inherited_global": true,
+    "slo_source": "bundles/metrics.json#slo (P37) — LCI_MIN/RV_MIN/GOLDEN_REPLAY_UVER_MAX",
+    "min_domains": 6,
+    "provenance": "V1 SLO control plane; prompt P58 Sekcja 10-I12",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T13:31:09.776324+00:00"
+  }
+}

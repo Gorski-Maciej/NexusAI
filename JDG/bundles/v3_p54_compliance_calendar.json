@@ -1,0 +1,35 @@
+{
+  "schema": "jdg.v3_p54.audit.v1",
+  "part": "P54",
+  "slug": "KSEF_JPK_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:32.272525+00:00",
+  "engine": "I01",
+  "context_key": "I01_ksef_compliance_calendar",
+  "gate": "PASS",
+  "data": {
+    "calendar_entries_count": 5,
+    "entries_without_deadline": 0,
+    "entries": [
+      "KSEF-DUZI",
+      "KSEF-MALI",
+      "KSEF-PRF",
+      "KSEF-FA2-END",
+      "KSEF-FA3-START"
+    ],
+    "lead_kpi_days": 30,
+    "single_source": "docs/KALENDARZ_ZMIAN_PRAWNYCH.md + P25",
+    "isap_status": "NIEZWERYFIKOWANE (daty z seeda — decyzja 4-eyes Q02)"
+  },
+  "calendar_entries_count": 5,
+  "entries_without_deadline": 0,
+  "entries": [
+    "KSEF-DUZI",
+    "KSEF-MALI",
+    "KSEF-PRF",
+    "KSEF-FA2-END",
+    "KSEF-FA3-START"
+  ],
+  "lead_kpi_days": 30,
+  "single_source": "docs/KALENDARZ_ZMIAN_PRAWNYCH.md + P25",
+  "isap_status": "NIEZWERYFIKOWANE (daty z seeda — decyzja 4-eyes Q02)"
+}

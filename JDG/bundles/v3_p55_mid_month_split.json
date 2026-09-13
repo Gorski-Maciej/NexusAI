@@ -1,0 +1,29 @@
+{
+  "schema": "jdg.v3_p55.audit.v1",
+  "part": "P55",
+  "slug": "ZUS_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:27.814643+00:00",
+  "engine": "I03",
+  "context_key": "I03_mid_month_limit_split",
+  "gate": "PASS",
+  "data": {
+    "cross_months_total": 1,
+    "months_unsplit": 0,
+    "split_policy": "prorata_dni",
+    "case": {
+      "days_in_month": 30,
+      "days_above_limit": 10,
+      "prorata": 0.3333333333333333
+    },
+    "note": "miesiąc przekroczenia dzielony wg dni (polityka ADR-002; Q02 potwierdzenie praktyki ZUS)"
+  },
+  "cross_months_total": 1,
+  "months_unsplit": 0,
+  "split_policy": "prorata_dni",
+  "case": {
+    "days_in_month": 30,
+    "days_above_limit": 10,
+    "prorata": 0.3333333333333333
+  },
+  "note": "miesiąc przekroczenia dzielony wg dni (polityka ADR-002; Q02 potwierdzenie praktyki ZUS)"
+}

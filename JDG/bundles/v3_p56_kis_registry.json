@@ -1,0 +1,22 @@
+{
+  "header": {
+    "schema": "jdg.v3_p56.vat_pit.audit.v1",
+    "part": "P56",
+    "slug": "VAT_PIT_SZCZEGOLY",
+    "generated_at": "2026-09-13T10:16:36.274264+00:00",
+    "analyses": {
+      "I04": "PASS"
+    }
+  },
+  "result": {
+    "registry_size": 4,
+    "uncovered_topics": [
+      "klauzule_ochronne",
+      "dotacje"
+    ],
+    "high_risk_topics_total": 4,
+    "provenance": "rejestr interpretacji KIS — karty szczegółów P56 (9.03)",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T10:16:36.274264+00:00"
+  }
+}

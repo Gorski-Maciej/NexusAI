@@ -1,0 +1,63 @@
+{
+  "schema": "jdg.v3_p55.audit.v1",
+  "part": "P55",
+  "slug": "ZUS_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:29.173966+00:00",
+  "engine": "I06",
+  "context_key": "I06_dra_deadline_watchdog",
+  "gate": "PASS",
+  "data": {
+    "dra_events_total": 2,
+    "dra_events_orphan": 0,
+    "events": [
+      {
+        "id": "DRA-standard",
+        "grid": {
+          "day_minus_1": "2026-09-09",
+          "day_0": "2026-09-10",
+          "day_plus_1": "2026-09-11"
+        },
+        "moved_to_business_day": false,
+        "effective_date": null
+      },
+      {
+        "id": "DRA-privileged",
+        "grid": {
+          "day_minus_1": "2026-09-14",
+          "day_0": "2026-09-15",
+          "day_plus_1": "2026-09-16"
+        },
+        "moved_to_business_day": false,
+        "effective_date": null
+      }
+    ],
+    "single_source": "tools/zus_calendar.py deadline_engine (P25 spójne)",
+    "legal_basis": "SUS art. 47 [NIEZWERYFIKOWANE — ISAP]"
+  },
+  "dra_events_total": 2,
+  "dra_events_orphan": 0,
+  "events": [
+    {
+      "id": "DRA-standard",
+      "grid": {
+        "day_minus_1": "2026-09-09",
+        "day_0": "2026-09-10",
+        "day_plus_1": "2026-09-11"
+      },
+      "moved_to_business_day": false,
+      "effective_date": null
+    },
+    {
+      "id": "DRA-privileged",
+      "grid": {
+        "day_minus_1": "2026-09-14",
+        "day_0": "2026-09-15",
+        "day_plus_1": "2026-09-16"
+      },
+      "moved_to_business_day": false,
+      "effective_date": null
+    }
+  ],
+  "single_source": "tools/zus_calendar.py deadline_engine (P25 spójne)",
+  "legal_basis": "SUS art. 47 [NIEZWERYFIKOWANE — ISAP]"
+}

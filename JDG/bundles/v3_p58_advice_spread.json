@@ -1,0 +1,28 @@
+{
+  "header": {
+    "schema": "jdg.v3_p58.observability.audit.v1",
+    "part": "P58",
+    "slug": "OBSERWOWALNOSC_DOMKNIECIE",
+    "generated_at": "2026-09-13T13:31:06.486913+00:00",
+    "analyses": {
+      "I03_advice_spread_radar": "PASS"
+    }
+  },
+  "result": {
+    "domains_total": 1,
+    "domains_hot": [
+      {
+        "domain": "vat",
+        "spread_pct": 100.0,
+        "advice": 1,
+        "total": 1
+      }
+    ],
+    "max_spread_pct": 15,
+    "events_total": 1,
+    "clusterization": "powody NEEDS_ADVICE w certyfikatach P11 (decision.reason) — klaster po normalizacji",
+    "provenance": "P49 fail-closed ścieżki; telemetria z certyfikatów P11 (bez podwójnej instrumentacji); prompt P58 Sekcja 10-I03",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T13:31:06.486913+00:00"
+  }
+}

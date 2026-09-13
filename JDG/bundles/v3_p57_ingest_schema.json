@@ -1,0 +1,47 @@
+{
+  "header": {
+    "schema": "jdg.v3_p57.ingest.audit.v1",
+    "part": "P57",
+    "slug": "INGEST_DANYCH",
+    "generated_at": "2026-09-13T12:45:12.723164+00:00",
+    "analyses": {
+      "I01_ingest_contract_schema": "PASS"
+    }
+  },
+  "result": {
+    "schema_version": "jdg.ingest.v1",
+    "docs_total": 11,
+    "rejected": [
+      "DOC-009",
+      "DOC-010",
+      "DOC-011"
+    ],
+    "rejected_detail": [
+      {
+        "doc": "DOC-009",
+        "errors": [
+          "missing:amount_gr"
+        ],
+        "action": "REJECT_WITH_REPAIR_PATH"
+      },
+      {
+        "doc": "DOC-010",
+        "errors": [
+          "range:amount_gr"
+        ],
+        "action": "REJECT_WITH_REPAIR_PATH"
+      },
+      {
+        "doc": "DOC-011",
+        "errors": [
+          "type:doc_number"
+        ],
+        "action": "REJECT_WITH_REPAIR_PATH"
+      }
+    ],
+    "leaked_into_engine": [],
+    "provenance": "ORCHESTRATOR_DATA_CONTRACT (P02/P40) — rozszerzony o walidację graniczną; prompt P57 Sekcja 10-I01",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T12:45:12.723164+00:00"
+  }
+}

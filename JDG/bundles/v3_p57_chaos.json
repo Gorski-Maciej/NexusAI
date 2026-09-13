@@ -1,0 +1,79 @@
+{
+  "header": {
+    "schema": "jdg.v3_p57.ingest.audit.v1",
+    "part": "P57",
+    "slug": "INGEST_DANYCH",
+    "generated_at": "2026-09-13T12:45:15.472742+00:00",
+    "analyses": {
+      "I08_ingest_chaos_suite": "PASS"
+    }
+  },
+  "result": {
+    "cases_total": 8,
+    "detected": [
+      "NEG-AMT",
+      "BAD-TYPE",
+      "DUP",
+      "MISSING-FIELD",
+      "OVERFLOW",
+      "NULL-NIP",
+      "SHORT-NIP",
+      "NO-TENANT"
+    ],
+    "undetected": [],
+    "detail": [
+      {
+        "case": "NEG-AMT",
+        "signals": [
+          "range:amount_gr"
+        ]
+      },
+      {
+        "case": "BAD-TYPE",
+        "signals": [
+          "type:amount_gr"
+        ]
+      },
+      {
+        "case": "DUP",
+        "signals": [
+          "dedup:semantic_key"
+        ]
+      },
+      {
+        "case": "MISSING-FIELD",
+        "signals": [
+          "missing:doc_date",
+          "missing:amount_gr"
+        ]
+      },
+      {
+        "case": "OVERFLOW",
+        "signals": [
+          "range:amount_gr"
+        ]
+      },
+      {
+        "case": "NULL-NIP",
+        "signals": [
+          "nip:checksum"
+        ]
+      },
+      {
+        "case": "SHORT-NIP",
+        "signals": [
+          "nip:checksum"
+        ]
+      },
+      {
+        "case": "NO-TENANT",
+        "signals": [
+          "missing:tenant_id"
+        ]
+      }
+    ],
+    "provenance": "prompt P57 Sekcja 10-I08; P39 bramki CI; P43 security; pozytywna kontrola detektorów (konwencja P54-I06)",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T12:45:15.472742+00:00"
+  }
+}

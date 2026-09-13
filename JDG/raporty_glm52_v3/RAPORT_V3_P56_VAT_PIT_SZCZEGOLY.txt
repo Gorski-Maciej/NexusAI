@@ -1,0 +1,446 @@
+════════════════════════════════════════════════════════════════════════════════
+RAPORT V3 P56 — VAT I PIT — SZCZEGÓŁY MATERIALNE, KTÓRE DECYDUJĄ O POPRAWNOŚCI
+NEXUSAI JDG — V3 FORTRESS CAMPAIGN (GLM 5.2) — STATUS: WDROŻONY_100
+════════════════════════════════════════════════════════════════════════════════
+Data raportu: 2026-09-13
+Plik promptu:  JDG/prompty_v3/V3_PROMPT_P56_VAT_PIT_SZCZEGOLY.txt
+Plik raportu:  JDG/raporty_glm52_v3/RAPORT_V3_P56_VAT_PIT_SZCZEGOLY.txt
+Seria: NEXUSAI JDG — V3 Fortress Campaign; pozycja: 57. z 69 (P56)
+Konwencja: spójna z P51–P55 (reguła Rego + progi ADR-002 + wiring + narzędzia
+dowodowe rozszerzające rdzeń + bundli + testy natywe i pytest + mirror + ledger).
+════════════════════════════════════════════════════════════════════════════════
+
+9.01 EXECUTIVE SUMMARY
+────────────────────────────────────────────────────────────────────────────────
+Dojrzałość części P56: ENTERPRISE — szczegóły materialne VAT/PIT (miejsce
+świadczenia, GTU/procedury, koszty art. 22/23, ryczałt per PKWiU, ulgi
+i interakcje) domknięte 12 analizami Rego z bramkowaniem podsumowań silników
+dowodowych (konwencja P54/P55), all-green tylko przy pełnym dowodzie.
+
+Wdrożono (dowody = uruchomienia, nie deklaracje):
+  * Reguła: JDG/rules/v3_p56_vat_pit_details.rego — 12 analiz I01–I12,
+    router fail-closed (BLOCK→NEEDS_ADVICE→MANUAL_REVIEW→PASS→NO_MATCH),
+    priorities 456001–456012, rule_id unikalne, każda decyzja z _legal_basis
+    i oknem valid_from/valid_to (P05).
+  * Progi ADR-002: 6 kluczy v3_p56 + no_auto_post + manual_review_required
+    w data.jdg.thresholds.v3_p56 (valid_from 2026-01-01, P05/P53).
+  * Wiring: main_jdg.rego import + final_verdict_p120 (safe_merge łańcuch
+    p119→p120); POST-MERGE anchor przesunięty p119→p120 (konwencja kampanii).
+  * Narzędzia dowodowe: v3_p56_common.py / v3_p56_engines.py (12 silników
+    rozszerzających narzędzia rdzenia: vat_rate_engine, vat_mpp_auto_detector,
+    p13_crossborder_toolkit, vat_innovation_tools, pit_innovation_tools,
+    pit_temporal_snapshot_engine, tax_form_whatif_simulator, p12_uor_toolkit,
+    p12_uor_accounting_toolkit — ZERO duplikacji) / v3_p56_run_all.py.
+  * Bundle: 13 × JDG/bundles/v3_p56_*.json — 12/12 gate=PASS (run_all).
+  * Testy: 26/26 natywnych Rego (OPA 0.68) + 26/26 (OPA 1.9 v0-compatible);
+    76 pytest (75 PASS + 1 skip usunięty po mirror sync → 75/75 + skip test
+    mirror aktywny). Regresja P51–P56: 211/211 rego, 255/255 pytest.
+  * Mirror: policies/{v3_p56_vat_pit_details,thresholds_jdg,main_jdg}.rego
+    — hash-parity sha256 3/3, dryf 0 (bramka P48).
+
+TOP-10 rekomendacji: patrz 9.09 PLAN WDROŻENIA (wszystkie wdrożone w tej
+części; pozostałe = kolejne części serii).
+
+Liczba luk: P0=0, P1=2, P2=4, P3=3 (rejestr: 9.06 / T3).
+Innowacje: 12/12 (I01–I12, pełny projekt 6-punktowy: 9.07 / T4).
+Kontrakt wyjściowy: WDROŻONY_100 (K-P56-1..6: 9.08 / T5).
+
+NIEZWERYFIKOWANE (uczciwie): wszystkie wartości prawne (stawki, terminy,
+art.) mają status [NIEZWERYFIKOWANE — ISAP/podatki.gov.pl]; weryfikacja
+zewnętrzna → rejestr mediacji 9.06 (L01) i pytania Q01–Q02 (9.11).
+
+9.02 ZAKRES I OGRANICZENIA
+────────────────────────────────────────────────────────────────────────────────
+Przeanalizowano (Sekcja 6 promptu — 24 pliki, wszystkie istnieją na dysku):
+grupa 6.1 (VAT): rules/micro/vat/vat.rego (28 924 linie — czytanie celowane:
+package, konwencje rule_id; pełne czytanie poza budżetem 50% — zaznaczone
+zgodnie z 6.0c), tools/vat_rate_engine.py (256), vat_mpp_auto_detector.py
+(190), p13_crossborder_toolkit.py (241), vat_gap_detector.py (100),
+vat_innovation_tools.py (242), tests/test_vat_macro_audit.py (101),
+test_vat_micro_core_audit.py (82). Grupa 6.2 (PIT): tests/test_pit_macro_audit.py
+(86), test_pit_micro_reliefs_audit.py (79), tools/pit_temporal_snapshot_engine.py
+(211), pit_innovation_tools.py (708 — interfejsy), tax_form_whatif_simulator.py
+(77), p12_uor_toolkit.py (317), p12_uor_accounting_toolkit.py (442),
+docs/PIT_MACRO_P05.md (91). Grupa 6.3: docs/VAT_MACRO_P03.md (90),
+VAT_MICRO_P04.md (87), PIT_MICRO_P06.md (97), VAT_AUDYT_R03.md (209),
+PIT_AUDYT_R04.md (137), tests/test_p06_pit_macro_enterprise.py (197),
+test_p07_pit_micro_atomic.py (240), test_p05_vat_micro_atomic.py (182).
+Grupa 6.4 (mirror): policies/jdg, policies/tax, policies/tax/vat, bundle.sh,
+manifesty overlay — zweryfikowane strukturalnie (sync 9.13). Tabela dowodów: T1.
+
+Pominięto i DLACZEGO: pełna treść vat.rego (28.9k linii) — budżet 50% (Sekcja 3);
+czytanie celowane wg 6.0c, fakt udokumentowany w T1 (wiersz #1).
+Status weryfikacji źródeł prawnych: wszystkie twierdzenia = [NIEZWERYFIKOWANE]
+(protokół 4.5 — ISAP/RCL/MF poza sesją); zero fikcyjnych podstaw.
+
+9.03 STAN OBECNY CZĘŚCI P56 — MAPA ARTEFAKTÓW
+────────────────────────────────────────────────────────────────────────────────
+| Artefakt | Pakiet Rego / moduł | rule_id / funkcja | Podstawa | Testy | Lifecycle |
+|----------|--------------------|--------------------|----------|-------|-----------|
+| rules/v3_p56_vat_pit_details.rego | jdg.v3_p56_vat_pit_details | 12 analiz + router decide | VAT/PIT/UoPR [NIEZW] | 26 rego | ACTIVE (flaga v3_p56_check) |
+| thresholds_jdg.rego (v3_p56) | data.jdg.thresholds.v3_p56 | 6 kluczy + flagi | ADR-002/P05 | 3 pytest | ACTIVE |
+| main_jdg.rego (p120) | safe_merge chain | final_verdict_p120 | konwencja P47–P55 | 1 pytest | ACTIVE |
+| tools/v3_p56_{common,engines,run_all}.py | — | I01–I12 + gate | protokół 06 | 12 gate + run_all | ACTIVE |
+| bundles/v3_p56_*.json (13) | — | dowody uruchomień | — | 76 pytest | ACTIVE |
+| policies/v3_p56_vat_pit_details.rego | mirror | hash-parity 3/3 | P48 | 1 pytest | ACTIVE |
+Stan bazowy przed P56 (z P00/VAT_MICRO_P04/PIT_MICRO_P06): VAT macro/micro
+i PIT macro/micro istnieją (rozszerzane, nie duplikowane); pustynie szczegółów
+miejsca świadczenia/GTU-as-data/interakcji ulg — domknięte przez P56 (P51 wspólny
+rejestr pustyni, część materialna).
+
+9.04 PODANALIZY 5.1–5.4
+────────────────────────────────────────────────────────────────────────────────
+AN01 — VAT miejsce świadczenia i cross-border (I01):
+  Dowody: 6 przypadków cross-border; detektor wykrył lukę NIP UE przy usługach
+  B2B (FR) — pustynia potwierdzona i domknięta regułą (gaps_nip_ue →
+  NEEDS_ADVICE). Art. 28b (B2B: kraj kontrahenta), art. 28k (elektroniczne),
+  art. 42 (WDT; swap ust. 10a), import usług (odwrócone obciążenie) —
+  reguły z oknami; rozszerza p13_crossborder_toolkit.cb_matrix (provenance).
+  Wnioski: (1) pustynia miejsca świadczenia realna — brak ścieżki NIP UE
+  przed P56; (2) fail-closed: brak NIP UE ≠ ciche przypisanie kraju PL;
+  (3) test graniczny day-0 siatki kwartalnej (I07) reuse dla WDT-progów.
+  Luki AN01: L02 (RSS/monitoring zmian art. 28b — RCL), P2: L05.
+AN02 — VAT GTU, procedury, towary wrażliwe (I02/I03):
+  Dowody: GTU_01–13 jako dane z rocznikiem PKWiU (13/13 okien); detektor MPP
+  z narzędzia rdzenia: 3/5 faktur mpp_required (CN 7207, akumulator
+  semantic, CONSTRUCTION_SUBCONTRACTING), 0 naruszeń split-payment
+  (pozytywna kontrola MPP obowiązkowego art. 17 ust. 1 pkt 4 / zał. 15);
+  próg 15 000 PLN z narzędzia (bez hardcode).
+  Wnioski: (1) zmiana tabeli GTU = zmiana danych (P46), nie kodu;
+  (2) auto-oznaczanie procedur eliminuje błąd ręczny (I03);
+  (3) roczniki PKWiU = temporalność (P53-I10) — wersjonowanie wymuszone.
+  Luki AN02: P2: L06 (pełny załącznik 15 ~150 CN — externalizowany w bundlu,
+  podzbiór wbudowany), P3: L08.
+AN03 — PIT koszty i przychody (I05/I09/I10):
+  Dowody: guard art. 23 wykrył 2/5 kosztów wyłączonych (reprezentacja,
+  automobile nadmierne) → BLOCK; przychody nieodpłatne art. 14 ust. 2 pkt 8:
+  brak wyceny 1/2 pozycji → NEEDS_ADVICE; spójność VAT↔PIT: rozjazd 1/4
+  pozycji WYKRYTY przez silnik (pozytywna kontrola — bramka karze
+  niewykrycie, konwencja P54-I06).
+  Wnioski: (1) koszt nieodliczonego VAT flow ma jedno źródło prawdy (I10);
+  (2) NKUP-57 z pit_innovation_tools reuse dla świadczeń nieodpłatnych;
+  (3) zaliczki/RMK (p12_uor_toolkit.calculate_rmk) dostępne dla koszty-okresu
+  ścieżki (art. 22 ust. 5a) — rekomendacja dalej (L07, P2).
+  Luki AN03: P2: L07 (art. 22 ust. 5a — rozliczenia międzyokresowe ścieżka),
+  P3: L09.
+AN04 — PIT ulgi i interakcje (I06/I07/I08/I11/I12):
+  Dowody: tabela ryczałtu art. 12 — 12 wierszy per PKWiU, wszystkie z oknami
+  (per_row_test=true); proporcje art. 90: 75.00% dokładny ułamek (P52),
+  polityka przeliczenia kwartalnego przy zmiennych obrotach; macierz ulg:
+  konflikt wykryty przez resolve_relief_conflicts (wspólny limit 85 528
+  [NIEZWERYFIKOWANE]) → MANUAL_REVIEW; sygnały agresywne: 2 high (schemat
+  MPP-split 4×14 900, brak białej listy) → NEEDS_ADVICE z powodem (GAAR
+  art. 119a obrona); pokrycie kartami: 75–92% per domena, średnia 85.0%,
+  domena vat_miejsce_swiaadczenia poniżej progu 80% → MANUAL_REVIEW.
+  Wnioski: (1) interakcje ulg testowane, nie zakładane (asercje par);
+  (2) ryczałt↔ZUS zdrowotna z P18/P55 reuse (harmonizacja istnieje);
+  (3) coverage-score to miernik pustyni P51 — CI-wariant (L04).
+  Luki AN04: P1: L01 (wartości prawne NIEZWERYFIKOWANE), P1: L03
+  (święta w kalendarzu proporcji kwartalnych), P2: L04.
+
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2 — wiersze obowiązkowe z Sekcji 8)
+────────────────────────────────────────────────────────────────────────────────
+| Akt | Art./ust. | Grupa | Reguła | Test | Status | Ryzyko |
+|-----|-----------|-------|--------|------|--------|--------|
+| VAT | 28b | 6.1 | I01 place_of_supply | 26-rego #5, pytest I01 | CZĘŚCIOWE [NIEZW] | średnie |
+| VAT | 28k | 6.1 | I01 (elektroniczne) | pytest I01 | CZĘŚCIOWE [NIEZW] | średnie |
+| VAT | 42 (WDT/swap 10a) | 6.1 | I01 wdt_rule | pytest I01 | CZĘŚCIOWE [NIEZW] | średnie |
+| VAT | 19a ust. 1 pkt 4 | 6.1 | I03 procedure_markers | 26-rego #7, pytest I03 | PEŁNE [NIEZW] | niskie |
+| VAT | 17 ust. 1 pkt 4 | 6.1 | I03 (budowlane MPP) | pytest I03 | PEŁNE [NIEZW] | niskie |
+| VAT | 109a–109e (GTU) | 6.1 | I02 gtu_data | 26-rego #6, pytest I02 | PEŁNE [NIEZW] | niskie |
+| VAT | 90 (proporcje) | 6.1 | I07 proportions | 26-rego #11c, pytest I07 | CZĘŚCIOWE [NIEZW] | średnie |
+| PIT | 14 ust. 2 pkt 8 | 6.2 | I09 non_monetary | 26-rego #13, pytest I09 | PEŁNE [NIEZW] | niskie |
+| PIT | 22 ust. 1–9 | 6.2 | I05/I10 | pytest I05/I10 | CZĘŚCIOWE [NIEZW] | średnie |
+| PIT | 23 (wyłączenia) | 6.2 | I05 cost_exclusion | 26-rego #9, pytest I05 | PEŁNE [NIEZW] | niskie |
+| PIT | 30ca (IP Box) | 6.2 | I08 relief_matrix | 26-rego #12, pytest I08 | CZĘŚCIOWE [NIEZW] | wysokie |
+| PIT | 18ea (B+R) | 6.2 | I08 (para) | pytest I08 | CZĘŚCIOWE [NIEZW] | wysokie |
+| PIT | 30f / UoPR 12 | 6.2 | I06 ryczalt_table | 26-rego #10, pytest I06 | PEŁNE [NIEZW] | niskie |
+| PIT | 45 ust. 3a | 6.2 | I08 (kontekst) | — | BRAK (kontrakt P14) | średnie |
+| STL | 119a (GAAR) | 6.1 | I11 suspicious | 26-rego #15, pytest I11 | CZĘŚCIOWE [NIEZW] | średnie |
+| KIS | interpretacje | 6.2 | I04 kis_registry | 26-rego #8, pytest I04 | CZĘŚCIOWE [NIEZW] | niskie |
+Odkryty przepis materiałny w zakresie części: PIT art. 22 ust. 5a (koszty
+okresu — RMK) → dodany do rejestru luk (L07). Ust. 45 ust. 3a → kontrakt z P14.
+
+9.06 REJESTR LUK (T3)
+────────────────────────────────────────────────────────────────────────────────
+| ID | P | Luka | Dowód | Wpływ | Rozwiązanie | Koszt | Ryzyko regresji |
+|----|---|------|-------|-------|-------------|-------|-----------------|
+| L01 | P1 | Wartości prawne [NIEZWERYFIKOWANE] (ISAP/podatki.gov.pl poza sesją) | każdy _legal_basis w regule | decyzja na twierdzeniach, nie dowodach | weryfikacja zewnętrzna → Q01; bramka P47 recheck | średni | niskie (tagi jawnie) |
+| L02 | P1 | Brak feedu RCL/ISAP dla zmian art. 28b/90 (Law Radar podłączony w P49–P50 tylko do akt bazowych) | Sekcja 4.5; AP01-check | dryf prawo↔kod niezauważony | kontrakt do P58 (K-P56-4) | średni | niskie |
+| L03 | P1 | Święta w kalendarzu przeliczeń kwartalnych proporcji (I07) — grid day-0 bez dni wolnych | bundle proportions | przesunięcie przeliczenia na dzień wolny | reuse zus_calendar z P55 → P25 jedno źródło | niski | niskie |
+| L04 | P2 | Coverage-score tylko offline (bundle), nie CI-gate | engines I12 | pustynia może wrócić cicho | bramka CI z progiem v3_p56_coverage_min_pct → P39 | niski | średnie |
+| L05 | P2 | OSS/MOSS rejestracja — ścieżka oznaczona, stawki kontrahenta poza sesją | I01 cases | błędna stawka przy sprzedaży B2C UE | dane OSS do P57 (K-P56-5) | średni | niskie |
+| L06 | P2 | Załącznik 15: podzbiór wbudowany (~20 CN), pełny externalizowany w bundles/vat_annex15_cn.json | vat_mpp_auto_detector | pominięcie CN poza podzbiorem | rozszerzenie danych (P46) — nie kodu | niski | niskie |
+| L07 | P2 | Art. 22 ust. 5a (RML koszty okresu) — narzędzie RMK istnieje, brak reguły fail-closed | p12_uor_toolkit.calculate_rmk | koszty w złym okresie | reguła w P57+ (wejście K-P56-6) | średni | średnie |
+| L08 | P3 | Klasyfikacja PKWiU: brak walidacji kontrahenta (PKD vs PKWiU faktury) | I02 | GTU przy złym PKWiU | heurystyka + MANUAL_REVIEW | średni | średnie |
+| L09 | P3 | Dotacje/klauzule ochronne: pokrycie kartami 75% (pustynia) | I12 domains_below_min | NEEDS_ADVICE częstszy niż potrzeba | karty szczegółów → P60 (dokumentacja) | niski | niskie |
+Anty-wzorce 7.5 (wynik sprawdzenia): AP01 stubs — BRAK (12/12 analiz z
+warunkami materialnymi); AP02 hardcode — BRAK (progi z data.thresholds.v3_p56,
+próg MPP z narzędzia); AP03 otwarte negatywy — BRAK (router pełny else-chain
++ NO_MATCH); AP04 duplikaty rule_id — BRAK (test pytest unikalności ≥14 ID);
+AP05 podstawy bez Dz.U. — JAWNE jako [NIEZWERYFIKOWANE] (L01); AP06 testy
+zawsze-zielone — BRAK (asercje negatywne #1, #20, granice #11c, #23);
+AP07 cichy AUTO_POST — BRAK (no_auto_post=true; AUTO_POST niemożliwy w P56);
+AP08 cykle pakietów — BRAK (import jednokierunkowy main→v3_p56);
+AP09 dane zewnętrzne hardcoded — BRAK (fixtures z provenance); AP10 brak okien
+— BRAK (valid_from w każdej decyzji); AP11 mirror dryf — BRAMKA (hash-parity
+3/3, test skip-protected); AP12 metryki w dwóch miejscach — BRAK (jedno źródło:
+bundli).
+
+9.07 INNOWACJE ENTERPRISE (T4 — min. 12, pełny projekt 6-punktowy)
+────────────────────────────────────────────────────────────────────────────────
+I01 Place-of-supply rule pack. (1) Luka: pustynia art. 28b/28k/42 (P51).
+(2) Mechanizm: 6 przypadków cross-border → gaps_nip_ue; rego I01 NEEDS_ADVICE;
+provenance p13 cb_matrix. (3) Bezpieczeństwo: brak NIP UE = brak cichego
+przypisania kraju. (4) Ryzyko: za dużo NEEDS_ADVICE — mitygacja: próg
+konfidencji w thresholds. (5) Akceptacja: test #5 rego + pytest I01 (gap
+wykryty). (6) Zależności: P13, P51, P57 (OSS dane).
+I02 GTU classification as data. (1) Luka: GTU w kodzie = dryf przy zmianach.
+(2) Mechanizm: tabela PKWiU→GTU_01..13 z rocznikiem jako oknem; zmiana = dane.
+(3) Bezpieczeństwo: wiersz bez okna = BLOCK (niemożliwa nieaktualna tabela).
+(4) Ryzyko: zła klasyfikacja PKWiU — mitygacja: L08 heurystyka + review.
+(5) Akceptacja: test #6 + pytest I02 (13/13 okien). (6) Zależności: P36, P46.
+I03 Procedure markers engine. (1) Luka: ręczne oznaczanie MPP/TP/FP/WEW = błąd
+ludzki. (2) Mechanizm: detect_mpp z narzędzia rdzenia + auto-marks GTU;
+niezgodność ręczne/auto = BLOCK. (3) Bezpieczeństwo: sankcja 30% (MPP)
+wykluczona strukturalnie. (4) Ryzyko: false-positive semantyczne — mitygacja:
+rejestr słów kluczowych wersjonowany. (5) Akceptacja: test #7 + pytest I03
+(3 mpp_required, 0 konfliktów). (6) Zależności: P36, P54 (JPK pola).
+I04 KIS interpretation registry. (1) Luka: wykładnia nieudokumentowana przy
+regułach wysokiego ryzyka. (2) Mechanizm: rejestr (ID, data, teza) vs tematy;
+uncovered = NEEDS_ADVICE. (3) Bezpieczeństwo: decyzja obciążona dowodem
+wykładni. (4) Ryzyko: rejestr nieaktualny — mitygacja: P49 recheck + L02 feed.
+(5) Akceptacja: test #8 + pytest I04 (luka wykryta). (6) Zależności: P40, P51.
+I05 Cost exclusion guard. (1) Luka: koszty reprezentacji/automobile w KUP
+(częsty błąd księgowych). (2) Mechanizm: kategorie art. 23 w danych;
+excluded_ids → BLOCK. (3) Bezpieczeństwo: nieterminowy koszt nigdy nie
+przejdzie cicho. (4) Ryzyko: za szerokie kategorie — mitygacja: lista jawna
+w bundlu + review. (5) Akceptacja: test #9 + pytest I05. (6) Zależności: P12.
+I06 Ryczałt table by PKWiU. (1) Luka: stawki ryczałtu w kodzie (P18) bez okien
+per wiersz. (2) Mechanizm: 12 wierszy z valid_from/to; per_row_test; rego I06
+BLOCK bez okna. (3) Bezpieczeństwo: zmiana stawki 1.01 = nowy wiersz danych.
+(4) Ryzyko: duplikacja z P18 — mitygacja: P18 rozszerzane (provenance),
+nie kopiowane. (5) Akceptacja: test #10 + pytest I06. (6) Zależności: P18, P46, P53.
+I07 Mixed-sales proportion engine. (1) Luka: proporcje art. 90 bez przeliczeń
+kwartalnych. (2) Mechanizm: optimize_proportion (rdzeń) + turnover_varies_in_year
+→ MANUAL_REVIEW; dokładny ułamek (P52); day-grid kwartalny. (3) Bezpieczeństwo:
+nadodliczenie VAT wykrywalne co kwartał. (4) Ryzyko: święta w gridzie — L03.
+(5) Akceptacja: testy #11/#11b/#11c/#23 + pytest I07 (75.00% exact).
+(6) Zależności: P52, P14 (limit 200k analogia accumulator@D z P55 K-P55-4).
+I08 Relief interaction matrix. (1) Luka: interakcje ulg zakładane, nie
+testowane (IP Box przy ryczałcie, wspólny limit 85 528). (2) Mechanizm:
+resolve_relief_conflicts (rdzeń) + pary; konflikt = MANUAL_REVIEW.
+(3) Bezpieczeństwo: niezgodna kombinacja ulg niemożliwa bez człowieka.
+(4) Ryzyko: zmiana limitu — mitygacja: wartość w danych rdzenia (jedno
+źródło). (5) Akceptacja: test #12 + pytest I08 (limit 85 528, konflikt
+wykryty). (6) Zależności: P55 (K-P55-2), P14, P18.
+I09 Non-monetary income rules. (1) Luka: pustynia przychodów nieodpłatnych
+(art. 14 ust. 2 pkt 8). (2) Mechanizm: pozycje z valuation_pln; unvalued =
+NEEDS_ADVICE; NKUP-57 reuse. (3) Bezpieczeństwo: przychód bez wyceny nie
+wejdzie do ewidencji automatycznie. (4) Ryzyko: subiektywna wycena —
+mitygacja: wartość rynkowa + dokument źródłowy w bundlu. (5) Akceptacja:
+test #13 + pytest I09. (6) Zależności: P51, P57 (ingest darowizn).
+I10 VAT-non-deductible→cost flow. (1) Luka: rozjazd VAT nieodliczony ↔ koszt
+(two sources of truth). (2) Mechanizm: pary kwot per faktura; mismatch =
+BLOCK; rego I10. (3) Bezpieczeństwo: spójność VAT↔PIT egzekwowana
+maszynowo. (4) Ryzyko: różnice zaokrągleń — mitygacja: round 2 miejsca
+(P52 grosze). (5) Akceptacja: test #14 + pytest I10 (pozytywna kontrola
+detekcji). (6) Zależności: P12, P52, P54 (KSeF kwoty źródłowe).
+I11 Suspicious-pattern advice. (1) Luka: schematy MPP-split i fałszywe faktury
+bez ścieżki NEEDS_ADVICE. (2) Mechanizm: sygnały severity=high → NEEDS_ADVICE
+z powodem; threshold_precision_check z rdzenia. (3) Bezpieczeństwo: obrona
+GAAR art. 119a (uczestnik działał po powiadomieniu człowieka). (4) Ryzyko:
+alarm fatigue — mitygacja: tylko high do człowieka, low do raportu.
+(5) Akceptacja: test #15 + pytest I11 (MPP_SPLIT wykryty). (6) Zależności:
+P37 (metryki), P49 (fail-closed score).
+I12 Detail-coverage score. (1) Luka: pustynie szczegółów wracają cicho.
+(2) Mechanizm: pokrycie per domena vs próg z thresholds; below = MANUAL_REVIEW.
+(3) Bezpieczeństwo: miernik mierzalny, nie deklaratywny. (4) Ryzyko: gaming
+metryki — mitygacja: karty z testami (P51 definicja), CI-gate L04.
+(5) Akceptacja: test #16 + pytest I12 (domena 75% wykryta). (6) Zależności:
+P51, P39, P60.
+
+9.08 KONTRAKT WYJŚCIOWY (T5) — wiąże P57 i dalsze
+────────────────────────────────────────────────────────────────────────────────
+K-P56-1 Karty szczegółów VAT/PIT (przepis→warunki→reguła→test→interpretacja,
+        min. 15 pozycji: 9.03/9.05) — wejście do P41 (grafy) i P68
+        (re-certyfikacja). Format: tabela 9.05 + bundli.
+K-P56-2 GTU/procedure data (PKWiU→GTU z rocznikami; auto-marks) — wiąże P36
+        (generatory) i P46 (parametry wersjonowane): zmiana tabeli = dane.
+K-P56-3 Macierz interakcji ulg (85 528; pary dozwolone) — wiąże P55 (ZUS),
+        P18 (ryczałt), P14 (kwota wolna): asercje par jako kontrakt.
+K-P56-4 Rejestr luk P1 (L01/L02/L03) — wejście do P58 (obserwowalność):
+        metryki ksef→vat_dryf analogicznie; feed RCL jako wymaganie.
+K-P56-5 Dane OSS/MOSS + ścieżki B2C UE — wejście do P57 (ingest danych):
+        przypadki I01 jako fixture kontraktowy.
+K-P56-6 Ścieżka art. 22 ust. 5a (RML) — wejście do P57+ : calculate_rmk
+        z rdzenia jako silnik, reguła fail-closed do dodania.
+Do P04 (invarianty runtime): INV-VATPIT-01 „brak NIP UE przy B2B UE →
+nigdy AUTO_POST", INV-VATPIT-02 „rozjazd VAT↔PIT → BLOCK", INV-VATPIT-03
+„wiersz GTU/ryczałtu bez okna → BLOCK". Do P68/P44: attestation + hash
+bundli P56.
+
+9.09 PLAN WDROŻENIA (T6) — wykonany w tej części
+────────────────────────────────────────────────────────────────────────────────
+1. [x] Reguła Rego (12 analiz + router) — od razu (izolowany pakiet, flaga).
+2. [x] Progi ADR-002 v3_p56 — od razu (ADR-002, P05).
+3. [x] Wiring p119→p120 — od razu (safe_merge, POST-MERGE anchor).
+4. [x] Narzędzia dowodowe (rozszerzenie rdzenia) — po weryfikacji interfejsów.
+5. [x] 13 bundli (run_all 12/12 PASS) — po silnikach; bramka pozytywna.
+6. [x] Testy natywne Rego (26) + pytest (76) — bramki merge P39.
+7. [x] Mirror sync + hash-parity — po zielonych testach.
+8. [x] Regresja P51–P56 (211 rego / 255 pytest) — przed raportem.
+9. [x] Raport + ledger (--mark P56, auto-recheck).
+Kolejność wymuszona zależnościami; żadnego kroku bez zielonego poprzednika.
+Wymagające decyzji człowieka (4-eyes): Q01/Q02 (9.11) — nie blokują
+wdrożenia (statusy [NIEZWERYFIKOWANE] jawne).
+
+9.10 PLAN TESTÓW (T7) — bramki blokujące merge
+────────────────────────────────────────────────────────────────────────────────
+| # | Test | Rodzaj | Oczekiwany wynik | Blokuje merge |
+|---|------|--------|------------------|---------------|
+| 1 | brak flagi → NO_MATCH (both fixtures z naruszeniami) | rego #1/#20 | NO_MATCH | TAK |
+| 2 | thresholds missing → NEEDS_ADVICE priority 0 | rego #2 | NEEDS_ADVICE | TAK |
+| 3 | all-green → PASS priority 1 | rego #3/#24 | PASS | TAK |
+| 4 | determinizm dwóch ewaluacji | rego #4 | identyczne | TAK |
+| 5 | BLOCK > NEEDS_ADVICE > MANUAL_REVIEW (router) | rego #17 | BLOCK pierwszy | TAK |
+| 6 | I07 matematyka 75.00% exact | rego #11c | 75.0 | TAK |
+| 7 | I07 total=0 (dzielenie) | rego #23 | brak review | TAK |
+| 8 | reason niepuste (P49) | rego #18 | ≥1 znak | TAK |
+| 9 | okno valid_from w decyzjach | rego #19 | 2026-01-01 | TAK |
+| 10 | unikalność rule_id ≥14 | pytest | pass | TAK |
+| 11 | wiring p120 + POST-MERGE anchor | pytest | pass | TAK |
+| 12 | mirror hash-parity | pytest | 3/3 | TAK |
+| 13 | 13 bundli gate=PASS | pytest | pass | TAK |
+| 14 | pozytywna kontrola detektorów (I01/I04/I05/I09/I10/I11/I12) | pytest | wykryte | TAK |
+| 15 | fuzz: kwoty groszowe proporcji (P52 reuse) | pytest I07 | exact | zalecane |
+| 16 | temporal day-0 (progi v3_p56 valid_from) | rego #19 + P53 replay | pass | zalecane |
+Regresja: P51–P56 = 211/211 rego (OPA 0.68) + 26/26 (OPA 1.9) + 255/255 pytest.
+
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+────────────────────────────────────────────────────────────────────────────────
+Q01 (V3-P56-Q01): Weryfikacja ISAP/podatki.gov.pl wartości prawnych użytych
+  w kartach (art. 28b/28k/42, 17 ust. 1 pkt 4, 19a ust. 1 pkt 4, 109a–109e,
+  90; PIT 14 ust. 2 pkt 8, 22, 23; UoPR art. 12; STL 119a; limit ulg
+  85 528). Blokuje: podniesienie statusu z [NIEZWERYFIKOWANE] na AKTYWNE.
+Q02 (V3-P56-Q02): Karty harmonogramowe (daty okien GTU/ryczałtu na 2027+)
+  wymagają potwierdzenia DRL — wejście do kalendarza P25 (jedno źródło).
+Q03 (V3-P56-Q03): Decyzja biznesowa: próg coverage 80% (v3_p56_coverage_min_pct)
+  — czy podnieść do 90% po P60 (dokumentacja)? (4-eyes, zmiana progu = decyzja).
+
+9.12 ZAŁOŻENIA JAWNE (T9)
+────────────────────────────────────────────────────────────────────────────────
+[ZAŁOŻENIE] Z1: Fixture silników reprezentuje przypadki HIGH-frequency
+  (domeny 9.04); pełny ingest rzeczywistych danych = P57.
+[ZAŁOŻENIE] Z2: Limit ulg 85 528 PLN przyjęty z narzędzia rdzenia
+  (pit_innovation_tools) bez weryfikacji zewnętrznej [NIEZWERYFIKOWANE].
+[ZAŁOŻENIE] Z3: Rocznik PKWiU 2025 aktualny dla okna 2026 (Z3 → Q02).
+[ZAŁOŻENIE] Z4: Próg MPP 15 000 PLN z vat_mpp_auto_detector = stan prawny
+  narzędzia (art. 108a ust. 1 [NIEZWERYFIKOWANE]).
+[ZAŁOŻENIE] Z5: Kotwica POST-MERGE przesuwa się p119→p120 zgodnie z
+  konwencją kampanii (p117→p118→p119→p120; notatki P29–P55).
+
+9.13 ARTEFAKTY PRZEKAZANE DALEJ (T10)
+────────────────────────────────────────────────────────────────────────────────
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| K-P56-1 karty szczegółów (9.05) | P41, P68 | tabela + bundli | wejście grafu wiedzy/re-certyfikacji |
+| K-P56-2 GTU/procedure data | P36, P46 | JSON bundli | zmiana tabeli = dane, nie kod |
+| K-P56-3 macierz ulg | P55, P18, P14 | bundle relief_matrix | asercje par wspólne |
+| K-P56-4 luki P1 (L01–L03) | P58 | rejestr T3 | metryki obserwowalności |
+| K-P56-5 fixtures OSS/cross-border | P57 | bundle place_of_supply | ingest danych |
+| K-P56-6 RML (art. 22 ust. 5a) | P57+ | p12_uor_toolkit.calculate_rmk | reguła fail-closed |
+| INV-VATPIT-01..03 | P04 | tekst invariants | runtime enforcement |
+| attestation + hash bundli P56 | P68, P44 | v3_p56_run_all.json | re-certyfikacja |
+| thresholds v3_p56 (6 kluczy) | P06-kontrakt | rego | ADR-002 wspólne |
+| mirror v3_p56 (hash-parity 3/3) | P48 | policies/ | bramka dryfu |
+
+9.14 MATRYCA PODANALIZA×GRUPA (APENDYKS B / T11)
+────────────────────────────────────────────────────────────────────────────────
+| Podanaliza | Grupy kluczowe (6.x) | Wynik |
+|------------|----------------------|-------|
+| AN01 miejsce świadczenia | 6.1 (vat.rego, crossborder, rate_engine) | I01 wdrożony; luka L02/L05 |
+| AN02 GTU/procedury | 6.1 (mpp_detector, gap_detector, innovation) | I02+I03 wdrożone; L06/L08 |
+| AN03 koszty/przychody | 6.2 (uor×2, pit_innovation NKUP) + 6.3 audyty | I05+I09+I10; L07/L09 |
+| AN04 ulgi/interakcje | 6.2 (whatif, pit_temporal, pit_innovation) | I04+I06+I07+I08+I11+I12; L01/L03/L04 |
+
+9.15 REJESTR KONFLIKTÓW (T12)
+────────────────────────────────────────────────────────────────────────────────
+C01 (rozstrzygnięty): Prompt P56 Sekcja 12.01–12.02 mówi „nie generujesz kodu /
+nie modyfikujesz repozytorium", ale rozkaz użytkownika (nadrzędny w sesji)
+wymaga pełnego wdrożenia w architekturze OPA. Rozstrzygnięcie: wdrożenie wg
+rozkazu użytkownika, zgodne z konwencją P51–P55 (kampania już interpretuje
+prompt jako kontrakt wdrożeniowy — P51–P55 to samo podejście, ledger 56/69).
+Odstępstwo udokumentowane; dokumenty święte nienaruszone (flaga aktywacji +
+fail-closed + ADR-002 zachowane).
+C02 (brak): konfliktów z dokumentami świętymi nie stwierdzono — deklaracja
+zgodności na końcu raportu.
+
+9.16 ODPOWIEDZI NA PYTANIA KRZYŻOWE (7.4)
+────────────────────────────────────────────────────────────────────────────────
+X01 Sprzeczności z dokumentami świętymi: brak (C01 dotyczy protokołu promptu,
+    nie architektury; flaga aktywacji + fail-closed + ADR-002 = zgodne z V1 §6
+    i Legal Twin V2).
+X02 Naruszenia parametrów-as-data/temporalności: BRAK w nowych artefaktach
+    (progi z data.thresholds.v3_p56; okna w danych GTU/ryczałtu; test pytest
+    thresholds_keys_used_by_rule egzekwuje parowanie kluczy).
+X03 Ścieżki nie-fail-closed: BRAK nowych; AUTO_POST niemożliwy (no_auto_post
+    true; router bez gałęzi AUTO_POST); ryzyko cichego przypisania kraju w I01
+    domknięte NEEDS_ADVICE.
+X04 Zgodność z kontraktem werdyktu 25-polowym (P03): decyzje P56 niosą matched/
+    rule_id/package/priority/decision/reason/metrics/_legal_basis/valid_from/
+    valid_to — superset kontraktu; brak pól niekompatybilnych typowo (string/
+    number/bool zgodnie z P03).
+X05 Testy bramek merge: T7 wiersze 1–14 (TAK); rego #1–#24 i pytest 1–13
+    jako warunek zielonego merge (P39).
+X06 Duplikaty: ZERO — narzędzia rdzenia rozszerzane (provenance w 12 bundlach
+    egzekwowany testem); P18 ryczałt rozszerzany (I06 provenance), nie
+    kopiowany; rego P56 nie powtarza VAT_MICRO_P04 (nowa warstwa flag).
+X07 Podstawy niezweryfikowane: wszystkie [NIEZWERYFIKOWANE] → L01/Q01
+    (rejestr mediacji; priorytet: art. 90 i 23 — wysokie ryzyko sporu).
+X08 Innowacje wymagające 4-eyes: I08 (limit 85 528 — Q01), I06 (stawki
+    ryczałtu 2027+ — Q02), I12 (próg 80% — Q03). Pozostałe: wdrożone
+    fail-closed bez decyzji biznesowych.
+X09 Metryki do P37: p56_pos_gaps_count (alert >0), p56_gtu_rows_missing_window
+    (=0), p56_mpp_conflicts (>0 → PAGE), p56_kis_uncovered (>0), p56_cost_
+    excluded_count (>0), p56_vat_pit_mismatches (>0 → PAGE), p56_coverage_min
+    (<80 → warn), p56_high_signals (>0 → review-queue). Progi w thresholds
+    v3_p56; dashboard: „VAT/PIT szczegóły" (P58 kontrakt K-P56-4).
+X10 Ryzyka → invarianty runtime: INV-VATPIT-01..03 (9.08) — uzasadnienie
+    prawne: art. 28b (miejsce), art. 22 (koszt), art. 109a/12 UoPR (okna);
+    wzorzec P04: evaluate() na final_verdict_p120.
+
+APENDYKS E — PLAN PRACY (odznaczony)
+────────────────────────────────────────────────────────────────────────────────
+[✓] 1. Ledger: pierwszy niewdrożony = P56 (56/69 przed sesją).
+[✓] 2. Prompt P56 przeczytany (Sekcje 1–16).
+[✓] 3. Pliki Sekcji 6: 24/24 istnieją; czytanie celowane (vat.rego budżet).
+[✓] 4. Konwencje P51–P55 (rego/tools/bundles/tests/mirror/ledger) pobrane.
+[✓] 5. Reguła Rego: 12 analiz + router (fail-closed, NO_MATCH default).
+[✓] 6. Progi ADR-002: v3_p56 (6 kluczy + flagi) z valid_from.
+[✓] 7. Wiring: import + final_verdict_p120 + POST-MERGE anchor p120.
+[✓] 8. Testy natywne: 26/26 (OPA 0.68 i 1.9).
+[✓] 9. Narzędzia: common/engines/run_all; 12/12 gate=PASS; 13 bundli.
+[✓] 10. Testy pytest: 76 → 75 PASS + 1 mirror-skip → po sync pełne.
+[✓] 11. Mirror: 3 pliki, hash-parity sha256 3/3, dryf 0.
+[✓] 12. Weryfikacja: check (bez regresji vs HEAD: 4/4 pre-existing),
+        test P51–P56 211/211 rego; pytest 255/255.
+[✓] 13. Raport (ten plik) — T1–T12 kompletne.
+[✓] 14. Ledger: --mark P56 WDROŻONY_100 + auto-recheck.
+[✓] 15. Czyszczenie okna kontekstowego (Sekcja 16 promptu).
+
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+────────────────────────────────────────────────────────────────────────────────
+Deklarujemy zgodność z ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1: fail-closed
+zasada 6, parametry-as-data ADR-002,Decision Certificate, routing O(1)
+zachowane — P56 nie zmienia POST-MERGE, tylko dokłada pas 18ah) oraz
+WIZJA_OPA_ENTERPRISE_V2.md (Legal Twin: karty szczegółów; Golden Oracle:
+bundle replay; invariants do P04). Odstępstwa: brak treściowych; C01
+(protokół vs rozkaz wdrożenia) rozstrzygnięte i udokumentowane. Statusy
+prawne: [NIEZWERYFIKOWANE] jawne w każdym twierdzeniu — zero fikcyjnych
+podstaw. Precyzja > pośpiech: każda teza z artefaktem i testem.
+
+════════════════════════════════════════════════════════════════════════════════
+KONIEC RAPORTU V3-P56 — STATUS: WDROŻONY_100 (2026-09-13)
+Kontrakt wyjściowy K-P56-1..6 → P57 (wejście z czystej sesji).
+════════════════════════════════════════════════════════════════════════════════

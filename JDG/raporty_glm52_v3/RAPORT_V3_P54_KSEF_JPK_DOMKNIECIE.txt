@@ -1,0 +1,481 @@
+==============================================================================
+RAPORT V3 P54 — KSEF 2.0 I JPK — TERMINY, SCHEMATY I KOLEJKI ENTERPRISE —
+DOMKNIĘCIE WARSTWY E-DOKUMENTACJI
+==============================================================================
+Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN (P00–P68)
+Prompt:      JDG/prompty_v3/V3_PROMPT_P54_KSEF_JPK_DOMKNIECIE.txt
+Raport:      JDG/raporty_glm52_v3/RAPORT_V3_P54_KSEF_JPK_DOMKNIECIE.txt
+Status:      WDROŻONY_100 (2026-09-13)
+Sesja:       wdrożenie raportu wg protokołu Sekcji 16 (czyste okno kontekstowe)
+
+──────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+──────────────────────────────────────────────────────────────────────────────
+Dojrzałość części P54: WDROŻONA (Enterprise). Warstwa KSeF 2.0/JPK domknięta
+end-to-end: kalendarz obowiązków per typ podatnika → wersjonowanie schematów
+FA(2)→FA(3) → walidacja pre-send → sandbox replay w CI → monitoring SLA sesji
+→ outbox exactly-once → sync KSeF→księgi (P32) → korekty art. 106j → tryb
+offline (art. 106ne) → mapa błędów MF→akcje → deadline watchdog → attestation
+integracji.
+
+Zrealizowane artefakty (dowód: kod + wynik uruchomienia, nie deklaracje):
+  * Polityka OPA: rules/v3_p54_ksef_jpk_closure.rego — pakiet
+    jdg.v3_p54_ksef_jpk_closure, 12 analiz I01–I12 + router decide
+    fail-closed (kolejność: snapshot→I09→I03→I05→I02→I04→I06→I11→I01→I07→
+    I08→I10→I12→all_green→no_match), priorities 454001–454012, okno
+    temporalne valid_from/valid_to w każdym werdykcie (P05/P53).
+  * Progi (ADR-002): blok v3_p54 w thresholds_jdg.rego (19 kluczy, okno
+    temporalne valid_from=2026-01-01, P05; no_auto_post=true,
+    manual_review_required=true).
+  * Wiring: main_jdg.rego import + final_verdict_p118 = safe_merge(p117,
+    v3_p54_ksef_jpk_closure.decide, fallback) → final_verdict_post_merge
+    (kotwica POST-MERGE przesunięta z p117 na p118 — konwencja kampanii).
+  * Narzędzia: 3 pliki (v3_p54_common.py + v3_p54_engines.py z 12 silnikami
+    I01–I12 + v3_p54_run_all.py) — gate=PASS dla 12/12 (v3_p54_run_all.json).
+    Silniki ROZSZERZAJĄ istniejące narzędzia rdzenia (ksef_outbox.py,
+    ksef_offline_queue.py, jpk_validator.py — import modułów, zero duplikacji).
+  * Dane: kalendarz KSeF 2.0 (5 wpisów DRL, duzi/mali/PRF/schematy) zasilony
+    do docs/KALENDARZ_ZMIAN_PRAWNYCH.md (DRL-0002..0005) — jedno źródło
+    terminów z P25; katalog 4 okien schematów (FA(2), FA(3), JPK_V7M,
+    JPK_PKPIR) z siatkami day-0; mapa 8 błędów MF→akcje.
+  * Bundly dowodowe: 13× v3_p54_*.json (gate=PASS).
+  * Testy: 23/23 natywnych Rego (OPA 0.68.0) + 48/48 pytest.
+  * Regresja: P51–P54 = 162/162 testów rego + pytest 128/128 zielone.
+  * Mirror: policies/ sync 3 plików (v3_p54_ksef_jpk_closure.rego,
+    thresholds_jdg.rego, main_jdg.rego), hash-parity sha256 3/3, dryf 0.
+
+Kluczowe liczby bazowe (z narzędzi, realny stan repo):
+  * Kalendarz KSeF: 5 wpisów (KSEF-DUZI 2026-02-01, KSEF-MALI 2026-04-01,
+    KSEF-PRF 2027-01-01, KSEF-FA2-END 2026-01-31, KSEF-FA3-START 2026-02-01),
+    0 wpisów bez terminu/drogi.
+  * Schematy: 4 wersjonowane oknami, 0 bez okna; granice przełączenia
+    FA(2)→FA(3) przetestowane (31.01/1.02/2.02).
+  * Pre-send: 10/10 faktur walidowanych przed wysyłką (100%).
+  * Sandbox: przebieg świeży (0 dni ≤ 14); scenariusze: enqueue→dispatch→UPO,
+    retry z backoff, STALE→alarm, offline flush.
+  * SLA: 4 sesje, 0 STALE (deadline UPO 1 dzień — art. 106nq).
+  * Outbox: exactly-once potwierdzone kontrolą duplikatu (wykryty 1/1,
+    niewykrytych 0); retry ≤ 10, backoff cap 3600 s.
+  * Sync KSeF→księgi: 3 przyjęte → 3 zaksięgowane, 0 niezaksięgowanych,
+    0 podwójnych zapisów (idempotencja: outbox_id + hash treści, wspólna z P32).
+  * Korekty: 2/2 łańcuchy kompletne (books_updated + jpk_reflected).
+  * Offline: najstarsza faktura 0 h ≤ grace 168 h (art. 106ne); ZAW-NR w razie
+    awarii (kara 5000 PLN — próg z ADR-002).
+  * Mapa błędów: 8/8 zmapowanych (100%); odbiorcy P40/P41.
+  * Watchdog: 0 eskalacji przy progu 3 dni.
+  * Attestation: wiek 0 dni ≤ 90; hash sha256 16-znakowy; FA(3) pokryty.
+
+Luki: P0=0, P1=2 (L01–L02), P2=4 (L03–L06), P3=3 (L07–L09) — T3.
+Innowacje: 12 (I01–I12, wszystkie wdrożone z dowodami) — T4.
+Człowiek (4-eyes): Q01–Q04 — T8.
+
+TOP-10 rekomendacji:
+  1. Decyzja 4-eyes (Q02): potwierdzenie dat harmonogramu KSeF 2.0 w
+     crd.gov.pl/podatki.gov.pl przed aktywacją produkcyjną kalendarza.
+  2. Podłączenie realnego API KSeF (Q01): endpointy prod/sandbox + token —
+     obecnie tryb mock (sandbox symulowany; adapter po decyzji człowieka).
+  3. Wpięcie v3_p54_run_all.py do CI (P39) jako bramka blokująca co PR.
+  4. Uzupełnienie KALENDARZ_ZMIAN_PRAWNYCH o kolejne daty RCL (lead ≥ 30 dni).
+  5. Generator mapy błędów MF z oficjalnego katalogu (crd.gov.pl) — L06.
+  6. Rozszerzenie testu kontraktowego XSD (xmllint w CI — spójnie z P16
+     ksef_xsd_offline_ci) o FA(3).
+  7. Dashboard end-to-end faktury w UI (P40): wysłana→przyjęta→zaksięgowana
+     →w JPK (statusy z I05/I07).
+  8. Pomiar wpływu na telemetrię P37: metryki ksef_stale_count,
+     ksef_queue_age_hours, ksef_sync_lag_hours z progami alarmów.
+  9. Synchronizacja progu 200M PLN (duzi podatnicy) z thresholds-as-data po
+     weryfikacji ISAP (dziś w seedzie kalendarza z tagiem).
+ 10. Chaos drill awarii MF (P43) z nową bramką offline I09 w scenariuszu.
+
+Co udowodniono: kompilacja i testy OPA 0.68; bramki z liczników narzędzi
+(nie deklaracje); exactly-once outbox (kontrola duplikatu); sync idempotentny
+(0 podwójnych zapisów); offline w granicy grace; determinizm routera
+(23/23, w tym test podwójnej ewaluacji); zero AUTO_POST w pakiecie.
+Co pozostało [NIEZWERYFIKOWANE]: wszystkie daty harmonogramu KSeF (crd.gov.pl
+— brak dostępu w sesji), treść art. 106na–106nq/106j/106ne (ISAP), katalog
+błędów MF (seed ekspercki), realna integracja API (mock).
+
+──────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+──────────────────────────────────────────────────────────────────────────────
+Przeanalizowano: 17 plików z Sekcji 6 promptu (grupy 6.1–6.3) + 3 pliki
+mirrora 6.4 (spójność canonical↔mirror: policies/v3_p54_ksef_jpk_closure.rego,
+policies/thresholds_jdg.rego, policies/main_jdg.rego) — T1. Każdy plik: ≥1 fakt.
+Pominięto: nic z listy Sekcji 6 (wszystkie odczytane/adnotowane).
+Ograniczenia:
+  * Brak dostępu do ISAP/RCL/crd.gov.pl/MF w sesji — wszystkie daty
+    harmonogramu i treść aktów [NIEZWERYFIKOWANE] (protokół 04; rejestr
+    mediacji w 9.05/Q01–Q02).
+  * Realna wysyłka API = mock (sandbox symulowany w ksef_outbox.py);
+    produkcyjny adapter wykracza poza sesję (decyzja Q01).
+  * Budżet 50%: czytanie celowane (nagłówki/grep/window), bez ładowania
+    katalogów zbiorczo; każda teza ma dowód z pliku/wyniku narzędzia.
+Status weryfikacji źródeł prawnych: [NIEZWERYFIKOWANE — ISAP/crd.gov.pl] przy
+każdej podstawie; zero fikcyjnych artykułów/dat/stawek (protokół 04); daty
+seeda kalendarza opisane jako twierdzenia do weryfikacji (Q02).
+
+──────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P54 — MAPA ARTEFAKTÓW
+──────────────────────────────────────────────────────────────────────────────
+| Artefakt | Pakiet/rule_id | Podstawa prawna | Testy | Lifecycle |
+|---|---|---|---|---|
+| rules/v3_p54_ksef_jpk_closure.rego | jdg.v3_p54_ksef_jpk_closure.* (12) | VAT 106na–106nq/106j/106ne; KKS 57 §2; Ordynacja 128–132 [NIEZWERYFIKOWANE] | 23 rego + 48 pytest | CANDIDATE v3.54.1 |
+| thresholds_jdg.rego (v3_p54) | data.jdg.thresholds.v3_p54 (19 kluczy) | ADR-002; P05 | snapshot testy | AKTYWNE (progi) |
+| main_jdg.rego (p118) | final_verdict_p118 | kontrakt werdyktu P03 | wiring testy | AKTYWNE |
+| tools/v3_p54_{common,engines,run_all}.py | 12 silników I01–I12 | jw. | 13 bundli gate=PASS | narzędzia CI |
+| tools/ksef_outbox.py (rozszerzony) | outbox exactly-once | art. 106na–106nq [NIEZWERYFIKOWANE] | I05/I06/I07 | istniejące (P04) |
+| tools/ksef_offline_queue.py (rozszerzony) | offline grace/ZAW-NR | art. 106ne [NIEZWERYFIKOWANE] | I09 | istniejące (P04) |
+| bundles/v3_p54_*.json (13) | dowody | jw. | pytest weryfikuje | dowody |
+| docs/KALENDARZ_ZMIAN_PRAWNYCH.md (DRL-0002..0005) | kalendarz | crd.gov.pl [NIEZWERYFIKOWANE] | I01/I08 (P53) | dane [4-eyes] |
+| tests/rego/test_v3_p54_ksef_jpk_closure.rego | test | P39 bramki | 23/23 OPA 0.68 | bramka |
+| tests/auto/test_v3_p54_ksef_jpk_closure.py | test | P39 | 48/48 | bramka |
+| policies/v3_p54_ksef_jpk_closure.rego (mirror) | jw. canonical | P48 sync | hash-parity | MIRROR |
+
+Statusy lifecycle zgodne z rejestrem: nowe reguły CANDIDATE (nie SHADOW —
+mają pełne testy i dowody; aktywacja CANDIDATE→ACTIVE = decyzja 4-eyes
+zgodnie z kontraktem P47–P53).
+
+──────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4 (każda: tabela dowodów + ≥3 wnioski + luki)
+──────────────────────────────────────────────────────────────────────────────
+
+5.1 Harmonogram i obowiązki KSeF 2.0
+  Dowody: KALENDARZ_ZMIAN_PRAWNYCH.md (1 wpis testowy → 5 wpisów z DRL
+  KSeF); v3_p54_compliance_calendar.json (5 wpisów, 0 bez terminu);
+  docs/KSEF_JPK_EDEKLARACJE_P17.md (obowiązek od 2026-02-01, tryby online/
+  offline, UPO 1 dzień, sankcje); KSEF_CALENDAR_SEED (I01: duzi/mali/PRF).
+  Wnioski:
+    W-5.1.1 Kalendarz obowiązków per typ podatnika istnieje jako dane
+      (I01) i jest zasilony do jednego źródła terminów (kontrakt z P25) —
+      wcześniej 1 wpis testowy (DRL-0001, 2099) = zero realnych przełączeń.
+    W-5.1.2 Tryby rozróżnione: online (path=online), schemat (path=schema),
+      offline (I09, path w kolejce OFL) — reguły P17 rozróżniają tryby w
+      ksef_audit, a P54 dodaje bramkę grace 168 h.
+    W-5.1.3 PRF (faktury konsumenckie) obecne w harmonogramie jako wpis
+      odrębny (KSEF-PRF 2027-01-01) — ścieżka B2C monitorowana osobno.
+  Luki: L01 (daty [NIEZWERYFIKOWANE — crd.gov.pl], decyzja Q02),
+  L02 (kalendarz bez automatycznego odświeżania z RCL — ręczny seed).
+
+5.2 Schematy i walidacja
+  Dowody: v3_p54_schema_versions.json (4 schematy z oknami, 0 bez wersji,
+  switch_tested 31.01/1.02/2.02); v3_p54_pre_send_dry_run.json (10/10 =
+  100% walidacji przed wysyłką); tools/jpk_validator.py (220 linii —
+  walidacja pól JPK); docs/KSEF_JPK_EDEKLARACJE_P17.md (ksef_xsd_validator,
+  ksef_xsd_offline_ci — 3 schematy w CI).
+  Wnioski:
+    W-5.2.1 Wersjonowanie schematów oknami temporalnymi (FA(2) do 31.01,
+      FA(3) od 1.02) zamiast pojedynczej wersji — przełączenie na datę
+      (I02) z siatkami day-0 z generatora P53-I02.
+    W-5.2.2 Walidacja pre-send uruchamiana przed dispatch (outbox wysyła
+      tylko po walidacji; jpk_validator + firewall P17) — bramka I03
+      wymaga 100%.
+    W-5.2.3 Mapowanie błędów na akcje (I10) uzupełnia walidację: księgowy
+      dostaje „pole → co poprawić" bez analizy XML.
+  Luki: L03 (walidator XSD FA(3) w CI do rozszerzenia o nowe pola),
+  L06 (katalog błędów MF z seeda eksperckiego, nie z oficjalnej listy).
+
+5.3 Kolejki, retry i idempotencja
+  Dowody: v3_p54_idempotent_outbox.json (duplikat wykryty 1/1, niewykrytych
+  0, failed_escalated 0); v3_p54_status_monitor.json (4 sesje, 0 STALE);
+  v3_p54_offline_compliance.json (0 h ≤ 168 h grace); v3_p54_sandbox_replay.json
+  (przebieg 0 dni, 4 scenariusze); tools/ksef_outbox.py (MAX_RETRIES=10,
+  BACKOFF_CAP=3600 s, hash treści); tools/ksef_offline_queue.py (grace 7 dni,
+  alert 120 h, ZAW-NR).
+  Wnioski:
+    W-5.3.1 Exactly-once potwierdzone kontrolą pozytywną: próba duplikatu
+      enqueue → detekcja po hash treści (kontrola idempotencji jest częścią
+      dowodu, nie zakłóceniem).
+    W-5.3.2 Retry z backoff wykładniczym (cap 1 h) i limitem 10 prób;
+      przekroczenie → FAILED + eskalacja (bramka I06 karze FAILED bez
+      eskalacji).
+    W-5.3.3 Ścieżka offline zgodna z art. 106ne [NIEZWERYFIKOWANE]: grace
+      168 h, alert 120 h, ZAW-NR z karą 5000 PLN (progi z ADR-002); awarie
+      testowane w sandbox replay (scenariusz offline flush).
+  Luki: L04 (realna awaria MF nierozpoznawalna w mocku — chaos drill z
+  prawdziwym API po Q01), L05 (STALE tylko SENT bez UPO — sesje batch bez
+  osobnego monitoringu).
+
+5.4 KSeF → ewidencje sync
+  Dowody: v3_p54_ksef_to_books.json (3 przyjęte → 3 zaksięgowane, 0
+  niezaksięgowanych, 0 podwójnych); v3_p54_correction_chains.json (2/2
+  kompletne); docs/AUTOMATYZACJA_KSIEGOWOSCI_P18.md (pipeline 4 kroków z
+  idempotencją); tools/ksef_outbox.py reconcile (UPO→UPO_OK).
+  Wnioski:
+    W-5.4.1 Faktura przyjęta → automatyczne księgowanie w oknie 24 h z
+      idempotencją wspólną z P32 (outbox_id + hash) — brak ręcznego
+      przepisywania; podwójny zapis = MANUAL_REVIEW (bramka I07).
+    W-5.4.2 Korekty art. 106j [NIEZWERYFIKOWANE] przechodzą pełny łańcuch
+      (faktura korygująca → ewidencje → JPK); przerwany łańcuch =
+      MANUAL_REVIEW (I08).
+    W-5.4.3 Stan end-to-end dostępny z liczników: status sesji (I05),
+      zaksięgowanie (I07), korekta (I08) — wejście dla dashboardu P40.
+  Luki: L07 (UI end-to-end do wykonania w P40 — dane gotowe, widok brak),
+  L08 (webhooki MF — dziś polling reconcile, nie push).
+
+──────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2; akty z Sekcji 8 promptu — wszystkie)
+──────────────────────────────────────────────────────────────────────────────
+| Akt | Art./ust. | Reguła | Test | Status | Ryzyko |
+|---|---|---|---|---|---|
+| Ustawa VAT | 106na–106nf (KSeF: obowiązek, terminy, tryby) | I01 calendar; I09 offline | test_i01_*; test_i09_* | CZĘŚCIOWE (daty [NIEZW]) | wysokie |
+| Rozp. MF o KSeF | FA(3), tryby offline, sesje | I02 schema_versions; I04 sandbox | test_i02_*; test_i04_* | CZĘŚCIOWE (crd.gov.pl [NIEZW]) | średnie |
+| Ustawa VAT | 99–100s (JPK_V7M/T terminy, korekty) | I02 (JPK_V7M okno); I08 chains | test_i02_*; test_i08_* | CZĘŚCIOWE | średnie |
+| Ustawa VAT | 106b ust. 1 pkt 2a (faktury ustrukturyzowane) | I03 pre_send | test_i03_* | PEŁNE (mechanizm) | średnie |
+| Rozp. o JPK_V7 | pola, zaokrąglenia, walidatory | jpk_validator.py; I03 | test_i03_* | CZĘŚCIOWE | niskie |
+| Ustawa Ordynacja | 128–132 (e-Doręczenia) | edelivery_* (P17); I12 attestation | I12 bundl | CZĘŚCIOWE | niskie |
+| KKS | 57 §2 (błędna faktura JPK) | I03 pre-send (ochrona) | test_i03_blocks_below | PEŁNE (mechanizm) | wysokie |
+| Ustawa o ZUS | 47–48 (deklaracje składkowe — P25) | kalendarz P25 (jedno źródło) | I01 single_source | CZĘŚCIOWE | niskie |
+| Odkryte: VAT | 106nq (UPO/sankcje) | I05 status monitor | test_i05_blocks_on_stale | CZĘŚCIOWE | wysokie |
+| Odkryte: VAT | 106ne ust. 1–4 (offline, ZAW-NR) | I09 offline | test_i09_blocks_past_grace | CZĘŚCIOWE | wysokie |
+| Odkryte: VAT | 106j (korekty) | I08 correction chains | test_i08_manual_review | CZĘŚCIOWE | średnie |
+
+──────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (T3)
+──────────────────────────────────────────────────────────────────────────────
+| ID | Kryt. | Dowód | Wpływ | Rozwiązanie | Koszt | Regresja |
+|---|---|---|---|---|---|---|
+| V3-P54-L01 | P1 | KSEF_CALENDAR_SEED: isap_status=NIEZWERYFIKOWANE (5/5) | zła data obowiązków = kara | weryfikacja crd.gov.pl + decyzja Q02 | S | brak (dane) |
+| V3-P54-L02 | P1 | kalendarz zasilany ręcznie (seed) | świeże nowele omijają system | feed z RCL/law_radar + alert lead<30d | M | niskie |
+| V3-P54-L03 | P2 | walidator XSD: 3 schematy (P16), FA(3) nie w CI | faktura nieprzechodząca FA(3) wysłana | rozszerzyć ksef_xsd_offline_ci o FA(3) | S | niskie |
+| V3-P54-L04 | P2 | dispatch: „produkcyjny adapter — wpięty w P0-1" (mock) | awarie realne niewykryte | integracja API po Q01 + chaos drill P43 | L | średnie |
+| V3-P54-L05 | P2 | I05: monitoring sesji online; batch bez osobnego SLA | sesja batch może przekroczyć termin | rozszerzyć I05 o tryb batch | S | niskie |
+| V3-P54-L06 | P2 | MF_ERROR_MAP: 8 kodów z seeda eksperckiego | nieznany kod = MANUAL_REVIEW | generator z oficjalnego katalogu MF | M | niskie |
+| V3-P54-L07 | P3 | I07/I05: dane end-to-end gotowe, widok UI brak | brak widoczności stanu | widget P40 (statusy + korekty) | M | brak |
+| V3-P54-L08 | P3 | reconcile = polling; webhook MF nieobsługiwany | opóźnienie sync do 24 h | odbiornik webhooków z idempotencją | M | średnie |
+| V3-P54-L09 | P3 | attestation odświeżany ręcznie | certyfikat może się zestarzeć | auto-odświeżenie przy zmianie schematu (I02→I12) | S | brak |
+
+──────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (T4; 12/12 wdrożone — kod + bundle + test)
+──────────────────────────────────────────────────────────────────────────────
+I01 KSeF compliance calendar — kalendarz obowiązków per typ podatnika jako
+  dane (5 wpisów DRL) zasilone do KALENDARZ_ZMIAN_PRAWNYCH (jedno źródło z
+  P25); bramka: wpis bez terminu = MANUAL_REVIEW. Wpływ: zero terminów „w
+  głowie księgowego". Ryzyko: nieaktualne daty → mitygacja L01/Q02.
+  Kryterium: 0 wpisów bez terminu (test_i01_calendar_complete). Zależności: P25, P53-I02.
+I02 Schema version manager — FA(2)/FA(3)/JPK jako okna temporalne z siatkami
+  day-0; przełączenie na datę; granica 31.01/1.02 przetestowana. Wpływ:
+  schema switch bez ręcznej konfiguracji. Ryzyko: nowe pola FA(3) → L03.
+  Kryterium: 0 schematów bez okna (test_i02_*). Zależności: P05, P53-I02.
+I03 Pre-send dry-run — 100% wysyłek przez walidację (XSD + firewall fortecy)
+  przed dispatch; bramka I03 BLOCK poniżej progu. Wpływ: błędna faktura nie
+  opuszcza systemu (KKS 57 §2). Ryzyko: fałszywe blokady → mapa akcji I10.
+  Kryterium: validated == total (test_i03_*). Zależności: P16, P17.
+I04 Sandbox replay — ścieżka wysyłki uruchamiana w CI na mockach MF (4
+  scenariusze); bramka świeżości ≤ 14 dni. Wpływ: regresja integracji
+  wykrywana co PR. Ryzyko: dryf mock↔prod → L04. Kryterium: age ≤ 14
+  (test_i04_*). Zależności: P16 harness, P43.
+I05 Status monitor with SLA — sesje PENDING→SENT→UPO_OK; SENT bez UPO ponad
+  1 dzień = STALE → BLOCK (ryzyko sankcji art. 106nq). Wpływ: zero cicho
+  zgubionych UPO. Ryzyko: batch bez SLA → L05. Kryterium: 0 STALE
+  (test_i05_*). Zależności: P17 UPO tracker, P37.
+I06 Idempotent outbox — exactly-once po hash treści; kontrola pozytywna
+  duplikatu w dowodzie; FAILED bez eskalacji = BLOCK. Wpływ: awaria nie
+  duplikuje wysyłki (podwójna faktura = podwójny obowiązek). Ryzyko: kolizja
+  hash → pełny kanoniczny JSON. Kryterium: undetected == 0 (test_i06_*).
+  Zależności: P32 (wspólna idempotencja), P17 outbox.
+I07 KSeF-to-books sync — przyjęta → zaksięgowana w oknie 24 h; 0 podwójnych
+  zapisów; naruszenie = MANUAL_REVIEW. Wpływ: zero ręcznego przepisywania
+  (cel główny serii). Ryzyko: webhook nieobecny → polling L08.
+  Kryterium: unbooked == 0, double == 0 (test_i07_*). Zależności: P32, P18.
+I08 Correction chains — korekty art. 106j end-to-end (korygująca → ewidencje
+  → JPK); przerwany łańcuch = MANUAL_REVIEW. Wpływ: korekta nie rozjeżdża
+  się z ewidencjami. Ryzyko: korekty międzyokresowe → P53 replay.
+  Kryterium: broken == 0 (test_i08_*). Zależności: P16 corrections_e2e, P53.
+I09 Offline mode compliance — grace 168 h, alert 120 h, ZAW-NR (5000 PLN)
+  jako progi ADR-002; BLOCK_AND_ALERT ponad grace. Wpływ: awaria MF =
+  tryb zgodny z art. 106ne, terminy odraczane nie kasowane. Ryzyko: clock
+  skew → czas narzędzi monotoniczny. Kryterium: age ≤ 168 (test_i09_*).
+  Zależności: P04 offline queue, P43.
+I10 Error-to-action mapping — 8 kodów MF → czytelne akcje (pole → co
+  poprawić); brak mapy = MANUAL_REVIEW. Wpływ: naprawa bez analizy XML.
+  Ryzyko: nowy kod MF → fail-closed (nie zgadujemy). Kryterium: unmapped == 0
+  (test_i10_*). Zależności: P40 UI, P41 docs.
+I11 Deadline watchdog — faktura w kolejce ponad 3 dni przed terminem →
+  eskalacja P0 (alarm P37). Wpływ: zero faktur zgubionych w kolejce.
+  Ryzyko: spam alarmów → próg w ADR-002. Kryterium: escalated == 0 przy
+  czystej kolejce (test_i11_*). Zależności: P37, P25.
+I12 Integration attestation — certyfikat integracji (wersje schematów +
+  sandbox + mapa błędów) z hashem; wiek > 90 dni = NEEDS_ADVICE. Wpływ:
+  dowód „jaka wersja integracji obowiązywała" — spójny z Decision
+  Certificate F4. Ryzyko: ręczne odświeżanie → L09. Kryterium: age ≤ 90 +
+  hash 16 (test_i12_*). Zależności: P44, P53-I12 (legal_epoch).
+
+──────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (T5; wiąże P55 i dalsze aż do P68)
+──────────────────────────────────────────────────────────────────────────────
+K-P54-1 KONTRAKT INTEGRACJI KSEF: schematy jako okna (I02), tryby
+  online/batch/offline (I04/I05/I09), terminy z KALENDARZ_ZMIAN_PRAWNYCH
+  (jedno źródło z P25). Odbiorcy: P40 (API/UI), P38 (deploy okna), P68.
+  Wymuszenie: bramki I02/I03 BLOCK; zmiana schematu bez okna = BLOCK.
+K-P54-2 KONTRAKT IDEMPOTENCJI: klucz = outbox_id + hash kanoniczny treści;
+  WSPÓLNY z P32 (zero podwójnego księgowania). Odbiorcy: P32, P55+.
+  Wymuszenie: I07 double_booked → MANUAL_REVIEW.
+K-P54-3 MONITORING STATUSÓW (metryki do P37): ksef_stale_count (alert: >0),
+  ksef_queue_age_hours (alert: >120), ksef_sync_lag_hours (alert: >24),
+  ksef_watchdog_escalations (alert: >0), ksef_sandbox_age_days (alert: >14).
+K-P54-4 MAPA BŁĘDÓW MF→AKCJE: katalog w silniku I10; każdy nowy kod =
+  fail-closed MANUAL_REVIEW (nie zgadujemy). Odbiorcy: P40 (UI), P41 (docs).
+K-P54-5 OFFLINE KONTRAKT: grace 168 h / alert 120 h / ZAW-NR 5000 PLN —
+  progi wyłącznie z data.jdg.thresholds.v3_p54 (ADR-002). Odbiorcy: P43
+  (chaos), P55+.
+K-P54-6 TEMPORALNOŚĆ KSEF: każda data obowiązków ma DRL w kalendarzu i
+  siatki day-0 (P53-I02); zmiana daty bez DRL = naruszenie kontraktu.
+
+──────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA (T6) — wykonany w tej sesji (kolejność sekwencyjna)
+──────────────────────────────────────────────────────────────────────────────
+1. Reguła OPA I01–I12 + router (bez duplikacji P16/P17) — wykonane.
+2. Progi ADR-002 v3_p54 (19 kluczy, okno P05) — wykonane.
+3. Wiring main_jdg p118 + przesunięcie kotwicy POST-MERGE — wykonane.
+4. Narzędzia: common + 12 silników (rozszerzenie istniejących, zero
+   duplikatów) + runner — wykonane; 12/12 gate=PASS.
+5. Testy: 23 rego + 48 pytest — wykonane, zielone.
+6. Kalendarz: DRL-0002..0005 — wykonane (tag [NIEZWERYFIKOWANE]).
+7. Mirror sync 3 plików + hash-parity — wykonane (dryf 0).
+8. Regresja P51–P54: 162/162 rego + 128/128 pytest — zielona.
+Wymaga decyzji człowieka (4-eyes): daty harmonogramu (Q02), realne API (Q01),
+limity budżetowe (Q03), eskalacje BLOCKER (Q04).
+
+──────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (T7; przypadki blokujące merge oznaczone [BLOK])
+──────────────────────────────────────────────────────────────────────────────
+| Przypadek | Typ | Oczekiwany wynik | Status |
+|---|---|---|---|
+| brak flagi v3_p54_check → NO_MATCH | rego [BLOK] | NO_MATCH, matched=false | 23/23 PASS |
+| brak snapshotu progów → NEEDS_ADVICE | rego [BLOK] | thresholds_missing, priority 0 | PASS |
+| determinizm: 2× decide == | rego [BLOK] | identyczny werdykt | PASS |
+| offline 169 h → BLOCK / 168 h → PASS | rego [BLOK] | granica grace włącznie | PASS |
+| pre-send 8/10 → BLOCK | rego [BLOK] | pre_send_dry_run BLOCK | PASS |
+| STALE 2 → BLOCK | rego [BLOK] | status_monitor BLOCK | PASS |
+| duplikat niewykryty → BLOCK | rego [BLOK] | idempotent_outbox BLOCK | PASS |
+| priorytet: offline > attestation | rego | kolejność else-chain | PASS |
+| progi z danych: grace=48 → BLOCK przy 49 h | rego [BLOK] | ADR-002, nie hardcode | PASS |
+| 13 bundli gate=PASS | pytest [BLOK] | run_all failures == [] | 48/48 PASS |
+| kalendarz: 0 bez terminu; DRL w jednym źródle | pytest | I01/I02 zielone | PASS |
+| outbox: duplikat wykryty, FAILED=0 | pytest | exactly-once | PASS |
+| sync: 3/3 zaksięgowane, 0 podwójnych | pytest | I07 zielone | PASS |
+| offline: 0 h ≤ 168 h; ZAW-NR w progach | pytest | I09 zielone | PASS |
+| attestation: wiek 0 ≤ 90; hash 16 | pytest | I12 zielone | PASS |
+| wiring p118 + post-merge | pytest [BLOK] | p118 w łańcuchu | PASS |
+| priorities 454001–454012 × 2 gałęzie | pytest | unikalność | PASS |
+| zero AUTO_POST w pakiecie | pytest [BLOK] | brak emisji AUTO_POST | PASS |
+| granice groszowe kwot faktur | pytest | kwoty z outbox (5000/1150 itd.) | PASS |
+| fuzz: mutacja kontekstu → nadal fail-closed | rego (chaos P43) | BLOCK/NEEDS_ADVICE, nie AUTO_POST | w planie P43 |
+
+──────────────────────────────────────────────────────────────────────────────
+9.11 PYTANIA DO CZŁOWIEKA (T8)
+──────────────────────────────────────────────────────────────────────────────
+V3-P54-Q01 Kiedy podłączyć produkcyjne API KSeF (endpointy, token, certyfikat)?
+  Dziś mock sandbox; integracja zmienia tryb dowodowy (I04/I06).
+V3-P54-Q02 Potwierdzenie dat harmonogramu (DRL-0002..0005) w crd.gov.pl /
+  podatki.gov.pl przed aktywacją CANDIDATE→ACTIVE — zgoda 4-eyes?
+V3-P54-Q03 Budżet: webhooki MF (L08) i generator mapy błędów (L06) — teraz
+  czy po P68? Zmienia kolejność planu P55+.
+V3-P54-Q04 Czy brak wsparcia sesji batch w SLA (L05) jest BLOCKER-em dla
+  wolumenów JDG, czy dopuszczalne tylko online w pierwszym rzucie?
+
+──────────────────────────────────────────────────────────────────────────────
+9.12 ZAAŁOŻENIA JAWNE (T9)
+──────────────────────────────────────────────────────────────────────────────
+[ZAŁOŻENIE] Z-01 Daty DRL-0002..0005 odpowiadają komunikatom MF (weryfikacja
+  Q02); system traktuje je jako twierdzenia, nie dowody.
+[ZAŁOŻENIE] Z-02 Mock sandbox (sukces od 2. próby, brak UPO) wiernie odwzorowuje
+  ścieżki błędów MF na poziomie bramek (L04 po Q01).
+[ZAŁOŻENIE] Z-03 Progi grace/alert/ZAW-NR (168/120/5000) zgodne z rozporządzeniem
+  do czasu weryfikacji ISAP (odczyt z istniejących narzędzi P04).
+[ZAŁOŻENIE] Z-04 „Przyjęta" w I07 = SENT potwierdzony (mock UPO_OK); realny
+  warunek po Q01 (numer KSeF + UPO).
+[ZAŁOŻENIE] Z-05 Katalog 8 błędów MF reprezentatywny dla JDG (seed ekspercki).
+
+──────────────────────────────────────────────────────────────────────────────
+9.13 PODANALIZY: tabele dowodów, wnioski, luki — patrz 9.04 (każda podanaliza
+ma ≥3 wnioski z dowodem i ≥1 lukę; zgodne z wymaganiem 9.13 promptu).
+──────────────────────────────────────────────────────────────────────────────
+9.14 Macierz 9.05 obejmuje wszystkie 8 aktów Sekcji 8 + 3 przepisy odkryte
+(106nq, 106ne, 106j) z statusami i ryzykiem.
+──────────────────────────────────────────────────────────────────────────────
+9.15 Identyfikatory: V3-P54-L01..L09; V3-P54-I01..I12; V3-P54-Q01..Q04;
+V3-P54-X01..X10 (7.4); V3-P54-C01 (konflikt brak — patrz X01).
+──────────────────────────────────────────────────────────────────────────────
+PYTANIA KRZYŻOWE 7.4 (V3-P54-X01..X10)
+──────────────────────────────────────────────────────────────────────────────
+X01 Konflikty z dokumentami świętymi: BRAK (V3-P54-C01 nie występuje).
+  Fail-closed (V1 zasada 6) zachowany: brak snapshotu → NEEDS_ADVICE;
+  Decision Certificate F4 rozbudowany o attestation integracji (I12) —
+  zgodne z V2 (provenance), nie sprzeczne.
+X02 Naruszenia parametrów-as-data (P06)/temporalności (P05): w nowym kodzie
+  P54 = 0 (19 progów w ADR-002; okna schematów w danych). Zewnętrzne stałe
+  narzędzi rdzenia (MAX_RETRIES=10 w ksef_outbox.py) — odzwierciedlone w
+  progu v3_p54_retry_max_attempts; pełna migracja → L02/plan P46.
+X03 Ścieżki nie-fail-closed: 0 nowych. Host nigdy nie AUTO_POST-uje przy
+  CERTAINTY_BLOCKED (P03/P04); P54 nie emituje AUTO_POST (test 20).
+X04 Kontrakt 25-polowy (P03): werdykty P54 niosą rule_id/package/priority/
+  decision/reason/_legal_basis/valid_from/valid_to/metrics — typy zgodne
+  (string/int/null); dodatkowe pola (metrics) dopuszczalne (superset).
+X05 Testy blokujące merge (P39): 8 pozycji [BLOK] w T7 — NO_MATCH, snapshot,
+  determinizm, granica grace, pre-send, STALE, duplikat, progi-z-danych.
+X06 Duplikaty: BRAK nowych — silniki importują ksef_outbox/ksef_offline_queue/
+  jpk_validator (rozszerzenie, nie kopia); P16/P17 pozostają źródłem rdzenia.
+X07 Podstawy niezweryfikowane: wszystkie (9.05) — rejestr mediacji: L01
+  (harmonogram), Q02; priorytet: 106na–106nb (terminy) i 106ne (grace).
+X08 Decyzje 4-eyes: Q01 (API), Q02 (daty), Q03 (budżet), Q04 (batch SLA).
+X09 Metryki do P37: 5 metryk z progami (K-P54-3); dashboardy: end-to-end
+  faktura (L07), kolejka offline, SLA sesji.
+X10 Invarianty runtime (P04) do dodania: INV-KSEF-01 „nie wysyłaj bez
+  walidacji pre-send" (podstawa: KKS 57 §2), INV-KSEF-02 „retry nie tworzy
+  drugiej wysyłki tego samego hash" (106na), INV-KSEF-03 „kolejka > grace
+  = BLOCK_AND_ALERT" (106ne) — wniosek do P04 registry.
+
+──────────────────────────────────────────────────────────────────────────────
+T10 PRZEKAZYWANE ARTEFAKTY (11.4)
+──────────────────────────────────────────────────────────────────────────────
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|---|---|---|---|
+| Kalendarz KSeF (5 DRL) | P25/P55/P68 | MD + JSON silnika | terminy tylko z tego źródła |
+| Okna schematów FA/JPK | P40/P38/P68 | JSON (I02) | przełączenie tylko po dacie |
+| Metryki SLA (K-P54-3) | P37 | kontrakt | progi alarmów jako dane |
+| Mapa błędów MF→akcje | P40/P41 | JSON (I10) | fail-closed dla nieznanych kodów |
+| Idempotencja outbox_id+hash | P32/P55 | kontrakt | wspólny klucz, zero podwójnych zapisów |
+| Attestation + hash | P68/P44 | JSON (I12) | dowód wersji integracji w certyfikacji |
+| Invarianty INV-KSEF-01..03 | P04 | wniosek | egzekucja runtime |
+| Bundly v3_p54_* (13) | P39/P68 | JSON gate=PASS | bramki CI i re-certyfikacja |
+
+T11 MACIERZ PODANALIZA×GRUPA (APENDYKS B)
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik |
+|---|---|---|---|
+| 5.1 | 6.1 (ksef_jpk_v3_gate, auditor), 6.3 (KALENDARZ, P17 doc), 6.4 | 3+ (W-5.1.1..3) | 9.04/9.05 |
+| 5.2 | 6.1 (jpk_validator/generator/autogen), 6.2 (test_ksef_jpk_v3_11), 6.3 | 3+ (W-5.2.1..3) | 9.04/9.05 |
+| 5.3 | 6.1 (ksef_offline_queue, ksef_outbox), 6.2 (test_ksef_generator), 6.3 | 3+ (W-5.3.1..3) | 9.04/9.05 |
+| 5.4 | 6.1 (outbox, autogen), 6.2 (etap20 audit), 6.3 (AUTOMATYZACJA doc) | 3+ (W-5.4.1..3) | 9.04/9.05 |
+
+T12 REJESTR KONFLIKTÓW: pusty (X01 — brak konfliktów C01+).
+
+──────────────────────────────────────────────────────────────────────────────
+ANTY-WZORCE 7.5 (wynik sprawdzenia → rejestr luk)
+──────────────────────────────────────────────────────────────────────────────
+AP01 stuby {true}: BRAK w nowym rego (testy negative-first; gate z liczników).
+AP02 hardcode progów: BRAK w v3_p54 (19 progów w ADR-002; test 20). Uwaga:
+  stałe narzędzi rdzenia P04 → notatka X02/plan P46.
+AP03 brak else-chain: BRAK (router pełny, terminal no_match).
+AP04 duplikaty rule_id: BRAK (przestrzeń jdg.v3_p54_*, priorities unikalne).
+AP05 podstawy bez Dz.U.: BRAK nowych — wszystkie [NIEZWERYFIKOWANE] jawnie.
+AP06 testy zawsze-zielone: BRAK (negative-first, granice 168/169 h, 48/49 h).
+AP07 cichy AUTO_POST: NIELI (brak emisji; test 20 + K03/I07 fail-closed).
+AP08 cykle pakietów: BRAK (P54 importuje tylko data.jdg.thresholds).
+AP09 dane zewnętrzne bez provenance: BRAK (attestation hash; daty z tagami).
+AP10 brak okien temporalnych: BRAK (okno w każdym werdykcie + blok progów).
+AP11 mirror dryf: 0 (hash-parity 3/3 po sync).
+AP12 metryki w dwóch miejscach: BRAK (jedno źródło: bundly silników).
+
+──────────────────────────────────────────────────────────────────────────────
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+──────────────────────────────────────────────────────────────────────────────
+Zgodna z: V1 (Control/Data Plane, fail-closed, cykl życia CANDIDATE, bramki),
+V2 (Legal Twin — provenance attestation; Golden/temporalność — okna day-0;
+Decision Certificate — I12 rozszerza dowód integracji; Law Radar — DRL lead).
+Odstępstwa: BRAK. All-green nie oznacza „production-ready" — aktywacja
+CANDIDATE→ACTIVE = decyzja 4-eyes (Q01/Q02), zgodnie z kontraktem P47–P53.
+
+STATUS W LEDGERZE: P54 → WDROŻONY_100 (55/69 = 79.71%; następny: P55).
+──────────────────────────────────────────────────────────────────────────────
+Koniec raportu P54.

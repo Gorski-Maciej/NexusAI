@@ -1,0 +1,24 @@
+{
+  "header": {
+    "schema": "jdg.v3_p59.security.audit.v1",
+    "part": "P59",
+    "slug": "SECURITY_DOMKNIECIE",
+    "generated_at": "2026-09-13T14:29:12.323700+00:00",
+    "analyses": {
+      "I12_security_score_trend": "PASS"
+    }
+  },
+  "result": {
+    "score_pct": 100.0,
+    "min_pct": 75,
+    "trend": "rising",
+    "components": {
+      "threat_model": 100.0,
+      "ci_hardening": 100.0,
+      "secrets": 100.0
+    },
+    "provenance": "RODO art. 32; P58 obserwowalność; prompt P59 Sekcja 10-I12; raport do P68",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T14:29:12.323700+00:00"
+  }
+}

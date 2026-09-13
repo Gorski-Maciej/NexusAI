@@ -1,0 +1,25 @@
+{
+  "header": {
+    "schema": "jdg.v3_p58.observability.audit.v1",
+    "part": "P58",
+    "slug": "OBSERWOWALNOSC_DOMKNIECIE",
+    "generated_at": "2026-09-13T13:31:09.415488+00:00",
+    "analyses": {
+      "I11_telemetry_privacy_guard": "PASS"
+    }
+  },
+  "result": {
+    "records_scanned": 1,
+    "pii_hits": [],
+    "pii_patterns": [
+      "nip10",
+      "email",
+      "pesel"
+    ],
+    "privacy_mode": "pseudonymized",
+    "required_mode": "pseudonymized",
+    "provenance": "RODO art. 5 ust. 2, art. 32 [NIEZWERYFIKOWANE — ISAP]; prompt P58 Sekcja 10-I11",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T13:31:09.415488+00:00"
+  }
+}

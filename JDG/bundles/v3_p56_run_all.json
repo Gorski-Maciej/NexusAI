@@ -1,0 +1,59 @@
+{
+  "schema": "jdg.v3_p56.run_all.v1",
+  "part": "P56",
+  "slug": "VAT_PIT_SZCZEGOLY",
+  "generated_at": "2026-09-13T10:16:34.822540+00:00",
+  "engines_run": 12,
+  "failures": [],
+  "gate": "PASS",
+  "results": {
+    "I01": {
+      "exit": 0,
+      "output": "[P56:I01] gate=PASS bundle=v3_p56_place_of_supply.json"
+    },
+    "I02": {
+      "exit": 0,
+      "output": "[P56:I02] gate=PASS bundle=v3_p56_gtu_data.json"
+    },
+    "I03": {
+      "exit": 0,
+      "output": "[P56:I03] gate=PASS bundle=v3_p56_procedure_markers.json"
+    },
+    "I04": {
+      "exit": 0,
+      "output": "[P56:I04] gate=PASS bundle=v3_p56_kis_registry.json"
+    },
+    "I05": {
+      "exit": 0,
+      "output": "[P56:I05] gate=PASS bundle=v3_p56_cost_exclusion.json"
+    },
+    "I06": {
+      "exit": 0,
+      "output": "[P56:I06] gate=PASS bundle=v3_p56_ryczalt_table.json"
+    },
+    "I07": {
+      "exit": 0,
+      "output": "[P56:I07] gate=PASS bundle=v3_p56_proportions.json"
+    },
+    "I08": {
+      "exit": 0,
+      "output": "[P56:I08] gate=PASS bundle=v3_p56_relief_matrix.json"
+    },
+    "I09": {
+      "exit": 0,
+      "output": "[P56:I09] gate=PASS bundle=v3_p56_non_monetary.json"
+    },
+    "I10": {
+      "exit": 0,
+      "output": "[P56:I10] gate=PASS bundle=v3_p56_vat_cost_flow.json"
+    },
+    "I11": {
+      "exit": 0,
+      "output": "[P56:I11] gate=PASS bundle=v3_p56_suspicious.json"
+    },
+    "I12": {
+      "exit": 0,
+      "output": "[P56:I12] gate=PASS bundle=v3_p56_coverage.json"
+    }
+  }
+}

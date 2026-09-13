@@ -1,0 +1,112 @@
+{
+  "header": {
+    "schema": "jdg.v3_p59.security.audit.v1",
+    "part": "P59",
+    "slug": "SECURITY_DOMKNIECIE",
+    "generated_at": "2026-09-13T14:28:52.517140+00:00",
+    "analyses": {
+      "I01_threat_model_gates": "PASS"
+    }
+  },
+  "result": {
+    "vectors_total": 13,
+    "vectors_uncovered": [],
+    "min_vectors": 12,
+    "model": [
+      {
+        "vector": "rule_injection_pr",
+        "asset": "rules/*.rego",
+        "control": "CODEOWNERS + review prawne + CI bramki",
+        "test": "opa test + mirror hash-parity",
+        "status": "CONTROLLED"
+      },
+      {
+        "vector": "threshold_manipulation",
+        "asset": "thresholds_jdg.rego",
+        "control": "4-eyes + anomaly alarm (I04)",
+        "test": "rego t8/t8b",
+        "status": "CONTROLLED"
+      },
+      {
+        "vector": "history_rewrite",
+        "asset": "bundles/worm_audit.json",
+        "control": "WORM hash chain (I03)",
+        "test": "tamper drill",
+        "status": "CONTROLLED"
+      },
+      {
+        "vector": "key_theft_ksef",
+        "asset": "klucze KSeF/MF",
+        "control": "vault contract (I05)",
+        "test": "skan repo + audyt użycia",
+        "status": "CONTROLLED"
+      },
+      {
+        "vector": "ci_secret_exfiltration",
+        "asset": ".github/workflows",
+        "control": "permissions read + fork isolation (I06)",
+        "test": "checklist CI",
+        "status": "CONTROLLED"
+      },
+      {
+        "vector": "unpinned_dependency",
+        "asset": "importy tools/",
+        "control": "SBOM + pinning (I09)",
+        "test": "SBOM diff w CI",
+        "status": "CONTROLLED"
+      },
+      {
+        "vector": "unsigned_bundle",
+        "asset": "bundles/*.tar.gz",
+        "control": "podpisy P44 (I02)",
+        "test": "verify przy deploy",
+        "status": "CONTROLLED"
+      },
+      {
+        "vector": "insider_rule_change",
+        "asset": "cykl życia reguł",
+        "control": "insider program (I08)",
+        "test": "audyt dostępów",
+        "status": "CONTROLLED"
+      },
+      {
+        "vector": "fork_pr_secrets",
+        "asset": "secrets CI",
+        "control": "pull_request vs target (I06)",
+        "test": "workflow review",
+        "status": "CONTROLLED"
+      },
+      {
+        "vector": "mirror_drift_attack",
+        "asset": "policies/*",
+        "control": "hash-parity CI (P48)",
+        "test": "sha256 3/3",
+        "status": "CONTROLLED"
+      },
+      {
+        "vector": "worm_tamper",
+        "asset": "audit trail",
+        "control": "tamper-evident chain (I03)",
+        "test": "drill tamper",
+        "status": "CONTROLLED"
+      },
+      {
+        "vector": "unattested_deploy",
+        "asset": "deployments",
+        "control": "attestation verify (I07)",
+        "test": "provenance check",
+        "status": "CONTROLLED"
+      },
+      {
+        "vector": "trust_boundary_cross",
+        "asset": "aktorzy↔systemy",
+        "control": "boundary map (I11)",
+        "test": "flows kontrolowane",
+        "status": "CONTROLLED"
+      }
+    ],
+    "provenance": "RODO art. 32 [NIEZWERYFIKOWANE — ISAP]; prompt P59 Sekcja 10-I01; kryterium 13.19 (>=12 wektorów)",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T14:28:52.517140+00:00"
+  }
+}

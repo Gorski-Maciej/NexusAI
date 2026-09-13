@@ -1,0 +1,29 @@
+{
+  "schema": "jdg.v3_p55.audit.v1",
+  "part": "P55",
+  "slug": "ZUS_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:28.222894+00:00",
+  "engine": "I04",
+  "context_key": "I04_carencia_break_tracker",
+  "gate": "PASS",
+  "data": {
+    "violations": 0,
+    "restarts_tracked": 1,
+    "carencia_days": 90,
+    "boundary": {
+      "day_89": "BLOCK",
+      "day_90": "PASS"
+    },
+    "restart_rule": "wznowienie po przerwie = nowa karencja (I04)",
+    "source": "tools/zus_zasilkowa_calculator.py (rozszerzony o restarty)"
+  },
+  "violations": 0,
+  "restarts_tracked": 1,
+  "carencia_days": 90,
+  "boundary": {
+    "day_89": "BLOCK",
+    "day_90": "PASS"
+  },
+  "restart_rule": "wznowienie po przerwie = nowa karencja (I04)",
+  "source": "tools/zus_zasilkowa_calculator.py (rozszerzony o restarty)"
+}

@@ -1,0 +1,23 @@
+{
+  "header": {
+    "schema": "jdg.v3_p59.security.audit.v1",
+    "part": "P59",
+    "slug": "SECURITY_DOMKNIECIE",
+    "generated_at": "2026-09-13T14:29:05.594726+00:00",
+    "analyses": {
+      "I10_security_chaos_drills": "PASS"
+    }
+  },
+  "result": {
+    "experiments_total": 8,
+    "security_experiments": 1,
+    "security_names": [
+      "CORRUPT_BUNDLE"
+    ],
+    "freq_days": 90,
+    "last_drill": "harmonogram kwartalny (ADR-002) — pierwszy drill do zaplanowania (L11)",
+    "provenance": "RODO art. 32 (regularne testy); P43 chaos; prompt P59 Sekcja 10-I10",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T14:29:05.594726+00:00"
+  }
+}

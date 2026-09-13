@@ -1,0 +1,21 @@
+{
+  "header": {
+    "schema": "jdg.v3_p58.observability.audit.v1",
+    "part": "P58",
+    "slug": "OBSERWOWALNOSC_DOMKNIECIE",
+    "generated_at": "2026-09-13T13:31:07.614385+00:00",
+    "analyses": {
+      "I06_error_budget_freeze": "PASS"
+    }
+  },
+  "result": {
+    "budget_pct": 100.0,
+    "min_pct": 20,
+    "freeze_active": false,
+    "golden_uver_pct": 0.0,
+    "source": "bundles/metrics.json#golden_replay.uver_pct (P37) + deployments.json (P38)",
+    "provenance": "P38 bundle deploy + P39 CI; prompt P58 Sekcja 10-I06",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T13:31:07.614385+00:00"
+  }
+}

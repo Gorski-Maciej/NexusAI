@@ -1,0 +1,22 @@
+{
+  "header": {
+    "schema": "jdg.v3_p58.observability.audit.v1",
+    "part": "P58",
+    "slug": "OBSERWOWALNOSC_DOMKNIECIE",
+    "generated_at": "2026-09-13T13:31:06.123358+00:00",
+    "analyses": {
+      "I02_coverage_regression_alarm": "PASS"
+    }
+  },
+  "result": {
+    "coverage_current": 100.0,
+    "coverage_baseline": 100.0,
+    "drop_pp": 0.0,
+    "new_deserts": [],
+    "threshold_pp": 0,
+    "source": "bundles/metrics.json#health_score.components.coverage_lci (P37)",
+    "provenance": "P51 pustynie prawne; prompt P58 Sekcja 10-I02",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T13:31:06.123358+00:00"
+  }
+}

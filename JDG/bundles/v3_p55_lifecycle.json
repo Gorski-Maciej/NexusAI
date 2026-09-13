@@ -1,0 +1,47 @@
+{
+  "schema": "jdg.v3_p55.audit.v1",
+  "part": "P55",
+  "slug": "ZUS_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:27.116446+00:00",
+  "engine": "I01",
+  "context_key": "I01_zus_lifecycle_state_machine",
+  "gate": "PASS",
+  "data": {
+    "states_total": 5,
+    "transitions_valid": 5,
+    "violations": [],
+    "states": [
+      "NEW",
+      "START_RELIEF",
+      "PREFERENTIAL",
+      "SMALL_ZUS_PLUS",
+      "STANDARD"
+    ],
+    "transitions": [
+      "NEW→START_RELIEF",
+      "START_RELIEF→PREFERENTIAL",
+      "PREFERENTIAL→SMALL_ZUS_PLUS",
+      "SMALL_ZUS_PLUS→STANDARD",
+      "PREFERENTIAL(24m)→SMALL_ZUS_PLUS"
+    ],
+    "source": "tools/preferential_period_tracker.py RELIEF_PERIODS (rozszerzone)"
+  },
+  "states_total": 5,
+  "transitions_valid": 5,
+  "violations": [],
+  "states": [
+    "NEW",
+    "START_RELIEF",
+    "PREFERENTIAL",
+    "SMALL_ZUS_PLUS",
+    "STANDARD"
+  ],
+  "transitions": [
+    "NEW→START_RELIEF",
+    "START_RELIEF→PREFERENTIAL",
+    "PREFERENTIAL→SMALL_ZUS_PLUS",
+    "SMALL_ZUS_PLUS→STANDARD",
+    "PREFERENTIAL(24m)→SMALL_ZUS_PLUS"
+  ],
+  "source": "tools/preferential_period_tracker.py RELIEF_PERIODS (rozszerzone)"
+}

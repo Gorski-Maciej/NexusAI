@@ -90,6 +90,13 @@ python JDG/tools/rodo_aml_security_auditor.py --penalty-sim --scenario NO_STR   
 python JDG/tools/rodo_aml_security_auditor.py --dead-data --expiring-30d 5 --expired 0                      # INN-19 monitor martwych danych
 ```
 
+## Program insider threat (P59 doprecyzowanie)
+
+- **Podwójna kontrola (dual control / 4-eyes)**: zmiany reguł krytycznych wymagają akceptacji dwóch ról (techniczna + prawna) — zasada `four_eyes_review` w kontrakcie operating.
+- **Rotacja obowiązków**: zadania wrażliwe (deploy produkcyjny, zarządzanie sekretami, wyłączanie bramek) rotowane kwartalnie między co najmniej dwiema osobami; brak osoby zapasowej = NEEDS_ADVICE w P59.
+- **Kanał zgłoszeń**: podejrzenie manipulacji/naruszenia → incydent wg playbooka (RODO art. 33–34, 72 h do UODO); rejestr zdarzeń w WORM.
+- **Audyt nietypowych dostępów**: powiązany z hash chain WORM (P42) i telemetrią decyzji (P58); sygnał podejrzany = MANUAL_REVIEW.
+
 ## Testy
 
 - Rego: `JDG/tests/rego/test_p16_rodo_aml_security_enterprise.rego` (**54** scenariusze: 43 + 11 INN-15..19)

@@ -1,0 +1,23 @@
+{
+  "schema": "jdg.v3_p54.audit.v1",
+  "part": "P54",
+  "slug": "KSEF_JPK_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:35.524555+00:00",
+  "engine": "I09",
+  "context_key": "I09_offline_compliance",
+  "gate": "PASS",
+  "data": {
+    "oldest_age_hours": 0.0,
+    "grace_hours": 168,
+    "approaching_deadline": false,
+    "zaw_nr_required": true,
+    "queue_size": 2,
+    "tool": "tools/ksef_offline_queue.py deadline (rozszerzony o alerty P54)"
+  },
+  "oldest_age_hours": 0.0,
+  "grace_hours": 168,
+  "approaching_deadline": false,
+  "zaw_nr_required": true,
+  "queue_size": 2,
+  "tool": "tools/ksef_offline_queue.py deadline (rozszerzony o alerty P54)"
+}

@@ -1,0 +1,45 @@
+{
+  "schema": "jdg.v3_p55.audit.v1",
+  "part": "P55",
+  "slug": "ZUS_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:30.176850+00:00",
+  "engine": "I09",
+  "context_key": "I09_benefit_vs_suspension",
+  "gate": "PASS",
+  "data": {
+    "violations": 0,
+    "cases": [
+      {
+        "id": "SUSP-001",
+        "suspension": "pełne",
+        "benefit_requested": true,
+        "allowed": true
+      },
+      {
+        "id": "SUSP-002",
+        "suspension": "wstrzymanie (możliwość pracy)",
+        "benefit_requested": true,
+        "allowed": false
+      }
+    ],
+    "policy": "zasiłek tylko przy pełnym zawieszeniu",
+    "legal_basis": "ustawa zasiłkowa art. 6 [NIEZWERYFIKOWANE — ISAP]"
+  },
+  "violations": 0,
+  "cases": [
+    {
+      "id": "SUSP-001",
+      "suspension": "pełne",
+      "benefit_requested": true,
+      "allowed": true
+    },
+    {
+      "id": "SUSP-002",
+      "suspension": "wstrzymanie (możliwość pracy)",
+      "benefit_requested": true,
+      "allowed": false
+    }
+  ],
+  "policy": "zasiłek tylko przy pełnym zawieszeniu",
+  "legal_basis": "ustawa zasiłkowa art. 6 [NIEZWERYFIKOWANE — ISAP]"
+}

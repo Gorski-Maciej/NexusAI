@@ -1,0 +1,23 @@
+{
+  "header": {
+    "schema": "jdg.v3_p56.vat_pit.audit.v1",
+    "part": "P56",
+    "slug": "VAT_PIT_SZCZEGOLY",
+    "generated_at": "2026-09-13T10:16:39.019460+00:00",
+    "analyses": {
+      "I11": "PASS"
+    }
+  },
+  "result": {
+    "signals_total": 3,
+    "high_hits": [
+      "MPP_SPLIT:4xFV_14_9k",
+      "FV_FAKE:brak_whitelist_20260905"
+    ],
+    "threshold_precision_check": "checked",
+    "gaar_defense": "NEEDS_ADVICE z powodem = obrona art. 119a STL [NIEZWERYFIKOWANE]",
+    "provenance": "tools/vat_innovation_tools.py mpp_threshold_precision_check",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T10:16:39.019460+00:00"
+  }
+}

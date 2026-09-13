@@ -1,0 +1,39 @@
+{
+  "header": {
+    "schema": "jdg.v3_p58.observability.audit.v1",
+    "part": "P58",
+    "slug": "OBSERWOWALNOSC_DOMKNIECIE",
+    "generated_at": "2026-09-13T13:31:07.258753+00:00",
+    "analyses": {
+      "I05_decision_telemetry_registry": "PASS"
+    }
+  },
+  "result": {
+    "certs_total": 1,
+    "certs_incomplete": [
+      "DC-2026-08-29-00000001"
+    ],
+    "incomplete_detail": [
+      {
+        "cert": "DC-2026-08-29-00000001",
+        "missing": [
+          "amount_gr",
+          "legal_epoch",
+          "bundle_hash"
+        ]
+      }
+    ],
+    "required_fields": [
+      "domain",
+      "amount_gr",
+      "certainty",
+      "legal_epoch",
+      "bundle_hash"
+    ],
+    "threshold_key": "v3_p58_telemetry_required_fields",
+    "single_source": "bundles/decision_certificates.json",
+    "provenance": "P11 certyfikat = jedyne źródło telemetrii (kontrakt 11.1); RODO art. 5 ust. 2 [NIEZWERYFIKOWANE — ISAP]; prompt P58 Sekcja 10-I05",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T13:31:07.258753+00:00"
+  }
+}

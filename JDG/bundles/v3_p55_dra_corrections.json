@@ -1,0 +1,53 @@
+{
+  "schema": "jdg.v3_p55.audit.v1",
+  "part": "P55",
+  "slug": "ZUS_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:29.533393+00:00",
+  "engine": "I07",
+  "context_key": "I07_dra_correction_chain",
+  "gate": "PASS",
+  "data": {
+    "corrections_total": 2,
+    "chains_broken": 0,
+    "entries": [
+      {
+        "id": "DRA-KOR-001",
+        "month": "2026-07",
+        "diff_pln": -184.32,
+        "interest_calculated": true,
+        "interest_basis": "OP art. 56 [NIEZWERYFIKOWANE]",
+        "payment_planned": true
+      },
+      {
+        "id": "DRA-KOR-002",
+        "month": "2026-08",
+        "diff_pln": 92.16,
+        "interest_calculated": true,
+        "interest_basis": "OP art. 56 [NIEZWERYFIKOWANE]",
+        "payment_planned": true
+      }
+    ],
+    "interest_basis": "OP art. 56 [NIEZWERYFIKOWANE — ISAP]"
+  },
+  "corrections_total": 2,
+  "chains_broken": 0,
+  "entries": [
+    {
+      "id": "DRA-KOR-001",
+      "month": "2026-07",
+      "diff_pln": -184.32,
+      "interest_calculated": true,
+      "interest_basis": "OP art. 56 [NIEZWERYFIKOWANE]",
+      "payment_planned": true
+    },
+    {
+      "id": "DRA-KOR-002",
+      "month": "2026-08",
+      "diff_pln": 92.16,
+      "interest_calculated": true,
+      "interest_basis": "OP art. 56 [NIEZWERYFIKOWANE]",
+      "payment_planned": true
+    }
+  ],
+  "interest_basis": "OP art. 56 [NIEZWERYFIKOWANE — ISAP]"
+}

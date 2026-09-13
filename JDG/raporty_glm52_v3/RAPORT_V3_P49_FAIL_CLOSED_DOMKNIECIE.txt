@@ -4,7 +4,9 @@ KAŻDA NIEPEWNOŚĆ MA ŚCIEŻKĘ
 ================================================================================
 Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN dla GLM 5.2
 Plik promptu:   JDG/prompty_v3/V3_PROMPT_P49_FAIL_CLOSED_DOMKNIECIE.txt
-Plik raportu:   JDG/raporty_glm52_v3/RAPORT_V3_P49_FAIL_CLOSED_DOMKNIECIE.txt
+Plik raportu:  JDG/raporty_glm52_v3/RAPORT_V3_P49_FAIL_CLOSED_DOMKNIECIE.txt
+Status:        WDROŻONY_100 (2026-09-13; wdrożenie 2026-09-11 — pełny cykl:
+               reguła, progi, wiring, narzędzia, bundla, testy rego+pytest)
 Data wykonania: 2026-09-11 · Tryb: WDROŻENIE (implementacja + raport, konwencja
 kampanii V3: prompt = analiza = kod = testy = dowody, protokoły 01/02 kampanii
 modyfikuje decyzja właściciela — wdrożenie wykonałeś w tej samej sesji co P48).

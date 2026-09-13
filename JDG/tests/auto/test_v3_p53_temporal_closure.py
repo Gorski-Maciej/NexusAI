@@ -159,7 +159,11 @@ def test_main_jdg_wiring_p117():
     main = (RULES / "main_jdg.rego").read_text(encoding="utf-8")
     assert "import data.jdg.v3_p53_temporal_closure" in main
     assert "final_verdict_p117 = safe_merge(final_verdict_p116" in main
-    assert "final_verdict_p117\n" in main.replace("\r\n", "\n")
+    # p117 w łańcuchu POST-MERGE; kotwica przesunięta na p118 przez P54
+    # (konwencja kampanii: "post-merge anchor przesunięty", notatki P29–P53)
+    normalized = main.replace("\r\n", "\n")
+    assert ("final_verdict_p117\n" in normalized) or (
+        "final_verdict_p118 = safe_merge(final_verdict_p117" in normalized)
 
 
 def test_thresholds_block_present():

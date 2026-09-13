@@ -1,0 +1,41 @@
+{
+  "schema": "jdg.v3_p54.audit.v1",
+  "part": "P54",
+  "slug": "KSEF_JPK_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:32.660532+00:00",
+  "engine": "I02",
+  "context_key": "I02_schema_version_manager",
+  "gate": "PASS",
+  "data": {
+    "schemas_total": 4,
+    "schemas_unversioned": 0,
+    "schemas": [
+      "FA(2)",
+      "FA(3)",
+      "JPK_V7M",
+      "JPK_PKPIR"
+    ],
+    "day0_grid_generated": true,
+    "switch_tested": [
+      "2026-01-31",
+      "2026-02-01",
+      "2026-02-02"
+    ],
+    "isap_status": "NIEZWERYFIKOWANE (crd.gov.pl)"
+  },
+  "schemas_total": 4,
+  "schemas_unversioned": 0,
+  "schemas": [
+    "FA(2)",
+    "FA(3)",
+    "JPK_V7M",
+    "JPK_PKPIR"
+  ],
+  "day0_grid_generated": true,
+  "switch_tested": [
+    "2026-01-31",
+    "2026-02-01",
+    "2026-02-02"
+  ],
+  "isap_status": "NIEZWERYFIKOWANE (crd.gov.pl)"
+}

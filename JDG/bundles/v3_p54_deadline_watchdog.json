@@ -1,0 +1,19 @@
+{
+  "schema": "jdg.v3_p54.audit.v1",
+  "part": "P54",
+  "slug": "KSEF_JPK_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:36.357785+00:00",
+  "engine": "I11",
+  "context_key": "I11_deadline_watchdog",
+  "gate": "PASS",
+  "data": {
+    "queue_total": 1,
+    "escalated_count": 0,
+    "watchdog_threshold_days": 3,
+    "rule": "created_ns + próg dni → alarm P0 (P37)"
+  },
+  "queue_total": 1,
+  "escalated_count": 0,
+  "watchdog_threshold_days": 3,
+  "rule": "created_ns + próg dni → alarm P0 (P37)"
+}

@@ -1,0 +1,40 @@
+{
+  "header": {
+    "schema": "jdg.v3_p57.ingest.audit.v1",
+    "part": "P57",
+    "slug": "INGEST_DANYCH",
+    "generated_at": "2026-09-13T12:45:14.711631+00:00",
+    "analyses": {
+      "I06_repair_path_for_rejects": "PASS"
+    }
+  },
+  "result": {
+    "rejected_total": 3,
+    "with_repair": [
+      "DOC-009",
+      "DOC-010",
+      "DOC-011"
+    ],
+    "no_repair": [],
+    "repairs": [
+      {
+        "doc": "DOC-009",
+        "field": "amount_gr",
+        "action": "popraw pole 'amount_gr' i zwróć do kolejki ingestu"
+      },
+      {
+        "doc": "DOC-010",
+        "field": "amount_gr",
+        "action": "popraw pole 'amount_gr' i zwróć do kolejki ingestu"
+      },
+      {
+        "doc": "DOC-011",
+        "field": "doc_number",
+        "action": "popraw pole 'doc_number' i zwróć do kolejki ingestu"
+      }
+    ],
+    "provenance": "P32 kontrakt pipeline (ingest = pierwszy etap); prompt P57 Sekcja 10-I06",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T12:45:14.711631+00:00"
+  }
+}

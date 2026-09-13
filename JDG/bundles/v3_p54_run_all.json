@@ -1,0 +1,59 @@
+{
+  "schema": "jdg.v3_p54.run_all.v1",
+  "part": "P54",
+  "slug": "KSEF_JPK_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:31.948179+00:00",
+  "engines_run": 12,
+  "failures": [],
+  "gate": "PASS",
+  "results": {
+    "I01": {
+      "exit": 0,
+      "output": "[P54:I01] I01_ksef_compliance_calendar gate=PASS bundle=v3_p54_compliance_calendar.json"
+    },
+    "I02": {
+      "exit": 0,
+      "output": "[P54:I02] I02_schema_version_manager gate=PASS bundle=v3_p54_schema_versions.json"
+    },
+    "I03": {
+      "exit": 0,
+      "output": "[P54:I03] I03_pre_send_dry_run gate=PASS bundle=v3_p54_pre_send_dry_run.json"
+    },
+    "I04": {
+      "exit": 0,
+      "output": "[P54:I04] I04_sandbox_replay gate=PASS bundle=v3_p54_sandbox_replay.json"
+    },
+    "I05": {
+      "exit": 0,
+      "output": "[P54:I05] I05_status_monitor_sla gate=PASS bundle=v3_p54_status_monitor.json"
+    },
+    "I06": {
+      "exit": 0,
+      "output": "[P54:I06] I06_idempotent_outbox gate=PASS bundle=v3_p54_idempotent_outbox.json"
+    },
+    "I07": {
+      "exit": 0,
+      "output": "[P54:I07] I07_ksef_to_books_sync gate=PASS bundle=v3_p54_ksef_to_books.json"
+    },
+    "I08": {
+      "exit": 0,
+      "output": "[P54:I08] I08_correction_chains gate=PASS bundle=v3_p54_correction_chains.json"
+    },
+    "I09": {
+      "exit": 0,
+      "output": "[P54:I09] I09_offline_compliance gate=PASS bundle=v3_p54_offline_compliance.json"
+    },
+    "I10": {
+      "exit": 0,
+      "output": "[P54:I10] I10_error_to_action gate=PASS bundle=v3_p54_error_map.json"
+    },
+    "I11": {
+      "exit": 0,
+      "output": "[P54:I11] I11_deadline_watchdog gate=PASS bundle=v3_p54_deadline_watchdog.json"
+    },
+    "I12": {
+      "exit": 0,
+      "output": "[P54:I12] I12_integration_attestation gate=PASS bundle=v3_p54_integration_attestation.json"
+    }
+  }
+}

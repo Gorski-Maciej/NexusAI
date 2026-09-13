@@ -1,0 +1,41 @@
+{
+  "schema": "jdg.v3_p54.audit.v1",
+  "part": "P54",
+  "slug": "KSEF_JPK_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:35.931317+00:00",
+  "engine": "I10",
+  "context_key": "I10_error_to_action",
+  "gate": "PASS",
+  "data": {
+    "errors_total": 8,
+    "errors_unmapped": 0,
+    "mapping_coverage_pct": 100.0,
+    "catalog": [
+      "E10001",
+      "E10002",
+      "E20001",
+      "E20002",
+      "E30001",
+      "E30002",
+      "E40001",
+      "E90001"
+    ],
+    "consumers": "P40 UI (pole→akcja), P41 dokumentacja",
+    "source": "schematy MF [NIEZWERYFIKOWANE — crd.gov.pl]"
+  },
+  "errors_total": 8,
+  "errors_unmapped": 0,
+  "mapping_coverage_pct": 100.0,
+  "catalog": [
+    "E10001",
+    "E10002",
+    "E20001",
+    "E20002",
+    "E30001",
+    "E30002",
+    "E40001",
+    "E90001"
+  ],
+  "consumers": "P40 UI (pole→akcja), P41 dokumentacja",
+  "source": "schematy MF [NIEZWERYFIKOWANE — crd.gov.pl]"
+}

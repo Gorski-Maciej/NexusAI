@@ -1,0 +1,26 @@
+{
+  "header": {
+    "schema": "jdg.v3_p56.vat_pit.audit.v1",
+    "part": "P56",
+    "slug": "VAT_PIT_SZCZEGOLY",
+    "generated_at": "2026-09-13T10:16:35.937826+00:00",
+    "analyses": {
+      "I03": "PASS"
+    }
+  },
+  "result": {
+    "checks_total": 5,
+    "mpp_required_count": 3,
+    "conflicts": [],
+    "gtu_auto_marks": {
+      "FV-2026/09/101": "GTU_05",
+      "FV-2026/09/102": "GTU_06",
+      "FV-2026/09/103": "GTU_06",
+      "FV-2026/09/104": "GTU_13"
+    },
+    "threshold_pln": 15000,
+    "provenance": "tools/vat_mpp_auto_detector.py detect_mpp",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T10:16:35.937826+00:00"
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "header": {
+    "schema": "jdg.v3_p58.observability.audit.v1",
+    "part": "P58",
+    "slug": "OBSERWOWALNOSC_DOMKNIECIE",
+    "generated_at": "2026-09-13T13:31:07.957247+00:00",
+    "analyses": {
+      "I07_runbook_per_alarm": "PASS"
+    }
+  },
+  "result": {
+    "alarms_total": 12,
+    "with_runbook": [
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A06",
+      "A07",
+      "A08",
+      "A09",
+      "A10",
+      "A11",
+      "A12"
+    ],
+    "without_runbook": [],
+    "runbooks": [
+      "RB-P58-01",
+      "RB-P58-02",
+      "RB-P58-03",
+      "RB-P58-04",
+      "RB-P58-05",
+      "RB-P58-06",
+      "RB-P58-07",
+      "RB-P58-08",
+      "RB-P58-09",
+      "RB-P58-10",
+      "RB-P58-11",
+      "RB-P58-12"
+    ],
+    "provenance": "P41 dokumentacja; kontrakt: alarm bez runbooka nie wchodzi do produkcji; prompt P58 Sekcja 10-I07",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T13:31:07.957247+00:00"
+  }
+}

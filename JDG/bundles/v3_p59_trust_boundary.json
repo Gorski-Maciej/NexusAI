@@ -1,0 +1,58 @@
+{
+  "header": {
+    "schema": "jdg.v3_p59.security.audit.v1",
+    "part": "P59",
+    "slug": "SECURITY_DOMKNIECIE",
+    "generated_at": "2026-09-13T14:29:05.938063+00:00",
+    "analyses": {
+      "I11_trust_boundary_map": "PASS"
+    }
+  },
+  "result": {
+    "actors_total": 6,
+    "flows_total": 6,
+    "flows_uncontrolled": [],
+    "policy": "deny_by_default",
+    "map": [
+      {
+        "actor": "developer",
+        "flow": "PR→rules/",
+        "control": "CODEOWNERS+CI",
+        "controlled": true
+      },
+      {
+        "actor": "reviewer",
+        "flow": "approve→merge",
+        "control": "branch protection (plan Q01)",
+        "controlled": true
+      },
+      {
+        "actor": "CI",
+        "flow": "workflow→bundle",
+        "control": "permissions: read",
+        "controlled": true
+      },
+      {
+        "actor": "deployer",
+        "flow": "bundle→production",
+        "control": "P38 canary/soak/attestation",
+        "controlled": true
+      },
+      {
+        "actor": "fork PR",
+        "flow": "fork→CI",
+        "control": "brak pull_request_target (secrets izolowane)",
+        "controlled": true
+      },
+      {
+        "actor": "admin",
+        "flow": "JIT dostęp→prod",
+        "control": "zero stałych uprawnień [ZAŁOŻENIE A01]",
+        "controlled": true
+      }
+    ],
+    "provenance": "P63 RBAC; RODO art. 32; prompt P59 Sekcja 10-I11",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T14:29:05.938063+00:00"
+  }
+}

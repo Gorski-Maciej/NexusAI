@@ -1,0 +1,35 @@
+{
+  "header": {
+    "schema": "jdg.v3_p57.ingest.audit.v1",
+    "part": "P57",
+    "slug": "INGEST_DANYCH",
+    "generated_at": "2026-09-13T12:45:15.080062+00:00",
+    "analyses": {
+      "I07_bank_reconciliation_engine": "PASS"
+    }
+  },
+  "result": {
+    "feed_total": 11,
+    "matched": 8,
+    "unmatched": 3,
+    "unmatched_pct": 27.3,
+    "threshold_pct": 5,
+    "candidates": {
+      "TX-098": [
+        "DOC-007",
+        "DOC-005"
+      ],
+      "TX-099": [
+        "DOC-007",
+        "DOC-005"
+      ],
+      "TX-100": [
+        "DOC-006",
+        "DOC-002"
+      ]
+    },
+    "provenance": "P32 kontrakt recon v3_p32-I05 (auto-parowanie, alarm rozjazdów); prompt P57 Sekcja 10-I07",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T12:45:15.080062+00:00"
+  }
+}

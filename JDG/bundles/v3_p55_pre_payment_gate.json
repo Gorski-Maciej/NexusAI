@@ -1,0 +1,29 @@
+{
+  "schema": "jdg.v3_p55.audit.v1",
+  "part": "P55",
+  "slug": "ZUS_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:31.463571+00:00",
+  "engine": "I12",
+  "context_key": "I12_benefit_pre_payment_gate",
+  "gate": "PASS",
+  "data": {
+    "payments_total": 3,
+    "payments_ungated": 0,
+    "gate_checks": 9,
+    "gate_chain": [
+      "I04_carencia",
+      "I05_period",
+      "I09_suspension"
+    ],
+    "note": "wypłata bez pełnego łańcucha uprawnień = BLOCK (fail-closed)"
+  },
+  "payments_total": 3,
+  "payments_ungated": 0,
+  "gate_checks": 9,
+  "gate_chain": [
+    "I04_carencia",
+    "I05_period",
+    "I09_suspension"
+  ],
+  "note": "wypłata bez pełnego łańcucha uprawnień = BLOCK (fail-closed)"
+}

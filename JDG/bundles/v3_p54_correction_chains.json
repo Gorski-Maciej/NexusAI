@@ -1,0 +1,55 @@
+{
+  "schema": "jdg.v3_p54.audit.v1",
+  "part": "P54",
+  "slug": "KSEF_JPK_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:35.141562+00:00",
+  "engine": "I08",
+  "context_key": "I08_correction_chains",
+  "gate": "PASS",
+  "data": {
+    "corrections_total": 2,
+    "chains_broken": 0,
+    "entries": [
+      {
+        "id": "COR-001",
+        "base": "FV/2026/09/201",
+        "reason": "obniżenie podstawy (art. 106j ust. 2)",
+        "books_updated": true,
+        "jpk_reflected": true,
+        "within_window_days": 5
+      },
+      {
+        "id": "COR-002",
+        "base": "FV/2026/09/202",
+        "reason": "zwrot towaru (art. 106j ust. 3)",
+        "books_updated": true,
+        "jpk_reflected": true,
+        "within_window_days": 11
+      }
+    ],
+    "window_days": 30,
+    "legal_basis": "VAT art. 106j [NIEZWERYFIKOWANE — ISAP]"
+  },
+  "corrections_total": 2,
+  "chains_broken": 0,
+  "entries": [
+    {
+      "id": "COR-001",
+      "base": "FV/2026/09/201",
+      "reason": "obniżenie podstawy (art. 106j ust. 2)",
+      "books_updated": true,
+      "jpk_reflected": true,
+      "within_window_days": 5
+    },
+    {
+      "id": "COR-002",
+      "base": "FV/2026/09/202",
+      "reason": "zwrot towaru (art. 106j ust. 3)",
+      "books_updated": true,
+      "jpk_reflected": true,
+      "within_window_days": 11
+    }
+  ],
+  "window_days": 30,
+  "legal_basis": "VAT art. 106j [NIEZWERYFIKOWANE — ISAP]"
+}

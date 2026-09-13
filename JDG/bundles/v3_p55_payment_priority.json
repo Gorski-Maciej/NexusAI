@@ -1,0 +1,23 @@
+{
+  "schema": "jdg.v3_p55.audit.v1",
+  "part": "P55",
+  "slug": "ZUS_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:29.871340+00:00",
+  "engine": "I08",
+  "context_key": "I08_zus_payment_priority",
+  "gate": "PASS",
+  "data": {
+    "arrears_pln": 1500.0,
+    "blocked_payments": 2,
+    "double_payments_detected": 0,
+    "idempotency_key": "zlecenie_hash (wspólny z P32/P54)",
+    "threshold_pln": 0.0,
+    "note": "zaległość > próg → inne auto-płatności wstrzymane do uregulowania ZUS"
+  },
+  "arrears_pln": 1500.0,
+  "blocked_payments": 2,
+  "double_payments_detected": 0,
+  "idempotency_key": "zlecenie_hash (wspólny z P32/P54)",
+  "threshold_pln": 0.0,
+  "note": "zaległość > próg → inne auto-płatności wstrzymane do uregulowania ZUS"
+}

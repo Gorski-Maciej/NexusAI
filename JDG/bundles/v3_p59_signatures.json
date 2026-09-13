@@ -1,0 +1,27 @@
+{
+  "header": {
+    "schema": "jdg.v3_p59.security.audit.v1",
+    "part": "P59",
+    "slug": "SECURITY_DOMKNIECIE",
+    "generated_at": "2026-09-13T14:28:52.901931+00:00",
+    "analyses": {
+      "I02_signed_rules_4eyes": "PASS"
+    }
+  },
+  "result": {
+    "critical_total": 3,
+    "critical_unsigned": [
+      "thresholds_jdg.rego",
+      "main_jdg.rego",
+      "v3_p59_security_closure.rego"
+    ],
+    "signature_tool": "v3_p44_worm_signature (P44)",
+    "required_roles": [
+      "technical",
+      "legal"
+    ],
+    "provenance": "eIDAS [NIEZWERYFIKOWANE — ISAP]; P44 podpisy; prompt P59 Sekcja 10-I02",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T14:28:52.901931+00:00"
+  }
+}

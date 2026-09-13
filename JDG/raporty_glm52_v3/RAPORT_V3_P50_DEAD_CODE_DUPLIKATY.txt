@@ -4,7 +4,9 @@ PRAWDY PER ZASADA
 ================================================================================
 Seria: NEXUSAI JDG — V3 FORTRESS CAMPAIGN dla GLM 5.2
 Plik promptu:   JDG/prompty_v3/V3_PROMPT_P50_DEAD_CODE_DUPLIKATY.txt
-Plik raportu:   JDG/raporty_glm52_v3/RAPORT_V3_P50_DEAD_CODE_DUPLIKATY.txt
+Plik raportu:  JDG/raporty_glm52_v3/RAPORT_V3_P50_DEAD_CODE_DUPLIKATY.txt
+Status:        WDROŻONY_100 (2026-09-13; wdrożenie 2026-09-11 — pełny cykl:
+               reguła, progi, wiring, narzędzia, bundla, testy rego+pytest)
 Data wykonania: 2026-09-11 · Tryb: WDROŻENIE (implementacja + raport, konwencja
 kampanii V3: prompt = analiza = kod = testy = dowody, protokoły 01/02 kampanii
 modyfikuje decyzja właściciela — wdrożenie wykonane w tej samej sesji co P49).

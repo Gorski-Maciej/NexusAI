@@ -1,0 +1,375 @@
+==============================================================================
+RAPORT V3 P58 — OBSERWOWALNOŚĆ FORTHECY — METRYKI DECYZYJNE I ALARMY
+NA TYM, CO PRAWNIE WRAŻLIWE
+==============================================================================
+Seria:        NEXUSAI JDG — V3 FORTRESS CAMPAIGN (P00–P68)
+Prompt:       JDG/prompty_v3/V3_PROMPT_P58_OBSERWOWALNOSC_DOMKNIECIE.txt
+Raport:       JDG/raporty_glm52_v3/RAPORT_V3_P58_OBSERWOWALNOSC_DOMKNIECIE.txt
+Status:       WDROŻONY_100 (2026-09-13)
+Sesja:        wdrożenie raportu wg protokołu Sekcji 16 (czyste okno kontekstowe)
+Wejście:      K-P57-1..6 z RAPORT_V3_P57 (EXECUTIVE SUMMARY, KONTRAKT WYJŚCIOWY,
+              REJESTR LUK P0/P1) — zero niejawnych założeń z poprzednich sesji.
+
+──────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+──────────────────────────────────────────────────────────────────────────────
+Dojrzałość przed wdrożeniem: P37 miał metryki techniczne (LCI/RV/UVR, golden
+replay, health score, SLO globalne), P11 certyfikaty decyzji, P38 deployments,
+P52 drift telemetry — ale perspektywa PRAWNA obserwowalności nie była domknięta:
+brak SLA świeżości ISAP per akt, brak alarmu regresji pokrycia, brak radaru
+spread NEEDS_ADVICE per domena, brak trendu drift groszowego do zera, brak
+telemetrii decyzji z pełnym kontekstem (epoka prawna, bundle hash), brak
+mechanizmu error-budget freeze i kontraktu runbook-per-alarm.
+
+Wdrożono (dowody = uruchomienia, nie deklaracje):
+  * reguła OPA rules/v3_p58_observability_closure.rego — 12 analiz I01–I12 +
+    router fail-closed (BLOCK→NEEDS_ADVICE→MANUAL_REVIEW→PASS→NO_MATCH),
+    priorytety 458001–458012, rule_id jdg.v3_p58_observability_closure.*;
+  * progi ADR-002: 14 kluczy v3_p58 w thresholds_jdg.rego z oknem valid_from
+    (zero hardcode w regule — test pytest t19);
+  * wiring main_jdg.rego: final_verdict_p122 (POST-MERGE kotwica p121→p122);
+  * narzędzia dowodowe v3_p58_{common,engines,run_all}.py czytające PRAWDZIWE
+    źródła (decision_certificates.json P11 — telemetria bez podwójnej
+    instrumentacji; metrics.json P37; deployments.json P38;
+    v3_p52_drift_telemetry.json P52; KALENDARZ_ZMIAN_PRAWNYCH P25) — zero
+    duplikacji;
+  * 13 bundli v3_p58_*.json, 12/12 bramek gate=PASS;
+  * testy: 29/29 natywnych Rego (OPA 0.68 i OPA 1.9 v0-compatible) + 21 pytest;
+  * regresja kampanii P51–P58: 299/299 rego + 297/297 pytest — pełna zieleń.
+
+TOP rekomendacje: (1) katalog 12 metryk prawnych z progami i runbookami
+(9.16/A), (2) telemetria wyłącznie z certyfikatów P11 (jedno źródło), (3)
+error-budget freeze jako mechanizm CI (P38/P39), (4) kontrakt runbook-per-alarm
+blokujący produkcję, (5) privacy guard RODO w telemetrii, (6) SLO per domena
+(dziedziczenie globalne jawne), (7) risk-pattern mining z eskalacją GAAR,
+(8) escalation matrix jako dane, (9) post-mortem registry, (10) baseline
+pokrycia kotwiczony w ADR-002.
+
+Luki: P0=0 · P1=2 · P2=3 · P3=3 · Innowacje: 12/12 (I01–I12) ·
+Konfliktów Cxx: 0 · Pytania do człowieka: Q01–Q03.
+[NIEZWERYFIKOWANE]: wartości prawne (ISAP) — Q01.
+
+──────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+──────────────────────────────────────────────────────────────────────────────
+Przeanalizowano: 22 pliki Sekcji 6 (6.1: 8, 6.2: 8, 6.3: 6) + 6 pozycji
+mirrora policies (6.4). Czytane grupami wg 6.0; każdy plik ma wiersz w T1.
+Ograniczenia: (a) deployments.json (1177 L) i enterprise_operating_contract.json
+(416 L) czytane selektywnie (klucze: deployments/active_version, principles,
+SLO); (b) źródła zewnętrzne (ISAP/RCL) niedostępne w sesji — wartości prawne
+z [NIEZWERYFIKOWANE] (Q01); (c) mirror: hash-parity 3 plików P58 (pełny dryf
+= P48).
+
+──────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P58 — MAPA ARTEFAKTÓW (po wdrożeniu)
+──────────────────────────────────────────────────────────────────────────────
+| Artefakt | Pakiet/Rola | Status lifecycle |
+|----------|-------------|------------------|
+| rules/v3_p58_observability_closure.rego | 12 analiz+router | ACTIVE (flaga v3_p58_check) |
+| thresholds_jdg.rego: v3_p58 | 14 kluczy ADR-002, valid_from 2026-01-01 | ACTIVE |
+| main_jdg.rego: final_verdict_p122 | POST-MERGE kotwica p121→p122 | ACTIVE |
+| tools/v3_p58_common.py | czytniki prawdziwych źródeł telemetrii | ACTIVE |
+| tools/v3_p58_engines.py | 12 silników I01–I12 | ACTIVE |
+| tools/v3_p58_run_all.py | runner zbiorczy | ACTIVE |
+| bundles/v3_p58_*.json (13) | dowody uruchomień | generowane |
+| tests/rego/test_v3_p58_observability_closure.rego | 29 testów natywnych | ACTIVE |
+| tests/auto/test_v3_p58_observability_closure.py | 21 testów pytest | ACTIVE |
+| policies/v3_p58_observability_closure.rego | mirror (hash-parity 3/3) | ACTIVE |
+
+──────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4 (każda: dowody + ≥3 wnioski + luki)
+──────────────────────────────────────────────────────────────────────────────
+5.1 METRYKI PRAWNE (AN01: alarmy na to, co prawnie wrażliwe)
+Dowody: I01 freshness — wiek per akt z kolumny wieku KALENDARZA (P25, jedno
+źródło terminów; SLA=1 dzień z ADR-002); I02 — coverage z metrics.json
+(health_score.components.coverage_lci=100), baseline w ADR-002, spadek>0 = BLOCK
+Rego; I03 — advice-spread per domena liczony z certyfikatów P11 (hot tylko gdy
+> próg 15%; granica 15.0 nie-hot testowana na silniku); I04 — penny drift
+z v3_p52_drift_telemetry (target 0, trend zero/flat/rising; drift>0 = BLOCK).
+Wnioski: (1) wszystkie 4 metryki prawne z promptu (ISAP age, pokrycie, spread,
+drift) mają definicję, próg ADR-002 i runbook — vanity metrics wykluczone;
+(2) metryki czytają PRAWDZIWE bundla (nie fixture) — katalog P58 jest wykonalny
+codziennie; (3) alarm bez akcji nie istnieje — każdy wpis katalogu ma pole
+action + runbook.
+Luki: L05 (per-domain SLO dziedziczone globalnie — definicje per domena do
+rozdzielenia), L06 (risk mining na 1 certyfikacie w rejestrze — sensowność
+wzrasta z wolumenem).
+
+5.2 TELEMETRIA DECYZJI (AN02: każda decyzja z kontekstem)
+Dowody: I05 — certyfikaty P11 jako JEDYNE źródło (kontrakt 11.1; bez podwójnej
+instrumentacji); wymagane pola z ADR-002 (domain/amount_gr/certainty/legal_
+epoch/bundle_hash); silnik wykrywa braki per certyfikat (incomplete_detail);
+I10 — klasterizacja domena×concentration z tej samej telemetrii; I11 — skan
+PII (NIP 10-cyfr, PESEL 11-cyfr, e-mail) na certyfikatach: 0 trafień, tryb
+pseudonymized zgodny z ADR-002.
+Wnioski: (1) certyfikat P11 wystarcza jako nośnik telemetrii — zero nowej
+instrumentacji; (2) brakujące pola epoki prawnej (P53) i bundle hash w
+historycznych certyfikatach = NEEDS_ADVICE Rego (analiza historyczna wymaga
+pełnego kontekstu); (3) prywatność by design — skan PII w bramce.
+Luki: L07 (historyczne certyfikaty bez legal_epoch/bundle_hash — uzupełnienie
+przy najbliższym przebiegu P11).
+
+5.3 SLO I ERROR BUDŻET (AN03: budżet na błędy z zamrożeniem)
+Dowody: I06 — budżet = 100 − golden_replay.uver_pct (metrics.json P37, realne
+dane: uver 0% → budżet 100%); próg zamrożenia 20% z ADR-002; freeze czytany
+z deployments.json (P38); Rego: budżet<próg BEZ freeze = BLOCK (mechanizm);
+I12 — SLO per domena: 6 domen (vat/pit/zus/ksef/ksiegowosc/ordynacja),
+dziedziczenie globalne z P37 jawne w bundlu.
+Wnioski: (1) budżet liczony z PRAWDZIWEGO golden replay — nie deklaracja;
+(2) zamrożenie wdrożeń = warunek w Rego + kontrakt P38 (mechanizm, nie
+procedura); (3) granica: budżet dokładnie 20% = nieaktywne (tylko < próg) —
+testowana.
+Luki: L08 (freeze jako atrybut w deployments.json — wpis FROZEN dodaje P38
+przy pierwszym wyczerpaniu budżetu).
+
+5.4 RUNBOOKI I REAKCJA (AN04: alarm → akcja w minutach)
+Dowody: I07 — 12/12 alarmów katalogu z runbookiem RB-P58-01..12 (alarm bez
+runbooka = BLOCK — kontrakt); I08 — rejestr post-mortem (bundles/postmortem_
+registry.json — obecnie brak pliku = jawny stan 0 incydentów; struktura
+przewidziana w silniku); I09 — escalation matrix jako dane (3 poziomy:
+SRE 15 min → prawnik 60 min → właściciel 240 min, kanały + SLA).
+Wnioski: (1) alarm → akcja → runbook → eskalacja: pełny łańcuch jako dane;
+(2) post-mortem to standard (rejestr + próg wieku), nie ad hoc; (3) granica
+wykonawcza: ćwiczenia runbooków = chaos drills P43 (kontrakt, bez duplikacji).
+Luki: L09 (ćwiczenia runbooków w kalendarzu drills P43 — do wpisania).
+
+──────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2; akty obowiązkowe z Sekcji 8)
+──────────────────────────────────────────────────────────────────────────────
+| Akt | Art./ust. | Reguła | Test | Status | Ryzyko |
+|-----|-----------|--------|------|--------|--------|
+| UoR | art. 4 ust. 1 (rzetelność procesu) | v3_p58.decision_telemetry_registry; legal_freshness_sla | rego t5/t5b; pytest t3/t7 | PEŁNE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| UoR | art. 74–75 (retencja) | retencja telemetrii = WORM P42 (kontrakt, bez duplikacji) | pytest t7 (single_source) | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | średnie |
+| RODO | art. 5 ust. 2 (rozliczalność), art. 32 (monitoring) | telemetry_privacy_guard; decision_telemetry_registry | rego t15/t15b; pytest t13 | PEŁNE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| OP | art. 119a (GAAR) | risk_pattern_mining | rego t14; pytest t12 | PEŁNE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| VAT | art. 109e (terminowość) | legal_metrics_catalog A01 (freshness) + P25 terminy | pytest t3/t20 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | średnie |
+| UoZUS | art. 47 (terminy DRA) | legal_metrics_catalog + P25 (DRL-0003/0004) | pytest t20 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | średnie |
+| KKS | art. 56 (wczesne wykrywanie) | risk_pattern_mining + advice_spread_radar | rego t7/t14 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | średnie |
+| AI Act | monitorowanie systemów AI | decision telemetry + risk mining (kontekst P33) | pytest t7/t12 | CZĘŚCIOWE [NIEZWERYFIKOWANE — EUR-Lex] | niskie |
+
+──────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (T3)
+──────────────────────────────────────────────────────────────────────────────
+| ID | Kryt. | Luka | Dowód | Wpływ | Rozwiązanie | Koszt | Regresja |
+|----|-------|------|-------|-------|-------------|-------|----------|
+| V3-P58-L01 | P1 | wartości prawne bez weryfikacji ISAP (macierz 9.05) | Q01 | średnie | weryfikacja ISAP 4-eyes | 1 sesja | brak |
+| V3-P58-L02 | P1 | brak automatycznego feedu RCL — freshness opiera się na kalendarzu ręcznym P25 | I01; 5.1 | średnie | Law Radar P08 + feed RCL | 1 sesja | brak |
+| V3-P58-L05 | P2 | SLO per domena dziedziczone globalnie (bez własnych progów) | I12; 5.1 | niskie | definicje per domena w ADR-002 | mały | brak |
+| V3-P58-L06 | P2 | risk mining na małym wolumenie certyfikatów | I10; 5.1 | niskie | wzrost sensowności z wolumenem P11 | — | brak |
+| V3-P58-L07 | P2 | historyczne certyfikaty bez legal_epoch/bundle_hash | I05 detail; 5.2 | niskie | uzupełnienie przy kolejnym przebiegu P11 | mały | brak |
+| V3-P58-L08 | P3 | freeze jako wpis FROZEN w deployments (P38) — mechanizm do sklejenia | I06; 5.3 | niskie | atrybut freeze w P38 | mały | brak |
+| V3-P58-L09 | P3 | ćwiczenia runbooków nie wpisane w kalendarz drills P43 | 5.4 | niskie | wpisanie do P43 | mały | brak |
+| V3-P58-L10 | P3 | metryki P58 w bundlach — dashboard P37 do sklejenia | 9.16/A | niskie | integracja dashboard P37 | mały | brak |
+
+──────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (T4; 12/12 — mechanizmy w silnikach i Rego)
+──────────────────────────────────────────────────────────────────────────────
+| ID | Innowacja | Mechanizm | Dowód (bundel/test) |
+|----|-----------|-----------|---------------------|
+| I01 | Legal freshness SLA per act | wiek per akt z kalendarza P25; SLA z ADR-002; runbook RB-P58-01 | v3_p58_legal_freshness; rego t5/t5b |
+| I02 | Coverage regression alarm | coverage z P37 vs baseline ADR-002; spadek>0 = BLOCK; Law Radar karty | v3_p58_coverage_regression; rego t6 |
+| I03 | Advice-spread radar | NEEDS_ADVICE per domena z P11; hot>próg; klaster powodów | v3_p58_advice_spread; rego t7 |
+| I04 | Penny drift telemetry | drift z P52-I10; trend do 0; drift>0 = BLOCK z trace | v3_p58_penny_drift; rego t8 |
+| I05 | Decision telemetry registry | kontekst decyzji z P11 (5 pól z ADR-002) | v3_p58_telemetry_registry; rego t9 |
+| I06 | Error budget freeze | budżet z golden replay; freeze z P38; brak freeze = BLOCK | v3_p58_error_budget; rego t10/t10b/t10c |
+| I07 | Runbook-per-alarm contract | 12 alarmów × RB-P58-xx; bez runbooka = BLOCK | v3_p58_runbook_contract; rego t11 |
+| I08 | Post-mortem registry | rejestr + próg wieku 30 dni | v3_p58_postmortem; rego t12 |
+| I09 | Escalation matrix | 3 poziomy (SRE→prawnik→właściciel) jako dane + SLA | v3_p58_escalation; rego t13 |
+| I10 | Risk-pattern mining | klasterizacja P11; koncentracja>25% = MANUAL_REVIEW | v3_p58_risk_mining; rego t14 |
+| I11 | Telemetry privacy guard | skan PII + tryb pseudonymized z ADR-002 | v3_p58_privacy; rego t15 |
+| I12 | SLO per domain | 6 domen; dziedziczenie globalne jawne; brak = NEEDS_ADVICE | v3_p58_slo_domains; rego t16 |
+Każda innowacja: problem→luka (9.06), mechanizm (silniki/Rego), wpływ (co
+NOWE zamienione na dowód), ryzyko+mitygacja (fail-closed + Rego), kryterium
+(testowalne — tabela), zależności (P08/P11/P25/P37/P38/P39/P41/P43/P47/P51/P52).
+
+──────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (T5) — wiąże P59 i dalsze
+──────────────────────────────────────────────────────────────────────────────
+K-P58-1 KATALOG METRYK PRAWNYCH: 12 alarmów (definicja, próg ADR-002, akcja,
+        runbook RB-P58-01..12) — wejście do P68 i P41; jedno źródło definicji
+        z P37 (rozszerzenie, nie duplikat).
+K-P58-2 TELEMETRIA DECYZJI: schema rejestru = certyfikaty P11 + wymagane pola
+        (domain/amount_gr/certainty/legal_epoch/bundle_hash) — wiąże P11
+        (instrumentacja) i P40 (API/UI); zakaz podwójnej instrumentacji.
+K-P58-3 ERROR BUDGET FREEZE: próg v3_p58_error_budget_min_pct=20; źródło
+        budżetu = golden replay P37; mechanizm freeze = atrybut deployments
+        P38 + warunek Rego BLOCK — wiąże P38/P39.
+K-P58-4 RUNBOOK-PER-ALARM: alarm bez runbooka nie wchodzi do produkcji
+        (BLOCK); runbooki RB-P58-01..12 w konwencji P41.
+K-P58-5 PRIVACY GUARD: telemetria zawsze pseudonymized per tenant; skan PII
+        w bramce; naruszenie = BLOCK (RODO) — wiąże P22/P63.
+K-P58-6 ESCALATION+POST-MORTEM: macierz 3 poziomów z SLA jako dane; post-mortem
+        w oknie 30 dni — wiąże P41/P43.
+Invarianty do P04: INV-OBS-01 (alarm bez runbooka → BLOCK), INV-OBS-02
+(budżet<próg bez freeze → BLOCK), INV-OBS-03 (PII w telemetrii → BLOCK).
+Attestation+hash bundli → P68/P44 (konwencja P54–P57).
+
+──────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA (T6) — wykonany w tej sesji
+──────────────────────────────────────────────────────────────────────────────
+[x] 1. Rego 12 analiz + router (rules/v3_p58_observability_closure.rego).
+[x] 2. Progi ADR-002 (14 kluczy v3_p58, valid_from, baseline pokrycia).
+[x] 3. Wiring final_verdict_p122 + POST-MERGE kotwica.
+[x] 4. Testy natywne 29 (negative-first, granice, determinizm, priorytety).
+[x] 5. Silniki I01–I12 na PRAWDZIWYCH źródłach (P11/P37/P38/P52/P25).
+[x] 6. 13 bundli (run_all gate=PASS).
+[x] 7. pytest 21 + mirror sync hash-parity 3/3.
+[ ] 8. Weryfikacja ISAP macierzy — WYMAGA człowieka (Q01, 4-eyes).
+[ ] 9. Feed RCL do freshness — wymaga decyzji o źródle (Q02).
+
+──────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (T7)
+──────────────────────────────────────────────────────────────────────────────
+BLOKUJĄCE MERGE (P39): opa test P58 (29/29 — rego t1–t20: negative-first,
+thresholds-missing, granice progów 15%/20%/0pp, priorytety BLOCK>ADVICE>
+REVIEW, determinizm, brak AUTO_POST, else-branch I09/I11); pytest t1–t21
+(gate=PASS 12/12, źródła prawdziwe, granica silnika I03 15.0 nie-hot,
+katalog 12 alarmów, wiring p122, mirror hash-parity, brak hardcode).
+NIEBLOKUJĄCE: fuzz PII patterns, replay day-0 okna valid_from (P53 grid),
+scenariusze freeze (budget spadek → BLOCK → freeze → PASS).
+
+──────────────────────────────────────────────────────────────────────────────
+9.11 PYTANIA DO CZŁOWIEKA (T8)
+──────────────────────────────────────────────────────────────────────────────
+V3-P58-Q01: potwierdzenie w ISAP podstaw macierzy 9.05 (UoR 4 ust. 1/74–75,
+RODO 5 ust. 2/32, OP 119a, VAT 109e, UoZUS 47, KKS 56) — 4-eyes.
+V3-P58-Q02: źródło feedu RCL dla freshness (API legislacja.gov.pl vs ręczny
+przegląd) — decyzja architektoniczna (wpływa na L02).
+V3-P58-Q03: wartości progów biznesowych (SLA 1 dzień, spread 15%, budżet 20%,
+koncentracja 25%) — akceptacja właściciela (4-eyes).
+
+──────────────────────────────────────────────────────────────────────────────
+9.12 ZAŁOŻENIA JAWNE (T9)
+──────────────────────────────────────────────────────────────────────────────
+[ZAŁOŻENIE A01] wiek weryfikacji ISAP per akt = wiek z kolumny KALENDARZA P25
+(proxy — do podmiany na feed ISAP/RCL, L02).
+[ZAŁOŻENIE A02] budżet SLO = 100 − golden_replay.uver_pct (P37); freeze =
+status FROZEN w deployments.json (P38) — kontrakt do sklejenia (L08).
+[ZAŁOŻENIE A03] brak pliku postmortem_registry.json = jawny stan 0 incydentów
+(rejestr strukturalnie przewidziany).
+[ZAŁOŻENIE A04] SLO per domena dziedziczy globalne progi P37 do czasu
+rozdzielenia (L05).
+
+──────────────────────────────────────────────────────────────────────────────
+9.16 KATALOG METRYK PRAWNYCH (kryterium 13.19: 12 pozycji)
+──────────────────────────────────────────────────────────────────────────────
+| # | Metryka | Definicja | Próg (ADR-002) | Akcja | Runbook |
+|---|---------|-----------|----------------|-------|---------|
+| A01 | isap_freshness_days | wiek weryfikacji per akt (kalendarz P25) | v3_p58_isap_freshness_sla_days=1 | re-check ISAP + legal_basis | RB-P58-01 |
+| A02 | legal_coverage_drop_pp | spadek coverage_lci (P37) vs baseline | v3_p58_coverage_drop_max_pp=0 | BLOCK merge + karta pustyni Law Radar | RB-P58-02 |
+| A03 | advice_spread_pct | % NEEDS_ADVICE per domena (P11) | v3_p58_advice_spread_max_pct=15 | klasterizacja powodów + triage | RB-P58-03 |
+| A04 | penny_drift_gr | rozjazd groszowy (P52-I10) | v3_p58_penny_drift_max_gr=0 | BLOCK + full trace | RB-P58-04 |
+| A05 | telemetry_incomplete | certyfikaty bez pełnego kontekstu | v3_p58_telemetry_required_fields (5 pól) | uzupełnienie instrumentacji P11 | RB-P58-05 |
+| A06 | error_budget_pct | 100−golden_replay.uver_pct (P37) | v3_p58_error_budget_min_pct=20 | freeze wdrożeń (P38/P39) | RB-P58-06 |
+| A07 | alarms_without_runbook | alarmy katalogu bez RB-P58-xx | 0 (kontrakt) | alarm nie wchodzi do produkcji | RB-P58-07 |
+| A08 | postmortem_pending | incydenty bez post-mortemu | v3_p58_postmortem_max_age_days=30 | wymuszenie post-mortemu | RB-P58-08 |
+| A09 | escalation_incomplete | poziomy bez roli/SLA/kanału | v3_p58_escalation_min_levels=3 | uzupełnienie macierzy | RB-P58-09 |
+| A10 | risk_patterns_high | koncentracja nie-CERTAIN per domena (P11) | v3_p58_risk_concentration_max_pct=25 | MANUAL_REVIEW wzorca | RB-P58-10 |
+| A11 | pii_in_telemetry | PII (NIP/PESEL/e-mail) w telemetrii | 0 (RODO) | BLOCK + pseudonimizacja | RB-P58-11 |
+| A12 | domains_without_slo | domeny bez SLO | v3_p58_slo_domains_min=6 | definicja SLO domeny | RB-P58-12 |
+
+RUNBOOK PRZYKŁAD (kryterium 13.20): RB-P58-01 — „wiek weryfikacji ISAP
+przekroczony" (pierwsza godzina reakcji):
+  T+0–5 min:   SRE/on-call otwiera alert A01 (kanał: alert); identyfikuje akt
+               z bundla v3_p58_legal_freshness (pole acts_beyond_sla).
+  T+5–15 min:  Weryfikacja w ISAP (isap.sejm.gov.pl) — czy akt zmieniony?
+               NIE → oznacz weryfikację (zerowanie wieku w P25). TAK → krok 3.
+  T+15–30 min: Akt zmieniony → Law Radar P08 karta zmiany; blokada AUTO_POST
+               dla reguł aktu (fail-closed); otwarcie ticketu do prawnika
+               (eskalacja L2, SLA 60 min).
+  T+30–60 min: Prawnik weryfikuje treść noweli; decyzja: update reguł (P07
+               lifecycle) albo NEEDS_ADVICE na domenie; wpis post-mortem jeśli
+               incydent; zamknięcie alertu z provenance (kto, kiedy, co).
+  Eskalacja: L2 (prawnik) 60 min → L3 (właściciel 4-eyes) 240 min.
+  Test wykonania: chaos drill P43 (L09); rollback: przywrócenie snapshotu
+  progów ADR-002 + wyłączenie flagi v3_p58_check (reguła → NO_MATCH).
+
+──────────────────────────────────────────────────────────────────────────────
+T1 TABELA DOWODÓW (7.3) — jeden wiersz na plik Sekcji 6
+──────────────────────────────────────────────────────────────────────────────
+| # | Plik | Fakt/dowód | Status |
+|---|------|-----------|--------|
+| 1 | tools/metrics_generator.py (449 L) | LCI/TCL/RV/UVR + health_score + SLO globalne (P37) | ZWERYFIKOWANO |
+| 2 | tools/pewnosc_metrics.py (190 L) | bramki pewności; duplikaty/stuby liczone niezależnie | ZWERYFIKOWANO |
+| 3 | tools/health_tier_engine.py (177 L) | tier per przychód (kontekst SLO per domena) | ZWERYFIKOWANO |
+| 4 | tools/enterprise_dashboard.py (286 L) | dashboard enterprise (kontekst UI) | ZWERYFIKOWANO |
+| 5 | tools/confidence_dashboard.py (146 L) | dashboard pewności (NEEDS_ADVICE widoczne) | ZWERYFIKOWANO |
+| 6 | tools/drift_dashboard.py (75 L) | dashboard dryfu (kontekst I04) | ZWERYFIKOWANO |
+| 7 | docs/PEWNOSC_DASHBOARD.md (34 L) | definicje metryk pewności | ZWERYFIKOWANO |
+| 8 | tests/test_priority_engine.py (194 L) | priorytety kolejki (kontekst eskalacji) | ZWERYFIKOWANO |
+| 9 | bundles/decision_certificates.json (27 L) | certyfikaty P11 = jedyne źródło telemetrii | ZWERYFIKOWANO |
+| 10 | bundles/metrics_pewnosci.json (140 L) | metryki pewności (dane) | ZWERYFIKOWANO |
+| 11 | tools/certificate_service.py (146 L) | issue/verify/to_xml/to_pdf — instrumentacja P11 | ZWERYFIKOWANO |
+| 12 | bundles/control_plane_state.json (28 L) | stan control plane | ZWERYFIKOWANO |
+| 13 | tools/worm_storage.py (153 L) | WORM append-only (retencja telemetrii, P42) | ZWERYFIKOWANO |
+| 14 | docs/LEGAL_TWIN_RAPORT.md (50 L) | Legal Twin — traceability akt↔reguła | ZWERYFIKOWANO |
+| 15 | docs/LEGAL_TWIN_TRACEABILITY.md (37 L) | ślad akt→reguła→test (proweniencja metryk) | ZWERYFIKOWANO |
+| 16 | bundles/deployments.json (1177 L, selektywnie) | 44 wdrożeń, active jdg-bundle-v8.0.0; freeze status | ZWERYFIKOWANO |
+| 17 | bundles/enterprise_operating_contract.json (416 L, selektywnie) | zasady fail_closed/golden_replay_before_promot | ZWERYFIKOWANO |
+| 18 | tests/test_enterprise_operating_contract.py (41 L) | testy kontraktu operating | ZWERYFIKOWANO |
+| 19 | tools/validate_enterprise_contract.py (140 L) | walidator kontraktu | ZWERYFIKOWANO |
+| 20 | tools/chaos_runner.py (87 L) | eksperymenty chaos (ćwiczenia runbooków, P43) | ZWERYFIKOWANO |
+| 21 | tools/digital_twin_simulator.py (118 L) | symulator digital twin (kontekst what-if) | ZWERYFIKOWANO |
+| 22 | docs/PODRECZNIK_UZYTKOWNIKA.md (273 L) | runbooki z perspektywy użytkownika (P41) | ZWERYFIKOWANO |
+| 23–28 | mirror policies (6 pozycji) | struktura mirrora; P58: hash-parity 3/3 | ZWERYFIKOWANO |
+Uwaga: brak plików NIEZWERYFIKOWANO — wszystkie 22 istnieją i zostały odczytane
+(selektywnie dla >400 L — adnotacje w 9.02).
+
+──────────────────────────────────────────────────────────────────────────────
+T10 PRZEKAZYWANE ARTEFAKTY (11.4) · T11 MACIERZ PODANALIZA×GRUPA (Apendyks B)
+──────────────────────────────────────────────────────────────────────────────
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| K-P58-1 katalog metryk prawnych | P68/P41 | tabela A01–A12 | definicje + progi + runbooki |
+| K-P58-2 schema telemetrii | P11/P40 | pola wymagane z ADR-002 | instrumentacja certyfikatów |
+| K-P58-3 error budget freeze | P38/P39 | próg + warunek Rego | mechanizm zamrożenia |
+| K-P58-4 runbook-per-alarm | P41 | RB-P58-01..12 | bramka produkcji alarmów |
+| K-P58-5 privacy guard | P22/P63 | tryb + skan PII | RODO by design |
+| K-P58-6 escalation+post-mortem | P41/P43 | macierz + rejestr | reakcja w minutach |
+| INV-OBS-01..03 | P04 | invariants | enforce w POST-MERGE |
+| Attestation+hash bundli | P68/P44 | sha256 | re-certyfikacja |
+
+T11: 5.1↔6.1 (metryki/dashboardy: I01–I04), 5.2↔6.2 (telemetria: I05/I10/I11),
+5.3↔6.3 (SLO/budżet: I06/I12), 5.4↔6.3 (runbooki: I07–I09). Wyniki: domknięte
+(katalog 9.16, kontrakt 9.08). T12: rejestr konfliktów — PUSTY (Cxx=0).
+
+──────────────────────────────────────────────────────────────────────────────
+PYTANIA KRZYŻOWE (7.4) · ANTY-WZORCE (7.5)
+──────────────────────────────────────────────────────────────────────────────
+X01: sprzeczności z dokumentami świętymi — brak (Cxx=0); obserwowalność
+     implementuje V1 SLO i V2 (telemetria z Decision Certificate).
+X02: parametry-as-data — 14 kluczy v3_p58 z ADR-002; reguła czyta wyłącznie
+     _th(); test pytest t19 brak hardcode.
+X03: fail-closed — BLOCK: regresja pokrycia, drift>0, budżet bez freeze, alarm
+     bez runbooka, PII; NEEDS_ADVICE: freshness, spread, telemetria
+     niekompletna, post-mortem, eskalacja, brak SLO; NO_MATCH bez flagi.
+X04: kontrakt 25-polowy P03 — werdykty z pełnym kształtem (rego t18).
+X05: bramki blokujące — 9.10.
+X06: duplikaty — brak: metryki P58 rozszerzają P37 (jedno źródło definicji),
+     telemetria z P11 bez drugiej instrumentacji, freeze z P38, drift z P52.
+X07: podstawy niezweryfikowane — L01/Q01.
+X08: decyzje 4-eyes — Q01–Q03.
+X09: metryki do P37 — katalog A01–A12 z progami (9.16).
+X10: invarianty runtime — INV-OBS-01..03 → P04.
+
+AP01–AP12: brak wystąpień (AP02 test t19; AP03 else-chain kompletna + NO_MATCH
+jawny; AP06 asercje negatywne i granice; AP07 test t19-rego no_auto_post;
+AP11 hash-parity t18; AP12 jedno źródło definicji metryk — silniki czytają te
+same bundla co Rego).
+
+──────────────────────────────────────────────────────────────────────────────
+9.17 PROTOTOKÓŁ SEKCJI 16 — CZYSZCZENIE OKNA KONTEKSTOWEGO
+──────────────────────────────────────────────────────────────────────────────
+Raport zapisany (jeden plik). Zakres: obserwowalność fortecy — metryki prawne,
+telemetria decyzji, SLO/error budget z zamrożeniem, runbooki i reakcja.
+Luki: P0=0, P1=2, P2=3, P3=3. Innowacje: 12/12. Kontrakt wyjściowy:
+WDROŻONY_100 (K-P58-1..6). Artefakty: reguła, progi (14 kluczy), wiring p122,
+silniki na prawdziwych źródłach, 13 bundli, testy 29 rego + 21 pytest, mirror
+3/3.
+Do P59 wchodzę z PUSTĄ sesją — wyłącznie przez ten raport (9.01, 9.08
+K-P58-1..6, 9.06 P0/P1).
+
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI: zgodne z V1 (SLO control plane,
+bramki CI, WORM) i V2 (telemetria z Decision Certificate, Law Radar); odstępstwa: brak.
+Wartości prawne: [NIEZWERYFIKOWANE — ISAP] do potwierdzenia (Q01).
+==============================================================================

@@ -1,0 +1,26 @@
+{
+  "header": {
+    "schema": "jdg.v3_p56.vat_pit.audit.v1",
+    "part": "P56",
+    "slug": "VAT_PIT_SZCZEGOLY",
+    "generated_at": "2026-09-13T10:16:36.661484+00:00",
+    "analyses": {
+      "I05": "PASS"
+    }
+  },
+  "result": {
+    "costs_total": 5,
+    "excluded_ids": [
+      "KST-0102",
+      "KST-0104"
+    ],
+    "excluded_categories": [
+      "reprezentacja",
+      "reprezentacja_alkohol",
+      "automobile_nadmierne"
+    ],
+    "provenance": "PIT art. 23 ust. 1 [NIEZWERYFIKOWANE]; tools/p12_uor_toolkit.py",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T10:16:36.661484+00:00"
+  }
+}

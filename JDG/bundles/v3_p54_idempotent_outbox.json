@@ -1,0 +1,27 @@
+{
+  "schema": "jdg.v3_p54.audit.v1",
+  "part": "P54",
+  "slug": "KSEF_JPK_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:34.280120+00:00",
+  "engine": "I06",
+  "context_key": "I06_idempotent_outbox",
+  "gate": "PASS",
+  "data": {
+    "total": 1,
+    "duplicates_detected": 1,
+    "duplicates_undetected": 0,
+    "failed_escalated": 0,
+    "max_retries": 10,
+    "backoff_cap_sec": 3600,
+    "exactly_once": "hash treści faktury (ksef_outbox._invoice_hash)",
+    "note": "duplikat = pozytywna kontrola detekcji (kontrola idempotencji, nie awaria)"
+  },
+  "total": 1,
+  "duplicates_detected": 1,
+  "duplicates_undetected": 0,
+  "failed_escalated": 0,
+  "max_retries": 10,
+  "backoff_cap_sec": 3600,
+  "exactly_once": "hash treści faktury (ksef_outbox._invoice_hash)",
+  "note": "duplikat = pozytywna kontrola detekcji (kontrola idempotencji, nie awaria)"
+}

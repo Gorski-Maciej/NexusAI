@@ -1,0 +1,6 @@
+# NexusAI JDG — zależności zewnętrzne (supply chain, P59-I09)
+# Wersje przypięte == do wersji zweryfikowanych w środowisku testowym.
+# Zmiana wersji wymaga przeglądu (CI: SBOM diff — v3_p59_engines.I09).
+httpx==0.28.1
+PyYAML==6.0.3
+pytest==9.0.3

@@ -1,0 +1,43 @@
+{
+  "header": {
+    "schema": "jdg.v3_p57.ingest.audit.v1",
+    "part": "P57",
+    "slug": "INGEST_DANYCH",
+    "generated_at": "2026-09-13T12:45:13.494424+00:00",
+    "analyses": {
+      "I03_semantic_dedup_key": "PASS"
+    }
+  },
+  "result": {
+    "dups_total": 2,
+    "registered": [
+      "DOC-003",
+      "DOC-003-DUP"
+    ],
+    "unregistered": [],
+    "register": [
+      {
+        "key": [
+          "5261040828",
+          "2026-09-03",
+          9900,
+          "FV/2026/09/003"
+        ],
+        "docs": [
+          "DOC-003",
+          "DOC-003-DUP"
+        ],
+        "action": "MANUAL_REVIEW"
+      }
+    ],
+    "key_fields": [
+      "nip",
+      "data",
+      "kwota_gr",
+      "numer"
+    ],
+    "provenance": "UoR art. 5 [NIEZWERYFIKOWANE — ISAP]; P32 idempotencja; prompt P57 Sekcja 10-I03",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T12:45:13.494424+00:00"
+  }
+}

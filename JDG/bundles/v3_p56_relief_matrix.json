@@ -1,0 +1,28 @@
+{
+  "header": {
+    "schema": "jdg.v3_p56.vat_pit.audit.v1",
+    "part": "P56",
+    "slug": "VAT_PIT_SZCZEGOLY",
+    "generated_at": "2026-09-13T10:16:37.872053+00:00",
+    "analyses": {
+      "I08": "PASS"
+    }
+  },
+  "result": {
+    "reliefs_active": 3,
+    "conflicts": [
+      "ulga_na_start"
+    ],
+    "shared_limit": 85528.0,
+    "conflict_resolved": true,
+    "pairs_checked": [
+      "IP_BOX+RYCZALT",
+      "RYCZALT+KWOTA_WOLNA",
+      "IP_BOX+KWOTA_WOLNA",
+      "ZUS+RYCZALT_ZDROWOTNA"
+    ],
+    "provenance": "tools/pit_innovation_tools.py resolve_relief_conflicts; P55 K-P55-2 [NIEZWERYFIKOWANE]",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T10:16:37.872053+00:00"
+  }
+}

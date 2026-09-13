@@ -1,0 +1,21 @@
+{
+  "header": {
+    "schema": "jdg.v3_p59.security.audit.v1",
+    "part": "P59",
+    "slug": "SECURITY_DOMKNIECIE",
+    "generated_at": "2026-09-13T14:28:53.333437+00:00",
+    "analyses": {
+      "I03_rule_history_hash_chain": "PASS"
+    }
+  },
+  "result": {
+    "chain_valid": true,
+    "records": 1,
+    "tamper_detected": true,
+    "tamper_cases": 1,
+    "drill_note": "tamper na kopii w pamięci — prawdziwy WORM nietykalny (append-only)",
+    "provenance": "UoR art. 74 [NIEZWERYFIKOWANE — ISAP]; P42 WORM; prompt P59 Sekcja 10-I03",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T14:28:53.333437+00:00"
+  }
+}

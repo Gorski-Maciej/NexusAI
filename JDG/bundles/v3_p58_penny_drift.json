@@ -1,0 +1,22 @@
+{
+  "header": {
+    "schema": "jdg.v3_p58.observability.audit.v1",
+    "part": "P58",
+    "slug": "OBSERWOWALNOSC_DOMKNIECIE",
+    "generated_at": "2026-09-13T13:31:06.907916+00:00",
+    "analyses": {
+      "I04_penny_drift_telemetry": "PASS"
+    }
+  },
+  "result": {
+    "drift_gr": 0,
+    "trend": "zero",
+    "target": 0,
+    "traces": [],
+    "threshold_gr": 0,
+    "source": "bundles/v3_p52_drift_telemetry.json (P52-I10 kontrakt: trend do 0)",
+    "provenance": "P52 granice groszowe; prompt P58 Sekcja 10-I04",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T13:31:06.907916+00:00"
+  }
+}

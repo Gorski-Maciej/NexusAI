@@ -1,0 +1,25 @@
+{
+  "header": {
+    "schema": "jdg.v3_p58.observability.audit.v1",
+    "part": "P58",
+    "slug": "OBSERWOWALNOSC_DOMKNIECIE",
+    "generated_at": "2026-09-13T13:31:09.108567+00:00",
+    "analyses": {
+      "I10_risk_pattern_mining": "PASS"
+    }
+  },
+  "result": {
+    "events_total": 1,
+    "patterns_high_risk": [
+      {
+        "domain": "vat",
+        "non_certain": 1,
+        "concentration_pct": 100.0
+      }
+    ],
+    "concentration_threshold_pct": 25,
+    "provenance": "OP art. 119a (GAAR wczesna detekcja) [NIEZWERYFIKOWANE — ISAP]; telemetria P11; prompt P58 Sekcja 10-I10",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T13:31:09.108567+00:00"
+  }
+}

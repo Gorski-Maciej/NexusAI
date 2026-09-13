@@ -1,0 +1,24 @@
+{
+  "header": {
+    "schema": "jdg.v3_p58.observability.audit.v1",
+    "part": "P58",
+    "slug": "OBSERWOWALNOSC_DOMKNIECIE",
+    "generated_at": "2026-09-13T13:31:05.783762+00:00",
+    "analyses": {
+      "I01_legal_freshness_sla": "PASS"
+    }
+  },
+  "result": {
+    "acts_total": 6,
+    "acts_covered_by_calendar": [],
+    "acts_beyond_sla": [],
+    "acts_unverified": [],
+    "calendar_rows": 5,
+    "sla_days": 1,
+    "source": "docs/KALENDARZ_ZMIAN_PRAWNYCH.md (P25 — jedno źródło terminów)",
+    "runbook": "RB-P58-01",
+    "provenance": "P47 legal basis; P25 kalendarz; prompt P58 Sekcja 10-I01",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T13:31:05.783762+00:00"
+  }
+}

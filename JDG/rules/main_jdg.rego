@@ -123,6 +123,12 @@ import data.jdg.v3_p50_dead_code as v3_p50_dead_code
 import data.jdg.v3_p51_coverage_deserts as v3_p51_coverage_deserts
 import data.jdg.v3_p52_penny_granularity as v3_p52_penny_granularity
 import data.jdg.v3_p53_temporal_closure as v3_p53_temporal_closure
+import data.jdg.v3_p54_ksef_jpk_closure as v3_p54_ksef_jpk_closure
+import data.jdg.v3_p55_zus_closure as v3_p55_zus_closure
+import data.jdg.v3_p59_security_closure as v3_p59_security_closure
+import data.jdg.v3_p58_observability_closure as v3_p58_observability_closure
+import data.jdg.v3_p57_ingest_data as v3_p57_ingest_data
+import data.jdg.v3_p56_vat_pit_details as v3_p56_vat_pit_details
 import data.jdg.micro.quality_v3_13 as micro_quality_v3_13
 import data.jdg.hyper.quality_v3_14 as hyper_quality_v3_14
 import data.jdg.enterprise.quality_v3_15 as enterprise_quality_v3_15
@@ -3276,6 +3282,77 @@ final_verdict_p117 = safe_merge(final_verdict_p116,
         fallback.decide
     ))
 
+# ── PAS 18af: V3-P54 KSEF 2.0 I JPK DOMKNIĘCIE (compliance calendar per typ
+# podatnika, schema version manager FA(2)→FA(3), pre-send dry-run, sandbox
+# replay, status monitor SLA, idempotent outbox, KSeF-to-books sync, correction
+# chains art. 106j, offline mode compliance art. 106ne, error-to-action
+# mapping, deadline watchdog, integration attestation). Fail-closed;
+# nieaktywny dopóki input.jdg_entrepreneur.v3_p54_check nie jest true.
+final_verdict_p118 = safe_merge(final_verdict_p117,
+    safe_merge(v3_p54_ksef_jpk_closure.decide,
+        fallback.decide
+    ))
+
+# ── PAS 18ag: V3-P55 ZUS DOMKNIĘCIE (lifecycle state machine ulg,
+# 30-krotność year-to-date z korektami w locie, mid-month limit split,
+# karencja chorobowa 90 dni + wznowienia, okresy zasiłkowe 182/270,
+# DRA deadline watchdog 10./15. + dzień roboczy, DRA correction chain
+# z odsetkami OP art. 56, ZUS payment priority w P32, zasiłek a zawieszenie
+# art. 6, annual rate windows P53-I10, completeness matrix, benefit
+# pre-payment gate). Fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p55_check nie jest true.
+final_verdict_p119 = safe_merge(final_verdict_p118,
+    safe_merge(v3_p55_zus_closure.decide,
+        fallback.decide
+    ))
+
+# ── PAS 18ah: V3-P56 VAT/PIT SZCZEGÓŁY (place-of-supply art. 28b/28k/42,
+# GTU classification as data, procedure markers engine, KIS interpretation
+# registry, cost exclusion guard art. 23, ryczałt tabela per PKWiU art. 12,
+# mixed-sales proportions art. 90, relief interaction matrix, non-monetary
+# income art. 14 ust. 2 pkt 8, VAT-nieodliczony→koszt flow, suspicious-pattern
+# advice GAAR, detail-coverage score). Fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p56_check nie jest true.
+final_verdict_p120 = safe_merge(final_verdict_p119,
+    safe_merge(v3_p56_vat_pit_details.decide,
+        fallback.decide
+    ))
+
+# ── PAS 18ai: V3-P57 INGEST DANYCH (granica fortecy: ingest contract schema
+# z walidacją na wejściu, NIP checksum gate modulo 11, semantic dedup key
+# NIP+data+kwota+numer, original-first WORM z checksumą przed przetwarzaniem,
+# status state machine przyjęty→…→zarchiwizowany, repair path for rejects,
+# bank reconciliation engine, ingest chaos suite, ingest metrics P37,
+# provenance chain certificate→checksuma→dokument, multi-tenant isolation
+# tenant_id, rate governor per kanał). Fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p57_check nie jest true.
+final_verdict_p121 = safe_merge(final_verdict_p120,
+    safe_merge(v3_p57_ingest_data.decide,
+        fallback.decide
+    ))
+
+# ── PAS 18aj: V3-P58 OBSERWOWALNOŚĆ DOMKNIĘCIE (legal freshness SLA per akt,
+# coverage regression alarm P51, advice-spread radar P49, penny drift telemetry
+# P52, decision telemetry registry z certyfikatów P11, error budget freeze
+# P38/P39, runbook-per-alarm P41, post-mortem registry, escalation matrix,
+# risk-pattern mining GAAR, telemetry privacy guard RODO, SLO per domain).
+# Fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p58_check nie jest true.
+final_verdict_p122 = safe_merge(final_verdict_p121,
+    safe_merge(v3_p58_observability_closure.decide,
+        fallback.decide
+    ))
+
+# ── PAS 18ak: V3-P59 BEZPIECZEŃSTWO DOMKNIĘCIE (threat model as data + gates,
+# signed rules 4-eyes, rule history hash chain WORM, rate-change anomaly alarm,
+# secrets vault contract, CI hardening checklist, build attestation verification,
+# insider threat program, supply chain SBOM, security chaos drills, trust
+# boundary map, security score trend). Fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p59_check nie jest true.
+final_verdict_p123 = safe_merge(final_verdict_p122,
+    safe_merge(v3_p59_security_closure.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -3308,7 +3385,7 @@ final_verdict_p117 = safe_merge(final_verdict_p116,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p117
+    final_verdict_p123
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

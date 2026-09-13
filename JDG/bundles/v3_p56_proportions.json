@@ -1,0 +1,26 @@
+{
+  "header": {
+    "schema": "jdg.v3_p56.vat_pit.audit.v1",
+    "part": "P56",
+    "slug": "VAT_PIT_SZCZEGOLY",
+    "generated_at": "2026-09-13T10:16:37.463749+00:00",
+    "analyses": {
+      "I07": "PASS"
+    }
+  },
+  "result": {
+    "taxable_turnover": 300000,
+    "exempt_turnover": 100000,
+    "ratio_pct": 75.0,
+    "turnover_varies_in_year": true,
+    "quarterly_recalc_policy": "kwartalna",
+    "day_grid_q1": {
+      "day_minus_1": "2025-12-31",
+      "day_0": "2026-01-01",
+      "day_plus_1": "2026-01-02"
+    },
+    "provenance": "tools/vat_innovation_tools.py optimize_proportion → ?%; VAT art. 90 [NIEZWERYFIKOWANE]",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T10:16:37.463749+00:00"
+  }
+}

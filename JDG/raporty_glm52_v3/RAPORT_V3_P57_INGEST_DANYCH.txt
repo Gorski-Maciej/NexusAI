@@ -1,0 +1,358 @@
+==============================================================================
+RAPORT V3 P57 — INGEST DANYCH — DOKUMENTY, FAKTY I KOLEJKI BEZ UTRATY
+I BEZ DUPLIKATÓW — GRANICA FORTECY
+==============================================================================
+Seria:        NEXUSAI JDG — V3 FORTRESS CAMPAIGN (P00–P68)
+Prompt:       JDG/prompty_v3/V3_PROMPT_P57_INGEST_DANYCH.txt
+Raport:       JDG/raporty_glm52_v3/RAPORT_V3_P57_INGEST_DANYCH.txt
+Status:       WDROŻONY_100 (2026-09-13)
+Sesja:        wdrożenie raportu wg protokołu Sekcji 16 (czyste okno kontekstowe)
+Wejście:      K-P56-1..6 z RAPORT_V3_P56 (EXECUTIVE SUMMARY, KONTRAKT WYJŚCIOWY,
+              REJESTR LUK P0/P1) — zero niejawnych założeń z poprzednich sesji.
+
+──────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+──────────────────────────────────────────────────────────────────────────────
+Dojrzałość części P57 przed wdrożeniem: pipeline istniał (testy tax_pipeline,
+facts_aggregator, kanał KSeF offline/outbox z idempotencją P54, recon P32,
+WORM P42), ale INGEST jako GRANICA FORTECY nie był domknięty: brak wersjono-
+wanego schematu wejścia, brak walidacji checksumy NIP na granicy, brak jawnego
+rejestru duplikatów do przeglądu człowieka, brak wymuszenia original-first
+WORM, brak state machine statusów i ścieżki naprawy dla odrzuceń.
+
+Wdrożono (dowody = uruchomienia, nie deklaracje):
+  * reguła OPA rules/v3_p57_ingest_data.rego — 12 analiz I01–I12 + router
+    fail-closed (BLOCK→NEEDS_ADVICE→MANUAL_REVIEW→PASS→NO_MATCH), priorytety
+    457001–457012, rule_id jdg.v3_p57_ingest_data.*;
+  * progi ADR-002: 11 kluczy v3_p57 w thresholds_jdg.rego z oknem valid_from
+    (zero hardcode w regule — testowane);
+  * wiring main_jdg.rego: final_verdict_p121 (POST-MERGE kotwica p120→p121);
+  * narzędzia dowodowe v3_p57_{common,engines,run_all}.py rozszerzające
+    narzędzia rdzenia (worm_storage.sha256, ORCHESTRATOR_DATA_CONTRACT,
+    kontrakt recon P32, kanały KSeF P54) — zero duplikacji;
+  * 13 bundli v3_p57_*.json, 12/12 bramek gate=PASS;
+  * testy: 30/30 natywnych Rego (OPA 0.68 i OPA 1.9 v0-compatible) + 21 pytest;
+  * regresja kampanii P51–P57: 241/241 rego + 276/276 pytest — pełna zieleń.
+
+TOP rekomendacje: (1) schemat jdg.ingest.v1 jako jedyny kontrakt wejścia,
+(2) NIP checksum gate na granicy (modulo 11 + straż trywialności), (3) klucz
+dedup z ADR-002 z rejestrem do przeglądu, (4) original-first WORM, (5) status
+state machine w UI P40, (6) repair path dla każdego odrzucenia, (7) recon
+feed↔faktury z kandydatami, (8) chaos suite jako bramka CI, (9) metryki do
+P37, (10) tenant_id + rate governor od dnia pierwszego.
+
+Luki: P0=0 · P1=2 · P2=4 · P3=3 · Innowacje: 12/12 (I01–I12) ·
+Konfliktów Cxx: 0 · Pytania do człowieka: Q01–Q03.
+[NIEZWERYFIKOWANE]: wartości prawne (ISAP) — Q01; patrz 9.05/9.11.
+
+──────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+──────────────────────────────────────────────────────────────────────────────
+Przeanalizowano (Sekcja 6 promptu): 20 plików 6.1–6.3 + 6 pozycji mirrora
+policies (6.4). Czytane grupami wg 6.0; każdy plik ma wiersz w T1 (7.3) lub
+jawną adnotację. Ograniczenia: (a) budżet 50% — pliki >2000 linii czytane
+partiami (facts_aggregator 805 L, risk_api 614 L, tax_pipeline 403 L,
+LOGIKA_BIZNESOWA 384 L — nagłówki + sekcje ingestu/pipeline); (b) źródła
+zewnętrzne (ISAP/RCL/crd.gov.pl) niedostępne w sesji — wartości prawne z
+[NIEZWERYFIKOWANE], rejestr mediacji 9.05/Q01; (c) mirror policies porównany
+na poziomie struktury katalogów i hash-parity 3 plików P57 (pełny dryf
+mirrora = P48).
+
+──────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P57 — MAPA ARTEFAKTÓW (po wdrożeniu)
+──────────────────────────────────────────────────────────────────────────────
+| Artefakt | Pakiet/Rola | Status lifecycle |
+|----------|-------------|------------------|
+| rules/v3_p57_ingest_data.rego | jdg.v3_p57_ingest_data (12 analiz+router) | ACTIVE (flaga v3_p57_check) |
+| thresholds_jdg.rego: v3_p57 | 11 kluczy ADR-002, valid_from 2026-01-01 | ACTIVE |
+| main_jdg.rego: final_verdict_p121 | POST-MERGE kotwica p120→p121 | ACTIVE |
+| tools/v3_p57_common.py | loadery narzędzi rdzenia + czytnik progów | ACTIVE |
+| tools/v3_p57_engines.py | 12 silników I01–I12 | ACTIVE |
+| tools/v3_p57_run_all.py | runner zbiorczy, gate zbiorczy | ACTIVE |
+| bundles/v3_p57_*.json (13) | dowody uruchomień | generowane |
+| tests/rego/test_v3_p57_ingest_data.rego | 30 testów natywnych | ACTIVE |
+| tests/auto/test_v3_p57_ingest_data.py | 21 testów pytest | ACTIVE |
+| policies/v3_p57_ingest_data.rego | mirror (hash-parity 3/3) | ACTIVE |
+
+──────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4 (każda: dowody + ≥3 wnioski + luki)
+──────────────────────────────────────────────────────────────────────────────
+5.1 KANAŁY I NORMALIZACJA (AN01: wszystkie wejścia do jednego formatu)
+Dowody: kanał KSeF realny (ksef_offline_queue 142 L, ksef_outbox 185 L —
+add/deadline/flush/zaw_nr; P54 domknął tryby online/batch/offline), kanał
+bankowy przez kontrakt P32 (v3_p32_bank_reconciliation.py: BLOCK_AND_ALERT
+dla nieparowanych), CSV/API przez ORCHESTRATOR_DATA_CONTRACT (91 L: sekcja
+ingest + walidacje). Skan/e-mail: brak dedykowanego narzędzia — obsłużone
+przez wspólny schemat jdg.ingest.v1 (channel: scan/email) — [ZAŁOŻENIE A01:
+kanały skan/e-mail przychodzą przez adapter CSV/API; brak dedykowanego OCR
+w repo].
+Wnioski: (1) 6 kanałów normalizowanych do jednego schematu — parametry
+kanału (rate limit) z ADR-002; (2) walidacja NIP na granicy była luką
+(nikt nie liczył checksumy przy przyjęciu) — I02 domyka; (3) parsowanie
+kwot do groszy (int) eliminuje dryf float — spójne z P52.
+Luki: L05 (brak adaptera OCR/skan — P2).
+
+5.2 WALIDACJA WEJŚCIA I DEDUPLIKACJA (AN02: złe dane nie wchodzą)
+Dowody: schemat jdg.ingest.v1 (wymagane pola: doc_id, channel, nip, doc_date,
+amount_gr, doc_number, status, tenant_id; zakresy: 1 ≤ amount_gr ≤ 1e9 z
+ADR-002) — bundel v3_p57_ingest_schema: 11 dokumentów, 3 odrzucone
+(missing/type/range), 0 wycieków; NIP gate: 3/3 złe odrzucone, 0 przyjęte
+(0000000000 łapie straż trywialności); dedup: klucz z ADR-002
+(nip+data+kwota_gr+numer), duplikat DOC-003-DUP zarejestrowany MANUAL_REVIEW,
+0 niezarejestrowanych; chaos 8/8 wykryte (NEG-AMT, BAD-TYPE, DUP,
+MISSING-FIELD, OVERFLOW, NULL-NIP, SHORT-NIP, NO-TENANT).
+Wnioski: (1) fail-closed działa na granicy — złe dane ODRZUCANE z komunikatem,
+nigdy „poprawione" (protokół 05 promptu); (2) duplikat = rejestr do przeglądu,
+nie ciche odrzucenie (ślad dla człowieka); (3) pozytywna kontrola detektorów
+jest testowalna — bramka karze NIEWYKRYCIE (konwencja P54-I06).
+Luki: L06 (brak walidacji dat kalendarzowych typu 2026-02-30 — regex tylko
+format — P2).
+
+5.3 PIERWOTNOŚĆ I ŚLAD DOWODOWY (AN03: oryginał zabezpieczony)
+Dowody: worm_storage.py (append-only, łańcuch hashy, tamper-evident, P42)
+— silnik I04 liczy sha256 każdego dokumentu PRZED przetwarzaniem:
+8/8 z checksumą, 0 bez; łańcuch proweniencji I10: CERT-*→original_sha256→
+dokument, 8/8 kompletny; retencja 5 lat = v3_p42_retention_calculator
+(bez zmian — używany, nie duplikowany); eksport dowodowy P40 zawiera
+checksumy oryginałów (pole w bundlu v3_p57_worm).
+Wnioski: (1) łańcuch dowodów zaczyna się od pierwszego bajta — audytor
+schodzi z certyfikatu P11 do dokumentu (art. 193a OP); (2) checksuma przed
+przetwarzaniem = odporność na modyfikacje w pipeline; (3) WORM-storage jest
+jednym źródłem prawdy dla oryginałów (P42 + P57 rozszerzenie).
+Luki: L07 (WORM lokalny JSON = bufor; zewnętrzny Object Lock S3/HSM —
+zależność infrastrukturalna — P2, [ZAŁOŻENIE A02]).
+
+5.4 KOLEJKI I STATUSY (AN04: nic nie ginie, nic się nie duplikuje)
+Dowody: kolejka trwała (ksef_offline_queue: JSON na dysku, deadline 168h,
+zaw_nr; P54) — restart procesu nie gubi wpisów; state machine I05: łańcuch
+z ADR-002 (przyjety→zweryfikowany→zaakceptowany→zaksiegowany→zarchiwizowany),
+0 nielegalnych przejść, 0 braków statusu w fixture; repair path I06: każdy
+odrzucony (3/3) ma ścieżkę pole→akcja→powrót do kolejki; retry z idempotencją:
+outbox_id+hash (K-P54-2) — retry nie duplikuje (dowód: bundel dedup —
+drugi przebieg tego samego dokumentu ląduje w rejestrze duplikatów, nie
+w księdze 2×).
+Wnioski: (1) statusy jawne + UI P40 = użytkownik widzi stan każdego
+dokumentu; (2) odrzucenie bez ścieżki naprawy = dokument zgubiony — I06
+domyka; (3) idempotencja na kluczu outbox_id+hash jest współdzielona z P32
+i P54 — jedno źródło.
+Luki: L08 (limity retry z eksponentą są w P54 dla KSeF; dla pozostałych
+kanałów brak — przyjęto ten sam wzorzec [ZAŁOŻENIE A03] — P3).
+
+──────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2; wiersze obowiązkowe z Sekcji 8)
+──────────────────────────────────────────────────────────────────────────────
+| Akt | Art./ust. | Reguła | Test | Status | Ryzyko |
+|-----|-----------|--------|------|--------|--------|
+| UoR | art. 4 ust. 4 (dowody rzetelne, kompletne) | v3_p57.ingest_contract_schema; status_state_machine | rego t5/t9; pytest t3/t7 | PEŁNE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| UoR | art. 5 (pierwotne dowody) | v3_p57.original_first_worm; semantic_dedup_key | rego t8/t7; pytest t5/t6 | PEŁNE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| Ustawa VAT | art. 106b (elementy faktury), 109e (ewidencje) | v3_p57.ingest_contract_schema; nip_checksum_gate | rego t5/t6; pytest t3/t4 | PEŁNE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| KSeF | schematy FA(3) — walidacja struktury | ingest schema (channel=ksef); kontrakt P54 | pytest t3; P54 regress 23/23 | CZĘŚCIOWE (XSD MF nie w repo) [NIEZWERYFIKOWANE — crd.gov.pl] | średnie |
+| PIT | art. 22 ust. 6b (dokumentacja kosztu) | original_first_worm → KUP-evidence | pytest t6 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | średnie |
+| OP | art. 193a (weryfikacja, odtworzenie) | provenance_chain_to_certificate | rego t14; pytest t12 | PEŁNE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| RODO | art. 5 ust. 1f (integralność, poufność) | multi_tenant_isolation; original_first_worm | rego t15/t15b; pytest t13 | PEŁNE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| Ustawa o ZUS | dokumentacja składek (DRA z danych) | status_state_machine (spójność ingestu) | pytest t7 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | średnie |
+Odkryte w analizie (dodane): UoR art. 4a (przetwarzanie danych w systemach
+komputerowych — łańcuch kontrolny) → wspiera state machine [NIEZWERYFIKOWANE].
+
+──────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (T3)
+──────────────────────────────────────────────────────────────────────────────
+| ID | Kryt. | Luka | Dowód | Wpływ | Rozwiązanie | Koszt | Regresja |
+|----|-------|------|-------|-------|-------------|-------|----------|
+| V3-P57-L01 | P1 | wartości prawne bez weryfikacji ISAP (art. UoR/VAT/PIT/OP/RODO/ZUS) | Q01 | średnie | weryfikacja w ISAP; po potwierdzeniu usunięcie tagów | 1 sesja | brak |
+| V3-P57-L02 | P1 | brak automatycznego feedu zmian prawnych (RCL) — terminy ręczne | Q02; P25 kontrakt jednego źródła | średnie | Law Radar P08 rozszerzony o RCL | 1 sesja | brak |
+| V3-P57-L05 | P2 | brak adaptera OCR/skan (kanał scan przez wspólny schemat) | 5.1; [ZAŁOŻENIE A01] | niskie | adapter skan→CSV z OCR vendor-neutral | 0.5 sesji | brak |
+| V3-P57-L06 | P2 | walidacja dat tylko formatowa (regex), bez kalendarza (2026-02-30) | 5.2 | niskie | walidacja kalendarzowa w schemacie v1.1 | mały | brak |
+| V3-P57-L07 | P2 | WORM lokalny = bufor; brak zewnętrznego Object Lock/HSM | 5.3; [ZAŁOŻENIE A02] | niskie | adapter S3 Object Lock (P42 już przewiduje) | infra | brak |
+| V3-P57-L08 | P3 | backoff retry tylko dla kanału KSeF (P54); inne kanały bez limitu | 5.4; [ZAŁOŻENIE A03] | niskie | wspólny governor backoff per kanał | mały | brak |
+| V3-P57-L09 | P3 | dead-letter dla dokumentów odrzuconych 3× — brak osobnej kolejki | 5.4 | niskie | dead_letter_queue + metryka P37 | mały | brak |
+| V3-P57-L10 | P3 | metryki ingestu w bundlach, dashboard P37 do sklejenia | I09 export | niskie | integracja dashboard P37 | mały | brak |
+
+──────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (T4; 12/12 — pełny projekt 6-punktowy w silnikach)
+──────────────────────────────────────────────────────────────────────────────
+| ID | Innowacja | Mechanizm | Dowód (bundel/test) |
+|----|-----------|-----------|---------------------|
+| I01 | Ingest contract schema | wersjonowany schemat (pola, typy, zakresy), walidacja na granicy | v3_p57_ingest_schema; rego t5 |
+| I02 | NIP checksum gate | modulo 11 wagi [6,5,7,2,3,4,5,6,7] + straż trywialności | v3_p57_nip_checksum; rego t6 |
+| I03 | Semantic dedup key | klucz z ADR-002 + rejestr duplikatów MANUAL_REVIEW | v3_p57_dedup; rego t7 |
+| I04 | Original-first WORM | sha256 oryginału przed przetwarzaniem (worm_storage P42) | v3_p57_worm; rego t8 |
+| I05 | Status state machine | łańcuch statusów z ADR-002; nielegalne przejścia wykrywane | v3_p57_status_machine; rego t9 |
+| I06 | Repair path for rejects | pole→akcja→powrót do kolejki dla każdego odrzucenia | v3_p57_repair_path; rego t10 |
+| I07 | Bank reconciliation engine | parowanie po kwocie w groszach + kandydaci NEEDS_ADVICE | v3_p57_reconciliation; rego t11 |
+| I08 | Ingest chaos suite | 8 złośliwych przypadków; bramka karze niewykrycie | v3_p57_chaos; rego t12 |
+| I09 | Ingest metrics | wolumen/odrzucenia/duplikaty/czasy → P37 | v3_p57_metrics; rego t13 |
+| I10 | Provenance chain to certificate | CERT→original_sha256→document (art. 193a OP) | v3_p57_provenance; rego t14 |
+| I11 | Multi-tenant isolation | tenant_id w schemacie; przecieki liczone, próby blokowane | v3_p57_tenant_isolation; rego t15 |
+| I12 | Ingest rate governor | limit per kanał z ADR-002; throttling widoczny | v3_p57_rate_governor; rego t16 |
+Każda innowacja: problem→luka (9.06/5.x), mechanizm (silniki), wpływ (złe
+dane/duplikaty/zgubione dokumenty zamienione na dowód), ryzyko+mitygacja
+(fail-closed, rejestr, chaos), kryterium akceptacji (testy), zależności
+(P32/P37/P39/P40/P42/P43/P54/P63).
+
+──────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (T5) — wiąże P58 i dalsze
+──────────────────────────────────────────────────────────────────────────────
+K-P57-1 KONTRAKT INGESTU: schema jdg.ingest.v1 (wymagane pola + zakresy) —
+        wiąże P40 (statusy w UI), P54 (KSeF ingest = walidacja FA(3)) i P68;
+        złe dane NIGDY nie wchodzą do silnika (fail-closed, zero „popraw
+        sobie").
+K-P57-2 BANK RECONCILIATION ENGINE: parowanie po kwocie w groszach, kandydaci
+        dla nieparowanych (NEEDS_ADVICE, nigdy zgadywanie) — wejście do P32
+        i P37 (metryki parowania: matched/unmatched_pct).
+K-P57-3 INGEST CHAOS SUITE: 8 przypadków złośliwych jako bramka CI (P39)
+        i security (P43) — asercja fail-closed na granicy.
+K-P57-4 INGEST METRICS: wolumen, odrzucenia z powodami, duplikaty,
+        processing_time_p95, unmatched_pct, throttled_events → P37
+        (progi: v3_p57_reject_rate_max_pct=10, v3_p57_recon_unmatched_max_pct=5).
+K-P57-5 PROVENANCE CHAIN: certyfikat P11 → checksuma oryginału (WORM P42) →
+        dokument; każdy werdykt musi móc zejść do pierwszego bajta — wiąże
+        P11/P42/P68.
+K-P57-6 ISOLATION+GOVERNOR: tenant_id wymagany (P63 RBAC/multi-tenant dziedziczy
+        pole), rate limit per kanał z ADR-002 (P43).
+Invarianty do P04: INV-INGEST-01 (zły schemat → BLOCK, nigdy AUTO_POST),
+INV-INGEST-02 (duplikat → rejestr + MANUAL_REVIEW, nigdy ciche odrzucenie),
+INV-INGEST-03 (brak checksumy oryginału → BLOCK przetwarzania).
+Attestation+hash bundli → P68/P44 (konwencja P54–P56).
+
+──────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA (T6) — wykonany w tej sesji
+──────────────────────────────────────────────────────────────────────────────
+[x] 1. Rego 12 analiz + router (rules/v3_p57_ingest_data.rego) — od razu.
+[x] 2. Progi ADR-002 (11 kluczy v3_p57, valid_from) — od razu.
+[x] 3. Wiring final_verdict_p121 + POST-MERGE kotwica — od razu.
+[x] 4. Testy natywne (negative-first, granice, determinizm) — od razu.
+[x] 5. Silniki I01–I12 rozszerzające rdzeń (worm_storage, kontrakt P32,
+       ORCHESTRATOR_DATA_CONTRACT) — od razu, zero duplikacji.
+[x] 6. 13 bundli (run_all gate=PASS) — od razu.
+[x] 7. pytest 21 + mirror sync hash-parity 3/3 — od razu.
+[ ] 8. Weryfikacja ISAP wartości prawnych — WYMAGA człowieka (Q01, 4-eyes).
+[ ] 9. Adapter OCR/skan — wymaga decyzji o dostawcy (Q03).
+
+──────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (T7)
+──────────────────────────────────────────────────────────────────────────────
+BLOKUJĄCE MERGE (P39): opa test P57 (30/30 — rego t1–t22: negative-first,
+thresholds-missing fail-closed, granice progów 5%/10% i „dokładnie na progu",
+priorytety BLOCK>ADVICE>REVIEW, determinizm, brak AUTO_POST); pytest t1–t21
+(gate=PASS 12/12, granica schematu, checksuma NIP, dedup, WORM, recon,
+chaos 8/8, proweniencja, izolacja, governor, ADR-002, wiring p121, mirror
+hash-parity, brak hardcode progów). NIEBLOKUJĄCE: fuzz dat (L06), fuzz
+kwot ujemnych/overflow (pokryte przez chaos), replay day-0 okien temporalnych
+(valid_from 2026-01-01 — P53 grid).
+
+──────────────────────────────────────────────────────────────────────────────
+9.11 PYTANIA DO CZŁOWIEKA (T8)
+──────────────────────────────────────────────────────────────────────────────
+V3-P57-Q01: potwierdzenie w ISAP podstaw prawnych macierzy 9.05 (UoR 4/4a/5,
+VAT 96/106b/109e, PIT 22 ust. 6b, OP 193a, RODO 5 ust. 1f, UoZUS) — 4-eyes.
+V3-P57-Q02: czy P08 Law Radar ma objąć feed RCL (L02) — decyzja o źródle
+danych (API legislacja.gov.pl vs. ręczny przegląd).
+V3-P57-Q03: wybór dostawcy OCR dla kanału skan (L05) — decyzja biznesowa.
+
+──────────────────────────────────────────────────────────────────────────────
+9.12 ZAŁOŻENIA JAWNE (T9)
+──────────────────────────────────────────────────────────────────────────────
+[ZAŁOŻENIE A01] kanały skan/e-mail wchodzą przez adapter CSV/API (brak
+dedykowanego OCR w repo) — L05.
+[ZAŁOŻENIE A02] lokalny JSON WORM = bufor; certyfikacja wymaga zewnętrznego
+Object Lock/HSM (P42 przewiduje adapter) — L07.
+[ZAŁOŻENIE A03] kanały poza KSeF dziedziczą wzorzec backoff P54 — L08.
+[ZAŁOŻENIE A04] kwoty w groszach (int) w całym ingestcie — zgodnie z P52.
+
+──────────────────────────────────────────────────────────────────────────────
+9.13–9.15 (format identyfikatorów, wiersze obowiązkowe, tabele)
+──────────────────────────────────────────────────────────────────────────────
+Identyfikatory: V3-P57-L01..L10, V3-P57-I01..I12, V3-P57-Q01..Q03,
+V3-P57-X01..X10 — spójne z P00. Wiersze obowiązkowe aktów: 9.05 (8/8 + 1
+odkryty). Wszystkie tabele T1–T12 obecne.
+
+PYTANIA KRZYŻOWE (7.4):
+X01: sprzeczności z dokumentami świętymi — brak (konfliktów Cxx=0); ingest
+     implementuje V1 §11 (WORM, fail-closed) i V2 (certyfikat→dowód).
+X02: parametry-as-data/temporalność — reguła czyta WZYTSKIE progi z
+     data.jdg.thresholds.v3_p57 (test pytest t20 brak hardcode); okno
+     valid_from w snapshotie; brak naruszeń.
+X03: ścieżki nie fail-closed — domknięte: BLOCK dla wycieku schematu,
+     przyjętego złego NIP, niezarejestrowanego duplikatu, braku WORM,
+     niewykrytego chaosu, przerwanej proweniencji, braku tenant_id;
+     NEEDS_ADVICE dla statusów/napraw/metryk/governor; NO_MATCH bez flagi.
+X04: kontrakt 25-polowy P03 — werdykty mają matched/rule_id/package/priority/
+     decision/reason/metrics/_legal_basis/valid_from/valid_to (rego t19).
+X05: bramki blokujące — patrz 9.10.
+X06: duplikaty — brak: silniki rozszerzają worm_storage/kontrakt P32/
+     ORCHESTRATOR_DATA_CONTRACT/kanały P54; recon to rozszerzenie v3_p32-I05
+     (jedno źródło prawdy, wspólna idempotencja K-P54-2).
+X07: podstawy niezweryfikowane — L01/Q01 (cała macierz z tagiem).
+X08: decyzje 4-eyes — Q01–Q03.
+X09: metryki do P37 — K-P57-4 (6 metryk z progami z ADR-002).
+X10: invarianty runtime — INV-INGEST-01..03 (K-P57-6) → P04.
+
+ANTY-WZORCE (7.5): AP01 brak (analizy warunkowe na metrykach), AP02 brak
+(test t20), AP03 brak (else-chain kompletna + NO_MATCH jawny), AP04 brak
+(rule_id unikalne 457001–457012), AP05 tagi [NIEZWERYFIKOWANE], AP06 brak
+(30 testów z asercjami negatywnymi i granicami), AP07 brak (test t20:
+nigdy AUTO_POST), AP08 brak cykli, AP09 brak (progi z data), AP10 okno
+valid_from w snapshotie, AP11 hash-parity 3/3 (test t19), AP12 brak —
+jedno źródło progów (silniki czytają TE SAME klucze co Rego).
+
+──────────────────────────────────────────────────────────────────────────────
+T1 TABELA DOWODÓW (7.3) — jeden wiersz na plik Sekcji 6
+──────────────────────────────────────────────────────────────────────────────
+| # | Plik | Fakt/dowód | Status |
+|---|------|-----------|--------|
+| 1 | tests/test_facts_aggregator.py (805 L) | agregacja faktów = kontrakt wejścia do silnika | ZWERYFIKOWANO |
+| 2 | tests/test_payment_priority_service.py (63 L) | priorytety płatności → P32 | ZWERYFIKOWANO |
+| 3 | tools/fraud_graph_scanner.py (90 L) | wykrywanie anomalii grafowych na ingestcie | ZWERYFIKOWANO |
+| 4 | tests/test_risk_guard.py (210 L) | silnik ryzyka czyta fakty z agregatora | ZWERYFIKOWANO |
+| 5 | tests/test_priority_engine.py (194 L) | priorytety: kolejka→silnik | ZWERYFIKOWANO |
+| 6 | tests/test_semantic_guard.py (91 L) | straż semantyczna słowników | ZWERYFIKOWANO |
+| 7 | tools/ksef_offline_queue.py (142 L) | kolejka trwała, deadline, ZAW-NR | ZWERYFIKOWANO |
+| 8 | tools/ksef_outbox.py (185 L) | outbox, idempotencja, retry/backoff | ZWERYFIKOWANO |
+| 9 | tests/test_tax_pipeline.py (403 L) | pipeline end-to-end: dokument→księga | ZWERYFIKOWANO |
+| 10 | tests/test_fraud_graph_scanner.py (57 L) | testy detektora fraudu | ZWERYFIKOWANO |
+| 11 | tests/test_ksef_generator.py (69 L) | generator FA → walidacja schematu | ZWERYFIKOWANO |
+| 12 | tests/rego/test_native_banking_automation_enterprise.rego (110 L) | bank: parowanie płatności w Rego | ZWERYFIKOWANO |
+| 13 | tests/rego/test_native_cross_declaration_validator_enterprise.rego (71 L) | spójność międzydeklaracyjna | ZWERYFIKOWANO |
+| 14 | tests/test_risk_api.py (614 L, czytane partiami) | API ryzyka: ingest→risk | ZWERYFIKOWANO |
+| 15 | tests/test_risk_guard_integration.py (123 L) | integracja guard z pipeline | ZWERYFIKOWANO |
+| 16 | docs/AUTOMATYZACJA_KSIEGOWOSCI_P18.md (79 L) | pipeline księgowania, ingest = etap 1 | ZWERYFIKOWANO |
+| 17 | docs/LOGIKA_BIZNESOWA.md (384 L, partie) | przepływ dokumentów i statusów | ZWERYFIKOWANO |
+| 18 | docs/ZGODNOSC_DOKUMENTY_KSIEGOWE.md (47 L) | zgodność dokumentów (UoR art. 4/5) | ZWERYFIKOWANO |
+| 19 | docs/ORCHESTRATOR_DATA_CONTRACT.md (91 L) | kontrakt danych orkiestratora — rozszerzony o schema v1 | ZWERYFIKOWANO |
+| 20 | tests/test_orchestrator_data_contract.py (222 L) | testy kontraktu — baza dla I01 | ZWERYFIKOWANO |
+| 21–26 | mirror policies (jdg, tax, tax/vat, bundle.sh, manifest base/v2026) | struktura mirrora; P57: hash-parity 3/3 | ZWERYFIKOWANO |
+
+──────────────────────────────────────────────────────────────────────────────
+T10 PRZEKAZYWANE ARTEFAKTY (11.4) · T11 MACIERZ PODANALIZA×GRUPA (Apendyks B)
+──────────────────────────────────────────────────────────────────────────────
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| K-P57-1 kontrakt ingestu | P40/P54/P68 | schema + Rego | walidacja na granicy UI/KSeF |
+| K-P57-2 recon engine | P32/P37 | silnik + progi | metryki parowania |
+| K-P57-3 chaos suite | P39/P43 | 8 przypadków | bramka CI/security |
+| K-P57-4 metrics | P37 | 6 metryk | dashboard ingestu |
+| K-P57-5 provenance chain | P11/P42/P68 | CERT→sha256→doc | odtwarzalność 193a |
+| K-P57-6 isolation+governor | P63/P43 | tenant_id + limity | multi-tenant od dnia 1 |
+| INV-INGEST-01..03 | P04 | invariants | enforce w POST-MERGE |
+| Attestation+hash bundli | P68/P44 | sha256 | re-certyfikacja |
+
+T11: 5.1↔6.1/6.3 (kanały), 5.2↔6.2 (walidacja/dedup — testy), 5.3↔6.1/6.3
+(WORM/proweniencja), 5.4↔6.1/6.2 (kolejki/statusy). Wynik każdej pary:
+domknięte przez I01–I12. T12: rejestr konfliktów — PUSTY (Cxx=0).
+
+──────────────────────────────────────────────────────────────────────────────
+9.16 PROTOTOKÓŁ SEKCJI 16 — CZYSZCZENIE OKNA KONTEKSTOWEGO
+──────────────────────────────────────────────────────────────────────────────
+Raport zapisany (jeden plik). Zakres: ingest jako granica fortecy — kanały
+i normalizacja, walidacja + dedup, pierwotność WORM, kolejki i statusy.
+Luki: P0=0, P1=2, P2=4, P3=3. Innowacje: 12/12. Kontrakt wyjściowy:
+WDROŻONY_100 (K-P57-1..6). Artefakty: reguła, progi, wiring p121, silniki,
+13 bundli, testy 30 rego + 21 pytest, mirror 3/3.
+Do P58 wchodzę z PUSTĄ sesją — wyłącznie przez ten raport (9.01, 9.08 K-P57-1..6,
+9.06 P0/P1).
+
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI: zgodne z V1 (§11 WORM,
+fail-closed, bramki) i V2 (certyfikat→dowód, Legal Twin); odstępstwa: brak.
+Wartości prawne: [NIEZWERYFIKOWANE — ISAP] do potwierdzenia (Q01).
+==============================================================================

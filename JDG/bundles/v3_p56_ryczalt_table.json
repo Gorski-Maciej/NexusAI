@@ -1,0 +1,22 @@
+{
+  "header": {
+    "schema": "jdg.v3_p56.vat_pit.audit.v1",
+    "part": "P56",
+    "slug": "VAT_PIT_SZCZEGOLY",
+    "generated_at": "2026-09-13T10:16:37.078978+00:00",
+    "analyses": {
+      "I06": "PASS"
+    }
+  },
+  "result": {
+    "rows_total": 12,
+    "rows_missing_window": [],
+    "window_years": [
+      "2026"
+    ],
+    "per_row_test": true,
+    "provenance": "UoPR art. 12 [NIEZWERYFIKOWANE]; tools/pit_temporal_snapshot_engine.py; P18 rozszerzane",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T10:16:37.078978+00:00"
+  }
+}

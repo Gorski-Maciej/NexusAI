@@ -4015,3 +4015,192 @@ v3_p53 := {
     "no_auto_post": true,
     "manual_review_required": true,
 }
+
+# ═══════════════════════════════════════════════════════════════
+# V3-P54 — KSEF 2.0 I JPK DOMKNIĘCIE (ADR-002, P05, P16/P17/P25/P32) — okno
+# temporalne. Obowiązuje od 2026-01-01. Progi: SLA UPO, grace offline (168h,
+# art. 106ne), walidacja pre-send, sandbox replay, watchdog kolejki, mapa
+# błędów MF, attestation integracji. Walidacja: JEDNA wersja aktywna na datę
+# (P1632); daty harmonogramu KSeF = [NIEZWERYFIKOWANE — crd.gov.pl] (Q02).
+v3_p54 := {
+    "v3_p54_threshold_version": "ksef-jpk-v3p54-2026.09",
+    "legal_basis_version": "lb-ksef-jpk-v3p54-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    "valid_to": null,
+    # I01: lead kalendarza obowiązków KSeF (KPI V2 §6.2.5, spójny z P25)
+    "v3_p54_calendar_lead_days": 30,
+    # I03: minimalny udział faktur walidowanych przed wysyłką (XSD + firewall)
+    "v3_p54_pre_send_validation_min_pct": 100.0,
+    # I04: maksymalny wiek przebiegu sandbox MF (dni) — ścieżka wysyłki w CI
+    "v3_p54_sandbox_replay_max_age_days": 14,
+    # I05: deadline UPO (dni) — art. 106nq [NIEZWERYFIKOWANE — ISAP]
+    "v3_p54_upo_deadline_days": 1,
+    # I05: próg SLA monitoringu sesji (%)
+    "v3_p54_status_sla_alert_pct": 95.0,
+    # I06: limit prób retry (outbox exactly-once) + cap backoff (s)
+    "v3_p54_retry_max_attempts": 10,
+    "v3_p54_retry_backoff_cap_sec": 3600,
+    # I07: okno synchronizacji KSeF→księgi (h) — pipeline P32
+    "v3_p54_sync_window_hours": 24,
+    # I08: okno korekt art. 106j (dni)
+    "v3_p54_correction_window_days": 30,
+    # I09: grace trybu offline (h) — art. 106ne; próg alertu (h); kara ZAW-NR (PLN)
+    "v3_p54_offline_grace_hours": 168,
+    "v3_p54_offline_warning_hours": 120,
+    "v3_p54_zaw_nr_penalty_pln": 5000,
+    # I10: minimalne pokrycie mapy błędów MF→akcje (%)
+    "v3_p54_error_mapping_min_pct": 90.0,
+    # I11: próg watchdog kolejki (dni) — eskalacja P0
+    "v3_p54_watchdog_threshold_days": 3,
+    # I12: maksymalny wiek certyfikatu integracji (dni)
+    "v3_p54_attestation_max_age_days": 90,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════
+# V3-P55 — ZUS DOMKNIĘCIE (ADR-002, P05, P53, SUS art. 12/18a–18d/47,
+# ustawa zasiłkowa art. 4/6) — okno temporalne. Obowiązuje od 2026-01-01.
+# Progi: karencja 90 dni, okresy zasiłkowe 182/270, terminy DRA 10./15.,
+# próg zaległości blokującej P32, polityka podziału miesiąca. Wartości
+# prawne = [NIEZWERYFIKOWANE — ISAP/zus.pl] (Q01); stawki roczne z oknami
+# (P53-I10) w danych silnika I10. Walidacja: JEDNA wersja aktywna na datę.
+v3_p55 := {
+    "v3_p55_threshold_version": "zus-closure-v3p55-2026.09",
+    "legal_basis_version": "lb-zus-closure-v3p55-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    "valid_to": null,
+    # I02/I03: polityka podziału miesiąca przy przekroczeniu 30-krotności
+    "v3_p55_mid_month_split_policy": "prorata_dni",
+    # I04: karencja chorobowa (dni) — SUS art. 12 [NIEZWERYFIKOWANE]
+    "v3_p55_carencia_days": 90,
+    # I05: okresy zasiłkowe (dni) — ustawa zasiłkowa art. 4 [NIEZWERYFIKOWANE]
+    "v3_p55_benefit_max_days": 182,
+    "v3_p55_benefit_extended_days": 270,
+    # I06: terminy DRA (dzień miesiąca) — SUS art. 47 [NIEZWERYFIKOWANE]
+    "v3_p55_dra_day_standard": 10,
+    "v3_p55_dra_day_privileged": 15,
+    # I07: podstawa odsetek przy korektach DRA (etykieta, nie stawka)
+    "v3_p55_interest_legal_basis": "OP art. 56 [NIEZWERYFIKOWANE — ISAP]",
+    # I08: próg zaległości ZUS blokującej auto-płatności P32 (PLN)
+    "v3_p55_arrears_block_threshold_pln": 0.0,
+    # I09: polityka zasiłek a zawieszenie (ustawa zasiłkowa art. 6)
+    "v3_p55_suspension_policy": "zasilek tylko przy pelnym zawieszeniu",
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════
+# V3-P56 — VAT/PIT SZCZEGÓŁY (ADR-002, P05, P53; VAT art. 28b/28k/42/90/
+# 109a–109e, PIT art. 14/22/23/30ca/30f, UoPR art. 12) — okno temporalne.
+# Progi: polityka place-of-supply, minimum pokrycia kartami szczegółów,
+# próg KIS, rocznik PKWiU. Wartości prawne = [NIEZWERYFIKOWANE — ISAP/
+# podatki.gov.pl] (Q01); GTU/stawki ryczałtu jako dane wersjonowane (P46).
+# Walidacja: JEDNA wersja aktywna na datę.
+v3_p56 := {
+    "v3_p56_threshold_version": "vat-pit-details-v3p56-2026.09",
+    "legal_basis_version": "lb-vat-pit-details-v3p56-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    "valid_to": null,
+    # I01: polityka braku NIP UE przy B2B cross-border (fail-closed)
+    "v3_p56_pos_min_nip_ue_confidence": "brak_nip_ue",
+    # I04: minimalna siła dowodowa interpretacji KIS (etykieta polityki)
+    "v3_p56_kis_min_evidence": "interpretacja_indywidualna",
+    # I07: przeliczenie proporcji art. 90 przy zmiennych obrotach
+    "v3_p56_proportion_recalc_policy": "kwartalna",
+    # I12: minimalne pokrycie kartami szczegółów per domena (%)
+    "v3_p56_coverage_min_pct": 80,
+    # I02/I06: wymagany rocznik PKWiU dla tabel GTU i ryczałtu (temporalność)
+    "v3_p56_pkwiu_year_min": 2025,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ── V3-P57 INGEST DANYCH (granica fortecy: walidacja, dedup, WORM, kolejki) ──
+v3_p57 := {
+    "v3_p57_threshold_version": "ingest-data-v3p57-2026.09",
+    "legal_basis_version": "lb-ingest-data-v3p57-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    "valid_to": null,
+    # I03: klucz deduplikacji semantycznej (NIP+data+kwota+numer — prompt P57 Sekcja 2)
+    "v3_p57_dedup_key_fields": ["nip", "data", "kwota_gr", "numer"],
+    # I05: jawny łańcuch statusów dokumentu (state machine; UI P40)
+    "v3_p57_status_chain": ["przyjety", "zweryfikowany", "zaakceptowany", "zaksiegowany", "zarchiwizowany"],
+    # I07: maksymalny udział nieparowanych przelewów feed↔faktury (%; alarm rozjazdów P32)
+    "v3_p57_recon_unmatched_max_pct": 5,
+    # I09: maksymalny wskaźnik odrzuceń na granicy ingestu (%; P37)
+    "v3_p57_reject_rate_max_pct": 10,
+    # I12: limit wolumenu per kanał na godzinę (rate governor; P43)
+    "v3_p57_rate_limit_per_channel_hour": 500,
+    # I11: polityka izolacji multi-tenant (pole tenant_id wymagane w schemacie)
+    "v3_p57_tenant_isolation_policy": "required",
+    # I01: wersja schematu ingestu (walidacja na granicy)
+    "v3_p57_ingest_schema_version": "jdg.ingest.v1",
+    # I01/I08: górna granica kwoty w groszach (detekcja przepełnienia/absurdu)
+    "v3_p57_amount_gr_max": 1000000000,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ── V3-P58 OBSERWOWALNOŚĆ DOMKNIĘCIE (metryki prawne, telemetria, SLO) ──────
+v3_p58 := {
+    "v3_p58_threshold_version": "observability-closure-v3p58-2026.09",
+    "legal_basis_version": "lb-observability-v3p58-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    "valid_to": null,
+    # I01: SLA świeżości weryfikacji ISAP per akt w dniach (P47)
+    "v3_p58_isap_freshness_sla_days": 1,
+    # I02: maksymalny spadek pokrycia prawnego w pp (regresja = BLOCK; P51)
+    "v3_p58_coverage_drop_max_pp": 0,
+    # I02: baseline pokrycia (%) — pierwszy przebieg kotwiczy bieżące pokrycie z P37
+    "v3_p58_coverage_baseline_pct": 100,
+    # I03: maksymalny udział NEEDS_ADVICE per domena (%) — sygnał luki/awarii
+    "v3_p58_advice_spread_max_pct": 15,
+    # I04: maksymalny dryf groszowy w groszach (trend do zera; P52)
+    "v3_p58_penny_drift_max_gr": 0,
+    # I05: wymagane pola kontekstu telemetrii decyzji (P11)
+    "v3_p58_telemetry_required_fields": ["domain", "amount_gr", "certainty", "legal_epoch", "bundle_hash"],
+    # I06: minimalny error budget SLO (%) zanim wymagane jest zamrożenie wdrożeń
+    "v3_p58_error_budget_min_pct": 20,
+    # I08: maksymalny wiek incydentu bez post-mortemu (dni)
+    "v3_p58_postmortem_max_age_days": 30,
+    # I09: minimalna liczba poziomów eskalacji (SRE→prawnik→właściciel)
+    "v3_p58_escalation_min_levels": 3,
+    # I10: maksymalna koncentracja ryzyka (%) w mining telemetrii
+    "v3_p58_risk_concentration_max_pct": 25,
+    # I11: wymagany tryb prywatności telemetrii (RODO by design)
+    "v3_p58_privacy_mode": "pseudonymized",
+    # I12: minimalna liczba domen z zdefiniowanym SLO
+    "v3_p58_slo_domains_min": 6,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ── V3-P59 BEZPIECZEŃSTWO DOMKNIĘCIE (granice zaufania, sekrety, anty-manipulacja) ──
+v3_p59 := {
+    "v3_p59_threshold_version": "security-closure-v3p59-2026.09",
+    "legal_basis_version": "lb-security-v3p59-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    "valid_to": null,
+    # I01: minimalna liczba wektorów w threat modelu (13.19)
+    "v3_p59_threat_vectors_min": 12,
+    # I02: wymagane role podpisu reguł krytycznych (4-eyes)
+    "v3_p59_signature_roles": ["technical", "legal"],
+    # I04: próg anomali zmiany stawki w pp (powyżej = wymagane 4-eyes)
+    "v3_p59_rate_change_anomaly_pp": 100,
+    # I05: maksymalna liczba sekretów w repo (cel: 0) + polityka rotacji
+    "v3_p59_secrets_max_in_repo": 0,
+    "v3_p59_rotation_policy": "quarterly",
+    # I06: minimalny wynik hardeningu CI (%)
+    "v3_p59_ci_hardening_min_pct": 75,
+    # I07: attestation builda wymagane dla decyzji (P38 provenance)
+    "v3_p59_attestation_required": true,
+    # I10: częstotliwość security drills w dniach
+    "v3_p59_drill_frequency_days": 90,
+    # I11: polityka granic zaufania (przejście bez kontrola = BLOCK)
+    "v3_p59_trust_boundary_policy": "deny_by_default",
+    # I12: minimalny security score (%)
+    "v3_p59_security_score_min_pct": 75,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}

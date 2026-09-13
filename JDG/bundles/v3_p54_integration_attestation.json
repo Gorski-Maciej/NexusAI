@@ -1,0 +1,31 @@
+{
+  "schema": "jdg.v3_p54.audit.v1",
+  "part": "P54",
+  "slug": "KSEF_JPK_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:36.734909+00:00",
+  "engine": "I12",
+  "context_key": "I12_integration_attestation",
+  "gate": "PASS",
+  "data": {
+    "attestation_age_days": 0,
+    "max_age_days": 90,
+    "attestation_hash": "7a03ce045c587dab",
+    "schemas_covered": [
+      "FA(2)",
+      "FA(3)",
+      "JPK_V7M",
+      "JPK_PKPIR"
+    ],
+    "note": "certyfikat integracji odświeżany przy każdej zmianie schematu MF (I12)"
+  },
+  "attestation_age_days": 0,
+  "max_age_days": 90,
+  "attestation_hash": "7a03ce045c587dab",
+  "schemas_covered": [
+    "FA(2)",
+    "FA(3)",
+    "JPK_V7M",
+    "JPK_PKPIR"
+  ],
+  "note": "certyfikat integracji odświeżany przy każdej zmianie schematu MF (I12)"
+}

@@ -1,0 +1,27 @@
+{
+  "header": {
+    "schema": "jdg.v3_p57.ingest.audit.v1",
+    "part": "P57",
+    "slug": "INGEST_DANYCH",
+    "generated_at": "2026-09-13T12:45:14.346515+00:00",
+    "analyses": {
+      "I05_status_state_machine": "PASS"
+    }
+  },
+  "result": {
+    "docs_total": 11,
+    "illegal_transitions": 0,
+    "missing_status": 0,
+    "chain": [
+      "przyjety",
+      "zweryfikowany",
+      "zaakceptowany",
+      "zaksiegowany",
+      "zarchiwizowany"
+    ],
+    "ui_surface": "P40 API/UI — status każdego dokumentu widoczny",
+    "provenance": "UoR art. 4 ust. 4 [NIEZWERYFIKOWANE — ISAP]; prompt P57 Sekcja 10-I05",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T12:45:14.346515+00:00"
+  }
+}

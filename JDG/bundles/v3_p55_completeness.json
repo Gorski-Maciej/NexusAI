@@ -1,0 +1,53 @@
+{
+  "schema": "jdg.v3_p55.audit.v1",
+  "part": "P55",
+  "slug": "ZUS_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:31.129792+00:00",
+  "engine": "I11",
+  "context_key": "I11_zus_completeness_matrix",
+  "gate": "PASS",
+  "data": {
+    "matrix_cells_total": 16,
+    "matrix_cells_uncovered": 0,
+    "conditions": [
+      "base_declared",
+      "base_60pct",
+      "base_maly_plus",
+      "relief_start",
+      "relief_preferential",
+      "relief_small_plus",
+      "sickness_voluntary",
+      "sickness_carencia",
+      "benefit_182",
+      "benefit_270",
+      "dra_deadline",
+      "dra_correction",
+      "suspension_full",
+      "suspension_partial",
+      "thirtyfold_ytd",
+      "rate_window"
+    ],
+    "source": "tools/zus_atom_test_matrix.py (rozszerzony o komórki P55)"
+  },
+  "matrix_cells_total": 16,
+  "matrix_cells_uncovered": 0,
+  "conditions": [
+    "base_declared",
+    "base_60pct",
+    "base_maly_plus",
+    "relief_start",
+    "relief_preferential",
+    "relief_small_plus",
+    "sickness_voluntary",
+    "sickness_carencia",
+    "benefit_182",
+    "benefit_270",
+    "dra_deadline",
+    "dra_correction",
+    "suspension_full",
+    "suspension_partial",
+    "thirtyfold_ytd",
+    "rate_window"
+  ],
+  "source": "tools/zus_atom_test_matrix.py (rozszerzony o komórki P55)"
+}

@@ -1,0 +1,34 @@
+{
+  "header": {
+    "schema": "jdg.v3_p57.ingest.audit.v1",
+    "part": "P57",
+    "slug": "INGEST_DANYCH",
+    "generated_at": "2026-09-13T12:45:13.067451+00:00",
+    "analyses": {
+      "I02_nip_checksum_gate": "PASS"
+    }
+  },
+  "result": {
+    "bad_total": 3,
+    "rejected_bad": [
+      "1234567890",
+      "0000000000",
+      "5261040827"
+    ],
+    "accepted_bad": [],
+    "weights": [
+      6,
+      5,
+      7,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "provenance": "VAT art. 96 [NIEZWERYFIKOWANE — ISAP]; prompt P57 Sekcja 10-I02",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T12:45:13.067451+00:00"
+  }
+}

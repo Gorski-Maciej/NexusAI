@@ -1,0 +1,25 @@
+{
+  "schema": "jdg.v3_p54.audit.v1",
+  "part": "P54",
+  "slug": "KSEF_JPK_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:33.058076+00:00",
+  "engine": "I03",
+  "context_key": "I03_pre_send_dry_run",
+  "gate": "PASS",
+  "data": {
+    "invoices_total": 10,
+    "invoices_pre_validated": 10,
+    "facts": [
+      "jpk_validator.py: 9102 B (walidacja pól JPK przed wysyłką)",
+      "ksef_outbox.py: dispatch PENDING tylko po statusie PENDING (walidacja po stronie enqueue→dispatch)"
+    ],
+    "note": "bramka: 100% wysyłek przez walidator pre-send (dry-run przed dispatch)"
+  },
+  "invoices_total": 10,
+  "invoices_pre_validated": 10,
+  "facts": [
+    "jpk_validator.py: 9102 B (walidacja pól JPK przed wysyłką)",
+    "ksef_outbox.py: dispatch PENDING tylko po statusie PENDING (walidacja po stronie enqueue→dispatch)"
+  ],
+  "note": "bramka: 100% wysyłek przez walidator pre-send (dry-run przed dispatch)"
+}

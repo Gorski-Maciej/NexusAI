@@ -1,0 +1,21 @@
+{
+  "header": {
+    "schema": "jdg.v3_p56.vat_pit.audit.v1",
+    "part": "P56",
+    "slug": "VAT_PIT_SZCZEGOLY",
+    "generated_at": "2026-09-13T10:16:38.660490+00:00",
+    "analyses": {
+      "I10": "PASS"
+    }
+  },
+  "result": {
+    "items_total": 4,
+    "mismatch_ids": [
+      "FV-2026/09/203"
+    ],
+    "flow_rule": "VAT nieodliczony (art. 90/prekluzja) → koszt podatkowy art. 22",
+    "provenance": "tools/p12_uor_accounting_toolkit.py; spójność VAT↔PIT [NIEZWERYFIKOWANE]",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T10:16:38.660490+00:00"
+  }
+}

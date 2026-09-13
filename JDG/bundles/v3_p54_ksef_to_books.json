@@ -1,0 +1,21 @@
+{
+  "schema": "jdg.v3_p54.audit.v1",
+  "part": "P54",
+  "slug": "KSEF_JPK_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:34.752022+00:00",
+  "engine": "I07",
+  "context_key": "I07_ksef_to_books_sync",
+  "gate": "PASS",
+  "data": {
+    "accepted_total": 3,
+    "unbooked_count": 0,
+    "double_booked_count": 0,
+    "sync_window_hours": 24,
+    "idempotency_key": "outbox_id + hash treści (wspólny z P32)"
+  },
+  "accepted_total": 3,
+  "unbooked_count": 0,
+  "double_booked_count": 0,
+  "sync_window_hours": 24,
+  "idempotency_key": "outbox_id + hash treści (wspólny z P32)"
+}

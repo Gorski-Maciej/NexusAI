@@ -1,0 +1,41 @@
+{
+  "schema": "jdg.v3_p54.audit.v1",
+  "part": "P54",
+  "slug": "KSEF_JPK_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:33.494926+00:00",
+  "engine": "I04",
+  "context_key": "I04_sandbox_replay",
+  "gate": "PASS",
+  "data": {
+    "days_since_last_run": 0,
+    "runs_count": 1,
+    "last_run": {
+      "when": "2026-09-13T09:31:33.494822+00:00",
+      "endpoint": "sandbox MF (mock)",
+      "result": "PASS",
+      "scenarios": [
+        "enqueue→dispatch→UPO_OK",
+        "retry z backoff",
+        "STALE>SLA→alarm",
+        "offline flush"
+      ]
+    },
+    "endpoint": "sandbox MF (mock; real API = decyzja Q01)",
+    "ci_path": "v3_p54_run_all.py co PR (I04 promptu P54)"
+  },
+  "days_since_last_run": 0,
+  "runs_count": 1,
+  "last_run": {
+    "when": "2026-09-13T09:31:33.494822+00:00",
+    "endpoint": "sandbox MF (mock)",
+    "result": "PASS",
+    "scenarios": [
+      "enqueue→dispatch→UPO_OK",
+      "retry z backoff",
+      "STALE>SLA→alarm",
+      "offline flush"
+    ]
+  },
+  "endpoint": "sandbox MF (mock; real API = decyzja Q01)",
+  "ci_path": "v3_p54_run_all.py co PR (I04 promptu P54)"
+}

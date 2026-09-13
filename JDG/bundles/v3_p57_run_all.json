@@ -1,0 +1,59 @@
+{
+  "schema": "jdg.v3_p57.run_all.v1",
+  "part": "P57",
+  "slug": "INGEST_DANYCH",
+  "generated_at": "2026-09-13T12:45:12.382771+00:00",
+  "engines_run": 12,
+  "failures": [],
+  "gate": "PASS",
+  "results": {
+    "I01": {
+      "exit": 0,
+      "output": "[P57:I01] gate=PASS bundle=v3_p57_ingest_schema.json"
+    },
+    "I02": {
+      "exit": 0,
+      "output": "[P57:I02] gate=PASS bundle=v3_p57_nip_checksum.json"
+    },
+    "I03": {
+      "exit": 0,
+      "output": "[P57:I03] gate=PASS bundle=v3_p57_dedup.json"
+    },
+    "I04": {
+      "exit": 0,
+      "output": "[P57:I04] gate=PASS bundle=v3_p57_worm.json"
+    },
+    "I05": {
+      "exit": 0,
+      "output": "[P57:I05] gate=PASS bundle=v3_p57_status_machine.json"
+    },
+    "I06": {
+      "exit": 0,
+      "output": "[P57:I06] gate=PASS bundle=v3_p57_repair_path.json"
+    },
+    "I07": {
+      "exit": 0,
+      "output": "[P57:I07] gate=PASS bundle=v3_p57_reconciliation.json"
+    },
+    "I08": {
+      "exit": 0,
+      "output": "[P57:I08] gate=PASS bundle=v3_p57_chaos.json"
+    },
+    "I09": {
+      "exit": 0,
+      "output": "[P57:I09] gate=PASS bundle=v3_p57_metrics.json"
+    },
+    "I10": {
+      "exit": 0,
+      "output": "[P57:I10] gate=PASS bundle=v3_p57_provenance.json"
+    },
+    "I11": {
+      "exit": 0,
+      "output": "[P57:I11] gate=PASS bundle=v3_p57_tenant_isolation.json"
+    },
+    "I12": {
+      "exit": 0,
+      "output": "[P57:I12] gate=PASS bundle=v3_p57_rate_governor.json"
+    }
+  }
+}

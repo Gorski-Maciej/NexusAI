@@ -1,0 +1,31 @@
+{
+  "header": {
+    "schema": "jdg.v3_p59.security.audit.v1",
+    "part": "P59",
+    "slug": "SECURITY_DOMKNIECIE",
+    "generated_at": "2026-09-13T14:29:41.680696+00:00",
+    "analyses": {
+      "I09_supply_chain_sbom": "FAIL"
+    }
+  },
+  "result": {
+    "deps_total": 3,
+    "pinned": 0,
+    "unpinned": [
+      "httpx",
+      "pytest",
+      "yaml"
+    ],
+    "sbom_present": true,
+    "sbom_path": "bundles/sbom.json",
+    "requirements_file": "requirements.txt",
+    "external_dependencies": [
+      "httpx",
+      "pytest",
+      "yaml"
+    ],
+    "provenance": "supply chain security; P68 certyfikat; prompt P59 Sekcja 10-I09",
+    "gate": "FAIL",
+    "generated_at": "2026-09-13T14:29:41.680696+00:00"
+  }
+}

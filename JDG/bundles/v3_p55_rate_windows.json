@@ -1,0 +1,35 @@
+{
+  "schema": "jdg.v3_p55.audit.v1",
+  "part": "P55",
+  "slug": "ZUS_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:30.538739+00:00",
+  "engine": "I10",
+  "context_key": "I10_annual_rate_windows",
+  "gate": "PASS",
+  "data": {
+    "years_total": 2,
+    "years_unwindowed": 0,
+    "day0_tested": true,
+    "year_boundary_grid": {
+      "day_minus_1": "2025-12-31",
+      "day_0": "2026-01-01"
+    },
+    "windows": [
+      2025,
+      2026
+    ],
+    "provenance": "tools/zus_calculator.py RATES (rozszerzone o okna P53-I10)"
+  },
+  "years_total": 2,
+  "years_unwindowed": 0,
+  "day0_tested": true,
+  "year_boundary_grid": {
+    "day_minus_1": "2025-12-31",
+    "day_0": "2026-01-01"
+  },
+  "windows": [
+    2025,
+    2026
+  ],
+  "provenance": "tools/zus_calculator.py RATES (rozszerzone o okna P53-I10)"
+}

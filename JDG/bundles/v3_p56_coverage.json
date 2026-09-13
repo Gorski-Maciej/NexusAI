@@ -1,0 +1,22 @@
+{
+  "header": {
+    "schema": "jdg.v3_p56.vat_pit.audit.v1",
+    "part": "P56",
+    "slug": "VAT_PIT_SZCZEGOLY",
+    "generated_at": "2026-09-13T10:16:39.341650+00:00",
+    "analyses": {
+      "I12": "PASS"
+    }
+  },
+  "result": {
+    "domains_total": 4,
+    "domains_below_min": [
+      "vat_miejsce_swiaadczenia"
+    ],
+    "avg_coverage_pct": 85.0,
+    "min_coverage_pct": 80,
+    "provenance": "P51 pustynie prawne — miernik pokrycia; karty szczegółów raportu P56",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T10:16:39.341650+00:00"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "schema": "jdg.v3_p58.run_all.v1",
+  "part": "P58",
+  "slug": "OBSERWOWALNOSC_DOMKNIECIE",
+  "generated_at": "2026-09-13T13:31:05.488011+00:00",
+  "engines_run": 12,
+  "failures": [],
+  "gate": "PASS",
+  "results": {
+    "I01": {
+      "exit": 0,
+      "output": "[P58:I01] gate=PASS bundle=v3_p58_legal_freshness.json"
+    },
+    "I02": {
+      "exit": 0,
+      "output": "[P58:I02] gate=PASS bundle=v3_p58_coverage_regression.json"
+    },
+    "I03": {
+      "exit": 0,
+      "output": "[P58:I03] gate=PASS bundle=v3_p58_advice_spread.json"
+    },
+    "I04": {
+      "exit": 0,
+      "output": "[P58:I04] gate=PASS bundle=v3_p58_penny_drift.json"
+    },
+    "I05": {
+      "exit": 0,
+      "output": "[P58:I05] gate=PASS bundle=v3_p58_telemetry_registry.json"
+    },
+    "I06": {
+      "exit": 0,
+      "output": "[P58:I06] gate=PASS bundle=v3_p58_error_budget.json"
+    },
+    "I07": {
+      "exit": 0,
+      "output": "[P58:I07] gate=PASS bundle=v3_p58_runbook_contract.json"
+    },
+    "I08": {
+      "exit": 0,
+      "output": "[P58:I08] gate=PASS bundle=v3_p58_postmortem.json"
+    },
+    "I09": {
+      "exit": 0,
+      "output": "[P58:I09] gate=PASS bundle=v3_p58_escalation.json"
+    },
+    "I10": {
+      "exit": 0,
+      "output": "[P58:I10] gate=PASS bundle=v3_p58_risk_mining.json"
+    },
+    "I11": {
+      "exit": 0,
+      "output": "[P58:I11] gate=PASS bundle=v3_p58_privacy.json"
+    },
+    "I12": {
+      "exit": 0,
+      "output": "[P58:I12] gate=PASS bundle=v3_p58_slo_domains.json"
+    }
+  }
+}

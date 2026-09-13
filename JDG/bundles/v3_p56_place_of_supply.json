@@ -1,0 +1,22 @@
+{
+  "header": {
+    "schema": "jdg.v3_p56.vat_pit.audit.v1",
+    "part": "P56",
+    "slug": "VAT_PIT_SZCZEGOLY",
+    "generated_at": "2026-09-13T10:16:35.193261+00:00",
+    "analyses": {
+      "I01": "PASS"
+    }
+  },
+  "result": {
+    "cases_total": 6,
+    "gaps_nip_ue": [
+      "usluga_b2b_FR"
+    ],
+    "b2b_rule": "art. 28b: kraj kontrahenta (NIP UE wymagany)",
+    "wdt_rule": "art. 42: WDT przy NIP UE nabywcy; swap ust. 10a",
+    "provenance": "tools/p13_crossborder_toolkit.py cb_matrix",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T10:16:35.193261+00:00"
+  }
+}

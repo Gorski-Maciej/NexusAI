@@ -1,0 +1,59 @@
+{
+  "schema": "jdg.v3_p55.run_all.v1",
+  "part": "P55",
+  "slug": "ZUS_DOMKNIECIE",
+  "generated_at": "2026-09-13T09:31:26.789166+00:00",
+  "engines_run": 12,
+  "failures": [],
+  "gate": "PASS",
+  "results": {
+    "I01": {
+      "exit": 0,
+      "output": "[P55:I01] I01_zus_lifecycle_state_machine gate=PASS bundle=v3_p55_lifecycle.json"
+    },
+    "I02": {
+      "exit": 0,
+      "output": "[P55:I02] I02_thirtyfold_ytd_engine gate=PASS bundle=v3_p55_thirtyfold_ytd.json"
+    },
+    "I03": {
+      "exit": 0,
+      "output": "[P55:I03] I03_mid_month_limit_split gate=PASS bundle=v3_p55_mid_month_split.json"
+    },
+    "I04": {
+      "exit": 0,
+      "output": "[P55:I04] I04_carencia_break_tracker gate=PASS bundle=v3_p55_carencia.json"
+    },
+    "I05": {
+      "exit": 0,
+      "output": "[P55:I05] I05_benefit_period_counter gate=PASS bundle=v3_p55_benefit_period.json"
+    },
+    "I06": {
+      "exit": 0,
+      "output": "[P55:I06] I06_dra_deadline_watchdog gate=PASS bundle=v3_p55_dra_watchdog.json"
+    },
+    "I07": {
+      "exit": 0,
+      "output": "[P55:I07] I07_dra_correction_chain gate=PASS bundle=v3_p55_dra_corrections.json"
+    },
+    "I08": {
+      "exit": 0,
+      "output": "[P55:I08] I08_zus_payment_priority gate=PASS bundle=v3_p55_payment_priority.json"
+    },
+    "I09": {
+      "exit": 0,
+      "output": "[P55:I09] I09_benefit_vs_suspension gate=PASS bundle=v3_p55_suspension.json"
+    },
+    "I10": {
+      "exit": 0,
+      "output": "[P55:I10] I10_annual_rate_windows gate=PASS bundle=v3_p55_rate_windows.json"
+    },
+    "I11": {
+      "exit": 0,
+      "output": "[P55:I11] I11_zus_completeness_matrix gate=PASS bundle=v3_p55_completeness.json"
+    },
+    "I12": {
+      "exit": 0,
+      "output": "[P55:I12] I12_benefit_pre_payment_gate gate=PASS bundle=v3_p55_pre_payment_gate.json"
+    }
+  }
+}

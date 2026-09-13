@@ -1,0 +1,38 @@
+{
+  "header": {
+    "schema": "jdg.v3_p57.ingest.audit.v1",
+    "part": "P57",
+    "slug": "INGEST_DANYCH",
+    "generated_at": "2026-09-13T12:45:13.977171+00:00",
+    "analyses": {
+      "I04_original_first_worm": "PASS"
+    }
+  },
+  "result": {
+    "processed_total": 8,
+    "with_worm": [
+      "DOC-001",
+      "DOC-002",
+      "DOC-003",
+      "DOC-004",
+      "DOC-005",
+      "DOC-006",
+      "DOC-007",
+      "DOC-008"
+    ],
+    "missing_worm": [],
+    "checksums": {
+      "DOC-001": "6ece6c2328c7aaa7623023324c937e2ce41b38be167d7fa34d2046c3527b6dc3",
+      "DOC-002": "903c8d74ed37b91231f730bd7c2bf9946ecfb21f78ccb8082f9706656134bb9f",
+      "DOC-003": "d142a2b866592b53b0fdaa61885b7afe910e6cbe5881326731314136f64fec73",
+      "DOC-004": "872740f7d45247fa094f16e8d72562f67e32feaa88a0ac96b72a22507eb233df",
+      "DOC-005": "444307a806aafd7066b8b3187a76c0e2137e3c5b0716b00df04e09e2f836be90",
+      "DOC-006": "39faa6bb3b390244507717fb2a56c308e132f1f71aa087951f1e3f3a5d4a108b",
+      "DOC-007": "2dc0e56d6e6dfee2a8320514b5d66ef7799e59ced00810fc0d1da2da83b30b72",
+      "DOC-008": "1216404f577873203b9add35c0c3d6d63b55df55ba49c9cd53659048dd77e271"
+    },
+    "provenance": "UoR art. 5; RODO art. 5 ust. 1f [NIEZWERYFIKOWANE — ISAP]; worm_storage (P42); prompt P57 Sekcja 10-I04",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T12:45:13.977171+00:00"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "header": {
+    "schema": "jdg.v3_p56.vat_pit.audit.v1",
+    "part": "P56",
+    "slug": "VAT_PIT_SZCZEGOLY",
+    "generated_at": "2026-09-13T10:16:38.246290+00:00",
+    "analyses": {
+      "I09": "PASS"
+    }
+  },
+  "result": {
+    "items_total": 2,
+    "unvalued_ids": [
+      "SW-0007"
+    ],
+    "valuation_rule": "wartość rynkowa z dnia otrzymania [NIEZWERYFIKOWANE — ISAP]",
+    "provenance": "tools/pit_innovation_tools.py verify_nkup_completeness; P51 pustynia NKUP",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T10:16:38.246290+00:00"
+  }
+}

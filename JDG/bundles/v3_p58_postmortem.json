@@ -1,0 +1,21 @@
+{
+  "header": {
+    "schema": "jdg.v3_p58.observability.audit.v1",
+    "part": "P58",
+    "slug": "OBSERWOWALNOSC_DOMKNIECIE",
+    "generated_at": "2026-09-13T13:31:08.337692+00:00",
+    "analyses": {
+      "I08_postmortem_registry": "PASS"
+    }
+  },
+  "result": {
+    "incidents_total": 0,
+    "pending_postmortem": [],
+    "registry_size": 0,
+    "max_age_days": 30,
+    "registry_present": false,
+    "provenance": "prompt P58 Sekcja 10-I08; P43 chaos drills; rejestr: bundles/postmortem_registry.json",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T13:31:08.337692+00:00"
+  }
+}
