@@ -1,0 +1,22 @@
+{
+  "header": {
+    "schema": "jdg.v3_p60.documentation.audit.v1",
+    "part": "P60",
+    "slug": "DOKUMENTACJA_DOMKNIECIE",
+    "generated_at": "2026-09-13T19:29:13.253316+02:00",
+    "analyses": {
+      "I11_plen_parity": "PASS"
+    }
+  },
+  "result": {
+    "parity_pct": 92,
+    "min_pct": 80,
+    "adr_parity_pct": 100,
+    "term_parity_pct": 75,
+    "mismatched": [],
+    "pl_source_of_truth": true,
+    "provenance": "P41 PL/EN mirror; P48 anti-drift; prompt P60 Sekcja 10-I11",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T19:29:13.253316+02:00"
+  }
+}

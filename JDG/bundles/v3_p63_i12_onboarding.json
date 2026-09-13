@@ -1,0 +1,31 @@
+{
+  "header": {
+    "schema": "jdg.v3_p63.rbac.audit.v1",
+    "part": "P63",
+    "slug": "RBAC_MULTITENANT",
+    "generated_at": "2026-09-13T20:41:01.251174+00:00",
+    "analyses": {
+      "I12_role_onboarding": "PASS"
+    }
+  },
+  "result": {
+    "roles": [
+      "entrepreneur",
+      "accountant",
+      "auditor",
+      "admin"
+    ],
+    "packed_roles": [
+      "entrepreneur",
+      "accountant",
+      "auditor",
+      "admin"
+    ],
+    "coverage_pct": 100,
+    "doc": "docs/ROLE_MAPS.md (P60-I05/I12)",
+    "provenance": "P60 mapy rolowe; prompt P63 Sekcja 10-I12",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T20:41:01.251174+00:00"
+  },
+  "gate": "PASS"
+}

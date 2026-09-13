@@ -3,7 +3,7 @@
     "schema": "jdg.v3_p59.security.audit.v1",
     "part": "P59",
     "slug": "SECURITY_DOMKNIECIE",
-    "generated_at": "2026-09-13T14:28:52.901931+00:00",
+    "generated_at": "2026-09-13T15:42:16.244327+00:00",
     "analyses": {
       "I02_signed_rules_4eyes": "PASS"
     }
@@ -22,6 +22,6 @@
     ],
     "provenance": "eIDAS [NIEZWERYFIKOWANE — ISAP]; P44 podpisy; prompt P59 Sekcja 10-I02",
     "gate": "PASS",
-    "generated_at": "2026-09-13T14:28:52.901931+00:00"
+    "generated_at": "2026-09-13T15:42:16.244327+00:00"
   }
 }

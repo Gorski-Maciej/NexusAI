@@ -1,3 +1,11 @@
+<!--
+artifacts: [docs/ARCHITECTURE.md, docs/ARCHITEKTURA.md]
+status: ACTIVE
+owner: core
+verified: 2026-09-13
+verify_cmd: python3 tools/v3_p60_engines.py I11
+-->
+
 # 🏗️ JDG Architecture Decision Records (ADR) — v8.3
 
 > **Status:** ENTERPRISE v8.3 | **Data:** 2026-08-22 | **22 ADR-y** (001–022)

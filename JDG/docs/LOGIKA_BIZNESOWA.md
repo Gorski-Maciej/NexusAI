@@ -1,3 +1,11 @@
+<!--
+artifacts: [docs/LOGIKA_BIZNESOWA.md, rules/main_jdg.rego]
+status: ACTIVE
+owner: core
+verified: 2026-09-13
+verify_cmd: python3 tools/v3_p60_engines.py I03
+-->
+
 # ⚙️ NexusAI JDG — Logika Biznesowa: Moduły, Algorytmy i Debugowanie
 
 > **Dokument:** LOGIKA_BIZNESOWA.md | **Zakres:** wszystkie pakiety reguł, orkiestrator, agenci AI, narzędzia

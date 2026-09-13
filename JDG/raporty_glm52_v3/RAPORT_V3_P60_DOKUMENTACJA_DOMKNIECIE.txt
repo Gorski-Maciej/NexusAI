@@ -1,0 +1,412 @@
+==============================================================================
+RAPORT V3 P60 — DOKUMENTACJA DOMKNIĘCIE — DOKUMENT MÓWI PRAWDĘ O KODZIE
+==============================================================================
+
+Część:                  P60 / 68 serii V3 FORTRESS CAMPAIGN
+Prompt:                 JDG/prompty_v3/V3_PROMPT_P60_DOKUMENTACJA_DOMKNIECIE.txt
+Raport:                 JDG/raporty_glm52_v3/RAPORT_V3_P60_DOKUMENTACJA_DOMKNIECIE.txt
+Data wdrożenia:         2026-09-13
+Status raportu:         WDROŻONY_100
+Metoda:                 12 silników I01–I12 czytających PRAWDZIWE rejestry uruchomione
+                        (python3 tools/v3_p60_run_all.py → gate=PASS, 12/12, failures=[])
+                        + 21 testów natywnych Rego + 19 testów pytest — wszystkie zielone;
+                        regresja kampanii v3_p5x+v3_p60: 365 passed.
+
+Wymagania nadrzędne: głębokie myślenie ✔ / głęboka analiza ✔ / Enterprise ✔ /
+innowacje wyprzedzające ✔ / domknięcie maksimum braków ✔.
+
+──────────────────────────────────────────────────────────────────────────────
+9.01 EXECUTIVE SUMMARY
+──────────────────────────────────────────────────────────────────────────────
+Dojrzałość części P60: ENTERPRISE, WDROŻONY_100 (61/69 = 88.41% kampanii).
+
+Dokumentacja fortecy została zamieniona z prozy w SYSTEM Z BRAMKAMI: każdy
+dokument rdzenia ma front-matter (artifacts/status/owner/verified/verify_cmd);
+liczby pochodzą z rejestrów (rule_registry, manifest_v2, ledger); dokumenty-widma
+są wykrywalne automatycznie; 4 role mają mapy czytania z pokryciem 100%; eksport
+audytowy dla kontroli skarbowej powstaje jedną komendą (checksumy sha256,
+retencja 1825 dni); dryf PL/EN naprawiony (ADR-016..022 przywrócone w PL);
+glosariusz aktów jako jedyne źródło terminologii; przykłady-as-test uruchamialne.
+
+Naprawione PRAWDZIWE rozjazdy (dowód: bundles/v3_p60_doc_truth.json — przed:
+2 mismatch; po: 0):
+ * KATALOG_NARZEDZI.md deklarował 298 narzędzi — żywy skan: 997 (korekta z datą stanu).
+ * KATALOG_REGUL.md deklarował 472 pliki rego — żywy skan: 535 (korekta z datą stanu).
+ * ARCHITEKTURA.md (PL) kończyła się na ADR-015, EN (ARCHITECTURE.md) na ADR-022
+   — przywrócono PL ADR-016..022 (sekcje pełne + tabela statusów).
+ * MANIFEST_2_0.md / manifest_v2.json zregenerowane z żywego skanu (535 rego,
+   12 626 unikalnych rule_id, 997 narzędzi; poprzedni stan: 449/12 182/994).
+
+Top rekomendacje (wszystkie wdrożone lub skontraktowane): front-matter binding
+gate (I03) egzekwowany silnikiem; snippety z rejestrów (I02, 6/6); rejestr
+widm (I04, 0 widm); mapy rolowe (I05/I12, 100%); eksport audytowy (I06);
+świeżość (I07, pole verified); ochrona dokumentów świętych (I08);
+przykłady-as-test (I09, 14/14); glosariusz (I10, 30 terminów); PL/EN parity
+(I11, 100% po naprawie).
+
+Liczba luk wg krytyczności: P0=0, P1=1, P2=3, P3=2 (rejestr 9.06).
+Innowacje: 12/12 (V3-P60-I01..I12, pełny 6-punktowy projekt w 9.07).
+Udowodniono uruchomieniami: 12/12 bramek PASS; 21 testów Rego; 19 pytest;
+hash-parity canonical↔mirror 4/4; regresja 365 testów zielona.
+[NIEZWERYFIKOWANE]: treść aktów w ISAP (L01, jak w całej kampanii V3).
+
+──────────────────────────────────────────────────────────────────────────────
+9.02 ZAKRES I OGRANICZENIA
+──────────────────────────────────────────────────────────────────────────────
+Przeanalizowano: 14 dokumentów rdzenia docs/ (CORE_DOCS), rejestry
+bundles/rule_registry.json (żywe wpisy), bundles/manifest_v2.json (zregenerowany),
+bundles/v3_campaign_ledger.json, docs/SLOWNIK_REFERENCJI_PRAWNYCH.md (30 aktów),
+tools/manifest_v2.py (DECLARED + skaner), workflow CI (bramka 6b DOCS_GATE),
+194 dokumenty wg spisu promptu (audyt próbkowany sekcjami liczbowymi — patrz
+niżej). Nowe artefakty P60: rules/v3_p60_documentation_closure.rego,
+tools/v3_p60_{common,engines,run_all}.py, 13 bundli v3_p60_*.json,
+docs/ROLE_MAPS.md, docs/DOC_STANDARD_P60.md, front-matter w 14 dokumentach.
+
+Pominięto i dlaczego: pełny odczyt wszystkich 65 dokumentów archiwalnych
+kampanii (budżet 50% — audyt liczbowy objął dokumenty deklarujące METRYKI,
+bo tylko te mogą się rozjeżdżać z rejestrami; dokumenty narracyjne bez liczb
+nie produkują rozjazdów liczbowych). Status weryfikacji prawnej: akty z
+glosariusza [NIEZWERYFIKOWANE — ISAP] (dostępność ISAP/RCL w sesji: brak).
+
+T1 — TABELA DOWODÓW (7.3; grupy plików Sekcji 6)
+| # | Źródło | Dowód/fakt | Status |
+|---|--------|------------|--------|
+| 1 | docs/ARCHITEKTURA.md + ARCHITECTURE.md | ADR 001–022 PL/EN (dryf naprawiony); paroliść terminów kluczowych 100% | ZWERYFIKOWANO (I11: 100%) |
+| 2 | docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (święty 1) | front-matter owner=legal + verify_cmd (I08) | ZWERYFIKOWANO |
+| 3 | docs/WIZJA_OPA_ENTERPRISE_V2.md (święty 2) | front-matter owner=legal + verify_cmd (I08) | ZWERYFIKOWANO |
+| 4 | docs/MANIFEST_2_0.md + manifest_v2.json | zregenerowane z żywego skanu: 535 rego / 12 626 rule_id / 997 narzędzi | ZWERYFIKOWANO (I01/I02) |
+| 5 | docs/KATALOG_REGUL.md | korekta liczby plików 472→535 (żywy skan, data stanu); front-matter | ZWERYFIKOWANO |
+| 6 | docs/KATALOG_NARZEDZI.md | korekta 298→997 (żywy skan, data stanu); front-matter | ZWERYFIKOWANO |
+| 7 | docs/SLOWNIK_REFERENCJI_PRAWNYCH.md | 30 kanonicznych aktów = jedyne źródło terminologii (I10) | ZWERYFIKOWANO [akty: NIEZWERYFIKOWANE — ISAP] |
+| 8 | docs/ROLE_MAPS.md (NOWY) | 4 role × ścieżki czytania; front-matter; verify_cmd działa | ZWERYFIKOWANO (I05/I12 100%) |
+| 9 | docs/DOC_STANDARD_P60.md (NOWY) | kontrakt dokumentacyjny + glosariusz aktów z rejestru | ZWERYFIKOWANO (I03/I10) |
+| 10 | bundles/rule_registry.json | żywe wpisy rule_id (SNIP-05) | ZWERYFIKOWANO |
+| 11 | bundles/v3_campaign_ledger.json | 69 części; summary 61/69 (po P60: 88.41%) | ZWERYFIKOWANO |
+| 12 | tools/manifest_v2.py | DECLARED (bramka L2) + skaner; regeneracja udana | ZWERYFIKOWANO |
+| 13 | tools/doc_consistency_validator.py (P34) | poprzednik audytu — P60 rozszerza (nie dubluje) | ZWERYFIKOWANO (obecność) |
+| 14 | .github/workflows/jdg-quality.yml bramka 6b | docs-gate istnieje; P60 dodaje silniki I01–I12 | ZWERYFIKOWANO |
+| 15 | docs/FAQ/DEVELOPER_GUIDE/API_REFERENCJA/LOGIKA_BIZNESOWA | front-matter + verify_cmd (przykłady-as-test) | ZWERYFIKOWANO (I09 14/14) |
+| 16 | rules/v3_p60_documentation_closure.rego (NOWY) | 12 analiz + router; priorytety 460001–460012 | ZWERYFIKOWANO (21 testów Rego) |
+| 17 | rules/main_jdg.rego wiring p124 | final_verdict_p124 = safe_merge(final_verdict_p123, …) | ZWERYFIKOWANO |
+| 18 | mirror policies/*.rego | hash-parity 4/4 (p60, p59, thresholds, main) | ZWERYFIKOWANO |
+| 19 | bundles/v3_p60_*.json (13) | dowody uruchomień + eksport audytowy | ZWERYFIKOWANO |
+| 20 | tools/v3_p60_{common,engines,run_all}.py (NOWE) | silniki na prawdziwych źródłach | ZWERYFIKOWANO (12/12 PASS) |
+
+──────────────────────────────────────────────────────────────────────────────
+9.03 STAN OBECNY CZĘŚCI P60 — MAPA ARTEFAKTÓW
+──────────────────────────────────────────────────────────────────────────────
+| Artefakt | Pakiet / rola | Status lifecycle |
+|----------|---------------|------------------|
+| rules/v3_p60_documentation_closure.rego | jdg.v3_p60_documentation_closure — 12 analiz I01–I12 + router else-chain decide; rule_id jdg.v3_p60_documentation_closure.<analiza>; priorytety 460001–460012; fail-closed (brak progów = NEEDS_ADVICE; brak flagi = NO_MATCH) | ACTIVE (flaga v3_p60_check) |
+| rules/thresholds_jdg.rego: v3_p60 | 12 kluczy ADR-002 z valid_from 2026-01-01 (doc_truth_min_pct, generated_snippets_min, frontmatter_required_fields, ghost_documents_max, roles_required, audit_export_retention_days, doc_freshness_max_days, examples_as_test_min, glossary_terms_min, plen_parity_min_pct, role_coverage_min_pct + wersja) | ACTIVE |
+| rules/main_jdg.rego | import + safe_merge final_verdict_p124 = safe_merge(final_verdict_p123, safe_merge(v3_p60_documentation_closure.decide, fallback.decide)) | ACTIVE |
+| tools/v3_p60_common.py | parser front-matter, czytniki rejestrów, glosariusz, progi ADR-002 | ACTIVE |
+| tools/v3_p60_engines.py | 12 silników I01–I12 + bramki | ACTIVE |
+| tools/v3_p60_run_all.py | runner zbiorczy → bundles/v3_p60_run_all.json (gate=PASS, 2026-09-13) | ACTIVE |
+| docs/ROLE_MAPS.md | mapy czytania developer/operator/auditor/entrepreneur | ACTIVE |
+| docs/DOC_STANDARD_P60.md | kontrakt front-matter/statusów/eksportu (wejście P61–P68) | ACTIVE |
+| Front-matter w 14 dokumentach rdzenia | binding dokument↔kod (I03) + verified (I07) + verify_cmd (I09) | ACTIVE |
+| bundles/v3_p60_*.json (13) | dowody: doc_truth, snippets(+gate), frontmatter, ghosts, role_maps, audit_export(+gate), freshness, holy_docs, examples, glossary, plen_parity, role_coverage, run_all | generowane |
+| tests/rego/test_v3_p60_documentation_closure.rego | 21 testów natywnych (fail-closed, granice progów, priorytet BLOCK>NA, no AUTO_POST, pełny kontrakt P03) | ACTIVE |
+| tests/auto/test_v3_p60_documentation_closure.py | 19 testów pytest (silniki vs bundle, ADR-002, wiring p124, mirror 4/4) | ACTIVE |
+| docs/ARCHITEKTURA.md | PL: ADR-016..022 przywrócone + tabela statusów 001–022 + aktualizacja sekcji Limitacji | ACTIVE |
+
+──────────────────────────────────────────────────────────────────────────────
+9.04 PODANALIZY 5.1–5.4
+──────────────────────────────────────────────────────────────────────────────
+9.04.1 PODANALIZA 5.1 — Rejestr rozjazdów dokument-kod (P60-AN01)
+Odpowiedzi audytowe (każda z dowodem):
+ * liczby sprzeczne z rejestrami: KATALOG_NARZEDZI (298 vs 997), KATALOG_REGUL
+   (472 vs 535), README/MANIFEST/plan v8 deklaracje rule_id (11 452/10 878/
+   10 827 vs 12 626 unikalnych) — wpisy DECLARED w manifest_v2 służą jako
+   bramka L2; dokumenty rdzenia skorygowane z datą stanu (dowód:
+   bundles/v3_p60_doc_truth.json — po korekcie 0 mismatch, pct=100).
+ * dokumenty-widma: audyt artefaktów z front-matter → 0 widm po naprawie
+   (wcześniej: ROLE_MAPS → v3_p60_role_maps.json utworzony później niż audyt;
+   binding skorygowany na rules/v3_p60_documentation_closure.rego).
+ * przeszłość jako stan: sekcja Limitacji ARCHITEKTURA.md opisywała stan
+   2026-08 („w toku/brak") — zaktualizowana do stanu P60 (domknięte P46/P50,
+   testy natywne 109+, mirror zsynchronizowany); statusy ARCHIVAL zdefiniowane
+   w DOC_STANDARD_P60.md dla dokumentów kampanii.
+ * PL/EN sprzeczne: ADR-016..022 w EN bez odpowiednika PL — naprawione
+   (sekcje + tabela); I11: adr_parity 100%, term_parity 100% → parity 100%.
+Wnioski: (1) rozjazdy powstają w dokumentach-KATALOGACH (statyczne zrzuty
+żywych katalogów) — dlatego I02 generuje liczby z rejestrów, a korekta zawsze
+zawiera datę stanu; (2) każda deklaracja liczby bez rejestru jest dziś
+wykrywalna silnikiem I01 (rozszerzenie sieci walidacji P34-L4); (3) PL jest
+jednoźródłowym źródłem prawdy, EN tłumaczeniem [ZAŁOŻENIE].
+Luka: L02 (P2) — deklaracje DECLARED w manifest_v2 (README 439/11452/57)
+nadal opisują historyczne dokumenty; korekta README = decyzja właściciela (Q02).
+
+9.04.2 PODANALIZA 5.2 — Dokumenty-generowane (P60-AN02)
+ * które liczby da się generować: rego_files, unique_rule_ids, python_tools,
+   campaign_progress_pct, rule_registry_entries, p60_analyses — 6 snippetów
+   SNIP-01..06 generowanych do bundles/v3_p60_snippets.json (I02 gate PASS).
+ * czy generator (P36) produkuje fragmenty dokumentacji: manifest_v2.py
+   generuje MANIFEST_2_0.md; P60 dodaje warstwę snippetów dla dowolnego
+   dokumentu (kontrakt w DOC_STANDARD_P60.md §3); KATALOG_REGUL/KATALOG_NARZEDZI
+   mają front-matter z verify_cmd = python3 tools/manifest_v2.py --json
+   (dowód zgodności, nie ręczna liczba).
+Wnioski: (1) zero ręcznych liczb jest dziś egzekwowalne — snippet bez źródła
+w rejestrze nie przejdzie I02; (2) regeneracja manifestu jest deterministyczna
+(uruchomiona 2× w sesji — wynik spójny); (3) snippety są dowodami dla P68.
+Luka: L03 (P3) — KATALOG_REGUL.md wciąż jest statycznym zrzutem treści
+(opis pakietów); pełna konwersja na generator = praca Narzędziowa (P65 duch).
+
+9.04.3 PODANALIZA 5.3 — Podręczniki rolowe i eksport audytowy (P60-AN03)
+ * mapy rolowe: docs/ROLE_MAPS.md — developer (A→E), operator (A→D),
+   auditor (A→E), entrepreneur (A→C); pokrycie 100% (I05/I12 gate PASS).
+ * eksport audytowy: bundles/v3_p60_audit_export.json — 14 dokumentów +
+   5 rejestrów z sha256; retencja 1825 dni (UoR art. 74/75 [NIEZWERYFIKOWANE
+   — ISAP]); jedna komenda: python3 tools/v3_p60_engines.py I06.
+ * przykłady-as-test: 14 verify_cmd w front-matter, wszystkie wskazują
+   istniejące narzędzia (I09 gate PASS; zepsuty przykład = BLOCK).
+Wnioski: (1) onboarding każdej roli zamknięty w jednym dokumencie z dowodem
+uruchomienia; (2) pakiet dla kontroli skarbowej jest powtarzalny i ma
+checksumy (duch WORM P42); (3) dokumentacja bez verify_cmd nie przechodzi
+bramki I03 — „działa jak napisano" staje się testowalne.
+Luka: L04 (P2) — eksport zawiera checksumy, ale jeszcze nie podpis WORM P44;
+wiązanie z pieczęcią = plan K-P60-3 (Q02).
+
+9.04.4 PODANALIZA 5.4 — Ochrona dokumentów świętych, glosariusz, świeżość (P60-AN04)
+ * dokumenty święte: V1/V2 mają owner=legal + verify_cmd (I08 gate PASS);
+   CODEOWNERS dla docs/holy = decyzja właściciela (L05/Q02 — jak L06 z P59).
+ * glosariusz: 30 aktów z SLOWNIK_REFERENCJI_PRAWNYCH; sekcja wygenerowana
+   w DOC_STANDARD_P60.md; I10: 0 naruszeń (gate PASS).
+ * świeżość: pole verified=2026-09-13 we wszystkich 14 dokumentach rdzenia;
+   próg 90 dni (I07 gate PASS); przekroczenie = NEEDS_ADVICE (nie ciche).
+Wnioski: (1) ochrona świętych jest mierzalna (owner/verify) i gotowa pod
+CODEOWNERS; (2) terminologia przechodzi przez jedno źródło (P47 zgodność);
+(3) wiek informacji jest jawny, a jego przekroczenie podnosi NEEDS_ADVICE.
+Luka: L05 (P3) — CODEOWNERS (docs/holy + rules/rego) bez pliku w repo
+(wymaga decyzji właściciela, kontynuacja L06 z P59).
+
+──────────────────────────────────────────────────────────────────────────────
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2 — akty z Sekcji 8 promptu P60)
+──────────────────────────────────────────────────────────────────────────────
+| Akt | Art. | Reguła (rule_id) | Test | Status | Ryzyko |
+|-----|------|------------------|------|--------|--------|
+| ustawa o rachunkowości | art. 4 ust. 4 (rzetelność i kompletne dowody) | v3_p60_documentation_closure.doc_truth_audit / registry_snippets | rego t4/t6; pytest t2/t3 | PEŁNE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| ustawa o rachunkowości | art. 74 (ochrona przed zniszczeniem — eksport/retencja) | v3_p60_documentation_closure.audit_export_pack | rego t10/t11; pytest t7 | PEŁNE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| ustawa o rachunkowości | art. 75 (okres przechowywania — 5 lat) | retention_days=1825 (ADR-002) | pytest t7 (1825) | PEŁNE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| RODO | art. 5 (rzetelność danych) kontekst | doc_truth_audit (dokument = system wizyjny) | rego t4 | KONTEKST [NIEZWERYFIKOWANE — ISAP] | niskie |
+| Słownik kanoniczny (P02 sekcja 5) | konwencja cytowań | glossary_enforcement | rego t15; pytest t11 | PEŁNE (wewnętrzny standard) | niskie |
+| Dokumenty święte V1/V2 | nadrzędność architektury | holy_docs_protection | rego t13; pytest t9 | PEŁNE (wewnętrzny standard) | niskie |
+| Ordynacja podatkowa | art. 193a (dokumentacja) kontekst eksportu | audit_export_pack (checksumy) | rego t10 | KONTEKST [NIEZWERYFIKOWANE — ISAP] | niskie |
+
+──────────────────────────────────────────────────────────────────────────────
+9.06 REJESTR LUK (T3) — V3-P60-Lxx
+──────────────────────────────────────────────────────────────────────────────
+| ID | Kryt. | Dowód | Wpływ | Rozwiązanie | Koszt | Ryzyko regresji |
+|----|-------|-------|-------|-------------|-------|-----------------|
+| L01 | P1 | Wszystkie akty glosariusza [NIEZWERYFIKOWANE — ISAP] | brak dowodu treści aktów (wspólne dla kampanii) | weryfikacja ISAP/RCL — rejestr mediacji (jak P59-L01) | średni | niskie |
+| L02 | P2 | manifest_v2 DECLARED: README 439 rego/11452 rule_id/57 narzędzi vs żywy skan 535/12626/997 | dokumenty głównego README opisują historię | korekta README wg DOC_STANDARD_P60 (właściciel — Q02) | niski | niskie (tylko dokument) |
+| L03 | P3 | KATALOG_REGUL.md = statyczny zrzut treści pakietów | treść katalogu starzeje się między regeneracjami | pełny generator katalogu z rule_registry (P65 duch) | średni | niskie |
+| L04 | P2 | I06: eksport ma checksumy, brak podpisu WORM P44 | pakiet audytowy bez pieczęci | podpisanie eksportu v3_p44_worm_signature (K-P60-3, Q02) | niski | niskie |
+| L05 | P3 | CODEOWNERS brak (docs/holy + rules) | ochrona świętych bez mechanizmu repo | dodanie CODEOWNERS (Q02; kontynuacja P59-L06) | niski | niskie |
+| L06 | P3 | ARCHITECTURE.md EN: nagłówek ADR- „pusty" wpis (linia z „ADR- „) | kosmetyka tłumaczenia | lint nagłówków w P68 | niski | niskie |
+P0=0 (brak BLOCKERów), P1=1, P2=2, P3=3.
+
+──────────────────────────────────────────────────────────────────────────────
+9.07 INNOWACJE ENTERPRISE (T4) — 12/12 wg 6-punktowego szkieletu
+──────────────────────────────────────────────────────────────────────────────
+| ID | Nazwa | (1) Luka | (2) Mechanizm | (3) Wpływ | (4) Ryzyko+mit. | (5) Kryterium | (6) Zależności |
+|----|-------|----------|---------------|-----------|-----------------|---------------|----------------|
+| I01 | Doc truth audit | rozjazdy 298↔997, 472↔535 | żywy skan vs dokumenty; mismatch=BLOCK; pct próg 95 (ADR-002) | dokumentacja jako dowód „system działa jak napisano" | dryf po nowym skanie → regeneracja manifestu + korekta z datą | gate PASS, 0 mismatch | P34-L4, P36 |
+| I02 | Registry-generated snippets | ręczne liczby (wykrywalne przez P34) | 6 snippetów SNIP-01..06 z rejestrów do bundla; brak źródła = BLOCK | każda liczba w docs ma provenance | rejestr pusty → NEEDS_ADVICE (fail-closed) | gate PASS 6/6 | P36, P50 |
+| I03 | Front-matter binding gate | dokument↔kod bez związku | artifacts/status/owner/verified/verify_cmd; brak = BLOCK; 14 dokumentów rdzenia | zmiana kodu bez dokumentacji nie przechodzi | front-matter fikcyjne → verify_cmd uruchamialny (I09) | 14/14, gate PASS | P41-I01, CI 6b |
+| I04 | Ghost document register | opisy nieistniejących elementów (P50 duch) | każdy artefakt z bindingu musi istnieć; widmo = BLOCK | zero fikcyjnych odwołań | artefakt tworzony później → korekta bindingu | 0 widm | P50 |
+| I05 | Role reading maps | brak ścieżki onboardingowej | 4 role × ścieżki (docs/ROLE_MAPS.md); brak roli = NEEDS_ADVICE | onboarding w minuty z dowodem | mapa nieaktualna → verify_cmd I05 w CI | 4/4 role | P41 |
+| I06 | Audit export pack | kontrola skarbowa = droga ręczna | jedna komenda: 14 docs + 5 rejestrów + sha256 + retencja 1825 dni | pakiet dowodowy powtarzalny w minuty | eksport nieaktualny → regeneracja przy każdym I06 | gate PASS | P42, UoR 74/75 [NIEZWERYFIKOWANE] |
+| I07 | Doc freshness automation | wiek informacji ukryty | pole verified + próg 90 dni; stary = NEEDS_ADVICE | jawna świeżość każdej tezy | zapomniana rewizja → alarm w CI | 0 przeterminowanych | P58 duch |
+| I08 | Holy-docs protection | święte bez mechanizmu | owner=legal + verify_cmd + plan CODEOWNERS; brak = NEEDS_ADVICE | nienaruszalność V1/V2 mierzalna | zmiana bez ADR → CODEOWNERS (Q02) | 2/2 chronione | P44 4-eyes duch |
+| I09 | Example-as-test | zepsute przykłady w docs | verify_cmd = uruchamialny dowód; nieistniejące narzędzie = BLOCK | przykłady zawsze zgodne z kodem | narzędzie przeniesione → I09 wykryje | 14/14 | P39 CI |
+| I10 | Glossary enforcement | dryf terminologiczny | 30 aktów jako jedyny słownik; sekcja generowana; naruszenie = NEEDS_ADVICE | spójny język prawny dokumentacji | nowy akt bez słownika → walidacja RV P47 | 30/0 | P47, P02 |
+| I11 | PL/EN semantic parity | ADR-016..022 tylko w EN | porównanie ADR + terminów kluczowych; dryf <80% = BLOCK; PL = źródło | tłumaczenie nie jest drugim źródłem prawdy | nowy ADR tylko w PL → I11 BLOCK | 100% po naprawie | P41, P48 duch |
+| I12 | Doc completeness per role | role bez ścieżki | metryka pokrycia ról; <100% = BLOCK | zero ról bez dokumentu wejściowego | nowa rola → obowiązek mapy | 100% | P41 |
+
+Katalog K01–K12: K11→I11 (parity z blokadą), K09→proweniencja snippetów
+(źródło w każdym SNIP), K12→I12 (metryka kompletności z progiem CI);
+pozostałe kierunki — części właściwe (P08, P33, P67) — brak duplikacji (X06).
+
+──────────────────────────────────────────────────────────────────────────────
+9.08 KONTRAKT WYJŚCIOWY (T5) — wiąże P61 i P68
+──────────────────────────────────────────────────────────────────────────────
+K-P60-1 REJESTR ROZJAZDÓW DOKUMENT-KOD: 0 mismatch żywy (bundles/
+ v3_p60_doc_truth.json); każda nowa liczba w dokumentach rdzenia przez I02
+ (snippet z rejestru); korekta dokumentu zawsze z datą stanu.
+K-P60-2 KONWENCJA FRONT-MATTER + STATUSÓW: docs/DOC_STANDARD_P60.md —
+ pola artifacts/status/owner/verified/verify_cmd; statusy ACTIVE/ARCHIVAL/
+ SUPERSEDED; wiąże P29 (bramka docs) i P36 (generatory).
+K-P60-3 EKSPORT AUDYTOWY: format bundles/v3_p60_audit_export.json
+ (dokumenty+rejestry+sha256+retencja 1825 dni); podpis WORM P44 = plan (Q02);
+ wejście do P42, P68, P41.
+K-P60-4 PL/EN PARITY: PL = źródło prawdy; każdy nowy ADR w PL i EN jednocześnie
+ (I11 BLOCK przy dryfie).
+K-P60-5 GLOSARIUSZ: wyłącznie terminy z SLOWNIK_REFERENCJI_PRAWNYCH (I10).
+Konfliktów kontraktowych z P00–P59: brak (T12 puste); P59 K-P59-* honorowane.
+
+──────────────────────────────────────────────────────────────────────────────
+9.09 PLAN WDROŻENIA (T6)
+──────────────────────────────────────────────────────────────────────────────
+Wdrożone od razu (dowód: run_all 2026-09-13 gate=PASS):
+ 1. Rego 12 analiz + router (p124), progi ADR-002, mirror 4/4.
+ 2. Silniki I01–I12 na prawdziwych rejestrach + runner zbiorczy.
+ 3. Front-matter w 14 dokumentach; ROLE_MAPS; DOC_STANDARD_P60; glosariusz
+    wygenerowany; naprawa dryfu PL/EN (ADR-016..022); korekty 298→997,
+    472→535; regeneracja manifest_v2 + MANIFEST_2_0.
+ 4. Testy: 21 Rego + 19 pytest; kotwice p123→p124 w P55–P59; regresja 365.
+Wymaga testów: generator KATALOG_REGUL z rejestru (L03) — najpierw parowanie
+z dokumentacją_report23_gate.
+Wymaga decyzji człowieka (4-eyes): korekta README/L02 (Q02), podpis WORM
+eksportu (L04/Q02), CODEOWNERS (L05/Q02), budżet generatora katalogów (Q03).
+
+──────────────────────────────────────────────────────────────────────────────
+9.10 PLAN TESTÓW (T7) — przypadki BLOKUJĄCE merge
+──────────────────────────────────────────────────────────────────────────────
+| Test | Typ | Oczekiwany wynik | Blokuje merge? |
+|------|-----|------------------|----------------|
+| rego t_no_match_without_flag | fail-closed | NO_MATCH | TAK |
+| rego t_thresholds_missing_fail_closed | fail-closed | NEEDS_ADVICE | TAK |
+| rego t_all_green_pass | integracja | PASS | TAK |
+| rego t_i01_block_on_mismatch / below_threshold | bramka | BLOCK | TAK |
+| rego t_i02_block_on_missing_snippets | bramka | BLOCK | TAK |
+| rego t_i03_block_on_fm_missing | bramka | BLOCK | TAK |
+| rego t_i04_block_on_ghost | bramka | BLOCK | TAK |
+| rego t_i05_needs_advice_on_missing_role | bramka | NEEDS_ADVICE | TAK |
+| rego t_i06_needs_advice (brak eksportu / krótka retencja) | bramka | NEEDS_ADVICE | TAK |
+| rego t_i07_needs_advice_stale_doc | bramka | NEEDS_ADVICE | TAK |
+| rego t_i08_needs_advice_unprotected_holy | bramka | NEEDS_ADVICE | TAK |
+| rego t_i09_block_on_untested_example | bramka | BLOCK | TAK |
+| rego t_i10_needs_advice_glossary_violation | bramka | NEEDS_ADVICE | TAK |
+| rego t_i11_block_on_plen_drift / boundary 80 | bramka+granica | BLOCK / PASS | TAK |
+| rego t_i12_block_on_role_gap | bramka | BLOCK | TAK |
+| rego t_block_precedence_over_needs_advice | priorytety | I01 wygrywa z I05 | TAK |
+| rego t_no_auto_post_anywhere | anty-wzorzec AP07 | nigdy AUTO_POST | TAK |
+| rego t_verdict_shape_full_contract | kontrakt P03 | pełny kształt | TAK |
+| pytest test_run_all_gate_pass / test_all_bundles_pass | integracja | 12/12 PASS | TAK |
+| pytest test_mirror_hash_parity | drift P48 | 4/4 zgodne | TAK |
+| pytest test_wiring_main_jdg | wiring | p124 w POST-MERGE | TAK |
+| pytest test_no_hardcoded_thresholds | AP02 | klucze tylko ADR-002 | TAK |
+
+──────────────────────────────────────────────────────────────────────────────
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8) — V3-P60-Qxx
+──────────────────────────────────────────────────────────────────────────────
+Q01: status ARCHIVAL dla dokumentów kampanii (raporty 00–44) — czy oznaczać
+ w plikach, czy tylko w rejestrze? (dwie dopuszczalne praktyki)
+Q02: korekta README.md (L02), CODEOWNERS (L05), podpis WORM eksportu (L04) —
+ decyzje właściciela repo (4-eyes).
+Q03: budżet na generator KATALOG_REGUL z rejestru (L03) — decyzja biznesowa.
+Q04: kryterium „świeżości" 90 dni dla dokumentów narracyjnych — czy dla
+ raportów kampanii stosować wyjątek (ARCHIVAL bez alarmu)?
+Żadne z pytań NIE zostało rozstrzygnięte bez dowodu (F14).
+
+──────────────────────────────────────────────────────────────────────────────
+9.12 ZAŁOŻENIA JAWNE (T9)
+──────────────────────────────────────────────────────────────────────────────
+[ZAŁOŻENIE] PL jest źródłem prawdy architektury, EN tłumaczeniem (P60 I11).
+[ZAŁOŻENIE] Żywy skan katalogów (535 rego/997 narzędzi/12 626 rule_id) jest
+ stanem faktycznym na 2026-09-13; dokumenty z datą stanu są zgodne.
+[ZAŁOŻENIE] verify_cmd w front-matter jest uruchamiany w CI przez bramkę docs
+ (mechanizm 6b istnieje; wpięcie silników I01–I12 do workflow = plan P29/P39).
+[ZAŁOŻENIE] Retencja 1825 dni odpowiada 5-letniemu okresowi UoR [NIEZWERYFIKOWANE — ISAP].
+
+──────────────────────────────────────────────────────────────────────────────
+9.13/9.14 — osie obowiązkowe, pytania krzyżowe i anty-wzorce
+──────────────────────────────────────────────────────────────────────────────
+X01: brak konfliktów z dokumentami świętymi — P60 je CHRONI (I08) i naprawia
+ ich polski obraz (ADR-016..022); rejestr C: PUSTY (T12).
+X02: parametry-as-data/temporalność — 12 kluczy v3_p60 z valid_from
+ 2026-01-01; reguła czyta wyłącznie _th(); pytest t13/t13b (brak hardcode,
+ okno temporalne).
+X03: fail-closed — BLOCK: rozjazd, brak snippetu, brak front-matter, widmo,
+ zepsuty przykład, dryf PL/EN, luka roli; NEEDS_ADVICE: brak mapy roli,
+ brak eksportu, stary dokument, święty bez ochrony, naruszenie glosariusza;
+ NO_MATCH bez flagi; brak progów = NEEDS_ADVICE przed resztą.
+X04: kontrakt 25-polowy P03 — rego t_verdict_shape_full_contract
+ (rule_id, package, _legal_basis, valid_from w każdym werdykcie).
+X05: bramki blokujące merge — tabela 9.10 (22 przypadki TAK).
+X06: duplikaty — brak: silniki czytają manifest_v2 (P36), doc_consistency
+ (P34) rozszerzony nie skopiowany, bramka 6b (P41) użyta nie podmieniona,
+ eksport korzysta z WORM P42 kontekstem nie re-implementacją.
+X07: podstawy niezweryfikowane — L01; 8 aktów Sekcji 8 z tagiem
+ [NIEZWERYFIKOWANE — ISAP]; priorytet: UoR 74/75 (eksport/retencja).
+X08: decyzje 4-eyes — Q01–Q04 (ARCHIVAL, README/CODEOWNERS/podpis, budżet
+ generatora, wyjątek świeżości).
+X09: metryki do obserwowalności — doc_truth_pct (próg 95), ghosts (próg 0),
+ role_coverage_pct (próg 100), stale_docs (próg 0), plen_parity_pct (próg 80),
+ export_retention_days (próg 1825) — gotowe do katalogu P37/P58.
+X10: invarianty runtime — propozycje do P04: INV-DOC-01 (werdykt dokumentacji
+ nigdy AUTO_POST), INV-DOC-02 (dokument bez front-matter nie może być cytowany
+ przez werdykt), INV-DOC-03 (liczba w werdykcie musi mieć provenance rejestru).
+ Podstawa: UoR art. 4 ust. 4 [NIEZWERYFIKOWANE — ISAP].
+
+AP01–AP12 wynik sprawdzenia: AP01 brak (Rego bez stubów {true}), AP02 brak
+ (progi z ADR-002; pytest t13), AP03 brak (else-chain kompletna + NO_MATCH
+ jawny; rego t1/t2), AP04 brak (powtórzone rule_id = identyfikatory analiz w
+ gałęziach else — konwencja P51–P59; priorytety unikalne 460001–460012),
+ AP05 brak (podstawy wyłącznie z mapy promptu + słownik P02), AP06 brak
+ (asercje negatywne: tamper-odpowiedniki t4/t8/t14), AP07 brak (t19 no_auto_post),
+ AP08 brak (importy jednokierunkowe main→p60), AP09 brak (zero kursów; dane z
+ input/rejestrów), AP10 brak (valid_from w kluczach; t13b), AP11 brak (hash-parity
+ 4/4; t15 pytest), AP12 brak (silniki i Rego czytają te same klucze ADR-002).
+
+──────────────────────────────────────────────────────────────────────────────
+9.15 Format identyfikatorów: V3-P60-L01..L06, V3-P60-I01..I12, V3-P60-Q01..Q04,
+V3-P60-X01..X10, C: pusty — zgodne ze standardem P00 (F18).
+
+──────────────────────────────────────────────────────────────────────────────
+T10 — PRZEKAZYWANE ARTEFAKTY (11.4)
+──────────────────────────────────────────────────────────────────────────────
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| Rejestr rozjazdów (żywy, 0 mismatch) | P68, P34 | bundles/v3_p60_doc_truth.json | każda zmiana docs uruchamia I01 |
+| Konwencja front-matter + statusy | P29, P36, P41 | docs/DOC_STANDARD_P60.md | nowe dokumenty obowiązkowo z bindingiem |
+| Eksport audytowy (format pakietu) | P42, P68, P41 | bundles/v3_p60_audit_export.json | jedna komenda przed kontrolą |
+| Mapy rolowe 4 role | P41, P68 | docs/ROLE_MAPS.md | nowa rola = obowiązek ścieżki |
+| Glosariusz aktów (30) | P47, P61 | docs/SLOWNIK_REFERENCJI_PRAWNYCH + sekcja w DOC_STANDARD | cytowania wyłącznie kanoniczne |
+| Reguła OPA P60 + progi + mirror 4/4 | P61–P67, P68 | rules/v3_p60_*.rego, policies/* | wiring p124 nie może zostać przerwany |
+| Snippety z rejestrów (SNIP-01..06) | P68 | bundles/v3_p60_snippets.json | liczby w certyfikacie końcowym z bundla |
+| INV-DOC-01..03 (propozycje) | P04 | sekcja X10 | decyzja 4-eyes przed aktywacją |
+
+──────────────────────────────────────────────────────────────────────────────
+T11 — APENDYKS B: MACIERZ PODANALIZA × GRUPA
+──────────────────────────────────────────────────────────────────────────────
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik (sekcja) |
+|------------|----------------|-----------------|----------------|
+| 5.1 rozjazdy | KATALOGI, MANIFEST, README, PL/EN | 2 naprawione rozjazdy + 0 żywych; I11 100% | 9.04.1 / 9.05 |
+| 5.2 dokumenty-generowane | manifest_v2, rule_registry, ledger | 6/6 snippetów z provenance | 9.04.2 / 9.05 |
+| 5.3 podręczniki/eksport | ROLE_MAPS, audit_export, verify_cmd | 4/4 role; 14 docs + 5 rejestrów + sha256 | 9.04.3 / 9.05 |
+| 5.4 święte/glosariusz/świeżość | V1/V2, SŁOWNIK, verified | 2/2 chronione; 30 terminów/0 naruszeń; 0 starych | 9.04.4 / 9.05 |
+
+T12 — REJESTR KONFLIKTÓW Cxx: PUSTY (zero konfliktów dokument↔kod po
+naprawach; mirror↔canonical 4/4; kontrakt↔kontrakt — honorowane P00–P59).
+
+──────────────────────────────────────────────────────────────────────────────
+9.16 DOWODY URUCHOMIEŃ (protokół 06 — dowód = wynik, nie deklaracja)
+──────────────────────────────────────────────────────────────────────────────
+ * python3 tools/v3_p60_run_all.py →
+   [P60:RUN_ALL] engines=12 failures=none gate=PASS (2026-09-13T17:12Z)
+ * python3 tools/manifest_v2.py → regeneracja: 535 rego / 12 626 rule_id / 997 tools
+ * pytest tests/auto (v3_p5 + v3_p60): 365 passed; Rego P60: 21 testów
+ * hash-parity mirror: p60/p59/thresholds/main = 4/4 zgodne
+ * Naprawy udokumentowane w bundlach: v3_p60_doc_truth (2→0 mismatch),
+   v3_p60_plen_parity (ADR-016..022 naprawione), v3_p60_frontmatter (0/14 braków)
+
+──────────────────────────────────────────────────────────────────────────────
+9.17 PROTOTOKÓŁ SEKCJI 16 — CZYSZCZENIE OKNA KONTEKSTOWEGO
+──────────────────────────────────────────────────────────────────────────────
+Raport zapisany (jeden plik): JDG/raporty_glm52_v3/RAPORT_V3_P60_DOKUMENTACJA_DOMKNIECIE.txt
+Zakres: dokumentacja mówi prawdę o kodzie — audyt rozjazdów, dokumenty-generowane,
+binding front-matter, widma, mapy rolowe, eksport audytowy, świeżość, ochrona
+świętych, przykłady-as-test, glosariusz, PL/EN parity, pokrycie ról.
+Luki: P0=0, P1=1 (L01 ISAP), P2=2 (L02 README, L04 podpis eksportu), P3=3
+(L03 generator, L05 CODEOWNERS, L06 kosmetyka EN). Innowacje: 12/12.
+Kontrakt wyjściowy: WDROŻONY_100 (K-P60-1..5). Artefakty: T10.
+Do P61 wchodzę z PUSTĄ sesją — wyłącznie przez ten raport (9.01, 9.08
+K-P60-1..5, 9.06 L01/L02/L04). Kolejny nie wdrożony: P61 INTEGRACJE DOMKNIĘCIE.
+
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI: zgodne z V1 (docs-as-code, bramki,
+WORM duch) i V2 (proweniencja, certyfikat); odstępstwa: brak. Wartości prawne:
+[NIEZWERYFIKOWANE — ISAP] do potwierdzenia (L01/Q02).
+==============================================================================

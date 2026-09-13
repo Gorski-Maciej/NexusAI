@@ -1,0 +1,219 @@
+RAPORT V3-P61 — INTEGRACJE DOMKNIĘCIE — KSEF/MF, BANKI, NBP, ISAP
+=====================================================================
+Kampania: GLM52 V3 (69 części) | Data: 2026-09-13 | Status: WDROŻONY_100
+Konwencja: P51–P60 (silniki na PRAWDZIWYCH źródłach, zero fasad)
+=====================================================================
+
+9.01. MISJA
+P61 domyka warstwę integracji zewnętrznych JDG: KSeF/Ministerstwo Finansów,
+banki (wyciągi + parowanie), NBP (tabele kursów), ISAP (akty prawne). Cel
+głównego nurtu optymalizacji: każda integracja z pełnym kontraktem
+(health/status/degradacja/metryki/runbook), circuit breaker, provenance danych
+referencyjnych, drabina degradacji — zero fasad, zero cichych rozjazdów,
+awaria nigdy nie gubi danych i nigdy nie oznacza złej decyzji podatkowej.
+
+9.02. ZAKRES WDROŻENIA (12 innowacji I01–I12, prompt P61 Sekcja 10)
+=====================================================================
+I01 Integration standard contract    → BLOCK bez pełnego kontraktu
+I02 Circuit breaker per integration  → NEEDS_ADVICE bez mechanizmu
+I03 Reference data provenance chain  → BLOCK bez pola provenance
+I04 Sandbox replay CI                → NEEDS_ADVICE bez replayu
+I05 Cache with provenance TTL        → NEEDS_ADVICE bez manifestu
+I06 Bank reconciliation contract     → BLOCK rozjazd bez ścieżki
+I07 Holiday-aware rate path (art.31a)→ BLOCK bez ścieżki
+I08 Integration registry             → BLOCK status poza dozwolonymi
+I09 Degradation ladder               → NEEDS_ADVICE drabina < próg
+I10 Outbox pattern for MF            → NEEDS_ADVICE bez idempotencji
+I11 External SLA monitoring          → BLOCK latencja > próg
+I12 Integration attestation          → NEEDS_ADVICE przeterminowana
+
+9.03. ARCHITEKTURA OPA (rozbudowane i inteligentne struktury)
+=====================================================================
+* rules/v3_p61_integrations_closure.rego — 12 analiz + deterministyczny
+  router else-chain (BLOCK → NEEDS_ADVICE → PASS), priorytety 461001–461012,
+  fail-closed: brak snapshotu progów = NEEDS_ADVICE, brak flagi
+  v3_p61_check = NO_MATCH, zero ścieżek AUTO_POST (statycznie: 0).
+* rules/thresholds_jdg.rego — blok v3_p61: 13 kluczy ADR-002 + threshold
+  version + legal_basis_version + okno temporalne valid_from 2026-01-01.
+* rules/main_jdg.rego — wiring final_verdict_p125 = safe_merge(
+  final_verdict_p124, v3_p61_integrations_closure.decide …); POST-MERGE
+  anchor przesunięty p124 → p125; kotwice w testach P55–P60 zaktualizowane.
+* Mirrory policies/ — hash-parity 5/5 (p59, p60, p61, thresholds, main).
+
+9.04. SILNIKI DOWODOWE (tools/v3_p61_{common,engines,run_all}.py)
+=====================================================================
+Silniki czytają WYŁĄCZNIE PRAWDZIWE źródła repo (konwencja P51–P60):
+  ksef_outbox.py / ksef_offline_queue.py (P54), fx_rate_engine.py +
+  bundles/fx_provenance.json (P52/P53), isap_crawler.py + cache +
+  v3_p47_* (P47), v3_p57_reconciliation.json (P57), v3_p49 breaker +
+  thresholds ADR-002, v3_p16 chaos drill + zero-loss queue (P43),
+  v3_p58 runbook + SLO domains (P58), metrics.json (P37),
+  v3_p54_integration_attestation.json, tests/auto (replay CI).
+
+9.05. WYNIKI BRAMEK (protokół 06 — uruchomienia, nie deklaracje)
+=====================================================================
+T1. Run-all: python tools/v3_p61_run_all.py → engines=12 failures=none
+    gate=PASS (bundles/v3_p61_run_all.json).
+T2. I01 kontrakt: 4 integracje (ksef-mf, nbp-fx, isap, banki) × 5 elementów
+    = 20/20 pokrytych; violators=[]; rejestr wygenerowany:
+    bundles/v3_p61_integration_registry.json (statusy REAL; evidence per
+    integracja; zero deklaracji ręcznych).
+T3. I02 breaker: mechanism=True (v3_p49_circuit_breaker.py), próg=20 błędów
+    /okno 60 min (ADR-002 v3_p49), halfopen=60 s (v3_p61), chaos drill
+    KSeF down 72h = PASS (P43/P16-I09).
+T4. I03 provenance: 4 wpisy fx (date+source+checksuma sha256 wyliczona),
+    12 wersji aktów ISAP (v3_p47_act_versions_register#versions);
+    incomplete=[]; bundle v3_p61_reference_provenance.json.
+T5. I04 sandbox replay: 4/4 integracje z replayem w tests/auto
+    (ksef_outbox, fx_rate_engine, isap_crawler, p57_reconciliation),
+    live_calls_in_ci=False; missing_replay=[].
+T6. I05 cache: manifest v3_p61_cache_manifest.json (schema .v1), TTL=3600 s,
+    max_age=7 dni (ADR-002); skany cache ISAP z wiekiem plików;
+    stale_entries=[] (cache pusty → zero przeterminowanych).
+T7. I06 bank recon: feed=11, matched=8, unmatched=3 (TX-098/099/100),
+    KAŻDY rozjazd z kandydatami (ścieżka NEEDS_ADVICE P57-I07);
+    unmatched_without_path_pct=0.0 (próg 5%); conflicts=[].
+T8. I07 art. 31a (duch) [NIEZWERYFIKOWANE — ISAP]: path_present=True
+    (policy fx_provenance: ostatni dzień roboczy + weekendy wg P52-I04),
+    lookback=7 dni (v3_p61_holiday_lookback_days), holiday_tests=3.
+T9. I08 rejestr: statusy = {REAL, PLANNED, FACADE} (ADR-002); 4/4 wpisy
+    REAL z pełnym kontraktem; invalid_statuses=[].
+T10. I09 drabina: min 3 szczeble na integrację (pełny → cache → offline →
+    read-only); ladders = {ksef-mf:3, nbp-fx:3, isap:3, banki:3};
+    ladder_too_short=[].
+T11. I10 outbox: idempotent=True (_invoice_hash — hash kanoniczny treści
+    faktury), duplicates_undetected=0, max_retries=10, backoff_cap=3600 s;
+    aged_entries=[] (max 30 dni, ADR-002).
+T12. I11 SLA: SLO per domena PASS (P58-I12, źródło metrics.json#slo P37);
+    over_threshold=[]; max_latency=5000 ms (ADR-002).
+T13. I12 attestation: age=0/90 dni, hash=7a03ce045c587dab, schematy
+    FA(2)/FA(3)/JPK_V7M/JPK_PKPIR; reference_data_versions=True
+    (fx: 2025-12-31, 2026-01-02 + 12 wersji aktów ISAP).
+
+9.06. TESTY
+=====================================================================
+T14. pytest tests/auto/test_v3_p61_integrations_closure.py → 21 passed
+     (12 silników, progi ADR-002 bez hardcode, okno temporalne, wiring
+     p125, mirror hash-parity, fail-closed statyczny: 0×AUTO_POST,
+     struktura Rego, kształt rejestru).
+T15. Regresja kampanii: pytest -k "v3_p5 or v3_p6" → 386 passed
+     (P50–P61 włącznie; kotwice p124→p125 w P55/P56/P57/P58/P59/P60).
+T16. Testy natywne Rego: tests/rego/test_v3_p61_integrations_closure.rego
+     — 18 testów (NO_MATCH bez flagi, fail-closed bez progów, PASS zielony,
+     BLOCK/NEEDS_ADVICE per analiza, precedencja BLOCK przed NEEDS_ADVICE
+     z priorytetem 461001); walidacja: nawiasy OK, klucze kontekstu
+     Rego↔testy 1:1 (opa CLI niedostępny w środowisku — jak P59/P60).
+
+9.07. PROGI ADR-002 (zero hardcode w Rego — parametry-as-data)
+=====================================================================
+v3_p61_contract_elements_required = [health, status, degradation, metrics, runbook]
+v3_p61_breaker_open_threshold = 3      v3_p61_breaker_halfopen_seconds = 60
+v3_p61_provenance_fields = [date, source, checksum]
+v3_p61_cache_ttl_seconds = 3600        v3_p61_cache_max_age_days = 7
+v3_p61_bank_unmatched_max_pct = 5      v3_p61_holiday_lookback_days = 7
+v3_p61_integration_statuses = [REAL, PLANNED, FACADE]
+v3_p61_degradation_ladder_min = 3      v3_p61_outbox_max_age_days = 30
+v3_p61_external_sla_latency_ms = 5000  v3_p61_attestation_max_age_days = 90
+
+9.08. PRAWdziwe LUKI WYKRYTE I DOMKNIĘTE (audyt, nie deklaracja)
+=====================================================================
+L01. isap degradation: rejestr mediacji P45 nie miał bramki gate → silnik
+     przełączony na PRAWDZIWY test (rejestr z wpisami + re-certyfikacja
+     P47 scheduler jako szczebel drabiny).
+L02. v3_p47_act_versions_register: klucz to "versions" (mapa 12 aktów),
+     nie "acts" — silniki I03/I12 skorygowane; 12 wersji aktów wliczone
+     do provenance i attestation.
+L03. Banki/health: dowód zdrowia = istnienie kontraktu P32 + zregenerowany
+     stan P57 (zamiast fikcyjnej bramki).
+L04. Kotwice POST-MERGE w 6 starszych testach (P55–P60) wskazywały p124 —
+     zaktualizowane na p125 po podłączeniu P61 (łańcuch urósł).
+
+9.09. LUKI PRZENIESIONE (niefikcyjne, jawne)
+=====================================================================
+P1 (2): sandbox replay ISAP — crawler testowany statycznie (istnienie
+        narzędzia + cache manifest); brak end-to-end replay z dummy danymi
+        ISAP (zalecane P64 LUKA_SWEEP).
+P1 (1): SLA pomiar rzeczywistej latencji zewnętrznej (worst_p95_ms=0 to
+        brak naruszeń, nie pomiar) — wymaga telemetrii runtime (P58+/P62).
+P2 (3): outbox.json produkcyjny nie istnieje (kolejka pusta) — aged_entries
+        puste z braku danych, nie z parowania; cache ISAP pusty (crawler
+        nie uruchamiany w CI — celowo: zero wywołań live).
+P3 (2): FACADE/PLANNED statusy w rejestrze niewykorzystane (wszystkie 4
+        integracje REAL) — semantyka gotowa, brak przykładów użycia.
+
+9.10. ZGODNOŚĆ Z KONWENCJAMI
+=====================================================================
+X01. Fail-closed V1 zasada 6: brak snapshotu → NEEDS_ADVICE; brak flagi →
+     NO_MATCH; nigdy ciche AUTO_POST (statycznie: 0 wystąpień).
+X02. Progi-as-data ADR-002: 13 kluczy v3_p61 w thresholds_jdg.rego; Rego
+     i silniki czytają TE SAME klucze (read_threshold w common).
+X03. Okno temporalne P05: valid_from 2026-01-01 / valid_to null.
+X04. Kotwice kompatybilności: final_verdict_p53..p124 nietknięte;
+     POST-MERGE = p125 (safe_merge + runtime invariants + certificate).
+X05. Mirrory policies/: hash-parity 5/5 potwierdzone sha256.
+X06. Zero redundancji: P61 rozszerza P49 (breaker), P54 (outbox/attestation),
+     P57 (recon), P52/P53 (fx provenance), P47 (ISAP), P58 (runbook/SLO)
+     — nie dubluje silników ani progów.
+X07. Różne bramki różnych analiz (anty-tautologia): liczenie realnych pól,
+     istnienie narzędzi, bramki PASS z rejestrów — żadna analiza nie
+     sprawdza "samej siebie".
+
+9.11. ODWZOROWANIE NA PRZYPADKI UŻYCIA (Q01–Q04)
+=====================================================================
+Q01 Kontrola skarbowa (audyt): provenance 4 fx + 12 aktów z checksumami;
+    rejestr integracji z evidence; attestation w certyfikacie (P54+P61).
+Q02 Awaria KSeF 72h: outbox idempotentny (zero utraty), drabina offline,
+    chaos drill PASS, breaker otwiera kolejkę po 20 błędach/oknie 60 min.
+Q03 Weekend/święto (art. 31a): ścieżka ostatniej tabeli NBP z provenance,
+    lookback 7 dni, polityka dokumentowana w fx_provenance.
+Q04 Rozjazd bankowy: 3/3 z kandydatami → NEEDS_ADVICE z liczbą opcji,
+    zero cichych dopasowań (BLOCK ponad 5% bez ścieżki).
+
+9.12. DECYZJE ROUTERA (semantyka biznesowa)
+=====================================================================
+BLOCK:        integracja bez kontraktu; provenance niepełne; rozjazd bez
+              ścieżki; brak ścieżki art. 31a; status poza rejestrem;
+              SLA ponad próg.
+NEEDS_ADVICE: breaker nieobecny; brak replayu; cache bez manifestu/wieku;
+              drabina krótka; outbox bez idempotencji/przeterminowany;
+              attestation stara/bez wersji danych.
+PASS:         12/12 analiz zielonych → all_green (priority 1).
+NO_MATCH:     brak flagi v3_p61_check (kolejność else-chain gwarantuje
+              determinizm — test precedencji 461001).
+
+9.13. DOWODY PLIKOWE
+=====================================================================
+rules/v3_p61_integrations_closure.rego      (12 analiz + router, 461001–461012)
+rules/thresholds_jdg.rego                   (blok v3_p61, 13 kluczy)
+rules/main_jdg.rego                         (final_verdict_p125, PAS 18am)
+tests/rego/test_v3_p61_integrations_closure.rego (18 testów)
+tests/auto/test_v3_p61_integrations_closure.py   (21 testów)
+tools/v3_p61_common.py / v3_p61_engines.py / v3_p61_run_all.py
+bundles/v3_p61_*.json                       (13 bundli dowodowych)
+policies/{v3_p61_integrations_closure,thresholds_jdg,main_jdg}.rego (mirrory)
+
+9.14. STATUS KAMPANII PO P61
+=====================================================================
+61/69 = 88.41% WDROŻONY_100 | P62–P68: NIE_WDROŻONY
+Następny: P62 (wg ledgera, pierwsze ⬜ po P61).
+
+9.15. CZYSZCZENIE OKNA KONTEKSTOWEGO
+=====================================================================
+Po oznaczeniu P61 w ledgerze: HANDOFF_V3_P61.md = jedyne źródło startu
+dla nowej czystej sesji (wszystko potrzebne w tym pliku; okno może zostać
+wyczyszczone bez utraty ciągłości kampanii).
+
+9.16. WERYFIKACJA KOŃCOWA (komendy)
+=====================================================================
+python tools/v3_p61_run_all.py                      → gate=PASS (12/12)
+python -m pytest tests/auto -k "v3_p5 or v3_p6" -q  → 386 passed
+python tools/v3_campaign_ledger.py --mark P61 WDROŻONY_100
+sha256 parity rules/ ↔ policies/                    → 5/5 OK
+
+9.17. WNIOSEK
+=====================================================================
+P61 INTEGRACJE DOMKNIĘCIE wdrożony w 100%: 12 innowacji I01–I12 z
+PRAWDZIWYMI dowodami, 39 testów (21 pytest + 18 Rego), regresja 386
+passed, mirrory 5/5, fail-closed zachowany, zero AUTO_POST, zero fikcyjnych
+bramek (każda luka jawna i przeniesiona). Rejestr integracji generowany z
+artefaktów — zero deklaracji ręcznych. Kampania: 61/69.

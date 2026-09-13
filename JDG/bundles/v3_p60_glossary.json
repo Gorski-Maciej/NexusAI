@@ -1,0 +1,20 @@
+{
+  "header": {
+    "schema": "jdg.v3_p60.documentation.audit.v1",
+    "part": "P60",
+    "slug": "DOKUMENTACJA_DOMKNIECIE",
+    "generated_at": "2026-09-13T19:29:12.656649+02:00",
+    "analyses": {
+      "I10_glossary_enforcement": "PASS"
+    }
+  },
+  "result": {
+    "terms_checked": 30,
+    "min_terms": 12,
+    "violations": [],
+    "source": "docs/SLOWNIK_REFERENCJI_PRAWNYCH.md (P02 sekcja 5)",
+    "provenance": "P47 konwencja cytowań; prompt P60 Sekcja 10-I10",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T19:29:12.656649+02:00"
+  }
+}

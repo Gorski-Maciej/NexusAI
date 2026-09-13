@@ -272,15 +272,26 @@ def _sbom_audit() -> dict:
                 external.add(mod)
             except ImportError:
                 pass
-    # Pinning: requirements.txt z `name==version` (P59 fix supply chain)
-    req = REPO_ROOT / "requirements.txt"
+    # Pinning: requirements.txt z `name==version` (P59 fix supply chain).
+    # Lokalizacja: repo root LUB JDG/ (single-repo layout — czytamy oba).
+    # Nazwy dist vs import (PEP 503 + znane aliasy): PyYAML↔yaml itd.;
+    # kanonizacja '-'→'_' + lower po obu stronach porównania.
+    dist_import_alias = {"pyyaml": "yaml", "beautifulsoup4": "bs4",
+                         "python-dateutil": "dateutil", "pycryptodome": "crypto"}
+
+    def _canon(name: str) -> str:
+        n = name.strip().lower().replace("-", "_")
+        return dist_import_alias.get(n, n)
+
     pinned_spec = set()
-    if req.exists():
+    for req in (REPO_ROOT / "requirements.txt", Path(__file__).resolve().parent.parent / "requirements.txt"):
+        if not req.exists():
+            continue
         for line in req.read_text(encoding="utf-8").splitlines():
             line = line.strip()
             if "==" in line and not line.startswith("#"):
-                pinned_spec.add(line.split("==")[0].strip().lower().replace("-", "_"))
-    unpinned = sorted(e for e in external if e.lower().replace("-", "_") not in pinned_spec)
+                pinned_spec.add(_canon(line.split("==")[0]))
+    unpinned = sorted(e for e in external if _canon(e) not in pinned_spec)
     sbom_path = BUNDLES / "sbom.json"
     sbom_present = sbom_path.exists()
     # SBOM aktualizowany przy każdym przebiegu (diff w CI = zmiana zależności)

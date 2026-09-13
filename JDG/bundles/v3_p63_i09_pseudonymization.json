@@ -1,0 +1,26 @@
+{
+  "header": {
+    "schema": "jdg.v3_p63.rbac.audit.v1",
+    "part": "P63",
+    "slug": "RBAC_MULTITENANT",
+    "generated_at": "2026-09-13T20:40:59.475494+00:00",
+    "analyses": {
+      "I09_pseudonymization": "PASS"
+    }
+  },
+  "result": {
+    "privacy_mode": "pseudonymized",
+    "required_mode": "pseudonymized",
+    "pii_hits": 0,
+    "pii_patterns": [
+      "nip10",
+      "email",
+      "pesel"
+    ],
+    "federated_guard_gate": "PASS",
+    "provenance": "art. 5 ust. 1c, art. 32 RODO [NIEZWERYFIKOWANE — ISAP]; P58-I11; P33-I10; prompt P63 Sekcja 10-I09",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T20:40:59.475494+00:00"
+  },
+  "gate": "PASS"
+}

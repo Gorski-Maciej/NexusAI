@@ -1,0 +1,29 @@
+{
+  "header": {
+    "schema": "jdg.v3_p63.rbac.audit.v1",
+    "part": "P63",
+    "slug": "RBAC_MULTITENANT",
+    "generated_at": "2026-09-13T20:41:00.642729+00:00",
+    "analyses": {
+      "I11_permission_drift": "PASS"
+    }
+  },
+  "result": {
+    "alarm_present": true,
+    "drift_tools": [
+      "temporal_drift_detector.py",
+      "isap_drift_alarm.py",
+      "drift_dashboard.py",
+      "v3_drift_watchdog.py",
+      "v3_p48_drift_heatmap.py",
+      "v3_p46_drift_alarm.py",
+      "v3_p37_golden_drift_watch.py"
+    ],
+    "rbac_gate": "PASS",
+    "review_after_change": true,
+    "provenance": "P48-I04 anti-drift (wzorzec); P06 freshness; prompt P63 Sekcja 10-I11",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T20:41:00.642729+00:00"
+  },
+  "gate": "PASS"
+}

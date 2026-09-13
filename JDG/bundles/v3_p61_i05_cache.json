@@ -1,0 +1,21 @@
+{
+  "header": {
+    "schema": "jdg.v3_p61.integrations.audit.v1",
+    "part": "P61",
+    "slug": "INTEGRACJE_DOMKNIECIE",
+    "generated_at": "2026-09-13T18:45:36.874875+00:00",
+    "analyses": {
+      "I05_cache_ttl": "PASS"
+    }
+  },
+  "result": {
+    "cache_manifest_present": true,
+    "ttl_seconds": 3600,
+    "max_age_days": 7,
+    "entries_total": 0,
+    "stale_entries": [],
+    "gate": "PASS",
+    "generated_at": "2026-09-13T18:45:36.874875+00:00"
+  },
+  "gate": "PASS"
+}

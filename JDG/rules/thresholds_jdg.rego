@@ -4204,3 +4204,159 @@ v3_p59 := {
     "no_auto_post": true,
     "manual_review_required": true,
 }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P60 DOKUMENTACJA DOMKNIĘCIE — DOKUMENT MÓWI PRAWDĘ O KODZIE (konwencja
+# P51–P59; 12 innowacji I01–I12 promptu P60 Sekcja 10). Wszystkie progi z ADR-002
+# (parametry-as-data, P06) z oknem temporalnym valid_from (P05). Fail-closed:
+# brak snapshotu = NEEDS_ADVICE (Rego), brak flagi v3_p60_check = NO_MATCH.
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p60 := {
+    "v3_p60_threshold_version": "documentation-closure-v3p60-2026.09",
+    "legal_basis_version": "lb-docs-v3p60-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    "valid_to": null,
+    # I01: minimalny % zgodności dokument-kod (audyt prawdy dokumentacji)
+    "v3_p60_doc_truth_min_pct": 95,
+    # I02: minimalna liczba snippetów generowanych z rejestrów (zero ręcznych liczb)
+    "v3_p60_generated_snippets_min": 6,
+    # I03: wymagane pola front-matter (binding dokument↔kod)
+    "v3_p60_frontmatter_required_fields": ["artifacts", "status", "owner", "verify_cmd"],
+    # I04: dozwolona liczba dokumentów-widm (cel: 0)
+    "v3_p60_ghost_documents_max": 0,
+    # I05: role wymagające mapy czytania (I12: pokrycie 100%)
+    "v3_p60_roles_required": ["developer", "operator", "auditor", "entrepreneur"],
+    # I06: retencja pakietu audytowego w dniach (kontekst UoR art. 74/75)
+    "v3_p60_audit_export_retention_days": 1825,
+    # I07: maksymalny wiek weryfikacji dokumentu w dniach (świeżość)
+    "v3_p60_doc_freshness_max_days": 90,
+    # I09: minimalna liczba przykładów-as-test (przykład bez testu = NEEDS_ADVICE)
+    "v3_p60_examples_as_test_min": 8,
+    # I10: minimalna liczba terminów glosariusza kontrolowanych lintem
+    "v3_p60_glossary_terms_min": 12,
+    # I11: minimalny % paroliści PL/EN (kluczowe nagłówki)
+    "v3_p60_plen_parity_min_pct": 80,
+    # I12: minimalny % pokrycia ról mapami czytania (cel 100)
+    "v3_p60_role_coverage_min_pct": 100,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P61 INTEGRACJE DOMKNIĘCIE — KSEF/MF, BANKI, NBP, ISAP (konwencja P51–P60;
+# 12 innowacji I01–I12 promptu P61 Sekcja 10). Progi z ADR-002 (P06), okno
+# temporalne valid_from (P05). Fail-closed: brak snapshotu = NEEDS_ADVICE,
+# brak flagi v3_p61_check = NO_MATCH, nigdy ciche AUTO_POST.
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p61 := {
+    "v3_p61_threshold_version": "integrations-closure-v3p61-2026.09",
+    "legal_basis_version": "lb-integrations-v3p61-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    "valid_to": null,
+    # I01: elementy standardowego kontraktu integracji (health/status/degradacja/metryki/runbook)
+    "v3_p61_contract_elements_required": ["health", "status", "degradation", "metrics", "runbook"],
+    # I02: próg otwarcia circuit breakera (błędy z rzędu) i okno półotwarcia (s)
+    "v3_p61_breaker_open_threshold": 3,
+    "v3_p61_breaker_halfopen_seconds": 60,
+    # I03: wymagane pola provenance danych referencyjnych
+    "v3_p61_provenance_fields": ["date", "source", "checksum"],
+    # I05: TTL cache danych referencyjnych w sekundach i maks. wiek w dniach
+    "v3_p61_cache_ttl_seconds": 3600,
+    "v3_p61_cache_max_age_days": 7,
+    # I06: maks. % rozjazdów bankowych bez ścieżki NEEDS_ADVICE
+    "v3_p61_bank_unmatched_max_pct": 5,
+    # I07: dni wstecz szukania ostatniej tabeli NBP (art. 31a duch)
+    "v3_p61_holiday_lookback_days": 7,
+    # I08: dozwolone statusy integracji w rejestrze (REAL z pełnym kontraktem)
+    "v3_p61_integration_statuses": ["REAL", "PLANNED", "FACADE"],
+    # I09: minimalna drabina degradacji (pełny → cache → offline → read-only)
+    "v3_p61_degradation_ladder_min": 3,
+    # I10: maks. wiek wpisu outbox w dniach (awaria nie gubi niczego)
+    "v3_p61_outbox_max_age_days": 30,
+    # I11: maks. latencja SLA zewnętrznych w ms (alarm powyżej)
+    "v3_p61_external_sla_latency_ms": 5000,
+    # I12: maks. wiek attestation integracji w dniach (odświeżenie)
+    "v3_p61_attestation_max_age_days": 90,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P62 PRZEPŁYWY PIENIĘŻNE — PŁATNOŚCI, PRIORYTETY I CASHFLOW (konwencja
+# P51–P61; 12 innowacji I01–I12 promptu P62 Sekcja 10). Progi z ADR-002 (P06),
+# okno temporalne valid_from (P05). Fail-closed: brak snapshotu = NEEDS_ADVICE,
+# brak flagi v3_p62_check = NO_MATCH, nigdy ciche AUTO_POST.
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p62 := {
+    "v3_p62_threshold_version": "cashflow-closure-v3p62-2026.09",
+    "legal_basis_version": "lb-cashflow-v3p62-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    "valid_to": null,
+    # I01: regułowa kolejność płatności (uzasadnienie: odsetki porównawczo) + reguła konfliktu tego samego dnia
+    "v3_p62_priority_order": ["ZUS", "VAT", "PIT", "inni"],
+    "v3_p62_same_day_conflict_rule": "odsetki_desc",
+    # I02: klucz idempotencji płatności (deklaracja+termin+kwota) — retry nie duplikuje
+    "v3_p62_idempotency_fields": ["declaration", "term", "amount_gr"],
+    # I03: wykonanie dwufazowe (rezerwacja → wykonanie z walidacją między)
+    "v3_p62_two_phase_required": true,
+    # I04: horyzont cashflow w dniach i alert wyprzedzający (tygodnie, nie godziny)
+    "v3_p62_cashflow_horizon_days": 30,
+    "v3_p62_cashflow_alert_weeks": 2,
+    # I05: odsetki od zaległości na żywo (art. 56 OP — parametry P46/P55)
+    "v3_p62_interest_live_required": true,
+    # I06: drabina przypomnień 7/3/1 dnia przed terminem
+    "v3_p62_reminder_days": [7, 3, 1],
+    # I07: archiwum potwierdzeń WORM (dowody dla audytu i rekonsylacji)
+    "v3_p62_worm_required": true,
+    # I08: playbook awarii banku testowany chaosem (P43/P57/P16)
+    "v3_p62_chaos_playbook_required": true,
+    # I09: rejestr podwójnych płatności z procedurą zwrotu (zero cichych strat)
+    "v3_p62_duplication_register_required": true,
+    # I10: balance guard — płatność nie wychodzi przy prognozowanym saldzie < kwota
+    "v3_p62_balance_guard_required": true,
+    # I11: multi-bank ready (tenant_id, bank_id w schemacie płatności)
+    "v3_p62_multibank_fields": ["tenant_id", "bank_id"],
+    # I12: horyzont symulacji scenariuszowych (digital twin P33)
+    "v3_p62_scenario_horizon_months": 3,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P63 RBAC, MULTI-TENANT I DANE — IZOLACJA I UPRAWNIENIA (konwencja P51–P62;
+# 12 innowacji I01–I12 promptu P63 Sekcja 10). Progi z ADR-002 (P06), okno
+# temporalne valid_from (P05). Fail-closed: brak snapshotu = NEEDS_ADVICE,
+# brak flagi v3_p63_check = NO_MATCH, nigdy ciche AUTO_POST.
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p63 := {
+    "v3_p63_threshold_version": "rbac-multitenant-closure-v3p63-2026.09",
+    "legal_basis_version": "lb-rbac-v3p63-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    "valid_to": null,
+    # I01: RBAC as data — 4 role z mapowaniem rola→pola (P40 kontrakt API)
+    "v3_p63_roles_required": ["entrepreneur", "accountant", "auditor", "admin"],
+    # I02: separation of duties — 4-eyes wymaga różnych osób
+    "v3_p63_sod_required": true,
+    # I03: izolacja tenantów — zero cross-tenant leaks (rozszerzenie P57)
+    "v3_p63_cross_tenant_leaks_max": 0,
+    # I04: break-glass — dostęp awaryjny oznaczony + obowiązkowy review
+    "v3_p63_breakglass_review_required": true,
+    # I05: audyt dostępu — analizowane kanały anomalii (P58)
+    "v3_p63_access_audit_anomalies": ["night_access", "mass_export", "repeat_pattern"],
+    # I06: prawo do bycia zapomnianym — wyjątek retencji księgowej (art. 74 UoR)
+    "v3_p63_erasure_retention_years": 5,
+    # I07: quoty per tenant (fair use — ochrona przed hałasem)
+    "v3_p63_tenant_quota_events_per_hour": 500,
+    # I08: mapa przepływów danych — min. kanałów w rejestrze RODO art. 30
+    "v3_p63_dataflow_channels_min": 6,
+    # I09: pseudonimizacja — wymagany tryb prywatności telemetrii
+    "v3_p63_privacy_mode_required": "pseudonymized",
+    # I10: schemat multi-tenant — min. tabel z tenant_id w migracjach
+    "v3_p63_multitenant_tables_min": 1,
+    # I11: drift uprawnień — alarm przy rozszerzeniu uprawnień bez review
+    "v3_p63_permission_drift_alarm": true,
+    # I12: onboarding roli — każdy przydział roli z pakietem (dostępy+ścieżka)
+    "v3_p63_role_onboarding_required": true,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}

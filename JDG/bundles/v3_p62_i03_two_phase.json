@@ -1,0 +1,25 @@
+{
+  "header": {
+    "schema": "jdg.v3_p62.cashflow.audit.v1",
+    "part": "P62",
+    "slug": "PRZEPYWY_PIENIEZNE",
+    "generated_at": "2026-09-13T19:39:07.023823+00:00",
+    "analyses": {
+      "I03_two_phase_payment": "PASS"
+    }
+  },
+  "result": {
+    "pipeline_present": true,
+    "two_phase_tool": "tools/v3_p32_two_phase_close.py",
+    "pre_payment_gate": "PASS",
+    "gate_chain": [
+      "I04_carencia",
+      "I05_period",
+      "I09_suspension"
+    ],
+    "provenance": "P32-I03 two-phase close (wspólny wzorzec); P55-I12 pre-payment gate; prompt P62 Sekcja 10-I03",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T19:39:07.023823+00:00"
+  },
+  "gate": "PASS"
+}

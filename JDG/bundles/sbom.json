@@ -1,17 +1,17 @@
 {
   "schema": "jdg.sbom.v1",
-  "generated_at": "2026-09-13T14:29:41.676676+00:00",
+  "generated_at": "2026-09-13T15:42:30.887323+00:00",
   "external_dependencies": [
     "httpx",
     "pytest",
     "yaml"
   ],
-  "pinned_in_requirements": [],
-  "unpinned": [
+  "pinned_in_requirements": [
     "httpx",
     "pytest",
     "yaml"
   ],
+  "unpinned": [],
   "stdlib_only": false,
   "generator": "v3_p59_engines.I09"
 }

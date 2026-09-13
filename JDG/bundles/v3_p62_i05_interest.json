@@ -1,0 +1,23 @@
+{
+  "header": {
+    "schema": "jdg.v3_p62.cashflow.audit.v1",
+    "part": "P62",
+    "slug": "PRZEPYWY_PIENIEZNE",
+    "generated_at": "2026-09-13T19:39:08.225800+00:00",
+    "analyses": {
+      "I05_interest_live": "PASS"
+    }
+  },
+  "result": {
+    "engine_present": true,
+    "engine_bundle": "bundles/v3_p17_interest_precision_engine.json",
+    "monthly_capitalization": true,
+    "grosz_rounding": true,
+    "temporal": true,
+    "legal_basis": "OP art. 56 [NIEZWERYFIKOWANE — ISAP]; parametry P46/P55",
+    "provenance": "P17-I01 interest precision engine; prompt P62 Sekcja 10-I05",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T19:39:08.225800+00:00"
+  },
+  "gate": "PASS"
+}

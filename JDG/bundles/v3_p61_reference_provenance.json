@@ -1,0 +1,78 @@
+{
+  "header": {
+    "schema": "jdg.v3_p61.integrations.audit.v1",
+    "part": "P61",
+    "slug": "INTEGRACJE_DOMKNIECIE",
+    "generated_at": "2026-09-13T18:45:34.923756+00:00",
+    "analyses": {
+      "I03_reference_provenance": "PASS"
+    }
+  },
+  "result": {
+    "schema": "jdg.v3_p61.reference_provenance.v1",
+    "datasets": [
+      "fx:NBP-A:EUR:2025-12-31",
+      "fx:NBP-A:EUR:2026-01-02",
+      "fx:NBP-A:USD:2025-12-31",
+      "fx:NBP-A:USD:2026-01-02",
+      "isap:v3_p47_act_ordynacja",
+      "isap:v3_p47_act_vat",
+      "isap:v3_p47_act_pit",
+      "isap:v3_p47_act_cit",
+      "isap:v3_p47_act_zus",
+      "isap:v3_p47_act_ksht",
+      "isap:v3_p47_act_kks",
+      "isap:v3_p47_act_ksef",
+      "isap:v3_p47_act_pcc",
+      "isap:v3_p47_act_ryczalt",
+      "isap:v3_p47_act_mdr",
+      "isap:v3_p47_act_informacja"
+    ],
+    "incomplete": [],
+    "fx_entries": 4,
+    "checksums_added": 4,
+    "acts_registered": 12,
+    "augmented_registry": [
+      {
+        "table": "NBP-A",
+        "currency": "EUR",
+        "rate": 4.35,
+        "published_at": "2025-12-31",
+        "source": "nbp.pl [NIEZWERYFIKOWANE — sesja]",
+        "valid_from": "2025-12-31",
+        "checksum": "6885ac0a1fb30d2e"
+      },
+      {
+        "table": "NBP-A",
+        "currency": "EUR",
+        "rate": 4.36,
+        "published_at": "2026-01-02",
+        "source": "nbp.pl [NIEZWERYFIKOWANE — sesja]",
+        "valid_from": "2026-01-02",
+        "checksum": "5491de6db4f53d2e"
+      },
+      {
+        "table": "NBP-A",
+        "currency": "USD",
+        "rate": 4.1,
+        "published_at": "2025-12-31",
+        "source": "nbp.pl [NIEZWERYFIKOWANE — sesja]",
+        "valid_from": "2025-12-31",
+        "checksum": "847f1e98dbb34ff7"
+      },
+      {
+        "table": "NBP-A",
+        "currency": "USD",
+        "rate": 4.12,
+        "published_at": "2026-01-02",
+        "source": "nbp.pl [NIEZWERYFIKOWANE — sesja]",
+        "valid_from": "2026-01-02",
+        "checksum": "d23525436307d162"
+      }
+    ],
+    "provenance": "P52/P53 fx provenance; P47 wersje aktów; prompt P61 Sekcja 10-I03",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T18:45:34.923756+00:00"
+  },
+  "gate": "PASS"
+}

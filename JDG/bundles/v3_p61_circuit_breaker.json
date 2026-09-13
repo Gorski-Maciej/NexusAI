@@ -1,0 +1,22 @@
+{
+  "header": {
+    "schema": "jdg.v3_p61.integrations.audit.v1",
+    "part": "P61",
+    "slug": "INTEGRACJE_DOMKNIECIE",
+    "generated_at": "2026-09-13T18:45:34.196888+00:00",
+    "analyses": {
+      "I02_circuit_breaker": "PASS"
+    }
+  },
+  "result": {
+    "mechanism_present": true,
+    "breaker_threshold": 20,
+    "breaker_window_min": 60,
+    "halfopen_seconds": 60,
+    "chaos_drill_gate": "PASS",
+    "provenance": "P49 breaker per domena (ADR-002); P43 chaos drill; prompt P61 Sekcja 10-I02",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T18:45:34.196888+00:00"
+  },
+  "gate": "PASS"
+}

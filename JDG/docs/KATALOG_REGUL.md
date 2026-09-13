@@ -1,6 +1,14 @@
+<!--
+artifacts: [docs/KATALOG_REGUL.md, rules/, bundles/rule_registry.json]
+status: ACTIVE
+owner: docs
+verified: 2026-09-13
+verify_cmd: python3 tools/manifest_v2.py --json
+-->
+
 # 📚 NexusAI JDG — Katalog Pakietów Reguł (wszystkie pliki Rego)
 
-> **Dokument:** KATALOG_REGUL.md | **Zakres:** **każdy plik `.rego`** w `JDG/rules/` (472, 459 pakietów) oraz `policies/` (546 plików, 496 pakietów)
+> **Dokument:** KATALOG_REGUL.md | **Zakres:** **każdy plik `.rego`** w `JDG/rules/` (535, żywy skan P60) oraz `policies/` (615 plików, żywy skan P60)
 > **Dane:** ekstrakcja statyczna (package, bloki `matched:true`, unikalne `rule_id`); liczby kanoniczne (M1/M2) w [MANIFEST.md](../MANIFEST.md)
 > **Cel:** Ctrl+F po nazwie pliku, pakiecie lub domenie → od razu wiesz, ile reguł zawiera i gdzie szukać.
 

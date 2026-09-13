@@ -1,3 +1,11 @@
+<!--
+artifacts: [docs/FAQ.md]
+status: ACTIVE
+owner: docs
+verified: 2026-09-13
+verify_cmd: python3 tools/v3_p60_engines.py I03
+-->
+
 # ❓ NexusAI JDG — FAQ (Najczęściej Zadawane Pytania)
 
 > **Dokument:** FAQ.md | **Cel:** szybkie odpowiedzi — jeśli potrzebujesz szczegółów, każde pytanie wskazuje właściwy dokument.

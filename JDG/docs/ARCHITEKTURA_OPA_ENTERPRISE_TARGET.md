@@ -1,3 +1,11 @@
+<!--
+artifacts: [docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md]
+status: ACTIVE
+owner: legal
+verified: 2026-09-13
+verify_cmd: python3 tools/v3_p60_engines.py I08
+-->
+
 # 🏆 ARCHITEKTURA DOCELOWA — SILNIK REGUŁ PODATKOWYCH OPA KLASY ENTERPRISE („ZA MILION DOLARÓW”)
 
 > **Dokument:** ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md

@@ -1,0 +1,27 @@
+{
+  "header": {
+    "schema": "jdg.v3_p61.integrations.audit.v1",
+    "part": "P61",
+    "slug": "INTEGRACJE_DOMKNIECIE",
+    "generated_at": "2026-09-13T18:45:36.148382+00:00",
+    "analyses": {
+      "I04_sandbox_replay": "PASS"
+    }
+  },
+  "result": {
+    "integrations_total": 4,
+    "replay_ok": [
+      "ksef-mf",
+      "nbp-fx",
+      "isap",
+      "banki"
+    ],
+    "missing_replay": [],
+    "tests_dir": "tests/auto",
+    "live_calls_in_ci": false,
+    "provenance": "P39 CI (offline, deterministyczne); prompt P61 Sekcja 10-I04",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T18:45:36.148382+00:00"
+  },
+  "gate": "PASS"
+}

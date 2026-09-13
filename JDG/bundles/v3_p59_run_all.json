@@ -2,12 +2,10 @@
   "schema": "jdg.v3_p59.run_all.v1",
   "part": "P59",
   "slug": "SECURITY_DOMKNIECIE",
-  "generated_at": "2026-09-13T14:28:52.207674+00:00",
+  "generated_at": "2026-09-13T15:42:15.134471+00:00",
   "engines_run": 12,
-  "failures": [
-    "I09"
-  ],
-  "gate": "FAIL",
+  "failures": [],
+  "gate": "PASS",
   "results": {
     "I01": {
       "exit": 0,
@@ -42,8 +40,8 @@
       "output": "[P59:I08] gate=PASS bundle=v3_p59_insider.json"
     },
     "I09": {
-      "exit": 1,
-      "output": "[P59:I09] gate=FAIL bundle=v3_p59_sbom.json"
+      "exit": 0,
+      "output": "[P59:I09] gate=PASS bundle=v3_p59_sbom.json"
     },
     "I10": {
       "exit": 0,

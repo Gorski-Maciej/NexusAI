@@ -3,7 +3,7 @@
     "schema": "jdg.v3_p59.security.audit.v1",
     "part": "P59",
     "slug": "SECURITY_DOMKNIECIE",
-    "generated_at": "2026-09-13T14:28:52.517140+00:00",
+    "generated_at": "2026-09-13T15:42:15.672023+00:00",
     "analyses": {
       "I01_threat_model_gates": "PASS"
     }
@@ -107,6 +107,6 @@
     ],
     "provenance": "RODO art. 32 [NIEZWERYFIKOWANE — ISAP]; prompt P59 Sekcja 10-I01; kryterium 13.19 (>=12 wektorów)",
     "gate": "PASS",
-    "generated_at": "2026-09-13T14:28:52.517140+00:00"
+    "generated_at": "2026-09-13T15:42:15.672023+00:00"
   }
 }

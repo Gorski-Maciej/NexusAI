@@ -1,0 +1,25 @@
+{
+  "header": {
+    "schema": "jdg.v3_p60.documentation.audit.v1",
+    "part": "P60",
+    "slug": "DOKUMENTACJA_DOMKNIECIE",
+    "generated_at": "2026-09-13T19:29:06.033253+02:00",
+    "analyses": {
+      "I01_doc_truth_audit": "PASS"
+    }
+  },
+  "result": {
+    "pct": 100,
+    "min_pct": 95,
+    "checks_total": 5,
+    "mismatches": [],
+    "live_counts": {
+      "rego_files": 535,
+      "tools": 997,
+      "unique_rule_ids": 12626
+    },
+    "provenance": "P34 siec walidacji L4 (rozszerzenie); manifest_v2 DECLARED; prompt P60 Sekcja 10-I01",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T19:29:06.033253+02:00"
+  }
+}

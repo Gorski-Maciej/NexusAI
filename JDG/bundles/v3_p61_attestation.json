@@ -1,0 +1,32 @@
+{
+  "header": {
+    "schema": "jdg.v3_p61.integrations.audit.v1",
+    "part": "P61",
+    "slug": "INTEGRACJE_DOMKNIECIE",
+    "generated_at": "2026-09-13T18:45:42.057688+00:00",
+    "analyses": {
+      "I12_integration_attestation": "PASS"
+    }
+  },
+  "result": {
+    "attestation_age_days": 0,
+    "max_age_days": 90,
+    "attestation_hash": "7a03ce045c587dab",
+    "schemas_covered": [
+      "FA(2)",
+      "FA(3)",
+      "JPK_V7M",
+      "JPK_PKPIR"
+    ],
+    "reference_data_versions": true,
+    "fx_data_versions": [
+      "2025-12-31",
+      "2026-01-02"
+    ],
+    "isap_act_versions": 12,
+    "provenance": "P54-I12 attestation + P52/P53 fx wersje + P47 wersje aktów; prompt P61 Sekcja 10-I12",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T18:45:42.057688+00:00"
+  },
+  "gate": "PASS"
+}

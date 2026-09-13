@@ -1,0 +1,23 @@
+{
+  "header": {
+    "schema": "jdg.v3_p63.rbac.audit.v1",
+    "part": "P63",
+    "slug": "RBAC_MULTITENANT",
+    "generated_at": "2026-09-13T20:40:57.551723+00:00",
+    "analyses": {
+      "I06_right_to_be_forgotten": "PASS"
+    }
+  },
+  "result": {
+    "erasure_path": true,
+    "retention_exception": true,
+    "retention_years": 5,
+    "rule": "jdg.rodo_extended.rodo_erasure_automation (P1640)",
+    "retention_rule": "rodo_retention_exception (RODO × UoR — dane księgowe NIE podlegają usunięciu do końca retencji)",
+    "legal_basis": "art. 17, 19 RODO [NIEZWERYFIKOWANE — ISAP]; art. 74 UoR [NIEZWERYFIKOWANE — ISAP]",
+    "provenance": "rules/rodo_extended.rego; prompt P63 Sekcja 10-I06",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T20:40:57.551723+00:00"
+  },
+  "gate": "PASS"
+}

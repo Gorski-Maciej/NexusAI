@@ -1,0 +1,12 @@
+{
+  "schema": "jdg.v3_p61.cache_manifest.v1",
+  "generated_at": "2026-09-13T18:45:36.864840+00:00",
+  "cache_dirs": [
+    "/data/data/com.termux/files/home/NexusAI/JDG/tools/.isap_cache"
+  ],
+  "ttl_seconds": 3600,
+  "max_age_days": 7,
+  "entries": [],
+  "stale_entries": [],
+  "provenance": "isap_crawler cache (ISAP_DATA_DIR); P58 świeżość; prompt P61 Sekcja 10-I05"
+}

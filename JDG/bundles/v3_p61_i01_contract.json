@@ -1,0 +1,27 @@
+{
+  "header": {
+    "schema": "jdg.v3_p61.integrations.audit.v1",
+    "part": "P61",
+    "slug": "INTEGRACJE_DOMKNIECIE",
+    "generated_at": "2026-09-13T18:45:33.543463+00:00",
+    "analyses": {
+      "I01_integration_contract": "PASS"
+    }
+  },
+  "result": {
+    "integrations_total": 4,
+    "elements_required": [
+      "health",
+      "status",
+      "degradation",
+      "metrics",
+      "runbook"
+    ],
+    "contract_violators": [],
+    "registry_bundle": "bundles/v3_p61_integration_registry.json",
+    "provenance": "V1 control plane (kontrakty kanałów); P58 runbook/SLO; prompt P61 Sekcja 10-I01",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T18:45:33.543463+00:00"
+  },
+  "gate": "PASS"
+}

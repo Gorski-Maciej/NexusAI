@@ -1,0 +1,31 @@
+{
+  "header": {
+    "schema": "jdg.v3_p63.rbac.audit.v1",
+    "part": "P63",
+    "slug": "RBAC_MULTITENANT",
+    "generated_at": "2026-09-13T20:40:57.010092+00:00",
+    "analyses": {
+      "I05_access_audit": "PASS"
+    }
+  },
+  "result": {
+    "worm_gate": "PASS",
+    "entry_fields": [
+      "actor",
+      "endpoint",
+      "timestamp",
+      "result",
+      "checksum"
+    ],
+    "anomaly_channels": [
+      "night_access",
+      "mass_export",
+      "repeat_pattern"
+    ],
+    "anomaly_source": "ADR-002 v3_p63_access_audit_anomalies (noc/masowe eksporty/powtarzalne wzorce — analiza P58)",
+    "provenance": "art. 30 RODO [NIEZWERYFIKOWANE — ISAP]; P40-I05; prompt P63 Sekcja 10-I05",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T20:40:57.010092+00:00"
+  },
+  "gate": "PASS"
+}

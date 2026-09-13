@@ -292,7 +292,7 @@ def test_main_wiring_p120():
     txt = (RULES / "main_jdg.rego").read_text(encoding="utf-8")
     assert "import data.jdg.v3_p56_vat_pit_details as v3_p56_vat_pit_details" in txt
     assert "final_verdict_p120 = safe_merge(final_verdict_p119" in txt
-    assert "final_verdict_p122\n)" in txt
+    assert "final_verdict_p127\n)" in txt  # kotwica p126→p127 (P63)
 
 
 # ═══ 17. Mirror: hash-parity canonical vs policies (P48) ═══

@@ -1,6 +1,14 @@
-# 🛠️ NexusAI JDG — Katalog Narzędzi (wszystkie pliki w `JDG/tools/`)
+<!--
+artifacts: [docs/KATALOG_NARZEDZI.md, tools/]
+status: ACTIVE
+owner: docs
+verified: 2026-09-13
+verify_cmd: python3 tools/manifest_v2.py --json
+-->
 
-> **Dokument:** KATALOG_NARZEDZI.md | **Zakres:** **wszystkie 298 plików `.py`** w `JDG/tools/` (~80 000 linii)
+# 🛠️ NexusAI JDG — Katalog Narzędzi (wszystkie pliki w `JDG/tools/`; żywy skan P60: 997)
+
+> **Dokument:** KATALOG_NARZEDZI.md | **Zakres:** **wszystkie pliki `.py`** w `JDG/tools/` (żywy skan P60, 2026-09-13: 997)
 > **Cel:** Ctrl+F po nazwie narzędzia → cel, kategoria i typowe wywołanie. Pełny opis kategorii: [tools/README.md](../tools/README.md).
 
 ---
@@ -189,7 +197,7 @@
 
 ## 10. Podsumowanie
 
-> ⚠️ **Uwaga:** katalog zawiera obecnie **298 plików `.py`** (stan 2026-08-22; kampania GLM 5.2 dodała ~170 narzędzi: audyty ETAP 10–28, bramki raportowe R01–R24, generatory; kampania V3 dodała bramki kontraktów jakościowych V3-14…V3-20 — patrz tabela powyżej i [MANIFEST.md §PAKIETY KAMPANII V3](../MANIFEST.md)). Poniższe sekcje opisują kategorie rdzenia; pełną listę generuje `ls JDG/tools/*.py` oraz [INWENTARYZACJA_PLIKOW.md](INWENTARYZACJA_PLIKOW.md).
+> ⚠️ **Uwaga:** katalog zawiera **997 plików `.py`** (żywy skan P60 2026-09-13; wcześniej 298 wg stanu 2026-08-22; kampania GLM 5.2 dodała ~170 narzędzi: audyty ETAP 10–28, bramki raportowe R01–R24, generatory; kampania V3 dodała bramki kontraktów jakościowych V3-14…V3-20 — patrz tabela powyżej i [MANIFEST.md §PAKIETY KAMPANII V3](../MANIFEST.md)). Poniższe sekcje opisują kategorie rdzenia; pełną listę generuje `ls JDG/tools/*.py` oraz [INWENTARYZACJA_PLIKOW.md](INWENTARYZACJA_PLIKOW.md).
 
 **Bramki kampanii V3 (kontrakty jakościowe, evidence w `JDG/bundles/`):**
 
@@ -218,7 +226,7 @@ python JDG/tools/docs_quality_v3_20_gate.py --write         # Legal Twin/dokumen
 | Innowacje P28 | 16+ | self_healing_engine, blockchain_audit_trail |
 | Monitoring prawa / pomocnicze | 15+ | isap_crawler, llm_bridge, judgment_predictor |
 
-> 📌 Pełna lista 298 narzędzi: `ls JDG/tools/*.py` — kategorie powyżej są reprezentatywne, nie wyczerpujące.
+> 📌 Pełna lista narzędzi (żywy skan P60: 997): `ls JDG/tools/*.py` — kategorie powyżej są reprezentatywne, nie wyczerpujące.
 
 **Typowe wywołania:**
 

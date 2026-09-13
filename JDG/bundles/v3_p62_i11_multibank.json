@@ -1,0 +1,24 @@
+{
+  "header": {
+    "schema": "jdg.v3_p62.cashflow.audit.v1",
+    "part": "P62",
+    "slug": "PRZEPYWY_PIENIEZNE",
+    "generated_at": "2026-09-13T19:39:11.865503+00:00",
+    "analyses": {
+      "I11_multibank_ready": "PASS"
+    }
+  },
+  "result": {
+    "required_fields": [
+      "tenant_id",
+      "bank_id"
+    ],
+    "missing_fields": [],
+    "bank_id_evidence": "rules/banking_automation_enterprise.rego (bank_id_for sort_code)",
+    "tenant_evidence": "bundles/v3_p57_tenant_isolation.json (gate=PASS, leaks=0)",
+    "provenance": "P57 izolacja tenantów; banking automation; prompt P62 Sekcja 10-I11",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T19:39:11.865503+00:00"
+  },
+  "gate": "PASS"
+}

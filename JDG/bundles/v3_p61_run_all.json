@@ -1,0 +1,59 @@
+{
+  "schema": "jdg.v3_p61.run_all.v1",
+  "part": "P61",
+  "slug": "INTEGRACJE_DOMKNIECIE",
+  "generated_at": "2026-09-13T18:45:32.842750+00:00",
+  "engines_run": 12,
+  "failures": [],
+  "gate": "PASS",
+  "results": {
+    "I01": {
+      "exit": 0,
+      "output": "[P61:I01] gate=PASS bundle=v3_p61_i01_contract.json"
+    },
+    "I02": {
+      "exit": 0,
+      "output": "[P61:I02] gate=PASS bundle=v3_p61_circuit_breaker.json"
+    },
+    "I03": {
+      "exit": 0,
+      "output": "[P61:I03] gate=PASS bundle=v3_p61_reference_provenance.json"
+    },
+    "I04": {
+      "exit": 0,
+      "output": "[P61:I04] gate=PASS bundle=v3_p61_sandbox_replay.json"
+    },
+    "I05": {
+      "exit": 0,
+      "output": "[P61:I05] gate=PASS bundle=v3_p61_i05_cache.json"
+    },
+    "I06": {
+      "exit": 0,
+      "output": "[P61:I06] gate=PASS bundle=v3_p61_bank_recon.json"
+    },
+    "I07": {
+      "exit": 0,
+      "output": "[P61:I07] gate=PASS bundle=v3_p61_holiday_rate_path.json"
+    },
+    "I08": {
+      "exit": 0,
+      "output": "[P61:I08] gate=PASS bundle=v3_p61_registry_gate.json"
+    },
+    "I09": {
+      "exit": 0,
+      "output": "[P61:I09] gate=PASS bundle=v3_p61_degradation_ladder.json"
+    },
+    "I10": {
+      "exit": 0,
+      "output": "[P61:I10] gate=PASS bundle=v3_p61_outbox.json"
+    },
+    "I11": {
+      "exit": 0,
+      "output": "[P61:I11] gate=PASS bundle=v3_p61_external_sla.json"
+    },
+    "I12": {
+      "exit": 0,
+      "output": "[P61:I12] gate=PASS bundle=v3_p61_attestation.json"
+    }
+  }
+}

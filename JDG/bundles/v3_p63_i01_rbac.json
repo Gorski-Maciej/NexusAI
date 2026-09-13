@@ -1,0 +1,28 @@
+{
+  "header": {
+    "schema": "jdg.v3_p63.rbac.audit.v1",
+    "part": "P63",
+    "slug": "RBAC_MULTITENANT",
+    "generated_at": "2026-09-13T20:40:54.470655+00:00",
+    "analyses": {
+      "I01_rbac_as_data": "PASS"
+    }
+  },
+  "result": {
+    "roles_total": 4,
+    "roles_with_field_map": [
+      "accountant",
+      "admin",
+      "auditor",
+      "entrepreneur"
+    ],
+    "missing_field_map": [],
+    "auditor_read_only": true,
+    "map_complete": true,
+    "evidence": "bundles/v3_p40_rbac_minimization.json (P40-I04, kontrakt API)",
+    "provenance": "art. 5 ust. 1c RODO [NIEZWERYFIKOWANE — ISAP]; prompt P63 Sekcja 10-I01",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T20:40:54.470655+00:00"
+  },
+  "gate": "PASS"
+}

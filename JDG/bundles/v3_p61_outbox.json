@@ -1,0 +1,25 @@
+{
+  "header": {
+    "schema": "jdg.v3_p61.integrations.audit.v1",
+    "part": "P61",
+    "slug": "INTEGRACJE_DOMKNIECIE",
+    "generated_at": "2026-09-13T18:45:40.739849+00:00",
+    "analyses": {
+      "I10_outbox_pattern": "PASS"
+    }
+  },
+  "result": {
+    "idempotent": true,
+    "exactly_once": "hash treści faktury (ksef_outbox._invoice_hash)",
+    "duplicates_detected": 1,
+    "duplicates_undetected": 0,
+    "max_retries": 10,
+    "backoff_cap_sec": 3600,
+    "aged_entries": [],
+    "max_age_days": 30,
+    "provenance": "P54-I06 idempotent outbox (hash treści); P57 kolejki; prompt P61 Sekcja 10-I10",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T18:45:40.739849+00:00"
+  },
+  "gate": "PASS"
+}

@@ -1,0 +1,59 @@
+{
+  "schema": "jdg.v3_p62.run_all.v1",
+  "part": "P62",
+  "slug": "PRZEPYWY_PIENIEZNE",
+  "generated_at": "2026-09-13T19:39:05.318230+00:00",
+  "engines_run": 12,
+  "failures": [],
+  "gate": "PASS",
+  "results": {
+    "I01": {
+      "exit": 0,
+      "output": "[P62:I01] gate=PASS bundle=v3_p62_i01_payment_engine.json"
+    },
+    "I02": {
+      "exit": 0,
+      "output": "[P62:I02] gate=PASS bundle=v3_p62_i02_idempotent.json"
+    },
+    "I03": {
+      "exit": 0,
+      "output": "[P62:I03] gate=PASS bundle=v3_p62_i03_two_phase.json"
+    },
+    "I04": {
+      "exit": 0,
+      "output": "[P62:I04] gate=PASS bundle=v3_p62_i04_cashflow.json"
+    },
+    "I05": {
+      "exit": 0,
+      "output": "[P62:I05] gate=PASS bundle=v3_p62_i05_interest.json"
+    },
+    "I06": {
+      "exit": 0,
+      "output": "[P62:I06] gate=PASS bundle=v3_p62_i06_reminders.json"
+    },
+    "I07": {
+      "exit": 0,
+      "output": "[P62:I07] gate=PASS bundle=v3_p62_i07_worm.json"
+    },
+    "I08": {
+      "exit": 0,
+      "output": "[P62:I08] gate=PASS bundle=v3_p62_i08_playbook.json"
+    },
+    "I09": {
+      "exit": 0,
+      "output": "[P62:I09] gate=PASS bundle=v3_p62_i09_duplications.json"
+    },
+    "I10": {
+      "exit": 0,
+      "output": "[P62:I10] gate=PASS bundle=v3_p62_i10_balance_guard.json"
+    },
+    "I11": {
+      "exit": 0,
+      "output": "[P62:I11] gate=PASS bundle=v3_p62_i11_multibank.json"
+    },
+    "I12": {
+      "exit": 0,
+      "output": "[P62:I12] gate=PASS bundle=v3_p62_i12_scenario.json"
+    }
+  }
+}

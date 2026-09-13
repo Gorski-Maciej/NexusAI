@@ -1,0 +1,23 @@
+{
+  "header": {
+    "schema": "jdg.v3_p61.integrations.audit.v1",
+    "part": "P61",
+    "slug": "INTEGRACJE_DOMKNIECIE",
+    "generated_at": "2026-09-13T18:45:38.619482+00:00",
+    "analyses": {
+      "I07_holiday_rate_path": "PASS"
+    }
+  },
+  "result": {
+    "path_present": true,
+    "policy_source": "bundles/fx_provenance.json#policy (P52-I04/P53-I03)",
+    "policy_excerpt": "brak kursu na datę zdarzenia = ostatni dzień roboczy z provenance; weekendy wg P52-I04; [NIEZWERYFIKOWANE] do stempla 4-eyes",
+    "lookback_days": 7,
+    "holiday_tests": 3,
+    "legal_basis": "art. 31a Ordynacji podatkowej (duch) [NIEZWERYFIKOWANE — ISAP]",
+    "provenance": "prompt P61 Sekcja 10-I07",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T18:45:38.619482+00:00"
+  },
+  "gate": "PASS"
+}

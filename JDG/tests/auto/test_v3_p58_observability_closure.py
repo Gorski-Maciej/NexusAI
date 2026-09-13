@@ -190,8 +190,10 @@ def test_wiring_main_jdg():
     assert "import data.jdg.v3_p58_observability_closure as v3_p58_observability_closure" in main
     assert "final_verdict_p122 = safe_merge(final_verdict_p121" in main
     assert "v3_p58_observability_closure.decide" in main
-    post = main[main.index("final_verdict_post_merge = safe_merge("):]
-    assert "final_verdict_p122" in post[:300]
+    post = main[main.index("final_verdict_post_merge = safe_merge("):] 
+    # Kotwica POST-MERGE przesunięta na p127: łańcuch urósł o P63
+    # (wiring final_verdict_p127, kampania V3 — P63 RBAC Multi-Tenant).
+    assert "final_verdict_p127" in post[:900]
 
 
 # ═══ 18. Mirror: hash-parity policies/ ═══

@@ -1,0 +1,23 @@
+{
+  "header": {
+    "schema": "jdg.v3_p63.rbac.audit.v1",
+    "part": "P63",
+    "slug": "RBAC_MULTITENANT",
+    "generated_at": "2026-09-13T20:40:55.769823+00:00",
+    "analyses": {
+      "I03_tenant_isolation": "PASS"
+    }
+  },
+  "result": {
+    "cross_tenant_leaks": 0,
+    "max_leaks": 0,
+    "missing_tenant": [],
+    "blocked_attempts": 1,
+    "policy": "required (ADR-002: v3_p57_tenant_isolation_policy)",
+    "base_gate": "PASS",
+    "provenance": "art. 5 ust. 1f RODO [NIEZWERYFIKOWANE — ISAP]; P57-I11; prompt P63 Sekcja 10-I03",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T20:40:55.769823+00:00"
+  },
+  "gate": "PASS"
+}

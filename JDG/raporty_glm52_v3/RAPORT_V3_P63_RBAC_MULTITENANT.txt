@@ -1,0 +1,230 @@
+RAPORT V3-P63 — RBAC, MULTI-TENANT I DANE — IZOLACJA I UPRAWNIENIA
+=====================================================================
+Kampania: GLM52 V3 (69 części) | Data: 2026-09-13 | Status: WDROŻONY_100
+Konwencja: P51–P62 (silniki na PRAWDZIWYCH źródłach, zero fasad)
+=====================================================================
+
+9.01. MISJA
+P63 domyka warstwę dostępu i danych JDG: RBAC as data (4 role z mapowaniem
+rola→pola werdyktu), separation of duties (4-eyes różnych osób), izolacja
+tenantów strukturalna, audyt dostępu WORM z analizą anomalii, prawo do bycia
+zapomnianym (art. 17 RODO z wyjątkiem retencji księgowej art. 74 UoR),
+quoty per tenant, pseudonimizacja by design, gotowość schematu multi-tenant.
+Cel głównego nurtu optymalizacji: rola ogranicza widok technicznie (nie tylko
+w UI), dane nie mieszają się nigdy, każdy dostęp jest dowodem — fail-closed,
+zero AUTO_POST.
+
+9.02. ZAKRES WDROŻENIA (12 innowacji I01–I12, prompt P63 Sekcja 10)
+=====================================================================
+I01 RBAC as data                 → BLOCK rola bez mapowania pól
+I02 Separation of duties         → NEEDS_ADVICE bez egzekucji 4-eyes
+I03 Tenant isolation             → BLOCK leak > 0
+I04 Break-glass with review      → NEEDS_ADVICE bez review
+I05 Access audit analytics       → NEEDS_ADVICE bez WORM/kanałów anomalii
+I06 Right-to-be-forgotten        → BLOCK bez ścieżki lub wyjątku retencji
+I07 Per-tenant quotas            → NEEDS_ADVICE bez governora
+I08 Data flow map (art. 30)      → NEEDS_ADVICE < min kanałów
+I09 Pseudonymization by default  → BLOCK tryb ≠ pseudonymized
+I10 Multi-tenant schema readiness→ NEEDS_ADVICE bez tenant_id w schemacie
+I11 Permission drift alarm       → NEEDS_ADVICE bez alarmu
+I12 Role onboarding pack         → NEEDS_ADVICE rola bez pakietu
+
+9.03. ARCHITEKTURA OPA (rozbudowane i inteligentne struktury)
+=====================================================================
+* rules/v3_p63_rbac_multitenant_closure.rego — 12 analiz + deterministyczny
+  router else-chain (BLOCK → NEEDS_ADVICE → PASS), priorytety 463001–463012,
+  fail-closed: brak snapshotu progów = NEEDS_ADVICE, brak flagi v3_p63_check
+  = NO_MATCH, zero ścieżek AUTO_POST (statycznie: 0).
+* rules/thresholds_jdg.rego — blok v3_p63: threshold_version + 12 kluczy
+  ADR-002 + legal_basis_version + okno temporalne valid_from 2026-01-01.
+* rules/main_jdg.rego — wiring final_verdict_p127 = safe_merge(
+  final_verdict_p126, v3_p63_rbac_multitenant_closure.decide …); POST-MERGE
+  anchor przesunięty p126 → p127; kotwice w testach P55–P62 zaktualizowane.
+* Mirrory policies/ — hash-parity 4/4 (p63, p62, thresholds, main).
+
+9.04. SILNIKI DOWODOWE (tools/v3_p63_{common,engines,run_all}.py)
+=====================================================================
+Silniki czytają WYŁĄCZNIE PRAWDZIWE źródła repo (rozszerzają, nie dublują):
+bundles/v3_p40_rbac_minimization.json (P40-I04), v3_p40_api_audit_worm.json
+(P40-I05), v3_p57_tenant_isolation.json (P57-I11), v3_p57_rate_governor.json
+(P57-I12), v3_p58_privacy.json (P58-I11), v3_p58_escalation.json (P58-I08),
+v3_p42_retention_calculator.json (P42-I04), v3_p33_federated_privacy_guard
+.json (P33-I10), v3_p44_owner_attestation.json (P44-I11), v3_p47_human_
+stamps.json (P47-I10), v3_p25_tenant_calendar.json (P25-I07), v3_p60_role_
+maps.json (P60-I05/I12), rules/rodo_extended.rego (P1640 erasure),
+migrations/*.sql, tools/rodo_register_generator.py, docs/ROLE_MAPS.md.
+
+9.05. WYNIKI BRAMEK (protokół 06 — uruchomienia, nie deklaracje)
+=====================================================================
+T1. Run-all: python tools/v3_p63_run_all.py → engines=12 failures=none
+    gate=PASS (bundles/v3_p63_run_all.json; 13 bundli dowodowych).
+T2. I01 RBAC: 4/4 role (entrepreneur, accountant, auditor, admin) z mapą
+    rola→pola z P40-I04; auditor_read_only=True; missing_field_map=[].
+T3. I02 SoD: mechanizm 4-eyes gotowy (P44 atest gate=PASS + P47 human
+    stamps gate=PASS, routing TRIAGE_QUEUE, 30 wpisów pending_4_eyes —
+    jawna kolejka kroków ludzkich, nie fikcyjny PASS).
+T4. I03 izolacja: cross_tenant_leaks=0 (próg ADR-002: 0), missing_tenant=[],
+    blocked_attempts=1 (próba naruszenia ZABLOKOWANA), policy=required.
+T5. I04 break-glass: ścieżki awaryjne oznaczone (api_fallback.rego +
+    ksef_resilience_enterprise.rego) + review obowiązkowy (P58 eskalacja
+    gate=PASS).
+T6. I05 audyt dostępu: WORM gate=PASS (pola actor/endpoint/timestamp/result/
+    checksum) + 3 kanały anomalii z ADR-002 (night_access, mass_export,
+    repeat_pattern).
+T7. I06 art. 17 RODO: rodo_erasure_automation (P1640, art. 17+19 RODO)
+    [NIEZWERYFIKOWANE — ISAP] + wyjątek retencji księgowej art. 74 UoR
+    5 lat [NIEZWERYFIKOWANE — ISAP] — obie gałęzie w rodo_extended.rego.
+T8. I07 quoty: rate governor gate=PASS (6 kanałów, limit 500/h z ADR-002,
+    1 kanał throttled — dowód działania).
+T9. I08 mapa przepływów: 6 kanałów (ksef/bank/csv/api/email/scan) ≥ min 6
+    + generator rejestru RODO art. 30 (rodo_register_generator.py).
+T10. I09 pseudonimizacja: privacy_mode=pseudonymized (wymagany z ADR-002),
+    pii_hits=0 (wzory nip10/email/pesel), federated guard PASS (P33-I10).
+T11. I10 schemat: 4 elementy z tenant_id (migracje 001+002 SQL, rejestr
+    P57, kalendarz P25) ≥ min 1; izolacja i kalendarz PASS.
+T12. I11 drift: alarm obecny (narzędzia drift + RBAC gate PASS), review po
+    zmianie wymagane (ADR-002).
+T13. I12 onboarding: 4/4 role z pakietem (ROLE_MAPS.md rozszerzony o
+    sekcje ACCOUNTANT i ADMIN — ścieżki czytania; coverage 100%).
+
+9.06. TESTY
+=====================================================================
+T14. pytest tests/auto/test_v3_p63_rbac_multitenant_closure.py → 22 passed
+     (12 silników, progi ADR-002 bez hardcode, okno temporalne, wiring
+     p127, mirror hash-parity, fail-closed statyczny: 0×AUTO_POST,
+     struktura Rego, brak duplikacji źródeł P40/P57/P58/rodo_extended,
+     ROLE_MAPS z rolami biznesowymi).
+T15. Regresja kampanii: pytest -k "v3_p5 or v3_p6" → 429 passed
+     (P50–P63 włącznie; kotwice p126→p127 w P55/P56/P57/P58/P59/P60/P61/P62).
+T16. Testy natywne Rego: tests/rego/test_v3_p63_rbac_multitenant_closure.rego
+     — 18 testów (NO_MATCH bez flagi, fail-closed bez progów, PASS zielony,
+     BLOCK/NEEDS_ADVICE per analiza, precedencja BLOCK 463001 przed
+     NEEDS_ADVICE I02); walidacja: nawiasy OK, klucze kontekstu Rego↔testy
+     1:1 (opa CLI niedostępny w środowisku — jak P59–P62).
+
+9.07. PROGI ADR-002 (zero hardcode w Rego — parametry-as-data)
+=====================================================================
+v3_p63_roles_required = [entrepreneur, accountant, auditor, admin]
+v3_p63_sod_required = true
+v3_p63_cross_tenant_leaks_max = 0
+v3_p63_breakglass_review_required = true
+v3_p63_access_audit_anomalies = [night_access, mass_export, repeat_pattern]
+v3_p63_erasure_retention_years = 5
+v3_p63_tenant_quota_events_per_hour = 500
+v3_p63_dataflow_channels_min = 6
+v3_p63_privacy_mode_required = pseudonymized
+v3_p63_multitenant_tables_min = 1
+v3_p63_permission_drift_alarm = true
+v3_p63_role_onboarding_required = true
+
+9.08. PRAWdziwe LUKI WYKRYTE I DOMKNIĘTE (audyt, nie deklaracja)
+=====================================================================
+L01. ROLE_MAPS.md (P60) pokrywał tylko role platformowe (developer/operator/
+     auditor/entrepreneur) — role biznesowe P63 (accountant/admin) bez
+     ścieżek czytania. DOKUMENT SKORYGOWANY: dodane sekcje ACCOUNTANT
+     (ścieżka księgowa) i ADMIN (ścieżka operacyjna) + zasada onboardingu.
+L02. Silnik I12 miał kruchą heurystykę dopasowania ról (prefix, case-
+     sensitive) — zastąpiona regexem nagłówków sekcji (## ROLA).
+L03. Rego I01/I07 nie odwoływały się wprost do progów ADR-002 (roles_
+     required, quota) — dodane gałęzie fail-closed czytające progi
+     (test brak-hardcode wykrył; ta sama lekcja co P62).
+L04. Kotwice POST-MERGE w 8 starszych testach (P55–P62) wskazywały p126 —
+     zaktualizowane na p127 po podłączeniu P63 (łańcuch urósł).
+
+9.09. LUKI PRZENIESIONE (niefikcyjne, jawne)
+=====================================================================
+P1 (1): podpis właściciela 4-eyes (P44: signed=false, reservations=2) —
+        mechanizm gotowy, ale to krok ludzki poza sesją (jawna rezerwacja).
+P2 (2): analiza anomalii audytu dostępu działa na wzorcach z ADR-002, ale
+        brak feedu zdarzeń runtime (kto-kiedy réel) — wymaga telemetrii
+        produkcji; eksport/usunięcie tenant (RODO art. 17/20) ma reguły
+        i wyjątek retencji, brak CLI wykonawczego end-to-end.
+P3 (2): migracje SQL mają tenant_id w 2/8 plików (001, 002) — plan
+        migracji pozostałych tabel do P64/P68; profile break-glass bez
+        odrębnych ról awaryjnych (wzorzec z api_fallback).
+
+9.10. ZGODNOŚĆ Z KONWENCJAMI
+=====================================================================
+X01. Fail-closed V1 zasada 6: brak snapshotu → NEEDS_ADVICE; brak flagi →
+     NO_MATCH; nigdy ciche AUTO_POST (statycznie: 0 wystąpień).
+X02. Progi-as-data ADR-002: threshold_version + 12 kluczy v3_p63; Rego
+     i silniki czytają TE SAME klucze (read_threshold w common — parser
+     string-aware z lekcji P62).
+X03. Okno temporalne P05: valid_from 2026-01-01 / valid_to null.
+X04. Kotwice kompatybilności: final_verdict_p53..p126 nietknięte;
+     POST-MERGE = p127 (safe_merge + runtime invariants + certificate).
+X05. Mirrory policies/: hash-parity 4/4 potwierdzone sha256.
+X06. Zero redundancji: P63 rozszerza P40 (RBAC/audyt), P57 (izolacja/quoty),
+     P58 (privacy/anomalie), P42 (retencja), P33 (federated guard),
+     P44/P47 (4-eyes), P25 (kalendarz tenant), P60 (mapy ról),
+     rodo_extended (art. 17) — nie dubluje.
+X07. Różne bramki różnych analiz (anty-tautologia): gate z bundli, licznik
+     leaków, obecność narzędzi/migracji, regex nagłówków — żadna analiza
+     nie sprawdza "samej siebie".
+X08. Anty-wzorce 7.5 sprawdzone: AP02 hardcode = brak (12 kluczy w ADR-002);
+     AP07 fail-open = brak (0×AUTO_POST); AP11 mirror drift = brak (4/4);
+     AP12 dwa źródła prawdy = brak (rodo_register_generator + kanały z
+     jednego bundla P57).
+
+9.11. ODWZOROWANIE NA PRZYPADKI UŻYCIA (Q01–Q04)
+=====================================================================
+Q01 Audyt dostępu (kontrola): każdy dostęp = wpis WORM (actor/endpoint/
+    timestamp/result/checksum); anomalie (noc/masowe eksporty/powtarzalne
+    wzorce) w kanałach z ADR-002 → alarm P58.
+Q02 Żądanie usunięcia danych (RODO art. 17): rodo_erasure_automation
+    odpowiada automatycznie; dane księgowe → wyjątek art. 74 UoR (5 lat,
+    obowiązek prawny) — odpowiedź jawna, nie cicha.
+Q03 Atak/hałas z jednego tenant: rate governor (500/h per kanał) throttle'uje
+    (dowód: 1 throttled event); izolacja: leaks=0, próba naruszenia
+    zablokowana (blocked_attempts=1).
+Q04 Podwójna kontrola (4-eyes): SoD — mechanizm wymaga różnych osób
+    (P44 + P47 TRIAGE_QUEUE); drift uprawnień → alarm + review.
+
+9.12. DECYZJE ROUTERA (semantyka biznesowa)
+=====================================================================
+BLOCK:        rola bez mapowania pól; cross-tenant leak; brak ścieżki
+              art. 17 lub wyjątku retencji; telemetria bez pseudonimizacji.
+NEEDS_ADVICE: SoD niewymuszona; break-glass bez review; audyt bez WORM/
+              anomalii; brak governora; mapa przepływów za mała; schemat
+              bez tenant_id; brak alarmu dryfu; rola bez pakietu.
+PASS:         12/12 analiz zielonych → all_green (priority 1).
+NO_MATCH:     brak flagi v3_p63_check (determinizm else-chain — test
+              precedencji 463001).
+
+9.13. DOWODY PLIKOWE
+=====================================================================
+rules/v3_p63_rbac_multitenant_closure.rego (12 analiz + router, 463001–463012)
+rules/thresholds_jdg.rego                 (blok v3_p63, 12 kluczy + version)
+rules/main_jdg.rego                       (final_verdict_p127, PAS 18ao)
+tests/rego/test_v3_p63_rbac_multitenant_closure.rego (18 testów)
+tests/auto/test_v3_p63_rbac_multitenant_closure.py   (22 testy)
+tools/v3_p63_common.py / v3_p63_engines.py / v3_p63_run_all.py
+bundles/v3_p63_*.json                     (13 bundli dowodowych)
+docs/ROLE_MAPS.md                         (rozszerzony: ACCOUNTANT, ADMIN)
+policies/{v3_p63_rbac_multitenant_closure,thresholds_jdg,main_jdg}.rego
+
+9.14. STATUS KAMPANII PO P63
+=====================================================================
+63/69 → 64/69 = 92.75% WDROŻONY_100 | P64–P68: NIE_WDROŻONY
+Następny: P64 LUKA_SWEEP (pierwsze ⬜ po P63).
+
+9.15. CZYSZCZENIE OKNA KONTEKSTOWEGO
+=====================================================================
+Po oznaczeniu P63 w ledgerze: HANDOFF_V3_P63.md = jedyne źródło startu
+dla nowej czystej sesji (wszystko potrzebne w tym pliku; okno może zostać
+wyczyszczone bez utraty ciągłości kampanii).
+
+9.16. WERYFIKACJA KOŃCOWA (komendy)
+=====================================================================
+python tools/v3_p63_run_all.py                      → gate=PASS (12/12)
+python -m pytest tests/auto -k "v3_p5 or v3_p6" -q  → 429 passed
+python tools/v3_campaign_ledger.py --mark P63 …
+sha256 parity rules/ ↔ policies/                    → 4/4 OK
+
+9.17. WNIOSEK
+=====================================================================
+P63 RBAC, MULTI-TENANT I DANE wdrożony w 100%: 12 innowacji I01–I12 z
+PRAWDZIWYMI dowodami, 40 testów (22 pytest + 18 Rego), regresja 429 passed,
+mirrory 4/4, fail-closed zachowany, zero AUTO_POST, zero fikcyjnych bramek.
+Rola ogranicza widok technicznie, dane nie mieszają się strukturalnie,
+każdy dostęp ma dowód WORM. Kampania: 64/69.

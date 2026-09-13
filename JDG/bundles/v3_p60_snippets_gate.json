@@ -1,0 +1,63 @@
+{
+  "header": {
+    "schema": "jdg.v3_p60.documentation.audit.v1",
+    "part": "P60",
+    "slug": "DOKUMENTACJA_DOMKNIECIE",
+    "generated_at": "2026-09-13T19:29:06.983038+02:00",
+    "analyses": {
+      "I02_registry_snippets": "PASS"
+    }
+  },
+  "result": {
+    "snippets_total": 6,
+    "min_snippets": 6,
+    "missing_snippets": [],
+    "snippets": [
+      {
+        "id": "SNIP-01",
+        "metric": "rego_files",
+        "value": 535,
+        "source": "zzywy skan rules/ via manifest_v2 scan",
+        "doc": "docs/MANIFEST_2_0.md"
+      },
+      {
+        "id": "SNIP-02",
+        "metric": "unique_rule_ids",
+        "value": 12626,
+        "source": "bundles/manifest_v2.json (rules.unique_rule_ids)",
+        "doc": "docs/MANIFEST_2_0.md"
+      },
+      {
+        "id": "SNIP-03",
+        "metric": "python_tools",
+        "value": 997,
+        "source": "zzywy skan tools/*.py",
+        "doc": "docs/KATALOG_NARZEDZI.md"
+      },
+      {
+        "id": "SNIP-04",
+        "metric": "campaign_progress_pct",
+        "value": 88.41,
+        "source": "bundles/v3_campaign_ledger.json (summary)",
+        "doc": "docs/DOC_STANDARD_P60.md"
+      },
+      {
+        "id": "SNIP-05",
+        "metric": "rule_registry_entries",
+        "value": 126,
+        "source": "bundles/rule_registry.json",
+        "doc": "docs/KATALOG_REGUL.md"
+      },
+      {
+        "id": "SNIP-06",
+        "metric": "p60_analyses",
+        "value": 12,
+        "source": "rules/v3_p60_documentation_closure.rego (I01-I12)",
+        "doc": "docs/ROLE_MAPS.md"
+      }
+    ],
+    "provenance": "P36 generatory (rozszerzenie); prompt P60 Sekcja 10-I02",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T19:29:06.983038+02:00"
+  }
+}

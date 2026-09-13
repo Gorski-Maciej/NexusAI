@@ -1,0 +1,78 @@
+{
+  "header": {
+    "schema": "jdg.v3_p60.documentation.audit.v1",
+    "part": "P60",
+    "slug": "DOKUMENTACJA_DOMKNIECIE",
+    "generated_at": "2026-09-13T19:29:07.597273+02:00",
+    "analyses": {
+      "I03_frontmatter_binding": "PASS"
+    }
+  },
+  "result": {
+    "docs_with_fm": 14,
+    "fm_missing": [],
+    "ghosts": [],
+    "stale": [],
+    "unprotected": [],
+    "verify_cmds": [
+      [
+        "docs/FAQ.md",
+        "python3 tools/v3_p60_engines.py I03"
+      ],
+      [
+        "docs/DEVELOPER_GUIDE.md",
+        "python3 tools/v3_p60_engines.py I03"
+      ],
+      [
+        "docs/API_REFERENCJA.md",
+        "python3 tools/v3_p60_engines.py I03"
+      ],
+      [
+        "docs/LOGIKA_BIZNESOWA.md",
+        "python3 tools/v3_p60_engines.py I03"
+      ],
+      [
+        "docs/KATALOG_NARZEDZI.md",
+        "python3 tools/manifest_v2.py --json"
+      ],
+      [
+        "docs/KATALOG_REGUL.md",
+        "python3 tools/manifest_v2.py --json"
+      ],
+      [
+        "docs/SLOWNIK_REFERENCJI_PRAWNYCH.md",
+        "python3 tools/validate_legal_basis_v2.py --help"
+      ],
+      [
+        "docs/ARCHITEKTURA.md",
+        "python3 tools/v3_p60_engines.py I11"
+      ],
+      [
+        "docs/ARCHITECTURE.md",
+        "python3 tools/v3_p60_engines.py I11"
+      ],
+      [
+        "docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md",
+        "python3 tools/v3_p60_engines.py I08"
+      ],
+      [
+        "docs/WIZJA_OPA_ENTERPRISE_V2.md",
+        "python3 tools/v3_p60_engines.py I08"
+      ],
+      [
+        "docs/MANIFEST_2_0.md",
+        "python3 tools/manifest_v2.py --json"
+      ],
+      [
+        "docs/ROLE_MAPS.md",
+        "python3 tools/v3_p60_engines.py I05 && python3 tools/v3_p60_engines.py I12"
+      ],
+      [
+        "docs/DOC_STANDARD_P60.md",
+        "python3 tools/v3_p60_engines.py I03 && python3 tools/v3_p60_engines.py I01"
+      ]
+    ],
+    "gate": "PASS",
+    "generated_at": "2026-09-13T19:29:07.597273+02:00"
+  }
+}

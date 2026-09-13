@@ -1,0 +1,23 @@
+{
+  "header": {
+    "schema": "jdg.v3_p63.rbac.audit.v1",
+    "part": "P63",
+    "slug": "RBAC_MULTITENANT",
+    "generated_at": "2026-09-13T20:40:55.147822+00:00",
+    "analyses": {
+      "I02_separation_of_duties": "PASS"
+    }
+  },
+  "result": {
+    "enforced": true,
+    "attestation_gate": "PASS",
+    "stamps_gate": "PASS",
+    "stamps_routing": "TRIAGE_QUEUE",
+    "pending_4_eyes": 30,
+    "note": "mechanizm 4-eyes gotowy; podpis właściciela = krok ludzki (jawna rezerwacja P44 — INFO, nie fikcyjny PASS)",
+    "provenance": "P44-I11; P47-I10; prompt P63 Sekcja 10-I02",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T20:40:55.147822+00:00"
+  },
+  "gate": "PASS"
+}

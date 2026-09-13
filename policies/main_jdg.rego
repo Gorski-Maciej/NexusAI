@@ -125,6 +125,10 @@ import data.jdg.v3_p52_penny_granularity as v3_p52_penny_granularity
 import data.jdg.v3_p53_temporal_closure as v3_p53_temporal_closure
 import data.jdg.v3_p54_ksef_jpk_closure as v3_p54_ksef_jpk_closure
 import data.jdg.v3_p55_zus_closure as v3_p55_zus_closure
+import data.jdg.v3_p60_documentation_closure as v3_p60_documentation_closure
+import data.jdg.v3_p61_integrations_closure as v3_p61_integrations_closure
+import data.jdg.v3_p62_cashflow_closure as v3_p62_cashflow_closure
+import data.jdg.v3_p63_rbac_multitenant_closure as v3_p63_rbac_multitenant_closure
 import data.jdg.v3_p59_security_closure as v3_p59_security_closure
 import data.jdg.v3_p58_observability_closure as v3_p58_observability_closure
 import data.jdg.v3_p57_ingest_data as v3_p57_ingest_data
@@ -3353,6 +3357,51 @@ final_verdict_p123 = safe_merge(final_verdict_p122,
         fallback.decide
     ))
 
+# ── PAS 18al: V3-P60 DOKUMENTACJA DOMKNIĘCIE (doc truth audit vs rejestry,
+# registry-generated snippets, front-matter binding gate, ghost document
+# register, role reading maps, audit export pack, doc freshness automation,
+# holy-docs protection, example-as-test, glossary enforcement, PL/EN semantic
+# parity, doc completeness per role). Fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p60_check nie jest true.
+final_verdict_p124 = safe_merge(final_verdict_p123,
+    safe_merge(v3_p60_documentation_closure.decide,
+        fallback.decide
+    ))
+
+# ── PAS 18am: V3-P61 INTEGRACJE DOMKNIĘCIE (integration standard contract,
+# circuit breaker per integration, reference data provenance chain, sandbox
+# replay CI, cache provenance TTL, bank reconciliation contract, holiday-aware
+# rate path art. 31a, integration registry, degradation ladder, outbox pattern
+# for MF, external SLA monitoring, integration attestation in certificate).
+# Fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p61_check nie jest true.
+final_verdict_p125 = safe_merge(final_verdict_p124,
+    safe_merge(v3_p61_integrations_closure.decide,
+        fallback.decide
+    ))
+
+# ── PAS 18an: V3-P62 PRZEPŁYWY PIENIĘŻNE (payment rule engine, idempotent
+# execution, two-phase payment, cashflow-aware schedule, interest live view,
+# reminder ladder, payment archive WORM, failure mode playbook, payment
+# duplication ledger, balance guard, multi-bank ready, cashflow scenario
+# runner). Fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p62_check nie jest true.
+final_verdict_p126 = safe_merge(final_verdict_p125,
+    safe_merge(v3_p62_cashflow_closure.decide,
+        fallback.decide
+    ))
+
+# ── PAS 18ao: V3-P63 RBAC, MULTI-TENANT I DANE (RBAC as data, separation of
+# duties, tenant isolation, break-glass with review, access audit analytics,
+# right-to-be-forgotten art. 17 RODO, per-tenant quotas, data flow map,
+# pseudonymization by default, multi-tenant schema readiness, permission
+# drift alarm, role onboarding pack). Fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p63_check nie jest true.
+final_verdict_p127 = safe_merge(final_verdict_p126,
+    safe_merge(v3_p63_rbac_multitenant_closure.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -3385,7 +3434,7 @@ final_verdict_p123 = safe_merge(final_verdict_p122,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p123
+    final_verdict_p127
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

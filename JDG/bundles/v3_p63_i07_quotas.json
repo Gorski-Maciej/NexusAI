@@ -1,0 +1,28 @@
+{
+  "header": {
+    "schema": "jdg.v3_p63.rbac.audit.v1",
+    "part": "P63",
+    "slug": "RBAC_MULTITENANT",
+    "generated_at": "2026-09-13T20:40:58.239000+00:00",
+    "analyses": {
+      "I07_per_tenant_quotas": "PASS"
+    }
+  },
+  "result": {
+    "governor_gate": "PASS",
+    "quota_per_hour": 500,
+    "channels_monitored": [
+      "ksef",
+      "bank",
+      "csv",
+      "api",
+      "email",
+      "scan"
+    ],
+    "throttled": 1,
+    "provenance": "P57-I12 rate governor (fair use); prompt P63 Sekcja 10-I07",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T20:40:58.239000+00:00"
+  },
+  "gate": "PASS"
+}

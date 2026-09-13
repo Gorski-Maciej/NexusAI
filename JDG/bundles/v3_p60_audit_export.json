@@ -1,0 +1,83 @@
+{
+  "schema": "jdg.v3_p60.audit_export.v1",
+  "generated_at": "2026-09-13T19:29:09.663117+02:00",
+  "purpose": "pakiet dla kontroli skarbowej (dokumenty + rejestry + checksumy)",
+  "docs": {
+    "docs/FAQ.md": {
+      "sha256": "897bffb2141c7e175f05a1f85ad5e90db6e0a472417e6f1bcf040fb97f169f68",
+      "bytes": 11655
+    },
+    "docs/DEVELOPER_GUIDE.md": {
+      "sha256": "1e80f01d619c32a47371a77f8de8a3369679002d0ffaeb29673a947a15520c7a",
+      "bytes": 5736
+    },
+    "docs/API_REFERENCJA.md": {
+      "sha256": "bd15a52863d7ea9dcf7244138f13ecbabf66d6d1e9041088b859adf26db66c89",
+      "bytes": 25862
+    },
+    "docs/LOGIKA_BIZNESOWA.md": {
+      "sha256": "077f524e9f686cc7cb0116b1a48b22191d0323e1b7ce6546fe9e7d2456e7ada0",
+      "bytes": 22239
+    },
+    "docs/KATALOG_NARZEDZI.md": {
+      "sha256": "ff032aa95e59e1646ad12b4d7ff126fb2dd4b83891e601930b55e4f177f8cccb",
+      "bytes": 14215
+    },
+    "docs/KATALOG_REGUL.md": {
+      "sha256": "34a12aff14b4293a14fb0e05b4e27e86b7e65b7ded7fbb5217f3972c4dc07885",
+      "bytes": 40586
+    },
+    "docs/SLOWNIK_REFERENCJI_PRAWNYCH.md": {
+      "sha256": "cad96118c7b743435a1ebc77bdaa71a4acb95ace7c7a53b4cec67ad9ff99e282",
+      "bytes": 7006
+    },
+    "docs/ARCHITEKTURA.md": {
+      "sha256": "fdeefbeb857a356a1319e15a72e69abc8a2278f3b7a1b91d844798251c570355",
+      "bytes": 27573
+    },
+    "docs/ARCHITECTURE.md": {
+      "sha256": "26be0eac46a5894845a45c6f3fffadbc5f24e0ff3f02625c3ab4d6282c71bccb",
+      "bytes": 16356
+    },
+    "docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md": {
+      "sha256": "e78deebfe56cc8e893d081799bff6be601aacd3a4927fa780aa65e731694af14",
+      "bytes": 37101
+    },
+    "docs/WIZJA_OPA_ENTERPRISE_V2.md": {
+      "sha256": "a3124c550c2ecd07aacfdb8b2b412a4f83193fc3284fb37fac5573cfac1108b6",
+      "bytes": 34937
+    },
+    "docs/MANIFEST_2_0.md": {
+      "sha256": "be71f637d1036946091b4bb9ff0e7abcfd49429f3dca343669c402d582038c97",
+      "bytes": 2297
+    },
+    "docs/ROLE_MAPS.md": {
+      "sha256": "041418a6323c8a7a61e245b17736a65eb94747d5938c70ff9c08332b16985d4c",
+      "bytes": 2755
+    },
+    "docs/DOC_STANDARD_P60.md": {
+      "sha256": "e5044997e9c6cd557a92841e4110592f0b9058a163b936126f365396fcf50108",
+      "bytes": 4176
+    }
+  },
+  "registries": {
+    "bundles/rule_registry.json": {
+      "sha256": "11926656a36ff36d515ecf0cbf44f58cd4d4415d76ec24ef4eb476ff6c34c354"
+    },
+    "bundles/manifest_v2.json": {
+      "sha256": "6e287e5a1880066a5ae98f459f1b1a8a1900d3f9024af0c9d342478c53add9f9"
+    },
+    "bundles/v3_campaign_ledger.json": {
+      "sha256": "001d6c36c48c7b4f246eb5042c596ec51ebd80e4f514577e6cd3710b1bc98e82"
+    },
+    "bundles/v3_p59_run_all.json": {
+      "sha256": "61012eb3d3e4d42537d9b06f96064f2bbe77a83cdf7db03e8d5779013dbcab93"
+    },
+    "bundles/sbom.json": {
+      "sha256": "13a51395204bb5df0d04236a0af1ea131747b9d91ca4626a503f0e52de657e7b"
+    }
+  },
+  "retention_days": 1825,
+  "retention_basis": "UoR art. 74/75 (5 lat) [NIEZWERYFIKOWANE — ISAP]",
+  "generator": "v3_p60_engines.I06"
+}

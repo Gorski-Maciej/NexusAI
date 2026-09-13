@@ -1,3 +1,11 @@
+<!--
+artifacts: [docs/SLOWNIK_REFERENCJI_PRAWNYCH.md, tools/validate_legal_basis_v2.py]
+status: ACTIVE
+owner: legal
+verified: 2026-09-13
+verify_cmd: python3 tools/validate_legal_basis_v2.py --help
+-->
+
 # 📖 SŁOWNIK KANONICZNY REFERENCJI PRAWNYCH JDG — P02 (sekcja 5)
 
 > Wygenerowano: 2026-08-08 · format kanoniczny: `Art. X ust. Y pkt Z ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.)`

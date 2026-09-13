@@ -1,3 +1,11 @@
+<!--
+artifacts: [docs/DEVELOPER_GUIDE.md, docs/OPA_REGO_DEVELOPER_GUIDE.md]
+status: ACTIVE
+owner: docs
+verified: 2026-09-13
+verify_cmd: python3 tools/v3_p60_engines.py I03
+-->
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # NexusAI JDG — Developer Guide v8.0 (R11, P28 Grand Finale)
 # Zgodny z ADR-008 — pełny przewodnik projektowy

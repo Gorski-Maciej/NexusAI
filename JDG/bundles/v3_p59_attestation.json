@@ -3,7 +3,7 @@
     "schema": "jdg.v3_p59.security.audit.v1",
     "part": "P59",
     "slug": "SECURITY_DOMKNIECIE",
-    "generated_at": "2026-09-13T14:29:00.818939+00:00",
+    "generated_at": "2026-09-13T15:42:25.648721+00:00",
     "analyses": {
       "I07_build_attestation_verification": "PASS"
     }
@@ -23,6 +23,6 @@
     "source": "bundles/deployments.json (P38)",
     "provenance": "P38 attestation; P11 certyfikat; prompt P59 Sekcja 10-I07",
     "gate": "PASS",
-    "generated_at": "2026-09-13T14:29:00.818939+00:00"
+    "generated_at": "2026-09-13T15:42:25.648721+00:00"
   }
 }

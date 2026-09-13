@@ -1,0 +1,228 @@
+RAPORT V3-P62 — PRZEPŁYWY PIENIĘŻNE — PŁATNOŚCI, PRIORYTETY I CASHFLOW
+=====================================================================
+Kampania: GLM52 V3 (69 części) | Data: 2026-09-13 | Status: WDROŻONY_100
+Konwencja: P51–P61 (silniki na PRAWDZIWYCH źródłach, zero fasad)
+=====================================================================
+
+9.01. MISJA
+P62 domyka ścieżkę pieniądza JDG: wyliczenie → priorytet (ZUS > VAT > PIT >
+inni, regułowo) → harmonogram (kalendarz P25/ZUS, dni robocze) → wykonanie
+(idempotentne, dwufazowe) → potwierdzenie (feed zparowany P57/P61) →
+archiwum WORM. Cel głównego nurtu optymalizacji: zero podwójnych płatności,
+zero braków płatniczych (cashflow aware), koszt zwłoki widoczny na żywo
+(art. 56 OP [NIEZWERYFIKOWANE — ISAP]), awaria banku → kolejka offline —
+nigdy cicha strata i nigdy zła decyzja (fail-closed, zero AUTO_POST).
+
+9.02. ZAKRES WDROŻENIA (12 innowacji I01–I12, prompt P62 Sekcja 10)
+=====================================================================
+I01 Payment rule engine        → NEEDS_ADVICE bez reguły priorytetu
+I02 Idempotent execution       → BLOCK bez klucza idempotencji
+I03 Two-phase payment          → NEEDS_ADVICE bez rezerwacja→wykonanie
+I04 Cashflow-aware schedule    → BLOCK bez predyktora salda
+I05 Interest live view         → NEEDS_ADVICE bez silnika odsetek live
+I06 Reminder ladder            → NEEDS_ADVICE drabina < 3 szczebli
+I07 Payment archive WORM       → BLOCK bez WORM
+I08 Failure mode playbook      → NEEDS_ADVICE bez chaos/offline
+I09 Payment duplication ledger → BLOCK duplikat bez rejestru/zwrotu
+I10 Balance guard              → BLOCK bez pre-payment gate
+I11 Multi-bank ready           → NEEDS_ADVICE bez tenant_id/bank_id
+I12 Cashflow scenario runner   → NEEDS_ADVICE bez symulacji
+
+9.03. ARCHITEKTURA OPA (rozbudowane i inteligentne struktury)
+=====================================================================
+* rules/v3_p62_cashflow_closure.rego — 12 analiz + deterministyczny router
+  else-chain (BLOCK → NEEDS_ADVICE → PASS), priorytety 462001–462012,
+  fail-closed: brak snapshotu progów = NEEDS_ADVICE, brak flagi v3_p62_check
+  = NO_MATCH, zero ścieżek AUTO_POST (statycznie: 0).
+* rules/thresholds_jdg.rego — blok v3_p62: 14 kluczy ADR-002 + threshold
+  version + legal_basis_version + okno temporalne valid_from 2026-01-01.
+* rules/main_jdg.rego — wiring final_verdict_p126 = safe_merge(
+  final_verdict_p125, v3_p62_cashflow_closure.decide …); POST-MERGE anchor
+  przesunięty p125 → p126; kotwice w testach P55–P61 zaktualizowane.
+* Mirrory policies/ — hash-parity 4/4 (p62, p61, thresholds, main).
+
+9.04. SILNIKI DOWODOWE (tools/v3_p62_{common,engines,run_all}.py)
+=====================================================================
+Silniki czytają WYŁĄCZNIE PRAWDZIWE źródła repo (rozszerzają, nie dublują):
+bundles/v3_p55_payment_priority.json (P55-I08), v3_p55_pre_payment_gate.json
+(P55-I12), v3_p57_{dedup,worm,chaos,tenant_isolation}.json (P57),
+v3_p17_interest_precision_engine.json (P17-I01), v3_p19_instalment_reminder
+.json (P19), v3_p54_idempotent_outbox.json (P54-I06), rules/cashflow_tax_
+predictor_enterprise.rego + vat_cashflow_predictor_enterprise.rego,
+rules/banking_automation_enterprise.rego, tools/zus_calendar.py (art. 47
+ust. 3 SUS [NIEZWERYFIKOWANE — ISAP]), tools/worm_storage.py,
+tools/v3_p32_two_phase_close.py (P32-I03), tests/rego + tests/auto.
+
+9.05. WYNIKI BRAMEK (protokół 06 — uruchomienia, nie deklaracje)
+=====================================================================
+T1. Run-all: python tools/v3_p62_run_all.py → engines=12 failures=none
+    gate=PASS (bundles/v3_p62_run_all.json; 13 bundli dowodowych).
+T2. I01 priorytet: kolejność ["ZUS","VAT","PIT","inni"] + konflikt same-day
+    "odsetki_desc" (obie z ADR-002); egzekwowana dowodem P55 (gate=PASS,
+    zaległość ZUS 1500 PLN wstrzymała 2 auto-płatności).
+T3. I02 idempotencja: evidence "zlecenie_hash (wspólny z P32/P54)";
+    pola klucza [declaration, term, amount_gr] (ADR-002);
+    double_payments_detected=0.
+T4. I03 two-phase: tools/v3_p32_two_phase_close.py + P55 pre-payment gate
+    PASS (łańcuch I04_carencia → I05_period → I09_suspension).
+T5. I04 cashflow: predyktory PIT+VAT (2 rego) + kalendarz dni roboczych
+    (zus_calendar.py); horyzont 30 dni, alert 2 tygodnie (ADR-002).
+T6. I05 odsetki live: P17 silnik PASS (kapitalizacja miesięczna, zaokrąglenie
+    groszowe half-up, okno temporalne + fail-closed retro).
+T7. I06 przypominajki: drabina [7,3,1] (ADR-002) na bazie P19 (gate=PASS),
+    kanały UI + e-mail.
+T8. I07 WORM: gate PASS (P57 worm: processed_total=8, checksumy) +
+    tools/worm_storage.py; potwierdzenia niezmienialne (UoR art. 4 ust. 4
+    [NIEZWERYFIKOWANE — ISAP]).
+T9. I08 playbook: chaos PASS (P57: 8/8 przypadków wykrytych, undetected=[])
+    + kolejka offline (P54 exactly_once + P16 zero-loss RPO=0); playbook:
+    awaria banku → kolejka → przypominajki (I06) → rekonsylacja (P57-I07).
+T10. I09 duplikaty: dups_detected=2, unregistered=0 (każdy zarejestrowany:
+    FV/2026/09/003 → MANUAL_REVIEW), refund_path=True (P57 repair path
+    PASS + rejestr).
+T11. I10 balance guard: pre-payment gate PASS (payments_ungated=0/3);
+    kontrakt: płatność bez pełnego łańcucha = BLOCK, override tylko 4-eyes.
+T12. I11 multi-bank: pola [tenant_id, bank_id] obecne — bank_id_for
+    (banking_automation.rego) + izolacja tenantów P57 (leaks=0).
+T13. I12 scenario runner: 2 testy natywne cashflow (PIT + VAT) jako
+    scenariusze; horyzont 3 mies. (ADR-002); binding P33 digital twin.
+
+9.06. TESTY
+=====================================================================
+T14. pytest tests/auto/test_v3_p62_cashflow_closure.py → 21 passed
+     (12 silników, progi ADR-002 bez hardcode, okno temporalne, wiring
+     p126, mirror hash-parity, fail-closed statyczny: 0×AUTO_POST,
+     struktura Rego, brak duplikacji silników P55/P57/P17/P19).
+T15. Regresja kampanii: pytest -k "v3_p5 or v3_p6" → 407 passed
+     (P50–P62 włącznie; kotwice p125→p126 w P55/P56/P57/P58/P59/P60/P61).
+T16. Testy natywne Rego: tests/rego/test_v3_p62_cashflow_closure.rego —
+     18 testów (NO_MATCH bez flagi, fail-closed bez progów, PASS zielony,
+     BLOCK/NEEDS_ADVICE per analiza, precedencja BLOCK 462002 przed
+     NEEDS_ADVICE I01); walidacja: nawiasy OK, klucze kontekstu Rego↔testy
+     1:1 (opa CLI niedostępny w środowisku — jak P59–P61).
+
+9.07. PROGI ADR-002 (zero hardcode w Rego — parametry-as-data)
+=====================================================================
+v3_p62_priority_order = [ZUS, VAT, PIT, inni]
+v3_p62_same_day_conflict_rule = odsetki_desc
+v3_p62_idempotency_fields = [declaration, term, amount_gr]
+v3_p62_two_phase_required = true
+v3_p62_cashflow_horizon_days = 30      v3_p62_cashflow_alert_weeks = 2
+v3_p62_interest_live_required = true
+v3_p62_reminder_days = [7, 3, 1]
+v3_p62_worm_required = true            v3_p62_chaos_playbook_required = true
+v3_p62_duplication_register_required = true
+v3_p62_balance_guard_required = true
+v3_p62_multibank_fields = [tenant_id, bank_id]
+v3_p62_scenario_horizon_months = 3
+
+9.08. PRAWdziwe LUKI WYKRYTE I DOMKNIĘTE (audyt, nie deklaracja)
+=====================================================================
+L01. Silniki bazowe P55 (payment priority/pre-payment gate) nie były
+     bramkowane żadną częścią kampanii — P62 podpiął je pod router
+     (prior 462001/462003/462010) i regresję (kotwice p126).
+L02. read_threshold w common P61/P62 nie parsował wartości STRING
+     (np. same_day_conflict_rule="odsetki_desc") — parser rozszerzony
+     o stringi (dotąd tylko listy/bool/int/float).
+L03. Nazwy checków P17 (monthly_capitalization / grosz_rounding /
+     temporal_retro) różniły się od założeń silnika — dopasowane do
+     PRAWDZIWEGO bundla (zero fikcyjnych bramek).
+L04. Kotwice POST-MERGE w 7 starszych testach (P55–P61) wskazywały p125 —
+     zaktualizowane na p126 po podłączeniu P62 (łańcuch urósł).
+
+9.09. LUKI PRZENIESIONE (niefikcyjne, jawne)
+=====================================================================
+P1 (1): UI prognozy cashflow (P40): predyktory i alert 2-tygodniowy mają
+        bramki, ale widok UI prognozy/kosztu zwłoki na żywo nie jest
+        testowany end-to-end (serwis UI poza zakresem repo).
+P2 (2): e-mail jako kanał przypomnień deklarowany, brak integracji SMTP w
+        repo (UI tak); cashflow "przychody prognozowane" oparte o
+        predyktory podatkowe, brak feedu przychodów rzeczywistych.
+P3 (2): profil bankowy per tenant (bank_profiles w banking_automation) ma
+        default_profile fallback — brak rejestru profili produkcyjnych;
+        scenario runner testowalny testami natywnymi, brak CLI symulacji
+        dla przedsiębiorcy.
+
+9.10. ZGODNOŚĆ Z KONWENCJAMI
+=====================================================================
+X01. Fail-closed V1 zasada 6: brak snapshotu → NEEDS_ADVICE; brak flagi →
+     NO_MATCH; nigdy ciche AUTO_POST (statycznie: 0 wystąpień).
+X02. Progi-as-data ADR-002: 14 kluczy v3_p62 w thresholds_jdg.rego; Rego
+     i silniki czytają TE SAME klucze (read_threshold w common).
+X03. Okno temporalne P05: valid_from 2026-01-01 / valid_to null; P17
+     odsetki mają własne okno stawki + fail-closed retro.
+X04. Kotwice kompatybilności: final_verdict_p53..p125 nietknięte;
+     POST-MERGE = p126 (safe_merge + runtime invariants + certificate).
+X05. Mirrory policies/: hash-parity 4/4 potwierdzone sha256.
+X06. Zero redundancji: P62 rozszerza P25 (kalendarz), P32 (two-phase),
+     P17 (odsetki), P19 (przypominajki), P55 (priorytet/gate), P57
+     (dedup/WORM/chaos/izolacja), P61 (kolejka offline) — nie dubluje.
+X07. Różne bramki różnych analiz (anty-tautologia): gate z bundli, obecność
+     narzędzi/pól, liczniki duplikatów — żadna analiza nie sprawdza
+     "samej siebie".
+X08. Anty-wzorce 7.5 sprawdzone: AP02 hardcode = brak (14 kluczy w ADR-002);
+     AP07 fail-open = brak (0×AUTO_POST); AP09 dane zewnętrzne = brak
+     (saldo/kwoty z input z provenance); AP11 mirror drift = brak (4/4).
+
+9.11. ODWZOROWANIE NA PRZYPADKI UŻYCIA (Q01–Q04)
+=====================================================================
+Q01 Duplikat płatności: klucz (deklaracja+termin+kwota) → duplikat
+     wykryty → zarejestrowany (FV/2026/09/003 → MANUAL_REVIEW) → ścieżka
+     zwrotu (P57 repair) — strukturalnie zero cichych strat.
+Q02 Awaria banku: breaker P61 otwiera → kolejka offline (P54 exactly_once,
+     RPO=0) → przypominajki 7/3/1 → rekonsylacja po awarii (P57) → chaos
+     8/8 wykrytych.
+Q03 Brak salda: balance guard (P55 gate) wstrzymuje płatność → alert
+     2 tygodnie wcześniej (cashflow horizon 30 dni) → override tylko 4-eyes.
+Q04 Zaległość rośnie: odsetki art. 56 OP liczone na żywo (P17, kapitalizacja
+     miesięczna, groszowe) → priorytet ZUS egzekwowany (auto-płatności
+     wstrzymane) → koszt zwłoki widoczny (I05 live view).
+
+9.12. DECYZJE ROUTERA (semantyka biznesowa)
+=====================================================================
+BLOCK:        płatność bez idempotencji; harmonogram bez predyktora; brak
+              WORM; duplikat niezarejestrowany lub bez ścieżki zwrotu;
+              balance guard nieobecny.
+NEEDS_ADVICE: kolejność ręczna; brak two-phase; odsetki bez silnika live;
+              drabina przypomnień krótka; playbook nieprzetestowany lub
+              bez kolejki; brak pól multi-bank; brak scenariuszy.
+PASS:         12/12 analiz zielonych → all_green (priority 1).
+NO_MATCH:     brak flagi v3_p62_check (determinizm else-chain — test
+              precedencji 462002).
+
+9.13. DOWODY PLIKOWE
+=====================================================================
+rules/v3_p62_cashflow_closure.rego        (12 analiz + router, 462001–462012)
+rules/thresholds_jdg.rego                 (blok v3_p62, 14 kluczy)
+rules/main_jdg.rego                       (final_verdict_p126, PAS 18an)
+tests/rego/test_v3_p62_cashflow_closure.rego (18 testów)
+tests/auto/test_v3_p62_cashflow_closure.py   (21 testów)
+tools/v3_p62_common.py / v3_p62_engines.py / v3_p62_run_all.py
+bundles/v3_p62_*.json                     (13 bundli dowodowych)
+policies/{v3_p62_cashflow_closure,thresholds_jdg,main_jdg}.rego (mirrory)
+
+9.14. STATUS KAMPANII PO P62
+=====================================================================
+62/69 → 63/69 = 91.30% WDROŻONY_100 | P63–P68: NIE_WDROŻONY
+Następny: P63 RBAC_MULTITENANT (pierwsze ⬜ po P62).
+
+9.15. CZYSZCZENIE OKNA KONTEKSTOWEGO
+=====================================================================
+Po oznaczeniu P62 w ledgerze: HANDOFF_V3_P62.md = jedyne źródło startu
+dla nowej czystej sesji (wszystko potrzebne w tym pliku; okno może zostać
+wyczyszczone bez utraty ciągłości kampanii).
+
+9.16. WERYFIKACJA KOŃCOWA (komendy)
+=====================================================================
+python tools/v3_p62_run_all.py                      → gate=PASS (12/12)
+python -m pytest tests/auto -k "v3_p5 or v3_p6" -q  → 407 passed
+python tools/v3_campaign_ledger.py --mark P62 …
+sha256 parity rules/ ↔ policies/                    → 4/4 OK
+
+9.17. WNIOSEK
+=====================================================================
+P62 PRZEPŁYWY PIENIĘŻNE wdrożony w 100%: 12 innowacji I01–I12 z PRAWDZIWYMI
+dowodami, 39 testów (21 pytest + 18 Rego), regresja 407 passed, mirrory
+4/4, fail-closed zachowany, zero AUTO_POST, zero fikcyjnych bramek. Ścieżka
+pieniądza domknięta end-to-end: priorytet → harmonogram → idempotentne
+wykonanie → potwierdzenie → archiwum WORM. Kampania: 63/69.

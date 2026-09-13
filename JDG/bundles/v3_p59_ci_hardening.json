@@ -3,7 +3,7 @@
     "schema": "jdg.v3_p59.security.audit.v1",
     "part": "P59",
     "slug": "SECURITY_DOMKNIECIE",
-    "generated_at": "2026-09-13T14:29:00.468316+00:00",
+    "generated_at": "2026-09-13T15:42:25.034467+00:00",
     "analyses": {
       "I06_ci_hardening_checklist": "PASS"
     }
@@ -23,6 +23,6 @@
     "source": ".github/workflows/jdg-quality.yml (PRAWDZIWE permissions: contents: read)",
     "provenance": "P39 CI; supply chain security; prompt P59 Sekcja 10-I06",
     "gate": "PASS",
-    "generated_at": "2026-09-13T14:29:00.468316+00:00"
+    "generated_at": "2026-09-13T15:42:25.034467+00:00"
   }
 }

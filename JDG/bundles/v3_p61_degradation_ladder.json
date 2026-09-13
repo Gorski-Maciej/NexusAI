@@ -1,0 +1,27 @@
+{
+  "header": {
+    "schema": "jdg.v3_p61.integrations.audit.v1",
+    "part": "P61",
+    "slug": "INTEGRACJE_DOMKNIECIE",
+    "generated_at": "2026-09-13T18:45:39.969124+00:00",
+    "analyses": {
+      "I09_degradation_ladder": "PASS"
+    }
+  },
+  "result": {
+    "integrations_total": 4,
+    "min_ladder": 3,
+    "ladder_too_short": [],
+    "ladders": {
+      "ksef-mf": 3,
+      "nbp-fx": 3,
+      "isap": 3,
+      "banki": 3
+    },
+    "ladder_contract": "pełny → cache → offline → read-only (P40/P57)",
+    "provenance": "prompt P61 Sekcja 10-I09",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T18:45:39.969124+00:00"
+  },
+  "gate": "PASS"
+}

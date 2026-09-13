@@ -1,0 +1,26 @@
+{
+  "header": {
+    "schema": "jdg.v3_p63.rbac.audit.v1",
+    "part": "P63",
+    "slug": "RBAC_MULTITENANT",
+    "generated_at": "2026-09-13T20:41:00.061504+00:00",
+    "analyses": {
+      "I10_schema_readiness": "PASS"
+    }
+  },
+  "result": {
+    "elements_with_tenant_id": [
+      "migration:001_jdg_rule_store.sql",
+      "migration:002_jdg_enterprise_v7.sql",
+      "registry:v3_p57_tenant_isolation",
+      "calendar:v3_p25_tenant_calendar"
+    ],
+    "min_elements": 1,
+    "isolation_gate": "PASS",
+    "calendar_gate": "PASS",
+    "provenance": "migrations/*.sql + P57-I11 + P25-I07; prompt P63 Sekcja 10-I10",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T20:41:00.061504+00:00"
+  },
+  "gate": "PASS"
+}

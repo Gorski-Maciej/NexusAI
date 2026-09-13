@@ -1,3 +1,11 @@
+<!--
+artifacts: [docs/ARCHITEKTURA.md, docs/ARCHITECTURE.md]
+status: ACTIVE
+owner: core
+verified: 2026-09-13
+verify_cmd: python3 tools/v3_p60_engines.py I11
+-->
+
 # 🏗️ NexusAI JDG — Architektura Systemu (C4 + Warstwy + Wzorce)
 
 > **Status:** ENTERPRISE v8.3 | **Dokument:** ARCHITEKTURA.md | **Spójny z:** README.md, ADR 001–022, api/openapi.yaml
@@ -414,6 +422,13 @@ sequenceDiagram
 | ADR-013 | Testy Rego w CI | ⚠️ częściowo — natywne testy Rego istnieją w `tests/rego/` i `tests/rego/micro/` (test_native_*.rego); cel ≥ 20 plików testowych do Q4 2026 |
 | ADR-014 | Rozliczalność narzędzi (core/legacy/one-shot) | ✅ wdrożony |
 | ADR-015 | Konwencja Checkpoint-Stubów | ✅ wdrożony |
+| ADR-016 | Legal Twin / LKG (F1 V2) | ✅ wdrożony |
+| ADR-017 | Warstwa Konstytucyjna — Runtime Invariants (F2 V2) | ✅ wdrożony |
+| ADR-018 | Golden Oracle + ewaluacja różnicowa (F3 V2) | ✅ wdrożony |
+| ADR-019 | Decision Certificate (F4 V2) | ✅ wdrożony |
+| ADR-020 | Law Radar (F5 V2) | ✅ wdrożony |
+| ADR-021 | Declarative Change (F6 V2) | ✅ wdrożony |
+| ADR-022 | Orkiestrator Forteca — POST-MERGE invariants + certyfikat | ✅ wdrożony |
 
 ---
 
@@ -467,3 +482,88 @@ policies/
 ---
 
 *Spójny z: README.md · MANIFEST.md · ADR 001–015 · api/openapi.yaml · DEVELOPER_GUIDE.md*
+
+## ADR-016: Legal Twin / Legal Knowledge Graph (LKG) — [NOWY, v8.2 / P01 V2 F1]
+
+**Status:** ✅ Zaakceptowane (2026-08-08, P01 Fundament). PL/EN parity P60: sekcja przywrócona (dryf tłumaczenia wykryty bramką I11 — PL jest źródłem prawdy).
+
+**Decyzja:** Ewolucja tabeli `jdg_legal_cartography` do pełnego **Legal Knowledge Graph** (`legal_graph`, migracja 003): akty → artykuły → ustępy → punkty z wersjonowaniem czasowym (jak reguły). Każda reguła i parametr dwukierunkowo powiązane z węzłami prawa. Podstawa prawna przestaje być stringiem — staje się **referencją** do węzła LKG (`_legal_basis_refs`).
+
+**Metryki:** LCI (Legal Coverage Index ≥ 99%), TCL (Temporal Continuity 100%), RV (Rule–Law Verification 100%).
+
+**Narzędzia:** `tools/legal_twin.py` (build LKG + indeksy), bramka RV w CI.
+
+---
+
+## ADR-017: Warstwa Konstytucyjna — Runtime Invariants — [NOWY, v8.2 / P01 V2 F2]
+
+**Status:** ✅ Zaakceptowane (2026-08-08, P01 Fundament).
+
+**Decyzja:** Katalog ~30 twardych niezmienników (INV-001..030) egzekwowanych na **każdym werdykcie w runtime** (koniec POST-MERGE w `main_jdg.rego`), a nie tylko w CI. Naruszenie = `CERTAINTY_BLOCKED` + alarm + auto-revert. Trzy poziomy: BUILD (blokada merge), RUNTIME (blokada werdyktu), STATISTICAL (auto-rollback bundle).
+
+**Artefakty:** `rules/audit/runtime_invariants_enterprise.rego` (katalog INV + reguły egzekucji), `tools/invariant_checker.py` (bramka CI).
+
+---
+
+## ADR-018: Golden Oracle + Ewaluacja Różnicowa — [NOWY, v8.2 / P01 V2 F3]
+
+**Status:** ✅ Zaakceptowane (2026-08-08, P01 Fundament).
+
+**Decyzja:** Repozytorium złotych werdyktów (tabela `golden_verdicts`, migracja 003) jako „oracle przeszłości”: żadna zmiana nie może zmienić historycznego werdyktu bez uzasadnienia w diffie prawnym (UVR = 0). Ewaluacja różnicowa: domeny krytyczne liczone na ≥ 2 węzłach, hash werdyktu (`decision_hash`) musi się zgadzać.
+
+**Narzędzia:** `tools/golden_replay.py` (record/replay/annotate/report), bramka GOLDEN_REPLAY w CI.
+
+---
+
+## ADR-019: Decision Certificate — [NOWY, v8.2 / P01 V2 F4]
+
+**Status:** ✅ Zaakceptowane (2026-08-08, P01 Fundament).
+
+**Decyzja:** Każdy werdykt generuje certyfikat decyzyjny z klasą pewności `CERTAIN` / `CONDITIONAL` / `NEEDS_ADVICE` oraz pieczęcią kryptograficzną (SHA-256 → Merkle → podpis HSM), weryfikowalną offline. Eksport PDF+XML dla KAS. AUTO_POST tylko dla CERTAIN.
+
+**Narzędzia:** `tools/decision_certificate.py` (issue/verify/classes/export), tabela `decision_certificates` (migracja 003).
+
+---
+
+## ADR-020: Law Radar — Proaktywna Adaptacja — [NOWY, v8.2 / P01 V2 F5]
+
+**Status:** ✅ Zaakceptowane (2026-08-08, P01 Fundament).
+
+**Decyzja:** Monitoring **projektów ustaw** (RCL, Sejm, Senat) — nie tylko opublikowanych nowelizacji. Reguły przygotowywane z wyprzedzeniem (SHADOW, `valid_from` = data wejścia) — w dniu wejścia tylko promote. KPI: `lead_time_avg ≥ 30 dni` przed wejściem w życie.
+
+**Narzędzia:** `tools/law_radar.py` (track/radar/status/prepare), tabela `draft_law_radar` (migracja 003).
+
+---
+
+## ADR-021: Declarative Change — [NOWY, v8.2 / P01 V2 F6]
+
+**Status:** ✅ Zaakceptowane (2026-08-08, P01 Fundament).
+
+**Decyzja:** Interfejs deklaratywny zmiany: człowiek opisuje zmianę w języku prostym (np. „stawka VAT 23% → 8% od 2027-01-01"), system mapuje na parametr/regułę, generuje diff, testy, impact, golden replay, PR 4-eyes i wdraża kanarkowo. Automatyzacja NIGDY: bez zdrowych metryk kanara, bez 2 podpisów dla domen niemutowalnych, bez dowodu zero referencji przy usuwaniu.
+
+**Narzędzia:** `tools/declarative_change.py` (plan/execute/template/history), integracja z data_service (ścieżka danych < 1 min).
+
+---
+
+## ADR-022: Orkiestrator Forteca — POST-MERGE Invariants + Decision Certificate — [NOWY, v8.3 / P03 GLM52]
+
+**Status:** ✅ Zaakceptowane (2026-08-08, P03 GLM52 Orkiestrator).
+
+**Decyzja:** Na **końcu POST-MERGE** (`main_jdg.rego` → `final_verdict_enforced`) każdy werdykt przechodzi przez egzekucję runtime invariants (F2 V2) i otrzymuje `_invariant_report` (INV-001..042), `certainty_class` (CERTAIN/CONDITIONAL/NEEDS_ADVICE), `_certainty_guard` (host NIGDY nie wykonuje AUTO_POST dla CERTAINTY_BLOCKED — INV-006/INV-035), `_decision_certificate` (decision_hash + wersje bundle/rule/threshold + legal_basis_refs) oraz `_routing_context` (routing O(1), ADR-009).
+
+**Katalog:** INV-001..042 w `rules/audit/runtime_invariants_enterprise.rego`; `evaluate(v)` — jednoźródłowa funkcja czysta (runtime, host, CI).
+
+**Artefakty:** `rules/audit/runtime_invariants_enterprise.rego`, `rules/p03_orchestrator_innovations_v9.rego`, `rules/temporal.rego`, `rules/provenance.rego`, `tools/hardcoded_audit_gate.py`, `final_verdict_enforced` w `main_jdg.rego`.
+
+---
+
+## 9. Limitacje i znane obszary rozwoju (aktualizacja P60, 2026-09-13)
+
+| Obszar | Stan (P60) |
+|---|---|
+| Migracja hardcoded wartości do DuckDB | ✅ domknięta falą P46 (zero hardcode, bramka HARDCODED_AUDIT) |
+| Deduplikacja rule_id (makro/mikro) | ✅ domknięta falą P50 (unikalność w raportach P45–P59) |
+| Natywne testy Rego | ✅ 100+ plików testowych (manifest_v2: 109) + kampania V3 P51–P59 |
+| Sharded Router w `policies/` | ✅ mirror zsynchronizowany (hash-parity P48, 4/4 w P59/P60) |
+
+*Spójny z: README.md · MANIFEST_2_0.md · ADR 001–022 · api/openapi.yaml · DEVELOPER_GUIDE.md*

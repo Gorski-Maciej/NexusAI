@@ -1,0 +1,25 @@
+{
+  "header": {
+    "schema": "jdg.v3_p61.integrations.audit.v1",
+    "part": "P61",
+    "slug": "INTEGRACJE_DOMKNIECIE",
+    "generated_at": "2026-09-13T18:45:37.541741+00:00",
+    "analyses": {
+      "I06_bank_reconciliation": "PASS"
+    }
+  },
+  "result": {
+    "feed_total": 11,
+    "matched": 8,
+    "unmatched_total": 3,
+    "unmatched_without_path_pct": 0.0,
+    "unmatched_with_candidates": 3,
+    "conflicts_without_candidates": [],
+    "threshold_pct": 5,
+    "contract": "rozjazd → NEEDS_ADVICE z kandydatami (P57-I07); zero cichych dopasowań",
+    "provenance": "P57-I07 bank reconciliation + P32-I05 kontrakt; prompt P61 Sekcja 10-I06",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T18:45:37.541741+00:00"
+  },
+  "gate": "PASS"
+}

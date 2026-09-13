@@ -1,0 +1,106 @@
+{
+  "schema": "jdg.v3_p61.integration_registry.v1",
+  "description": "Rejestr integracji zewnętrznych — generowany z realnych artefaktów (zero deklaracji ręcznych); statusy REAL/PLANNED/FACADE",
+  "generated_at": "2026-09-13T18:45:33.518529+00:00",
+  "entries": [
+    {
+      "id": "ksef-mf",
+      "name": "KSeF / Ministerstwo Finansów",
+      "channel": "API (sandbox → produkcja)",
+      "status": "REAL",
+      "contract": {
+        "health": true,
+        "status": true,
+        "degradation": true,
+        "metrics": true,
+        "runbook": true
+      },
+      "ladder": [
+        true,
+        true,
+        true
+      ],
+      "evidence": [
+        "tools/ksef_outbox.py",
+        "tools/ksef_offline_queue.py",
+        "bundles/v3_p16_chaos_ksef_drill.json",
+        "bundles/v3_p16_zero_loss_queue.json"
+      ],
+      "contract_complete": true,
+      "ladder_rungs": 3
+    },
+    {
+      "id": "nbp-fx",
+      "name": "NBP — tabele kursów",
+      "channel": "publikacja NBP-A (provenance)",
+      "status": "REAL",
+      "contract": {
+        "health": true,
+        "status": true,
+        "degradation": true,
+        "metrics": true,
+        "runbook": true
+      },
+      "ladder": [
+        true,
+        true,
+        true
+      ],
+      "evidence": [
+        "tools/fx_rate_engine.py",
+        "bundles/fx_provenance.json"
+      ],
+      "contract_complete": true,
+      "ladder_rungs": 3
+    },
+    {
+      "id": "isap",
+      "name": "ISAP — akty prawne",
+      "channel": "crawler + cache + re-certyfikacja",
+      "status": "REAL",
+      "contract": {
+        "health": true,
+        "status": true,
+        "degradation": true,
+        "metrics": true,
+        "runbook": true
+      },
+      "ladder": [
+        true,
+        true,
+        true
+      ],
+      "evidence": [
+        "tools/isap_crawler.py",
+        "bundles/v3_p47_isap_anchors.json",
+        "bundles/v3_p45_isap_mediation_register.json"
+      ],
+      "contract_complete": true,
+      "ladder_rungs": 3
+    },
+    {
+      "id": "banki",
+      "name": "Banki — wyciągi / parowanie",
+      "channel": "feed transakcji (recon)",
+      "status": "REAL",
+      "contract": {
+        "health": true,
+        "status": true,
+        "degradation": true,
+        "metrics": true,
+        "runbook": true
+      },
+      "ladder": [
+        true,
+        true,
+        true
+      ],
+      "evidence": [
+        "bundles/v3_p57_reconciliation.json",
+        "bundles/v3_p32_bank_reconciliation.json"
+      ],
+      "contract_complete": true,
+      "ladder_rungs": 3
+    }
+  ]
+}

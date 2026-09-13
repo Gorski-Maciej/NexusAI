@@ -1,0 +1,59 @@
+{
+  "schema": "jdg.v3_p60.run_all.v1",
+  "part": "P60",
+  "slug": "DOKUMENTACJA_DOMKNIECIE",
+  "generated_at": "2026-09-13T17:29:05.183764+00:00",
+  "engines_run": 12,
+  "failures": [],
+  "gate": "PASS",
+  "results": {
+    "I01": {
+      "exit": 0,
+      "output": "[P60:I01] gate=PASS bundle=v3_p60_doc_truth.json"
+    },
+    "I02": {
+      "exit": 0,
+      "output": "[P60:I02] gate=PASS bundle=v3_p60_snippets_gate.json"
+    },
+    "I03": {
+      "exit": 0,
+      "output": "[P60:I03] gate=PASS bundle=v3_p60_frontmatter.json"
+    },
+    "I04": {
+      "exit": 0,
+      "output": "[P60:I04] gate=PASS bundle=v3_p60_ghosts.json"
+    },
+    "I05": {
+      "exit": 0,
+      "output": "[P60:I05] gate=PASS bundle=v3_p60_role_maps.json"
+    },
+    "I06": {
+      "exit": 0,
+      "output": "[P60:I06] gate=PASS bundle=v3_p60_audit_export_gate.json"
+    },
+    "I07": {
+      "exit": 0,
+      "output": "[P60:I07] gate=PASS bundle=v3_p60_freshness.json"
+    },
+    "I08": {
+      "exit": 0,
+      "output": "[P60:I08] gate=PASS bundle=v3_p60_holy_docs.json"
+    },
+    "I09": {
+      "exit": 0,
+      "output": "[P60:I09] gate=PASS bundle=v3_p60_examples.json"
+    },
+    "I10": {
+      "exit": 0,
+      "output": "[P60:I10] gate=PASS bundle=v3_p60_glossary.json"
+    },
+    "I11": {
+      "exit": 0,
+      "output": "[P60:I11] gate=PASS bundle=v3_p60_plen_parity.json"
+    },
+    "I12": {
+      "exit": 0,
+      "output": "[P60:I12] gate=PASS bundle=v3_p60_role_coverage.json"
+    }
+  }
+}

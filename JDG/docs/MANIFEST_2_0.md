@@ -1,31 +1,39 @@
+<!--
+artifacts: [docs/MANIFEST_2_0.md, bundles/manifest_v2.json]
+status: ACTIVE
+owner: core
+verified: 2026-09-13
+verify_cmd: python3 tools/manifest_v2.py --json
+-->
+
 # 📋 MANIFEST 2.0 — JEDNO ŹRÓDŁO PRAWDY METRYK JDG (P01 Fundament)
 
-> Wygenerowano: 2026-08-17T12:31:49.484505+00:00 · generator: `manifest_v2.py`
+> Wygenerowano: 2026-09-13T16:38:06.818902+00:00 · generator: `manifest_v2.py`
 > **Zasada:** manifest jest regenerowany w CI ze skanu katalogów; każda rozbieżność
 > między dokumentami a tym plikiem = blokada merge (bramka `--check`).
 
 ## Metryki autorytatywne (stan faktyczny)
 
-| Metryka | Wartość (2026-08-17) | Wartość (2026-08-22) | SLO |
-|---|---|---|---|
-| Pliki Rego (rules/) | 449 | **472** | — |
-| Bloki reguł | 13033 | 11 811 (matched) | — |
-| Bloki matched=true | 12134 | 11 811 | — |
-| Unikalne rule_id | 12182 | **11 808** | — |
-| Duplikaty rule_id | 235 | **3** | **0** |
-| Stuby { true } | 1028 | **25** | **0** |
-| Narzędzia Python (tools/) | 223 | **298** | — |
-| Natywne testy Rego | 109 | **207** | ≥ 95% pakietów |
-| Pliki testów pytest | 36 | **198** | — |
-| Completeness Score | 50/100 | **88/100** | → 100 |
+| Metryka | Wartość | SLO |
+|---|---|---|
+| Pliki Rego (rules/) | 535 | — |
+| Bloki reguł | 13664 | — |
+| Bloki matched=true | 12479 | — |
+| Unikalne rule_id | 12626 | — |
+| Duplikaty rule_id | 277 | **0** |
+| Stuby { true } | 1087 | **0** |
+| Narzędzia Python (tools/) | 994 | — |
+| Natywne testy Rego | 162 | ≥ 95% pakietów |
+| Pliki testów pytest | 84 | — |
+| Completeness Score | 50/100 | → 100 |
 
 ## Rozstrzygnięcie luk dokumentacyjnych (L2)
 
 | Metryka | README.md | MANIFEST.md | COVERAGE_REPORT.md | STAN FAKTYCZNY (2.0) |
 |---|---|---|---|---|
-| Pliki Rego | 472 | 472 | — | **472** |
-| rule_id | 11808 | 11808 | — | **11808** (unikalne) |
-| Narzędzia | 298 | — | — | **298** |
+| Pliki Rego | 439 | 383 | 176 | **535** |
+| rule_id | 11452 | 10878 | 10827 | **12626** (unikalne) |
+| Narzędzia | 57 | 98 | 130 | **994** |
 
 ## SLO docelowe (V1 §0 / V2 §11)
 

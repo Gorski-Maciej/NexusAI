@@ -1,0 +1,26 @@
+{
+  "header": {
+    "schema": "jdg.v3_p62.cashflow.audit.v1",
+    "part": "P62",
+    "slug": "PRZEPYWY_PIENIEZNE",
+    "generated_at": "2026-09-13T19:39:07.626132+00:00",
+    "analyses": {
+      "I04_cashflow_schedule": "PASS"
+    }
+  },
+  "result": {
+    "predictor_present": true,
+    "predictors": [
+      "rules/cashflow_tax_predictor_enterprise.rego",
+      "rules/vat_cashflow_predictor_enterprise.rego"
+    ],
+    "calendar_working_day_shift": true,
+    "calendar_source": "tools/zus_calendar.py (art. 47 ust. 3 SUS) [NIEZWERYFIKOWANE — ISAP]",
+    "horizon_days": 30,
+    "alert_weeks": 2,
+    "provenance": "P25 kalendarz terminów (jedno źródło); P55-I06 DRA watchdog; prompt P62 Sekcja 10-I04",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T19:39:07.626132+00:00"
+  },
+  "gate": "PASS"
+}

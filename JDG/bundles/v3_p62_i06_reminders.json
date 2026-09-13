@@ -1,0 +1,29 @@
+{
+  "header": {
+    "schema": "jdg.v3_p62.cashflow.audit.v1",
+    "part": "P62",
+    "slug": "PRZEPYWY_PIENIEZNE",
+    "generated_at": "2026-09-13T19:39:08.841905+00:00",
+    "analyses": {
+      "I06_reminder_ladder": "PASS"
+    }
+  },
+  "result": {
+    "ladder_days": [
+      7,
+      3,
+      1
+    ],
+    "ladder_source": "ADR-002 v3_p62_reminder_days",
+    "base_reminder_gate": "PASS",
+    "base_tool": "tools/v3_p19_instalment_reminder.py",
+    "channels": [
+      "UI",
+      "e-mail"
+    ],
+    "provenance": "P19 drabina rat (wzorzec); prompt P62 Sekcja 10-I06",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T19:39:08.841905+00:00"
+  },
+  "gate": "PASS"
+}

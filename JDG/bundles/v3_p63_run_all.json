@@ -1,0 +1,59 @@
+{
+  "schema": "jdg.v3_p63.run_all.v1",
+  "part": "P63",
+  "slug": "RBAC_MULTITENANT",
+  "generated_at": "2026-09-13T20:40:53.904865+00:00",
+  "engines_run": 12,
+  "failures": [],
+  "gate": "PASS",
+  "results": {
+    "I01": {
+      "exit": 0,
+      "output": "[P63:I01] gate=PASS bundle=v3_p63_i01_rbac.json"
+    },
+    "I02": {
+      "exit": 0,
+      "output": "[P63:I02] gate=PASS bundle=v3_p63_i02_sod.json"
+    },
+    "I03": {
+      "exit": 0,
+      "output": "[P63:I03] gate=PASS bundle=v3_p63_i03_isolation.json"
+    },
+    "I04": {
+      "exit": 0,
+      "output": "[P63:I04] gate=PASS bundle=v3_p63_i04_breakglass.json"
+    },
+    "I05": {
+      "exit": 0,
+      "output": "[P63:I05] gate=PASS bundle=v3_p63_i05_access_audit.json"
+    },
+    "I06": {
+      "exit": 0,
+      "output": "[P63:I06] gate=PASS bundle=v3_p63_i06_erasure.json"
+    },
+    "I07": {
+      "exit": 0,
+      "output": "[P63:I07] gate=PASS bundle=v3_p63_i07_quotas.json"
+    },
+    "I08": {
+      "exit": 0,
+      "output": "[P63:I08] gate=PASS bundle=v3_p63_i08_dataflow.json"
+    },
+    "I09": {
+      "exit": 0,
+      "output": "[P63:I09] gate=PASS bundle=v3_p63_i09_pseudonymization.json"
+    },
+    "I10": {
+      "exit": 0,
+      "output": "[P63:I10] gate=PASS bundle=v3_p63_i10_schema.json"
+    },
+    "I11": {
+      "exit": 0,
+      "output": "[P63:I11] gate=PASS bundle=v3_p63_i11_drift.json"
+    },
+    "I12": {
+      "exit": 0,
+      "output": "[P63:I12] gate=PASS bundle=v3_p63_i12_onboarding.json"
+    }
+  }
+}

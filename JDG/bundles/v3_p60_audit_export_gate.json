@@ -1,0 +1,21 @@
+{
+  "header": {
+    "schema": "jdg.v3_p60.documentation.audit.v1",
+    "part": "P60",
+    "slug": "DOKUMENTACJA_DOMKNIECIE",
+    "generated_at": "2026-09-13T19:29:09.665837+02:00",
+    "analyses": {
+      "I06_audit_export_pack": "PASS"
+    }
+  },
+  "result": {
+    "export_present": true,
+    "export_path": "bundles/v3_p60_audit_export.json",
+    "docs_in_pack": 14,
+    "registries_in_pack": 5,
+    "retention_days": 1825,
+    "provenance": "P42 WORM (kontekst); prompt P60 Sekcja 10-I06",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T19:29:09.665837+02:00"
+  }
+}

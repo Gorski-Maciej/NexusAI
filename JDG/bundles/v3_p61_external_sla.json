@@ -1,0 +1,22 @@
+{
+  "header": {
+    "schema": "jdg.v3_p61.integrations.audit.v1",
+    "part": "P61",
+    "slug": "INTEGRACJE_DOMKNIECIE",
+    "generated_at": "2026-09-13T18:45:41.462058+00:00",
+    "analyses": {
+      "I11_external_sla": "PASS"
+    }
+  },
+  "result": {
+    "over_threshold": [],
+    "worst_p95_ms": 0,
+    "max_latency_ms": 5000,
+    "slo_domains_gate": "PASS",
+    "slo_source": "bundles/metrics.json#slo (P37)",
+    "provenance": "P37 SLO + P58-I12 SLO per domena; prompt P61 Sekcja 10-I11",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T18:45:41.462058+00:00"
+  },
+  "gate": "PASS"
+}

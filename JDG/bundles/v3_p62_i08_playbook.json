@@ -1,0 +1,25 @@
+{
+  "header": {
+    "schema": "jdg.v3_p62.cashflow.audit.v1",
+    "part": "P62",
+    "slug": "PRZEPYWY_PIENIEZNE",
+    "generated_at": "2026-09-13T19:39:09.970926+00:00",
+    "analyses": {
+      "I08_failure_playbook": "PASS"
+    }
+  },
+  "result": {
+    "chaos_gate": "PASS",
+    "chaos_cases": {
+      "total": 8,
+      "undetected": []
+    },
+    "offline_queue": true,
+    "offline_evidence": "bundles/v3_p54_idempotent_outbox.json (exactly_once) + P16 zero-loss (RPO=0)",
+    "playbook": "awaria banku → kolejka offline → przypominajki (I06) → rekonsylacja po awarii (P57-I07)",
+    "provenance": "P43 chaos; P57 chaos; P16 KSeF drill; prompt P62 Sekcja 10-I08",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T19:39:09.970926+00:00"
+  },
+  "gate": "PASS"
+}

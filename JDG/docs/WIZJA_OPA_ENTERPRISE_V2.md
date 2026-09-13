@@ -1,3 +1,11 @@
+<!--
+artifacts: [docs/WIZJA_OPA_ENTERPRISE_V2.md]
+status: ACTIVE
+owner: legal
+verified: 2026-09-13
+verify_cmd: python3 tools/v3_p60_engines.py I08
+-->
+
 # 🏆 WIZJA V2 — SILNIK REGUŁ PODATKOWYCH OPA KLASY ENTERPRISE
 ## „Niezachwiana pewność prawa podatkowego i księgowego w regułach"
 

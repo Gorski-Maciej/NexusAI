@@ -133,14 +133,18 @@ def test_i08_insider_program():
     assert r["suspicious_signals"] == 0
 
 
-# ═══ 11. I09: SBOM istnieje po przebiegu, stdlib-only udokumentowane ═══
+# ═══ 11. I09: SBOM istnieje po przebiegu; 100% zależności zewnętrznych pinowane
+# w requirements.txt (JDG/requirements.txt: httpx==0.28.1, PyYAML==6.0.3,
+# pytest==9.0.3). stdlib_only=False — supply chain istnieje i jest pod kontrolą.
 def test_i09_sbom_generated():
     r = _load("v3_p59_sbom")["result"]
     assert r["sbom_present"] is True
     assert r["deps_total"] == r["pinned"]
+    assert r["unpinned"] == []
     sbom = json.loads((BUNDLES / "sbom.json").read_text(encoding="utf-8"))
     assert sbom["schema"] == "jdg.sbom.v1"
-    assert sbom["stdlib_only"] is True
+    assert sbom["stdlib_only"] is False
+    assert sbom["unpinned"] == []
 
 
 # ═══ 12. I10: eksperymenty security w chaos_runner (P43) ═══
@@ -205,8 +209,9 @@ def test_wiring_main_jdg():
     assert "import data.jdg.v3_p59_security_closure as v3_p59_security_closure" in main
     assert "final_verdict_p123 = safe_merge(final_verdict_p122" in main
     assert "v3_p59_security_closure.decide" in main
-    post = main[main.index("final_verdict_post_merge = safe_merge("):]
-    assert "final_verdict_p123" in post[:300]
+    post = main[main.index("final_verdict_post_merge = safe_merge("):] 
+    # Kotwica POST-MERGE przesunięta na p127 (łańcuch urósł o P63 — kampania V3).
+    assert "final_verdict_p127" in post[:900]
 
 
 # ═══ 18. Mirror: hash-parity policies/ ═══

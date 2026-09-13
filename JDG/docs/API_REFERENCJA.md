@@ -1,3 +1,11 @@
+<!--
+artifacts: [docs/API_REFERENCJA.md, api/openapi.yaml]
+status: ACTIVE
+owner: core
+verified: 2026-09-13
+verify_cmd: python3 tools/v3_p60_engines.py I03
+-->
+
 # 📡 NexusAI JDG — API Reference (Decision API v1.0.0)
 
 > **Dokument:** API_REFERENCJA.md | **Specyfikacja:** [../api/openapi.yaml](../api/openapi.yaml) (OpenAPI 3.0.3)

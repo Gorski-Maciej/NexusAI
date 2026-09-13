@@ -1,0 +1,25 @@
+{
+  "header": {
+    "schema": "jdg.v3_p62.cashflow.audit.v1",
+    "part": "P62",
+    "slug": "PRZEPYWY_PIENIEZNE",
+    "generated_at": "2026-09-13T19:39:06.439367+00:00",
+    "analyses": {
+      "I02_idempotent_execution": "PASS"
+    }
+  },
+  "result": {
+    "idempotent": true,
+    "key_fields": [
+      "declaration",
+      "term",
+      "amount_gr"
+    ],
+    "evidence_key": "zlecenie_hash (wspólny z P32/P54)",
+    "double_payments_detected": 0,
+    "provenance": "P55-I08 idempotency_key (wspólny z P32/P54); prompt P62 Sekcja 10-I02",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T19:39:06.439367+00:00"
+  },
+  "gate": "PASS"
+}

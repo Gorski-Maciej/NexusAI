@@ -1,0 +1,32 @@
+{
+  "header": {
+    "schema": "jdg.v3_p60.documentation.audit.v1",
+    "part": "P60",
+    "slug": "DOKUMENTACJA_DOMKNIECIE",
+    "generated_at": "2026-09-13T19:29:13.931381+02:00",
+    "analyses": {
+      "I12_role_coverage": "PASS"
+    }
+  },
+  "result": {
+    "maps": [
+      "developer",
+      "operator",
+      "auditor",
+      "entrepreneur"
+    ],
+    "missing_roles": [],
+    "roles": [
+      "developer",
+      "operator",
+      "auditor",
+      "entrepreneur"
+    ],
+    "coverage_pct": 100,
+    "min_pct": 100,
+    "doc": "docs/ROLE_MAPS.md",
+    "provenance": "prompt P60 Sekcja 10-I05/I12",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T19:29:13.931381+02:00"
+  }
+}

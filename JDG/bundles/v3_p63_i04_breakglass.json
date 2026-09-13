@@ -1,0 +1,24 @@
+{
+  "header": {
+    "schema": "jdg.v3_p63.rbac.audit.v1",
+    "part": "P63",
+    "slug": "RBAC_MULTITENANT",
+    "generated_at": "2026-09-13T20:40:56.381679+00:00",
+    "analyses": {
+      "I04_breakglass": "PASS"
+    }
+  },
+  "result": {
+    "flagged": true,
+    "review_required": true,
+    "escalation_gate": "PASS",
+    "paths": [
+      "rules/api_fallback.rego",
+      "rules/ksef_resilience_enterprise.rego"
+    ],
+    "provenance": "P58-I08 eskalacja; P43 DR; prompt P63 Sekcja 10-I04",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T20:40:56.381679+00:00"
+  },
+  "gate": "PASS"
+}

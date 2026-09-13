@@ -1,0 +1,45 @@
+{
+  "header": {
+    "schema": "jdg.v3_p61.integrations.audit.v1",
+    "part": "P61",
+    "slug": "INTEGRACJE_DOMKNIECIE",
+    "generated_at": "2026-09-13T18:45:39.350873+00:00",
+    "analyses": {
+      "I08_integration_registry": "PASS"
+    }
+  },
+  "result": {
+    "entries": [
+      {
+        "id": "ksef-mf",
+        "status": "REAL",
+        "contract_complete": true
+      },
+      {
+        "id": "nbp-fx",
+        "status": "REAL",
+        "contract_complete": true
+      },
+      {
+        "id": "isap",
+        "status": "REAL",
+        "contract_complete": true
+      },
+      {
+        "id": "banki",
+        "status": "REAL",
+        "contract_complete": true
+      }
+    ],
+    "invalid_statuses": [],
+    "allowed_statuses": [
+      "REAL",
+      "PLANNED",
+      "FACADE"
+    ],
+    "provenance": "V1 rejestr kanałów; generowany przez I01; prompt P61 Sekcja 10-I08",
+    "gate": "PASS",
+    "generated_at": "2026-09-13T18:45:39.350873+00:00"
+  },
+  "gate": "PASS"
+}
