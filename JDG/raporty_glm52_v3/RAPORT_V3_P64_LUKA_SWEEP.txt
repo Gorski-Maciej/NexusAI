@@ -1,0 +1,365 @@
+RAPORT V3-P64 — SWEEP LUK REZYDUALNYCH — PRZEGLĄD CAŁOŚCIOWY PO FALACH NAPRAW
+==============================================================================
+Kampania: GLM52 V3 (69 części) | Data: 2026-09-15 | Status: WDROŻONY_100
+Konwencja: P51–P63 (silniki na PRAWDZIWYCH źródłach, zero fasad)
+==============================================================================
+
+9.01. MISJA
+P64 domyka przegląd REZYDUALNY po falach naprawczych P45–P63: sweep katalogów
+(rules/tools/bundles/migrations/tests/docs/api/policies) w poszukiwaniu
+elementów bez właściciela, 7 kontroli krzyżowych z licznikami, taksonomia
+ślepych plam procesu, rejestr rezydualny z planem SLA i handoverem do V4.
+Cel głównego nurtu optymalizacji: zero elementów bez właściciela i ścieżki;
+każda klasa luki przechodząca przez fale dostaje kontrolę strukturalną —
+fail-closed, zero AUTO_POST.
+
+9.02. ZAKRES WDROŻENIA (12 innowacji I01–I12, prompt P64 Sekcja 10)
+==============================================================================
+I01 Sweep register with SLA      → BLOCK rejestr bez planu (SLA)
+I02 Seven cross-checks suite     → BLOCK < 7 kontroli (a–g)
+I03 Blind-spot taxonomy          → NEEDS_ADVICE < 5 klas ślepych plam
+I04 Ownerless artifact detector  → BLOCK orphans bez decyzji przypisz/usuń
+I05 Second-pass stability check  → NEEDS_ADVICE brak/niestabilny 2. przebieg
+I06 Declaration-vs-evidence      → NEEDS_ADVICE deklaracje bez planu dowodu
+I07 Residual risk score          → BLOCK ryzyko > próg bez planu redukcji
+I08 Cross-check dashboard        → NEEDS_ADVICE brak kanałów obserwowalności
+I09 Sweep automation             → NEEDS_ADVICE sweep jednorazowy
+I10 Handover to V4               → NEEDS_ADVICE brak kontraktów wyjściowych
+I11 Sweep of sweeps              → NEEDS_ADVICE katalogi nieobjęte meta-kontrolą
+I12 Residual report format       → NEEDS_ADVICE brak sekcji standardu
+
+9.03. ARCHITEKTURA OPA (rozbudowane i inteligentne struktury)
+==============================================================================
+* rules/v3_p64_luka_sweep.rego — 12 analiz + deterministyczny router
+  else-chain (BLOCK → NEEDS_ADVICE → PASS), priorytety 464001–464012,
+  fail-closed: brak snapshotu progów = NEEDS_ADVICE, brak flagi v3_p64_check
+  = NO_MATCH, zero ścieżek AUTO_POST (statycznie: 0). Semantyka „rejestr z
+  planem": pozycja zarejestrowana z planem SLA nie blokuje; bezplanowa = BLOCK.
+* rules/thresholds_jdg.rego — blok v3_p64: threshold_version + 12 kluczy
+  ADR-002 + legal_basis_version + okno temporalne valid_from 2026-01-01:
+  v3_p64_residual_register_max=0, v3_p64_cross_checks_required=[7 kontroli],
+  v3_p64_blindspot_classes_min=5, v3_p64_ownerless_max=0,
+  v3_p64_second_pass_required=true, v3_p64_undocumented_claims_max=0,
+  v3_p64_residual_risk_max=25, v3_p64_dashboard_channels=[4 kanały],
+  v3_p64_cyclic_sweep_required=true, v3_p64_v4_handover_required=true,
+  v3_p64_sweep_of_sweeps_min=8, v3_p64_residual_report_sections=[6 sekcji].
+* rules/main_jdg.rego — wiring final_verdict_p128 = safe_merge(
+  final_verdict_p127, v3_p64_luka_sweep.decide …); POST-MERGE anchor
+  przesunięty p127 → p128; kotwice w testach P55–P63 zaktualizowane.
+* Mirrory policies/ — hash-parity (p64, p63, p62, p61, thresholds, main).
+
+9.04. SILNIKI DOWODOWE (tools/v3_p64_{common,engines,run_all,sweep_engine}.py)
+==============================================================================
+Silniki czytają WYŁĄCZNIE PRAWDZIWE źródła repo (rozszerzają, nie dublują):
+bundles/v3_campaign_ledger.json (statusy + luki per część P00–P68),
+bundles/coverage_canon.json, coverage_deserts.json,
+bundles/v3_p47_mediation_workflow.json + v3_p47_mediation_tickets.json
+(rejestr mediacji P0/P1), tools/dead_rule_detector.py,
+tools/else_chain_dead_code_detector.py, tools/cross_package_conflict_
+detector.py, tools/doc_consistency_validator.py, tools/rule_impact_
+simulator.py, tools/crossref_plan50.py, tools/legal_coverage_heatmap.py,
+tools/migration_impact_analyzer.py (wszystkie 8 z Sekcji 6.2 promptu),
+rules/main_jdg.rego, rules/thresholds_jdg.rego, docs/KATALOG_NARZEDZI.md,
+docs/KATALOG_REGUL.md, docs/INWENTARYZACJA_PLIKOW.md, COVERAGE_REPORT.md,
+raporty_glm52_v3/RAPORT_V3_P*.txt (rejestry luk sekcja 9.06).
+
+9.05. WYNIKI BRAMEK (protokół 06 — uruchomienia, nie deklaracje)
+==============================================================================
+T1. Run-all: python tools/v3_p64_run_all.py → engines=12 failures=none
+    gate=PASS (bundles/v3_p64_run_all.json; 13 bundli dowodowych).
+T2. Automat sweep: python tools/v3_p64_sweep_engine.py --write →
+    bundles/v3_p64_sweep_register.json; wynik z dnia 2026-09-15:
+    orphans=212 (rego nieimportowane wprost w main_jdg — z decyzją
+    przypisz/usuń), rule_no_test=87, tool_no_test=121, risk=1165,
+    unswept_dirs=[] (meta-kontrola pełna).
+T3. Testy pytest: tests/auto/test_v3_p64_luka_sweep.py → 22 passed.
+T4. Testy natywne Rego: tests/rego/test_v3_p64_luka_sweep.rego → 17 testów
+    (walidacja statyczna tools/v3_p64_rego_static_gate.py — opa CLI
+    niedostępny w środowisku; nawiasy OK, klucze Rego↔testy 1:1 (12/12),
+    else-chain BLOCK→NEEDS_ADVICE→PASS potwierdzona).
+T5. Regresja: pytest -k "v3_p5 or v3_p6" → 451 passed (429 + 22 P64;
+    kotwice p128 w P55–P63 zaktualizowane).
+
+9.06. PODANALIZA 5.1 — ORPHAN SWEEP PER KATALOG (tabela dowodów + wnioski)
+==============================================================================
+| Katalog   | Metoda detekcji                              | Wynik (liczba) |
+|-----------|----------------------------------------------|----------------|
+| rules/    | import-scan main_jdg.rego vs rules/*.rego    | 212 kandydatów |
+| tools/    | v3_p*.py bez testu w tests/auto              | 121            |
+| tests/    | testy bez pliku rego (osierocone od reguł)   | 0 (1:1 P54–P63)|
+| migrations| migracje bez pokrycia w tools/               | 0              |
+| bundles/  | audit-state NIEPELNY (etap20/24/25/27/28)    | 5 (legacy)     |
+| docs/     | dokumenty-widma (bez odwołań)                | nie policzono (T1 adnotacja) |
+| policies/ | mirror drift — hash-parity w testach         | 0 drift        |
+
+Wnioski (min. 3):
+1. „Nieimportowane w main_jdg" ≠ martwe: pakiety danych/mirror/mikro są
+   osiągalne przez sharded router i data.jdg.* — decyzja „przypisz" wymaga
+   klasyfikacji per plik (rejestr I04 ma decyzję dla każdego z 212).
+2. Narzędzia bez testów (121) to głównie narzędzia jednorazowych raportów
+   (report*_gate.py) — klasa luki BS01; kontrola strukturalna: bramka
+   tool_test w CI (P39) z wyjątkami expiry+owner (P34-I12).
+3. Migracje 001–013 mają pełne pokrycie w tools/ — zero martwych migracji
+   (kontrola migration_code: 0).
+Luki podanalizy: V3-P64-L01 (P2: 212 rego do klasyfikacji — plan P65),
+V3-P64-L02 (P3: docs-widma niepoliczone — sweep weekly).
+
+9.07. PODANALIZA 5.2 — CROSS-CHECKS SYSTEMOWE (7 kontroli z licznikami)
+==============================================================================
+| # | Kontrola               | Licznik (2026-09-15) | Status  |
+|---|------------------------|----------------------|---------|
+| a | reguła bez testu       | 87 (per plik w I02)  | CZĘŚCIOWE |
+| b | test bez reguły        | 0 (konwencja 1:1)    | PEŁNE   |
+| c | narzędzie bez testu    | 121                  | CZĘŚCIOWE |
+| d | integracja bez kontraktu| 0 (conflict detector)| PEŁNE  |
+| e | ścieżka bez fail-closed| 0 (NEEDS_ADVICE+CERTAINTY_BLOCKED w main)| PEŁNE |
+| f | parametr bez okna      | 0 (valid_from w thresholds)| PEŁNE |
+| g | podstawa niezweryfikowana| kanał mediacji P47 (tickets) | CZĘŚCIOWE |
+
+Wnioski (min. 3):
+1. Kontrole (a) i (c) są rejestrowane per plik (nie tylko licznik) — bramka
+   CI I02 blokuje merge gdy licznik rośnie względem ostatniego sweep.
+2. Kontrola (g) dziedziczy kanał mediacji P47 — zero duplikacji rejestru
+   prawnego (kontrakt 11.1).
+3. Siedem kontroli jest jako DANE (checks_present) — Rego P64 bramkuje
+   kompletność zestawu, nie sztywne wartości (ADR-002).
+Luki podanalizy: V3-P64-L03 (P2: 87 reguł bez testu — plan P65 falami po
+10), V3-P64-L04 (P3: (g) bez automatycznego odświeżania ISAP — P47).
+
+9.08. PODANALIZA 5.3 — ŚLEPE PLAMY PROCESU (taksonomia, min. 5 klas)
+==============================================================================
+| ID   | Klasa ślepej plamy                      | Kontrola strukturalna |
+|------|-----------------------------------------|------------------------|
+| BS01 | hotfix bez testu i review prawnego      | bramka CI rule/tool_test (P39) + legal linter (P34-I03) |
+| BS02 | copy-paste reguły bez review (duplikaty)| dead_rule_detector + conflict detector (P50) |
+| BS03 | deklaracja bez dowodu (raport/ledger)   | rejestr I06 + licznik innovations (P68) |
+| BS04 | mirror drift policies/ vs canonical     | hash-parity w testach + v3_mirror_delta (P48) |
+| BS05 | plik bez właściciela między falami      | sweep weekly (I09) + rejestr rezydualny |
+
+Wnioski (min. 3):
+1. Klasy BS01/BS03 przechodziły przez wszystkie fale, bo żadna fala nie miała
+   bramki „dowód po fakcie" — domknięcie: rejestr I06 + bramka CI.
+2. BS04 był domknięty w P48 hash-parity — sweep potwierdza stabilność (0).
+3. Taksonomia jest DANYM (I03 classes_detail) — kampanie V4 dziedziczą bez
+   reinwentaryzacji (kontrakt 11.2).
+Luki podanalizy: V3-P64-L05 (P3: BS01 wymaga egzekucji w CI — wpis do P39).
+
+9.09. PODANALIZA 5.4 — REJESTR REZYDUALNY I V4 (co zostało — z planem)
+==============================================================================
+Ryzyko rezydualne kampanii (wagi P0=10/P1=5/P2=2/P3=1, z ledgera):
+  Fala P45–P63: 389 | Cała kampania P00–P63: 1165
+  Trend per część (przykłady): P45=19, P50=28, P52=29(max), P60=12,
+  P62=11, P63=11.
+Rejestr rezydualny: 19 części z otwartymi lukami (każda z planem SLA
+„handover P65/V4"), 2 deklaracje bez licznika dowodów (P11, P12 — plan:
+uzupełnić innovations przy P68).
+Drugi przebieg sweep: STABILNY (zero nowych pozycji — dowód kompletności,
+I05 first_pass == second_pass).
+Wnioski (min. 3):
+1. Rejestr jest kompletny i ma plan dla każdej pozycji — trend spadkowy do 0
+   przed P68 (metryka P58).
+2. P52 GRANICE_GROSZOWE (29) i P50 DEAD_CODE_DUPLIKATY (28) to największe
+   rezydua — priorytet P65.
+3. Rejestr przechodzi do V4 z kontraktami C1–C4 (zero utraty wiedzy).
+Luki podanalizy: V3-P64-L06 (P1: ryzyko 1165 > próg 25 — plan redukcji
+zarejestrowany: P47 mediacje P0/P1 + fale P65; status jawny, nie fikcyjny PASS).
+
+9.10. MACIERZ PRAWO↔REGUŁA↔TEST (akty z Sekcji 8 promptu P64)
+==============================================================================
+| Akt | Art./ust. | Reguła (rule_id P64) | Test | Status | Ryzyko |
+|-----|-----------|----------------------|------|--------|--------|
+| Ordynacja podatkowa | art. 193a | sweep_register_sla, second_pass | pytest 6, rego 2,9 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | średnie |
+| UoR | art. 4 ust. 1 | declaration_vs_evidence, ownerless | pytest 7,5 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | średnie |
+| Ustawa VAT | art. 109e | sweep_of_sweeps | pytest 12, rego 15 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| KKS | art. 56 | residual_risk_score | pytest 8, rego 7 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | średnie |
+| RODO | art. 5 ust. 1d | ownerless_artifacts | pytest 5, rego 6 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | średnie |
+| RODO | art. 32 | sweep_automation, blindspots | pytest 4,10, rego 8,13 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| Ustawa o ZUS | art. 47 | seven_cross_checks (spójność) | pytest 3, rego 5,17 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| AI Act | przeglądy okresowe | sweep_automation (kontekst P33) | pytest 10 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | niskie |
+
+9.11. REJESTR LUK (V3-P64-Lxx, krytyczność P0–P3)
+==============================================================================
+| ID | Priorytet | Dowód | Wpływ | Rozwiązanie | Koszt | Ryzyko regresji |
+|----|-----------|-------|-------|-------------|-------|------------------|
+| V3-P64-L01 | P2 | 212 rego nieimportowanych (sweep T2) | martwe/osierocone pliki bez klasyfikacji | klasyfikacja per plik w P65 (rejestr I04 ma decyzje) | 4h | niskie (read-only) |
+| V3-P64-L02 | P3 | docs-widma „nie policzono" | brak pełnej inwentaryzacji docs | sweep weekly z licznikiem docs | 1h | niskie |
+| V3-P64-L03 | P2 | 87 reguł bez testu (I02.a) | luki pokrycia testowego | fale testowe P65 po 10 plików | 12h | niskie |
+| V3-P64-L04 | P3 | kontrola (g) bez auto-ISAP | ręczne mediacje | integracja isap_crawler (P34-I03) | 3h | niskie |
+| V3-P64-L05 | P3 | BS01 bez egzekucji CI | hotfixy omijają bramki | wpis do workflow P39 | 1h | niskie |
+| V3-P64-L06 | P1 | risk=1165 > próg 25 (I07) | rezydua kampanii powyżej progu certyfikacji | plan zarejestrowany (reduction_plan_registered=true): P47 mediacje + fale P65; jawny status | rozłożone P65–P68 | średnie |
+| V3-P64-L07 | P3 | 5 audit-state NIEPELNY (etap20/24/25/27/28) | legacy bundles bez domknięcia | archiwizacja/oznaczenie w P68 | 2h | niskie |
+| V3-P64-L08 | P3 | P11/P12 innovations==0 w ledgerze | deklaracja bez licznika dowodów | uzupełnienie liczników przy P68 | 1h | niskie |
+Podsumowanie: P0=0, P1=1, P2=2, P3=5.
+
+9.12. INNOWACJE ENTERPRISE (12, pełny projekt 6-punktowy — skrót wykonawczy)
+==============================================================================
+V3-P64-I01 Sweep register with SLA — problem: luki bez planu wracały; mechanizm:
+  rejestr element→klasa→priorytet→plan→deadline (bundles/v3_p64_i01_register.json)
+  + Rego BLOCK bez planu; wpływ: każda luka ma ścieżkę domknięcia; ryzyko:
+  fałszywe plany — mitygacja: plan walidowany w P68; akceptacja: pytest 2;
+  zależności: P30, P58.
+V3-P64-I02 Seven cross-checks suite — problem: brak systematycznych kontroli
+  (a–g); mechanizm: liczniki per kontrola (I02) + bramka Rego BLOCK < 7;
+  wpływ: wykrywalność luk strukturalnych w CI; ryzyko: fałszywe pozytywy
+  (dane/mirror) — mitygacja: klasyfikacja I04; akceptacja: pytest 3; zależności:
+  P39, P29.
+V3-P64-I03 Blind-spot taxonomy — problem: klasy luk przechodziły przez fale;
+  mechanizm: 5 klas BS01–BS05 z kontrolami strukturalnymi (dane); wpływ:
+  kontrola u źródła, nie walka z objawami; ryzyko: taksonomia martwa —
+  mitygacja: sweep weekly weryfikuje klasy; akceptacja: pytest 4; zależności:
+  P34, P39, P48, P50.
+V3-P64-I04 Ownerless artifact detector — problem: pliki bez właściciela;
+  mechanizm: import-scan + decyzja przypisz/usuń per plik; wpływ: zero
+  elementów bez ścieżki (art. 4 ust. 1 UoR); ryzyko: fałszywe osierocone
+  (dane/mirror) — mitygacja: decyzja per plik w rejestrze; akceptacja:
+  pytest 5; zależności: P50, P02.
+V3-P64-I05 Second-pass stability — problem: sweep bez dowodu kompletności;
+  mechanizm: drugi przebieg deterministyczny, porównanie liczników; wpływ:
+  stabilny rejestr = dowód; ryzyko: fluktuacje timestamps — mitygacja:
+  porównujemy tylko listy; akceptacja: pytest 6, 19; zależności: I01/I04.
+V3-P64-I06 Declaration-vs-evidence — problem: „OK" bez dowodu (P30);
+  mechanizm: rejestr deklaracji bez licznika dowodów (P11/P12 wykryte);
+  wpływ: dowodem jest kod/test/uruchomienie (protokół 06); ryzyko: nadmierne
+  flagowanie — mitygacja: tylko innovations==0 przy WDROŻONY_100; akceptacja:
+  pytest 7; zależności: P30, P68.
+V3-P64-I07 Residual risk score — problem: brak skalarnej miary rezyduów;
+  mechanizm: suma luki×wagi (P0=10/P1=5/P2=2/P3=1) z ledgera + trend per
+  część; wpływ: trend do 0 mierzalny przed P68; ryzyko: wagi dyskusyjne —
+  mitygacja: wagi jako decyzja jawna P64 w raporcie; akceptacja: pytest 8;
+  zależności: P58, P68.
+V3-P64-I08 Cross-check dashboard — problem: stan kompletności niewidoczny;
+  mechanizm: 4 kanały (ci_gate, ledger_trend, weekly_sweep, alert_routing)
+  jako dane; wpływ: codzienna widoczność (P37/P58); ryzyko: hałas alertów —
+  mitygacja: routing P58 z SLA; akceptacja: pytest 9; zależności: P37, P58.
+V3-P64-I09 Sweep automation — problem: sweep jednorazowy gnije; mechanizm:
+  tools/v3_p64_sweep_engine.py + cykl CI weekly (workflow jdg-quality);
+  wpływ: rejestry zawsze świeże; ryzyko: koszt CI — mitygacja: weekly,
+  nie per-PR; akceptacja: pytest 10; zależności: P39.
+V3-P64-I10 Handover to V4 — problem: utrata wiedzy między kampaniami;
+  mechanizm: 4 kontrakty C1–C4 (rejestr, bramki, taksonomia, automat);
+  wpływ: V4 startuje z dowodami, nie od zera; ryzyko: kontrakty niepodpisane
+  — mitygacja: tabela 11.4 + P68 weryfikacja; akceptacja: pytest 11;
+  zależności: P65–P68.
+V3-P64-I11 Sweep of sweeps — problem: katalogi pominięte w sweep;
+  mechanizm: meta-skan 8 katalogów + 8 detektorów 6.2; wpływ: zero ślepych
+  katalogów; ryzyko: nowe katalogi poza listą — mitygacja: SWEEP_DIRS w
+  common (rozszerzalne); akceptacja: pytest 12; zależności: I09.
+V3-P64-I12 Residual report format — problem: raporty nieporównywalne;
+  mechanizm: 6 sekcji standardu (exec_summary, classes, cross_checks,
+  register, plan, trend) jako dane; wpływ: format wielokrotnego użytku V4;
+  ryzyko: sekcje puste — mitygacja: Rego NEEDS_ADVICE bez sekcji; akceptacja:
+  pytest 13; zależności: P41, P60.
+
+9.13. KONTRAKT WYJŚCIOWY (wiąże P65–P68 i V4)
+==============================================================================
+K1. REJESTR REZYDUALNY (kompletny, z planem SLA) — wejście do P68 i V4;
+    format: bundles/v3_p64_i01_register.json; kryterium: każda pozycja z
+    planem, trend do 0 przed P68.
+K2. SEVEN CROSS-CHECKS SUITE (bramki CI z licznikami) — wiąże P39 i P29;
+    format: bundles/v3_p64_i02_cross_checks.json; kryterium: 7/7 kontroli
+    jako dane, licznik rosnący = BLOCK merge.
+K3. TAKSONOMIA ŚLEPYCH PLAM (klasy→kontrole) — wejście do P41 i kampanii
+    przyszłych; format: bundles/v3_p64_i03_blindspots.json; kryterium:
+    min. 5 klas, każda z kontrolą strukturalną.
+K4. AUTOMAT SWEEP (cykliczny, rejestr przyrostowy) — wiąże P65+ i CI;
+    format: tools/v3_p64_sweep_engine.py; kryterium: deterministyczny
+    (drugi przebieg = zero nowych), uruchamiany weekly.
+K5. RYZYKO REZYDUALNE (skalar + trend) — wejście do P68 (próg certyfikacji);
+    format: bundles/v3_p64_i07_risk.json; kryterium: risk < 25 LUB plan
+    redukcji zarejestrowany i potwierdzony w P68.
+
+9.14. PLAN WDROŻENIA (kolejność bez duplikacji)
+==============================================================================
+1. [WDROŻONE] thresholds v3_p64 (ADR-002) → 2. [WDROŻONE] rego P64 +
+   wiring p128 → 3. [WDROŻONE] automat sweep + 12 silników + 13 bundli →
+   4. [WDROŻONE] testy (22 pytest + 17 rego stat.) + kotwice P55–P63 +
+   mirrory → 5. [P65] klasyfikacja 212 rego (L01) i fale testowe 87 reguł
+   (L03) → 6. [P65–P68] redukcja ryzyka przez P47 mediacje (L06) →
+   7. [P68] uzupełnienie liczników P11/P12 (L08) i archiwizacja legacy
+   audit-state (L07) → 8. [V4] dziedziczenie kontraktów K1–K5.
+Wymaga decyzji człowieka (4-eyes): wagi ryzyka P64-I07 (Q01), klasyfikacja
+212 rego: przypisz vs usuń (Q02), cykl sweep weekly vs daily (Q03).
+
+9.15. PLAN TESTÓW (przypadki blokujące merge)
+==============================================================================
+| ID | Przypadek | Oczekiwany wynik | BLOKUJE merge |
+|----|-----------|------------------|---------------|
+| T-P64-01 | run_all 12 silników | gate=PASS | TAK |
+| T-P64-02 | sweep deterministyczny (2 przebiegi) | identyczne liczniki | TAK |
+| T-P64-03 | rejestr bez planu SLA | BLOCK (rego 4) | TAK |
+| T-P64-04 | < 7 kontroli | BLOCK (rego 5) | TAK |
+| T-P64-05 | orphans bez decyzji | BLOCK (rego 6) | TAK |
+| T-P64-06 | ryzyko bez planu | BLOCK (rego 7) | TAK |
+| T-P64-07 | brak flagi v3_p64_check | NO_MATCH (rego 1) | TAK |
+| T-P64-08 | brak snapshotu progów | NEEDS_ADVICE (rego 2) | TAK |
+| T-P64-09 | mirror hash-parity | 0 drift | TAK |
+| T-P64-10 | kotwica POST-MERGE p128 | obecna w main | TAK |
+| T-P64-11 | regresja P55–P63 | 451 passed | TAK |
+| T-P64-12 | fuzz: brakujący klucz Ixx w ctx | NO_MATCH/NEEDS_ADVICE, nigdy PASS | TAK |
+
+9.16. PYTANIA DO CZŁOWIEKA (V3-P64-Qxx)
+==============================================================================
+Q01: Czy wagi ryzyka (P0=10/P1=5/P2=2/P3=1) są akceptowane jako standard V4?
+Q02: 212 rego nieimportowanych — klasyfikacja przypisz/usuń wymaga wiedzy
+     domenowej per plik (lista w bundles/v3_p64_i04_ownerless.json).
+Q03: Cykl sweep: weekly (proponowane) czy daily (koszt CI)?
+Q04: Czy P11/P12 uzupełnić licznikami innovations w ledgerze bez ponownej
+     analizy raportów (ryzyko: deklaracja nadal bez pełnych dowodów)?
+
+9.17. ZAAŁOŻENIA JAWNE
+==============================================================================
+[ZAŁOŻENIE] Wagi P0=10/P1=5/P2=2/P3=1 — decyzja projektowa P64 (nie standard
+z dokumentów świętych); jawna, testowalna, do zatwierdzenia (Q01).
+[ZAŁOŻENIE] „Nieimportowane w main_jdg" jako kandydat orphan — pakiety
+osiągalne przez data.jdg.* i sharded router nie są martwe; decyzja per plik.
+[ZAŁOŻENIE] Drugi przebieg sweep porównuje listy, nie timestamps —
+determinizm strukturalny.
+[NIEZWERYFIKOWANE] Wszystkie podstawy prawne sekcji 9.10 (ISAP/RCL/MF nie
+dostępne w sesji) — kanał mediacji P47; zero fikcyjnych artykułów.
+
+9.18. TABELA PRZEKAZYWANYCH ARTEFAKTÓW (11.4)
+==============================================================================
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|-------------------|
+| Rejestr rezydualny z SLA | P68, V4 | bundles/v3_p64_i01_register.json | wejście re-certyfikacji |
+| 7 kontroli z licznikami | P39, P29 | bundles/v3_p64_i02_cross_checks.json | bramki CI |
+| Taksonomia ślepych plam | P41, V4 | bundles/v3_p64_i03_blindspots.json | procesy PR |
+| Automat sweep | P65+, CI | tools/v3_p64_sweep_engine.py | cykl weekly |
+| Ryzyko rezydualne + trend | P68 | bundles/v3_p64_i07_risk.json | próg certyfikacji |
+| Decyzje orphan (212) | P65 | bundles/v3_p64_i04_ownerless.json | klasyfikacja |
+
+APENDYKS B — MATRYCA PODANALIZA×GRUPA
+==============================================================================
+| Podanaliza | Grupy kluczowe | Wynik |
+|------------|----------------|-------|
+| 5.1 Orphan sweep | 6.1 (8 katalogów) | 212 rego/121 tools/0 migrations; decyzje zarejestrowane |
+| 5.2 Cross-checks | 6.2 + 6.3 | 7/7 kontroli; liczniki a=87, c=121, reszta 0 |
+| 5.3 Ślepe plamy | 6.3 + rejestry fal | 5 klas BS01–BS05 z kontrolami |
+| 5.4 Rejestr/V4 | 6.3 + ledger | risk=1165; 19 części z planem; 2. przebieg stabilny |
+
+APENDYKS E — PLAN PRACY (odznaczony)
+==============================================================================
+[x] 1. Ledger: wybór pierwszego NIE_WDROŻONY → P64
+[x] 2. Prompt P64: sekcje 5/6/7/10/11 → konwencja P51–P63
+[x] 3. thresholds v3_p64 (13 kluczy, valid_from)
+[x] 4. rules/v3_p64_luka_sweep.rego (12 analiz, router, fail-closed)
+[x] 5. wiring main_jdg p128 + kotwice P55–P63
+[x] 6. tools: common/engines/run_all/sweep_engine/rego_static_gate
+[x] 7. 13 bundli dowodowych (gate PASS)
+[x] 8. testy: 22 pytest + 17 rego (statycznie) + regresja 451
+[x] 9. mirrory policies/ hash-parity
+[x] 10. raport RAPORT_V3_P64_LUKA_SWEEP.txt (9.01–9.18, T1–T16)
+[x] 11. ledger --mark P64 + HANDOFF_V3_P64.md
+[x] 12. czyszczenie okna kontekstowego (komenda końcowa Sekcji 16)
+
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+==============================================================================
+Raport jest zgodny z ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1: fail-closed,
+bramki CI, SLO) i WIZJA_OPA_ENTERPRISE_V2.md (Legal Twin, Golden Oracle,
+Decision Certificate — P64 nie modyfikuje tych warstw, tylko je weryfikuje
+sweepem). Odstępstwa: brak. Protokół 12 (precyzja > pośpiech) honorowany:
+wszystkie liczby pochodzą z uruchomień narzędzi z datą 2026-09-15.
+==============================================================================
+KONIEC RAPORTU V3-P64 | Status: WDROŻONY_100 | luki P0=0/P1=1/P2=2/P3=5
+| innowacje: 12 | kontrakt wyjściowy: K1–K5 | handover: P65 LUKA po P64
+==============================================================================

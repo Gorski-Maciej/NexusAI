@@ -129,6 +129,7 @@ import data.jdg.v3_p60_documentation_closure as v3_p60_documentation_closure
 import data.jdg.v3_p61_integrations_closure as v3_p61_integrations_closure
 import data.jdg.v3_p62_cashflow_closure as v3_p62_cashflow_closure
 import data.jdg.v3_p63_rbac_multitenant_closure as v3_p63_rbac_multitenant_closure
+import data.jdg.v3_p64_luka_sweep as v3_p64_luka_sweep
 import data.jdg.v3_p59_security_closure as v3_p59_security_closure
 import data.jdg.v3_p58_observability_closure as v3_p58_observability_closure
 import data.jdg.v3_p57_ingest_data as v3_p57_ingest_data
@@ -3402,6 +3403,17 @@ final_verdict_p127 = safe_merge(final_verdict_p126,
         fallback.decide
     ))
 
+# ── PAS 18ap: V3-P64 SWEEP LUK REZYDUALNYCH (sweep register with SLA, seven
+# cross-checks suite, blind-spot taxonomy, ownerless artifact detector,
+# second-pass stability check, declaration-vs-evidence register, residual risk
+# score, cross-check dashboard, sweep automation, handover to V4, sweep of
+# sweeps, residual report format). Fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p64_check nie jest true.
+final_verdict_p128 = safe_merge(final_verdict_p127,
+    safe_merge(v3_p64_luka_sweep.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -3434,7 +3446,7 @@ final_verdict_p127 = safe_merge(final_verdict_p126,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p127
+    final_verdict_p128
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

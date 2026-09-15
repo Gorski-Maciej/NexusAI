@@ -1,0 +1,32 @@
+{
+  "header": {
+    "schema": "jdg.v3_p64.sweep.audit.v1",
+    "part": "P64",
+    "slug": "LUKA_SWEEP",
+    "generated_at": null,
+    "analyses": {
+      "I07_risk": null
+    }
+  },
+  "result": {
+    "risk_score": 1165,
+    "max_risk": 25,
+    "reduction_plan_registered": true,
+    "weights": {
+      "p0": 10,
+      "p1": 5,
+      "p2": 2,
+      "p3": 1
+    },
+    "trend_by_part": {
+      "P45": 19,
+      "P50": 28,
+      "P55": 21,
+      "P60": 12,
+      "P63": 11
+    },
+    "plan": "redukcja przez domknięcie P0/P1 (P47 mediacje) i handover V4 — trend do 0 przed P68",
+    "evidence": "bundles/v3_campaign_ledger.json (luki per część, wagi P64)",
+    "provenance": "art. 56 KKS (redukcja ryzyka) [NIEZWERYFIKOWANE — ISAP]; prompt P64 Sekcja 10-I07"
+  }
+}

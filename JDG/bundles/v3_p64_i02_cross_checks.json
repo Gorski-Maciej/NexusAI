@@ -1,0 +1,43 @@
+{
+  "header": {
+    "schema": "jdg.v3_p64.sweep.audit.v1",
+    "part": "P64",
+    "slug": "LUKA_SWEEP",
+    "generated_at": null,
+    "analyses": {
+      "I02_cross_checks": null
+    }
+  },
+  "result": {
+    "checks_required": [
+      "rule_test",
+      "test_rule",
+      "tool_test",
+      "integration_contract",
+      "fail_closed",
+      "param_window",
+      "legal_basis"
+    ],
+    "checks_present": [
+      "rule_test",
+      "test_rule",
+      "tool_test",
+      "integration_contract",
+      "fail_closed",
+      "param_window",
+      "legal_basis"
+    ],
+    "missing_checks": [],
+    "counters_per_check": {
+      "rule_test": 87,
+      "test_rule": 0,
+      "tool_test": 121,
+      "integration_contract": 0,
+      "fail_closed": 0,
+      "param_window": 0,
+      "legal_basis": 5
+    },
+    "evidence": "tools/v3_p64_sweep_engine.py (liczniki) + tools/cross_package_conflict_detector.py + rules/main_jdg.rego",
+    "provenance": "art. 193a OP (staranność) [NIEZWERYFIKOWANE — ISAP]; prompt P64 Sekcja 10-I02"
+  }
+}

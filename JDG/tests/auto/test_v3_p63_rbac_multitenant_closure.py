@@ -166,8 +166,8 @@ def test_wiring_main_jdg():
     assert "final_verdict_p127 = safe_merge(final_verdict_p126" in main
     assert "v3_p63_rbac_multitenant_closure.decide" in main
     post = main[main.index("final_verdict_post_merge = safe_merge("):]
-    # Kotwica POST-MERGE przesunięta na p127 (wiring P63, kampania V3).
-    assert "final_verdict_p127" in post[:400]
+    # Kotwica POST-MERGE przesunięta na p128 (wiring P64, kampania V3).
+    assert "final_verdict_p128" in post[:400]
 
 
 # ═══ 16. Mirror: hash-parity policies/ ═══

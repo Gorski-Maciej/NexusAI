@@ -1,0 +1,19 @@
+{
+  "header": {
+    "schema": "jdg.v3_p64.sweep.audit.v1",
+    "part": "P64",
+    "slug": "LUKA_SWEEP",
+    "generated_at": null,
+    "analyses": {
+      "I09_automation": null
+    }
+  },
+  "result": {
+    "cyclic_sweep_present": true,
+    "tool": "tools/v3_p64_sweep_engine.py (--write)",
+    "runner": "tools/v3_p64_run_all.py (12 silników) + bramka w CI (P39)",
+    "workflow_present": true,
+    "incremental_register": "v3_p64_sweep_register.json",
+    "provenance": "art. 32 RODO (przegląd okresowy) [NIEZWERYFIKOWANE — ISAP]; prompt P64 Sekcja 10-I09"
+  }
+}

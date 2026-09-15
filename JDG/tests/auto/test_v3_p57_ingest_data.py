@@ -192,7 +192,7 @@ def test_wiring_main_jdg():
     assert "v3_p57_ingest_data.decide" in main
     # POST-MERGE kotwica przesunięta na p121
     post = main[main.index("final_verdict_post_merge = safe_merge("):]
-    assert "final_verdict_p127" in post[:300]  # kotwica p126→p127 (P63)
+    assert "final_verdict_p128" in post[:300]  # kotwica p127→p128 (P64)
 
 
 # ═══ 18. Spójność: sumy w bundlach = fixture w silnikach (jedno źródło) ═══

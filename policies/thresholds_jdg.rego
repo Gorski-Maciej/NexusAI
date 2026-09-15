@@ -4360,3 +4360,42 @@ v3_p63 := {
     "no_auto_post": true,
     "manual_review_required": true,
 }
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# V3-P64 SWEEP LUK REZYDUALNYCH — PRZEGLĄD CAŁOŚCIOWY (konwencja P51–P63;
+# 12 innowacji I01–I12 promptu P64 Sekcja 10). Progi z ADR-002 (P06), okno
+# temporalne valid_from (P05). Fail-closed: brak snapshotu = NEEDS_ADVICE,
+# brak flagi v3_p64_check = NO_MATCH, nigdy ciche AUTO_POST.
+# ═══════════════════════════════════════════════════════════════════════════════
+v3_p64 := {
+    "v3_p64_threshold_version": "luka-sweep-v3p64-2026.09",
+    "legal_basis_version": "lb-sweep-v3p64-2026.09",
+    "valid_from": "2026-01-01",                                # okno temporalne (P05)
+    "valid_to": null,
+    # I01: rejestr rezydualny — maks. otwartych pozycji (trend spadkowy do P68)
+    "v3_p64_residual_register_max": 0,
+    # I02: seven cross-checks — wszystkie kontrolki (a–g) wymagane jako bramki
+    "v3_p64_cross_checks_required": ["rule_test", "test_rule", "tool_test", "integration_contract", "fail_closed", "param_window", "legal_basis"],
+    # I03: taksonomia ślepych plam — min. klas ślepych plam z kontrolami
+    "v3_p64_blindspot_classes_min": 5,
+    # I04: detektor osieroconych artefaktów — maks. plików bez właściciela
+    "v3_p64_ownerless_max": 0,
+    # I05: drugi przebieg sweep — wymagane potwierdzenie stabilności rejestru
+    "v3_p64_second_pass_required": true,
+    # I06: rejestr deklaracji bez dowodu (P00–P67) — maks. deklaracji bez dowodu
+    "v3_p64_undocumented_claims_max": 0,
+    # I07: ryzyko rezydualne skalarne — próg certyfikacji (suma luk × wagi)
+    "v3_p64_residual_risk_max": 25,
+    # I08: dashboard 7 kontrol — kanały obserwowalności (P37/P58)
+    "v3_p64_dashboard_channels": ["ci_gate", "ledger_trend", "weekly_sweep", "alert_routing"],
+    # I09: automat cykliczny sweep — wymagane uruchomienie CI weekly
+    "v3_p64_cyclic_sweep_required": true,
+    # I10: handover V4 — rejestr rezydualny z kontraktami (zero utraty wiedzy)
+    "v3_p64_v4_handover_required": true,
+    # I11: sweep of sweeps — wszystkie katalogi repo objęte meta-kontrolą
+    "v3_p64_sweep_of_sweeps_min": 8,
+    # I12: standard raportu rezydualnego — sekcje wielokrotnego użytku (V4)
+    "v3_p64_residual_report_sections": ["exec_summary", "classes", "cross_checks", "register", "plan", "trend"],
+    "no_auto_post": true,
+    "manual_review_required": true,
+}

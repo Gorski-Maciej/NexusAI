@@ -1,0 +1,47 @@
+{
+  "header": {
+    "schema": "jdg.v3_p64.sweep.audit.v1",
+    "part": "P64",
+    "slug": "LUKA_SWEEP",
+    "generated_at": null,
+    "analyses": {
+      "I10_handover": null
+    }
+  },
+  "result": {
+    "handover_contracts": [
+      "C1",
+      "C2",
+      "C3",
+      "C4"
+    ],
+    "contracts_detail": [
+      {
+        "id": "C1",
+        "artefakt": "REJESTR REZYDUALNY (kompletny, z planem SLA)",
+        "odbiorca": "P68 re-certyfikacja + V4",
+        "format": "bundles/v3_p64_i01_register.json"
+      },
+      {
+        "id": "C2",
+        "artefakt": "Seven cross-checks suite (bramki CI z licznikami)",
+        "odbiorca": "P39 CI + P29 bramki",
+        "format": "bundles/v3_p64_i02_cross_checks.json"
+      },
+      {
+        "id": "C3",
+        "artefakt": "Taksonomia ślepych plam (klasy→kontrole)",
+        "odbiorca": "P41 procesy + kampanie przyszłe",
+        "format": "bundles/v3_p64_i03_blindspots.json"
+      },
+      {
+        "id": "C4",
+        "artefakt": "Automat sweep (cykliczny, rejestr przyrostowy)",
+        "odbiorca": "P65+ / CI weekly",
+        "format": "tools/v3_p64_sweep_engine.py"
+      }
+    ],
+    "required": true,
+    "provenance": "prompt P64 Sekcja 11.2 (kontrakt wyjściowy); prompt P64 Sekcja 10-I10"
+  }
+}

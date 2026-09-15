@@ -1,0 +1,50 @@
+{
+  "header": {
+    "schema": "jdg.v3_p64.sweep.audit.v1",
+    "part": "P64",
+    "slug": "LUKA_SWEEP",
+    "generated_at": null,
+    "analyses": {
+      "I03_blindspots": null
+    }
+  },
+  "result": {
+    "classes": [
+      "BS01",
+      "BS02",
+      "BS03",
+      "BS04",
+      "BS05"
+    ],
+    "classes_detail": [
+      {
+        "id": "BS01",
+        "klasa": "hotfix bez testu i review prawnego",
+        "kontrola": "bramka CI rule_test/tool_test (P39) + legal linter (P34-I03)"
+      },
+      {
+        "id": "BS02",
+        "klasa": "copy-paste reguły bez review (duplikat rule_id)",
+        "kontrola": "dead_rule_detector + cross_package_conflict_detector (P50)"
+      },
+      {
+        "id": "BS03",
+        "klasa": "deklaracja bez dowodu w raporcie/ledgerze",
+        "kontrola": "rejestr deklaracji-vs-dowody (P30) + innovations licznik (P64-I06)"
+      },
+      {
+        "id": "BS04",
+        "klasa": "mirror drift policies/ vs canonical",
+        "kontrola": "v3_mirror_delta + hash-parity w testach (P48)"
+      },
+      {
+        "id": "BS05",
+        "klasa": "plik bez właściciela (orphan) między falami",
+        "kontrola": "v3_p64_sweep_engine.py weekly + rejestr rezydualny (P64-I04/I09)"
+      }
+    ],
+    "min_classes": 5,
+    "evidence": "rejestr P64 (taksonomia z wywiadu fal P45–P63, raport RAPORT_V3_P64 sekcja 5.3)",
+    "provenance": "art. 32 RODO (przegląd okresowy) [NIEZWERYFIKOWANE — ISAP]; prompt P64 Sekcja 10-I03"
+  }
+}

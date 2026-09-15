@@ -1,0 +1,28 @@
+{
+  "header": {
+    "schema": "jdg.v3_p64.sweep.audit.v1",
+    "part": "P64",
+    "slug": "LUKA_SWEEP",
+    "generated_at": null,
+    "analyses": {
+      "I08_dashboard": null
+    }
+  },
+  "result": {
+    "channels_present": [
+      "ci_gate",
+      "ledger_trend",
+      "weekly_sweep",
+      "alert_routing"
+    ],
+    "channels_required": [
+      "ci_gate",
+      "ledger_trend",
+      "weekly_sweep",
+      "alert_routing"
+    ],
+    "missing": [],
+    "data_source": "bundles/v3_p64_sweep_register.json + v3_campaign_ledger.json (trend) + CI weekly (sweep) + alert routing P58",
+    "provenance": "P37 obserwowalność; P58 metryki/trend; prompt P64 Sekcja 10-I08"
+  }
+}

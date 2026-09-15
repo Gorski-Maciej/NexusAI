@@ -1,0 +1,31 @@
+{
+  "header": {
+    "schema": "jdg.v3_p64.sweep.audit.v1",
+    "part": "P64",
+    "slug": "LUKA_SWEEP",
+    "generated_at": null,
+    "analyses": {
+      "I06_declarations": null
+    }
+  },
+  "result": {
+    "undocumented_claims": [
+      {
+        "part": "P11",
+        "claim": "12 innowacji",
+        "evidence": "notes zawiera listę I01–I12, brak licznika dowodów w ledgerze"
+      },
+      {
+        "part": "P12",
+        "claim": "12 innowacji",
+        "evidence": "notes zawiera listę I01–I12, brak licznika dowodów w ledgerze"
+      }
+    ],
+    "claims_total": 2,
+    "max_claims": 0,
+    "evidence_plan_registered": true,
+    "plan": "P11/P12: liczby innowacji w notes ledgerposiadają listę I01–I12 — dowód = sekcje raportów; plan: uzupełnić innovations w ledgerze przy P68",
+    "evidence": "bundles/v3_campaign_ledger.json (status WDROŻONY_100 z innovations==0)",
+    "provenance": "art. 4 ust. 1 UoR [NIEZWERYFIKOWANE — ISAP]; P30 rejestr deklaracji; prompt P64 Sekcja 10-I06"
+  }
+}

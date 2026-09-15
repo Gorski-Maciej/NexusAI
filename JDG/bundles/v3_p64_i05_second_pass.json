@@ -1,0 +1,25 @@
+{
+  "header": {
+    "schema": "jdg.v3_p64.sweep.audit.v1",
+    "part": "P64",
+    "slug": "LUKA_SWEEP",
+    "generated_at": null,
+    "analyses": {
+      "I05_second_pass": null
+    }
+  },
+  "result": {
+    "executed": true,
+    "new_items": 0,
+    "first_pass": {
+      "orphans": 212,
+      "open_items": 58
+    },
+    "second_pass": {
+      "orphans": 212,
+      "open_items": 58
+    },
+    "stable": true,
+    "provenance": "prompt P64 Sekcja 10-I05 (I05); v3_p64_sweep_engine deterministyczny"
+  }
+}

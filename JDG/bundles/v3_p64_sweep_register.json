@@ -1,0 +1,1238 @@
+{
+  "header": {
+    "schema": "jdg.v3_p64.sweep.audit.v1",
+    "part": "P64",
+    "slug": "LUKA_SWEEP",
+    "generated_at": null,
+    "analyses": {
+      "sweep": null
+    }
+  },
+  "result": {
+    "schema": "jdg.v3_p64.sweep.v1",
+    "part": "P64",
+    "slug": "LUKA_SWEEP",
+    "generated_at": "2026-09-15T19:51:44.247876+00:00",
+    "I01_sweep_register": {
+      "open_items": [
+        {
+          "part": "P00",
+          "slug": "MAPA_KANONICZNA",
+          "luki": {
+            "p0": 5,
+            "p1": 6,
+            "p2": 0,
+            "p3": 0
+          },
+          "risk": 80,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P01",
+          "slug": "LEGAL_TWIN_LKG",
+          "luki": {
+            "p0": 4,
+            "p1": 6,
+            "p2": 0,
+            "p3": 0
+          },
+          "risk": 70,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P02",
+          "slug": "ORKIESTRATOR",
+          "luki": {
+            "p0": 3,
+            "p1": 6,
+            "p2": 0,
+            "p3": 0
+          },
+          "risk": 60,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P03",
+          "slug": "KONTRAKT_WERDYKTU",
+          "luki": {
+            "p0": 2,
+            "p1": 4,
+            "p2": 2,
+            "p3": 0
+          },
+          "risk": 44,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P04",
+          "slug": "INVARIANTY_RUNTIME",
+          "luki": {
+            "p0": 2,
+            "p1": 4,
+            "p2": 3,
+            "p3": 0
+          },
+          "risk": 46,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P05",
+          "slug": "TEMPORALNOSC",
+          "luki": {
+            "p0": 2,
+            "p1": 4,
+            "p2": 3,
+            "p3": 3
+          },
+          "risk": 49,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P06",
+          "slug": "PARAMETRY_DANE",
+          "luki": {
+            "p0": 1,
+            "p1": 6,
+            "p2": 5,
+            "p3": 2
+          },
+          "risk": 52,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P07",
+          "slug": "RULE_LIFECYCLE",
+          "luki": {
+            "p0": 1,
+            "p1": 7,
+            "p2": 6,
+            "p3": 2
+          },
+          "risk": 59,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P08",
+          "slug": "LAW_RADAR",
+          "luki": {
+            "p0": 0,
+            "p1": 6,
+            "p2": 5,
+            "p3": 1
+          },
+          "risk": 41,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P09",
+          "slug": "DECLARATIVE_CHANGE",
+          "luki": {
+            "p0": 1,
+            "p1": 7,
+            "p2": 5,
+            "p3": 0
+          },
+          "risk": 55,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P10",
+          "slug": "GOLDEN_ORACLE",
+          "luki": {
+            "p0": 1,
+            "p1": 6,
+            "p2": 2,
+            "p3": 0
+          },
+          "risk": 44,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P13",
+          "slug": "VAT_ODLICZENIA_MPP",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 5,
+            "p3": 3
+          },
+          "risk": 13,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P14",
+          "slug": "PIT_ULGI_OPTYMALIZACJA",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 0,
+            "p3": 3
+          },
+          "risk": 3,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P15",
+          "slug": "CROSSBORDER_TP",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 0,
+            "p3": 3
+          },
+          "risk": 3,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P16",
+          "slug": "KSEF_JPK",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 0,
+            "p3": 3
+          },
+          "risk": 3,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P19",
+          "slug": "PCC_AKCYZA_BDO",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 0,
+            "p3": 3
+          },
+          "risk": 3,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P20",
+          "slug": "KSIEGOWOSC_PKPIR_UOR",
+          "luki": {
+            "p0": 1,
+            "p1": 0,
+            "p2": 0,
+            "p3": 0
+          },
+          "risk": 10,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P23",
+          "slug": "PRAWO_PRZEDSIEBIORCOW",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 2,
+            "p3": 4
+          },
+          "risk": 8,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P24",
+          "slug": "PRACA_SWIADCZENIA",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 4,
+            "p3": 6
+          },
+          "risk": 14,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P25",
+          "slug": "KALENDARZ_ZBIORCZY",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 2,
+            "p3": 10
+          },
+          "risk": 14,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P26",
+          "slug": "ZUS_SKLADKI",
+          "luki": {
+            "p0": 0,
+            "p1": 1,
+            "p2": 1,
+            "p3": 2
+          },
+          "risk": 9,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P27",
+          "slug": "CFC_EXIT_MDG",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 0,
+            "p3": 2
+          },
+          "risk": 2,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P28",
+          "slug": "HYPER_PLAN45",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 0,
+            "p3": 3
+          },
+          "risk": 3,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P29",
+          "slug": "KAMPANIE_JAKOSCI_V3",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 0,
+            "p3": 2
+          },
+          "risk": 2,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P30",
+          "slug": "FALE_INNOWACJI_GATES",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 0,
+            "p3": 2
+          },
+          "risk": 2,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P31",
+          "slug": "ETAPY_AUDYTOW_12_28",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 0,
+            "p3": 2
+          },
+          "risk": 2,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P32",
+          "slug": "AUTOMATYZACJA_KSIEGOWOSCI",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 0,
+            "p3": 2
+          },
+          "risk": 2,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P33",
+          "slug": "NEURAL_MESH_AI",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 0,
+            "p3": 3
+          },
+          "risk": 3,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P34",
+          "slug": "WALIDACJA_NARZEDZIA",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 0,
+            "p3": 2
+          },
+          "risk": 2,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P35",
+          "slug": "AUDYTORY_DOMENOWE",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 0,
+            "p3": 2
+          },
+          "risk": 2,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P36",
+          "slug": "GENERATORY_MIGRATORY",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 1,
+            "p3": 2
+          },
+          "risk": 4,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P37",
+          "slug": "OBSERWOWALNOSC",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 2,
+            "p3": 2
+          },
+          "risk": 6,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P38",
+          "slug": "BUNDLE_DEPLOY",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 2,
+            "p3": 2
+          },
+          "risk": 6,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P39",
+          "slug": "TESTY_CI",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 3,
+            "p3": 2
+          },
+          "risk": 8,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P40",
+          "slug": "API_DANE_UI",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 3,
+            "p3": 5
+          },
+          "risk": 11,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P41",
+          "slug": "DOKUMENTACJA",
+          "luki": {
+            "p0": 0,
+            "p1": 1,
+            "p2": 4,
+            "p3": 3
+          },
+          "risk": 16,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P42",
+          "slug": "ENTERPRISE_RESZTA",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 3,
+            "p3": 5
+          },
+          "risk": 11,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P43",
+          "slug": "SECURITY_DR",
+          "luki": {
+            "p0": 0,
+            "p1": 0,
+            "p2": 2,
+            "p3": 5
+          },
+          "risk": 9,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P44",
+          "slug": "CERTYFIKACJA_FINALNA",
+          "luki": {
+            "p0": 0,
+            "p1": 1,
+            "p2": 0,
+            "p3": 0
+          },
+          "risk": 5,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P45",
+          "slug": "STUB_KILLER",
+          "luki": {
+            "p0": 0,
+            "p1": 2,
+            "p2": 4,
+            "p3": 1
+          },
+          "risk": 19,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P46",
+          "slug": "HARDCODE_ELIMINACJA",
+          "luki": {
+            "p0": 0,
+            "p1": 1,
+            "p2": 3,
+            "p3": 3
+          },
+          "risk": 14,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P47",
+          "slug": "LEGAL_BASIS_WERYFIKACJA",
+          "luki": {
+            "p0": 0,
+            "p1": 3,
+            "p2": 4,
+            "p3": 2
+          },
+          "risk": 25,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P48",
+          "slug": "MIRROR_SYNC",
+          "luki": {
+            "p0": 0,
+            "p1": 2,
+            "p2": 4,
+            "p3": 2
+          },
+          "risk": 20,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P49",
+          "slug": "FAIL_CLOSED_DOMKNIECIE",
+          "luki": {
+            "p0": 1,
+            "p1": 2,
+            "p2": 2,
+            "p3": 2
+          },
+          "risk": 26,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P50",
+          "slug": "DEAD_CODE_DUPLIKATY",
+          "luki": {
+            "p0": 1,
+            "p1": 2,
+            "p2": 3,
+            "p3": 2
+          },
+          "risk": 28,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P51",
+          "slug": "PUSTYNIE_PRAWNE",
+          "luki": {
+            "p0": 0,
+            "p1": 2,
+            "p2": 4,
+            "p3": 6
+          },
+          "risk": 24,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P52",
+          "slug": "GRANICE_GROSZOWE",
+          "luki": {
+            "p0": 0,
+            "p1": 3,
+            "p2": 5,
+            "p3": 4
+          },
+          "risk": 29,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P53",
+          "slug": "TEMPORALNOSC_DOMKNIECIE",
+          "luki": {
+            "p0": 0,
+            "p1": 3,
+            "p2": 4,
+            "p3": 3
+          },
+          "risk": 26,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P54",
+          "slug": "KSEF_JPK_DOMKNIECIE",
+          "luki": {
+            "p0": 0,
+            "p1": 2,
+            "p2": 4,
+            "p3": 3
+          },
+          "risk": 21,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P55",
+          "slug": "ZUS_DOMKNIECIE",
+          "luki": {
+            "p0": 0,
+            "p1": 2,
+            "p2": 4,
+            "p3": 3
+          },
+          "risk": 21,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P56",
+          "slug": "VAT_PIT_SZCZEGOLY",
+          "luki": {
+            "p0": 0,
+            "p1": 2,
+            "p2": 4,
+            "p3": 3
+          },
+          "risk": 21,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P57",
+          "slug": "INGEST_DANYCH",
+          "luki": {
+            "p0": 0,
+            "p1": 2,
+            "p2": 4,
+            "p3": 3
+          },
+          "risk": 21,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P58",
+          "slug": "OBSERWOWALNOSC_DOMKNIECIE",
+          "luki": {
+            "p0": 0,
+            "p1": 2,
+            "p2": 3,
+            "p3": 3
+          },
+          "risk": 19,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P59",
+          "slug": "SECURITY_DOMKNIECIE",
+          "luki": {
+            "p0": 0,
+            "p1": 2,
+            "p2": 3,
+            "p3": 2
+          },
+          "risk": 18,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P60",
+          "slug": "DOKUMENTACJA_DOMKNIECIE",
+          "luki": {
+            "p0": 0,
+            "p1": 1,
+            "p2": 2,
+            "p3": 3
+          },
+          "risk": 12,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P61",
+          "slug": "INTEGRACJE_DOMKNIECIE",
+          "luki": {
+            "p0": 0,
+            "p1": 3,
+            "p2": 3,
+            "p3": 2
+          },
+          "risk": 23,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P62",
+          "slug": "PRZEPYWY_PIENIEZNE",
+          "luki": {
+            "p0": 0,
+            "p1": 1,
+            "p2": 2,
+            "p3": 2
+          },
+          "risk": 11,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        },
+        {
+          "part": "P63",
+          "slug": "RBAC_MULTITENANT",
+          "luki": {
+            "p0": 0,
+            "p1": 1,
+            "p2": 2,
+            "p3": 2
+          },
+          "risk": 11,
+          "plan": "handover P65/V4 (kontrakt wyjściowy P64)"
+        }
+      ],
+      "sla_plan_registered": true
+    },
+    "I02_cross_checks": {
+      "checks_present": [
+        "rule_test",
+        "test_rule",
+        "tool_test",
+        "integration_contract",
+        "fail_closed",
+        "param_window",
+        "legal_basis"
+      ],
+      "counters": {
+        "rule_test": {
+          "missing": [
+            "rules/_business_lifecycle_rates.rego",
+            "rules/_compliance_rates.rego",
+            "rules/_crossborder_rates.rego",
+            "rules/_edge_cases_conflicts_rates.rego",
+            "rules/_helpers_jdg.rego",
+            "rules/_kks_micro_rates.rego",
+            "rules/_metadata_jdg.rego",
+            "rules/_pcc_local_excise_rates.rego",
+            "rules/_pkpir_rates.rego",
+            "rules/_uor_rates.rego",
+            "rules/business_lifecycle_etap18_v1.rego",
+            "rules/calendar_notifier_enterprise.rego",
+            "rules/conviction_checker_enterprise.rego",
+            "rules/cross_domain_red_team_etap27_v1.rego",
+            "rules/cross_jurisdiction_ruling_enterprise.rego",
+            "rules/crossborder_etap17_v1.rego",
+            "rules/decision_scoring_enterprise.rego",
+            "rules/edelivery_gateway_v2_enterprise.rego",
+            "rules/enterprise_ai_neural_etap23_v1.rego",
+            "rules/final_certification_etap28_v1.rego",
+            "rules/financial_hardship_scorer_enterprise.rego",
+            "rules/form_transition_simulator_enterprise.rego",
+            "rules/gaar_shield_enterprise.rego",
+            "rules/gtu_completeness_checker_enterprise.rego",
+            "rules/hyper_enterprise_contexts_etap22_v1.rego",
+            "rules/hyper_plan45_meta_enterprise.rego",
+            "rules/insurance_tracker_enterprise.rego",
+            "rules/interest_calculator_enterprise.rego",
+            "rules/international_expanded.rego",
+            "rules/judicial_trend_enterprise.rego",
+            "rules/kks_ord_etap16_v1.rego",
+            "rules/ksef_jpk_etap20_v1.rego",
+            "rules/legislative_impact_analyzer_enterprise.rego",
+            "rules/local_excise_etap19_v1.rego",
+            "rules/neural_mesh_v2_enterprise.rego",
+            "rules/nkup_enterprise_complete.rego",
+            "rules/ord_supplements_enterprise.rego",
+            "rules/p01_core_architecture_innovations_v8.rego",
+            "rules/p01_fundament_innovations_v9.rego",
+            "rules/p02_vat_macro_innovations_v8.rego",
+            "rules/p03_orchestrator_innovations_v9.rego",
+            "rules/p03_vat_micro_innovations_v8.rego",
+            "rules/p04_pit_macro_innovations_v8.rego",
+            "rules/p04_vat_macro_enterprise_v9.rego",
+            "rules/p05_pit_innovations_v8.rego",
+            "rules/p05_vat_micro_atomic_v9.rego",
+            "rules/p06_pit_macro_enterprise_v9.rego",
+            "rules/p06_pit_micro_innovations_v8.rego",
+            "rules/p07_pit_micro_atomic_v9.rego",
+            "rules/p07_zus_macro_innovations_v8.rego",
+            "rules/p08_zus_macro_enterprise_v9.rego",
+            "rules/p08_zus_micro_innovations_v8.rego",
+            "rules/p09_kks_macro_innovations_v8.rego",
+            "rules/p10_kks_micro_innovations_v8.rego",
+            "rules/p11_accounting_pkpir_innovations_v8.rego",
+            "rules/p12_uor_innovations_v8.rego",
+            "rules/p13_crossborder_innovations_v8.rego",
+            "rules/p14_compliance_innovations_v8.rego",
+            "rules/p15_pcc_local_excise_innovations_v8.rego",
+            "rules/p16_business_lifecycle_innovations_v8.rego",
+            "rules/p17_edge_conflicts_innovations_v8.rego",
+            "rules/p34_innovations_engine.rego",
+            "rules/p34_remaining_fixes.rego",
+            "rules/p35_cross_act_coherence.rego",
+            "rules/p35_innovations_engine.rego",
+            "rules/p35_system_gaps.rego",
+            "rules/penalty_ai_enterprise.rego",
+            "rules/pit_macro_etap10_innovations_v1.rego",
+            "rules/pit_micro_reliefs_etap11_v1.rego",
+            "rules/pkpir_etap14_v1.rego",
+            "rules/policies_mirror_sync_etap26_v1.rego",
+            "rules/regulated_compliance_enterprise.rego",
+            "rules/reliability_guarantee_enterprise.rego",
+            "rules/rodo_aml_bdo_hr_etap21_v1.rego",
+            "rules/rule_lifecycle_enterprise.rego",
+            "rules/sanctions_supplements_enterprise.rego",
+            "rules/solidarity_auto_calc_enterprise.rego",
+            "rules/strategic_roadmap_enterprise.rego",
+            "rules/tax_correspondence_engine_enterprise.rego",
+            "rules/tax_ruling_autodrafter_enterprise.rego",
+            "rules/tests_ci_quality_etap24_v1.rego",
+            "rules/tools_api_rulestore_bundles_etap25_v1.rego",
+            "rules/uor_etap15_v1.rego",
+            "rules/v3_p64_luka_sweep.rego",
+            "rules/wis_autorequester_enterprise.rego",
+            "rules/zus_core_etap12_v1.rego",
+            "rules/zus_micro_etap13_v1.rego"
+          ],
+          "count": 87
+        },
+        "tool_test": {
+          "missing": [
+            "tools/v3_p12_classification_confidence.py",
+            "tools/v3_p12_coverage_desert_map.py",
+            "tools/v3_p12_exemption_matrix.py",
+            "tools/v3_p12_gtu_semantic_classifier.py",
+            "tools/v3_p12_limit113_sentinel.py",
+            "tools/v3_p12_macro_micro_gate.py",
+            "tools/v3_p12_rate_change_corrector.py",
+            "tools/v3_p12_rate_golden_set.py",
+            "tools/v3_p12_rates_as_data_engine.py",
+            "tools/v3_p12_vat_invariants_pack.py",
+            "tools/v3_p12_vat_r_advisor.py",
+            "tools/v3_p12_waiver_tracker.py",
+            "tools/v3_p25_common.py",
+            "tools/v3_p27_common.py",
+            "tools/v3_p27_generate_tools.py",
+            "tools/v3_p28_common.py",
+            "tools/v3_p28_generate_tools.py",
+            "tools/v3_p29_common.py",
+            "tools/v3_p29_enterprise_reports_generate.py",
+            "tools/v3_p29_generate_tools.py",
+            "tools/v3_p30_common.py",
+            "tools/v3_p30_generate_tools.py",
+            "tools/v3_p31_common.py",
+            "tools/v3_p31_generate_tools.py",
+            "tools/v3_p32_common.py",
+            "tools/v3_p32_generate_tools.py",
+            "tools/v3_p33_common.py",
+            "tools/v3_p34_common.py",
+            "tools/v3_p35_common.py",
+            "tools/v3_p36_common.py",
+            "tools/v3_p36_transform_tool.py",
+            "tools/v3_p37_common.py",
+            "tools/v3_p38_common.py",
+            "tools/v3_p39_common.py",
+            "tools/v3_p40_common.py",
+            "tools/v3_p41_common.py",
+            "tools/v3_p42_common.py",
+            "tools/v3_p43_common.py",
+            "tools/v3_p44_common.py",
+            "tools/v3_p45_common.py",
+            "tools/v3_p47_acts_heatmap.py",
+            "tools/v3_p47_citation_linter.py",
+            "tools/v3_p47_common.py",
+            "tools/v3_p47_completeness_score.py",
+            "tools/v3_p47_fictional_basis.py",
+            "tools/v3_p47_gate.py",
+            "tools/v3_p47_isap_anchors.py",
+            "tools/v3_p47_isap_diff_watch.py",
+            "tools/v3_p47_legal_basis_census.py",
+            "tools/v3_p47_mediation_workflow.py",
+            "tools/v3_p47_recheck_scheduler.py",
+            "tools/v3_p47_style_guide.py",
+            "tools/v3_p48_case_study.py",
+            "tools/v3_p48_common.py",
+            "tools/v3_p48_drift_heatmap.py",
+            "tools/v3_p48_golden_replay_mirror.py",
+            "tools/v3_p48_lifecycle_alignment.py",
+            "tools/v3_p48_mirror_build_output.py",
+            "tools/v3_p48_mirror_ownership.py",
+            "tools/v3_p48_mirror_test_parity.py",
+            "tools/v3_p48_one_truth_attestation.py",
+            "tools/v3_p48_overlay_declaration.py",
+            "tools/v3_p48_post_deploy_check.py",
+            "tools/v3_p48_rule_registry_register.py",
+            "tools/v3_p48_semantic_ast_diff.py",
+            "tools/v3_p48_sync_in_pr.py",
+            "tools/v3_p48_sync_mirror_files.py",
+            "tools/v3_p49_ceiling_reason.py",
+            "tools/v3_p49_chaos_input.py",
+            "tools/v3_p49_circuit_breaker.py",
+            "tools/v3_p49_common.py",
+            "tools/v3_p49_export_replay.py",
+            "tools/v3_p49_fail_open_scanner.py",
+            "tools/v3_p49_invariant_pack.py",
+            "tools/v3_p49_missing_field_generator.py",
+            "tools/v3_p49_score_canary_ui.py",
+            "tools/v3_p50_burden_metric.py",
+            "tools/v3_p50_common.py",
+            "tools/v3_p50_consolidation_ledger.py",
+            "tools/v3_p50_contradictions.py",
+            "tools/v3_p50_dead_tool_archive.py",
+            "tools/v3_p50_duplicate_detector.py",
+            "tools/v3_p50_generator_prevention.py",
+            "tools/v3_p50_ghost_docs.py",
+            "tools/v3_p50_intentful_variants.py",
+            "tools/v3_p50_reachability.py",
+            "tools/v3_p50_ruleid_uniqueness.py",
+            "tools/v3_p50_run_all.py",
+            "tools/v3_p50_single_source_register.py",
+            "tools/v3_p51_attestation.py",
+            "tools/v3_p51_chain_metric.py",
+            "tools/v3_p51_common.py",
+            "tools/v3_p51_desert_cards.py",
+            "tools/v3_p51_desert_heatmap.py",
+            "tools/v3_p51_desert_register.py",
+            "tools/v3_p51_law_radar_block.py",
+            "tools/v3_p51_quarterly_goals.py",
+            "tools/v3_p51_run_all.py",
+            "tools/v3_p51_semi_auto_drafting.py",
+            "tools/v3_p51_systemic_sweep.py",
+            "tools/v3_p51_testless_sweep.py",
+            "tools/v3_p51_vacancy_bridge.py",
+            "tools/v3_p52_common.py",
+            "tools/v3_p52_run_all.py",
+            "tools/v3_p52_standards_register.py",
+            "tools/v3_p53_common.py",
+            "tools/v3_p53_engines.py",
+            "tools/v3_p54_common.py",
+            "tools/v3_p54_engines.py",
+            "tools/v3_p55_common.py",
+            "tools/v3_p56_common.py",
+            "tools/v3_p56_engines.py",
+            "tools/v3_p57_common.py",
+            "tools/v3_p59_engines.py",
+            "tools/v3_p60_common.py",
+            "tools/v3_p60_engines.py",
+            "tools/v3_p61_common.py",
+            "tools/v3_p61_engines.py",
+            "tools/v3_p64_common.py",
+            "tools/v3_parts_data_a.py",
+            "tools/v3_parts_data_b.py"
+          ],
+          "count": 121
+        },
+        "migration_code": {
+          "missing": [
+            "migrations/005_jdg_v10_legal_sources.sql",
+            "migrations/006_jdg_v11_legal_traceability.sql",
+            "migrations/011_jdg_v16_vat_micro.sql",
+            "migrations/012_jdg_v17_vat_micro_special.sql"
+          ],
+          "count": 4
+        }
+      }
+    },
+    "I04_ownerless": {
+      "orphans": [
+        "rules/_business_lifecycle_rates.rego:not-imported-by-main",
+        "rules/_compliance_rates.rego:not-imported-by-main",
+        "rules/_crossborder_rates.rego:not-imported-by-main",
+        "rules/_edge_cases_conflicts_rates.rego:not-imported-by-main",
+        "rules/_helpers_jdg.rego:not-imported-by-main",
+        "rules/_kks_micro_rates.rego:not-imported-by-main",
+        "rules/_metadata_jdg.rego:not-imported-by-main",
+        "rules/_pcc_local_excise_rates.rego:not-imported-by-main",
+        "rules/_pkpir_rates.rego:not-imported-by-main",
+        "rules/_uor_rates.rego:not-imported-by-main",
+        "rules/adaptive_trust_scoring_enterprise.rego:not-imported-by-main",
+        "rules/annual_declaration_enterprise.rego:not-imported-by-main",
+        "rules/audit_defense_enterprise.rego:not-imported-by-main",
+        "rules/banking_automation_enterprise.rego:not-imported-by-main",
+        "rules/business_lifecycle_etap18_v1.rego:not-imported-by-main",
+        "rules/calendar_notifier_enterprise.rego:not-imported-by-main",
+        "rules/cashflow_tax_predictor_enterprise.rego:not-imported-by-main",
+        "rules/conflict_declaration_enterprise.rego:not-imported-by-main",
+        "rules/conviction_checker_enterprise.rego:not-imported-by-main",
+        "rules/cross_declaration_validator_enterprise.rego:not-imported-by-main",
+        "rules/cross_domain_intelligence_enterprise.rego:not-imported-by-main",
+        "rules/cross_domain_red_team_etap27_v1.rego:not-imported-by-main",
+        "rules/cross_jurisdiction_ruling_enterprise.rego:not-imported-by-main",
+        "rules/crossborder_etap17_v1.rego:not-imported-by-main",
+        "rules/deadline_monitor_enterprise.rego:not-imported-by-main",
+        "rules/decision_composer_enterprise.rego:not-imported-by-main",
+        "rules/decision_core_completeness_enterprise.rego:not-imported-by-main",
+        "rules/decision_scoring_enterprise.rego:not-imported-by-main",
+        "rules/defense_builder_enterprise.rego:not-imported-by-main",
+        "rules/edelivery_gateway_enterprise.rego:not-imported-by-main",
+        "rules/edelivery_gateway_v2_enterprise.rego:not-imported-by-main",
+        "rules/enterprise_ai_neural_etap23_v1.rego:not-imported-by-main",
+        "rules/epuap_enterprise.rego:not-imported-by-main",
+        "rules/esig_auto_applicator_enterprise.rego:not-imported-by-main",
+        "rules/exit_tax_mdr_enterprise.rego:not-imported-by-main",
+        "rules/final_certification_etap28_v1.rego:not-imported-by-main",
+        "rules/financial_hardship_scorer_enterprise.rego:not-imported-by-main",
+        "rules/form_optimizer_enterprise.rego:not-imported-by-main",
+        "rules/form_transition_simulator_enterprise.rego:not-imported-by-main",
+        "rules/gaar_shield_enterprise.rego:not-imported-by-main",
+        "rules/gtu_completeness_checker_enterprise.rego:not-imported-by-main",
+        "rules/hyper_enterprise_contexts_etap22_v1.rego:not-imported-by-main",
+        "rules/hyper_plan45_meta_enterprise.rego:not-imported-by-main",
+        "rules/insurance_tracker_enterprise.rego:not-imported-by-main",
+        "rules/interest_calculator_enterprise.rego:not-imported-by-main",
+        "rules/international_expanded.rego:not-imported-by-main",
+        "rules/jpk_corrections_workflow_enterprise.rego:not-imported-by-main",
+        "rules/jpk_kr_st_generator_enterprise.rego:not-imported-by-main",
+        "rules/jpk_v7_autogen_enterprise.rego:not-imported-by-main",
+        "rules/judicial_interpretations_enterprise.rego:not-imported-by-main",
+        "rules/judicial_trend_enterprise.rego:not-imported-by-main",
+        "rules/kks_ord_etap16_v1.rego:not-imported-by-main",
+        "rules/ksef_firewall_enterprise.rego:not-imported-by-main",
+        "rules/ksef_innovations_enterprise.rego:not-imported-by-main",
+        "rules/ksef_jpk_etap20_v1.rego:not-imported-by-main",
+        "rules/ksef_offline_queue_enterprise.rego:not-imported-by-main",
+        "rules/ksef_outbox_enterprise.rego:not-imported-by-main",
+        "rules/ksef_receipt_digest_enterprise.rego:not-imported-by-main",
+        "rules/ksef_resilience_enterprise.rego:not-imported-by-main",
+        "rules/ksef_sanction_monitor_enterprise.rego:not-imported-by-main",
+        "rules/ksef_sandbox_harness_enterprise.rego:not-imported-by-main",
+        "rules/ksef_upo_tracker_enterprise.rego:not-imported-by-main",
+        "rules/legislative_impact_analyzer_enterprise.rego:not-imported-by-main",
+        "rules/legislative_monitor_enterprise.rego:not-imported-by-main",
+        "rules/lifecycle_manager_enterprise.rego:not-imported-by-main",
+        "rules/local_excise_etap19_v1.rego:not-imported-by-main",
+        "rules/mdr_dac6_enterprise.rego:not-imported-by-main",
+        "rules/neural_mesh_v2_enterprise.rego:not-imported-by-main",
+        "rules/neural_rule_mesh_enterprise.rego:not-imported-by-main",
+        "rules/nkup_enterprise_complete.rego:not-imported-by-main",
+        "rules/ord_supplements_enterprise.rego:not-imported-by-main",
+        "rules/overpayment_auto_claimer_enterprise.rego:not-imported-by-main",
+        "rules/p00_legal_coverage_closure.rego:not-imported-by-main",
+        "rules/p01_core_architecture_innovations_v8.rego:not-imported-by-main",
+        "rules/p01_fundament_innovations_v9.rego:not-imported-by-main",
+        "rules/p02_decision_core_innovations_v9.rego:not-imported-by-main",
+        "rules/p02_vat_macro_innovations_v8.rego:not-imported-by-main",
+        "rules/p03_orchestrator_innovations_v9.rego:not-imported-by-main",
+        "rules/p03_vat_macro_innovations_v9.rego:not-imported-by-main",
+        "rules/p03_vat_micro_innovations_v8.rego:not-imported-by-main",
+        "rules/p04_pit_macro_innovations_v8.rego:not-imported-by-main",
+        "rules/p04_vat_macro_enterprise_v9.rego:not-imported-by-main",
+        "rules/p04_vat_micro_innovations_v9.rego:not-imported-by-main",
+        "rules/p05_pit_innovations_v8.rego:not-imported-by-main",
+        "rules/p05_pit_macro_innovations_v9.rego:not-imported-by-main",
+        "rules/p05_vat_micro_atomic_v9.rego:not-imported-by-main",
+        "rules/p06_pit_macro_enterprise_v9.rego:not-imported-by-main",
+        "rules/p06_pit_micro_innovations_v8.rego:not-imported-by-main",
+        "rules/p06_pit_micro_innovations_v9.rego:not-imported-by-main",
+        "rules/p07_pit_micro_atomic_v9.rego:not-imported-by-main",
+        "rules/p07_zus_macro_innovations_v8.rego:not-imported-by-main",
+        "rules/p07_zus_macro_innovations_v9.rego:not-imported-by-main",
+        "rules/p08_zus_macro_enterprise_v9.rego:not-imported-by-main",
+        "rules/p08_zus_micro_innovations_v8.rego:not-imported-by-main",
+        "rules/p08_zus_micro_innovations_v9.rego:not-imported-by-main",
+        "rules/p09_kks_macro_innovations_v8.rego:not-imported-by-main",
+        "rules/p09_ksiegowosc_pkpir_uor_innovations_v9.rego:not-imported-by-main",
+        "rules/p10_kks_innovations_v9.rego:not-imported-by-main",
+        "rules/p10_kks_micro_innovations_v8.rego:not-imported-by-main",
+        "rules/p11_accounting_pkpir_innovations_v8.rego:not-imported-by-main",
+        "rules/p11_ordynacja_podatkowa_innovations_v9.rego:not-imported-by-main",
+        "rules/p12_crossborder_innovations_v9.rego:not-imported-by-main",
+        "rules/p12_uor_innovations_v8.rego:not-imported-by-main",
+        "rules/p13_crossborder_innovations_v8.rego:not-imported-by-main",
+        "rules/p13_ryczalt_cykl_zycia_innovations_v9.rego:not-imported-by-main",
+        "rules/p14_compliance_innovations_v8.rego:not-imported-by-main",
+        "rules/p14_pcc_lokalne_akcyza_innovations_v9.rego:not-imported-by-main",
+        "rules/p15_pcc_local_excise_innovations_v8.rego:not-imported-by-main",
+        "rules/p15_srodowisko_bdo_innovations_v9.rego:not-imported-by-main",
+        "rules/p16_autoform_generator_enterprise.rego:not-imported-by-main",
+        "rules/p16_business_lifecycle_innovations_v8.rego:not-imported-by-main",
+        "rules/p16_enhanced_sca_enterprise.rego:not-imported-by-main",
+        "rules/p16_entrepreneur_test_enterprise.rego:not-imported-by-main",
+        "rules/p16_estonian_cit_enterprise.rego:not-imported-by-main",
+        "rules/p16_rodo_aml_security_innovations_v9.rego:not-imported-by-main",
+        "rules/p17_edge_conflicts_innovations_v8.rego:not-imported-by-main",
+        "rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego:not-imported-by-main",
+        "rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego:not-imported-by-main",
+        "rules/p19_hr_swiadczenia_innovations_v9.rego:not-imported-by-main",
+        "rules/p20_neural_mesh_innovations_v9.rego:not-imported-by-main",
+        "rules/p21_innovations_enterprise.rego:not-imported-by-main",
+        "rules/p21_opa_system_innovations_v9.rego:not-imported-by-main",
+        "rules/p22_innovations_enterprise.rego:not-imported-by-main",
+        "rules/p22_validation_tools_innovations_v9.rego:not-imported-by-main",
+        "rules/p23_innovations_enterprise.rego:not-imported-by-main",
+        "rules/p23_test_rego_ci_innovations_v9.rego:not-imported-by-main",
+        "rules/p24_audyt_kompletny_innovations_v9.rego:not-imported-by-main",
+        "rules/p24_innovations_enterprise.rego:not-imported-by-main",
+        "rules/p34_innovations_engine.rego:not-imported-by-main",
+        "rules/p34_remaining_fixes.rego:not-imported-by-main",
+        "rules/p35_cross_act_coherence.rego:not-imported-by-main",
+        "rules/p35_innovations_engine.rego:not-imported-by-main",
+        "rules/p35_system_gaps.rego:not-imported-by-main",
+        "rules/penalty_ai_enterprise.rego:not-imported-by-main",
+        "rules/pit_macro_etap10_innovations_v1.rego:not-imported-by-main",
+        "rules/pit_micro_reliefs_etap11_v1.rego:not-imported-by-main",
+        "rules/pkpir_etap14_v1.rego:not-imported-by-main",
+        "rules/poa_manager_enterprise.rego:not-imported-by-main",
+        "rules/policies_mirror_sync_etap26_v1.rego:not-imported-by-main",
+        "rules/ppk_pfron_enterprise.rego:not-imported-by-main",
+        "rules/proceeding_tracker_enterprise.rego:not-imported-by-main",
+        "rules/r01_orchestrator_core_innovations_v9.rego:not-imported-by-main",
+        "rules/r02_vat_core_innovations_v9.rego:not-imported-by-main",
+        "rules/r03_vat_micro_innovations_v9.rego:not-imported-by-main",
+        "rules/r04_pit_core_innovations_v9.rego:not-imported-by-main",
+        "rules/r05_pit_enterprise_innovations_v9.rego:not-imported-by-main",
+        "rules/r06_zus_innovations_v9.rego:not-imported-by-main",
+        "rules/r07_kks_innovations_v9.rego:not-imported-by-main",
+        "rules/r08_ordynacja_obrona_innovations_v9.rego:not-imported-by-main",
+        "rules/r09_ksiegowosc_pkpir_uor_innovations_v9.rego:not-imported-by-main",
+        "rules/r10_crossborder_innovations_v9.rego:not-imported-by-main",
+        "rules/r11_pcc_lokalne_akcyza_innovations_v9.rego:not-imported-by-main",
+        "rules/r12_ryczalt_cykl_zycia_innovations_v9.rego:not-imported-by-main",
+        "rules/r13_hyper_konteksty_innovations_v9.rego:not-imported-by-main",
+        "rules/r14_rodo_aml_bdo_innovations_v9.rego:not-imported-by-main",
+        "rules/r15_ksef_jpk_edeklaracje_innovations_v9.rego:not-imported-by-main",
+        "rules/r16_system_opa_innovations_v9.rego:not-imported-by-main",
+        "rules/r17_enterprise_ai_innovations_v9.rego:not-imported-by-main",
+        "rules/regulated_compliance_enterprise.rego:not-imported-by-main",
+        "rules/reliability_guarantee_enterprise.rego:not-imported-by-main",
+        "rules/rodo_aml_bdo_hr_etap21_v1.rego:not-imported-by-main",
+        "rules/rule_lifecycle_enterprise.rego:not-imported-by-main",
+        "rules/sanctions_optimization_enterprise.rego:not-imported-by-main",
+        "rules/sanctions_supplements_enterprise.rego:not-imported-by-main",
+        "rules/solidarity_auto_calc_enterprise.rego:not-imported-by-main",
+        "rules/statute_of_limitations.rego:not-imported-by-main",
+        "rules/strategic_advisor_enterprise.rego:not-imported-by-main",
+        "rules/strategic_roadmap_enterprise.rego:not-imported-by-main",
+        "rules/tax_authority_interaction_enterprise.rego:not-imported-by-main",
+        "rules/tax_correspondence_engine_enterprise.rego:not-imported-by-main",
+        "rules/tax_optimization_enterprise.rego:not-imported-by-main",
+        "rules/tax_ruling_autodrafter_enterprise.rego:not-imported-by-main",
+        "rules/tests_ci_quality_etap24_v1.rego:not-imported-by-main",
+        "rules/tools_api_rulestore_bundles_etap25_v1.rego:not-imported-by-main",
+        "rules/uor_etap15_v1.rego:not-imported-by-main",
+        "rules/v3_p13_vat_deductions_enterprise.rego:not-imported-by-main",
+        "rules/v3_p14_pit_reliefs_enterprise.rego:not-imported-by-main",
+        "rules/v3_p15_crossborder_enterprise.rego:not-imported-by-main",
+        "rules/v3_p16_ksef_jpk_enterprise.rego:not-imported-by-main",
+        "rules/v3_p17_ordynacja_obrona_enterprise.rego:not-imported-by-main",
+        "rules/v3_p18_ryczalt_enterprise.rego:not-imported-by-main",
+        "rules/v3_p19_pcc_akcyza_bdo_enterprise.rego:not-imported-by-main",
+        "rules/v3_p20_ksiegowosc_pkpir_uor_enterprise.rego:not-imported-by-main",
+        "rules/v3_p25_kalendarz_zbiorczy_enterprise.rego:not-imported-by-main",
+        "rules/v3_p26_zus_skladki_enterprise.rego:not-imported-by-main",
+        "rules/v3_p27_cfc_exit_mdr_enterprise.rego:not-imported-by-main",
+        "rules/v3_p28_hyper_plan45_enterprise.rego:not-imported-by-main",
+        "rules/v3_p29_quality_campaigns_enterprise.rego:not-imported-by-main",
+        "rules/v3_p30_innovation_waves_enterprise.rego:not-imported-by-main",
+        "rules/v3_p31_audit_stages_enterprise.rego:not-imported-by-main",
+        "rules/v3_p32_ksiegowosc_automation_enterprise.rego:not-imported-by-main",
+        "rules/v3_p33_neural_mesh_ai_enterprise.rego:not-imported-by-main",
+        "rules/v3_p34_walidacja_narzedzia_enterprise.rego:not-imported-by-main",
+        "rules/v3_p35_audyutory_domenowe_enterprise.rego:not-imported-by-main",
+        "rules/v3_p36_generatory_migratory_enterprise.rego:not-imported-by-main",
+        "rules/v3_p37_obserwowalnosc_enterprise.rego:not-imported-by-main",
+        "rules/v3_p38_bundle_deploy_enterprise.rego:not-imported-by-main",
+        "rules/v3_p39_testy_ci_enterprise.rego:not-imported-by-main",
+        "rules/v3_p40_api_dane_ui_enterprise.rego:not-imported-by-main",
+        "rules/v3_p41_dokumentacja_enterprise.rego:not-imported-by-main",
+        "rules/v3_p43_security_dr_enterprise.rego:not-imported-by-main",
+        "rules/v3_p45_conversions.rego:not-imported-by-main",
+        "rules/vat_cashflow_predictor_enterprise.rego:not-imported-by-main",
+        "rules/vat_deductions_corrections_enterprise.rego:not-imported-by-main",
+        "rules/vat_fraud_detection_enterprise.rego:not-imported-by-main",
+        "rules/vat_mpp_split_payment_enterprise.rego:not-imported-by-main",
+        "rules/vat_rates_exemptions_audit_enterprise.rego:not-imported-by-main",
+        "rules/vat_substantive_complete_enterprise.rego:not-imported-by-main",
+        "rules/wis_api_enterprise.rego:not-imported-by-main",
+        "rules/wis_autorequester_enterprise.rego:not-imported-by-main",
+        "rules/zus_core_etap12_v1.rego:not-imported-by-main",
+        "rules/zus_micro_etap13_v1.rego:not-imported-by-main"
+      ],
+      "decisions_registered": true,
+      "scan_dirs": [
+        "rules"
+      ],
+      "decision_rule": "przypisz (mirror/legacy bundle) lub usuń — zero plików bez ścieżki"
+    },
+    "I05_second_pass": {
+      "executed": true,
+      "new_items": 0,
+      "note": "drugi przebieg sweep_engine: rejestry ownerless/register/meta stabilne (zero nowych pozycji)"
+    },
+    "I06_declarations": {
+      "undocumented_claims": [
+        {
+          "part": "P11",
+          "claim": "12 innowacji",
+          "evidence": "notes zawiera listę I01–I12, brak licznika dowodów w ledgerze"
+        },
+        {
+          "part": "P12",
+          "claim": "12 innowacji",
+          "evidence": "notes zawiera listę I01–I12, brak licznika dowodów w ledgerze"
+        }
+      ],
+      "evidence_plan_registered": true
+    },
+    "I07_risk": {
+      "risk_score": 1165,
+      "reduction_plan_registered": true
+    },
+    "I08_dashboard": {
+      "channels_present": [
+        "ci_gate",
+        "ledger_trend",
+        "weekly_sweep",
+        "alert_routing"
+      ]
+    },
+    "I09_automation": {
+      "cyclic_sweep_present": true,
+      "tool": "tools/v3_p64_sweep_engine.py"
+    },
+    "I11_meta": {
+      "swept_dirs": [
+        "rules",
+        "tools",
+        "bundles",
+        "migrations",
+        "tests",
+        "docs",
+        "api",
+        "policies"
+      ],
+      "unswept_dirs": []
+    },
+    "I12_report": {
+      "sections_present": [
+        "exec_summary",
+        "classes",
+        "cross_checks",
+        "register",
+        "plan",
+        "trend"
+      ]
+    }
+  }
+}

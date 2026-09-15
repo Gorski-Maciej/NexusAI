@@ -1,0 +1,28 @@
+{
+  "header": {
+    "schema": "jdg.v3_p64.sweep.audit.v1",
+    "part": "P64",
+    "slug": "LUKA_SWEEP",
+    "generated_at": null,
+    "analyses": {
+      "I11_meta": null
+    }
+  },
+  "result": {
+    "swept_dirs": [
+      "rules",
+      "tools",
+      "bundles",
+      "migrations",
+      "tests",
+      "docs",
+      "api",
+      "policies"
+    ],
+    "unswept_dirs": [],
+    "min_dirs": 8,
+    "coverage_tools_present": true,
+    "evidence": "tools/v3_p64_sweep_engine.py (meta-scan SWEEP_DIRS + detektory 6.2)",
+    "provenance": "art. 109e VAT (kompletność ewidencji) [NIEZWERYFIKOWANE — ISAP]; prompt P64 Sekcja 10-I11"
+  }
+}

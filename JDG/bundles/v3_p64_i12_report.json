@@ -1,0 +1,32 @@
+{
+  "header": {
+    "schema": "jdg.v3_p64.sweep.audit.v1",
+    "part": "P64",
+    "slug": "LUKA_SWEEP",
+    "generated_at": null,
+    "analyses": {
+      "I12_report": null
+    }
+  },
+  "result": {
+    "sections_present": [
+      "exec_summary",
+      "classes",
+      "cross_checks",
+      "register",
+      "plan",
+      "trend"
+    ],
+    "sections_required": [
+      "exec_summary",
+      "classes",
+      "cross_checks",
+      "register",
+      "plan",
+      "trend"
+    ],
+    "missing": [],
+    "standard": "RAPORT_V3_P64 sekcje 9.01–9.17 + T1–T12 — format wielokrotnego użytku V4",
+    "provenance": "prompt P64 Sekcja 9.16 (T1–T12); prompt P64 Sekcja 10-I12"
+  }
+}
