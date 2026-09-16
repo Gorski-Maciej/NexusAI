@@ -1,0 +1,20 @@
+{
+  "header": {
+    "schema": "jdg.v3_p65.toolforge.audit.v1",
+    "part": "P65",
+    "slug": "NOWE_NARZEDZIA",
+    "generated_at": null,
+    "analyses": {
+      "I12_docs": "engine"
+    }
+  },
+  "result": {
+    "doc_binding_present": true,
+    "drift_detected": true,
+    "tools_documented": 5,
+    "content_hash": "86a8ff0cb40e2c21",
+    "output_doc": "docs/TOOLS_P65_GENERATED.md",
+    "evidence": "tools/v3_p65_doc_generator.py (AST docstring + argparse → docs; binding P60)",
+    "provenance": "P60 binding docs↔kod; prompt P65 Sekcja 10-I12"
+  }
+}

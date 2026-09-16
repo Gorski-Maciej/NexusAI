@@ -1,0 +1,63 @@
+{
+  "header": {
+    "schema": "jdg.v3_p65.toolforge.audit.v1",
+    "part": "P65",
+    "slug": "NOWE_NARZEDZIA",
+    "generated_at": null,
+    "analyses": {
+      "I11_adoption": "engine"
+    }
+  },
+  "result": {
+    "cycle": "weekly",
+    "unused_tools_without_decision": 0,
+    "tools_used": 6,
+    "tools_total": 6,
+    "rows": [
+      {
+        "tool": "v3_p65_tool_contract.py",
+        "exists": true,
+        "used_in_ci_or_docs": true,
+        "used_in_tests": false,
+        "decision": "używane"
+      },
+      {
+        "tool": "v3_p65_semantic_diff.py",
+        "exists": true,
+        "used_in_ci_or_docs": true,
+        "used_in_tests": false,
+        "decision": "używane"
+      },
+      {
+        "tool": "v3_p65_rule_to_tests.py",
+        "exists": true,
+        "used_in_ci_or_docs": true,
+        "used_in_tests": false,
+        "decision": "używane"
+      },
+      {
+        "tool": "v3_p65_worm_tamper_test.py",
+        "exists": true,
+        "used_in_ci_or_docs": true,
+        "used_in_tests": false,
+        "decision": "używane"
+      },
+      {
+        "tool": "v3_p65_adoption_metrics.py",
+        "exists": true,
+        "used_in_ci_or_docs": true,
+        "used_in_tests": false,
+        "decision": "używane"
+      },
+      {
+        "tool": "v3_p65_doc_generator.py",
+        "exists": true,
+        "used_in_ci_or_docs": true,
+        "used_in_tests": false,
+        "decision": "używane"
+      }
+    ],
+    "evidence": "tools/v3_p65_adoption_metrics.py (CI workflows + tests + KATALOG_NARZEDZI)",
+    "provenance": "P50 dead tools; P37 metryki; prompt P65 Sekcja 10-I11"
+  }
+}

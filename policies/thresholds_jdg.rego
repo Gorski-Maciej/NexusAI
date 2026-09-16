@@ -4399,3 +4399,43 @@ v3_p64 := {
     "no_auto_post": true,
     "manual_review_required": true,
 }
+
+# ── V3-P65 NOWE NARZĘDZIA FORTECY (12 innowacji I01–I12; prompt P65 Sekcja 10) ─
+# Narzędzia z wspólnym kontraktem (wejście → raport JSON schema P29 → exit
+# codes → dry-run); zero duplikacji (kompozycja istniejących detektorów 6.2);
+# progi ADR-002; okno temporalne (P05). Podstawy: art. 119a OP [NIEZWERYFIKOWANE
+# — ISAP], art. 4 ust. 1 i art. 5 UoR, art. 109e VAT, art. 9a PIT, art. 25 RODO,
+# art. 47 ustawy o ZUS, art. 56 KKS [WSZYSTKIE NIEZWERYFIKOWANE — ISAP].
+v3_p65 := {
+    "v3_p65_threshold_version": "tool-forge-v3p65-2026.09",
+    "legal_basis_version": "lb-tool-forge-v3p65-2026.09",
+    "valid_from": "2026-01-01",                               # okno temporalne (P05)
+    "valid_to": null,
+    # I01: wspólny kontrakt narzędzi — minimalne pola raportu JSON (schema P29)
+    "v3_p65_tool_contract_fields_min": 4,
+    "v3_p65_tool_contract_required_fields": ["schema", "tool", "status", "provenance"],
+    # I02: semantic diff — minimalne pokrycie klasyfikacji zmian Rego
+    "v3_p65_semantic_diff_classes_min": 3,
+    # I03: generator testów z przepisu — minimalne klasy przypadków brzegowych
+    "v3_p65_edge_case_classes_min": 4,
+    # I04: symulator cashflow — minimalne scenariusze płynności (P62 digital twin)
+    "v3_p65_cashflow_scenarios_min": 3,
+    # I05: symulator temporalny — przełączenia day-0 (P53 sandbox)
+    "v3_p65_temporal_transitions_min": 2,
+    # I06: walidator RBAC — macierz ról z polami obowiązkowymi (P63)
+    "v3_p65_rbac_matrix_roles_min": 4,
+    # I07: benchmark eval — próg regresji p95 latencji (ms) (P37)
+    "v3_p65_eval_p95_ms_max": 500,
+    # I08: tamper test WORM — minimalna liczba prób naruszenia integralności (P42/P59)
+    "v3_p65_worm_tamper_probes_min": 5,
+    # I09: chaos suite prawny — minimalna liczba mutacji z asercją fail-closed (P49)
+    "v3_p65_chaos_mutations_min": 10,
+    # I10: reguła kompozycji — kompozycja przed nowym kodem (zero duplikacji)
+    "v3_p65_composition_first_required": true,
+    # I11: metryki przyjęcia narzędzi — cykl pomiaru użycia w CI (P50 dead)
+    "v3_p65_adoption_cycle": "weekly",
+    # I12: generator dokumentacji narzędzi — dokumenty generowane z definicji (P60)
+    "v3_p65_doc_binding_required": true,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}

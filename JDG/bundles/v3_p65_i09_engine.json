@@ -1,0 +1,25 @@
+{
+  "header": {
+    "schema": "jdg.v3_p65.toolforge.audit.v1",
+    "part": "P65",
+    "slug": "NOWE_NARZEDZIA",
+    "generated_at": null,
+    "analyses": {
+      "I09_chaos": "engine"
+    }
+  },
+  "result": {
+    "mutations": 1,
+    "fail_closed_breaches": 0,
+    "auto_post_hits_in_chaos_tools": 1,
+    "chaos_tools_found": [
+      "v3_p49_chaos_input.py",
+      "v3_p49_missing_field_generator.py",
+      "v3_p49_fail_open_scanner.py"
+    ],
+    "min_mutations": 10,
+    "composition": "chaos prawny z tools/v3_p49_* (P49) — rozszerzany, nie dublowany",
+    "evidence": "tools/v3_p49_chaos_input.py + v3_p49_missing_field_generator.py + v3_p49_fail_open_scanner.py",
+    "provenance": "P49 fail-closed; art. 56 KKS [NIEZWERYFIKOWANE — ISAP]; prompt P65 Sekcja 10-I09"
+  }
+}

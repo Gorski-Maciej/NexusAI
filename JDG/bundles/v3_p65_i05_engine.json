@@ -1,0 +1,24 @@
+{
+  "header": {
+    "schema": "jdg.v3_p65.toolforge.audit.v1",
+    "part": "P65",
+    "slug": "NOWE_NARZEDZIA",
+    "generated_at": null,
+    "analyses": {
+      "I05_temporal": "engine"
+    }
+  },
+  "result": {
+    "transitions_present": [
+      "day[-_]?[-+]?\\d",
+      "day_minus",
+      "day_0",
+      "granica"
+    ],
+    "transitions_missing": [],
+    "p53_engines_present": true,
+    "composition": "przełączenia day-0 z tools/v3_p53_engines.py (P53 sandbox temporalny) — zero duplikacji",
+    "evidence": "tools/v3_p53_engines.py (symulacje day-1/day-0/day+1)",
+    "provenance": "P05 temporalność; P53 sandbox; prompt P65 Sekcja 10-I05"
+  }
+}

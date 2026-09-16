@@ -1,0 +1,40 @@
+{
+  "header": {
+    "schema": "jdg.v3_p65.toolforge.audit.v1",
+    "part": "P65",
+    "slug": "NOWE_NARZEDZIA",
+    "generated_at": null,
+    "analyses": {
+      "I06_rbac": "engine"
+    }
+  },
+  "result": {
+    "roles_matrix": {
+      "accountant": {
+        "field_map": {
+          "*": 1
+        }
+      },
+      "admin": {
+        "field_map": {
+          "*": 1
+        }
+      },
+      "auditor": {
+        "field_map": {
+          "*": 1
+        }
+      },
+      "entrepreneur": {
+        "field_map": {
+          "*": 1
+        }
+      }
+    },
+    "roles_total": 4,
+    "source_bundle": "bundles/v3_p63_i01_rbac.json (I01_rbac_as_data PASS)",
+    "role_maps_doc": "docs/ROLE_MAPS.md (role z nagłówkiem bez mapy = incomplete)",
+    "evidence": "bundles/v3_p63_i01_rbac.json + docs/ROLE_MAPS.md — kompozycja z P63",
+    "provenance": "art. 25 RODO (privacy by design) [NIEZWERYFIKOWANE — ISAP]; P63; prompt P65 Sekcja 10-I06"
+  }
+}

@@ -1,0 +1,1058 @@
+{
+  "header": {
+    "schema": "jdg.v3_p65.toolforge.audit.v1",
+    "part": "P65",
+    "slug": "NOWE_NARZEDZIA",
+    "generated_at": null,
+    "analyses": {
+      "I02_semantic_diff": null
+    }
+  },
+  "result": {
+    "schema": "jdg.v3_p65.semantic_diff.v1",
+    "tool": "v3_p65_semantic_diff",
+    "status": "PASS",
+    "classes_present": [
+      "cosmetic",
+      "threshold",
+      "semantic"
+    ],
+    "min_classes_required": 3,
+    "all_classes_covered": true,
+    "diff": {
+      "old": "v3_p64_luka_sweep.rego",
+      "new": "v3_p65_tool_forge.rego",
+      "classes_present": [
+        "cosmetic",
+        "threshold",
+        "semantic"
+      ],
+      "counts": {
+        "cosmetic": 88,
+        "threshold": 15,
+        "semantic": 233
+      },
+      "dominant_class": "semantic",
+      "required_review_path": "4-eyes + legal review + golden replay (P10) + bramka CI (P39)",
+      "changed_line_pairs": [
+        {
+          "class": "cosmetic",
+          "old": "# NEXUSAI JDG — V3-P64 SWEEP LUK REZYDUALNYCH — PRZEGLĄD CAŁOŚCIOWY",
+          "new": "# NEXUSAI JDG — V3-P65 NOWE NARZĘDZIA FORTECY (konwencja P51–P64)"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# Warstwa przeglądu resztkowego ENTERPRISE — 12 innowacji (I01–I12; minimum",
+          "new": "# Warstwa narzędziowa ENTERPRISE — 12 innowacji (I01–I12; minimum z promptu P65"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# z promptu P64 Sekcja 10; konwencja P51–P63):",
+          "new": "# Sekcja 10):"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#   I01 Sweep register with SLA — rejestr rezydualny: element→klasa→priorytet→",
+          "new": "#   I01 Tool standard contract — wspólny kontrakt narzędzi fortecy: wejście →"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#       plan→deadline; trend spadkowy (do zera przed P68); brak rejestru =",
+          "new": "#       raport JSON (schema P29) → exit codes → dry-run; kontrakt jako DANE"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#       NEEDS_ADVICE.",
+          "new": "#       (fields z progu ADR-002); niekompletny zestaw pól = BLOCK."
+        },
+        {
+          "class": "cosmetic",
+          "old": "#   I02 Seven cross-checks suite — 7 kontrol krzyżowych (rule→test, test→rule,",
+          "new": "#   I02 Semantic diff for Rego — klasyfikacja zmian (kosmetyczna/progowa/"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#       tool→test, integration→contract, fail-closed, okno parametru,",
+          "new": "#       semantyczna) z różnymi ścieżkami review; < min klas = NEEDS_ADVICE."
+        },
+        {
+          "class": "cosmetic",
+          "old": "#       podstawa prawna) jako bramki CI z licznikami; niekompletny zestaw =",
+          "new": "#   I03 Rule-to-tests generator — struktura przypadków brzegowych z treści"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#       BLOCK.",
+          "new": "#       przepisu (karty pustyni P51); < min klas brzegowych = NEEDS_ADVICE."
+        },
+        {
+          "class": "cosmetic",
+          "old": "#   I03 Blind-spot taxonomy — taksonomia ślepych plam (hotfix bez testu,",
+          "new": "#   I04 Cashflow simulator — scenariusze płynności (terminy, salda, odsetki;"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#       copy-paste bez review, deklaracja bez dowodu) z kontrolami",
+          "new": "#       P62 digital twin); < min scenariuszy = NEEDS_ADVICE."
+        },
+        {
+          "class": "cosmetic",
+          "old": "#       strukturalnymi; < min klas = NEEDS_ADVICE.",
+          "new": "#   I05 Temporal simulator — przełączenia day-0 (P53 sandbox); < min"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#   I04 Ownerless artifact detector — pliki bez odwołania z kodu/dokumentów",
+          "new": "#       przełączeń = NEEDS_ADVICE."
+        },
+        {
+          "class": "cosmetic",
+          "old": "#       (orphan); > próg = BLOCK.",
+          "new": "#   I06 RBAC validator — macierz ról (P63); rola bez pól obowiązkowych ="
+        },
+        {
+          "class": "cosmetic",
+          "old": "#   I05 Second-pass stability check — drugi przebieg sweep po naprawach;",
+          "new": "#       BLOCK (zawsze, niezależnie od progu ról)."
+        },
+        {
+          "class": "cosmetic",
+          "old": "#       zero nowych pozycji = dowód kompletności; brak potwierdzenia =",
+          "new": "#   I07 Eval benchmark tool — p95 latencji per domena (P37); regresja ponad"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#       NEEDS_ADVICE.",
+          "new": "#       próg bez planu = BLOCK."
+        },
+        {
+          "class": "cosmetic",
+          "old": "#   I06 Declaration-vs-evidence register — rejestr deklaracji bez dowodu",
+          "new": "#   I08 WORM tamper tester — próby naruszenia integralności (P42/P59); brak"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#       (P00–P67); deklaracja bez dowodu = NEEDS_ADVICE.",
+          "new": "#       asercji niezmienności = BLOCK."
+        },
+        {
+          "class": "cosmetic",
+          "old": "#   I07 Residual risk score — skalarne ryzyko rezydualne (luki × wagi klas);",
+          "new": "#   I09 Legal chaos suite — mutacje prawne z asercją fail-closed (P49);"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#       > próg certyfikacji = BLOCK.",
+          "new": "#       < min mutacji = NEEDS_ADVICE."
+        },
+        {
+          "class": "cosmetic",
+          "old": "#   I08 Cross-check dashboard — 7 kontrol jako dane (liczniki, trend) do",
+          "new": "#   I10 Composition-first rule — przed nowym narzędziem kompozycja (A+B+glue);"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#       obserwowalności (P37/P58); brak kanałów = NEEDS_ADVICE.",
+          "new": "#       brak analizy kompozycji = NEEDS_ADVICE."
+        },
+        {
+          "class": "cosmetic",
+          "old": "#   I09 Sweep automation — sweep jako narzędzie uruchamiane cyklicznie",
+          "new": "#   I11 Tool adoption metrics — metryki użycia (CI wywołania); narzędzie"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#       (CI weekly) z rejestrem przyrostowym; brak automatu = NEEDS_ADVICE.",
+          "new": "#       nieużywane bez decyzji = NEEDS_ADVICE."
+        },
+        {
+          "class": "cosmetic",
+          "old": "#   I10 Handover to V4 — rejestr rezydualny z kontraktami (dziedziczenie",
+          "new": "#   I12 Tool documentation generator — docs z definicji narzędzia (zero dryfu,"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#       standardów); brak kontraktów = NEEDS_ADVICE.",
+          "new": "#       P60 binding); dryf dokumentacji = NEEDS_ADVICE."
+        },
+        {
+          "class": "semantic",
+          "old": "#   I11 Sweep of sweeps — meta-kontrola: czy sweep objął wszystkie katalogi;",
+          "new": ""
+        },
+        {
+          "class": "semantic",
+          "old": "#       < min katalogów = NEEDS_ADVICE.",
+          "new": ""
+        },
+        {
+          "class": "semantic",
+          "old": "#   I12 Residual report format — standard raportu rezydualnego (klasy,",
+          "new": ""
+        },
+        {
+          "class": "semantic",
+          "old": "#       priorytety, plany) wielokrotnego użytku; brak sekcji = NEEDS_ADVICE.",
+          "new": ""
+        },
+        {
+          "class": "cosmetic",
+          "old": "#   * WSZYSTKIE progi/polityki z data.jdg.thresholds.v3_p64 — ADR-002 (P06),",
+          "new": "#   * WSZYSTKIE progi/polityki z data.jdg.thresholds.v3_p65 — ADR-002 (P06),"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#   * Fail-closed (V1 zasada 6; konwencja P51–P63): brak snapshotu progów =",
+          "new": "#   * Fail-closed (V1 zasada 6; konwencja P51–P64): brak snapshotu progów ="
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     NEEDS_ADVICE; bez flagi v3_p64_check = NO_MATCH; nigdy ciche AUTO_POST.",
+          "new": "#     NEEDS_ADVICE; bez flagi v3_p65_check = NO_MATCH; nigdy ciche AUTO_POST."
+        },
+        {
+          "class": "cosmetic",
+          "old": "#   * Konwencja P54–P63: Rego bramkuje PODSUMOWANIA silników dowodowych",
+          "new": "#   * Konwencja P54–P64: Rego bramkuje PODSUMOWANIA silników dowodowych"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     (tools/v3_p64_engines.py czytają PRAWDZIWE źródła: ledger kampanii",
+          "new": "#     (tools/v3_p65_engines.py czytają PRAWDZIWE źródła: kontrakt narzędzi"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     bundles/v3_campaign_ledger.json (luki per część), rejestry luk raportów",
+          "new": "#     tools/tool_contract.py + 12 narzędzi v3_p65_tool_*, detektor kompozycji"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     JDG/raporty_glm52_v3/RAPORT_V3_P*_*.txt (sekcja REJESTR LUK),",
+          "new": "#     tools/v3_p64_sweep_engine.py, rolę RBAC docs/ROLE_MAPS.md + P63,"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     tools/dead_rule_detector.py, tools/cross_package_conflict_detector.py,",
+          "new": "#     WORM tools/v3_p42_retention_calculator.py + audit trail P40, chaos P49,"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     tools/migration_impact_analyzer.py, tools/v3_repo_hygiene.py,",
+          "new": "#     benchmark P37, dokumentacja P60 — KATALOG_NARZEDZI.md)."
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     docs/COVERAGE/INWENTARYZACJA, rules/main_jdg.rego (ścieżka decyzyjna),",
+          "new": "#     Klucze w input.v3_p65 (I01_..–I12_..)."
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     rules/thresholds_jdg.rego (okna parametrów), bundles/v3_p47_mediation_",
+          "new": "#   * Kontrakty: P03 (werdykt), P06 (ADR-002), P29 (kontrakt raportu JSON),"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     workflow.json [NIEZWERYFIKOWANE], COVERAGE_REPORT.md).",
+          "new": "#     P36 (generatory), P37 (obserwowalność/benchmark), P39 (CI), P41/P60"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     Klucze w input.v3_p64 (I01_..–I12_..).",
+          "new": "#     (dokumentacja generowana), P42/P59 (WORM/integralność), P49 (fail-closed),"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#   * Kontrakty: P03 (werdykt), P06 (ADR-002), P29 (bramki), P30 (rejestr",
+          "new": "#     P50 (dead tools), P51 (pustynie/karty przepisu), P53 (temporal sandbox),"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     deklaracji), P31 (audyty), P37 (obserwowalność), P39 (CI), P47",
+          "new": "#     P62 (cashflow), P63 (RBAC), P64 (rejestr rezydualny K1–K5). Akty:"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     (mediacje P0/P1), P58 (metryki/trend), P60 (dokumentacja), P61",
+          "new": "#     art. 119a OP (GAAR — narzędzia defensywne), art. 4 ust. 1 UoR"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     (kontrakty integracji), P65–P68 (handover + re-certyfikacja). Akty:",
+          "new": "#     (sprawdzalność), art. 5 UoR (pierwotność dowodów), art. 109e VAT"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     art. 193a OP (staranność procesu), art. 4 ust. 1 UoR (sprawdzalność),",
+          "new": "#     (kompletność ewidencji), art. 9a PIT (spójność dokumentacji), art. 25"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     art. 5 ust. 1d RODO (prawidłowość), art. 32 RODO (przegląd okresowy),",
+          "new": "#     RODO (privacy by design), art. 47 ustawy o ZUS (terminowość), art. 56"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     art. 109e VAT (kompletność ewidencji), art. 56 KKS (redukcja ryzyka),",
+          "new": "#     KKS (wczesna detekcja błędów) — WSZYSTKIE [NIEZWERYFIKOWANE — ISAP]."
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     art. 47 ustawy o ZUS (spójność deklaracji) — WSZYSTKIE",
+          "new": "#   * Aktywacja: input.jdg_entrepreneur.v3_p65_check == true; bez flagi →"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     [NIEZWERYFIKOWANE — ISAP].",
+          "new": "#     no_match. rule_id: jdg.v3_p65_tool_forge.<analiza>."
+        },
+        {
+          "class": "cosmetic",
+          "old": "#   * Aktywacja: input.jdg_entrepreneur.v3_p64_check == true; bez flagi →",
+          "new": "#   * Priorytety: 465001–465012 (I01–I12)."
+        },
+        {
+          "class": "cosmetic",
+          "old": "#     no_match. rule_id: jdg.v3_p64_luka_sweep.<analiza>.",
+          "new": "#   * Pakiety importujące (main_jdg.rego): data.jdg.v3_p65_tool_forge →"
+        },
+        {
+          "class": "cosmetic",
+          "old": "#   * Priorytety: 464001–464012 (I01–I12).",
+          "new": "#     final_verdict_p129 = safe_merge(final_verdict_p128, …)."
+        },
+        {
+          "class": "semantic",
+          "old": "#   * Pakiety importujące (main_jdg.rego): data.jdg.v3_p64_luka_sweep →",
+          "new": ""
+        },
+        {
+          "class": "semantic",
+          "old": "#     final_verdict_p128 = safe_merge(final_verdict_p127, …).",
+          "new": ""
+        },
+        {
+          "class": "semantic",
+          "old": "package jdg.v3_p64_luka_sweep",
+          "new": "package jdg.v3_p65_tool_forge"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# ── Kontrakt wejściowy ──────────────────────────────────────────────────────────",
+          "new": "# ── Kontrakt wejściowy ────────────────────────────────────────────────────────"
+        },
+        {
+          "class": "semantic",
+          "old": "_activated := object.get(object.get(input, \"jdg_entrepreneur\", {}), \"v3_p64_check\", false) == true",
+          "new": "_activated := object.get(object.get(input, \"jdg_entrepreneur\", {}), \"v3_p65_check\", false) == true"
+        },
+        {
+          "class": "semantic",
+          "old": "_ctx := object.get(input, \"v3_p64\", {})",
+          "new": "_ctx := object.get(input, \"v3_p65\", {})"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# ── Snapshot progów (ADR-002) ──────────────────────────────────────────────────",
+          "new": "# ── Snapshot progów (ADR-002) ─────────────────────────────────────────────────"
+        },
+        {
+          "class": "threshold",
+          "old": "_p64_snapshot := data.jdg.thresholds.v3_p64",
+          "new": "_p65_snapshot := data.jdg.thresholds.v3_p65"
+        },
+        {
+          "class": "semantic",
+          "old": "\tcount(_p64_snapshot) > 0",
+          "new": "\tcount(_p65_snapshot) > 0"
+        },
+        {
+          "class": "semantic",
+          "old": "\tcount(_p64_snapshot) > 0",
+          "new": "\tcount(_p65_snapshot) > 0"
+        },
+        {
+          "class": "semantic",
+          "old": "\tvalue := object.get(_p64_snapshot, key, null)",
+          "new": "\tvalue := object.get(_p65_snapshot, key, null)"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# ── Fail-closed gdy snapshot progów niedostępny ────────────────────────────────",
+          "new": "# ── Fail-closed gdy snapshot progów niedostępny ───────────────────────────────"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"rule_id\": \"jdg.v3_p64_luka_sweep.thresholds_missing\",",
+          "new": "\t\"rule_id\": \"jdg.v3_p65_tool_forge.thresholds_missing\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"package\": \"jdg.v3_p64_luka_sweep\",",
+          "new": "\t\"package\": \"jdg.v3_p65_tool_forge\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"reason\": \"P64 thresholds snapshot missing — fail-closed (ADR-002)\",",
+          "new": "\t\"reason\": \"P65 thresholds snapshot missing — fail-closed (ADR-002)\","
+        },
+        {
+          "class": "cosmetic",
+          "old": "# ── I01: Sweep register with SLA ───────────────────────────────────────────────",
+          "new": "# ── I01: Tool standard contract ───────────────────────────────────────────────"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# Rejestr rezydualny ponad limit = BLOCK — element bez właściciela i planu",
+          "new": "# Narzędzie bez wspólnego kontraktu = BLOCK — narzędzie bez raportu JSON"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# narusza sprawdzalność (art. 4 ust. 1 UoR) i prawidłowość (art. 5 ust. 1d RODO).",
+          "new": "# (schema P29), exit codes i dry-run nie łańcuchuje się w CI (art. 4 ust. 1"
+        },
+        {
+          "class": "semantic",
+          "old": "i01_register := {",
+          "new": "# UoR: sprawdzalność)."
+        },
+        {
+          "class": "semantic",
+          "old": "",
+          "new": "i01_contract := {"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"rule_id\": \"jdg.v3_p64_luka_sweep.sweep_register_sla\",",
+          "new": "\t\"rule_id\": \"jdg.v3_p65_tool_forge.tool_standard_contract\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"package\": \"jdg.v3_p64_luka_sweep\",",
+          "new": "\t\"package\": \"jdg.v3_p65_tool_forge\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"priority\": 464001,",
+          "new": "\t\"priority\": 465001,"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"reason\": sprintf(\"rejestr rezydualny: %v pozycji (limit %v) — element bez właściciela i planu = luka sprawdzalności\", ",
+          "new": "\t\"reason\": sprintf(\"kontrakt narzędzi: %v z %v wymaganych pól raportu JSON (brakuje: %v) — narzędzie bez kontraktu nie w"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"metrics\": {\"items\": count(items), \"max\": max_items},",
+          "new": "\t\"metrics\": {\"present\": present, \"required\": count(required), \"missing\": missing},"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"_legal_basis\": \"art. 4 ust. 1 UoR (sprawdzalność) [NIEZWERYFIKOWANE — ISAP]; art. 5 ust. 1d RODO (prawidłowość) [NIEZW",
+          "new": "\t\"_legal_basis\": \"art. 4 ust. 1 UoR (sprawdzalność) [NIEZWERYFIKOWANE — ISAP]; P29 kontrakt raportu JSON; prompt P65 Sek"
+        },
+        {
+          "class": "semantic",
+          "old": "\t_ctx_i01 := object.get(_ctx, \"I01_sweep_register\", {})",
+          "new": "\t_ctx_i01 := object.get(_ctx, \"I01_tool_contract\", {})"
+        },
+        {
+          "class": "threshold",
+          "old": "\tmax_items := _th(\"v3_p64_residual_register_max\", 0)",
+          "new": "\trequired := _th(\"v3_p65_tool_contract_required_fields\", [])"
+        },
+        {
+          "class": "semantic",
+          "old": "\titems := object.get(_ctx_i01, \"open_items\", [])",
+          "new": "\tpresent := object.get(_ctx_i01, \"contract_fields_present\", [])"
+        },
+        {
+          "class": "semantic",
+          "old": "\tsla := object.get(_ctx_i01, \"sla_plan_registered\", false)",
+          "new": "\tmissing := [f | f := required[_]; not present[f] = true]"
+        },
+        {
+          "class": "semantic",
+          "old": "\tcount(items) > max_items",
+          "new": "\tcount(missing) >= 1"
+        },
+        {
+          "class": "semantic",
+          "old": "\t_not(sla)",
+          "new": ""
+        },
+        {
+          "class": "cosmetic",
+          "old": "# ── I02: Seven cross-checks suite ──────────────────────────────────────────────",
+          "new": "# ── I02: Semantic diff for Rego ───────────────────────────────────────────────"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# Niekompletny zestaw 7 kontrol krzyżowych = BLOCK — sweep bez pełnej macierzy",
+          "new": "# Klasyfikacja zmian poniżej minimum = NEEDS_ADVICE — zmiana semantyczna"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# kontrol przechodzi obok klas luk, które przechodziły przez wszystkie fale.",
+          "new": "# (próg/skutek) musi iść inną ścieżką review niż kosmetyczna."
+        },
+        {
+          "class": "semantic",
+          "old": "i02_cross_checks := {",
+          "new": "i02_semantic_diff := {"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"rule_id\": \"jdg.v3_p64_luka_sweep.seven_cross_checks\",",
+          "new": "\t\"rule_id\": \"jdg.v3_p65_tool_forge.semantic_diff\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"package\": \"jdg.v3_p64_luka_sweep\",",
+          "new": "\t\"package\": \"jdg.v3_p65_tool_forge\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"priority\": 464002,",
+          "new": "\t\"priority\": 465002,"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"decision\": \"BLOCK\",",
+          "new": "\t\"decision\": \"NEEDS_ADVICE\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"reason\": sprintf(\"cross-checks: %v z %v wymaganych kontroli obecnych (brakuje: %v)\", [count(present), count(required),",
+          "new": "\t\"reason\": sprintf(\"semantic diff Rego: %v z %v wymaganych klas zmian (brakuje: %v) — klasy kosmetyczna/progowa/semantyc"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"metrics\": {\"present\": present, \"required\": count(required), \"missing\": missing},",
+          "new": "\t\"metrics\": {\"classes\": present, \"min_classes\": min_classes},"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"_legal_basis\": \"art. 193a OP (staranność weryfikacji) [NIEZWERYFIKOWANE — ISAP]; prompt P64 Sekcja 10-I02\",",
+          "new": "\t\"_legal_basis\": \"art. 9a PIT (spójność dokumentacji i ewidencji) [NIEZWERYFIKOWANE — ISAP]; prompt P65 Sekcja 10-I02\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t_ctx_i02 := object.get(_ctx, \"I02_cross_checks\", {})",
+          "new": "\t_ctx_i02 := object.get(_ctx, \"I02_semantic_diff\", {})"
+        },
+        {
+          "class": "threshold",
+          "old": "\trequired := _th(\"v3_p64_cross_checks_required\", [])",
+          "new": "\tmin_classes := _th(\"v3_p65_semantic_diff_classes_min\", 3)"
+        },
+        {
+          "class": "semantic",
+          "old": "\tpresent := object.get(_ctx_i02, \"checks_present\", [])",
+          "new": "\tpresent := object.get(_ctx_i02, \"classes_present\", [])"
+        },
+        {
+          "class": "semantic",
+          "old": "\tmissing := [c | c := required[_]; not present[c] = true]",
+          "new": "\tmissing := [c | c := [\"cosmetic\", \"threshold\", \"semantic\"][_]; not present[c] = true]"
+        },
+        {
+          "class": "semantic",
+          "old": "",
+          "new": "\tcount(present) < min_classes"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# ── I03: Blind-spot taxonomy ───────────────────────────────────────────────────",
+          "new": "# ── I03: Rule-to-tests generator ──────────────────────────────────────────────"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# Taksonomia ślepych plam poniżej minimum = NEEDS_ADVICE — klasy luk przechodzące",
+          "new": "# Generator bez klas przypadków brzegowych = NEEDS_ADVICE — test z treści"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# przez fale muszą mieć nazwę i kontrolę strukturalną, inaczej wracają.",
+          "new": "# przepisu bez granic (daty, progi, waluty, zaokrąglenia) jest zawsze-zielony"
+        },
+        {
+          "class": "semantic",
+          "old": "i03_blindspots := {",
+          "new": "# (AP06)."
+        },
+        {
+          "class": "semantic",
+          "old": "",
+          "new": "i03_test_generator := {"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"rule_id\": \"jdg.v3_p64_luka_sweep.blindspot_taxonomy\",",
+          "new": "\t\"rule_id\": \"jdg.v3_p65_tool_forge.rule_to_tests_generator\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"package\": \"jdg.v3_p64_luka_sweep\",",
+          "new": "\t\"package\": \"jdg.v3_p65_tool_forge\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"priority\": 464003,",
+          "new": "\t\"priority\": 465003,"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"reason\": sprintf(\"taksonomia ślepych plam: %v klas (min %v) — klasy bez kontroli strukturalnej wracają\", [count(classe",
+          "new": "\t\"reason\": sprintf(\"generator testów z przepisu: %v z %v wymaganych klas brzegowych (brakuje: %v) — brak asercji negatyw"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"metrics\": {\"classes\": classes, \"min_classes\": min_classes},",
+          "new": "\t\"metrics\": {\"classes\": present, \"min_classes\": min_classes},"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"_legal_basis\": \"art. 32 RODO (przegląd okresowy systemu) [NIEZWERYFIKOWANE — ISAP]; prompt P64 Sekcja 10-I03\",",
+          "new": "\t\"_legal_basis\": \"art. 109e VAT (kompletność ewidencji) [NIEZWERYFIKOWANE — ISAP]; P51 karty pustyni; prompt P65 Sekcja "
+        },
+        {
+          "class": "semantic",
+          "old": "\t_ctx_i03 := object.get(_ctx, \"I03_blindspots\", {})",
+          "new": "\t_ctx_i03 := object.get(_ctx, \"I03_test_generator\", {})"
+        },
+        {
+          "class": "threshold",
+          "old": "\tmin_classes := _th(\"v3_p64_blindspot_classes_min\", 5)",
+          "new": "\tmin_classes := _th(\"v3_p65_edge_case_classes_min\", 4)"
+        },
+        {
+          "class": "semantic",
+          "old": "\tclasses := object.get(_ctx_i03, \"classes\", [])",
+          "new": "\tpresent := object.get(_ctx_i03, \"edge_case_classes_present\", [])"
+        },
+        {
+          "class": "semantic",
+          "old": "\tcount(classes) < min_classes",
+          "new": "\tmissing := [c | c := [\"dates\", \"thresholds\", \"currencies\", \"rounding\"][_]; not present[c] = true]"
+        },
+        {
+          "class": "semantic",
+          "old": "",
+          "new": "\tcount(missing) >= 1"
+        },
+        {
+          "class": "semantic",
+          "old": "",
+          "new": "\tcount(present) < min_classes"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# ── I04: Ownerless artifact detector ───────────────────────────────────────────",
+          "new": "# ── I04: Cashflow simulator ───────────────────────────────────────────────────"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# Artefakty bez właściciela ponad próg = BLOCK — zero elementów bez ścieżki",
+          "new": "# Symulator bez scenariuszy płynności = NEEDS_ADVICE — prognoza bez scenariuszy"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# (orphan w rules/tools/tests/migrations/docs).",
+          "new": "# (bazowy/opóźnienia/zwrot VAT) nie wspiera decyzji księgowych (P62)."
+        },
+        {
+          "class": "semantic",
+          "old": "i04_ownerless := {",
+          "new": "i04_cashflow := {"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"rule_id\": \"jdg.v3_p64_luka_sweep.ownerless_artifacts\",",
+          "new": "\t\"rule_id\": \"jdg.v3_p65_tool_forge.cashflow_simulator\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"package\": \"jdg.v3_p64_luka_sweep\",",
+          "new": "\t\"package\": \"jdg.v3_p65_tool_forge\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"priority\": 464004,",
+          "new": "\t\"priority\": 465004,"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"decision\": \"BLOCK\",",
+          "new": "\t\"decision\": \"NEEDS_ADVICE\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"reason\": sprintf(\"artefakty bez właściciela: %v (limit %v) — plik bez odwołania z kodu/dokumentów\", [count(orphans), m",
+          "new": "\t\"reason\": sprintf(\"symulator cashflow: %v z %v wymaganych scenariuszy (brakuje: %v) — P62 digital twin wymaga scenarius"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"metrics\": {\"orphans\": orphans, \"max_ownerless\": max_ownerless},",
+          "new": "\t\"metrics\": {\"scenarios\": present, \"min_scenarios\": min_scenarios},"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"_legal_basis\": \"art. 5 ust. 1d RODO (prawidłowość — dane/reguły bez właściciela) [NIEZWERYFIKOWANE — ISAP]; prompt P64",
+          "new": "\t\"_legal_basis\": \"art. 47 ustawy o ZUS (terminowość) [NIEZWERYFIKOWANE — ISAP]; P62 przepływy pieniężne; prompt P65 Sekc"
+        },
+        {
+          "class": "semantic",
+          "old": "\t_ctx_i04 := object.get(_ctx, \"I04_ownerless\", {})",
+          "new": "\t_ctx_i04 := object.get(_ctx, \"I04_cashflow\", {})"
+        },
+        {
+          "class": "threshold",
+          "old": "\tmax_ownerless := _th(\"v3_p64_ownerless_max\", 0)",
+          "new": "\tmin_scenarios := _th(\"v3_p65_cashflow_scenarios_min\", 3)"
+        },
+        {
+          "class": "semantic",
+          "old": "\torphans := object.get(_ctx_i04, \"orphans\", [])",
+          "new": "\tpresent := object.get(_ctx_i04, \"scenarios_present\", [])"
+        },
+        {
+          "class": "semantic",
+          "old": "\tregistered := object.get(_ctx_i04, \"decisions_registered\", false)",
+          "new": "\tmissing := [s | s := [\"base\", \"delays\", \"vat_refund\"][_]; not present[s] = true]"
+        },
+        {
+          "class": "semantic",
+          "old": "\tcount(orphans) > max_ownerless",
+          "new": "\tcount(missing) >= 1"
+        },
+        {
+          "class": "semantic",
+          "old": "\t_not(registered)",
+          "new": "\tcount(present) < min_scenarios"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# ── I05: Second-pass stability check ───────────────────────────────────────────",
+          "new": "# ── I05: Temporal simulator ───────────────────────────────────────────────────"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# Brak potwierdzenia stabilności drugiego przebiegu = NEEDS_ADVICE — sweep bez",
+          "new": "# Symulator temporalny bez przełączeń day-0 = NEEDS_ADVICE — wdrożenie noweli"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# drugiego przebiegu nie jest dowodem kompletności.",
+          "new": "# bez symulacji day-1/day-0/day+1 (P53) to ryzyko błędnej decyzji na granicy."
+        },
+        {
+          "class": "semantic",
+          "old": "i05_second_pass := {",
+          "new": "i05_temporal := {"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"rule_id\": \"jdg.v3_p64_luka_sweep.second_pass_stability\",",
+          "new": "\t\"rule_id\": \"jdg.v3_p65_tool_forge.temporal_simulator\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"package\": \"jdg.v3_p64_luka_sweep\",",
+          "new": "\t\"package\": \"jdg.v3_p65_tool_forge\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"priority\": 464005,",
+          "new": "\t\"priority\": 465005,"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"reason\": sprintf(\"drugi przebieg sweep: wymagany=%v, wykonany=%v, nowe pozycje=%v — stabilny rejestr = dowód kompletno",
+          "new": "\t\"reason\": sprintf(\"symulator temporalny: %v z %v wymaganych przełączeń day-0 (brakuje: %v) — granice nowelizacji wymaga"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"metrics\": {\"executed\": executed, \"new_items\": new_items},",
+          "new": "\t\"metrics\": {\"transitions\": present, \"min_transitions\": min_transitions},"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"_legal_basis\": \"art. 193a OP (kompletność procesu weryfikacji) [NIEZWERYFIKOWANE — ISAP]; prompt P64 Sekcja 10-I05\",",
+          "new": "\t\"_legal_basis\": \"P05 temporalność; P53 sandbox temporalny; prompt P65 Sekcja 10-I05\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t_ctx_i05 := object.get(_ctx, \"I05_second_pass\", {})",
+          "new": "\t_ctx_i05 := object.get(_ctx, \"I05_temporal\", {})"
+        },
+        {
+          "class": "threshold",
+          "old": "\trequired := _th(\"v3_p64_second_pass_required\", true)",
+          "new": "\tmin_transitions := _th(\"v3_p65_temporal_transitions_min\", 2)"
+        },
+        {
+          "class": "semantic",
+          "old": "\texecuted := object.get(_ctx_i05, \"executed\", false)",
+          "new": "\tpresent := object.get(_ctx_i05, \"transitions_present\", [])"
+        },
+        {
+          "class": "semantic",
+          "old": "\tnew_items := object.get(_ctx_i05, \"new_items\", 0)",
+          "new": "\tmissing := [t | t := [\"day_minus_1\", \"day_0\"][_]; not present[t] = true]"
+        },
+        {
+          "class": "semantic",
+          "old": "\trequired",
+          "new": "\tcount(missing) >= 1"
+        },
+        {
+          "class": "semantic",
+          "old": "\t_not(executed)",
+          "new": "\tcount(present) < min_transitions"
+        },
+        {
+          "class": "semantic",
+          "old": "} else := {",
+          "new": "}"
+        },
+        {
+          "class": "semantic",
+          "old": "",
+          "new": "# ── I06: RBAC validator ───────────────────────────────────────────────────────"
+        },
+        {
+          "class": "semantic",
+          "old": "",
+          "new": "# Rola bez pól obowiązkowych macierzy = BLOCK — walidacja matrix RBAC (P63):"
+        },
+        {
+          "class": "semantic",
+          "old": "",
+          "new": "# rola bez mapy pól/testu to ślepe uprawnienie (privacy by design, art. 25 RODO)."
+        },
+        {
+          "class": "semantic",
+          "old": "",
+          "new": "i06_rbac := {"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"rule_id\": \"jdg.v3_p64_luka_sweep.second_pass_stability\",",
+          "new": "\t\"rule_id\": \"jdg.v3_p65_tool_forge.rbac_validator\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"package\": \"jdg.v3_p64_luka_sweep\",",
+          "new": "\t\"package\": \"jdg.v3_p65_tool_forge\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"priority\": 464005,",
+          "new": "\t\"priority\": 465006,"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"decision\": \"NEEDS_ADVICE\",",
+          "new": "\t\"decision\": \"BLOCK\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"reason\": sprintf(\"drugi przebieg sweep: wykonany=%v, nowe pozycje=%v — nowe pozycje wymagają domknięcia przed certyfik",
+          "new": "\t\"reason\": sprintf(\"walidator RBAC: %v z %v ról kompletnych (bez pól: %v) — rola bez mapy pól/testu = ślepe uprawnienie "
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"metrics\": {\"executed\": executed, \"new_items\": new_items},",
+          "new": "\t\"metrics\": {\"roles\": count(complete_roles), \"min_roles\": min_roles, \"incomplete\": incomplete},"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"_legal_basis\": \"prompt P64 Sekcja 10-I05\",",
+          "new": "\t\"_legal_basis\": \"art. 25 RODO (privacy by design) [NIEZWERYFIKOWANE — ISAP]; P63 RBAC; prompt P65 Sekcja 10-I06\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t_ctx_i05 := object.get(_ctx, \"I05_second_pass\", {})",
+          "new": "\t_ctx_i06 := object.get(_ctx, \"I06_rbac\", {})"
+        },
+        {
+          "class": "threshold",
+          "old": "\texecuted := object.get(_ctx_i05, \"executed\", false)",
+          "new": "\tmin_roles := _th(\"v3_p65_rbac_matrix_roles_min\", 4)"
+        },
+        {
+          "class": "semantic",
+          "old": "\tnew_items := object.get(_ctx_i05, \"new_items\", 0)",
+          "new": "\troles := object.get(_ctx_i06, \"roles_matrix\", {})"
+        },
+        {
+          "class": "semantic",
+          "old": "\texecuted",
+          "new": "\tincomplete := [r | some r; fields := roles[r]; count(object.get(fields, \"field_map\", {})) == 0]"
+        },
+        {
+          "class": "semantic",
+          "old": "\tnew_items > 0",
+          "new": "\tcomplete := {r | some r; fields := roles[r]; count(object.get(fields, \"field_map\", {})) > 0}"
+        },
+        {
+          "class": "semantic",
+          "old": "",
+          "new": "\tcount(complete) < min_roles"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# ── I06: Declaration-vs-evidence register ──────────────────────────────────────",
+          "new": "# ── I07: Eval benchmark tool ──────────────────────────────────────────────────"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# Deklaracje bez dowodu ponad próg = NEEDS_ADVICE — „OK\" bez dowodu (P30) nie",
+          "new": "# Regresja p95 ponad próg bez planu = BLOCK — wydajność eval jest częścią"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# jest dowodem (zasada 12 protokołu: dowodem jest kod, test, wynik uruchomienia).",
+          "new": "# observability (P37); degradacja latencji bez planu = ryzyko operacyjne."
+        },
+        {
+          "class": "semantic",
+          "old": "i06_declarations := {",
+          "new": "i07_benchmark := {"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"rule_id\": \"jdg.v3_p64_luka_sweep.declaration_vs_evidence\",",
+          "new": "\t\"rule_id\": \"jdg.v3_p65_tool_forge.eval_benchmark\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"package\": \"jdg.v3_p64_luka_sweep\",",
+          "new": "\t\"package\": \"jdg.v3_p65_tool_forge\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"priority\": 464006,",
+          "new": "\t\"priority\": 465007,"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"decision\": \"NEEDS_ADVICE\",",
+          "new": "\t\"decision\": \"BLOCK\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"reason\": sprintf(\"deklaracje bez dowodu: %v (limit %v) — rejestr deklaracji P00–P67 wymaga dowodów\", [count(claims), m",
+          "new": "\t\"reason\": sprintf(\"benchmark eval: p95=%v ms (próg %v) bez planu redukcji — regresja wydajności per domena (P37)\", [p95"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"metrics\": {\"claims\": count(claims), \"max\": max_claims},",
+          "new": "\t\"metrics\": {\"p95_ms\": p95_ms, \"max_ms\": max_ms},"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"_legal_basis\": \"art. 4 ust. 1 UoR (sprawdzalność) [NIEZWERYFIKOWANE — ISAP]; P30 rejestr deklaracji; prompt P64 Sekcja",
+          "new": "\t\"_legal_basis\": \"P37 obserwowalność (SLO eval); prompt P65 Sekcja 10-I07\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t_ctx_i06 := object.get(_ctx, \"I06_declarations\", {})",
+          "new": "\t_ctx_i07 := object.get(_ctx, \"I07_benchmark\", {})"
+        },
+        {
+          "class": "threshold",
+          "old": "\tmax_claims := _th(\"v3_p64_undocumented_claims_max\", 0)",
+          "new": "\tmax_ms := _th(\"v3_p65_eval_p95_ms_max\", 500)"
+        },
+        {
+          "class": "semantic",
+          "old": "\tclaims := object.get(_ctx_i06, \"undocumented_claims\", [])",
+          "new": "\tp95_ms := object.get(_ctx_i07, \"p95_ms\", 0)"
+        },
+        {
+          "class": "semantic",
+          "old": "\tplan := object.get(_ctx_i06, \"evidence_plan_registered\", false)",
+          "new": "\tplan := object.get(_ctx_i07, \"reduction_plan_registered\", false)"
+        },
+        {
+          "class": "semantic",
+          "old": "\tcount(claims) > max_claims",
+          "new": "\tp95_ms > max_ms"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# ── I07: Residual risk score ───────────────────────────────────────────────────",
+          "new": "# ── I08: WORM tamper tester ───────────────────────────────────────────────────"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# Ryzyko rezydualne ponad próg certyfikacji = BLOCK — skalar (luki × wagi klas)",
+          "new": "# Brak asercji niezmienności przy próbach naruszenia = BLOCK — tamper test bez"
+        },
+        {
+          "class": "cosmetic",
+          "old": "# z trendem do P68.",
+          "new": "# wykrywalności modyfikacji unieważnia dowód WORM (art. 5 UoR pierwotność)."
+        },
+        {
+          "class": "semantic",
+          "old": "i07_risk := {",
+          "new": "i08_worm := {"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"rule_id\": \"jdg.v3_p64_luka_sweep.residual_risk_score\",",
+          "new": "\t\"rule_id\": \"jdg.v3_p65_tool_forge.worm_tamper_tester\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"package\": \"jdg.v3_p64_luka_sweep\",",
+          "new": "\t\"package\": \"jdg.v3_p65_tool_forge\","
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"priority\": 464007,",
+          "new": "\t\"priority\": 465008,"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"reason\": sprintf(\"ryzyko rezydualne: %v (próg %v) — luki × wagi klas powyżej progu certyfikacji\", [risk, max_risk]),",
+          "new": "\t\"reason\": sprintf(\"WORM tamper test: %v prób, wykrytych=%v — brak asercji niezmienności unieważnia dowód WORM\", [probes"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"metrics\": {\"risk\": risk, \"max\": max_risk},",
+          "new": "\t\"metrics\": {\"probes\": probes, \"detected\": detected},"
+        },
+        {
+          "class": "semantic",
+          "old": "\t\"_legal_basis\": \"art. 56 KKS (redukcja ryzyka) [NIEZWERYFIKOWANE — ISAP]; prompt P64 Sekcja 10-I07\",",
+          "new": "\t\"_legal_basis\": \"art. 5 UoR (pierwotność dowodów) [NIEZWERYFIKOWANE — ISAP]; P42 retencja/WORM; P59 integralność; promp"
+        },
+        {
+          "class": "semantic",
+          "old": "\t_ctx_i07 := object.get(_ctx, \"I07_risk\", {})",
+          "new": "\t_ctx_i08 := object.get(_ctx, \"I08_worm\", {})"
+        }
+      ],
+      "total_changes": 336
+    },
+    "self_test": {
+      "expected": [
+        "cosmetic",
+        "threshold",
+        "semantic"
+      ],
+      "got": [
+        "cosmetic",
+        "threshold",
+        "semantic"
+      ],
+      "pass": true
+    },
+    "evidence": "rules/*.rego (PRAWDZIWE pliki) + difflib opcodes — kompozycja z review paths P39/P44",
+    "provenance": "art. 9a PIT (spójność dokumentacji) [NIEZWERYFIKOWANE — ISAP]; prompt P65 Sekcja 10-I02",
+    "generated_at": "2026-09-16T06:26:23.159768+00:00"
+  }
+}

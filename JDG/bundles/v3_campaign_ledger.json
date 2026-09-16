@@ -902,15 +902,15 @@
       "slug": "LUKA_SWEEP",
       "prompt": "V3_PROMPT_P64_LUKA_SWEEP.txt",
       "report": "RAPORT_V3_P64_LUKA_SWEEP.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
-      "luki_p1": 0,
-      "luki_p2": 0,
-      "luki_p3": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": "",
-      "auto_recheck": true
+      "luki_p1": 1,
+      "luki_p2": 2,
+      "luki_p3": 5,
+      "innovations": 12,
+      "implemented_at": "2026-09-16T05:04:34.152235+00:00",
+      "notes": "LUKA_SWEEP: 12/12 innowacji I01-I12 (sweep register SLA, 7 kontroli krzyzowych, taksonomia BS01-BS05, detektor ownerless 212 orphans, 2. przebieg stabilny, deklaracje-vs-dowody P11/P12, risk=1165 z planem redukcji, dashboard 4 kanaly, automat sweep weekly, handover V4 C1-C4, meta-sweep 8 katalogow, standard raportu) + 12 silnikow + 13 bundli (gate PASS) + 22 pytest + 17 rego statycznie + regresja 451; wiring p128; mirrory hash-parity; raport RAPORT_V3_P64_LUKA_SWEEP.txt (9.01-9.18); luki P0=0/P1=1/P2=2/P3=5",
+      "auto_recheck": false
     },
     "P65": {
       "slug": "NOWE_NARZEDZIA",
@@ -971,8 +971,8 @@
   },
   "summary": {
     "total": 69,
-    "wdrozony_100": 64,
-    "nie_wdrozony": 5,
-    "progress_pct": 92.75
+    "wdrozony_100": 65,
+    "nie_wdrozony": 4,
+    "progress_pct": 94.2
   }
 }

@@ -1,0 +1,83 @@
+{
+  "header": {
+    "schema": "jdg.v3_p65.toolforge.audit.v1",
+    "part": "P65",
+    "slug": "NOWE_NARZEDZIA",
+    "generated_at": null,
+    "analyses": {
+      "I03_test_generator": null
+    }
+  },
+  "result": {
+    "schema": "jdg.v3_p65.rule_to_tests.v1",
+    "tool": "v3_p65_rule_to_tests",
+    "status": "PASS",
+    "edge_classes_required": [
+      "dates",
+      "thresholds",
+      "currencies",
+      "rounding"
+    ],
+    "min_classes_required": 4,
+    "coverage": {
+      "present": [
+        "dates",
+        "thresholds",
+        "currencies",
+        "rounding"
+      ],
+      "missing": []
+    },
+    "skeleton": {
+      "rule": "v3_p65_tool_forge.rego",
+      "cases": [
+        {
+          "class": "dates",
+          "case": "day-1 przed valid_from → NO_MATCH/stare okno",
+          "assert": "decision in {NO_MATCH, NEEDS_ADVICE}"
+        },
+        {
+          "class": "dates",
+          "case": "day-0 granica valid_from → nowe okno aktywne",
+          "assert": "decision == oczekiwane wg nowej wersji"
+        },
+        {
+          "class": "thresholds",
+          "case": "wartość == próg (granica) → nie przekracza",
+          "assert": "decision PASS/NEEDS_ADVICE"
+        },
+        {
+          "class": "thresholds",
+          "case": "wartość = próg+1 → przekroczenie → BLOCK",
+          "assert": "decision == BLOCK"
+        },
+        {
+          "class": "currencies",
+          "case": "EUR vs PLN (eur_pln_reference) → konwersja z provenance",
+          "assert": "metrics.kurs z wersją i datą"
+        },
+        {
+          "class": "rounding",
+          "case": "grosz w dół/w górę (half-up) → różnica 0,01",
+          "assert": "kwota groszowo dokładna"
+        }
+      ],
+      "classes": [
+        "currencies",
+        "dates",
+        "rounding",
+        "thresholds"
+      ]
+    },
+    "desert_cards_found": 1,
+    "desert_cards_sample": [
+      {
+        " przepis": "!/usr/bin/env python3"
+      }
+    ],
+    "acceleration_note": "szkielet 4 klas brzegowych = start zamiast pustej strony (przyspieszenie ok. 5x wg promptu P65 Sekcja 2)",
+    "evidence": "tools/v3_p51_desert_cards.py (karty pustyni P51 — kompozycja) + tests/auto + tests/rego (pokrycie klas)",
+    "provenance": "art. 109e VAT (kompletność ewidencji) [NIEZWERYFIKOWANE — ISAP]; P51 karty pustyni; prompt P65 Sekcja 10-I03",
+    "generated_at": "2026-09-16T06:26:24.001969+00:00"
+  }
+}

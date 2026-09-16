@@ -1,0 +1,68 @@
+{
+  "schema": "jdg.v3_p65.run_all.v1",
+  "part": "P65",
+  "slug": "NOWE_NARZEDZIA",
+  "generated_at": "2026-09-16T06:26:21.587609+00:00",
+  "tools_run": 6,
+  "tool_results": {
+    "v3_p65_tool_contract.py": 0,
+    "v3_p65_semantic_diff.py": 0,
+    "v3_p65_rule_to_tests.py": 0,
+    "v3_p65_worm_tamper_test.py": 0,
+    "v3_p65_adoption_metrics.py": 0,
+    "v3_p65_doc_generator.py": 0
+  },
+  "engines_run": 12,
+  "failures": [],
+  "gate": "PASS",
+  "results": {
+    "I01": {
+      "exit": 0,
+      "output": "{\"contract_fields_present\": {\"schema\": true, \"tool\": true, \"status\": true, \"provenance\": true}, \"contract_fields_missing\": [], \"registry_total\": 9, \"registry_missing_tools\": [], \"exit_codes\": {\"0\": \"PASS\", \"1\": \"BLOCK/FAIL\", \"2\": \"NEEDS_ADVICE/usage\"}, \"dry_run_supported\": true, \"evidence\": \"tools/v3_p65_tool_contract.py + bundles/v3_p65_i01_contract.json\", \"provenance\": \"art. 4 ust. 1 UoR (sprawdzalność) [NIEZWERYFIKOWANE — ISAP]; P29 kontrakt raportu JSON; prompt P65 Sekcja 10-I01\"}"
+    },
+    "I02": {
+      "exit": 0,
+      "output": "{\"classes_present\": [\"cosmetic\", \"threshold\", \"semantic\"], \"self_test_pass\": true, \"dominant_class\": \"semantic\", \"review_path\": \"4-eyes + legal review + golden replay (P10) + bramka CI (P39)\", \"evidence\": \"tools/v3_p65_semantic_diff.py (difflib na rules/*.rego) + self-test 3 klas\", \"provenance\": \"art. 9a PIT (spójność dokumentacji) [NIEZWERYFIKOWANE — ISAP]; prompt P65 Sekcja 10-I02\"}"
+    },
+    "I03": {
+      "exit": 0,
+      "output": "{\"edge_case_classes_present\": [\"dates\", \"thresholds\", \"currencies\", \"rounding\"], \"edge_case_classes_missing\": [], \"skeleton_cases\": 6, \"desert_cards_found\": 1, \"evidence\": \"tools/v3_p65_rule_to_tests.py (kompozycja z v3_p51_desert_cards.py)\", \"provenance\": \"art. 109e VAT [NIEZWERYFIKOWANE — ISAP]; P51 karty pustyni; prompt P65 Sekcja 10-I03\"}"
+    },
+    "I04": {
+      "exit": 0,
+      "output": "{\"scenarios_present\": [\"base\", \"zwrot\"], \"scenarios_missing\": [\"delays\", \"vat_refund\"], \"p62_engines_present\": true, \"p62_gate_pass\": true, \"composition\": \"cashflow scenarios z tools/v3_p62_engines.py (P62 digital twin) — zero duplikacji\", \"evidence\": \"tools/v3_p62_engines.py + bundles/v3_p62_run_all.json (gate)\", \"provenance\": \"art. 47 ustawy o ZUS (terminowość) [NIEZWERYFIKOWANE — ISAP]; P62; prompt P65 Sekcja 10-I04\"}"
+    },
+    "I05": {
+      "exit": 0,
+      "output": "{\"transitions_present\": [\"day[-_]?[-+]?\\\\d\", \"day_minus\", \"day_0\", \"granica\"], \"transitions_missing\": [], \"p53_engines_present\": true, \"composition\": \"przełączenia day-0 z tools/v3_p53_engines.py (P53 sandbox temporalny) — zero duplikacji\", \"evidence\": \"tools/v3_p53_engines.py (symulacje day-1/day-0/day+1)\", \"provenance\": \"P05 temporalność; P53 sandbox; prompt P65 Sekcja 10-I05\"}"
+    },
+    "I06": {
+      "exit": 0,
+      "output": "{\"roles_matrix\": {\"accountant\": {\"field_map\": {\"*\": 1}}, \"admin\": {\"field_map\": {\"*\": 1}}, \"auditor\": {\"field_map\": {\"*\": 1}}, \"entrepreneur\": {\"field_map\": {\"*\": 1}}}, \"roles_total\": 4, \"source_bundle\": \"bundles/v3_p63_i01_rbac.json (I01_rbac_as_data PASS)\", \"role_maps_doc\": \"docs/ROLE_MAPS.md (role z nagłówkiem bez mapy = incomplete)\", \"evidence\": \"bundles/v3_p63_i01_rbac.json + docs/ROLE_MAPS.md — kompozycja z P63\", \"provenance\": \"art. 25 RODO (privacy by design) [NIEZWERYFIKOWANE — ISAP]; P63; prompt P65 Sekcja 10-I06\"}"
+    },
+    "I07": {
+      "exit": 0,
+      "output": "{\"p95_ms\": 0, \"measurement_available\": false, \"tool_p95_support\": true, \"tool_regression_support\": true, \"reduction_plan_registered\": true, \"composition\": \"benchmark eval przez tools/v3_p37_benchmark_gate.py (P37) — rozszerzany, nie dublowany\", \"evidence\": \"tools/v3_p37_benchmark_gate.py + v3_p37_benchmark_regression.py\", \"provenance\": \"P37 obserwowalność (SLO eval); prompt P65 Sekcja 10-I07\"}"
+    },
+    "I08": {
+      "exit": 0,
+      "output": "{\"tamper_probes\": 5, \"tampering_detected\": 5, \"all_detected\": true, \"baseline_chain_valid\": true, \"composes\": \"tools/v3_p42_worm_hash_chain.py (łańcuch hashy WORM P42; obecny=True)\", \"evidence\": \"tools/v3_p65_worm_tamper_test.py (kompozycja z v3_p42_worm_hash_chain.py)\", \"provenance\": \"art. 5 UoR (pierwotność dowodów) [NIEZWERYFIKOWANE — ISAP]; P42/P59; prompt P65 Sekcja 10-I08\"}"
+    },
+    "I09": {
+      "exit": 0,
+      "output": "{\"mutations\": 1, \"fail_closed_breaches\": 0, \"auto_post_hits_in_chaos_tools\": 1, \"chaos_tools_found\": [\"v3_p49_chaos_input.py\", \"v3_p49_missing_field_generator.py\", \"v3_p49_fail_open_scanner.py\"], \"min_mutations\": 10, \"composition\": \"chaos prawny z tools/v3_p49_* (P49) — rozszerzany, nie dublowany\", \"evidence\": \"tools/v3_p49_chaos_input.py + v3_p49_missing_field_generator.py + v3_p49_fail_open_scanner.py\", \"provenance\": \"P49 fail-closed; art. 56 KKS [NIEZWERYFIKOWANE — ISAP]; prompt P65 Sekcja 10-I09\"}"
+    },
+    "I10": {
+      "exit": 0,
+      "output": "{\"composition_analysis_present\": true, \"tools_total\": 9, \"tools_with_composition_map\": 4, \"composition_map\": {\"v3_p65_rule_to_tests.py\": [\"v3_p51_desert_cards.py\"], \"v3_p65_worm_tamper_test.py\": [\"v3_p42_worm_hash_chain.py\", \"v3_p40_api_audit_worm.py\"], \"v3_p65_adoption_metrics.py\": [\"v3_p64_sweep_engine.py\"], \"v3_p65_doc_generator.py\": [\"v3_p60_doc_registry.json\"]}, \"real_sources_scanned\": [\"v3_p62_engines.py\", \"v3_p53_engines.py\", \"v3_p42_worm_hash_chain.py\", \"v3_p49_chaos_input.py\", \"v3_p51_desert_cards.py\", \"v3_p64_sweep_engine.py\"], \"evidence\": \"tools/v3_p65_tool_contract.py (rejestr composes) + skan 6 realnych źródeł\", \"provenance\": \"protokół P65 pkt 08 (zakaz duplikacji); P50; prompt P65 Sekcja 10-I10\"}"
+    },
+    "I11": {
+      "exit": 0,
+      "output": "{\"cycle\": \"weekly\", \"unused_tools_without_decision\": 0, \"tools_used\": 6, \"tools_total\": 6, \"rows\": [{\"tool\": \"v3_p65_tool_contract.py\", \"exists\": true, \"used_in_ci_or_docs\": true, \"used_in_tests\": false, \"decision\": \"używane\"}, {\"tool\": \"v3_p65_semantic_diff.py\", \"exists\": true, \"used_in_ci_or_docs\": true, \"used_in_tests\": false, \"decision\": \"używane\"}, {\"tool\": \"v3_p65_rule_to_tests.py\", \"exists\": true, \"used_in_ci_or_docs\": true, \"used_in_tests\": false, \"decision\": \"używane\"}, {\"tool\": \"v3_p65_worm_tamper_test.py\", \"exists\": true, \"used_in_ci_or_docs\": true, \"used_in_tests\": false, \"decision\": \"używane\"}, {\"tool\": \"v3_p65_adoption_metrics.py\", \"exists\": true, \"used_in_ci_or_docs\": true, \"used_in_tests\": false, \"decision\": \"używane\"}, {\"tool\": \"v3_p65_doc_generator.py\", \"exists\": true, \"used_in_ci_or_docs\": true, \"used_in_tests\": false, \"decision\": \"używane\"}], \"evidence\": \"tools/v3_p65_adoption_metrics.py (CI workflows + tests + KATALOG_NARZEDZI)\", \"provenance\": \"P50 dead tools; P37 metryki; prompt P65 Sekcja 10-I11\"}"
+    },
+    "I12": {
+      "exit": 0,
+      "output": "{\"doc_binding_present\": true, \"drift_detected\": true, \"tools_documented\": 5, \"content_hash\": \"86a8ff0cb40e2c21\", \"output_doc\": \"docs/TOOLS_P65_GENERATED.md\", \"evidence\": \"tools/v3_p65_doc_generator.py (AST docstring + argparse → docs; binding P60)\", \"provenance\": \"P60 binding docs↔kod; prompt P65 Sekcja 10-I12\"}"
+    }
+  }
+}

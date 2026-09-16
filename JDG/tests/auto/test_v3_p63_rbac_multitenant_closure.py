@@ -167,7 +167,7 @@ def test_wiring_main_jdg():
     assert "v3_p63_rbac_multitenant_closure.decide" in main
     post = main[main.index("final_verdict_post_merge = safe_merge("):]
     # Kotwica POST-MERGE przesunięta na p128 (wiring P64, kampania V3).
-    assert "final_verdict_p128" in post[:400]
+    assert "final_verdict_p129" in post[:400]
 
 
 # ═══ 16. Mirror: hash-parity policies/ ═══
@@ -189,7 +189,7 @@ def test_fail_closed_static():
     hay = RULE.read_text(encoding="utf-8")
     assert hay.count('"AUTO_POST"') == 0
     assert "NO_MATCH" in hay and "NEEDS_ADVICE" in hay
-    # final_verdict_p127 tylko w komentarzu nagłówka (konwencja P59–P62) —
+    # final_verdict_p127 tylko w komentarzu nagłówka (konwencja P59–P64) —
     # rega P63 nie wykonuje host-wiringu.
     assert hay.count("final_verdict_p127") == 1
 

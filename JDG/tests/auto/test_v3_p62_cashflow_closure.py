@@ -170,8 +170,8 @@ def test_wiring_main_jdg():
     assert "v3_p62_cashflow_closure.decide" in main
     post = main[main.index("final_verdict_post_merge = safe_merge("):]
     # Kotwica POST-MERGE przesunięta na p128: łańcuch urósł o P64
-    # (wiring final_verdict_p128, kampania V3 — P64 LUKA SWEEP).
-    assert "final_verdict_p128" in post[:400]
+    # (wiring final_verdict_p129, kampania V3 — P65 NOWE NARZĘDZIA).
+    assert "final_verdict_p129" in post[:400]
 
 
 # ═══ 16. Mirror: hash-parity policies/ ═══

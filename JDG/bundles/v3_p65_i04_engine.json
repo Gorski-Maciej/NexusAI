@@ -1,0 +1,26 @@
+{
+  "header": {
+    "schema": "jdg.v3_p65.toolforge.audit.v1",
+    "part": "P65",
+    "slug": "NOWE_NARZEDZIA",
+    "generated_at": null,
+    "analyses": {
+      "I04_cashflow": "engine"
+    }
+  },
+  "result": {
+    "scenarios_present": [
+      "base",
+      "zwrot"
+    ],
+    "scenarios_missing": [
+      "delays",
+      "vat_refund"
+    ],
+    "p62_engines_present": true,
+    "p62_gate_pass": true,
+    "composition": "cashflow scenarios z tools/v3_p62_engines.py (P62 digital twin) — zero duplikacji",
+    "evidence": "tools/v3_p62_engines.py + bundles/v3_p62_run_all.json (gate)",
+    "provenance": "art. 47 ustawy o ZUS (terminowość) [NIEZWERYFIKOWANE — ISAP]; P62; prompt P65 Sekcja 10-I04"
+  }
+}

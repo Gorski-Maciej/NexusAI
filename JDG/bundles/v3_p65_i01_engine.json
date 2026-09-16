@@ -1,0 +1,30 @@
+{
+  "header": {
+    "schema": "jdg.v3_p65.toolforge.audit.v1",
+    "part": "P65",
+    "slug": "NOWE_NARZEDZIA",
+    "generated_at": null,
+    "analyses": {
+      "I01_tool_contract": "engine"
+    }
+  },
+  "result": {
+    "contract_fields_present": {
+      "schema": true,
+      "tool": true,
+      "status": true,
+      "provenance": true
+    },
+    "contract_fields_missing": [],
+    "registry_total": 9,
+    "registry_missing_tools": [],
+    "exit_codes": {
+      "0": "PASS",
+      "1": "BLOCK/FAIL",
+      "2": "NEEDS_ADVICE/usage"
+    },
+    "dry_run_supported": true,
+    "evidence": "tools/v3_p65_tool_contract.py + bundles/v3_p65_i01_contract.json",
+    "provenance": "art. 4 ust. 1 UoR (sprawdzalność) [NIEZWERYFIKOWANE — ISAP]; P29 kontrakt raportu JSON; prompt P65 Sekcja 10-I01"
+  }
+}

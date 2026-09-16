@@ -1,0 +1,23 @@
+{
+  "header": {
+    "schema": "jdg.v3_p65.toolforge.audit.v1",
+    "part": "P65",
+    "slug": "NOWE_NARZEDZIA",
+    "generated_at": null,
+    "analyses": {
+      "I02_semantic_diff": "engine"
+    }
+  },
+  "result": {
+    "classes_present": [
+      "cosmetic",
+      "threshold",
+      "semantic"
+    ],
+    "self_test_pass": true,
+    "dominant_class": "semantic",
+    "review_path": "4-eyes + legal review + golden replay (P10) + bramka CI (P39)",
+    "evidence": "tools/v3_p65_semantic_diff.py (difflib na rules/*.rego) + self-test 3 klas",
+    "provenance": "art. 9a PIT (spójność dokumentacji) [NIEZWERYFIKOWANE — ISAP]; prompt P65 Sekcja 10-I02"
+  }
+}

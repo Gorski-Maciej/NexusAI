@@ -1,0 +1,73 @@
+{
+  "header": {
+    "schema": "jdg.v3_p65.toolforge.audit.v1",
+    "part": "P65",
+    "slug": "NOWE_NARZEDZIA",
+    "generated_at": null,
+    "analyses": {
+      "I12_docs": null
+    }
+  },
+  "result": {
+    "schema": "jdg.v3_p65.doc_generator.v1",
+    "tool": "v3_p65_doc_generator",
+    "status": "PASS",
+    "gate": "PASS",
+    "doc_binding_required": true,
+    "doc_binding_present": true,
+    "drift_detected": true,
+    "content_hash": "86a8ff0cb40e2c21",
+    "tools_documented": 5,
+    "definitions": [
+      {
+        "tool": "v3_p65_tool_contract.py",
+        "docstring_first_line": "NexusAI JDG — V3-P65 TOOL STANDARD CONTRACT (I01; prompt P65 Sekcja 10-I01).",
+        "cli_flags": [
+          "--dry-run",
+          "--json"
+        ],
+        "output": "bundles/v3_p65_*.json"
+      },
+      {
+        "tool": "v3_p65_semantic_diff.py",
+        "docstring_first_line": "NexusAI JDG — V3-P65 SEMANTIC DIFF FOR REGO (I02; prompt P65 Sekcja 10-I02).",
+        "cli_flags": [
+          "--json",
+          "--self-test",
+          "new",
+          "old"
+        ],
+        "output": "bundles/v3_p65_*.json"
+      },
+      {
+        "tool": "v3_p65_rule_to_tests.py",
+        "docstring_first_line": "NexusAI JDG — V3-P65 RULE-TO-TESTS GENERATOR (I03; prompt P65 Sekcja 10-I03).",
+        "cli_flags": [
+          "--json",
+          "rule"
+        ],
+        "output": "bundles/v3_p65_*.json"
+      },
+      {
+        "tool": "v3_p65_worm_tamper_test.py",
+        "docstring_first_line": "NexusAI JDG — V3-P65 WORM TAMPER TESTER (I08; prompt P65 Sekcja 10-I08).",
+        "cli_flags": [
+          "--json"
+        ],
+        "output": "bundles/v3_p65_*.json"
+      },
+      {
+        "tool": "v3_p65_adoption_metrics.py",
+        "docstring_first_line": "NexusAI JDG — V3-P65 TOOL ADOPTION METRICS (I11; prompt P65 Sekcja 10-I11).",
+        "cli_flags": [
+          "--json"
+        ],
+        "output": "bundles/v3_p65_*.json"
+      }
+    ],
+    "output_doc": "docs/TOOLS_P65_GENERATED.md",
+    "evidence": "AST (docstring + add_argument) z definicji narzędzi — zero ręcznych opisów",
+    "provenance": "P60 dokumentacja domknięcie (binding); prompt P65 Sekcja 10-I12",
+    "generated_at": "2026-09-16T06:26:39.148767+00:00"
+  }
+}

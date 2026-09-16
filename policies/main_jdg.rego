@@ -130,6 +130,7 @@ import data.jdg.v3_p61_integrations_closure as v3_p61_integrations_closure
 import data.jdg.v3_p62_cashflow_closure as v3_p62_cashflow_closure
 import data.jdg.v3_p63_rbac_multitenant_closure as v3_p63_rbac_multitenant_closure
 import data.jdg.v3_p64_luka_sweep as v3_p64_luka_sweep
+import data.jdg.v3_p65_tool_forge as v3_p65_tool_forge
 import data.jdg.v3_p59_security_closure as v3_p59_security_closure
 import data.jdg.v3_p58_observability_closure as v3_p58_observability_closure
 import data.jdg.v3_p57_ingest_data as v3_p57_ingest_data
@@ -3414,6 +3415,16 @@ final_verdict_p128 = safe_merge(final_verdict_p127,
         fallback.decide
     ))
 
+# ── PAS 18aq: V3-P65 NOWE NARZĘDZIA FORTECY (tool standard contract, semantic
+# diff Rego, rule-to-tests generator, cashflow simulator, temporal simulator,
+# RBAC validator, eval benchmark, WORM tamper tester, legal chaos suite,
+# composition-first rule, tool adoption metrics, tool documentation generator).
+# Fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p65_check nie jest true.
+final_verdict_p129 = safe_merge(final_verdict_p128,
+    safe_merge(v3_p65_tool_forge.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -3446,7 +3457,7 @@ final_verdict_p128 = safe_merge(final_verdict_p127,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p128
+    final_verdict_p129
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

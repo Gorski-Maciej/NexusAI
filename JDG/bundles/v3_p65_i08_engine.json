@@ -1,0 +1,20 @@
+{
+  "header": {
+    "schema": "jdg.v3_p65.toolforge.audit.v1",
+    "part": "P65",
+    "slug": "NOWE_NARZEDZIA",
+    "generated_at": null,
+    "analyses": {
+      "I08_worm": "engine"
+    }
+  },
+  "result": {
+    "tamper_probes": 5,
+    "tampering_detected": 5,
+    "all_detected": true,
+    "baseline_chain_valid": true,
+    "composes": "tools/v3_p42_worm_hash_chain.py (łańcuch hashy WORM P42; obecny=True)",
+    "evidence": "tools/v3_p65_worm_tamper_test.py (kompozycja z v3_p42_worm_hash_chain.py)",
+    "provenance": "art. 5 UoR (pierwotność dowodów) [NIEZWERYFIKOWANE — ISAP]; P42/P59; prompt P65 Sekcja 10-I08"
+  }
+}

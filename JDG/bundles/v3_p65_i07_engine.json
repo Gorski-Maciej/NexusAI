@@ -1,0 +1,21 @@
+{
+  "header": {
+    "schema": "jdg.v3_p65.toolforge.audit.v1",
+    "part": "P65",
+    "slug": "NOWE_NARZEDZIA",
+    "generated_at": null,
+    "analyses": {
+      "I07_benchmark": "engine"
+    }
+  },
+  "result": {
+    "p95_ms": 0,
+    "measurement_available": false,
+    "tool_p95_support": true,
+    "tool_regression_support": true,
+    "reduction_plan_registered": true,
+    "composition": "benchmark eval przez tools/v3_p37_benchmark_gate.py (P37) — rozszerzany, nie dublowany",
+    "evidence": "tools/v3_p37_benchmark_gate.py + v3_p37_benchmark_regression.py",
+    "provenance": "P37 obserwowalność (SLO eval); prompt P65 Sekcja 10-I07"
+  }
+}

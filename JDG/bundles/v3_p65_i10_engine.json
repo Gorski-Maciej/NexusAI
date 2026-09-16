@@ -1,0 +1,41 @@
+{
+  "header": {
+    "schema": "jdg.v3_p65.toolforge.audit.v1",
+    "part": "P65",
+    "slug": "NOWE_NARZEDZIA",
+    "generated_at": null,
+    "analyses": {
+      "I10_composition": "engine"
+    }
+  },
+  "result": {
+    "composition_analysis_present": true,
+    "tools_total": 9,
+    "tools_with_composition_map": 4,
+    "composition_map": {
+      "v3_p65_rule_to_tests.py": [
+        "v3_p51_desert_cards.py"
+      ],
+      "v3_p65_worm_tamper_test.py": [
+        "v3_p42_worm_hash_chain.py",
+        "v3_p40_api_audit_worm.py"
+      ],
+      "v3_p65_adoption_metrics.py": [
+        "v3_p64_sweep_engine.py"
+      ],
+      "v3_p65_doc_generator.py": [
+        "v3_p60_doc_registry.json"
+      ]
+    },
+    "real_sources_scanned": [
+      "v3_p62_engines.py",
+      "v3_p53_engines.py",
+      "v3_p42_worm_hash_chain.py",
+      "v3_p49_chaos_input.py",
+      "v3_p51_desert_cards.py",
+      "v3_p64_sweep_engine.py"
+    ],
+    "evidence": "tools/v3_p65_tool_contract.py (rejestr composes) + skan 6 realnych źródeł",
+    "provenance": "protokół P65 pkt 08 (zakaz duplikacji); P50; prompt P65 Sekcja 10-I10"
+  }
+}

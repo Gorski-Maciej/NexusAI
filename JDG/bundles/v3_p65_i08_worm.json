@@ -1,0 +1,47 @@
+{
+  "header": {
+    "schema": "jdg.v3_p65.toolforge.audit.v1",
+    "part": "P65",
+    "slug": "NOWE_NARZEDZIA",
+    "generated_at": null,
+    "analyses": {
+      "I08_worm": null
+    }
+  },
+  "result": {
+    "schema": "jdg.v3_p65.worm_tamper.v1",
+    "tool": "v3_p65_worm_tamper_test",
+    "status": "PASS",
+    "gate": "PASS",
+    "tamper_probes": 5,
+    "tampering_detected": 5,
+    "all_detected": true,
+    "baseline_chain_valid": true,
+    "probes_detail": [
+      {
+        "probe": "modify_byte",
+        "detected": true
+      },
+      {
+        "probe": "delete_entry",
+        "detected": true
+      },
+      {
+        "probe": "insert_entry",
+        "detected": true
+      },
+      {
+        "probe": "reorder",
+        "detected": true
+      },
+      {
+        "probe": "hash_swap",
+        "detected": true
+      }
+    ],
+    "composes": "tools/v3_p42_worm_hash_chain.py (łańcuch hashy WORM P42; obecny=True)",
+    "evidence": "TinyWorm verify() — 5/5 prób naruszenia wykrytych (modyfikacja, usunięcie, wstawienie, kolejność, swap hash)",
+    "provenance": "art. 5 UoR (pierwotność dowodów) [NIEZWERYFIKOWANE — ISAP]; P42 retencja/WORM; P59 integralność; prompt P65 Sekcja 10-I08",
+    "generated_at": "2026-09-16T06:26:24.753001+00:00"
+  }
+}

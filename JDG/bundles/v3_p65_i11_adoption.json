@@ -1,0 +1,70 @@
+{
+  "header": {
+    "schema": "jdg.v3_p65.toolforge.audit.v1",
+    "part": "P65",
+    "slug": "NOWE_NARZEDZIA",
+    "generated_at": null,
+    "analyses": {
+      "I11_adoption": null
+    }
+  },
+  "result": {
+    "schema": "jdg.v3_p65.adoption.v1",
+    "tool": "v3_p65_adoption_metrics",
+    "status": "PASS",
+    "gate": "PASS",
+    "cycle": "weekly",
+    "tools_total": 6,
+    "tools_used": 6,
+    "unused_tools_without_decision": 0,
+    "rows": [
+      {
+        "tool": "v3_p65_tool_contract.py",
+        "exists": true,
+        "used_in_ci_or_docs": true,
+        "used_in_tests": false,
+        "decision": "używane"
+      },
+      {
+        "tool": "v3_p65_semantic_diff.py",
+        "exists": true,
+        "used_in_ci_or_docs": true,
+        "used_in_tests": false,
+        "decision": "używane"
+      },
+      {
+        "tool": "v3_p65_rule_to_tests.py",
+        "exists": true,
+        "used_in_ci_or_docs": true,
+        "used_in_tests": false,
+        "decision": "używane"
+      },
+      {
+        "tool": "v3_p65_worm_tamper_test.py",
+        "exists": true,
+        "used_in_ci_or_docs": true,
+        "used_in_tests": false,
+        "decision": "używane"
+      },
+      {
+        "tool": "v3_p65_adoption_metrics.py",
+        "exists": true,
+        "used_in_ci_or_docs": true,
+        "used_in_tests": false,
+        "decision": "używane"
+      },
+      {
+        "tool": "v3_p65_doc_generator.py",
+        "exists": true,
+        "used_in_ci_or_docs": true,
+        "used_in_tests": false,
+        "decision": "używane"
+      }
+    ],
+    "composes": "tools/v3_p64_sweep_engine.py (sweep jako źródło danych użycia; obecny=True)",
+    "policy": "narzędzie nieużywane → decyzja: poprawa DX albo usunięcie (P50 dead tools)",
+    "evidence": ".github/workflows/*.yml + tests/auto/test_v3_p65_*.py + docs/KATALOG_NARZEDZI.md",
+    "provenance": "P50 dead code/duplikaty; P37 metryki; prompt P65 Sekcja 10-I11",
+    "generated_at": "2026-09-16T06:26:38.169193+00:00"
+  }
+}
