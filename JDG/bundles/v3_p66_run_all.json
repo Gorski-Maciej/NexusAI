@@ -1,0 +1,69 @@
+{
+  "schema": "jdg.v3_p66.run_all.v1",
+  "part": "P66",
+  "slug": "CHAOS_ODPORNOSC",
+  "generated_at": "2026-09-16T10:58:53.627720+00:00",
+  "phases": {
+    "chaos_runner_gate": 0,
+    "engines": 12,
+    "rego": "PASS"
+  },
+  "engines_run": 12,
+  "rego_gate": "PASS",
+  "failures": [],
+  "gate": "PASS",
+  "results": {
+    "I01": {
+      "exit": 0,
+      "output": "{\"hypothesis_present\": true, \"baseline_metrics\": 5, \"baseline_sources_missing\": [], \"error_budget_pct\": 100.0, \"error_budget_gate\": \"PASS\", \"advice_spread_max_pct\": 15, \"deployments\": {\"deployments_total\": 44, \"auto_rollback_armed\": 7, \"fail_closed\": 24, \"production_active_count\": 0}, \"hypothesis_testable_auto\": true, \"evidence\": \"tools/v3_p66_experiment_cards.json (steady_state) + bundles/v3_p58_error_budget.json + v3_p58_advice_spread.json + deployments.json\", \"provenance\": \"RODO art. 32 ust. 1 pkt d (regularne testowanie środków) [NIEZWERYFIKOWANE — ISAP]; P58 metryki; prompt P66 Sekcja 10-I01\"}"
+    },
+    "I02": {
+      "exit": 0,
+      "output": "{\"cards_total\": 12, \"cards_incomplete\": [], \"assertion_no_auto_post_all\": true, \"required_sections\": [\"hypothesis\", \"assertions\", \"rollback\"], \"evidence\": \"tools/v3_p66_experiment_cards.json (12 kart; kompozycja: chaos_runner P18, P43, P49, P57, P65-I08)\", \"provenance\": \"P49 chaos input; P65 karty narzędzi; prompt P66 Sekcja 10-I02\"}"
+    },
+    "I03": {
+      "exit": 0,
+      "output": "{\"dependency_matrix\": {\"MF\": {\"experiments\": [\"PEAK_TIME_MF_OUTAGE_SIMULATED\", \"GAME_DAY_COMPOUND_MF_NBP_BANK\"], \"failure_modes\": [\"timeout\", \"error\", \"halt\"]}, \"NBP\": {\"experiments\": [\"NBP_RATE_MISSING_WEEKEND\", \"GAME_DAY_COMPOUND_MF_NBP_BANK\"], \"failure_modes\": [\"timeout\", \"error\", \"halt\"]}, \"BANK\": {\"experiments\": [\"BANK_TIMEOUT_MID_MONTH\", \"GAME_DAY_COMPOUND_MF_NBP_BANK\"], \"failure_modes\": [\"timeout\", \"error\", \"halt\"]}, \"ISAP\": {\"experiments\": [\"ISAP_UNAVAILABLE_LEGAL_FRESHNESS\"], \"failure_modes\": [\"timeout\", \"error\", \"halt\"]}}, \"dependencies_covered\": [\"MF\", \"NBP\", \"BANK\", \"ISAP\"], \"combinations_tested\": 21, \"min_combinations\": 12, \"failure_modes\": [\"timeout\", \"error\", \"halt\"], \"evidence\": \"tools/v3_p66_experiment_cards.json (EX-01..EX-04, EX-12) + chaos_runner P18 (KSEF_OFFLINE_72H)\", \"provenance\": \"P61 integracje; P54/P57 kolejki; AP09 kurs z provenance; prompt P66 Sekcja 10-I03\"}"
+    },
+    "I04": {
+      "exit": 0,
+      "output": "{\"heavy_experiments\": [\"EX-09\", \"EX-12\"], \"kill_switch_tool_present\": true, \"kill_switch_pausable_seconds\": \"hot-reload < 1 s (P07-I04)\", \"p07_single_rule_suspend\": true, \"experiment_kill_switch_defined\": true, \"gap_closed_from_p07\": true, \"sla_note\": \"P07 SLA MTTR <= 15 min / auto-rollback <= 5 min; eksperymenty: przerwanie < 1 s (sekundy, nie minuty)\", \"evidence\": \"tools/v3_p66_experiment_cards.json (rollback per karta) + tools/v3_p07_kill_switch_sla.py + bundles/v3_p07_kill_switch_sla.json\", \"provenance\": \"P07 kill-switch SLA; prompt P66 Sekcja 10-I04\"}"
+    },
+    "I05": {
+      "exit": 0,
+      "output": "{\"cadence\": \"monthly\", \"chaos_day_scheduled\": true, \"chaos_runner_gate_in_ci\": false, \"ci_runnable_experiments\": 10, \"non_ci_experiments\": [\"EX-09\", \"EX-12\"], \"evidence\": \".github/workflows/*.yml (skan chaos) + tools/chaos_runner.py gate (P18) + tools/v3_p66_experiment_cards.json (ci_runnable per karta)\", \"provenance\": \"P39 CI; prompt P66 Sekcja 10-I05\"}"
+    },
+    "I06": {
+      "exit": 0,
+      "output": "{\"cards_with_rollback\": 12, \"cards_total\": 12, \"auto_rollback_armed_deployments\": 7, \"fail_closed_deployments\": 24, \"healthy_versions_present\": true, \"auto_rollback_sla_min\": 5, \"assertion_breach_path\": \"aserca złamana → rollback karty → przywrócenie healthy version → raport do rejestru (I09)\", \"evidence\": \"tools/v3_p66_experiment_cards.json + bundles/deployments.json (auto_rollback_armed) + bundles/healthy_versions.json (P38)\", \"provenance\": \"P38 bundle deploy (auto-rollback, MTTR SLA); prompt P66 Sekcja 10-I06\"}"
+    },
+    "I07": {
+      "exit": 0,
+      "output": "{\"ladder_levels\": [\"L1: eksperymenty w CI\", \"L2: chaos day monthly\", \"L3: game days\", \"L4: ciągły chaos w staging\", \"L5: chaos na produkcji z kill switchem\"], \"current_level\": \"L3\", \"level_evidence\": {\"ci_runnable\": 10, \"chaos_day\": \"zdefiniowany (I05)\", \"game_day\": \"EX-12 (I12)\"}, \"next_level_plan\": \"L3 game day: EX-12 na chaos day z kill switchem (I04) + rejestr wniosków (I09)\", \"evidence\": \"tools/v3_p66_experiment_cards.json (ci_runnable per karta)\", \"provenance\": \"prompt P66 Sekcja 10-I07\"}"
+    },
+    "I08": {
+      "exit": 0,
+      "output": "{\"experiments_as_data\": true, \"cards_total\": 12, \"new_scenarios_without_code\": 5, \"json_schema\": \"jdg.v3_p66.experiment_cards.v1 (hipoteza, kroki, asercje, rollback, metryki, blast radius, ci_runnable)\", \"runner_supports_data\": true, \"evidence\": \"tools/v3_p66_experiment_cards.json + tools/chaos_runner.py (EXPERIMENTS jako dane w kodzie runnera — rozszerzane, nie dublowane)\", \"provenance\": \"ADR-002 parametry-as-data zastosowane do eksperymentów; prompt P66 Sekcja 10-I08\"}"
+    },
+    "I09": {
+      "exit": 0,
+      "output": "{\"fail_closed_violations_total\": 0, \"feed_to_repair_register\": true, \"repair_register_source\": \"bundles/v3_p64_sweep_register.json (P64 automat sweep; SLA plan P64-I01)\", \"findings_path\": \"luka chaos → wpis z SLA → fala naprawcza (P64 kontrakt K1) → weryfikacja następnym chaosem\", \"open_findings_now\": 0, \"evidence\": \"bundles/v3_p49_chaos_input.json + v3_p65_i09_engine.json + v3_p57_chaos.json + v3_p64_sweep_register.json\", \"provenance\": \"P49 chaos; P64 rejestr rezydualny; prompt P66 Sekcja 10-I09\"}"
+    },
+    "I10": {
+      "exit": 0,
+      "output": "{\"resilience_pct\": 100.0, \"min_pct\": 80, \"components\": {\"cards_with_core_assertion\": 12, \"green_chaos_sources\": 2}, \"trend_to_p68\": \"kwartalny odczyt resilience_pct → wejście do re-certyfikacji P68\", \"evidence\": \"tools/v3_p66_experiment_cards.json + bundles/v3_p49_chaos_input.json + v3_p57_chaos.json\", \"provenance\": \"P58 metryki; prompt P66 Sekcja 10-I10\"}"
+    },
+    "I11": {
+      "exit": 0,
+      "output": "{\"peak_experiment_present\": true, \"simulation_env\": \"digital twin (tools/digital_twin_simulator.py, P33) — nigdy produkcja\", \"volume_multiplier_note\": \"wolumen szczytowy symulowany (x10) — liczba nie z produkcji [ZAŁOŻENIE]\", \"probability_cost_analysis\": \"MF w szczycie = najwyższe prawdopodobieństwo × koszt (masowe błędne deklaracje) — EX-09 priorytet 1 spoza CI\", \"evidence\": \"tools/v3_p66_experiment_cards.json (EX-09) + tools/digital_twin_simulator.py\", \"provenance\": \"prompt P66 Sekcja 10-I11\"}"
+    },
+    "I12": {
+      "exit": 0,
+      "output": "{\"game_day_present\": true, \"compound_dependencies\": [\"MF (EX-01)\", \"NBP (EX-02)\", \"BANK (EX-03)\"], \"chaos_drill_p43_gate\": \"PASS\", \"team_training_path\": \"game day = chaos day + obserwatorzy + debrief → wnioski do rejestru napraw (I09)\", \"evidence\": \"tools/v3_p66_experiment_cards.json (EX-12) + bundles/v3_p43_chaos_drill.json\", \"provenance\": \"prompt P66 Sekcja 10-I12\"}"
+    },
+    "rego_opa_native": {
+      "exit": 0,
+      "output": "PASS: 19/19"
+    }
+  }
+}

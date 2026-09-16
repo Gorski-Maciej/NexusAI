@@ -1,0 +1,36 @@
+{
+  "analysis": "I07_data_readiness_register",
+  "checks": [
+    {
+      "name": "sources_registered",
+      "status": "OK",
+      "detail": "źródła danych uczących w rejestrze: 7 (wymagane >= 6)"
+    },
+    {
+      "name": "availability_status",
+      "status": "OK",
+      "detail": "źródła dostępne od startu: 6; brakujące (plan): ['legal_reviews_p47']"
+    },
+    {
+      "name": "plan_field",
+      "status": "OK",
+      "detail": "każde źródło ma plan domknięcia"
+    },
+    {
+      "name": "pipeline_consumes_sources",
+      "status": "OK",
+      "detail": "pipeline uczenia definiuje konsumentów danych"
+    }
+  ],
+  "metrics": {
+    "sources": 7,
+    "available": 6,
+    "missing": 1
+  },
+  "decision": "PASS",
+  "legal_basis": "prompt P67 I07; P51 pustynie (plan domknięcia)",
+  "gate": "PASS",
+  "findings": [],
+  "innovation": "V3-P67-I07",
+  "generated_at": null
+}

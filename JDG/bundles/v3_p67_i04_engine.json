@@ -1,0 +1,30 @@
+{
+  "analysis": "I04_suggestion_expiry_by_law_epoch",
+  "checks": [
+    {
+      "name": "suggestions_with_epoch",
+      "status": "OK",
+      "detail": "sugestie z epoką prawną: 2/2"
+    },
+    {
+      "name": "epoch_registry_p53",
+      "status": "OK",
+      "detail": "epoki prawne P53 dostępne: 1"
+    },
+    {
+      "name": "epoch_source_binding",
+      "status": "OK",
+      "detail": "źródło epok w pipeline: bundles/v3_p53_epoch_registry.json"
+    }
+  ],
+  "metrics": {
+    "suggestions": 2,
+    "epochs": 1
+  },
+  "decision": "PASS",
+  "legal_basis": "P05 temporalność; P53 epoki prawne; prompt P67 I04",
+  "gate": "PASS",
+  "findings": [],
+  "innovation": "V3-P67-I04",
+  "generated_at": null
+}

@@ -43,10 +43,12 @@ def extract_tool_def(path: Path) -> dict:
 
 
 def render(docs: list[dict]) -> str:
+    # Deterministyczna treść: bez timestampa w treści (czas generacji jest
+    # w bundles/v3_p65_i12_docs.json) — hash = stabilny, --check bez dryfu.
     lines = [
         "# NARZĘDZIA V3-P65 NOWE NARZĘDZIA FORTECY (WYGENEROWANE)",
         "",
-        f"Generator: tools/v3_p65_doc_generator.py | Binding P60: docs ↔ kod (zero dryfu) | Wygenerowano: {now_iso()}",
+        "Generator: tools/v3_p65_doc_generator.py | Binding P60: docs ↔ kod (zero dryfu)",
         "",
         "| # | Narzędzie | Opis | Flagi CLI | Wyjście |",
         "|---|-----------|------|-----------|---------|",

@@ -1,6 +1,6 @@
 # NARZĘDZIA V3-P65 NOWE NARZĘDZIA FORTECY (WYGENEROWANE)
 
-Generator: tools/v3_p65_doc_generator.py | Binding P60: docs ↔ kod (zero dryfu) | Wygenerowano: 2026-09-16T06:26:39.141168+00:00
+Generator: tools/v3_p65_doc_generator.py | Binding P60: docs ↔ kod (zero dryfu)
 
 | # | Narzędzie | Opis | Flagi CLI | Wyjście |
 |---|-----------|------|-----------|---------|

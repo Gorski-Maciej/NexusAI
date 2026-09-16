@@ -18,14 +18,14 @@
         "tool": "v3_p65_tool_contract.py",
         "exists": true,
         "used_in_ci_or_docs": true,
-        "used_in_tests": false,
+        "used_in_tests": true,
         "decision": "używane"
       },
       {
         "tool": "v3_p65_semantic_diff.py",
         "exists": true,
         "used_in_ci_or_docs": true,
-        "used_in_tests": false,
+        "used_in_tests": true,
         "decision": "używane"
       },
       {
@@ -53,7 +53,7 @@
         "tool": "v3_p65_doc_generator.py",
         "exists": true,
         "used_in_ci_or_docs": true,
-        "used_in_tests": false,
+        "used_in_tests": true,
         "decision": "używane"
       }
     ],

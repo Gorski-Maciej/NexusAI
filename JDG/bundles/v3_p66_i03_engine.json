@@ -1,0 +1,73 @@
+{
+  "header": {
+    "schema": "jdg.v3_p66.chaos.audit.v1",
+    "part": "P66",
+    "slug": "CHAOS_ODPORNOSC",
+    "generated_at": null,
+    "analyses": {
+      "I03_dependency_matrix": "engine"
+    }
+  },
+  "result": {
+    "dependency_matrix": {
+      "MF": {
+        "experiments": [
+          "PEAK_TIME_MF_OUTAGE_SIMULATED",
+          "GAME_DAY_COMPOUND_MF_NBP_BANK"
+        ],
+        "failure_modes": [
+          "timeout",
+          "error",
+          "halt"
+        ]
+      },
+      "NBP": {
+        "experiments": [
+          "NBP_RATE_MISSING_WEEKEND",
+          "GAME_DAY_COMPOUND_MF_NBP_BANK"
+        ],
+        "failure_modes": [
+          "timeout",
+          "error",
+          "halt"
+        ]
+      },
+      "BANK": {
+        "experiments": [
+          "BANK_TIMEOUT_MID_MONTH",
+          "GAME_DAY_COMPOUND_MF_NBP_BANK"
+        ],
+        "failure_modes": [
+          "timeout",
+          "error",
+          "halt"
+        ]
+      },
+      "ISAP": {
+        "experiments": [
+          "ISAP_UNAVAILABLE_LEGAL_FRESHNESS"
+        ],
+        "failure_modes": [
+          "timeout",
+          "error",
+          "halt"
+        ]
+      }
+    },
+    "dependencies_covered": [
+      "MF",
+      "NBP",
+      "BANK",
+      "ISAP"
+    ],
+    "combinations_tested": 21,
+    "min_combinations": 12,
+    "failure_modes": [
+      "timeout",
+      "error",
+      "halt"
+    ],
+    "evidence": "tools/v3_p66_experiment_cards.json (EX-01..EX-04, EX-12) + chaos_runner P18 (KSEF_OFFLINE_72H)",
+    "provenance": "P61 integracje; P54/P57 kolejki; AP09 kurs z provenance; prompt P66 Sekcja 10-I03"
+  }
+}

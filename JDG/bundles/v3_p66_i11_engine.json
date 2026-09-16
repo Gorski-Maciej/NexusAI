@@ -1,0 +1,19 @@
+{
+  "header": {
+    "schema": "jdg.v3_p66.chaos.audit.v1",
+    "part": "P66",
+    "slug": "CHAOS_ODPORNOSC",
+    "generated_at": null,
+    "analyses": {
+      "I11_peak_time": "engine"
+    }
+  },
+  "result": {
+    "peak_experiment_present": true,
+    "simulation_env": "digital twin (tools/digital_twin_simulator.py, P33) — nigdy produkcja",
+    "volume_multiplier_note": "wolumen szczytowy symulowany (x10) — liczba nie z produkcji [ZAŁOŻENIE]",
+    "probability_cost_analysis": "MF w szczycie = najwyższe prawdopodobieństwo × koszt (masowe błędne deklaracje) — EX-09 priorytet 1 spoza CI",
+    "evidence": "tools/v3_p66_experiment_cards.json (EX-09) + tools/digital_twin_simulator.py",
+    "provenance": "prompt P66 Sekcja 10-I11"
+  }
+}

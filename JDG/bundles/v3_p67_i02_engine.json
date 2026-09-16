@@ -1,0 +1,35 @@
+{
+  "analysis": "I02_correction_rate_per_rule",
+  "checks": [
+    {
+      "name": "corrections_registered",
+      "status": "OK",
+      "detail": "korekty AUTO_POST zarejestrowane: 1"
+    },
+    {
+      "name": "rule_attribution",
+      "status": "OK",
+      "detail": "każda korekta wskazuje regułę (rule_id) — wskaźnik per reguła"
+    },
+    {
+      "name": "days_metric",
+      "status": "OK",
+      "detail": "liczba dni do korekty mierzalna (trend spadkowy = uczenie działa)"
+    },
+    {
+      "name": "verdict_base",
+      "status": "OK",
+      "detail": "golden orzeczeń w bazie wskaźnika: 31 (>= 30)"
+    }
+  ],
+  "metrics": {
+    "corrections": 1,
+    "verdicts": 31
+  },
+  "decision": "PASS",
+  "legal_basis": "UoR art. 4 ust. 1 (rzetelność — korekty ujawniane); KKS art. 56 [NIEZWERYFIKOWANE — ISAP]; prompt P67 I02",
+  "gate": "PASS",
+  "findings": [],
+  "innovation": "V3-P67-I02",
+  "generated_at": null
+}

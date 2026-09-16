@@ -97,6 +97,6 @@
     "composability_check": "I10 kompozycja przed nowym kodem (rejestr composes)",
     "evidence": "tools/v3_p65_tool_contract.py (rejestr narzędzi) + thresholds v3_p65_*",
     "provenance": "art. 4 ust. 1 UoR (sprawdzalność) [NIEZWERYFIKOWANE — ISAP]; P29 kontrakt raportu JSON; prompt P65 Sekcja 10-I01",
-    "generated_at": "2026-09-16T06:26:22.363690+00:00"
+    "generated_at": "2026-09-16T09:24:16.827898+00:00"
   }
 }

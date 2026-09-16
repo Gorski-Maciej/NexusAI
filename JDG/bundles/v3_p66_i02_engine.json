@@ -1,0 +1,23 @@
+{
+  "header": {
+    "schema": "jdg.v3_p66.chaos.audit.v1",
+    "part": "P66",
+    "slug": "CHAOS_ODPORNOSC",
+    "generated_at": null,
+    "analyses": {
+      "I02_experiment_cards": "engine"
+    }
+  },
+  "result": {
+    "cards_total": 12,
+    "cards_incomplete": [],
+    "assertion_no_auto_post_all": true,
+    "required_sections": [
+      "hypothesis",
+      "assertions",
+      "rollback"
+    ],
+    "evidence": "tools/v3_p66_experiment_cards.json (12 kart; kompozycja: chaos_runner P18, P43, P49, P57, P65-I08)",
+    "provenance": "P49 chaos input; P65 karty narzędzi; prompt P66 Sekcja 10-I02"
+  }
+}

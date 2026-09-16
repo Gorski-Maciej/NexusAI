@@ -1,0 +1,331 @@
+{
+  "schema": "jdg.v3_p66.experiment_cards.v1",
+  "part": "P66",
+  "note": "Eksperymenty jako dane (I08) — nowe scenariusze bez kodu; każda karta: hipoteza, kroki, asercje (zero cichych AUTO_POST = obowiązkowa), rollback, metryki P58, blast radius. Kompozycja: 5 kart z istniejącego chaos_runner (P18), 2 z chaos drillów P43/P16, reszta nowe zależności (MF/NBP/bank/ISAP) wg promptu P66 Sekcja 2.",
+  "steady_state_hypothesis": {
+    "statement": "System w normie: decyzje płyną (error_rate=0.0, deployments.json), latencja w SLO (P37), fail-closed działa (NEEDS_ADVICE przy wątpliwości), error budget P58 = 100%, advice spread <= 15% (v3_p58_advice_spread.json).",
+    "metrics_baseline": [
+      {
+        "metric": "golden_replay_uver_pct",
+        "source": "bundles/metrics.json#golden_replay (P37/P58)",
+        "expected": "0.0"
+      },
+      {
+        "metric": "error_budget_pct",
+        "source": "bundles/v3_p58_error_budget.json",
+        "expected": ">= 20 (freeze off)"
+      },
+      {
+        "metric": "advice_spread_max_pct",
+        "source": "bundles/v3_p58_advice_spread.json",
+        "expected": "<= 15"
+      },
+      {
+        "metric": "deploy_error_rate",
+        "source": "bundles/deployments.json",
+        "expected": "0.0"
+      },
+      {
+        "metric": "fail_closed_violations",
+        "source": "bundles/v3_p49_chaos_input.json + v3_p65_i09_engine.json",
+        "expected": "0"
+      }
+    ],
+    "verification": "przed/po eksperyment — metryki porównywane automatycznie przez silnik I01 (bundles/v3_p66_i01_engine.json)"
+  },
+  "cards": [
+    {
+      "id": "EX-01",
+      "name": "MF_KSEF_OUTAGE_72H",
+      "source": "chaos_runner:KSEF_OFFLINE_72H + tools/ksef_offline_queue.py + ksef_outbox.py",
+      "hypothesis": "Przy awarii MF (KSeF offline 72 h) kolejka OFL rośnie kontrolnie, deklaracje spóźnione zero, zero cichych AUTO_POST.",
+      "steps": [
+        "aktywuj outbox exactly-once (P54)",
+        "symuluj brak odpowiedzi MF 72 h",
+        " obserwuj kolejka_ofl_depth i degradację"
+      ],
+      "assertions": [
+        "no_silent_auto_post",
+        "queue_growth_controlled",
+        "degradation_visible",
+        "alerts_fire"
+      ],
+      "rollback": "przywróć łączność → drain kolejki OFL → rekonsylacja P57-I07",
+      "metrics": [
+        "ksef_queue_depth",
+        "oldest_item_hours",
+        "auto_post_attempts_blocked"
+      ],
+      "blast_radius": "izolowany moduł KSeF; produkcja nieaktywna (deployments.json production_active=false)",
+      "ci_runnable": true,
+      "kill_switch": true
+    },
+    {
+      "id": "EX-02",
+      "name": "NBP_RATE_MISSING_WEEKEND",
+      "source": "NOWY — zależność NBP (AP09: kurs z provenance, nie hardcode)",
+      "hypothesis": "Brak kursu NBP w weekend/święto nie produkuje cichego wyliczenia — decyzja walutowa dostaje NEEDS_ADVICE z powodem brak kursu z provenance, nie zmyślonego kursu.",
+      "steps": [
+        "ustaw inject: brak kursu NBP dla daty weekendowej",
+        "ewaluuj reguły walutowe (kurs historyczny time-travel P53)",
+        "weryfikuj provenance kursu"
+      ],
+      "assertions": [
+        "no_silent_auto_post",
+        "degradation_visible",
+        "alerts_fire"
+      ],
+      "rollback": "przywróć feed kursów → replay decyzji z NEEDS_ADVICE (P05 time-travel)",
+      "metrics": [
+        "missing_fx_events",
+        "needs_advice_rate_delta",
+        "provenance_missing_count"
+      ],
+      "blast_radius": "tylko strumienie walutowe; wyłącznik: kill switch eksperymentu P66",
+      "ci_runnable": true,
+      "kill_switch": true
+    },
+    {
+      "id": "EX-03",
+      "name": "BANK_TIMEOUT_MID_MONTH",
+      "source": "NOWY — zależność bank (P62 playbook: kolejka offline → przypominajki → rekonsylacja)",
+      "hypothesis": "Timeout banku w połowie miesiąca nie powoduje podwójnej płatności (idempotency_key P55/P62-I02) ani utraty płatności (outbox exactly-once).",
+      "steps": [
+        "symuluj timeout łącza bankowego 15. dnia miesiąca",
+        "wywołaj auto-płatność z zarezerwowanym kluczem idempotencji",
+        "sprawdź kolejka offline + rekonsylacja"
+      ],
+      "assertions": [
+        "no_silent_auto_post",
+        "queue_growth_controlled",
+        "degradation_visible"
+      ],
+      "rollback": "kill switch: drain kolejki offline → rekonsylacja P57 → przywrócenie łączności → weryfikacja double_payments_detected=0",
+      "metrics": [
+        "idempotency_collisions",
+        "offline_queue_depth",
+        "double_payments_detected"
+      ],
+      "blast_radius": "moduł płatności P62; wyłącznik eksperymentu",
+      "ci_runnable": true,
+      "kill_switch": true
+    },
+    {
+      "id": "EX-04",
+      "name": "ISAP_UNAVAILABLE_LEGAL_FRESHNESS",
+      "source": "NOWY — zależność ISAP (P58 legal freshness; P47 mediacje)",
+      "hypothesis": "Niedostępny ISAP nie blokuje decyzji na istniejących zweryfikowanych podstawach, ale nowa/ ZMIANA podstawy dostaje NEEDS_ADVICE [NIEZWERYFIKOWANE] zamiast cichego uznania.",
+      "steps": [
+        "symuluj timeout ISAP",
+        "zainicjuj zmianę reguły wymagającą weryfikacji",
+        "weryfikuj ścieżkę mediacji P47"
+      ],
+      "assertions": [
+        "no_silent_auto_post",
+        "degradation_visible",
+        "alerts_fire"
+      ],
+      "rollback": "przywróć ISAP → dokończ weryfikację → usuń tag [NIEZWERYFIKOWANE]",
+      "metrics": [
+        "unverified_basis_count",
+        "mediation_queue_depth"
+      ],
+      "blast_radius": "warstwa legal (P47); zero wpływu na istniejące decyzje ACTIVE",
+      "ci_runnable": true,
+      "kill_switch": true
+    },
+    {
+      "id": "EX-05",
+      "name": "CORRUPT_BUNDLE_FALLBACK",
+      "source": "chaos_runner:CORRUPT_BUNDLE",
+      "hypothesis": "Uszkodzony bundle OPA (losowe bajty) jest wykrywany (validate_rules.py / opa check) i system fallbackuje bez crashy (INV-015/034).",
+      "steps": [
+        "uszkodź kopię bundla",
+        "uruchom walidator",
+        "weryfikuj fail-closed routing"
+      ],
+      "assertions": [
+        "no_silent_auto_post",
+        "degradation_visible",
+        "alerts_fire"
+      ],
+      "rollback": "przywróć zdrową wersję z bundles/healthy_versions.json (P38)",
+      "metrics": [
+        "detection_time_s",
+        "fallback_engaged"
+      ],
+      "blast_radius": "kopia testowa bundla; oryginał nietknięty",
+      "ci_runnable": true,
+      "kill_switch": true
+    },
+    {
+      "id": "EX-06",
+      "name": "EMPTY_THRESHOLDS_GLOBAL_ADVICE",
+      "source": "chaos_runner:EMPTY_THRESHOLDS",
+      "hypothesis": "Opróżnione thresholds (brak snapshotu ADR-002) daje globalny NEEDS_ADVICE (konwencja P51-P65: thresholds_missing) — zero decyzji na zmyślonych progach.",
+      "steps": [
+        "usuń blok progów z kopii",
+        "ewaluuj dowolny pakiet P5x/P6x",
+        "weryfikuj thresholds_missing"
+      ],
+      "assertions": [
+        "no_silent_auto_post",
+        "degradation_visible"
+      ],
+      "rollback": "przywróć thresholds_jdg.rego z mirror (hash-parity P48)",
+      "metrics": [
+        "thresholds_missing_verdicts",
+        "auto_post_attempts_blocked"
+      ],
+      "blast_radius": "kopia reguł w katalogu tymczasowym",
+      "ci_runnable": true,
+      "kill_switch": true
+    },
+    {
+      "id": "EX-07",
+      "name": "DUPLICATE_RULE_IDS_DETECTED",
+      "source": "chaos_runner:DUPLICATE_RULE_IDS",
+      "hypothesis": "Duplikat rule_id wprowadzony celowo jest wykrywany przez walidator (unikalność globalna) i blokuje merge.",
+      "steps": [
+        "dodaj duplikat do kopii reguł",
+        "uruchom validate_rules.py",
+        "oczekiwany FAIL walidacji"
+      ],
+      "assertions": [
+        "no_silent_auto_post",
+        "degradation_visible",
+        "alerts_fire"
+      ],
+      "rollback": "kill switch: usuń duplikat z kopii i przywróć stan wyjściowy katalogu reguł",
+      "metrics": [
+        "validator_exit_code"
+      ],
+      "blast_radius": "kopia reguł",
+      "ci_runnable": true,
+      "kill_switch": true
+    },
+    {
+      "id": "EX-08",
+      "name": "MISSING_DOMAIN_PACKAGE_SAFE_MERGE",
+      "source": "chaos_runner:MISSING_DOMAIN_PACKAGE",
+      "hypothesis": "Usunięcie pakietu domeny nie usuwa reszty decyzji — safe_merge fallbackuje, brakująca domena jest widoczna w degradacji.",
+      "steps": [
+        "usuń import domeny z kopii main_jdg",
+        "ewaluuj",
+        "weryfikuj fallback + degradację"
+      ],
+      "assertions": [
+        "no_silent_auto_post",
+        "degradation_visible",
+        "alerts_fire"
+      ],
+      "rollback": "przywróć main_jdg z mirror (hash-parity)",
+      "metrics": [
+        "safe_merge_fallbacks",
+        "domain_gaps_visible"
+      ],
+      "blast_radius": "kopia main_jdg.rego",
+      "ci_runnable": true,
+      "kill_switch": true
+    },
+    {
+      "id": "EX-09",
+      "name": "PEAK_TIME_MF_OUTAGE_SIMULATED",
+      "source": "NOWY — I11 peak-time (symulowany szczyt deklaracji: 20-ty dzień miesiąca + awaria MF)",
+      "hypothesis": "Awaria MF w szczycie deklaracji (najgorszy moment wg analizy prawdopodobieństwo x koszt) produkuje kontrolowany wzrost kolejki i degradację, nie masowe błędne deklaracje.",
+      "steps": [
+        "ustaw symulowany wolumen szczytowy (x10)",
+        "nałóż awarię MF (EX-01)",
+        "weryfikuj kolejka rośnie liniowo + termostat alertów"
+      ],
+      "assertions": [
+        "no_silent_auto_post",
+        "queue_growth_controlled",
+        "degradation_visible",
+        "alerts_fire"
+      ],
+      "rollback": "jak EX-01 + przywróć wolumen bazowy",
+      "metrics": [
+        "queue_depth_peak",
+        "alert_latency_s",
+        "deklaracje_spóźnione"
+      ],
+      "blast_radius": "środowisko symulacji (digital twin P33); produkcja nietknięta",
+      "ci_runnable": false,
+      "kill_switch": true
+    },
+    {
+      "id": "EX-10",
+      "name": "WORM_CORRUPT_DETECTABLE",
+      "source": "kompozycja P65-I08 v3_p65_worm_tamper_test.py (5/5 wykrytych)",
+      "hypothesis": "Każda próba naruszenia archiwum WORM (byte-flip, truncation, append, reorder, delete) jest wykrywalna przez łańcuch hashowy (art. 5 UoR pierwotność).",
+      "steps": [
+        "uruchom tamper test P65-I08",
+        "weryfikuj 5/5 detected",
+        "weryfikuj BLOCK w Rego P65"
+      ],
+      "assertions": [
+        "no_silent_auto_post",
+        "degradation_visible"
+      ],
+      "rollback": "kill switch: archiwum rekonstruowane z kopii zdrowej (P38 healthy versions) + audyt prób",
+      "metrics": [
+        "tamper_probes",
+        "tampering_detected"
+      ],
+      "blast_radius": "kopia łańcucha testowego",
+      "ci_runnable": true,
+      "kill_switch": true
+    },
+    {
+      "id": "EX-11",
+      "name": "MISSING_FIELDS_FUZZ_FAIL_CLOSED",
+      "source": "kompozycja P49 (12 scenariuszy chaos + 171 przypadków missing-field; v3_p57_chaos 8/8)",
+      "hypothesis": "Każda mutacja input (braki pól, złe typy, skrajne wartości, bypass) kończy NEEDS_ADVICE/MANUAL_REVIEW/BLOCK/no_match — nigdy cichym AUTO_POST (AP07).",
+      "steps": [
+        "uruchom v3_p49_chaos_input.py",
+        "weryfikuj fail_closed_violations=0",
+        "uruchom P57 chaos 8/8"
+      ],
+      "assertions": [
+        "no_silent_auto_post",
+        "degradation_visible"
+      ],
+      "rollback": "kill switch: read-only (eval w pamięci) — przywrócenie nie wymagane, stan nietknięty",
+      "metrics": [
+        "fail_closed_violations",
+        "cases_total"
+      ],
+      "blast_radius": "zero (eval w pamięci)",
+      "ci_runnable": true,
+      "kill_switch": true
+    },
+    {
+      "id": "EX-12",
+      "name": "GAME_DAY_COMPOUND_MF_NBP_BANK",
+      "source": "NOWY — I12 game day (awaria złożona: MF + NBP + bank jednocześnie)",
+      "hypothesis": "Awaria złożona trzech zależności jednocześnie degraduje system czytelnie per domena (3 osobne alerty), każda ścieżka fail-closed, kolejki kontrolne — trening zespołu (game day) potwierdza procedury.",
+      "steps": [
+        "arm game day (kill switch gotowy)",
+        "nałóż EX-01+EX-02+EX-03",
+        "weryfikuj 3 domeny degradacji niezależnie",
+        "zbierz wnioski do rejestru P66-I09"
+      ],
+      "assertions": [
+        "no_silent_auto_post",
+        "queue_growth_controlled",
+        "degradation_visible",
+        "alerts_fire"
+      ],
+      "rollback": "kill switch eksperymentu (P66-I04) → przywrócenie feedów → rekonsylacja P57",
+      "metrics": [
+        "degraded_domains",
+        "alert_count",
+        "mttr_measured_min"
+      ],
+      "blast_radius": "największy z katalogu — TYLKO chaos day z kill switchem, nigdy CI",
+      "ci_runnable": false,
+      "kill_switch": true
+    }
+  ]
+}

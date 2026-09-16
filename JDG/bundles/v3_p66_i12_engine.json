@@ -1,0 +1,23 @@
+{
+  "header": {
+    "schema": "jdg.v3_p66.chaos.audit.v1",
+    "part": "P66",
+    "slug": "CHAOS_ODPORNOSC",
+    "generated_at": null,
+    "analyses": {
+      "I12_game_day": "engine"
+    }
+  },
+  "result": {
+    "game_day_present": true,
+    "compound_dependencies": [
+      "MF (EX-01)",
+      "NBP (EX-02)",
+      "BANK (EX-03)"
+    ],
+    "chaos_drill_p43_gate": "PASS",
+    "team_training_path": "game day = chaos day + obserwatorzy + debrief → wnioski do rejestru napraw (I09)",
+    "evidence": "tools/v3_p66_experiment_cards.json (EX-12) + bundles/v3_p43_chaos_drill.json",
+    "provenance": "prompt P66 Sekcja 10-I12"
+  }
+}

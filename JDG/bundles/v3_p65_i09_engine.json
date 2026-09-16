@@ -9,9 +9,15 @@
     }
   },
   "result": {
-    "mutations": 1,
+    "mutations": 196,
+    "mutation_evidence": {
+      "chaos_scenarios": 12,
+      "missing_field_cases": 171,
+      "fail_open_paths": 12,
+      "mutation_generators": 1
+    },
     "fail_closed_breaches": 0,
-    "auto_post_hits_in_chaos_tools": 1,
+    "auto_post_hits_in_chaos_tools": 0,
     "chaos_tools_found": [
       "v3_p49_chaos_input.py",
       "v3_p49_missing_field_generator.py",
@@ -19,7 +25,7 @@
     ],
     "min_mutations": 10,
     "composition": "chaos prawny z tools/v3_p49_* (P49) — rozszerzany, nie dublowany",
-    "evidence": "tools/v3_p49_chaos_input.py + v3_p49_missing_field_generator.py + v3_p49_fail_open_scanner.py",
+    "evidence": "bundles/v3_p49_chaos_input.json + v3_p49_missing_field_coverage.json + v3_p49_fail_open_registry.json",
     "provenance": "P49 fail-closed; art. 56 KKS [NIEZWERYFIKOWANE — ISAP]; prompt P65 Sekcja 10-I09"
   }
 }

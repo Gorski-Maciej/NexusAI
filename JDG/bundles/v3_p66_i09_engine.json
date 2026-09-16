@@ -1,0 +1,20 @@
+{
+  "header": {
+    "schema": "jdg.v3_p66.chaos.audit.v1",
+    "part": "P66",
+    "slug": "CHAOS_ODPORNOSC",
+    "generated_at": null,
+    "analyses": {
+      "I09_findings": "engine"
+    }
+  },
+  "result": {
+    "fail_closed_violations_total": 0,
+    "feed_to_repair_register": true,
+    "repair_register_source": "bundles/v3_p64_sweep_register.json (P64 automat sweep; SLA plan P64-I01)",
+    "findings_path": "luka chaos → wpis z SLA → fala naprawcza (P64 kontrakt K1) → weryfikacja następnym chaosem",
+    "open_findings_now": 0,
+    "evidence": "bundles/v3_p49_chaos_input.json + v3_p65_i09_engine.json + v3_p57_chaos.json + v3_p64_sweep_register.json",
+    "provenance": "P49 chaos; P64 rejestr rezydualny; prompt P66 Sekcja 10-I09"
+  }
+}

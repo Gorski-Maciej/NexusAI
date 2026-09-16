@@ -78,6 +78,6 @@
     "acceleration_note": "szkielet 4 klas brzegowych = start zamiast pustej strony (przyspieszenie ok. 5x wg promptu P65 Sekcja 2)",
     "evidence": "tools/v3_p51_desert_cards.py (karty pustyni P51 — kompozycja) + tests/auto + tests/rego (pokrycie klas)",
     "provenance": "art. 109e VAT (kompletność ewidencji) [NIEZWERYFIKOWANE — ISAP]; P51 karty pustyni; prompt P65 Sekcja 10-I03",
-    "generated_at": "2026-09-16T06:26:24.001969+00:00"
+    "generated_at": "2026-09-16T09:24:17.656917+00:00"
   }
 }

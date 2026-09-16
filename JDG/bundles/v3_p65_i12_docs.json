@@ -15,8 +15,8 @@
     "gate": "PASS",
     "doc_binding_required": true,
     "doc_binding_present": true,
-    "drift_detected": true,
-    "content_hash": "86a8ff0cb40e2c21",
+    "drift_detected": false,
+    "content_hash": "9e20e898a7e5e091",
     "tools_documented": 5,
     "definitions": [
       {
@@ -68,6 +68,6 @@
     "output_doc": "docs/TOOLS_P65_GENERATED.md",
     "evidence": "AST (docstring + add_argument) z definicji narzędzi — zero ręcznych opisów",
     "provenance": "P60 dokumentacja domknięcie (binding); prompt P65 Sekcja 10-I12",
-    "generated_at": "2026-09-16T06:26:39.148767+00:00"
+    "generated_at": "2026-09-16T14:04:59.787266+00:00"
   }
 }

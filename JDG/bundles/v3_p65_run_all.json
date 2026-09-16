@@ -2,7 +2,7 @@
   "schema": "jdg.v3_p65.run_all.v1",
   "part": "P65",
   "slug": "NOWE_NARZEDZIA",
-  "generated_at": "2026-09-16T06:26:21.587609+00:00",
+  "generated_at": "2026-09-16T09:24:16.482391+00:00",
   "tools_run": 6,
   "tool_results": {
     "v3_p65_tool_contract.py": 0,
@@ -13,6 +13,7 @@
     "v3_p65_doc_generator.py": 0
   },
   "engines_run": 12,
+  "rego_gate": "PASS",
   "failures": [],
   "gate": "PASS",
   "results": {
@@ -30,7 +31,7 @@
     },
     "I04": {
       "exit": 0,
-      "output": "{\"scenarios_present\": [\"base\", \"zwrot\"], \"scenarios_missing\": [\"delays\", \"vat_refund\"], \"p62_engines_present\": true, \"p62_gate_pass\": true, \"composition\": \"cashflow scenarios z tools/v3_p62_engines.py (P62 digital twin) — zero duplikacji\", \"evidence\": \"tools/v3_p62_engines.py + bundles/v3_p62_run_all.json (gate)\", \"provenance\": \"art. 47 ustawy o ZUS (terminowość) [NIEZWERYFIKOWANE — ISAP]; P62; prompt P65 Sekcja 10-I04\"}"
+      "output": "{\"scenarios_present\": [\"base\", \"delays\", \"vat_refund\"], \"scenarios_missing\": [], \"scenario_evidence\": {\"base\": \"bundles/v3_p62_i04_cashflow.json (gate=PASS: predictor_present + kalendarz dni roboczych)\", \"delays\": \"rules/cashflow_tax_predictor_enterprise.rego (ostrzeżenie o opóźnieniach płatności klienta)\", \"vat_refund\": \"rules/vat_cashflow_predictor_enterprise.rego (vat_forecast_*_vat_to_refund, total_refund)\"}, \"p62_engines_present\": true, \"p62_gate_pass\": true, \"composition\": \"scenariusze cashflow z tools/v3_p62_engines.py + predyktory Rego P62 — zero duplikacji\", \"evidence\": \"tools/v3_p62_engines.py + bundles/v3_p62_i04_cashflow.json + rules/*cashflow*\", \"provenance\": \"art. 47 ustawy o ZUS (terminowość) [NIEZWERYFIKOWANE — ISAP]; P62; prompt P65 Sekcja 10-I04\"}"
     },
     "I05": {
       "exit": 0,
@@ -50,7 +51,7 @@
     },
     "I09": {
       "exit": 0,
-      "output": "{\"mutations\": 1, \"fail_closed_breaches\": 0, \"auto_post_hits_in_chaos_tools\": 1, \"chaos_tools_found\": [\"v3_p49_chaos_input.py\", \"v3_p49_missing_field_generator.py\", \"v3_p49_fail_open_scanner.py\"], \"min_mutations\": 10, \"composition\": \"chaos prawny z tools/v3_p49_* (P49) — rozszerzany, nie dublowany\", \"evidence\": \"tools/v3_p49_chaos_input.py + v3_p49_missing_field_generator.py + v3_p49_fail_open_scanner.py\", \"provenance\": \"P49 fail-closed; art. 56 KKS [NIEZWERYFIKOWANE — ISAP]; prompt P65 Sekcja 10-I09\"}"
+      "output": "{\"mutations\": 196, \"mutation_evidence\": {\"chaos_scenarios\": 12, \"missing_field_cases\": 171, \"fail_open_paths\": 12, \"mutation_generators\": 1}, \"fail_closed_breaches\": 0, \"auto_post_hits_in_chaos_tools\": 0, \"chaos_tools_found\": [\"v3_p49_chaos_input.py\", \"v3_p49_missing_field_generator.py\", \"v3_p49_fail_open_scanner.py\"], \"min_mutations\": 10, \"composition\": \"chaos prawny z tools/v3_p49_* (P49) — rozszerzany, nie dublowany\", \"evidence\": \"bundles/v3_p49_chaos_input.json + v3_p49_missing_field_coverage.json + v3_p49_fail_open_registry.json\", \"provenance\": \"P49 fail-closed; art. 56 KKS [NIEZWERYFIKOWANE — ISAP]; prompt P65 Sekcja 10-I09\"}"
     },
     "I10": {
       "exit": 0,
@@ -58,11 +59,15 @@
     },
     "I11": {
       "exit": 0,
-      "output": "{\"cycle\": \"weekly\", \"unused_tools_without_decision\": 0, \"tools_used\": 6, \"tools_total\": 6, \"rows\": [{\"tool\": \"v3_p65_tool_contract.py\", \"exists\": true, \"used_in_ci_or_docs\": true, \"used_in_tests\": false, \"decision\": \"używane\"}, {\"tool\": \"v3_p65_semantic_diff.py\", \"exists\": true, \"used_in_ci_or_docs\": true, \"used_in_tests\": false, \"decision\": \"używane\"}, {\"tool\": \"v3_p65_rule_to_tests.py\", \"exists\": true, \"used_in_ci_or_docs\": true, \"used_in_tests\": false, \"decision\": \"używane\"}, {\"tool\": \"v3_p65_worm_tamper_test.py\", \"exists\": true, \"used_in_ci_or_docs\": true, \"used_in_tests\": false, \"decision\": \"używane\"}, {\"tool\": \"v3_p65_adoption_metrics.py\", \"exists\": true, \"used_in_ci_or_docs\": true, \"used_in_tests\": false, \"decision\": \"używane\"}, {\"tool\": \"v3_p65_doc_generator.py\", \"exists\": true, \"used_in_ci_or_docs\": true, \"used_in_tests\": false, \"decision\": \"używane\"}], \"evidence\": \"tools/v3_p65_adoption_metrics.py (CI workflows + tests + KATALOG_NARZEDZI)\", \"provenance\": \"P50 dead tools; P37 metryki; prompt P65 Sekcja 10-I11\"}"
+      "output": "{\"cycle\": \"weekly\", \"unused_tools_without_decision\": 0, \"tools_used\": 6, \"tools_total\": 6, \"rows\": [{\"tool\": \"v3_p65_tool_contract.py\", \"exists\": true, \"used_in_ci_or_docs\": true, \"used_in_tests\": true, \"decision\": \"używane\"}, {\"tool\": \"v3_p65_semantic_diff.py\", \"exists\": true, \"used_in_ci_or_docs\": true, \"used_in_tests\": true, \"decision\": \"używane\"}, {\"tool\": \"v3_p65_rule_to_tests.py\", \"exists\": true, \"used_in_ci_or_docs\": true, \"used_in_tests\": false, \"decision\": \"używane\"}, {\"tool\": \"v3_p65_worm_tamper_test.py\", \"exists\": true, \"used_in_ci_or_docs\": true, \"used_in_tests\": false, \"decision\": \"używane\"}, {\"tool\": \"v3_p65_adoption_metrics.py\", \"exists\": true, \"used_in_ci_or_docs\": true, \"used_in_tests\": false, \"decision\": \"używane\"}, {\"tool\": \"v3_p65_doc_generator.py\", \"exists\": true, \"used_in_ci_or_docs\": true, \"used_in_tests\": true, \"decision\": \"używane\"}], \"evidence\": \"tools/v3_p65_adoption_metrics.py (CI workflows + tests + KATALOG_NARZEDZI)\", \"provenance\": \"P50 dead tools; P37 metryki; prompt P65 Sekcja 10-I11\"}"
     },
     "I12": {
       "exit": 0,
-      "output": "{\"doc_binding_present\": true, \"drift_detected\": true, \"tools_documented\": 5, \"content_hash\": \"86a8ff0cb40e2c21\", \"output_doc\": \"docs/TOOLS_P65_GENERATED.md\", \"evidence\": \"tools/v3_p65_doc_generator.py (AST docstring + argparse → docs; binding P60)\", \"provenance\": \"P60 binding docs↔kod; prompt P65 Sekcja 10-I12\"}"
+      "output": "{\"doc_binding_present\": true, \"drift_detected\": false, \"tools_documented\": 5, \"content_hash\": \"9e20e898a7e5e091\", \"output_doc\": \"docs/TOOLS_P65_GENERATED.md\", \"evidence\": \"tools/v3_p65_doc_generator.py (AST docstring + argparse → docs; binding P60)\", \"provenance\": \"P60 binding docs↔kod; prompt P65 Sekcja 10-I12\"}"
+    },
+    "rego_opa_native": {
+      "exit": 0,
+      "output": "PASS: 17/17"
     }
   }
 }

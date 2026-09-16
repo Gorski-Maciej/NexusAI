@@ -1,0 +1,28 @@
+{
+  "header": {
+    "schema": "jdg.v3_p66.chaos.audit.v1",
+    "part": "P66",
+    "slug": "CHAOS_ODPORNOSC",
+    "generated_at": null,
+    "analyses": {
+      "I01_steady_state": "engine"
+    }
+  },
+  "result": {
+    "hypothesis_present": true,
+    "baseline_metrics": 5,
+    "baseline_sources_missing": [],
+    "error_budget_pct": 100.0,
+    "error_budget_gate": "PASS",
+    "advice_spread_max_pct": 15,
+    "deployments": {
+      "deployments_total": 44,
+      "auto_rollback_armed": 7,
+      "fail_closed": 24,
+      "production_active_count": 0
+    },
+    "hypothesis_testable_auto": true,
+    "evidence": "tools/v3_p66_experiment_cards.json (steady_state) + bundles/v3_p58_error_budget.json + v3_p58_advice_spread.json + deployments.json",
+    "provenance": "RODO art. 32 ust. 1 pkt d (regularne testowanie środków) [NIEZWERYFIKOWANE — ISAP]; P58 metryki; prompt P66 Sekcja 10-I01"
+  }
+}

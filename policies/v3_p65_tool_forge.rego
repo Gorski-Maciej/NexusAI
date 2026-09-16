@@ -119,8 +119,10 @@ i01_contract := {
 } {
 	_ctx_i01 := object.get(_ctx, "I01_tool_contract", {})
 	required := _th("v3_p65_tool_contract_required_fields", [])
+	min_fields := _th("v3_p65_tool_contract_fields_min", 4)
 	present := object.get(_ctx_i01, "contract_fields_present", [])
 	missing := [f | f := required[_]; not present[f] = true]
+	count(required) >= min_fields
 	count(missing) >= 1
 }
 
@@ -226,8 +228,8 @@ i06_rbac := {
 	"package": "jdg.v3_p65_tool_forge",
 	"priority": 465006,
 	"decision": "BLOCK",
-	"reason": sprintf("walidator RBAC: %v z %v ról kompletnych (bez pól: %v) — rola bez mapy pól/testu = ślepe uprawnienie (P63)", [count(complete_roles), min_roles, incomplete]),
-	"metrics": {"roles": count(complete_roles), "min_roles": min_roles, "incomplete": incomplete},
+	"reason": sprintf("walidator RBAC: %v z %v ról kompletnych (bez pól: %v) — rola bez mapy pól/testu = ślepe uprawnienie (P63)", [count(complete), min_roles, incomplete]),
+	"metrics": {"roles": count(complete), "min_roles": min_roles, "incomplete": incomplete},
 	"_legal_basis": "art. 25 RODO (privacy by design) [NIEZWERYFIKOWANE — ISAP]; P63 RBAC; prompt P65 Sekcja 10-I06",
 	"valid_from": "2026-01-01",
 	"valid_to": null,
@@ -319,6 +321,7 @@ i09_chaos := {
 	"valid_to": null,
 } {
 	_ctx_i09 := object.get(_ctx, "I09_chaos", {})
+	mutations := object.get(_ctx_i09, "mutations", 0)
 	breaches := object.get(_ctx_i09, "fail_closed_breaches", 0)
 	breaches > 0
 }

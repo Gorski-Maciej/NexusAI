@@ -1,0 +1,35 @@
+{
+  "analysis": "I10_knowledge_base_from_verdicts",
+  "checks": [
+    {
+      "name": "verdicts_queryable",
+      "status": "OK",
+      "detail": "orzeczenia z hashem (zapytywalne): 31 >= 30"
+    },
+    {
+      "name": "structured_decision",
+      "status": "OK",
+      "detail": "pola decision.* certyfikatu (ustrukturyzowane powody): 8"
+    },
+    {
+      "name": "annotation_path",
+      "status": "OK",
+      "detail": "ścieżka adnotacji (wykładnia) w golden_verdicts.json"
+    },
+    {
+      "name": "certificates_present",
+      "status": "OK",
+      "detail": "certyfikaty P11 jako źródło powodów NEEDS_ADVICE"
+    }
+  ],
+  "metrics": {
+    "verdicts": 31,
+    "certificates": 1
+  },
+  "decision": "PASS",
+  "legal_basis": "prompt P67 I10; P11 Decision Certificate",
+  "gate": "PASS",
+  "findings": [],
+  "innovation": "V3-P67-I10",
+  "generated_at": null
+}

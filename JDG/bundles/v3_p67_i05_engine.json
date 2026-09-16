@@ -1,0 +1,39 @@
+{
+  "analysis": "I05_guardrails_enforcement_tests",
+  "checks": [
+    {
+      "name": "required_validations_full",
+      "status": "OK",
+      "detail": "walidacje obowiązkowe: ['smt_z3', 'golden_replay', 'four_eyes']"
+    },
+    {
+      "name": "four_eyes_roles",
+      "status": "OK",
+      "detail": "role 4-eyes: ['author', 'reviewer', 'legal_approver', 'owner']"
+    },
+    {
+      "name": "smt_tool_fail_closed",
+      "status": "OK",
+      "detail": "smt_z3_verification.py ma tryb --require-z3 (fail-closed)"
+    },
+    {
+      "name": "enforcement_tests_pytest",
+      "status": "OK",
+      "detail": "testy egzekwują: sugestia bez walidacji = odrzucona"
+    },
+    {
+      "name": "p33_ai_layer_present",
+      "status": "OK",
+      "detail": "narzędzia warstwy AI P33 obecne: 8/8"
+    }
+  ],
+  "metrics": {
+    "p33_tools": 8
+  },
+  "decision": "PASS",
+  "legal_basis": "AI Act (nadzór człowieka) [NIEZWERYFIKOWANE — ISAP]; RODO art. 22; prompt P67 I05",
+  "gate": "PASS",
+  "findings": [],
+  "innovation": "V3-P67-I05",
+  "generated_at": null
+}

@@ -1,0 +1,30 @@
+{
+  "analysis": "I03_learning_telemetry_p58",
+  "checks": [
+    {
+      "name": "p58_catalog_present",
+      "status": "OK",
+      "detail": "silniki P58 (wspólne źródło): 12"
+    },
+    {
+      "name": "telemetry_threshold_adr002",
+      "status": "OK",
+      "detail": "v3_p67_telemetry_metrics_min=6 (ADR-002)"
+    },
+    {
+      "name": "learning_metric_definitions",
+      "status": "OK",
+      "detail": "zdefiniowane metryki uczenia: 6 >= 6"
+    }
+  ],
+  "metrics": {
+    "p58_engines": 12,
+    "metrics_defined": 6
+  },
+  "decision": "PASS",
+  "legal_basis": "RODO art. 13 ust. 2 lit. f (przejrzystość logiki) [NIEZWERYFIKOWANE — ISAP]; prompt P67 I03",
+  "gate": "PASS",
+  "findings": [],
+  "innovation": "V3-P67-I03",
+  "generated_at": null
+}

@@ -176,8 +176,8 @@ def test_wiring_main_jdg():
     assert "final_verdict_p129 = safe_merge(final_verdict_p128" in main
     assert "v3_p64_luka_sweep.decide" in main
     post = main[main.index("final_verdict_post_merge = safe_merge("):]
-    # Kotwica POST-MERGE przesunięta na p129 (wiring P65, kampania V3).
-    assert "final_verdict_p129" in post[:400]
+    # Kotwica POST-MERGE przesunięta na p131 (wiring P67, kampania V3).
+    assert "final_verdict_p131" in post[:400]
 
 
 # ═══ 16. Mirror: hash-parity policies/ ═══

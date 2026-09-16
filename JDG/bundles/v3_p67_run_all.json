@@ -1,0 +1,69 @@
+{
+  "schema": "nexusai.jdg.v3_p67_run_all.v1",
+  "part": "P67",
+  "slug": "SELF_LEARNING",
+  "generated_at": "2026-09-16T14:01:38.669891+00:00",
+  "engines_run": 12,
+  "rego_gate": "PASS",
+  "static_gate": "PASS",
+  "failures": [],
+  "results": {
+    "I01": {
+      "exit": 0,
+      "output": ""
+    },
+    "I02": {
+      "exit": 0,
+      "output": ""
+    },
+    "I03": {
+      "exit": 0,
+      "output": ""
+    },
+    "I04": {
+      "exit": 0,
+      "output": ""
+    },
+    "I05": {
+      "exit": 0,
+      "output": ""
+    },
+    "I06": {
+      "exit": 0,
+      "output": ""
+    },
+    "I07": {
+      "exit": 0,
+      "output": ""
+    },
+    "I08": {
+      "exit": 0,
+      "output": ""
+    },
+    "I09": {
+      "exit": 0,
+      "output": ""
+    },
+    "I10": {
+      "exit": 0,
+      "output": ""
+    },
+    "I11": {
+      "exit": 0,
+      "output": ""
+    },
+    "I12": {
+      "exit": 0,
+      "output": ""
+    },
+    "rego_opa_native": {
+      "exit": 0,
+      "output": "PASS: 19/19"
+    },
+    "rego_static_gate": {
+      "exit": 0,
+      "output": "PASS: P67 static gate (12 kluczy I01–I12, progi ADR-002, wiring p131, mirror sync)"
+    }
+  },
+  "gate": "PASS"
+}

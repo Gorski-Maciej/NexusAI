@@ -131,6 +131,8 @@ import data.jdg.v3_p62_cashflow_closure as v3_p62_cashflow_closure
 import data.jdg.v3_p63_rbac_multitenant_closure as v3_p63_rbac_multitenant_closure
 import data.jdg.v3_p64_luka_sweep as v3_p64_luka_sweep
 import data.jdg.v3_p65_tool_forge as v3_p65_tool_forge
+import data.jdg.v3_p66_chaos_resilience as v3_p66_chaos_resilience
+import data.jdg.v3_p67_self_learning as v3_p67_self_learning
 import data.jdg.v3_p59_security_closure as v3_p59_security_closure
 import data.jdg.v3_p58_observability_closure as v3_p58_observability_closure
 import data.jdg.v3_p57_ingest_data as v3_p57_ingest_data
@@ -3425,6 +3427,28 @@ final_verdict_p129 = safe_merge(final_verdict_p128,
         fallback.decide
     ))
 
+# ═══ PAS 19: V3-P66 CHAOS I ODPORNOŚĆ (kampania V3, prompt P66) ═══
+# 12 analiz programu chaos engineering (steady state, karty eksperymentów,
+# macierz zależności MF/NBP/bank/ISAP, kill switch, chaos day, auto-rollback,
+# drabina dojrzałości, awarie jako dane, luki chaos→rejestr napraw, wskaźnik
+# odporności, peak-time chaos, game day złożony).
+# Fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p66_check nie jest true.
+final_verdict_p130 = safe_merge(final_verdict_p129,
+    safe_merge(v3_p66_chaos_resilience.decide,
+        fallback.decide
+    ))
+
+# ═══ PAS 20: V3-P67 SELF-LEARNING (kampania V3, prompt P67) ═══
+# Pętla wiedzy z decyzji i wyjątków: klaster NEEDS_ADVICE → sugestia →
+# SMT/Z3 + golden replay + 4-eyes → lifecycle SHADOW (AI proponuje,
+# forteca decyduje); metryki uczenia w P58; epoki prawne unieważniają
+# sugestie. Fail-closed; nieaktywny dopóki input.jdg_entrepreneur.v3_p67_check
+# nie jest true.
+final_verdict_p131 = safe_merge(final_verdict_p130,
+    safe_merge(v3_p67_self_learning.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -3457,7 +3481,7 @@ final_verdict_p129 = safe_merge(final_verdict_p128,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p129
+    final_verdict_p131
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

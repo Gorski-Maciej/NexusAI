@@ -1,0 +1,20 @@
+{
+  "header": {
+    "schema": "jdg.v3_p66.chaos.audit.v1",
+    "part": "P66",
+    "slug": "CHAOS_ODPORNOSC",
+    "generated_at": null,
+    "analyses": {
+      "I08_injection_as_data": "engine"
+    }
+  },
+  "result": {
+    "experiments_as_data": true,
+    "cards_total": 12,
+    "new_scenarios_without_code": 5,
+    "json_schema": "jdg.v3_p66.experiment_cards.v1 (hipoteza, kroki, asercje, rollback, metryki, blast radius, ci_runnable)",
+    "runner_supports_data": true,
+    "evidence": "tools/v3_p66_experiment_cards.json + tools/chaos_runner.py (EXPERIMENTS jako dane w kodzie runnera — rozszerzane, nie dublowane)",
+    "provenance": "ADR-002 parametry-as-data zastosowane do eksperymentów; prompt P66 Sekcja 10-I08"
+  }
+}

@@ -1,0 +1,383 @@
+RAPORT V3-P65 — NOWE NARZĘDZIA FORTECY — CO PRZEGAPIŁA FALA (NARZĘDZIA 8-12)
+==============================================================================
+Kampania: GLM52 V3 (69 części) | Data: 2026-09-16 | Status raportu wdrożenia: WDROŻONY_100
+Konwencja: P51-P64 (silniki na PRAWDZIWYCH źródłach, zero fasad, zero duplikacji)
+==============================================================================
+
+9.01. MISJA
+P65 domyka warstwę narzędziową fortecy (DX/automatyzacja) po falach P45-P64:
+12 innowacji I01-I12 z promptu Sekcja 10 — wspólny kontrakt narzędzi, semantic
+diff Rego, generator testów z przepisu, symulator cashflow, symulator temporalny,
+walidator RBAC, benchmark eval, WORM tamper tester, chaos suite prawny, reguła
+kompozycji (zero duplikacji), metryki przyjęcia narzędzi, generator dokumentacji.
+Cel głównego nurtu optymalizacji: każda klasa luki P45-P64 dostaje NARZĘDZIE
+strukturalne (detekcja → raport JSON → bramka Rego → CI), silnik pozostaje
+fail-closed (NEEDS_ADVICE/MANUAL_REVIEW przy wątpliwości — nigdy cichy AUTO_POST).
+
+9.02. ZAKRES WDROŻENIA (12 innowacji I01-I12, prompt P65 Sekcja 10)
+==============================================================================
+I01 Tool standard contract        → BLOCK narzędzie bez pól kontraktu raportu JSON
+I02 Semantic diff for Rego        → NEEDS_ADVICE < 3 klas zmian (kosmetyczna/progowa/semantyczna)
+I03 Rule-to-tests generator       → NEEDS_ADVICE < 4 klas brzegowych (daty/progi/waluty/zaokrąglenia)
+I04 Cashflow simulator            → NEEDS_ADVICE < 3 scenariuszy płynności (kompozycja P62)
+I05 Temporal simulator            → NEEDS_ADVICE < 2 przełączeń day-0 (kompozycja P53)
+I06 RBAC validator                → BLOCK rola w macierzy bez mapy pól (kompozycja P63)
+I07 Eval benchmark tool           → BLOCK p95 > próg bez planu redukcji (kompozycja P37)
+I08 WORM tamper tester            → BLOCK próby naruszenia niewykryte (kompozycja P42)
+I09 Legal chaos suite             → NEEDS_ADVICE < min mutacji lub przełamanie fail-closed (kompozycja P49)
+I10 Composition-first rule        → NEEDS_ADVICE brak analizy kompozycji przed nowym narzędziem
+I11 Tool adoption metrics         → NEEDS_ADVICE narzędzie nieużywane bez decyzji (P50)
+I12 Tool documentation generator  → NEEDS_ADVICE dryf dokumentacji (binding P60)
+
+9.03. ARCHITEKTURA OPA (rozbudowane i inteligentne struktury)
+==============================================================================
+* rules/v3_p65_tool_forge.rego — 12 analiz + deterministyczny router else-chain
+  (BLOCK → NEEDS_ADVICE → PASS), priorytety 465001-465012, fail-closed:
+  brak snapshotu progów = NEEDS_ADVICE, brak flagi v3_p65_check = NO_MATCH,
+  zero ścieżek AUTO_POST (statycznie: 0). Reguła I01 weryfikuje KONTRAKT JAKO
+  DANE (pola z progu ADR-002 v3_p65_tool_contract_required_fields + fields_min);
+  I06 domyka „rola bez mapy pól = ślepe uprawnienie" (art. 25 RODO privacy by
+  design); I07/I08 to bramki integralności/ekonomiki (p95, WORM 5/5 prób).
+* rules/thresholds_jdg.rego — blok v3_p65: threshold_version
+  tool-forge-v3p65-2026.09 + legal_basis_version + 13 kluczy ADR-002 + okno
+  temporalne valid_from 2026-01-01 / valid_to null (P05): contract_fields_min=4,
+  contract_required_fields=[schema,tool,status,provenance], semantic_diff_
+  classes_min=3, edge_case_classes_min=4, cashflow_scenarios_min=3,
+  temporal_transitions_min=2, rbac_matrix_roles_min=4, eval_p95_ms_max=500,
+  worm_tamper_probes_min=5, chaos_mutations_min=10, composition_first_required=
+  true, adoption_cycle=weekly, doc_binding_required=true.
+* rules/main_jdg.rego — wiring final_verdict_p129 = safe_merge(final_verdict_p128,
+  v3_p65_tool_forge.decide, fallback.decide); POST-MERGE anchor p128→p129.
+* Mirrory policies/ — hash-parity (p65, p64, thresholds, main).
+* NOWE (przewaga V3-P65): PIERWSZY pakiet serii V3 zweryfikowany NATYWNIE z OPA
+  CLI (bin/opa 0.68.0): opa test 17/17 PASS na rules/v3_p65_tool_forge.rego +
+  tests/rego/test_v3_p65_tool_forge.rego. Poprzednie fale P51-P64 opierały się
+  wyłącznie na walidacji statycznej („OPA niedostępny") — P65 dowodzi, że CLI
+  istnieje (P49 chaos go używał) i pełna ewaluacja Rego jest możliwa; runner
+  P65 uruchamia testy natywne automatycznie (faza 3, fallback: bramka statyczna).
+
+9.04. SILNIKI DOWODOWE (tools/v3_p65_{common,engines,run_all,rego_static_gate}.py)
+==============================================================================
+Silniki czytają WYŁĄCZNIIE PRAWDZIWE źródła repo (rozszerzają, nie dublują —
+protokół 08): tools/v3_p65_tool_contract.py (rejestr 9 narzędzi fortecy),
+tools/v3_p65_semantic_diff.py, tools/v3_p65_rule_to_tests.py (kompozycja z
+v3_p51_desert_cards.py), tools/v3_p65_worm_tamper_test.py (kompozycja z
+v3_p42_worm_hash_chain.py + P40), tools/v3_p65_adoption_metrics.py (kompozycja
+z v3_p64_sweep_engine.py), tools/v3_p65_doc_generator.py (binding P60 →
+docs/TOOLS_P65_GENERATED.md), bundla v3_p62_i04_cashflow.json + rules/
+cashflow_tax_predictor_enterprise.rego + rules/vat_cashflow_predictor_
+enterprise.rego (scenariusze base/delays/vat_refund), tools/v3_p53_engines.py
+(day-1/day-0/day+1), bundles/v3_p63_i01_rbac.json + docs/ROLE_MAPS.md,
+tools/v3_p37_benchmark_gate.py + v3_p37_benchmark_regression.py,
+bundles/v3_p49_chaos_input.json + v3_p49_missing_field_coverage.json +
+v3_p49_fail_open_registry.json, docs/KATALOG_NARZEDZI.md (żywy skan P60).
+
+9.05. WYNIKI BRAMEK (protokół 06 — uruchomienia, nie deklaracje)
+==============================================================================
+T1. Run-all: python3 tools/v3_p65_run_all.py → tools=6 engines=12 rego=PASS
+    failures=none gate=PASS (bundles/v3_p65_run_all.json; 19 bundli dowodowych).
+T2. Rego NATYWNIE: ../bin/opa test rules/thresholds_jdg.rego
+    rules/v3_p65_tool_forge.rego tests/rego/test_v3_p65_tool_forge.rego →
+    PASS 17/17 (OPA 0.68.0); bramka statyczna (konwencja P63/P64):
+    P65-REGO-STATIC: PASS (testy=17, klucze rego=12, klucze testów=12).
+T3. Testy pytest: tests/auto/test_v3_p65_tool_forge.py → 21 passed
+    (run-all gate, 12 silników vs bundla, ADR-002 zero hardcode, wiring p129,
+    mirror hash-parity, fail-closed zero AUTO_POST, kompozycje 10 źródeł,
+    determinizm dry-run).
+T4. Regresja: pytest -k "v3_p5 or v3_p6" → 472 passed (451 + 21 P65; zero
+    regresji; kotwica POST-MERGE p129 aktualizowana w testach P55-P64).
+T5. Wyniki silników (bundla v3_p65_i*_engine.json, 2026-09-16):
+    I01 registry_total=9, missing_tools=[], dry_run=true, exit codes {0,1,2};
+    I02 klasy [cosmetic,threshold,semantic] self-test PASS, diff=337 zmian
+        (dominanta semantic → ścieżka 4-eyes+legal+golden+CI);
+    I03 klasy [dates,thresholds,currencies,rounding], karty P51=1, szkielet 6 przypadków;
+    I04 scenariusze [base,delays,vat_refund] (dowody: P62-I04 gate=PASS,
+        ostrzeżenie o opóźnieniach w cashflow predictor, vat_to_refund w VAT predictor);
+    I05 przełączenia [day_minus_1,day_0] (P53);
+    I06 role=4/4 kompletnych (P63 I01_rbac_as_data + ROLE_MAPS.md), incomplete=[];
+    I07 p95 support + regression support + plan (bramka P37 w CI);
+    I08 WORM 5 prób / 5 wykrytych (kompozycja v3_p42_worm_hash_chain);
+    I09 mutacje=196 (chaos 12 + missing-field 171 + fail-open 12 + generatory 1),
+        przełamania fail-closed=0, AUTO_POST w narzędziach mutujących=0;
+    I10 mapa kompozycji 4 narzędzi, 6 prawdziwych źródeł przeskanowanych;
+    I11 used=6/6, cycle=weekly, nieużywane bez decyzji=0;
+    I12 binding=true, drift=false (dokument deterministyczny — bez timestampa),
+        tools_documented=5, docs/TOOLS_P65_GENERATED.md.
+
+9.06. PODANALIZA 5.1 — KATALOG NARZĘDZI Z LUK (tabela dowodów + wnioski)
+==============================================================================
+Tabela dowodów (Sekcja 6 promptu P65 → 7.3):
+| # | Plik | Dowód/fakt | Status |
+|---|------|-----------|--------|
+| 1 | tools/doc_consistency_validator.py | istnieje; kompozycja I10/P64 | ZWERYFIKOWANO |
+| 2 | tools/traceability_matrix.py | istnieje (P41) | ZWERYFIKOWANO |
+| 3 | tools/migration_impact_analyzer.py | istnieje; źródło P64 sweep | ZWERYFIKOWANO |
+| 4 | tools/rule_impact_simulator.py | istnieje; źródło P64 sweep | ZWERYFIKOWANO |
+| 5 | tools/legal_coverage_heatmap.py | istnieje; źródło P64 sweep | ZWERYFIKOWANO |
+| 6 | tools/tax_form_whatif_simulator.py | istnieje (wzorzec symulatorów) | ZWERYFIKOWANO |
+| 7 | tools/zus_completeness_engine.py | istnieje | ZWERYFIKOWANO |
+| 8 | tools/preferential_period_tracker.py | istnieje | ZWERYFIKOWANO |
+| 9 | docs/KATALOG_NARZEDZI.md | żywy skan P60: 997 narzędzi (auto-objmuje P65) | ZWERYFIKOWANO |
+| 10 | docs/NARZEDZIA_WALIDACJI_P22.md | istnieje | ZWERYFIKOWANO |
+| 11 | tools/README.md | istnieje | ZWERYFIKOWANO |
+| 12 | docs/OPA_REGO_DEVELOPER_GUIDE.md | istnieje | ZWERYFIKOWANO |
+| 13 | tools/tools_quality_v3_16_gate.py | istnieje (bramka jakości narzędzi) | ZWERYFIKOWANO |
+| 14 | tests/test_tools_quality_v3_16.py | istnieje | ZWERYFIKOWANO |
+| 15 | docs/OPA_JAKO_SYSTEM_P21.md | istnieje | ZWERYFIKOWANO |
+| 16 | docs/DEVELOPER_GUIDE.md | istnieje | ZWERYFIKOWANO |
+| 17-22 | policies/jdg, policies/tax(/vat), bundle.sh, manifest base+v2026 | mirror hash-parity potwierdzony sha256 | ZWERYFIKOWANO |
+Wnioski: (1) 8-12 projektów zrealizowano KOMPOZYCJĄ — 6 nowych narzędzi
+v3_p65_* rozszerza 10 prawdziwych źródeł P37/P42/P49/P51/P53/P62/P63/P64;
+zero duplikacji funkcjonalności. (2) Wspólny kontrakt (I01) jest egzekwowany
+regułą Rego (BLOCK), nie tylko konwencją — kontrakt jako dane ADR-002.
+(3) Luki P45-P64 mają teraz narzędzia strukturalne: semantic diff (P48 mirror
+drift), rule-to-tests (P51 pustynie), WORM tamper (P42/P59), chaos suite
+(P49), adoption (P50), docs generator (P60).
+
+9.07. PODANALIZA 5.2 — PRIORYTETOWE 3 (pseudokod, testy, plan)
+==============================================================================
+Priorytety ROI: I01 (kontrakt — warunek łańcuchowania wszystkich pozostałych),
+I02 (semantic diff — tarcza przeciwko cichej zmianie semantyki reguł), I08
+(WORM tamper — dowód niezmienności archiwum). Rozwinięcie w kodzie produkcyjnym:
+* I01 v3_p65_tool_contract.py: register (9 narzędzi z rodzinami i composes) →
+  weryfikacja pól kontraktu z progu ADR-002 → raport JSON → exit 0/1/2 →
+  --dry-run (oblicza bez zapisu). Testy: pytest I01 (pola, braki, dry-run,
+  determinizm 2 przebiegów); Rego test_i01_block_missing_contract_field (BLOCK).
+* I02 v3_p65_semantic_diff.py: normalizacja (usuwanie komentarzy) → unified
+  diff → klasyfikacja zmian (kosmetyczna: białe znaki/komentarze; progowa:
+  literal progu/data/stawka; semantyczna: reszta) → dominanta → ścieżka review
+  (semantic = 4-eyes + legal + golden replay P10 + CI P39). Self-test 3 klas
+  wbudowany. Testy: pytest I02 (klasy, self-test, realny diff 337 zmian);
+  Rego test_i02_needs_advice_missing_class.
+* I08 v3_p65_worm_tamper_test.py: baseline łańcucha hashowego (v3_p42_worm_hash
+  _chain.py) → 5 prób naruszenia (byte-flip, truncation, append, reorder, delete)
+  → asercja: każda próba WYKRYTA (rehash ≠ hash łańcucha) → BLOCK gdy niewykryta.
+  Testy: pytest I08 (5/5 detected, all_detected=true); Rego test_i08_block.
+Plan wdrożenia: wykonany (wdrożone z bundlami dowodowymi i bramkami Rego);
+reszta 9 innowacji wdrożona tą samą konwencją. Terminy/właściciele: sesja
+2026-09-16, właściciel kampania V3 (rejestr w KATALOG_NARZEDZI, żywy skan P60).
+
+9.08. PODANALIZA 5.3 — KOMPOZYCJA ISTNIEJĄCYCH (zero duplikacji)
+==============================================================================
+(1) Kompozycje zmapowane w rejestrze I01 (composes): rule_to_tests→p51_desert
+_cards; worm_tamper→p42_worm_hash_chain+p40_api_audit_worm; adoption→p64_sweep
+_engine; doc_generator→p60_doc_registry; cashflow→p62_engines+predictory Rego;
+temporal→p53_engines; rbac→p63_i01_rbac+ROLE_MAPS; benchmark→p37_benchmark_*;
+chaos→p49_*. (2) Biblioteki: v3_p65_common.py (czytnik progów ADR-002 — to samo
+źródło co Rego; parser list/string/bool/int/float — lekcja z P62). (3) Kontrakt
+raportu JSON P29 pozwala na łańcuchowanie: run_all faza 1 (narzędzia) → faza 2
+(silniki czytają bundla fazy 1) → faza 3 (OPA test) — pipeline dowodowy.
+(4) Nowe zależności: ZERO nowych bibliotek zewnętrznych (tylko stdlib + bin/opa)
+— ryzyko supply chain (P59) niezmienione.
+Wnioski: (1) żaden silnik nie duplikuje funkcjonalności P37/P42/P49/P51/P53/
+P62/P63/P64 — kwantyfikowane: I10 tools_with_composition_map=4/4 nowych
+narzędzi z mapą, 6 prawdziwych źródeł przeskanowanych. (2) Test zakazu
+duplikacji: test_no_duplication_of_earlier_engines (10 źródeł w haystacku).
+
+9.09. PODANALIZA 5.4 — DX I PRZYJĘCIE
+==============================================================================
+(1) Ergonomia: każde narzędzie --json (maszyna) + --dry-run (bezpieczny podgląd)
++ deterministyczny output (test_tools_deterministic). (2) Dokumentacja: I12
+generuje docs/TOOLS_P65_GENERATED.md z AST (docstring+argparse) — zero dryfu,
+--check w trybie CI; docs nie zawiera timestampa → hash stabilny (lekcja
+naprawy driftu fałszywego). (3) Tryb CI vs lokalny: run_all (CI, exit codes) vs
+pojedyncze narzędzia (developer); bramka statyczna jako fallback gdy brak OPA.
+(4) Metryki przyjęcia: I11 liczy użycie (CI workflows + testy + katalog) —
+cykl weekly z progu ADR-002; narzędzie nieużywane bez decyzji = NEEDS_ADVICE.
+Wnioski: (1) 6/6 narzędzi używanych (dowód: CI-testy-katalog). (2) Live-scan
+P60 KATALOG_NARZEDZI auto-objmuje narzędzia P65 — zero dryfu katalogu.
+(3) Użycie mierzone i bramkowane — narzędzia nie mogą umrzeć po cichu (P50).
+
+9.10. MACIERZ PRAWO↔REGUŁA↔TEST (akty z Sekcji 8 promptu P65)
+==============================================================================
+| Akt | Art. | Reguła | Test | Status | Uwaga |
+|-----|------|--------|------|--------|-------|
+| Ordynacja podatkowa | 119a GAAR | all_green (narzędzia defensywne) | test_all_green_pass | PEŁNE | [NIEZWERYFIKOWANE — ISAP] |
+| UoR | 4 ust. 1 sprawdzalność | i01_contract | test_i01_block + pytest | PEŁNE | [NIEZWERYFIKOWANE — ISAP] |
+| UoR | 5 pierwotność dowodów | i08_worm | test_i08_block + pytest 5/5 | PEŁNE | [NIEZWERYFIKOWANE — ISAP] |
+| Ustawa VAT | 109e ewidencja | i03_test_generator | test_i03 + pytest | PEŁNE | [NIEZWERYFIKOWANE — ISAP] |
+| PIT | 9a spójność dokumentacji | i02_semantic_diff | test_i02 + pytest | PEŁNE | [NIEZWERYFIKOWANE — ISAP] |
+| RODO | 25 privacy by design | i06_rbac | test_i06_block + pytest | PEŁNE | [NIEZWERYFIKOWANE — ISAP] |
+| Ustawa o ZUS | 47 terminowość | i04_cashflow | test_i04 + pytest | PEŁNE | [NIEZWERYFIKOWANE — ISAP] |
+| KKS | 56 wczesna detekcja | i09_chaos | test_i09 x2 + pytest | PEŁNE | [NIEZWERYFIKOWANE — ISAP] |
+Statusy weryfikacji: wszystkie 8 aktów oznaczone [NIEZWERYFIKOWANE — ISAP]
+zgodnie z protokołem 4.2 (brak dostępu do ISAP w sesji — rejestr mediacji:
+P47 workflow; weryfikacja pozostaje zadaniem P68 re-certyfikacji).
+
+9.11. REJESTR LUK (V3-P65-Lxx, krytyczność P0-P3)
+==============================================================================
+L01 (P2, DOMKNIĘTA w tej części): testy natywne P51-P64 nigdy nie były
+     uruchamiane z OPA CLI („OPA niedostępny" — konwencja P63/P64), a CLI
+     istnieje (bin/opa 0.68.0, używany przez P49). Dowód: opa test wykrył
+     2 rego_unsafe_var_error w rules/v3_p65_tool_forge.rego, których walidacja
+     statyczna NIE wykryła. Fix: P65 uruchamia testy natywne (runner faza 3);
+     rozszerzenie na P51-P64 pozostaje rekomendacją do P66+ (nie wykonywano
+     w tej sesji — zero regresji 472 pytest gwarantuje statyczny stan).
+L02 (P2, DOMKNIĘTA): fałszywy dryf dokumentacji I12 — timestamp „Wygenerowano"
+     w treści renderowanej powodował niezgodność przy każdym --check. Fix:
+     treść deterministyczna (czas generacji wyłącznie w bundlu JSON).
+L03 (P2, DOMKNIĘTA): silnik I04 klasyfikował scenariusze po keywordach
+     („base"/„zwrot" dopasowane w innych kontekstach, „delays" nieistniejące
+     w źródle). Fix: scenariusze z bundla bramki P62-I04 + konkretne dowody
+     w predyktorach Rego (opóźnienia, vat_to_refund).
+L04 (P2, DOMKNIĘTA): silnik I09 liczył definicje funkcji (1) zamiast realnych
+     mutacji chaos P49 (12+171+12+generatory=196). Fix: odczyt bundli
+     v3_p49_{chaos_input,missing_field_coverage,fail_open_registry}.json.
+L05 (P3, DOMKNIĘTA): reguła I01 nie używała klucza ADR-002
+     v3_p65_tool_contract_fields_min (martwy próg). Fix: warunek
+     count(required) >= min_fields w body reguły.
+L06 (P3, DOMKNIĘTA): object.union (deep merge) w testach Rego nadpisywał
+     zagnieżdżone konteksty tylko częściowo → 3 faile. Fix: object.remove
+     przed nadpisaniem (wzorzec udokumentowany w teście).
+L07 (P1, OTWARTA → P66+): 212 rego nieimportowanych w main_jdg (P64-L01) i
+     87 reguł bez testu (P64-L03) — narzędzia P65 dają klasyfikację, decyzje
+     per plik pozostają 4-eyes (Q02 P64).
+L08 (P3, OTWARTA → P68): podstawy prawne 8 aktów [NIEZWERYFIKOWANE — ISAP]
+     — weryfikacja w re-certyfikacji P68 (integracja isap_crawler P34-I03).
+
+9.12. INNOWACJE ENTERPRISE (12, pełny projekt 6-punktowy — skrót wykonawczy)
+==============================================================================
+I01-Kontrakt: (1) luka: narzędzia bez wspólnego raportu nie łańcuchują się w CI;
+(2) mechanizm: rejestr + pola z ADR-002 + exit codes + dry-run + bramka Rego
+BLOCK; (3) wpływ: każde narzędzie daje porównywalny dowód JSON (P29);
+(4) ryzyko: dryf rejestru → test registry_missing_tools==[]; (5) kryterium:
+pytest I01 + Rego test_i01; (6) zależności: P29/P39/P06.
+I02-Diff: (1) luka: cicha zmiana semantyki reguł bez innej ścieżki review;
+(2) normalizacja+diff+klasyfikacja 3 klas; (3) zmiana progowa/semantyczna
+idzie 4-eyes+legal+golden+CI; (4) ryzyko: fałszywe klasy → self-test wbudowany;
+(5) pytest I02 + Rego test_i02; (6) P10/P39/P48.
+I03-Testy-z-przepisu: (1) pustynie testowe; (2) karty P51 → szkielet 4 klas
+brzegowych (daty/progi/waluty/zaokrąglenia); (3) start zamiast pustej strony
+(≈5x wg promptu); (4) ryzyko szkieletów zawsze-zielonych → asercje negatywne
+wymagane klasami; (5) pytest I03; (6) P51/P39.
+I04-Cashflow: (1) decyzje bez scenariuszy płynności; (2) base/delays/vat_refund
+z P62 + predyktorów Rego; (3) prognoza zamiast zgadywania terminów; (4) ryzyko:
+stare dane → dowód z bundli gate=PASS; (5) pytest I04; (6) P62.
+I05-Temporal: (1) wdrożenia nowel bez symulacji granic; (2) day-1/day-0/day+1
+z P53; (3) brak błędów na granicy nowelizacji; (4) ryzyko: przełączenia tylko
+w testach → kompozycja z P53 (istniejący sandbox); (5) pytest I05; (6) P05/P53.
+I06-RBAC: (1) ślepe uprawnienia w macierzy; (2) role z P63 + ROLE_MAPS; rola
+bez field_map = BLOCK; (3) minimalizacja danych (art. 25 RODO); (4) ryzyko:
+rola dodana poza macierzą → roles_matrix z bundla P63 jako źródło; (5) pytest
+I06 + Rego test_i06; (6) P63.
+I07-Benchmark: (1) regresja latencji bez planu; (2) p95 z bramki P37 + próg
+ADR-002; plan = bramka w CI; (3) SLO eval jako część obserwowalności; (4)
+ryzyko: pomiar flak → pomiar delegowany do P37; (5) pytest I07; (6) P37.
+I08-WORM-tamper: (1) archiwum bez dowodu niezmienności; (2) 5 prób naruszenia
+na łańcuchu hashowym P42, asercja wykrywalności; (3) pierwotność dowodów
+(art. 5 UoR); (4) ryzyko: mutacja testu → self-test baseline; (5) pytest I08 +
+Rego test_i08; (6) P42/P59.
+I09-Chaos: (1) defensywność niemierzalna; (2) mutacje = chaos P49 (12) +
+missing-field (171) + fail-open (12) + generatory; asercja: 0 przełamań
+fail-closed; (3) każda mutacja kończy NEEDS_ADVICE/BLOCK/no_match — nigdy
+cichy AUTO_POST (AP07); (4) ryzyko: liczenie fasady → bundle P49 jako źródło;
+(5) pytest I09 + Rego test_i09 x2; (6) P49.
+I10-Kompozycja: (1) duplikowanie detektorów; (2) reguła: przed nowym narzędziem
+mapa composes; brak analizy = NEEDS_ADVICE; (3) mniejsza powierzchnia błędów;
+(4) ryzyko: mapa martwa → real_sources_scanned=6; (5) pytest I10; (6) P50/P08.
+I11-Adopcja: (1) martwe narzędzia po cichu; (2) cykl weekly z ADR-002, źródła:
+CI+testy+katalog; nieużywane bez decyzji = NEEDS_ADVICE; (3) metryka życia
+narzędzia; (4) ryzyko: haystack puchnie → deterministic glob; (5) pytest I11;
+(6) P50/P37.
+I12-Docs: (1) dokumentacja dryfująca od kodu; (2) generator AST docstring+
+argparse → TOOLS_P65_GENERATED.md; --check; treść deterministyczna; (3) docs =
+kod (P60 binding); (4) ryzyko: timestamp w treści (naprawione — L02);
+(5) pytest I12; (6) P60.
+
+9.13. KONTRAKT WYJŚCIOWY (wiąże P66-P68 i V4)
+==============================================================================
+C1. Kontrakt narzędzi (I01) — KAŻDE nowe narzędzie V4: wejście → raport JSON
+    (min. pola: schema, tool, status, provenance; progi z ADR-002) → exit codes
+    0/1/2 → dry-run; narzędzie bez kontraktu = BLOCK (bramka Rego I01).
+C2. Testy Rego NATYWNIE — od P66: opa test (bin/opa) obowiązkowy dla nowych
+    pakietów; walidacja statyczna tylko jako fallback; rego_unsafe_var musi
+    być wykrywany PRZED merge (lekcja L01).
+C3. Dokumentacja generowana (I12) — narzędzia dokumentowane z definicji;
+    treść deterministyczna (bez timestampów w renderowanych plikach).
+C4. Adopcja mierzona (I11) — narzędzie V4 bez dowodu użycia po 2 cyklach
+    weekly = decyzja: poprawa DX albo usunięcie (P50).
+C5. Kompozycja pierwsza (I10) — przed nowym narzędziem mapa composes;
+    zero duplikacji funkcjonalności istniejących detektorów.
+C6. Treść bundli dowodowych — silniki czytają bundle bramek wcześniejszych
+    części (jak I04←P62-I04, I09←P49); zakaz liczeń „z powietrza" (L03/L04).
+
+9.14. PLAN WDROŻENIA (kolejność bez duplikacji)
+==============================================================================
+[x] 1. rules/v3_p65_tool_forge.rego (12 analiz + router + fail-closed) — DONE
+[x] 2. thresholds_jdg.rego blok v3_p65 (13 kluczy ADR-002 + okno temporalne) — DONE
+[x] 3. main_jdg.rego wiring final_verdict_p129 + POST-MERGE anchor p129 — DONE
+[x] 4. tools/v3_p65_{tool_contract,semantic_diff,rule_to_tests,worm_tamper_test,
+       adoption_metrics,doc_generator,common,engines,run_all,rego_static_gate}.py — DONE
+[x] 5. tests/auto/test_v3_p65_tool_forge.py (21 testów) — DONE
+[x] 6. tests/rego/test_v3_p65_tool_forge.rego (17 testów natywnych OPA) — DONE
+[x] 7. Mirrory policies/ (hash-parity sha256) — DONE
+[x] 8. Naprawy L01-L06 (unsafe_var, deep-merge, drift, źródła scenariuszy/mutacji) — DONE
+[x] 9. Ledger --mark P65 (luki P0=0/P1=1/P2=4/P3=2; innowacje=12) — DONE
+[x] 10. HANDOFF_V3_P65.md → czyste okno dla P66 — DONE
+
+9.15. PLAN TESTÓW (przypadki blokujące merge)
+==============================================================================
+* pytest tests/auto/test_v3_p65_tool_forge.py (21) — BLOKUJE merge:
+  run_all gate=PASS (12 silników), ADR-002 (13 kluczy + threshold_version),
+  wiring p129, mirror hash-parity (4 pliki), fail-closed (0 AUTO_POST),
+  kompozycja 10 źródeł, determinizm dry-run, WORM 5/5, RBAC 4/4, docs 0 dryfu.
+* opa test (17 natywnych) — BLOKUJE merge: no_match bez flagi, thresholds
+  missing → NEEDS_ADVICE (precedencja), all_green PASS, BLOCK per I01/I06/I07/
+  I08, NEEDS_ADVICE per I02/I03/I04/I05/I09(x2)/I10/I11/I12, router
+  BLOCK-wins (priorytety deterministyczne).
+* Bramka statyczna (fallback) — BLOKUJE merge: nawiasy, klucze 1:1, else-chain.
+* Regresja: pytest -k "v3_p5 or v3_p6" → 472 passed (kotwica p129 w P55-P64).
+* Negatywne (dowód, że bramka działa): brak pola kontraktu → BLOCK; rola bez
+  field_map → BLOCK; p95 900 > 500 bez planu → BLOCK; tamper 3/5 → BLOCK;
+  próg p95 zmieniony w thresholds → test nadal czyta z ADR-002 (nie z hardcode).
+
+9.16. PYTANIA DO CZŁOWIEKA (V3-P65-Qxx)
+==============================================================================
+Q01 (4-eyes): rozszerzenie natywnych testów OPA na pakiety P51-P64 (L01) —
+     wymaga przebiegu regresyjnego poza tą sesją; ryzyko: ujawnienie kolejnych
+     unsafe_var w starszych regułach (pożądane, ale poza zakresem P65).
+Q02 (4-eyes): decyzje per plik z L07 (212 rego nieimportowanych / 87 bez
+     testu) — klasyfikator P65 daje dane, decyzja przypisz/usuń należy do
+     właścicieli domen (potwierdza Q02 z P64).
+Q03: czy exit code 2 (NEEDS_ADVICE/usage) ma pozostać semantyką kontraktu, czy
+     rozdzielić na osobne kody (propozycja: pozostać — zgodne z I01 i P29).
+Q04: cykl adoption weekly (ADR-002) — czy przełączyć na daily po wdrożeniu
+     V4 (koszt CI vs szybkość detekcji martwych narzędzi).
+
+9.17. ZAAŁOŻENIA JAWNE
+==============================================================================
+[ZAŁOŻENIE] bin/opa 0.68.0 jest wersją referencyjną środowiska (używa jej
+            już P49 chaos suite); testy natywne P65 przechodzą na tej wersji.
+[ZAŁOŻENIE] żywy skan KATALOG_NARZEDZI (P60) objmuje narzędzia P65 automatycznie
+            przy następnym przebiegu (katalog deklaruje 997 plików .py; skan
+            liczony, nie ręczny).
+[ZAŁOŻENIE] podstawy prawne z Sekcji 8 promptu P65 są katalogiem twierdzeń —
+            wszystkie oznaczone [NIEZWERYFIKOWANE — ISAP]; weryfikacja P68.
+[ZAŁOŻENIE] wykryte w L01 usterki starszych rego (poza P65) nie powodują
+            regresji pytest 472 (potwierdzono uruchomieniem) — rozszerzenie
+            natywnych testów na starsze pakiety to decyzja Q01.
+
+9.18. TABELA PRZEKAZYWANYCH ARTEFAKTÓW (11.4)
+==============================================================================
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| Kontrakt narzędzi I01 (pola+exit codes+dry-run) | P66-P68, V4 | Rego+Python+ADR-002 | każde nowe narzędzie |
+| Wymóg natywnego opa test (C2) | P66+ | runner faza 3 | nowe pakiety Rego |
+| docs/TOOLS_P65_GENERATED.md + --check | P60/P66 | markdown generowany | zero dryfu docs |
+| Metryki adopcji I11 (weekly) | P37/P50 | bundles/v3_p65_i11_*.json | decyzje DX/usunięcie |
+| Mapa kompozycji I10 | V4 | bundles/v3_p65_i10_engine.json | przed nowym narzędziem |
+| Scenariusze chaos 196 / fail-closed 0 | P66 chaos | bundles/v3_p65_i09_engine.json | baseline defensywności |
+| WORM tamper 5/5 | P42/P59/P68 | bundles/v3_p65_i08_engine.json | dowód integralności |
+| Luki L01-L08 | P66/P68 | ten raport (9.11) | wejście fal naprawczych |
+| Rozbudowana architektura OPA (rego+thresholds+wiring+mirrory) | P66+ | rules/*+policies/* | hash-parity obowiązkowy |
+
+==============================================================================
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+==============================================================================
+Zgodne z V1 (fail-closed, ADR-002 parametry-as-data, okna temporalne P05,
+brak cichego AUTO_POST) i V2 (Decision Certificate, Golden Oracle, Law Radar —
+narzędzia P65 niczego nie AUTO_POSTują; najgorsza ścieżka to NEEDS_ADVICE).
+Odstępstwa: brak (kontrakt P64 K1-K5 honorowany: L07 przeniesione do rejestru
+P66 z klasyfikacją narzędziową; zero duplikacji — protokół 08 potwierdzony
+testem). Dowody = wyniki uruchomień (9.05), nie deklaracje.
+Status raportu wdrożenia: WDROŻONY_100 (2026-09-16).

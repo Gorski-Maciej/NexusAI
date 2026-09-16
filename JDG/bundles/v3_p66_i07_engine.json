@@ -1,0 +1,29 @@
+{
+  "header": {
+    "schema": "jdg.v3_p66.chaos.audit.v1",
+    "part": "P66",
+    "slug": "CHAOS_ODPORNOSC",
+    "generated_at": null,
+    "analyses": {
+      "I07_maturity": "engine"
+    }
+  },
+  "result": {
+    "ladder_levels": [
+      "L1: eksperymenty w CI",
+      "L2: chaos day monthly",
+      "L3: game days",
+      "L4: ciągły chaos w staging",
+      "L5: chaos na produkcji z kill switchem"
+    ],
+    "current_level": "L3",
+    "level_evidence": {
+      "ci_runnable": 10,
+      "chaos_day": "zdefiniowany (I05)",
+      "game_day": "EX-12 (I12)"
+    },
+    "next_level_plan": "L3 game day: EX-12 na chaos day z kill switchem (I04) + rejestr wniosków (I09)",
+    "evidence": "tools/v3_p66_experiment_cards.json (ci_runnable per karta)",
+    "provenance": "prompt P66 Sekcja 10-I07"
+  }
+}

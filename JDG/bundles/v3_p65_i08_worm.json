@@ -42,6 +42,6 @@
     "composes": "tools/v3_p42_worm_hash_chain.py (łańcuch hashy WORM P42; obecny=True)",
     "evidence": "TinyWorm verify() — 5/5 prób naruszenia wykrytych (modyfikacja, usunięcie, wstawienie, kolejność, swap hash)",
     "provenance": "art. 5 UoR (pierwotność dowodów) [NIEZWERYFIKOWANE — ISAP]; P42 retencja/WORM; P59 integralność; prompt P65 Sekcja 10-I08",
-    "generated_at": "2026-09-16T06:26:24.753001+00:00"
+    "generated_at": "2026-09-16T09:24:18.064900+00:00"
   }
 }

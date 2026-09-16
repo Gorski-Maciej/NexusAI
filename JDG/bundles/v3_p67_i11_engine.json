@@ -1,0 +1,38 @@
+{
+  "analysis": "I11_curriculum_for_rules",
+  "checks": [
+    {
+      "name": "roi_scores_present",
+      "status": "OK",
+      "detail": "klaster z ROI: 3/3"
+    },
+    {
+      "name": "roi_threshold_adr002",
+      "status": "OK",
+      "detail": "próg v3_p67_curriculum_roi_min=5 (ADR-002)"
+    },
+    {
+      "name": "priority_order",
+      "status": "OK",
+      "detail": "kolejka wg ROI (desc): [14, 10, 9]"
+    },
+    {
+      "name": "roi_above_min",
+      "status": "OK",
+      "detail": "najniższe ROI w kolejce: 9 >= 5"
+    }
+  ],
+  "metrics": {
+    "queue": [
+      14,
+      10,
+      9
+    ]
+  },
+  "decision": "PASS",
+  "legal_basis": "prompt P67 I11; P51 domykanie pustyni (priorytety)",
+  "gate": "PASS",
+  "findings": [],
+  "innovation": "V3-P67-I11",
+  "generated_at": null
+}

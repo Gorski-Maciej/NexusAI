@@ -1,0 +1,35 @@
+{
+  "analysis": "I09_learning_safety_metrics",
+  "checks": [
+    {
+      "name": "rejections_registered",
+      "status": "OK",
+      "detail": "odrzucone sugestie (dowód działania guardrail): 1"
+    },
+    {
+      "name": "rejection_by_guardrail",
+      "status": "OK",
+      "detail": "odrzucenia tylko przez guardrails (smt_z3/golden_replay/four_eyes)"
+    },
+    {
+      "name": "smt_proofs_present",
+      "status": "OK",
+      "detail": "lematy SMT w smt_proofs.json: ['kks', 'pit', 'vat', 'zus']"
+    },
+    {
+      "name": "safety_metric_defined",
+      "status": "OK",
+      "detail": "próg v3_p67_suggestion_rejections_min w ADR-002"
+    }
+  ],
+  "metrics": {
+    "rejections": 1,
+    "proofs": 4
+  },
+  "decision": "PASS",
+  "legal_basis": "OP art. 119a (GAAR); prompt P67 I09",
+  "gate": "PASS",
+  "findings": [],
+  "innovation": "V3-P67-I09",
+  "generated_at": null
+}

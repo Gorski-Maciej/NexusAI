@@ -1,0 +1,23 @@
+{
+  "header": {
+    "schema": "jdg.v3_p66.chaos.audit.v1",
+    "part": "P66",
+    "slug": "CHAOS_ODPORNOSC",
+    "generated_at": null,
+    "analyses": {
+      "I05_chaos_day": "engine"
+    }
+  },
+  "result": {
+    "cadence": "monthly",
+    "chaos_day_scheduled": true,
+    "chaos_runner_gate_in_ci": false,
+    "ci_runnable_experiments": 10,
+    "non_ci_experiments": [
+      "EX-09",
+      "EX-12"
+    ],
+    "evidence": ".github/workflows/*.yml (skan chaos) + tools/chaos_runner.py gate (P18) + tools/v3_p66_experiment_cards.json (ci_runnable per karta)",
+    "provenance": "P39 CI; prompt P66 Sekcja 10-I05"
+  }
+}

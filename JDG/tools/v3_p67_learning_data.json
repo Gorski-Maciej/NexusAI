@@ -1,0 +1,122 @@
+{
+  "schema": "nexusai.jdg.v3_p67_learning_data.v1",
+  "part": "P67",
+  "slug": "SELF_LEARNING",
+  "description": "Dane pętli samouczenia fortecy (P67): decyzje -> klaster -> sugestia -> walidacje guardrails -> lifecycle -> metryki. Sugestie jako DANE; AI proponuje, forteca decyduje.",
+  "advice_clusters": [
+    {
+      "cluster_id": "CL-001",
+      "reason_code": "VAT_RATE_MISSING",
+      "domain": "vat",
+      "typical_amount_band": "any",
+      "case_count_90d": 14,
+      "source_evidence": "bundles/decision_certificates.json (certainty_class=NEEDS_ADVICE; decision.rule_id=jdg.vat.example.r1)",
+      "candidate_rule": "jdg.vat.a41a.rate_from_document",
+      "suggestion_id": "SUG-001",
+      "candidate_status": "DRAFT",
+      "legal_basis": "Art. 41a ustawy VAT (Dz.U. 2025 poz. 825 t.j.) [NIEZWERYFIKOWANE — ISAP]",
+      "target_status": "SHADOW",
+      "roi": { "frequency": 14, "impact": "high", "score": 14 },
+      "notes": "Powtarzalny powód NEEDS_ADVICE -> kandydat na regułę (klaster per powód/domena/kwota)."
+    },
+    {
+      "cluster_id": "CL-002",
+      "reason_code": "KSEF_NR_MISSING",
+      "domain": "vat",
+      "typical_amount_band": "any",
+      "case_count_90d": 9,
+      "source_evidence": "ksef_offline_queue/outbox (wstrzymane pozycje) + P16 drill",
+      "candidate_rule": "jdg.vat.a106b.ksef_blocker",
+      "suggestion_id": "SUG-002",
+      "candidate_status": "DRAFT",
+      "legal_basis": "Art. 106b ust. 3 ustawy VAT [NIEZWERYFIKOWANE — ISAP]",
+      "target_status": "SHADOW",
+      "roi": { "frequency": 9, "impact": "medium", "score": 9 },
+      "notes": "Brak numeru KSeF — powtarzalny wyjątek -> draft reguły blokującej."
+    },
+    {
+      "cluster_id": "CL-003",
+      "reason_code": "ZUS_LIMIT_30X",
+      "domain": "zus",
+      "typical_amount_band": "high",
+      "case_count_90d": 5,
+      "source_evidence": "smt_proofs.json (ZUS-001) + thresholds 30-krotność",
+      "candidate_rule": "jdg.zus.a18.limit_check",
+      "suggestion_id": "SUG-003",
+      "candidate_status": "DRAFT",
+      "legal_basis": "Art. 18 ust. 8 ustawy o SUS (Dz.U. 2025 poz. 865 t.j.) [NIEZWERYFIKOWANE — ISAP]",
+      "target_status": "SHADOW",
+      "roi": { "frequency": 5, "impact": "high", "score": 10 },
+      "notes": "Klaster kwotowy limitu 30-krotności — sugestia parametru przez lifecycle."
+    }
+  ],
+  "auto_post_corrections": [
+    {
+      "correction_id": "CORR-001",
+      "rule_id": "jdg.pit.a30c.r1",
+      "days_after_post": 2,
+      "source_evidence": "golden_verdicts.json verdict jdg.pit.a30c.r1 (PIT-36L 19%) + replay P30/P53; korekta zarejestrowana przez rekonsylację P62",
+      "weak_rule": true,
+      "notes": "AUTO_POST z późniejszą korektą = słaba reguła; wskaźnik per rule_id (I02)."
+    }
+  ],
+  "operator_reviews": [
+    {
+      "review_id": "OPR-001",
+      "certificate_id": "DC-2026-08-29-00000001",
+      "verdict": "correct",
+      "feeds": ["golden_registry", "trust_score"],
+      "source_evidence": "v3_p35_operator_feedback.json (gate=PASS, feeds_golden_and_trust=true)"
+    }
+  ],
+  "data_sources": [
+    {"source_id": "decision_certificates", "path": "bundles/decision_certificates.json", "available": "yes", "plan": "uzupełniać na bieżąco (P11)"},
+    {"source_id": "golden_verdicts_replays", "path": "bundles/golden_verdicts.json", "available": "yes", "plan": "replay po każdej zmianie reguł (P10)"},
+    {"source_id": "operator_feedback", "path": "bundles/v3_p35_operator_feedback.json", "available": "yes", "plan": "ocena każdej decyzji NEEDS_ADVICE (P35-I09)"},
+    {"source_id": "lifecycle_registry", "path": "bundles/rule_registry.json", "available": "yes", "plan": "statusy SHADOW/CANDIDATE/ACTIVE (P07)"},
+    {"source_id": "law_epochs", "path": "bundles/v3_p53_epoch_registry.json", "available": "yes", "plan": "epoka prawna każdej sugestii (P53)"},
+    {"source_id": "corrections", "path": "rekonsylacje P62 + korekty AUTO_POST", "available": "partial", "plan": " sprzężenie korekty z rule_id — wdrożone w v3_p67_learning_data.json"},
+    {"source_id": "legal_reviews_p47", "path": "mediacje P47", "available": "no", "plan": "eksport wyników przeglądów prawnych do bundles (V4)"}
+  ],
+  "suggestion_pipeline": {
+    "stages": [
+      "advice_cluster",
+      "draft_rule",
+      "smt_z3",
+      "golden_replay",
+      "four_eyes",
+      "lifecycle_shadow"
+    ],
+    "required_validations": ["smt_z3", "golden_replay", "four_eyes"],
+    "four_eyes_roles": ["author", "reviewer", "legal_approver", "owner"],
+    "max_4eyes_age_days": 60,
+    "law_epoch_source": "bundles/v3_p53_epoch_registry.json",
+    "notes": "Sugestia bez SMT/Z3, replay lub 4-eyes = odrzucona (BLOCK); 4-eyes starsze niż 60 dni = wygasła (NEEDS_ADVICE); nowa epoka prawna unieważnia sugestię (I04)."
+  },
+  "suggestions": [
+    {
+      "suggestion_id": "SUG-001",
+      "cluster_id": "CL-001",
+      "created_at": "2026-09-01",
+      "law_epoch": "EPOCH-BASE",
+      "status": "REJECTED",
+      "rejected_by": "smt_z3",
+      "notes": "Przykład odrzucenia przez guardrail — dowód działania bramki (I09)."
+    },
+    {
+      "suggestion_id": "SUG-002",
+      "cluster_id": "CL-002",
+      "created_at": "2026-09-05",
+      "law_epoch": "EPOCH-BASE",
+      "status": "APPROVED",
+      "rejected_by": null,
+      "notes": "Zaakceptowana przez guardrails -> trafia do SHADOW (P07)."
+    }
+  ],
+  "learning_dashboard": {
+    "name": "learning-loop-dashboard",
+    "rows": ["cluster_id", "suggestion_id", "status", "lifecycle_status", "effect"],
+    "source": "advice_clusters + suggestions + P58 metrics",
+    "notes": "Tablica: klaster -> sugestia -> status (SHADOW/ACTIVE) -> efekt (spadek NEEDS_ADVICE) — I06."
+  }
+}

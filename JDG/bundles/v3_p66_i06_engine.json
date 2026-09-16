@@ -1,0 +1,22 @@
+{
+  "header": {
+    "schema": "jdg.v3_p66.chaos.audit.v1",
+    "part": "P66",
+    "slug": "CHAOS_ODPORNOSC",
+    "generated_at": null,
+    "analyses": {
+      "I06_auto_rollback": "engine"
+    }
+  },
+  "result": {
+    "cards_with_rollback": 12,
+    "cards_total": 12,
+    "auto_rollback_armed_deployments": 7,
+    "fail_closed_deployments": 24,
+    "healthy_versions_present": true,
+    "auto_rollback_sla_min": 5,
+    "assertion_breach_path": "aserca złamana → rollback karty → przywrócenie healthy version → raport do rejestru (I09)",
+    "evidence": "tools/v3_p66_experiment_cards.json + bundles/deployments.json (auto_rollback_armed) + bundles/healthy_versions.json (P38)",
+    "provenance": "P38 bundle deploy (auto-rollback, MTTR SLA); prompt P66 Sekcja 10-I06"
+  }
+}

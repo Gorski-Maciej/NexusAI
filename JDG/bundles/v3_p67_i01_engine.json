@@ -1,0 +1,40 @@
+{
+  "analysis": "I01_advice_to_rule_pipeline",
+  "checks": [
+    {
+      "name": "clusters_present",
+      "status": "OK",
+      "detail": "klastery NEEDS_ADVICE z sugestiami: 3 (wymagane >= 3)"
+    },
+    {
+      "name": "pipeline_stages",
+      "status": "OK",
+      "detail": "etapy pipeline: 6 -> ['advice_cluster', 'draft_rule', 'smt_z3', 'golden_replay', 'four_eyes', 'lifecycle_shadow']"
+    },
+    {
+      "name": "required_validations",
+      "status": "OK",
+      "detail": "walidacje obowiązkowe: ['smt_z3', 'golden_replay', 'four_eyes']"
+    },
+    {
+      "name": "lifecycle_target",
+      "status": "OK",
+      "detail": "cel klasterów = SHADOW (P07 lifecycle, zero bypass): True"
+    },
+    {
+      "name": "each_cluster_has_suggestion",
+      "status": "OK",
+      "detail": "każdy klaster ma sugestię-kandydata"
+    }
+  ],
+  "metrics": {
+    "clusters": 3,
+    "stages": 6
+  },
+  "decision": "PASS",
+  "legal_basis": "RODO art. 22 (human-in-the-loop); OP art. 119a (GAAR — nie promuje agresywnych ścieżek) [NIEZWERYFIKOWANE — ISAP]; prompt P67 I01",
+  "gate": "PASS",
+  "findings": [],
+  "innovation": "V3-P67-I01",
+  "generated_at": null
+}

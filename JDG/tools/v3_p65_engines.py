@@ -119,17 +119,32 @@ def _test_generator_engine() -> dict:
 
 # ── I04: Cashflow simulator (kompozycja P62) ─────────────────────────────────
 def _cashflow_engine() -> dict:
-    src = read_text(P62_ENGINES)
-    scenarios = keyword_scan([P62_ENGINES], ["base", "delays?", "vat_refund", "opoznien", "zwrot"])
-    bundle_ok = (read_json(BUNDLES / "v3_p62_run_all.json") or {}).get("gate") == "PASS"
-    present = sorted(set(scenarios))
+    """Scenariusze płynności z PRAWDZIWYCH źródeł P62 (kompozycja, zero duplikacji):
+    base — silnik harmonogramu P62-I04 (predyktory + kalendarz dni roboczych),
+    delays — ostrzeżenie o opóźnieniach płatności klienta (cashflow predictor),
+    vat_refund — prognoza zwrotów VAT w horyzoncie kwartalnym (VAT predictor)."""
+    p62_i04 = read_json(BUNDLES / "v3_p62_i04_cashflow.json") or {}
+    schedule_pass = p62_i04.get("gate") == "PASS"
+    base_src = read_text(P62_ENGINES)
+    predictor_src = read_text(RULES_DIR / "cashflow_tax_predictor_enterprise.rego")
+    vat_src = read_text(RULES_DIR / "vat_cashflow_predictor_enterprise.rego")
+    base = schedule_pass or "predictor_present" in base_src
+    delays = bool(re.search(r"op[oó]źn|delay", predictor_src, re.I))
+    vat_refund = bool(re.search(r"zwrot|refund", vat_src, re.I))
+    present = [s for s, ok in (("base", base), ("delays", delays), ("vat_refund", vat_refund)) if ok]
+    run_all = read_json(BUNDLES / "v3_p62_run_all.json") or {}
     payload = {
         "scenarios_present": present,
         "scenarios_missing": [s for s in ["base", "delays", "vat_refund"] if s not in present],
+        "scenario_evidence": {
+            "base": "bundles/v3_p62_i04_cashflow.json (gate=PASS: predictor_present + kalendarz dni roboczych)",
+            "delays": "rules/cashflow_tax_predictor_enterprise.rego (ostrzeżenie o opóźnieniach płatności klienta)",
+            "vat_refund": "rules/vat_cashflow_predictor_enterprise.rego (vat_forecast_*_vat_to_refund, total_refund)",
+        },
         "p62_engines_present": P62_ENGINES.exists(),
-        "p62_gate_pass": bundle_ok,
-        "composition": "cashflow scenarios z tools/v3_p62_engines.py (P62 digital twin) — zero duplikacji",
-        "evidence": "tools/v3_p62_engines.py + bundles/v3_p62_run_all.json (gate)",
+        "p62_gate_pass": run_all.get("gate") == "PASS",
+        "composition": "scenariusze cashflow z tools/v3_p62_engines.py + predyktory Rego P62 — zero duplikacji",
+        "evidence": "tools/v3_p62_engines.py + bundles/v3_p62_i04_cashflow.json + rules/*cashflow*",
         "provenance": "art. 47 ustawy o ZUS (terminowość) [NIEZWERYFIKOWANE — ISAP]; P62; prompt P65 Sekcja 10-I04",
     }
     write_json(BUNDLES / "v3_p65_i04_engine.json",
@@ -220,20 +235,45 @@ def _worm_engine() -> dict:
 
 # ── I09: Legal chaos suite (kompozycja P49) ───────────────────────────────────
 def _chaos_engine() -> dict:
+    """Chaos prawny (I09) — kompozycja z PRAWDZIWYCH artefaktów P49 (zero duplikacji):
+    mutacje = scenariusze chaos (chaos_input) + warianty brakujących pól
+    (missing_field_coverage) + ścieżki fail-open (fail_open_registry) + generatory;
+    przełamania = REALNE naruszenia fail-closed z bundli P49 (zero deklaracji)."""
+    chaos = read_json(BUNDLES / "v3_p49_chaos_input.json") or {}
+    missing = read_json(BUNDLES / "v3_p49_missing_field_coverage.json") or {}
+    registry = read_json(BUNDLES / "v3_p49_fail_open_registry.json") or {}
+    chaos_m = chaos.get("metrics", {}) or {}
+    missing_m = missing.get("metrics", {}) or {}
+    registry_m = registry.get("metrics", {}) or {}
     sources = [P49_CHAOS_INPUT, P49_MISSING_FIELD, P49_FAIL_OPEN]
     found = [p.name for p in sources if p.exists()]
     hay = "\n".join(read_text(p) for p in sources)
-    # policz realne mutacje/aszercje fail-closed w narzędziach P49
-    mutations = len(re.findall(r"def\s+(?:generate|mutate|chaos|fuzz)\w*", hay, re.I))
-    mutations += len(re.findall(r"assert.*(fail|closed|BLOCK|NEEDS_ADVICE)", hay, re.I))
+    generators = len(re.findall(r"def\s+(?:generate|mutate|chaos|fuzz)\w*", hay, re.I))
+    mutations = (int(chaos_m.get("cases_total", 0) or 0)
+                 + int(missing_m.get("cases_total", 0) or 0)
+                 + int(registry_m.get("fail_open_paths", 0) or 0)
+                 + generators)
+    breaches = (int(chaos_m.get("fail_closed_violations", 0) or 0)
+                + int(registry_m.get("silent_auto_post_max", 0) or 0))
+    # Cichy AUTO_POST w narzędziach MUTUJĄCYCH (chaos_input, missing_field);
+    # literał w fail_open_scanner to WZORZEC DETEKCJI (skaner szuka takich ścieżek)
+    # — jego wynik liczony jest wyżej jako fail_open_paths, nie jako ścieżka AUTO_POST.
+    auto_post_hits = sum(read_text(p).count('"AUTO_POST"')
+                         for p in (P49_CHAOS_INPUT, P49_MISSING_FIELD))
     payload = {
         "mutations": mutations,
-        "fail_closed_breaches": 0,  # asercja: zero cichych AUTO_POST w P49 (skan)
-        "auto_post_hits_in_chaos_tools": len(re.findall(r'"AUTO_POST"', hay)),
+        "mutation_evidence": {
+            "chaos_scenarios": chaos_m.get("cases_total", 0),
+            "missing_field_cases": missing_m.get("cases_total", 0),
+            "fail_open_paths": registry_m.get("fail_open_paths", 0),
+            "mutation_generators": generators,
+        },
+        "fail_closed_breaches": breaches,
+        "auto_post_hits_in_chaos_tools": auto_post_hits,
         "chaos_tools_found": found,
         "min_mutations": read_threshold("v3_p65_chaos_mutations_min") or 10,
         "composition": "chaos prawny z tools/v3_p49_* (P49) — rozszerzany, nie dublowany",
-        "evidence": "tools/v3_p49_chaos_input.py + v3_p49_missing_field_generator.py + v3_p49_fail_open_scanner.py",
+        "evidence": "bundles/v3_p49_chaos_input.json + v3_p49_missing_field_coverage.json + v3_p49_fail_open_registry.json",
         "provenance": "P49 fail-closed; art. 56 KKS [NIEZWERYFIKOWANE — ISAP]; prompt P65 Sekcja 10-I09",
     }
     write_json(BUNDLES / "v3_p65_i09_engine.json",

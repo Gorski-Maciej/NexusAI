@@ -1,0 +1,22 @@
+{
+  "header": {
+    "schema": "jdg.v3_p66.chaos.audit.v1",
+    "part": "P66",
+    "slug": "CHAOS_ODPORNOSC",
+    "generated_at": null,
+    "analyses": {
+      "I10_resilience_trend": "engine"
+    }
+  },
+  "result": {
+    "resilience_pct": 100.0,
+    "min_pct": 80,
+    "components": {
+      "cards_with_core_assertion": 12,
+      "green_chaos_sources": 2
+    },
+    "trend_to_p68": "kwartalny odczyt resilience_pct → wejście do re-certyfikacji P68",
+    "evidence": "tools/v3_p66_experiment_cards.json + bundles/v3_p49_chaos_input.json + v3_p57_chaos.json",
+    "provenance": "P58 metryki; prompt P66 Sekcja 10-I10"
+  }
+}

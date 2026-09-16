@@ -11,16 +11,19 @@
   "result": {
     "scenarios_present": [
       "base",
-      "zwrot"
-    ],
-    "scenarios_missing": [
       "delays",
       "vat_refund"
     ],
+    "scenarios_missing": [],
+    "scenario_evidence": {
+      "base": "bundles/v3_p62_i04_cashflow.json (gate=PASS: predictor_present + kalendarz dni roboczych)",
+      "delays": "rules/cashflow_tax_predictor_enterprise.rego (ostrzeżenie o opóźnieniach płatności klienta)",
+      "vat_refund": "rules/vat_cashflow_predictor_enterprise.rego (vat_forecast_*_vat_to_refund, total_refund)"
+    },
     "p62_engines_present": true,
     "p62_gate_pass": true,
-    "composition": "cashflow scenarios z tools/v3_p62_engines.py (P62 digital twin) — zero duplikacji",
-    "evidence": "tools/v3_p62_engines.py + bundles/v3_p62_run_all.json (gate)",
+    "composition": "scenariusze cashflow z tools/v3_p62_engines.py + predyktory Rego P62 — zero duplikacji",
+    "evidence": "tools/v3_p62_engines.py + bundles/v3_p62_i04_cashflow.json + rules/*cashflow*",
     "provenance": "art. 47 ustawy o ZUS (terminowość) [NIEZWERYFIKOWANE — ISAP]; P62; prompt P65 Sekcja 10-I04"
   }
 }

@@ -1,0 +1,30 @@
+{
+  "analysis": "I12_post_learning_replay",
+  "checks": [
+    {
+      "name": "replays_present",
+      "status": "OK",
+      "detail": "replay orzeczeń (P10): 31 >= 30"
+    },
+    {
+      "name": "replay_contract_p53",
+      "status": "OK",
+      "detail": "kontrakt replay P53 (filarów): 4"
+    },
+    {
+      "name": "threshold_adr002",
+      "status": "OK",
+      "detail": "próg v3_p67_replay_cases_min w ADR-002"
+    }
+  ],
+  "metrics": {
+    "replays": 31,
+    "pillars": 4
+  },
+  "decision": "PASS",
+  "legal_basis": "prompt P67 I12; P10 golden replay; P53 replay contract",
+  "gate": "PASS",
+  "findings": [],
+  "innovation": "V3-P67-I12",
+  "generated_at": null
+}

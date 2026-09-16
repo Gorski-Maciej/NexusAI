@@ -916,29 +916,29 @@
       "slug": "NOWE_NARZEDZIA",
       "prompt": "V3_PROMPT_P65_NOWE_NARZEDZIA.txt",
       "report": "RAPORT_V3_P65_NOWE_NARZEDZIA.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
-      "luki_p1": 0,
-      "luki_p2": 0,
-      "luki_p3": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": "",
-      "auto_recheck": true
+      "luki_p1": 1,
+      "luki_p2": 4,
+      "luki_p3": 2,
+      "innovations": 12,
+      "implemented_at": "2026-09-16T09:41:39.837041+00:00",
+      "notes": "NOWE NARZEDZIA FORTECY: 12 innowacji I01-I12; 6 narzedzi v3_p65_* (kontrakt, semantic diff, rule-to-tests, WORM tamper, adoption, docs generator) na 10 prawdziwych zrodlach (P37/P42/P49/P51/P53/P62/P63/P64) — zero duplikacji; rego 12 analiz + router else-chain (465001-465012) + thresholds ADR-002 (13 kluczy) + wiring p129 + mirrory hash-parity; PIERWSZY pakiet V3 z natywnym opa test 17/17 PASS (bin/opa 0.68.0) — wykryl 2 unsafe_var niewidoczne dla walidacji statycznej (L01); pytest 21/21; regresja kampanii 472 passed; naprawy L01-L06 (deep-merge object.union, falszywy dryf docs, scenariusze/mutacje z bundli bramek).",
+      "auto_recheck": false
     },
     "P66": {
       "slug": "CHAOS_ODPORNOSC",
       "prompt": "V3_PROMPT_P66_CHAOS_ODPORNOSC.txt",
       "report": "RAPORT_V3_P66_CHAOS_ODPORNOSC.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
-      "luki_p1": 0,
-      "luki_p2": 0,
-      "luki_p3": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": "",
-      "auto_recheck": true
+      "luki_p1": 1,
+      "luki_p2": 3,
+      "luki_p3": 3,
+      "innovations": 12,
+      "implemented_at": "2026-09-16T11:32:10.110359+00:00",
+      "notes": "CHAOS I ODORNOSC: 12 innowacji I01-I12; program chaos engineering jako dane — 12 kart eksperymentow (asercja no_silent_auto_post w kazdej, rollback 12/12, blast radius, kill switch) + steady state jako dane (5 metryk z P58/P37/P49/P38) + macierz zaleznosci MF/NBP/BANK/ISAP x timeout/error/halt (21 kombinacji); rego 12 analiz + router else-chain (466001-466012) + thresholds ADR-002 (9 kluczy) + wiring p130 + mirrory hash-parity; natywny opa test 19/19 PASS (kontrakt C2 z P65 utrzymany); pytest 23/23; regresja kampanii 495 passed; kill switch eksperymentow domyka luke P07 package_suspend (L04); resilience_pct=100 (prog 80) -> trend do P68; luki otwarte L01 (chaos gate w CI — Q03), L07/L08 -> P68.",
+      "auto_recheck": false
     },
     "P67": {
       "slug": "SELF_LEARNING",
@@ -971,8 +971,8 @@
   },
   "summary": {
     "total": 69,
-    "wdrozony_100": 65,
-    "nie_wdrozony": 4,
-    "progress_pct": 94.2
+    "wdrozony_100": 67,
+    "nie_wdrozony": 2,
+    "progress_pct": 97.1
   }
 }

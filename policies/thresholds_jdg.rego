@@ -4439,3 +4439,60 @@ v3_p65 := {
     "no_auto_post": true,
     "manual_review_required": true,
 }
+
+# ── V3-P66 CHAOS I ODPORNOŚĆ (12 innowacji I01–I12; prompt P66 Sekcja 10) ─────
+# Program chaos engineering: steady state jako dane, karty eksperymentów
+# (asercja zero cichych AUTO_POST), macierz zależności MF/NBP/bank/ISAP,
+# kill switch, chaos day, auto-rollback, dojrzałość, awarie jako dane,
+# luki→rejestr napraw, wskaźnik odporności, peak-time, game day. Progi ADR-002;
+# okno temporalne (P05). Podstawy: RODO art. 32 ust. 1 pkt d, UoR art. 4 ust. 1,
+# VAT art. 109e, SUS art. 47, OP art. 56, KKS art. 56 [NIEZWERYFIKOWANE — ISAP].
+v3_p66 := {
+    "v3_p66_threshold_version": "chaos-resilience-v3p66-2026.09",
+    "legal_basis_version": "lb-chaos-resilience-v3p66-2026.09",
+    "valid_from": "2026-01-01",                               # okno temporalne (P05)
+    "valid_to": null,
+    # I01: steady state — minimalna liczba metryk bazowych normy (P58)
+    "v3_p66_steady_state_metrics_min": 4,
+    # I02: karta eksperymentu — wymagane sekcje (hipoteza/asercje/rollback)
+    "v3_p66_card_sections_required": ["hypothesis", "assertions", "rollback"],
+    # I03: macierz zależności — tryby awarii i minimalna liczba kombinacji
+    "v3_p66_dependency_failure_modes": ["timeout", "error", "halt"],
+    "v3_p66_dependency_combinations_min": 12,
+    # I05: cykl chaos day (program ciągły, nie jednorazowy)
+    "v3_p66_chaos_day_cadence": "monthly",
+    # I06: SLA automatycznego wycofania eksperymentu (minuty; P07 MTTR)
+    "v3_p66_auto_rollback_sla_min": 5,
+    # I07: poziomy dojrzałości chaos (L1–L5)
+    "v3_p66_maturity_levels": ["L1: eksperymenty w CI", "L2: chaos day monthly", "L3: game days", "L4: ciągły chaos w staging", "L5: chaos na produkcji z kill switchem"],
+    # I10: próg wskaźnika odporności (trend kwartalny do P68)
+    "v3_p66_resilience_min_pct": 80,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}
+
+# ── P67 SELF-LEARNING (pętla wiedzy z decyzji i wyjątków) ──────────────
+# Prompt P67 Sekcja 10 (I01–I12). Progi czytane przez silniki tools/v3_p67_engines.py
+# i reguły rules/v3_p67_self_learning.rego (jedno źródło prawdy — ADR-002).
+v3_p67 := {
+    "v3_p67_threshold_version": "self-learning-v3p67-2026.09",
+    "valid_from": "2026-01-01",
+    "valid_to": null,
+    "v3_p67_check": false,
+    "v3_p67_clusters_min": 3,
+    "v3_p67_pipeline_stages_min": 5,
+    "v3_p67_validations_required": ["smt_z3", "golden_replay", "four_eyes"],
+    "v3_p67_four_eyes_roles_min": 4,
+    "v3_p67_max_4eyes_age_days": 60,
+    "v3_p67_telemetry_metrics_min": 6,
+    "v3_p67_suggestion_rejections_min": 1,
+    "v3_p67_knowledge_verdicts_min": 30,
+    "v3_p67_curriculum_roi_min": 5,
+    "v3_p67_replay_cases_min": 30,
+    "v3_p67_corrections_max_ratio_pct": 5,
+    "v3_p67_time_to_rule_days_max": 30,
+    "v3_p67_epoch_invalidation_required": true,
+    "v3_p67_dashboard_rows_min": 4,
+    "v3_p67_data_sources_min": 6,
+    "v3_p67_guardrail_layers": ["smt_z3", "golden_replay", "four_eyes", "lifecycle_shadow"],
+}

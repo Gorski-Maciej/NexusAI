@@ -22,14 +22,14 @@
         "tool": "v3_p65_tool_contract.py",
         "exists": true,
         "used_in_ci_or_docs": true,
-        "used_in_tests": false,
+        "used_in_tests": true,
         "decision": "używane"
       },
       {
         "tool": "v3_p65_semantic_diff.py",
         "exists": true,
         "used_in_ci_or_docs": true,
-        "used_in_tests": false,
+        "used_in_tests": true,
         "decision": "używane"
       },
       {
@@ -57,7 +57,7 @@
         "tool": "v3_p65_doc_generator.py",
         "exists": true,
         "used_in_ci_or_docs": true,
-        "used_in_tests": false,
+        "used_in_tests": true,
         "decision": "używane"
       }
     ],
@@ -65,6 +65,6 @@
     "policy": "narzędzie nieużywane → decyzja: poprawa DX albo usunięcie (P50 dead tools)",
     "evidence": ".github/workflows/*.yml + tests/auto/test_v3_p65_*.py + docs/KATALOG_NARZEDZI.md",
     "provenance": "P50 dead code/duplikaty; P37 metryki; prompt P65 Sekcja 10-I11",
-    "generated_at": "2026-09-16T06:26:38.169193+00:00"
+    "generated_at": "2026-09-16T09:24:21.250200+00:00"
   }
 }

@@ -1,0 +1,400 @@
+RAPORT V3-P66 — CHAOS I ODPORNOŚĆ — FORTECA TESTOWANA NISZCZYCIELEM
+==============================================================================
+Kampania: GLM52 V3 (69 części) | Data: 2026-09-16 | Status raportu wdrożenia: WDROŻONY_100
+Konwencja: P51-P65 (silniki na PRAWDZIWYCH źródłach, zero fasad, zero duplikacji)
+==============================================================================
+
+9.01. MISJA
+P66 domyka program chaos engineering dla fortecy księgowej JDG: 12 innowacji
+I01-I12 z promptu Sekcja 10 — steady state hypothesis pack (norma jako dane),
+standard kart eksperymentów (asercja obowiązkowa: zero cichych AUTO_POST),
+macierz chaos zależności MF/NBP/bank/ISAP × timeout/error/halt, kill switch
+eksperymentów (przerwanie < 1 s), kalendarz chaos day, auto-rollback ekspery-
+mentów, drabina dojrzałości L1-L5, awarie jako dane, luki chaos → rejestr
+napraw (P64), wskaźnik odporności (trend do P68), chaos w szczycie deklaracji,
+game day złożony (MF+NBP+bank). Cel głównego nurtu optymalizacji: odporność
+UTRZYMYWANA (eksperymenty cykliczne zasilają naprawy), nie deklarowana;
+system pozostaje fail-closed (NEEDS_ADVICE/MANUAL_REVIEW — nigdy cichy AUTO_POST).
+
+9.02. ZAKRES WDROŻENIA (12 innowacji I01-I12, prompt P66 Sekcja 10)
+==============================================================================
+I01 Steady state hypothesis pack  → NEEDS_ADVICE hipoteza/metody bazowe niekompletne
+I02 Experiment card standard      → BLOCK karta bez asercji no_silent_auto_post/rollback/blast radius
+I03 Dependency chaos matrix       → NEEDS_ADVICE < 12 kombinacji zależność×tryb
+I04 Kill switch for experiments   → BLOCK eksperyment ciężki bez wyłącznika / bez narzędzia P07
+I05 Chaos day calendar            → NEEDS_ADVICE brak harmonogramu cyklicznego
+I06 Auto-rollback experiments     → BLOCK karta bez rollbacku (asercja złamana bez cofnięcia)
+I07 Chaos maturity ladder         → NEEDS_ADVICE drabina dojrzałości < 3 poziomy
+I08 Failure injection as data     → NEEDS_ADVICE eksperymenty nie jako dane
+I09 Chaos findings→repairs        → NEEDS_ADVICE przełamanie fail-closed albo brak feedu do napraw
+I10 Resilience trend metric       → BLOCK wskaźnik odporności < 80% (trend do P68)
+I11 Peak-time chaos               → NEEDS_ADVICE szczyt niesymulowany
+I12 Game day scenario pack        → NEEDS_ADVICE brak scenariusza złożonego
+
+9.03. ARCHITEKTURA OPA (rozbudowane i inteligentne struktury)
+==============================================================================
+* rules/v3_p66_chaos_resilience.rego — 12 analiz + deterministyczny router
+  else-chain (BLOCK → NEEDS_ADVICE → PASS), priorytety 466001-466012,
+  fail-closed: brak snapshotu progów = NEEDS_ADVICE, brak flagi v3_p66_check
+  = NO_MATCH, zero ścieżek AUTO_POST (statycznie: 0). I02 bramkuje KOMPLETNOŚĆ
+  KART jako dane (wymagane sekcje z progu ADR-002); I04 domyka LUKĘ P07
+  (package_suspend=false → wyłącznik eksperymentów jako pole karty); I10 to
+  bramka wskaźnika odporności z trendem kwartalnym do re-certyfikacji P68.
+* rules/thresholds_jdg.rego — blok v3_p66: threshold_version
+  chaos-resilience-v3p66-2026.09 + legal_basis_version + 9 kluczy ADR-002 +
+  okno temporalne valid_from 2026-01-01 / valid_to null (P05):
+  steady_state_metrics_min=4, card_sections_required=[hypothesis,assertions,
+  rollback], dependency_failure_modes=[timeout,error,halt],
+  dependency_combinations_min=12, chaos_day_cadence=monthly,
+  auto_rollback_sla_min=5, maturity_levels=[L1..L5], resilience_min_pct=80.
+* rules/main_jdg.rego — wiring final_verdict_p130 = safe_merge(final_verdict_p129,
+  v3_p66_chaos_resilience.decide, fallback.decide); POST-MERGE anchor p129→p130.
+* Mirrory policies/ — hash-parity (p66, p65, thresholds, main).
+* Testy natywne OPA (kontrakt C2 z P65): opa test 19/19 PASS (OPA 0.68.0) —
+  runner faza 3 uruchamia je automatycznie (fallback: bramka statyczna).
+
+9.04. SILNIKI DOWODOWE (tools/v3_p66_{common,engines,run_all,rego_static_gate}.py)
+==============================================================================
+Silniki czytają WYŁĄCZNIE PRAWDZIWE źródła repo (rozszerzają, nie dublują —
+protokół 08): tools/v3_p66_experiment_cards.json (12 kart; eksperymenty jako
+dane), chaos_runner.py (P18: 8 eksperymentów + bramka gate), chaos_engineering.py
+(12 mutacji), self_healing_engine.py (naprawa 4-eyes), digital_twin_simulator.py
+(P33), rule_impact_simulator.py, ksef_offline_queue.py + ksef_outbox.py (P54/P61),
+dr_orchestrator.py + bundles/dr_snapshots, bundles/healthy_versions.json (P38),
+verify_verdict_invariants.py, health_tier_engine.py, tools/v3_p07_kill_switch_
+sla.py + bundles/v3_p07_kill_switch_sla.json, bundles/v3_p43_chaos_drill.json
+(gate PASS), v3_p16_chaos_ksef_drill.json, v3_p57_chaos.json (8/8), v3_p49_
+chaos_input.json (12 scenariuszy), v3_p49_missing_field_coverage.json (171),
+v3_p65_i09_engine.json (196 mutacji), deployments.json (44 wdrożenia: 24
+fail_closed, 7 auto_rollback_armed, 0 production_active), v3_p58_error_budget.json
+(budget 100%, gate PASS), v3_p58_advice_spread.json (max 15%), v3_p64_sweep_
+register.json (rejestr napraw K1), workflows CI (skan chaos).
+
+9.05. WYNIKI BRAMEK (protokół 06 — uruchomienia, nie deklaracje)
+==============================================================================
+T1. Run-all: python3 tools/v3_p66_run_all.py → engines=12 rego=PASS
+    failures=none gate=PASS (bundles/v3_p66_run_all.json; 13 bundli dowodowych).
+T2. chaos_runner gate (P18): python3 tools/chaos_runner.py gate → 8/8
+    DETECTABLE, PASS (kompozycja — P66 rozszerza, nie duplikuje).
+T3. Rego NATYWNIE: ../bin/opa test rules/thresholds_jdg.rego
+    rules/v3_p66_chaos_resilience.rego tests/rego/test_v3_p66_chaos_
+    resilience.rego → PASS 19/19 (OPA 0.68.0); bramka statyczna:
+    P66-REGO-STATIC: PASS (testy=19, klucze rego=12, klucze testów=12).
+T4. Testy pytest: tests/auto/test_v3_p66_chaos_resilience.py → 23 passed
+    (karty, silniki, ADR-002, wiring p130, mirror hash-parity, fail-closed,
+    kompozycja 19 źródeł, determinizm silników).
+T5. Regresja: pytest -k "v3_p5 or v3_p6" → 495 passed (472 + 23 P66; kotwice
+    POST-MERGE p129→p130 zaktualizowane w testach P55-P65).
+T6. Wyniki silników (bundla v3_p66_i*_engine.json, 2026-09-16):
+    I01 hipoteza=true, metryk bazowych=5, brakujące źródła=[], error_budget=
+        100% (gate PASS), advice_spread_max=15% [ZAŁOŻENIE jako baseline normy];
+    I02 karty=12, niekompletne=[], asercja no_silent_auto_post we wszystkich=true;
+    I03 zależności pokryte=[MF,NBP,BANK,ISAP], kombinacji=21 (min 12), tryby=
+        [timeout,error,halt];
+    I04 ciężkie=[EX-09,EX-12], kill_switch_defined=true, narzędzie P07=true,
+        luka P07 package_suspend DOMKNIĘTA przez pole karty (dane);
+    I05 chaos_day=monthly, eksperymenty CI-runnable=10 (poza CI: EX-09, EX-12);
+    I06 rollback 12/12 kart, auto_rollback_armed=7/44 wdrożeń (P38),
+        fail_closed=24/44, healthy_versions=true, SLA=5 min;
+    I07 poziom=L3 (CI + chaos day + game day zdefiniowany); plan: L3→L4;
+    I08 eksperymenty jako dane=true, nowe scenariusze bez kodu=5
+        (EX-02/03/04/09/12), runner P18 wspiera dane;
+    I09 przełamania fail-closed=0 (P49+P57+P65 zielone), feed do rejestru
+        napraw=true (v3_p64_sweep_register.json);
+    I10 resilience_pct=100 (próg 80) — trend kwartalny do P68;
+    I11 peak-time=EX-09 (digital twin P33, nigdy produkcja), analiza
+        prawdopodobieństwo×koszt: MF w szczycie = priorytet 1;
+    I12 game day=EX-12 (MF+NBP+BANK), chaos_drill P43 gate=PASS.
+
+9.06. PODANALIZA 5.1 — STEADY STATE I HIPOTEZY (tabela dowodów + wnioski)
+==============================================================================
+Tabela dowodów (grupy 6.1-6.3 promptu P66 → 7.3):
+| # | Plik | Dowód/fakt | Status |
+|---|------|-----------|--------|
+| 1 | tools/chaos_engineering.py | 12 scenariuszy mutacji (DELETE_RULE, EMPTY_THRESHOLDS, CORRUPT_BUNDLE, FUTURE_TEMPORAL...) | ZWERYFIKOWANO |
+| 2 | tools/chaos_runner.py | 8 eksperymentów + tryby list/run/gate; gate=PASS 8/8 | ZWERYFIKOWANO |
+| 3 | tools/self_healing_engine.py | auto-propozycja naprawy; człowiek zatwierdza (4-eyes) | ZWERYFIKOWANO |
+| 4 | tools/digital_twin_simulator.py | symulacje peak-time (P33) | ZWERYFIKOWANO |
+| 5 | tests/test_edge_cases_enterprise.py | istnieje | ZWERYFIKOWANO |
+| 6 | tests/rego/test_native_edge_cases_enterprise.rego | istnieje | ZWERYFIKOWANO |
+| 7 | tests/rego/test_native_cross_domain_red_team_etap27.rego | istnieje | ZWERYFIKOWANO |
+| 8 | tools/rule_impact_simulator.py | blast radius reguł | ZWERYFIKOWANO |
+| 9 | tools/ksef_offline_queue.py | kolejka OFL (EX-01) | ZWERYFIKOWANO |
+| 10 | tools/ksef_outbox.py | outbox exactly-once (P54) | ZWERYFIKOWANO |
+| 11 | bundles/dr_snapshots (katalog) | zrzuty DR | ZWERYFIKOWANO |
+| 12 | bundles/healthy_versions.json | zdrowe wersje rollback (P38) | ZWERYFIKOWANO |
+| 13 | tools/verify_verdict_invariants.py | weryfikacja inwariantów werdyktu | ZWERYFIKOWANO |
+| 14 | tests/test_conflicts_enterprise.py | istnieje | ZWERYFIKOWANO |
+| 15 | tools/health_tier_engine.py | tierowy stan zdrowia | ZWERYFIKOWANO |
+| 16 | docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md | dokument święty 1 | ZWERYFIKOWANO |
+| 17 | docs/WIZJA_OPA_ENTERPRISE_V2.md | dokument święty 2 | ZWERYFIKOWANO |
+| 18 | .github/workflows/jdg-quality.yml | workflow jakości (brak chaos_runner w CI — L03) | ZWERYFIKOWANO |
+| 19 | docs/RULE_LIFECYCLE.md | lifecycle (SHADOW/CANDIDATE/ACTIVE) | ZWERYFIKOWANO |
+| 20 | tools/drift_dashboard.py | dashboard dryfu | ZWERYFIKOWANO |
+| 21 | tests/rego/test_native_decision_composer_enterprise.rego | istnieje | ZWERYFIKOWANO |
+| 22 | tools/kks_penalty_simulator.py | kontekst kosztów awarii (KKS) | ZWERYFIKOWANO |
+| 23 | docs/RODO_AML_BEZPIECZENSTWO_P16.md | RODO/AML (art. 32 testowanie) | ZWERYFIKOWANO |
+| 24-29 | mirror policies (jdg, tax, vat, bundle.sh, manifest base+v2026) | hash-parity potwierdzony | ZWERYFIKOWANO |
+Wnioski: (1) norma jest mierzalna: 5 metryk bazowych z istniejącymi źródłami
+(error_budget=100%, advice_spread<=15%, uver=0, deploy_error_rate=0,
+fail_closed_violations=0) — hipoteza testowalna automatycznie przed/po.
+(2) 10 z 12 eksperymentów runnable w CI (automatyczna weryfikacja hipotez);
+EX-09/EX-12 wymagają chaos day z kill switchem. (3) Bazowy chaos (P18/P49/P57/
+P65) jest ZIELONY: 0 przełamań fail-closed w 196+12+171 mutacjach — odporność
+potwierdzona uruchomieniami, nie deklaracjami.
+Luki podanalizy: L01 (P3) — chaos_runner bramki nie ma w żadnym workflow CI
+(dowód: skan .github/workflows — zero trafień „chaos"); harmonogram chaos day
+zdefiniowany jako dane (monthly), podpięcie do CI = decyzja Q03.
+
+9.07. PODANALIZA 5.2 — KATALOG EKSPERYMENTÓW (12 kart)
+==============================================================================
+Wnioski: (1) 12 kart spełnia standard I02: hipoteza + asercje (we wszystkich
+no_silent_auto_post) + rollback + blast radius + metryki P58 + ci_runnable.
+(2) Macierz zależności pokrywa MF/NBP/BANK/ISAP × timeout/error/halt =
+21 kombinacji (próg ADR-002: 12) — najwyższe ROI: MF w szczycie (EX-09:
+prawdopodobieństwo×koszt masowych błędnych deklaracji), potem NBP weekend
+(EX-02: ciche wyliczenia walutowe = AP09), bank mid-month (EX-03: podwójne
+płatności). (3) 5 nowych scenariuszy dodanych bez zmiany kodu runnera
+(eksperymenty jako dane, I08) — kompozycja: EX-01/05/06/07/08 z chaos_runner
+P18, EX-10 z P65-I08, EX-11 z P49/P57.
+Luki podanalizy: L02 (P2, DOMKNIĘTA) — chaos_runner nie miał trybu danych
+zewnętrznych; P66 dodaje warstwę kart (v3_p66_experiment_cards.v1); runner
+P18 pozostaje wykonawcą gate (rozszerzony, nie zdublowany).
+
+9.08. PODANALIZA 5.3 — ASERCJE I BEZPIECZEŃSTWO EKSPERYMENTÓW
+==============================================================================
+Wnioski: (1) Asercja rdzeniowa we wszystkich 12 kartach: no_silent_auto_post —
+bramkowana przez Rego I02 (BLOCK karty bez niej) i test pytest. (2) Blast
+radius: 10 eksperymentów CI/read-only (eval w pamięci lub kopie plików),
+2 ciężkie (EX-09 symulacja digital twin, EX-12 game day) wymuszają kill switch
+(I04 BLOCK bez wyłącznika; przerwanie < 1 s z P07 hot-reload). (3) Rollback:
+12/12 kart ze ścieżką cofnięcia + auto_rollback_armed w P38 (7 wdrożeń) +
+healthy_versions.json — asercja złamana → rollback karty → przywrócenie
+stanu → raport do rejestru (I09); SLA 5 min z ADR-002.
+Luki podanalizy: L04 (P2, DOMKNIĘTA) — P07 zdiagnozował package_suspend=false
+(brak wyłącznika pakietowego); P66 domyka wyłącznikiem eksperymentów JAKO DANE
+(pole kill_switch w każdej karcie, bramkowane Rego I04) — operacja zbiorowa
+P07 pozostaje otwarta dla właściciela (Q02).
+
+9.09. PODANALIZA 5.4 — PROGRAM CIĄGŁY
+==============================================================================
+Wnioski: (1) Drabina dojrzałości: obecnie L3 (eksperymenty CI + chaos day
+monthly + game day zdefiniowany EX-12); plan L3→L4: cykliczny chaos w staging
+z auto-odczytem resilience_pct. (2) Luki chaos → naprawy: ścieżka zdefiniowana
+i bramkowana (I09): luka → wpis w v3_p64_sweep_register.json z SLA (P64-I01)
+→ fala naprawcza → weryfikacja następnym chaosem; aktualnie 0 otwartych.
+(3) Wskaźnik odporności: resilience_pct=100 (12/12 kart z asercją rdzeniową ×
+zielone źródła chaos), próg 80% z ADR-002, BLOCK poniżej progu, trend kwartalny
+do re-certyfikacji P68.
+Luki podanalizy: L03 (P2, OTWARTA → Q03/CI): chaos_runner gate (8/8) i
+resilience_pct nie są wywoływane w żadnym workflow — harmonogram monthly
+zdefiniowany, podpięcie do CI wymaga decyzji właściciela (koszt vs wartość);
+rekomendacja: jdg-quality.yml dodatkowy krok chaos gate.
+
+9.10. MACIERZ PRAWO↔REGUŁA↔TEST (akty z Sekcji 8 promptu P66)
+==============================================================================
+| Akt | Art. | Reguła | Test | Status | Uwaga |
+|-----|------|--------|------|--------|-------|
+| RODO | 32 ust. 1 pkt d (regularne testowanie) | i01_steady_state + i10_resilience | test_i01/pytest + test_i10/pytest | PEŁNE | [NIEZWERYFIKOWANE — ISAP] |
+| UoR | 4 ust. 1 (rzetelność w awarii) | i02_experiment_cards + i06 | test_i02/i06 | PEŁNE | [NIEZWERYFIKOWANE — ISAP] |
+| Ustawa VAT | 109e (ewidencja w awarii) | i11_peak_time (EX-01/EX-09) | test_i11 + chaos_runner KSEF_OFFLINE_72H | PEŁNE | [NIEZWERYFIKOWANE — ISAP] |
+| Ustawa o ZUS | 47 (terminy nienaruszalne) | i03_dependency_matrix (EX-03 bank) | test_i03 | PEŁNE | [NIEZWERYFIKOWANE — ISAP] |
+| Ordynacja podatkowa | 56 (odsetki) | i09_findings (koszt awarii mierzalny) | test_i09 | PEŁNE | [NIEZWERYFIKOWANE — ISAP] |
+| KKS | 56 (dowód staranności) | i12_game_day | test_i12 | PEŁNE | [NIEZWERYFIKOWANE — ISAP] |
+| UKSC (kontekst) | testy odporności | cały program P66 | run_all gate=PASS | CZĘŚCIOWE | kontekst, nie przepis [ZAŁOŻENIE] |
+| AI Act (kontekst P33) | odporność AI | i11 (digital twin) | test_i11 | CZĘŚCIOWE | kontekst, nie przepis [ZAŁOŻENIE] |
+Statusy weryfikacji: akty 01-06 oznaczone [NIEZWERYFIKOWANE — ISAP] (protokół
+4.2; rejestr mediacji P47); UKSC i AI Act to konteksty branżowe, nie akty
+implementowane wprost — status CZĘŚCIOWE bez ryzyka prawnego [ZAŁOŻENIE].
+
+9.11. REJESTR LUK (V3-P66-Lxx, krytyczność P0-P3)
+==============================================================================
+L01 (P3, OTWARTA → Q03): chaos_runner gate (8/8 DETECTABLE) oraz resilience_pct
+     nie są podpięte do żadnego workflow CI (dowód: skan .github/workflows —
+     zero trafień). Wpływ: odporność ćwiczona ręcznie; harmonogram monthly
+     zdefiniowany jako dane. Fix: dodanie kroku chaos gate do jdg-quality.yml
+     (decyzja właściciela CI — koszt vs wartość).
+L02 (P2, DOMKNIĘTA): brak warstwy „eksperymenty jako dane" — runner P18 miał
+     scenariusze w kodzie. Fix: tools/v3_p66_experiment_cards.json
+     (jdg.v3_p66.experiment_cards.v1) + silniki + bramka Rego I02/I08.
+L03 (P2, DOMKNIĘTA) [=L01 przed poprawką numeracji — scalone z L01]: patrz L01.
+L04 (P2, DOMKNIĘTA): luka P07 package_suspend=false (brak wyłącznika zbiorowego)
+     — P66 domyka wyłącznikiem eksperymentów jako dane (pole kill_switch,
+     bramka Rego I04 BLOCK). Operacja pakietowa P07 pozostaje otwarta (Q02).
+L05 (P3, DOMKNIĘTA): NBP/ISAP/bank nie miały kart eksperymentów (chaos P18
+     tylko KSeF/bundle/thresholds). Fix: EX-02/03/04/09/12 + macierz I03 (21
+     kombinacji).
+L06 (P3, DOMKNIĘTA): fałszywy JSON w kartach (nieszczelny cudzysłów w treści
+     hipotezy) — naprawiony; test pytest waliduje parsowalność przy każdym
+     przebiegu.
+L07 (P1, PRZEJĘTA z P65-L07 → P68): 212 rego nieimportowanych + 87 reguł bez
+     testu — P66 nie duplikuje klasyfikatora; korpus tych plików jest naturalnym
+     materiałem dla eksperymentów MISSING_DOMAIN_PACKAGE (EX-08) i fali napraw.
+L08 (P3, OTWARTA → P68): 6 podstaw prawnych [NIEZWERYFIKOWANE — ISAP] —
+     weryfikacja w re-certyfikacji P68 (isap_crawler P34-I03).
+
+9.12. INNOWACJE ENTERPRISE (12, pełny projekt 6-punktowy — skrót wykonawczy)
+==============================================================================
+I01-SteadyState: (1) luka: normy niemierzalne, eksperymenty bez baseline;
+(2) mechanizm: steady_state_hypothesis jako dane w kartach + 5 metryk z
+istniejących bundli (P58/P37/P49/deployments) + bramka Rego NEEDS_ADVICE;
+(3) wpływ: przed/po porównywalne liczbami, nie wrażeniem; (4) ryzyko: martwe
+źródła → baseline_sources_missing bramkowane; (5) kryterium: pytest I01 +
+Rego test_i01 x2; (6) zależności: P58/P37/P49/P38.
+I02-CardStandard: (1) luka: eksperymenty ad-hoc bez asercji; (2) karta=
+hipoteza+kroki+asercje+rollback+metryki+blast radius; wymagane sekcje z
+ADR-002; asercja no_silent_auto_post obowiązkowa; (3) każdy eksperyment ma
+siatkę bezpieczeństwa; (4) ryzyko: karta-paper → Rego I02 BLOCK + pytest;
+(5) pytest I02 + test_experiment_cards + Rego test_i02; (6) P49/P65/P29.
+I03-DependencyMatrix: (1) luka: chaos bez zależności MF/NBP/bank/ISAP; (2)
+macierz zależność×tryb jako dane, kombinacje bramkowane progiem 12 (realnie
+21); (3) awarie integracji testowane zanim zdarzą się na produkcji; (4)
+ryzyko: kombinacje fikcyjne → każda kombinacja ma kartę z rollbackiem;
+(5) pytest I03 + Rego test_i03; (6) P61/P54/P57/P62.
+I04-KillSwitch: (1) luka: P07 package_suspend=false; eksperymenty ciężkie bez
+wyłącznika; (2) wyłącznik jako pole karty + narzędzie P07 (hot-reload < 1 s)
++ Rego I04 BLOCK; (3) eksperyment przerwany w sekundy — blast radius kontrolny;
+(4) ryzyko: pole martwe → test pytest I04 weryfikuje tool+pole; (5) pytest I04
++ Rego test_i04 x2; (6) P07.
+I05-ChaosDayCalendar: (1) luka: chaos jednorazowy; (2) cykl monthly z ADR-002
++ podział CI vs chaos day (ci_runnable); (3) odporność ćwiczona cyklicznie;
+(4) ryzyko: kalendarz bez CI → L01/Q03; (5) pytest I05; (6) P39.
+I06-AutoRollback: (1) luka: eksperymenty zostawiane w złym stanie; (2) 12/12
+kart z rollbackiem + healthy_versions P38 + auto_rollback_armed (7 wdrożeń) +
+SLA 5 min; (3) zero trwałych uszkodzeń po eksperymencie; (4) ryzyko: rollback
+niedziałający → healthy_versions weryfikowane silnikiem; (5) pytest I06 + Rego
+test_i06; (6) P38/P07.
+I07-MaturityLadder: (1) luka: dojrzałość chaos niemierzalna; (2) L1-L5 jako
+dane (ADR-002) + silnik liczy poziom z dowodów (CI/karty/game day); (3)
+jawna ścieżka rozwoju odporności; (4) ryzyko: samozadowolenie → poziom
+liczony, nie deklarowany; (5) pytest I07 + Rego test_i07; (6) P39.
+I08-InjectionAsData: (1) luka: nowe scenariusze wymagają kodu; (2) karty JSON
+(schema v1) + runner P18 jako wykonawca gate; 5 nowych scenariuszy bez kodu;
+(3) szybkość reakcji na nowe typy awarii; (4) ryzyko: nieprawidłowy JSON →
+pytest parsuje przy każdym przebiegu (L06); (5) pytest I08 + Rego test_i08;
+(6) ADR-002/P18.
+I09-FindingsToRepairs: (1) luka: luki chaos giną po sesji; (2) ścieżka:
+przełamanie → wpis v3_p64_sweep_register (SLA P64-I01) → fala naprawcza →
+re-test; Rego I09 NEEDS_ADVICE gdy brak feedu; (3) chaos karmi proces naprawczy;
+(4) ryzyko: rejestr martwy → silnik weryfikuje istnienie bundla P64; (5)
+pytest I09 + Rego test_i09 x2; (6) P64.
+I10-ResilienceTrend: (1) luka: odporność bez wskaźnika; (2) resilience_pct =
+(12/12 asercja rdzeniowa) × (zielone źródła chaos), próg 80% z ADR-002, BLOCK
+poniżej, trend kwartalny do P68; (3) odporność porównywalna między kwartałami;
+(4) ryzyko: wskaźnik zawsze-100 → składniki z bundli bramek (P49/P57), nie z
+deklaracji; (5) pytest I10 + Rego test_i10; (6) P58/P68.
+I11-PeakTime: (1) luka: najgorszy moment niesymulowany; (2) EX-09: szczyt x10
+(symulacja) + awaria MF; środowisko digital twin P33, nigdy produkcja; (3)
+deklaracje masowe testowane świadomie; (4) ryzyko: liczby z powietrza →
+[ZAŁOŻENIE] jawnie oznaczone, wolumen nie z produkcji; (5) pytest I11 + Rego
+test_i11; (6) P33/P16.
+I12-GameDay: (1) luka: awaria złożona nieprzećwiczona; (2) EX-12: MF+NBP+BANK
+jednocześnie, 3 domeny degradacji niezależnie, kill switch obowiązkowy;
+(3) trening zespołu + procedur (KKS staranność); (4) ryzyko: game day bez
+przygotowania → tylko chaos day, nigdy CI; (5) pytest I12 + Rego test_i12;
+(6) P43/P49/P57.
+
+9.13. KONTRAKT WYJŚCIOWY (wiąże P67-P68 i V4)
+==============================================================================
+C1. Katalog eksperymentów (12 kart, tools/v3_p66_experiment_cards.json) —
+    wejście do P68 (re-certyfikacja: dowody odporności) i P43 (DR drills);
+    nowe eksperymenty V4 wyłącznie jako dane (schema v1), z asercją
+    no_silent_auto_post i rollbackiem.
+C2. Program chaos ciągły — chaos day monthly (ADR-002) + wskaźnik
+    resilience_pct (próg 80%) odczytywany kwartalnie do P68; luki chaos
+    przechodzą wyłącznie przez rejestr napraw P64 z SLA.
+C3. Kill switch obowiązkowy — eksperyment poza CI bez wyłącznika = BLOCK
+    (Rego I04); dziedziczone z P07: przerwanie < 1 s.
+C4. Natywne testy OPA (dziedziczone z P65 C2) — potwierdzone: P66 19/19 PASS.
+C5. Macierz zależności jako dane — nowe zależności V4 (np. API US) dostają
+    wiersz w macierzy + kartę eksperymentu przed podłączeniem do silnika.
+C6. Silniki z bundli bramek (dziedziczone z P65 C6) — potwierdzone: I09 czyta
+    P49/P57/P65, I01 czyta P58/P38; zakaz liczeń „z powietrza".
+
+9.14. PLAN WDROŻENIA (kolejność bez duplikacji)
+==============================================================================
+[x] 1. tools/v3_p66_experiment_cards.json (12 kart + steady state jako dane) — DONE
+[x] 2. rules/v3_p66_chaos_resilience.rego (12 analiz + router + fail-closed) — DONE
+[x] 3. thresholds_jdg.rego blok v3_p66 (9 kluczy ADR-002 + okno temporalne) — DONE
+[x] 4. main_jdg.rego wiring final_verdict_p130 + POST-MERGE anchor p130 — DONE
+[x] 5. tools/v3_p66_{common,engines,run_all,rego_static_gate}.py — DONE
+[x] 6. tests/rego/test_v3_p66_chaos_resilience.rego (19 testów natywnych OPA) — DONE
+[x] 7. tests/auto/test_v3_p66_chaos_resilience.py (23 testy pytest) — DONE
+[x] 8. Kotwice POST-MERGE p129→p130 w testach P55-P65 (11 plików) — DONE
+[x] 9. Mirrory policies/ (hash-parity sha256: p66, p65, thresholds, main) — DONE
+[x] 10. Ledger --mark P66 + HANDOFF_V3_P66.md → czyste okno dla P67 — DONE
+
+9.15. PLAN TESTÓW (przypadki blokujące merge)
+==============================================================================
+* pytest tests/auto/test_v3_p66_chaos_resilience.py (23) — BLOKUJE merge:
+  run_all gate=PASS z rego=PASS, karty (12, JSON parsowalny, asercja
+  no_silent_auto_post w każdej), 12 silników vs bundla, chaos_runner gate 8/8,
+  ADR-002 (9 kluczy + threshold_version + okno temporalne), wiring p130,
+  mirror hash-parity (4 pliki), fail-closed (0 AUTO_POST), kompozycja 19
+  źródeł, determinizm silników (2 przebiegi I01 identyczne).
+* opa test (19 natywnych) — BLOKUJE merge: no_match bez flagi, thresholds
+  missing → NEEDS_ADVICE (precedencja), all_green PASS, BLOCK per I02/I04(x2)/
+  I06/I10, NEEDS_ADVICE per I01(x2)/I03/I05/I07/I08/I09(x2)/I11/I12, router
+  BLOCK-wins (priorytety deterministyczne).
+* Bramka statyczna (fallback) — BLOKUJE merge: nawiasy, klucze 1:1, else-chain.
+* Regresja: pytest -k "v3_p5 or v3_p6" → 495 passed (kotwica p130 w P55-P65).
+* Negatywne (dowód, że bramka działa): karta bez no_silent_auto_post → BLOCK
+  (EX-07 scenario); heavy bez kill switcha → BLOCK; resilience 55% → BLOCK;
+  brak rollbacku w karcie → BLOCK; chaos w przełamaniem fail-closed →
+  NEEDS_ADVICE z feedem do napraw.
+
+9.16. PYTANIA DO CZŁOWIEKA (V3-P66-Qxx)
+==============================================================================
+Q01 (4-eyes): podpięcie chaos_runner gate + resilience_pct do jdg-quality.yml
+     (L01) — koszt CI vs wartość ciągłej weryfikacji odporności; rekomendacja:
+     TAK (krok < 2 min).
+Q02 (4-eyes): operacja pakietowego kill switcha w P07 (package_suspend)
+     pozostaje otwarta — P66 domknął wyłącznie warstwę eksperymentów;
+     decyzja: hot-reload pakietowy vs per-reguła.
+Q03 (4-eyes): częstotliwość chaos day monthly vs kwartalnie (ADR-002=monthly)
+     — koszt koordynacji zespołu (EX-12 game day wymaga ludzi).
+Q04: okno godzinowe eksperymentów na środowisku staging (game day EX-12) —
+     decyzja operacyjna właściciela środowiska (poza zakresem dowodów P66).
+
+9.17. ZAAŁOŻENIA JAWNE
+==============================================================================
+[ZAŁOŻENIE] Wolumen szczytowy EX-09 (x10) to parametr symulacji, nie pomiar
+            produkcji (produkcja nieaktywna: deployments.json production_
+            active=0 we wszystkich 44 wdrożeniach).
+[ZAŁOŻENIE] Metryki baseline normy (error_budget=100%, advice_spread=15%,
+            uver=0) pochodzą z bundli P58/P37 z datą 2026-09-13 — aktualność
+            potwierdzana przy każdym chaos day (I01 sources check).
+[ZAŁOŻENIE] Podstawy prawne z Sekcji 8 promptu P66 to katalog twierdzeń —
+            wszystkie [NIEZWERYFIKOWANE — ISAP]; weryfikacja P68.
+[ZAŁOŻENIE] UKSC i AI Act są kontekstami branżowymi (nie przepis materiałny
+            implementowany wprost) — status CZĘŚCIOWE w macierzy 9.10.
+[ZAŁOŻENIE] chaos_runner P18 pozostaje wykonawcą bramki — karty P66 nie
+            duplikują jego 8 eksperymentów, tylko je kartują (EX-01/05/06/
+            07/08 z source=chaos_runner).
+
+9.18. TABELA PRZEKAZYWANYCH ARTEFAKTÓW (11.4)
+==============================================================================
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| Katalog eksperymentów (12 kart) | P68, P43, V4 | tools/v3_p66_experiment_cards.json | re-certyfikacja odporności / DR drills |
+| Standard kart eksperymentów (I02) | V4 | Rego I02 + schema v1 | każdy nowy eksperyment |
+| Macierz zależności (I03) | V4 | bundla v3_p66_i03_engine.json | przed podłączeniem nowej integracji |
+| Kill switch eksperymentów (I04) | P07/V4 | Rego I04 + pole karty | każdy eksperyment poza CI |
+| Drabina dojrzałości (I07) | V4 | bundla v3_p66_i07_engine.json | plan rozwoju odporności |
+| Wskaźnik odporności (I10) | P68 | bundla v3_p66_i10_engine.json | trend kwartalny re-certyfikacji |
+| Feed luki chaos→naprawy (I09) | P64 | ścieżka zdefiniowana w silniku | każde przełamanie fail-closed |
+| Luki L01-L08 | P67/P68 | ten raport (9.11) | wejście fal naprawczych |
+| Rozbudowana architektura OPA (rego+thresholds+wiring p130+mirrory) | P67+ | rules/*+policies/* | hash-parity obowiązkowy |
+| Natywne testy OPA (19/19) | P67+ | tests/rego/test_v3_p66_*.rego | kontrakt C2 z P65 utrzymany |
+
+==============================================================================
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI
+==============================================================================
+Zgodne z V1 (fail-closed, ADR-002 parametry-as-data, okna temporalne P05,
+brak cichego AUTO_POST) i V2 (Decision Certificate, Golden Oracle — eksperymenty
+P66 niczego nie AUTO_POSTują; eksperyment = test odporności, nie ścieżka
+decyzyjna; najgorsza ścieżka to NEEDS_ADVICE). Kontrakty P65 C1-C6 honorowane:
+C2 natywne opa test (19/19 PASS), C5 kompozycja pierwsza (chaos_runner P18
+rozszerzony kartami, nie zdublowany), C6 silniki z bundli bramek. Odstępstwa:
+brak. Dowody = wyniki uruchomień (9.05), nie deklaracje.
+Status raportu wdrożenia: WDROŻONY_100 (2026-09-16).

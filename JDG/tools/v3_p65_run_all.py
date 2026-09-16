@@ -2,8 +2,10 @@
 """
 NexusAI JDG — V3-P65 NOWE NARZĘDZIA FORTECY — RUNNER (konwencja P51–P64).
 Uruchamia: (1) narzędzia P65 (kontrakt I01, tamper I08, adoption I11,
-doc generator I12), (2) 12 silników I01–I12, zbiera wyniki do bundla
-zbiorczego. Exit 0 tylko gdy wszystkie silniki działają (exit 0).
+doc generator I12), (2) 12 silników I01–I12, (3) testy Rego — natywne OPA
+(bin/opa; pierwszy pakiet V3 z realną ewaluacją Rego — konwencja P63/P64
+opierała się na walidacji statycznej z powodu „braku CLI"), zbiera wyniki
+do bundla zbiorczego. Exit 0 tylko gdy wszystkie fazy działają (exit 0).
 """
 from __future__ import annotations
 
@@ -50,6 +52,30 @@ def main() -> int:
         if proc.returncode != 0:
             failures.append(key)
 
+    # Faza 3: testy Rego — natywne OPA (bin/opa; fallback: bramka statyczna)
+    rego_gate = "SKIPPED"
+    opa = TOOLS.parent.parent / "bin" / "opa"
+    if opa.exists():
+        proc = subprocess.run(
+            [str(opa), "test",
+             str(TOOLS.parent / "rules" / "thresholds_jdg.rego"),
+             str(TOOLS.parent / "rules" / "v3_p65_tool_forge.rego"),
+             str(TOOLS.parent / "tests" / "rego" / "test_v3_p65_tool_forge.rego")],
+            capture_output=True, text=True)
+        rego_gate = "PASS" if proc.returncode == 0 else "FAIL"
+        results["rego_opa_native"] = {"exit": proc.returncode,
+                                      "output": (proc.stdout or "").strip().splitlines()[-1] if proc.stdout.strip() else (proc.stderr or "")[-200:]}
+        if proc.returncode != 0:
+            failures.append("rego_opa_native")
+    else:
+        proc = subprocess.run([sys.executable, str(TOOLS / "v3_p65_rego_static_gate.py")],
+                              capture_output=True, text=True)
+        rego_gate = "PASS_STATIC" if proc.returncode == 0 else "FAIL"
+        results["rego_static"] = {"exit": proc.returncode,
+                                  "output": (proc.stdout or "").strip().splitlines()[-1]}
+        if proc.returncode != 0:
+            failures.append("rego_static")
+
     summary = {
         "schema": "jdg.v3_p65.run_all.v1",
         "part": "P65", "slug": "NOWE_NARZEDZIA",
@@ -57,6 +83,7 @@ def main() -> int:
         "tools_run": len(PRE_TOOLS),
         "tool_results": tool_results,
         "engines_run": len(ORDER),
+        "rego_gate": rego_gate,
         "failures": failures,
         "gate": "PASS" if not failures else "FAIL",
         "results": results,
@@ -64,7 +91,7 @@ def main() -> int:
     (BUNDLES / "v3_p65_run_all.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"[P65:RUN_ALL] tools={len(PRE_TOOLS)} engines={len(ORDER)} "
-          f"failures={failures or 'none'} gate={summary['gate']}")
+          f"rego={rego_gate} failures={failures or 'none'} gate={summary['gate']}")
     return 0 if not failures else 1
 
 
