@@ -2,13 +2,13 @@
 artifacts: [docs/KATALOG_REGUL.md, rules/, bundles/rule_registry.json]
 status: ACTIVE
 owner: docs
-verified: 2026-09-13
+verified: 2026-09-19
 verify_cmd: python3 tools/manifest_v2.py --json
 -->
 
 # 📚 NexusAI JDG — Katalog Pakietów Reguł (wszystkie pliki Rego)
 
-> **Dokument:** KATALOG_REGUL.md | **Zakres:** **każdy plik `.rego`** w `JDG/rules/` (535, żywy skan P60) oraz `policies/` (615 plików, żywy skan P60)
+> **Dokument:** KATALOG_REGUL.md | **Zakres:** **każdy plik `.rego`** w `JDG/rules/` (żywy skan P60: 535; **stan dysku 2026-09-19: 543** — dołączyły pakiety P64–P68) oraz `policies/` (żywy skan P60: 615; stan dysku: 635)
 > **Dane:** ekstrakcja statyczna (package, bloki `matched:true`, unikalne `rule_id`); liczby kanoniczne (M1/M2) w [MANIFEST.md](../MANIFEST.md)
 > **Cel:** Ctrl+F po nazwie pliku, pakiecie lub domenie → od razu wiesz, ile reguł zawiera i gdzie szukać.
 
@@ -605,7 +605,7 @@ verify_cmd: python3 tools/manifest_v2.py --json
 
 > ⚠️ **Uwaga o metodzie:** wiersze **nie są rozłączne** — pliki plan44/45 w katalogach domenowych (np. `audit/`, `calendar/`) są uwzględnione zarówno w „rdzeń i domeny", jak i w „plan44/45 + hyper". Suma wierszy (~12 800) może więc przekraczać kanoniczne 11 821 bloków `matched:true` z MANIFEST — traktuj wiersze jako orientacyjne, a MANIFEST.md jako źródło prawdy.
 
-> **Uwaga metodyczna:** kolumny R/ID pochodzą z ekstrakcji statycznej (grep linii `matched…true` i `rule_id"`). Kanoniczne wartości M1/M2 (11 811 bloków, 11 808 unikalnych rule_id na 2026-08-22) — patrz [MANIFEST.md](../MANIFEST.md). Aktualny stan (2026-08-30): 490 plików / 11 855 unique rule_id / 0 duplikatów.
+> **Uwaga metodyczna:** kolumny R/ID pochodzą z ekstrakcji statycznej (grep linii `matched…true` i `rule_id"`). Kanoniczne wartości M1/M2 (11 811 bloków, 11 808 unikalnych rule_id na 2026-08-22) — patrz [MANIFEST.md](../MANIFEST.md). Aktualny stan (2026-08-30): 490 plików / 11 855 unique rule_id / 0 duplikatów; na dysku 543 pliki Rego w drzewie rules/ (2026-09-19) — różnica zakresu metod, patrz [KAMPANIA_V3_PROMPTY_P00_P68.md §5.1](KAMPANIA_V3_PROMPTY_P00_P68.md).
 
 ---
 

@@ -1,0 +1,48 @@
+{
+  "analysis": "I01_hard_gates",
+  "checks": [
+    {
+      "name": "zero_cichego_AUTO_POST",
+      "status": "OK",
+      "detail": "silent_auto_post_max=0 (rejestr P49; SUGGEST≠AUTO_POST)"
+    },
+    {
+      "name": "zero_duplikatow_rule_id",
+      "status": "OK",
+      "detail": "duplicate_rule_ids=0"
+    },
+    {
+      "name": "zero_hardcode_wartosci_prawnych",
+      "status": "OK",
+      "detail": "blok v3_p68 z valid_from (ADR-002)"
+    },
+    {
+      "name": "zero_dryfu_mirror",
+      "status": "OK",
+      "detail": "dryf: brak"
+    },
+    {
+      "name": "podstawy_oznaczone_statusami",
+      "status": "OK",
+      "detail": "legal_basis_version w bloku v3_p68 (konwencja P47)"
+    },
+    {
+      "name": "gates_count",
+      "status": "OK",
+      "detail": "5 z 5 wymaganych"
+    }
+  ],
+  "metrics": {
+    "violated": 0,
+    "violated_gates": [],
+    "hard_gates_required": 5
+  },
+  "decision": "PASS",
+  "legal_basis": "prompt P68 Sekcja 2 (hard gates); P49; P50; ADR-002; P48 [NIEZWERYFIKOWANE — ISAP]",
+  "innovation": "V3-P68-I01",
+  "gate": "PASS",
+  "findings": [],
+  "generated_at": "2026-09-19T10:22:08.948677+00:00",
+  "part": "P68",
+  "slug": "RECERTYFIKACJA_FINALNA"
+}

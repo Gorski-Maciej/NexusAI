@@ -101,7 +101,17 @@ opa test JDG/tests/rego/test_native_final_certification_etap28.rego -v
 | [CORE_GUARDS_TEMPORAL_THRESHOLDS.md](CORE_GUARDS_TEMPORAL_THRESHOLDS.md) | ETAP 06 — 42 niezmienniki INV-001..042 |
 | [policies/README.md](../../policies/README.md) | mirror + overlays (ETAP 26) |
 | [MANIFEST.md](../MANIFEST.md) | tracker pokrycia reguł (auto-generowany) |
+| [KAMPANIA_V3_PROMPTY_P00_P68.md](KAMPANIA_V3_PROMPTY_P00_P68.md) | **Kontynuacja — kampania V3 (69/69 WDROŻONY_100, certyfikat fortecy P68)** |
 
 ---
 
 *Wygenerowano 2026-08-22 na podstawie `JDG/bundles/*audit_state.json` (22 pliki) i `final_certification_etap28_audit_state.json`.*
+
+---
+
+## 5. Kontynuacja kampanii — V3 (P00–P68)
+
+> Ta kampania (GLM 5.2, ETAP 06–28) jest **fundamentem** dla kampanii V3, która domknęła
+> system w 69 częściach naprawczych (kontrakty P01–P11, domeny P12–P44, rejestry naprawcze
+> P45–P67, recertyfikacja P68). Status: **69/69 WDROŻONY_100** (ledger `bundles/v3_campaign_ledger.json`, 2026-09-19).
+> Pełna dokumentacja: [KAMPANIA_V3_PROMPTY_P00_P68.md](KAMPANIA_V3_PROMPTY_P00_P68.md).

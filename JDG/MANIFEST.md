@@ -1,15 +1,15 @@
 # 📋 JDG MANIFEST — Tracker Pokrycia Reguł vs Mapa Kanoniczna 38c
 
-> **Auto-generowane:** 2026-08-30 09:53:06
+> **Auto-generowane:** 2026-09-19 16:54:59
 > **Generator:** v8.0 (parser strukturalny, 100% plików)
-> **Completeness Score:** 🟢 **91/100**
->   - Plików w manifescie: 444/490 (90%)
->   - Aktualność: 96/100 | Sumy spójne: ✅ | Routing: 63%
-> **Plików Rego:** 490
-> **Plików z matched:true:** 444
-> **Bloków matched:true:** 11855
-> **Unikalnych rule_id:** 11855
-> **Duplikatów:** 0
+> **Completeness Score:** 🟡 **83/100**
+>   - Plików w manifescie: 497/543 (91%)
+>   - Aktualność: 66/100 | Sumy spójne: ✅ | Routing: 64%
+> **Plików Rego:** 543
+> **Plików z matched:true:** 497
+> **Bloków matched:true:** 12155
+> **Unikalnych rule_id:** 12111
+> **Duplikatów:** 44
 
 ---
 
@@ -19,7 +19,7 @@
 |------|:-----:|:-----:|:------:|---------|
 | `rules/accounting.rego` | 74 | 6 | 12 | 1c46e6793cb74833 |
 | `rules/accounting/depreciation_enterprise.rego` | 11 | 0 | 0 | b0ba438c4aea3186 |
-| `rules/accounting/depreciation_enterprise_complete.rego` | 29 | 1 | 0 | 2b8c97934088040d |
+| `rules/accounting/depreciation_enterprise_complete.rego` | 29 | 1 | 0 | dc51b17bd62f76a3 |
 | `rules/accounting/pkpir_enterprise_live.rego` | 12 | 1 | 0 | 60a65d86612c6548 |
 | `rules/accounting/pkpir_enterprise_validation.rego` | 34 | 2 | 0 | 483b0838522cc3f6 |
 | `rules/accounting/pkpir_enterprise_validator.rego` | 21 | 1 | 3 | 9227f4b47318da19 |
@@ -30,13 +30,13 @@
 | `rules/advertising/plan45_advertising.rego` | 37 | 3 | 0 | 0d76f2f134753d29 |
 | `rules/allowances.rego` | 18 | 2 | 1 | 91f1098cadbc28ca |
 | `rules/allowances/plan23_reliefs.rego` | 9 | 0 | 0 | 9b0fa65e9a5558f8 |
-| `rules/annual_declaration_enterprise.rego` | 6 | 0 | 0 | 1d0b0192c2d29f93 |
+| `rules/annual_declaration_enterprise.rego` | 6 | 0 | 0 | db4a066155115200 |
 | `rules/api_fallback.rego` | 6 | 1 | 1 | f89dfd4daa28e652 |
-| `rules/api_ui/quality_v3_19.rego` | 1 | 0 | 0 | 8c99376c34617ed0 |
+| `rules/api_ui/quality_v3_19.rego` | 1 | 0 | 0 | 5c1ed7fc1939419b |
 | `rules/audit/plan44_audit.rego` | 15 | 1 | 2 | 166aaaf02d77d330 |
 | `rules/audit/plan45_audit.rego` | 55 | 3 | 6 | 0016f227d516aea9 |
 | `rules/audit_defense_enterprise.rego` | 4 | 0 | 0 | 773ecbf2fdd10558 |
-| `rules/banking_automation_enterprise.rego` | 14 | 0 | 0 | a41d729d474d8daf |
+| `rules/banking_automation_enterprise.rego` | 14 | 0 | 0 | 3658bd7f854d361c |
 | `rules/bundles/quality_v3_18.rego` | 1 | 0 | 0 | e06a778c24da6dbc |
 | `rules/business.rego` | 23 | 8 | 5 | f856e084da38e22d |
 | `rules/business/gig_economy.rego` | 5 | 0 | 1 | 4fefd676c291ef24 |
@@ -47,7 +47,7 @@
 | `rules/calendar/plan45_calendar.rego` | 35 | 0 | 0 | ec34f22964bb2b98 |
 | `rules/cashflow_tax_predictor_enterprise.rego` | 6 | 0 | 0 | 977e5c82b638ab94 |
 | `rules/cbam_full.rego` | 3 | 0 | 0 | 4f8e307dd6fb925e |
-| `rules/cfc_auto_classifier.rego` | 3 | 0 | 0 | 515d8c0591521b34 |
+| `rules/cfc_auto_classifier.rego` | 3 | 0 | 0 | aa0edbebee87d374 |
 | `rules/compliance.rego` | 10 | 4 | 0 | b18a78343a137b7b |
 | `rules/compliance/v3_12_enterprise.rego` | 1 | 1 | 0 | 2aa4ce103f2b8f6c |
 | `rules/conflict_declaration_enterprise.rego` | 4 | 1 | 0 | d43cb08e83909190 |
@@ -57,7 +57,7 @@
 | `rules/corrections.rego` | 19 | 3 | 4 | 92c60f4e77b985a0 |
 | `rules/cross_domain_red_team_etap27_v1.rego` | 1 | 0 | 0 | 55b9c3e65be7a063 |
 | `rules/crossborder.rego` | 31 | 3 | 11 | 74c0774f3b5900ba |
-| `rules/crossborder/exit_tax_cfc_complete.rego` | 16 | 3 | 0 | 856fc17fabacf309 |
+| `rules/crossborder/exit_tax_cfc_complete.rego` | 15 | 1 | 0 | 0620f83301666514 |
 | `rules/crossborder/plan23_ue.rego` | 8 | 1 | 2 | 09dd78f4f45b63d5 |
 | `rules/crossborder/post_brexit.rego` | 3 | 0 | 1 | 145f7f73001e316f |
 | `rules/crossborder/v3_08_enterprise.rego` | 1 | 1 | 0 | 73476a5e3dbf39ef |
@@ -78,7 +78,7 @@
 | `rules/esig/plan45_esig.rego` | 36 | 2 | 0 | 309e1c17789c01a7 |
 | `rules/esig_auto_applicator_enterprise.rego` | 4 | 1 | 0 | 56cacc69d6b8fdef |
 | `rules/exit_tax_interest_calculator.rego` | 3 | 0 | 0 | 21ef75f6399a5c31 |
-| `rules/exit_tax_mdr_enterprise.rego` | 7 | 3 | 1 | d633bc4faec58b10 |
+| `rules/exit_tax_mdr_enterprise.rego` | 7 | 3 | 1 | 4afd4addba857608 |
 | `rules/family/plan44_family.rego` | 10 | 0 | 3 | 785ae69f58a4ce20 |
 | `rules/family/plan45_family.rego` | 51 | 4 | 2 | 3e5d04c613440602 |
 | `rules/final_certification_etap28_v1.rego` | 1 | 0 | 0 | 26f909478131e84a |
@@ -113,12 +113,12 @@
 | `rules/jdg/hyper/solidarity/plan45.rego` | 11 | 0 | 0 | 83397bd4a8fbf6c3 |
 | `rules/jdg/hyper/wis/plan45.rego` | 18 | 0 | 0 | 3188b3baea8f7c84 |
 | `rules/jpk/plan26_deadlines.rego` | 1 | 0 | 0 | 48d7ae022bf552fa |
-| `rules/jpk_cit.rego` | 4 | 0 | 0 | 84ef50cf89d927a8 |
+| `rules/jpk_cit.rego` | 4 | 0 | 0 | 10aa39f62094d930 |
 | `rules/jpk_corrections_workflow_enterprise.rego` | 3 | 0 | 0 | 52ffe716fe1e6305 |
 | `rules/jpk_kr_st_generator_enterprise.rego` | 4 | 0 | 0 | 7ca5cbe60242bd42 |
 | `rules/jpk_v7_autogen_enterprise.rego` | 7 | 0 | 0 | 74c7ffa84ff92083 |
 | `rules/judicial_interpretations_enterprise.rego` | 5 | 0 | 0 | 8ec1a75fe3614bca |
-| `rules/kks.rego` | 255 | 170 | 61 | 4c09d8e677ca727a |
+| `rules/kks.rego` | 255 | 170 | 61 | 5bccd00845112f15 |
 | `rules/kks/enterprise_penalties.rego` | 21 | 12 | 0 | 6fbf79bee1882a84 |
 | `rules/kks/kks_extensions_enterprise.rego` | 4 | 0 | 1 | 35bc49ffd5816d65 |
 | `rules/kks/kks_innovations_v8.rego` | 13 | 4 | 0 | 481d15cfa37c19ba |
@@ -134,7 +134,7 @@
 | `rules/ksef_offline_queue_enterprise.rego` | 3 | 0 | 0 | 65c76ba02f605c91 |
 | `rules/ksef_outbox_enterprise.rego` | 4 | 0 | 0 | 6f3dc0edb7bc86d9 |
 | `rules/ksef_receipt_digest_enterprise.rego` | 3 | 0 | 1 | 0d3d6d71c3abe41c |
-| `rules/ksef_resilience_enterprise.rego` | 7 | 1 | 3 | 1be6d15fecf1f9e9 |
+| `rules/ksef_resilience_enterprise.rego` | 7 | 1 | 3 | 6e822d4e374ae534 |
 | `rules/ksef_sanction_monitor_enterprise.rego` | 2 | 0 | 0 | 4dc688ce501c613c |
 | `rules/ksef_sandbox_harness_enterprise.rego` | 3 | 0 | 1 | 7b7d93c9bc408ef4 |
 | `rules/ksef_upo_tracker_enterprise.rego` | 3 | 0 | 0 | f8bd61a3544eb11c |
@@ -143,8 +143,8 @@
 | `rules/lifecycle_manager_enterprise.rego` | 4 | 1 | 0 | f1aefbef6586dc98 |
 | `rules/local_excise_etap19_v1.rego` | 1 | 0 | 0 | 03a4e2b15823bcd0 |
 | `rules/local_taxes.rego` | 27 | 2 | 6 | 1e35767154b24e08 |
-| `rules/local_taxes/akcyza_alcohol.rego` | 20 | 4 | 0 | e1bdec59e7d15093 |
-| `rules/local_taxes/akcyza_fuel.rego` | 18 | 1 | 1 | 24704989d869b118 |
+| `rules/local_taxes/akcyza_alcohol.rego` | 20 | 4 | 0 | 0fd418c48f85b0c7 |
+| `rules/local_taxes/akcyza_fuel.rego` | 18 | 1 | 1 | 03b8648da22b11fc |
 | `rules/local_taxes/excise_enterprise_complete.rego` | 15 | 2 | 1 | 691c82b09134c9f6 |
 | `rules/local_taxes/local_procedures_enterprise.rego` | 15 | 0 | 0 | 97e2649c0911e6aa |
 | `rules/local_taxes/pcc.rego` | 3 | 0 | 2 | 3b17ceafc4369362 |
@@ -154,13 +154,13 @@
 | `rules/local_taxes/real_estate.rego` | 2 | 0 | 2 | a3a2112a641c0a2e |
 | `rules/local_taxes/transport.rego` | 1 | 0 | 1 | 12c4c0b1494ce58e |
 | `rules/local_taxes/v3_10_enterprise.rego` | 1 | 1 | 0 | d226d284d060a4c7 |
-| `rules/mdr/mdr_enterprise.rego` | 16 | 4 | 12 | d4df30687512ce80 |
-| `rules/mdr/mdr_hallmarks.rego` | 20 | 17 | 0 | 76d998a773937527 |
+| `rules/mdr/mdr_enterprise.rego` | 16 | 4 | 12 | ada23c77c7114260 |
+| `rules/mdr/mdr_hallmarks.rego` | 20 | 17 | 0 | 2670bba840f98132 |
 | `rules/mdr/plan44_mdr.rego` | 10 | 1 | 7 | 12e82419eac65364 |
 | `rules/mdr/plan45_mdr.rego` | 42 | 2 | 34 | a10ee7c10c33de63 |
-| `rules/mdr_auto_generator.rego` | 5 | 2 | 0 | bcda782191abda4d |
-| `rules/mdr_dac6_enterprise.rego` | 3 | 0 | 0 | 237cba88865257e2 |
-| `rules/micro/akcyza/akcyza.rego` | 132 | 0 | 0 | 5e5f111a19150c37 |
+| `rules/mdr_auto_generator.rego` | 5 | 2 | 0 | 28bc6c0d9ed99bf6 |
+| `rules/mdr_dac6_enterprise.rego` | 3 | 0 | 0 | 4b7e972bd0834418 |
+| `rules/micro/akcyza/akcyza.rego` | 132 | 0 | 0 | acb8eee74153239c |
 | `rules/micro/aml/aml.rego` | 125 | 0 | 0 | a3c508ea40618333 |
 | `rules/micro/aml/aml_cbdd.rego` | 5 | 2 | 2 | 4015ef343903da34 |
 | `rules/micro/aml/aml_ryzyko.rego` | 7 | 3 | 3 | 41613d9882ee5969 |
@@ -189,7 +189,7 @@
 | `rules/micro/ksef/ksef.rego` | 79 | 2 | 0 | 44132c16d843ff82 |
 | `rules/micro/ksiegowosc_atomic_p10.rego` | 16 | 5 | 3 | 83d93847a4bffea6 |
 | `rules/micro/ord/ord.rego` | 423 | 3 | 0 | 5e500ff7d4d06e67 |
-| `rules/micro/p24_innovations_enterprise.rego` | 29 | 3 | 0 | 0c49c842b5a9269b |
+| `rules/micro/p24_innovations_enterprise.rego` | 29 | 3 | 0 | dc7e625daf6eded4 |
 | `rules/micro/pcc/pcc.rego` | 89 | 1 | 0 | 9f73dbd4cb19eb69 |
 | `rules/micro/pcc_lokalne_atomic_p14.rego` | 18 | 0 | 0 | b5bab5a7422a2790 |
 | `rules/micro/pit/pit.rego` | 811 | 25 | 0 | 7c07864ecba2a151 |
@@ -247,7 +247,7 @@
 | `rules/micro/vat/place_of_supply_micro.rego` | 12 | 0 | 3 | 4ca07119eb300cbe |
 | `rules/micro/vat/proportion_vat.rego` | 10 | 2 | 3 | 84e606f4fb71ae66 |
 | `rules/micro/vat/r03_vat_micro_articles.rego` | 13 | 0 | 0 | 5687e72810aefd57 |
-| `rules/micro/vat/vat.rego` | 1091 | 27 | 0 | 8c849d0c0e6e4eee |
+| `rules/micro/vat/vat.rego` | 1091 | 27 | 0 | 2849e3189c919b0b |
 | `rules/micro/vat/wdt_export_import.rego` | 16 | 2 | 11 | f953d4854ba58822 |
 | `rules/micro/zasilkowa/zasilkowa.rego` | 38 | 0 | 0 | 16a8fa7b2470d99f |
 | `rules/micro/zdrowotna/zdrowotna.rego` | 136 | 2 | 0 | 6b33cab64ad47425 |
@@ -283,7 +283,7 @@
 | `rules/p08_zus_micro_innovations_v8.rego` | 15 | 0 | 0 | 5a9df4558a7f502d |
 | `rules/p08_zus_micro_innovations_v9.rego` | 21 | 0 | 0 | 391a03e93edcdd7b |
 | `rules/p09_kks_macro_innovations_v8.rego` | 14 | 0 | 0 | 6964e26c9ab36ec1 |
-| `rules/p09_ksiegowosc_pkpir_uor_innovations_v9.rego` | 27 | 0 | 4 | db3f03141f904ef3 |
+| `rules/p09_ksiegowosc_pkpir_uor_innovations_v9.rego` | 27 | 0 | 0 | 6909a01167603bf3 |
 | `rules/p10_kks_innovations_v9.rego` | 23 | 0 | 2 | d231286caa15ff5e |
 | `rules/p10_kks_micro_innovations_v8.rego` | 11 | 0 | 0 | 1f938dc152da1b57 |
 | `rules/p11_accounting_pkpir_innovations_v8.rego` | 13 | 0 | 0 | be5a7ba17119bb99 |
@@ -293,7 +293,7 @@
 | `rules/p13_crossborder_innovations_v8.rego` | 13 | 0 | 0 | 3c227d83c378f9e4 |
 | `rules/p13_ryczalt_cykl_zycia_innovations_v9.rego` | 25 | 0 | 4 | 1f84e02fd5cada72 |
 | `rules/p14_compliance_innovations_v8.rego` | 12 | 0 | 0 | 15c0f8be6e3bacca |
-| `rules/p14_pcc_lokalne_akcyza_innovations_v9.rego` | 24 | 0 | 4 | aabcf33e5f9d336a |
+| `rules/p14_pcc_lokalne_akcyza_innovations_v9.rego` | 24 | 0 | 0 | 985c397ee38025e3 |
 | `rules/p15_pcc_local_excise_innovations_v8.rego` | 13 | 0 | 0 | 0eb766b4ab206bdf |
 | `rules/p15_srodowisko_bdo_innovations_v9.rego` | 32 | 0 | 0 | fbc4958b83a6a495 |
 | `rules/p16_autoform_generator_enterprise.rego` | 7 | 0 | 4 | ec48a972b2452333 |
@@ -305,7 +305,7 @@
 | `rules/p17_edge_conflicts_innovations_v8.rego` | 12 | 0 | 0 | 5365fcb6ecc02407 |
 | `rules/p17_ksef_jpk_edeklaracje_innovations_v9.rego` | 29 | 0 | 0 | fb9960c26332f5c0 |
 | `rules/p18_automatyzacja_ksiegowosci_innovations_v9.rego` | 30 | 0 | 0 | c9132b1508e7549e |
-| `rules/p19_hr_swiadczenia_innovations_v9.rego` | 26 | 0 | 0 | 7ef9ea38978e17e3 |
+| `rules/p19_hr_swiadczenia_innovations_v9.rego` | 26 | 0 | 0 | acd8fee59d214d2b |
 | `rules/p20_neural_mesh_innovations_v9.rego` | 28 | 0 | 0 | d2b22f648fe7e350 |
 | `rules/p21_innovations_enterprise.rego` | 48 | 6 | 6 | 068449c739a8a4e4 |
 | `rules/p21_opa_system_innovations_v9.rego` | 1 | 0 | 0 | b66f234768d2fbee |
@@ -313,8 +313,8 @@
 | `rules/p22_validation_tools_innovations_v9.rego` | 1 | 0 | 0 | 611c92208f568bc7 |
 | `rules/p23_innovations_enterprise.rego` | 20 | 1 | 5 | 76e05be6b3ce27f4 |
 | `rules/p23_test_rego_ci_innovations_v9.rego` | 1 | 0 | 0 | adaaa6326c7c6a4a |
-| `rules/p24_audyt_kompletny_innovations_v9.rego` | 1 | 0 | 0 | e0182e96f55717ff |
-| `rules/p24_innovations_enterprise.rego` | 28 | 0 | 6 | db3cca0f52c81bff |
+| `rules/p24_audyt_kompletny_innovations_v9.rego` | 1 | 0 | 0 | c30111a52dccb7d8 |
+| `rules/p24_innovations_enterprise.rego` | 28 | 0 | 6 | 38949e546958bb29 |
 | `rules/p3233_innovations.rego` | 7 | 0 | 0 | 060d5ca35d4592b4 |
 | `rules/p33_excise_supplement.rego` | 7 | 0 | 0 | 9f42f86c32f4c3ef |
 | `rules/p33_ordpu_kks_supplement.rego` | 7 | 0 | 0 | 4c8b033e1694df80 |
@@ -361,7 +361,7 @@
 | `rules/pkpir_to_uor_transformer.rego` | 6 | 0 | 0 | ce4a2192b145ec94 |
 | `rules/poa_manager_enterprise.rego` | 2 | 0 | 0 | 33407c0d5453f1ea |
 | `rules/policies_mirror_sync_etap26_v1.rego` | 1 | 0 | 0 | 38240b93ed460404 |
-| `rules/ppk_pfron_enterprise.rego` | 7 | 0 | 0 | 0750fe7995c7c3ea |
+| `rules/ppk_pfron_enterprise.rego` | 7 | 0 | 0 | 26473f15c8422026 |
 | `rules/proceeding_tracker_enterprise.rego` | 2 | 1 | 0 | 99d28e88c3fe6148 |
 | `rules/procurement/plan44_procurement.rego` | 7 | 1 | 0 | c7bac0828712af1d |
 | `rules/procurement/plan45_procurement.rego` | 38 | 5 | 0 | 38ea795539d920e9 |
@@ -429,6 +429,59 @@
 | `rules/uor/uor_obligation.rego` | 30 | 9 | 6 | 3ecbc77b7c3f36f3 |
 | `rules/uor/uor_revenue.rego` | 29 | 0 | 1 | fbf82f96837d4d2d |
 | `rules/uor_etap15_v1.rego` | 1 | 0 | 0 | 3dd15737920c422a |
+| `rules/v3_p13_vat_deductions_enterprise.rego` | 1 | 1 | 0 | 48de910f61142fe1 |
+| `rules/v3_p14_pit_reliefs_enterprise.rego` | 1 | 1 | 0 | 7ea13b8db6716dca |
+| `rules/v3_p15_crossborder_enterprise.rego` | 1 | 1 | 0 | fd9bdbb821603f4a |
+| `rules/v3_p16_ksef_jpk_enterprise.rego` | 1 | 1 | 0 | 46bd2bc61c073e07 |
+| `rules/v3_p17_ordynacja_obrona_enterprise.rego` | 1 | 1 | 0 | c96a9cceb9d13070 |
+| `rules/v3_p18_ryczalt_enterprise.rego` | 1 | 1 | 0 | 3803461515246300 |
+| `rules/v3_p19_pcc_akcyza_bdo_enterprise.rego` | 1 | 1 | 0 | 2edeb32c9440569c |
+| `rules/v3_p20_ksiegowosc_pkpir_uor_enterprise.rego` | 1 | 1 | 0 | d4a782278299b885 |
+| `rules/v3_p25_kalendarz_zbiorczy_enterprise.rego` | 1 | 1 | 0 | 43cc330df6bf3d8e |
+| `rules/v3_p26_zus_skladki_enterprise.rego` | 1 | 1 | 0 | aee23a3cbafaedd2 |
+| `rules/v3_p27_cfc_exit_mdr_enterprise.rego` | 1 | 1 | 0 | 655c2bb867c63323 |
+| `rules/v3_p28_hyper_plan45_enterprise.rego` | 1 | 1 | 0 | 8f281db83432be2e |
+| `rules/v3_p29_quality_campaigns_enterprise.rego` | 1 | 1 | 0 | 224c1743aa3e1ced |
+| `rules/v3_p30_innovation_waves_enterprise.rego` | 1 | 1 | 0 | fea8062e5258622a |
+| `rules/v3_p31_audit_stages_enterprise.rego` | 1 | 1 | 0 | 00a04c0280c917b9 |
+| `rules/v3_p32_ksiegowosc_automation_enterprise.rego` | 1 | 1 | 0 | 0198140f7ab9fe9d |
+| `rules/v3_p33_neural_mesh_ai_enterprise.rego` | 1 | 1 | 0 | e0b7f0615f9e491a |
+| `rules/v3_p34_walidacja_narzedzia_enterprise.rego` | 1 | 1 | 0 | 05ce36a8139cc019 |
+| `rules/v3_p35_audyutory_domenowe_enterprise.rego` | 1 | 1 | 0 | 246ee8b932102360 |
+| `rules/v3_p36_generatory_migratory_enterprise.rego` | 1 | 1 | 0 | db64937fbaa77f5f |
+| `rules/v3_p37_obserwowalnosc_enterprise.rego` | 1 | 1 | 0 | 306b158d4e12bbe4 |
+| `rules/v3_p38_bundle_deploy_enterprise.rego` | 1 | 1 | 0 | c625c0d44acbda43 |
+| `rules/v3_p39_testy_ci_enterprise.rego` | 1 | 1 | 0 | 3a1ec7681a1c1ff0 |
+| `rules/v3_p40_api_dane_ui_enterprise.rego` | 1 | 1 | 0 | d8578d563ec9a0de |
+| `rules/v3_p41_dokumentacja_enterprise.rego` | 1 | 1 | 0 | fe57080c1937044b |
+| `rules/v3_p42_enterprise_reszta.rego` | 1 | 1 | 0 | ae5139a3d249e28c |
+| `rules/v3_p43_security_dr_enterprise.rego` | 1 | 1 | 0 | 7cd381c4131a381a |
+| `rules/v3_p44_certyfikacja_finalna.rego` | 1 | 1 | 0 | aa9fc8155c9d0b2a |
+| `rules/v3_p45_conversions.rego` | 13 | 1 | 9 | dbbe0039c7a5be48 |
+| `rules/v3_p45_stub_killer.rego` | 1 | 1 | 0 | 23528be6a2e042bd |
+| `rules/v3_p46_hardcode_eliminacja_enterprise.rego` | 1 | 1 | 0 | 4f5482efa5d9b550 |
+| `rules/v3_p47_legal_basis_weryfikacja_enterprise.rego` | 2 | 2 | 0 | 8fdd2e8b4fdfdd0c |
+| `rules/v3_p48_mirror_sync.rego` | 2 | 2 | 0 | 41ffb015b26351e6 |
+| `rules/v3_p49_fail_closed.rego` | 1 | 1 | 0 | f10a07a6623f539f |
+| `rules/v3_p50_dead_code.rego` | 1 | 1 | 0 | 634a5005f593564b |
+| `rules/v3_p51_coverage_deserts.rego` | 1 | 1 | 0 | 6f6be80a03cd5cf5 |
+| `rules/v3_p52_penny_granularity.rego` | 1 | 1 | 0 | fe6cf5ddda40a055 |
+| `rules/v3_p53_temporal_closure.rego` | 13 | 0 | 0 | 607aff8d4d6401bd |
+| `rules/v3_p54_ksef_jpk_closure.rego` | 14 | 0 | 0 | 7b53d780ca1fa571 |
+| `rules/v3_p55_zus_closure.rego` | 14 | 0 | 0 | 5661e5381f7c24ad |
+| `rules/v3_p56_vat_pit_details.rego` | 14 | 0 | 0 | 6b6c94f18ccda9ad |
+| `rules/v3_p57_ingest_data.rego` | 16 | 0 | 0 | 3bd18dd05516fb1f |
+| `rules/v3_p58_observability_closure.rego` | 17 | 0 | 0 | 86b2fa0e3e107c43 |
+| `rules/v3_p59_security_closure.rego` | 21 | 0 | 0 | 5efc9fcd888a8503 |
+| `rules/v3_p60_documentation_closure.rego` | 19 | 0 | 0 | b32d4bf1f81b97e7 |
+| `rules/v3_p61_integrations_closure.rego` | 18 | 0 | 0 | d88f73399fa7c746 |
+| `rules/v3_p62_cashflow_closure.rego` | 17 | 0 | 0 | ddb69e70d6ea4c4b |
+| `rules/v3_p63_rbac_multitenant_closure.rego` | 17 | 0 | 0 | 2aaea9c1b48021e3 |
+| `rules/v3_p64_luka_sweep.rego` | 16 | 0 | 0 | 0fe45f115ae4d65e |
+| `rules/v3_p65_tool_forge.rego` | 15 | 0 | 0 | d7172d711b71d4b5 |
+| `rules/v3_p66_chaos_resilience.rego` | 17 | 0 | 0 | 48b99bb9565e08f5 |
+| `rules/v3_p67_self_learning.rego` | 2 | 0 | 0 | 6687a3ab68239f52 |
+| `rules/v3_p68_recertification_final.rego` | 19 | 0 | 0 | 5149773b9a523e06 |
 | `rules/validation.rego` | 8 | 5 | 3 | 7fdb119701a4dc5b |
 | `rules/vat/deductions.rego` | 28 | 5 | 4 | 7858b9de3622cba1 |
 | `rules/vat/enterprise_vat_bridge.rego` | 11 | 0 | 0 | c158ab7ad11e2f06 |
@@ -437,7 +490,7 @@
 | `rules/vat/plan26_critical.rego` | 18 | 1 | 1 | bb6e59ad28c4fd5b |
 | `rules/vat/plan42_reduced_rates.rego` | 13 | 3 | 2 | 953b607747ddb377 |
 | `rules/vat/procedures.rego` | 20 | 1 | 1 | 3320d6877ac7c6ae |
-| `rules/vat/substantive.rego` | 62 | 6 | 6 | a04082f2b6149f68 |
+| `rules/vat/substantive.rego` | 63 | 6 | 7 | 49c16260dec66d78 |
 | `rules/vat/vat_enterprise_zero_doubt.rego` | 14 | 3 | 0 | 611590e7a271a64c |
 | `rules/vat_cashflow_predictor_enterprise.rego` | 4 | 0 | 0 | 8d63448e8d3581b8 |
 | `rules/vat_deductions_corrections_enterprise.rego` | 7 | 2 | 1 | ee3f2165f0a6651c |
@@ -461,7 +514,7 @@
 | `rules/zus/zus_extensions_enterprise.rego` | 6 | 0 | 0 | 4600db0d99adf678 |
 | `rules/zus_core_etap12_v1.rego` | 1 | 0 | 0 | 0deafadceff840d8 |
 | `rules/zus_micro_etap13_v1.rego` | 1 | 0 | 0 | 35107838d81b4232 |
-| **RAZEM** | **11855** | **847** | **692** | — |
+| **RAZEM** | **12155** | **884** | **694** | — |
 
 ---
 
@@ -1102,8 +1155,8 @@
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 18301 | `jdg.cfc_auto_classifier.passive_classifier` |  | Art. 30f PIT — CFC; Art. 45 ust. 1aa PIT (PIT-CFC) |
-| 18302 | `jdg.cfc_auto_classifier.de_minimis_check` |  | Art. 30f ust. 2 PIT |
+| 18301 | `jdg.cfc_auto_classifier.passive_classifier` |  | Art. 30c-30f PIT — CFC [ZWERYFIKOWANO-WEB 2026-09-06: próg z... |
+| 18302 | `jdg.cfc_auto_classifier.de_minimis_check` |  | Art. 30c ust. 7 PIT (zwolnienie 250 000 PLN [ZWERYFIKOWANO-W... |
 | 18303 | `jdg.cfc_auto_classifier.jurisdiction_check` |  | Art. 30f PIT; EU List of Non-Cooperative Jurisdictions |
 
 ### `rules/compliance.rego` (10 reguł)
@@ -1280,17 +1333,17 @@
 | 586 | `jdg.crossborder.dac8_below_threshold` |  | DAC8 Art. 8ac ust. 2 — wyłączenie de minimis |
 | 587 | `jdg.crossborder.dac8_deadline_reminder` | 🟡 TRIAGE | DAC8 — art. 8ac Dyrektywy 2011/16/UE |
 
-### `rules/crossborder/exit_tax_cfc_complete.rego` (16 reguł)
+### `rules/crossborder/exit_tax_cfc_complete.rego` (15 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
-| 360001 | `jdg.exit_tax_cfc.exit_tax.r1` | 🔴 BLOCK | Art. 30da ust. 1 PIT |
-| 360002 | `jdg.exit_tax_cfc.exit_tax.r2` |  | Art. 30da ust. 2 PIT |
-| 360003 | `jdg.exit_tax_cfc.exit_tax.r3` |  | Art. 30da ust. 3 PIT (próg wartościowy) |
-| 360004 | `jdg.exit_tax_cfc.exit_tax.r4` |  | Art. 30da ust. 8 PIT (odroczenie) |
+| 360001 | `jdg.exit_tax_cfc.exit_tax.r1` |  | Art. 30da ust. 1 pkt 2 PIT |
+| 360002 | `jdg.exit_tax_cfc.exit_tax.r2` |  | Art. 30da ust. 1 pkt 1 PIT |
+| 360003 | `jdg.exit_tax_cfc.exit_tax.r3` |  | Art. 30da ust. 1 pkt 2 PIT [ZWERYFIKOWANO-WEB 2026-09-06] |
+| 360004 | `jdg.exit_tax_cfc.exit_tax.r4` |  | Art. 30da ust. 8 PIT |
 | 360005 | `jdg.exit_tax_cfc.exit_tax.r5` |  | Art. 30da ust. 5 PIT |
 | 360006 | `jdg.exit_tax_cfc.exit_tax.r6` |  | Art. 30da ust. 9 PIT |
-| 360020 | `jdg.exit_tax_cfc.cfc.r1` | 🔴 BLOCK | Art. 30f ust. 1-3 PIT |
+| 360020 | `jdg.exit_tax_cfc.cfc.r1` |  | Art. 30f ust. 1-3 PIT |
 | 360021 | `jdg.exit_tax_cfc.cfc.r2` |  | Art. 30f ust. 3 pkt 1 PIT |
 | 360022 | `jdg.exit_tax_cfc.cfc.r3` |  | Art. 30f ust. 4 PIT (próg dochodów pasywnych) |
 | 360023 | `jdg.exit_tax_cfc.cfc.r4` |  | Art. 30f ust. 18 PIT (zwolnienie dla rzeczywistej działalnoś... |
@@ -1299,7 +1352,6 @@
 | 360041 | `jdg.exit_tax_cfc.pe.r1` |  | Art. 5 UPO (OECD Model); Art. 4a pkt 11 PIT |
 | 360042 | `jdg.exit_tax_cfc.treaty.r1` |  | Art. 30a ust. 2 PIT; właściwa UPO |
 | 360043 | `jdg.exit_tax_cfc.wht.r2` | 🔴 BLOCK | Art. 26 ust. 2e CIT |
-| 360044 | `jdg.exit_tax_cfc.cfc.r6` |  | Art. 30f ust. 2 PIT |
 
 ### `rules/crossborder/plan23_ue.rego` (8 reguł)
 
@@ -9473,11 +9525,11 @@
 | 50024 | `jdg.micro.vat.a7.r8` |  | Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50024 | `jdg.final.a108.u5.p1` |  | Ustawa o VAT — przepisy końcowe |
 | 50025 | `jdg.micro.vat.a7.r9` |  | Art. 7 ust. 8 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
-| 50025 | `jdg.final.a109.u1.p2` |  | Ustawa o VAT — przepisy końcowe |
+| 50025 | `jdg.final.a109.u1.p2` |  | Art. 109 ustawy o VAT (ewidencja VAT) — patrz jdg.micro.vat.... |
 | 50026 | `jdg.micro.vat.a7.r10` |  | Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
-| 50026 | `jdg.final.a109.u2.p3` |  | Ustawa o VAT — przepisy końcowe |
+| 50026 | `jdg.final.a109.u2.p3` |  | Art. 109 ustawy o VAT (ewidencja VAT) — patrz jdg.micro.vat.... |
 | 50027 | `jdg.micro.vat.a7.r11` |  | Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
-| 50027 | `jdg.final.a109.u3.p4` |  | Ustawa o VAT — przepisy końcowe |
+| 50027 | `jdg.final.a109.u3.p4` |  | Art. 109 ustawy o VAT (ewidencja VAT) — patrz jdg.micro.vat.... |
 | 50028 | `jdg.micro.vat.a7.r12` | 🔴 BLOCK | Art. 7 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
 | 50028 | `jdg.final.a110.u1.p3` |  | Ustawa o VAT — przepisy końcowe |
 | 50029 | `jdg.micro.vat.a8.r1` |  | Art. 8 ust. 1 ustawy o VAT (Dz.U. 2024 poz. 1557 ze zm.) |
@@ -10372,25 +10424,25 @@
 | 50473 | `jdg.vat.a73.u5.p2` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
 | 50474 | `jdg.micro.vat.a108a.r8` |  | Art. 108a-108f VAT |
 | 50474 | `jdg.vat.a74.u1.p4` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
-| 50475 | `jdg.micro.vat.a109.r1` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
+| 50475 | `jdg.micro.vat.a109.r1` |  | Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 53... |
 | 50475 | `jdg.vat.a74.u3.p1` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
-| 50476 | `jdg.micro.vat.a109.r2` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
+| 50476 | `jdg.micro.vat.a109.r2` |  | Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 53... |
 | 50476 | `jdg.vat.a74.u4.p2` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
-| 50477 | `jdg.micro.vat.a109.r3` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
+| 50477 | `jdg.micro.vat.a109.r3` |  | Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 53... |
 | 50477 | `jdg.vat.a74.u5.p3` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
-| 50478 | `jdg.micro.vat.a109.r4` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
+| 50478 | `jdg.micro.vat.a109.r4` |  | Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 53... |
 | 50478 | `jdg.vat.a75.u2.p1` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
-| 50479 | `jdg.micro.vat.a109.r5` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
+| 50479 | `jdg.micro.vat.a109.r5` |  | Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 53... |
 | 50479 | `jdg.vat.a75.u3.p2` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
-| 50480 | `jdg.micro.vat.a109.r6` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
+| 50480 | `jdg.micro.vat.a109.r6` |  | Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 53... |
 | 50480 | `jdg.vat.a75.u4.p3` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
-| 50481 | `jdg.micro.vat.a109.r7` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
+| 50481 | `jdg.micro.vat.a109.r7` |  | Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 53... |
 | 50481 | `jdg.vat.a75.u5.p4` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
-| 50482 | `jdg.micro.vat.a109.r8` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
+| 50482 | `jdg.micro.vat.a109.r8` |  | Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 53... |
 | 50482 | `jdg.vat.a76.u1.p1` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
-| 50483 | `jdg.micro.vat.a109.r9` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
+| 50483 | `jdg.micro.vat.a109.r9` |  | Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 53... |
 | 50483 | `jdg.vat.a76.u2.p2` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
-| 50484 | `jdg.micro.vat.a109.r10` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
+| 50484 | `jdg.micro.vat.a109.r10` |  | Art. 109 ustawy o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 53... |
 | 50484 | `jdg.vat.a76.u3.p3` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
 | 50485 | `jdg.micro.vat.a113.r1` |  | Art. 113 VAT |
 | 50485 | `jdg.vat.a76.u4.p4` |  | Ustawa o VAT z 11.03.2004 (Dz.U. 2004 nr 54 poz. 535) |
@@ -11368,10 +11420,10 @@
 | 875 | `jdg.p09_ksiegowosc_pkpir_uor_innovations.financial_statements_generator` |  | Art. 45-49, art. 52 UoR |
 | 876 | `jdg.p09_ksiegowosc_pkpir_uor_innovations.leasing_comparator` |  | Art. 23b, art. 23f PIT |
 | 877 | `jdg.p09_ksiegowosc_pkpir_uor_innovations.accounting_template_hook` |  | ADR-002 (dane temporalne) |
-| 878 | `jdg.p09_ksiegowosc_pkpir_uor_innovations.pkpir_cross_domain_validator` | 🟡 TRIAGE | Rozporządzenie o PKPiR (Dz.U. 2025 poz. 567); VAT art. 109; ... |
-| 879 | `jdg.p09_ksiegowosc_pkpir_uor_innovations.year_closing_checklist` | 🟡 TRIAGE | Art. 24 ust. 2 PIT; art. 74 UoR; art. 86 §1 OrdPU; art. 193a... |
-| 880 | `jdg.p09_ksiegowosc_pkpir_uor_innovations.jpk_pkpir_readiness` | 🟡 TRIAGE | Art. 30a ustawy o rachunkowości; art. 193a OrdPU; rozp. MF w... |
-| 881 | `jdg.p09_ksiegowosc_pkpir_uor_innovations.uor_opening_balance_continuity` | 🟡 TRIAGE | Art. 10-12, art. 22 UoR |
+| 878 | `jdg.p09_ksiegowosc_pkpir_uor_innovations.pkpir_cross_domain_validator` |  | Rozporządzenie o PKPiR (Dz.U. 2025 poz. 567); VAT art. 109; ... |
+| 879 | `jdg.p09_ksiegowosc_pkpir_uor_innovations.year_closing_checklist` |  | Art. 24 ust. 2 PIT; art. 74 UoR; art. 86 §1 OrdPU; art. 193a... |
+| 880 | `jdg.p09_ksiegowosc_pkpir_uor_innovations.jpk_pkpir_readiness` |  | Art. 30a ustawy o rachunkowości; art. 193a OrdPU; rozp. MF w... |
+| 881 | `jdg.p09_ksiegowosc_pkpir_uor_innovations.uor_opening_balance_continuity` |  | Art. 10-12, art. 22 UoR |
 | 882 | `jdg.p09_ksiegowosc_pkpir_uor_innovations.pkpir_intelligent_classifier` |  | Rozporządzenie o PKPiR (Dz.U. 2025 poz. 567) |
 
 ### `rules/p10_kks_innovations_v9.rego` (23 reguł)
@@ -11604,11 +11656,11 @@
 | 1170 | `jdg.p14_pcc_lokalne_akcyza_innovations.gmina_rates_hook` |  | ADR-002; uchwały rad gmin |
 | 1171 | `jdg.p14_pcc_lokalne_akcyza_innovations.excise_warehouse_tracker` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
 | 1172 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc_local_excise_compliance_panel` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
-| 1173 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc_obligation_detector` | 🟡 TRIAGE | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
-| 1174 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc3_zero_click` | 🟡 TRIAGE | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 1173 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc_obligation_detector` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 1174 | `jdg.p14_pcc_lokalne_akcyza_innovations.pcc3_zero_click` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
 | 1175 | `jdg.p14_pcc_lokalne_akcyza_innovations.gmina_rates_map` |  | ustawy z dnia 12 stycznia 1991 r. o podatkach i opłatach lok... |
-| 1176 | `jdg.p14_pcc_lokalne_akcyza_innovations.vat_vs_pcc_optimizer` | 🟡 TRIAGE | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
-| 1177 | `jdg.p14_pcc_lokalne_akcyza_innovations.excise_import_detector` | 🟡 TRIAGE | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
+| 1176 | `jdg.p14_pcc_lokalne_akcyza_innovations.vat_vs_pcc_optimizer` |  | ustawy z dnia 9 września 2000 r. o podatku od czynności cywi... |
+| 1177 | `jdg.p14_pcc_lokalne_akcyza_innovations.excise_import_detector` |  | ustawy z dnia 6 grudnia 2008 r. o podatku akcyzowym (Dz.U. 2... |
 
 ### `rules/p15_pcc_local_excise_innovations_v8.rego` (13 reguł)
 
@@ -14029,6 +14081,571 @@
 |:---------:|---------|:-------:|----------------|
 | 590 | `jdg.uor_etap15.report` |  | art. 2/3/4/12/15/21/26/28-32/45-49 UoR; art. 22a-22n PIT |
 
+### `rules/v3_p13_vat_deductions_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p13_vat_deductions.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p14_pit_reliefs_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p14_pit_reliefs.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p15_crossborder_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p15_crossborder.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p16_ksef_jpk_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p16_ksef_jpk.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p17_ordynacja_obrona_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p17_ordynacja_obrona.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p18_ryczalt_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p18_ryczalt.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p19_pcc_akcyza_bdo_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p19_pcc_akcyza_bdo.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p20_ksiegowosc_pkpir_uor_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p20_ksiegowosc_pkpir_uor.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p25_kalendarz_zbiorczy_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p25_kalendarz_zbiorczy.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p26_zus_skladki_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p26_zus_skladki.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p27_cfc_exit_mdr_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p27_cfc_exit_mdr.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p28_hyper_plan45_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p28_hyper_plan45.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p29_quality_campaigns_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p29_quality_campaigns.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p30_innovation_waves_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p30_innovation_waves.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p31_audit_stages_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p31_audit_stages.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p32_ksiegowosc_automation_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p32_ksiegowosc_automation.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p33_neural_mesh_ai_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p33_neural_mesh_ai.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p34_walidacja_narzedzia_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p34_walidacja_narzedzia.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p35_audyutory_domenowe_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p35_audyutory_domenowe.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p36_generatory_migratory_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p36_generatory_migratory.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p37_obserwowalnosc_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p37_obserwowalnosc.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p38_bundle_deploy_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p38_bundle_deploy.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p39_testy_ci_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p39_testy_ci.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p40_api_dane_ui_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p40_api_dane_ui.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p41_dokumentacja_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p41_dokumentacja.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p42_enterprise_reszta.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p42_enterprise_reszta.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p43_security_dr_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p43_security_dr.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p44_certyfikacja_finalna.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p44_certyfikacja_finalna.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p45_conversions.rego` (13 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p45_conversions.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+| 0 | `jdg.v3_p45_conversions.uor_a2_threshold` |  | UoR art. 2 ust. 1 pkt 5 [NIEZWERYFIKOWANE] |
+| 0 | `jdg.v3_p45_conversions.uor_a2_threshold` | 🟡 TRIAGE | UoR art. 2 ust. 1 pkt 5 [NIEZWERYFIKOWANE]; V1 zasada 6 |
+| 0 | `jdg.v3_p45_conversions.uor_a3_conditions` | 🟡 TRIAGE | UoR art. 3 [NIEZWERYFIKOWANE] |
+| 0 | `jdg.v3_p45_conversions.mdr_hallmark_a` | 🟡 TRIAGE | Ordynacja art. 86a §1 [NIEZWERYFIKOWANE] |
+| 0 | `jdg.v3_p45_conversions.pcc_a1_condition` | 🟡 TRIAGE | PCC art. 1 ust. 1 pkt 1 [NIEZWERYFIKOWANE] |
+| 0 | `jdg.v3_p45_conversions.wht_foreign_service` | 🟡 TRIAGE | UoWHT art. 21 ust. 1 pkt 2a [NIEZWERYFIKOWANE] |
+| 445101 | `jdg.v3_p45_conversions.uor_a2_threshold` | 🟡 TRIAGE | UoR art. 2 ust. 1 pkt 5 [NIEZWERYFIKOWANE] |
+| 445102 | `jdg.v3_p45_conversions.uor_a3_conditions` |  | UoR art. 3 [NIEZWERYFIKOWANE] |
+| 445103 | `jdg.v3_p45_conversions.mdr_hallmark_a` | 🟡 TRIAGE | Ordynacja art. 86a §1 [NIEZWERYFIKOWANE] |
+| 445104 | `jdg.v3_p45_conversions.pcc_a1_condition` |  | PCC art. 1 ust. 1 pkt 1; art. 9 [NIEZWERYFIKOWANE] |
+| 445105 | `jdg.v3_p45_conversions.wht_foreign_service` | 🟡 TRIAGE | UoWHT art. 21 ust. 1 pkt 2a [NIEZWERYFIKOWANE] |
+| 999998 | `jdg.v3_p45_conversions.needs_advice` | 🟡 TRIAGE | V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p45_stub_killer.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p45_stub_killer.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p46_hardcode_eliminacja_enterprise.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p46_hardcode_eliminacja_enterprise.thresholds_missing` | 🔴 BLOCK | ADR-002 zero-hardcode; V1 zasada 6 (fail-closed) |
+
+### `rules/v3_p47_legal_basis_weryfikacja_enterprise.rego` (2 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p47_legal_basis_weryfikacja_enterprise.thresholds_missing` | 🔴 BLOCK | ADR-002; V1 zasada 6 (fail-closed); protokół 04 (zero fikcyj... |
+| 0 | `jdg.v3_p47_legal_basis_weryfikacja_enterprise.acts_missing` | 🔴 BLOCK | V3-P47-I03; protokół 04 — weryfikacja wymaga rejestru aktów ... |
+
+### `rules/v3_p48_mirror_sync.rego` (2 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p48_mirror_sync.thresholds_missing` | 🔴 BLOCK | ADR-002; V1 zasada 6 (fail-closed); ustawa o rachunkowości a... |
+| 0 | `jdg.v3_p48_mirror_sync.packages_missing` | 🔴 BLOCK | V3-P48-I08; protokół 04 — rejestr własności wymaga mapy paki... |
+
+### `rules/v3_p49_fail_closed.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p49_fail_closed.thresholds_missing` | 🔴 BLOCK | ADR-002; V1 zasada 6 (fail-closed); ustawa o rachunkowości a... |
+
+### `rules/v3_p50_dead_code.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p50_dead_code.thresholds_missing` | 🔴 BLOCK | ADR-002; V1 zasada 6 (fail-closed); ustawa o rachunkowości a... |
+
+### `rules/v3_p51_coverage_deserts.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p51_coverage_deserts.thresholds_missing` | 🔴 BLOCK | ADR-002; V1 zasada 6 (fail-closed); UoR art. 4 ust. 1 (spraw... |
+
+### `rules/v3_p52_penny_granularity.rego` (1 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p52_penny_granularity.thresholds_missing` | 🔴 BLOCK | ADR-002; V1 zasada 6 (fail-closed); OP art. 107 (pełne grosz... |
+
+### `rules/v3_p53_temporal_closure.rego` (13 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p53_temporal_closure.thresholds_missing` |  | V1 zasada 6 (fail-closed); ADR-002 parametry-as-data |
+| 453000 | `jdg.v3_p53_temporal_closure.all_green` |  | P05 temporalność; INV-037; Ordynacja art. 24b [NIEZWERYFIKOW... |
+| 453001 | `jdg.v3_p53_temporal_closure.temporal_coverage_gate` |  | Ordynacja art. 24b (prawo właściwe w czasie) [NIEZWERYFIKOWA... |
+| 453002 | `jdg.v3_p53_temporal_closure.day0_tests` |  | P36 generatory testów brzegowych; P05 okna |
+| 453003 | `jdg.v3_p53_temporal_closure.replay_contract` |  | UoR art. 5 (porównywalność okresów) [NIEZWERYFIKOWANE — ISAP... |
+| 453004 | `jdg.v3_p53_temporal_closure.transitional_register` |  | SUS art. 18a/18c/18ab/18d ust. 2; VAT art. 113 [NIEZWERYFIKO... |
+| 453005 | `jdg.v3_p53_temporal_closure.interval_validation` |  | INV-037 (CORE_GUARDS §4); P05; Ordynacja art. 24b [NIEZWERYF... |
+| 453007 | `jdg.v3_p53_temporal_closure.future_sandbox` |  | V2 Wizja: Declarative Change; planowanie na noweli przed wej... |
+| 453008 | `jdg.v3_p53_temporal_closure.preprovisioning` |  | V2 §6.2.5 KPI lead >= 30 dni; WIZJA_OPA_ENTERPRISE_V2 |
+| 453009 | `jdg.v3_p53_temporal_closure.year_boundary` |  | SUS art. 18d ust. 2; VAT art. 113 [NIEZWERYFIKOWANE — ISAP] |
+| 453010 | `jdg.v3_p53_temporal_closure.param_history` |  | ADR-002 parametry-as-data; UoR art. 5 [NIEZWERYFIKOWANE — IS... |
+| 453011 | `jdg.v3_p53_temporal_closure.epoch_golden` |  | Golden Oracle (V2); P10 |
+| 453012 | `jdg.v3_p53_temporal_closure.temporal_audit_trail` |  | Decision Certificate F4 (V2); Ordynacja art. 24b [NIEZWERYFI... |
+
+### `rules/v3_p54_ksef_jpk_closure.rego` (14 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p54_ksef_jpk_closure.thresholds_missing` |  | V1 zasada 6 (fail-closed); ADR-002 parametry-as-data |
+| 454000 | `jdg.v3_p54_ksef_jpk_closure.all_green` |  | VAT art. 106na–106nq [NIEZWERYFIKOWANE — ISAP]; crd.gov.pl; ... |
+| 454001 | `jdg.v3_p54_ksef_jpk_closure.compliance_calendar` |  | VAT art. 106na–106nf [NIEZWERYFIKOWANE — ISAP]; crd.gov.pl; ... |
+| 454002 | `jdg.v3_p54_ksef_jpk_closure.schema_versions` |  | Rozp. MF o KSeF (schemat FA(3)) [NIEZWERYFIKOWANE — ISAP/crd... |
+| 454003 | `jdg.v3_p54_ksef_jpk_closure.pre_send_dry_run` |  | KKS art. 57 §2 [NIEZWERYFIKOWANE — ISAP]; VAT art. 106na; P1... |
+| 454004 | `jdg.v3_p54_ksef_jpk_closure.sandbox_replay` |  | P16 ksef_sandbox_harness; P43 chaos; crd.gov.pl sandbox MF [... |
+| 454005 | `jdg.v3_p54_ksef_jpk_closure.status_monitor_sla` |  | VAT art. 106nq [NIEZWERYFIKOWANE — ISAP]; P17 UPO tracker; P... |
+| 454006 | `jdg.v3_p54_ksef_jpk_closure.idempotent_outbox` |  | P32 idempotencja wspólna; P17 outbox; art. 106na–106nq VAT [... |
+| 454007 | `jdg.v3_p54_ksef_jpk_closure.ksef_to_books_sync` |  | P32 automatyzacja księgowości; P17 ingest; UoR art. 5 [NIEZW... |
+| 454008 | `jdg.v3_p54_ksef_jpk_closure.correction_chains` |  | VAT art. 106j [NIEZWERYFIKOWANE — ISAP]; P16 ksef_correction... |
+| 454009 | `jdg.v3_p54_ksef_jpk_closure.offline_compliance` |  | VAT art. 106ne ust. 1–4 [NIEZWERYFIKOWANE — ISAP]; P43 chaos |
+| 454010 | `jdg.v3_p54_ksef_jpk_closure.error_to_action` |  | P40 API/UI; P41 dokumentacja; schematy MF [NIEZWERYFIKOWANE ... |
+| 454011 | `jdg.v3_p54_ksef_jpk_closure.deadline_watchdog` |  | VAT art. 106na–106nb terminy [NIEZWERYFIKOWANE — ISAP]; P37 ... |
+| 454012 | `jdg.v3_p54_ksef_jpk_closure.integration_attestation` |  | I12 promptu P54; P44 certyfikacja; crd.gov.pl wersje schemat... |
+
+### `rules/v3_p55_zus_closure.rego` (14 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p55_zus_closure.thresholds_missing` |  | V1 zasada 6 (fail-closed); ADR-002 parametry-as-data |
+| 455000 | `jdg.v3_p55_zus_closure.all_green` |  | SUS art. 12/18a–18d/47; ustawa zasiłkowa art. 4/6 [NIEZWERYF... |
+| 455001 | `jdg.v3_p55_zus_closure.lifecycle_state_machine` |  | SUS art. 18a/18c/18c ust. 8 [NIEZWERYFIKOWANE — ISAP]; P23 c... |
+| 455002 | `jdg.v3_p55_zus_closure.thirtyfold_ytd_engine` |  | SUS art. 18d [NIEZWERYFIKOWANE — ISAP]; P53-I02/I09 (accumul... |
+| 455003 | `jdg.v3_p55_zus_closure.mid_month_limit_split` |  | SUS art. 18d ust. 1 (roczny limit; sposób wyliczenia ZUS) [N... |
+| 455004 | `jdg.v3_p55_zus_closure.carencia_break_tracker` |  | SUS art. 12 (dobrowolna chorobowa — karencja 90 dni) [NIEZWE... |
+| 455005 | `jdg.v3_p55_zus_closure.benefit_period_counter` |  | Ustawa zasiłkowa art. 4 (okresy 182/270) [NIEZWERYFIKOWANE —... |
+| 455006 | `jdg.v3_p55_zus_closure.dra_deadline_watchdog` |  | SUS art. 47 ust. 2a (terminy imienne/obligatoryjne) [NIEZWER... |
+| 455007 | `jdg.v3_p55_zus_closure.dra_correction_chain` |  | Ordynacja art. 56 (odsetki od zaległości) [NIEZWERYFIKOWANE ... |
+| 455008 | `jdg.v3_p55_zus_closure.payment_priority` |  | SUS art. 26 (wygaśnięcie/egzekucja); P32 pipeline [NIEZWERYF... |
+| 455009 | `jdg.v3_p55_zus_closure.benefit_vs_suspension` |  | Ustawa zasiłkowa art. 6 (zasiłek a zawieszenie/wstrzymanie) ... |
+| 455010 | `jdg.v3_p55_zus_closure.annual_rate_windows` |  | P53-I10 stawki roczne jako dane; ADR-002; SUS art. 18d [NIEZ... |
+| 455011 | `jdg.v3_p55_zus_closure.completeness_matrix` |  | P55-I11; zus_atom_test_matrix; P31/P35 metodologia audytu |
+| 455012 | `jdg.v3_p55_zus_closure.benefit_pre_payment_gate` |  | Ustawa zasiłkowa art. 4/6; SUS art. 12 [NIEZWERYFIKOWANE — I... |
+
+### `rules/v3_p56_vat_pit_details.rego` (14 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p56_vat_pit_details.thresholds_missing` |  | V1 zasada 6 (fail-closed); ADR-002 parametry-as-data |
+| 1 | `jdg.v3_p56_vat_pit_details.all_green` |  | VAT art. 28b/28k/42/90/109a–109e; PIT art. 14/22/23/30ca/30f... |
+| 456001 | `jdg.v3_p56_vat_pit_details.place_of_supply` |  | VAT art. 28b, 28k, 42 ust. 1, 42 ust. 10a [NIEZWERYFIKOWANE ... |
+| 456002 | `jdg.v3_p56_vat_pit_details.gtu_classification_data` |  | VAT art. 109a ust. 10 [NIEZWERYFIKOWANE — ISAP]; P46; P53-I1... |
+| 456003 | `jdg.v3_p56_vat_pit_details.procedure_markers` |  | VAT art. 19a ust. 1 pkt 4, art. 17 ust. 1 pkt 4, art. 109a–1... |
+| 456004 | `jdg.v3_p56_vat_pit_details.kis_interpretation_registry` |  | ORD-IN art. 14b–14k [NIEZWERYFIKOWANE — ISAP]; P51 karty szc... |
+| 456005 | `jdg.v3_p56_vat_pit_details.cost_exclusion_guard` |  | PIT art. 23 ust. 1 pkt 4, pkt 23 [NIEZWERYFIKOWANE — ISAP]; ... |
+| 456006 | `jdg.v3_p56_vat_pit_details.ryczalt_table_by_pkwiu` |  | UoPR art. 12 [NIEZWERYFIKOWANE — ISAP]; P46; P53-I10 |
+| 456007 | `jdg.v3_p56_vat_pit_details.mixed_sales_proportions` |  | VAT art. 90 ust. 3, ust. 6 [NIEZWERYFIKOWANE — ISAP]; P52 pr... |
+| 456008 | `jdg.v3_p56_vat_pit_details.relief_interaction_matrix` |  | PIT art. 30ca, 30f; UoPR art. 12; P55 K-P55-2 [NIEZWERYFIKOW... |
+| 456009 | `jdg.v3_p56_vat_pit_details.non_monetary_income` |  | PIT art. 14 ust. 2 pkt 8 [NIEZWERYFIKOWANE — ISAP]; P51 pust... |
+| 456010 | `jdg.v3_p56_vat_pit_details.vat_nondeductible_cost_flow` |  | VAT art. 86/90 + PIT art. 22 ust. 1 [NIEZWERYFIKOWANE — ISAP... |
+| 456011 | `jdg.v3_p56_vat_pit_details.suspicious_pattern_advice` |  | VAT art. 19a ust. 1 pkt 4; STL art. 119a [NIEZWERYFIKOWANE —... |
+| 456012 | `jdg.v3_p56_vat_pit_details.detail_coverage_score` |  | P51 pustynie prawne — miernik pokrycia; prompt P56 Sekcja 10... |
+
+### `rules/v3_p57_ingest_data.rego` (16 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p57_ingest_data.thresholds_missing` |  | V1 zasada 6 (fail-closed); ADR-002 parametry-as-data |
+| 1 | `jdg.v3_p57_ingest_data.all_green` |  | UoR art. 4/5; VAT art. 106b/109e; OP art. 193a; RODO art. 5 ... |
+| 457001 | `jdg.v3_p57_ingest_data.ingest_contract_schema` |  | UoR art. 4 ust. 4 (dowody rzetelne) [NIEZWERYFIKOWANE — ISAP... |
+| 457002 | `jdg.v3_p57_ingest_data.nip_checksum_gate` |  | VAT art. 96 (NIP identyfikator podatkowy) [NIEZWERYFIKOWANE ... |
+| 457003 | `jdg.v3_p57_ingest_data.semantic_dedup_key` |  | UoR art. 5 (zapis odzwierciedla rzeczywiste zdarzenie) [NIEZ... |
+| 457004 | `jdg.v3_p57_ingest_data.original_first_worm` |  | UoR art. 5 (pierwotne dowody); RODO art. 5 ust. 1f (integral... |
+| 457005 | `jdg.v3_p57_ingest_data.status_state_machine` |  | UoR art. 4 ust. 4 (kompletność ścieżki); prompt P57 Sekcja 1... |
+| 457006 | `jdg.v3_p57_ingest_data.repair_path_for_rejects` |  | prompt P57 Sekcja 10-I06; P32 kontrakt pipeline (ingest = pi... |
+| 457007 | `jdg.v3_p57_ingest_data.bank_reconciliation_engine` |  | P32 kontrakt recon (auto-parowanie, alarm rozjazdów); prompt... |
+| 457008 | `jdg.v3_p57_ingest_data.ingest_chaos_suite` |  | prompt P57 Sekcja 10-I08; P39 bramki CI; P43 security |
+| 457009 | `jdg.v3_p57_ingest_data.ingest_metrics` |  | P37 obserwowalność; prompt P57 Sekcja 10-I09 |
+| 457009 | `jdg.v3_p57_ingest_data.ingest_metrics` |  | P37 obserwowalność; prompt P57 Sekcja 10-I09 |
+| 457010 | `jdg.v3_p57_ingest_data.provenance_chain_to_certificate` |  | OP art. 193a (weryfikacja, odtworzenie dowodów) [NIEZWERYFIK... |
+| 457011 | `jdg.v3_p57_ingest_data.multi_tenant_isolation` |  | RODO art. 5 ust. 1f (poufność) [NIEZWERYFIKOWANE — ISAP]; pr... |
+| 457011 | `jdg.v3_p57_ingest_data.multi_tenant_isolation` |  | RODO art. 5 ust. 1f (poufność) [NIEZWERYFIKOWANE — ISAP]; pr... |
+| 457012 | `jdg.v3_p57_ingest_data.ingest_rate_governor` |  | prompt P57 Sekcja 10-I12; P43 security (ochrona przed spamem... |
+
+### `rules/v3_p58_observability_closure.rego` (17 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p58_observability_closure.thresholds_missing` |  | V1 zasada 6 (fail-closed); ADR-002 parametry-as-data |
+| 1 | `jdg.v3_p58_observability_closure.all_green` |  | UoR art. 4 ust. 1; RODO art. 5 ust. 2/32; OP art. 119a; VAT ... |
+| 458001 | `jdg.v3_p58_observability_closure.legal_freshness_sla` |  | P47 legal basis weryfikacja; UoR art. 4 ust. 1 (rzetelność p... |
+| 458002 | `jdg.v3_p58_observability_closure.coverage_regression_alarm` |  | P51 pustynie prawne — regresja = BLOCKER; prompt P58 Sekcja ... |
+| 458002 | `jdg.v3_p58_observability_closure.coverage_regression_alarm` |  | P51 pustynie prawne — regresja = BLOCKER; prompt P58 Sekcja ... |
+| 458003 | `jdg.v3_p58_observability_closure.advice_spread_radar` |  | P49 fail-closed ścieżki advice; prompt P58 Sekcja 10-I03 |
+| 458004 | `jdg.v3_p58_observability_closure.penny_drift_telemetry` |  | P52 granice groszowe — trend do zera; prompt P58 Sekcja 10-I... |
+| 458005 | `jdg.v3_p58_observability_closure.decision_telemetry_registry` |  | P11 certyfikat decyzji = źródło telemetrii (bez podwójnej in... |
+| 458006 | `jdg.v3_p58_observability_closure.error_budget_freeze` |  | P38 bundle deploy + P39 CI bramki; prompt P58 Sekcja 10-I06 |
+| 458007 | `jdg.v3_p58_observability_closure.runbook_per_alarm` |  | P41 dokumentacja; prompt P58 Sekcja 10-I07 |
+| 458008 | `jdg.v3_p58_observability_closure.postmortem_registry` |  | prompt P58 Sekcja 10-I08; P43 chaos drills |
+| 458009 | `jdg.v3_p58_observability_closure.escalation_matrix` |  | prompt P58 Sekcja 10-I09; P41 runbooki (eskalacja w pierwsze... |
+| 458009 | `jdg.v3_p58_observability_closure.escalation_matrix` |  | prompt P58 Sekcja 10-I09; P41 runbooki (eskalacja w pierwsze... |
+| 458010 | `jdg.v3_p58_observability_closure.risk_pattern_mining` |  | OP art. 119a (GAAR — wczesna detekcja ścieżek agresywnych) [... |
+| 458011 | `jdg.v3_p58_observability_closure.telemetry_privacy_guard` |  | RODO art. 5 ust. 2 (rozliczalność), art. 32 (bezpieczeństwo ... |
+| 458011 | `jdg.v3_p58_observability_closure.telemetry_privacy_guard` |  | RODO art. 5 ust. 2, art. 32 [NIEZWERYFIKOWANE — ISAP]; promp... |
+| 458012 | `jdg.v3_p58_observability_closure.slo_per_domain` |  | V1 SLO control plane; prompt P58 Sekcja 10-I12 |
+
+### `rules/v3_p59_security_closure.rego` (21 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p59_security_closure.thresholds_missing` |  | V1 zasada 6 (fail-closed); ADR-002 parametry-as-data |
+| 1 | `jdg.v3_p59_security_closure.all_green` |  | RODO art. 32/33-34; eIDAS; UoR art. 74; KKS art. 115-1; AML ... |
+| 459001 | `jdg.v3_p59_security_closure.threat_model_gates` |  | RODO art. 32 (odporność systemów, regularne testy) [NIEZWERY... |
+| 459001 | `jdg.v3_p59_security_closure.threat_model_gates` |  | RODO art. 32 [NIEZWERYFIKOWANE — ISAP]; prompt P59 Sekcja 10... |
+| 459002 | `jdg.v3_p59_security_closure.signed_rules_4eyes` |  | eIDAS (integralność, autentyczność) [NIEZWERYFIKOWANE — ISAP... |
+| 459003 | `jdg.v3_p59_security_closure.rule_history_hash_chain` |  | UoR art. 74 (ochrona przed zniszczeniem/zmianą); P42 WORM; p... |
+| 459003 | `jdg.v3_p59_security_closure.rule_history_hash_chain` |  | UoR art. 74; P42 WORM; prompt P59 Sekcja 10-I03 |
+| 459004 | `jdg.v3_p59_security_closure.rate_change_anomaly` |  | P52 rate provenance; P46 parametry-as-data; prompt P59 Sekcj... |
+| 459004 | `jdg.v3_p59_security_closure.rate_change_anomaly` |  | P52 rate provenance; prompt P59 Sekcja 10-I04 |
+| 459005 | `jdg.v3_p59_security_closure.secrets_vault_contract` |  | RODO art. 32 (szyfrowanie, bezpieczeństwo); KKS art. 115-1 (... |
+| 459005 | `jdg.v3_p59_security_closure.secrets_vault_contract` |  | RODO art. 32; KKS art. 115-1 [NIEZWERYFIKOWANE — ISAP]; prom... |
+| 459005 | `jdg.v3_p59_security_closure.secrets_vault_contract` |  | RODO art. 32; KKS art. 115-1 [NIEZWERYFIKOWANE — ISAP]; prom... |
+| 459006 | `jdg.v3_p59_security_closure.ci_hardening_checklist` |  | P39 bramki CI; supply chain security; prompt P59 Sekcja 10-I... |
+| 459007 | `jdg.v3_p59_security_closure.build_attestation_verification` |  | P38 attestation (SLSA duch); P11 certyfikat; prompt P59 Sekc... |
+| 459008 | `jdg.v3_p59_security_closure.insider_threat_program` |  | Ustawa AML art. 2/48 (środki bezpieczeństwa) [NIEZWERYFIKOWA... |
+| 459008 | `jdg.v3_p59_security_closure.insider_threat_program` |  | Ustawa AML art. 2/48 [NIEZWERYFIKOWANE — ISAP]; prompt P59 S... |
+| 459009 | `jdg.v3_p59_security_closure.supply_chain_sbom` |  | supply chain security; P68 certyfikat; prompt P59 Sekcja 10-... |
+| 459009 | `jdg.v3_p59_security_closure.supply_chain_sbom` |  | supply chain security; prompt P59 Sekcja 10-I09 |
+| 459010 | `jdg.v3_p59_security_closure.security_chaos_drills` |  | RODO art. 32 (regularne testy); P43 chaos; prompt P59 Sekcja... |
+| 459011 | `jdg.v3_p59_security_closure.trust_boundary_map` |  | P63 RBAC; RODO art. 32; prompt P59 Sekcja 10-I11 |
+| 459012 | `jdg.v3_p59_security_closure.security_score_trend` |  | RODO art. 32 (ocena ryzyka); P58 obserwowalność; prompt P59 ... |
+
+### `rules/v3_p60_documentation_closure.rego` (19 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p60_documentation_closure.thresholds_missing` |  | V1 zasada 6 (fail-closed); ADR-002 parametry-as-data |
+| 1 | `jdg.v3_p60_documentation_closure.all_green` |  | UoR art. 4 ust. 4/74 [NIEZWERYFIKOWANE — ISAP]; P34/P36/P41/... |
+| 460001 | `jdg.v3_p60_documentation_closure.doc_truth_audit` |  | UoR art. 4 ust. 4 (dowody rzetelne i kompletne) [NIEZWERYFIK... |
+| 460001 | `jdg.v3_p60_documentation_closure.doc_truth_audit` |  | UoR art. 4 ust. 4 [NIEZWERYFIKOWANE — ISAP]; P34 L4; prompt ... |
+| 460002 | `jdg.v3_p60_documentation_closure.registry_snippets` |  | P36 generatory; P34 wykrywanie ręcznych liczb; prompt P60 Se... |
+| 460002 | `jdg.v3_p60_documentation_closure.registry_snippets` |  | P36 generatory; prompt P60 Sekcja 10-I02 |
+| 460003 | `jdg.v3_p60_documentation_closure.frontmatter_binding` |  | P41-I01 doc-code binding (bramka 6b); prompt P60 Sekcja 10-I... |
+| 460004 | `jdg.v3_p60_documentation_closure.ghost_documents` |  | P50 unikalność i jedno źródło prawdy; prompt P60 Sekcja 10-I... |
+| 460005 | `jdg.v3_p60_documentation_closure.role_reading_maps` |  | P41 dokumentacja enterprise; prompt P60 Sekcja 10-I05 |
+| 460006 | `jdg.v3_p60_documentation_closure.audit_export_pack` |  | UoR art. 74 (ochrona przed zniszczeniem) [NIEZWERYFIKOWANE —... |
+| 460006 | `jdg.v3_p60_documentation_closure.audit_export_pack` |  | UoR art. 74 [NIEZWERYFIKOWANE — ISAP]; P42 WORM; prompt P60 ... |
+| 460007 | `jdg.v3_p60_documentation_closure.doc_freshness` |  | P37/P58 obserwowalność (świeżość jako metryka); prompt P60 S... |
+| 460008 | `jdg.v3_p60_documentation_closure.holy_docs_protection` |  | V1/V2 nadrzędność (dokumenty święte); prompt P60 Sekcja 10-I... |
+| 460009 | `jdg.v3_p60_documentation_closure.examples_as_test` |  | P39 testy/CI; prompt P60 Sekcja 10-I09 |
+| 460009 | `jdg.v3_p60_documentation_closure.examples_as_test` |  | P39 testy/CI; prompt P60 Sekcja 10-I09 |
+| 460010 | `jdg.v3_p60_documentation_closure.glossary_enforcement` |  | P47 konwencja cytowań; glosariusz dokumentów świętych; promp... |
+| 460010 | `jdg.v3_p60_documentation_closure.glossary_enforcement` |  | P47 konwencja cytowań; prompt P60 Sekcja 10-I10 |
+| 460011 | `jdg.v3_p60_documentation_closure.plen_semantic_parity` |  | P41 PL/EN mirror; P48 duch anti-drift; prompt P60 Sekcja 10-... |
+| 460012 | `jdg.v3_p60_documentation_closure.role_coverage` |  | P41 dokumentacja enterprise; prompt P60 Sekcja 10-I12 |
+
+### `rules/v3_p61_integrations_closure.rego` (18 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p61_integrations_closure.thresholds_missing` |  | V1 zasada 6 (fail-closed); ADR-002 parametry-as-data |
+| 1 | `jdg.v3_p61_integrations_closure.all_green` |  | art. 106ne VAT (kolejka offline); art. 31a OP duch (kursy) [... |
+| 461001 | `jdg.v3_p61_integrations_closure.integration_standard_contract` |  | V1 control plane (kontrakty kanałów); prompt P61 Sekcja 10-I... |
+| 461002 | `jdg.v3_p61_integrations_closure.circuit_breaker` |  | P43 chaos (awaria testowana); P49-I05 breaker per domena; pr... |
+| 461003 | `jdg.v3_p61_integrations_closure.reference_data_provenance` |  | UoR art. 4 ust. 4 (dowody rzetelne) [NIEZWERYFIKOWANE — ISAP... |
+| 461004 | `jdg.v3_p61_integrations_closure.sandbox_replay_ci` |  | P39 testy/CI (stabilne, powtarzalne); prompt P61 Sekcja 10-I... |
+| 461005 | `jdg.v3_p61_integrations_closure.cache_provenance_ttl` |  | P58 świeżość na cachu; prompt P61 Sekcja 10-I05 |
+| 461005 | `jdg.v3_p61_integrations_closure.cache_provenance_ttl` |  | prompt P61 Sekcja 10-I05 |
+| 461006 | `jdg.v3_p61_integrations_closure.bank_reconciliation_contract` |  | P57-I07 bank reconciliation engine; prompt P61 Sekcja 10-I06 |
+| 461006 | `jdg.v3_p61_integrations_closure.bank_reconciliation_contract` |  | P57-I07; prompt P61 Sekcja 10-I06 |
+| 461007 | `jdg.v3_p61_integrations_closure.holiday_rate_path` |  | art. 31a Ordynacji podatkowej (duch) [NIEZWERYFIKOWANE — ISA... |
+| 461008 | `jdg.v3_p61_integrations_closure.integration_registry` |  | V1 rejestr kanałów; prompt P61 Sekcja 10-I08 |
+| 461009 | `jdg.v3_p61_integrations_closure.degradation_ladder` |  | P40 degradacja w odpowiedzi; P57 tryby offline; prompt P61 S... |
+| 461010 | `jdg.v3_p61_integrations_closure.outbox_pattern` |  | P54-I05 idempotent outbox; P57 kolejki; prompt P61 Sekcja 10... |
+| 461010 | `jdg.v3_p61_integrations_closure.outbox_pattern` |  | prompt P61 Sekcja 10-I10 |
+| 461011 | `jdg.v3_p61_integrations_closure.external_sla_monitoring` |  | P37/P58 SLO; prompt P61 Sekcja 10-I11 |
+| 461012 | `jdg.v3_p61_integrations_closure.integration_attestation` |  | P54-I12 attestation; P11 certyfikat (odtwarzalność); prompt ... |
+| 461012 | `jdg.v3_p61_integrations_closure.integration_attestation` |  | prompt P61 Sekcja 10-I12 |
+
+### `rules/v3_p62_cashflow_closure.rego` (17 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p62_cashflow_closure.thresholds_missing` |  | V1 zasada 6 (fail-closed); ADR-002 parametry-as-data |
+| 1 | `jdg.v3_p62_cashflow_closure.all_green` |  | OP art. 15/16/56 [NIEZWERYFIKOWANE — ISAP]; SUS art. 47–48 [... |
+| 462001 | `jdg.v3_p62_cashflow_closure.payment_rule_engine` |  | OP art. 15/16 (terminy płatnika) [NIEZWERYFIKOWANE — ISAP]; ... |
+| 462001 | `jdg.v3_p62_cashflow_closure.payment_rule_engine` |  | prompt P62 Sekcja 10-I01 |
+| 462002 | `jdg.v3_p62_cashflow_closure.idempotent_execution` |  | UoR art. 5 (zapisy odzwierciedlają wykonane operacje) [NIEZW... |
+| 462003 | `jdg.v3_p62_cashflow_closure.two_phase_payment` |  | P32-I03 two-phase close (wspólny wzorzec); prompt P62 Sekcja... |
+| 462004 | `jdg.v3_p62_cashflow_closure.cashflow_aware_schedule` |  | OP art. 16 (zaliczki — przepływy) [NIEZWERYFIKOWANE — ISAP];... |
+| 462005 | `jdg.v3_p62_cashflow_closure.interest_live_view` |  | OP art. 56 (odsetki od zaległości) [NIEZWERYFIKOWANE — ISAP]... |
+| 462006 | `jdg.v3_p62_cashflow_closure.reminder_ladder` |  | P19 drabina rat (wzorzec); prompt P62 Sekcja 10-I06 |
+| 462007 | `jdg.v3_p62_cashflow_closure.payment_archive_worm` |  | UoR art. 4 ust. 4 (dowody rzetelne) [NIEZWERYFIKOWANE — ISAP... |
+| 462008 | `jdg.v3_p62_cashflow_closure.failure_mode_playbook` |  | art. 106ne VAT (kolejka offline — duch) [NIEZWERYFIKOWANE — ... |
+| 462008 | `jdg.v3_p62_cashflow_closure.failure_mode_playbook` |  | prompt P62 Sekcja 10-I08 |
+| 462009 | `jdg.v3_p62_cashflow_closure.payment_duplication_ledger` |  | UoR art. 5 (pełność zapisów) [NIEZWERYFIKOWANE — ISAP]; P55/... |
+| 462009 | `jdg.v3_p62_cashflow_closure.payment_duplication_ledger` |  | prompt P62 Sekcja 10-I09 |
+| 462010 | `jdg.v3_p62_cashflow_closure.balance_guard` |  | P55-I08 priorytet ZUS (wstrzymanie auto-płatności przy zaleg... |
+| 462011 | `jdg.v3_p62_cashflow_closure.multibank_ready` |  | P57 izolacja tenantów (wzorzec); prompt P62 Sekcja 10-I11 |
+| 462012 | `jdg.v3_p62_cashflow_closure.cashflow_scenario_runner` |  | P33 digital twin (duch); prompt P62 Sekcja 10-I12 |
+
+### `rules/v3_p63_rbac_multitenant_closure.rego` (17 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p63_rbac_multitenant_closure.thresholds_missing` |  | V1 zasada 6 (fail-closed); ADR-002 parametry-as-data |
+| 1 | `jdg.v3_p63_rbac_multitenant_closure.all_green` |  | art. 5 ust. 1c/1f, art. 17, 19, 30, 32 RODO; art. 74 UoR [NI... |
+| 463001 | `jdg.v3_p63_rbac_multitenant_closure.rbac_as_data` |  | art. 5 ust. 1c RODO (minimalizacja) [NIEZWERYFIKOWANE — ISAP... |
+| 463001 | `jdg.v3_p63_rbac_multitenant_closure.rbac_as_data` |  | art. 5 ust. 1c RODO (minimalizacja) [NIEZWERYFIKOWANE — ISAP... |
+| 463002 | `jdg.v3_p63_rbac_multitenant_closure.separation_of_duties` |  | P44-I11 owner attestation (4-eyes biznesowe); P47-I10 human ... |
+| 463003 | `jdg.v3_p63_rbac_multitenant_closure.tenant_isolation` |  | art. 5 ust. 1f RODO (integralność i poufność) [NIEZWERYFIKOW... |
+| 463004 | `jdg.v3_p63_rbac_multitenant_closure.breakglass_review` |  | P58-I08 eskalacja (runbooki); prompt P63 Sekcja 10-I04 |
+| 463005 | `jdg.v3_p63_rbac_multitenant_closure.access_audit_analytics` |  | art. 30 RODO (rejestr czynności) [NIEZWERYFIKOWANE — ISAP]; ... |
+| 463005 | `jdg.v3_p63_rbac_multitenant_closure.access_audit_analytics` |  | prompt P63 Sekcja 10-I05 |
+| 463006 | `jdg.v3_p63_rbac_multitenant_closure.right_to_be_forgotten` |  | art. 17 i 19 RODO (usunięcie/powiadomienie) [NIEZWERYFIKOWAN... |
+| 463006 | `jdg.v3_p63_rbac_multitenant_closure.right_to_be_forgotten` |  | art. 74 UoR [NIEZWERYFIKOWANE — ISAP]; prompt P63 Sekcja 10-... |
+| 463007 | `jdg.v3_p63_rbac_multitenant_closure.per_tenant_quotas` |  | P57-I12 rate governor (fair use); prompt P63 Sekcja 10-I07 |
+| 463008 | `jdg.v3_p63_rbac_multitenant_closure.data_flow_map` |  | art. 30 RODO (rejestr kategorii przetwarzania) [NIEZWERYFIKO... |
+| 463009 | `jdg.v3_p63_rbac_multitenant_closure.pseudonymization_by_default` |  | art. 5 ust. 1c i art. 32 RODO [NIEZWERYFIKOWANE — ISAP]; P58... |
+| 463010 | `jdg.v3_p63_rbac_multitenant_closure.multitenant_schema_readiness` |  | P57-I11 izolacja (policy required); P25-I07 kalendarz per te... |
+| 463011 | `jdg.v3_p63_rbac_multitenant_closure.permission_drift_alarm` |  | P48-I04 anti-drift (wzorzec); prompt P63 Sekcja 10-I11 |
+| 463012 | `jdg.v3_p63_rbac_multitenant_closure.role_onboarding_pack` |  | P60-I05/I12 mapy rolowe (ścieżki czytania); prompt P63 Sekcj... |
+
+### `rules/v3_p64_luka_sweep.rego` (16 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p64_luka_sweep.thresholds_missing` |  | V1 zasada 6 (fail-closed); ADR-002 parametry-as-data |
+| 1 | `jdg.v3_p64_luka_sweep.all_green` |  | art. 193a OP; art. 4 ust. 1 UoR; art. 5 ust. 1d RODO; art. 3... |
+| 464001 | `jdg.v3_p64_luka_sweep.sweep_register_sla` |  | art. 4 ust. 1 UoR (sprawdzalność) [NIEZWERYFIKOWANE — ISAP];... |
+| 464002 | `jdg.v3_p64_luka_sweep.seven_cross_checks` |  | art. 193a OP (staranność weryfikacji) [NIEZWERYFIKOWANE — IS... |
+| 464003 | `jdg.v3_p64_luka_sweep.blindspot_taxonomy` |  | art. 32 RODO (przegląd okresowy systemu) [NIEZWERYFIKOWANE —... |
+| 464004 | `jdg.v3_p64_luka_sweep.ownerless_artifacts` |  | art. 5 ust. 1d RODO (prawidłowość — dane/reguły bez właścici... |
+| 464005 | `jdg.v3_p64_luka_sweep.second_pass_stability` |  | art. 193a OP (kompletność procesu weryfikacji) [NIEZWERYFIKO... |
+| 464005 | `jdg.v3_p64_luka_sweep.second_pass_stability` |  | prompt P64 Sekcja 10-I05 |
+| 464006 | `jdg.v3_p64_luka_sweep.declaration_vs_evidence` |  | art. 4 ust. 1 UoR (sprawdzalność) [NIEZWERYFIKOWANE — ISAP];... |
+| 464007 | `jdg.v3_p64_luka_sweep.residual_risk_score` |  | art. 56 KKS (redukcja ryzyka) [NIEZWERYFIKOWANE — ISAP]; pro... |
+| 464008 | `jdg.v3_p64_luka_sweep.cross_check_dashboard` |  | P37 obserwowalność; P58 metryki/trend; prompt P64 Sekcja 10-... |
+| 464009 | `jdg.v3_p64_luka_sweep.sweep_automation` |  | art. 32 RODO (przegląd okresowy) [NIEZWERYFIKOWANE — ISAP]; ... |
+| 464010 | `jdg.v3_p64_luka_sweep.handover_v4` |  | prompt P64 Sekcja 11.2 (kontrakt wyjściowy); prompt P64 Sekc... |
+| 464011 | `jdg.v3_p64_luka_sweep.sweep_of_sweeps` |  | art. 109e VAT (kompletność ewidencji) [NIEZWERYFIKOWANE — IS... |
+| 464011 | `jdg.v3_p64_luka_sweep.sweep_of_sweeps` |  | prompt P64 Sekcja 10-I11 |
+| 464012 | `jdg.v3_p64_luka_sweep.residual_report_format` |  | prompt P64 Sekcja 9.16 (T1–T12); prompt P64 Sekcja 10-I12 |
+
+### `rules/v3_p65_tool_forge.rego` (15 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p65_tool_forge.thresholds_missing` |  | V1 zasada 6 (fail-closed); ADR-002 parametry-as-data |
+| 1 | `jdg.v3_p65_tool_forge.all_green` |  | art. 119a OP; art. 4 ust. 1 UoR; art. 5 UoR; art. 109e VAT; ... |
+| 465001 | `jdg.v3_p65_tool_forge.tool_standard_contract` |  | art. 4 ust. 1 UoR (sprawdzalność) [NIEZWERYFIKOWANE — ISAP];... |
+| 465002 | `jdg.v3_p65_tool_forge.semantic_diff` |  | art. 9a PIT (spójność dokumentacji i ewidencji) [NIEZWERYFIK... |
+| 465003 | `jdg.v3_p65_tool_forge.rule_to_tests_generator` |  | art. 109e VAT (kompletność ewidencji) [NIEZWERYFIKOWANE — IS... |
+| 465004 | `jdg.v3_p65_tool_forge.cashflow_simulator` |  | art. 47 ustawy o ZUS (terminowość) [NIEZWERYFIKOWANE — ISAP]... |
+| 465005 | `jdg.v3_p65_tool_forge.temporal_simulator` |  | P05 temporalność; P53 sandbox temporalny; prompt P65 Sekcja ... |
+| 465006 | `jdg.v3_p65_tool_forge.rbac_validator` |  | art. 25 RODO (privacy by design) [NIEZWERYFIKOWANE — ISAP]; ... |
+| 465007 | `jdg.v3_p65_tool_forge.eval_benchmark` |  | P37 obserwowalność (SLO eval); prompt P65 Sekcja 10-I07 |
+| 465008 | `jdg.v3_p65_tool_forge.worm_tamper_tester` |  | art. 5 UoR (pierwotność dowodów) [NIEZWERYFIKOWANE — ISAP]; ... |
+| 465009 | `jdg.v3_p65_tool_forge.legal_chaos_suite` |  | P49 fail-closed domknięcie; art. 56 KKS (wczesna detekcja) [... |
+| 465009 | `jdg.v3_p65_tool_forge.legal_chaos_suite` |  | P49 fail-closed; AP07 cichy AUTO_POST; prompt P65 Sekcja 10-... |
+| 465010 | `jdg.v3_p65_tool_forge.composition_first` |  | protokół P65 pkt 08 (zakaz duplikacji); P50 dead code; promp... |
+| 465011 | `jdg.v3_p65_tool_forge.tool_adoption_metrics` |  | P50 dead code/duplikaty; P37 metryki; prompt P65 Sekcja 10-I... |
+| 465012 | `jdg.v3_p65_tool_forge.doc_generator` |  | P60 dokumentacja domknięcie (binding); prompt P65 Sekcja 10-... |
+
+### `rules/v3_p66_chaos_resilience.rego` (17 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p66_chaos_resilience.thresholds_missing` |  | V1 zasada 6 (fail-closed); ADR-002 parametry-as-data |
+| 1 | `jdg.v3_p66_chaos_resilience.all_green` |  | RODO art. 32 ust. 1 pkt d; UoR art. 4 ust. 1; VAT art. 109e;... |
+| 466001 | `jdg.v3_p66_chaos_resilience.steady_state_hypothesis` |  | RODO art. 32 ust. 1 pkt d [NIEZWERYFIKOWANE — ISAP]; P58 met... |
+| 466001 | `jdg.v3_p66_chaos_resilience.steady_state_hypothesis` |  | P58 metryki przed/po; prompt P66 Sekcja 10-I01 |
+| 466002 | `jdg.v3_p66_chaos_resilience.experiment_card_standard` |  | UoR art. 4 ust. 1 (rzetelność w warunkach awarii) [NIEZWERYF... |
+| 466003 | `jdg.v3_p66_chaos_resilience.dependency_chaos_matrix` |  | P61 integracje; SUS art. 47 (terminy) [NIEZWERYFIKOWANE — IS... |
+| 466004 | `jdg.v3_p66_chaos_resilience.kill_switch_experiments` |  | P07 kill-switch SLA (hot-reload < 1 s); prompt P66 Sekcja 10... |
+| 466004 | `jdg.v3_p66_chaos_resilience.kill_switch_experiments` |  | P07 kill-switch SLA; prompt P66 Sekcja 10-I04 |
+| 466005 | `jdg.v3_p66_chaos_resilience.chaos_day_calendar` |  | P39 CI; prompt P66 Sekcja 10-I05 |
+| 466006 | `jdg.v3_p66_chaos_resilience.auto_rollback_experiments` |  | P38 bundle deploy (auto-rollback); UoR art. 4 ust. 1 [NIEZWE... |
+| 466007 | `jdg.v3_p66_chaos_resilience.chaos_maturity_ladder` |  | prompt P66 Sekcja 10-I07 |
+| 466008 | `jdg.v3_p66_chaos_resilience.failure_injection_as_data` |  | ADR-002 parametry-as-data; prompt P66 Sekcja 10-I08 |
+| 466009 | `jdg.v3_p66_chaos_resilience.chaos_findings_to_repairs` |  | AP07 cichy AUTO_POST; P64 rejestr rezydualny; prompt P66 Sek... |
+| 466009 | `jdg.v3_p66_chaos_resilience.chaos_findings_to_repairs` |  | P64 kontrakt K1 (rejestr z SLA); prompt P66 Sekcja 10-I09 |
+| 466010 | `jdg.v3_p66_chaos_resilience.resilience_trend` |  | P58 metryki; RODO art. 32 (skuteczność środków) [NIEZWERYFIK... |
+| 466011 | `jdg.v3_p66_chaos_resilience.peak_time_chaos` |  | VAT art. 109e (kompletność w warunkach awaryjnych) [NIEZWERY... |
+| 466012 | `jdg.v3_p66_chaos_resilience.game_day_pack` |  | KKS art. 56 (staranność) [NIEZWERYFIKOWANE — ISAP]; prompt P... |
+
+### `rules/v3_p67_self_learning.rego` (2 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p67_self_learning.thresholds_missing` |  | V1 zasada 6 (fail-closed); ADR-002 parametry-as-data |
+| 1 | `jdg.v3_p67_self_learning.all_green` |  | RODO art. 22 i art. 13 ust. 2 lit. f; AI Act (nadzór człowie... |
+
+### `rules/v3_p68_recertification_final.rego` (19 reguł)
+
+| Priorytet | Rule ID | Routing | Podstawa prawna |
+|:---------:|---------|:-------:|----------------|
+| 0 | `jdg.v3_p68_recertification_final.thresholds_missing` |  | V1 zasada 6 (fail-closed); ADR-002 parametry-as-data |
+| 1 | `jdg.v3_p68_recertification_final.all_green` |  | OP art. 199a; UoR art. 4 ust. 1, 74–75; RODO art. 5.2, 24, 3... |
+| 468001 | `jdg.v3_p68_recertification_final.hard_gate_certificate` |  | prompt P68 Sekcja 2 (hard gates); P49 fail-closed; UoR art. ... |
+| 468002 | `jdg.v3_p68_recertification_final.register_settlement` |  | prompt P68 Sekcja 10-I02; P64 sweep; RODO art. 5.2 (rozlicza... |
+| 468003 | `jdg.v3_p68_recertification_final.pillar_scoreboard` |  | prompt P68 Sekcja 10-I03; README V3 definicja sukcesu |
+| 468003 | `jdg.v3_p68_recertification_final.pillar_scoreboard` |  | prompt P68 Sekcja 10-I03/I11 (truth-first) |
+| 468004 | `jdg.v3_p68_recertification_final.residual_v4_map` |  | prompt P68 Sekcja 10-I04; P64 handover V4 C1–C4 |
+| 468004 | `jdg.v3_p68_recertification_final.residual_v4_map` |  | prompt P68 Sekcja 10-I04; P64 kontrakt C1 |
+| 468005 | `jdg.v3_p68_recertification_final.success_metric_freeze` |  | prompt P68 Sekcja 10-I05; P58 wspólne źródło |
+| 468006 | `jdg.v3_p68_recertification_final.certificate_worm_signature` |  | eIDAS (integralność) [NIEZWERYFIKOWANE — ISAP]; UoR art. 74–... |
+| 468006 | `jdg.v3_p68_recertification_final.certificate_worm_signature` |  | eIDAS [NIEZWERYFIKOWANE — ISAP]; prompt P68 Sekcja 10-I06 |
+| 468007 | `jdg.v3_p68_recertification_final.renewal_policy` |  | prompt P68 Sekcja 10-I07; P53 epoki; P38 deploy |
+| 468007 | `jdg.v3_p68_recertification_final.renewal_policy` |  | prompt P68 Sekcja 10-I07; P53; P38 |
+| 468008 | `jdg.v3_p68_recertification_final.owner_attestation` |  | prompt P68 Sekcja 10-I08; RODO art. 24 (odpowiedzialność) [N... |
+| 468009 | `jdg.v3_p68_recertification_final.knowledge_transfer_pack` |  | prompt P68 Sekcja 10-I09; P60 dokumentacja |
+| 468010 | `jdg.v3_p68_recertification_final.fortress_self_portrait` |  | prompt P68 Sekcja 10-I10; P00 mapa kanoniczna (aktualizacja) |
+| 468010 | `jdg.v3_p68_recertification_final.fortress_self_portrait` |  | prompt P68 Sekcja 10-I10 |
+| 468011 | `jdg.v3_p68_recertification_final.truth_first_integrity` |  | prompt P68 Sekcja 10-I11; protokół 06 (dowód > deklaracja) |
+| 468012 | `jdg.v3_p68_recertification_final.campaign_post_mortem` |  | prompt P68 Sekcja 10-I12; P67 pętla uczenia (proces jako obi... |
+
 ### `rules/validation.rego` (8 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
@@ -14194,7 +14811,7 @@
 | 240 | `jdg.vat.procedures.empty_invoice_sanction` | 🔴 BLOCK | Art. 108a ust. 5, Art. 109 ust. 5b VAT, Art. 62 KKS |
 | 241 | `jdg.vat.procedures.vat_ue_correction` | 🟡 TRIAGE | Art. 100 ust. 4-5 VAT |
 
-### `rules/vat/substantive.rego` (62 reguł)
+### `rules/vat/substantive.rego` (63 reguł)
 
 | Priorytet | Rule ID | Routing | Podstawa prawna |
 |:---------:|---------|:-------:|----------------|
@@ -14257,6 +14874,7 @@
 | 140 | `jdg.vat.substantive.vat_account_restriction` | 🔴 BLOCK | Art. 108a ust. 4 VAT |
 | 141 | `jdg.vat.substantive.exemption_loss_2_years` | 🔴 BLOCK | Art. 113 ust. 14 VAT |
 | 142 | `jdg.vat.substantive.nkup_mpp_breach` | 🔴 BLOCK | Art. 108a ust. 7 VAT w zw. z Art. 22p PIT |
+| 143 | `jdg.vat.substantive.voluntary_waiver_vatr` | 🟡 TRIAGE | Art. 44 ustawy o VAT |
 | 143 | `jdg.vat.substantive.mpp_prepayment_check` |  | Art. 108a VAT (zaliczka podlega MPP tak samo jak płatność ko... |
 | 998 | `jdg.vat.substantive.a113_limit_monitor` |  | Art. 113 ust. 1, 5 i 9 VAT |
 | 999 | `jdg.vat.substantive.taxable_person_jdg_v04` |  | Art. 15 ust. 1 VAT |
@@ -14574,5 +15192,5 @@
 | 570 | `jdg.zus_micro_etap13.report` |  | SUS art. 6-47; u.ś.o.z. art. 79-82; ustawa zasiłkowa art. 4-... |
 
 ---
-*Wygenerowano automatycznie — 2026-08-30 09:53:06*
+*Wygenerowano automatycznie — 2026-09-19 16:54:59*
 *Generator v8.0 — `python JDG/tools/generate_manifest.py`*

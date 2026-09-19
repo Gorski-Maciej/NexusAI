@@ -2,7 +2,7 @@
 artifacts: [docs/WIZJA_OPA_ENTERPRISE_V2.md]
 status: ACTIVE
 owner: legal
-verified: 2026-09-13
+verified: 2026-09-19
 verify_cmd: python3 tools/v3_p60_engines.py I08
 -->
 
@@ -42,11 +42,11 @@ Wizja V2 powstała z trzech źródeł:
 
 ### 1.1. Analiza dokumentacji JDG (ARCHITEKTURA.md + ANALIZA_STANU_OPA_JAKO_SYSTEM.md)
 
-**Stan obecny (potwierdzony):** orkiestrator `main_jdg.rego` z Multi-Pass (PASS 0–8) i Sharded Routerem (ADR-009, routing O(1), 4 ścieżki); werdykt 25-polowy (ADR-004); `safe_merge` z allowlistą niemutowalną (ZUS/business); temporalność z time-travel (ADR-003); zero-hardcode częściowo (ADR-002, ~265 wartości do migracji); cykl życia reguły SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK (rule_lifecycle_manager.py, hot-reload przez `data.jdg.rule_registry` — bez restartu); pipeline jakości 8 bramek (P22); 15 workflow CI; 9 tabel RuleStore (w tym `jdg_legal_cartography` — **zalążek F1**).
+**Stan obecny (potwierdzony; pomiar 2026-08-30, zaktualizowano 2026-09-19):** orkiestrator `main_jdg.rego` z Multi-Pass (PASS 0–8) i Sharded Routerem (ADR-009, routing O(1), 4 ścieżki); werdykt 25-polowy (ADR-004); `safe_merge` z allowlistą niemutowalną (ZUS/business); temporalność z time-travel (ADR-003); zero-hardcode częściowo (ADR-002, ~265 wartości do migracji); cyklu życia reguły SHADOW→CANDIDATE→ACTIVE→ROLLED_BACK (rule_lifecycle_manager.py, hot-reload przez `data.jdg.rule_registry` — bez restartu); pipeline jakości 8 bramek (P22); 15 workflow CI; RuleStore **58 tabel** (CREATE TABLE w migracjach 001–013; w tym `jdg_legal_cartography` — **zalążek F1**).
 
 **Główne luki (za ANALIZA_STANU):**
 - **L1:** brak realnego control plane (podpis, delta, kanary jako infrastruktura — dziś głównie reguły audytujące);
-- **L2 (rozwiązane 2026-08-30):** niespójne metryki między dokumentami (439 vs 383 vs 176 plików; 11 452 vs 10 878 rule_id) — brak autorytatywnego rejestru; obecnie spójne: 490 plików / 11 855 rule_id (MANIFEST regenerowany);
+- **L2 (rozwiązane 2026-08-30):** niespójne metryki między dokumentami (439 vs 383 vs 176 plików; 11 452 vs 10 878 rule_id) — brak autorytatywnego rejestru; obecnie spójne: 543 plików / 12 111 rule_id (MANIFEST regenerowany 2026-09-19);
 - **L3 (rozwiązane 2026-08-22):** 369 duplikatów / 512 stubów — brak automatycznej blokady; obecnie 3 duplikaty / 25 stubów, blokada CI aktywna (dead_rule_detector, tautology_guard);
 - **L4:** zero-hardcode tylko ~60%;
 - **L6/L8/L9:** brak DR/BCP, modelu ról operatorów, łańcucha traceability;
@@ -272,7 +272,7 @@ V1 opisała control plane; V2 **konkretyzuje go w mechanizmach OPA** (z research
 | **Progressive delivery** | canary 5% → shadow-compare → ramped 25/50/100 → soak 24 h → auto-rollback ≤ 5 min | orchestrator rolloutów (nie reguła!) |
 | **Policy Registry API** | `/v1/rules` — katalog, wersje, metadane, owner, status; searchable; podpięty do rule_registry.json | rozbudowa `rule_lifecycle_manager.py` do usługi |
 
-**Manifest 2.0 (rozwiązanie L2):** jeden autorytatywny manifest (reguły, rule_id, testy, parametry, węzły LKG, metryki), regenerowany w CI; każda rozbieżność między dokumentami/artefaktami = **blokada CI** (nie alert). To usuwa klasę problemów „439 vs 383 vs 176" — aktualny stan: 490 plików / 11 855 rule_id (MANIFEST 2026-08-30).
+**Manifest 2.0 (rozwiązanie L2):** jeden autorytatywny manifest (reguły, rule_id, testy, parametry, węzły LKG, metryki), regenerowany w CI; każda rozbieżność między dokumentami/artefaktami = **blokada CI** (nie alert). To usuwa klasę problemów „439 vs 383 vs 176" — aktualny stan: 543 plików / 12 111 rule_id (MANIFEST 2026-09-19).
 
 ---
 
@@ -378,7 +378,7 @@ Zasada graniczna V1 pozostaje: **decyzja ewaluacyjna zawsze w deterministycznym 
 | Prostota zmiany | manifest 8 pól + pipeline | **declarative change: człowiek opisuje, maszyna wykonuje; szablony domenowe** |
 | Control plane | opisany (bundle server, kanary) | **konkretne mechanizmy OPA: sign, persist, discovery, status, delta, Data API** |
 | Metryki | SLO operacyjne | **+ Indeksy Pewności (LCI, TCL, RV, UVR) i dashboard „Pewność"** |
-| Baza danych | 9 tabel (w tym `jdg_legal_cartography`) | **ewolucja cartography → `legal_graph` (LKG) + nowe: `invariants`, `golden_verdicts`, `decision_certificates`, `draft_law_radar`** (migracje 003+) |
+| Baza danych | 58 tabel w 13 migracjach (w tym `jdg_legal_cartography`) | **ewolucja cartography → `legal_graph` (LKG) + nowe: `invariants`, `golden_verdicts`, `decision_certificates`, `draft_law_radar`** (migracje 003+) |
 
 ---
 

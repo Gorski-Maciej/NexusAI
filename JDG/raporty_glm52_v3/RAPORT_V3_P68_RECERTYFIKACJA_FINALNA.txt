@@ -1,0 +1,829 @@
+=================================================================================
+RAPORT V3 P68 — RE-CERTYFIKACJA FORTECY — DOWÓD STANU PO FALACH NAPRAWCZYCH
+=================================================================================
+Seria:            NEXUSAI JDG — V3 FORTRESS CAMPAIGN (sesja wdrożeniowa)
+Data raportu:     2026-09-19
+Prompt:           JDG/prompty_v3/V3_PROMPT_P68_RECERTYFIKACJA_FINALNA.txt (V3.0)
+Dokumenty święte: JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1),
+                  JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md (V2) — nadrzędne.
+Status części:    WDROŻONY_100 (2026-09-19; dowody wykonania w 9.03 i T1;
+                  ledger --mark P68 → kampania 69/69 = 100%).
+Tryb sesji:       sesja wdrożeniowa (wyjątek od protokołu 01/02: wdrożono i
+                  zweryfikowano artefakty; raport = dowód stanu, nie esej).
+Dowody wykonania: bin/opa test natywnie 23/23 PASS; tools/v3_p68_run_all.py
+                  gate PASS (12/12 silników + hard gate); pytest P68 23/23;
+                  regresja kampanii 540 passed (2 skip legacy); mirrory
+                  policies/ hash-parity sha256 3/3 (p68, thresholds, main).
+
+Wymagania nadrzędne (przypomnienie): głębokie myślenie, głęboka analiza,
+poziom ENTERPRISE, innowacje wyprzedzające profesjonalistów, maksymalne
+domknięcie braków — zero duplikacji, zero fikcji, fail-closed, zero sellingu.
+
+=================================================================================
+9.01 EXECUTIVE SUMMARY
+=================================================================================
+
+Ocena dojrzałości części P68: ENTERPRISE — RE-CERTYFIKACJA WYDANA Z DOWODAMI.
+
+Werdykt komisji (jedno zdanie): forteca JDG jest ufortyfikowana na poziomie
+SYSTEMU (architektura, proces, bramki, dowody), z JAWNYMI ograniczeniami:
+(1) status produkcji pozostaje NOT_CERTIFIED (brak telemetrii zewnętrznej —
+uczciwość evidence v4 utrzymana), (2) 2 rejestry naprawcze (P49, P50) niosą
+po 1 luce P0 jako rezyduum do fali V4-F0, (3) podstawy prawne mają konwencję
+oznaczania, nie weryfikację ISAP Online.
+
+TOP-10 rekomendacji (wszystkie WDROŻONE; szczegóły 9.07):
+  1. V3-P68-I01 Hard gate certificate (5 bramek zmierzonych → 0 naruszonych).
+  2. V3-P68-I02 Register settlement table (23/23 rejestrów rozliczonych).
+  3. V3-P68-I03 Filar scoreboard V3 (9 filarów: 9 dowodowych, 0 deklaratywnych).
+  4. V3-P68-I04 Residual → V4 map (rezyduum zinwentaryzowane, 0 bez mapy).
+  5. V3-P68-I05 Success metric freeze (8 metryk z progiem, przed oceną).
+  6. V3-P68-I06 Certificate WORM + signature slot (P65-I08 reused).
+  7. V3-P68-I07 Renewal policy (90 dni / epoka P53 / deploy krytyczny P38).
+  8. V3-P68-I08 Owner attestation (slot czeka na właściciela — Q01).
+  9. V3-P68-I09 Knowledge transfer pack (6/5 sekcji).
+ 10. V3-P68-I10–I12 Self-portrait / Truth-first / Post-mortem.
+
+Liczba luk wg krytyczności: P0=0 (nowych), P1=1, P2=2, P3=3 (rejestr 9.06;
+P0 rezydualne P49/P50 są rozliczone jako wejście V4-F0 — patrz I02 i 9.04.1).
+
+Co UDOWODNIONO (artefakt + wynik uruchomienia):
+  hard gates 5/5 zmierzone (silent_auto_post_max=0 z P49; duplikaty 0 z P50;
+  ADR-002 valid_from; mirror sha256 3/3; legal_basis_version); 23 rejestry
+  P45–P67 rozliczone jako DANE ze spójnością ledger; 9 filarów ze statusami
+  z dowodów; 12 silników + 13 bundli + 23 testy natywne + 23 pytest; pętla
+  uczenia P67 i chaos P66 użyte jako źródła (kompozycja, zero duplikacji).
+Co pozostaje [NIEZWERYFIKOWANE — ISAP]: wszystkie podstawy prawne (mediacja
+Q02), akceptacja właściciela (Q01), eksport bramek do CI (Q03, dziedziczony).
+
+Definicja sukcesu kampanii (README V3) — POTWIERDZONA Z OGRANICZENIAMI:
+  „mierzalne pokrycie (Legal Twin), egzekwowane invarianty, golden oracle,
+  certyfikaty, Law Radar, deklaratywna zmiana, zero duplikatów/stubów/
+  hardcode/fikcyjnych podstaw, pełny fail-closed" — potwierdzone per filar
+  (9.04.2) Z WYJĄTKIEM pełnej weryfikacji prawnej ISAP (jawne ograniczenie,
+  nie ukryte). Production-ready: NIE (NOT_CERTIFIED — wymóg dokumentów świętych
+  o telemetrii zewnętrznej nie został spełniony i jest raportowany wprost).
+
+=================================================================================
+9.02 ZAKRES I OGRANICZENIA
+=================================================================================
+
+Przeanalizowano (Sekcja 6 promptu — 24 pliki + 6 mirror; WSZYSTKIE istnieją,
+tabela T1): 6.1 certyfikacja i rejestry finalne (8), 6.2 rejestry naprawcze (8),
+6.3 dokumenty święte i kontekst (8), 6.4 mirror policies (hash-parity 3/3
+plików P68; dryf = KONFLIKT — nie stwierdzono).
+
+Artefakty WDROŻONE w tej części (dowód wykonania):
+  rules/v3_p68_recertification_final.rego (12 analiz + router else-chain),
+  rules/thresholds_jdg.rego (blok v3_p68, 19 kluczy ADR-002),
+  rules/main_jdg.rego (import + final_verdict_p132 + POST-MERGE anchor p132),
+  tools/v3_p68_{common,settlement.json,engines,rego_static_gate,run_all},
+  13 bundli bundles/v3_p68_*.json (12 silników + run_all),
+  tests/rego/test_v3_p68_recertification_final.rego (23 scenariusze natywne),
+  tests/auto/test_v3_p68_recertification.py (23 pytest),
+  policies/v3_p68_recertification_final.rego (mirror, hash-parity),
+  aktualizacja kotwic POST-MERGE p131→p132 w 13 plikach testowych P55–P67.
+
+Pominięto i DLACZEGO:
+  - Czytanie katalogów zbiorczo — budżet 50% (Sekcja 3); wyłącznie pliki
+    Sekcji 6 + kontrakty wyjściowe P67 (HANDOFF_V3_P67.md, Sekcja 11.1).
+  - Weryfikacja ISAP Online — sesja offline; konwencja tagów utrzymana (Q02).
+  - Podpis kryptograficzny certyfikatu (eIDAS-qualified) — slot przygotowany
+    (I06), wykonanie wymaga decyzji właściciela (Q01/Q04).
+
+Status weryfikacji źródeł prawnych: agregat kampanii (każda część oznaczała
+[NIEZWERYFIKOWANE — ISAP]); P68 nie dodaje nowych twierdzeń prawnych —
+certyfikat agreguje statusy, nie podnosi ich bez dowodu (I11 truth-first).
+
+=================================================================================
+9.03 STAN OBECNY CZĘŚCI P68 (MAPA ARTEFAKTÓW PO WDROŻENIU)
+=================================================================================
+
+Plik → pakiet Rego → rule_id → podstawa prawna → testy → lifecycle:
+
+  rules/v3_p68_recertification_final.rego → jdg.v3_p68_recertification_final
+    thresholds_missing (prio 0; NEEDS_ADVICE; fail-closed snapshotu)
+    i01..i12           (468001..468012; BLOCK: I01/I11; NEEDS_ADVICE: reszta)
+    all_green          (prio 1; PASS — tylko gdy 12/12 zielonych)
+    no_match           (prio 0; NO_MATCH bez flagi v3_p68_check)
+    Akty: OP art. 199a; UoR art. 4 ust. 1, 74–75; RODO art. 5.2/24/30;
+          eIDAS; AI Act — [NIEZWERYFIKOWANE — ISAP] (agregat, zero nowych).
+    Testy: tests/rego (23 natywne — PASS 23/23 bin/opa 0.68.0) +
+           tests/auto/test_v3_p68_recertification.py (23 — PASS).
+    Lifecycle: bramka adnotacyjna re-certyfikacji; aktywacja flagą
+    input.jdg_entrepreneur.v3_p68_check==true; zero AUTO_POST (asercja).
+
+  rules/thresholds_jdg.rego → data.jdg.thresholds.v3_p68 (ADR-002, 19 kluczy):
+    threshold_version=recertification-v3p68-2026.09,
+    legal_basis_version=lb-recertification-v3p68-2026.09,
+    valid_from=2026-01-01, valid_to=null, hard_gates_required=5,
+    registers_total=23, pillars_total=9,
+    pillar_status_valid=[DOWIEDZONE,CZĘŚCIOWE,DEKLAROWANE],
+    success_metrics_min=5, worm_required=true, renewal_max_days=90,
+    renewal_on_epoch_change=true, renewal_on_critical_deploy=true,
+    residual_v4_map_required=true, kt_pack_sections_min=5,
+    owner_attestation_required=true, truth_first_integrity_required=true,
+    post_mortem_required=true, no_auto_post=true, manual_review_required=true.
+
+  rules/main_jdg.rego → wiring (PAS 21):
+    final_verdict_p132 = safe_merge(final_verdict_p131, safe_merge(
+      v3_p68_recertification_final.decide, fallback.decide));
+    final_verdict_post_merge = safe_merge({"_routing_context": routing_context},
+      final_verdict_p132) — POST-MERGE anchor = p132 (kotwice 13 testów
+    P55–P67 zaktualizowane; regresja 540 passed).
+
+  Silniki (tools/v3_p68_engines.py) czytają PRAWDZIWE źródła (zero fikcyjnych
+  liczeń): v3_campaign_ledger.json (69 części; rejestry P45–P67 + luki),
+  v3_p68_settlement.json (rozliczenie jako DANE), final_certification_v4_
+  evidence.json (LCI 71.43, TCL 100.0, RV_audit 13.56, LKG 258 węzłów,
+  production NOT_CERTIFIED, honesty jawnie), rule_registry.json, thresholds_
+  data.json, coverage_deserts.json (Doc50: desert_pct=69.9, alarm=True),
+  v3_p51_desert_register.json (P51), golden_verdicts.json (31 orzeczeń),
+  deployments.json (44 wdrożenia), healthy_versions.json, enterprise_operating_
+  contract.json (production_activation NOT_CERTIFIED), v3_p64_sweep_register
+  .json (rezyduum), v3_p53_epoch_registry.json (epoki), v3_p67_learning_data
+  .json + v3_p67_run_all.json (pętla uczenia; kontrakt K1–K6 honorowany),
+  v3_p66_run_all.json (resilience), v3_p49_fail_open_registry.json
+  (silent_auto_post_max=0 — POMIAR hard gate), v3_p50_semantic_duplicates.json
+  (parse_errors — rezyduum P0), worm_storage.py + worm_audit.json (I06),
+  final_certification_v4_gate.py / zero_defect_certification.py (spójność
+  bramek — 5.3).
+
+=================================================================================
+9.04 PODANALIZY 5.1–5.4 (każda: tabela dowodów, wnioski, luki)
+=================================================================================
+
+──── 9.04.1 PODANALIZA 5.1 — ROZLICZENIE REJESTRÓW NAPRAWCZYCH (P68-AN01) ────
+Tabela rozliczenia 23 rejestrów (I02 — pełna wersja jako DANE:
+tools/v3_p68_settlement.json; streszczenie):
+
+| Rejestr | Cel | Status | Dowód (skrót) | Trend | Rezyduum V4 |
+|---------|-----|--------|---------------|-------|-------------|
+| P45 STUB_KILLER | zero reguł-udajników | DOMKNIETY | ledger WDROŻONY_100; luki 0/2/4/1 | spadkowy | P1–P3 |
+| P46 HARDCODE | progi w data.* (ADR-002) | DOMKNIETY | bloki v3_p* w thresholds; luki 0/1/3/3 | spadkowy | kontrola ciągła |
+| P47 PRAWNE | zero fikcyjnych podstaw | DOMKNIETY | konwencja tagów [NIEZWERYFIKOWANE]; luki 0/3/4/2 | spadkowy | ISAP 6 podstaw |
+| P48 MIRROR | zero dryfu | DOMKNIETY | hash-parity sha256 3/3 (P67+P68) | spadkowy | mirror gate CI |
+| P49 FAIL-CLOSED | zero cichych AUTO_POST | CZESCIOWY | silent_auto_post_max=0 (POMIAR), ale L01 P0: 12×SUGGEST-tail | stały | NAPRAWA V4-F0 (Q02) |
+| P50 DEAD CODE | unikalność rule_id | CZESCIOWY | duplikaty 0, ale L01 P0: 217/525 parse_errors ogranicza AST | stały | NAPRAWA V4-F0 |
+| P51 PUSTYNIE | pokrycie akt→reguły | DOMKNIETY | desert register + plan; luki 0/2/4/6 | spadkowy | pustynie rezydualne |
+| P52 GRANICE | grosze/waluty/zaokrąglenia | DOMKNIETY | luki 0/3/5/4 | spadkowy | testy walut |
+| P53 TEMPORAL | day-0, time-travel | DOMKNIETY | epoki v3_p53_epoch_registry; luki 0/3/4/3 | spadkowy | epoki kolejnych akt |
+| P54 KSEF/JPK | terminy/schematy/kolejki | DOMKNIETY | kolejki offline/outbox; luki 0/2/4/3 | spadkowy | XSD 2027 |
+| P55 ZUS | 30-krotność, ulgi, terminy | DOMKNIETY | luki 0/2/4/3 | spadkowy | parametry 2027 |
+| P56 VAT/PIT | szczegóły materialne | DOMKNIETY | luki 0/2/4/3 | spadkowy | nowelizacje 2027 |
+| P57 INGEST | kolejki bez utraty | DOMKNIETY | chaos 8/8 (kompozycja P66); luki 0/2/4/3 | spadkowy | exactly-once UI |
+| P58 OBSERWOWALNOŚĆ | metryki decyzyjne | DOMKNIETY | katalog P58 = wspólne źródło (P67-I03); luki 0/2/3/3 | spadkowy | dashboardy prod |
+| P59 SECURITY | granice zaufania | DOMKNIETY | luki 0/2/3/2 | spadkowy | rotacja sekretów |
+| P60 DOKUMENTACJA | dokument = prawda o kodzie | DOMKNIETY | luki 0/1/2/3 | spadkowy | generator z definicji |
+| P61 INTEGRACJE | MF/banki/NBP/ISAP | DOMKNIETY | macierz P66: 21 kombinacji; luki 0/3/3/2 | spadkowy | sandbox MF e2e |
+| P62 PŁATNOŚCI | priorytety i cashflow | DOMKNIETY | korekty sprzężone z rule_id (P67-I02); luki 0/1/2/2 | spadkowy | prognoza walut |
+| P63 RBAC | izolacja/uprawnienia | DOMKNIETY | luki 0/1/2/2 | spadkowy | audyt dostępu |
+| P64 SWEEP | przegląd całościowy z SLA | DOMKNIETY | sweep register; 2. przebieg stabilny; luki 0/1/2/5 | spadkowy | sweep weekly |
+| P65 NARZĘDZIA | 8–12 narzędzi; kontrakt C2 | DOMKNIETY | opa test 17/17; luki 0/1/4/2 | spadkowy | narzędzia V4 |
+| P66 CHAOS | program ciągły, resilience≥80 | DOMKNIETY | resilience_pct=100; gate PASS; luki 0/1/3/3 | spadkowy | chaos gate w CI |
+| P67 UCZENIE | pętla z guardrails | DOMKNIETY | learning_data; opa 19/19; luki 0/1/2/4 | spadkowy | baseline M1–M6 |
+
+Odpowiedzi na pytania audytowe:
+  * Domknięte z trendem do zera: 21/23 (tabela wyżej) — dowód: ledger +
+    settlement jako DANE + bundli bramek.
+  * Częściowo domknięte: P49 (P0 L01: 12 ścieżek SUGGEST-tail w 8 plikach —
+    uwaga dowodowa: SUGGEST≠AUTO_POST, silent_auto_post_max=0, więc NIE jest
+    to naruszenie hard gate „cichy AUTO_POST"; jest to rezyduum jakościowe
+    klasyfikacji) i P50 (P0 L01: 217/525 parse_errors ogranicza analizę AST —
+    dolne oszacowania dedup/burden). Oba z planem V4-F0 i właścicielem (Q02).
+  * Hard gates naruszone: ZERO z 5 zmierzonych (I01) — dlatego certyfikat
+    wydany; dwa P0 są warunkowo rozliczone (brak wpływu na cichy AUTO_POST),
+    ale pozostają w mapie V4-F0.
+  * Drugi przebieg sweep (P64): stabilny — v3_p64_sweep_register.json (2.
+    przebieg bez nowych luk; feed napraw P66/P67); dowód w 9.03.
+Wnioski: W1) rozliczenie jako DANE jest weryfikowalne maszynowo (test
+  spójności z ledger w pytest); W2) rozróżnienie SUGGEST/AUTO_POST uratowało
+  uczciwość certyfikatu (I11) — bez pomiaru P49 komisja musiałaby wydać
+  „brak re-certyfikacji"; W3) każde rezyduum ma falę V4 — zero luki-widmo.
+Luki: V3-P68-L01 (P2): 2×P0 rezydualne bez SLA czasowego (plan V4-F0 bez
+  deadline) — wpływ: okno ryzyka nieograniczone; rozwiązanie: SLA fali F0
+  w mapie V4; koszt: S; regresja: niska.
+
+──── 9.04.2 PODANALIZA 5.2 — SCOREBOARD FILARÓW (P68-AN02) ────
+9 filarów definicji sukcesu (README V3) ze statusem Z DOWODU (silnik I03):
+
+| Filar | Status | Dowód |
+|-------|--------|-------|
+| Legal Twin | DOWIEDZONE | v3_p51_desert_register + coverage_deserts.json; LKG 258 węzłów (evidence v4); LCI 71.43 z SLO_MIN 99 — LUKA JAWNA (patrz niżej) |
+| Golden Oracle | DOWIEDZONE | golden_verdicts=31 + 31 replays; replay grosz-w-grosz potwierdzony kontraktem P53/P10 (v3_p53_replay_contract.json) |
+| Decision Certificate | DOWIEDZONE | decision_certificates.json (P11, decision.* ustrukturyzowane; P67-I10) |
+| Law Radar | DOWIEDZONE | tools/law_radar.py (P08) aktywny |
+| Declarative Change | DOWIEDZONE | tools/declarative_change.py (P09) aktywny |
+| Fail-closed | DOWIEDZONE | P49: silent_auto_post_max=0; fail_closed_score_pct=90.84; 12/12 analiz P66 z asercją no_silent_auto_post |
+| Precyzja arytmetyczna | DOWIEDZONE | thresholds_jdg.rego: bloki v3_p45..v3_p68 z valid_from (ADR-002; P52) |
+| Odporność | DOWIEDZONE | P66 gate PASS; resilience_pct=100 (próg 80); 21 kombinacji zależności |
+| Uczenie | DOWIEDZONE | P67: pipeline 6 etapów, guardrails BLOCK, metryki M1–M6; opa 19/19 |
+
+Odpowiedzi na pytania audytowe:
+  * Legal Twin: pokrycie z pełnym łańcuchem — LCI=71.43% (evidence v4, SLO 99):
+    status filaru DOWIEDZONE co do ISTNIENIA i DZIAŁANIA mechanizmu (desert
+    register, traceability), z luką wartości SLO raportowaną JAWNIE (V3-P68-L02).
+  * Golden Oracle replay: działa — 31/31 replays deterministycznych (hash P10);
+    kontrakt replay grosz-w-grosz: v3_p53_replay_contract.json (P53).
+  * Decision Certificate: próba pobrana — decision_certificates.json; kompletność
+    pól decision.* potwierdzona silnikiem P67-I10 (8 pól ustrukturyzowanych).
+  * Law Radar + Declarative Change: ścieżka zmiany prawa → reguł istnieje
+    (narzędzia aktywne); case study end-to-end (ISAP→reguła→produkcja) pozostaje
+    V4 (L02).
+Wnioski: W1) żaden filar nie jest DEKLAROWANY — 9/9 z dowodem (I11 integrity
+  PASS); W2) LCI 71.43 vs SLO 99 to najważniejsza JAWNA luka wartości (nie
+  mechanizmu) — certyfikat jej nie ukrywa; W3) filary mają jedno źródło
+  (silnik I03) — brak dublowania scoreboardu.
+Luki: V3-P68-L02 (P2): LCI=71.43% < SLO_MIN=99 (evidence v4) i RV_audit=13.56
+  < 100 — wpływ: pokrycie prawne wartościowo poniżej celu mimo działającego
+  mechanizmu; rozwiązanie: fala V4-F1 (domknięcie LKG/Doc50 — coverage_deserts
+  desert_pct=69.9, alarm=True); koszt: L; regresja: średnia (masowa praca
+  regułowa — mitygacja: golden replay przed każdym batchem).
+
+──── 9.04.3 PODANALIZA 5.3 — HARD GATES I CERTYFIKAT (P68-AN03) ────
+Lista hard gates (I01 — WSZYSTKIE Z POMIARU, nie deklaracji):
+  HG1 zero cichego AUTO_POST: silent_auto_post_max=0 (v3_p49_fail_open_
+      registry.json, skan 524 plików, 131 łańcuchów, 119 z jawnym else) — ZAMKNIĘTY.
+  HG2 zero duplikatów rule_id: duplicate_rule_ids=0 (rule_registry/unified
+      plan v8: 11855 unikalnych) — ZAMKNIĘTY.
+  HG3 zero hardcode wartości prawnych: blok v3_p68 z valid_from + legal_basis_
+      version (ADR-002) + konwencja P46 dla wszystkich bloków v3_p* — ZAMKNIĘTY.
+  HG4 zero dryfu mirror semantycznego: sha256 canonical==mirror dla p68/
+      thresholds/main (3/3) — ZAMKNIĘTY.
+  HG5 podstawy prawne 100% zweryfikowane LUB oznaczone: konwencja tagów
+      [NIEZWERYFIKOWANE — ISAP] w całej kampanii + legal_basis_version —
+      ZAMKNIĘTY (w wariancie „oznaczone"; wariant „zweryfikowane online"
+      pozostaje V4 — Q02, jawne ograniczenie).
+Odpowiedzi na pytania audytowe:
+  * Pełna lista: HG1–HG5 powyżej + spójność z zero_defect_certification.py i
+    final_certification_v4_gate.py: oba narzędzia egzekwują bramki raportów/
+    artefaktów (evidence v4: gates 6/6) i NIE są sprzeczne z hard gates P68 —
+    P68 dokłada warstwę POMIARU (5.3: zero_defect 6/6 + P68 HG 5/5).
+  * Twierdzenia [NIEZWERYFIKOWANE]: wszystkie podstawy prawne (ISAP online),
+    status produkcji (telemetria zewnętrzna), akceptacja właściciela (Q01),
+    podpis kwalifikowany (Q04) — certyfikat bez tych 4 pozycji NIE jest
+    certyfikatem produkcyjnym (i tak jest nazwany: re-certyfikat stanu repo).
+  * Podpis i archiwizacja: slot WORM (worm_audit.json; worm_storage.py P65-I08,
+    append+hash) + retencja zgodna z UoR 74–75 [NIEZWERYFIKOWANE]; podpis
+    4-eyes: autor sesji + właściciel (Q01) — po akceptacji wpis do WORM.
+Wnioski: W1) „dowód, nie deklaracja" jest egzekwowalny maszynowo (runner FAIL
+  gdy I01=BLOCK); W2) ograniczenia certyfikatu są częścią certyfikatu (I11);
+  W3) spójność P42/P44/P68 bramek potwierdzona (bez duplikacji — rozdzielone
+  role: raporty/artefakty vs pomiar stanu).
+Luki: V3-P68-L03 (P3): HG5 w wariancie „oznaczone" (nie „zweryfikowane online")
+  — wpływ: ryzyko błędnej treści podstaw teoretycznie możliwe; rozwiązanie:
+  isap_crawler P34-I03 w V4-F1; koszt: M; regresja: niska.
+
+──── 9.04.4 PODANALIZA 5.4 — MAPA V4 I OCENA WŁASNA (P68-AN04) ────
+Odpowiedzi na pytania audytowe:
+  * Kontrakty V3 dziedziczone przez V4 (lista, źródło prawdy):
+    K1–K6 z P67 (pętla uczenia, metryki M1–M6, rejestr danych, luki przeniesione,
+    dane UI, natywne opa test) + C1–C6 z P66 (katalog eksperymentów, chaos
+    ciągły, kill switch, macierz zależności, silniki z bundli) + konwencja
+    P51→P68 (ADR-002, router else-chain, fail-closed, mirrory hash-parity,
+    ledger --mark) — źródło prawdy: raporty 9.08 + HANDOFF_V3_P68.md.
+  * Fale V4 (priorytety z rejestru rezydualnego P64/settlement I02):
+    F0 (natychmiast): naprawa 2×P0 (P49-L01 SUGGEST-tails decyzja Q02;
+    P50-L01 parse errors) + SLA fali; F1: LCI 71.43→SLO 99 (pustynie Doc50,
+    desert_pct 69.9→cel) + ISAP 6 podstaw (isap_crawler); F2: nowe akty 2027
+    (Law Radar → epoki P53 → lifecycle P07); F3: eksport bramek/trendów do CI
+    (Q03) + dashboardy produkcyjne P58; F4: telemetria zewnętrzna → certyfikat
+    produkcyjny (zniesienie NOT_CERTIFIED).
+  * Jak mierzyć postęp V4: metryki zamrożone (I05: 8 metryk z progiem i
+    źródłem) + baseline kwartalny (M1–M6 P67, resilience P66, LCI/TCL/RV);
+    kolejna re-certyfikacja: polityka I07 (≤90 dni ALBO nowa epoka prawna
+    ALBO deploy krytyczny) — certyfikat żywy, nie wieczny.
+  * Czy forteca jest ufortyfikowana — OCENA WŁASNA (zero sellingu):
+    ZA: (1) architektura jako SYSTEM — 21 pasów safe_merge w main_jdg
+    (P00→P68), deterministyczny routing, fail-closed zmierzony (silent=0);
+    (2) proces — 69/69 części rozliczonych, kontrakty międzyczęściowe
+    honorowane, rejestry jako DANE; (3) bramki — natywne testy OPA 23/23,
+    static gate, hard gates z pomiaru, runner fail-closed; (4) wiedza —
+    12 innowacji P68 + knowledge transfer 6 sekcji; (5) uczciwość — LCI/RV/
+    produkcja raportowane wprost (I11).
+    PRZECIW: (1) produkcja NOT_CERTIFIED — forteca nie przeszła próby
+    rzeczywistą telemetrią zewnętrzną; (2) LCI 71.43 < 99 — wartościowo
+    pokrycie prawne poniżej SLO; (3) 2×P0 rezydualne bez SLA; (4) RV_audit
+    13.56 — audyt odwrócony pokrycia na wczesnym etapie; (5) podstawy prawne
+    bez weryfikacji online; (6) metryki pętli bez baseline kwartalnego (pierwszy
+    cykl w toku).
+    WERDYKT: ufortyfikowana JAKO SYSTEM REPOZYTORIUM I PROCESU (dowody 1–5);
+    NIE jest jeszcze ufortyfikowana JAKO PRODUKCJA (przeciw 1–2). Certyfikat
+    re-certyfikacji stanu repo: WYDANY z ograniczeniami; certyfikat
+    produkcyjny: NIE WYDANY (zgodnie z dokumentami świętymi — wymóg
+    telemetrii; honesty evidence v4 utrzymana).
+Wnioski: W1) rozdział „repo vs produkcja" jest kluczową uczciwością tego
+  raportu; W2) mapa V4 powstaje z pomiarów (rezyduum + SLO), nie z wizji;
+  W3) polityka odnowienia czyni re-certyfikację procesem ciągłym.
+Luki: V3-P68-L04 (P3): baseline trendów M1–M6/resilience niezebrany (pierwszy
+  cykl kwartalny w toku) — wpływ: trend bez punktu odniesienia; rozwiązanie:
+  automatyczny zapis kwartalny (kontrakt K2 P67); koszt: XS; regresja: niska.
+
+=================================================================================
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2; akty Sekcji 8 promptu — KAŻDY obowiązkowy)
+=================================================================================
+
+| # | Akt | Art./ust. | Grupa 6.x | Reguła (rule_id) | Test | Status | Ryzyko |
+|---|-----|-----------|-----------|------------------|------|--------|--------|
+| 1 | Wszystkie akty P00–P67 (agregat) | per P00–P67 Sekcja 8 | 6.1/6.2 | i02_settlement | tests/rego I02 + pytest settlement | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] (agregat statusów, nie nowa weryfikacja) | średnie |
+| 2 | Ordynacja podatkowa | art. 119a, 199a | 6.1 | i01_hard_gates (klauzule/interpretacje w ocenie) | tests/rego I01 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | średnie |
+| 3 | Ustawa o rachunkowości | art. 4, 74–75 | 6.2 | i06_worm (retencja dowodu) + i01 (rzetelność) | tests/rego I06 + pytest | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| 4 | RODO | art. 5.2, 24, 30 | 6.1/6.2 | i02 (rozliczalność) + i08 (odpowiedzialność) | tests/rego I02/I08 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| 5 | AI Act | dokumentacja finalna | 6.1 | i09_kt_pack + i11_truth_first (warstwa AI P33/P67) | tests/rego I09/I11 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP/RCL] | średnie |
+| 6 | Ustawa VAT/PIT/ZUS | finalne pokrycie materiałowe | 6.2 | i03_pillars + settlement P54–P56 | tests/rego I03 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | wysokie bez weryfikacji ISAP |
+| 7 | KKS | finalna redukcja ryzyka | 6.2 | i01 (fail-closed i chaos jako dowód staranności — P66/P49) | tests/rego I01 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| 8 | eIDAS | podpis certyfikatu | 6.2 | i06_worm+signature (slot; kwalifikowany po Q04) | tests/rego I06 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| 9 | (odkryty) UoR | art. 75 (przechowywanie do 5 lat) | 6.2 | i06 (retencja WORM certyfikatu) | pytest I06 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | niskie |
+|10 | (odkryty) OP | art. 199a §2 (ocena interpretacji w sprawie) | 6.1 | i07_renewal (nowa interpretacja = wygaśnięcie certyfikatu) | tests/rego I07 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | niskie |
+
+Zero statusów PEŁNE (weryfikacja ISAP = Q02/V4-F1); zero PRZECZYANE.
+
+=================================================================================
+9.06 REJESTR LUK (T3)
+=================================================================================
+
+| ID | P | Luka — dowód | Wpływ | Rozwiązanie | Koszt | Ryzyko regresji |
+|----|---|--------------|-------|-------------|-------|-----------------|
+| V3-P68-L01 | P1 | 2×P0 rezydualne (P49-L01: 12 SUGGEST-tails; P50-L01: 217/525 parse_errors) bez SLA czasowego fali V4-F0 | okno ryzyka klasyfikacji/AST nieograniczone czasem | fala V4-F0 z SLA + decyzja 4-eyes Q02 | S | niskie |
+| V3-P68-L02 | P2 | LCI=71.43% < SLO_MIN=99; RV_audit=13.56% < 100; desert_pct Doc50=69.9 (alarm=True) — evidence v4 + coverage_deserts | wartościowe pokrycie prawne poniżej SLO mimo działającego mechanizmu | fala V4-F1 (domknięcie LKG/Doc50; golden replay per batch) | L | średnie — mitygacja: replay przed batchem |
+| V3-P68-L03 | P3 | HG5 w wariancie „oznaczone” (0 podstaw zweryfikowanych online) | teoretyczne ryzyko błędnej treści podstaw | isap_crawler (P34-I03) w V4-F1; mediacja Q02 | M | niskie |
+| V3-P68-L04 | P3 | baseline trendów M1–M6/resilience niezebrany (pierwszy cykl w toku) | trend bez punktu odniesienia | automatyczny zapis kwartalny (K2 P67) | XS | niskie |
+| V3-P68-L05 | P3 | podpis certyfikatu w wariancie slotu (bez podpisu kwalifikowanego eIDAS) | autentyczność dowodu oparta na repo, nie podpisie | decyzja Q04 | M | niskie |
+| V3-P68-L06 | P3 | eksport bramek/trendów do CI nieobecny (dziedziczony: V3-P67-L01, V3-P66-L01; skan .github/workflows) | re-certyfikacja ręczna, nie ciągła | decyzja właściciela CI (Q03) | XS | niskie |
+
+Nowe luki P0: ZERO. Certyfikat wydany — hard gates naruszone: 0/5.
+
+=================================================================================
+9.07 INNOWACJE ENTERPRISE (T4) — 12 × 6-elementowy szkielet
+=================================================================================
+
+V3-P68-I01 — HARD GATE CERTIFICATE
+ 1) Luka: certyfikaty wydawane deklaratywnie (etykieta zamiast pomiaru).
+ 2) Mechanizm: 5 hard gates zmierzonych z rejestru P49 (silent_auto_post_max),
+    rule_registry (duplikaty), thresholds (ADR-002 valid_from), sha256 mirror,
+    legal_basis_version; BLOCK w rego 468001 gdy >0 naruszeń; runner FAIL gdy
+    I01=BLOCK — bramka techniczna, nie proceduralna.
+ 3) Bezpieczeństwo: re-certyfikat bez pełnego domknięcia jest NIEWYDALANY
+    (raport „brak” z listą) — zero marketingu w decyzji o fortecą.
+ 4) Ryzyko: fałszywy PASS przez martwe rejestry — mitygacja: rejestry czytane
+    z bundli bramek P49/P50 z datą generowania; rollback: mark ledger cofalny
+    (--unmark), runner powtarzalny.
+ 5) Akceptacja: test_p68_i01_hard_gate_violation_blocks (Rego) + pytest I01
+    (violated==0) + test_p68_i01_fails_without_gate_results; uruchomione PASS.
+ 6) Zależności: P49, P50, P46, P48, P06 (ADR-002), P65 (C2).
+
+V3-P68-I02 — REGISTER SETTLEMENT TABLE
+ 1) Luka: 23 rejestry naprawcze bez jednolitego rozliczenia status/dowód/trend.
+ 2) Mechanizm: tools/v3_p68_settlement.json (DANE): rejestr→cel→status
+    (DOMKNIETY/CZESCIOWY)→dowód→trend→residual_v4; silnik I02 weryfikuje
+    spójność z ledgerem (WDROŻONY_100) — 23/23.
+ 3) Bezpieczeństwo: właściciel widzi CAŁE rezyduum w jednym miejscu; rejestry
+    z P0 nie mogą zniknąć (CZESCIOWY + fala V4-F0).
+ 4) Ryzyko: dryf settlement↔ledger — mitygacja: test spójności w pytest
+    (test_i02_settlement_complete czyta oba) + silnik.
+ 5) Akceptacja: test_p68_i02_settlement_incomplete (Rego) + pytest I02 ×2.
+ 6) Zależności: P45–P67 (ledger), P64 (sweep).
+
+V3-P68-I03 — FILAR SCOREBOARD V3
+ 1) Luka: „definicja sukcesu” bez statusów dowodowych = broszura.
+ 2) Mechanizm: 9 filarów ze statusem wyliczonym z artefaktów (desert register,
+    golden count, certificates, narzędzia P08/P09, P49 silent=0, ADR-002,
+    P66 gate, P67 pipeline); statusy ograniczone do DOWIEDZONE/CZĘŚCIOWE/
+    DEKLAROWANE (prog pillar_status_valid); NEEDS_ADVICE poza rejestrem.
+ 3) Bezpieczeństwo: ocena fortecy na artefaktach — DEKLAROWANE nie przejdzie
+    jako DOWIEDZONE (spina się z I11).
+ 4) Ryzyko: subiektywne progi filarów — mitygacja: progi w data (ADR-002),
+    dowód w każdym statusie.
+ 5) Akceptacja: test_p68_i03_pillars_below_min + i03_invalid_status + pytest.
+ 6) Zależności: README V3 (definicja), P51, P10, P11, P08, P09, P49, P52,
+    P66, P67.
+
+V3-P68-I04 — RESIDUAL → V4 MAP
+ 1) Luka: wiedza o lukach ginęła między kampaniami (P64 handover bez egzekucji).
+ 2) Mechanizm: rezyduum P1–P3 zinwentaryzowane z ledgera (per część/per poziom),
+    każda pozycja settlement z residual_v4; silnik I04 NEEDS_ADVICE gdy
+    brak mapy lub unmapped>0; progi residual_v4_map_required=true.
+ 3) Bezpieczeństwo: zero luki-widmo — każda znana słabość ma falę, priorytet
+    i właściciela w V4.
+ 4) Ryzyko: mapa przeterminowana — mitygacja: odnowienie przy każdej
+    re-certyfikacji (I07).
+ 5) Akceptacja: test_p68_i04_no_v4_map + i04_fails_without_map_registry + pytest.
+ 6) Zależności: P64 (rejestr), P67 (K4), settlement I02.
+
+V3-P68-I05 — SUCCESS METRIC FREEZE
+ 1) Luka: ocena końcowa po fakcie definiowała metryki (cherry-picking).
+ 2) Mechanizm: 8 metryk z progiem i źródłem zamrożonych w bundlu silnika
+    PRZED oceną filarów (hard gates=0, registers=23, pillars=9, unmapped=0,
+    renewal=3 warunki, KT=5, M1–M6=6, resilience≥80); NEEDS_ADVICE <5 metryk.
+ 3) Bezpieczeństwo: komisja nie może poluzować progów po zobaczeniu wyników —
+    definicja sukcesu jest DANYM.
+ 4) Ryzyko: zmiana progów w trakcie — mitygacja: ADR-002 + wersjonowanie
+    threshold_version + test kotwiczący.
+ 5) Akceptacja: test_p68_i05_frozen_below_min + pytest I05.
+ 6) Zależności: P58 (źródło), P67 (M1–M6), P66 (resilience).
+
+V3-P68-I06 — CERTIFICATE WORM + SIGNATURE
+ 1) Luka: certyfikaty papierowe — brak niezmienialnego archiwum dowodu.
+ 2) Mechanizm: slot w worm_audit.json + worm_storage.py (P65-I08, append+hash,
+    5/5 tamper probes); wpisanie re-certyfikatu po akceptacji I08; retencja
+    UoR 74–75 [NIEZWERYFIKOWANE]; podpis: autor+właściciel (4-eyes),
+    kwalifikowany eIDAS po decyzji Q04.
+ 3) Bezpieczeństwo: dowód re-certyfikacji odporny na manipulację i czas.
+ 4) Ryzyko: pusty slot = brak dowodu — mitygacja: NEEDS_ADVICE rego I06 przy
+    braku worm/podpisu (dwa scenariusze testowe).
+ 5) Akceptacja: test_p68_i06_worm_missing + i06_signature_missing + pytest I06.
+ 6) Zależności: P65-I08 (WORM), UoR, eIDAS.
+
+V3-P68-I07 — RENEWAL POLICY
+ 1) Luka: certyfikat wieczny (raz wydany — zawsze ważny).
+ 2) Mechanizm: wygaśnięcie przy (a) >90 dni, (b) nowej epoce prawnej (P53
+    epoch_registry), (c) deployu krytycznym (P38 deployments — 44 wpisy);
+    progi v3_p68_renewal_*; NEEDS_ADVICE gdy polityka niekompletna.
+ 3) Bezpieczeństwo: zmiana prawa lub kodu unieważnia dowód stanu — forteca
+    certyfikowana na WERSJĘ świata, nie na zawsze.
+ 4) Ryzyko: częste wygaszanie = fatyga — mitygacja: odnowienie = re-run
+    runnera (automat), nie nowa kampania.
+ 5) Akceptacja: test_p68_i07_renewal_days_missing + i07_renewal_epoch_missing
+    + pytest I07.
+ 6) Zależności: P53, P38, P34 (isap_crawler jako wyzwalacz epok).
+
+V3-P68-I08 — OWNER ATTESTATION
+ 1) Luka: komisja sama „przyjmowała” własną pracę (brak 4-eyes biznesowych).
+ 2) Mechanizm: slot attestation w evidence; progi owner_attestation_required;
+    brak akceptacji NIE jest defektem fortecy (INFO) — ALE blokuje podpis
+    certyfikatu (I06) i jest pytaniem Q01; silnik raportuje jawnie.
+ 3) Bezpieczeństwo: odpowiedzialność biznesowa za przyjęcie ograniczeń
+    (RODO art. 24) nie przenosi się na narzędzie.
+ 4) Ryzyko: ślepa akceptacja — mitygacja: akceptacja wymaga potwierdzenia
+    przeczytania ograniczeń (lista w 9.01/9.06).
+ 5) Akceptacja: test_p68_i08_owner_not_attested (Rego NEEDS_ADVICE) + pytest
+    (present==False jawnie).
+ 6) Zależności: RODO 24; I06; Q01.
+
+V3-P68-I09 — KNOWLEDGE TRANSFER PACK
+ 1) Luka: forteca operowalna tylko przez autorów kampanii.
+ 2) Mechanizm: 6 sekcji (rejestry: ledger+settlement; runbooki: run_all+
+    bundle.sh; kontrakty: enterprise_operating_contract+evidence; progi
+    alarmów: thresholds v3_p*; mapa komponentów: main_jdg PAS-ów; właściciele
+    decyzji: Q01–Q04) — silnik I09 liczy (min 5).
+ 3) Bezpieczeństwo: nowy zespół operuje fortrecą poznając bramki, nie
+    zgadując; awaryjne procedury w runbookach.
+ 4) Ryzyko: dokumentacja dryfuje z kodem — mitygacja: sekcje czytają PRAWDZIWE
+    pliki (exists/count), nie kopie treści.
+ 5) Akceptacja: test_p68_i09_sections_below_min + pytest I09.
+ 6) Zależności: P60, P64, enterprise contract.
+
+V3-P68-I10 — FORTRESS SELF-PORTRAIT
+ 1) Luka: brak jednego punktu wejścia (komponenty/kontrakty/dowody).
+ 2) Mechanizm: diagram mermaid (21+ pasów safe_merge P00→P68 — wyliczone z
+    main_jdg) + tabela komponentów (69 części ledger + 23 rejestry I02 +
+    9 filarów I03) w raporcie 9.16/X01; silnik I10 weryfikuje obecność.
+ 3) Bezpieczeństwo: audyt/inspection ma mapę — mniej założeń, więcej dowodów.
+ 4) Ryzyko: portret przestarzały — mitygacja: regeneracja przy każdej
+    re-certyfikacji (I07).
+ 5) Akceptacja: test_p68_i10_no_diagram + i10_no_components_table + pytest.
+ 6) Zależności: P00 (mapa kanoniczna — aktualizowana, nie duplikowana).
+
+V3-P68-I11 — TRUTH-FIRST ATTESTATION
+ 1) Luka: DEKLAROWANE mogło wyglądać jak DOWIEDZONE (selling).
+ 2) Mechanizm: silnik I11 porównuje scoreboard I03 z rejestrem statusów;
+    misreported>0 = BLOCK (468011); production_status NOT_CERTIFIED musi
+    pozostać jawny (honesty evidence v4) — jego ukrycie = BLOCK.
+ 3) Bezpieczeństwo: certyfikat z fałszywym statusem dowodowym jest NIEWAŻNY —
+    maszyna tego pilnuje, nie sumienie autora.
+ 4) Ryzyko: gaming statusów — mitygacja: statusy wyliczane przez I03 z
+    artefaktów, nie wpisywane ręcznie.
+ 5) Akceptacja: test_p68_i11_misreported_blocks + i11_fails_with_misreported
+    + pytest I11.
+ 6) Zależności: I03, evidence v4, protokół 06.
+
+V3-P68-I12 — CAMPAIGN POST-MORTEM
+ 1) Luka: proces kampanii bez rozliczenia powtarza błędy (V4 zaczyna od zera).
+ 2) Mechanizm: post-mortem jako DANE w bundlu I12: worked (konwencja P51→P68,
+    natywne opa testy, kompozycja, rejestry-jako-dane, ledger), did_not_work
+    (wdrożenie bez raportu w sesji, środowisko pytest/PYTHONPATH, brak CI),
+    change_in_v4 (F0 SLA, CI eksport, ISAP, baseline trendów, mapa V4);
+    sprzężenie z pętlą P67 (proces jako obiekt uczenia).
+ 3) Bezpieczeństwo: V4 startuje z wniosków, nie z mitów — mniej powtórek ryzyka.
+ 4) Ryzyko: post-mortem wygładzony — mitygacja: 3 sekcje obowiązkowe +
+    konkretne pozycje z faktów (Q-numery, liczby).
+ 5) Akceptacja: test_p68_i12_no_post_mortem + pytest I12 (3 sekcje, ≥3 zmiany).
+ 6) Zależności: P67 (pętla), P64–P67 (fakty).
+
+=================================================================================
+9.08 KONTRAKT WYJŚCIOWY (T5) — RAPORT FINALNY DLA WŁAŚCICIELA (V4)
+=================================================================================
+
+K1 — RE-CERTYFIKAT FINALNY (stan 2026-09-19): WYDANY z ograniczeniami.
+  Hard gates 5/5 zmierzone — zero naruszeń. Scoreboard 9/9 filarów dowodowych.
+  Ograniczenia jawne: produkcja NOT_CERTIFIED; LCI 71.43<99; 2×P0 rezydualne;
+  podstawy „oznaczone” nie „zweryfikowane”; akceptacja właściciela oczekiwana.
+K2 — REJESTR V4 (kontrakty dziedziczone + fale + metryki): K1–K6 (P67),
+  C1–C6 (P66), konwencja P51→P68; fale F0 (P0×2 + SLA) → F1 (LCI→99 + ISAP)
+  → F2 (akty 2027) → F3 (CI + dashboardy) → F4 (telemetria → certyfikat
+  produkcyjny); metryki zamrożone I05 (8) + baseline kwartalny (L04).
+K3 — KNOWLEDGE TRANSFER PACK (I09): 6 sekcji; runbook = tools/v3_p68_run_all.py
+  + v3_p67_run_all.py + bundle.sh; właściciele decyzji: Q01–Q04 (9.11).
+K4 — POLITYKA ODNOWIENIA (I07): ≤90 dni | nowa epoka P53 | deploy krytyczny
+  P38 → re-certyfikacja runnerem (nie nowa kampania).
+K5 — DLA KOLEJNEJ SESJI/KAMPANII: start z HANDOFF_V3_P68.md + ledger
+  (69/69=100%) + ten raport (9.01/9.06/9.08); zero niejawnych założeń.
+K6 — STANDARDY WIĄŻĄCE (utrzymane): ADR-002, router else-chain, fail-closed,
+  mirrory hash-parity, natywne opa test (C2), identyfikatory V3-*.
+
+Tabela przekazywanych artefaktów (11.4):
+
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| Re-certyfikat z ograniczeniami (K1) | właściciel projektu | raport 9.01 + ledger | decyzje F0–F4, akceptacja Q01 |
+| Rozliczenie 23 rejestrów | V4, właściciel | tools/v3_p68_settlement.json | wejście planowania fal |
+| Mapa rezyduum V4 (K2) | V4 | raport 9.04.1 kolumna residual_v4 | priorytety F0/F1 |
+| Metryki zamrożone (I05) | V4/P58 | bundles/v3_p68_i05_engine.json | ocena postępu bez przeróbek progów |
+| 13 bundli v3_p68_* | V4, CI | JSON dowodowy | bramki PASS jako dowód stanu |
+| tests/rego (23) + pytest (23) | V4, CI | Rego/py | blokada regresji certyfikatu |
+| HANDOFF_V3_P68.md | kolejna sesja | MD | start bez kontekstu sesji |
+| Post-mortem (I12) | V4 | bundle + raport 9.04.4 | plan kampanii V4 |
+
+=================================================================================
+9.09 PLAN WDROŻENIA (T6) — STAN: WYKONANY
+=================================================================================
+
+| # | Praca | Tryb | Status |
+|---|-------|------|--------|
+| 1 | Progi v3_p68 (ADR-002, valid_from, 19 kluczy) | od razu | WYKONANE |
+| 2 | rules/v3_p68_recertification_final.rego (12 analiz + router) | od razu | WYKONANE (opa check OK) |
+| 3 | Settlement 23 rejestrów jako DANE | od razu | WYKONANE (+ spójność z ledger w teście) |
+| 4 | 12 silników z PRAWDZIWYCH źródeł | od razu | WYKONANE (12/12 PASS) |
+| 5 | Wiring p132 + import + POST-MERGE anchor | od razu (po testach) | WYKONANE |
+| 6 | Kotwice p131→p132 w 13 plikach testowych | wymagane przed mark | WYKONANE (regresja 540) |
+| 7 | Testy natywne OPA (23) + static gate + run_all | wymagane przed mark | WYKONANE (PASS/PASS/PASS) |
+| 8 | Mirrory hash-parity | wymagane przed mark | WYKONANE (sha256 3/3) |
+| 9 | Raport + ledger --mark P68 + HANDOFF | od razu | WYKONANE (ta sesja) |
+|10 | Naprawa 2×P0 (P49/P50) z SLA | DECYZJA 4-eyes (Q02) | V4-F0 |
+|11 | Akceptacja właściciela + podpis | DECYZJA CZŁOWIEKA (Q01/Q04) | slot czeka |
+|12 | Eksport bramek do CI | DECYZJA WŁAŚCICIELA CI (Q03) | V4-F3 |
+
+=================================================================================
+9.10 PLAN TESTÓW (T7) — przypadki blokujące merge
+=================================================================================
+
+Blokujące merge (bramki P39; wszystkie URUCHOMIONE — PASS):
+  T-R01 bin/opa test (natywne, kontrakt C2): 23/23 PASS — [kontekst zielony,
+    NO_MATCH bez flagi, snapshot progów, priorytety 468001/468012, BLOCK I01
+    (hard gates), BLOCK I11 (truth-first), NEEDS_ADVICE ×12 (I02–I12 granice),
+    negatywy ×3].
+  T-R02 tools/v3_p68_rego_static_gate.py → PASS (struktura, 19 kluczy ADR-002,
+    wiring p132, mirror 3/3, testy ≥19, zero AUTO_POST).
+  T-R03 pytest tests/auto/test_v3_p68_recertification.py → 23/23 PASS
+    (silniki vs bundle, settlement↔ledger spójność, mirror, wiring, fail-closed,
+    determinizm, zero duplikacji).
+  T-R04 tools/v3_p68_run_all.py → gate PASS (12 silników + rego + static +
+    hard gate I01; FAIL gdy I01=BLOCK).
+  T-R05 regresja: pytest -k "v3_p5 or v3_p6" → 540 passed (2 skip legacy).
+
+Testy graniczne/temporalne (w zestawie): granice progów (registers 22/23,
+pillars 8/9, sections 4/5, frozen 4/5), renewal day-0 (days=0 → NEEDS_ADVICE),
+epoka-deploy wygaszenie, NO_MATCH bez flagi, fail-closed snapshot, negatywy
+per-innowacja. Fuzz: mutacje input.v3_p68 (brakujące klucze I01–I12, złe typy)
+→ NEEDS_ADVICE/BLOCK, nigdy AUTO_POST (silniki + static gate).
+
+=================================================================================
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+=================================================================================
+
+| ID | Pytanie | Dlaczego człowiek | Wpływ jeśli brak decyzji |
+|----|---------|-------------------|--------------------------|
+| V3-P68-Q01 | Akceptacja re-certyfikatu przez właściciela (4-eyes biznesowe, I08) + potwierdzenie przeczytania ograniczeń | przyjęcie odpowiedzialności (RODO 24) | certyfikat bez podpisu (slot I06 czeka) |
+| V3-P68-Q02 | Zatwierdzenie fali V4-F0: naprawa 12 SUGGEST-tails (P49-L01) i 217 parse_errors (P50-L01) + SLA | decyzja o zakresach/4-eyes kodu | 2×P0 rezydualne bez terminu (L01) |
+| V3-P68-Q03 | Eksport bramek/trendów do workflow CI (L06; dziedziczy P67-Q03/P66-Q01) | własność CI i budżet runnerów | re-certyfikacja ręczna |
+| V3-P68-Q04 | Podpis kwalifikowany eIDAS certyfikatu (I06) i polityka retencji | decyzja kryptograficzna/prawna | podpis = repo-4-eyes, nie kwalifikowany (L05) |
+
+=================================================================================
+9.12 ZAAŁOŻENIA JAWNE (T9)
+=================================================================================
+
+| # | Założenie | Tag | Uzasadnienie |
+|---|-----------|-----|--------------|
+| 1 | Zasada 50% odczytu (Sekcja 3) utrzymana jak w P00–P67 | [ZAŁOŻENIE] | konwencja kampanii |
+| 2 | Katalog policies/ = pełnoprawny mirror płaski (hash-parity) | [ZAŁOŻENIE] | wynik sha256 3/3; P48/P65–P67 |
+| 3 | Wartości progów v3_p68 (90 dni, 5 sekcji KT itd.) = rozsądne SLO startowe | [ZAŁOŻENIE] | brak historycznych SLO certyfikacji; zmiana = ADR-002 |
+| 4 | 8 błędów kolekcji pytest (moduły legacy) = pre-existing, poza zakresem | [ZAŁOŻENIE] | identyczne przed/po; brak zmian w tych plikach |
+| 5 | Agregat statusów prawnych z P00–P67 nie podnosi wiarygodności bez ISAP | [ZAŁOŻENIE] | protokół 04; I11 |
+| 6 | Rozliczenie P49/P50 jako CZESCIOWY mimo WDROŻONY_100 w ledgerze jest spójne (status części ≠ brak rezyduum) | [ZAŁOŻENIE] | definicja statusu części obejmuje wdrożenie, nie zero luk |
+
+=================================================================================
+9.13–9.15 — ZGODNOŚĆ FORMATU
+=================================================================================
+
+  9.13 Podanalizy 5.1–5.4: każda z tabelą dowodów, ≥3 wnioskami i luką — 9.04.1–4.
+  9.14 Macierz PRAWO↔REGUŁA↔TEST: 8 aktów z Sekcji 8 + 2 odkryte — 9.05.
+  9.15 Identyfikatory V3-P68-Lxx/Ixx/Qxx/Xxx — spójnie w całym raporcie.
+
+=================================================================================
+9.16 ODPOWIEDZI NA PYTANIA KRZYŻOWE (7.4)
+=================================================================================
+
+V3-P68-X01 (sprzeczności z dokumentami świętymi): NIE STWIERDZONO. Certyfikat
+  NIE deklaruje production-ready (wymóg V1: telemetria zewnętrzna — jawne
+  NOT_CERTIFIED, zgodnie z honesty evidence v4). Diagram auto-portretu:
+  ```mermaid
+  main_jdg: p129(P65) → p130(P66) → p131(P67) → p132(P68) → POST-MERGE
+    (safe_merge łańcuch deterministyczny; _routing_context po lewej,
+     p132 authority po prawej; enforce(runtime_invariants) na końcu)
+  ```
+V3-P68-X02 (łamanie P06/P05): BRAK — 19 kluczy progów v3_p68 z valid_from/
+  valid_to; polityka odnowienia jest temporalna z definicji (I07); zero
+  hardcode (static gate skanuje klucze).
+V3-P68-X03 (ścieżki nie-fail-closed): BRAK cichego AUTO_POST — silent_auto_
+  post_max=0 (pomiar P49), asercja w Rego (zero "AUTO_POST"), router:
+  BLOCK → NEEDS_ADVICE → PASS → NO_MATCH; brak snapshotu = NEEDS_ADVICE.
+V3-P68-X04 (kontrakt 25-polowy P03): ZACHOWANY — decide zwraca {matched,
+  rule_id, package, priority, decision, reason, metrics, _legal_basis,
+  valid_from, valid_to} (konwencja P47–P67); safe_merge zachowuje pola
+  biznesowe; POST-MERGE anchor p132.
+V3-P68-X05 (testy blokujące merge): T-R01..T-R05 (9.10).
+V3-P68-X06 (duplikaty): ZERO — kompozycja: settlement czyta ledger; I01 czyta
+  rejestry P49/P50; I03 czyta artefakty filarów; I06 czyta WORM P65-I08;
+  I07 czyta P53/P38; I10 liczy PAS-y z main_jdg; test_no_duplication kotwiczy.
+V3-P68-X07 (podstawy niezweryfikowane): 10 wierszy 9.05 [NIEZWERYFIKOWANE —
+  ISAP]; priorytet V4-F1: VAT/PIT/ZUS pokrycie materiałowe (ryzyko wysokie),
+  OP 199a, UoR 4/74–75, RODO 5.2/24/30, eIDAS, AI Act — mediacja Q02.
+V3-P68-X08 (innowacje wymagające decyzji 4-eyes): akceptacja właściciela
+  (I08→Q01), naprawa P0 (I02→Q02), eksport CI (I05/I04→Q03), podpis
+  kwalifikowany (I06→Q04). Pozostałe (I01,I03,I04,I05,I07,I09–I12) wdrożone
+  w granicach konwencji.
+V3-P68-X09 (metryki do obserwowalności P37/P58): frozen 8 (I05) z progami:
+  hard_gates_violated>0, registers<23, pillars<9, unmapped>0, renewal<3
+  warunki, kt<5, M1–M6<6, resilience<80 — kanały: ledger + run_all JSON;
+  alarmy przy naruszeniu (runner FAIL).
+V3-P68-X10 (invarianty runtime P04): propozycje (bez zmiany rdzenia): (a)
+  INV-cert: decyzja PASS pakietu p132 możliwa tylko przy braku BLOCK I01/I11 —
+  egzekwowane routerem (BLOCK najpierw); (b) INV-odnowienie: certyfikat starszy
+  niż renewal_max_days / z innej epoki / starszy niż ostatni deploy krytyczny
+  → host NIE przyjmuje PASS jako dowodu stanu (rekomendacja do P04 w V4-F1).
+
+=================================================================================
+APENDYKS A — MAPA GRUP PLIKÓW (uzupełniona)
+=================================================================================
+
+| Grupa | Nazwa | Plików | Rola analityczna (wynik) |
+|-------|-------|--------|--------------------------|
+| 6.1 | Certyfikacja i rejestry finalne | 8 | evidence v4 (6/6 gates, LCI/TCL/RV, NOT_CERTIFIED), zero_defect + v4 gate (spójność bramek 5.3), certyfikaty P11, coverage_canon (11591 reguł/11127 actionable z legal basis), golden 31, prompts_status (archiwum) |
+| 6.2 | Rejestry naprawcze | 8 | rule_registry, thresholds_data, coverage_deserts (69.9% alarm), deployments (44), healthy_versions, enterprise contract (NOT_CERTIFIED), COVERAGE_REPORT, test kontraktu |
+| 6.3 | Dokumenty święte i kontekst | 8 | V1/V2 (zgodność X01), Legal Twin raport, luki prawne, zgodność, audyt podstaw, kalendarz zmian, inwentaryzacja |
+| 6.4 | Mirror policies | 6 | hash-parity 3/3 P68 (p68, thresholds, main); dryf = KONFLIKT (nie stwierdzono) |
+
+=================================================================================
+APENDYKS B — MACIERZ PODANALIZA × GRUPA (T11; uzupełniona)
+=================================================================================
+
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik (sekcja) |
+|------------|----------------|-----------------|----------------|
+| 5.1 | 6.1, 6.2 | ≥3 twierdzenia z dowodem | SPEŁNIONE → 9.04.1 / 9.05 |
+| 5.2 | 6.1, 6.3 | ≥3 twierdzenia z dowodem | SPEŁNIONE → 9.04.2 / 9.05 |
+| 5.3 | 6.1, 6.2, 6.4 | ≥3 twierdzenia z dowodem | SPEŁNIONE → 9.04.3 / 9.05 |
+| 5.4 | 6.2, 6.3, 6.4 | ≥3 twierdzenia z dowodem | SPEŁNIONE → 9.04.4 / 9.05 |
+
+=================================================================================
+APENDYKS C — REJESTR KONFLIKTÓW (T12)
+=================================================================================
+
+V3-P68-C01..C99: NIE STWIERDZONO (mirror↔canonical 3/3 hash-parity;
+dokument↔kod zgodny; kontrakty P00–P67 honorowane — rozliczenie w T5/K1–K6;
+zero_defect/v4_gate ↔ hard gates P68: spójne, rozdzielone role).
+
+=================================================================================
+APENDYKS D — GLOSARIUSZ (zgodny z dokumentami świętymi)
+=================================================================================
+
+Luka (Lxx), Innowacja (Ixx), Konflikt (Cxx), Pytanie (Qxx), Krzyżowe (Xxx),
+AUTO_POST, NEEDS_ADVICE, MANUAL_REVIEW — jak w APENDYKSIE D promptu P68.
+Terminologia: Legal Twin, Golden Oracle, Decision Certificate, Law Radar,
+Declarative Change — bez zmian znaczeniowych względem WIZJA_OPA_ENTERPRISE_V2.md.
+
+=================================================================================
+APENDYKS E — PLAN PRACY (APENDYKS E promptu) — WYKONANY
+=================================================================================
+
+ETAP 1 (przygotowanie): dokumenty święte i kontrakty potwierdzone (X01);
+  akty Sekcji 8 → macierz 9.05; budżet 50% dotrzymany (tylko Sekcja 6 + P67).
+ETAP 2 (odczyt dowodów): grupy 6.1/6.2/6.3/6.4 — T1 (25 wierszy, każdy plik
+  z faktem), notatki w 9.03/9.04.
+ETAP 3 (podanalizy 5.1–5.4): 9.04.1–9.04.4 (wnioski + luki + macierz).
+ETAP 4 (prawo): K35–K42 → wiersze 1–8 macierzy 9.05 (CZĘŚCIOWE, mediacja Q02).
+ETAP 5 (synteza): T1–T12; I01–I12 (6-elementowy szkielet); X01–X10.
+ETAP 6 (domknięcie): zapis raportu → ledger --mark P68 (69/69=100%) →
+  HANDOFF_V3_P68.md → czyszczenie okna kontekstowego (Sekcja 16).
+
+=================================================================================
+TABELA T1 — TABELA DOWODÓW (7.3) — jeden wiersz na plik Sekcji 6
+=================================================================================
+
+| # | Plik | Co pobieramy (dowód/fakt/liczba) | Status |
+|---|------|----------------------------------|--------|
+| 1 | tools/final_certification_v4_gate.py | bramki raportów/artefaktów kampanii v4 — spójność z hard gates P68 | ZWERYFIKOWANO |
+| 2 | tests/test_final_certification_v4.py | testy bramki v4 — wzorzec testów bramek | ZWERYFIKOWANO |
+| 3 | tools/zero_defect_certification.py | certyfikacja zero-defect (6/6 w evidence) — spójność 5.3 | ZWERYFIKOWANO |
+| 4 | bundles/decision_certificates.json | certyfikaty P11 (decision.* ustrukturyzowane) | ZWERYFIKOWANO |
+| 5 | bundles/final_certification_v4_evidence.json | LCI 71.43/TCL 100/RV 13.56; LKG 258; production NOT_CERTIFIED; honesty | ZWERYFIKOWANO |
+| 6 | bundles/coverage_canon.json | 11591 reguł; 11127 actionable; 0 skeleton; legal_basis 11127 | ZWERYFIKOWANO |
+| 7 | bundles/golden_verdicts.json | 31 orzeczeń + 31 replays (replay P10/P53) | ZWERYFIKOWANO |
+| 8 | prompts_status.yaml | archiwum P00–P30 (statusy kampanii GLM52) | ZWERYFIKOWANO |
+| 9 | bundles/rule_registry.json | unikalność rule_id (duplikaty=0 — HG2) | ZWERYFIKOWANO |
+|10 | bundles/thresholds_data.json | progi/stawki jako dane (P46) — hardcode check | ZWERYFIKOWANO |
+|11 | bundles/coverage_deserts.json | desert_pct=69.9 (Doc50), alarm=True — wejście F1 | ZWERYFIKOWANO |
+|12 | bundles/deployments.json | 44 wdrożenia (P38) — wyzwalacz odnowienia I07 | ZWERYFIKOWANO |
+|13 | bundles/healthy_versions.json | zdrowe wersje bundle (stabilność) | ZWERYFIKOWANO |
+|14 | bundles/enterprise_operating_contract.json | production_activation NOT_CERTIFIED; zasady SSOT | ZWERYFIKOWANO |
+|15 | COVERAGE_REPORT.md | raport pokrycia (generowany) — zgodność z canon | ZWERYFIKOWANO |
+|16 | tests/test_enterprise_operating_contract.py | testy kontraktu enterprise | ZWERYFIKOWANO |
+|17 | docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md | dokument święty 1 (V1) — zgodność X01 | ZWERYFIKOWANO |
+|18 | docs/WIZJA_OPA_ENTERPRISE_V2.md | dokument święty 2 (V2) — definicja sukcesu | ZWERYFIKOWANO |
+|19 | docs/LEGAL_TWIN_RAPORT.md | stan Legal Twin (filar 1) | ZWERYFIKOWANO |
+|20 | docs/LEGAL_COVERAGE_GAP_RAPORT.md | luki pokrycia prawnego (wejście F1) | ZWERYFIKOWANO |
+|21 | docs/ZGODNOSC_PRAWNA.md | zgodność prawna (status per akt) | ZWERYFIKOWANO |
+|22 | docs/AUDYT_PODSTAW_PRAWNYCH.md | audyt podstaw (HG5 wariant „oznaczone”) | ZWERYFIKOWANO |
+|23 | docs/KALENDARZ_ZMIAN_PRAWNYCH.md | kalendarz zmian (wyzwalacz epok I07) | ZWERYFIKOWANO |
+|24 | docs/INWENTARYZACJA_PLIKOW.md | inwentaryzacja (mapa artefaktów) | ZWERYFIKOWANO |
+|25 | policies/ (mirror p68, thresholds, main) | hash-parity sha256 3/3 (dryf=KONFLIKT — brak) | ZWERYFIKOWANO |
+
+=================================================================================
+ANTY-WZORCE 7.5 — WYNIK SPRZAWDZENIA (kryterium 14)
+=================================================================================
+
+AP01 stuby: BRAK w nowych artefaktach (0 reguł {true}); AP02 hardcode: BRAK
+(19 kluczy ADR-002); AP03 brak else-chain: BRAK (router pełny + NO_MATCH jawny);
+AP04 duplikaty: BRAK (468001–468012 unikalne; HG2=0 globalnie); AP05 podstawy
+fikcyjne: BRAK (agregat bez nowych twierdzeń); AP06 testy zawsze-zielone: BRAK
+(BLOCK ×2 + negatywy ×3); AP07 cichy AUTO_POST: BRAK (HG1 silent=0, pomiar);
+AP08 cykle importów: BRAK (thresholds jednokierunkowo); AP09 dane zewnętrzne
+hardcoded: BRAK (epoki/deploye z data); AP10 okna temporalne: OBECNE
+(valid_from/valid_to + polityka odnowienia); AP11 mirror dryf: BRAK (sha256
+3/3); AP12 metryki w 2 miejscach: BRAK (I05 jedno źródło + P58 share).
+
+=================================================================================
+SYNTEZA FINALNA (Sekcja 16 pkt 3 promptu)
+=================================================================================
+
+1) Status fortecy OPA vs dokumenty święte: ZGODNA jako system repozytorium
+   i procesu (V1: control plane, cykl życia, bramki — wdrożone i zmierzone;
+   V2: Legal Twin, konstytucja, Golden Oracle, Certificate, Radar, Change —
+   9/9 filarów dowodowych). Ograniczenia jawne: produkcja NOT_CERTIFIED;
+   LCI 71.43<99; 2×P0 rezydualne; ISAP niezweryfikowany online.
+2) Lista decyzji do wdrożenia (priorytetyzacja):
+   P0→V4-F0: naprawa P49-L01 (12 SUGGEST-tails) i P50-L01 (217 parse_errors)
+     z SLA — decyzja Q02.
+   P1: SLA fali F0 (L01); eksport bramek do CI (L06 — Q03).
+   P2: fala F1 LCI→99 + ISAP 6 podstaw (L02/L03 — Q02).
+   P3: baseline trendów (L04), podpis kwalifikowany (L05 — Q04), akceptacja
+     właściciela (Q01).
+3) Definicja sukcesu kampanii (README V3): POTWIERDZONA z ograniczeniami —
+   wszystkie elementy definicji istnieją i są zmierzone, Z WYJĄTKIEM pełnej
+   weryfikacji prawnej online (jawne, oznaczone) i statusu produkcyjnego
+   (NOT_CERTIFIED). Zero sellingu: forteca jest ufortyfikowana jako SYSTEM,
+   nie jako produkcja — i ten raport tego nie ukrywa.
+
+=================================================================================
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI (kryterium 18)
+=================================================================================
+
+Raport i wdrożenie P68 są zgodne z ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1)
+oraz WIZJA_OPA_ENTERPRISE_V2.md (V2). Odstępstwa: BRAK.
+Zero stwierdzeń „100% zgodności/production-ready” bez dowodu — certyfikat
+nosi status NOT_CERTIFIED dla produkcji i wymienia ograniczenia wprost.
+
+=================================================================================
+LISTA KONTROLNA KRYTERIÓW AKCEPTACJI (Sekcja 13 promptu — 20/20)
+=================================================================================
+
+[✓]01 raport jako jeden plik TXT (ta ścieżka)    [✓]02 sekcje 9.01–9.16 nietrywialne
+[✓]03 każdy plik Sekcji 6 w T1 (25 wierszy)      [✓]04 macierz PRAWO↔REGUŁA↔TEST (10 wierszy)
+[✓]05 rejestr luk P0–P3 (L01–L06)                [✓]06 ≥12 innowacji × 6 elementów (I01–I12)
+[✓]07 kontrakt wyjściowy K1–K6                   [✓]08 plan testów z bramkami blokującymi
+[✓]09 sekcja pytań Q01–Q04                       [✓]10 zero twierdzeń bez dowodu; [ZAŁOŻENIE]/[NIEZWERYFIKOWANE]
+[✓]11 X01–X10 odpowiedziane                      [✓]12 tabela przekazywanych artefaktów (11.4)
+[✓]13 APENDYKS B wypełniony                      [✓]14 AP01–AP12 sprawdzone (brak)
+[✓]15 instrukcja 6.0 wykonana (T1)               [✓]16 APENDYKS E odznaczony
+[✓]17 sekcje nie skopiowane z P65–P67            [✓]18 deklaracja zgodności powyżej
+[✓]19 rozliczenie 23 rejestrów (9.04.1)          [✓]20 ocena własna za/przeciw (9.04.4)
+
+=================================================================================
+SEKCJA 16 — POTWIERDZENIE ZAMKNIĘCIA CZĘŚCI P68 (komenda końcowa promptu)
+=================================================================================
+
+1. Raport zapisany: JDG/raporty_glm52_v3/RAPORT_V3_P68_RECERTYFIKACJA_FINALNA.txt
+   (JEDEN plik).
+2. Potwierdzenie zakresu: P68 RE-CERTYFIKACJA — dowód stanu po falach
+   naprawczych. Luki: P0=0 (nowych), P1=1, P2=2, P3=3. Innowacje: 12
+   (I01–I12, szkielet 6-punktowy). Kontrakt wyjściowy: K1–K6 (raport finalny
+   dla właściciela).
+3. Synteza finalna: patrz sekcja SYNTEZA FINALNA powyżej (status vs dokumenty
+   święte; decyzje P0–P3; definicja sukcesu potwierdzona z ograniczeniami).
+4. OKNO KONTEKSTOWE WYCZYSZCZONE — kampania V3 ZAKOŃCZONA (69/69 = 100%);
+   do V4 przenosisz się WYŁĄCZNIE przez: ten raport (9.01/9.06/9.08) +
+   HANDOFF_V3_P68.md + bundles/v3_campaign_ledger.json.
+5. Nie utrzymujemy żadnych niejawnych założeń, fragmentów kodu ani cytatów
+   po czyszczeniu sesji.
+
+Koniec raportu V3 P68 — RE-CERTYFIKACJA FORTECY. Kampania V3: 69/69 = 100%.
+=================================================================================

@@ -2,7 +2,7 @@
 artifacts: [docs/LOGIKA_BIZNESOWA.md, rules/main_jdg.rego]
 status: ACTIVE
 owner: core
-verified: 2026-09-13
+verified: 2026-09-19
 verify_cmd: python3 tools/v3_p60_engines.py I03
 -->
 
@@ -30,6 +30,8 @@ verify_cmd: python3 tools/v3_p60_engines.py I03
 ---
 
 ## 2. Mapa modułów i usług
+Każdy moduł: odpowiedzialność, algorytm i przepływ danych — od warstwy decyzyjnej po usługi pomocnicze i kampanię V3.
+
 
 ### 2.1. Warstwa decyzyjna (reguły OPA)
 
@@ -94,6 +96,8 @@ verify_cmd: python3 tools/v3_p60_engines.py I03
 ---
 
 ## 3. Algorytmy kluczowe
+Pseudokod i logika najważniejszych algorytmów silnika: ewaluacja transakcji, safe_merge, Trust Score.
+
 
 ### 3.1. Algorytm ewaluacji transakcji (pseudokod)
 
@@ -153,6 +157,8 @@ JEŚLI  Trust Score < 0.75   → ASK_USER  (2–3 kliknięcia, ~3–5%)
 ---
 
 ## 4. Diagramy sekwencji — procesy krytyczne
+Przepływy krok po kroku: księgowanie faktury oraz decyzja Rady Agentów.
+
 
 ### 4.1. Księgowanie faktury — od wpływu do zapisu w księgach
 
@@ -267,6 +273,8 @@ sequenceDiagram
 ---
 
 ## 6. Poradnik debugowania
+Logi, narzędzia i tryby verbose — jak zdiagnozować „zły werdykt” w minuty, nie dni.
+
 
 ### 6.1. Poziomy diagnostyki
 
@@ -386,6 +394,18 @@ Każdy etap: `JDG/tools/<domena>_etapNN_audit.py` (bramki) + `JDG/bundles/<domen
 | `chaos_engineering.py` | `python tools/chaos_engineering.py` | odporność na awarie |
 | `isap_crawler.py` | `python tools/isap_crawler.py` | aktualizacja prawa |
 | `judgment_predictor.py` | `python tools/judgment_predictor.py` | predykcja decyzji organów |
+
+### 2.2. Moduły kampanii V3 (forteca)
+
+> Synonimy: `v3 logic`, `p131`, `p132`, `self-learning`, `recertification`. Pełny opis: [KAMPANIA_V3_PROMPTY_P00_P68.md](KAMPANIA_V3_PROMPTY_P00_P68.md).
+
+| Moduł (pakiet) | Odpowiedzialność | Logika / przepływ |
+|---|---|---|
+| **`v3_p67_self_learning`** | pętla samouczenia: AI proponuje, forteca decyduje | decyzje → klaster (powód×domena×kwota) → draft jako DANE → guardrails: SMT/Z3 → golden replay → 4-eyes (4 role, ≤60 dni) → epoka prawna (P53) → lifecycle SHADOW (P07) → telemetria (P58) → post-learning replay; 12 analiz I01–I12 (priorytety 467001–467012), fail-closed, zero AUTO_POST |
+| **`v3_p68_recertification_final`** | nowy dowód stanu fortecy | 12 analiz I01–I12 (468001–468012): hard gates z pomiaru (I01), rozliczenie 23 rejestrów P45–P67 (`tools/v3_p68_settlement.json` — DANE), scoreboard 9 filarów, truth-first (`production: NOT_CERTIFIED` jawne), polityka odnowienia; certyfikat WYDANY (2026-09-19) |
+| **Wiring V3 w orkiestratorze** | scalanie decyzji V3 z werdyktem | `final_verdict_p131` (P67) → `final_verdict_p132` (P68) → POST-MERGE; kotwica p132 aktualizowana w testach natywnych |
+| **Progi V3 (ADR-002)** | wszystkie analizy V3 czytają progi z `data.thresholds.jdg.v3_pNN.*` | blok `v3_p67` (19 kluczy) i `v3_p68` (19 kluczy) w `thresholds_jdg.rego`, z `valid_from`; zero hardcode |
+| **Ledger kampanii** | źródło prawdy statusów | `python tools/v3_campaign_ledger.py` — 69 części, statusy, podsumowanie; oznaczanie: `--mark PNN --status WDROŻONY_100 --write` |
 
 ---
 

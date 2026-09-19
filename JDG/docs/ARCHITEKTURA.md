@@ -2,7 +2,7 @@
 artifacts: [docs/ARCHITEKTURA.md, docs/ARCHITECTURE.md]
 status: ACTIVE
 owner: core
-verified: 2026-09-13
+verified: 2026-09-19
 verify_cmd: python3 tools/v3_p60_engines.py I11
 -->
 
@@ -32,6 +32,8 @@ verify_cmd: python3 tools/v3_p60_engines.py I11
 ---
 
 ## 2. Diagramy C4 — cztery poziomy
+Trzy poziomy C4 (Context, Container, Component) plus mikro-architektura reguł — każdy diagram samowystarczalny, w formacie Mermaid.
+
 
 ### 2.1. C4 Level 1 — Context (System in context)
 
@@ -173,7 +175,7 @@ System mapuje klasyczne warstwy DDD na konkretne artefakty:
 |---|---|---|
 | **Presentation** (prezentacja) | `api/openapi.yaml`, endpointy REST `/jdg/*`, dokumenty UI | Przyjęcie żądań, autoryzacja JWT, walidacja wejścia (schema + semantic guard) |
 | **Application** (aplikacja) | Orkiestrator `main_jdg.rego`, Sharded Router, Decision Composer, tryby AUTO_POST/SUGGEST/ASK_USER | Koordynacja przepływu decyzyjnego, wybór ścieżki ewaluacji, kompozycja odpowiedzi |
-| **Domain** (domena) | 472 pliki Rego w pakietach `jdg.*` (VAT, PIT, ZUS, KKS, UoR, PCC, cross-border…), warstwa mikro-atomowa | Reguły biznesowe i prawne, pierwszeństwo dopasowania (First-Match-Wins), temporalność |
+| **Domain** (domena) | 543 pliki Rego w drzewie `rules/` (pakietach `jdg.*`: VAT, PIT, ZUS, KKS, UoR, PCC, cross-border…), warstwa mikro-atomowa, 53 pakietów `v3_*.rego` | Reguły biznesowe i prawne, pierwszeństwo dopasowania (First-Match-Wins), temporalność |
 | **Infrastructure** (infrastruktura) | DuckDB RuleStore, bundle OPA, NATS, Redis, agenci AI, integracje zewnętrzne (KSeF, MF, CEIDG, NBP, GUS, ISAP), CI/CD | Pamięć, komunikacja, ekstrakcja danych, monitorowanie prawa |
 
 > **Zasada zależności:** warstwy wyżej mogą zależeć od warstw niżej, nigdy odwrotnie. Reguły domenowe **nie** zawierają logiki I/O — prógów nie czyta się z DuckDB bezpośrednio w Rego, tylko przez `data.thresholds.jdg.*`.
@@ -190,6 +192,8 @@ System mapuje klasyczne warstwy DDD na konkretne artefakty:
 ---
 
 ## 4. Wzorce projektowe
+Katalog wzorców z odwołaniami do ADR — każdy wzorzec opisuje, co rozwiązuje i gdzie jest egzekwowany w kodzie.
+
 
 ### 4.1. First-Match-Wins (else-chain) — ADR-001
 
@@ -318,6 +322,8 @@ Krytyczne werdykty mają `immutable_verdict: true`, są podpisywane HMAC-SHA256,
 ---
 
 ## 5. Diagramy sekwencji — procesy krytyczne
+Sekwencje Mermaid dla dwóch procesów krytycznych: przetwarzanie faktury od wpływu do decyzji oraz proces decyzyjny (tryby automatyzacji).
+
 
 ### 5.1. Przetwarzanie faktury — od wpływu do decyzji
 
@@ -565,5 +571,69 @@ policies/
 | Deduplikacja rule_id (makro/mikro) | ✅ domknięta falą P50 (unikalność w raportach P45–P59) |
 | Natywne testy Rego | ✅ 100+ plików testowych (manifest_v2: 109) + kampania V3 P51–P59 |
 | Sharded Router w `policies/` | ✅ mirror zsynchronizowany (hash-parity P48, 4/4 w P59/P60) |
+
+---
+
+## 11. Warstwa V3 — forteca, self-learning i recertyfikacja (2026-09)
+
+> Synonimy: `forteca`, `v3 architecture`, `p131`, `p132`, `final_verdict_p132`, `self-learning`, `recertification`.
+
+Kampania V3 (P00–P68, 69/69 WDROŻONY_100) dokłada do architektury **cztery elementy**:
+
+| Element | Artefakt | Rola architektoniczna |
+|---|---|---|
+| **Progi V3 (ADR-002)** | `rules/thresholds_jdg.rego` — bloki `v3_pNN` (np. `v3_p67`: 19 kluczy, `v3_p68`: 19 kluczy) z `valid_from` | zero hardcoded w analizach V3; czytane przez silniki OPA Data API |
+| **Pakiety analiz V3** | 53 pliki `rules/v3_*.rego` (kontrakty, rejestry naprawcze, self-learning P67, recertyfikacja P68) | 12 analiz I01–I12 + router else-chain na część; fail-closed; zero AUTO_POST |
+| **Wiring orkiestratora** | `main_jdg.rego` — `final_verdict_p131` (P67) → **`final_verdict_p132` (P68) + POST-MERGE anchor** | każda część podpina się łańcuchowo; kotwica aktualizowana w testach |
+| **Dane V3** | `tools/v3_p68_settlement.json` (23 rejestry P45–P67 jako DANE), `tools/v3_p67_learning_data.json` (7 źródeł), 862 bundli `bundles/v3_*` | rozliczenia i rejestry jako dane — logika tylko w Rego (zasada DANE vs LOGIKA) |
+
+**Pętla samouczenia (P67):** decyzje → klaster (powód×domena×kwota) → draft jako DANE → guardrails (SMT/Z3 → golden replay → 4-eyes 4 role ≤60 dni → epoka prawna P53) → lifecycle SHADOW (P07) → telemetria (P58) → dashboard → post-learning replay. AI proponuje, forteca decyduje — bramki są techniczne (BLOCK), nie proceduralne.
+
+**Recertyfikacja (P68):** rozliczenie 23 rejestrów P45–P67 (21 DOMKNIETY / 2 CZESCIOWY), hard gates 5/5 z pomiaru (m.in. `silent_auto_post_max=0` z rejestru P49), scoreboard 9/9 filarów, **certyfikat fortecy WYDANY** dla repo (produkcja jawna `NOT_CERTIFIED`), polityka odnowienia (≤90 dni / epoka prawna / deploy krytyczny).
+
+### 11.1. Pętla samouczenia (P67) — diagram przepływu
+
+```mermaid
+flowchart TD
+    A[Decyzje fortecy\naudit trail] --> B[Klaster powodów\npowód × domena × kwota]
+    B --> C[Draft reguły\njako DANE — nie kod]
+    C --> D{Guardrails}
+    D -->|SMT / Z3| E[Golden replay\nUVR = 0 wymagane]
+    E --> F[4-eyes review\n4 role ≤ 60 dni]
+    F --> G[Epoka prawna P53\ntemporalność]
+    G --> H[Lifecycle P07\nstart: SHADOW]
+    H --> I[Telemetria P58\n+ dashboard]
+    I --> J[Post-learning replay\ndecyzja o awansie]
+    J -->|AWANS| K[ACTIVE — reguła produkcyjna]
+    J -->|ODRZUCENIE| L[ARCHIVE — z powodem]
+    D -.->|BLOCK| L
+    E -.->|UVR > 0| L
+    F -.->|brak 4-eyes| L
+    style A fill:#e1f5fe
+    style K fill:#c8e6c9
+    style L fill:#ffcdd2
+```
+
+> Kluczowa zasada: **AI proponuje, forteca decyduje** — draft nigdy nie staje się regułą produkcyjną bez przejścia wszystkich bramek technicznych (BLOCK), a start zawsze w trybie SHADOW. Fail-closed: brak snapshotu → NEEDS_ADVICE, zero AUTO_POST.
+
+### 11.2. Recertyfikacja fortecy (P68) — diagram komisji
+
+```mermaid
+flowchart TD
+    S[Uruchomienie P68\n≤90 dni / epoka P53 / deploy P38] --> R1[Rozliczenie 23 rejestrów\nP45–P67 — jako DANE]
+    R1 --> R2[Hard gates — 5/5 Z POMIARU]
+    R2 -->|0 naruszeń| R3[Scoreboard 9 filarów\nzero DEKLAROWANYCH]
+    R3 --> R4[Truth-first: status produkcji\nNOT_CERTIFIED — jawne]
+    R4 --> V{Certyfikat}
+    V -->|WYDANY| C[Certyfikat fortecy repo\n+ mapa V4 i polityka odnowienia]
+    V -->|naruszenie| X[BLOCK — certyfikat wstrzymany\nluki P0 naprawa obowiązkowa]
+    C --> M[V4-F0 2×P0 → F1 LCI → F2 akty 2027 → F3 CI → F4 telemetria]
+    M -.-> S
+    style S fill:#e1f5fe
+    style C fill:#c8e6c9
+    style X fill:#ffcdd2
+```
+
+Mapa V4 (rezyduum → plan): **F0** 2×P0 + SLA → **F1** LCI 71.43→99 + ISAP → **F2** akty 2027 → **F3** CI → **F4** telemetria produkcyjna. Pełna tabela: [KAMPANIA_V3_PROMPTY_P00_P68.md §7](KAMPANIA_V3_PROMPTY_P00_P68.md).
 
 *Spójny z: README.md · MANIFEST_2_0.md · ADR 001–022 · api/openapi.yaml · DEVELOPER_GUIDE.md*

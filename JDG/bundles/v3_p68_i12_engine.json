@@ -1,0 +1,33 @@
+{
+  "analysis": "I12_campaign_post_mortem",
+  "checks": [
+    {
+      "name": "post_mortem_present",
+      "status": "OK",
+      "detail": "post-mortem jako dane w bundlu I12 + raport 9.04.4"
+    },
+    {
+      "name": "three_sections",
+      "status": "OK",
+      "detail": "sekcje: ['worked', 'did_not_work', 'change_in_v4']"
+    },
+    {
+      "name": "feeds_v4",
+      "status": "OK",
+      "detail": "change_in_v4 → mapa V4 (I04) — pętla uczenia procesu (P67)"
+    }
+  ],
+  "metrics": {
+    "post_mortem_present": true,
+    "sections": 3,
+    "change_in_v4_items": 5
+  },
+  "decision": "PASS",
+  "legal_basis": "prompt P68 Sekcja 10-I12; P67 (proces jako obiekt uczenia)",
+  "innovation": "V3-P68-I12",
+  "gate": "PASS",
+  "findings": [],
+  "generated_at": "2026-09-19T10:22:12.635786+00:00",
+  "part": "P68",
+  "slug": "RECERTYFIKACJA_FINALNA"
+}

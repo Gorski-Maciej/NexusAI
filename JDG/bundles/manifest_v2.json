@@ -1,14 +1,14 @@
 {
   "manifest_version": "2.0",
-  "generated_at": "2026-09-13T16:38:06.818902+00:00",
+  "generated_at": "2026-09-19T18:05:53.184258+00:00",
   "generator": "manifest_v2.py",
   "source": "realne skanowanie katalogów (rules/, tools/, tests/) — JEDNO ŹRÓDŁO PRAWDY",
   "rules": {
-    "rego_files": 535,
-    "rule_blocks": 13664,
-    "matched_blocks": 12479,
-    "unique_rule_ids": 12626,
-    "duplicate_rule_ids": 277,
+    "rego_files": 543,
+    "rule_blocks": 13802,
+    "matched_blocks": 12601,
+    "unique_rule_ids": 12734,
+    "duplicate_rule_ids": 299,
     "duplicates_sample": [
       "jdg.accounting.depreciation_one_off",
       "jdg.accounting.no_match",
@@ -314,7 +314,7 @@
       "rules/local_taxes/transport.rego": "12c4c0b1494ce58ea23f8df8981001f8c1d4b2e5ab834dfafa5ff859af27a3b1",
       "rules/local_taxes/v3_10_enterprise.rego": "d226d284d060a4c7609d9496bce5182ce4765959292a3cd27ff4805ce3f0b971",
       "rules/local_taxes.rego": "1e35767154b24e08b9d85d6fa03cfcd809c24ec68680c2c3281094bf65d48c37",
-      "rules/main_jdg.rego": "7325062d4dda850d54295604d88590573343a4153a03aeded438d0040d039048",
+      "rules/main_jdg.rego": "4d78dff04466b89b153569d74b6755cb2bd7795efa2a49f42591f9d30ba5b682",
       "rules/mdr/mdr_enterprise.rego": "ada23c77c71142609e7322fc2274375f8b257edca131e87b7ada84ab83fb66be",
       "rules/mdr/mdr_hallmarks.rego": "2670bba840f98132141ca42250fcdcc09ff800d1ce711097de9fedf7b23b5df5",
       "rules/mdr/plan44_mdr.rego": "12e82419eac65364d6e0657c37e8d08d9eae534c532ff56df4567c52c8c01628",
@@ -586,7 +586,7 @@
       "rules/temporal.rego": "d2a3d75391694a102b78abd74e2178bbd494a18f31e7ff1ada0c9837977a683b",
       "rules/tests_ci/quality_v3_17.rego": "5a0d983db2e33a3dcf68fff705ab428ea69e2a008feabf9211325e895729b171",
       "rules/tests_ci_quality_etap24_v1.rego": "348e51f0065080425979f90ac2cdd9a63cc542053ca88426cf0e39b55477f8dc",
-      "rules/thresholds_jdg.rego": "03e476119ed03b4872519bb4e75da897f5da68ca3f15dbaea5c28c1571f46be6",
+      "rules/thresholds_jdg.rego": "5fd2d0a81a6a1a6cc2e59cb103319d0f228f63f757c9ca1d60e615d556e8fb80",
       "rules/tools/quality_v3_16.rego": "b55f630fac299488ff14690aa9e8d2d735a67882b9e1ec6c243e52226cdf2780",
       "rules/tools_api_rulestore_bundles_etap25_v1.rego": "d15926e99c55a98a60f2b2146050ef2499c079723852514b26de4aea4650f62f",
       "rules/tp/plan44_tp.rego": "1c977d94613b070ebbbc86e9b659de0c85cc09daf6f0fe7b445d00d02978c0a7",
@@ -646,6 +646,14 @@
       "rules/v3_p58_observability_closure.rego": "86b2fa0e3e107c434cb822bf2b3c725bb011b02ace86e2d7ae1e55fb016953dc",
       "rules/v3_p59_security_closure.rego": "5efc9fcd888a850333cf593bfd61e103d1e8c5028b41c760cb9bdee3820b4285",
       "rules/v3_p60_documentation_closure.rego": "b32d4bf1f81b97e7f67d134eef40d8ed9a8c36c100a2139b9fdc9a79ad73a0fb",
+      "rules/v3_p61_integrations_closure.rego": "d88f73399fa7c746d1b3957730b93912849fced296bf0e534cfaea9196fc0ac0",
+      "rules/v3_p62_cashflow_closure.rego": "ddb69e70d6ea4c4b186517c48c57d5e0f48729503321899d9043f7ee49bee2af",
+      "rules/v3_p63_rbac_multitenant_closure.rego": "2aaea9c1b48021e39ae91f4ebeafe8f36b1d0f981e9444d48126fcfe9e47f375",
+      "rules/v3_p64_luka_sweep.rego": "0fe45f115ae4d65e1d179eaccb47daa0a4127e401de5d0218f69d2ce50a26a59",
+      "rules/v3_p65_tool_forge.rego": "d7172d711b71d4b5b67dab44218318aa2a6c32fee67496d258d430c38a165195",
+      "rules/v3_p66_chaos_resilience.rego": "48b99bb9565e08f5876a89d8b8516fe0b8f006601f045457ae49e5d34db6b7dc",
+      "rules/v3_p67_self_learning.rego": "6687a3ab68239f527c8feb1fa694d7c5de5dc7054bac97fb1f228687b424443f",
+      "rules/v3_p68_recertification_final.rego": "5149773b9a523e061605fb368c4aa5dd8cf9a473218fe0b5410b33676fa18de3",
       "rules/validation.rego": "7fdb119701a4dc5b7c958c611e737ebafeb1c1cc0b4b8ca4383a56df930c6289",
       "rules/vat/deductions.rego": "7858b9de3622cba1be542fc8e2314d5968db5ff5467fbbb3323f5fa63dd343c8",
       "rules/vat/enterprise_vat_bridge.rego": "c158ab7ad11e2f06932db3634884f5965e92eb64234b597e06ea8755dd849082",
@@ -2687,6 +2695,38 @@
         "blocks": 20
       },
       {
+        "file": "rules/v3_p61_integrations_closure.rego",
+        "blocks": 19
+      },
+      {
+        "file": "rules/v3_p62_cashflow_closure.rego",
+        "blocks": 18
+      },
+      {
+        "file": "rules/v3_p63_rbac_multitenant_closure.rego",
+        "blocks": 18
+      },
+      {
+        "file": "rules/v3_p64_luka_sweep.rego",
+        "blocks": 17
+      },
+      {
+        "file": "rules/v3_p65_tool_forge.rego",
+        "blocks": 17
+      },
+      {
+        "file": "rules/v3_p66_chaos_resilience.rego",
+        "blocks": 18
+      },
+      {
+        "file": "rules/v3_p67_self_learning.rego",
+        "blocks": 3
+      },
+      {
+        "file": "rules/v3_p68_recertification_final.rego",
+        "blocks": 20
+      },
+      {
         "file": "rules/validation.rego",
         "blocks": 9
       },
@@ -2825,7 +2865,7 @@
     ]
   },
   "tools": {
-    "python_tools": 994,
+    "python_tools": 1033,
     "tools_list": [
       "accounting_docs_compliance.py",
       "accounting_report09_gate.py",
@@ -3770,6 +3810,45 @@
       "v3_p59_common.py",
       "v3_p59_engines.py",
       "v3_p59_run_all.py",
+      "v3_p60_common.py",
+      "v3_p60_engines.py",
+      "v3_p60_run_all.py",
+      "v3_p61_common.py",
+      "v3_p61_engines.py",
+      "v3_p61_run_all.py",
+      "v3_p62_common.py",
+      "v3_p62_engines.py",
+      "v3_p62_run_all.py",
+      "v3_p63_common.py",
+      "v3_p63_engines.py",
+      "v3_p63_run_all.py",
+      "v3_p64_common.py",
+      "v3_p64_engines.py",
+      "v3_p64_rego_static_gate.py",
+      "v3_p64_run_all.py",
+      "v3_p64_sweep_engine.py",
+      "v3_p65_adoption_metrics.py",
+      "v3_p65_common.py",
+      "v3_p65_doc_generator.py",
+      "v3_p65_engines.py",
+      "v3_p65_rego_static_gate.py",
+      "v3_p65_rule_to_tests.py",
+      "v3_p65_run_all.py",
+      "v3_p65_semantic_diff.py",
+      "v3_p65_tool_contract.py",
+      "v3_p65_worm_tamper_test.py",
+      "v3_p66_common.py",
+      "v3_p66_engines.py",
+      "v3_p66_rego_static_gate.py",
+      "v3_p66_run_all.py",
+      "v3_p67_common.py",
+      "v3_p67_engines.py",
+      "v3_p67_rego_static_gate.py",
+      "v3_p67_run_all.py",
+      "v3_p68_common.py",
+      "v3_p68_engines.py",
+      "v3_p68_rego_static_gate.py",
+      "v3_p68_run_all.py",
       "v3_parts_data_a.py",
       "v3_parts_data_b.py",
       "v3_registry_of_registries.py",
@@ -3930,19 +4009,17 @@
   "completeness_score": 50,
   "declared_sources": {
     "rego_files": {
-      "README.md": 439,
-      "MANIFEST.md": 383,
-      "COVERAGE_REPORT.md": 176
+      "README.md": 543,
+      "MANIFEST.md": 543,
+      "COVERAGE_REPORT.md": 543
     },
     "rule_ids": {
-      "README.md": 11452,
-      "bundles/manifest.json": 10878,
-      "unified_plan_v8.yaml": 10827
+      "docs/MANIFEST_2_0.md": null,
+      "bundles/manifest_v2.json": null
     },
     "tools": {
-      "README.md": 57,
-      "OPA_JAKO_SYSTEM_P21.md": 98,
-      "KATALOG_NARZEDZI.md": 130
+      "README.md": 1033,
+      "KATALOG_NARZEDZI.md": 1033
     }
   },
   "slo_targets": {

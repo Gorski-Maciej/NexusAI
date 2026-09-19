@@ -944,35 +944,35 @@
       "slug": "SELF_LEARNING",
       "prompt": "V3_PROMPT_P67_SELF_LEARNING.txt",
       "report": "RAPORT_V3_P67_SELF_LEARNING.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
-      "luki_p1": 0,
-      "luki_p2": 0,
-      "luki_p3": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": "",
-      "auto_recheck": true
+      "luki_p1": 1,
+      "luki_p2": 2,
+      "luki_p3": 4,
+      "innovations": 12,
+      "implemented_at": "2026-09-19T09:33:40.498377+00:00",
+      "notes": "SELF-LEARNING: 12 innowacji I01-I12; pętla wiedzy decyzje->klaster(powod/domkwota)->draft DANE->guardrails SMT/Z3+golden replay+4-eyes(4 role,<=60dni)->epoka prawna P53->lifecycle P07 SHADOW->telemetria P58->dashboard->post-learning replay; rego 12 analiz + router else-chain (467001-467012) + thresholds ADR-002 (19 kluczy) + wiring p131 + mirrory hash-parity; silniki z PRAWDZIWYCH zrodel (P11 certyfikaty, P10 golden 31+31, P07 registry, P35 feedback, P53 epoki, P51 pustynie, P58, warstwa AI P33, WORM P65); rejestr danych uczacych v3_p67_learning_data.json (7 zrodel, legal_reviews_p47=plan V4); natywny opa test 19/19 PASS + pytest 22/22 + regresja kampanii 517 passed; raport RAPORT_V3_P67_SELF_LEARNING.txt (9.01-9.16, T1-T12); luki P0=0/P1=1/P2=2/P3=4; kontrakty K1-K6 -> P68",
+      "auto_recheck": false
     },
     "P68": {
       "slug": "RECERTYFIKACJA_FINALNA",
       "prompt": "V3_PROMPT_P68_RECERTYFIKACJA_FINALNA.txt",
       "report": "RAPORT_V3_P68_RECERTYFIKACJA_FINALNA.txt",
-      "status": "NIE_WDROŻONY",
+      "status": "WDROŻONY_100",
       "luki_p0": 0,
-      "luki_p1": 0,
-      "luki_p2": 0,
-      "luki_p3": 0,
-      "innovations": 0,
-      "implemented_at": null,
-      "notes": "",
-      "auto_recheck": true
+      "luki_p1": 1,
+      "luki_p2": 2,
+      "luki_p3": 3,
+      "innovations": 12,
+      "implemented_at": "2026-09-19T10:45:12.834945+00:00",
+      "notes": "RECERTYFIKACJA FINALNA: 12 innowacji I01-I12; hard gates 5/5 Z POMIARU (silent_auto_post_max=0 z P49, duplikaty 0, ADR-002 valid_from, mirror sha256 3/3, legal_basis_version) -> certyfikat WYDANY z ograniczeniami; rozliczenie 23 rejestrow P45-P67 (settlement jako DANE, 21 DOMKNIETY / 2 CZESCIOWY: P49+P50 z P0 rezydualnym -> fala V4-F0); scoreboard 9 filarow definicji sukcesu (9 dowodowych, 0 deklaratywnych, truth-first I11: production NOT_CERTIFIED jawne); mapa rezydualna V4 (F0->F1 LCI 71.43->99 + ISAP -> F2 akty 2027 -> F3 CI -> F4 telemetria); zamrozone 8 metryk sukcesu; WORM+slot podpisu; polityka odnowienia (90 dni/epoka P53/deploy P38); owner attestation slot (Q01); knowledge transfer 6 sekcji; self-portrait; post-mortem kampanii; rego 12 analiz + router (468001-468012) + thresholds ADR-002 (19 kluczy) + wiring p132 + kotwice p131->p132 w 13 testach + mirrory hash-parity; natywny opa test 23/23 PASS + pytest 23/23 + regresja 540 passed; raport RAPORT_V3_P68_RECERTYFIKACJA_FINALNA.txt (9.01-9.16, T1-T12, syntеза finalna); KAMPANIA V3: 69/69 = 100%",
+      "auto_recheck": false
     }
   },
   "summary": {
     "total": 69,
-    "wdrozony_100": 67,
-    "nie_wdrozony": 2,
-    "progress_pct": 97.1
+    "wdrozony_100": 69,
+    "nie_wdrozony": 0,
+    "progress_pct": 100.0
   }
 }

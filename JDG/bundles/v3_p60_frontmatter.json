@@ -3,7 +3,7 @@
     "schema": "jdg.v3_p60.documentation.audit.v1",
     "part": "P60",
     "slug": "DOKUMENTACJA_DOMKNIECIE",
-    "generated_at": "2026-09-13T19:29:07.597273+02:00",
+    "generated_at": "2026-09-19T18:04:42.430660+00:00",
     "analyses": {
       "I03_frontmatter_binding": "PASS"
     }
@@ -61,7 +61,7 @@
       ],
       [
         "docs/MANIFEST_2_0.md",
-        "python3 tools/manifest_v2.py --json"
+        "python3 tools/manifest_v2.py"
       ],
       [
         "docs/ROLE_MAPS.md",
@@ -73,6 +73,6 @@
       ]
     ],
     "gate": "PASS",
-    "generated_at": "2026-09-13T19:29:07.597273+02:00"
+    "generated_at": "2026-09-19T18:04:42.430660+00:00"
   }
 }

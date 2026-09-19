@@ -1,9 +1,10 @@
 # 🎯 Zunifikowany Plan Wdrożenia Modułu JDG — v8.0
 
 > **Scalenie 67 dokumentów Plan OPA w jeden nurt**
-> **Data:** 2026-08-02 (aktualizacja: 2026-08-22) | **Generator:** auto z MANIFEST.md
-> **Stan faktyczny:** 490 plików / 11 855 unikalnych rule_id / 444 plików z matched:true
+> **Data:** 2026-08-02 (aktualizacja: 2026-09-19) | **Generator:** auto z MANIFEST.md
+> **Stan faktyczny:** 543 pliki Rego w drzewie `rules/` / 12 111 unikalnych rule_id (MANIFEST, regen. 2026-09-19) / 288 pytest (204 auto + 84 root) + 278 testów natywnych Rego
 > **Certyfikacja końcowa:** ETAP 28/29 — `WDROZONY_100` (2026-08-22, 14/14 bramek)
+> **Kampania V3:** P00–P68 — **69/69 WDROŻONY_100** (2026-09-19) — patrz [KAMPANIA_V3_PROMPTY_P00_P68.md](KAMPANIA_V3_PROMPTY_P00_P68.md)
 
 ---
 
@@ -15,7 +16,7 @@ Plan OPA zawiera 67 dokumentów z wieloma konkurującymi strategiami:
 |---|----------|-----------|:------:|
 | 1 | `00_PLAN_STRUKTURA.md` | 240 reguł, 13 faz | 📐 Fundament |
 | 2 | `24_JDG_COMPLETE_INDEX.md` | 47 reguł ID | 🔴 DEPRECATED |
-| 3 | `38c_JDG_CANONICAL_MAP.md` | ~779 reguł | ⭐ ŹRÓDŁO PRAWDY (plan bazowy — PRZEKROCZONY: 11 855) |
+| 3 | `38c_JDG_CANONICAL_MAP.md` | ~779 reguł | ⭐ ŹRÓDŁO PRAWDY (plan bazowy — PRZEKROCZONY: 12 111) |
 | 4 | `41_JDG_MEGA_MATRIX_7000_RULES.md` | ~7000 Micro | 🎯 Horyzont 2027+ |
 | 5 | `45_JDG_HYPER_GRANULARITY.md` | ~700 atomowych | 🧪 Eksperyment |
 
@@ -26,11 +27,12 @@ Plan OPA zawiera 67 dokumentów z wieloma konkurującymi strategiami:
 ## Stan Faktyczny (v8.0 — aktualizacja 2026-08-30)
 
 ```
-STAN OBECNY:  490 plików Rego, 11 855 unikalnych rule_id
-              444 pliki z matched:true, 24 inicjatyw S1-S24
-              298 narzędzi, 198 testów pytest, 207 testów natywnych Rego
-              22 audit-state (ETAP 06-28), 13 migracji, 29/29 raportów GLM52 WDROZONY_100
-CEL:          779 reguł kanonicznych (mapa 38c) — PRZEKROCZONY (11 855)
+STAN OBECNY:  543 plików Rego w drzewie rules/ (284 w katalogu głównym), 12 111 unikalnych rule_id (MANIFEST regen. 2026-09-19)
+              24 inicjatywy S1-S24, 1033 narzędzi Python
+              288 testów pytest (204 auto + 84 root), 278 testów natywnych Rego
+              22 audit-state (ETAP 06-28), 13 migracji (58 tabel), 29/29 raportów GLM52 WDROZONY_100
+              KAMPANIA V3: 69/69 WDROŻONY_100 (P00–P68, ledger 2026-09-19)
+CEL:          779 reguł kanonicznych (mapa 38c) — PRZEKROCZONY (12 111)
 STATUS:       Fazy A/B/C wykonane lub przekroczone; ETAP 28/29 certyfikacja końcowa WDROZONY_100
 HORYZONT:     7000 reguł Micro (Dual-Layer — zrealizowane w rules/micro/, patrz ADR-010)
 ```
@@ -38,6 +40,8 @@ HORYZONT:     7000 reguł Micro (Dual-Layer — zrealizowane w rules/micro/, pat
 ---
 
 ## 6 Faz Wdrożenia — v8.0
+Każda faza: zadania, status i Definition of Done — z licznikami aktualnymi na datę nagłówka.
+
 
 ### Faza 1: Domknięcie Kanoniczne (Doc 50 → 95%)
 
@@ -76,7 +80,7 @@ HORYZONT:     7000 reguł Micro (Dual-Layer — zrealizowane w rules/micro/, pat
 
 | # | Zadanie | Status | Metryka |
 |---|---------|:------:|---------|
-| 4.1 | Testy Rego dla kluczowych pakietów (VAT, PIT, ZUS, KKS) | ✅ (2026-08-02) | >=20 plików _test.rego (obecnie **207** natywnych + 198 pytest) |
+| 4.1 | Testy Rego dla kluczowych pakietów (VAT, PIT, ZUS, KKS) | ✅ (2026-08-02) | >=20 plików _test.rego (obecnie **278** natywnych + 288 pytest) |
 | 4.2 | Pre-commit hook: validate_rules + manifest --check | ✅ (2026-08-02) | .pre-commit-config.yaml |
 | 4.3 | GitHub Action: CI dla dokumentacji | ⬜ | .github/workflows/jdg-docs.yml |
 | 4.4 | Testy regresyjne dla else-chain | ⬜ | Testy kolejności reguł |
@@ -99,7 +103,7 @@ HORYZONT:     7000 reguł Micro (Dual-Layer — zrealizowane w rules/micro/, pat
 |---|---------|:------:|
 | 6.1 | AI Agent — asystent podatkowy (LLM Bridge C2 rozszerzenie) | ⬜ |
 | 6.2 | Dashboard — metryki pokrycia i health | ⬜ |
-| 6.3 | API: /manifest, /coverage, /rules/{id}, /legal-coverage (R14) | ✅ (2026-08-02) | 17 endpointów OpenAPI 1.0.0 |
+| 6.3 | API: /manifest, /coverage, /rules/{id}, /legal-coverage (R14) | ✅ (2026-08-02) | 18 endpointów OpenAPI 1.0.0 |
 
 ---
 
@@ -138,12 +142,14 @@ HORYZONT:     7000 reguł Micro (Dual-Layer — zrealizowane w rules/micro/, pat
 
 | Etap | Pliki Rego | Unikalne rule_id | Pokrycie Doc 50 |
 |------|:----------:|:----------------:|:---------------:|
-| **Stan obecny (v8.0, 2026-08-30)** ✅ | 490 | 11 855 | 100% raportów GLM52 WDROZONY_100 |
+| **Stan obecny (v8.0, 2026-09-19)** ✅ | 543 (drzewo rules/) | **12 111** (44 duplikaty) | 100% raportów GLM52 WDROZONY_100 + 69/69 kampanii V3 |
 | Po Fazie 1 | 472 | ~11 900 | pełne mapowanie rule_id |
 | Po Fazie 2 | 472 | ~11 900 | klasyfikacja A/B/C aktualna |
-| Po Fazie 3 | 472 | ~11 805 | 0 duplikatów (obecnie 3) |
-| Po Fazie 4 | 490 | ~11 855 | 198 pytest + 207 testów Rego |
+| Po Fazie 3 | 472 | ~11 805 | 0 duplikatów (obecnie 44) |
+| Po Fazie 4 | 543 (drzewo rules/) | ~11 855 | 288 pytest + 278 testów Rego |
 | Po Fazie 5 | 490 | ~11 855 | bundle deployment weryfikowany |
+
+> ⚠️ Wiersze „Po Fazie 1–5” to **oryginalne projekcje planu v8.0** (2026-08-02) — pozostawione jako zapis historii; rzeczywisty rozwój (kampanie GLM 5.2 i V3) przeskoczył te kamienie (stan: wiersz „Stan obecny”).
 
 ## Roadmap Czasowy Q3-Q4 2026
 

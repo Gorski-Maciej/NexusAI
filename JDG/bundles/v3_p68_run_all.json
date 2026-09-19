@@ -1,0 +1,79 @@
+{
+  "schema": "nexusai.jdg.v3_p68.run_all.v1",
+  "part": "P68",
+  "slug": "RECERTYFIKACJA_FINALNA",
+  "generated_at": "2026-09-19T10:22:08.614536+00:00",
+  "phases": {
+    "engines": 12,
+    "rego": "PASS",
+    "static": "PASS"
+  },
+  "engines_run": 12,
+  "rego_gate": "PASS",
+  "static_gate": "PASS",
+  "hard_gates": {
+    "violated": 0,
+    "violated_gates": [],
+    "hard_gates_required": 5
+  },
+  "failures": [],
+  "gate": "PASS",
+  "results": {
+    "I01": {
+      "exit": 0,
+      "output": "{\"analysis\": \"I01_hard_gates\", \"decision\": \"PASS\", \"gate\": \"PASS\"}"
+    },
+    "I02": {
+      "exit": 0,
+      "output": "{\"analysis\": \"I02_register_settlement\", \"decision\": \"PASS\", \"gate\": \"PASS\"}"
+    },
+    "I03": {
+      "exit": 0,
+      "output": "{\"analysis\": \"I03_pillar_scoreboard\", \"decision\": \"PASS\", \"gate\": \"PASS\"}"
+    },
+    "I04": {
+      "exit": 0,
+      "output": "{\"analysis\": \"I04_residual_v4_map\", \"decision\": \"PASS\", \"gate\": \"PASS\"}"
+    },
+    "I05": {
+      "exit": 0,
+      "output": "{\"analysis\": \"I05_success_metric_freeze\", \"decision\": \"PASS\", \"gate\": \"PASS\"}"
+    },
+    "I06": {
+      "exit": 0,
+      "output": "{\"analysis\": \"I06_certificate_worm_signature\", \"decision\": \"PASS\", \"gate\": \"PASS\"}"
+    },
+    "I07": {
+      "exit": 0,
+      "output": "{\"analysis\": \"I07_renewal_policy\", \"decision\": \"PASS\", \"gate\": \"PASS\"}"
+    },
+    "I08": {
+      "exit": 0,
+      "output": "{\"analysis\": \"I08_owner_attestation\", \"decision\": \"PASS\", \"gate\": \"PASS\"}"
+    },
+    "I09": {
+      "exit": 0,
+      "output": "{\"analysis\": \"I09_knowledge_transfer_pack\", \"decision\": \"PASS\", \"gate\": \"PASS\"}"
+    },
+    "I10": {
+      "exit": 0,
+      "output": "{\"analysis\": \"I10_fortress_self_portrait\", \"decision\": \"PASS\", \"gate\": \"PASS\"}"
+    },
+    "I11": {
+      "exit": 0,
+      "output": "{\"analysis\": \"I11_truth_first_integrity\", \"decision\": \"PASS\", \"gate\": \"PASS\"}"
+    },
+    "I12": {
+      "exit": 0,
+      "output": "{\"analysis\": \"I12_campaign_post_mortem\", \"decision\": \"PASS\", \"gate\": \"PASS\"}"
+    },
+    "rego_opa_native": {
+      "exit": 0,
+      "output": "PASS: 23/23"
+    },
+    "static_gate": {
+      "exit": 0,
+      "output": "PASS: P68 static gate (12 kluczy I01–I12, progi ADR-002, wiring p132, mirror sync, testy natywne: 23)"
+    }
+  }
+}

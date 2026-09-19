@@ -4,7 +4,7 @@
 > **Generator:** Innowacja 6 — API Documentation Auto-Generator
 
 Silnik decyzyjny JDG oparty na OPA/Rego. Ewaluuje transakcje gospodarcze
-Jednoosobowej Działalności Gospodarczej przeciwko ~11 855 regułom podatkowym,
+Jednoosobowej Działalności Gospodarczej przeciwko 12 111 unikalnym regułom podatkowym (MANIFEST regen. 2026-09-19),
 ubezpieczeniowym i compliance (472 pliki Rego). Zwraca werdykt z pełnym drzewem proweniencji
 (A1) i łańcuchem przyczynowości temporalnej (A2).
 

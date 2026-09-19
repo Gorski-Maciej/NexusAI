@@ -1,5 +1,11 @@
 # NexusAI — Wirtualny Księgowy
 
+<div align="center">
+<img src="assets/logo.svg" alt="NexusAI — Wirtualny Księgowy" width="280">
+
+**Autonomiczna, lokalna platforma księgowa klasy Enterprise dla MŚP w Polsce**
+</div>
+
 > **NexusAI to nie aplikacja — to wirtualny księgowy.**
 > Autonomiczna, lokalna platforma księgowa klasy Enterprise dla MŚP w Polsce.
 
@@ -36,7 +42,7 @@ Pełna instrukcja krok po kroku: [`docs/QUICKSTART.md`](docs/QUICKSTART.md).
 | Funkcja | Opis |
 |---|---|
 | 🧾 **Księgowanie autonomiczne** | 5 Agentów AI analizuje fakturę i podejmuje decyzję: **AUTO_POST** (≥0.92), **SUGGEST** (≥0.75), lub **ASK_USER** (<0.75). Jeden poziom automatyzacji. |
-| ⚖️ **OPA/Rego Rule Engine** | **~11 855 reguł kanonicznych** JDG (490 plików `.rego`, Dual-Layer Multi-Pass, PASS 0–8 + POST-MERGE). Pokrycie: PIT, VAT, ZUS, KSeF, JPK, KKS, ulgi, crossborder, RODO, AML, KŚT, PKPiR, PCC, sukcesja. **ETAP 06–28 wdrożony w 100%** (kampania GLM 5.2 — 29/29 raportów, 22 audit-state, certyfikacja końcowa 2026-08-22: 18 domen — 13 CERTIFIED / 5 CONDITIONAL). Completeness Score **91/100** (MANIFEST 2026-08-30). 198 testów pytest + 207 testów natywnych Rego, Temporal Bundle Routing, Sharded Router O(1) p95 < 5 ms, Immutable Audit Trail (HMAC + Merkle), Decision Certificate F4, Legal Twin / Legal Knowledge Graph, Control Plane Rule Lifecycle. |
+| ⚖️ **OPA/Rego Rule Engine** | **12 111 unikalnych `rule_id`** JDG (543 plików `.rego` w drzewie `rules/`, Dual-Layer Multi-Pass, PASS 0–8 + POST-MERGE). Pokrycie: PIT, VAT, ZUS, KSeF, JPK, KKS, ulgi, crossborder, RODO, AML, KŚT, PKPiR, PCC, sukcesja. **ETAP 06–28 wdrożony w 100%** (kampania GLM 5.2 — 29/29 raportów, certyfikacja 2026-08-22: 18 domen — 13 CERTIFIED / 5 CONDITIONAL). **Kampania V3: 69/69 WDROŻONY_100 (2026-09-19, certyfikat fortecy WYDANY)** — kontrakty, rejestry naprawcze P45–P67, self-learning, recertyfikacja P68. 288 testów pytest (204 auto + 84 root) + 278 testów natywnych Rego, Temporal Bundle Routing, Sharded Router O(1) p95 < 5 ms, Immutable Audit Trail (HMAC + Merkle), Decision Certificate F4, Legal Twin / Legal Knowledge Graph, Control Plane Rule Lifecycle. |
 | 🔍 **OCR ensemble (4 silniki)** | Tesseract + PaddleOCR + docTR + EasyOCR z konsensusem głosowania i Nadzorcą AI. Wyższe **recall** niż pojedynczy VLM. |
 | 🤖 **5 Agentów AI (lokalnych)** | Orkiestrator (Granite 3.2 3B), Ekstrakcji Danych, Analityczny, Walidator Jakości, Środków Trwałych. 13 modeli GGUF. Cognitive Audit Trail, 4-Eyes Principle, Bayesian Trust Score. [Pełna specyfikacja →](docs/AGENTS.md) |
 | 📜 **Pełna zgodność KSeF** | Generowanie XML wg schematu `FA_VAT(2)`, walidacja XSD, wysyłka do API KSeF MF. |
@@ -72,9 +78,11 @@ Cała dokumentacja znajduje się w katalogu [`docs/`](docs/INDEX.md):
 | 17 | [Podręcznik użytkownika](docs/USER_GUIDE.md) | Instrukcja dla przedsiębiorcy |
 | 18 | [Słownik pojęć](docs/GLOSSARY.md) | Terminy księgowe i techniczne |
 | 19 | [FAQ](docs/FAQ.md) | Najczęstsze pytania |
-| 20 | [Moduł JDG (OPA/Rego)](JDG/README.md) | Silnik reguł podatkowych: 490 plików Rego, ~11 855 rule_id, Completeness 91/100, ETAP 06–28, kampania GLM 5.2 |
+| 20 | [Moduł JDG (OPA/Rego)](JDG/README.md) | Silnik reguł podatkowych: 543 plików Rego, 12 111 unikalnych rule_id, kampanie GLM 5.2 i V3 (69/69) |
+| 21 | [JDG — INDEX dokumentacji](JDG/docs/INDEX.md) | **Master spis: start wg roli, „gdzie jest…?”, katalog 85 dokumentów, źródła prawdy** |
 | 21 | [JDG — Kampania ETAP 10–28](JDG/docs/KAMPANIA_GLM52_ETAPY_10_28.md) | Audyty wdrożenia, certyfikacja końcowa (2026-08-22) |
-| 22 | [JDG — Spis dokumentacji](JDG/docs/STRUKTURA_PROJEKTU.md) | Dokumentacja techniczna modułu JDG |
+| 22 | [JDG — Kampania V3 (P00–P68)](JDG/docs/KAMPANIA_V3_PROMPTY_P00_P68.md) | 69 części WDROŻONY_100, certyfikat fortecy (2026-09-19), mapa V4 |
+| 23 | [JDG — Spis dokumentacji](JDG/docs/STRUKTURA_PROJEKTU.md) | Dokumentacja techniczna modułu JDG |
 
 ---
 

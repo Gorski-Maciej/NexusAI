@@ -2,7 +2,7 @@
 
 > **Status:** MIRROR SYNCHRONIZED — ETAP 26 (2026-08-22)  
 > **Wersja:** 2026.08 (mirror z `JDG/rules/`, hash-parity 0% drift)  
-> **Plik referencyjny:** `JDG/rules/` — źródło prawdy (490 plików, ~11 855 rule_id)  
+> **Plik referencyjny:** `JDG/rules/` — źródło prawdy (543 plików, 12 111 unikalnych rule_id — MANIFEST regen. 2026-09-19)  
 > **Pliki Rego (mirror):** 52 | **Linii kodu:** ~15 500
 
 ---

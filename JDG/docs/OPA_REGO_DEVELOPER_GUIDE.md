@@ -2,7 +2,7 @@
 
 > **Status:** v8.3 | **Data:** 2026-08-02 (aktualizacja: 2026-08-22)
 > **Przewodnik po konwencjach, strukturze i workflow dla deweloperów reguł Rego w NexusAI JDG**
-> **Stan reguł:** 490 plików / ~11 855 rule_id / 91/100 Completeness (MANIFEST 2026-08-30)
+> **Stan reguł:** 543 plików Rego w drzewie rules/ / 12 111 unikalnych rule_id / Completeness 83/100 (MANIFEST regen. 2026-09-19; kampania V3 69/69)
 
 ---
 
@@ -30,6 +30,8 @@ JDG/rules/
 ---
 
 ## 2. Konwencja Rule ID
+Format, przestrzenie nazw i zasady nadawania unikalnych identyfikatorów reguł (ADR-008).
+
 
 ### Format
 ```
@@ -153,6 +155,8 @@ else := {
 ---
 
 ## 6. Walidacja i testowanie
+Linter, walidator, testy natywne Rego i pytest — bramki jakości reguł.
+
 
 ### Walidacja składni
 ```bash

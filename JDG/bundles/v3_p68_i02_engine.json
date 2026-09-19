@@ -1,0 +1,40 @@
+{
+  "analysis": "I02_register_settlement",
+  "checks": [
+    {
+      "name": "registers_total",
+      "status": "OK",
+      "detail": "rozliczonych rejestrów: 23 (wymagane >= 23)"
+    },
+    {
+      "name": "each_has_status_evidence_trend",
+      "status": "OK",
+      "detail": "bez statusu/dowodu/trendu: brak"
+    },
+    {
+      "name": "ledger_status_consistent",
+      "status": "OK",
+      "detail": "rejestry z rozbieżnym statusem ledger: brak"
+    },
+    {
+      "name": "domkniecie_trend",
+      "status": "OK",
+      "detail": "DOMKNIETY=21, CZESCIOWY=2; P0 w rejestrach: ['P49', 'P50']"
+    }
+  ],
+  "metrics": {
+    "registers_settled": 23,
+    "registers_missing": [],
+    "domkniety": 21,
+    "czesciowy": 2,
+    "registers_missing_count": 0
+  },
+  "decision": "PASS",
+  "legal_basis": "prompt P68 Sekcja 10-I02; RODO art. 5.2 (rozliczalność) [NIEZWERYFIKOWANE — ISAP]",
+  "innovation": "V3-P68-I02",
+  "gate": "PASS",
+  "findings": [],
+  "generated_at": "2026-09-19T10:22:09.295625+00:00",
+  "part": "P68",
+  "slug": "RECERTYFIKACJA_FINALNA"
+}

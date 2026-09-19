@@ -2,7 +2,7 @@
 artifacts: [docs/ARCHITECTURE.md, docs/ARCHITEKTURA.md]
 status: ACTIVE
 owner: core
-verified: 2026-09-13
+verified: 2026-09-19
 verify_cmd: python3 tools/v3_p60_engines.py I11
 -->
 
@@ -186,7 +186,7 @@ temporal_validity := {
 | Metryka | Definicja | Wartość (2026-08-22) |
 |---------|-----------|----------------------|
 | **M1: Bloki matched:true** | Liczba wystąpień `"matched": true` we wszystkich plikach Rego | **11 811** |
-| **M2: Unikalne rule_id** | Liczba unikalnych identyfikatorów reguł (dedup) | **11 855** |
+| **M2: Unikalne rule_id** | Liczba unikalnych identyfikatorów reguł (dedup) | **12 111** |
 | **M3: Punkty Doc 50** | Liczba punktów prawnych z Doc 50 zmapowanych na rule_id | 29/29 raportów GLM52 WDROZONY_100 |
 
 **Źródło jednej prawdy:** MANIFEST.md (auto-generowany przez generate_manifest.py v8.0)
@@ -205,7 +205,7 @@ temporal_validity := {
 - `opa test JDG/tests/ -v` w CI
 - Pokrycie testami: cel >=20 plików testowych do Q4 2026
 
-**Aktualny stan:** ✅ **207 natywnych plików testowych Rego** w `JDG/tests/` (w tym `tests/rego/` 103 + `tests/rego/micro/` 25 + testy natywne ETAP 14–28) + **198 testów pytest** (`tests/`, `tests/auto/`). Cel >=20 plików przekroczony ~10×.
+**Aktualny stan:** ✅ **278 natywnych plików testowych Rego** w `JDG/tests/` (w tym `tests/rego/` 276 + `tests/` 2, `tests/rego/micro/` 25, testy ETAP 14–28 i kampanii V3) + **288 testów pytest** (`tests/auto/` 204 + `tests/` 84). Cel >=20 plików przekroczony ~14×.
 
 **Status wdrożenia:** ✅ IMPLEMENTED (Faza 4 — przekroczone; testy natywne `test_native_*.rego` dla każdego ETAP 14–28)
 

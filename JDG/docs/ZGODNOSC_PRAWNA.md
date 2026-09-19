@@ -1,6 +1,6 @@
 # ⚖️ NexusAI JDG — Zgodność z Przepisami (Compliance)
 
-> **Dokument:** ZGODNOSC_PRAWNA.md | **Pokrycie:** 13 aktów prawnych, ~11 855 reguł (490 plików Rego)
+> **Dokument:** ZGODNOSC_PRAWNA.md | **Pokrycie:** 13 aktów prawnych, 12 111 unikalnych reguł (543 plików Rego w drzewie rules/, MANIFEST regen. 2026-09-19)
 > **Cel:** Jak system zapewnia zgodność z przepisami księgowymi i podatkowymi, jak obsługuje KSeF/JPK/deklaracje, jak odtworzyć dowolną decyzję (ścieżka audytu) i jak długo przechowuje dane.
 
 > ⚠️ **Zastrzeżenie:** Ten dokument opisuje funkcje silnika reguł i ich podstawy prawne. Nie stanowi porady prawnej. Ostateczną interpretację przepisów zawsze weryfikuj z doradcą podatkowym.
@@ -53,6 +53,8 @@
 ---
 
 ## 3. Zgodność z przepisami księgowymi (UoR, IFRS, GAAP)
+PKPiR, pełna księgowość UoR i relacja do IFRS/GAAP — z mapowaniem na moduły reguł.
+
 
 ### 3.1. PKPiR (podatkowa księga przychodów i rozchodów)
 
@@ -104,6 +106,8 @@
 ---
 
 ## 4. KSeF — Krajowy System e-Faktur
+Generowanie XML, walidacja XSD, firewall i wysyłka do API KSeF — maszyną stanów w regułach.
+
 
 ### 4.1. Wymogi i progi (z `jdg_tax_thresholds`)
 
@@ -201,6 +205,8 @@ sequenceDiagram
 ---
 
 ## 7. Ścieżka audytu — jak odtworzyć dowolną decyzję
+Kryptograficzna rekonstrukcja werdyktu: decision_hash, Merkle-proof, time-travel — krok po kroku.
+
 
 ### 7.1. Niezmienny log (A1 + ADR-006)
 
@@ -258,6 +264,8 @@ sequenceDiagram
 ---
 
 ## 8. Przechowywanie danych — okresy retencji
+Okresy retencji zgodne z prawem podatkowym i RODO, egzekwowane przez `rules/retention.rego`.
+
 
 ### 8.1. Reguły retencji (`rules/retention.rego`)
 
@@ -315,6 +323,22 @@ sequenceDiagram
 | Retencja | §8 + `rules/retention.rego` |
 | KKS | §9 + `rules/kks.rego`, `rules/micro/kks/` |
 | Podstawy prawne reguł | `rules/_metadata_jdg.rego` + `docs/LEGAL_REFERENCE_ACTS.md` + `docs/LEGAL_COVERAGE.md` |
+
+---
+
+## 11. Certyfikacja zgodności po kampanii V3 (P68, 2026-09-19)
+
+> Synonimy: `certyfikacja`, `recertification`, `P68`, `NOT_CERTIFIED`, `truth-first`, `epoka prawna`.
+
+| Element | Status | Dowód |
+|---|---|---|
+| **Certyfikat fortecy (repo)** | 🟢 **WYDANY** (2026-09-19) | rozliczenie 23 rejestrów naprawczych P45–P67 (`tools/v3_p68_settlement.json`); hard gates 5/5 **z pomiaru** (0 naruszeń); scoreboard 9/9 filarów definicji sukcesu |
+| **Certyfikat produkcyjny** | 🔴 **NOT_CERTIFIED** (jawne, truth-first) | brak pętli kwartalnej i zbioru telemetrii produkcyjnej — domknięcie w fali V4-F4 |
+| **Podstawy prawne** | ⚠️ OZNACZONE (nie „zweryfikowane online") | weryfikacja w ISAP zaplanowana w fali V4-F1; rejestr źródeł: [LEGAL_SOURCE_REGISTRY.md](LEGAL_SOURCE_REGISTRY.md) |
+| **Luki P0 rezydualne** | 2 szt. (P49-L01: 12 ogonów SUGGEST-tail; P50-L01: 217 parse errors) | plan fali V4-F0; ogony SUGGEST ≠ cichy AUTO_POST (pomiar P49: `silent_auto_post_max=0`) |
+| **Polityka odnowienia** | ≤90 dni / zmiana epoki prawnej (P53) / krytyczny deploy (P38) — whichever first | `tools/v3_p68_run_all.py` + hard gates + scoreboard |
+
+**Rozliczenie 23 rejestrów naprawczych:** 21 **DOMKNIETY** / 2 **CZESCIOWY** (P49, P50 — rezyduum P0 do V4-F0), każdy wpis z dowodem (bundle bramki lub rejestr części z luki rezydualnymi). Pełna tabela: [KAMPANIA_V3_PROMPTY_P00_P68.md](KAMPANIA_V3_PROMPTY_P00_P68.md).
 
 ---
 

@@ -216,7 +216,7 @@ def test_wiring_main_jdg():
     txt = (RULES / "main_jdg.rego").read_text(encoding="utf-8")
     assert "import data.jdg.v3_p55_zus_closure" in txt
     assert "final_verdict_p119 = safe_merge(final_verdict_p118" in txt
-    assert "final_verdict_p131" in txt.split("final_verdict_post_merge = safe_merge(")[1][:400]  # kotwica p130→p131 (P67)
+    assert "final_verdict_p132" in txt.split("final_verdict_post_merge = safe_merge(")[1][:400]  # kotwica p131→p132 (P68)
 
 
 # ═══ 17. Fail-closed statycznie ═══

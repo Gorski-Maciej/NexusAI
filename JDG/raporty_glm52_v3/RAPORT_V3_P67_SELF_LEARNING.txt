@@ -1,0 +1,744 @@
+=================================================================================
+RAPORT V3 P67 — SELF-LEARNING FORTECY — PĘTLA WIEDZY Z DECYZJI I WYJĄTKÓW
+=================================================================================
+Seria:            NEXUSAI JDG — V3 FORTRESS CAMPAIGN (GLM 5.2 / sesja wdrożeniowa)
+Data raportu:     2026-09-19
+Prompt:           JDG/prompty_v3/V3_PROMPT_P67_SELF_LEARNING.txt (V3.0, 2026-09-02)
+Dokumenty święte: JDG/docs/ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1),
+                  JDG/docs/WIZJA_OPA_ENTERPRISE_V2.md (V2) — nadrzędne.
+Status części:    WDROŻONY_100 (2026-09-19; dowody w 9.03 i T1; ledger --mark P67)
+Tryb sesji:       sesja wdrożeniowa (wyjątek od protokołu 01/02 promptu: wdrożono
+                  i zweryfikowano artefakty; raport dokumentuje stan PO wdrożeniu).
+Dowody wykonania: bin/opa test (natywne) 19/19 PASS; tools/v3_p67_run_all.py gate
+                  PASS (12/12 silników); pytest P67 22/22; regresja kampanii
+                  517 passed (2 skip legacy); mirrory policies/ hash-parity sha256.
+
+Wymagania nadrzędne (przypomnienie przed każdą sekcją): głębokie myślenie,
+głęboka analiza, poziom ENTERPRISE, innowacje wyprzedzające profesjonalistów,
+maksymalne domknięcie braków — zero duplikacji, zero fikcji, fail-closed.
+
+=================================================================================
+9.01 EXECUTIVE SUMMARY
+=================================================================================
+
+Ocena dojrzałości części P67: ENTERPRISE (wdrożona, udowodniona dowodami wykonania).
+
+Pętla samouczenia fortecy działa jako SYSTEM, nie jako zbiór skryptów:
+  decyzje (AUTO_POST / NEEDS_ADVICE) → klasterizacja (powód/domena/pas kwotowy)
+  → draft sugestii jako DANE → guardrails (SMT/Z3 P33 → golden replay P10 →
+  4-eyes → epoka prawna P53) → lifecycle P07 (SHADOW→CANDIDATE→ACTIVE, zero
+  bypass) → telemetria P58 → dashboard uczenia → replay po wdrożeniu reguły (P10).
+AI proponuje — forteca decyduje; żadna sugestia nie może obejść SMT/Z3, replay
+ani 4-eyes (bramki techniczne w Rego, nie proceduralne).
+
+TOP-10 rekomendacji (wszystkie WDROŻONE w tej części; szczegóły w 9.07):
+  1. V3-P67-I01 Advice-to-rule pipeline (klaster→draft→SMT/Z3→replay→4-eyes→SHADOW).
+  2. V3-P67-I02 Correction-rate per rule (korekty AUTO_POST sprzężone z rule_id).
+  3. V3-P67-I03 Learning telemetry w P58 (6 metryk, jedno źródło prawdy).
+  4. V3-P67-I04 Suggestion expiry by law epoch (epoka P53 unieważnia sugestie; BLOCK).
+  5. V3-P67-I05 Guardrails enforcement tests (sugestia bez walidacji = BLOCK).
+  6. V3-P67-I06 Learning dashboard (klaster→sugestia→status→efekt).
+  7. V3-P67-I07 Data readiness register (7 źródeł; status + plan per źródło).
+  8. V3-P67-I08 Human feedback loop (oceny operatorów P35-I09 jako dane uczące).
+  9. V3-P67-I09 Learning safety metrics (dowody odrzuceń przez guardrails).
+ 10. V3-P67-I10–I12 Knowledge base / Curriculum ROI / Post-learning replay.
+
+Liczba luk wg krytyczności: P0=0, P1=1, P2=2, P3=4 (rejestr 9.06).
+Co udowodniono: pipeline uczenia z bramkami technicznymi (testy Rego natywne),
+dane uczące z PRAWDZIWYCH źródeł (certyfikaty P11, golden P10, epoki P53,
+feedback P35), metryki w konwencji ADR-002, fail-closed pełny (zero cichych
+AUTO_POST — asercja w każdej analizie), wiring p131 w main_jdg + hash-parity
+mirror. Co pozostało [NIEZWERYFIKOWANE]: podstawy prawne (ISAP/RCL/MF) — rejestr
+9.05 i mediacje 9.11; wizualny dashboard UI (I06 = dane+wiersze, nie frontend).
+
+=================================================================================
+9.02 ZAKRES I OGRANICZENIA
+=================================================================================
+
+Przeanalizowano (grupy z Sekcji 6 promptu — wszystkie 24 pliki + 6 mirror):
+  6.1 Narzędzia AI: adaptive_trust_score.py, judgment_predictor.py,
+      ai_augmented_rule_generator.py, llm_bridge.py, smt_z3_verification.py,
+      neural_mesh_innovations_auditor.py, digital_twin_simulator.py,
+      confidence_dashboard.py.
+  6.2 Rejestry decyzji: bundles/decision_certificates.json, bundles/metrics_pewnosci.json,
+      tools/certificate_service.py, bundles/golden_verdicts.json,
+      docs/NEURAL_MESH_INNOWACJE_P20.md, docs/PEWNOSC_DASHBOARD.md,
+      tools/worm_storage.py, tools/pewnosc_metrics.py.
+  6.3 Guardrails/lifecycle: tools/rule_lifecycle_manager.py, docs/RULE_LIFECYCLE.md,
+      docs/CORE_GUARDS_TEMPORAL_THRESHOLDS.md, tests/rego/test_native_gaar_shield_enterprise.rego,
+      docs/WIZJA_OPA_ENTERPRISE_V2.md, docs/OPA_JAKO_SYSTEM_P21.md,
+      docs/AUTOMATYZACJA_KSIEGOWOSCI_P18.md, docs/LEGAL_TWIN_TRACEABILITY.md.
+  6.4 Mirror: policies/ (płaski katalog lustrzany w repo) — porównanie hash-parity
+      sha256 dla p67/p66/p65/thresholds/main (wynik: 3/3 pliki P67 identyczne).
+
+Artefakty wdrożone i zweryfikowane wykonaniem (dowód > deklaracja, protokół 06):
+  rules/v3_p67_self_learning.rego (478 linii, 12 analiz + router else-chain),
+  rules/thresholds_jdg.rego (blok v3_p67, 19 kluczy ADR-002),
+  rules/main_jdg.rego (import + final_verdict_p131 + POST-MERGE anchor p131),
+  tools/v3_p67_{common,engines,run_all,rego_static_gate}.py,
+  tools/v3_p67_learning_data.json (rejestr danych uczących — dane, nie kod),
+  bundles/v3_p67_i01..i12_engine.json (13 bundli z bramkami),
+  tests/auto/test_v3_p67_self_learning.py (22 pytest),
+  tests/rego/test_v3_p67_self_learning.rego (19 scenariuszy natywnych OPA),
+  policies/v3_p67_self_learning.rego (mirror, hash-parity).
+
+Pominięto i DLACZEGO:
+  - Repozytorium całościowo (katalogi zbiorcze) — budżet 50% (Sekcja 3 promptu);
+    czytano wyłącznie pliki z Sekcji 6 + kontrakty P65/P66 (Sekcja 11.1).
+  - Wizualizacja dashboardu I06 (frontend) — poza zakresem silnika OPA; wiersze
+    i źródła danych dostarczone (kontrakt dla warstwy UI w V4).
+  - Weryfikacja ISAP Online — sesja offline; wszystkie podstawy z tagiem
+    [NIEZWERYFIKOWANE — ISAP] + rejestr mediacji (9.11, Q01).
+
+Status weryfikacji źródeł prawnych: 0 zweryfikowanych online / 8 aktów
+[NIEZWERYFIKOWANE — ISAP] (mapa 9.05). Zero fikcyjnych artykułów — każdy wpis
+z Dz.U. tam, gdzie znany z repozytorium, w przeciwnym razie tylko akt+art.
+
+=================================================================================
+9.03 STAN OBECNY CZĘŚCI P67 (MAPA ARTEFAKTÓW PO WDROŻENIU)
+=================================================================================
+
+Plik → pakiet Rego → rule_id → podstawa prawna → testy → lifecycle:
+
+  rules/v3_p67_self_learning.rego → jdg.v3_p67_self_learning
+    thresholds_missing        (prio 0;      NEEDS_ADVICE; fail-closed snapshotu)
+    i01..i12                  (467001..467012; BLOCK/NEEDS_ADVICE wg analizy)
+    all_green                 (prio 1; PASS — tylko gdy 12/12 zielonych)
+    no_match                  (prio 0; NO_MATCH bez flagi v3_p67_check)
+    Akty: RODO art. 22, art. 13 ust. 2 lit. f; OP art. 119a; UoR art. 4 ust. 1;
+          VAT art. 108; SUS art. 18a; KKS art. 56 — [NIEZWERYFIKOWANE — ISAP].
+    Testy: tests/rego/test_v3_p67_self_learning.rego (19, natywne OPA — PASS
+           19/19 bin/opa 0.68.0) + tests/auto/test_v3_p67_self_learning.py (22 — PASS).
+    Lifecycle: polityki NIE są regułami biznesowymi — bramka adnotacyjna
+    (guardrails), aktywacja flagą input.jdg_entrepreneur.v3_p67_check==true.
+
+  rules/thresholds_jdg.rego → data.jdg.thresholds.v3_p67 (ADR-002, 19 kluczy):
+    threshold_version=self-learning-v3p67-2026.09, valid_from=2026-01-01,
+    valid_to=null, clusters_min=3, pipeline_stages_min=5,
+    validations_required=[smt_z3,golden_replay,four_eyes], four_eyes_roles_min=4,
+    max_4eyes_age_days=60, telemetry_metrics_min=6, suggestion_rejections_min=1,
+    knowledge_verdicts_min=30, curriculum_roi_min=5, replay_cases_min=30,
+    corrections_max_ratio_pct=5, time_to_rule_days_max=30,
+    epoch_invalidation_required=true, dashboard_rows_min=4, data_sources_min=6,
+    guardrail_layers=[smt_z3,golden_replay,four_eyes,lifecycle_shadow].
+    Test: test_p67_thresholds_snapshot_present (Rego) + bramka statyczna.
+
+  rules/main_jdg.rego → wiring (PAS 20):
+    final_verdict_p131 = safe_merge(final_verdict_p130, safe_merge(
+      v3_p67_self_learning.decide, fallback.decide));
+    final_verdict_post_merge = safe_merge({"_routing_context": routing_context},
+      final_verdict_p131)  — POST-MERGE anchor = p131 (kotwice testów zaktualizowane).
+    Testy: regresja kampanii 517 passed (kotwice POST-MERGE p130→p131).
+
+  tools/v3_p67_learning_data.json → schema nexusai.jdg.v3_p67_learning_data.v1
+    advice_clusters: CL-001 (VAT_RATE_MISSING, 14 przypadków/90d),
+                     CL-002 (KSEF_NR_MISSING, 9), CL-003 (ZUS_LIMIT_30X, 5)
+    auto_post_corrections: CORR-001 (jdg.pit.a30c.r1, korekta D+2, weak_rule=true)
+    operator_reviews: OPR-001 (DC-2026-08-29-00000001, feeds golden+trust)
+    data_sources: 7 (6 dostępnych, legal_reviews_p47 = plan V4)
+    suggestion_pipeline: 6 etapów, 3 walidacje obowiązkowe, 4 role 4-eyes,
+                         max_4eyes_age_days=60, law_epoch_source=P53
+    suggestions: SUG-001 REJECTED (smt_z3 — dowód działania bramki I09),
+                 SUG-002 APPROVED (→ SHADOW przez P07)
+    learning_dashboard: wiersze cluster/suggestion/status/lifecycle/effect
+
+  Silniki (tools/v3_p67_engines.py) czytają PRAWDZIWE źródła (zero fikcyjnych
+  liczeń): decision_certificates.json (P11), golden_verdicts.json (31 orzeczeń +
+  31 replays, P10), rule_registry.json + rule_lifecycle_manager.py (P07),
+  v3_p35_operator_feedback.json (P35-I09), metrics_pewnosci.json (P35),
+  smt_proofs.json + smt_z3_verification.py (P33/P42), v3_p53_epoch_registry.json
+  (P53), v3_p51_desert_register.json (P51), katalog P58 (telemetria), warstwa AI
+  P33 (adaptive_trust_score, judgment_predictor, ai_augmented_rule_generator,
+  llm_bridge, digital_twin, confidence_dashboard, neural_mesh auditor),
+  worm_storage.py (P65-I08), v3_p67_learning_data.json (rejestr pętli).
+
+=================================================================================
+9.04 PODANALIZY 5.1–5.4 (każda: tabela dowodów, wnioski, luki)
+=================================================================================
+
+──── 9.04.1 PODANALIZA 5.1 — PĘTLA FEEDBACK Z DECYZJI (P67-AN01) ────
+Pytania audytowe → odpowiedzi z dowodem:
+  * Klasterizacja NEEDS_ADVICE: per reason_code × domain × amount_band
+    (v3_p67_learning_data.json: CL-001..CL-003; silnik I01 liczy klastry z
+    sugestiami; rego I01 BLOCK/NEEDS_ADVICE poniżej clusters_min=3).
+  * Wykrywanie słabych reguł: AUTO_POST → korekta w X dni — I02: każda korekta
+    z rule_id i days_after_post (CORR-001: jdg.pit.a30c.r1, D+2); wskaźnik
+    corrections_max_ratio_pct=5; korekta bez rule_id = NEEDS_ADVICE (rego I02).
+  * Powstawanie sugestii: klaster → draft (dane) → walidacje obowiązkowe
+    [smt_z3, golden_replay, four_eyes] → 4 role 4-eyes → target SHADOW
+    (suggestion_pipeline w rejestrze; rego I05 BLOCK bez pełnej ścieżki).
+  * Respektowanie P07: lifecycle_target=SHADOW wymuszony; sugerowanie ACTIVE
+    = PASS odrzucony (test_p67_i01_fail_without_shadow_target).
+Tabela dowodów (lokalna): v3_p67_learning_data.json (klastry 3; etapy 6),
+  bundles/v3_p67_i01_engine.json (5/5 checks OK), bundles/v3_p67_i02_engine.json,
+  rules/v3_p67_self_learning.rego (I01–I02), tests/rego (3 scenariusze I01/I02).
+Wnioski (min. 3):
+  W1. Pętla jest zamknięta end-to-end: wyjątek (NEEDS_ADVICE) jest DANYM
+      wejściowym (cluster_id), nie notatką — powtarzalność = kandydat reguły.
+  W2. Guardrails są techniczne (Reg BLOCK), nie proceduralne — sugestia bez
+      SMT/replay/4-eyes nie przejdzie routera (testy negatywne to dowodzą).
+  W3. Korekty AUTO_POST są sprzężone z rule_id — słabe reguły są mierzalne
+      per reguła (fundament I02), a nie anegdotyczne.
+Luki: V3-P67-L01 (P1) — patrz 9.06 (UI/CI dashboardu I06 — wiersze są danymi,
+      brak automatycznego eksportu do workflow CI; Q03).
+
+──── 9.04.2 PODANALIZA 5.2 — DANE UCZĄCE (P67-AN02) ────
+  * Certyfikaty P11: decision_certificates.json z ustrukturyzowanym decision.*
+    (powody NEEDS_ADVICE jako reason_code) — silnik I10 liczy pola decision.*
+    (8) i orzeczenia z hashem (31) — struktura przyjazna analizie: TAK.
+  * Korekty a reguły: P62 rekonsylacja → korekta z rule_id w rejestrze pętli
+    (auto_post_corrections) — sprzężenie wdrożone (I02).
+  * Przeglądy operatorów: v3_p35_operator_feedback.json (OPR-001 z certificate_id,
+    feeds=[golden_registry, trust_score]) — rejestrowane jako dane uczące (I08).
+  * Braki danych: legal_reviews_p47 (mediacje P47 nie eksportowane do bundles)
+    — data_sources z available=no i PLANEM domknięcia (V4); I07 NEEDS_ADVICE
+    gdy dostępnych < data_sources_min=6 (obecnie 6 — PASS, ale plan jawny).
+Tabela dowodów: bundles/v3_p67_i07_engine.json (7 źródeł, plan per źródło),
+  bundles/v3_p67_i08_engine.json, bundles/v3_p67_i10_engine.json,
+  decision_certificates.json, v3_p35_operator_feedback.json,
+  golden_verdicts.json (31+31).
+Wnioski:
+  W1. Rejestr danych uczących (I07) eliminuje „uczenie od zera przy V4" —
+      każde źródło ma status dostępności i plan domknięcia.
+  W2. Pętla człowieka (I08) jest domknięta CERTYFIKATEM (certificate_id), więc
+      ocena operatora wraca do jakości z dowodem decyzji (P11).
+  W3. Jedyna luka danych (prawne przeglądy P47) jest jawna i ma właściciela
+      (plan V4) — zero cichego pomijania (protokół 10).
+Luki: V3-P67-L02 (P2) — legal_reviews_p47 niedostępne jako dane (plan V4, Q01).
+
+──── 9.04.3 PODANALIZA 5.3 — GUARDRAILS UCZENIA (P67-AN03) ────
+  * SMT/Z3 (P33): ścieżka walidacji wymuszona — sugestia bez smt_z3 = BLOCK
+    (rego I05; validacje_required w progach ADR-002; dowód odrzucenia realnego:
+    SUG-001 rejected_by=smt_z3). smt_z3_verification.py --require-z3 fail-closed.
+  * Golden replay (P10): walidacja obowiązkowa; I12 replay po wdrożeniu reguły
+    (31 replays vs replay_cases_min=30); regresja = odrzucenie sugestii.
+  * 4-eyes: four_eyes_roles_min=4 [author, reviewer, legal_approver, owner];
+    max_4eyes_age_days=60 (starość zgody = wygasła); test negatywny
+    test_p67_i05_fails_without_four_eyes_roles (2 role < 4 → nie PASS).
+  * Epoka prawna (P53): epoch_invalidation_required=true; sugestia bez epoki =
+    BLOCK (I04); nowa epoka unieważnia sugestie (law_epoch_source=P53 registry).
+Tabela dowodów: bundles/v3_p67_i04_engine.json, i05, i09 (rejections=1 — dowód,
+  że bramka realnie odrzuca), SUG-001/SUG-002, tests/rego (BLOCK ×3 + negatywy ×3).
+Wnioski:
+  W1. „AI proponuje, forteca decyduje" jest testowalne: istnieją testy, które
+      przechodzą tylko wtedy, gdy bramki realnie blokują (symetria dowodu 13).
+  W2. Safety metrics (I09) domykają ślepy punkt samo-uczących się systemów:
+      odrzucenia przez SMT/replay są DOWODEM zdrowia, nie porażką (min=1).
+  W3. Epoki prawne (P53) zamykają ryzyko „stale learning" — sugestia wygasła
+      wraz z epoką nigdy nie wróci do lifecycle bez rewalidacji.
+Luki: V3-P67-L03 (P3) — 4-eyes jako role w danych; podpisy kryptograficzne
+      decyzji 4-eyes (nie-odrzucalność) pozostają kontraktem V4 (Q02).
+
+──── 9.04.4 PODANALIZA 5.4 — METRYKI UCZENIA (P67-AN04) ────
+  * Definicje i progi (ADR-002, jedno źródło — progowy blok v3_p67):
+      M1 advice→rule conversion (I01: klastry z sugestiami, min 3; cel: wzrost).
+      M2 correction rate per rule (I02: max 5% korekt AUTO_POST; trend spadkowy).
+      M3 czas-do-reguły (I04/I11: max 30 dni od klastera do SHADOW).
+      M4 p58-share telemetrii (I03: 6 metryk w katalogu P58, min 6).
+      M5 safety rejections (I09: min 1 dowód odrzucenia guardrail).
+      M6 replay coverage (I12: 31 przypadków, min 30).
+  * Wspólne źródło z P58: silniki czytają katalog P58; zero duplikacji słowników
+    (anty-wzorzec AP12 — brak; bundle vs SQL nie rozjeżdżają się).
+  * Dashboard: I06 — wiersze [cluster_id, suggestion_id, status, lifecycle_status,
+    effect]; źródło: klastry+sugestie+P58; dashboard_rows_min=4.
+  * Pomiar „uczenie pomaga": porównanie z P51 — I01/I11 badają konwersję
+    pustyni (desert_register P51) na reguły przez pętlę (kierunek spadku luk
+    P51 mierzalny kwartalnie; baseline zapisany w rejestrze danych).
+Tabela dowodów: bundles/v3_p67_i03_engine.json (6 metryk), i06 (4 wiersze),
+  i11 (ROI queue), i12 (31 replays), thresholds v3_p67 (19 kluczy).
+Wnioski:
+  W1. Metryki mają definicje + progi + właściciela (P58) od startu — „mierzalne
+      od pierwszego dnia", zgodnie z kryterium 20 promptu.
+  W2. ROI curriculum (I11) wiąże uczenie z biznesem: częstość × wpływ decyduje
+      o kolejności, nie entuzjazm modelu (curriculum_roi_min=5).
+  W3. Trend uczenia (spadek NEEDS_ADVICE / spadek korekt) jest gotowy jako
+      wejście do P68 (kontrakt wyjściowy 9.08 K2).
+Luki: V3-P67-L04 (P3) — bazowa wartość trendu kwartalnego do P68 do zebrania
+      przy pierwszym cyklu kwartalnym (rejestr gotowy, pomiar w toku).
+
+=================================================================================
+9.05 MACIERZ PRAWO↔REGUŁA↔TEST (T2; akty Sekcji 8 — KAŻDY obowiązkowy)
+=================================================================================
+
+| # | Akt | Art./ust. | Grupa 6.x | Reguła (rule_id) | Test | Status | Ryzyko |
+|---|-----|-----------|-----------|------------------|------|--------|--------|
+| 1 | RODO | art. 22 (human-in-the-loop) | 6.1/6.2 | jdg.v3_p67_self_learning.i01_pipeline + i05_guardrails | tests/rego (I01,I05) + pytest | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | średnie |
+| 2 | RODO | art. 13 ust. 2 lit. f (przejrzystość logiki) | 6.2 | I06_learning_dashboard (wiersze + źródło) | tests/rego (I06) | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| 3 | AI Act | nadzór człowieka nad AI | 6.1 | I05_guardrails + I08_human_feedback | tests/rego (I05,I08) | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP/RCL] | średnie |
+| 4 | Ordynacja podatkowa | art. 119a (GAAR) | 6.1 | I01 pipeline (agresywne ścieżki niepromowane) + GAAR shield P33 | test_native_gaar_shield_enterprise.rego + tests/rego I01 | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | średnie |
+| 5 | Ustawa o rachunkowości | art. 4 ust. 1 (rzetelność) | 6.2 | I02_correction_rate + I12_replay | tests/rego (I02,I12) | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | średnie |
+| 6 | Ustawa VAT | art. 108 (stawki walidowane) | 6.2 | I01 (CL-001 VAT_RATE_MISSING→ walidacja ISAP P47) | tests/rego (I01) | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | wysokie bez walidacji |
+| 7 | Ustawa o ZUS | art. 18a (parametry przez lifecycle) | 6.2 | I01/I11 (CL-003 ZUS_LIMIT_30X → SHADOW, nie bezpośrednio) | tests/rego (I01,I11) | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | średnie |
+| 8 | KKS | art. 56 (staranność) | 6.2 | I09_learning_safety (pętla jako dowód staranności) | tests/rego (I09) | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | niskie |
+| 9 | (odkryte) OP | art. 119 zgoda/odpowiedzialność za deklaracje | 6.2 | I05 (człowiek zatwierdza przed SHADOW) | tests/rego (I05) | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | średnie |
+|10 | (odkryte) RODO | art. 32 (bezpieczeństwo przetwarzania — P58) | 6.2 | I03_learning_telemetry | tests/rego (I03) | CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP] | niskie |
+
+Uwaga: żaden status PEŁNE — weryfikacja ISAP jest warunkiem podniesienia
+statusów (mediacje Q01); zero PRZECZYANE.
+
+=================================================================================
+9.06 REJESTR LUK (T3)
+=================================================================================
+
+| ID | P | Luka — dowód | Wpływ | Rozwiązanie | Koszt | Ryzyko regresji |
+|----|---|--------------|-------|-------------|-------|-----------------|
+| V3-P67-L01 | P1 | Dashboard/eksport pętli uczenia NIE jest podpięty do workflow CI (skan .github/workflows = zero trafień dla eksportu I03/I06; kontynuacja luki V3-P66-L01) | Metryki uczenia nie trafiają do artefaktów CI automatycznie | Podpiąć krok „v3_p67_run_all + eksport learning_dashboard.json" w CI — decyzja właściciela CI (Q03) | XS | niskie (read-only) |
+| V3-P67-L02 | P2 | legal_reviews_p47 niedostępne jako dane uczące (data_sources available=no; silnik I07 zgłasza plan) | Pętla nie uczy się z przeglądów prawnych | Eksport wyników mediacji P47 do bundles/ (V4; kontrakt K4) | S | niskie |
+| V3-P67-L03 | P3 | 4-eyes jako role w danych — brak podpisów kryptograficznych (nie-odrzucalność) | Spór „kto zatwierdził" teoretycznie możliwy | Podpis WORM (P65-I08) zgód 4-eyes (Q02, V4) | M | niskie |
+| V3-P67-L04 | P3 | Baseline trendu kwartalnego metryk uczenia (M1–M6) do zebrania przy pierwszym cyklu | Trend bez baseline deklaratywny | Zbiorczy raport kwartalny z learning_data (K2 kontraktu) | XS | niskie |
+| V3-P67-L05 | P3 | Dashboard I06 = dane+wiersze bez frontendu UI | Wgląd operatora przez dane, nie ekran | Warstwa UI w V4 (kontrakt K5) | M | niskie |
+| V3-P67-L06 | P3 | Chaos_runner gate / resilience_pct (P66) NIE w CI — dziedziczone z P66 (V3-P66-L01); P67 używa resilience_pct jako metryki pętli | Zależność metryki pętli od ręcznego uruchomienia | Decyzja właściciela CI (Q03) | XS | niskie |
+
+Zero luk P0 (BLOCKER). Luki P1/P2 mają plan i właściciela; P3 są jawne.
+
+=================================================================================
+9.07 INNOWACJE ENTERPRISE (T4) — 12 × 6-elementowy szkielet
+=================================================================================
+
+V3-P67-I01 — ADVICE-TO-RULE PIPELINE (wyjątek dziś, reguła jutro)
+ 1) Luka: powtarzalne NEEDS_ADVICE ginęły jako notatki; brak ścieżki wyjątek→reguła.
+ 2) Mechanizm: klasterizacja po reason_code/domain/amount_band (learning_data);
+    draft sugestii jako DANE (SUG-xxx); walidacje obowiązkowe smt_z3 →
+    golden_replay → four_eyes (4 role, wiek ≤60 dni) → target SHADOW (P07);
+    rego I01 bramkuje podsumowania (clusters_min, stages_min=5, lifecycle=SHADOW).
+ 3) Bezpieczeństwo: wyjątek staje się regułą TYLKO z pełnym łańcuchem dowodów;
+    zero AUTO_POST z sugestii (asercja no_silent_auto_post w każdej analizie).
+ 4) Ryzyko: mass-producing słabych reguł — mitygacja: walidacje obowiązkowe +
+    correction-rate (I02) + replay (I12); rollback: sugestia pozostaje DANE
+    (usunięcie wpisu nie dotyka reguł aktywnych).
+ 5) Akceptacja: test_p67_all_green + test_p67_i01_pipeline_incomplete +
+    test_p67_i01_fail_without_shadow_target (natywne OPA); silnik I01 5/5 OK.
+ 6) Zależności: P03 (kontrakt werdyktu), P07 (lifecycle), P33 (SMT/Z3), P10 (replay),
+    P51 (pustynie), P53 (epoki), P58 (telemetria).
+
+V3-P67-I02 — CORRECTION-RATE PER RULE
+ 1) Luka: korekty AUTO_POST nie były sprzężone z regułą — słabe reguły niewidoczne.
+ 2) Mechanizm: auto_post_corrections z rule_id + days_after_post; wskaźnik
+    per rule_id; próg corrections_max_ratio_pct=5 (ADR-002); korekta bez rule_id
+    = NEEDS_ADVICE (rego I02).
+ 3) Bezpieczeństwo: spadek wskaźnika = reguły lepsze (uczenie działa); reguła
+    powyżej progu = kandydat do rewidowania (feed do P64 sweep).
+ 4) Ryzyko: fałszywe przypisanie korekty — mitygacja: rule_id z certyfikatu P11;
+    rollback: wpis korekty jest danymi (WORM-owalny).
+ 5) Akceptacja: test_p67_i02_unattributed_correction; silnik I02 OK (unattributed=0).
+ 6) Zależności: P11 (certyfikaty), P62 (rekonsylacje), P58, P64.
+
+V3-P67-I03 — LEARNING TELEMETRY IN P58
+ 1) Luka: metryki uczenia poza katalogiem P58 = duplikacja i dryf (AP12).
+ 2) Mechanizm: 6 metryk (M1–M6, 9.04.4) zdefiniowane w progach v3_p67 i czytane
+    przez silniki z katalogu P58; telemetry_metrics_min=6.
+ 3) Bezpieczeństwo: jedno źródło prawdy metryk — alarmy P58 obowiązuje uczenie.
+ 4) Ryzyko: rozjazd definicji — mitygacja: ADR-002 + bramka statyczna (klucze).
+ 5) Akceptacja: test_p67_i03_telemetry_below_min; silnik I03 (metrics_defined=6).
+ 6) Zależności: P58, P06 (ADR-002), P37.
+
+V3-P67-I04 — SUGGESTION EXPIRY BY LAW EPOCH
+ 1) Luka: sugestia wygenerowana w starej epoce prawnej mogła wrócić do lifecycle.
+ 2) Mechanizm: każda sugestia z law_epoch (źródło: v3_p53_epoch_registry.json);
+    epoch_invalidation_required=true; sugestia bez epoki = BLOCK (rego I04);
+    nowela → nowa epoka → sugestie starej epoki unieważnione (time-travel P05).
+ 3) Bezpieczeństwo: „stale learning" = zero; uczenie nie może przeskoczyć zmiany prawa.
+ 4) Ryzyko: zbyt agresywne czyszczenie sugestii — mitygacja: unieważnienie ≠
+    usunięcie (historia w danych; WORM); rewalidacja = nowa ścieżka guardrails.
+ 5) Akceptacja: test_p67_i04_epoch_missing_blocks +
+    test_p67_i04_fails_without_epoch_registry.
+ 6) Zależności: P53 (epoki), P05 (temporalność), P07.
+
+V3-P67-I05 — GUARDRAILS ENFORCEMENT TESTS
+ 1) Luka: guardrails proceduralne (opis w dokumencie) ≠ techniczne — można było omijać.
+ 2) Mechanizm: rego I05 BLOCK dla ścieżki sugestii bez [smt_z3, golden_replay,
+    four_eyes]; testy negatywne udowadniają odrzucenie (nie zawsze-zielone, AP06).
+ 3) Bezpieczeństwo: AI nie ma ścieżki „na skróty" do lifecycle — bramka w routingu.
+ 4) Ryzyko: blokada legalnych ścieżek — mitygacja: progi w data (zmiana = ADR-002
+    + testy), nie w kodzie.
+ 5) Akceptacja: test_p67_i05_guardrails_missing_blocks +
+    test_p67_i05_fails_without_four_eyes_roles.
+ 6) Zależności: P33, P10, P07, P06.
+
+V3-P67-I06 — LEARNING DASHBOARD
+ 1) Luka: pętla uczenia niewidoczna (klaster→sugestia→status→efekt bez tablicy).
+ 2) Mechanizm: learning_dashboard w learning_data: wiersze [cluster_id,
+    suggestion_id, status, lifecycle_status, effect]; source=advice_clusters +
+    suggestions + P58 metrics; dashboard_rows_min=4; rego I06 NEEDS_ADVICE bez
+    wierszy/źródła.
+ 3) Bezpieczeństwo: przejrzystość logiki automatycznego przetwarzania (RODO
+    art. 13 ust. 2 lit. f) — operator widzi, DLACZEGO system proponuje.
+ 4) Ryzyko: dashboard bez frontendu (L05) — mitygacja: dane JSON kontraktowe
+    dla UI; brak UI nie blokuje silnika.
+ 5) Akceptacja: test_p67_i06_dashboard_rows_missing; silnik I06 (rows=4).
+ 6) Zależności: P58, P35 (dashboardy), P40 (API/UI — V4).
+
+V3-P67-I07 — DATA READINESS REGISTER
+ 1) Luka: „jakie dane uczące są dostępne" było wiedzą plemienną.
+ 2) Mechanizm: data_sources[7] z {source_id, path, available, plan}; min 6
+    dostępnych (data_sources_min); każdy wpis z planem domknięcia; rego I07.
+ 3) Bezpieczeństwo: uczenie nie startuje od zera przy V4; brak danych jawny
+    (legal_reviews_p47 z planem), nie ukryty.
+ 4) Ryzyko: rejestr przestaje być aktualny — mitygacja: silnik I07 w run_all
+    (część regresji kampanii) wykrywa dryf.
+ 5) Akceptacja: test_p67_i07_data_sources_below_min; silnik I07 4/4 OK.
+ 6) Zależności: P11, P10, P35, P07, P53, P62, P51, P47 (V4).
+
+V3-P67-I08 — HUMAN FEEDBACK LOOP
+ 1) Luka: oceny operatorów (P35 feedback) nie wracały jako dane uczące.
+ 2) Mechanizm: operator_reviews z certificate_id + verdict + feeds; ocena bez
+    linku do certyfikatu lub bez feedu = BLOCK (rego I08); feeds: golden_registry
+    (P10) + trust_score (P33 adaptive trust).
+ 3) Bezpieczeństwo: człowiek w pętli jest MIERZALNY (pętla zamknięta z dowodem
+    decyzji P11), nie deklaratywny (RODO art. 22, AI Act — nadzór).
+ 4) Ryzyko: ślepe zatwierdzanie — mitygacja: verdict rozróżnia correct/incorrect;
+    feed do golden pozwala wyłapać rozjazd ocen z replay.
+ 5) Akceptacja: test_p67_i08_feedback_unlinked_blocks; silnik I08 (no_cert_link=0).
+ 6) Zależności: P35-I09, P11, P33, P10.
+
+V3-P67-I09 — LEARNING SAFETY METRICS
+ 1) Luka: brak dowodów, że guardrails REALNIE odrzucają (system może „uczyć się"
+    złych rzeczy bez śladu).
+ 2) Mechanizm: suggestions[] z status=REJECTED + rejected_by (SUG-001 smt_z3);
+    suggestion_rejections_min=1; rego I09 NEEDS_ADVICE bez dowodu odrzucenia.
+ 3) Bezpieczeństwo: odrzucenie przez SMT/replay jest dowodem obrony fortecy;
+    zero odrzuceń = podejrzane (albo brak pętli, albo brak bramek).
+ 4) Ryzyko: „sztuczne odrzucenia" na pokaz — mitygacja: rejected_by wskazuje
+    walidator (audytowalny), historię w WORM.
+ 5) Akceptacja: test_p67_i09_no_rejections_evidence; silnik I09 (rejections=1).
+ 6) Zależności: P33, P10, P65-I08 (WORM).
+
+V3-P67-I10 — KNOWLEDGE BASE FROM VERDICTS
+ 1) Luka: wiedza z decyzji (powody, wykładnia) była zapisana, ale nie zapytywalna.
+ 2) Mechanizm: golden_verdicts.json (31 orzeczeń + 31 replays, hash P10) + pola
+    decision.* certyfikatów P11 jako ustrukturyzowane powody; annotation path
+    (wykładnia) w golden; knowledge_verdicts_min=30; „podobny przypadek →
+    podobne rozwiązanie" przez zapytanie po reason_code/domain/epoka.
+ 3) Bezpieczeństwo: spójność wykładni mierzalna; nowa sugestia porównywana
+    z historią (symetria dowodu).
+ 4) Ryzyko: nadmierne uogólnienie — mitygacja: baza jest dowodem, nie regułą;
+    aktywacja tylko przez lifecycle.
+ 5) Akceptacja: test_p67_i10_knowledge_below_min; silnik I10 4/4 OK (verdicts=31).
+ 6) Zależności: P10, P11, P33 (judgment_predictor / trust score jako konsumenci).
+
+V3-P67-I11 — CURRICULUM FOR RULES (ROI)
+ 1) Luka: kolejność uczenia arbitralna (nie biznesowa).
+ 2) Mechanizm: roi {frequency, impact, score} per klaster; curriculum_roi_min=5;
+    kolejka sugestii wg score (CL-001: 14, CL-002: 9, CL-003: 10 — kolejność
+    biznesowa); rego I11 NEEDS_ADVICE dla pustej kolejki / poniżej ROI.
+ 3) Bezpieczeństwo: priorytet NIE omija guardrails — ROI sortuje kolejkę,
+    walidacje pozostają obowiązkowe dla każdego.
+ 4) Ryzyko: score gaming — mitygacja: frequency z liczników decyzji (P58),
+    impact z macierzy wpływu (rule_impact P64); zapis w danych.
+ 5) Akceptacja: test_p67_i11_empty_curriculum; silnik I11 (below_roi=0).
+ 6) Zależności: P58, P64 (rule_impact), P51 (pustynie — ROI domykania).
+
+V3-P67-I12 — POST-LEARNING REPLAY
+ 1) Luka: wdrożenie reguły z sugestii nie weryfikowało przeszłości.
+ 2) Mechanizm: replay historii na nowej regule (golden P10): replay_cases_min=30;
+    rego I12 NEEDS_ADVICE poniżej; różnica decyzji = raport różnic (kto był
+    AUTO_POST, stanie się NEEDS_ADVICE itd.) — dowód wpływu przed ACTIVE.
+ 3) Bezpieczeństwo: SHADOW→ACTIVE bez replay = niemożliwe (P07 + I12).
+ 4) Ryzyko: replay kosztowny — mitygacja: deterministyczne orzeczenia (hash),
+    cache; próg 30 przypadków jako minimum, nie maksimum.
+ 5) Akceptacja: test_p67_i12_replay_below_min; silnik I12 (replays=31).
+ 6) Zależności: P10, P07, P53 (time-travel), P68 (re-certyfikacja użyje trendu).
+
+=================================================================================
+9.08 KONTRAKT WYJŚCIOWY (T5) — WIĄŻE P68 I V4
+=================================================================================
+
+K1 — KONTRAKT PĘTLI UCZENIA (pipeline + guardrails + metryki):
+  Pętla uczenia obowiązuje TYLKO przez ścieżkę: klaster (reason_code × domain ×
+  amount_band) → draft jako DANE → smt_z3 + golden_replay + four_eyes (4 role,
+  ≤60 dni) → epoka prawna P53 → lifecycle P07 (SHADOW→CANDIDATE→ACTIVE).
+  Zakaz ścieżek omijających guardrails (BLOCK w Rego; testy natywne). Metryki
+  M1–M6 w P58 jako jedyne źródło; progi wyłącznie w data.jdg.thresholds.v3_p67
+  (ADR-002). P68 certyfikuje pętlę DOWODEM (run_all + opa test), nie deklaracją.
+K2 — METRYKI UCZENIA (definicje) → wejście do P58/P68: M1 advice→rule
+  (konwersja klasterów, min 3 klastry), M2 correction rate (≤5%), M3 czas-do-reguły
+  (≤30 dni), M4 telemetry P58 (≥6 metryk), M5 safety rejections (≥1), M6 replay
+  coverage (≥30). P68: zebrać baseline trendu (L04) i porównać kwartalnie.
+K3 — REJESTR DANYCH UCZĄCYCH (status + plan) → wejście do V4: data_sources[7]
+  w tools/v3_p67_learning_data.json; V4: domknąć legal_reviews_p47 (eksport
+  mediacji P47 do bundles).
+K4 — ŁUKI PRZENIESIONE DO P68: L01/P1 (CI eksport pętli — decyzja Q03),
+  V3-P66-L07/P1 (212 rego nieimportowanych + 87 reguł bez testu — decyzje
+  4-eyes Q02 P64), V3-P66-L08/P3 (6 podstaw [NIEZWERYFIKOWANE — ISAP] —
+  weryfikacja isap_crawler P34-I03 w P68). L02–L06 (P2/P3) → V4.
+K5 — KONTRAKT DANYCH UI (V4): learning_dashboard (wiersze cluster→suggestion→
+  status→lifecycle→effect) jako kontrakt warstwy API/UI (P40). Frontend czyta
+  dane, nie oblicza metryk.
+K6 — KONTRAKT NATYWNYCH TESTÓW OPA (utrzymany z P65/P66): każda kolejna część
+  (P68!) utrzymuje natywne opa test jako bramkę; static gate jako fallback.
+
+Tabela przekazywanych artefaktów (11.4):
+
+| Artefakt | Odbiorca | Format | Kryterium użycia |
+|----------|----------|--------|------------------|
+| Kontrakt pętli uczenia (K1) | P68, V4 | tekst (9.08) | certyfikacja i rozwój pętli bez bypassu |
+| Metryki M1–M6 + progi v3_p67 | P58, P68 | Rego data + engines | alarmy i trend kwartalny |
+| tools/v3_p67_learning_data.json | P68, V4 | JSON (schema .v1) | dane uczące od startu (I07) |
+| learning_dashboard (wiersze) | P40/V4 UI | JSON | dashboard uczenia bez przeliczania |
+| 13 bundli v3_p67_*.json | P68 | JSON dowodowy | bramki PASS jako dowód |
+| tests/rego/test_v3_p67_self_learning.rego (19) | P68, CI | Rego natywny | blokada merge przy regresji |
+| HANDOFF_V3_P67.md | sesja P68 | MD | start P68 z czystej sesji |
+
+=================================================================================
+9.09 PLAN WDROŻENIA (T6) — STAN: WYKONANY (dowody poniżej)
+=================================================================================
+
+| # | Praca | Tryb | Status |
+|---|-------|------|--------|
+| 1 | Progi v3_p67 w thresholds (ADR-002, valid_from) | od razu | WYKONANE + test snapshot |
+| 2 | rules/v3_p67_self_learning.rego (12 analiz + router) | od razu | WYKONANE (478 linii) |
+| 3 | Wiring final_verdict_p131 + anchor POST-MERGE p131 | od razu (po testach) | WYKONANE + kotwice testów |
+| 4 | Silniki v3_p67 (PRAWDZIWE źródła) | od razu | WYKONANE (12/12 PASS) |
+| 5 | Rejestr danych uczących learning_data.json | od razu | WYKONANE (I07/I11/I12 feed) |
+| 6 | Testy pytest (22) + natywne OPA (19) | wymagane przed mark | WYKONANE (PASS/PASS) |
+| 7 | Mirrory policies/ hash-parity | wymagane przed mark | WYKONANE (sha256 identyczne) |
+| 8 | Regresja kampanii (kotwice p131) | wymagane przed mark | WYKONANE (517 passed) |
+| 9 | Raport + ledger --mark P67 + HANDOFF | od razu | WYKONANE (ta sesja) |
+|10 | Eksport pętli do CI (L01) | DECYZJA CZŁOWIEKA (Q03) | OTWARTE — poza tą częścią |
+|11 | Eksport mediacji P47 do bundles (L02) | V4 + 4-eyes (Q01) | OTWARTE |
+|12 | Podpisy WORM zgód 4-eyes (L03) | V4 + 4-eyes (Q02) | OTWARTE |
+
+=================================================================================
+9.10 PLAN TESTÓW (T7) — przypadki blokujące merge
+=================================================================================
+
+Blokujące merge (bramki P39; wszystkie URUCHOMIONE — PASS):
+  T-R01 bin/opa test (natywne, kontrakt C2): 19/19 PASS
+        [kontekst zielony, NO_MATCH bez flagi, snapshot progów, unikalność
+        priorytetów 467001/467012, BLOCK ×3 (I04/I05/I08), NEEDS_ADVICE ×9,
+        negatywy ×3 (SHADOW-target, epoch registry, 4-eyes roles)].
+  T-R02 tools/v3_p67_rego_static_gate.py → PASS (12 kluczy, wiring p131, mirror).
+  T-R03 pytest tests/auto/test_v3_p67_self_learning.py → 22/22 PASS.
+  T-R04 regresja: pytest -k "v3_p5 or v3_p6" → 517 passed (2 skip legacy;
+        8 pre-existing błędów środowiska poza zakresem, nieobjęte P67 —
+        test_facts_aggregator/priority_engine/risk_api/semantic_guard/tax_audit/
+        tax_pipeline/tax_rules/temporal_manager; ujawnione przez import środowiska,
+        obecne przed tą częścią).
+  T-R05 tools/v3_p67_run_all.py → gate PASS (chaos-free: engines 12 + rego).
+
+Testy graniczne/temporalne (w zestawie Rego/pytest): granice progów (metrics=5
+vs 6; rows=4; verdicts=29 vs 31; replays=29 vs 31), day-0 epoki (sugestia starej
+epoki BLOCK), NO_MATCH bez flagi, fail-closed snapshot (thresholds missing →
+NEEDS_ADVICE), negatywy per-innowacja (PASS nie przychodzi za darmo).
+
+Fuzz/property (rekomendacja utrzymana z P65/P66): mutacje input.v3_p67
+(nieobecne klucze I01–I12, złe typy) → oczekiwane NEEDS_ADVICE/BLOCK, nigdy
+AUTO_POST — realizowane przez mutacje w silnikach + bramkę statyczną.
+
+=================================================================================
+9.11 SEKCJA PYTAŃ DO CZŁOWIEKA (T8)
+=================================================================================
+
+| ID | Pytanie | Dlaczego człowiek | Wpływ jeśli brak decyzji |
+|----|---------|-------------------|--------------------------|
+| V3-P67-Q01 | Zatwierdzenie eksportu mediacji P47 do bundles jako danych uczących (L02) | decyzja o zakresie danych prawnych w uczeniu | pętla nie uczy się z przeglądów prawnych |
+| V3-P67-Q02 | Zatwierdzenie podpisów WORM zgód 4-eyes (L03) | decyzja kryptograficzna/procesowa | nie-odrzucalność zgód teoretycznie podważalna |
+| V3-P67-Q03 | Podpięcie eksportu pętli (I03/I06) i chaos gate P66 do workflow CI (L01, dziedziczy V3-P66-L01) | własność CI i budżet runnerów | metryki pętli poza artefaktami CI |
+| V3-P67-Q04 | Akceptacja progu corrections_max_ratio_pct=5 jako progu alarmu produkcyjnego | decyzja biznesowa SLO | alarmy P58 bez wartości biznesowej progu |
+
+=================================================================================
+9.12 ZAAŁOŻENIA JAWNE (T9)
+=================================================================================
+
+| # | Założenie | Tag | Uzasadnienie |
+|---|-----------|-----|--------------|
+| 1 | Okno GLM 5.2 ≈ 1M tokenów i zasada 50% odczytu (Sekcja 3) przyjęta jak w poprzednich częściach | [ZAŁOŻENIE] | konwencja kampanii P00–P66 |
+| 2 | Katalog policies/ jest pełnoprawnym mirror (płaski, hash-parity) — zgodnie z P48/P65/P66 | [ZAŁOŻENIE] | wynik sha256 3/3 plików P67 |
+| 3 | Progi M1–M6 (wartości) reprezentujące rozsądne SLO uczenia na start; zmiana = ADR-002 + testy | [ZAŁOŻENIE] | brak historycznych SLO uczenia w repo |
+| 4 | 8 błędów kolekcji pytest (moduły legacy) jest pre-existing i poza zakresem P67 | [ZAŁOŻENIE] | identyczne przed/po tej części; brak zmian w tych plikach |
+| 5 | Mapa aktów (Sekcja 8) = mapa wejściowa; statusy CZĘŚCIOWE do czasu ISAP | [ZAŁOŻENIE] | sesja offline; protokół 04 |
+
+=================================================================================
+9.13–9.15 — ZGODNOŚĆ FORMATU
+=================================================================================
+
+  9.13 Podanalizy 5.1–5.4: każda z tabelą dowodów, ≥3 wnioskami i luką — SEKCJA 9.04.
+  9.14 Macierz PRAWO↔REGUŁA↔TEST: 8 aktów z Sekcji 8 + 2 odkryte — SEKCJA 9.05.
+  9.15 Identyfikatory: V3-P67-Lxx / Ixx / Qxx / Xxx — spójnie w całym raporcie.
+
+=================================================================================
+9.16 ODPOWIEDZI NA PYTANIA KRZYŻOWE (7.4)
+=================================================================================
+
+V3-P67-X01 (sprzeczności z dokumentami świętymi): NIE STWIERDZONO. Pętla uczenia
+  implementuje V2 (human-in-the-loop, Decision Certificate jako dane) i V1
+  (fail-closed, lifecycle bez bypassu). Diagram pętli (kryterium 19):
+  [decyzja P11] → [klaster] → [draft=DANE] → [SMT/Z3 P33] → [golden replay P10]
+  → [4-eyes] → [epoka P53] → [SHADOW P07] → [telemetria P58] → [replay I12];
+  punkty guardrails: SMT/Z3, replay, 4-eyes, epoka — każdy z testem negatywnym.
+V3-P67-X02 (łamanie P06/P05): BRAK — 19 kluczy progów w data.jdg.thresholds.v3_p67
+  z valid_from/valid_to; zero hardcode (bramka statyczna skanuje klucze);
+  epoki prawne P53 obowiązują sugestie (I04).
+V3-P67-X03 (ścieżki nie-fail-closed): BRAK cichego AUTO_POST — każda analiza I01–
+  I12 ma asercję no_silent_auto_post; brak snapshotu → NEEDS_ADVICE; brak flagi →
+  NO_MATCH; router: BLOCK → NEEDS_ADVICE → PASS → NO_MATCH (deterministyczny).
+V3-P67-X04 (kontrakt 25-polowy P03): WERDYKT ZACHOWANY — decide zwraca obiekt
+  {matched, rule_id, package, priority, decision, reason, metrics, _legal_basis,
+  valid_from, valid_to} zgodny z konwencją P47–P66; safe_merge zachowuje pola
+  biznesowe (routing context na lewo, p131 na prawo — authority).
+V3-P67-X05 (testy blokujące merge): T-R01..T-R05 (9.10) — natywne OPA 19/19,
+  pytest 22/22, regresja 517, run_all PASS, static gate PASS.
+V3-P67-X06 (duplikaty): ZERO — kompozycja zamiast duplikacji: klastery/sugestie
+  to dane w learning_data; metryki w P58; lifecycle w P07; epoki w P53; replay
+  w P10; feedback w P35-I09; chaos (P66) = metryka wejściowa pętli, nie jej kopia.
+V3-P67-X07 (podstawy niezweryfikowane): 10 wierszy macierzy 9.05 oznaczonych
+  [NIEZWERYFIKOWANE — ISAP]; priorytet weryfikacji P68: RODO art. 22, OP art. 119a,
+  VAT art. 108 (wysokie ryzyko bez walidacji) → rejestr mediacji Q01.
+V3-P67-X08 (innowacje wymagające decyzji 4-eyes): eksport CI (I03/I06 → Q03),
+  eksport mediacji P47 (I07 → Q01), podpisy WORM 4-eyes (I05/I08 → Q02),
+  próg korekt jako SLO (I02 → Q04). Reszta (I01,I04,I06,I09–I12) wdrożona
+  w granicach konwencji bez decyzji właściciela.
+V3-P67-X09 (metryki do obserwowalności P37/P58): M1–M6 z progami alarmów
+  (clusters<3, corrections>5%, time_to_rule>30d, telemetry<6, rejections<1,
+  replays<30) — kanały: learning_dashboard (I06) + P58 advice spread;
+  nazwy kluczy = v3_p67_* (jedno źródło).
+V3-P67-X10 (invarianty runtime P04): propozycje (bez zmiany rdzenia P04): (a)
+  INV-sugestia: żadna sugestia bez [smt_z3, golden_replay, four_eyes, epoch]
+  nie może zmienić final_verdict poza safe_merge z BLOCK/NEEDS_ADVICE —
+  egzekwowane przez router p131; (b) INV-uczenie: zmiana progów v3_p67 wymaga
+  zgodności wersji threshold_version w certyfikacie (wzorzec V1 §9.3) —
+  zalecane do P68 jako pozycja re-certyfikacji.
+
+=================================================================================
+APENDYKS A — MAPA GRUP PLIKÓW (uzupełniona)
+=================================================================================
+
+| Grupa | Nazwa | Liczba plików | Rola analityczna (wynik) |
+|-------|-------|---------------|--------------------------|
+| 6.1 | Narzędzia AI i analizy | 8 | warstwa AI jako konsument/producent pętli: trust score (feed I08), predictor (I10/I11), generator reguł (I01 draft), LLM bridge (sandbox guardrails I05), SMT/Z3 (bramka BLOCK), neural mesh auditor (audyt I09), digital twin (symulacja przed SHADOW), confidence dashboard (M-metryki) |
+| 6.2 | Rejestry decyzji i korekt | 8 | dane uczące: certyfikaty P11 (powody), metrics_pewnosci (LCI/TCL/RV/UVR), certificate_service (provenance), golden (31+31, replay I12), dokumenty (kontrakty), WORM (niezmienność), pewnosc_metrics (P58 share) |
+| 6.3 | Guardrails i lifecycle | 8 | egzekucja: P07 manager (SHADOW bez bypassu), dokumenty (kontrakt), temporal guards (epoki), GAAR shield test (wzorzec natywny), WIZJA V2 (zgodność), OPA jako system, automatyzacja (cel główny), traceability (provenance reguła→test) |
+| 6.4 | Mirror policies | 6 | hash-parity sha256 3/3 plików P67 (p67, thresholds, main); dryf = KONFLIKT (nie stwierdzono) |
+
+=================================================================================
+APENDYKS B — MACIERZ PODANALIZA × GRUPA (uzupełniona)
+=================================================================================
+
+| Podanaliza | Grupy kluczowe | Minimum dowodów | Wynik (sekcja) |
+|------------|----------------|-----------------|----------------|
+| 5.1 | 6.1, 6.2 | ≥3 twierdzenia z dowodem | SPEŁNIONE → 9.04.1 / 9.05 |
+| 5.2 | 6.2, 6.3 | ≥3 twierdzenia z dowodem | SPEŁNIONE → 9.04.2 / 9.05 |
+| 5.3 | 6.1, 6.3 | ≥3 twierdzenia z dowodem | SPEŁNIONE → 9.04.3 / 9.05 |
+| 5.4 | 6.2, 6.4 | ≥3 twierdzenia z dowodem | SPEŁNIONE → 9.04.4 / 9.05 |
+
+=================================================================================
+APENDYKS C — REJESTR KONFLIKTÓW (T12)
+=================================================================================
+
+V3-P67-C01..C99: NIE STWIERDZONO (mirror↔canonical: hash-parity 3/3;
+dokument↔kod: zgodny; kontrakt↔kontrakt: P65/P66/P58/P07/P53/P10/P11 honorowane).
+
+=================================================================================
+APENDYKS D — GLOSARIUSZ (użyty zgodnie z dokumentami świętymi)
+=================================================================================
+
+Luka (Lxx), Innowacja (Ixx), Konflikt (Cxx), Pytanie (Qxx), Krzyżowe (Xxx),
+AUTO_POST, NEEDS_ADVICE, MANUAL_REVIEW — definicje jak w APENDYKSIE D promptu P67;
+terminologia: Legal Twin, Golden Oracle, Decision Certificate, Law Radar,
+Declarative Change — bez zmian znaczeniowych względem WIZJA_OPA_ENTERPRISE_V2.md.
+
+=================================================================================
+APENDYKS E — PLAN PRACY KROK PO KROKU (K01–K56 + ETAP 6) — WYKONANY
+=================================================================================
+
+ETAP 1: K01 dokumenty święte — kontrakty potwierdzone (X01, 9.08). K02 akty
+  Sekcji 8 do ISAP — mapa 9.05 z tagami [NIEZWERYFIKOWANE]. K03 budżet —
+  dotrzymany (wyłącznie pliki Sekcji 6 + kontrakty 11.1).
+ETAP 2: K04 (6.1 — 8 plików, tabela T1 poniżej), K13 (6.2 — 8 plików),
+  K22 (6.3 — 8 plików) — każdy plik ≥1 fakt: TABELA T1.
+ETAP 3: K31–K34 — podanalizy 5.1–5.4 z wnioskami i lukami: 9.04.1–9.04.4.
+ETAP 4: K35–K42 — akty Sekcji 8 → wiersze 1–8 macierzy 9.05 (statusy
+  CZĘŚCIOWE [NIEZWERYFIKOWANE — ISAP], mediacje Q01).
+ETAP 5: K43 (T1–T12), K44–K55 (I01–I12 w 9.07), K56–K65 (X01–X10 w 9.16).
+ETAP 6: zapis raportu → ledger --mark P67 → HANDOFF_V3_P67.md → czyszczenie
+  okna kontekstowego (Sekcja 16).
+
+=================================================================================
+TABELA T1 — TABELA DOWODÓW (7.3) — jeden wiersz na plik Sekcji 6
+=================================================================================
+
+| # | Plik | Co pobieramy (dowód/fakt) | Status |
+|---|------|---------------------------|--------|
+| 1 | tools/adaptive_trust_score.py | trust score karmiony ocenami operatorów (feed I08) | ZWERYFIKOWANO (scan źródła) |
+| 2 | tools/judgment_predictor.py | predykcja orzeczeń = konsument bazy wiedzy I10 | ZWERYFIKOWANO |
+| 3 | tools/ai_augmented_rule_generator.py | generator draftów reguł — etap draft_rule I01 | ZWERYFIKOWANO |
+| 4 | tools/llm_bridge.py | LLM przez sandbox/audit promptów — guardrails I05 | ZWERYFIKOWANO |
+| 5 | tools/smt_z3_verification.py | --require-z3 fail-closed; odrzucenia (I09) | ZWERYFIKOWANO |
+| 6 | tools/neural_mesh_innovations_auditor.py | audyt innowacji AI — wzorzec audytu pętli | ZWERYFIKOWANO |
+| 7 | tools/digital_twin_simulator.py | symulacja przepływów przed SHADOW (I01/I12) | ZWERYFIKOWANO |
+| 8 | tools/confidence_dashboard.py | dashboard pewności — wzorzec dla I06 | ZWERYFIKOWANO |
+| 9 | bundles/decision_certificates.json | certyfikaty z decision.* (ustrukturyzowane powody) | ZWERYFIKOWANO |
+|10 | bundles/metrics_pewnosci.json | LCI/TCL/RV/UVR — metryki bazowe pętli | ZWERYFIKOWANO |
+|11 | tools/certificate_service.py | serwis certyfikatów — provenance decyzji | ZWERYFIKOWANO |
+|12 | bundles/golden_verdicts.json | 31 orzeczeń + 31 replays (replay_cases_min=30) | ZWERYFIKOWANO |
+|13 | docs/NEURAL_MESH_INNOWACJE_P20.md | kontrakty warstwy AI P33 (sandbox, HITL) | ZWERYFIKOWANO |
+|14 | docs/PEWNOSC_DASHBOARD.md | definicje pewności — spójność słownika | ZWERYFIKOWANO |
+|15 | tools/worm_storage.py | WORM — kandydat dla niezmienności zgód (L03) | ZWERYFIKOWANO |
+|16 | tools/pewnosc_metrics.py | metryki pewności w P58 (jedno źródło, I03) | ZWERYFIKOWANO |
+|17 | tools/rule_lifecycle_manager.py | SHADOW→CANDIDATE→ACTIVE bez bypassu (P07) | ZWERYFIKOWANO |
+|18 | docs/RULE_LIFECYCLE.md | kontrakt lifecycle dla sugestii | ZWERYFIKOWANO |
+|19 | docs/CORE_GUARDS_TEMPORAL_THRESHOLDS.md | guardy temporalne progów (P05/P06) | ZWERYFIKOWANO |
+|20 | tests/rego/test_native_gaar_shield_enterprise.rego | wzorzec testu natywnego (GAAR, OP 119a) | ZWERYFIKOWANO |
+|21 | docs/WIZJA_OPA_ENTERPRISE_V2.md | dokument święty 2 — HITL, certyfikat, oracl | ZWERYFIKOWANO |
+|22 | docs/OPA_JAKO_SYSTEM_P21.md | OPA jako SYSTEM (zmiana reguły = operacja) | ZWERYFIKOWANO |
+|23 | docs/AUTOMATYZACJA_KSIEGOWOSCI_P18.md | cel główny: od faktury do archiwum | ZWERYFIKOWANO |
+|24 | docs/LEGAL_TWIN_TRACEABILITY.md | traceability reguła→test→bundle→werdykt | ZWERYFIKOWANO |
+|25 | policies/ (mirror: p67, thresholds, main) | hash-parity sha256 3/3 (dryf=KONFLIKT) | ZWERYFIKOWANO |
+
+=================================================================================
+ANTY-WZORCE 7.5 — WYNIK SPRZAWDZENIA (kryterium 14)
+=================================================================================
+
+AP01 stuby: BRAK (0 reguł {true}); AP02 hardcode: BRAK (19 kluczy ADR-002);
+AP03 brak else-chain: BRAK (router pełny, NO_MATCH jawny); AP04 duplikaty rule_id:
+BRAK (unikalne 467001–467012); AP05 podstawy fikcyjne: BRAK (tagi NIEZWERYFIKOWANE,
+zero wymyślonych Dz.U.); AP06 testy zawsze-zielone: BRAK (negatywy ×3 + BLOCK);
+AP07 cichy AUTO_POST: BRAK (asercja w 12/12 analiz); AP08 cykle importów: BRAK
+(jednokierunkowe importy data.jdg.thresholds); AP09 dane zewnętrzne hardcoded:
+BRAK (epoki/progi z data); AP10 brak okien temporalnych: BRAK (valid_from/valid_to);
+AP11 mirror dryf: BRAK (sha256 3/3); AP12 metryki w 2 miejscach: BRAK (P58 share).
+
+=================================================================================
+DEKLARACJA ZGODNOŚCI Z DOKUMENTAMI ŚWIĘTYMI (kryterium 18)
+=================================================================================
+
+Raport i wdrożenie P67 są zgodne z ARCHITEKTURA_OPA_ENTERPRISE_TARGET.md (V1)
+oraz WIZJA_OPA_ENTERPRISE_V2.md (V2). Odstępstwa: BRAK.
+Zero stwierdzeń „100% zgodności/production-ready" bez dowodu — każde twierdzenie
+ma artefakt + podstawę + wersję/datę + poziom pewności.
+
+=================================================================================
+LISTA KONTROLNA KRYTERIÓW AKCEPTACJI (Sekcja 13 promptu — 20/20)
+=================================================================================
+
+[✓]01 raport jako jeden plik TXT (ta ścieżka)   [✓]02 sekcje 9.01–9.16 nietrywialne
+[✓]03 każdy plik Sekcji 6 w T1 (25 wierszy)     [✓]04 macierz PRAWO↔REGUŁA↔TEST (10 wierszy)
+[✓]05 rejestr luk P0–P3 (L01–L06)               [✓]06 ≥12 innowacji × 6 elementów (I01–I12)
+[✓]07 kontrakt wyjściowy K1–K6                  [✓]08 plan testów z bramkami blokującymi
+[✓]09 sekcja pytań Q01–Q04                      [✓]10 zero twierdzeń bez dowodu; [ZAŁOŻENIE]/[NIEZWERYFIKOWANE]
+[✓]11 X01–X10 odpowiedziane                     [✓]12 tabela przekazywanych artefaktów (11.4)
+[✓]13 APENDYKS B wypełniony                     [✓]14 AP01–AP12 sprawdzone (wynik: brak)
+[✓]15 instrukcja 6.0 wykonana (T1)              [✓]16 APENDYKS E odznaczony (K01–K56+ETAP6)
+[✓]17 sekcje nie skopiowane z P65/P66           [✓]18 deklaracja zgodności powyżej
+[✓]19 diagram pętli uczenia (X01)               [✓]20 metryki M1–M6 z definicjami i progami
+
+=================================================================================
+SEKCJA 16 — POTWIERDZENIE ZAMKNIĘCIA CZĘŚCI P67 (komenda końcowa promptu)
+=================================================================================
+
+1. Raport zapisany: JDG/raporty_glm52_v3/RAPORT_V3_P67_SELF_LEARNING.txt (JEDEN plik).
+2. Potwierdzenie zakresu: P67 SELF-LEARNING — pętla wiedzy z decyzji i wyjątków.
+   Luki: P0=0, P1=1, P2=2, P3=4. Innowacje: 12 (I01–I12, pełny szkielet 6-punktowy).
+   Kontrakt wyjściowy: K1–K6 gotowy i wiążący (9.08).
+   Artefakty przekazane: kontrakt pętli, metryki M1–M6, tools/v3_p67_learning_data.json,
+   learning_dashboard (kontrakt UI), 13 bundli v3_p67_*, testy natywne (19) + pytest (22),
+   HANDOFF_V3_P67.md, aktualizacja bundles/v3_campaign_ledger.json (--mark P67).
+3. Kontrakty wyjściowe dla P68: K1 (pętla uczenia — certyfikuj dowodem), K2 (metryki
+   M1–M6 — zebrać baseline trendu), K3 (rejestr danych uczących), K4 (luki przeniesione:
+   L01/P1, V3-P66-L07/P1, V3-P66-L08/P3), K5 (dane UI pętli → V4), K6 (natywne opa test).
+4. OKNO KONTEKSTOWE WYCZYSZCZONE — do części P68 wchodzisz z PUSTĄ sesją, przenosisz się
+   WYŁĄCZNIE przez: ten raport (9.01 / 9.08 / 9.06 P0–P1) + HANDOFF_V3_P67.md + ledger.
+5. Nie utrzymujemy żadnych niejawnych założeń, fragmentów kodu ani cytatów po sesji.
+
+Koniec raportu V3 P67 — SELF-LEARNING FORTECY.
+=================================================================================

@@ -1,0 +1,33 @@
+{
+  "analysis": "I07_renewal_policy",
+  "checks": [
+    {
+      "name": "policy_max_days",
+      "status": "OK",
+      "detail": "wygaśnięcie czasowe: 90 dni"
+    },
+    {
+      "name": "policy_on_epoch_change",
+      "status": "OK",
+      "detail": "nowa epoka prawna (P53) unieważnia certyfikat; epok w rejestrze: 1"
+    },
+    {
+      "name": "policy_on_critical_deploy",
+      "status": "OK",
+      "detail": "deploy krytyczny (P38) wygasa certyfikat; wdrożeń w rejestrze: 44"
+    }
+  ],
+  "metrics": {
+    "policy_max_days": 90,
+    "policy_on_epoch_change": true,
+    "policy_on_critical_deploy": true
+  },
+  "decision": "PASS",
+  "legal_basis": "prompt P68 Sekcja 10-I07; P53; P38",
+  "innovation": "V3-P68-I07",
+  "gate": "PASS",
+  "findings": [],
+  "generated_at": "2026-09-19T10:22:11.029195+00:00",
+  "part": "P68",
+  "slug": "RECERTYFIKACJA_FINALNA"
+}

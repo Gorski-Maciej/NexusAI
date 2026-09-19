@@ -2,7 +2,7 @@
 artifacts: [docs/KATALOG_NARZEDZI.md, tools/]
 status: ACTIVE
 owner: docs
-verified: 2026-09-13
+verified: 2026-09-19
 verify_cmd: python3 tools/manifest_v2.py --json
 -->
 
@@ -197,7 +197,7 @@ verify_cmd: python3 tools/manifest_v2.py --json
 
 ## 10. Podsumowanie
 
-> ⚠️ **Uwaga:** katalog zawiera **997 plików `.py`** (żywy skan P60 2026-09-13; wcześniej 298 wg stanu 2026-08-22; kampania GLM 5.2 dodała ~170 narzędzi: audyty ETAP 10–28, bramki raportowe R01–R24, generatory; kampania V3 dodała bramki kontraktów jakościowych V3-14…V3-20 — patrz tabela powyżej i [MANIFEST.md §PAKIETY KAMPANII V3](../MANIFEST.md)). Poniższe sekcje opisują kategorie rdzenia; pełną listę generuje `ls JDG/tools/*.py` oraz [INWENTARYZACJA_PLIKOW.md](INWENTARYZACJA_PLIKOW.md).
+> ⚠️ **Uwaga:** katalog zawiera **997 plików `.py`** (żywy skan P60 2026-09-13; wcześniej 298 wg stanu 2026-08-22; **stan dysku 2026-09-19: 1033 top-level + 12 w `v3_p40_tools/` = 1045** — kampania GLM 5.2 dodała ~170 narzędzi: audyty ETAP 10–28, bramki raportowe R01–R24, generatory; kampania V3 dodała 689 narzędzi `v3_*` i bramki kontraktów jakościowych V3-14…V3-20 — patrz tabela powyżej i [MANIFEST.md §PAKIETY KAMPANII V3](../MANIFEST.md)). Poniższe sekcje opisują kategorie rdzenia; pełną listę generuje `ls JDG/tools/*.py` oraz [INWENTARYZACJA_PLIKOW.md](INWENTARYZACJA_PLIKOW.md).
 
 **Bramki kampanii V3 (kontrakty jakościowe, evidence w `JDG/bundles/`):**
 

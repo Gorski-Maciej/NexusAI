@@ -1,14 +1,14 @@
 <!--
-artifacts: [docs/MANIFEST_2_0.md, bundles/manifest_v2.json]
-status: ACTIVE
-owner: core
-verified: 2026-09-13
-verify_cmd: python3 tools/manifest_v2.py --json
+artifacts: [docs/MANIFEST_2_0.md, rules/, tools/]
+status: AUTO
+owner: docs
+verified: 2026-09-19
+verify_cmd: python3 tools/manifest_v2.py
 -->
 
 # 📋 MANIFEST 2.0 — JEDNO ŹRÓDŁO PRAWDY METRYK JDG (P01 Fundament)
 
-> Wygenerowano: 2026-09-13T16:38:06.818902+00:00 · generator: `manifest_v2.py`
+> Wygenerowano: 2026-09-19T18:05:53.184258+00:00 · generator: `manifest_v2.py`
 > **Zasada:** manifest jest regenerowany w CI ze skanu katalogów; każda rozbieżność
 > między dokumentami a tym plikiem = blokada merge (bramka `--check`).
 
@@ -16,13 +16,13 @@ verify_cmd: python3 tools/manifest_v2.py --json
 
 | Metryka | Wartość | SLO |
 |---|---|---|
-| Pliki Rego (rules/) | 535 | — |
-| Bloki reguł | 13664 | — |
-| Bloki matched=true | 12479 | — |
-| Unikalne rule_id | 12626 | — |
-| Duplikaty rule_id | 277 | **0** |
+| Pliki Rego (rules/) | 543 | — |
+| Bloki reguł | 13802 | — |
+| Bloki matched=true | 12601 | — |
+| Unikalne rule_id | 12734 | — |
+| Duplikaty rule_id | 299 | **0** |
 | Stuby { true } | 1087 | **0** |
-| Narzędzia Python (tools/) | 994 | — |
+| Narzędzia Python (tools/) | 1033 | — |
 | Natywne testy Rego | 162 | ≥ 95% pakietów |
 | Pliki testów pytest | 84 | — |
 | Completeness Score | 50/100 | → 100 |
@@ -31,9 +31,9 @@ verify_cmd: python3 tools/manifest_v2.py --json
 
 | Metryka | README.md | MANIFEST.md | COVERAGE_REPORT.md | STAN FAKTYCZNY (2.0) |
 |---|---|---|---|---|
-| Pliki Rego | 439 | 383 | 176 | **535** |
-| rule_id | 11452 | 10878 | 10827 | **12626** (unikalne) |
-| Narzędzia | 57 | 98 | 130 | **994** |
+| Pliki Rego | 543 | 543 | 543 | **543** |
+| rule_id (kanoniczna, matched:true) | 12 111 | 12 111 | 12 111 | 12734 (ta metoda liczy wszystkie bloki) |
+| Narzędzia | 1033 | — | 1033 | **1033** |
 
 ## SLO docelowe (V1 §0 / V2 §11)
 

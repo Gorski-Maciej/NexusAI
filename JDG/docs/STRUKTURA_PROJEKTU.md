@@ -33,7 +33,7 @@ JDG/                                        ← KATALOG GŁÓWNY MODUŁU
 ├── unified_plan_v8.yaml                    Plan strategiczny v8 (24 inicjatywy)
 ├── unified_plan_progress.yaml              Postęp wdrożenia planu
 │
-├── rules/                                  ★ SERCE — 490 plików Rego, ~11 855 rule_id
+├── rules/                                  ★ SERCE — 543 plików Rego w drzewie, 12 111 unikalnych rule_id
 │   ├── main_jdg.rego                       Orkiestrator Multi-Pass + Sharded Router (1656 linii)
 │   ├── _helpers_jdg.rego                   Helpery: thresholds, FC, MPP
 │   ├── _metadata_jdg.rego                  Metadane reguł (severity, remediation, temporalność)
@@ -52,14 +52,14 @@ JDG/                                        ← KATALOG GŁÓWNY MODUŁU
 │   ├── security/                           security_fortress_v8.rego
 │   └── *_enterprise.rego                   Inicjatywy S1–S24 (optimization, ksef_*, banking…)
 │
-├── tests/                                  Testy (198 pytest + 207 natywnych Rego)
+├── tests/                                  Testy (288 pytest + 278 natywnych Rego)
 │   ├── test_*.py                           pytest (16 skopiowanych z tests/ + enterprise + audyty ETAP 10–28)
 │   ├── auto/test_auto_block_*.py           Automatyczne testy bloków tematycznych (~60 plików)
 │   ├── rego/test_native_*.rego             Natywne testy Rego (opa test, w tym test_native_*_etapNN)
 │   ├── rego/micro/test_native_micro_*.rego Testy mikro-atomów (27 obszarów)
 │   └── jdg_rules_test.rego                 Testy reguł
 │
-├── tools/                                  ★ 298 narzędzi Python (~80 000+ linii)
+├── tools/                                  ★ 1033 narzędzi Python
 │   ├── generate_manifest.py                Manifest → MANIFEST.md
 │   ├── validate_rules.py                   〓 9 walidacji jakości
 │   ├── lint_rego_rules.py                  Linter 6-check
@@ -73,7 +73,7 @@ JDG/                                        ← KATALOG GŁÓWNY MODUŁU
 │
 ├── bundles/                                OPA Bundle
 │   ├── bundle.sh                           Budowa tar.gz z zachowaniem struktury (fix R1)
-│   └── manifest.json                       Manifest bundle (11 855 reguł, 490 plików, serwis thresholds)
+│   └── manifest.json                       Manifest bundle (reguły kanoniczne + serwis thresholds; liczby wg daty budowy bundle)
 │
 ├── docs/                                   ★ Dokumentacja (ta rodzina plików)
 │   ├── ARCHITEKTURA.md · STRUKTURA_PROJEKTU.md (ten) · API_REFERENCJA.md
@@ -85,7 +85,7 @@ JDG/                                        ← KATALOG GŁÓWNY MODUŁU
 │   └── P02_* … P24_*                       Dokumenty inicjatyw (VAT_MACRO_P03, ZUS_MICRO_P08…)
 │
 ├── api/
-│   └── openapi.yaml                        ★ Specyfikacja REST API (OpenAPI 3.0.3, 17 endpointów)
+│   └── openapi.yaml                        ★ Specyfikacja REST API (OpenAPI 3.0.3, 18 endpointów, 13 schematów)
 │
 └── migrations/                             ★ DuckDB RuleStore
     ├── 001_jdg_rule_store.sql              Tabele 1–5 + seed 50 progów
@@ -119,6 +119,8 @@ policies/                                   ← MIRROR REGUŁ (starsza wersja + 
 ---
 
 ## 3. Konwencje nazewnicze
+Rule ID (ADR-008), nazwy plików Rego, priorytety numeryczne, pakiety, kolumny SQL i endpointy — jedna konwencja w całym projekcie.
+
 
 ### 3.1. Rule ID (ADR-008)
 
@@ -503,9 +505,22 @@ LIMIT 10;
 | `vat_*` | 010–012 | VAT Macro/Micro/Special — progi, stawki, binding registry, KSeF/marża/proporcja | `article`, `rate`, `valid_from`, `valid_to`, `binding_micro_macro` |
 | `tools_api_bundles` | 013 | Narzędzia/API/RuleStore/Bundles — wersjonowanie i integracja | `artifact_id`, `version`, `sha256`, `deployment_state` |
 
+### 5.1. Domeny danych → tabele, endpointy i moduły reguł
+
+> Mapa czterech domen biznesowych z checklisty: gdzie dane powstają, gdzie są przechowywane i jak je pobrać. Synonimy: `księgowania`, `bookings`, `raporty`, `reports`, `decyzje`, `decisions`, `środki trwałe`, `fixed assets`.
+
+| Domena | Tabele (RuleStore) | Endpointy API | Moduły reguł |
+|---|---|---|---|
+| **Księgowania** (automatyczne / manualne / korekty) | `jdg_verdict_audit` (log werdyktów — tryb AUTO_POST/SUGGEST/ASK_USER w polu `decision_mode`), `rule_versions` (wersja reguły źródłowej) | `POST /jdg/decide` (auto), `POST /jdg/simulate` (manualne/korekty — co-if przed zapisem) | `jdg.accounting` (PKPiR), `rules/uor/*`, tryby pewności CERTAIN/CONDITIONAL/NEEDS_ADVICE |
+| **Raporty** (analityka / podatki) | `jdg_tax_thresholds` (progi raportów), `decision_certificates` (podpisane zestawienia F4) | `GET /jdg/manifest`, `GET /jdg/coverage`, `GET /jdg/legal-coverage` (dane analityczne) | `jpk_v7_autogen_enterprise` (JPK_V7M), deklaracje PIT-36/36L/28, VAT-7 |
+| **Decyzje** (oczekujące / historia) | `jdg_verdict_audit` (historia, Merkle-proof), `jdg_prediction_history` (symulacje), `jdg_conflict_registry` (konflikty) | `POST /jdg/decide` (ASK_USER → centrum decyzji), `GET /jdg/audit/{id}` (historia), `POST /jdg/explain` (wyjaśnienie) | Sharded Router + `safe_merge` (Application), Decision Certificate `seal` |
+| **Środki trwałe** (przyjęcie / amortyzacja) | `jdg_tax_thresholds` (limity: jednorazowa 100k, niskocenne 10k, auto 150k/225k), `legal_graph` (art. 22k–22o) | `POST /jdg/decide` (przyjęcie/OT), `POST /jdg/simulate` (warianty amortyzacji) | `jdg.accounting` amortyzacja, `rules/accounting/*`, R04-INN-02/03 (jednorazowa, niskocenne) |
+
 ---
 
 ## 6. Strategia migracji i seedowania
+Pipeline ładowania danych, katalog migracji 001–013 i zasady seedowania progów z obwieszczeń MF.
+
 
 ### 6.1. Pipeline ładowania danych
 
@@ -585,6 +600,20 @@ WHERE threshold_id = 'vat_standard_rate' AND valid_to = '2026-12-31';
 | Testy reguł | `tests/rego/test_native_*.rego` |
 | Testy blokowe | `tests/auto/test_auto_block_*.py` |
 | Plan strategiczny | `unified_plan_v8.yaml` |
+| Kampania V3 — zbiorczo | [docs/KAMPANIA_V3_PROMPTY_P00_P68.md](KAMPANIA_V3_PROMPTY_P00_P68.md) |
+
+### 9.1. Katalogi kampanii V3 (P00–P68)
+
+| Katalog/plik | Zawartość | Liczba |
+|---|---|---:|
+| `prompty_v3/` | prompty kampanii V3 (TXT, 1 część = 1 plik) | 70 |
+| `raporty_glm52_v3/` | raporty wdrożenia `RAPORT_V3_PNN_*.txt` + handoffy `HANDOFF_V3_PNN.md` | 79 |
+| `bundles/v3_*` | bundele dowodowe (bramki, silniki, evidence) + `v3_campaign_ledger.json` | 862 |
+| `tools/v3_*` | narzędzia V3: silniki, bramki statyczne, run-all, ledger | 689 |
+| `rules/v3_*.rego` | pakiety Rego V3 (kontrakty, domknięcia, P67/P68) | 53 |
+| `tests/rego/test_v3_*.rego` | natywne testy Rego V3 (bramka podstawowa) | w drzewie tests/ |
+
+> **Konwencja V3:** każda część = prompt TXT → raport TXT → narzędzia `v3_pNN_*` → bundele dowodowe `v3_pNN_*` → testy natywne + pytest → wpis w ledgerze `v3_campaign_ledger.json`.
 
 ---
 

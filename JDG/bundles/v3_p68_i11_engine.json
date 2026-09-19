@@ -1,0 +1,32 @@
+{
+  "analysis": "I11_truth_first_integrity",
+  "checks": [
+    {
+      "name": "no_misreported_pillars",
+      "status": "OK",
+      "detail": "DEKLAROWANE jako DOWIEDZONE: brak"
+    },
+    {
+      "name": "production_honesty",
+      "status": "OK",
+      "detail": "production_status=NOT_CERTIFIED; honesty: Produkcja niecertyfikowana (brak telemetrii zewnętrznej); RV/LCI luki raportowan"
+    },
+    {
+      "name": "unverified_tagged",
+      "status": "OK",
+      "detail": "wszystkie podstawy prawne z [NIEZWERYFIKOWANE — ISAP] (konwencja P47)"
+    }
+  ],
+  "metrics": {
+    "misreported_as_evidenced": [],
+    "production_status": "NOT_CERTIFIED"
+  },
+  "decision": "PASS",
+  "legal_basis": "prompt P68 Sekcja 10-I11; protokół 06",
+  "innovation": "V3-P68-I11",
+  "gate": "PASS",
+  "findings": [],
+  "generated_at": "2026-09-19T10:22:12.324897+00:00",
+  "part": "P68",
+  "slug": "RECERTYFIKACJA_FINALNA"
+}

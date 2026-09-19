@@ -201,6 +201,34 @@ innovations:
     status: "done"
     tool: "bundle.sh v8.0"
 
+# ═════════════════════════════════════════════════════════════════════════
+# KAMPANIA V3 (P00-P68) — status wdrożenia części (źródło prawdy: ledger)
+campaign_v3:
+  generated: "2026-09-19"
+  ledger: "bundles/v3_campaign_ledger.json"
+  prompts_dir: "prompty_v3/"
+  reports_dir: "raporty_glm52_v3/"
+  summary:
+    total: 69
+    wdrozony_100: 69
+    nie_wdrozony: 0
+    progress_pct: 100.0
+  final_certification:
+    part: "P68"
+    slug: "RECERTYFIKACJA_FINALNA"
+    status: "WDROZONY_100"
+    certificate: "WYDANY (repo)"
+    production_status: "NOT_CERTIFIED (jawne, truth-first)"
+    hard_gates: "5/5 z pomiaru, 0 naruszeń"
+    pillars: "9/9 filarów ze statusem dowodowym"
+  renewals_policy:
+    days: 90
+    legal_epoch_change: "P53"
+    critical_deploy: "P38"
+  residual_gaps:
+    p0: ["P49-L01 (12 ścieżek SUGGEST-tail)", "P50-L01 (217 parse errors)"]
+    wave: "V4-F0"
+
 # ═══════════════════════════════════════════════════════════════════════════
 # KAMPANIA PROMOTY GLM52 (P01-P20) — status wdrożenia raportów
 # (1 prompt = 1 plik TXT w JDG/prompty_glm52/)

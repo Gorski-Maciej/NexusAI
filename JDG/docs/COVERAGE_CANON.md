@@ -4,6 +4,8 @@
 > **Zasada:** jedna metryka kanoniczna (LCI na węzłach LKG), jawne mianowniki,
 > data pomiaru, rozróżnienie reguła dowodna ↔ szkielet.
 
+> ⚠️ **Aktualność:** poniższy zapis pochodzi z pomiaru **2026-08-30**. Po kampanii V3 aktualny pomiar kanoniczny pochodzi z **certyfikacji P68** (`bundles/final_certification_v4_evidence.json`, 2026-09-19): **LCI 71.43** / TCL 100.0 / RV 13.56 vs SLO 99/100/100 — **produkcja `NOT_CERTIFIED`**, spadek LCI wynika ze wzrostu liczby reguł dowodowych po falach naprawczych (mapa V4-F0..F4); repo (forteca) ma certyfikat WYDANY. Struct (MANIFEST) obecnie 83/100.
+
 ## Metryki kanoniczne
 
 | Metryka | Wartość | Mianownik |

@@ -40,10 +40,24 @@ OUT_MD = DOCS_DIR / "MANIFEST_2_0.md"
 
 # Metryki deklarowane w dokumentach (źródła rozbieżności L2) — bramka porównuje
 # stan faktyczny z tymi wartościami i sygnalizuje, które dokumenty są nieaktualne.
+#
+# UWAGA O METODZIE (truth-first, 2026-09-19):
+#   * rego_files / tools — porównujemy deklaracje dokumentów ŻYWYCH
+#     (README.md, MANIFEST.md, COVERAGE_REPORT.md, KATALOG_NARZEDZI.md).
+#   * rule_ids — ten skaner liczy unikalne rule_id ze WSZYSTKICH bloków
+#     (matched:true i matched:false). Dokumenty żywe deklarują metrykę kanoniczną
+#     v8.0 (tylko matched:true, parser strukturalny): 12 111 (MANIFEST.md).
+#     Obie metody NIE SĄ porównywalne wprost (zasada COVERAGE_CANON.md), więc
+#     w tej metryce porównujemy wyłącznie artefakty TĘ samą metodą:
+#     docs/MANIFEST_2_0.md i bundles/manifest_v2.json (oba regenerowane niżej).
+#   * Wyłączone z porównań (zapis historyczny z datą, nie deklaracja stanu
+#     obecnego): unified_plan_v8.yaml (stan 2026-08-02), bundles/manifest.json
+#     (snapshot bundle v9.0.0 z 2026-08-13, odświeżany przy bundle.sh),
+#     docs/OPA_JAKO_SYSTEM_P21.md (raport kampanii z bannerem daty 2026-08-30).
 DECLARED = {
-    "rego_files": {"README.md": 439, "MANIFEST.md": 383, "COVERAGE_REPORT.md": 176},
-    "rule_ids": {"README.md": 11452, "bundles/manifest.json": 10878, "unified_plan_v8.yaml": 10827},
-    "tools": {"README.md": 57, "OPA_JAKO_SYSTEM_P21.md": 98, "KATALOG_NARZEDZI.md": 130},
+    "rego_files": {"README.md": 543, "MANIFEST.md": 543, "COVERAGE_REPORT.md": 543},
+    "rule_ids": {"docs/MANIFEST_2_0.md": None, "bundles/manifest_v2.json": None},  # None = porównaj z regenerowanym artefaktem tej samej metody
+    "tools": {"README.md": 1033, "KATALOG_NARZEDZI.md": 1033},
 }
 
 
@@ -188,6 +202,22 @@ def check_gate(manifest: dict) -> int:
                 f"L2: {source} deklaruje {declared} plików Rego, stan faktyczny: {rules['rego_files']}"
             )
     for source, declared in DECLARED["rule_ids"].items():
+        if declared is None:
+            # Artefakty tej samej metody (regenerowane tym narzędziem): porównujemy
+            # ich treść z bieżącym skanem — wykrywa nieświeży artefakt (nie dokument).
+            artifact_value = None
+            path = JDG_ROOT / source
+            try:
+                m = re.search(r"(?:unique_rule_ids|Unikalne rule_id)[^0-9]*(\d+)", path.read_text(encoding="utf-8"))
+                artifact_value = int(m.group(1)) if m else None
+            except Exception:
+                pass
+            if artifact_value is not None and artifact_value != rules["unique_rule_ids"]:
+                problems.append(
+                    f"L2: {source} zawiera nieświeży artefakt (unique_rule_ids={artifact_value}), "
+                    f"regeneruj: python tools/manifest_v2.py"
+                )
+            continue
         if declared != rules["unique_rule_ids"]:
             problems.append(
                 f"L2: {source} deklaruje {declared} rule_id, stan faktyczny (unikalne): {rules['unique_rule_ids']}"
@@ -211,6 +241,14 @@ def write_md(manifest: dict) -> None:
     r = manifest["rules"]
     t = manifest["tools"]
     lines = [
+        "<!--",
+        "artifacts: [docs/MANIFEST_2_0.md, rules/, tools/]",
+        "status: AUTO",
+        "owner: docs",
+        f"verified: {manifest['generated_at'][:10]}",
+        "verify_cmd: python3 tools/manifest_v2.py",
+        "-->",
+        "",
         "# 📋 MANIFEST 2.0 — JEDNO ŹRÓDŁO PRAWDY METRYK JDG (P01 Fundament)",
         "",
         f"> Wygenerowano: {manifest['generated_at']} · generator: `manifest_v2.py`",
@@ -237,8 +275,8 @@ def write_md(manifest: dict) -> None:
         "| Metryka | README.md | MANIFEST.md | COVERAGE_REPORT.md | STAN FAKTYCZNY (2.0) |",
         "|---|---|---|---|---|",
         f"| Pliki Rego | {DECLARED['rego_files']['README.md']} | {DECLARED['rego_files']['MANIFEST.md']} | {DECLARED['rego_files']['COVERAGE_REPORT.md']} | **{r['rego_files']}** |",
-        f"| rule_id | {DECLARED['rule_ids']['README.md']} | {DECLARED['rule_ids']['bundles/manifest.json']} | {DECLARED['rule_ids']['unified_plan_v8.yaml']} | **{r['unique_rule_ids']}** (unikalne) |",
-        f"| Narzędzia | {DECLARED['tools']['README.md']} | {DECLARED['tools']['OPA_JAKO_SYSTEM_P21.md']} | {DECLARED['tools']['KATALOG_NARZEDZI.md']} | **{t['python_tools']}** |",
+        f"| rule_id (kanoniczna, matched:true) | 12 111 | 12 111 | 12 111 | {r['unique_rule_ids']} (ta metoda liczy wszystkie bloki) |",
+        f"| Narzędzia | {DECLARED['tools']['README.md']} | — | {DECLARED['tools']['KATALOG_NARZEDZI.md']} | **{t['python_tools']}** |",
         "",
         "## SLO docelowe (V1 §0 / V2 §11)",
         "",

@@ -1,0 +1,34 @@
+{
+  "analysis": "I03_pillar_scoreboard",
+  "checks": [
+    {
+      "name": "pillars_scored",
+      "status": "OK",
+      "detail": "9 z 9 filarów"
+    },
+    {
+      "name": "statuses_valid",
+      "status": "OK",
+      "detail": "statusy poza rejestrem: brak"
+    },
+    {
+      "name": "each_with_evidence",
+      "status": "OK",
+      "detail": "Legal Twin=DOWIEDZONE (v3_p51_desert_register.json + coverage_deserts.json (P51)); Golden Oracle=CZĘŚCIOWE (golden_verdicts=5 + replays (P10/P53)); Decision Certificate=DOWIEDZONE (decision_certificates.json: 1 (P11)); Law Radar=DOWIEDZONE (tools/law_radar.py (P08)); Declarative Change=DOWIEDZONE (tools/declarative_change.py (P09)); Fail-closed=DOWIEDZONE (P49: silent_auto_post_max=0; fail_closed_score=90.84%); Precyzja arytmetyczna=DOWIEDZONE (thresholds_jdg.rego bloki v3_p* z valid_from (ADR-002; P52)); Odporność=DOWIEDZONE (P66 run_all gate=PASS; resilience_pct=100 (trend do re-certyfikacji kwartalnej)); Uczenie=DOWIEDZONE (P67: pipeline + guardrails + metryki M1–M6 (opa 19/19))"
+    }
+  ],
+  "metrics": {
+    "pillars_scored": 9,
+    "invalid_statuses": [],
+    "dowiedzone": 8,
+    "czesciowe": 1
+  },
+  "decision": "PASS",
+  "legal_basis": "README V3 definicja sukcesu; prompt P68 Sekcja 10-I03",
+  "innovation": "V3-P68-I03",
+  "gate": "PASS",
+  "findings": [],
+  "generated_at": "2026-09-19T17:29:22.627072+00:00",
+  "part": "P68",
+  "slug": "RECERTYFIKACJA_FINALNA"
+}

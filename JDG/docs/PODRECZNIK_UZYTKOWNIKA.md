@@ -22,6 +22,8 @@
 ---
 
 ## 2. Pierwsze uruchomienie
+Kreator konfiguracji i aktywacja licencji — od zera do pierwszej decyzji.
+
 
 ### 2.1. Kreator konfiguracji (Configuration Wizard)
 
@@ -60,11 +62,15 @@ Po zalogowaniu uruchom **Kreator konfiguracji** (menu: *Ustawienia → Kreator*)
 | **Administrator** | Techniczne: integracje, aktualizacje, klucze API, logi | Wdrażanie bundle, klucze dostępu |
 | **Audytor** (read-only) | `GET /jdg/audit/*`, raporty | Weryfikacja historycznych decyzji |
 
+> 🔎 **Role systemowe vs funkcjonalne:** powyższe to role **funkcjonalne** (persony). Role **systemowe** RBAC w silniku (`rules/v3_p63_rbac_multitenant_closure.rego`, P63-I01) to 4 role: **entrepreneur / accountant / auditor / admin** — mapowanie: Właściciel→`entrepreneur`, Księgowa→`accountant`, Audytor→`auditor`, Administrator→`admin`. Rola **Doradca** to poziom licencji **Pro** (uprawnienie `simulate`), nie osobna rola RBAC. Brak roli = BLOCK (fail-closed).
+
 **Mapowanie na token JWT:** `tenant_id`, `tenant_type` oraz uprawnienia `decide` / `simulate` / `audit` — zobacz [API_REFERENCJA.md §2.2](API_REFERENCJA.md).
 
 ---
 
 ## 4. Workflow — codzienna praca
+Cztery kroki dnia: pobranie faktur → AUTO_POST → ASK_USER → jedna decyzja przedsiębiorcy.
+
 
 ### 4.1. Przepływ krok po kroku
 
@@ -140,6 +146,8 @@ Każda pozycja historii pokazuje: werdykt (stawki, forma), podstawę prawną, dr
 ---
 
 ## 6. Raporty
+Przeglądanie, eksport i drukowanie — analityka i podatki.
+
 
 ### 6.1. Dostępne raporty
 
@@ -162,6 +170,8 @@ Każda pozycja historii pokazuje: werdykt (stawki, forma), podstawę prawną, dr
 ---
 
 ## 7. Konfiguracja
+Stawki VAT i progi, plan kont (PKPiR/UoR) oraz polityka rachunkowości.
+
 
 ### 7.1. Stawki VAT i progi
 
@@ -188,6 +198,8 @@ Każda pozycja historii pokazuje: werdykt (stawki, forma), podstawę prawną, dr
 ---
 
 ## 8. Integracje — jak skonfigurować
+KSeF, GUS, NBP i pozostałe — poświadczenia, test połączeń, typowe błędy.
+
 
 ### 8.1. KSeF (Krajowy System e-Faktur)
 
@@ -234,6 +246,8 @@ flowchart LR
 ---
 
 ## 9. Aktualizacje
+Automatyczne, ręczne i rollback — jak bezpiecznie aktualizować silnik i reguły.
+
 
 ### 9.1. Aktualizacje automatyczne
 
@@ -267,6 +281,21 @@ Każdy bundle ma wersję (`bundle_version` w audycie). W przypadku regresji: *Ak
 - [ ] Użytkownicy dodani (księgowa, doradca) z właściwymi rolami
 - [ ] Testowa faktura → tryb SUGGEST/ASK_USER → akceptacja
 - [ ] Pierwszy raport miesięczny wyeksportowany
+
+---
+
+## 12. Status certyfikacji — co musisz wiedzieć (2026-09-19)
+
+> Synonimy: `certyfikat`, `kampania v3`, `P68`, `NOT_CERTIFIED`.
+
+| Co | Status | Co to znaczy dla Ciebie |
+|---|---|---|
+| **Certyfikat fortecy reguł (repo)** | 🟢 WYDANY | logika decyzyjna jest domknięta 69/69 częściami kampanii V3, z dowodami z pomiaru (nie deklaracji) |
+| **Certyfikat produkcyjny** | 🔴 NOT_CERTIFIED | środowisko produkcyjne wymaga jeszcze pętli kwartalnej i telemetrii (fala V4-F4) — traktuj wersję repo jako źródło prawdy reguł, nie jako potwierdzenie produkcji |
+| **Podstawy prawne** | OZNACZONE | każda reguła ma `_legal_basis`; weryfikacja online w ISAP w fali V4-F1 — przed kontrolą KAS skonsultuj z doradcą podatkowym |
+| **Odnowienie certyfikatu** | ≤90 dni / nowa epoka prawna / krytyczny deploy | forteca ponownie przechodzi hard gates i scoreboard (procedura: [KAMPANIA_V3_PROMPTY_P00_P68.md](KAMPANIA_V3_PROMPTY_P00_P68.md)) |
+
+Pełny raport końcowy: `raporty_glm52_v3/RAPORT_V3_P68_RECERTYFIKACJA_FINALNA.txt`.
 
 ---
 

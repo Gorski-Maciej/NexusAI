@@ -4496,3 +4496,46 @@ v3_p67 := {
     "v3_p67_data_sources_min": 6,
     "v3_p67_guardrail_layers": ["smt_z3", "golden_replay", "four_eyes", "lifecycle_shadow"],
 }
+
+# ── P68 RE-CERTYFIKACJA FORTECY (dowód stanu po falach naprawczych) ────
+# Prompt P68 Sekcja 10 (I01–I12). Progi czytane przez silniki tools/v3_p68_engines.py
+# i reguły rules/v3_p68_recertification_final.rego (jedno źródło prawdy — ADR-002).
+# Hard gates (Sekcja 2 promptu): zero stubów ACTIVE, zero hardcode wartości
+# prawnych, 100% podstaw zweryfikowanych lub oznaczonych, zero dryfu mirror
+# semantycznego, zero ścieżek fail-open na AUTO_POST. Certyfikat tylko gdy
+# WSZYSTKIE zamknięte — inaczej raport „brak re-certyfikacji” (I01).
+v3_p68 := {
+    "v3_p68_threshold_version": "recertification-v3p68-2026.09",
+    "legal_basis_version": "lb-recertification-v3p68-2026.09",
+    "valid_from": "2026-01-01",                               # okno temporalne (P05)
+    "valid_to": null,
+    "v3_p68_check": false,
+    # I01: hard gates — liczba wymaganych bramek twardych (Sekcja 2 promptu)
+    "v3_p68_hard_gates_required": 5,
+    # I02: rozliczenie rejestrów naprawczych P45–P67 (23 rejestry)
+    "v3_p68_registers_total": 23,
+    # I03: scoreboard filarów (9 filarów definicji sukcesu z README V3)
+    "v3_p68_pillars_total": 9,
+    # I03/I11: dozwolone statusy dowodowe filarów (truth-first)
+    "v3_p68_pillar_status_valid": ["DOWIEDZONE", "CZĘŚCIOWE", "DEKLAROWANE"],
+    # I05: zamrożona definicja sukcesu — minimum metryk z progiem
+    "v3_p68_success_metrics_min": 5,
+    # I06: certyfikat podpisany i archiwizowany WORM (P65-I08) — obowiązkowy
+    "v3_p68_worm_required": true,
+    # I07: polityka odnowienia — wygaśnięcie po dniach / epoce / deployu krytycznym
+    "v3_p68_renewal_max_days": 90,
+    "v3_p68_renewal_on_epoch_change": true,
+    "v3_p68_renewal_on_critical_deploy": true,
+    # I04: rejestr rezydualny musi mieć mapę V4 (zero utraty wiedzy)
+    "v3_p68_residual_v4_map_required": true,
+    # I09: knowledge transfer pack — minimalna liczba sekcji
+    "v3_p68_kt_pack_sections_min": 5,
+    # I08: akceptacja właściciela (4-eyes biznesowe) wymagana w evidence
+    "v3_p68_owner_attestation_required": true,
+    # I11: integralność truth-first — DEKLAROWANE nie może być raportowane jako DOWIEDZONE
+    "v3_p68_truth_first_integrity_required": true,
+    # I12: post-mortem kampanii wymagany
+    "v3_p68_post_mortem_required": true,
+    "no_auto_post": true,
+    "manual_review_required": true,
+}

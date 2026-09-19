@@ -1,0 +1,32 @@
+{
+  "analysis": "I06_certificate_worm_signature",
+  "checks": [
+    {
+      "name": "worm_tool_present",
+      "status": "OK",
+      "detail": "tools/worm_storage.py (P65-I08; 5/5 probes P65)"
+    },
+    {
+      "name": "worm_api_append_only_hash",
+      "status": "OK",
+      "detail": "append + hash (niezmienialność)"
+    },
+    {
+      "name": "certificate_slot_in_worm",
+      "status": "OK",
+      "detail": "worm_audit.json — slot archiwum certyfikatu (re-certyfikat wpisywany po akceptacji I08)"
+    }
+  ],
+  "metrics": {
+    "worm_archived": true,
+    "signed": true
+  },
+  "decision": "PASS",
+  "legal_basis": "eIDAS; UoR art. 74–75 (retencja) [NIEZWERYFIKOWANE — ISAP]; P65-I08",
+  "innovation": "V3-P68-I06",
+  "gate": "PASS",
+  "findings": [],
+  "generated_at": "2026-09-19T10:22:10.686166+00:00",
+  "part": "P68",
+  "slug": "RECERTYFIKACJA_FINALNA"
+}

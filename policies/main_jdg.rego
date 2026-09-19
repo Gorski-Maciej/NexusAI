@@ -133,6 +133,7 @@ import data.jdg.v3_p64_luka_sweep as v3_p64_luka_sweep
 import data.jdg.v3_p65_tool_forge as v3_p65_tool_forge
 import data.jdg.v3_p66_chaos_resilience as v3_p66_chaos_resilience
 import data.jdg.v3_p67_self_learning as v3_p67_self_learning
+import data.jdg.v3_p68_recertification_final as v3_p68_recertification_final
 import data.jdg.v3_p59_security_closure as v3_p59_security_closure
 import data.jdg.v3_p58_observability_closure as v3_p58_observability_closure
 import data.jdg.v3_p57_ingest_data as v3_p57_ingest_data
@@ -3449,6 +3450,19 @@ final_verdict_p131 = safe_merge(final_verdict_p130,
         fallback.decide
     ))
 
+# ═══ PAS 21: V3-P68 RE-CERTYFIKACJA FORTECY (kampania V3, prompt P68) ═══
+# Dowód stanu po falach naprawczych: hard gates (I01), rozliczenie 23 rejestrów
+# P45–P67 (I02), scoreboard 9 filarów (I03), mapa rezydualna V4 (I04),
+# zamrożona definicja sukcesu (I05), WORM+podpis (I06), polityka odnowienia
+# (I07), akceptacja właściciela (I08), knowledge transfer (I09), auto-portret
+# (I10), truth-first (I11), post-mortem (I12). Status produkcji: NOT_CERTIFIED
+# — jawne ograniczenie certyfikatu. Fail-closed; nieaktywny dopóki
+# input.jdg_entrepreneur.v3_p68_check nie jest true.
+final_verdict_p132 = safe_merge(final_verdict_p131,
+    safe_merge(v3_p68_recertification_final.decide,
+        fallback.decide
+    ))
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # PAS 18n: POST-MERGE RUNTIME INVARIANTS + DECISION CERTIFICATE (ADR-022, F2/F4)
 # Na KOŃCU POST-MERGE egzekucja niezmienników (F2 V2): wstrzykuje
@@ -3481,7 +3495,7 @@ final_verdict_p131 = safe_merge(final_verdict_p130,
 # authority for business fields.
 final_verdict_post_merge = safe_merge(
     {"_routing_context": routing_context},
-    final_verdict_p131
+    final_verdict_p132
 )
 
 # Enforcement is a second safe merge: invariant/certificate fields are attached

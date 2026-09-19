@@ -2,7 +2,7 @@
 artifacts: [docs/FAQ.md]
 status: ACTIVE
 owner: docs
-verified: 2026-09-13
+verified: 2026-09-19
 verify_cmd: python3 tools/v3_p60_engines.py I03
 -->
 
@@ -27,15 +27,17 @@ verify_cmd: python3 tools/v3_p60_engines.py I03
 ---
 
 ## 1. Ogólne
+Podstawy: czym jest system, jaki ma status i ile reguł pokrywa.
+
 
 ### Q1.1 Czym jest NexusAI JDG?
-Silnik reguł podatkowych (Policy-as-Code) dla polskich jednoosobowych działalności gospodarczych. Koduje 13 aktów prawnych jako ~11 855 reguł OPA/Rego (490 plików), które automatycznie ewaluują faktury i podejmują decyzje księgowe. Szczegóły: [README.md](../README.md).
+Silnik reguł podatkowych (Policy-as-Code) dla polskich jednoosobowych działalności gospodarczych. Koduje 13 aktów prawnych jako **12 111 unikalnych reguł OPA/Rego** (543 pliki Rego w drzewie `rules/`, MANIFEST regen. 2026-09-19), które automatycznie ewaluują faktury i podejmują decyzje księgowe. Szczegóły: [README.md](../README.md).
 
 ### Q1.2 Jaki jest status produktu?
 Reguły i API: **PRODUCTION (ENTERPRISE v8.0)**. RuleStore DuckDB: BETA. Testy: BETA. Pełna tabela statusów: [README.md §Status](../README.md).
 
 ### Q1.3 Ile reguł pokrywa system?
-~11 855 unikalnych `rule_id` w 490 plikach Rego (MANIFEST.md, 2026-08-30). Uwaga: `bundles/manifest.json` bywa starszy — aktualizowany przy budowie bundle (`bundle.sh`).
+**12 111 unikalnych `rule_id`** (MANIFEST.md, regenerowany 2026-09-19; 12 155 bloków `matched:true`, 44 duplikaty, Completeness 83/100). Na dysku: 543 pliki Rego w drzewie `rules/` (2026-09-19). Uwaga: `bundles/manifest.json` bywa starszy — aktualizowany przy budowie bundle (`bundle.sh`).
 
 ### Q1.4 Czy to zastępuje księgowego?
 Nie w pełni. Automatyzuje ~85% transakcji (AUTO_POST), ale ~3–5% wymaga decyzji człowieka (ASK_USER), a doradca/księgowa nadzoruje strategię i obronę przed KAS.
@@ -43,6 +45,8 @@ Nie w pełni. Automatyzuje ~85% transakcji (AUTO_POST), ale ~3–5% wymaga decyz
 ---
 
 ## 2. Techniczne (developer / integrator)
+Wywołania API, lokalne uruchomienie OPA i typowe integracje.
+
 
 ### Q2.1 Jak wywołać ewaluację faktury?
 ```bash
@@ -91,6 +95,8 @@ Tryb wynika z klasy pewności werdyktu (V3-19 `x-decision-modes`): **CERTAIN →
 ---
 
 ## 3. Prawne i zgodność
+Podstawy prawne reguł, pokrycie aktów i zasada disclaimeru.
+
 
 ### Q3.1 Czy system obsługuje KSeF?
 Tak — od obowiązku 2026-02-01: generacja XML, walidacja XSD, wysyłka online/offline (7 dni), UPO, firewall i monitor sankcji. [ZGODNOSC_PRAWNA.md §4](ZGODNOSC_PRAWNA.md).
@@ -113,6 +119,8 @@ Nie. System podaje podstawy prawne (`_legal_basis`) i rekomendacje, ale ostatecz
 ---
 
 ## 4. Użytkownik końcowy
+Codzienna praca: faktury, centrum decyzji, raporty.
+
 
 ### Q4.1 Co zrobić z pierwszą fakturą?
 Wgraj (e-mail/KSeF/folder) → system wyekstrahuje dane → jeśli Trust Score < 0.92, zatwierdź propozycję lub odpowiedz na pytanie w Centrum decyzji. [PODRECZNIK_UZYTKOWNIKA.md §4](PODRECZNIK_UZYTKOWNIKA.md).
@@ -138,6 +146,8 @@ Tak — korekta w module korekt (`rules/corrections.rego`); system uwzględnia t
 ---
 
 ## 5. Wdrożenie i DevOps
+Instalacja, aktualizacje, backup i monitorowanie.
+
 
 ### Q5.1 Jakie są wymagania sprzętowe?
 OPA Server + DuckDB RuleStore + serwis thresholdów; rekomendowane minimum: 2 vCPU / 4 GB RAM dla testów, 4 vCPU / 8 GB dla produkcji (pełny bundle 472 plików).
@@ -157,6 +167,8 @@ Tak — rejestr czynności (Art. 30), prawo do usunięcia (Art. 17), podprocesor
 ---
 
 ## 6. Pytania o koszty i licencje
+Model licencjonowania i zakres poszczególnych planów.
+
 
 ### Q6.1 Ile kosztuje licencja?
 Modele: Trial (30 dni), Standard (JDG+KSeF+JPK), Pro (doradca: symulacje, optymalizacja), Enterprise (wielu tenantów, API). Aktualny cennik — kontakt z NexusAI.
@@ -167,6 +179,8 @@ Koszty zależne od: ruchu API (rate limiting 60 req/min/klucz), wywołań LLM (`
 ---
 
 ## 7. Kampania GLM 5.2 i certyfikacja (ETAP 10–28)
+Status, bramki i znaczenie certyfikacji końcowej kampanii GLM 5.2.
+
 
 ### Q7.1 Co to jest kampania GLM 5.2?
 Seria 19 audytowanych etapów wdrożenia (ETAP 10–28) rozwijająca silnik JDG od fundamentów (ETAP 04–06) do certyfikacji końcowej. Każdy etap ma reguły Rego, audyt (`JDG/tools/*_etapNN_audit.py`), audit-state (`JDG/bundles/*audit_state.json`) oraz testy pytest + natywne Rego. Pełna tabela: [KAMPANIA_GLM52_ETAPY_10_28.md](KAMPANIA_GLM52_ETAPY_10_28.md).
@@ -189,4 +203,28 @@ Wszystkie etapy deklarują `decision_mode := "SUGGEST"` i `no_auto_post: true` �
 
 ---
 
-*Spójny z: README.md · ARCHITEKTURA.md · API_REFERENCJA.md · ZGODNOSC_PRAWNA.md · PODRECZNIK_UZYTKOWNIKA.md · LOGIKA_BIZNESOWA.md · KAMPANIA_GLM52_ETAPY_10_28.md*
+## 8. Kampania V3 (P00–P68) i certyfikacja
+
+> Synonimy wyszukiwania: `kampania v3`, `P67`, `P68`, `self-learning`, `recertyfikacja`, `certyfikat`, `NOT_CERTIFIED`.
+
+### Q8.1 Co to jest kampania V3?
+Seria 69 części naprawczych (P00–P68) prowadzonych jednym rejestrem — `JDG/bundles/v3_campaign_ledger.json`. Status: **69/69 WDROŻONY_100** (2026-09-19). Pełna dokumentacja: [KAMPANIA_V3_PROMPTY_P00_P68.md](KAMPANIA_V3_PROMPTY_P00_P68.md).
+
+### Q8.2 Co dała P68 RECERTYFIKACJA_FINALNA?
+Nowy dowód stanu fortecy z pomiaru (nie deklaracji): rozliczenie 23 rejestrów naprawczych P45–P67, hard gates 5/5 (0 naruszeń), scoreboard 9/9 filarów, **certyfikat fortecy WYDANY** (2026-09-19). Szczegóły: `raporty_glm52_v3/RAPORT_V3_P68_RECERTYFIKACJA_FINALNA.txt`.
+
+### Q8.3 Czy system jest certyfikowany produkcyjnie?
+**Nie.** Certyfikat P68 dotyczy **repozytorium (fortecy reguł)**. Produkcja ma status `NOT_CERTIFIED` — wymaga uruchomienia pętli kwartalnej i zbioru telemetrii (fala V4-F4). To świadome zastrzeżenie truth-first, nie ukryta luka.
+
+### Q8.4 Jak sprawdzić status kampanii?
+```bash
+cd JDG && python3 tools/v3_campaign_ledger.py
+```
+Ledger wypisuje wszystkie 69 części ze statusem i podsumowaniem.
+
+### Q8.5 Kiedy odnowić certyfikat fortecy?
+Gdy minie ≤90 dni od wydania, LUB zmieni się epoka prawna (P53), LUB nastąpi krytyczny deploy (P38) — whichever first. Procedura w [KAMPANIA_V3_PROMPTY_P00_P68.md §7.1](KAMPANIA_V3_PROMPTY_P00_P68.md).
+
+---
+
+*Spójny z: README.md · ARCHITEKTURA.md · API_REFERENCJA.md · ZGODNOSC_PRAWNA.md · PODRECZNIK_UZYTKOWNIKA.md · LOGIKA_BIZNESOWA.md · KAMPANIA_GLM52_ETAPY_10_28.md · KAMPANIA_V3_PROMPTY_P00_P68.md*

@@ -1,0 +1,32 @@
+{
+  "analysis": "I05_success_metric_freeze",
+  "checks": [
+    {
+      "name": "frozen_metrics",
+      "status": "OK",
+      "detail": "8 metryk z progiem i źródłem (min 5)"
+    },
+    {
+      "name": "each_with_threshold_and_source",
+      "status": "OK",
+      "detail": "wszystkie z progiem liczbowym i źródłem w data/kodzie"
+    },
+    {
+      "name": "no_post_hoc_definitions",
+      "status": "OK",
+      "detail": "definicja zapisana jako DANE (engine bundle) przed oceną filarów"
+    }
+  ],
+  "metrics": {
+    "frozen_metrics": 8,
+    "min": 5
+  },
+  "decision": "PASS",
+  "legal_basis": "prompt P68 Sekcja 10-I05; P58 wspólne źródło",
+  "innovation": "V3-P68-I05",
+  "gate": "PASS",
+  "findings": [],
+  "generated_at": "2026-09-19T10:22:10.299827+00:00",
+  "part": "P68",
+  "slug": "RECERTYFIKACJA_FINALNA"
+}

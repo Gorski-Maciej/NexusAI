@@ -2,7 +2,7 @@
   "schema": "nexusai.jdg.v3_p67_run_all.v1",
   "part": "P67",
   "slug": "SELF_LEARNING",
-  "generated_at": "2026-09-16T14:01:38.669891+00:00",
+  "generated_at": "2026-09-19T09:11:01.029991+00:00",
   "engines_run": 12,
   "rego_gate": "PASS",
   "static_gate": "PASS",
@@ -10,51 +10,51 @@
   "results": {
     "I01": {
       "exit": 0,
-      "output": ""
+      "output": "{\"analysis\": \"I01_advice_to_rule_pipeline\", \"checks\": [{\"name\": \"clusters_present\", \"status\": \"OK\", \"detail\": \"klastery NEEDS_ADVICE z sugestiami: 3 (wymagane >= 3)\"}, {\"name\": \"pipeline_stages\", \"status\": \"OK\", \"detail\": \"etapy pipeline: 6 -> ['advice_cluster', 'draft_rule', 'smt_z3', 'golden_replay', 'four_eyes', 'lifecycle_shadow']\"}, {\"name\": \"required_validations\", \"status\": \"OK\", \"detail\": \"walidacje obowiązkowe: ['smt_z3', 'golden_replay', 'four_eyes']\"}, {\"name\": \"lifecycle_target\", \"status\": \"OK\", \"detail\": \"cel klasterów = SHADOW (P07 lifecycle, zero bypass): True\"}, {\"name\": \"each_cluster_has_suggestion\", \"status\": \"OK\", \"detail\": \"każdy klaster ma sugestię-kandydata\"}], \"metrics\": {\"clusters\": 3, \"stages\": 6}, \"decision\": \"PASS\", \"legal_basis\": \"RODO art. 22 (human-in-the-loop); OP art. 119a (GAAR — nie promuje agresywnych ścieżek) [NIEZWERYFIKOWANE — ISAP]; prompt P67 I01\", \"gate\": \"PASS\", \"findings\": [], \"innovation\": \"V3-P67-I01\", \"generated_at\": null}"
     },
     "I02": {
       "exit": 0,
-      "output": ""
+      "output": "{\"analysis\": \"I02_correction_rate_per_rule\", \"checks\": [{\"name\": \"corrections_registered\", \"status\": \"OK\", \"detail\": \"korekty AUTO_POST zarejestrowane: 1\"}, {\"name\": \"rule_attribution\", \"status\": \"OK\", \"detail\": \"każda korekta wskazuje regułę (rule_id) — wskaźnik per reguła\"}, {\"name\": \"days_metric\", \"status\": \"OK\", \"detail\": \"liczba dni do korekty mierzalna (trend spadkowy = uczenie działa)\"}, {\"name\": \"verdict_base\", \"status\": \"OK\", \"detail\": \"golden orzeczeń w bazie wskaźnika: 31 (>= 30)\"}], \"metrics\": {\"corrections\": 1, \"verdicts\": 31}, \"decision\": \"PASS\", \"legal_basis\": \"UoR art. 4 ust. 1 (rzetelność — korekty ujawniane); KKS art. 56 [NIEZWERYFIKOWANE — ISAP]; prompt P67 I02\", \"gate\": \"PASS\", \"findings\": [], \"innovation\": \"V3-P67-I02\", \"generated_at\": null}"
     },
     "I03": {
       "exit": 0,
-      "output": ""
+      "output": "{\"analysis\": \"I03_learning_telemetry_p58\", \"checks\": [{\"name\": \"p58_catalog_present\", \"status\": \"OK\", \"detail\": \"silniki P58 (wspólne źródło): 12\"}, {\"name\": \"telemetry_threshold_adr002\", \"status\": \"OK\", \"detail\": \"v3_p67_telemetry_metrics_min=6 (ADR-002)\"}, {\"name\": \"learning_metric_definitions\", \"status\": \"OK\", \"detail\": \"zdefiniowane metryki uczenia: 6 >= 6\"}], \"metrics\": {\"p58_engines\": 12, \"metrics_defined\": 6}, \"decision\": \"PASS\", \"legal_basis\": \"RODO art. 13 ust. 2 lit. f (przejrzystość logiki) [NIEZWERYFIKOWANE — ISAP]; prompt P67 I03\", \"gate\": \"PASS\", \"findings\": [], \"innovation\": \"V3-P67-I03\", \"generated_at\": null}"
     },
     "I04": {
       "exit": 0,
-      "output": ""
+      "output": "{\"analysis\": \"I04_suggestion_expiry_by_law_epoch\", \"checks\": [{\"name\": \"suggestions_with_epoch\", \"status\": \"OK\", \"detail\": \"sugestie z epoką prawną: 2/2\"}, {\"name\": \"epoch_registry_p53\", \"status\": \"OK\", \"detail\": \"epoki prawne P53 dostępne: 1\"}, {\"name\": \"epoch_source_binding\", \"status\": \"OK\", \"detail\": \"źródło epok w pipeline: bundles/v3_p53_epoch_registry.json\"}], \"metrics\": {\"suggestions\": 2, \"epochs\": 1}, \"decision\": \"PASS\", \"legal_basis\": \"P05 temporalność; P53 epoki prawne; prompt P67 I04\", \"gate\": \"PASS\", \"findings\": [], \"innovation\": \"V3-P67-I04\", \"generated_at\": null}"
     },
     "I05": {
       "exit": 0,
-      "output": ""
+      "output": "{\"analysis\": \"I05_guardrails_enforcement_tests\", \"checks\": [{\"name\": \"required_validations_full\", \"status\": \"OK\", \"detail\": \"walidacje obowiązkowe: ['smt_z3', 'golden_replay', 'four_eyes']\"}, {\"name\": \"four_eyes_roles\", \"status\": \"OK\", \"detail\": \"role 4-eyes: ['author', 'reviewer', 'legal_approver', 'owner']\"}, {\"name\": \"smt_tool_fail_closed\", \"status\": \"OK\", \"detail\": \"smt_z3_verification.py ma tryb --require-z3 (fail-closed)\"}, {\"name\": \"enforcement_tests_pytest\", \"status\": \"OK\", \"detail\": \"testy egzekwują: sugestia bez walidacji = odrzucona\"}, {\"name\": \"p33_ai_layer_present\", \"status\": \"OK\", \"detail\": \"narzędzia warstwy AI P33 obecne: 8/8\"}], \"metrics\": {\"p33_tools\": 8}, \"decision\": \"PASS\", \"legal_basis\": \"AI Act (nadzór człowieka) [NIEZWERYFIKOWANE — ISAP]; RODO art. 22; prompt P67 I05\", \"gate\": \"PASS\", \"findings\": [], \"innovation\": \"V3-P67-I05\", \"generated_at\": null}"
     },
     "I06": {
       "exit": 0,
-      "output": ""
+      "output": "{\"analysis\": \"I06_learning_dashboard\", \"checks\": [{\"name\": \"dashboard_defined\", \"status\": \"OK\", \"detail\": \"tablica uczenia zdefiniowana: True\"}, {\"name\": \"dashboard_rows\", \"status\": \"OK\", \"detail\": \"wiersze tablicy: ['cluster_id', 'suggestion_id', 'status', 'lifecycle_status', 'effect']\"}, {\"name\": \"effect_column\", \"status\": \"OK\", \"detail\": \"kolumna efektu (spadek NEEDS_ADVICE) obecna\"}, {\"name\": \"p58_metrics_available\", \"status\": \"OK\", \"detail\": \"metryki P58 do zasilania tablicy: 12\"}], \"metrics\": {\"rows\": 5}, \"decision\": \"PASS\", \"legal_basis\": \"prompt P67 I06; P58 obserwowalność\", \"gate\": \"PASS\", \"findings\": [], \"innovation\": \"V3-P67-I06\", \"generated_at\": null}"
     },
     "I07": {
       "exit": 0,
-      "output": ""
+      "output": "{\"analysis\": \"I07_data_readiness_register\", \"checks\": [{\"name\": \"sources_registered\", \"status\": \"OK\", \"detail\": \"źródła danych uczących w rejestrze: 7 (wymagane >= 6)\"}, {\"name\": \"availability_status\", \"status\": \"OK\", \"detail\": \"źródła dostępne od startu: 6; brakujące (plan): ['legal_reviews_p47']\"}, {\"name\": \"plan_field\", \"status\": \"OK\", \"detail\": \"każde źródło ma plan domknięcia\"}, {\"name\": \"pipeline_consumes_sources\", \"status\": \"OK\", \"detail\": \"pipeline uczenia definiuje konsumentów danych\"}], \"metrics\": {\"sources\": 7, \"available\": 6, \"missing\": 1}, \"decision\": \"PASS\", \"legal_basis\": \"prompt P67 I07; P51 pustynie (plan domknięcia)\", \"gate\": \"PASS\", \"findings\": [], \"innovation\": \"V3-P67-I07\", \"generated_at\": null}"
     },
     "I08": {
       "exit": 0,
-      "output": ""
+      "output": "{\"analysis\": \"I08_human_feedback_loop\", \"checks\": [{\"name\": \"operator_reviews_present\", \"status\": \"OK\", \"detail\": \"oceny operatorów jako dane uczące: 1\"}, {\"name\": \"feeds_golden_and_trust\", \"status\": \"OK\", \"detail\": \"oceny zasilały golden registry + trust score (pętla zamknięta)\"}, {\"name\": \"p35_gate_pass\", \"status\": \"OK\", \"detail\": \"bundle P35-I09: gate=PASS\"}, {\"name\": \"review_link_certificate\", \"status\": \"OK\", \"detail\": \"ocena powiązana z certyfikatem decyzji (P11)\"}], \"metrics\": {\"reviews\": 1}, \"decision\": \"PASS\", \"legal_basis\": \"RODO art. 22 (człowiek w pętli); prompt P67 I08\", \"gate\": \"PASS\", \"findings\": [], \"innovation\": \"V3-P67-I08\", \"generated_at\": null}"
     },
     "I09": {
       "exit": 0,
-      "output": ""
+      "output": "{\"analysis\": \"I09_learning_safety_metrics\", \"checks\": [{\"name\": \"rejections_registered\", \"status\": \"OK\", \"detail\": \"odrzucone sugestie (dowód działania guardrail): 1\"}, {\"name\": \"rejection_by_guardrail\", \"status\": \"OK\", \"detail\": \"odrzucenia tylko przez guardrails (smt_z3/golden_replay/four_eyes)\"}, {\"name\": \"smt_proofs_present\", \"status\": \"OK\", \"detail\": \"lematy SMT w smt_proofs.json: ['kks', 'pit', 'vat', 'zus']\"}, {\"name\": \"safety_metric_defined\", \"status\": \"OK\", \"detail\": \"próg v3_p67_suggestion_rejections_min w ADR-002\"}], \"metrics\": {\"rejections\": 1, \"proofs\": 4}, \"decision\": \"PASS\", \"legal_basis\": \"OP art. 119a (GAAR); prompt P67 I09\", \"gate\": \"PASS\", \"findings\": [], \"innovation\": \"V3-P67-I09\", \"generated_at\": null}"
     },
     "I10": {
       "exit": 0,
-      "output": ""
+      "output": "{\"analysis\": \"I10_knowledge_base_from_verdicts\", \"checks\": [{\"name\": \"verdicts_queryable\", \"status\": \"OK\", \"detail\": \"orzeczenia z hashem (zapytywalne): 31 >= 30\"}, {\"name\": \"structured_decision\", \"status\": \"OK\", \"detail\": \"pola decision.* certyfikatu (ustrukturyzowane powody): 8\"}, {\"name\": \"annotation_path\", \"status\": \"OK\", \"detail\": \"ścieżka adnotacji (wykładnia) w golden_verdicts.json\"}, {\"name\": \"certificates_present\", \"status\": \"OK\", \"detail\": \"certyfikaty P11 jako źródło powodów NEEDS_ADVICE\"}], \"metrics\": {\"verdicts\": 31, \"certificates\": 1}, \"decision\": \"PASS\", \"legal_basis\": \"prompt P67 I10; P11 Decision Certificate\", \"gate\": \"PASS\", \"findings\": [], \"innovation\": \"V3-P67-I10\", \"generated_at\": null}"
     },
     "I11": {
       "exit": 0,
-      "output": ""
+      "output": "{\"analysis\": \"I11_curriculum_for_rules\", \"checks\": [{\"name\": \"roi_scores_present\", \"status\": \"OK\", \"detail\": \"klaster z ROI: 3/3\"}, {\"name\": \"roi_threshold_adr002\", \"status\": \"OK\", \"detail\": \"próg v3_p67_curriculum_roi_min=5 (ADR-002)\"}, {\"name\": \"priority_order\", \"status\": \"OK\", \"detail\": \"kolejka wg ROI (desc): [14, 10, 9]\"}, {\"name\": \"roi_above_min\", \"status\": \"OK\", \"detail\": \"najniższe ROI w kolejce: 9 >= 5\"}], \"metrics\": {\"queue\": [14, 10, 9]}, \"decision\": \"PASS\", \"legal_basis\": \"prompt P67 I11; P51 domykanie pustyni (priorytety)\", \"gate\": \"PASS\", \"findings\": [], \"innovation\": \"V3-P67-I11\", \"generated_at\": null}"
     },
     "I12": {
       "exit": 0,
-      "output": ""
+      "output": "{\"analysis\": \"I12_post_learning_replay\", \"checks\": [{\"name\": \"replays_present\", \"status\": \"OK\", \"detail\": \"replay orzeczeń (P10): 31 >= 30\"}, {\"name\": \"replay_contract_p53\", \"status\": \"OK\", \"detail\": \"kontrakt replay P53 (filarów): 4\"}, {\"name\": \"threshold_adr002\", \"status\": \"OK\", \"detail\": \"próg v3_p67_replay_cases_min w ADR-002\"}], \"metrics\": {\"replays\": 31, \"pillars\": 4}, \"decision\": \"PASS\", \"legal_basis\": \"prompt P67 I12; P10 golden replay; P53 replay contract\", \"gate\": \"PASS\", \"findings\": [], \"innovation\": \"V3-P67-I12\", \"generated_at\": null}"
     },
     "rego_opa_native": {
       "exit": 0,

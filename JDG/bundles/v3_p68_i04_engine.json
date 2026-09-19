@@ -1,0 +1,38 @@
+{
+  "analysis": "I04_residual_v4_map",
+  "checks": [
+    {
+      "name": "v4_map_present",
+      "status": "OK",
+      "detail": "mapa V4 = sekcja 9.08 (T5) + kolumna residual_v4 w rozliczeniu I02"
+    },
+    {
+      "name": "residual_inventoried",
+      "status": "OK",
+      "detail": "rezyduum P1–P3 zinwentaryzowane: 69 pozycji"
+    },
+    {
+      "name": "sweep_register_feed",
+      "status": "OK",
+      "detail": "v3_p64_sweep_register.json jako feed mapy V4"
+    },
+    {
+      "name": "each_register_mapped",
+      "status": "OK",
+      "detail": "rejestry bez przypisania V4: brak"
+    }
+  ],
+  "metrics": {
+    "residual_items": 69,
+    "unmapped_registers": [],
+    "v4_map_present": true
+  },
+  "decision": "PASS",
+  "legal_basis": "prompt P68 Sekcja 10-I04; P64 handover C1–C4",
+  "innovation": "V3-P68-I04",
+  "gate": "PASS",
+  "findings": [],
+  "generated_at": "2026-09-19T10:22:09.976457+00:00",
+  "part": "P68",
+  "slug": "RECERTYFIKACJA_FINALNA"
+}

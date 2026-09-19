@@ -68,6 +68,6 @@
     "output_doc": "docs/TOOLS_P65_GENERATED.md",
     "evidence": "AST (docstring + add_argument) z definicji narzędzi — zero ręcznych opisów",
     "provenance": "P60 dokumentacja domknięcie (binding); prompt P65 Sekcja 10-I12",
-    "generated_at": "2026-09-16T14:04:59.787266+00:00"
+    "generated_at": "2026-09-19T10:24:23.396925+00:00"
   }
 }

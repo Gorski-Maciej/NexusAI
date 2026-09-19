@@ -1,5 +1,26 @@
 # CHANGELOG — NexusAI v8.0 (JDG OPA Enterprise + GLM 5.2)
 
+## [v8.4.1 Audyt prawdziwości dokumentacji] — 2026-09-19
+
+### 🔍 Truth-first audit: dokumentacja zharmonizowana ze stanem dysku
+
+- **MANIFEST.md zregenerowany** (`tools/generate_manifest.py` v8.0): **543 plików Rego / 497 z `matched:true` / 12 155 bloków / 12 111 unikalnych `rule_id` / 44 duplikaty / Completeness 83/100** (poprzedni zapis 2026-08-30: 490/444/11 855/0/91).
+- **Zaktualizowano metryki w dokumentacji żywej** (README, JDG/README, UNIFIED_PLAN, ARCHITECTURE, INDEX, KAMPANIA_V3, STRUKTURA_PROJEKTU, API_REFERENCJA, policies/jdg/README): liczba endpointów 17→**18** (zgodnie z `api/openapi.yaml`), testy 204→**288 pytest** (204 `tests/auto/` + 84 `tests/`), narzędzia V3 692→**689**, RuleStore 9→**58 tabel** (CREATE TABLE w migracjach 001–013).
+- **Nowa inwentaryzacja `docs/INWENTARYZACJA_PLIKOW.md`** — statystyki z liczników dyskowych (JDG: 3737 plików; policies: 635).
+- **Role RBAC ujednolicone** z kodem (`rules/v3_p63_rbac_multitenant_closure.rego`): **entrepreneur / accountant / auditor / admin** (4 role, mapowanie rola→pola werdyktu, brak roli = BLOCK).
+- **Certyfikacja z dowodami:** metryki LCI 71.43 / TCL 100.0 / RV 13.56 vs SLO (99/100/100) — produkcja `NOT_CERTIFIED`, repo certyfikat WYDANY (truth-first, zgodnie z P68).
+
+## [v8.4 Kampania V3 — 69/69 WDROŻONY_100] — 2026-09-19
+
+### 🏁 Kampania V3 (P00–P68) — domknięcie i recertyfikacja fortecy
+
+- **Kampania V3 zakończona: 69/69 części WDROŻONY_100** (ledger `JDG/bundles/v3_campaign_ledger.json`, progress 100.0%).
+- **P67 SELF_LEARNING** — pętla samouczenia fortecy: 12 analiz I01–I12 w `rules/v3_p67_self_learning.rego` (priorytety 467001–467012), progi bloku `v3_p67` w `thresholds_jdg.rego` (ADR-002), wiring `final_verdict_p131`, rejestr danych uczących `tools/v3_p67_learning_data.json` (7 źródeł); AI proponuje, forteca decyduje (SMT/Z3 → golden replay → 4-eyes → epoka prawna P53 → lifecycle SHADOW P07).
+- **P68 RECERTYFIKACJA_FINALNA** — nowy dowód stanu fortecy: 12 analiz I01–I12 w `rules/v3_p68_recertification_final.rego` (468001–468012), rozliczenie 23 rejestrów naprawczych P45–P67 jako DANE (`tools/v3_p68_settlement.json`: 21 DOMKNIETY / 2 CZESCIOWY), hard gates 5/5 **z pomiaru** (0 naruszeń), scoreboard 9/9 filarów, **certyfikat WYDANY** dla repo (produkcja jawna `NOT_CERTIFIED`), mapa fal V4-F0..F4 i polityka odnowienia (≤90 dni / epoka P53 / deploy P38).
+- **Wiring orkiestratora:** POST-MERGE anchor podniesiony `p131` → `final_verdict_p132` (kotwice zaktualizowane w testach).
+- **Dowody:** natywne `opa test` 23/23 (P68) i 19/19 (P67), pytest P68 23/23, regresja kampanii 540 passed, run-all gate PASS, mirrory hash-parity sha256 3/3.
+- **Dokumentacja:** nowy dokument zbiorczy [JDG/docs/KAMPANIA_V3_PROMPTY_P00_P68.md](JDG/docs/KAMPANIA_V3_PROMPTY_P00_P68.md); raporty i handoffy w `JDG/raporty_glm52_v3/` (79 plików), prompty w `JDG/prompty_v3/` (70 plików).
+
 ## [v8.0.1 Dokumentacja zsynchronizowana] — 2026-08-30
 
 ### 📚 Synchronizacja dokumentacji ze stanem faktycznym reguł

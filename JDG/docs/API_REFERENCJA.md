@@ -2,7 +2,7 @@
 artifacts: [docs/API_REFERENCJA.md, api/openapi.yaml]
 status: ACTIVE
 owner: core
-verified: 2026-09-13
+verified: 2026-09-19
 verify_cmd: python3 tools/v3_p60_engines.py I03
 -->
 
@@ -24,12 +24,14 @@ verify_cmd: python3 tools/v3_p60_engines.py I03
 | | |
 |---|---|
 | **P — Problem** | Integrator nie wie, jak wywołać ewaluację faktury, jakie pola wysłać i jak obsłużyć błędy (429, 503, 409). |
-| **W — Wartość** | Jeden dokument opisuje wszystkie 17 endpointów z gotowymi do wklejenia przykładami curl i pełną tabelą kodów błędów. |
+| **W — Wartość** | Jeden dokument opisuje wszystkie 18 endpointów z gotowymi do wklejenia przykładami curl i pełną tabelą kodów błędów. |
 | **E — Efekt** | Integracja systemu ERP z silnikiem JDG w jeden dzień, bez zgadywania. |
 
 ---
 
 ## 2. Informacje ogólne
+Serwery, autoryzacja, wspólne nagłówki i format dat — wszystko, co potrzebujesz przed pierwszym wywołaniem.
+
 
 ### 2.1. Serwery (bazowe URL)
 
@@ -54,6 +56,8 @@ Token JWT wystawiany przez **NexusAI Auth Service**. Zawartość: `tenant_id`, `
 | Nagłówek | Wymagany | Opis |
 |---|---|---|
 | `Authorization: Bearer <JWT>` | ✅ | Token dostępu |
+
+> 🔎 **Stan implementacji (truth-first):** kontrakt to `JDG/api/openapi.yaml` (**OpenAPI 3.0.3, spec 1.0.0, 18 operacji, 13 schematów, servery produkcja/staging**). Implementacja handlerów **Litestar** znajduje się w aplikacji `nexus_ai/` (repo root, ~130 dekoratorów `@get`/`@post`); moduł `JDG/` dostarcza silnik reguł, bundele i narzędzia. Przykłady curl traktuj jako kontrakt integracyjny — zweryfikuj parametry z `openapi.yaml` dla konkretnej wersji serwera.
 | `Content-Type: application/json` | ✅ (POST) | Format body |
 | `Accept: application/json` | ✅ | Format odpowiedzi |
 | `X-Request-Id` | opcjonalny | Identyfikator korelacji (zwracany w `request_id` błędów) |
@@ -95,6 +99,8 @@ Token JWT wystawiany przez **NexusAI Auth Service**. Zawartość: `tenant_id`, `
 ---
 
 ## 4. Endpointy — szczegóły
+Każdy endpoint: metoda, ścieżka, nagłówki, parametry, body, kody odpowiedzi i gotowy przykład curl.
+
 
 ### 4.1. POST `/jdg/decide` — ewaluacja transakcji JDG
 
@@ -490,6 +496,8 @@ curl -X GET https://api.nexusai.pl/v1/jdg/ready -H "Authorization: Bearer $JWT"
 ---
 
 ## 6. Kody błędów
+Trzy warstwy kodów: HTTP, własne `error` i biznesowe — z przyczyną i działaniem naprawczym.
+
 
 ### 6.1. HTTP (transport)
 

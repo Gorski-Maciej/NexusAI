@@ -1,0 +1,52 @@
+{
+  "analysis": "I09_knowledge_transfer_pack",
+  "checks": [
+    {
+      "name": "kt_section_rejestry",
+      "status": "OK",
+      "detail": "rejestry"
+    },
+    {
+      "name": "kt_section_runbooki",
+      "status": "OK",
+      "detail": "runbooki"
+    },
+    {
+      "name": "kt_section_kontrakty",
+      "status": "OK",
+      "detail": "kontrakty"
+    },
+    {
+      "name": "kt_section_progi_alarmow",
+      "status": "OK",
+      "detail": "progi_alarmow"
+    },
+    {
+      "name": "kt_section_mapa_komponentow",
+      "status": "OK",
+      "detail": "mapa_komponentow"
+    },
+    {
+      "name": "kt_section_kontakty_wlasciciele",
+      "status": "OK",
+      "detail": "kontakty_wlasciciele"
+    },
+    {
+      "name": "sections_min",
+      "status": "OK",
+      "detail": "6 z min 5"
+    }
+  ],
+  "metrics": {
+    "sections": 6,
+    "min": 5
+  },
+  "decision": "PASS",
+  "legal_basis": "prompt P68 Sekcja 10-I09; P60",
+  "innovation": "V3-P68-I09",
+  "gate": "PASS",
+  "findings": [],
+  "generated_at": "2026-09-19T10:22:11.676965+00:00",
+  "part": "P68",
+  "slug": "RECERTYFIKACJA_FINALNA"
+}

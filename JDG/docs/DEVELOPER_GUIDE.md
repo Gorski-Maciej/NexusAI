@@ -2,14 +2,13 @@
 artifacts: [docs/DEVELOPER_GUIDE.md, docs/OPA_REGO_DEVELOPER_GUIDE.md]
 status: ACTIVE
 owner: docs
-verified: 2026-09-13
+verified: 2026-09-19
 verify_cmd: python3 tools/v3_p60_engines.py I03
 -->
 
-# ═══════════════════════════════════════════════════════════════════════════════
 # NexusAI JDG — Developer Guide v8.0 (R11, P28 Grand Finale)
-# Zgodny z ADR-008 — pełny przewodnik projektowy
-# ═══════════════════════════════════════════════════════════════════════════════
+
+> Zgodny z ADR-008 — pełny przewodnik projektowy modułu JDG.
 
 ## 1. ARCHITEKTURA MODUŁU JDG
 
@@ -19,7 +18,7 @@ Architektura 8-warstwowa "Forteca Niechybnej Śmierci":
 ```
 Warstwa 1 — WALIDACJA WEJŚCIA: schema + semantic_guard + firewall
 Warstwa 2 — EKSTRAKCJA AI: 5 agentów, 4-Eyes, trust score ≥0.92
-Warstwa 3 — REGUŁY KANONICZNE: 490 plików Rego, 11 855+ reguł (MANIFEST 2026-08-30)
+Warstwa 3 — REGUŁY KANONICZNE: 543 plików Rego w drzewie rules/, 12 111 unikalnych rule_id (MANIFEST regen. 2026-09-19; kampania V3 69/69)
 Warstwa 4 — TEMPORALNOŚĆ: temporal.rego, valid_from/valid_to
 Warstwa 5 — MULTI-PASS SHARDED ROUTER: ADR-007
 Warstwa 6 — DECYZJA: decision_composer, AUTO_POST/SUGGEST/ASK_USER
@@ -31,7 +30,7 @@ Warstwa 8 — MONITORING: isap_crawler, telemetria, chaos engineering
 
 ```
 JDG/
-├── rules/                  # 490 plików Rego
+├── rules/                  # 543 plików Rego (drzewo rules/)
 │   ├── uor/                # NOWE Q3 2026: 8 plików jdg.uor.*
 │   ├── pcc/                # NOWE Q3 2026: 4 pliki jdg.pcc.*
 │   ├── local_taxes/        # NOWE Q3 2026: 2 pliki akcyza_*
@@ -48,6 +47,8 @@ JDG/
 ```
 
 ## 3. KONWENCJE REGO
+Wzorzec reguły, kontrakt werdyktu 25-polowy i zasady First-Match-Wins — standard pisania reguł.
+
 
 ### 3.1. Wzorzec reguły
 ```rego

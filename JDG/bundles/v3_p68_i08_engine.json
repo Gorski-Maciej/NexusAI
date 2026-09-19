@@ -1,0 +1,27 @@
+{
+  "analysis": "I08_owner_attestation",
+  "checks": [
+    {
+      "name": "attestation_required",
+      "status": "OK",
+      "detail": "4-eyes biznesowe wymagane progiem ADR-002"
+    },
+    {
+      "name": "attestation_present",
+      "status": "INFO",
+      "detail": "slot evidence czeka na akceptację właściciela (RAPORT 9.11 Q01); brak akceptacji nie jest defektem fortecy — blokuje PODPIS certyfikatu (I06/I08)"
+    }
+  ],
+  "metrics": {
+    "required": true,
+    "present": false
+  },
+  "decision": "PASS",
+  "legal_basis": "prompt P68 Sekcja 10-I08; RODO art. 24 [NIEZWERYFIKOWANE — ISAP]",
+  "innovation": "V3-P68-I08",
+  "gate": "PASS",
+  "findings": [],
+  "generated_at": "2026-09-19T10:22:11.348688+00:00",
+  "part": "P68",
+  "slug": "RECERTYFIKACJA_FINALNA"
+}
