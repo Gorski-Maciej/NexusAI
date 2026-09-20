@@ -40,7 +40,7 @@ Analizę przeprowadzono wyłącznie na podstawie dokumentacji zawartej w katalog
 | Testy pytest | 198 | ETAP 28 / INWENTARYZACJA |
 | Audit-state (ETAP 06–28) | 22 — wszystkie WDROZONY_100 | bundles/ |
 | Migracje RuleStore | 13 (001–013) | migrations/ |
-| Certyfikacja końcowa | ETAP 28/29 — 14/14 bramek, 18 domen (13 CERTIFIED) | final_certification_etap28 |
+| Certyfikacja końcowa | ETAP 28 — 13/14 bramek, `NIEPELNY` (2026-08-22); domknięcie V4 `WDROŻONY_100` 6/6 (2026-08-29); 18 domen (11 CERTIFIED) | final_certification_etap28 |
 | Endpointy API | 10–12 | openapi.yaml / api.md |
 
 ### 2.2. Architektura decyzyjna (jak OPA podejmuje decyzje)

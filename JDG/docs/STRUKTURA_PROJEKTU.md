@@ -88,7 +88,7 @@ JDG/                                        ← KATALOG GŁÓWNY MODUŁU
 │   └── openapi.yaml                        ★ Specyfikacja REST API (OpenAPI 3.0.3, 18 endpointów, 13 schematów)
 │
 └── migrations/                             ★ DuckDB RuleStore
-    ├── 001_jdg_rule_store.sql              Tabele 1–5 + seed 50 progów
+    ├── 001_jdg_rule_store.sql              Tabele 1–5 + seed 44 progów
     ├── 002_jdg_enterprise_v7.sql           Tabele 6–9 (predykcje, stale rules, konflikty, cache)
     ├── 003_jdg_v8_legal_twin.sql           Legal Twin / LKG (ADR-016)
     ├── 004_jdg_v9_control_plane.sql        Control Plane v9
@@ -370,7 +370,7 @@ WHERE scope_tenant_type = 'jdg'
 ORDER BY threshold_id;
 ```
 
-**Seed:** 50 progów (VAT, PIT, ZUS/SUS, ryczałt, OrdPU, KKS, amortyzacja, KSeF, CEIDG, podatki lokalne, CFC) — pełna lista w `migrations/001_jdg_rule_store.sql`.
+**Seed:** 44 progi (VAT, PIT, ZUS/SUS, ryczałt, OrdPU, KKS, amortyzacja, KSeF, CEIDG, podatki lokalne, CFC — pomiar 2026-09-20) — pełna lista w `migrations/001_jdg_rule_store.sql`.
 
 ### Tabela 2: `rule_versions` — rejestr wersji reguł (A2)
 
@@ -527,7 +527,7 @@ Pipeline ładowania danych, katalog migracji 001–013 i zasady seedowania prog�
 ```mermaid
 flowchart LR
     MIG["migracje/001–013 (SQL)"] --> DUCK["DuckDB RuleStore"]
-    SEED["seed: 50 progów + wersje reguł + kartografia"] --> DUCK
+    SEED["seed: 44 progi + wersje reguł + kartografia"] --> DUCK
     DUCK -->|OPA Data API| DATA["data.thresholds.jdg.*"]
     DATA --> REGO["Rego — ewaluacja"]
     ISAP["isap_crawler (daily)"] -->|diff| DUCK
@@ -537,7 +537,7 @@ flowchart LR
 
 | Migracja | Zakres | Tabele / funkcje |
 |---|---|---|
-| `001_jdg_rule_store.sql` | Fundacja RuleStore | tabele 1–5 (`jdg_tax_thresholds`, `rule_versions`, `jdg_verdict_audit`, `isap_history`, `jdg_legal_cartography`) + seed 50 progów |
+| `001_jdg_rule_store.sql` | Fundacja RuleStore | tabele 1–5 (`jdg_tax_thresholds`, `rule_versions`, `jdg_verdict_audit`, `isap_history`, `jdg_legal_cartography`) + seed 44 progów |
 | `002_jdg_enterprise_v7.sql` | Enterprise v7 | tabele 6–9 (`jdg_prediction_history`, `jdg_stale_rules_registry`, `jdg_conflict_registry`, `jdg_explanation_cache`) |
 | `003_jdg_v8_legal_twin.sql` | Legal Twin / LKG (ADR-016) | `legal_graph`, `golden_verdicts`, `decision_certificates`, `draft_law_radar` |
 | `004_jdg_v9_control_plane.sql` | Control Plane v9 | rejestr zmian, review, rollout evidence |
@@ -555,7 +555,7 @@ flowchart LR
 
 1. **Wersjonowanie plików:** nowa tabela/kolumna → nowy plik `NNN_*.sql` w `migrations/` (obecnie **001–013**). Nie modyfikuj wydanych migracji.
 2. **Idempotencja:** każda migracja używa `CREATE TABLE IF NOT EXISTS` / `CREATE INDEX IF NOT EXISTS` — można uruchamiać wielokrotnie.
-3. **Seed tylko w migracji:** dane startowe (50 progów, wersje P189/P500/P523, kartografia `lex:VAT:Art113` itd.) zapisane są razem z DDL — powtarzalny stan bazowy.
+3. **Seed tylko w migracji:** dane startowe (44 progi, wersje P189/P500/P523, kartografia `lex:VAT:Art113` itd.) zapisane są razem z DDL — powtarzalny stan bazowy.
 4. **Temporalność w seedzie:** każdy próg ma `valid_from`/`valid_to`; zmiana prawa = `UPDATE` + nowy wiersz z `superseded_by`, **nie** edycja wiersza historycznego.
 5. **Ładunek do OPA:** po migracji uruchom serwis thresholdów, aby OPA Data API wystawiło nowe wartości pod `data.thresholds.jdg.*` (hot-reload bez redeployu bundle).
 
@@ -602,7 +602,7 @@ WHERE threshold_id = 'vat_standard_rate' AND valid_to = '2026-12-31';
 | Plan strategiczny | `unified_plan_v8.yaml` |
 | Kampania V3 — zbiorczo | [docs/KAMPANIA_V3_PROMPTY_P00_P68.md](KAMPANIA_V3_PROMPTY_P00_P68.md) |
 
-### 9.1. Katalogi kampanii V3 (P00–P68)
+### 7.1. Katalogi kampanii V3 (P00–P68)
 
 | Katalog/plik | Zawartość | Liczba |
 |---|---|---:|
@@ -614,6 +614,16 @@ WHERE threshold_id = 'vat_standard_rate' AND valid_to = '2026-12-31';
 | `tests/rego/test_v3_*.rego` | natywne testy Rego V3 (bramka podstawowa) | w drzewie tests/ |
 
 > **Konwencja V3:** każda część = prompt TXT → raport TXT → narzędzia `v3_pNN_*` → bundele dowodowe `v3_pNN_*` → testy natywne + pytest → wpis w ledgerze `v3_campaign_ledger.json`.
+
+### 7.2. Znane artefakty struktury (truth-first, pomiar 2026-09-20)
+
+| Artefakt | Stan | Znaczenie |
+|---|---|---|
+| `JDG/JDG/rules/` (zagnieżdżony) | 4 pliki `v3_p13/p14/p16/p19_*_enterprise.rego` — **starsze wersje** (drift −2 linii) względem `rules/` | osierocona kopia z kampanii V3; NIE jest ładowana przez bundle; do usunięcia w sprzątaniu repo |
+| `bundles/manifest.json` | deklaruje 490 plików / 12 439 reguł (rewizja v9.0-2026-08-13) | starszy niż dysk (543 plików / 12 111 unikalnych rule_id); regenerowany przy budowie bundle (`bundle.sh`) — patrz [FAQ.md Q1.3](FAQ.md) |
+| `*.bak` / `*.p03backup` | `rules/main_jdg.rego.bak`, `rules/micro/vat/vat.rego.bak` + `.bak_stubs_removed` + `.p03backup` | kopie zapasowe przed usunięciem stubów — nie ładowane jako reguły |
+| `generate_coverage_report.py` (root + `tools/`) | generator legacy — wymaga usuniętego `Plan OPA/50_JDG_BRAKUJACE_PUNKTY_PRAWNE.md` (uruchomienie kończy się `FileNotFoundError`) | `COVERAGE_REPORT.md` pozostaje **archiwalny** (Doc 50); aktualne metryki pokrycia: `MANIFEST.md` + `GET /jdg/coverage` + [LEGAL_COVERAGE.md](LEGAL_COVERAGE.md) |
+| `tools/api_doc_generator.py` | generator legacy — przy obecnym `api/openapi.yaml` kończy się `KeyError: 'name'` (parametry bez pola `name`) | `docs/api.md` utrzymywany ręcznie; źródło prawdy API: [API_REFERENCJA.md](API_REFERENCJA.md) + `api/openapi.yaml` (18 endpointów, v1.0.0 — zgodne) |
 
 ---
 

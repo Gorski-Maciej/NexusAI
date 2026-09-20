@@ -2,7 +2,7 @@
 artifacts: [docs/KAMPANIA_V3_PROMPTY_P00_P68.md, bundles/v3_campaign_ledger.json]
 status: ACTIVE
 owner: core
-verified: 2026-09-19
+verified: 2026-09-20
 verify_cmd: python3 tools/v3_campaign_ledger.py
 -->
 

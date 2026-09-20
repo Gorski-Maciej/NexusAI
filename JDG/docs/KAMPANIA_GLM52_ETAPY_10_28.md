@@ -45,17 +45,17 @@ z bramkami w przedziale 10–19/19 w zależności od domeny.
 | 25 | Narzędzia / API / RuleStore / Bundle | `WDROZONY_100` | 18/18 | 21 | spójność schematu API, authN/Z, idempotencja, wersjonowanie, migracje |
 | 26 | policies mirror sync | `WDROZONY_100` | 14/14 | 17 | **hash-parity 0% drift**: 490 plików źródłowych ↔ 546 w policies/, 0 missing |
 | 27 | Cross-domain red team | `WDROZONY_100` | 15/15 | 18 | registry konfliktów, katalog ataków, macierz chaos (corrupt bundle, KSeF offline, missing thresholds) |
-| 28 | **Certyfikacja końcowa** | `WDROZONY_100` | **14/14** | — | 18 domen: 13 CERTIFIED / 5 CONDITIONAL / 0 BLOCKED; 29/29 raportów; 12 273 referencji prawnych |
+| 28 | **Certyfikacja końcowa** | `NIEPELNY` → domknięty V4 | **13/14** | — | 18 domen: 11 CERTIFIED / 7 CONDITIONAL / 0 BLOCKED; 22 raportów rozliczonych (2 NIEPELNE domknięte w dowodzie V4, 2026-08-29); 12 273 referencji prawnych |
 
 ## 3. Certyfikacja końcowa (ETAP 28)
 
-`JDG/tools/final_certification_etap28_audit.py` — 14/14 bramek PASSED:
+`JDG/tools/final_certification_etap28_audit.py` — wynik **z pomiaru** (artefakt: `bundles/final_certification_etap28_audit_state.json`): **13/14 bramek, status `NIEPELNY`**; niespełniona bramka `reconciliation_ok` została **domknięta w dowodzie V4** (`bundles/final_certification_v4_evidence.json`, 2026-08-29: status `WDROŻONY_100`, 6/6 bramek, w tym `all_reports_wdrozony` i `report21/24_code_gate`):
 
 | Bramka | Znaczenie |
 |--------|-----------|
-| `reconciliation_ok` | 29/29 raportów kampanii → `WDROZONY_100`, 0 incomplete, 0 unproven |
+| `reconciliation_ok` | rozliczenie 22 raportów kampanii: 20/22 `WDROŻONY_100` (24_TESTS_CI_QUALITY i 25_TOOLS_API_RULESTORE_BUNDLES — `NIEPELNE` w dniu audytu; domknięte w dowodzie V4) |
 | `matrix_complete` | 18 domen, 490 reguł, 405 testów, 22 bundlów, 12 273 referencji prawnych |
-| `domain_certification` | 13 CERTIFIED + 5 CONDITIONAL (VAT, orchestrator, legal_twin, control_plane, security) |
+| `domain_certification` | 11 CERTIFIED + 7 CONDITIONAL (ksef_jpk, orchestrator, legal_twin, control_plane, security, disaster_recovery, tests_ci) |
 | `production_blockers` | 0 blokerów: brak krytycznej luki prawnej, łańcuch temporalny kompletny |
 | `slo_sla_defined` | SLO/SLA zdefiniowane (canary→shadow→ramped→soak, MTTR ≤ 5 min) |
 | `change_control` | Control Plane Rule Lifecycle aktywny |

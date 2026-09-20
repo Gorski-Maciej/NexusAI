@@ -3,7 +3,7 @@
 > **📌 Aktualizacja 2026-08-30:** dokument historyczny opisujący wdrożenie promptu GLM 5.2.
 > **Metryki MANIFEST (2026-08-30):** 490 plików / 11 855 rule_id / 444 matched / Completeness 91/100 — patrz [MANIFEST.md](../MANIFEST.md).
 > Raporty źródłowe (`prompty_glm52/`, `raporty_glm52/`, `raporty_jdg_enterprise/`) zostały zarchiwizowane poza repo.
-> Aktualny stan wdrożenia: [`KAMPANIA_GLM52_ETAPY_10_28.md`](KAMPANIA_GLM52_ETAPY_10_28.md) + `JDG/bundles/*audit_state.json` (certyfikacja końcowa ETAP 28/29 — 2026-08-22, 14/14 bramek).
+> Aktualny stan wdrożenia: [`KAMPANIA_GLM52_ETAPY_10_28.md`](KAMPANIA_GLM52_ETAPY_10_28.md) + `JDG/bundles/*audit_state.json` (certyfikacja końcowa ETAP 28 — 2026-08-22: 13/14 bramek `NIEPELNY`; domknięcie V4 2026-08-29: `WDROŻONY_100` 6/6).
 
 **Raport:** MASTER RAPORT ENTERPRISE — JDG UFORTYFIKOWANA FORTECA (P24) v8.0
 **Pakiet Rego:** `jdg.p24_audyt_kompletny_innovations` (`JDG/rules/p24_audyt_kompletny_innovations_v9.rego`)

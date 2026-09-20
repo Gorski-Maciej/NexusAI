@@ -3,7 +3,7 @@
 > **Scalenie 67 dokumentów Plan OPA w jeden nurt**
 > **Data:** 2026-08-02 (aktualizacja: 2026-09-19) | **Generator:** auto z MANIFEST.md
 > **Stan faktyczny:** 543 pliki Rego w drzewie `rules/` / 12 111 unikalnych rule_id (MANIFEST, regen. 2026-09-19) / 288 pytest (204 auto + 84 root) + 278 testów natywnych Rego
-> **Certyfikacja końcowa:** ETAP 28/29 — `WDROZONY_100` (2026-08-22, 14/14 bramek)
+> **Certyfikacja końcowa:** ETAP 28 — `NIEPELNY` 13/14 (2026-08-22); domknięcie V4: `WDROŻONY_100` 6/6 (2026-08-29)
 > **Kampania V3:** P00–P68 — **69/69 WDROŻONY_100** (2026-09-19) — patrz [KAMPANIA_V3_PROMPTY_P00_P68.md](KAMPANIA_V3_PROMPTY_P00_P68.md)
 
 ---
@@ -22,6 +22,8 @@ Plan OPA zawiera 67 dokumentów z wieloma konkurującymi strategiami:
 
 **Decyzja:** 38c (~779) = źródło prawdy. Wszystkie strategie scalone w jeden nurt.
 
+> ⚠️ **Prawdziwość (2026-09-20):** dokumenty 1–5 to **plany historyczne spoza repozytorium** — katalog `Plan OPA/` nie istnieje w aktualnym drzewie projektu. Bieżące, żywe plany: [`unified_plan_v8.yaml`](../unified_plan_v8.yaml) (strategia) + [`unified_plan_progress.yaml`](../unified_plan_progress.yaml) (postęp).
+
 ---
 
 ## Stan Faktyczny (v8.0 — aktualizacja 2026-08-30)
@@ -33,7 +35,7 @@ STAN OBECNY:  543 plików Rego w drzewie rules/ (284 w katalogu głównym), 12 1
               22 audit-state (ETAP 06-28), 13 migracji (58 tabel), 29/29 raportów GLM52 WDROZONY_100
               KAMPANIA V3: 69/69 WDROŻONY_100 (P00–P68, ledger 2026-09-19)
 CEL:          779 reguł kanonicznych (mapa 38c) — PRZEKROCZONY (12 111)
-STATUS:       Fazy A/B/C wykonane lub przekroczone; ETAP 28/29 certyfikacja końcowa WDROZONY_100
+STATUS:       Fazy A/B/C wykonane lub przekroczone; ETAP 28 certyfikacja końcowa: 13/14 NIEPELNY → domknięcie V4 WDROŻONY_100
 HORYZONT:     7000 reguł Micro (Dual-Layer — zrealizowane w rules/micro/, patrz ADR-010)
 ```
 
@@ -61,7 +63,7 @@ Każda faza: zadania, status i Definition of Done — z licznikami aktualnymi na
 |---|---------|:------:|---------|
 | 2.1 | Uruchomienie validate_legal_basis.py | ⬜ | Aktualna klasyfikacja A/B/C |
 | 2.2 | Aktualizacja LEGAL_COVERAGE.md (ostatnia: 2026-07-17) | ✅ (2026-08-02) | Data = dzisiejsza |
-| 2.3 | Heatmapa pokrycia prawnego per akt | ✅ (2026-08-02) | Wizualizacja A/B/C (`reports/legal_coverage_heatmap.md`) |
+| 2.3 | Heatmapa pokrycia prawnego per akt | ✅ (2026-08-02) | Wizualizacja A/B/C — generator: `python tools/legal_coverage_heatmap.py` → `reports/legal_coverage_heatmap.md` (plik generowany na żądanie; żywy widok: [LEGAL_COVERAGE.md](LEGAL_COVERAGE.md)) |
 | 2.4 | Auto-aktualizacja przez ISAP Crawler | ⬜ | CI sprawdza dryf >7 dni |
 
 **Definition of Done:** LEGAL_COVERAGE.md z datą <= 7 dni od ostatniego commita rules/.
@@ -168,4 +170,4 @@ Każda faza: zadania, status i Definition of Done — z licznikami aktualnymi na
 
 *Wygenerowano przez NexusAI Unified Plan Engine v8.0 — 2026-08-22*
 *Liczby auto-generowane z MANIFEST.md przez `python JDG/tools/generate_manifest.py`*
-*Certyfikacja: ETAP 28/29 — 14/14 bramek PASSED, 18 domen (13 CERTIFIED / 5 CONDITIONAL / 0 BLOCKED)*
+*Certyfikacja: ETAP 28 — 13/14 bramek, status `NIEPELNY` (2026-08-22); domknięcie: dowód V4 `WDROŻONY_100` 6/6 (2026-08-29); 18 domen (11 CERTIFIED / 7 CONDITIONAL / 0 BLOCKED)*

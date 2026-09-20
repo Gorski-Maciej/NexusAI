@@ -2,7 +2,7 @@
 artifacts: [docs/LOGIKA_BIZNESOWA.md, rules/main_jdg.rego]
 status: ACTIVE
 owner: core
-verified: 2026-09-19
+verified: 2026-09-20
 verify_cmd: python3 tools/v3_p60_engines.py I03
 -->
 
@@ -260,7 +260,7 @@ sequenceDiagram
 | 3 | ZUS nadpisany przez risk | Usunięcie z allowlisty `immutable_verdict` | Przywróć pakiet w `immutable_verdict_allowlist` (main_jdg.rego) |
 | 4 | Zła stawka VAT dla daty historycznej | Brak temporalności / brak wersji w `rule_versions` | Wstaw wersję reguły z `valid_from`/`valid_to` (migracja 001) |
 | 5 | Błąd 503 `external_degraded` | Biała Lista / CEIDG / KSeF offline | Sprawdź `/jdg/health`; włącz `fallback_active`; retry po `retry_after_seconds` |
-| 6 | Duplikaty `rule_id` (369) | Reguła w makro i micro | Postępuj wg ADR-010: zachowaj makro, usuń micro; rename z sufiksem kontekstu |
+| 6 | Duplikaty `rule_id` (stan 2026-09-20: 44 unikalnych / 72 wystąpień) | Reguła w makro i micro lub powtórzona w pliku | Postępuj wg ADR-010: zachowaj makro, usuń micro; rename z sufiksem kontekstu; pełna lista w `MANIFEST.md` |
 | 7 | Reguła nigdy nie matchuje | Zły `else`-chain (kolejność) lub `{ true }` stub | Użyj `dead_rule_detector.py`; popraw kolejność; oznacz stub jako `CHECKPOINT-STUB` (ADR-015) |
 | 8 | Reguła matchuje zawsze | Tautologia / `{ true }` bez warunku | Uruchom `tautology_guard.py --strict`; dodaj prawdziwy warunek |
 | 9 | Test `opa test` nie pokrywa pakietu | Brak pliku `test_native_*.rego` | Wygeneruj test wg `tools/generate_test_suite.py` (cel: ≥20 plików testowych Q4 2026) |
@@ -372,7 +372,7 @@ python -m pytest JDG/tests/test_temporal_validity.py -v --log-cli-level=DEBUG
 | 22–23 | Hyper Contexts + AI/Neural | `hyper_enterprise_contexts_etap22_v1.rego`, `enterprise_ai_neural_etap23_v1.rego` |
 | 24–25 | Testy/CI + Narzędzia/API/Bundle | `tests_ci_quality_etap24_v1.rego`, `tools_api_rulestore_bundles_etap25_v1.rego` |
 | 26–27 | Mirror sync + Red team/chaos | `policies_mirror_sync_etap26_v1.rego`, `cross_domain_red_team_etap27_v1.rego` |
-| 28 | Certyfikacja końcowa | `final_certification_etap28_v1.rego` (14/14 bramek) |
+| 28 | Certyfikacja końcowa | `final_certification_etap28_v1.rego` (13/14 bramek — `NIEPELNY`; domknięcie: dowód V4 `WDROŻONY_100` 6/6, 2026-08-29) |
 
 Każdy etap: `JDG/tools/<domena>_etapNN_audit.py` (bramki) + `JDG/bundles/<domena>_etapNN_audit_state.json` (dowód) + pytest + natywny test Rego.
 
@@ -395,7 +395,7 @@ Każdy etap: `JDG/tools/<domena>_etapNN_audit.py` (bramki) + `JDG/bundles/<domen
 | `isap_crawler.py` | `python tools/isap_crawler.py` | aktualizacja prawa |
 | `judgment_predictor.py` | `python tools/judgment_predictor.py` | predykcja decyzji organów |
 
-### 2.2. Moduły kampanii V3 (forteca)
+### 7.1. Moduły kampanii V3 (forteca)
 
 > Synonimy: `v3 logic`, `p131`, `p132`, `self-learning`, `recertification`. Pełny opis: [KAMPANIA_V3_PROMPTY_P00_P68.md](KAMPANIA_V3_PROMPTY_P00_P68.md).
 

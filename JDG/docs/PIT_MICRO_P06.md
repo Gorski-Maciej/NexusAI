@@ -2,7 +2,7 @@
 
 > **📌 Aktualizacja 2026-08-22:** dokument historyczny opisujący wdrożenie promptu GLM 5.2.
 > Raporty źródłowe (`prompty_glm52/`, `raporty_glm52/`, `raporty_jdg_enterprise/`) zostały zarchiwizowane poza repo.
-> Aktualny stan wdrożenia: [`KAMPANIA_GLM52_ETAPY_10_28.md`](KAMPANIA_GLM52_ETAPY_10_28.md) + `JDG/bundles/*audit_state.json` (certyfikacja końcowa ETAP 28/29 — 2026-08-22, 14/14 bramek).
+> Aktualny stan wdrożenia: [`KAMPANIA_GLM52_ETAPY_10_28.md`](KAMPANIA_GLM52_ETAPY_10_28.md) + `JDG/bundles/*audit_state.json` (certyfikacja końcowa ETAP 28 — 2026-08-22: 13/14 bramek `NIEPELNY`; domknięcie V4 2026-08-29: `WDROŻONY_100` 6/6).
 
 > Raport: RAPORT_ANALITYCZNY_ENTERPRISE_JDG_PIT_MICRO_AMORTYZACJA (P06) v8.0
 > Prompt źródłowy: `prompts_glm52/P06_PIT_Micro.txt`
@@ -13,7 +13,7 @@
 
 P06 obejmuje **atomową warstwę PIT** (`JDG/rules/micro/pit/pit.rego`, ~22 738
 linii, 522 unikalne rule_id) oraz **amortyzację** (art. 22a-22n,
-`JDG/rules/micro/amortyzacja/pit_a22a/22i/22k/22n.rego`). GŁÓWNY PRIORYTET
+`JDG/rules/micro/amortyzacja/pit_a22{a,i,k,n}.rego` — 7 plików: `pit_a22a/b/c/h/i/k/n.rego`). GŁÓWNY PRIORYTET
 promptu: **AUDYT AMORTYZACJI**. Prompt wymaga raportu analitycznego (Sekcje
 1-8); w serii wdrożeniowej P01-P24 **każda sekcja jest implementowana jako
 działający kod** (rego + narzędzia + testy + dokumentacja).

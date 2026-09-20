@@ -2,7 +2,7 @@
 artifacts: [docs/INDEX.md]
 status: ACTIVE
 owner: docs
-verified: 2026-09-19
+verified: 2026-09-20
 verify_cmd: python3 tools/v3_p60_engines.py I03
 -->
 
@@ -55,7 +55,7 @@ verify_cmd: python3 tools/v3_p60_engines.py I03
 | ERD, tabel, indeksów, przykładowych zapytań SQL | [STRUKTURA_PROJEKTU.md](STRUKTURA_PROJEKTU.md) §4–5 (+ §5.1 domeny: księgowania/raporty/decyzje/środki trwałe) |
 | Migracji i seedowania DuckDB | [STRUKTURA_PROJEKTU.md](STRUKTURA_PROJEKTU.md) §6 |
 | Endpointów API, rate limiting, kodów błędów | [API_REFERENCJA.md](API_REFERENCJA.md) §3–6 |
-| Modułów, algorytmów, debugowania | [LOGIKA_BIZNESOWA.md](LOGIKA_BIZNESOWA.md) §2, §5–6 (+ §2.2 moduły V3) |
+| Modułów, algorytmów, debugowania | [LOGIKA_BIZNESOWA.md](LOGIKA_BIZNESOWA.md) §2, §5–7 (+ §7.1 moduły V3) |
 | UoR / IFRS / GAAP / KSeF / JPK / deklaracje / retencja | [ZGODNOSC_PRAWNA.md](ZGODNOSC_PRAWNA.md) §3–8 |
 | Ścieżki audytu (odtworzenie decyzji) | [ZGODNOSC_PRAWNA.md](ZGODNOSC_PRAWNA.md) §7 |
 | RBAC, workflow, centrum decyzji, integracji | [PODRECZNIK_UZYTKOWNIKA.md](PODRECZNIK_UZYTKOWNIKA.md) §3–9 |
@@ -184,4 +184,4 @@ verify_cmd: python3 tools/v3_p60_engines.py I03
 
 ---
 
-*INDEX v1.0 (2026-09-19). Zasada: dokument bez wpisu w tym indeksie = kandydat do przeglądu; wpis bez dokumentu = bug — zgłoś issue.*
+*INDEX v1.1 (2026-09-20; v1.0 2026-09-19). Zasada: dokument bez wpisu w tym indeksie = kandydat do przeglądu; wpis bez dokumentu = bug — zgłoś issue. Weryfikacja dyskowa pełnego zestawu rdzenia: 2026-09-20 (śledzenie istnienia plików, liczników i generatorów — patrz [STRUKTURA_PROJEKTU.md §7.2](STRUKTURA_PROJEKTU.md) — znane artefakty).*

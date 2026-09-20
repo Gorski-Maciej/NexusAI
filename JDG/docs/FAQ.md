@@ -2,7 +2,7 @@
 artifacts: [docs/FAQ.md]
 status: ACTIVE
 owner: docs
-verified: 2026-09-19
+verified: 2026-09-20
 verify_cmd: python3 tools/v3_p60_engines.py I03
 -->
 
@@ -31,13 +31,13 @@ Podstawy: czym jest system, jaki ma status i ile reguł pokrywa.
 
 
 ### Q1.1 Czym jest NexusAI JDG?
-Silnik reguł podatkowych (Policy-as-Code) dla polskich jednoosobowych działalności gospodarczych. Koduje 13 aktów prawnych jako **12 111 unikalnych reguł OPA/Rego** (543 pliki Rego w drzewie `rules/`, MANIFEST regen. 2026-09-19), które automatycznie ewaluują faktury i podejmują decyzje księgowe. Szczegóły: [README.md](../README.md).
+Silnik reguł podatkowych (Policy-as-Code) dla polskich jednoosobowych działalności gospodarczych. Koduje 13 aktów prawnych jako **12 111 unikalnych reguł OPA/Rego** (543 pliki Rego w drzewie `rules/`, MANIFEST regen. 2026-09-20), które automatycznie ewaluują faktury i podejmują decyzje księgowe. Szczegóły: [README.md](../README.md).
 
 ### Q1.2 Jaki jest status produktu?
 Reguły i API: **PRODUCTION (ENTERPRISE v8.0)**. RuleStore DuckDB: BETA. Testy: BETA. Pełna tabela statusów: [README.md §Status](../README.md).
 
 ### Q1.3 Ile reguł pokrywa system?
-**12 111 unikalnych `rule_id`** (MANIFEST.md, regenerowany 2026-09-19; 12 155 bloków `matched:true`, 44 duplikaty, Completeness 83/100). Na dysku: 543 pliki Rego w drzewie `rules/` (2026-09-19). Uwaga: `bundles/manifest.json` bywa starszy — aktualizowany przy budowie bundle (`bundle.sh`).
+**12 111 unikalnych `rule_id`** (MANIFEST.md, regenerowany 2026-09-20; 12 155 bloków `matched:true`, 44 duplikaty; Completeness 63/100 — składnik „aktualność” maleje z czasem od ostatniej fali zmian reguł). Na dysku: 543 pliki Rego w drzewie `rules/` (2026-09-20). Uwaga: `bundles/manifest.json` bywa starszy (rewizja v9.0-2026-08-13, 490 plików) — aktualizowany przy budowie bundle (`bundle.sh`).
 
 ### Q1.4 Czy to zastępuje księgowego?
 Nie w pełni. Automatyzuje ~85% transakcji (AUTO_POST), ale ~3–5% wymaga decyzji człowieka (ASK_USER), a doradca/księgowa nadzoruje strategię i obronę przed KAS.
@@ -153,7 +153,7 @@ Instalacja, aktualizacje, backup i monitorowanie.
 OPA Server + DuckDB RuleStore + serwis thresholdów; rekomendowane minimum: 2 vCPU / 4 GB RAM dla testów, 4 vCPU / 8 GB dla produkcji (pełny bundle 472 plików).
 
 ### Q5.2 Jak wygląda CI/CD?
-Workflow blokujący merge przy: lint FAIL, validate FAIL, manifest niespójny, tautologia, zero-defect < 85%. Codzienny scheduler ISAP wykrywa zmiany prawa. [docs/DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) §6.
+Workflow `JDG/.github/workflows/jdg-quality.yml` blokuje merge przy 12 bramkach: lint 6-check, walidacja reguł, tautologie, martwe reguły, hardcoded wartości (ADR-002), niezmienniki INV-001..042, testy (coverage/fuzz/mutation), golden replay (UVR = 0), macierz wpływu, build + podpis bundle, rollout canary. Codzienny crawl ISAP uruchamia `tools/isap_crawler.py` (wykrywa nowelizacje → Issue). [docs/DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) §6.
 
 ### Q5.3 Jak monitorować stan systemu?
 `GET /jdg/health` (OPA, DuckDB, API zewnętrzne, liczba reguł, uptime) + metryki `_cost_ms`/`_shard_routed` w werdyktach + tabele `isap_history`/`jdg_stale_rules_registry`.
@@ -186,14 +186,18 @@ Status, bramki i znaczenie certyfikacji końcowej kampanii GLM 5.2.
 Seria 19 audytowanych etapów wdrożenia (ETAP 10–28) rozwijająca silnik JDG od fundamentów (ETAP 04–06) do certyfikacji końcowej. Każdy etap ma reguły Rego, audyt (`JDG/tools/*_etapNN_audit.py`), audit-state (`JDG/bundles/*audit_state.json`) oraz testy pytest + natywne Rego. Pełna tabela: [KAMPANIA_GLM52_ETAPY_10_28.md](KAMPANIA_GLM52_ETAPY_10_28.md).
 
 ### Q7.2 Jaki jest status certyfikacji?
-ETAP 28/29 — **WDROZONY_100** (2026-08-22): 14/14 bramek PASSED, 29/29 raportów kampanii `WDROZONY_100`. Domeny: **13 CERTIFIED / 5 CONDITIONAL / 0 BLOCKED** (VAT, orchestrator, legal_twin, control_plane, security są CONDITIONAL). Status produkcji: **NOT_CERTIFIED** — system nie przeszedł jeszcze pełnej certyfikacji produkcyjnej (raport szczerości ETAP 28).
+Dwa etapy dowodowe — oba **z pomiaru**, artefakty w `JDG/bundles/`:
+1. **ETAP 28 — audyt końcowy kampanii GLM 5.2 (2026-08-22):** status **`NIEPELNY`** — **13/14 bramek** (FAIL: `reconciliation_ok` — 2 raporty `NIEPELNE`: 24_TESTS_CI_QUALITY, 25_TOOLS_API_RULESTORE_BUNDLES), rozliczenie 22 raportów (20 `WDROŻONY_100`), domeny: **11 CERTIFIED / 7 CONDITIONAL / 0 BLOCKED** (CONDITIONAL: ksef_jpk, orchestrator, legal_twin, control_plane, security, disaster_recovery, tests_ci).
+2. **Dowód V4 — kampania V3 (2026-08-29):** status **`WDROŻONY_100`** — **6/6 bramek**, w tym `all_reports_wdrozony` oraz `report21/24_code_gate` (domknięcie 2 raportów z ETAP 28).
+
+Status produkcji: **NOT_CERTIFIED** — system nie przeszedł certyfikacji produkcyjnej (świadome zastrzeżenie truth-first). Chronologia: [KAMPANIA_GLM52_ETAPY_10_28.md](KAMPANIA_GLM52_ETAPY_10_28.md) §3 + [KAMPANIA_V3_PROMPTY_P00_P68.md](KAMPANIA_V3_PROMPTY_P00_P68.md).
 
 ### Q7.3 Gdzie są dowody wdrożenia (evidence)?
 `JDG/bundles/*audit_state.json` (22 pliki) — każdy zawiera bramki (`gate_summary`), listę plików, pakiety, wyniki testów i znaczniki (np. `no_auto_post`). Certyfikacja końcowa: `JDG/bundles/final_certification_etap28_audit_state.json`.
 
 ### Q7.4 Jak samodzielnie zweryfikować etap?
 ```bash
-python JDG/tools/final_certification_etap28_audit.py   # bramki 14/14
+python JDG/tools/final_certification_etap28_audit.py validate   # status z pomiaru (patrz Q7.2)
 pytest -q JDG/tests/test_final_certification_etap28_audit.py
 opa test JDG/tests/rego/test_native_final_certification_etap28.rego -v
 ```

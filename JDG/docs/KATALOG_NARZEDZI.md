@@ -2,7 +2,7 @@
 artifacts: [docs/KATALOG_NARZEDZI.md, tools/]
 status: ACTIVE
 owner: docs
-verified: 2026-09-19
+verified: 2026-09-20
 verify_cmd: python3 tools/manifest_v2.py --json
 -->
 
@@ -25,8 +25,8 @@ verify_cmd: python3 tools/manifest_v2.py --json
 |---|---:|---|
 | `generate_manifest.py` | 359 | ★ generator MANIFEST.md (parser strukturalny v8.0) |
 | `generate_coverage_report.py` | 361 | ★ generator COVERAGE_REPORT.md |
-| `validate_rules.py` | 326 | ★ 9 walidacji jakości/spójności reguł (`--strict`) |
-| `lint_rego_rules.py` | 463 | ★ linter 6-check składni i stylu Rego |
+| `validate_rules.py` | 389 | ★ 9 walidacji jakości/spójności reguł (`--strict`) |
+| `lint_rego_rules.py` | 501 | ★ linter 6-check składni i stylu Rego |
 | `tautology_guard.py` | 120 | detektor tautologii (reguły zawsze-true) — CI BLOCKING |
 | `dead_rule_detector.py` | 120 | detektor martwych reguł i duplikatów rule_id |
 | `else_chain_dead_code_detector.py` | 123 | detektor martwego kodu w else-chainach |
@@ -45,8 +45,8 @@ verify_cmd: python3 tools/manifest_v2.py --json
 | `rule_impact_simulator.py` | 220 | symulator wpływu zmiany reguły |
 | `temporal_drift_detector.py` | 195 | detektor dryfu temporalnego wersji |
 | `legal_change_impact_analyzer.py` | 133 | analiza wpływu zmian prawa w czasie rzeczywistym |
-| `legal_coverage_heatmap.py` | 282 | heatmap pokrycia prawnego |
-| `traceability_matrix.py` | 174 | macierz śledzenia Doc→Rego |
+| `legal_coverage_heatmap.py` | 332 | heatmap pokrycia prawnego |
+| `traceability_matrix.py` | 193 | macierz śledzenia Doc→Rego |
 | `api_doc_generator.py` | 173 | auto-generator dokumentacji API (api.md) |
 | `enterprise_dashboard.py` | 286 | generator panelu enterprise |
 | `adr_auto_proposer.py` | 139 | auto-propozycje ADR |
@@ -197,7 +197,7 @@ verify_cmd: python3 tools/manifest_v2.py --json
 
 ## 10. Podsumowanie
 
-> ⚠️ **Uwaga:** katalog zawiera **997 plików `.py`** (żywy skan P60 2026-09-13; wcześniej 298 wg stanu 2026-08-22; **stan dysku 2026-09-19: 1033 top-level + 12 w `v3_p40_tools/` = 1045** — kampania GLM 5.2 dodała ~170 narzędzi: audyty ETAP 10–28, bramki raportowe R01–R24, generatory; kampania V3 dodała 689 narzędzi `v3_*` i bramki kontraktów jakościowych V3-14…V3-20 — patrz tabela powyżej i [MANIFEST.md §PAKIETY KAMPANII V3](../MANIFEST.md)). Poniższe sekcje opisują kategorie rdzenia; pełną listę generuje `ls JDG/tools/*.py` oraz [INWENTARYZACJA_PLIKOW.md](INWENTARYZACJA_PLIKOW.md).
+> ⚠️ **Uwaga:** katalog zawiera **997 plików `.py`** (żywy skan P60 2026-09-13; wcześniej 298 wg stanu 2026-08-22; **stan dysku 2026-09-19: 1033 top-level + 12 w `glm52_v3_campaign/` = 1045** — kampania GLM 5.2 dodała ~170 narzędzi: audyty ETAP 10–28, bramki raportowe R01–R24, generatory; kampania V3 dodała 689 narzędzi `v3_*` i bramki kontraktów jakościowych V3-14…V3-20 — patrz tabela powyżej i [MANIFEST.md §PAKIETY KAMPANII V3](../MANIFEST.md)). Poniższe sekcje opisują kategorie rdzenia; pełną listę generuje `ls JDG/tools/*.py` oraz [INWENTARYZACJA_PLIKOW.md](INWENTARYZACJA_PLIKOW.md).
 
 **Bramki kampanii V3 (kontrakty jakościowe, evidence w `JDG/bundles/`):**
 

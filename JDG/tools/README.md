@@ -1,33 +1,35 @@
 # NexusAI JDG — Narzędzia (Tools)
 
-> **Status:** v8.3 | **Data:** 2026-08-22
-> **298 plików .py, ~80 000+ linii** — uporządkowane wg kategorii (R15) + audyty ETAP 10–28
-> Pełna lista narzędzi: [`docs/KATALOG_NARZEDZI.md`](../docs/KATALOG_NARZEDZI.md)
+> **Status:** v8.4 | **Data:** 2026-09-20
+> **1045 plików `.py` = 1033 top-level + 12 w `glm52_v3_campaign/`** (344 rdzeń + 689 `v3_*` kampanii V3; pomiar dyskowy)
+> Pełna lista narzędzi: [`docs/KATALOG_NARZEDZI.md`](../docs/KATALOG_NARZEDZI.md) · inwentarz: [`docs/INWENTARYZACJA_PLIKOW.md` §5](../docs/INWENTARYZACJA_PLIKOW.md)
 
----
+> ⚠️ **Struktura katalogu (truth-first, 2026-09-20):** wszystkie narzędzia leżą **płasko** w `tools/` — jedynym podkatalogiem jest `glm52_v3_campaign/` (generator promptów kampanii V3). Podział R15 na kategorie **core / legacy / one-shot jest logiczny** (na podstawie RAPORT_P25), nie fizyczny — nagłówki poniżej grupują narzędzia tematycznie.
 
 ## Kategorie narzędzi
 
-### 🔧 Core (`core/`) — Główne narzędzia produkcyjne
+### 🔧 Core — główne narzędzia produkcyjne
 
 | Narzędzie | Linii | Opis |
 |-----------|:-----:|------|
-| `generate_manifest.py` | ~330 | Auto-generuje MANIFEST.md (parser strukturalny v8.0, 100% pokrycia) |
-| `validate_rules.py` | ~260 | 9 walidacji jakości/spójności reguł |
-| `generate_coverage_report.py` | ~250 | Generuje COVERAGE_REPORT.md (v8.0, fix NameError, wszystkie prefiksy) |
-| `generate_missing_rules.py` | ~276 | Masowa generacja reguł mikro z Plan OPA/50 |
-| `generate_micro_rules.py` | ~759 | Generator mikro-reguł atomowych |
-| `generate_massive_rules.py` | ~1507 | Generator masowy reguł |
-| `generate_from_plan50.py` | ~455 | Generator reguł z Planu 50 |
-| `generate_test_suite.py` | ~204 | Generator testów |
-| `lint_rego_rules.py` | ~463 | Linter składni Rego |
-| `isap_crawler.py` | ~624 | Crawler ISAP — aktualizacja podstaw prawnych |
-| `llm_bridge.py` | ~796 | Bridge do LLM (C2) |
-| `crossref_plan50.py` | ~50 | Cross-referencje Plan 50 |
-| `validate_legal_basis.py` | ~50 | Walidacja podstaw prawnych |
-| `validate_p24_legal_basis.py` | ~50 | Walidacja P24 podstaw prawnych |
+| `generate_manifest.py` | 359 | Auto-generuje MANIFEST.md (parser strukturalny v8.0, 100% pokrycia) |
+| `validate_rules.py` | 389 | 9 walidacji jakości/spójności reguł (stan 2026-09-20: 72 błędy duplikatów rule_id — patrz DEVELOPER_GUIDE §6) |
+| `generate_coverage_report.py` | 361 | ⚠️ legacy — wymaga zarchiwizowanego `Plan OPA/50…` (patrz nota poniżej) |
+| `generate_missing_rules.py` | 276 | Masowa generacja reguł mikro z Planu 50 |
+| `generate_micro_rules.py` | 759 | Generator mikro-reguł atomowych |
+| `generate_massive_rules.py` | 1507 | Generator masowy reguł |
+| `generate_from_plan50.py` | 455 | Generator reguł z Planu 50 |
+| `generate_test_suite.py` | 280 | Generator testów |
+| `lint_rego_rules.py` | 501 | Linter składni Rego (6 checków) |
+| `isap_crawler.py` | 624 | Crawler ISAP — aktualizacja podstaw prawnych |
+| `llm_bridge.py` | 799 | Bridge do LLM (C2) |
+| `crossref_plan50.py` | 79 | Cross-referencje Plan 50 |
+| `validate_legal_basis.py` | 203 | Walidacja podstaw prawnych |
+| `validate_p24_legal_basis.py` | 270 | Walidacja P24 podstaw prawnych |
+| `manifest_v2.py` | — | Generuje `bundles/manifest_v2.json` (indeks testów) |
+| `v3_p60_engines.py` | — | Silniki weryfikacji front-matter dokumentacji (np. `I03`) |
 
-### 📦 Legacy (`legacy/`) — Narzędzia kampanii P11-P24
+### 📦 Legacy — narzędzia kampanii P11–P24 (logiczna kategoria R15)
 
 | Narzędzie | Opis |
 |-----------|------|
@@ -72,7 +74,7 @@
 | `p10_kks_jurisprudence.py` | Orzecznictwo KKS |
 | `p10_kks_micro_simulator.py` | Symulator mikro KKS |
 
-### 🧹 One-shot (`one-shot/`) — Jednorazowe fixy/konwersje
+### 🧹 One-shot — jednorazowe fixy/konwersje (logiczna kategoria R15)
 
 | Narzędzie | Opis |
 |-----------|------|
@@ -97,14 +99,23 @@
 | `cross_package_conflict_detector.py` | Detektor konfliktów między pakietami |
 | `judgment_predictor.py` | Predyktor wyroków (C1) |
 
+### 🤖 Kampania V3 (`v3_*.py`, 689 narzędzi)
+
+Silniki kontraktów, bramki statyczne, audyty P00–P68, pętla samouczenia (P67), recertyfikacja (P68), ledger
+(`v3_campaign_ledger.py`) oraz dane: `v3_p67_learning_data.json`, `v3_p68_settlement.json`. Status: `python tools/v3_campaign_ledger.py`.
+
 ---
+
+> ⚠️ **Generatory legacy (pomiar 2026-09-20):** `generate_coverage_report.py` kończy się `FileNotFoundError`
+> (zależność od zarchiwizowanego `Plan OPA/50_JDG_BRAKUJACE_PUNKTY_PRAWNE.md`), a `tools/api_doc_generator.py`
+> — `KeyError: 'name'` (parametry obecnego `api/openapi.yaml` bez pola `name`).
+> Aktualne metryki: `generate_manifest.py` + `GET /jdg/coverage` + [LEGAL_COVERAGE.md](../docs/LEGAL_COVERAGE.md);
+> API: [API_REFERENCJA.md](../docs/API_REFERENCJA.md) + `api/openapi.yaml` (v1.0.0, zgodne).
 
 ## 🛡️ Bramki kontraktów kampanii V3 (V3-14…V3-20)
 
 Evidence gates bramkujące wyniki warstw z evidence (`JDG/bundles/*_audit_*.json`);
-każdy kontrakt: fail-closed, DECOUPLED, `no_auto_post=true`. Szczegóły:
-[`docs/KATALOG_NARZEDZI.md`](../docs/KATALOG_NARZEDZI.md) oraz
-[MANIFEST.md §PAKIETY KAMPANII V3](../MANIFEST.md).
+każdy kontrakt: fail-closed, DECOUPLED, `no_auto_post=true`. Wszystkie 7 bramek istnieje (weryfikacja 2026-09-20):
 
 ```bash
 python JDG/tools/hyper_quality_v3_14_gate.py --write        # deadlines/limits/kalendarze
@@ -116,29 +127,26 @@ python JDG/tools/api_ui_quality_v3_19_gate.py --write       # API spec/RBAC/cent
 python JDG/tools/docs_quality_v3_20_gate.py --write         # Legal Twin/dokumentacja/certyfikacja kampanii
 ```
 
----
-
 ## Workflow deweloperski
 
 ```bash
-# 1. Walidacja reguł
-python JDG/tools/validate_rules.py --strict
+# 1. Walidacja reguł (9 walidacji; oczekiwane „Błędów: 0" — patrz nota o 72 duplikatach)
+python JDG/tools/validate_rules.py
 
 # 2. Generacja manifestu
-python JDG/tools/generate_manifest.py --check  # Sprawdź
-python JDG/tools/generate_manifest.py          # Generuj
+python JDG/tools/generate_manifest.py
 
-# 3. Raport pokrycia
-python JDG/tools/generate_coverage_report.py
-
-# 4. Budowanie bundle
+# 3. Budowanie bundle
 cd JDG/bundles && bash bundle.sh
 
-# 5. Bramki kontraktów kampanii V3 (po każdej zmianie w danej warstwie)
+# 4. Bramki kontraktów kampanii V3 (po każdej zmianie w danej warstwie)
 python JDG/tools/bundles_quality_v3_18_gate.py --write
+
+# 5. Status kampanii V3
+python JDG/tools/v3_campaign_ledger.py
 ```
 
 ---
 
-*Wygenerowano dla NexusAI JDG Module — 2026-08-02; zaktualizowano po kampanii V3 (2026-08-26)*
-*R15: Segregacja core/legacy/one-shot na podstawie RAPORT_P25*
+*Zaktualizowano do stanu dyskowego 2026-09-20 (1045 narzędzi; weryfikacja ścieżek i liczb)*
+*R15: kategorie core/legacy/one-shot logiczne (na podstawie RAPORT_P25); struktura fizyczna płaska + `glm52_v3_campaign/`*

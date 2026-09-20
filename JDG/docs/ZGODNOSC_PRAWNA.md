@@ -85,7 +85,7 @@ PKPiR, pełna księgowość UoR i relacja do IFRS/GAAP — z mapowaniem na modu�
 
 | Standard | Zakres w systemie |
 |---|---|
-| **IFRS** | UoR polska jest zgodna z dyrektywą 2013/34/UE (baza = IFRS dla sprawozdań jednostkowych). System wspiera dane wejściowe w standardzie polskim (UoR), z regułami wyceny zgodnymi z ustawą — patrz `rules/uor/uor_valuation.rego` (policies/) i `uor_financial_stmt.rego`. |
+| **IFRS** | UoR polska jest zgodna z dyrektywą 2013/34/UE (baza = IFRS dla sprawozdań jednostkowych). System wspiera dane wejściowe w standardzie polskim (UoR), z regułami wyceny zgodnymi z ustawą — patrz `policies/tax/uor_valuation.rego` (mirror policies) i `rules/uor/uor_financial_stmt.rego`. |
 | **GAAP** | Odpowiednikiem lokalnego GAAP jest polska UoR + KSR. Reguły wyceny, inwentaryzacji i sprawozdawczości pokryte w `rules/uor/*`. |
 
 > **Uwaga:** Moduł JDG obsługuje podatkowy wymiar księgowości (PKPiR/UoR). Sprawozdawczość wg pełnych MSSF/IFRS dla jednostek zobowiązanych wymaga modułu korporacyjnego (CIT).
@@ -193,7 +193,7 @@ sequenceDiagram
 | **PIT-36L** (liniowy) | `rules/annual_declaration_enterprise.rego` | Auto-fill |
 | **PIT-28** (ryczałt) | `rules/annual_declaration_enterprise.rego` | Auto-fill |
 | **CIT-8** (spółki, wstecznie) | `rules/jpk_cit.rego`, `rules/p16_estonian_cit_enterprise.rego` | Estonian CIT Art. 28c–28t |
-| **PCC-3** | `rules/p15_innovations_enterprise.rego` (auto-filler), `rules/pcc/*` | Umowy PCC |
+| **PCC-3** | `rules/p15_pcc_local_excise_innovations_v8.rego` (auto-filler), `rules/pcc/*` | Umowy PCC |
 | **ZUS DRA/ZUA** | `rules/p16_autoform_generator_enterprise.rego` (G1–G7) | Auto-formularze |
 | **CEIDG-1, VAT-Z, PIT-4R/11** | `rules/p16_autoform_generator_enterprise.rego` | Auto-formularze G1–G7 |
 
@@ -274,7 +274,7 @@ Okresy retencji zgodne z prawem podatkowym i RODO, egzekwowane przez `rules/rete
 | Faktury i dokumenty księgowe | 5 lat (licząc od końca roku podatkowego) | OrdPU Art. 70, Art. 86 § 1 |
 | Księgi podatkowe (PKPiR) | 5 lat | OrdPU Art. 86 |
 | Karty przychodów / ewidencje | 5 lat | OrdPU Art. 86 |
-| Dokumenty pracownicze (akta) | 50 lat (okres przechowywania) | Prawo pracy / RODO |
+| Dokumenty pracownicze (akta) | **50 lat** (zatrudnieni do 1998) / **10 lat** (zatrudnieni od 2019-01-01, zgłoszeni do ZUS) | Prawo pracy / `retention.rego` (HR, HR_POST_2019) |
 | Dokumenty ZUS / składki | 5 lat | ZUS / SUS |
 | Dowody osobiste / identyfikacyjne (RODO) | nie dłużej niż konieczne | RODO Art. 5 ust. 1 lit. e |
 | Werdykty audytowe (JDG) | bezterminowo (dowód) | niezmienny log |

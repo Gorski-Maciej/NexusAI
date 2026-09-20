@@ -1,7 +1,7 @@
 # 🧪 JDG Tests
 
-> **Status:** v8.3 | **Data:** 2026-08-22
-> **198 testów pytest + 207 natywnych testów Rego** (`tests/`, `tests/auto/`, `tests/rego/`, `tests/rego/micro/`)
+> **Status:** v8.4 | **Data:** 2026-09-20
+> **288 testów pytest (root 84 + `auto/` 204) + 278 natywnych testów Rego (`rego/` 276 + root 2)** — pomiar dyskowy; szczegóły podziału: [INWENTARYZACJA_PLIKOW.md §4](../docs/INWENTARYZACJA_PLIKOW.md)
 > Audyty ETAP 10–28: `test_*_etapNN_audit.py` (pytest) + `test_native_*_etapNN.rego` (OPA)
 
 ## Skopiowane testy
@@ -10,7 +10,7 @@
 
 | Plik testowy | Status | Uwagi |
 |-------------|:------:|------|
-| `test_temporal_validity.py` | ✅ **40/40 PASS** | Testy walidacji temporalnej Rego |
+| `test_temporal_validity.py` | ⚠️ **34/40 (6 FAIL)** | 6 testów wymaga `Plan OPA/38c_JDG_CANONICAL_MAP.md` (4 × `test_canonical_map_*` + 2 × parzystość valid_from/valid_to) — plik zarchiwizowany poza repo; logika temporalna w `_metadata_jdg.rego` jest pokryta testami przechodzącymi (34/40) |
 | `test_temporal_manager.py` | ⚠️ Wymaga duckdb | Import nexus_ai |
 | `test_ksef_generator.py` | ⚠️ Wymaga nexus_ai | Import nexus_ai.services |
 | `test_priority_engine.py` | ⚠️ Wymaga nexus_ai | Import nexus_ai.services |

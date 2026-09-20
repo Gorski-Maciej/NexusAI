@@ -1,7 +1,7 @@
 # 🏛️ NexusAI JDG — Silnik Reguł Podatkowych dla Jednoosobowej Działalności Gospodarczej
 
 > **Status:** 🟢 PRODUCTION — ENTERPRISE v8.0 | 🏁 **Kampania V3: 69/69 WDROŻONY_100 (2026-09-19) — certyfikat fortecy WYDANY (P68)**
-> **Reguły:** 12 111 unikalnych `rule_id` (12 155 bloków `matched:true`, 44 duplikaty) — [MANIFEST.md](MANIFEST.md) regenerowany 2026-09-19 | **Pliki Rego:** 543 w drzewie `rules/` (284 w katalogu głównym) | **Akty prawne:** 13 | **Inicjatywy strategiczne:** 24 (A1–C3, S1–S24)
+> **Reguły:** 12 111 unikalnych `rule_id` (12 155 bloków `matched:true`, 44 duplikaty) — [MANIFEST.md](MANIFEST.md) regenerowany 2026-09-20 | **Pliki Rego:** 543 w drzewie `rules/` (284 w katalogu głównym) | **Akty prawne:** 13 | **Inicjatywy strategiczne:** 24 (A1–C3, S1–S24)
 > **Data wydania:** 2026-08-02 (aktualizacja: 2026-09-19) | **Licencja:** MIT
 
 ```
@@ -25,9 +25,9 @@ NexusAI JDG zamienia skomplikowane, wielokrotnie nowelizowane prawo podatkowe (V
 
 | Obszar | Status | Uwagi |
 |---|---|---|
-| **Silnik reguł Rego (JDG/rules)** | 🟢 **PRODUCTION** | 543 plików, 12 111 unikalnych rule_id (Completeness 83/100), First-Match-Wins |
+| **Silnik reguł Rego (JDG/rules)** | 🟢 **PRODUCTION** | 543 plików, 12 111 unikalnych rule_id (Completeness 63/100 — regen. 2026-09-20, patrz Metryki), First-Match-Wins |
 | **API (JDG/api/openapi.yaml)** | 🟢 **PRODUCTION (spec 1.0.0)** | 18 endpointów, 13 schematów, JWT Bearer; implementacja: `nexus_ai/api` (root repo) |
-| **RuleStore (JDG/migrations)** | 🟡 **BETA** | 58 tabel (CREATE TABLE w 13 migracjach 001–013), seed progów w 001 |
+| **RuleStore (JDG/migrations)** | 🟡 **BETA** | 57 unikalnych tabel (CREATE TABLE w 13 migracjach 001–013), seed 44 progów w 001 |
 | **Bundle OPA (JDG/bundles)** | 🟢 **PRODUCTION** | bundle.sh v8.0, manifesty, 22 audit-state, 1043 plików (w tym 862 `v3_*`) |
 | **Narzędzia (JDG/tools)** | 🟢 **PRODUCTION** | 1033 narzędzi Python (w tym 689 `v3_*` z kampanii V3) |
 | **Testy (JDG/tests)** | 🟢 **PRODUCTION** | 288 pytest (`tests/auto/` 204 + `tests/` 84) + 278 natywnych testów Rego (`tests/rego/` 276 + `tests/` 2) |
@@ -47,7 +47,7 @@ NexusAI JDG zamienia skomplikowane, wielokrotnie nowelizowane prawo podatkowe (V
 - **🔒 Immutable Audit Trail** — werdykty ZUS/zdrowotne podpisywane HMAC-SHA256 + Merkle Tree (A1, ADR-006).
 - **📉 Zero Hardcoded Values** — stawki/progi/limity ładowane z DuckDB przez OPA Data API (`data.thresholds.jdg.*`) (B2, ADR-002).
 - **🤖 Tryby automatyzacji** — `AUTO_POST` (≥0.92), `SUGGEST` (0.75–0.92), `ASK_USER` (<0.75).
-- **🧩 Warstwa mikro-atomowa** — 91 plików `rules/micro/` z regułami per artykuł ustawy (ADR-010).
+- **🧩 Warstwa mikro-atomowa** — 94 pliki `rules/micro/` z regułami per artykuł ustawy (ADR-010; pomiar 2026-09-20).
 - **📡 Integracje zewnętrzne** — KSeF, JPK, Biała Lista MF, CEIDG, NBP, ISAP (crawler aktów prawnych), e-Doręczenia, ePUAP, WIS.
 - **🗂️ Enterprise S1–S24** — optymalizacja podatkowa, cross-domain intelligence, predykcja wyroków, KSeF resilience, automatyzacja bankowości (PSD2/PolishAPI), auto-deklaracje PIT-36/36L/28, JPK_V7M, monitor legislacyjny.
 - **🛡️ Kampania V3 (69/69 WDROŻONY_100)** — kontrakty rdzenia (P01–P11), domknięcia domen (P12–P44), 23 rejestry naprawcze z pomiaru (P45–P67), pętla samouczenia (P67), recertyfikacja z dowodem stanu (P68: hard gates 5/5, certyfikat fortecy WYDANY).
@@ -345,16 +345,16 @@ curl -X POST http://localhost:8000/v1/jdg/decide \
 | Akty prawne pokryte | **13** |
 | Inicjatywy strategiczne | 24 (A1–A3, B1–B3, C1–C3, S1–S24) |
 | Pakiety w orkiestratorze | ~60+ |
-| Completeness Score (MANIFEST) | 🟡 83/100 (aktualność 66/100 — bloki bez matched po falach V3; routing 64%) |
+| Completeness Score (MANIFEST) | 🔴 63/100 (regen. 2026-09-20: aktualność 0/100 — składnik czasowy maleje od ostatniej fali zmian reguł; pliki w manifescie 497/543 = 91%, routing 64%; liczba reguł stabilna: 12 111) |
 | Narzędzia Python (JDG/tools) | **1033** (historycznie: 298 na 2026-08-22) |
 | Testy pytest / natywne Rego | **288** / **278** (historycznie: 198/207 na 2026-08-30) |
 | Migracje DuckDB | **13** (001–013) |
 | Audit-state (ETAP 06–28) | **22** — wszystkie `WDROZONY_100` / `PASS` |
-| Domeny po certyfikacji końcowej | **18** — 13 CERTIFIED, 5 CONDITIONAL, 0 BLOCKED |
-| Raporty kampanii GLM 5.2 | **29/29** — `WDROZONY_100` |
+| Domeny po certyfikacji końcowej | **18** — 11 CERTIFIED, 7 CONDITIONAL, 0 BLOCKED (ETAP 28, 2026-08-22; patrz [FAQ Q7.2](docs/FAQ.md)) |
+| Raporty kampanii GLM 5.2 | **22 rozliczonych** — 20/22 `WDROŻONY_100` w ETAP 28; 2 NIEPELNE domknięte w dowodzie V4 (`WDROŻONY_100`, 6/6 bramek, 2026-08-29) |
 | **Kampania V3 (P00–P68)** | **69/69** — `WDROŻONY_100` (ledger `bundles/v3_campaign_ledger.json`, 2026-09-19); artefakty: 70 promptów, 79 raportów, 862 bundli `v3_*`, 689 narzędzi `v3_*`, 52 natywnych testów Rego `test_v3_*` |
 | Testy pytest / natywne Rego (podział) | **288** = 204 `tests/auto/` + 84 `tests/` · **278** = 276 `tests/rego/` + 2 `tests/` |
-| Narzędzia Python (podział) | **1033** = 344 rdzeń + 689 `v3_*` w `JDG/tools/` |
+| Narzędzia Python (podział) | **1045** łącznie = 356 rdzeń + 689 `v3_*` (1033 top-level w `JDG/tools/` + 12 w `tools/glm52_v3_campaign/`; pomiar 2026-09-20) |
 | Certyfikat fortecy (P68) | 🟢 **WYDANY** (repo) — produkcja: `NOT_CERTIFIED` (pętla kwartalna V4-F4) |
 
 ### Warstwy architektury reguł
@@ -362,7 +362,7 @@ curl -X POST http://localhost:8000/v1/jdg/decide \
 | Warstwa | Plików | Reguł | Opis |
 |---|---:|---:|---|
 | **Macro (Core)** | ~231 (root) | ~6 300 | Reguły decyzyjne: VAT, PIT, ZUS, KKS, PKPiR, cross-border |
-| **Micro (atomowe)** | 91 | ~3 500 | Atomowe reguły per artykuł ustawy |
+| **Micro (atomowe)** | 94 | ~3 500 | Atomowe reguły per artykuł ustawy |
 | **Enterprise S1–S24 + ETAP 10–28** | 40+ | ~1 000 | Optymalizacja, cross-domain, KSeF, deklaracje, monitoring, audyty |
 | **Hyper Plan45** | 14 | ~450 | Reguły hiper-szczegółowe (terminy, limity, sankcje, e-Doręczenia) |
 
@@ -429,13 +429,15 @@ Pełne drzewo i konwencje: **[docs/STRUKTURA_PROJEKTU.md](docs/STRUKTURA_PROJEKT
 
 | Dokument | Opis |
 |---|---|
-| `Plan OPA/38c_JDG_CANONICAL_MAP.md` | Mapa kanoniczna ~779 reguł (plan bazowy — przekroczony do 12 111) |
-| `Plan OPA/41_JDG_MEGA_MATRIX_7000_RULES.md` | Dual-Layer Architecture (horyzont ~7000) |
-| `Plan OPA/52_AUDYT_JAKOSCI_REGUL.md` | Audyt jakości reguł |
-| `NexusAI_JDG_7000_MASTER_IMPLEMENTATION_PLAN.txt` | Master plan strategiczny |
+| [docs/UNIFIED_PLAN.md](docs/UNIFIED_PLAN.md) | Zunifikowany plan wdrożenia v8 — scalony nurt strategii (historia planów bazowych w §1) |
+| [docs/LEGAL_COVERAGE.md](docs/LEGAL_COVERAGE.md) | Pokrycie prawne 13 aktów + luki i statusy A/B/C |
+| [docs/AUDYT_KOMPLETNY_P24.md](docs/AUDYT_KOMPLETNY_P24.md) | Audyt kompletności systemu (ETAP kampanii GLM 5.2) |
+| [docs/KAMPANIA_V3_PROMPTY_P00_P68.md](docs/KAMPANIA_V3_PROMPTY_P00_P68.md) | Kampania V3: 69/69 WDROŻONY_100, dowody, mapa V4 |
+
+> **Artefakty historyczne:** dokumenty planistyczne `Plan OPA/*` (m.in. `38c_JDG_CANONICAL_MAP.md`, `41_JDG_MEGA_MATRIX_7000_RULES.md`) oraz `NexusAI_JDG_7000_MASTER_IMPLEMENTATION_PLAN.txt` **nie występują w repozytorium** (stan 2026-09-20) — ich treść została scalona do [docs/UNIFIED_PLAN.md](docs/UNIFIED_PLAN.md).
 
 ---
 
-*Wygenerowano przez NexusAI JDG Module Engine v8.0 — liczby z MANIFEST.md + kampanii V3 (2026-09-19)*
+*Wygenerowano przez NexusAI JDG Module Engine v8.0 — liczby z MANIFEST.md + kampanii V3 (2026-09-20)*
 *Regeneracja: `python JDG/tools/generate_manifest.py` · Status kampanii V3: `python JDG/tools/v3_campaign_ledger.py`*
-*Certyfikacja: ETAP 28/29 `final_certification_etap28_audit.py` — 14/14 bramek (2026-08-22); kampania V3 P68 — certyfikat fortecy WYDANY (2026-09-19)*
+*Certyfikacja: ETAP 28 — 13/14 bramek, status `NIEPELNY` (2026-08-22), domknięty dowodem V4 `WDROŻONY_100` 6/6 (2026-08-29); kampania V3 P68 — certyfikat fortecy WYDANY (2026-09-19)*

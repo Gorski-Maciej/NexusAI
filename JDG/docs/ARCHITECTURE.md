@@ -2,7 +2,7 @@
 artifacts: [docs/ARCHITECTURE.md, docs/ARCHITEKTURA.md]
 status: ACTIVE
 owner: core
-verified: 2026-09-19
+verified: 2026-09-20
 verify_cmd: python3 tools/v3_p60_engines.py I11
 -->
 

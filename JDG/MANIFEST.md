@@ -1,10 +1,10 @@
 # 📋 JDG MANIFEST — Tracker Pokrycia Reguł vs Mapa Kanoniczna 38c
 
-> **Auto-generowane:** 2026-09-19 16:54:59
+> **Auto-generowane:** 2026-09-20 10:55:17
 > **Generator:** v8.0 (parser strukturalny, 100% plików)
-> **Completeness Score:** 🟡 **83/100**
+> **Completeness Score:** 🔴 **63/100**
 >   - Plików w manifescie: 497/543 (91%)
->   - Aktualność: 66/100 | Sumy spójne: ✅ | Routing: 64%
+>   - Aktualność: 0/100 | Sumy spójne: ✅ | Routing: 64%
 > **Plików Rego:** 543
 > **Plików z matched:true:** 497
 > **Bloków matched:true:** 12155
@@ -15192,5 +15192,5 @@
 | 570 | `jdg.zus_micro_etap13.report` |  | SUS art. 6-47; u.ś.o.z. art. 79-82; ustawa zasiłkowa art. 4-... |
 
 ---
-*Wygenerowano automatycznie — 2026-09-19 16:54:59*
+*Wygenerowano automatycznie — 2026-09-20 10:55:17*
 *Generator v8.0 — `python JDG/tools/generate_manifest.py`*

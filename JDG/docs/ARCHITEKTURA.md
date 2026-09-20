@@ -2,7 +2,7 @@
 artifacts: [docs/ARCHITEKTURA.md, docs/ARCHITECTURE.md]
 status: ACTIVE
 owner: core
-verified: 2026-09-19
+verified: 2026-09-20
 verify_cmd: python3 tools/v3_p60_engines.py I11
 -->
 
@@ -475,9 +475,12 @@ policies/
 
 ---
 
-## 9. Limitacje i znane obszary rozwoju
+## 9a. Limitacje i znane obszary rozwoju — ARCHIWUM (stan przed kampanią GLM 5.2)
 
-| Obszar | Stan | Plan |
+> ⚠️ **Archiwum:** poniższa tabela opisuje stan sprzed kampanii GLM 5.2 / fali P60 (2026-08).
+> **Aktualny stan limitacji** opisuje dalsza sekcja „9. Limitacje i znane obszary rozwoju (aktualizacja P60, 2026-09-13)” — pozycje oznaczone tam ✅ zostały tu domknięte.
+
+| Obszar | Stan (archiwalny) | Plan |
 |---|---|---|
 | Migracja 265 hardcoded wartości do DuckDB | ⚠️ w toku | Faza C7 |
 | Deduplikacja 336 rule_id (makro/mikro) | ⚠️ w toku | Faza 3 |

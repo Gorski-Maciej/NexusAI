@@ -50,6 +50,6 @@ Projects remain SHADOW until the effective date and human review.
 ## Publication gate
 
 `validate --publication-gate` blocks incomplete changes. The SQL migration
-`007_jdg_v12_control_plane.sql` mirrors the gate with tables for requests,
+`007_jdg_v12_control_plane_lifecycle.sql` mirrors the gate with tables for requests,
 reviews, rollout evidence, traceability and append-only audit. Structural
 validation may pass while publication is blocked; this is intentional.

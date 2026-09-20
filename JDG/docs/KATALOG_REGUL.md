@@ -2,7 +2,7 @@
 artifacts: [docs/KATALOG_REGUL.md, rules/, bundles/rule_registry.json]
 status: ACTIVE
 owner: docs
-verified: 2026-09-19
+verified: 2026-09-20
 verify_cmd: python3 tools/manifest_v2.py --json
 -->
 
@@ -355,7 +355,6 @@ verify_cmd: python3 tools/manifest_v2.py --json
 | `plan34_ord.rego` | `jdg.micro.ord` | 189 | 190 |
 | `plan34_pit.rego` | `jdg.micro.pit` | 265 | 266 |
 | `plan34_vat.rego` | `jdg.micro.vat.plan34` | 179 | 180 |
-| `plan34_zus.rego` | `jdg.micro.zus` | 20 | 21 |
 | `p24_innovations_enterprise.rego` | `jdg.p24.innovations` | 29 | 30 |
 | `_zus_micro_rates.rego` | `jdg.micro.zus_rates` | 0 | 0 |
 | `GENERATION_SUMMARY.txt` | — | — | — (raport generacji) |
@@ -407,21 +406,7 @@ verify_cmd: python3 tools/manifest_v2.py --json
 | Środowisko | `srodowisko/srodowisko.rego` | `jdg.micro.srodowisko` | 48 | 49 |
 | Sukcesja | `sukcesja/sukcesja.rego` | `jdg.micro.sukcesja` | 140 | 138 |
 | SUS | `sus/sus.rego` | `jdg.micro.sus` | 122 | 123 |
-| SUS | `sus/sus_a6.rego` | `jdg.micro.sus` | 8 | 9 |
-| SUS | `sus/sus_a6b.rego` | `jdg.micro.sus` | 6 | 7 |
-| SUS | `sus/sus_a9.rego` | `jdg.micro.sus` | 8 | 9 |
-| SUS | `sus/sus_a11.rego` | `jdg.micro.sus` | 8 | 9 |
-| SUS | `sus/sus_a13.rego` | `jdg.micro.sus` | 8 | 9 |
-| SUS | `sus/sus_a14.rego` | `jdg.micro.sus` | 8 | 9 |
-| SUS | `sus/sus_a18.rego` | `jdg.micro.sus` | 10 | 11 |
-| SUS | `sus/sus_a18a.rego` | `jdg.micro.sus` | 10 | 11 |
-| SUS | `sus/sus_a18c.rego` | `jdg.micro.sus` | 10 | 11 |
 | SUS | `sus/sus_a19.rego` | `jdg.micro.sus` | 8 | 9 |
-| SUS | `sus/sus_a22.rego` | `jdg.micro.sus` | 8 | 9 |
-| SUS | `sus/sus_a24.rego` | `jdg.micro.sus` | 6 | 7 |
-| SUS | `sus/sus_a36.rego` | `jdg.micro.sus` | 8 | 9 |
-| SUS | `sus/sus_a40.rego` | `jdg.micro.sus` | 8 | 9 |
-| SUS | `sus/sus_a47.rego` | `jdg.micro.sus` | 8 | 9 |
 | Transport | `transport/transport.rego` | `jdg.micro.transport` | 44 | 45 |
 | UoR | `uor/uor.rego` | `jdg.micro.uor` | 148 | 149 |
 | VAT | `vat/vat.rego` | `jdg.micro.vat` | 1091 | 1092 |
@@ -431,17 +416,10 @@ verify_cmd: python3 tools/manifest_v2.py --json
 | VAT-proporcja | `vat/proportion_vat.rego` | `jdg.micro.vat.proportion` | 10 | 11 |
 | VAT-WDT | `vat/wdt_export_import.rego` | `jdg.micro.vat.wdt_export` | 16 | 17 |
 | Zasiłkowa | `zasilkowa/zasilkowa.rego` | `jdg.micro.zasilkowa` | 38 | 39 |
-| Zasiłkowa | `zasilkowa/zasilkowa_a19.rego` | `jdg.micro.zasilkowa` | 10 | 11 |
-| Zasiłkowa | `zasilkowa/zasilkowa_a29.rego` | `jdg.micro.zasilkowa` | 10 | 11 |
-| Zasiłkowa | `zasilkowa/zasilkowa_a32.rego` | `jdg.micro.zasilkowa` | 10 | 11 |
-| Zasiłkowa | `zasilkowa/zasilkowa_a33.rego` | `jdg.micro.zasilkowa` | 8 | 9 |
 | Zdrowotna | `zdrowotna/zdrowotna.rego` | `jdg.micro.zdrowotna` | 136 | 137 |
 | Zdrowotna | `zdrowotna/zdrowotna_a79.rego` | `jdg.micro.zdrowotna` | 10 | 11 |
-| Zdrowotna | `zdrowotna/zdrowotna_a81.rego` | `jdg.micro.zdrowotna` | 10 | 11 |
-| Zdrowotna | `zdrowotna/zdrowotna_a81b.rego` | `jdg.micro.zdrowotna` | 10 | 11 |
-| Zdrowotna | `zdrowotna/zdrowotna_a81c.rego` | `jdg.micro.zdrowotna` | 12 | 13 |
-| Zdrowotna | `zdrowotna/zdrowotna_a81d.rego` | `jdg.micro.zdrowotna` | 12 | 13 |
-| Zdrowotna | `zdrowotna/zdrowotna_a82.rego` | `jdg.micro.zdrowotna` | 82 | 83 |
+
+> **Konsolidacja per artykuł (pomiar 2026-09-20):** reguły `jdg.micro.sus.a6…a47`, `jdg.micro.zasilkowa.a19/a29/a32/a33` oraz `jdg.micro.zdrowotna.a81…a82` istnieją **wewnątrz** plików scalonych `sus/sus.rego`, `zasilkowa/zasilkowa.rego` i `zdrowotna/zdrowotna.rego`. Osobne pliki `sus_a6/a6b/a9/a11/a13/a14/a18/a18a/a18c/a22/a24/a36/a40/a47.rego`, `zasilkowa_a19/a29/a32/a33.rego` oraz `zdrowotna_a81/a81b/a81c/a81d/a82.rego` **nie istnieją na dysku** — pozostały osobno: `sus/sus_a19.rego` i `zdrowotna/zdrowotna_a79.rego`.
 
 > ⚠️ Pliki `.bak_stubs_removed` / `.p03backup` w `micro/vat/` — kopie zapasowe przed usunięciem stubów (nie ładowane jako reguły).
 
@@ -595,7 +573,7 @@ verify_cmd: python3 tools/manifest_v2.py --json
 | Obszar | Pliki | Reguły (matched) | Największe pliki |
 |---|---|---|---|
 | **JDG/rules — rdzeń i domeny** | ~231 | ~2 400+ | kks.rego (255), edge_cases (187), accounting.rego (74) |
-| **JDG/rules — micro** | 91 | ~6 900 | micro/vat/vat.rego (1091), micro/pit/pit.rego (811), micro/kks/kks.rego (473) |
+| **JDG/rules — micro** | 94 | ~6 900 | micro/vat/vat.rego (1091), micro/pit/pit.rego (811), micro/kks/kks.rego (473) — pomiar 2026-09-20 |
 | **JDG/rules — plan44/45 + hyper** | ~70 | ~1 500 | hyper/general (100), hyper/deadlines (56) |
 | **JDG/rules — innowacje v8/v9** | ~55 | ~750 | p21_innovations (48), p22_innovations (48) |
 | **JDG/rules — enterprise S1–S24** | ~50 | ~450 | nkup_enterprise_complete (59), pit/art21 (29) |

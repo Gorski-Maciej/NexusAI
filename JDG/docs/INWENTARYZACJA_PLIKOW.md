@@ -55,7 +55,7 @@
 | `JDG/reports/` | 2 | raporty pomocnicze |
 | `JDG/rules/` | 548 | 543 plików `.rego` + 4 kopie `.bak*` (nieładowane) + `micro/GENERATION_SUMMARY.txt` |
 | `JDG/tests/` | 569 | 288 pytest (root 84 + `auto/` 204) + 278 natywnych Rego (`rego/` 276 + root 2) + README |
-| `JDG/tools/` | 1051 | 1033 narzędzi top-level (689 `v3_*`) + `v3_p40_tools/` (12) |
+| `JDG/tools/` | 1051 | 1033 narzędzi top-level (689 `v3_*`) + `glm52_v3_campaign/` (12) |
 | `JDG/JDG/` (zagnieżdżony) | 4 | patrz §8 |
 | `JDG/policies/` (zagnieżdżony) | 6 | patrz §8 |
 
@@ -94,14 +94,14 @@
 
 ---
 
-## 5. `JDG/tools/` — 1051 plików (1033 top-level + 12 `v3_p40_tools/`)
+## 5. `JDG/tools/` — 1051 plików (1033 top-level + 12 `glm52_v3_campaign/`)
 
 | Grupa | Plików | Przykłady |
 |---|---:|---|
 | narzędzia V3 (`v3_*.py`) | 689 | silniki dowodowe, bramki statyczne, run-all, ledger (`v3_campaign_ledger.py`), settlement P68 |
 | narzędzia rdzenia | 344 | `generate_manifest.py` (auto-MANIFEST), `bundle_server.py`, `decision_certificate.py`, linter, walidatory, chaos/self-healing, audyty ETAP |
 | JSON | 3 | `v3_p67_learning_data.json` i inne rejestry danych |
-| `v3_p40_tools/` (podkatalog) | 12 | narzędzia P40 |
+| `glm52_v3_campaign/` (podkatalog) | 12 | generator promptów kampanii V3 (produkuje `prompty_v3/`) |
 | pozostałe | 3 | `README.md`, `.hypothesis/` |
 
 ---

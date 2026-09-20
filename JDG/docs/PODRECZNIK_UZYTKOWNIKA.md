@@ -284,6 +284,22 @@ Każdy bundle ma wersję (`bundle_version` w audycie). W przypadku regresji: *Ak
 
 ---
 
+## 11. Rozwiązywanie problemów — szybki start (użytkownik)
+
+> Pełny katalog błędów (14 pozycji) i poradnik debugowania: [LOGIKA_BIZNESOWA.md §5–6](LOGIKA_BIZNESOWA.md). Kody błędów API: [API_REFERENCJA.md §6](API_REFERENCJA.md).
+
+| Objaw | Pierwsza pomoc |
+|---|---|
+| Faktura utknęła w **TRIAGE_QUEUE** | Uzupełnij brakujące pola faktury (PKD, stawka, kwota) — patrz §4.3; system ponowi ewaluację |
+| Błąd **503** `external_degraded` | *Diagnostyka* → status integracji (KSeF/GUS/NBP/Biała Lista); ponow po `retry_after_seconds` |
+| Werdykt z „złą stawką VAT" | Sprawdź datę transakcji (temporalność — §7.1) i kod GTU/PKWiU towaru |
+| Brak wysyłki do **KSeF** | *Integracje → KSeF* → test połączenia; faktura leży w kolejce offline (7 dni) z automatycznym retry |
+| Pytanie **ASK_USER** nie znika | Odpowiedz w Centrum decyzji (§5.1) albo wybierz „Odłóż na później" |
+| Złe księgowanie | Korekta: *Historia decyzji* → wybierz dokument → *Koryguj* (§5.2); pełny ślad zostaje w audycie |
+| Nie masz dostępu do funkcji | Sprawdź rolę (§3) — np. symulacje wymagają roli Doradca (licencja Pro) |
+
+---
+
 ## 12. Status certyfikacji — co musisz wiedzieć (2026-09-19)
 
 > Synonimy: `certyfikat`, `kampania v3`, `P68`, `NOT_CERTIFIED`.
