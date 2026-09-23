@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ChemiaMax - Sklep Kiosk</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; height:100%; background:#0d1117; color:#e6edf3;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; overflow:hidden; }
+
+  /* ===== TRYB REKLAMY (pelny ekran, na wierzchu) ===== */
+  #reklama {
+    position:fixed; inset:0; background:#000; z-index:100;
+    display:none; align-items:center; justify-content:center;
+  }
+  #reklama.show { display:flex; }
+  #player { width:100%; height:100%; object-fit:contain; background:#000; }
+  #reklama-badge {
+    position:fixed; top:14px; right:18px; z-index:101; display:none;
+    font-size:.75rem; letter-spacing:.12em; color:#9aa4ad;
+    background:rgba(13,17,23,.6); border:1px solid #2a3038;
+    padding:.3rem .7rem; border-radius:999px;
+  }
+  #reklama-badge.show { display:block; }
+
+  /* ===== SKLEP ===== */
+  #sklep { height:100%; display:flex; flex-direction:column; }
+  header {
+    display:flex; align-items:center; gap:1rem; padding:.7rem 1.2rem;
+    background:#161b22; border-bottom:1px solid #2a3038; flex-shrink:0;
+  }
+  .logo { font-size:1.25rem; font-weight:700; letter-spacing:.03em; white-space:nowrap; }
+  .logo span { color:#4fc3f7; }
+  .kategorie { display:flex; gap:.35rem; flex-wrap:wrap; flex:1; }
+  .kategorie button {
+    background:#21262d; color:#c9d1d9; border:1px solid #30363d; border-radius:999px;
+    padding:.35rem .85rem; font-size:.85rem; cursor:pointer;
+  }
+  .kategorie button.aktywna { background:#1f6feb; border-color:#1f6feb; color:#fff; font-weight:600; }
+  .koszyk-btn {
+    position:relative; background:#238636; border:none; color:#fff; font-weight:700;
+    padding:.5rem 1.1rem; border-radius:8px; font-size:.95rem; cursor:pointer; white-space:nowrap;
+  }
+  .koszyk-badge {
+    position:absolute; top:-7px; right:-7px; background:#f85149; color:#fff;
+    font-size:.7rem; font-weight:700; min-width:20px; height:20px; border-radius:999px;
+    display:flex; align-items:center; justify-content:center; padding:0 4px;
+  }
+  .koszyk-badge.ukryty { display:none; }
+
+  main { flex:1; overflow-y:auto; padding:1rem 1.2rem; }
+  .siatka { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:.9rem; }
+  .karta {
+    background:#161b22; border:1px solid #2a3038; border-radius:12px; padding:.9rem;
+    display:flex; flex-direction:column; gap:.45rem;
+  }
+  .ikona { width:56px; height:56px; border-radius:10px; display:flex;
+    align-items:center; justify-content:center; }
+  .ikona svg { width:34px; height:34px; }
+  .nazwa { font-size:.92rem; font-weight:600; line-height:1.25; min-height:2.4em; }
+  .opis { font-size:.75rem; color:#8b949e; flex:1; }
+  .dol { display:flex; align-items:center; justify-content:space-between; gap:.5rem; }
+  .cena { font-size:1.05rem; font-weight:700; color:#3fb950; white-space:nowrap; }
+  .dodaj {
+    background:#21262d; color:#e6edf3; border:1px solid #30363d; border-radius:8px;
+    padding:.4rem .8rem; font-size:.85rem; font-weight:600; cursor:pointer;
+  }
+  .dodaj:hover { background:#1f6feb; border-color:#1f6feb; }
+
+  /* ===== KOSZYK / ZAMOWIENIE ===== */
+  #panel { position:fixed; inset:0; z-index:50; background:rgba(1,4,9,.7);
+    display:none; align-items:center; justify-content:center; }
+  #panel.show { display:flex; }
+  .okno { background:#161b22; border:1px solid #30363d; border-radius:14px;
+    width:min(680px,94vw); max-height:88vh; display:flex; flex-direction:column; }
+  .okno header { border-radius:14px 14px 0 0; }
+  .okno h2 { font-size:1.1rem; flex:1; }
+  .zamknij { background:none; border:none; color:#8b949e; font-size:1.5rem; cursor:pointer; line-height:1; }
+  .lista { overflow-y:auto; padding:.9rem 1.2rem; display:flex; flex-direction:column; gap:.6rem; }
+  .pozycja { display:flex; align-items:center; gap:.8rem; background:#0d1117;
+    border:1px solid #2a3038; border-radius:10px; padding:.6rem .8rem; }
+  .pozycja .nazwa { flex:1; min-height:0; }
+  .stepper { display:flex; align-items:center; gap:.4rem; }
+  .stepper button { width:30px; height:30px; border-radius:6px; border:1px solid #30363d;
+    background:#21262d; color:#fff; font-size:1rem; cursor:pointer; }
+  .stepper input { width:52px; text-align:center; background:#0d1117; border:1px solid #30363d;
+    color:#fff; border-radius:6px; padding:.3rem 0; }
+  .pusta { text-align:center; color:#8b949e; padding:2.5rem 0; }
+  .stopka-panelu { padding:.9rem 1.2rem; border-top:1px solid #30363d;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+  .suma { font-size:1.25rem; font-weight:700; }
+  .suma span { color:#3fb950; }
+  .zamow { background:#238636; border:none; color:#fff; font-weight:700;
+    padding:.7rem 1.6rem; border-radius:8px; font-size:1rem; cursor:pointer; }
+  .zamow:disabled { opacity:.5; cursor:default; }
+
+  /* ekran potwierdzenia */
+  #potwierdzenie { display:none; text-align:center; padding:3rem 1.5rem; }
+  #potwierdzenie.show { display:block; }
+  #potwierdzenie .hak { font-size:4rem; color:#3fb950; }
+  #potwierdzenie h3 { font-size:1.4rem; margin:.6rem 0 .3rem; }
+  #potwierdzenie p { color:#8b949e; margin-bottom:.4rem; }
+  #potwierdzenie .nr { color:#e6edf3; font-weight:700; font-size:1.15rem; letter-spacing:.05em; }
+
+  .stopka { flex-shrink:0; padding:.45rem 1.2rem; background:#161b22;
+    border-top:1px solid #2a3038; color:#8b949e; font-size:.72rem;
+    display:flex; justify-content:space-between; }
+</style>
+</head>
+<body>
+
+<!-- ============ REKLAMA (petla wideo, skrypt z ZIP - naprawiony) ============ -->
+<div id="reklama">
+  <!-- autoplay + muted: wymagane by przegladarka pozwolila grac bez klikniecia -->
+  <video id="player" autoplay muted playsinline></video>
+</div>
+<div id="reklama-badge">REKLAMA</div>
+
+<!-- ============ SKLEP ============ -->
+<div id="sklep">
+  <header>
+    <div class="logo">Chemia<span>Max</span></div>
+    <nav class="kategorie" id="kategorie"></nav>
+    <button class="koszyk-btn" id="btn-koszyk">Koszyk
+      <span class="koszyk-badge ukryty" id="koszyk-badge">0</span>
+    </button>
+  </header>
+
+  <main><div class="siatka" id="siatka"></div></main>
+
+  <div class="stopka">
+    <div>ChemiaMax &middot; kiosk sklepowy &middot; pon.-sob. 6:00-22:00</div>
+    <div>Reklama w petli miedzy sesjami &middot; demo bez platnosci</div>
+  </div>
+</div>
+
+<!-- ============ PANEL KOSZYKA ============ -->
+<div id="panel">
+  <div class="okno">
+    <header>
+      <h2>Twoje zamowienie</h2>
+      <button class="zamknij" id="btn-zamknij">&times;</button>
+    </header>
+
+    <div class="lista" id="lista"></div>
+
+    <div id="potwierdzenie">
+      <div class="hak">&#10004;</div>
+      <h3>Zamowienie przyjete!</h3>
+      <p>Numer zamowienia:</p>
+      <p class="nr" id="nr-zamowienia">ZAM-0000</p>
+      <p>Zaplac przy odbiorze: <b id="kwota-zamowienia">0,00 zl</b></p>
+      <p style="margin-top:1rem">Odbior produktow przy kasie nr 1.</p>
+    </div>
+
+    <div class="stopka-panelu" id="stopka-panelu">
+      <div class="suma">Suma: <span id="suma">0,00 zl</span></div>
+      <button class="zamow" id="btn-zamow">Zamawiam</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* =====================================================================
+   CZESC 1: REKLAMA - petla wideo (skrypt z public (1).zip, NAPRAWIONY)
+   ---------------------------------------------------------------------
+   Blad "adresow IP" w oryginale mial dwa oblicza:
+   1) serwer nasluchiwal bez jawnego hosta (naprawione w server.js),
+   2) frontend pobieral liste wideo z bezwzglednego adresu.
+      Teraz: wyacznie sciezki wzgledne ("/api/videos", "/videos/..."),
+      czyli NIGDY nie wpisujemy IP/recznego hosta w kodzie - strona
+      zawsze gada z serwerem, z ktorego zostala zaladowana.
+   Dodatkowo petla reklamowa dziala CYKLICZNIE w kiosku:
+   sklep (60 s) -> reklama (20 s) -> sklep -> reklama -> ...
+   ===================================================================== */
+
+const player = document.getElementById("player");
+const reklamaEl = document.getElementById("reklama");
+const reklamaBadge = document.getElementById("reklama-badge");
+
+const REKLAMA_CO_SEKUND = 60;   // co ile sekund sklep -> reklama
+const REKLAMA_MIN_CZAS  = 20;   // ile sekund trwa reklama
+
+let playlist = [];
+let index = 0;
+let timerPrzejscia = null;
+let odliczanie = null;
+
+async function fetchPlaylist() {
+  try {
+    // NAPRAWA: sciezka wzgledna - dziala na localhost, na IP mostka, wszedzie
+    const res = await fetch("/api/videos", { cache: "no-store" });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (err) {
+    return [];
+  }
+}
+
+function playNext() {
+  if (playlist.length === 0) return;
+  index = index % playlist.length;
+  player.src = playlist[index];
+  player.play().catch(() => {});
+  index++;
+}
+
+player.addEventListener("ended", playNext);
+
+// Uszkodzony / niezaladowany plik -> pomin po chwili
+player.addEventListener("error", () => {
+  if (playlist.length > 0) setTimeout(playNext, 1000);
+});
+
+function pokazReklame() {
+  if (playlist.length === 0) return;
+  clearTimeout(timerPrzejscia);
+  reklamaEl.classList.add("show");
+  reklamaBadge.classList.add("show");
+  playNext();
+  // po REKLAMA_MIN_CZAS sekundach wracamy do sklepu
+  timerPrzejscia = setTimeout(zamknijReklame, REKLAMA_MIN_CZAS * 1000);
+}
+
+function zamknijReklame() {
+  clearTimeout(timerPrzejscia);
+  player.pause();
+  reklamaEl.classList.remove("show");
+  reklamaBadge.classList.remove("show");
+  // zaplanuj nastepna reklame
+  clearInterval(odliczanie);
+  odliczanie = setInterval(pokazReklame, REKLAMA_CO_SEKUND * 1000);
+}
+
+/* =====================================================================
+   CZESC 2: SKLEP
+   ===================================================================== */
+
+const KATEGORIE = [
+  { id: "wszystkie", nazwa: "Wszystkie" },
+  { id: "pranie", nazwa: "Pranie" },
+  { id: "naczynia", nazwa: "Naczynia" },
+  { id: "powierzchnie", nazwa: "Powierzchnie" },
+  { id: "lazienka", nazwa: "\u0141azienka" },
+  { id: "dezynfekcja", nazwa: "Dezynfekcja" },
+  { id: "akcesoria", nazwa: "Akcesoria" },
+];
+
+// Ikony SVG inline (kiosk musi dzialac bez internetu - zero CDN)
+const IKONY = {
+  pompka: '<svg viewBox="0 0 24 24" fill="none" stroke="#0d1117" stroke-width="1.8" stroke-linecap="round"><rect x="8" y="10" width="8" height="11" rx="1.5"/><path d="M10 10V7h4v3M9 4h6v3H9z"/></svg>',
+  butelka: '<svg viewBox="0 0 24 24" fill="none" stroke="#0d1117" stroke-width="1.8" stroke-linecap="round"><path d="M10 3h4v4l2 3v10a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V10l2-3V3z"/><path d="M8 14h8"/></svg>',
+  kartonik: '<svg viewBox="0 0 24 24" fill="none" stroke="#0d1117" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="7" width="16" height="13" rx="1"/><path d="M4 7l2-3h12l2 3M12 7v13"/></svg>',
+  kanister: '<svg viewBox="0 0 24 24" fill="none" stroke="#0d1117" stroke-width="1.8" stroke-linecap="round"><path d="M7 8h10v12a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V8z"/><path d="M9 8V5h6v3M9 12h6"/></svg>',
+  spray: '<svg viewBox="0 0 24 24" fill="none" stroke="#0d1117" stroke-width="1.8" stroke-linecap="round"><rect x="8" y="9" width="7" height="12" rx="1.5"/><path d="M10 9V6h3v3M15 5h2M15 3l1.5 1M15 7l1.5-1"/></svg>',
+  chusteczki: '<svg viewBox="0 0 24 24" fill="none" stroke="#0d1117" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="6" width="16" height="12" rx="2"/><path d="M4 10c4 2 12 2 16 0M4 14c4 2 12 2 16 0"/></svg>',
+  gabka: '<svg viewBox="0 0 24 24" fill="none" stroke="#0d1117" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="7" width="16" height="10" rx="3"/><path d="M8 7v10M12 7v10M16 7v10"/></svg>',
+  kapsula: '<svg viewBox="0 0 24 24" fill="none" stroke="#0d1117" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16" fill="#0d1117" opacity=".25"/></svg>',
+};
+
+const PRODUKTY = [
+  { id:"p01", nazwa:"Myd\u0142o w p\u0142ynie Czysta D\u0142o\u0144 500 ml", kategoria:"dezynfekcja", cena:7.99,  ikonka:"pompka",    kolor:"#4fc3f7", opis:"Delikatne myd\u0142o antybakteryjne z gliceryn\u0105." },
+  { id:"p02", nazwa:"P\u0142yn do naczy\u0144 B\u0105belEkspert cytryna 900 ml", kategoria:"naczynia", cena:9.49, ikonka:"butelka", kolor:"#ffd54f", opis:"Skutecznie odt\u0142uszcza, wydajna formu\u0142a." },
+  { id:"p03", nazwa:"Proszek do prania Biel Aktywna 3 kg", kategoria:"pranie", cena:24.99, ikonka:"kartonik", kolor:"#90a4ae", opis:"Bia\u0142e pranie ju\u017c od 30\u00b0C, 60 pra\u0144." },
+  { id:"p04", nazwa:"P\u0142yn do p\u0142ukania Mi\u0119kki Puch lawenda 1,5 L", kategoria:"pranie", cena:12.99, ikonka:"butelka", kolor:"#b39ddb", opis:"Trwa\u0142y zapach i mi\u0119kko\u015b\u0107 tkanin." },
+  { id:"p05", nazwa:"P\u0142yn do pod\u0142\u00f3g L\u015bni\u0105cy Dom 1 L", kategoria:"powierzchnie", cena:8.99, ikonka:"kanister", kolor:"#81c784", opis:"Do paneli, p\u0142ytek i parkietu. Bez smug." },
+  { id:"p06", nazwa:"P\u0142yn do szyb KrystalView 500 ml", kategoria:"powierzchnie", cena:6.49, ikonka:"spray", kolor:"#4dd0e1", opis:"Szybkie odparowanie, lustrzany po\u0142ysk." },
+  { id:"p07", nazwa:"Wybielacz Bia\u0142a Si\u0142a 1 L", kategoria:"dezynfekcja", cena:5.99, ikonka:"kanister", kolor:"#e0e0e0", opis:"Usuwa plamy i bakterie. Uwaga: \u015brodki ochrony." },
+  { id:"p08", nazwa:"P\u0142yn do WC Moc \u017belu 750 ml", kategoria:"lazienka", cena:7.49, ikonka:"butelka", kolor:"#4db6ac", opis:"G\u0119sty \u017cel, usuwa kamie\u0144 i osady." },
+  { id:"p09", nazwa:"\u015aciereczki uniwersalne 3 szt.", kategoria:"akcesoria", cena:4.99, ikonka:"chusteczki", kolor:"#f48fb1", opis:"Microfibra - bez smug na ka\u017cdej powierzchni." },
+  { id:"p10", nazwa:"G\u0105bki do naczy\u0144 5 szt.", kategoria:"akcesoria", cena:3.99, ikonka:"gabka", kolor:"#ff8a65", opis:"Warstwa szoruj\u0105ca, d\u0142ugo zachowuj\u0105 form\u0119." },
+  { id:"p11", nazwa:"P\u0142yn dezynfekuj\u0105cy do r\u0105k 300 ml", kategoria:"dezynfekcja", cena:8.49, ikonka:"pompka", kolor:"#a5d6a7", opis:"70% alkoholu, z pantenolem." },
+  { id:"p12", nazwa:"Kapsu\u0142y do prania Max Kolor 30 szt.", kategoria:"pranie", cena:29.99, ikonka:"kapsula", kolor:"#7986cb", opis:"3 w 1: pranie, plamy, \u015bwie\u017co\u015b\u0107." },
+  { id:"p13", nazwa:"Od\u015bwie\u017carz powietrza Aero Fresh 300 ml", kategoria:"lazienka", cena:9.99, ikonka:"spray", kolor:"#ce93d8", opis:"Natychmiastowa \u015bwie\u017co\u015b\u0107, neutralizuje zapachy." },
+  { id:"p14", nazwa:"Zestaw Start: p\u0142yn + g\u0105bki + \u015bciereczki", kategoria:"naczynia", cena:15.99, ikonka:"kartonik", kolor:"#ffb74d", opis:"Pakiet ekonomiczny na start." },
+];
+
+const MAPA = new Map(PRODUKTY.map((p) => [p.id, p]));
+
+// Koszyk trzymany w sesji przegladarki
+let koszyk = new Map(); // id -> sztuki
+let aktywnaKategoria = "wszystkie";
+
+const siatka = document.getElementById("siatka");
+const elKat = document.getElementById("kategorie");
+const elBadge = document.getElementById("koszyk-badge");
+const elPanel = document.getElementById("panel");
+const elLista = document.getElementById("lista");
+const elSuma = document.getElementById("suma");
+const btnZamow = document.getElementById("btn-zamow");
+const elStopkaPanelu = document.getElementById("stopka-panelu");
+const elPotwierdzenie = document.getElementById("potwierdzenie");
+
+const zl = (v) => v.toFixed(2).replace(".", ",") + " z\u0142";
+
+function rysujKategorie() {
+  elKat.innerHTML = "";
+  for (const k of KATEGORIE) {
+    const b = document.createElement("button");
+    b.textContent = k.nazwa;
+    if (k.id === aktywnaKategoria) b.classList.add("aktywna");
+    b.addEventListener("click", () => {
+      aktywnaKategoria = k.id;
+      rysujKategorie();
+      rysujProdukty();
+    });
+    elKat.appendChild(b);
+  }
+}
+
+function rysujProdukty() {
+  siatka.innerHTML = "";
+  const lista = PRODUKTY.filter(
+    (p) => aktywnaKategoria === "wszystkie" || p.kategoria === aktywnaKategoria
+  );
+  for (const p of lista) {
+    const karta = document.createElement("div");
+    karta.className = "karta";
+    karta.innerHTML =
+      '<div class="ikona" style="background:' + p.kolor + '">' + (IKONY[p.ikonka] || "") + "</div>" +
+      '<div class="nazwa"></div>' +
+      '<div class="opis"></div>' +
+      '<div class="dol"><div class="cena"></div><button class="dodaj">+ Koszyk</button></div>';
+    karta.querySelector(".nazwa").textContent = p.nazwa;
+    karta.querySelector(".opis").textContent = p.opis;
+    karta.querySelector(".cena").textContent = zl(p.cena);
+    karta.querySelector(".dodaj").addEventListener("click", () => {
+      koszyk.set(p.id, (koszyk.get(p.id) || 0) + 1);
+      odswiezBadge();
+    });
+    siatka.appendChild(karta);
+  }
+}
+
+function odswiezBadge() {
+  let n = 0;
+  for (const s of koszyk.values()) n += s;
+  elBadge.textContent = String(n);
+  elBadge.classList.toggle("ukryty", n === 0);
+}
+
+function rysujKoszyk() {
+  elLista.innerHTML = "";
+  elPotwierdzenie.classList.remove("show");
+  elStopkaPanelu.style.display = "flex";
+
+  if (koszyk.size === 0) {
+    elLista.innerHTML = '<div class="pusta">Koszyk jest pusty.<br>Wybierz produkty z listy.</div>';
+    elSuma.textContent = zl(0);
+    btnZamow.disabled = true;
+    return;
+  }
+  btnZamow.disabled = false;
+
+  let suma = 0;
+  for (const [id, szt] of koszyk) {
+    const p = MAPA.get(id);
+    if (!p) continue;
+    const wart = Math.round(p.cena * szt * 100) / 100;
+    suma += wart;
+    const div = document.createElement("div");
+    div.className = "pozycja";
+    div.innerHTML =
+      '<div class="nazwa"></div>' +
+      '<div class="stepper">' +
+      '<button data-a="-">-</button>' +
+      '<input type="number" min="1" max="999" value="' + szt + '">' +
+      '<button data-a="+">+</button>' +
+      "</div>" +
+      '<div class="cena">' + zl(wart) + "</div>";
+    div.querySelector(".nazwa").textContent = p.nazwa;
+    const input = div.querySelector("input");
+    const ustaw = (v) => {
+      v = Math.max(1, Math.min(999, v | 0 || 1));
+      koszyk.set(id, v);
+      odswiezBadge();
+      rysujKoszyk();
+    };
+    div.querySelector('[data-a="-"]').addEventListener("click", () => ustaw(szt - 1));
+    div.querySelector('[data-a="+"]').addEventListener("click", () => ustaw(szt + 1));
+    input.addEventListener("change", () => ustaw(parseInt(input.value, 10)));
+    elLista.appendChild(div);
+  }
+  elSuma.textContent = zl(Math.round(suma * 100) / 100);
+}
+
+async function zlozZamowienie() {
+  btnZamow.disabled = true;
+  btnZamow.textContent = "Wysy\u0142am...";
+  try {
+    // NAPRAWA: fetch na sciezce wzglednej - bez IP w kodzie
+    const res = await fetch("/api/zamow", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        pozycje: [...koszyk].map(([id, sztuki]) => ({ id, sztuki })),
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.blad || "Blad zamowienia");
+
+    elLista.style.display = "none";
+    elStopkaPanelu.style.display = "none";
+    elPotwierdzenie.classList.add("show");
+    document.getElementById("nr-zamowienia").textContent = data.numer;
+    document.getElementById("kwota-zamowienia").textContent = zl(data.suma);
+
+    koszyk.clear();
+    odswiezBadge();
+    // po 6 s zamknij panel i wroc do sklepu
+    setTimeout(() => {
+      elLista.style.display = "flex";
+      zamknijPanel();
+      rysujKoszyk();
+    }, 6000);
+  } catch (err) {
+    alert("Nie udalo sie zlozyc zamowienia: " + err.message);
+  } finally {
+    btnZamow.textContent = "Zamawiam";
+    btnZamow.disabled = koszyk.size === 0;
+  }
+}
+
+function zamknijPanel() {
+  elPanel.classList.remove("show");
+}
+
+document.getElementById("btn-koszyk").addEventListener("click", () => {
+  rysujKoszyk();
+  elPanel.classList.add("show");
+});
+document.getElementById("btn-zamknij").addEventListener("click", zamknijPanel);
+btnZamow.addEventListener("click", zlozZamowienie);
+elPanel.addEventListener("click", (e) => {
+  if (e.target === elPanel) zamknijPanel();
+});
+
+/* ===== START ===== */
+rysujKategorie();
+rysujProdukty();
+
+(async () => {
+  playlist = await fetchPlaylist();
+  if (playlist.length === 0) {
+    console.warn("Brak wideo w /videos - petla reklam nieaktywna (sklep dziala).");
+  } else {
+    // pierwsza reklama po REKLAMA_CO_SEKUND sekundach od startu kiosku
+    odliczanie = setInterval(pokazReklame, REKLAMA_CO_SEKUND * 1000);
+  }
+})();
+</script>
+</body>
+</html>

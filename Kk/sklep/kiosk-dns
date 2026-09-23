@@ -1,0 +1,49 @@
+#!/bin/bash
+# kiosk-dns - zarzadzanie biala i czarna lista DNS (zadanie 1800, zad. 22)
+# Instalacja: sudo cp kiosk-dns /usr/local/bin/ && sudo chmod +x /usr/local/bin/kiosk-dns
+WHITELIST="/etc/dnsmasq.d/whitelist.conf"
+BLACKLIST="/etc/dnsmasq.d/blacklist.conf"
+
+usage() {
+  echo "Uzycie: kiosk-dns <komenda> [domena]"
+  echo "  allow  <domena>  - dodaj do bialej listy"
+  echo "  block  <domena>  - dodaj do czarnej listy"
+  echo "  remove <domena>  - usun z obu list"
+  echo "  list             - wyswietl obie listy"
+  echo "  test   <domena>  - sprawdz stan domeny"
+}
+
+reload_dns() { systemctl reload dnsmasq && echo "dnsmasq przeladowany."; }
+
+case "$1" in
+  allow)
+    [ -z "${2:-}" ] && { usage; exit 1; }
+    echo "server=/$2/8.8.8.8" >> "$WHITELIST"
+    echo "Dodano do bialej listy: $2"
+    reload_dns ;;
+  block)
+    [ -z "${2:-}" ] && { usage; exit 1; }
+    echo "address=/$2/" >> "$BLACKLIST"
+    echo "Dodano do czarnej listy: $2"
+    reload_dns ;;
+  remove)
+    [ -z "${2:-}" ] && { usage; exit 1; }
+    sed -i "/$2/d" "$WHITELIST" "$BLACKLIST"
+    echo "Usunieto z obu list: $2"
+    reload_dns ;;
+  list)
+    echo "=== BIALA LISTA (dozwolone) ==="
+    grep -v '^#' "$WHITELIST" 2>/dev/null | grep -v '^$' | sed 's|server=/||;s|/8\..*||'
+    echo ""
+    echo "=== CZARNA LISTA (zablokowane) ==="
+    grep -v '^#' "$BLACKLIST" 2>/dev/null | grep -v '^$' | sed 's|address=/||;s|/$||' ;;
+  test)
+    [ -z "${2:-}" ] && { usage; exit 1; }
+    result=$(dig +short "$2" @127.0.0.1 2>/dev/null)
+    if [ -z "$result" ]; then
+      echo "$2: ZABLOKOWANA (NXDOMAIN)"
+    else
+      echo "$2: DOSTEPNA -> $result"
+    fi ;;
+  *) usage; exit 1 ;;
+esac

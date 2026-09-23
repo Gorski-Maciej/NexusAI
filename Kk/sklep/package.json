@@ -1,0 +1,16 @@
+{
+  "name": "kiosk-sklep-chemia",
+  "version": "1.1.0",
+  "description": "Sklep internetowy z chemia gospodarcza w trybie kiosku - petla reklam wideo (naprawiona wersja, localhost)",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
