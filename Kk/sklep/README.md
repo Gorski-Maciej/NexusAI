@@ -4,6 +4,8 @@ Projekt wykonany w 100% w katalogu `Kk/`, zgodnie z [zadaniem 1800](https://mdvi
 
 **Potwierdzenie:** przeczytałem całą instrukcję z linku (Części 1–5: instalacja Ubuntu Server w VirtualBox, środowisko kiosku, dnsmasq whitelist+blacklist, zabezpieczenia, zarządzanie SSH) — wszystkie kroki są zautomatyzowane w `install.sh`.
 
+> 📖 **Szczegółowa instrukcja uruchomienia krok po kroku (także dla szkolnego komputera z VirtualBox):** [INSTRUKCJA_URUCHOMIENIA.md](INSTRUKCJA_URUCHOMIENIA.md)
+
 ---
 
 ## 1. Szybki start (test na dowolnej maszynie)
@@ -94,3 +96,5 @@ Kk/
 | `POST /api/zamow` | suma `40.97 PLN` liczona serwerowo |
 | `POST /api/zamow` (błędne id) | odrzucone: `Nieznany produkt: hakier` ✅ |
 | Fallback IP | brak `EADDRNOTAVAIL` — jawny host + awaryjny `0.0.0.0` |
+| `bash -n` install.sh / kiosk-dns / kiosk-status / kopiuj_wideo.sh | składnia poprawna ✅ |
+| `node --check` server.js / produkty.js | składnia poprawna ✅ |
