@@ -106,6 +106,16 @@
   .stopka { flex-shrink:0; padding:.45rem 1.2rem; background:#161b22;
     border-top:1px solid #2a3038; color:#8b949e; font-size:.72rem;
     display:flex; justify-content:space-between; }
+
+  /* Ostrzezenie: strona otwarta podwojnym kliknieciem (file://) zamiast przez serwer */
+  #blad-file { position:fixed; inset:0; z-index:200; background:#1a0d0d;
+    display:none; flex-direction:column; align-items:center; justify-content:center;
+    gap:1rem; text-align:center; padding:2rem; }
+  #blad-file.show { display:flex; }
+  #blad-file h2 { color:#f85149; font-size:1.6rem; }
+  #blad-file p { color:#e6edf3; max-width:60ch; line-height:1.5; }
+  #blad-file code { background:#0d1117; border:1px solid #30363d; border-radius:6px;
+    padding:.15rem .5rem; color:#3fb950; }
 </style>
 </head>
 <body>
@@ -116,6 +126,15 @@
   <video id="player" autoplay muted playsinline></video>
 </div>
 <div id="reklama-badge">REKLAMA</div>
+
+<!-- Ostrzezenie: otwarto index.html bezposrednio z dysku (bez serwera) -->
+<div id="blad-file">
+  <h2>&#9888; Sklep otwarty bezposrednio z pliku</h2>
+  <p>To nie zadziała - koszyk i reklamy potrzebuja <b>serwera</b>.</p>
+  <p>Uruchom sklep tak jak w instrukcji: podwojne klikniecie <code>URUCHOM.bat</code>,
+     w VS Code <code>Ctrl+Shift+B</code>, albo polecenie <code>npm start</code>.
+     Potem otworzy sie adres <code>http://localhost:3000</code>.</p>
+</div>
 
 <!-- ============ SKLEP ============ -->
 <div id="sklep">
@@ -439,6 +458,11 @@ elPanel.addEventListener("click", (e) => {
 });
 
 /* ===== START ===== */
+// Zabezpieczenie: ktoś kliknal index.html na dysku (file://) zamiast uruchomic serwer
+if (location.protocol === "file:") {
+  document.getElementById("blad-file").classList.add("show");
+}
+
 rysujKategorie();
 rysujProdukty();
 

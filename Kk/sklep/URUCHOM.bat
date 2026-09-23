@@ -2,6 +2,15 @@
 setlocal
 chcp 65001 >nul
 title ChemiaMax - Sklep Kiosk
+
+rem -- NAJWAZNIEJSZE: przejdz do katalogu tego pliku (dziala tez z pulpitu/ZIP)
+cd /d "%~dp0"
+if not exist package.json (
+  echo  [BLAD] Brak package.json - uruchom ten plik z katalogu sklep.
+  pause
+  exit /b 1
+)
+
 echo.
 echo  ==============================================
 echo    ChemiaMax - sklep kiosk  ^|  localhost:3000
@@ -21,15 +30,16 @@ if not errorlevel 1 (
   exit /b 0
 )
 
-rem -- 3. Biblioteki sklepu - instaluja sie tylko przy PIERWSZYCH starcie
+rem -- 3. Biblioteki sklepu - instaluja sie tylko przy PIERWSZYM starcie
 if not exist node_modules (
-  echo  [1/2] Instaluje biblioteki sklepu - npm install
-  echo        Pierwszy start trwa 1-2 minuty, czekaj...
+  echo  [1/2] Pierwszy start: instaluje biblioteki sklepu ^(npm install^)
+  echo        Trwa to 1-2 minuty, czekaj...
   echo.
   call npm install --no-audit --no-fund
   if errorlevel 1 (
     echo.
-    echo  [BLAD] npm install nie powiodl sie - sprawdz internet i sprobuj ponownie.
+    echo  [BLAD] npm install nie powiodl sie - zwykle brak internetu.
+    echo         Alternatywa: wyslij ZIP z folderem node_modules w srodku.
     pause
     exit /b 1
   )
@@ -50,11 +60,20 @@ exit /b 0
 :brak_node
 echo  [!] NA TYM KOMPUTERZE NIE MA NODE.JS - nie da sie tu uruchomic sklepu.
 echo.
-echo      Nie instaluj Node.js na szkolnym komputerze - zwykle brakuje
-echo      praw administratora i stracisz czas.
+echo      Nie probuj instalowac Node.js na szkolnym komputerze - zwykle
+echo      brakuje praw administratora i stracisz czas.
 echo.
-echo      Uruchom sklep w maszynie wirtualnej - patrz instrukcja:
-echo        INSTRUKCJA_EMAIL_VSCODE.md  -^>  ETAP 6 - MASZYNA WIRTUALNA
+echo      URUCHOM SKLEP W MASZYNIE WIRTUALNEJ (plan B, masz go na pendrive):
+echo        1. Otworz VirtualBox i uruchom maszyne Ubuntu
+echo           (login uczen, haslo admin1234)
+echo        2. Przegraj folder sklep do maszyny
+echo           (np. przez HTTP:  cd sklep ^&^& python3 -m http.server 8000)
+echo        3. W maszynie:  wget -r -np -nH -R index.html http://IP_KOMPUTERA:8000
+echo           albo przez shared folder / pendrive
+echo        4. W maszynie:  cd sklep ^&^& bash start.sh
+echo        5. Otworz w przegladarce maszyny:  http://localhost:3000
+echo.
+echo      Detale: INSTRUKCJA_EMAIL_VSCODE.md  ->  sekcja PROBLEMY pkt 1
 echo.
 echo      To okno mozesz juz zamknac.
 pause

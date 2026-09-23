@@ -8,8 +8,9 @@
     {
       "label": "URUCHOM SKLEP",
       "type": "shell",
-      // Przy pierwszym starcie sam doinstalowuje biblioteki (pozniej trwa to 2-3 s)
-      "command": "npm install --no-audit --no-fund && npm start",
+      // npm start sam doinstalowuje biblioteki przy pierwszym starcie (prestart.js)
+      // Celowo bez "&&" - PowerShell 5.1 (Windows 10) go nie obsluguje
+      "command": "npm start",
       "options": {
         "cwd": "${workspaceFolder}"
       },

@@ -55,9 +55,10 @@ sklep/
 
 > **Limit załącznika:** Gmail 25 MB, Outlook 20 MB — 12 MB mieści się z zapasem.
 >
-> **Gdyby mail odmówił (za duży):** usuń z ZIP-a folder `node_modules` — po rozpakowaniu
-> w szkole sklep sam go pobierze przy pierwszym starcie (wtedy potrzebny internet na
-> szkolnym komputerze, który zwykle jest).
+> **Gdyby mail odmówił (za duży):** usuń z ZIP-a folder `node_modules` (albo pobierz
+> projekt z GitHuba — biblioteki i tak nie są w repo). Nic to nie psuje: **sklep sam
+> doinstaluje biblioteki przy pierwszym starcie** (`prestart` w `package.json`),
+> potrzebuje tylko internetu na szkolnym komputerze.
 
 ---
 
@@ -89,8 +90,8 @@ sklep/
 
 **Droga 1 — szczegóły:** naciskasz Ctrl i Shift, trzymasz, klikasz B. U dołu pojawi się
 panel terminala z napisem *„Uruchamiane zadanie: URUCHOM SKLEP”* i bannerem sklepu.
-Skrót uruchamia `npm install && npm start` — **przy pierwszym starcie sam doinstaluje
-biblioteki (1–2 min), kolejne starty trwają 2–3 sekundy.**
+Skrót uruchamia `npm start` — a wbudowany mechanizm `prestart` **sam doinstaluje
+biblioteki przy pierwszym starcie (1–2 min)**; kolejne starty trwają 2–3 sekundy.
 
 **Droga 2 — szczegóły:** `URUCHOM.bat` sam sprawdzi Node.js, sam zainstaluje biblioteki,
 sam uruchomi sklep **i sam otworzy przeglądarkę** na właściwym adresie. Komunikaty są
@@ -135,15 +136,16 @@ przeglądarkę i wpisz adres. Droga 2: przeglądarka otworzy się **sama**.
 
 | # | Objaw | Rozwiązanie |
 |---|---|---|
-| 1 | `npm : nie można rozpoznać...` / `node: command not found` | **Na szkolnym komputerze nie ma Node.js.** NIE instaluj go (brak praw administratora). Uruchom sklep w maszynie wirtualnej → [INSTRUKCJA_URUCHOMIENIA.md](INSTRUKCJA_URUCHOMIENIA.md), ETAP D–F. `URUCHOM.bat` sam pokaże tę podpowiedź. |
+| 1 | `npm : nie można rozpoznać...` / `node: command not found` | **Na szkolnym komputerze nie ma Node.js.** NIE instaluj go (brak praw administratora). Uruchom sklep w maszynie wirtualnej → [INSTRUKCJA_URUCHOMIENIA.md](INSTRUKCJA_URUCHOMIENIA.md), ETAP D–F. `URUCHOM.bat` sam pokaże tę podpowiedź z instrukcją krok po kroku. |
 | 2 | `EADDRINUSE`, port 3000 zajęty | Sklep już działa: wejdź na http://localhost:3000 — albo zatrzymaj go (Część C) i startuj od nowa. |
-| 3 | `npm install` błąd / zawieszone pobieranie | Sprawdź internet szkolnego komputera. Alternatywa: wyślij ZIP **z folderem `node_modules`** (wtedy internet niepotrzebny). |
+| 3 | `prestart`: nie udało się zainstalować bibliotek | Brak internetu na szkolnym komputerze. Rozwiązanie: wyślij ZIP **z folderem `node_modules`** (wtedy internet niepotrzebny w ogóle). |
 | 4 | Przeglądarka się nie otworzyła sama | Wpisz ręcznie **http://localhost:3000** — serwer i tak działa. |
 | 5 | Reklama nie leci | Folder `videos/` jest pusty (np. wycięty z ZIP-a). Sklep działa, tylko bez pętli. Wrzuć pliki `.mp4` do `sklep/videos/` i odśwież stronę (F5). |
 | 6 | SmartScreen / antywirus przy `URUCHOM.bat` | **Więcej informacji → Uruchom mimo to.** Lękliwy? Użyj Drogi 1 (Ctrl+Shift+B) — zadziała bez .bat. |
 | 7 | Nie mogę rozpakować na Pulpicie | Rozpakuj w **Dokumentach** i stamtąd otwórz w VS Code. Reszta bez zmian. |
 | 8 | Nie ma VS Code na komputerze | Zapytaj prowadzącego. Plan B bez VS Code: rozpakuj ZIP, dwuklik `URUCHOM.bat`, koniec (Droga 2 nie wymaga VS Code). |
 | 9 | Strona działa tylko na szkolnym komputerze, nie w telefonie | Tak ma być — sklep stoi na `localhost` tego komputera. Widoczność w sieci: uruchom przez `bash start.sh lan` na VM (patrz druga instrukcja). |
+| 10 | Czerwony ekran „Sklep otwarty bezpośrednio z pliku” | Kliknąłeś 2× na `index.html` na dysku — tak nie działa (koszyk potrzebuje serwera). Uruchom sklep Droga 1/2/3 i wchodź na **http://localhost:3000**. |
 
 ---
 
