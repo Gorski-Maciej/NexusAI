@@ -53,12 +53,12 @@ zabij_poprzednia() {
 # MODE = stop
 # ============================================================================
 if [ "$MODE" = "stop" ]; then
+  zabij_poprzednia
   if port_odpowiada; then
-    zabij_poprzednia
-    ok "Sklep zatrzymany."
-  else
-    ok "Sklep nie dzialal - nic do zrobienia."
+    err "Nie udalo sie zatrzymac sklepu na porcie ${PORT}."
+    exit 1
   fi
+  ok "Sklep zatrzymany."
   exit 0
 fi
 

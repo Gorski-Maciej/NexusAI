@@ -75,20 +75,22 @@ ssh uczen@192.168.1.42
 
 → pierwszym razem zapyta `Are you sure...?` → wpisz **yes** → hasło `admin1234`. Widzisz teraz konsolę maszyny **wewnątrz VS Code**.
 
-### ETAP F — Odpalam sklep w maszynie
+### ETAP F — Odpalam sklep w maszynie (JEDNO polecenie)
 
-Będąc na SSH (z ETAPU E), wpisz kolejno:
+Będąc na SSH (z ETAPU E), wpisz:
 
 ```bash
 cd ~/sklep
-node --version        # jeśli pokaże v18/v20/v22 — git; jeśli 'command not found' — uruchom 2 komendy niżej
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -   # tylko gdy brak Node
-sudo apt install -y nodejs                                         # tylko gdy brak Node
-npm install           # instalacja bibliotek (1-2 min)
-npm start             # URUCHOMIENIE SKLEPU
+bash start.sh
 ```
 
+To wszystko! Skrypt **sam**: doinstaluje Node.js (gdy go brak na czystym Ubuntu Server), zainstaluje biblioteki sklepu, skopiuje reklamy wideo (jeśli trzeba) i uruchomi sklep.
+
 Zobaczysz banner `KIOSK: Sklep ChemiaGospodarcza + Reklama` i `Serwer dziala na: http://localhost:3000`. **Zostaw tę kartę terminala włączoną!**
+
+> 🆘 Jeśli pokaże `command not found: curl` na bardzo gołej maszynie: `sudo apt update && sudo apt install -y curl` i ponownie `bash start.sh`.
+>
+> Dodatkowe tryby: `bash start.sh lan` (sklep widoczny z sieci — wchodzisz na `http://IP_MASZYNY:3000`), `bash start.sh restart` (restart sklepu), `bash start.sh stop` (zatrzymanie).
 
 ### ETAP G — Klikam link i widzę sklep 🎉
 
@@ -109,7 +111,7 @@ ssh -L 3000:localhost:3000 uczen@192.168.1.42
 
 ### ETAP H — Zamieniam w prawdziwy kiosk (zgodnie z zadaniem 1800)
 
-1. W terminalu z `npm start` naciśnij **Ctrl + C** (zatrzymuje sklep ręczny — install.sh uruchomi go sam przez PM2).
+1. W terminalu ze sklepem naciśnij **Ctrl + C** (albo `bash start.sh stop`) — install.sh uruchomi sklep sam przez PM2.
 2. Na SSH wpisz:
 
 ```bash
@@ -117,9 +119,9 @@ cd ~/sklep
 sudo bash install.sh
 ```
 
-3. Skrypt wszystko zrobi sam (środowisko graficzne, auto-login, Chromium pełny ekran, DNS, zabezpieczenia) i zrestartuje maszynę.
+3. Skrypt wszystko zrobi sam (środowisko graficzne, auto-login, Chromium pełny ekran, autostart sklepu przez systemd `kiosk-sklep`, DNS, zabezpieczenia) i zrestartuje maszynę.
 4. Po restarcie maszyna **sama pokazuje sklep na pełnym ekranie z pętlą reklam** — to wersja kioskowa do pokazania prowadzącemu.
-5. Kontrola przez SSH: `sudo systemctl status lightdm dnsmasq kiosk-watchdog --no-pager` (wszystkie `active`), a po doinstalowaniu narzędzi (`sudo cp ~/sklep/kiosk-dns ~/sklep/kiosk-status /usr/local/bin/ && sudo chmod +x /usr/local/bin/kiosk-*`): komendy `kiosk-status` i `kiosk-dns list`.
+5. Kontrola przez SSH: `sudo systemctl status lightdm dnsmasq kiosk-watchdog kiosk-sklep --no-pager` (wszystkie `active`), a **najprościej jednym poleceniem: `bash status.sh`** (lub `kiosk-info` po instalacji) — pokaże sklep, kiosk i DNS z podpowiedziami naprawy.
 
 ### Plan awaryjny: szybka demonstracja BEZ maszyny (5 minut)
 
@@ -127,8 +129,7 @@ Jeśli na szkolnym komputerze jest Node.js (`node --version` w terminalu VS Code
 
 ```powershell
 cd C:\Users\TwojaNazwa\Desktop\sklep
-npm install
-npm start
+bash start.sh
 ```
 
 → klik `http://localhost:3000`. (To tylko szybki pokaz — **zadanie wymaga wersji w maszynie wirtualnej**, więc ostatecznie wykonaj ETAP D–H.)
@@ -265,33 +266,11 @@ ls ~/sklep
 
 ## CZĘŚĆ 6 — TESTUJĘ SKLEP (zobaczysz go na własne oczy!)
 
-1. W terminalu maszyny wirtualnej wpisz kolejno:
+1. W terminalu maszyny wirtualnej wpisz (sklep zrobi wszystko sam):
 
 ```bash
 cd ~/sklep
-node --version
-```
-
-- Jeśli pokaże `v20...` lub podobnie → **idź do punktu 2**.
-- Jeśli pokaże `command not found` → zainstaluj Node (skopiuj te 2 linie):
-
-```bash
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt install -y nodejs
-```
-
-2. Zainstaluj biblioteki sklepu:
-
-```bash
-npm install
-```
-
-(poczekaj, aż skończy — może potrwać 1–2 min)
-
-3. **Uruchom sklep:**
-
-```bash
-npm start
+bash start.sh
 ```
 
 → Powinno się pokazać:
@@ -316,7 +295,7 @@ npm start
    - koszyk po prawej — kliknij „+ Koszyk”, potem „Koszyk” i „Zamawiam”,
    - **po 60 sekundach ekran sklepu zasłania się reklamą wideo na 20 sekund** — i tak w kółko. 🎬
 
-6. **Wyłączasz sklep:** w oknie z `npm start` naciśnij **Ctrl + C**.
+6. **Wyłączasz sklep:** w oknie ze sklepem naciśnij **Ctrl + C** (albo w drugiej konsoli: `bash start.sh stop`).
 
 ---
 
@@ -342,7 +321,7 @@ sudo bash install.sh
    - doinstalowuje Xorg, Openbox, Chromium, LightDM, unclutter (Część 2 zadania),
    - tworzy użytkownika `kiosk` (hasło: `kiosk123`) z auto-loginem,
    - ustawia Chromium w trybie kiosk na **http://localhost:3000** — czyli na TWÓJ sklep,
-   - instaluje Node.js + PM2, dzięki czemu sklep startuje sam po restarcie,
+   - instaluje Node.js, a sklep startuje sam po restarcie przez usługę systemd `kiosk-sklep` (start.sh),
    - konfiguruje dnsmasq: biała lista + czarna lista + blokada reszty (Część 3),
    - blokuje Alt+F4, Alt+Tab, Ctrl+Alt+T, przełączanie TTY (Część 4),
    - zabezpiecza SSH (tylko admin może się logować) (Część 5).
@@ -354,20 +333,19 @@ sudo bash install.sh
 
 ```bash
 ssh admin@ADRES_IP_VM
-sudo systemctl status lightdm dnsmasq kiosk-watchdog --no-pager
+sudo systemctl status lightdm dnsmasq kiosk-watchdog kiosk-sklep --no-pager   # wszystkie active
+bash status.sh   # albo najprościej: jeden raport sklep+kiosk+DNS
 ```
-
-→ wszystkie powinny pokazać `active (running)`.
 
 ### Narzędzia do zarządzania (z zadania 22–23 instrukcji)
 
 ```bash
-sudo cp ~/sklep/kiosk-dns ~/sklep/kiosk-status /usr/local/bin/
-sudo chmod +x /usr/local/bin/kiosk-dns /usr/local/bin/kiosk-status
 kiosk-dns list          # pokaż białą i czarną listę DNS
 kiosk-dns test onet.pl  # sprawdź, czy domena jest dostępna z kiosku
 kiosk-dns allow onet.pl # dodaj domenę do białej listy
-kiosk-status            # pełny raport stanu kiosku
+kiosk-status            # pełny raport stanu kiosku (z instrukcji)
+bash status.sh          # szybki status: sklep + kiosk + DNS
+kiosk-dns-report        # Top 10 blokowanych/dozwolonych domen DNS
 ```
 
 ---
@@ -376,12 +354,13 @@ kiosk-status            # pełny raport stanu kiosku
 
 | Problem | Rozwiązanie |
 |---|---|
-| `command not found: node` | Wróć do Części 6, punkt 1 — zainstaluj Node.js |
+| `command not found: node` | Uruchom `bash start.sh` — sam zainstaluje Node.js (przy braku curl: `sudo apt install -y curl`) |
 | `EADDRINUSE` (port zajęty) | Ktoś już uruchomił sklep: `sudo fuser -k 3000/tcp` i ponownie `npm start` |
 | Strona się nie otwiera na komputerze uczelnianym | Używaj `http://ADRES_IP_VM:3000` (nie localhost!) albo sprawdzaj w przeglądarce **wewnątrz maszyny** na localhost |
 | Nie mogę się połączyć przez SSH | Sprawdź: `sudo systemctl status ssh` w VM; sprawdź czy maszyna ma kartę **Mostkowana**; pinguj IP maszyny |
 | Reklama nie leci | Sprawdź: `ls ~/sklep/videos` — muszą być pliki `.mp4`. Pusta lista = brak reklamy (sklep dalej działa) |
 | Po `install.sh` czarny ekran | Poczekaj 1–2 min (LightDM startuje). Jak dalej czarno: SSH → `sudo systemctl restart lightdm` |
+| Sklep nie wstał po restarcie | SSH → `bash status.sh` (pokaże co nie działa) albo `sudo systemctl restart kiosk-sklep` |
 | Chcę wyjść z kiosku na testy | SSH → `sudo pkill -u kiosk` (LightDM zaloguje ponownie) albo `sudo systemctl stop lightdm` |
 | Zapomniałem hasła do VM (Opcja A) | `uczen` / `admin1234` |
 
@@ -395,10 +374,14 @@ sklep/
 ├── produkty.js             ← lista 14 produktów chemii gospodarczej
 ├── public/index.html       ← wygląd sklepu + pętla reklamowa
 ├── videos/                 ← 3 reklamy wideo (mp4) — tu wrzucaj własne
+├── start.sh                ← JEDNO polecenie: instaluje Node i uruchamia sklep
+├── status.sh               ← status jednym poleceniem: sklep + kiosk + DNS
+├── test_czysty_ubuntu.sh   ← test instalacyjny (sprawdza start.sh od zera)
 ├── install.sh              ← automat całości (Części 2–5 zadania 1800)
 ├── ecosystem.config.cjs    ← autostart sklepu (PM2) po restarcie VM
 ├── kiosk-dns               ← zarządzanie białą/czarną listą DNS
 ├── kiosk-status            ← raport stanu kiosku
+├── kiosk-dns-report        ← dzienny raport blokowanych domen (zad. dod. 5)
 └── INSTRUKCJA_URUCHOMIENIA.md  ← ta instrukcja
 ```
 
@@ -406,7 +389,7 @@ sklep/
 
 1. Po włączeniu VM LightDM **sam loguje** użytkownika `kiosk`.
 2. Openbox (minimalne środowisko) uruchamia **Chromium w trybie kiosk** (pełny ekran, bez pasków) na `http://localhost:3000`.
-3. PM2 **sam startuje serwer sklepu** Node.js na `localhost:3000`.
+3. PM2/usługa systemd `kiosk-sklep` **sam startuje serwer sklepu** Node.js na `localhost:3000` (log: `/var/log/kiosk-sklep.log`).
 4. Sklep: produkty → koszyk → zamówienie (liczone na serwerze). Co 60 s ekran zasłania **reklama wideo** z folderu `videos/` (20 s), potem z powrotem sklep — w kółko.
 5. dnsmasq blokuje wszystkie domeny poza białą listą (tryb zamknięty); sklep działa lokalnie, więc działa zawsze.
 6. Watchdog restartuje Chromium, gdyby się zawiesił.
@@ -420,10 +403,25 @@ sklep/
 - [ ] Pendrive z folderem `sklep/` (+ zapasowo `servclear.ova` i ISO Ubuntu)
 - [ ] Zapisałem/adres IP VM zapiszę po starcie maszyny
 - [ ] Wiem, że terminal VM to czarne okno VirtualBoxa
-- [ ] Umiesz klepnąć `cd ~/sklep && npm install && npm start`
+- [ ] Umiesz klepnąć `cd ~/sklep && bash start.sh`
 - [ ] Wiesz, że sklep = **http://localhost:3000**
 - [ ] Reklama leci co 60 s przez 20 s — to celowe, nie błąd!
 - [ ] `sudo bash install.sh` = zamiana w prawdziwy kiosk
 - [ ] Po wszystkim pokaż prowadzącemu: kiosk + pętla reklam + `kiosk-status`
+
+## CZĘŚĆ 11 — TEST PRZED POKAZEM (opcjonalny, ale zalecany)
+
+Zanim pokażesz projekt prowadzącemu, możesz na VM uruchomić automatyczny test instalacyjny — sprawdza cały scenariusz "od zera" (T0–T9): składnię skryptów, start sklepu przez `start.sh`, API (produkty, reklamy, zamówienia), idempotencję, restart i stop:
+
+```bash
+cd ~/sklep
+bash test_czysty_ubuntu.sh            # pełny test (~1 min, na czystej VM dłużej - instaluje Node)
+bash test_czysty_ubuntu.sh --szybki   # bez fazy restartu
+bash test_czysty_ubuntu.sh --zostaw   # po teście sklep zostaje WLACZONY
+```
+
+Na końcu zobaczysz raport `PASS/FAIL/WARN`. **Wszystkie PASS = start.sh jest gotowy na pokaz.**
+
+---
 
 **Powodzenia! 🚀**

@@ -1,0 +1,192 @@
+#!/bin/bash
+# ============================================================================
+# kiosk-dns-report - RAPORT DZIENNY blokowanych domen DNS
+# (zadanie dodatkowe 5 z https://mdview.t24.ovh/task/LINUX/zadanie1800)
+#
+# Uzycie (na maszynie wirtualnej, po instalacji kiosku):
+#   kiosk-dns-report          -> raport Top 10 (zapisuje plik i drukuje)
+#   kiosk-dns-report 20       -> raport Top 20
+#   kiosk-dns-report --instaluj  -> wlacza automatyczny raport o polnocy (cron)
+#   kiosk-dns-report --test      -> generuje przykladowe logi i uruchamia raport
+#
+# Raport trafia do:  /tmp/dns-report-<RRRRMMDD>.txt
+# Automatyczny raport (po --instaluj):  /var/log/kiosk-dns-daily.log  (cron 0 0 * * *)
+#
+# POPRAWKA wzgledem instrukcji: dnsmasq loguje blokady jako
+#     "config <domena> is NXDOMAIN"   (a nie "query[A] <domena> ... NXDOMAIN"),
+#     wiec wzorce z instrukcji nie lapaly zadnych domen blokowanych.
+#     Skrypt rozpoznaje oba formaty oraz działa bez GNU grep -P (busybox/OSX).
+# ============================================================================
+set -uo pipefail
+
+LOGFILE="/var/log/dnsmasq.log"
+TOPN=10
+
+# --- kolory -----------------------------------------------------------------
+if [ -t 1 ]; then
+  G="\033[1;32m"; R="\033[1;31m"; C="\033[1;36m"; D="\033[2m"; N="\033[0m"
+else
+  G=""; R=""; C=""; D=""; N=""
+fi
+
+# ============================================================================
+# PARSE FLAG
+# ============================================================================
+for a in "$@"; do
+  case "$a" in
+    --instaluj) INSTALUJ=1 ;;
+    --test)     TEST=1 ;;
+    [0-9]*)     TOPN="$a" ;;
+    *)
+      echo "Uzycie: kiosk-dns-report [N] [--instaluj|--test]"
+      echo "  N           - ile pozycji w Top (domyslnie 10)"
+      echo "  --instaluj  - dodaj cron: raport dzienny o polnocy"
+      echo "  --test      - wygeneruj przykladowe logi i pusc raport"
+      exit 1 ;;
+  esac
+done
+
+# ============================================================================
+# --instaluj: cron o polnocy (zadanie dodatkowe 5)
+# ============================================================================
+if [ "${INSTALUJ:-0}" = "1" ]; then
+  if [ "$(id -u)" -ne 0 ]; then
+    echo -e "${R}[BLAD]${N} --instaluj wymaga roota:  sudo kiosk-dns-report --instaluj"
+    exit 1
+  fi
+  if ! command -v crontab >/dev/null 2>&1; then
+    echo -e "${R}[BLAD]${N} crontab niedostepny - zainstaluj:  sudo apt install -y cron"
+    exit 1
+  fi
+  SELF="$(readlink -f "$0" 2>/dev/null || echo "$0")"
+  install -m 755 "$SELF" /usr/local/bin/kiosk-dns-report
+  # idempotentnie: usuwamy stary wpis i dodajemy nowy
+  ( crontab -l 2>/dev/null | grep -v "kiosk-dns-report" ; \
+    echo "0 0 * * * /usr/local/bin/kiosk-dns-report >/var/log/kiosk-dns-daily.log 2>&1" ) | crontab -
+  echo -e "${G}[OK]${N} Zainstalowano cron (raport dzienny o 00:00):"
+  crontab -l | grep "kiosk-dns-report"
+  echo -e "     Raporty beda w: /var/log/kiosk-dns-daily.log"
+  exit 0
+fi
+
+# ============================================================================
+# --test: przykladowe logi (do demonstracji bez dnsmasq)
+# ============================================================================
+if [ "${TEST:-0}" = "1" ]; then
+  LOGFILE="/tmp/dnsmasq-test.log"
+  cat > "$LOGFILE" <<'EOF'
+dnsmasq[1234]: query[A] wikipedia.org from 127.0.0.1
+dnsmasq[1234]: forwarded wikipedia.org to 8.8.8.8
+dnsmasq[1234]: query[A] facebook.com from 127.0.0.1
+dnsmasq[1234]: config facebook.com is NXDOMAIN
+dnsmasq[1234]: query[A] instagram.com from 127.0.0.1
+dnsmasq[1234]: config instagram.com is NXDOMAIN
+dnsmasq[1234]: query[A] facebook.com from 127.0.0.1
+dnsmasq[1234]: config facebook.com is NXDOMAIN
+dnsmasq[1234]: query[A] tiktok.com from 127.0.0.1
+dnsmasq[1234]: config tiktok.com is NXDOMAIN
+dnsmasq[1234]: query[A] allegro.pl from 127.0.0.1
+dnsmasq[1234]: config allegro.pl is NXDOMAIN
+dnsmasq[1234]: query[A] github.com from 127.0.0.1
+dnsmasq[1234]: config github.com is NXDOMAIN
+dnsmasq[1234]: query[A] reddit.com from 127.0.0.1
+dnsmasq[1234]: config reddit.com is NXDOMAIN
+dnsmasq[1234]: query[A] facebook.com from 127.0.0.1
+dnsmasq[1234]: config facebook.com is NXDOMAIN
+dnsmasq[1234]: query[A] doubleclick.net from 127.0.0.1
+dnsmasq[1234]: config doubleclick.net is NXDOMAIN
+dnsmasq[1234]: query[A] pl.wikipedia.org from 127.0.0.1
+dnsmasq[1234]: forwarded pl.wikipedia.org to 8.8.8.8
+dnsmasq[1234]: query[A] google.com from 127.0.0.1
+dnsmasq[1234]: forwarded google.com to 8.8.8.8
+EOF
+  echo -e "${D}--test: wygenerowano przykladowe logi w ${LOGFILE}${N}"
+fi
+
+# ============================================================================
+# SPRAWDZENIE LOGU
+# ============================================================================
+if [ ! -r "$LOGFILE" ]; then
+  if [ -f "$LOGFILE" ]; then
+    echo -e "${R}[BLAD]${N} Brak uprawnien do $LOGFILE (uruchom z sudo)."
+  else
+    echo -e "${R}[BLAD]${N} Brak logu $LOGFILE (dnsmasq jeszcze nie dzialal lub nie skonfigurowany)."
+    echo "       Uruchom: sudo bash install.sh   (albo sprawdz: ls /var/log/dnsmasq*)"
+  fi
+  exit 1
+fi
+
+REPORT="/tmp/dns-report-$(date +%Y%m%d).txt"
+
+# ============================================================================
+# PARSOWANIE LOGU (2 formaty dnsmasq, bez grep -P)
+#   dozwolone:  "forwarded <domena> to <ip>"
+#   zablokowane: "config <domena> is NXDOMAIN"  LUB  "... is <domena>"
+# ============================================================================
+BLOK=$(grep "NXDOMAIN" "$LOGFILE" 2>/dev/null \
+  | sed -n 's/.*config \([^ ]*\) is NXDOMAIN.*/\1/p; s/.*\( [a-zA-Z0-9.-]*\) is NXDOMAIN.*/\1/p' \
+  | tr -d ' ' | sort | uniq -c | sort -rn | head -n "$TOPN")
+
+DOP=$(grep "forwarded" "$LOGFILE" 2>/dev/null \
+  | sed -n 's/.*forwarded \([^ ]*\) to .*/\1/p' \
+  | sort | uniq -c | sort -rn | head -n "$TOPN")
+
+BLOK_ALL=$(grep -c "NXDOMAIN" "$LOGFILE" 2>/dev/null || echo 0)
+DOP_ALL=$(grep -c "forwarded" "$LOGFILE" 2>/dev/null || echo 0)
+TOTAL=$(wc -l < "$LOGFILE" 2>/dev/null || echo 0)
+
+# ============================================================================
+# RAPORT
+# ============================================================================
+{
+  echo "=============================================="
+  echo "  RAPORT DNS KIOSK - $(date '+%Y-%m-%d %H:%M')"
+  echo "  (zadanie dodatkowe 5, log: $LOGFILE)"
+  echo "=============================================="
+  echo ""
+  echo "Top $TOPN ZABLOKOWANYCH domen:"
+  if [ -n "$BLOK" ]; then
+    echo "$BLOK" | awk '{printf "  %5d razy  %s\n", $1, $2}'
+  else
+    echo "  (brak zablokowanych zapytan w logu)"
+  fi
+  echo ""
+  echo "Top $TOPN DOZWOLONYCH domen:"
+  if [ -n "$DOP" ]; then
+    echo "$DOP" | awk '{printf "  %5d razy  %s\n", $1, $2}'
+  else
+    echo "  (brak dozwolonych zapytan w logu)"
+  fi
+  echo ""
+  echo "Podsumowanie:"
+  echo "  lacznie zapytan w logu : $TOTAL"
+  echo "  dozwolone              : $DOP_ALL"
+  echo "  zablokowane            : $BLOK_ALL"
+  if [ "$DOP_ALL" -ge 0 ] 2>/dev/null && [ "$BLOK_ALL" -ge 0 ] 2>/dev/null && [ $((DOP_ALL + BLOK_ALL)) -gt 0 ] 2>/dev/null; then
+    PROC=$(( 100 * BLOK_ALL / (DOP_ALL + BLOK_ALL) ))
+    echo "  poziom blokowania      : ${PROC}%"
+  fi
+  echo ""
+} > "$REPORT"
+
+# ============================================================================
+# WYSWIETLENIE
+# ============================================================================
+if [ -t 1 ]; then
+  echo -e "${C}Raport zapisano: ${REPORT}${N}"
+  echo ""
+  # kolory w podsumowaniu na ekranie
+  while IFS= read -r linia; do
+    case "$linia" in
+      *"zablokowane"*) echo -e "${R}${linia}${N}" ;;
+      *"dozwolone"*)   echo -e "${G}${linia}${N}" ;;
+      "Top"*)          echo -e "${C}${linia}${N}" ;;
+      *"===="*)        echo -e "${C}${linia}${N}" ;;
+      *)               echo "$linia" ;;
+    esac
+  done < "$REPORT"
+else
+  cat "$REPORT"
+fi
+
+exit 0

@@ -11,7 +11,7 @@
 #   - auto-login uzytkownika kiosk + Chromium w trybie --kiosk
 #   - dnsmasq: biala lista + czarna lista + domyslne blokowanie (tryb zamkniety)
 #   - watchdog Chromium, blokada skrotow/TTY, hartowanie SSH
-#   - PM2: autostart sklepu (localhost:3000) po restarcie VM
+#   - systemd kiosk-sklep.service: autostart sklepu przez start.sh po restarcie VM
 #
 # Na koniec w kiosku uruchamia sie SKLEP (ten folder) z petla reklam wideo.
 # ============================================================================
@@ -38,12 +38,12 @@ apt-get install -y \
   xorg openbox chromium-browser lightdm lightdm-gtk-greeter \
   unclutter x11-xserver-utils curl
 
-# Node.js + PM2 (sklep to aplikacja Node/Express)
+# Node.js (sklep to aplikacja Node/Express). start.sh tez umie go doinstalowac,
+# ale robimy to tutaj, zeby cala instalacja poszla za jednym zamachem.
 if ! command -v node >/dev/null; then
   curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
   apt-get install -y nodejs
 fi
-npm install -g pm2@latest
 
 # ============================================================================
 log "Czesc 2: uzytkownik kiosk + auto-login LightDM"
@@ -79,6 +79,8 @@ xset s off
 xset s noblank
 xset -dpms
 # Chromium w trybie kiosku -> sklep (localhost - NAPRAWA IP)
+# Czekaj chwile, az systemd wystartuje sklep (kiosk-sklep.service)
+sleep 5
 chromium-browser \\
   --kiosk \\
   --noerrdialogs \\
@@ -93,17 +95,42 @@ EOF
 chown -R "$KIOSK_USER":"$KIOSK_USER" /home/"$KIOSK_USER"/.config
 
 # ============================================================================
-log "Sklep: instalacja zaleznosci + PM2 (sklep na localhost:3000)"
+log "Sklep: zaleznosci + autostart przez systemd (start.sh, localhost:3000)"
 # ============================================================================
 SKLEP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SKLEP_DIR"
 sudo -u "$ADMIN_USER" npm install --no-audit --no-fund || npm install --no-audit --no-fund
 
-# PM2 start + autostart po reboot (jako admin, bo kiosk ma nologin)
-sudo -u "$ADMIN_USER" pm2 delete kiosk-sklep >/dev/null 2>&1 || true
-sudo -u "$ADMIN_USER" pm2 start "$SKLEP_DIR/ecosystem.config.cjs"
-sudo -u "$ADMIN_USER" pm2 save
-env PATH="\$PATH:/usr/bin" pm2 startup systemd -u "$ADMIN_USER" --hp "/home/$ADMIN_USER" >/dev/null 2>&1 || true
+# Czyszczenie po starych instalacjach z PM2 (jesli ktos wczesniej uzywatal)
+if command -v pm2 >/dev/null 2>&1; then
+  pm2 delete kiosk-sklep >/dev/null 2>&1 || true
+  pm2 save >/dev/null 2>&1 || true
+  systemctl disable "pm2-${ADMIN_USER}" >/dev/null 2>&1 || true
+fi
+
+# Autostart sklepu: usluga systemd uruchamia start.sh (tryb "restart"
+# porzadkuje stare instancje i startuje od nowa). Restart po awarii robi systemd.
+cat > /etc/systemd/system/kiosk-sklep.service <<EOF
+[Unit]
+Description=Kiosk Sklep (ChemiaMax) - serwer Node.js przez start.sh
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=${ADMIN_USER}
+WorkingDirectory=${SKLEP_DIR}
+ExecStart=/bin/bash ${SKLEP_DIR}/start.sh restart
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:/var/log/kiosk-sklep.log
+StandardError=append:/var/log/kiosk-sklep.log
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl daemon-reload
+systemctl enable --now kiosk-sklep
 
 # ============================================================================
 log "Czesc 3: dnsmasq - tryb zamkniety (biala + czarna lista)"
@@ -231,10 +258,23 @@ EOF
 usermod -s /usr/sbin/nologin "$KIOSK_USER" || true
 systemctl restart ssh || systemctl restart sshd || true
 
+# Narzedzia zarzadzania: kiosk-dns, kiosk-status, status.sh i raport DNS
+install -m 755 "$SKLEP_DIR/kiosk-dns" /usr/local/bin/kiosk-dns
+install -m 755 "$SKLEP_DIR/kiosk-status" /usr/local/bin/kiosk-status
+install -m 755 "$SKLEP_DIR/status.sh" /usr/local/bin/kiosk-info
+install -m 755 "$SKLEP_DIR/kiosk-dns-report" /usr/local/bin/kiosk-dns-report
+# Zadanie dodatkowe 5: raport dzienny o polnocy (cron; pomijane gdy brak crontab)
+if command -v crontab >/dev/null 2>&1; then
+  ( crontab -l 2>/dev/null | grep -v "kiosk-dns-report" ; \
+    echo "0 0 * * * /usr/local/bin/kiosk-dns-report >/var/log/kiosk-dns-daily.log 2>&1" ) | crontab - || true
+fi
+
 # ============================================================================
 log "GOTOWE. Restart systemu za 10 s (Ctrl+C aby przerwac)..."
 echo "   Po restarcie VM: kiosk -> Chromium -> http://localhost:3000 (sklep)"
 echo "   SSH:  ssh ${ADMIN_USER}@<adres-ip-vm>"
+echo "   Status wszystkich uslug:  kiosk-info   (lub: bash status.sh)"
+echo "   Raport DNS:               kiosk-dns-report   (dzienny o polnocy - cron)"
 # ============================================================================
 sleep 10
 systemctl reboot

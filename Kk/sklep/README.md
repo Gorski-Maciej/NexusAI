@@ -12,8 +12,17 @@ Projekt wykonany w 100% w katalogu `Kk/`, zgodnie z [zadaniem 1800](https://mdvi
 
 ```bash
 cd Kk/sklep
-npm install
-npm start
+bash start.sh
+```
+
+**Albo klasycznie** (`npm install` + `npm start`). Skrypt `start.sh` sam doinstalowuje Node.js, gdy go brak:
+
+```bash
+cd Kk/sklep
+bash start.sh          # sklep na localhost
+bash start.sh lan      # sklep widoczny z sieci (http://IP_MASZYNY:3000)
+bash start.sh restart  # restart sklepu
+bash start.sh stop     # zatrzymanie
 ```
 
 Otwórz **http://localhost:3000** — działa sklep, a reklama w pętli rusza po 60 s (dostosuj w `public/index.html`, stałe `REKLAMA_CO_SEKUND` / `REKLAMA_MIN_CZAS`).
@@ -56,9 +65,9 @@ ssh admin@<adres-ip-vm>
 cd ~/sklep && sudo bash install.sh    # wykonuje Części 2–5 instrukcji
 ```
 
-`install.sh` robi automatycznie: pakiety (xorg, openbox, chromium, lightdm, unclutter), użytkownik `kiosk`, auto-login LightDM, autostart Chromium `--kiosk` na `http://localhost:3000`, Node 20 + PM2 z autostartem sklepu, dnsmasq (biała lista + czarna + `address=/#/`), blokada skrótów (`rc.xml`), maskowanie TTY, watchdog Chromium, hartowanie SSH (`PermitRootLogin no`, `AllowUsers admin`, banner).
+`install.sh` robi automatycznie: pakiety (xorg, openbox, chromium, lightdm, unclutter), użytkownik `kiosk`, auto-login LightDM, autostart Chromium `--kiosk` na `http://localhost:3000`, Node 20 + **autostart sklepu przez systemd** (`kiosk-sklep.service` → `start.sh restart`; log: `/var/log/kiosk-sklep.log`), dnsmasq (biała lista + czarna + `address=/#/`), blokada skrótów (`rc.xml`), maskowanie TTY, watchdog Chromium, hartowanie SSH (`PermitRootLogin no`, `AllowUsers admin`, banner) + instaluje narzędzia `kiosk-dns`, `kiosk-status` i `kiosk-info` (status.sh).
 
-Skrypty zarządzania (zadania 22–23): `kiosk-dns` (allow/block/remove/list/test) i `kiosk-status`.
+Skrypty zarządzania (zadania 22–23): `kiosk-dns` (allow/block/remove/list/test), `kiosk-status` (raport z instrukcji), `status.sh` / `kiosk-info` (szybki status jednym poleceniem) oraz **`kiosk-dns-report`** (zadanie dodatkowe 5: Top blokowanych/dozwolonych domen DNS; `--instaluj` = cron o północy → `/var/log/kiosk-dns-daily.log`).
 
 > **Uwaga DNŚ:** sklep działa na `localhost:3000`, a Chromium łączy się z `localhost` — to nie przechodzi przez DNS, więc **tryb zamknięty dnsmasq nie blokuje sklepu**. Reklamy też są lokalne. Dodaj domeny do białej listy tylko jeśli chcesz w kiosku dodatkowe strony zewnętrzne.
 
@@ -78,10 +87,13 @@ Kk/
     ├── produkty.js              # katalog (serwer) — ceny liczone na serwerze
     ├── public/index.html        # sklep + pętla reklam (ścieżki względne — naprawa)
     ├── videos/                  # 3 spoty z ZIP-a (podmień na własne)
-    ├── ecosystem.config.cjs     # PM2 (HOST=127.0.0.1)
+    ├── start.sh                 # JEDNO polecenie: Node + biblioteki + sklep
+    ├── status.sh                # status: sklep + kiosk + DNS (kolorowy raport)
+    ├── test_czysty_ubuntu.sh    # test instalacyjny start.sh od zera (T0–T9)
     ├── install.sh               # automatyzacja zadania 1800 (Części 2–5)
     ├── kopiuj_wideo.sh          # kopiuje wideo z ZIP-a
     ├── kiosk-dns, kiosk-status  # narzędzia SSH (zadania 22–23)
+    ├── kiosk-dns-report         # dzienny raport blokowanych domen DNS (zad. dod. 5)
     └── README.md
 ```
 
@@ -96,5 +108,8 @@ Kk/
 | `POST /api/zamow` | suma `40.97 PLN` liczona serwerowo |
 | `POST /api/zamow` (błędne id) | odrzucone: `Nieznany produkt: hakier` ✅ |
 | Fallback IP | brak `EADDRNOTAVAIL` — jawny host + awaryjny `0.0.0.0` |
-| `bash -n` install.sh / kiosk-dns / kiosk-status / kopiuj_wideo.sh | składnia poprawna ✅ |
+| `bash -n` install.sh / start.sh / status.sh / kiosk-dns / kiosk-status / kopiuj_wideo.sh | składnia poprawna ✅ |
+| `status.sh` przy działającym sklepie | SKLEP [OK], produkty 21 pozycji, reklamy 3 ✅ |
+| `test_czysty_ubuntu.sh` (pełny scenariusz od zera: T0–T9) | **19 PASS / 0 FAIL / 0 WARN** (42 s) ✅ |
+| `kiosk-dns-report --test` (Top domen, poziom blokowania) | facebook.com 3×, blokada 75% ✅ |
 | `node --check` server.js / produkty.js | składnia poprawna ✅ |

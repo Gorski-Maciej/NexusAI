@@ -4,7 +4,7 @@
 echo "=== Stan Kiosku $(date) ==="
 echo ""
 echo "--- Uslugi ---"
-for svc in lightdm dnsmasq ssh kiosk-watchdog pm2-root; do
+for svc in lightdm dnsmasq ssh kiosk-watchdog kiosk-sklep; do
   status=$(systemctl is-active "$svc" 2>/dev/null || echo "brak")
   printf "  %-20s %s\n" "$svc:" "$status"
 done
@@ -15,8 +15,13 @@ echo ""
 echo "--- Przegladarka ---"
 pgrep -a chromium-browser | head -3 || echo "  (Chromium nie dziala)"
 echo ""
-echo "--- Sklep (PM2) ---"
-command -v pm2 >/dev/null && pm2 list 2>/dev/null || sudo -u admin pm2 list 2>/dev/null || echo "  (pm2 niedostepny)"
+echo "--- Sklep (localhost:3000) ---"
+http=$(curl -s -o /dev/null -w '%{http_code}' --max-time 3 http://localhost:3000/ 2>/dev/null)
+if [ "$http" = "200" ]; then
+  echo "  sklep odpowiada (HTTP 200)"
+else
+  echo "  sklep NIE odpowiada (HTTP ${http:-000}) - napraw: cd ~/sklep && bash start.sh restart"
+fi
 echo ""
 echo "--- DNS - ostatnie 10 zapytan ---"
 tail -10 /var/log/dnsmasq.log 2>/dev/null | awk '{
