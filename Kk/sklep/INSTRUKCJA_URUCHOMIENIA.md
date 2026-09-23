@@ -111,7 +111,7 @@ ssh -L 3000:localhost:3000 uczen@192.168.1.42
 
 ### ETAP H — Zamieniam w prawdziwy kiosk (zgodnie z zadaniem 1800)
 
-1. W terminalu ze sklepem naciśnij **Ctrl + C** (albo `bash start.sh stop`) — install.sh uruchomi sklep sam przez PM2.
+1. W terminalu ze sklepem naciśnij **Ctrl + C** (albo `bash start.sh stop`) — install.sh uruchomi sklep sam przez usługę systemd `kiosk-sklep`.
 2. Na SSH wpisz:
 
 ```bash
@@ -378,7 +378,7 @@ sklep/
 ├── status.sh               ← status jednym poleceniem: sklep + kiosk + DNS
 ├── test_czysty_ubuntu.sh   ← test instalacyjny (sprawdza start.sh od zera)
 ├── install.sh              ← automat całości (Części 2–5 zadania 1800)
-├── ecosystem.config.cjs    ← autostart sklepu (PM2) po restarcie VM
+├── ecosystem.config.cjs    ← (rezerwowy) autostart sklepu przez PM2
 ├── kiosk-dns               ← zarządzanie białą/czarną listą DNS
 ├── kiosk-status            ← raport stanu kiosku
 ├── kiosk-dns-report        ← dzienny raport blokowanych domen (zad. dod. 5)
@@ -389,7 +389,7 @@ sklep/
 
 1. Po włączeniu VM LightDM **sam loguje** użytkownika `kiosk`.
 2. Openbox (minimalne środowisko) uruchamia **Chromium w trybie kiosk** (pełny ekran, bez pasków) na `http://localhost:3000`.
-3. PM2/usługa systemd `kiosk-sklep` **sam startuje serwer sklepu** Node.js na `localhost:3000` (log: `/var/log/kiosk-sklep.log`).
+3. Usługa systemd `kiosk-sklep` **sam startuje serwer sklepu** Node.js na `localhost:3000` (log: `/var/log/kiosk-sklep.log`).
 4. Sklep: produkty → koszyk → zamówienie (liczone na serwerze). Co 60 s ekran zasłania **reklama wideo** z folderu `videos/` (20 s), potem z powrotem sklep — w kółko.
 5. dnsmasq blokuje wszystkie domeny poza białą listą (tryb zamknięty); sklep działa lokalnie, więc działa zawsze.
 6. Watchdog restartuje Chromium, gdyby się zawiesił.

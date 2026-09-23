@@ -110,6 +110,6 @@ Kk/
 | Fallback IP | brak `EADDRNOTAVAIL` — jawny host + awaryjny `0.0.0.0` |
 | `bash -n` install.sh / start.sh / status.sh / kiosk-dns / kiosk-status / kopiuj_wideo.sh | składnia poprawna ✅ |
 | `status.sh` przy działającym sklepie | SKLEP [OK], produkty 21 pozycji, reklamy 3 ✅ |
-| `test_czysty_ubuntu.sh` (pełny scenariusz od zera: T0–T9) | **19 PASS / 0 FAIL / 0 WARN** (42 s) ✅ |
+| `test_czysty_ubuntu.sh` (pełny scenariusz od zera: T0–T9) | **20 PASS / 0 FAIL / 0 WARN** (52 s) ✅ |
 | `kiosk-dns-report --test` (Top domen, poziom blokowania) | facebook.com 3×, blokada 75% ✅ |
 | `node --check` server.js / produkty.js | składnia poprawna ✅ |
