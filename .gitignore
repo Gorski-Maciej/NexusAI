@@ -27,6 +27,9 @@ mise.local.toml
 
 # ── IDE / Editor ────────────────────────────────────────────────────────────
 .vscode/
+# wyjatek: zadania uruchamiania sklepu kiosk (Ctrl+Shift+B w VS Code)
+!Kk/sklep/.vscode/
+!Kk/sklep/.vscode/tasks.json
 .idea/
 *.swp
 *.swo

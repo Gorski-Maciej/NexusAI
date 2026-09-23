@@ -5,6 +5,7 @@ Projekt wykonany w 100% w katalogu `Kk/`, zgodnie z [zadaniem 1800](https://mdvi
 **Potwierdzenie:** przeczytałem całą instrukcję z linku (Części 1–5: instalacja Ubuntu Server w VirtualBox, środowisko kiosku, dnsmasq whitelist+blacklist, zabezpieczenia, zarządzanie SSH) — wszystkie kroki są zautomatyzowane w `install.sh`.
 
 > 📖 **Szczegółowa instrukcja uruchomienia krok po kroku (także dla szkolnego komputera z VirtualBox):** [INSTRUKCJA_URUCHOMIENIA.md](INSTRUKCJA_URUCHOMIENIA.md)
+> 📧 **Najprostsza droga (katalog mailem → szkoła → VS Code → jeden skrót klawiszowy):** [INSTRUKCJA_EMAIL_VSCODE.md](INSTRUKCJA_EMAIL_VSCODE.md)
 
 ---
 
@@ -14,6 +15,11 @@ Projekt wykonany w 100% w katalogu `Kk/`, zgodnie z [zadaniem 1800](https://mdvi
 cd Kk/sklep
 bash start.sh
 ```
+
+**Na Windows (szkolny komputer) — bez pisania komend:**
+
+- podwójne kliknięcie **`URUCHOM.bat`** — sam sprawdzi Node.js, zainstaluje biblioteki i otworzy przeglądarkę,
+- albo w VS Code: otwórz ten folder i naciśnij **Ctrl + Shift + B** (zatrzymanie: Terminal → Uruchom zadanie… → STOP SKLEP).
 
 **Albo klasycznie** (`npm install` + `npm start`). Skrypt `start.sh` sam doinstalowuje Node.js, gdy go brak:
 
@@ -94,6 +100,8 @@ Kk/
     ├── kopiuj_wideo.sh          # kopiuje wideo z ZIP-a
     ├── kiosk-dns, kiosk-status  # narzędzia SSH (zadania 22–23)
     ├── kiosk-dns-report         # dzienny raport blokowanych domen DNS (zad. dod. 5)
+    ├── URUCHOM.bat              # Windows: podwójne kliknięcie = start sklepu
+    ├── .vscode/tasks.json       # VS Code: Ctrl+Shift+B = start, STOP SKLEP = stop
     └── README.md
 ```
 

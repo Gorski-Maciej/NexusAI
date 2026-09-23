@@ -2,6 +2,8 @@
 
 > Przeczytaj CAŁOŚĆ raz przed wyjazdem, potem na uczelni wykonuj punkt po punkcie.
 > Scenariusz: **szkolny komputer → VirtualBox → Ubuntu Server → sklep z chemią gospodarczą z pętlą reklam wideo.**
+>
+> 📧 Szukasz NAJPROSTSZEJ drogi (katalog mailem → VS Code → Ctrl+Shift+B, bez maszyny wirtualnej)? Otwórz: [INSTRUKCJA_EMAIL_VSCODE.md](INSTRUKCJA_EMAIL_VSCODE.md)
 
 ---
 
@@ -382,7 +384,9 @@ sklep/
 ├── kiosk-dns               ← zarządzanie białą/czarną listą DNS
 ├── kiosk-status            ← raport stanu kiosku
 ├── kiosk-dns-report        ← dzienny raport blokowanych domen (zad. dod. 5)
-└── INSTRUKCJA_URUCHOMIENIA.md  ← ta instrukcja
+├── URUCHOM.bat             ← Windows: podwójne kliknięcie = start sklepu
+├── .vscode/tasks.json      ← VS Code: Ctrl+Shift+B = start, STOP SKLEP = stop
+└── INSTRUKCJA_*.md         ← ta instrukcja + INSTRUKCJA_EMAIL_VSCODE.md (najprostsza droga)
 ```
 
 ### Jak to działa (w skrócie)
