@@ -1,0 +1,38 @@
+**Spis treści – Projekt układu sumatora pełnego (Full Adder) z minimalizacją bramek logicznych**
+
+**1. Wstęp teoretyczny**
+&nbsp;&nbsp;1.1. Definicja sumatora cyfrowego
+&nbsp;&nbsp;1.2. Zasada działania sumatora pełnego
+&nbsp;&nbsp;1.3. Zastosowanie sumatorów cyfrowych
+&nbsp;&nbsp;1.4. Rodzaje sumatorów (półsumujący, pełny, kaskadowy)
+
+**2. Opis techniczny projektu**
+&nbsp;&nbsp;2.1. Założenia projektowe
+&nbsp;&nbsp;2.2. Specyfikacja wejść i wyjść
+&nbsp;&nbsp;2.3. Analiza logiczna układu
+&nbsp;&nbsp;2.4. Tablica prawdy
+&nbsp;&nbsp;2.5. Mapa Karnaugha
+&nbsp;&nbsp;2.6. Minimalizacja funkcji logicznej
+&nbsp;&nbsp;2.7. Porównanie liczby bramek przed i po minimalizacji
+
+**3. Implementacja i realizacja**
+&nbsp;&nbsp;3.1. Wybór elementów logicznych
+&nbsp;&nbsp;3.2. Projekt układu sumatora
+&nbsp;&nbsp;3.3. Schemat logiczny układu
+&nbsp;&nbsp;3.4. Realizacja zminimalizowanego układu
+
+**4. Symulacja i testowanie**
+&nbsp;&nbsp;4.1. Środowisko symulacyjne
+&nbsp;&nbsp;4.2. Przygotowanie układu do symulacji
+&nbsp;&nbsp;4.3. Scenariusze testowe
+&nbsp;&nbsp;4.4. Oczekiwane wyniki symulacji
+&nbsp;&nbsp;4.5. Analiza wyników
+
+**5. Podsumowanie i wnioski**
+&nbsp;&nbsp;5.1. Ocena zaprojektowanego układu
+&nbsp;&nbsp;5.2. Korzyści wynikające z minimalizacji bramek
+&nbsp;&nbsp;5.3. Ograniczenia rozwiązania
+&nbsp;&nbsp;5.4. Możliwości rozwoju projektu
+
+**6. Źródła**
+
