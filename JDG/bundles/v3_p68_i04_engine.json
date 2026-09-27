@@ -9,7 +9,7 @@
     {
       "name": "residual_inventoried",
       "status": "OK",
-      "detail": "rezyduum P1–P3 zinwentaryzowane: 69 pozycji"
+      "detail": "rezyduum P1–P3 zinwentaryzowane: 72 pozycji"
     },
     {
       "name": "sweep_register_feed",
@@ -23,7 +23,7 @@
     }
   ],
   "metrics": {
-    "residual_items": 69,
+    "residual_items": 72,
     "unmapped_registers": [],
     "v4_map_present": true
   },
@@ -32,7 +32,7 @@
   "innovation": "V3-P68-I04",
   "gate": "PASS",
   "findings": [],
-  "generated_at": "2026-09-19T10:22:09.976457+00:00",
+  "generated_at": "2026-09-27T07:57:09.096691+00:00",
   "part": "P68",
   "slug": "RECERTYFIKACJA_FINALNA"
 }
