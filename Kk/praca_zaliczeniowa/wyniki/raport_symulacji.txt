@@ -1,0 +1,58 @@
+============================================================================
+ RAPORT SYMULACJI — komparator większości (A > B), 2 bity
+ Autor pracy: Maciej Górski, nr albumu 4256
+============================================================================
+
+--- 4.1 TABLICE PRAWDY (16 kombinacji, warianty S/N/C/T) ---
+  [PASS] wariant S (SOP z QM (2xNOT+2xAND3+AND2+OR3)): 16/16
+  [PASS] wariant N (NAND-NAND (2xNAND2inv+3xNAND+NAND3)): 16/16
+  [PASS] wariant C (SOP kanoniczny (4xNOT+6xAND4+OR6)): 16/16
+  [PASS] wariant T (Kaskada (2xNOT+XNOR+AND2+AND3+OR2)): 16/16
+
+--- 4.2 QUINE-McCLUSKEY ---
+  mintermy G: [4, 8, 9, 12, 13, 14]  (6 sztuk)
+  implikanty pierwsze (3):
+      A0·B1'·B0'           pokrywa [4, 12]  OK
+      A1·A0·B0'            pokrywa [12, 14]  OK
+      A1·B1'               pokrywa [8, 9, 12, 13]  OK
+  pokrycie minimalne:
+      A0·B1'·B0'
+      A1·B1'
+      A1·A0·B0'
+  Y_QM = A0·B1'·B0' + A1·B1' + A1·A0·B0'
+  weryfikacja pokrycia (ekspansja 100%): PASS
+
+--- 4.3 HAZARDY (240 przejsc x skew 0-3 ns) ---
+  wariant S: static-1=8, static-0=20, dynamiczne=36, najgorszy skew=1 ns
+  wariant N: static-1=8, static-0=20, dynamiczne=36, najgorszy skew=1 ns
+  wariant C: static-1=20, static-0=20, dynamiczne=80, najgorszy skew=3 ns
+  wariant T: static-1=12, static-0=20, dynamiczne=43, najgorszy skew=3 ns
+
+--- 4.4 TOLERANCJA POZIOMOW (skan d, k=1) ---
+  wariant S: d_max = 0.498
+  wariant N: d_max = 0.300
+  wariant C: d_max = 0.310
+  wariant T: d_max = 0.498
+  analitycznie (S): d <= 0.2929  [z (1-d)^2 >= 0,5, stan m4: A=01,B=00]
+  stan G=0: Y = d·(1-d) <= 0.25 < 0,5 dla kazdego d — niewiazaca
+
+--- 4.5 WZMOCNIENIE W DOL (skan k, d=0) ---
+  wariant S: k_min = 1.000
+  wariant N: k_min = 1.000
+  wariant C: k_min = 1.000
+  wariant T: k_min = 1.000
+
+--- 4.6 MONTE CARLO (n=20000, sigma=0.02, seed=4256) ---
+  wariant S: bledy=0/20000, worst Y|G=1: 0.8905, worst Y|G=0: 0.1030
+  wariant N: bledy=0/20000, worst Y|G=1: 0.9046, worst Y|G=0: 0.1639
+  wariant C: bledy=0/20000, worst Y|G=1: 0.8654, worst Y|G=0: 0.0982
+  wariant T: bledy=0/20000, worst Y|G=1: 0.8905, worst Y|G=0: 0.0987
+
+--- 4.7 OPÓŹNIENIA I ZŁOŻONOŚĆ ---
+  wariant S: bramki=6, glebokosc=3, sredni czas przejscia=12.7 ns
+  wariant N: bramki=6, glebokosc=3, sredni czas przejscia=9.7 ns
+  wariant C: bramki=11, glebokosc=3, sredni czas przejscia=13.7 ns
+  wariant T: bramki=6, glebokosc=3, sredni czas przejscia=13.7 ns
+
+============================================================================
+ KONIEC RAPORTU
