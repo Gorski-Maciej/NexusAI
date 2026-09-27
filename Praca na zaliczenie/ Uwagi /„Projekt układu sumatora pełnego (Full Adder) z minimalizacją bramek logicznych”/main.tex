@@ -1,0 +1,72 @@
+% ============================================================
+% Projekt układu sumatora pełnego (Full Adder)
+% z minimalizacją bramek logicznych
+% ------------------------------------------------------------
+% Dokument główny — kompilacja w Overleaf (pdfLaTeX).
+% Skleja pliki 01–06 w całą pracę.
+% ============================================================
+
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\input{glyphtounicode}
+\pdfgentounicode=1
+\usepackage{cmap}
+\usepackage[polish]{babel}
+\IfFileExists{lmodern.sty}{\usepackage{lmodern}}{}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{array, booktabs}
+\usepackage{tikz}
+\usepackage{circuitikz}
+\usepackage{setspace}
+\usepackage{hyperref}
+
+\hypersetup{
+    pdftitle={Projekt układu sumatora pełnego (Full Adder) z minimalizacją bramek logicznych},
+    pdfauthor={[IMIĘ NAZWISKO NUMER INDEKSU]},
+    pdfsubject={Elektronika -- projekt zaliczeniowy},
+    pdfcreator={LaTeX}
+}
+
+\onehalfspacing
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.6em}
+
+\begin{document}
+
+% ---------- Strona tytułowa ----------
+\begin{titlepage}
+    \centering
+    {\Large \textbf{ELEKTRONIKA}\par}
+    \vspace{1em}
+    {\large Prowadzący: prof. dr inż. Zbigniew Frąckiewicz\par}
+    \vspace{4em}
+    {\LARGE \textbf{Projekt układu sumatora pełnego (Full Adder)\\[0.5em] z minimalizacją bramek logicznych}\par}
+    \vspace{4em}
+    {\large 18. 09. 2026\par}
+    \vfill
+    {\large \textbf{Wyższa Szkoła Informatyki i Zarządzania}\\[0.3em]
+    Bielsko-Biała, 2025/2026\par}
+    \vspace{2em}
+    \begin{tabular}{|c|}
+        \hline
+        [IMIĘ NAZWISKO NUMER INDEKSU] \\
+        \hline
+    \end{tabular}
+\end{titlepage}
+
+% ---------- Spis treści ----------
+\tableofcontents
+\newpage
+
+% ---------- Treść pracy ----------
+\input{01_wstep_teoretyczny}
+\input{02_opis_techniczny}
+\input{03_implementacja}
+\input{04_symulacja}
+\input{05_podsumowanie}
+\input{06_zrodla}
+
+\end{document}

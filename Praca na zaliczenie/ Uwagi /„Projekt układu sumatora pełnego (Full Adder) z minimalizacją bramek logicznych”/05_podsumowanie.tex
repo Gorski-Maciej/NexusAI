@@ -1,0 +1,43 @@
+% ============================================================
+% Punkt 5: Podsumowanie i wnioski
+% Projekt układu sumatora pełnego (Full Adder)
+% z minimalizacją bramek logicznych
+% ------------------------------------------------------------
+% Plik przeznaczony do włączenia w dokumencie głównym Overleaf:
+%   \input{05_podsumowanie}
+% Wymagane pakiety w dokumencie głównym:
+%   \usepackage[utf8]{inputenc}  \usepackage[T1]{polski}
+%   \usepackage{amsmath, amssymb}
+% ============================================================
+
+\section{Podsumowanie i wnioski}
+
+\subsection{Ocena zaprojektowanego układu}
+
+Zaprojektowany sumator pełny spełnia wszystkie stawiane przed nim wymagania funkcjonalne. Zastosowanie podejścia strukturalnego opartego na funkcji alternatywy rozłącznej oraz wspólnym sygnale pośrednim okazało się wysoce efektywne. Układ działa w sposób deterministyczny i bezbłędnie wyznacza wartość sumy oraz przeniesienia dla każdej z ośmiu możliwych kombinacji wejściowych.
+
+\subsection{Korzyści wynikające z minimalizacji bramek}
+
+Minimalizacja funkcji logicznych z postaci kanonicznej (SOP) do postaci zredukowanej przyniosła wymierne korzyści:
+
+\begin{itemize}
+    \item Redukcja zasobów sprzętowych: Liczba potrzebnych bramek spadła z około 13--16 (w przypadku pełnej implementacji mintermów) do zaledwie 5 bramek logicznych.
+    \item Ograniczenie poboru prądu: Mniejsza liczba przełączających się tranzystorów wewnątrz struktur sumatora bezpośrednio przekłada się na mniejsze straty mocy.
+    \item Współdzielenie logiki: Wykorzystanie wspólnego sygnału $c_1 = a \oplus b$ zarówno w torze sumy, jak i w torze przeniesienia wyeliminowało konieczność wykonywania tej samej operacji dwukrotnie.
+    \item Zwiększenie szybkości: Skrócenie ścieżki krytycznej sygnału do trzech poziomów bramek zminimalizowało opóźnienie propagacyjne, co pozwala na pracę układu przy wyższych częstotliwościach zegarowych.
+\end{itemize}
+
+\subsection{Ograniczenia rozwiązania}
+
+Prezentowany układ posiada ograniczenie architektoniczne -- realizuje wyłącznie dodawanie trzech pojedynczych bitów. Nie dostarcza on możliwości dodawania liczb wielobitowych bez dodatkowych struktur. Dodatkowo, wraz ze wzrostem szerokości słowa danych (np. do 8 lub 16 bitów), łańcuch kaskadowo połączonych sumatorów pełnych wprowadza narastające opóźnienie propagacji przeniesienia, ponieważ każdy stopień musi oczekiwać na przeniesienie z rzędu niższego (tzw. efekt ripple). Wraz z liczbą bitów rośnie również liczba wymaganych połączeń międzystopniowych.
+
+\subsection{Możliwości rozwoju projektu}
+
+Projekt może zostać rozbudowany w następujących kierunkach:
+
+\begin{itemize}
+    \item Rozszerzenie funkcjonalności: Przekształcenie układu w sumator wielobitowy poprzez kaskadowe połączenie $n$ sumatorów pełnych (Ripple-Carry Adder), realizujące dodawanie liczb $n$-bitowych.
+    \item Przyspieszenie propagacji przeniesienia: Zastosowanie struktury z przyspieszonym przeniesieniem (Carry-Lookahead Adder), w którym przeniesienia wyznaczane są równolegle dla wszystkich pozycji, co znacząco skraca ścieżkę krytyczną kosztem zwiększonej złożoności logiki.
+    \item Skalowalność: Przekształcenie układu w sumator magistrali $n$-bitowej z selekcją trybu pracy (dodawanie/odejmowanie) poprzez implementację toru przekształcenia uzupełnienia do dwóch, dedykowanego dla systemów mikroprocesorowych.
+    \item Implementacja w VHDL/Verilog: Przeniesienie projektu na poziom opisu języka programowania układów programowalnych, co umożliwiłoby automatyczną syntezę w strukturach CPLD/FPGA.
+\end{itemize}

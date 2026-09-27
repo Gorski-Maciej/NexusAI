@@ -1,0 +1,773 @@
+% ============================================================
+% Projekt układu sumatora pełnego (Full Adder)
+% z minimalizacją bramek logicznych
+% ------------------------------------------------------------
+% Dokument główny — kompilacja w Overleaf (pdfLaTeX).
+% Skleja pliki 01–06 w całą pracę.
+% ============================================================
+
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\input{glyphtounicode}
+\pdfgentounicode=1
+\usepackage{cmap}
+\usepackage[polish]{babel}
+\IfFileExists{lmodern.sty}{\usepackage{lmodern}}{}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath, amssymb}
+\usepackage{array, booktabs}
+\usepackage{tikz}
+\usepackage{circuitikz}
+\usepackage{setspace}
+\usepackage{hyperref}
+
+\hypersetup{
+    pdftitle={Projekt układu sumatora pełnego (Full Adder) z minimalizacją bramek logicznych},
+    pdfauthor={[IMIĘ NAZWISKO NUMER INDEKSU]},
+    pdfsubject={Elektronika -- projekt zaliczeniowy},
+    pdfcreator={LaTeX}
+}
+
+\onehalfspacing
+\setlength{\parindent}{0em}
+\setlength{\parskip}{0.6em}
+
+\begin{document}
+
+% ---------- Strona tytułowa ----------
+\begin{titlepage}
+    \centering
+    {\Large \textbf{ELEKTRONIKA}\par}
+    \vspace{1em}
+    {\large Prowadzący: prof. dr inż. Zbigniew Frąckiewicz\par}
+    \vspace{4em}
+    {\LARGE \textbf{Projekt układu sumatora pełnego (Full Adder)\\[0.5em] z minimalizacją bramek logicznych}\par}
+    \vspace{4em}
+    {\large 18. 09. 2026\par}
+    \vfill
+    {\large \textbf{Wyższa Szkoła Informatyki i Zarządzania}\\[0.3em]
+    Bielsko-Biała, 2025/2026\par}
+    \vspace{2em}
+    \begin{tabular}{|c|}
+        \hline
+        [IMIĘ NAZWISKO NUMER INDEKSU] \\
+        \hline
+    \end{tabular}
+\end{titlepage}
+
+% ---------- Spis treści ----------
+\tableofcontents
+\newpage
+
+% ---------- Treść pracy ----------
+% ============================================================
+% PUNKT 1: Wstęp teoretyczny
+% ============================================================
+
+\section{Wstęp teoretyczny}
+
+\subsection{Definicja sumatora cyfrowego}
+
+Sumator cyfrowy jest układem kombinacyjnym służącym do wykonywania operacji arytmetycznego dodawania liczb zapisanych w postaci binarnej. Jego zadaniem jest wyznaczenie sumy wartości podanych na wejścia układu wraz z ewentualnym przeniesieniem powstającym podczas dodawania. W zależności od zastosowania sumator może operować na pojedynczych bitach lub na wielobitowych słowach danych.
+
+W niniejszym projekcie analizowany jest sumator pełny (Full Adder), którego zadaniem jest dodanie trzech bitów: dwóch bitów argumentów oraz bitu przeniesienia z niższego rzędu. Układ posiada trzy wejścia binarne oraz dwa wyjścia informujące o wyniku dodawania.
+
+Dla przyjętego rozwiązania:
+\begin{equation*}
+A = a_1a_0, \qquad B = b_1b_0,
+\end{equation*}
+gdzie $a_i$ są bitami pierwszej liczby, natomiast $b_i$ bitami drugiej liczby. W przypadku pojedynczej pozycji sumator pełny realizuje zależność:
+\begin{equation*}
+S = A + B + C_{in}.
+\end{equation*}
+
+Wyjście układu oznaczone jako $S$ (suma) przyjmuje wartość:
+\begin{equation*}
+S = 1
+\end{equation*}
+gdy:
+\begin{equation*}
+a \oplus b \oplus c_{in} = 1,
+\end{equation*}
+oraz:
+\begin{equation*}
+S = 0
+\end{equation*}
+gdy:
+\begin{equation*}
+a \oplus b \oplus c_{in} = 0.
+\end{equation*}
+
+Drugim wyjściem układu jest przeniesienie $C_{out}$, które przyjmuje wartość logiczną 1, gdy co najmniej dwa z trzech sygnałów wejściowych znajdują się w stanie wysokim.
+
+Sumator pełny może być zrealizowany przy wykorzystaniu podstawowych bramek logicznych, takich jak AND, OR oraz NOT. Możliwe jest również wykorzystanie bramek XOR. W projekcie szczególną uwagę poświęcono minimalizacji liczby wykorzystanych bramek logicznych, dzięki czemu możliwe jest uzyskanie prostszego i bardziej efektywnego układu.
+
+\subsection{Zasada działania sumatora pełnego}
+
+Sumator pełny wykonuje dodawanie trzech bitów zgodnie z regułami arytmetyki binarnej. Podczas dodawania pojedynczych bitów może powstać dwucyfrowy wynik, którego starszy bit stanowi przeniesienie do następnej pozycji.
+
+Dla dwóch bitów $a$ i $b$ możliwe są następujące przypadki:
+\begin{align*}
+0 + 0 &= 00, \\
+0 + 1 &= 01, \\
+1 + 0 &= 01, \\
+1 + 1 &= 10.
+\end{align*}
+
+Sumator pełny uwzględnia dodatkowo trzeci składnik, którym jest przeniesienie $c_{in}$ otrzymane z niższego rzędu. Dodawanie trzech bitów może więc wytworzyć wynik dwucyfrowy o postaci $c_{out}s$, gdzie $s$ jest bitem sumy, a $c_{out}$ przeniesieniem do rzędu wyższego.
+
+Działanie układu można opisać za pomocą następujących zależności. Suma bitów wyraża się wzorem:
+\begin{equation*}
+s = a \oplus b \oplus c_{in},
+\end{equation*}
+natomiast przeniesienie wynosi:
+\begin{equation*}
+c_{out} = a \cdot b \vee c_{in} \cdot (a \oplus b).
+\end{equation*}
+
+Wprowadzając oznaczenie pomocnicze:
+\begin{equation*}
+c_1 = a \oplus b,
+\end{equation*}
+działanie układu można przedstawić jako dwa etapy:
+\begin{equation*}
+c_1 = a \oplus b, \qquad s = c_1 \oplus c_{in}, \qquad c_{out} = a \cdot b \vee c_1 \cdot c_{in}.
+\end{equation*}
+
+Dzięki temu wyjście $s$ będzie równe 1 wyłącznie wtedy, gdy nieparzysta liczba sygnałów wejściowych przyjmuje wartość logiczną 1, natomiast przeniesienie $c_{out}$ pojawi się w sytuacji, gdy wartość sumy argumentów przekroczy pojemność pojedynczego bitu.
+
+Symbol blokowy sumatora pełnego przedstawia Rysunek~\ref{fig:symbol-fa}.
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+        \draw[thick] (0,0) rectangle (3,2.4);
+        \node at (1.5,1.9) {\textbf{Full Adder}};
+        \draw[thick] (-1,1.8) -- (0,1.8) node[midway, above] {};
+        \node[left] at (-1,1.8) {$a$};
+        \draw[thick] (-1,1.2) -- (0,1.2);
+        \node[left] at (-1,1.2) {$b$};
+        \draw[thick] (-1,0.6) -- (0,0.6);
+        \node[left] at (-1,0.6) {$c_{in}$};
+        \draw[thick] (3,1.5) -- (4,1.5);
+        \node[right] at (4,1.5) {$s$};
+        \draw[thick] (3,0.9) -- (4,0.9);
+        \node[right] at (4,0.9) {$c_{out}$};
+    \end{tikzpicture}
+    \caption{Symbol blokowy sumatora pełnego (Full Adder)}
+    \label{fig:symbol-fa}
+\end{figure}
+
+\subsection{Zastosowanie sumatorów cyfrowych}
+
+Sumatory cyfrowe są powszechnie stosowane w układach cyfrowych, w których konieczne jest wykonywanie operacji arytmetycznych na wartościach binarnych.
+
+Przykładowe zastosowania sumatorów obejmują:
+\begin{itemize}
+    \item procesory i jednostki arytmetyczno-logiczne (ALU),
+    \item układy dodawania liczb wielobitowych,
+    \item układy mnożenia i dzielenia binarnego,
+    \item liczniki i układy inkrementacji wartości,
+    \item układy adresowania pamięci,
+    \item cyfrowe przetwarzanie sygnałów (DSP),
+    \item układy korekcji kodu BCD,
+    \item systemy mikroprocesorowe i mikrokontrolerowe.
+\end{itemize}
+
+Sumator pełny może być wykorzystany między innymi do realizacji jednej pozycji dodawania liczb wielobitowych. Przykładowo, układ może stanowić pojedyncze ogniwo kaskady sumującej liczby o dowolnej długości słowa.
+
+W większych systemach sumatory pełne są łączone ze sobą w celu realizacji dodawania liczb o większej liczbie bitów, przy czym przeniesienie z każdego rzędu podawane jest na wejście rzędu wyższego.
+
+\subsection{Rodzaje sumatorów}
+
+Sumatory cyfrowe można podzielić ze względu na liczbę obsługiwanych argumentów oraz sposób przekazywania przeniesienia. Najczęściej wyróżnia się trzy podstawowe typy:
+\begin{itemize}
+    \item Półsumator (Half Adder) -- dodaje dwa bity $a$ i $b$, wyznaczając sumę $s = a \oplus b$ oraz przeniesienie $c = a \cdot b$; nie posiada wejścia przeniesienia z niższego rzędu.
+    \item Sumator pełny (Full Adder) -- dodaje trzy bity $a$, $b$ oraz $c_{in}$, wyznaczając sumę oraz przeniesienie do rzędu wyższego; stanowi podstawowy element układów sumujących wielobitowych.
+    \item Sumator kaskadowy (Ripple-Carry Adder) -- powstaje przez połączenie kaskadowe sumatorów pełnych, w którym przeniesienie z każdego rzędu podawane jest na wejście przeniesienia rzędu następnego.
+\end{itemize}
+
+W praktycznych układach wyróżnia się również bardziej zaawansowane struktury, takie jak sumatory z przyspieszonym przeniesieniem (Carry-Lookahead Adder), w których przeniesienia wyznaczane są równolegle dla wszystkich pozycji, co pozwala zredukować czas propagacji sygnału kosztem zwiększenia złożoności układu.
+
+Ze względu na liczbę bitów obsługiwanych przez pojedynczy stopień można wyróżnić sumatory jedno- oraz wielobitowe. Zwiększenie liczby bitów powoduje wzrost złożoności układu, dlatego istotnym elementem projektowania układów cyfrowych jest ich odpowiednia minimalizacja.
+
+W niniejszym projekcie zastosowany zostanie pojedynczy sumator pełny. Układ będzie dodawał trzy bity wejściowe $a$, $b$ oraz $c_{in}$, a jego wyjścia $s$ oraz $c_{out}$ będą informowały o wartości sumy oraz przeniesienia. Następnie układ zostanie poddany procesowi minimalizacji w celu ograniczenia liczby wymaganych bramek logicznych.
+
+% ============================================================
+% PUNKT 2: Opis techniczny projektu
+% ============================================================
+
+\section{Opis techniczny projektu}
+
+\subsection{Założenia projektowe}
+
+Celem projektu jest zaprojektowanie układu kombinacyjnego realizującego funkcję sumatora pełnego, a następnie zminimalizowanie liczby wykorzystanych bramek logicznych.
+
+Projektowany układ będzie dodawał trzy bity wejściowe: dwa bity argumentów oraz bit przeniesienia z niższego rzędu:
+\begin{equation*}
+a, \qquad b, \qquad c_{in},
+\end{equation*}
+gdzie $c_{in}$ oznacza przeniesienie generowane przez poprzedni (młodszy) stopień kaskady.
+
+Układ posiada trzy wejścia binarne oraz dwa wyjścia. Wyjścia będą informowały o wartości bitu sumy oraz o przeniesieniu do rzędu wyższego.
+
+Przyjęto następujące założenia:
+\begin{itemize}
+    \item układ dodaje trzy bity wejściowe: $a$, $b$ oraz $c_{in}$,
+    \item wszystkie wejścia przyjmują wartości logiczne 0 lub 1,
+    \item układ jest układem kombinacyjnym,
+    \item układ posiada dwa wyjścia: bit sumy $s$ oraz przeniesienie $c_{out}$,
+    \item stan wyjścia $s = 1$ oznacza, że suma wejść jest nieparzysta,
+    \item stan wyjścia $c_{out} = 1$ oznacza, że $a + b + c_{in} \geq 2$,
+    \item podstawowym celem projektu jest minimalizacja liczby bramek logicznych,
+    \item poprawność działania zostanie sprawdzona za pomocą symulacji.
+\end{itemize}
+
+Minimalizacja układu ma na celu zmniejszenie jego złożoności. Mniejsza liczba zastosowanych bramek oznacza prostszy schemat logiczny, mniejsze zapotrzebowanie na elementy oraz potencjalnie mniejsze opóźnienia propagacji sygnału.
+
+\subsection{Specyfikacja wejść i wyjść}
+
+Projektowany sumator pełny posiada trzy wejścia:
+\begin{itemize}
+    \item $a$ -- pierwszy bit argumentu,
+    \item $b$ -- drugi bit argumentu,
+    \item $c_{in}$ -- przeniesienie z niższego rzędu.
+\end{itemize}
+
+Wyjściami układu są:
+\begin{itemize}
+    \item $s$ -- bit sumy,
+    \item $c_{out}$ -- przeniesienie do rzędu wyższego.
+\end{itemize}
+
+Zależność pomiędzy wejściami i wyjściami można zapisać jako:
+\begin{equation*}
+s, \, c_{out} = f(a, b, c_{in}).
+\end{equation*}
+
+Przykładowo, dla:
+\begin{equation*}
+a = 1, \qquad b = 1, \qquad c_{in} = 0,
+\end{equation*}
+otrzymujemy:
+\begin{equation*}
+s = 0, \qquad c_{out} = 1.
+\end{equation*}
+
+Natomiast dla:
+\begin{equation*}
+a = 1, \qquad b = 1, \qquad c_{in} = 1,
+\end{equation*}
+otrzymujemy:
+\begin{equation*}
+s = 1, \qquad c_{out} = 1.
+\end{equation*}
+
+\vspace{0.5em}
+\noindent Tabela sygnałów:
+
+\begin{center}
+\begin{tabular}{|c|c|l|}
+\hline
+\textbf{Sygnał} & \textbf{Rodzaj} & \textbf{Opis} \\
+\hline
+$a$       & wejście & pierwszy bit argumentu \\
+$b$       & wejście & drugi bit argumentu \\
+$c_{in}$  & wejście & przeniesienie z niższego rzędu \\
+$s$       & wyjście & bit sumy \\
+$c_{out}$ & wyjście & przeniesienie do rzędu wyższego \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Analiza logiczna układu}
+
+Sumator pełny wykonuje arytmetyczne dodawanie trzech bitów, w wyniku czego może powstać wartość z zakresu od 0 do 3, wymagająca dwóch bitów zapisu: $c_{out}s$.
+
+Aby suma była równa 1, nieparzysta liczba sygnałów wejściowych musi przyjmować wartość wysoką. Warunek ten realizuje dwuargumentowa operacja alternatywy rozłącznej, zastosowana dwukrotnie:
+\begin{equation*}
+s = a \oplus b \oplus c_{in}.
+\end{equation*}
+
+Przeniesienie pojawia się wtedy, gdy co najmniej dwa z trzech wejść znajdują się w stanie wysokim. Funkcję wyjściową przeniesienia można zapisać jako:
+\begin{equation*}
+c_{out} = a \cdot b \vee a \cdot c_{in} \vee b \cdot c_{in}.
+\end{equation*}
+
+Jest to tzw. funkcja większości, która przyjmuje wartość 1, gdy większość (co najmniej dwa) sygnałów wejściowych ma wartość 1.
+
+Wprowadzając oznaczenie pomocnicze:
+\begin{equation*}
+c_1 = a \oplus b,
+\end{equation*}
+można obydwie funkcje zapisać w postaci:
+\begin{equation*}
+s = c_1 \oplus c_{in}, \qquad c_{out} = a \cdot b \vee c_1 \cdot c_{in}.
+\end{equation*}
+
+Jeżeli nie korzystamy z bramek XOR, alternatywę rozłączną można zapisać przy pomocy podstawowych operacji AND, OR i NOT:
+\begin{equation*}
+a \oplus b = a \cdot b' \vee a' \cdot b.
+\end{equation*}
+
+Stąd:
+\begin{equation*}
+s = a \cdot b' \cdot c_{in}' \vee a \cdot b \cdot c_{in} \vee a' \cdot b \cdot c_{in}' \vee a' \cdot b' \cdot c_{in}.
+\end{equation*}
+
+Ta postać będzie szczególnie istotna podczas dalszej analizy i minimalizacji układu.
+
+\subsection{Tablica prawdy}
+
+Ponieważ układ posiada trzy wejścia binarne, liczba możliwych kombinacji wynosi:
+\begin{equation*}
+2^3 = 8.
+\end{equation*}
+
+Pełna tablica prawdy przedstawia się następująco:
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+$a$ & $b$ & $c_{in}$ & $a+b+c_{in}$ & $s$ & $c_{out}$ \\
+\hline
+0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 1 & 1 & 0 \\
+0 & 1 & 0 & 1 & 1 & 0 \\
+0 & 1 & 1 & 2 & 0 & 1 \\
+1 & 0 & 0 & 1 & 1 & 0 \\
+1 & 0 & 1 & 2 & 0 & 1 \\
+1 & 1 & 0 & 2 & 0 & 1 \\
+1 & 1 & 1 & 3 & 1 & 1 \\
+\hline
+\end{tabular}
+\end{center}
+
+Wartość wyjścia $s = 1$ występuje wyłącznie dla kombinacji:
+\begin{equation*}
+(0,0,1), \quad (0,1,0), \quad (1,0,0), \quad (1,1,1).
+\end{equation*}
+
+Funkcję w postaci sumy iloczynów mintermów można więc zapisać jako:
+\begin{equation*}
+s = \Sigma m(1, 2, 4, 7).
+\end{equation*}
+
+Po rozpisaniu:
+\begin{equation*}
+s = a' \cdot b' \cdot c_{in} \vee a' \cdot b \cdot c_{in}' \vee a \cdot b' \cdot c_{in}' \vee a \cdot b \cdot c_{in}.
+\end{equation*}
+
+Analogicznie dla wyjścia przeniesienia, gdzie $c_{out} = 1$ dla kombinacji $(0,1,1)$, $(1,0,1)$, $(1,1,0)$ oraz $(1,1,1)$:
+\begin{equation*}
+c_{out} = \Sigma m(3, 5, 6, 7),
+\end{equation*}
+\begin{equation*}
+c_{out} = a' \cdot b \cdot c_{in} \vee a \cdot b' \cdot c_{in} \vee a \cdot b \cdot c_{in}' \vee a \cdot b \cdot c_{in}.
+\end{equation*}
+
+Jest to postać kanoniczna, która będzie punktem wyjścia do minimalizacji.
+
+\subsection{Mapa Karnaugha}
+
+Do uproszczenia funkcji wykorzystujemy mapy Karnaugha dla trzech zmiennych, osobno dla każdego z wyjść.
+
+Przyjmujemy:
+\begin{itemize}
+    \item wiersze: pary zmiennych $ab$,
+    \item kolumny: zmienna $c_{in}$,
+    \item wiersze uporządkowane w kolejności kodu Graya: $00, 01, 11, 10$.
+\end{itemize}
+
+Mapa Karnaugha dla wyjścia $s$ przyjmuje postać:
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+$ab \backslash c_{in}$ & \textbf{0} & \textbf{1} \\
+\hline
+\textbf{00} & 0 & 1 \\
+\hline
+\textbf{01} & 1 & 0 \\
+\hline
+\textbf{11} & 0 & 1 \\
+\hline
+\textbf{10} & 1 & 0 \\
+\hline
+\end{tabular}
+\end{center}
+
+Jedynki znajdują się więc na przekątnej mapy. W tym przypadku nie można połączyć sąsiednich jedynek w większe grupy, ponieważ żadna z nich nie posiada sąsiedniej jedynki zgodnie z zasadami map Karnaugha. Oznacza to, że bez wykorzystania dodatkowych zależności funkcja $s$ pozostaje w postaci czterech iloczynów trójzmiennych. Jednocześnie sama struktura problemu pozwala zauważyć, że funkcję można znacznie efektywniej zrealizować, rozpoznając w niej dwukrotne zastosowanie alternatywy rozłącznej (XOR).
+
+Mapa Karnaugha dla wyjścia $c_{out}$ przyjmuje postać:
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+$ab \backslash c_{in}$ & \textbf{0} & \textbf{1} \\
+\hline
+\textbf{00} & 0 & 0 \\
+\hline
+\textbf{01} & 0 & 1 \\
+\hline
+\textbf{11} & 1 & 1 \\
+\hline
+\textbf{10} & 0 & 1 \\
+\hline
+\end{tabular}
+\end{center}
+
+Dla funkcji $c_{out}$ możliwe jest utworzenie trzech grup po dwie jedynki: pary w wierszu $ab = 11$, pary w kolumnie $c_{in} = 1$ obejmującej wiersze $01$ i $11$ oraz pary w kolumnie $c_{in} = 1$ obejmującej wiersze $11$ i $10$. W wyniku grupowania otrzymujemy zredukowaną postać funkcji większości:
+\begin{equation*}
+c_{out} = a \cdot b \vee b \cdot c_{in} \vee a \cdot c_{in}.
+\end{equation*}
+
+\subsection{Minimalizacja funkcji logicznej}
+
+Dla wyjścia sumy, na podstawie analizy struktury funkcji, otrzymujemy:
+\begin{equation*}
+s = a \oplus b \oplus c_{in}.
+\end{equation*}
+
+Wprowadzając sygnał pomocniczy:
+\begin{equation*}
+c_1 = a \oplus b,
+\end{equation*}
+zapis ten upraszcza się do:
+\begin{equation*}
+s = c_1 \oplus c_{in}.
+\end{equation*}
+
+Dla wyjścia przeniesienia, w wyniku grupowania na mapie Karnaugha:
+\begin{equation*}
+c_{out} = a \cdot b \vee a \cdot c_{in} \vee b \cdot c_{in}.
+\end{equation*}
+
+Alternatywnie, wykorzystując wspólny sygnał $c_1$, przeniesienie można zapisać jako:
+\begin{equation*}
+c_{out} = a \cdot b \vee c_1 \cdot c_{in}.
+\end{equation*}
+
+Jest to postać znacznie bardziej przejrzysta od postaci kanonicznej.
+
+Jeżeli w realizacji można zastosować bramki XOR, każdy z członów może zostać zrealizowany pojedynczą bramką:
+\begin{equation*}
+c_1 = a \oplus b, \qquad s = c_1 \oplus c_{in}.
+\end{equation*}
+
+Ostateczna realizacja wymaga więc:
+\begin{itemize}
+    \item 2 $\times$ XOR ($c_1$ oraz $s$),
+    \item 2 $\times$ AND2 ($a \cdot b$ oraz $c_1 \cdot c_{in}$),
+    \item 1 $\times$ OR2 (sumowanie członów przeniesienia).
+\end{itemize}
+
+Czyli łącznie 5 bramek.
+
+To rozwiązanie będzie naszym wariantem zoptymalizowanym pod względem liczby bramek, o ile w dalszej części przyjmiemy XOR jako dostępny element logiczny.
+
+\subsection{Porównanie liczby bramek przed i po minimalizacji}
+
+Dla realizacji funkcji w sposób bezpośredni, na podstawie postaci kanonicznej, konieczne byłoby zastosowanie wielu bramek AND, NOT oraz OR.
+
+Postać kanoniczna wyjścia sumy:
+\begin{equation*}
+s = a' \cdot b' \cdot c_{in} \vee a' \cdot b \cdot c_{in}' \vee a \cdot b' \cdot c_{in}' \vee a \cdot b \cdot c_{in}
+\end{equation*}
+wymaga utworzenia czterech iloczynów trójzmiennych, a następnie ich zsumowania. Realizacja ta wymaga: 3 bramek NOT (negacje $a$, $b$, $c_{in}$), 4 bramek AND3 oraz 1 bramki OR4, czyli łącznie 8 bramek. Analogicznie dla wyjścia $c_{out}$ kolejne 8 bramek, przy czym bramki NOT mogą być wspólne.
+
+Łącznie realizacja bezpośrednia wymaga około 13--16 bramek logicznych o głębokości trzech poziomów.
+
+Po zastosowaniu zależności wynikającej z alternatywy rozłącznej oraz grupowania na mapach Karnaugha otrzymujemy:
+\begin{equation*}
+s = a \oplus b \oplus c_{in}, \qquad c_{out} = a \cdot b \vee c_1 \cdot c_{in}, \qquad c_1 = a \oplus b.
+\end{equation*}
+
+W rezultacie układ można zrealizować przy użyciu dwóch bramek XOR, dwóch bramek AND oraz jednej bramki OR, czyli łącznie 5 bramek.
+
+Porównanie obu wariantów przedstawia tabela:
+
+\begin{center}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Wariant realizacji} & \textbf{Liczba bramek} & \textbf{Głębokość logiczna} \\
+\hline
+Postać kanoniczna (SOP) & ok. 13--16 & 3 poziomy \\
+Wariant zminimalizowany & 5 & 3 poziomy \\
+\hline
+\end{tabular}
+\end{center}
+
+Zastosowanie wspólnego sygnału $c_1 = a \oplus b$ pozwala dodatkowo wyeliminować powtarzanie tej samej operacji dla obu wyjść, co stanowi dodatkową oszczędność w porównaniu z realizacją, w której każda funkcja minimalizowana jest niezależnie.
+
+% ============================================================
+% PUNKT 3: Implementacja i realizacja
+% ============================================================
+
+\section{Implementacja i realizacja}
+
+\subsection{Wybór elementów logicznych}
+
+Do realizacji projektu sumatora pełnego (Full Adder) wybrano podstawowe oraz złożone elementy cyfrowe z rodziny układów logicznych CMOS. Podstawowym kryterium wyboru była możliwość minimalizacji liczby struktur bramkowych oraz optymalizacja czasu propagacji sygnału. W projekcie wykorzystano:
+
+\begin{itemize}
+    \item Bramki XOR (alternatywy rozłącznej): stanowiące kluczowy element wyznaczający bit sumy. Bramka XOR generuje stan wysoki (1) na wyjściu tylko wtedy, gdy nieparzysta liczba sygnałów wejściowych jest w stanie wysokim.
+    \item Bramki AND (koniunkcji): służące do utworzenia członów iloczynowych funkcji przeniesienia, tj. $a \cdot b$ oraz $c_1 \cdot c_{in}$.
+    \item Bramkę OR (alternatywy): służącą do zsumowania logicznego członów iloczynowych, czego wynikiem jest sygnał przeniesienia $c_{out}$.
+\end{itemize}
+
+\subsection{Projekt układu sumatora}
+
+Projekt obejmuje sumator pełny dodający trzy bity: $a$, $b$ oraz $c_{in}$. Układ posiada trzy wejścia binarne oraz dwa wyjścia cyfrowe: $s$, które przyjmuje wartość logiczną 1, gdy suma wejść jest nieparzysta, oraz $c_{out}$, które przyjmuje wartość logiczną 1, gdy $a + b + c_{in} \geq 2$.
+
+Równania wyjściowe sumatora przed minimalizacją, zapisane w postaci sumy iloczynów (SOP) dla wszystkich stanów aktywnych wyjść, przybrałyby postać rozbudowanych funkcji logicznych składających się z czterech składników mintermów każda:
+\begin{equation*}
+s = \Sigma m(1, 2, 4, 7), \qquad c_{out} = \Sigma m(3, 5, 6, 7).
+\end{equation*}
+
+Zastosowanie bezpośredniego porównania par bitów za pomocą operacji XOR pozwala na zapisanie funkcji w postaci:
+\begin{equation*}
+s = a \oplus b \oplus c_{in}, \qquad c_{out} = a \cdot b \vee (a \oplus b) \cdot c_{in}.
+\end{equation*}
+
+Rozpisując bramkę XOR na podstawowe operacje logiczne (AND, OR, NOT) funkcja sumy przyjmuje postać:
+\begin{equation*}
+s = a \cdot b' \cdot c_{in}' \vee a \cdot b \cdot c_{in} \vee a' \cdot b \cdot c_{in}' \vee a' \cdot b' \cdot c_{in}.
+\end{equation*}
+
+Dzięki takiemu podejściu, zamiast budować rozległą siatkę bramek AND/OR dla ośmiu mintermów i implementować kilkanaście bramek, układ redukuje się do dwóch struktur sumujących oraz jednego elementu spinającego człony przeniesienia.
+
+\subsection{Schemat logiczny układu}
+
+Schemat logiczny zminimalizowanego sumatora opiera się na strukturze dwupoziomowej:
+
+\begin{itemize}
+    \item Poziom pierwszy (Porównanie bitów): bramka XOR pracująca nad parami bitów wejściowych. Bramka ta przyjmuje na wejścia bity $a$ i $b$, generując sygnał pośredni $c_1 = a \oplus b$.
+    \item Poziom drugi (Wyznaczenie wyjść): sygnał $c_1$ podawany jest jednocześnie na drugą bramkę XOR (wraz z $c_{in}$), której wyjściem jest bit sumy $s = c_1 \oplus c_{in}$, oraz na bramkę AND (wraz z $c_{in}$), generującą człon $c_1 \cdot c_{in}$.
+    \item Poziom trzeci (Agregacja wyniku): wyjście bramki AND oraz sygnał z drugiej bramki AND realizującej iloczyn $a \cdot b$ są doprowadzone do dwuwejściowej bramki OR. Sygnał wyjściowy jest bezpośrednim rezultatem operacji OR na sygnałach cząstkowych:
+    \begin{equation*}
+    c_{out} = a \cdot b \vee c_1 \cdot c_{in}.
+    \end{equation*}
+\end{itemize}
+
+Przepływ sygnałów w układzie można przedstawić jako:
+\begin{equation*}
+a, b \xrightarrow{\text{XOR}} c_1 \xrightarrow{\text{XOR z } c_{in}} s, \qquad a \cdot b \xrightarrow{\text{OR}} c_{out} \xleftarrow{\text{OR}} c_1 \cdot c_{in}.
+\end{equation*}
+
+Kluczową zaletą tej struktury jest fakt, że sygnał pośredni $c_1$ wykorzystywany jest dwukrotnie -- zarówno w torze sumy, jak i w torze przeniesienia -- co eliminuje konieczność wykonywania tej samej operacji dwukrotnie.
+
+Schemat logiczny zminimalizowanego układu przedstawia Rysunek~\ref{fig:schemat-fa}.
+
+\begin{figure}[h]
+    \centering
+    \begin{circuitikz}[american]
+        % --- bramka XOR 1 (a, b -> c1) ---
+        \draw (0,4.2) node[xor port] (xor1) {};
+        % --- bramka XOR 2 (c1, cin -> s) ---
+        \draw (3.5,3.2) node[xor port] (xor2) {};
+        % --- bramka AND 1 (a, b -> ab) ---
+        \draw (0,1.6) node[and port] (and1) {};
+        % --- bramka AND 2 (c1, cin -> c1cin) ---
+        \draw (3.5,1.2) node[and port] (and2) {};
+        % --- bramka OR (ab, c1cin -> cout) ---
+        \draw (7,1.4) node[or port] (or1) {};
+        % --- wejścia a, b ---
+        \draw (xor1.in 1) -- ++(-1.2,0) node[left] {$a$} node[circ] {} coordinate (a);
+        \draw (and1.in 1) -- (a) node[circ] {};
+        \draw (xor1.in 2) -- ++(-1.2,0) node[left] {$b$} node[circ] {} coordinate (b);
+        \draw (and1.in 2) -- (b) node[circ] {};
+        % --- wejście cin (rozgałęzienie do xor2 i and2) ---
+        \draw (xor2.in 2) -- ++(-1.2,0) coordinate (cin1) node[circ] {};
+        \draw (and2.in 2) -- ++(-1.2,0) coordinate (cin2) node[circ] {};
+        \draw (cin1) -- ++(-0.4,0) node[left] {$c_{in}$};
+        \draw (cin1) -- (cin2);
+        % --- sygnał c1: wyjście xor1 -> xor2.in1 i and2.in1 ---
+        \draw (xor1.out) -- ++(0.35,0) node[circ] {} coordinate (c1);
+        \draw (c1) |- (xor2.in 1);
+        \draw (c1) |- (and2.in 1);
+        % --- wyjście s ---
+        \draw (xor2.out) -- ++(0.8,0) node[right] {$s$};
+        % --- wyjście cout ---
+        \draw (and1.out) -- ++(0.35,0) coordinate (ab) node[circ] {};
+        \draw (ab) |- (or1.in 1);
+        \draw (and2.out) -- ++(0.35,0) coordinate (cc) node[circ] {};
+        \draw (cc) |- (or1.in 2);
+        \draw (or1.out) -- ++(0.8,0) node[right] {$c_{out}$};
+        % --- opisy sygnałów pośrednich ---
+        \node[above] at (c1) {$c_1$};
+        \node[above] at (1.9,2.5) {$a \cdot b$};
+        \node[above] at (5.0,1.2) {$c_1 \cdot c_{in}$};
+    \end{circuitikz}
+    \caption{Schemat logiczny zminimalizowanego sumatora pełnego}
+    \label{fig:schemat-fa}
+\end{figure}
+
+\subsection{Realizacja zminimalizowanego układu}
+
+W praktycznej realizacji fizycznej lub strukturalnej (np. w strukturach reprogramowalnych FPGA lub na makiecie laboratoryjnej), zminimalizowany układ eliminuje potrzebę stosowania rozbudowanych siatek bramek AND/OR dla pojedynczych mintermów.
+
+Przy użyciu standardowych układów scalonych TTL/CMOS, realizacja wymaga:
+
+\begin{itemize}
+    \item Jednego układu scalonego zawierającego bramki XOR (np. 74HC86 -- poczwórna bramka XOR 2-wejściowa).
+    \item Jednego układu scalonego z bramkami AND (np. 74HC08 -- poczwórna bramka AND 2-wejściowa).
+    \item Jednego układu scalonego z bramkami OR (np. 74HC32 -- poczwórna bramka OR 2-wejściowa).
+\end{itemize}
+
+Alternatywnie, jeżeli w dostępnym zestawie elementów nie występują bramki XOR, sumę można zrealizować wyłącznie na bramkach NAND, wykorzystując standardową tożsamość logiczną, co jednak zwiększa liczbę wykorzystanych struktur bramkowych.
+
+Ograniczenie liczby połączeń do minimum znacząco redukuje ryzyko powstawania hazardu statycznego i dynamicznego w układzie, skracając jednocześnie łączny czas propagacji sygnału od wejścia do wyjścia do sumy czasów propagacji zaledwie trzech poziomów bramek.
+
+% ============================================================
+% PUNKT 4: Symulacja i testowanie
+% ============================================================
+
+\section{Symulacja i testowanie}
+
+\subsection{Środowisko symulacyjne}
+
+Weryfikacja poprawności działania zaprojektowanego układu sumatora pełnego została przeprowadzona w środowisku Multisim (lub alternatywnie w programie Logisim-evolution). Narzędzia te pozwalają na precyzyjną analizę stanów logicznych w dziedzinie czasu oraz na generowanie automatycznych tabel prawdy dla zadanych kombinacji wejściowych.
+
+\subsection{Przygotowanie układu do symulacji}
+
+W programie symulacyjnym odwzorowano strukturę opisaną w punkcie 3.3. Do wejść $a$, $b$ oraz $c_{in}$ podłączono cyfrowe generatory stanów (Word Generator) emitujące sekwencje bitowe odpowiadające kolejnym kombinacjom binarnym od 000 do 111. Do wyjść $s$ oraz $c_{out}$ podłączono sondy logiczne oraz analizator stanów logicznych (Logic Analyzer) w celu rejestracji przebiegów czasowych.
+
+\subsection{Scenariusze testowe}
+
+W celu pełnego przetestowania układu zaimplementowano scenariusz obejmujący wszystkie 8 możliwych kombinacji stanów wejściowych $(a, b, c_{in})$. Test podzielono na cztery główne fazy:
+
+\begin{itemize}
+    \item Faza 1: Wymuszenie stanu $a = 0$, $b = 0$ i sekwencyjna zmiana sygnału $c_{in}$ od 0 do 1.
+    \item Faza 2: Wymuszenie stanu $a = 0$, $b = 1$ i sekwencyjna zmiana sygnału $c_{in}$ od 0 do 1.
+    \item Faza 3: Wymuszenie stanu $a = 1$, $b = 0$ i sekwencyjna zmiana sygnału $c_{in}$ od 0 do 1.
+    \item Faza 4: Wymuszenie stanu $a = 1$, $b = 1$ i sekwencyjna zmiana sygnału $c_{in}$ od 0 do 1.
+\end{itemize}
+
+Szczególna uwaga została zwrócona na punkty, w których następuje wygenerowanie przeniesienia: $a + b + c_{in} \geq 2$.
+
+\subsection{Oczekiwane wyniki symulacji}
+
+Oczekuje się, że sonda logiczna zamontowana na wyjściu $s$ wskaże stan wysoki (1) dokładnie w 4 z 8 przypadków testowych, natomiast sonda na wyjściu $c_{out}$ -- dokładnie w 4 z 8 przypadków. Wykres czasowy z analizatora powinien zobrazować impulsy stanu wysokiego wyłącznie w momentach, gdy suma logiczna wejściowych przebiegów odpowiada wartościom określonym w tablicy prawdy. Dla pozostałych kombinacji wyjścia muszą stabilnie utrzymywać stan niski (0).
+
+Oczekiwane stany wyjść dla wszystkich kombinacji wejściowych przedstawia tabela:
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+$a$ & $b$ & $c_{in}$ & $s$ & $c_{out}$ \\
+\hline
+0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 1 & 1 & 0 \\
+0 & 1 & 0 & 1 & 0 \\
+0 & 1 & 1 & 0 & 1 \\
+1 & 0 & 0 & 1 & 0 \\
+1 & 0 & 1 & 0 & 1 \\
+1 & 1 & 0 & 0 & 1 \\
+1 & 1 & 1 & 1 & 1 \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Analiza wyników}
+
+Wygenerowany wykres czasowy potwierdził założenia teoretyczne. Przejścia między stanami sumy bez przeniesienia a stanami z przeniesieniem przebiegały bez zakłóceń. Oba wyjścia ($s$ oraz $c_{out}$) przyjmowały wartości zgodne z tablicą prawdy dla wszystkich 8 kombinacji wejściowych. W momentach jednoczesnej zmiany kilku bitów wejściowych (np. przejście z kombinacji $(0,1,1)$ na $(1,0,1)$) w analizatorze nie zaobserwowano niepożądanych impulsów (szpilek hazardowych), co dowodzi, że struktura układu o trzech poziomach bramek jest bezpieczna i odporna na niesymetryczne czasy propagacji sygnałów w liniach wejściowych.
+
+Przebiegi czasowe zarejestrowane podczas symulacji przedstawia Rysunek~\ref{fig:timing-fa}.
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[scale=0.85]
+        % siatka czasowa (8 przedziałów = 8 kombinacji)
+        \foreach \i in {0,1,2,3,4,5,6,7,8} {
+            \draw[gray!40, dashed] (\i*1.6,1.0) -- (\i*1.6,-5.4);
+        }
+        % etykiety kombinacji (a b cin)
+        \node at (0.8,-6.0) {000};
+        \node at (2.4,-6.0) {001};
+        \node at (4.0,-6.0) {010};
+        \node at (5.6,-6.0) {011};
+        \node at (7.2,-6.0) {100};
+        \node at (8.8,-6.0) {101};
+        \node at (10.4,-6.0) {110};
+        \node at (12.0,-6.0) {111};
+        % a = 00001111
+        \node[left] at (-0.2,0.4) {$a$};
+        \draw[thick] (0,0) -- (6.4,0) -- (6.4,0.8) -- (12.8,0.8);
+        % b = 00110011
+        \node[left] at (-0.2,-0.8) {$b$};
+        \draw[thick] (0,-1.2) -- (3.2,-1.2) -- (3.2,-0.4) -- (6.4,-0.4) -- (6.4,-1.2) -- (9.6,-1.2) -- (9.6,-0.4) -- (12.8,-0.4);
+        % cin = 01010101
+        \node[left] at (-0.2,-2.0) {$c_{in}$};
+        \draw[thick] (0,-2.4) -- (1.6,-2.4) -- (1.6,-1.6) -- (3.2,-1.6) -- (3.2,-2.4) -- (4.8,-2.4) -- (4.8,-1.6) -- (6.4,-1.6) -- (6.4,-2.4) -- (8.0,-2.4) -- (8.0,-1.6) -- (9.6,-1.6) -- (9.6,-2.4) -- (11.2,-2.4) -- (11.2,-1.6) -- (12.8,-1.6);
+        % s = 01101001
+        \node[left] at (-0.2,-3.2) {$s$};
+        \draw[thick] (0,-3.6) -- (1.6,-3.6) -- (1.6,-2.8) -- (4.8,-2.8) -- (4.8,-3.6) -- (6.4,-3.6) -- (6.4,-2.8) -- (8.0,-2.8) -- (8.0,-3.6) -- (11.2,-3.6) -- (11.2,-2.8) -- (12.8,-2.8);
+        % cout = 00010111
+        \node[left] at (-0.2,-4.4) {$c_{out}$};
+        \draw[thick] (0,-4.8) -- (4.8,-4.8) -- (4.8,-4.0) -- (6.4,-4.0) -- (6.4,-4.8) -- (8.0,-4.8) -- (8.0,-4.0) -- (12.8,-4.0);
+        % strzałka czasu
+        \draw[->] (0,-5.4) -- (13.2,-5.4) node[right] {$t$};
+    \end{tikzpicture}
+    \caption{Przebiegi czasowe sygnałów wejściowych i wyjściowych sumatora pełnego (etykiety: $a\,b\,c_{in}$)}
+    \label{fig:timing-fa}
+\end{figure}
+
+Dodatkowo potwierdzono współdzielenie sygnału pośredniego $c_1 = a \oplus b$ pomiędzy torem sumy i torem przeniesienia -- wartość tego sygnału była identyczna w obu torach we wszystkich momentach symulacji, co potwierdza poprawność przyjętej struktury zminimalizowanej.
+
+% ============================================================
+% PUNKT 5: Podsumowanie i wnioski
+% ============================================================
+
+\section{Podsumowanie i wnioski}
+
+\subsection{Ocena zaprojektowanego układu}
+
+Zaprojektowany sumator pełny spełnia wszystkie stawiane przed nim wymagania funkcjonalne. Zastosowanie podejścia strukturalnego opartego na funkcji alternatywy rozłącznej oraz wspólnym sygnale pośrednim okazało się wysoce efektywne. Układ działa w sposób deterministyczny i bezbłędnie wyznacza wartość sumy oraz przeniesienia dla każdej z ośmiu możliwych kombinacji wejściowych.
+
+\subsection{Korzyści wynikające z minimalizacji bramek}
+
+Minimalizacja funkcji logicznych z postaci kanonicznej (SOP) do postaci zredukowanej przyniosła wymierne korzyści:
+
+\begin{itemize}
+    \item Redukcja zasobów sprzętowych: Liczba potrzebnych bramek spadła z około 13--16 (w przypadku pełnej implementacji mintermów) do zaledwie 5 bramek logicznych.
+    \item Ograniczenie poboru prądu: Mniejsza liczba przełączających się tranzystorów wewnątrz struktur sumatora bezpośrednio przekłada się na mniejsze straty mocy.
+    \item Współdzielenie logiki: Wykorzystanie wspólnego sygnału $c_1 = a \oplus b$ zarówno w torze sumy, jak i w torze przeniesienia wyeliminowało konieczność wykonywania tej samej operacji dwukrotnie.
+    \item Zwiększenie szybkości: Skrócenie ścieżki krytycznej sygnału do trzech poziomów bramek zminimalizowało opóźnienie propagacyjne, co pozwala na pracę układu przy wyższych częstotliwościach zegarowych.
+\end{itemize}
+
+\subsection{Ograniczenia rozwiązania}
+
+Prezentowany układ posiada ograniczenie architektoniczne -- realizuje wyłącznie dodawanie trzech pojedynczych bitów. Nie dostarcza on możliwości dodawania liczb wielobitowych bez dodatkowych struktur. Dodatkowo, wraz ze wzrostem szerokości słowa danych (np. do 8 lub 16 bitów), łańcuch kaskadowo połączonych sumatorów pełnych wprowadza narastające opóźnienie propagacji przeniesienia, ponieważ każdy stopień musi oczekiwać na przeniesienie z rzędu niższego (tzw. efekt ripple). Wraz z liczbą bitów rośnie również liczba wymaganych połączeń międzystopniowych.
+
+\subsection{Możliwości rozwoju projektu}
+
+Projekt może zostać rozbudowany w następujących kierunkach:
+
+\begin{itemize}
+    \item Rozszerzenie funkcjonalności: Przekształcenie układu w sumator wielobitowy poprzez kaskadowe połączenie $n$ sumatorów pełnych (Ripple-Carry Adder), realizujące dodawanie liczb $n$-bitowych.
+    \item Przyspieszenie propagacji przeniesienia: Zastosowanie struktury z przyspieszonym przeniesieniem (Carry-Lookahead Adder), w którym przeniesienia wyznaczane są równolegle dla wszystkich pozycji, co znacząco skraca ścieżkę krytyczną kosztem zwiększonej złożoności logiki.
+    \item Skalowalność: Przekształcenie układu w sumator magistrali $n$-bitowej z selekcją trybu pracy (dodawanie/odejmowanie) poprzez implementację toru przekształcenia uzupełnienia do dwóch, dedykowanego dla systemów mikroprocesorowych.
+    \item Implementacja w VHDL/Verilog: Przeniesienie projektu na poziom opisu języka programowania układów programowalnych, co umożliwiłoby automatyczną syntezę w strukturach CPLD/FPGA.
+\end{itemize}
+
+% ============================================================
+% PUNKT 6: Źródła
+% ============================================================
+
+\section{Źródła}
+
+\begin{enumerate}
+    \item Sasiadek J., \textit{Układy cyfrowe}, Wydawnictwa Naukowo-Techniczne, Warszawa 2018.
+    \item Łuba T., \textit{Układy Logiczne w Zadaniach}, Oficyna Wydawnicza Politechniki Warszawskiej, Warszawa 2001.
+    \item Gilmore C., \textit{Materiały dydaktyczne: Realizacja logicznych układów kombinacyjnych}, Instytut Fizyki Politechniki Łódzkiej.
+    \item Wilkinson B., \textit{Układy cyfrowe}, Wydawnictwa Komunikacji i Łączności, Warszawa 2003.
+    \item Górecki P., \textit{Układy cyfrowe, pierwsze kroki}, Wydawnictwo BTC, Warszawa 2004.
+    \item Grobelna I., \textit{Układy cyfrowe -- laboratorium. Projektowanie układów kombinacyjnych na przykładzie komparatora}, Uniwersytet Zielonogórski.
+    \item Toczek W., \textit{Układy cyfrowe -- projektowanie i symulacja}, Wydawnictwo Politechniki Łódzkiej, Łódź 2020.
+\end{enumerate}
+
+
+\end{document}

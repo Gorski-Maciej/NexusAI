@@ -1,0 +1,126 @@
+% ============================================================
+% Punkt 3: Implementacja i realizacja
+% Projekt układu sumatora pełnego (Full Adder)
+% z minimalizacją bramek logicznych
+% ------------------------------------------------------------
+% Plik przeznaczony do włączenia w dokumencie głównym Overleaf:
+%   \input{03_implementacja}
+% Wymagane pakiety w dokumencie głównym:
+%   \usepackage[utf8]{inputenc}  \usepackage[T1]{polski}
+%   \usepackage{amsmath, amssymb}
+% ============================================================
+
+\section{Implementacja i realizacja}
+
+\subsection{Wybór elementów logicznych}
+
+Do realizacji projektu sumatora pełnego (Full Adder) wybrano podstawowe oraz złożone elementy cyfrowe z rodziny układów logicznych CMOS. Podstawowym kryterium wyboru była możliwość minimalizacji liczby struktur bramkowych oraz optymalizacja czasu propagacji sygnału. W projekcie wykorzystano:
+
+\begin{itemize}
+    \item Bramki XOR (alternatywy rozłącznej): stanowiące kluczowy element wyznaczający bit sumy. Bramka XOR generuje stan wysoki (1) na wyjściu tylko wtedy, gdy nieparzysta liczba sygnałów wejściowych jest w stanie wysokim.
+    \item Bramki AND (koniunkcji): służące do utworzenia członów iloczynowych funkcji przeniesienia, tj. $a \cdot b$ oraz $c_1 \cdot c_{in}$.
+    \item Bramkę OR (alternatywy): służącą do zsumowania logicznego członów iloczynowych, czego wynikiem jest sygnał przeniesienia $c_{out}$.
+\end{itemize}
+
+\subsection{Projekt układu sumatora}
+
+Projekt obejmuje sumator pełny dodający trzy bity: $a$, $b$ oraz $c_{in}$. Układ posiada trzy wejścia binarne oraz dwa wyjścia cyfrowe: $s$, które przyjmuje wartość logiczną 1, gdy suma wejść jest nieparzysta, oraz $c_{out}$, które przyjmuje wartość logiczną 1, gdy $a + b + c_{in} \geq 2$.
+
+Równania wyjściowe sumatora przed minimalizacją, zapisane w postaci sumy iloczynów (SOP) dla wszystkich stanów aktywnych wyjść, przybrałyby postać rozbudowanych funkcji logicznych składających się z czterech składników mintermów każda:
+\begin{equation*}
+s = \Sigma m(1, 2, 4, 7), \qquad c_{out} = \Sigma m(3, 5, 6, 7).
+\end{equation*}
+
+Zastosowanie bezpośredniego porównania par bitów za pomocą operacji XOR pozwala na zapisanie funkcji w postaci:
+\begin{equation*}
+s = a \oplus b \oplus c_{in}, \qquad c_{out} = a \cdot b \vee (a \oplus b) \cdot c_{in}.
+\end{equation*}
+
+Rozpisując bramkę XOR na podstawowe operacje logiczne (AND, OR, NOT) funkcja sumy przyjmuje postać:
+\begin{equation*}
+s = a \cdot b' \cdot c_{in}' \vee a \cdot b \cdot c_{in} \vee a' \cdot b \cdot c_{in}' \vee a' \cdot b' \cdot c_{in}.
+\end{equation*}
+
+Dzięki takiemu podejściu, zamiast budować rozległą siatkę bramek AND/OR dla ośmiu mintermów i implementować kilkanaście bramek, układ redukuje się do dwóch struktur sumujących oraz jednego elementu spinającego człony przeniesienia.
+
+\subsection{Schemat logiczny układu}
+
+Schemat logiczny zminimalizowanego sumatora opiera się na strukturze dwupoziomowej:
+
+\begin{itemize}
+    \item Poziom pierwszy (Porównanie bitów): bramka XOR pracująca nad parami bitów wejściowych. Bramka ta przyjmuje na wejścia bity $a$ i $b$, generując sygnał pośredni $c_1 = a \oplus b$.
+    \item Poziom drugi (Wyznaczenie wyjść): sygnał $c_1$ podawany jest jednocześnie na drugą bramkę XOR (wraz z $c_{in}$), której wyjściem jest bit sumy $s = c_1 \oplus c_{in}$, oraz na bramkę AND (wraz z $c_{in}$), generującą człon $c_1 \cdot c_{in}$.
+    \item Poziom trzeci (Agregacja wyniku): wyjście bramki AND oraz sygnał z drugiej bramki AND realizującej iloczyn $a \cdot b$ są doprowadzone do dwuwejściowej bramki OR. Sygnał wyjściowy jest bezpośrednim rezultatem operacji OR na sygnałach cząstkowych:
+    \begin{equation*}
+    c_{out} = a \cdot b \vee c_1 \cdot c_{in}.
+    \end{equation*}
+\end{itemize}
+
+Przepływ sygnałów w układzie można przedstawić jako:
+\begin{equation*}
+a, b \xrightarrow{\text{XOR}} c_1 \xrightarrow{\text{XOR z } c_{in}} s, \qquad a \cdot b \xrightarrow{\text{OR}} c_{out} \xleftarrow{\text{OR}} c_1 \cdot c_{in}.
+\end{equation*}
+
+Kluczową zaletą tej struktury jest fakt, że sygnał pośredni $c_1$ wykorzystywany jest dwukrotnie -- zarówno w torze sumy, jak i w torze przeniesienia -- co eliminuje konieczność wykonywania tej samej operacji dwukrotnie.
+
+Schemat logiczny zminimalizowanego układu przedstawia Rysunek~\ref{fig:schemat-fa}.
+
+\begin{figure}[h]
+    \centering
+    \begin{circuitikz}[american]
+        % --- bramka XOR 1 (a, b -> c1) ---
+        \draw (0,4.2) node[xor port] (xor1) {};
+        % --- bramka XOR 2 (c1, cin -> s) ---
+        \draw (3.5,3.2) node[xor port] (xor2) {};
+        % --- bramka AND 1 (a, b -> ab) ---
+        \draw (0,1.6) node[and port] (and1) {};
+        % --- bramka AND 2 (c1, cin -> c1cin) ---
+        \draw (3.5,1.2) node[and port] (and2) {};
+        % --- bramka OR (ab, c1cin -> cout) ---
+        \draw (7,1.4) node[or port] (or1) {};
+        % --- wejścia a, b ---
+        \draw (xor1.in 1) -- ++(-1.2,0) node[left] {$a$} node[circ] {} coordinate (a);
+        \draw (and1.in 1) -- (a) node[circ] {};
+        \draw (xor1.in 2) -- ++(-1.2,0) node[left] {$b$} node[circ] {} coordinate (b);
+        \draw (and1.in 2) -- (b) node[circ] {};
+        % --- wejście cin (rozgałęzienie do xor2 i and2) ---
+        \draw (xor2.in 2) -- ++(-1.2,0) coordinate (cin1) node[circ] {};
+        \draw (and2.in 2) -- ++(-1.2,0) coordinate (cin2) node[circ] {};
+        \draw (cin1) -- ++(-0.4,0) node[left] {$c_{in}$};
+        \draw (cin1) -- (cin2);
+        % --- sygnał c1: wyjście xor1 -> xor2.in1 i and2.in1 ---
+        \draw (xor1.out) -- ++(0.35,0) node[circ] {} coordinate (c1);
+        \draw (c1) |- (xor2.in 1);
+        \draw (c1) |- (and2.in 1);
+        % --- wyjście s ---
+        \draw (xor2.out) -- ++(0.8,0) node[right] {$s$};
+        % --- wyjście cout ---
+        \draw (and1.out) -- ++(0.35,0) coordinate (ab) node[circ] {};
+        \draw (ab) |- (or1.in 1);
+        \draw (and2.out) -- ++(0.35,0) coordinate (cc) node[circ] {};
+        \draw (cc) |- (or1.in 2);
+        \draw (or1.out) -- ++(0.8,0) node[right] {$c_{out}$};
+        % --- opisy sygnałów pośrednich ---
+        \node[above] at (c1) {$c_1$};
+        \node[above] at (1.9,2.5) {$a \cdot b$};
+        \node[above] at (5.0,1.2) {$c_1 \cdot c_{in}$};
+    \end{circuitikz}
+    \caption{Schemat logiczny zminimalizowanego sumatora pełnego}
+    \label{fig:schemat-fa}
+\end{figure}
+
+\subsection{Realizacja zminimalizowanego układu}
+
+W praktycznej realizacji fizycznej lub strukturalnej (np. w strukturach reprogramowalnych FPGA lub na makiecie laboratoryjnej), zminimalizowany układ eliminuje potrzebę stosowania rozbudowanych siatek bramek AND/OR dla pojedynczych mintermów.
+
+Przy użyciu standardowych układów scalonych TTL/CMOS, realizacja wymaga:
+
+\begin{itemize}
+    \item Jednego układu scalonego zawierającego bramki XOR (np. 74HC86 -- poczwórna bramka XOR 2-wejściowa).
+    \item Jednego układu scalonego z bramkami AND (np. 74HC08 -- poczwórna bramka AND 2-wejściowa).
+    \item Jednego układu scalonego z bramkami OR (np. 74HC32 -- poczwórna bramka OR 2-wejściowa).
+\end{itemize}
+
+Alternatywnie, jeżeli w dostępnym zestawie elementów nie występują bramki XOR, sumę można zrealizować wyłącznie na bramkach NAND, wykorzystując standardową tożsamość logiczną, co jednak zwiększa liczbę wykorzystanych struktur bramkowych.
+
+Ograniczenie liczby połączeń do minimum znacząco redukuje ryzyko powstawania hazardu statycznego i dynamicznego w układzie, skracając jednocześnie łączny czas propagacji sygnału od wejścia do wyjścia do sumy czasów propagacji zaledwie trzech poziomów bramek.
