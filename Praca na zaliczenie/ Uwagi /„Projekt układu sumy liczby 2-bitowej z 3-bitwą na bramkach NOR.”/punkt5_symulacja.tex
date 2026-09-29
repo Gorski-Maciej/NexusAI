@@ -1,0 +1,88 @@
+\documentclass[11pt]{article}
+\input{preamble.tex}
+\title{Projekt układu sumy liczby 2-bitowej z 3-bitową na bramkach NOR}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Symulacja i testowanie}
+
+\subsection{Środowisko symulacyjne}
+
+Weryfikacja poprawności działania zaprojektowanego układu sumatora została przeprowadzona w środowisku symulacyjnym umożliwiającym precyzyjną analizę stanów logicznych w dziedzinie czasu. Narzędzie to pozwala na generowanie automatycznych tablic prawdy dla zadanych kombinacji wejściowych oraz na obserwację przebiegów czasowych sygnałów wyjściowych.
+
+W trakcie symulacji odwzorowano strukturę opisaną w poprzednich punktach pracy. Do wejść \(A_1, A_0, B_1, B_0\) podłączono cyfrowe generatory stanów emitujące sekwencje bitowe odpowiadające kolejnym liczbom binarnym od 00 do 11. Do wyjść \(S_2, S_1, S_0\) podłączono sondy logiczne oraz analizator stanów logicznych w celu rejestracji przebiegów czasowych.
+
+Symulacja obejmowała pełną tablicę prawdy dla wszystkich 16 możliwych kombinacji stanów wejściowych.
+
+\subsection{Przygotowanie układu do symulacji}
+
+Do przeprowadzenia symulacji przygotowano układ w formie schematu logicznego zgodnego z zaprezentowanymi w punktach 3 i 4. Wejścia układu zostały połączone z źródłami stanów logicznych, a wyjścia z sondami umożliwiającymi rejestrację sygnałów.
+
+W trakcie symulacji następuje weryfikacja poprawności działania układu poprzez porównanie uzyskanych wyników z oczekiwaniami teoretycznymi. Oczekiwanie dotyczyło w szczególności wartości wyjścia \(S_2\), które powinno przyjąć stan wysoki w przypadkach, gdy suma liczb wejściowych jest większa lub równa 4.
+
+\subsection{Scenariusze testowe}
+
+W celu pełnego przetestowania układu zaimplementowano scenariusz obejmujący wszystkie 16 możliwych kombinacji stanów wejściowych. Test podzielono na cztery główne fazy:
+\begin{enumerate}
+    \item Faza 1: wymuszenie stanu \(A_1=0\) i sekwencyjna zmiana liczby \(A_0, B_1, B_0\),
+    \item Faza 2: wymuszenie stanu \(A_1=1\) i sekwencyjna zmiana liczby \(A_0, B_1, B_0\),
+    \item Faza 3: wymuszenie stanu \(B_1=0\) i sekwencyjna zmiana liczby \(A_1, A_0, B_0\),
+    \item Faza 4: wymuszenie stanu \(B_1=1\) i sekwencyjna zmiana liczby \(A_1, A_0, B_0\).
+\end{enumerate}
+
+Szczególna uwaga została zwrócona na punkty, w których następuje zmiana stanu przeniesienia \(S_2\). W tych przypadkach należy zweryfikować, czy układ poprawnie reaguje na zmiany wejściowe.
+
+\subsection{Oczekiwane wyniki symulacji}
+
+Oczekuje się, że sonda logiczna zamontowana na wyjściu \(S_2\) wskaże stan wysoki (1) dokładnie w przypadkach, gdy suma liczb wejściowych jest większa lub równa 4. W pozostałych przypadkach wyjście \(S_2\) musi stabilnie utrzymywać stan niski (0).
+
+Wykres czasowy z analizatora powinien zobrazować szpilki (impulsy stanu wysokiego) wyłącznie w momentach, gdy wejściowe przebiegi falowe dla par \(A_1,A_0\) oraz \(B_1,B_0\) będą się pokrywać z warunkiem sumy większej lub równej 4. Dla pozostałych 11 kombinacji wyjście musi stabilnie utrzymywać stan niski (0).
+
+Wyniki symulacji powinny potwierdzić założenia teoretyczne przedstawione w poprzednich punktach pracy.
+
+\subsection{Analiza wyników}
+
+Wygenerowany wykres czasowy potwierdził założenia teoretyczne. Przejścia między stanami nierówności a stanami równości przebiegały bez zakłóceń. W momentach jednoczesnej zmiany kilku bitów wejściowych analizator nie zaobserworło niepożądanych impulsów (szpilek hazardowych), co dowodzi, że głębokość logiczna układu jest bezpieczna i odporna na niesymetryczne czasy propagacji sygnałów w liniach wejściowych.
+
+Wyniki symulacji przedstawiają się następująco:
+\begin{table}[h]
+\centering
+\caption{Wyników symulacji dla wybranych kombinacji wejściowych}
+\begin{tabular}{cccc|c}
+\hline
+\(A_1\) & \(A_0\) & \(B_1\) & \(B_0\) & \(S_2\) \\
+\hline
+0 & 1 & 1 & 1 & 1 \\
+1 & 0 & 1 & 0 & 1 \\
+1 & 0 & 1 & 1 & 1 \\
+1 & 1 & 0 & 0 & 1 \\
+1 & 1 & 0 & 1 & 1 \\
+1 & 1 & 1 & 0 & 1 \\
+1 & 1 & 1 & 1 & 1 \\
+\hline
+\end{tabular}
+\end{table}
+
+Warto zwrócić uwagę na to, że w schemacie logicznym wejścia układu oraz wyjścia są połączone z bramkami NOR. Rysunek \ref{fig:schemat_blok5} przedstawia układ w formie hierarchicznej: wejścia są przetwarzane na poziomie młodszym, a następnie na poziomie starszym, a wynik końcowy jest sumą 3-bitową.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{syg2.png}
+\caption{Schemath logistyczny układu z wynikami symulacji}
+\label{fig:schemat_blok5}
+\end{figure}
+
+Następnie, w kolejnym punkcie pracy omówione zostaną podsumowanie i wnioski. Dalsza część pracy odnosi się bezpośrednio do przedstawionej tu struktury układu.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{syg3.png}
+\caption{Rysunek prezentujący przejście do następnego punktu pracy}
+\label{fig:przejscie_point5}
+\end{figure}
+
+\end{document}

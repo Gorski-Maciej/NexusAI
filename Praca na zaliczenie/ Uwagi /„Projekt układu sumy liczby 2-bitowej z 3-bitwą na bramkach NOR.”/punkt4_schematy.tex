@@ -1,0 +1,116 @@
+\documentclass[11pt]{article}
+\input{preamble.tex}
+\title{Projekt układu sumy liczby 2-bitowej z 3-bitową na bramkach NOR}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Schematy logiczne, tabelaryczne i wykresowe}
+
+\subsection{Schemath logiczny układu}
+
+Schemat logiczny sumatora 2-bitowego z 3-bitową sumą przedstawia strukturę realizowaną wyłącznie na bramkach NOR. Wejścia układu to \(A_1, A_0, B_1, B_0\), a wyjścia to \(S_2, S_1, S_0\).
+
+Schemat działania układu można opisać w następujący sposób:
+\begin{enumerate}
+    \item poziom pierwszy: bramki NOR realizujące funkcję sumy bitów najmłodszych oraz przeniesienia \(P_0\),
+    \item poziom drugi: bramki NOR realizujące funkcję sumy bitów starszych oraz przeniesienia \(P_1\),
+    \item wyjście najstarsze: \(S_2 = P_1\).
+\end{enumerate}
+
+W schemacie logicznym wszystkie bramki są typu NOR, a sygnały są przetwarzane w celu uzyskania wyniku 3-bitowego. Schemat przedstawia zależności między wejściami a wyjściami w postaci uproszczonej, co ułatwia zrozumienie działania układu.
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[b]{0.8\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{syg1.png}
+    \caption{Schemath blokowy układu}
+    \label{fig:schemat_blok}
+\end{subfigure}
+\begin{subfigure}[b]{0.8\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{syg2.png}
+    \caption{Schemath logiczny układu}
+    \label{fig:schemat_log}
+\end{subfigure}
+\caption{Schema logiczna sumatora 2-bitowego z 3-bitową sumą}
+\label{fig:schematy_point4}
+\end{figure}
+
+Warto zwrócić uwagę na to, że w schemacie logicznym wejścia układu oraz wyjścia są połączone z bramkami NOR. Rysunek \ref{fig:schemat_blok} przedstawia układ w formie hierarchicznej: wejścia \(A_1, A_0, B_1, B_0\) są przetwarzane na poziomie młodszym, a następnie na poziomie starszym, a wynik końcowy jest sumą 3-bitową.
+
+\subsection{Tablica prawdy}
+
+Ponieważ układ posiada cztery wejścia binarne, liczba możliwych kombinacji wynosi:
+\begin{equation}
+2^4 = 16
+\end{equation}
+
+Pełna tablica prawdy przedstawia się następująco:
+\begin{table}[h]
+\centering
+\caption{Tablica prawdy sumatora 2-bitowego z 3-bitową sumą}
+\begin{tabular}{cccc|ccc}
+\hline
+\(A_1\) & \(A_0\) & \(B_1\) & \(B_0\) & \(S_2\) & \(S_1\) & \(S_0\) \\
+\hline
+0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 1 & 0 & 0 & 1 \\
+0 & 0 & 1 & 0 & 0 & 1 & 0 \\
+0 & 0 & 1 & 1 & 0 & 1 & 1 \\
+0 & 1 & 0 & 0 & 0 & 0 & 1 \\
+0 & 1 & 0 & 1 & 0 & 1 & 0 \\
+0 & 1 & 1 & 0 & 0 & 1 & 1 \\
+0 & 1 & 1 & 1 & 1 & 0 & 0 \\
+1 & 0 & 0 & 0 & 0 & 1 & 0 \\
+1 & 0 & 0 & 1 & 0 & 1 & 1 \\
+1 & 0 & 1 & 0 & 1 & 0 & 0 \\
+1 & 0 & 1 & 1 & 1 & 0 & 1 \\
+1 & 1 & 0 & 0 & 0 & 1 & 1 \\
+1 & 1 & 0 & 1 & 1 & 0 & 0 \\
+1 & 1 & 1 & 0 & 1 & 0 & 1 \\
+1 & 1 & 1 & 1 & 1 & 1 & 0 \\
+\hline
+\end{tabular}
+\end{table}
+
+Wartość wyjścia \(S_2\) występuje wyłącznie dla kombinacji, w których suma liczb wejściowych jest większa lub równa 4. W pozostałych przypadkach przyjmuje wartość 0.
+
+Funkcję w postaci sumy iloczynów mintermów można więc zapisać jako:
+\begin{equation}
+S_2 = \sum m(7,11,13,14,15)
+\end{equation}
+
+\subsection{Schemath blokowy układu}
+
+Schemat blokowy układu przedstawia zależność między wejściami a wyjściami w formie uproszczonej. Na schemacie wydzielono dwa poziomy sumacyjne oraz wyjście przeniesienia.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{syg1.png}
+\caption{Schemath blokowy układu}
+\label{fig:schemat_blok2}
+\end{figure}
+
+Na schemacie blokowym przedstawiono układ w formie uproszczonej, z wydzieleniem dwóch poziomów sumacyjnych oraz wyjścia przeniesienia. Rysunek \ref{fig:schemat_blok2} przedstawia układ w formie hierarchicznej: wejścia \(A_1, A_0, B_1, B_0\) są przetwarzane na poziomie młodszym, a następnie na poziomie starszym, a wynik końcowy jest sumą 3-bitową.
+
+\subsection{Wykres czasowy i opis działania}
+
+Wykres czasowy prezentuje zmianę stanów wyjściowych w funkcji stanów wejściowych. W szczególności warto zwrócić uwagę na momenty, w których następuje zmiana stanu przeniesienia \(S_2\).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{syg3.png}
+\caption{Wykres czasowy / schemat przejścia do następnego punktu pracy}
+\label{fig:wykres_point4}
+\end{figure}
+
+Z wykresu czasowego wynika, że dla kombinacji wejściowych, w których suma liczb wejściowych jest większa lub równa 4, następuje zmiana stanu \(S_2\) na 1. W pozostałych przypadkach \(S_2\) przyjmuje wartość 0.
+
+Następnie, w kolejnym punkcie pracy omówione zostaną szczegóły symulacji i weryfikacji działania układu. Dalsza część pracy odnosi się bezpośrednio do przedstawionej tu struktury układu.
+
+\end{document}

@@ -1,0 +1,168 @@
+\documentclass[11pt]{article}
+\input{preamble.tex}
+\title{Projekt układu sumy liczby 2-bitowej z 3-bitową na bramkach NOR}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Opis techniczny projektu}
+
+\subsection{Założenia projektowe}
+
+Celem projektu jest zaprojektowanie układu kombinacyjnego realizującego funkcję sumy dwóch liczb dwubitowych, a następnie zminimalizowanie liczby wykorzystanych bramek logicznych przy zachowaniu realizacji wyłącznie na bramkach NOR.
+
+Projektowany układ będzie dodawał dwie liczby binarne o długości dwóch bitów:
+\begin{center}
+$A = (A_1 A_0),\quad B = (B_1 B_0)$
+\end{center}
+Układ posiada cztery wejścia binarne oraz wyjście 3-bitowe. Wynik będzie informował o sumie liczb wraz z ewentualnym przeniesieniem najstarszego bitu.
+
+Przyjęto następujące założenia:
+\begin{itemize}
+    \item liczby wejściowe mają długość 2 bitów,
+    \item wszystkie wejścia przyjmują wartości logiczne 0 lub 1,
+    \item układ jest układem kombinacyjnym,
+    \item wynik sumy ma 3 bity: \(S_2 S_1 S_0\),
+    \item stan wyjścia \(S_2\) oznacza przeniesienie z poziomu bitów starszych,
+    \item podstawowym celem projektu jest minimalizacja liczby bramek logicznych,
+    \item poprawność działania zostanie sprawdzona za pomocą tablicy prawdy i symulacji.
+\end{itemize}
+
+Minimalizacja układu ma na celu zmniejszenie jego złożoności. Mniejsza liczba zastosowanych bramek oznacza prostszy schemat logiczny, mniejsze zapotrzebowanie na elementy oraz potencjalnie mniejsze opóźnienia propagacji sygnału.
+
+\subsection{Specyfikacja wejść i wyjść}
+
+Projektowany sumator posiada cztery wejścia:
+\begin{itemize}
+    \item \(A_1\) -- starszy bit pierwszej liczby,
+    \item \(A_0\) -- młodszy bit pierwszej liczby,
+    \item \(B_1\) -- starszy bit drugiej liczby,
+    \item \(B_0\) -- młodszy bit drugiej liczby.
+\end{itemize}
+
+Wyjścia układu to:
+\begin{itemize}
+    \item \(S_0\) -- bit wyniku najmłodszy,
+    \item \(S_1\) -- bit wyniku pośredni,
+    \item \(S_2\) -- najstarszy bit wyniku (przeniesienie).
+\end{itemize}
+
+Zależność pomiędzy wejściami a wyjściami można zapisać jako:
+\begin{equation}
+(A_1 A_0)_2 + (B_1 B_0)_2 = (S_2 S_1 S_0)_2
+\end{equation}
+
+Przykładowo, dla:
+\begin{center}
+$A = 10_2$, $B = 01_2$
+\end{center}
+otrzymujemy:
+\begin{center}
+$S = 11_2$
+\end{center}
+
+Natomiast dla:
+\begin{center}
+$A = 11_2$, $B = 11_2$
+\end{center}
+otrzymujemy:
+\begin{center}
+$S = 110_2$
+\end{center}
+
+Tabela sygnałowa przedstawia podstawowe sygnały wejściowe i wyjściowe projektowanego układu:
+\begin{table}[h]
+\centering
+\caption{Sygnały wejściowe i wyjściowe sumatora 2-bitowego z sumą 3-bitową}
+\begin{tabular}{lll}
+\toprule
+Sygnał & Rodzaj & Opis \\
+\midrule
+\(A_1\) & wejście & starszy bit pierwszej liczby \\
+\(A_0\) & wejście & młodszy bit pierwszej liczby \\
+\(B_1\) & wejście & starszy bit drugiej liczby \\
+\(B_0\) & wejście & młodszy bit drugiej liczby \\
+\(S_2\) & wyjście & najstarszy bit wyniku (przeniesienie) \\
+\(S_1\) & wyjście & bit wyniku pośredni \\
+\(S_0\) & wyjście & bit wyniku najmłodszy \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Analiza logiczna układu}
+
+Aby wyznaczyć wynik sumy, należy wykonać dodawanie pozycyjne, począwszy od poziomu najmłodszego bitu.
+
+Dla bitów najmłodszych:
+\begin{equation}
+S_0 = A_0 \oplus B_0
+\end{equation}
+przy czym w układzie opartym na bramkach NOR będzie to realizowane poprzez przekształcenie funkcji XOR na postać przyjazną dla bramek NOR.
+
+Generowanie przeniesienia na najmłodszym poziomie wynosi:
+\begin{equation}
+P_0 = A_0 \cdot B_0
+\end{equation}
+
+Dla bitów starszych:
+\begin{equation}
+S_1 = A_1 \oplus B_1 \oplus P_0
+\end{equation}
+oraz:
+\begin{equation}
+P_1 = (A_1 \cdot B_1) + (P_0 \cdot (A_1 \oplus B_1))
+\end{equation}
+
+Wynik najstarszy to:
+\begin{equation}
+S_2 = P_1
+\end{equation}
+
+Funkcje te można zapisać w postaci sumy iloczynów lub iloczynu sum, a następnie zminimalizować do postaci przyjaznej dla bramek NOR.
+
+W praktyce realizacji na bramkach NOR każda z tych funkcji może być przekształcana do postaci, w której wykorzystywane są wyłącznie operacje NOR, co wymaga odpowiedniego zaznaczenia negacji i zamiany bramek na ich równoważniki.
+
+Schemat działania można opisać następująco:
+\begin{enumerate}
+    \item poziom młodszy: określenie \(S_0\) oraz \(P_0\),
+    \item poziom starszy: określenie \(S_1\) oraz \(P_1\),
+    \item wyjście najstarsze: \(S_2 = P_1\).
+\end{enumerate}
+
+\subsection{Prezentacja układu i przejście do dalszej części pracy}
+
+Struktura układu przedstawiona jest na schemacie blokowym oraz schematach logicznych. Na rysunku \ref{fig:schemat_bloku2} przedstawiono układ w formie uproszczonej, z wydzieleniem dwóch poziomów sumacyjnych oraz wyjścia przeniesienia. Na rysunku \ref{fig:schemat_logical2} szczegółowo przedstawiono zależności między wejściami a wyjściami w formie bramek logicznych.
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[b]{0.8\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{syg1.png}
+    \caption{Schemath blokowy układu}
+    \label{fig:schemat_bloku2}
+\end{subfigure}
+\begin{subfigure}[b]{0.8\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{syg2.png}
+    \caption{Schemath logiczny układu}
+    \label{fig:schemat_logical2}
+\end{subfigure}
+\caption{Prezentacja układu sumatora 2-bitowego z 3-bitową sumą}
+\label{fig:schematy_point2}
+\end{figure}
+
+Warto zwrócić uwagę na to, że w schemacie logicznym wejścia układu oraz wyjścia są połączone z bramkami NOR. Rysunek \ref{fig:schemat_bloku2} przedstawia układ w formie hierarchicznej: wejścia \(A_1, A_0, B_1, B_0\) są przetwarzane na poziomie młodszym, a następnie na poziomie starszym, a wynik końcowy jest sumą 3-bitową.
+
+Następnie, w kolejnym punkcie pracy omówione zostaną minimalizacja funkcji logicznych na bramkach NOR, tablica prawdy oraz dalsze schematy i rysunki. Dalsza część pracy odnosi się bezpośrednio do przedstawionej tu struktury układu.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{syg3.png}
+\caption{Rysunek prezentujący przejście do następnego punktu pracy}
+\label{fig:przejscie_point2}
+\end{figure}
+
+\end{document}

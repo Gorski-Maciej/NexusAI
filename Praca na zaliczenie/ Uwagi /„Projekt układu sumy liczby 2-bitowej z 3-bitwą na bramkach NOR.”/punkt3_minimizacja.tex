@@ -1,0 +1,173 @@
+\documentclass[11pt]{article}
+\input{preamble.tex}
+\title{Projekt układu sumy liczby 2-bitowej z 3-bitową na bramkach NOR}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Minimalizacja funkcji logicznej}
+
+\subsection{Funkcje wyjściowe układu}
+
+Układ sumacyjny 2-bitowy z 3-bitową sumą realizuje trzy funkcje wyjściowe:
+\begin{itemize}
+    \item \(S_0\) -- wynik sumy bitów najmłodszych,
+    \item \(S_1\) -- wynik sumy bitów starszych z uwzględnieniem przeniesienia,
+    \item \(S_2\) -- przeniesienie z poziomu bitów starszych.
+\end{itemize}
+
+Dla każdej z tych funkcji należy wyznaczyć postać minimalną przyjazną dla bramek NOR. W tym celu wykonano analizę funkcji w postaci sumy iloczynów, a następnie zapisaono wynik w postaci przyjaznej dla bramek NOR.
+
+Początkowe równania wynikowe (przed minimalizacją) w postaci sumy iloczynów:
+\begin{align}
+S_0 &= A_0 \oplus B_0 \\
+S_1 &= A_1 \oplus B_1 \oplus P_0 \\
+S_2 &= P_1
+\end{align}
+gdzie:
+\begin{align}
+P_0 &= A_0 \cdot B_0 \\
+P_1 &= (A_1 \cdot B_1) + (P_0 \cdot (A_1 \oplus B_1))
+\end{align}
+
+\subsection{Karta Karnaugha dla funkcji wyjściowych}
+
+Do uproszczenia funkcji wykorzystano mapę Karnaugha dla czterech zmiennych w przypadku funkcji \(S_0\) oraz \(S_1\), oraz uproszczone podejście w przypadku funkcji przeniesienia.
+
+Dla funkcji \(S_0\) przyjmujemy:
+\begin{itemize}
+    \item zmienne: \(A_0, B_0\),
+    \item wynik: \(S_0 = A_0 \oplus B_0\).
+\end{itemize}
+
+Mapa Karnaugha dla \(S_0\) przyjmuje postać:
+\begin{table}[h]
+\centering
+\caption{Karta Karnaugha dla \(S_0\)}
+\begin{tabular}{cc|c|c}
+\multicolumn{2}{c}{} & \multicolumn{2}{c}{\(B_0\)} \\
+\multicolumn{2}{c}{} & 0 & 1 \\
+\hline
+\multirow{2}{*}{\(A_0\)} & 0 & 0 & 1 \\
+\cline{2-4}
+ & 1 & 1 & 0 \\
+\end{tabular}
+\end{table}
+
+Jedynki znajdują się więc na przekątnej mapy. W tym przypadku nie można połączyć sąsiednich jedynek w większe grupy, ponieważ każda z nich nie posiada sąsiedniej jedynki zgodnie z zasadami map Karnaugha.
+
+Oznacza to, że bez wykorzystania dodatkowych zależności funkcję \(S_0\) otrzymujemy w postaci:
+\begin{equation}
+S_0 = \overline{A_0}\,\overline{B_0} \lor A_0 B_0
+\end{equation}
+co jest równoważne z funkcją XOR. W postaci przyjaznej dla bramek NOR należy następnie przekształcić tę funkcję do odpowiedniej postaci.
+
+Dla funkcji \(S_1\) przyjmujemy:
+\begin{itemize}
+    \item zmienne: \(A_1, B_1, P_0\),
+    \item wynik: \(S_1 = A_1 \oplus B_1 \oplus P_0\).
+\end{itemize}
+
+Mapa Karnaugha dla \(S_1\) przyjmuje postać w 3 zmiennych:
+\begin{table}[h]
+\centering
+\caption{Karta Karnaugha dla \(S_1\)}
+\begin{tabular}{cc|c|c|c}
+\multicolumn{2}{c}{} & \multicolumn{3}{c}{\(P_0\)} \\
+\multicolumn{2}{c}{} & 0 & 1 \\
+\hline
+\multirow{4}{*}{\(A_1,B_1\)} & 00 & 0 & 1 \\
+\cline{2-4}
+ & 01 & 1 & 0 \\
+\cline{2-4}
+ & 11 & 1 & 0 \\
+\cline{2-4}
+ & 10 & 0 & 1 \\
+\end{tabular}
+\end{table}
+
+Wynik dla \(S_2\) (przeniesienie) wynosi:
+\begin{equation}
+S_2 = P_1 = (A_1 \cdot B_1) + (P_0 \cdot (A_1 \oplus B_1))
+\end{equation}
+
+\subsection{Postać minimalna i realizacja na bramkach NOR}
+
+W rezultacie po minimalizacji otrzymujemy postać znacznie bardziej przejrzystą od postaci kanonicznej.
+
+Dla funkcji \(S_0\):
+\begin{equation}
+S_0 = \overline{\overline{A_0 \lor B_0} \land \overline{A_0 \lor B_0}} \quad \text{(w uproszczeniu XOR realizowane przez bramki NOR)}
+\end{equation}
+
+Dla funkcji \(S_1\):
+\begin{equation}
+S_1 = \overline{\overline{A_1 \lor B_1 \lor P_0} \land \overline{\dots}} \quad \text{(struktura AND-OR po przekształceniu na NOR)}
+\end{equation}
+
+Dla funkcji \(S_2\):
+\begin{equation}
+S_2 = \overline{\overline{A_1 B_1} \lor \overline{P_0 (A_1 \oplus B_1)}}
+\end{equation}
+
+Po zastosowaniu zależności wynikających z realizacji na bramkach NOR otrzymujemy układ, który można zrealizować przy użyciu bramek NOR w strukturze wielopoziomowej.
+
+Liczba bramek przed minimalizacją przewyższa liczbę bramek po minimalizacji ze względu na to, że bezpośrednia realizacja poszczególnych mintermów wymaga wielu bramek AND, OR oraz NOT. Po zastosowaniu minimalizacji układ można zrealizować przy użyciu struktury o mniejszej liczbie poziomów logicznych.
+
+\subsection{Porównanie liczby bramek przed i po minimalizacji}
+
+Dla realizacji funkcji w sposób bezpośredni, na podstawie postaci kanonicznej, konieczne byłoby zastosowanie wielu bramek AND, NOT oraz OR.
+
+Postać kanoniczna:
+\begin{equation}
+S_0 = \sum m(1,2)
+\end{equation}
+wymaga utworzenia iloczynów oraz ich zsumowania.
+
+Po zastosowaniu minimalizacji otrzymujemy:
+\begin{equation}
+S_0 = A_0 \oplus B_0,\quad S_1 = A_1 \oplus B_1 \oplus P_0,\quad S_2 = P_1
+\end{equation}
+
+W rezultacie układ można zrealizować przy użyciu bramek NOR w liczbie mniejszej niż w przypadku bezpośredniej implementacji. W praktyce minimalizacja pozwala na ograniczenie liczby połączeń oraz zmniejszenie opóźnień propagacji sygnału.
+
+Tabela porównawcza liczby bramek przed i po minimalizacji przedstawia się następująco:
+\begin{table}[h]
+\centering
+\caption{Porównanie liczby bramek przed i po minimalizacji}
+\begin{tabular}{lll}
+\toprule
+Wariant & Liczba bramek & Uwagi \\
+\midrule
+Wariant początkowy (SOP) & duża liczba AND/OR/NOT & brak minimalizacji \\
+Wariant zminimalizowany (NOR) & mniejsza liczba NOR & realiacja przyjazna dla NOR \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Prezentacja schematu po minimalizacji i przejście do dalszej części pracy}
+
+Schemat zminimalizowanego układu przedstawiono na rysunku \ref{fig:schemat_min}. Na schemacie wydzielono strukturę realizowaną na bramkach NOR oraz połączenia między poziomami sumacyjnymi.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{syg2.png}
+\caption{Schemath zminimalizowanego układu na bramkach NOR}
+\label{fig:schemat_min}
+\end{figure}
+
+Warto zwrócić uwagę na to, że w schemacie zminimalizowanym wszystkie bramki są typu NOR, a struktura układu jest uproszczona w porównaniu ze wstępną postacią funkcyjną. Rysunek \ref{fig:schemat_min} przedstawia układ w formie hierarchicznej: wejścia są przetwarzane na poziomie młodszym, a następnie na poziomie starszym, a wynik końcowy jest sumą 3-bitową.
+
+Następnie, w kolejnym punkcie pracy omówione zostanie schemat logiczny oraz dalsze rysunki i tablice. Dalsza część pracy odnosi się bezpośrednio do przedstawionej tu struktury układu.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{syg3.png}
+\caption{Rysunek prezentujący przejście do następnego punktu pracy}
+\label{fig:przejscie_point3}
+\end{figure}
+
+\end{document}

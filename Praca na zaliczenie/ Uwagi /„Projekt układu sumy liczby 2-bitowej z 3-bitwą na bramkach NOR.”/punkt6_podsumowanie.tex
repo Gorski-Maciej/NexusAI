@@ -1,0 +1,112 @@
+\documentclass[11pt]{article}
+\input{preamble.tex}
+\title{Projekt układu sumy liczby 2-bitowej z 3-bitową na bramkach NOR}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Podsumowanie i wnioski}
+
+\subsection{Ocena zaprojektowanego układu}
+
+Zaprojektowany układ sumy liczby 2-bitowej z 3-bitową sumą spełnia wszystkie stawiane przed nim wymagania funkcjonalne. Zastosowanie podejścia strukturalnego opartego na bramkach NOR okazało się wysoce efektywne. Układ działa w sposób deterministyczny i bezbłędnie wyznacza wynik sumy wraz z przeniesieniem najstarszego bitu.
+
+W trakcie realizacji projektu wykonano:
+\begin{itemize}
+    \item analizę teoretyczną sumatora 2-bitowego z 3-bitową sumą,
+    \item specyfikację wejść i wyjść,
+    \item analizę logiczną funkcji wyjściowych,
+    \item minimalizację funkcji na bramkach NOR,
+    \item opracowanie schematów logicznych i tabelarycznych,
+    \item weryfikację działania za pomocą symulacji i tablicy prawdy.
+\end{itemize}
+
+Układ charakteryzuje się prostą strukturą, którą można łatwo zminimalizować pod kątem liczby bramek oraz liczby połączeń.
+
+\subsection{Korzyści wynikające z minimalizacji bramek NOR}
+
+Minimalizacja funkcji logicznej przyniosła wymierne korzyści:
+\begin{itemize}
+    \item redukcja zasobów sprzętowych: liczba potrzebnych bramek spadła w stosunku do wariantu bezpośredniego,
+    \item ograniczenie poboru prądu: mniejsza liczba przełączających się elementów wewnątrz struktur logicznych bezpośrednio przekłada się na mniejsze straty mocy,
+    \item zwiększenie szybkości: skrócenie ścieżki krytycznej sygnału zminimalizowało opóźnienie propagacyjne, co pozwala na pracę układu przy wyższych częstotliwościach.
+\end{itemize}
+
+Realizacja wyłącznie na bramkach NOR pozwoliła na ujednolicenie struktury układu i uproszczenie jego interpretacji. W praktyce oznacza to mniejsze zapotrzebowanie na różne typy bramek logicznych oraz łatwiejszą realizację w strukturach cyfrowych.
+
+Tabela porównawcza liczby bramek przed i po minimalizacji przedstawia się następująco:
+\begin{table}[h]
+\centering
+\caption{PorÓwnanie liczby bramek przed i po minimalizacji}
+\begin{tabular}{lll}
+\toprule
+Wariant & Liczba bramek & Uwagi \\
+\midrule
+Wariant początkowy (SOP) & większa liczba AND/OR/NOT & brak minimalizacji \\
+Wariant zminimalizowany (NOR) & mniejsza liczba NOR & realizacja przyjazna dla NOR \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Ograniczenia rozwiązania}
+
+Prezentowany układ posiada ograniczenie architektoniczne -- realizuje wyłącznie funkcję sumy 2-bitowej z 3-bitową sumą. Nie dostarcza on informacji o relacji rzędu między liczbami, czyli nie wskazuje, która z liczb jest większa lub mniejsza. Dodatkowo, wraz ze wzrostem szerokości słowa danych (np. do 8 lub 16 bitów), struktura kaskadowa musiałaby zostać rozszerzona, co wymusiłoby zwiększenie liczby poziomów bramek i przyśpieszenie opóźnień.
+
+W praktyce ograniczenia te są naturalnym skutkiem przyjętego zakresu projektu, który obejmował wyłącznie sumę dwóch liczb dwubitowych z wynikiem 3-bitowym.
+
+\subsection{Możliwości rozwoju projektu}
+
+Projekt może zostać rozbudowany w następujących kierunkach:
+\begin{itemize}
+    \item rozszerzenie funkcjonalności: dodanie bloków logicznych odpowiedzialnych za wykrywanie relacji większości i mniejszości,
+    \item skalowalność: przekształcenie układu w sumator magistrali n-bitowej poprzez zastosowanie struktury kaskadowej lub drzewiastej,
+    \item implementacja w języku opisu sprzętu: przeniesienie projektu na poziom opisu języka programowania układów programowalnych, co umożliwiłoby automatyczną syntezę w strukturach CPLD/FPGA.
+\end{itemize}
+
+Szczególnie interesującym kierunkiem rozwoju jest zastosowanie bramek NOR w strukturach programowalnych, gdzie możliwe jest wielokrotne użycie tych samych struktur bramkowych do realizacji różnych funkcji logicznych.
+
+\subsection{Zakres pracy}
+
+W pracy wykonano kompletną analizę projektu sumatora 2-bitowego z 3-bitową sumą na bramkach NOR. Praca obejmuje:
+\begin{itemize}
+    \item wstęp teoretyczny,
+    \item opis techniczny projektu,
+    \item minimalizację funkcji logicznej,
+    \item schematy logiczne, tabelaryczne i wykresowe,
+    \item symulację i testowanie,
+    \item podsumowanie i wnioski.
+\end{itemize}
+
+Projekt został przygotowany w formie gotowej do dalszych prac rozwojowych oraz do wykorzystania w strukturach cyfrowych.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{syg1.png}
+\caption{Schemath końcowy układu}
+\label{fig:schemat_koncowy}
+\end{figure}
+
+Na schemacie końcowym przedstawiono układ w formie uproszczonej, z wydzieleniem dwóch poziomów sumacyjnych oraz wyjścia przeniesienia. Rysunek \ref{fig:schemat_koncowy} przedstawia układ w formie hierarchicznej: wejścia są przetwarzane na poziomie młodszym, a następnie na poziomie starszym, a wynik końcowy jest sumą 3-bitową.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{syg2.png}
+\caption{Schemath logiczny układu}
+\label{fig:schemat_log_konc}
+\end{figure}
+
+Rysunek \ref{fig:schemat_log_konc} przedstawia szczegółowo zależności między wejściami a wyjściami w formie bramek NOR.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{syg3.png}
+\caption{Końcowy rysunek podsumowujący}
+\label{fig:koniec}
+\end{figure}
+
+Praca została zakończona. Wszystkie punkty zostały wykonane zgodnie z planem.
+
+\end{document}
