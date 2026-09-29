@@ -6,15 +6,16 @@ Przygotowane materiały tworzą pracę w LaTeX-ie, którą można opublikować n
 
 ## Jak korzystać
 
-1. Otwórz na Overleaf projekt z plikami:
+1. **Najprostsza droga:** wgraj na Overleaf wyłącznie `projekt_caly/caly_projekt.tex`.
+   Plik jest samowystarczalny — preamble i wszystkie rysunki (TikZ) ma wklejone w sobie, nie potrzebuje żadnych plików PNG.
+
+2. Alternatywnie — wariant wieloplikowy:
    - `projekt_caly/caly_projekt.tex` — główny plik pracy
    - `projekt_caly/preamble.tex` — wspólny preamble
+   - `projekt_caly/rysunki.tex` — biblioteka rysunków TikZ
    - `projekt_caly/punkt1_wstep.tex` … `punkt6_podsumowanie.tex` — pojedyncze punkty
-   - `projekt_caly/syg1.png`, `syg2.png`, `syg3.png` — placeholdery pod rysunki i schematy
 
-2. Wgraj folder `projekt_caly` na Overleaf (lub skopiuj te pliki bezpośrednio).
-
-3. Skompiluj `caly_projekt.tex` — powinien wygenerować PDF z wszystkimi punktami.
+3. Skompiluj `caly_projekt.tex` (najlepiej 2 razy, dla spisu treści i odnośników) — powstanie PDF z wszystkimi punktami i rysunkami.
 
 ## Struktura pracy
 
@@ -30,9 +31,10 @@ Praca zawiera 6 punktów:
 ## Uwagi techniczne
 
 - `preamble.tex` używa `\usepackage[polish]{babel}` — Overleaf powinien obsłużyć to bez dodatkowych ustawień.
-- `syg1.png`, `syg2.png`, `syg3.png` są zastępcze. W razie potrzeby można je podmienić na własne rysunki/schematy.
-- W logach można spotkać warningi typu `Float too large for page` oraz `Label(s) may have changed` po pierwszym kompilowaniu — są to normalne ostrzeżenia LaTeX.
-- Na zachowanie plików `.tex` i `.png` w tym samym katalogu patrz `caly_projekt.tex`.
+- Wszystkie rysunki (schemat blokowy, schemat logiczny na bramkach NOR, przebiegi czasowe) są wykonane **inline w TikZ** (`rysunki.tex`) — nie wymagają plików graficznych i skalują się bez utraty jakości.
+- Rysunki wstawiane są przez makra: `\RysSchematBlokowy`, `\RysSchematBlokowyDwa`, `\RysSchematNOR`, `\RysSchematMinimalny`, `\RysPrzebiegi` (owinięte w `\resizebox`, aby mieściły się na stronie).
+- W logach można spotkać warning `Label(s) may have changed` po pierwszym kompilowaniu — normalne; drugi przebieg go usuwa.
+- Wspólny schematic wzorca: `\usetikzlibrary{shapes.gates.logic.US, arrows.meta, positioning, calc}` jest już w `preamble.tex` (i wklejone w `caly_projekt.tex`).
 
 ## Sekcje w jednym pliku
 

@@ -1,5 +1,6 @@
 \documentclass[11pt]{article}
 \input{preamble.tex}
+\input{rysunki.tex}
 \title{Projekt układu sumy liczby 2-bitowej z 3-bitową na bramkach NOR}
 \author{}
 \date{}
@@ -25,19 +26,20 @@ W schemacie logicznym wszystkie bramki są typu NOR, a sygnały są przetwarzane
 
 \begin{figure}[h]
 \centering
-\begin{subfigure}[b]{0.8\textwidth}
+\begin{subfigure}[b]{0.97\linewidth}
     \centering
-    \includegraphics[width=\textwidth]{syg1.png}
-    \caption{Schemath blokowy układu}
+    \resizebox{\linewidth}{!}{\RysSchematBlokowy}
+    \caption{Schemat blokowy układu}
     \label{fig:schemat_blok}
 \end{subfigure}
-\begin{subfigure}[b]{0.8\textwidth}
+
+\begin{subfigure}[b]{0.97\linewidth}
     \centering
-    \includegraphics[width=\textwidth]{syg2.png}
-    \caption{Schemath logiczny układu}
+    \resizebox{\linewidth}{!}{\RysSchematNOR}
+    \caption{Schemat logiczny układu zrealizowany wyłącznie na bramkach NOR}
     \label{fig:schemat_log}
 \end{subfigure}
-\caption{Schema logiczna sumatora 2-bitowego z 3-bitową sumą}
+\caption{Prezentacja układu sumatora 2-bitowego z 3-bitową sumą}
 \label{fig:schematy_point4}
 \end{figure}
 
@@ -91,8 +93,8 @@ Schemat blokowy układu przedstawia zależność między wejściami a wyjściami
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg1.png}
-\caption{Schemath blokowy układu}
+\resizebox{0.95\linewidth}{!}{\RysSchematBlokowy}
+\caption{Schemat blokowy układu}
 \label{fig:schemat_blok2}
 \end{figure}
 
@@ -104,8 +106,8 @@ Wykres czasowy prezentuje zmianę stanów wyjściowych w funkcji stanów wejści
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg3.png}
-\caption{Wykres czasowy / schemat przejścia do następnego punktu pracy}
+\resizebox{0.85\linewidth}{!}{\RysPrzebiegi}
+\caption{Przebiegi czasowe sygnałów wejściowych $A_1, A_0, B_1, B_0$ oraz wyjścia $S_2$ dla wszystkich 16~kombinacji wejściowych}
 \label{fig:wykres_point4}
 \end{figure}
 

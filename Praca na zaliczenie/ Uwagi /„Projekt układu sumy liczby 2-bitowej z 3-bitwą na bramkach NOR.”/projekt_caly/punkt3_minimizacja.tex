@@ -1,5 +1,6 @@
 \documentclass[11pt]{article}
 \input{preamble.tex}
+\input{rysunki.tex}
 \title{Projekt układu sumy liczby 2-bitowej z 3-bitową na bramkach NOR}
 \author{}
 \date{}
@@ -154,8 +155,8 @@ Schemat zminimalizowanego układu przedstawiono na rysunku \ref{fig:schemat_min}
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg2.png}
-\caption{Schemath zminimalizowanego układu na bramkach NOR}
+\resizebox{\linewidth}{!}{\RysSchematNOR}
+\caption{Schemat logiczny układu zrealizowany wyłącznie na bramkach NOR}
 \label{fig:schemat_min}
 \end{figure}
 
@@ -165,8 +166,8 @@ Następnie, w kolejnym punkcie pracy omówione zostanie schemat logiczny oraz da
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg3.png}
-\caption{Rysunek prezentujący przejście do następnego punktu pracy}
+\resizebox{0.85\linewidth}{!}{\RysPrzebiegi}
+\caption{Przebiegi czasowe sygnałów wejściowych $A_1, A_0, B_1, B_0$ oraz wyjścia $S_2$ dla wszystkich 16~kombinacji wejściowych}
 \label{fig:przejscie_point3}
 \end{figure}
 

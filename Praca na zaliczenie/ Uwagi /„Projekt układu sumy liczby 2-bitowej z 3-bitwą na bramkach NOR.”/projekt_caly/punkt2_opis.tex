@@ -1,5 +1,6 @@
 \documentclass[11pt]{article}
 \input{preamble.tex}
+\input{rysunki.tex}
 \title{Projekt układu sumy liczby 2-bitowej z 3-bitową na bramkach NOR}
 \author{}
 \date{}
@@ -138,16 +139,17 @@ Struktura układu przedstawiona jest na schemacie blokowym oraz schematach logic
 
 \begin{figure}[h]
 \centering
-\begin{subfigure}[b]{0.8\textwidth}
+\begin{subfigure}[b]{0.97\linewidth}
     \centering
-    \includegraphics[width=\textwidth]{syg1.png}
-    \caption{Schemath blokowy układu}
+    \resizebox{\linewidth}{!}{\RysSchematBlokowy}
+    \caption{Schemat blokowy układu}
     \label{fig:schemat_bloku2}
 \end{subfigure}
-\begin{subfigure}[b]{0.8\textwidth}
+
+\begin{subfigure}[b]{0.97\linewidth}
     \centering
-    \includegraphics[width=\textwidth]{syg2.png}
-    \caption{Schemath logiczny układu}
+    \resizebox{\linewidth}{!}{\RysSchematNOR}
+    \caption{Schemat logiczny układu zrealizowany wyłącznie na bramkach NOR}
     \label{fig:schemat_logical2}
 \end{subfigure}
 \caption{Prezentacja układu sumatora 2-bitowego z 3-bitową sumą}
@@ -160,8 +162,8 @@ Następnie, w kolejnym punkcie pracy omówione zostaną minimalizacja funkcji lo
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg3.png}
-\caption{Rysunek prezentujący przejście do następnego punktu pracy}
+\resizebox{0.85\linewidth}{!}{\RysPrzebiegi}
+\caption{Przebiegi czasowe sygnałów wejściowych $A_1, A_0, B_1, B_0$ oraz wyjścia $S_2$ dla wszystkich 16~kombinacji wejściowych}
 \label{fig:przejscie_point2}
 \end{figure}
 

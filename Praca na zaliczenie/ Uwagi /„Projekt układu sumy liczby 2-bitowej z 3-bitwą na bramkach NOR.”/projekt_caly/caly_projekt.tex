@@ -1,5 +1,252 @@
 \documentclass[11pt]{article}
-\input{preamble.tex}
+% ===================== PREAMBUŁA =====================
+\usepackage[polish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{multirow}
+\geometry{margin=2.5cm}
+
+% --- biblioteki TikZ do rysunkow logiczno-czasowych (rysunki inline, bez plikow PNG) ---
+\usetikzlibrary{shapes.gates.logic.US}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{positioning}
+\usetikzlibrary{calc}
+% ===================== RYSUNKI (inline TikZ) =====================
+% =====================================================================
+%  RYSUNKI LOGICZNE (inline TikZ) — wspolny plik dolaczany przez \input
+%  Wymaga w preamble:
+%  \usetikzlibrary{shapes.gates.logic.US, arrows.meta, positioning, calc}
+% =====================================================================
+
+% ---------------------------------------------------------------------
+% RYSUNEK A — SCHEMAT BLOKOWY SUMATORA 2-BITOWEGO
+% ---------------------------------------------------------------------
+\newcommand{\RysSchematBlokowy}{%
+\begin{tikzpicture}[
+  font=\small,
+  line width=0.7pt,
+  >=Latex,
+  blok/.style={draw, thick, minimum width=32mm, minimum height=13mm, align=center},
+  dotTikZ/.style={draw, circle, inner sep=1.1pt, fill=black}
+]
+  \node[blok, fill=gray!10] (hs) at (0,0)   {półsumator\\[-2pt]$S_0=A_0\oplus B_0$\\[-2pt]$P_0=A_0\cdot B_0$};
+  \node[blok, fill=gray!10] (fs) at (7.0,0) {pełny sumator\\[-2pt]$S_1=A_1\oplus B_1\oplus P_0$\\[-2pt]$P_1$};
+  \node[blok, minimum width=24mm, minimum height=9mm, fill=gray!10] (wys) at (7.0,2.9) {$S_2=P_1$};
+
+  \draw[->] (-4.6,0.8)  node[left] {$A_0$} -- (hs.160);
+  \draw[->] (-4.6,-0.8) node[left] {$B_0$} -- (hs.200);
+  \draw[->] (-4.6,2.1)  node[left] {$A_1$} -- (3.6,2.1) -- (fs.150);
+  \draw[->] (-4.6,-2.1) node[left] {$B_1$} -- (5.4,-2.1) -- (fs.210);
+  \draw[->] (hs.east) -- ++(0.5,0) coordinate(pd) node[dotTikZ] {} node[above=1pt] {$P_0$};
+  \draw[->] (pd) -- (fs.205);
+  \draw[->] (hs.north) |- (9.6,-1.6) node[dotTikZ] {} |- ($(fs.east)+(0.35,-1.0)$);
+  \draw[->] ($(hs.east)+(0.25,0.45)$) node[dotTikZ] {} -- ++(0.4,0) |- (9.6,-2.6) node[right] {$S_0$};
+  \draw[->] (fs.north) -- (wys.south);
+  \draw[->] (wys.east) -- ++(2.0,0) node[right] {$S_2$};
+  \draw[->] (fs.east) -- ++(2.0,0) node[right] {$S_1$};
+\end{tikzpicture}%
+}
+
+% ---------------------------------------------------------------------
+% RYSUNEK B — UKŁAD HIERARCHICZNY: DWA POZIOMY SUMACYJNE
+% ---------------------------------------------------------------------
+\newcommand{\RysSchematBlokowyDwa}{%
+\begin{tikzpicture}[
+  font=\small,
+  line width=0.7pt,
+  >=Latex,
+  blok/.style={draw, thick, minimum width=34mm, minimum height=12mm, align=center}
+]
+  \node[blok, fill=gray!10] (p1) at (0,1.6)   {poziom młodszy\\[-2pt]$S_0,\ P_0$};
+  \node[blok, fill=gray!10] (p2) at (6.8,1.6) {poziom starszy\\[-2pt]$S_1,\ P_1$};
+  \node[blok, minimum width=20mm, minimum height=8mm, fill=gray!10] (p3) at (6.8,4.1) {$S_2$};
+
+  \draw[->] (-4.8,2.2) node[left] {$A_0,\ B_0$} -- (p1.west);
+  \draw[->] (-4.8,1.0) node[left] {$A_1,\ B_1$} -- (-2.8,1.0) -- (-2.8,4.1) -| (p2.west);
+  \draw[->] (p1.east) -- node[above] {$P_0$} (p2.west);
+  \draw[->] (p1.north) |- (9.4,-2.2) node[right] {$S_0$};
+  \draw[->] (p2.north) -- (p3.south);
+  \draw[->] (p2.east) -- ++(2.2,0) node[right] {$S_1$};
+  \draw[->] (p3.east) -- ++(2.2,0) node[right] {$S_2$};
+\end{tikzpicture}%
+}
+
+% ---------------------------------------------------------------------
+% RYSUNEK C — PEŁNY SCHEMAT LOGICZNY NA BRAMKACH NOR (17 BRAMEK)
+%  S0 = XOR(A0,B0);  P0 = A0*B0;
+%  X  = XOR(A1,B1);  S1 = XOR(X,P0);
+%  S2 = P1 = NOR( NOR(A1,B1), NOR(X,P0) )
+%  XOR(u,v) z 4 NOR: N1=NOR(u,v), N2=NOR(u,~N1), N3=NOR(v,~N1), out=NOR(N2,N3)
+% ---------------------------------------------------------------------
+\newcommand{\RysSchematNOR}{%
+\begin{tikzpicture}[
+  font=\small,
+  line width=0.6pt,
+  >=Latex,
+  norI2/.style={nor gate US, draw, logic gate inputs=nn, minimum width=11mm},
+  dotTikZ/.style={draw, circle, inner sep=1.1pt, fill=black},
+  lbl/.style={font=\footnotesize}
+]
+  % ================= POZIOM MLodszy: S0, P0 =================
+  % --- bramki ---
+  \node[norI2] (iA0)   at (0,1.2)    {};
+  \node[norI2] (iB0)   at (0,-0.4)   {};
+  \node[norI2] (gXOR1) at (2.8,0.4)  {};
+  \node[norI2] (gXOR2) at (2.8,-1.6) {};
+  \node[norI2] (gS0)   at (5.6,-0.6) {};
+  \node[norI2] (gP0)   at (5.6,-2.6) {};
+  % --- wejscia A0, B0 + inwertery ---
+  \draw (iA0.input 1) -- ++(-0.6,0) coordinate(A0) node[left] {$A_0$};
+  \draw (iB0.input 1) -- ++(-0.6,0) coordinate(B0) node[left] {$B_0$};
+  \draw ($(A0)+(-0.6,0)$) node[dotTikZ] {} coordinate(A0b);
+  \draw ($(B0)+(-0.6,0)$) node[dotTikZ] {} coordinate(B0b);
+  \draw (iA0.input 1) -- (iA0.input 2);
+  \draw (iB0.input 1) -- (iB0.input 2);
+  % --- XOR(A0,B0) ---
+  \draw (A0b) |- ($(gXOR1.input 1)+(-0.3,0)$) -- (gXOR1.input 1);
+  \draw (B0)  |- ($(gXOR1.input 2)+(-0.3,0)$) -- (gXOR1.input 2);
+  \draw (iA0.output) -- ++(0.3,0) coordinate(v1);
+  \draw (iB0.output) -- ++(0.3,0) coordinate(v2);
+  \draw (v1) |- ($(gXOR2.input 1)+(-0.3,0)$) -- (gXOR2.input 1);
+  \draw (v2) |- ($(gXOR2.input 2)+(-0.3,0)$) -- (gXOR2.input 2);
+  % --- NOR = OR dla S0 oraz P0 ---
+  \draw (gXOR1.output) -- ++(0.3,0) coordinate(c1) node[dotTikZ] {};
+  \draw (gXOR2.output) -- ++(0.3,0) coordinate(c2);
+  \draw (c1) |- ($(gS0.input 1)+(-0.3,0)$) -- (gS0.input 1);
+  \draw (c1) |- ($(gP0.input 1)+(-0.3,0)$) -- (gP0.input 1);
+  \draw (c2) |- ($(gS0.input 2)+(-0.3,0)$) -- (gS0.input 2);
+  \draw (gS0.output) -- ++(0.5,0) node[dotTikZ] {} coordinate(S0b) node[right, lbl] {$S_0$};
+  \draw (S0b) |- (gP0.input 2);
+  \draw (gP0.output) -- ++(0.6,0) node[dotTikZ] {} coordinate(P0) node[below=3pt, lbl] {$P_0$};
+
+  % ================= POZIOM STARSZY: S1, S2=P1 =================
+  % --- bramki ---
+  \node[norI2] (iA1)   at (0,8.2)    {};
+  \node[norI2] (iB1)   at (0,6.6)    {};
+  \node[norI2] (hXOR1) at (2.8,7.4)  {};
+  \node[norI2] (hXOR2) at (2.8,5.4)  {};
+  \node[norI2] (hX)    at (5.6,6.4)  {};
+  \node[norI2] (iX)    at (5.6,4.2)  {};
+  \node[norI2] (hXP)   at (8.6,5.3)  {};
+  \node[norI2] (iP0h)  at (8.6,2.9)  {};
+  \node[norI2] (hXP2)  at (11.4,4.1) {};
+  \node[norI2] (hS1)   at (14.2,4.7) {};
+  \node[norI2] (hP1)   at (14.2,7.0) {};
+  % --- wejscia A1, B1 + inwertery ---
+  \draw (iA1.input 1) -- ++(-0.6,0) coordinate(A1) node[left] {$A_1$};
+  \draw (iB1.input 1) -- ++(-0.6,0) coordinate(B1) node[left] {$B_1$};
+  \draw ($(A1)+(-0.6,0)$) node[dotTikZ] {} coordinate(A1b);
+  \draw ($(B1)+(-0.6,0)$) node[dotTikZ] {} coordinate(B1b);
+  \draw (iA1.input 1) -- (iA1.input 2);
+  \draw (iB1.input 1) -- (iB1.input 2);
+  % --- X = XOR(A1,B1) ---
+  \draw (A1b) |- ($(hXOR1.input 1)+(-0.3,0)$) -- (hXOR1.input 1);
+  \draw (B1b) |- ($(hXOR1.input 2)+(-0.3,0)$) -- (hXOR1.input 2);
+  \draw (iA1.output) -- ++(0.3,0) coordinate(w1);
+  \draw (iB1.output) -- ++(0.3,0) coordinate(w2);
+  \draw (w1) |- ($(hXOR2.input 1)+(-0.3,0)$) -- (hXOR2.input 1);
+  \draw (w2) |- ($(hXOR2.input 2)+(-0.3,0)$) -- (hXOR2.input 2);
+  \draw (hXOR1.output) -- ++(0.3,0) coordinate(d1) node[dotTikZ] {};
+  \draw (hXOR2.output) -- ++(0.3,0) coordinate(d2);
+  \draw (d1) |- ($(hX.input 1)+(-0.3,0)$) -- (hX.input 1);
+  \draw (d2) |- ($(hX.input 2)+(-0.3,0)$) -- (hX.input 2);
+  % --- inwerter X -> notX ---
+  \draw (hX.output) -- ++(0.25,0) node[dotTikZ] {} coordinate(Xb);
+  \draw (Xb) |- (iX.input 1);
+  \draw (iX.input 1) -- (iX.input 2);
+  \draw (iX.output) -- ++(0.3,0) coordinate(e1);
+  % --- S1 = NOR( NOR(X,P0), NOR(notX, notP0) ) ---
+  \draw (Xb) |- ($(hXP.input 1)+(-0.3,0)$) -- (hXP.input 1);
+  \draw (e1) |- ($(hXP2.input 1)+(-0.3,0)$) -- (hXP2.input 1);
+  \draw (P0) |- (iP0h.input 1);
+  \draw (iP0h.input 1) -- (iP0h.input 2);
+  \draw (iP0h.output) -- ++(0.3,0) coordinate(e2);
+  \draw (e2) |- ($(hXP2.input 2)+(-0.3,0)$) -- (hXP2.input 2);
+  \draw (P0) |- ($(hXP.input 2)+(-0.3,0)$) -- (hXP.input 2);
+  \draw (hXP.output) -- ++(0.3,0) coordinate(f1) node[dotTikZ] {};
+  \draw (hXP2.output) -- ++(0.3,0) coordinate(f2);
+  \draw (f1) |- ($(hS1.input 1)+(-0.3,0)$) -- (hS1.input 1);
+  \draw (f2) |- ($(hS1.input 2)+(-0.3,0)$) -- (hS1.input 2);
+  \draw (hS1.output) -- ++(0.5,0) node[right, lbl] {$S_1$};
+  % --- S2 = P1 = NOR( NOR(A1,B1), NOR(X,P0) ) ---
+  \draw (d1) |- ($(hP1.input 1)+(-0.3,0)$) -- (hP1.input 1);
+  \draw (f1) |- ($(hP1.input 2)+(-0.3,0)$) -- (hP1.input 2);
+  \draw (hP1.output) -- ++(0.7,0) node[right, lbl] {$S_2=P_1$};
+  % --- etykiety poziomow ---
+  \node[lbl, gray] at (2.2,-3.9) {poziom młodszy: $S_0$, $P_0$};
+  \node[lbl, gray] at (7.2,9.4)  {poziom starszy: $S_1$, $S_2=P_1$};
+\end{tikzpicture}%
+}
+
+% alias dla punktu 3 (schemat zminimalizowany = ta sama siec NOR)
+\newcommand{\RysSchematMinimalny}{\RysSchematNOR}
+
+% ---------------------------------------------------------------------
+% RYSUNEK D — PRZEBIEGI CZASOWE (16 KOMBINACJI WEJŚĆ, jak w tablicy prawdy)
+% ---------------------------------------------------------------------
+\newcommand{\RysPrzebiegi}{%
+\begin{tikzpicture}[
+  font=\footnotesize,
+  >=Latex,
+  sig/.style={line width=1.0pt},
+  hi/.style={line width=1.0pt},
+  gr/.style={gray!45, very thin}
+]
+  \def\dx{0.62}
+  % siatka pionowa t = 0..16
+  \foreach \x in {0,1,...,16} {
+    \draw[gr] (2+\x*\dx, 0.1) -- (2+\x*\dx, 8.4);
+  }
+  % ---------- A1: 0 dla t<8, 1 dla t>=8 ----------
+  \draw[sig] (2,7.9) node[left] {$A_1$} -- (2+16*\dx,7.9);
+  \draw[hi]  (2,7.2) -- (2+8*\dx,7.2);
+  \draw[hi]  (2+8*\dx,7.2) -- (2+8*\dx,7.9) -- (2+16*\dx,7.9);
+  % ---------- A0: 0,0,1,1 cyklicznie ----------
+  \draw[sig] (2,6.1) node[left] {$A_0$} -- (2+16*\dx,6.1);
+  \foreach \a/\b in {2/4,6/8,10/12,14/16} {
+    \draw[hi] (2+\a*\dx,5.4) -- (2+\b*\dx,5.4);
+    \draw[hi] (2+\a*\dx,5.4) -- (2+\a*\dx,6.1);
+    \draw[hi] (2+\b*\dx,5.4) -- (2+\b*\dx,6.1);
+  }
+  % ---------- B1: 0,0,1,1 cyklicznie (wolniej) ----------
+  \draw[sig] (2,4.3) node[left] {$B_1$} -- (2+16*\dx,4.3);
+  \foreach \a/\b in {4/8,12/16} {
+    \draw[hi] (2+\a*\dx,3.6) -- (2+\b*\dx,3.6);
+    \draw[hi] (2+\a*\dx,3.6) -- (2+\a*\dx,4.3);
+    \draw[hi] (2+\b*\dx,3.6) -- (2+\b*\dx,4.3);
+  }
+  % ---------- B0: 0,1,0,1 cyklicznie (najszybciej) ----------
+  \draw[sig] (2,2.5) node[left] {$B_0$} -- (2+16*\dx,2.5);
+  \foreach \a in {1,3,...,15} {
+    \pgfmathsetmacro\bp{\a+1}
+    \draw[hi] (2+\a*\dx,1.8) -- (2+\bp*\dx,1.8);
+    \draw[hi] (2+\a*\dx,1.8) -- (2+\a*\dx,2.5);
+    \draw[hi] (2+\bp*\dx,1.8) -- (2+\bp*\dx,2.5);
+  }
+  % ---------- S2: 1 gdy suma >= 4 (t = 4..7, 10..11, 13..16) ----------
+  \draw[sig] (2,0.7) node[left] {$S_2$} -- (2+16*\dx,0.7);
+  \foreach \a/\b in {4/8,10/12,13/16} {
+    \draw[hi] (2+\a*\dx,0.0) -- (2+\b*\dx,0.0);
+    \draw[hi] (2+\a*\dx,0.0) -- (2+\a*\dx,0.7);
+    \draw[hi] (2+\b*\dx,0.0) -- (2+\b*\dx,0.7);
+  }
+  % ---------- podpisy stanow A1A0 / B1B0 pod osia ----------
+  \foreach \i [count=\j from 0] in {00,00,01,01,10,10,11,11,00,00,01,01,10,10,11,11} {
+    \node[rotate=90, anchor=east, font=\tiny] at (2+\j*\dx+0.5*\dx, -0.25) {\i};
+  }
+  \foreach \i [count=\j from 0] in {00,01,10,11,00,01,10,11,00,01,10,11,00,01,10,11} {
+    \node[rotate=90, anchor=east, font=\tiny] at (2+\j*\dx+0.5*\dx, -1.15) {\i};
+  }
+  \node[font=\tiny, anchor=north] at (2+8*\dx, -2.35) {stany $A_1A_0$ (górny rząd) i $B_1B_0$ (dolny rząd) zgodne z tablicą prawdy};
+\end{tikzpicture}%
+}
 \title{Projekt układu sumy liczby 2-bitowej z 3-bitową na bramkach NOR}
 \author{}
 \date{}
@@ -7,11 +254,8 @@
 \begin{document}
 
 \maketitle
-
 \tableofcontents
-
 \newpage
-\maketitle
 
 \section{Wstęp teoretyczny}
 
@@ -96,16 +340,17 @@ Strukturę sumatora 2-bitowego z 3-bitową sumą przedstawiono na schemacie blok
 
 \begin{figure}[h]
 \centering
-\begin{subfigure}[b]{0.8\textwidth}
+\begin{subfigure}[b]{0.97\linewidth}
     \centering
-    \includegraphics[width=\textwidth]{syg1.png}
-    \caption{Schemath blokowy układu}
+    \resizebox{\linewidth}{!}{\RysSchematBlokowy}
+    \caption{Schemat blokowy układu}
     \label{fig:schemat_bloku}
 \end{subfigure}
-\begin{subfigure}[b]{0.8\textwidth}
+
+\begin{subfigure}[b]{0.97\linewidth}
     \centering
-    \includegraphics[width=\textwidth]{syg2.png}
-    \caption{Schemath logiczny układu}
+    \resizebox{\linewidth}{!}{\RysSchematNOR}
+    \caption{Schemat logiczny układu zrealizowany wyłącznie na bramkach NOR}
     \label{fig:schemat_loiczny}
 \end{subfigure}
 \caption{Prezentacja układu sumatora 2-bitowego z 3-bitową sumą}
@@ -118,12 +363,10 @@ Następnie, w kolejnym punkcie pracy omówione zostaną szczegóły logiczne, mi
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg3.png}
-\caption{Rysunek prezentujący przejście do następnego punktu pracy}
+\resizebox{0.85\linewidth}{!}{\RysPrzebiegi}
+\caption{Przebiegi czasowe sygnałów wejściowych $A_1, A_0, B_1, B_0$ oraz wyjścia $S_2$ dla wszystkich 16~kombinacji wejściowych}
 \label{fig:przejscie}
 \end{figure}
-
-\maketitle
 
 \section{Opis techniczny projektu}
 
@@ -255,16 +498,17 @@ Struktura układu przedstawiona jest na schemacie blokowym oraz schematach logic
 
 \begin{figure}[h]
 \centering
-\begin{subfigure}[b]{0.8\textwidth}
+\begin{subfigure}[b]{0.97\linewidth}
     \centering
-    \includegraphics[width=\textwidth]{syg1.png}
-    \caption{Schemath blokowy układu}
+    \resizebox{\linewidth}{!}{\RysSchematBlokowy}
+    \caption{Schemat blokowy układu}
     \label{fig:schemat_bloku2}
 \end{subfigure}
-\begin{subfigure}[b]{0.8\textwidth}
+
+\begin{subfigure}[b]{0.97\linewidth}
     \centering
-    \includegraphics[width=\textwidth]{syg2.png}
-    \caption{Schemath logiczny układu}
+    \resizebox{\linewidth}{!}{\RysSchematNOR}
+    \caption{Schemat logiczny układu zrealizowany wyłącznie na bramkach NOR}
     \label{fig:schemat_logical2}
 \end{subfigure}
 \caption{Prezentacja układu sumatora 2-bitowego z 3-bitową sumą}
@@ -277,12 +521,10 @@ Następnie, w kolejnym punkcie pracy omówione zostaną minimalizacja funkcji lo
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg3.png}
-\caption{Rysunek prezentujący przejście do następnego punktu pracy}
+\resizebox{0.85\linewidth}{!}{\RysPrzebiegi}
+\caption{Przebiegi czasowe sygnałów wejściowych $A_1, A_0, B_1, B_0$ oraz wyjścia $S_2$ dla wszystkich 16~kombinacji wejściowych}
 \label{fig:przejscie_point2}
 \end{figure}
-
-\maketitle
 
 \section{Minimalizacja funkcji logicznej}
 
@@ -430,8 +672,8 @@ Schemat zminimalizowanego układu przedstawiono na rysunku \ref{fig:schemat_min}
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg2.png}
-\caption{Schemath zminimalizowanego układu na bramkach NOR}
+\resizebox{\linewidth}{!}{\RysSchematNOR}
+\caption{Schemat logiczny układu zrealizowany wyłącznie na bramkach NOR}
 \label{fig:schemat_min}
 \end{figure}
 
@@ -441,12 +683,10 @@ Następnie, w kolejnym punkcie pracy omówione zostanie schemat logiczny oraz da
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg3.png}
-\caption{Rysunek prezentujący przejście do następnego punktu pracy}
+\resizebox{0.85\linewidth}{!}{\RysPrzebiegi}
+\caption{Przebiegi czasowe sygnałów wejściowych $A_1, A_0, B_1, B_0$ oraz wyjścia $S_2$ dla wszystkich 16~kombinacji wejściowych}
 \label{fig:przejscie_point3}
 \end{figure}
-
-\maketitle
 
 \section{Schematy logiczne, tabelaryczne i wykresowe}
 
@@ -465,19 +705,20 @@ W schemacie logicznym wszystkie bramki są typu NOR, a sygnały są przetwarzane
 
 \begin{figure}[h]
 \centering
-\begin{subfigure}[b]{0.8\textwidth}
+\begin{subfigure}[b]{0.97\linewidth}
     \centering
-    \includegraphics[width=\textwidth]{syg1.png}
-    \caption{Schemath blokowy układu}
+    \resizebox{\linewidth}{!}{\RysSchematBlokowy}
+    \caption{Schemat blokowy układu}
     \label{fig:schemat_blok}
 \end{subfigure}
-\begin{subfigure}[b]{0.8\textwidth}
+
+\begin{subfigure}[b]{0.97\linewidth}
     \centering
-    \includegraphics[width=\textwidth]{syg2.png}
-    \caption{Schemath logiczny układu}
+    \resizebox{\linewidth}{!}{\RysSchematNOR}
+    \caption{Schemat logiczny układu zrealizowany wyłącznie na bramkach NOR}
     \label{fig:schemat_log}
 \end{subfigure}
-\caption{Schema logiczna sumatora 2-bitowego z 3-bitową sumą}
+\caption{Prezentacja układu sumatora 2-bitowego z 3-bitową sumą}
 \label{fig:schematy_point4}
 \end{figure}
 
@@ -531,8 +772,8 @@ Schemat blokowy układu przedstawia zależność między wejściami a wyjściami
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg1.png}
-\caption{Schemath blokowy układu}
+\resizebox{0.95\linewidth}{!}{\RysSchematBlokowy}
+\caption{Schemat blokowy układu}
 \label{fig:schemat_blok2}
 \end{figure}
 
@@ -544,16 +785,14 @@ Wykres czasowy prezentuje zmianę stanów wyjściowych w funkcji stanów wejści
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg3.png}
-\caption{Wykres czasowy / schemat przejścia do następnego punktu pracy}
+\resizebox{0.85\linewidth}{!}{\RysPrzebiegi}
+\caption{Przebiegi czasowe sygnałów wejściowych $A_1, A_0, B_1, B_0$ oraz wyjścia $S_2$ dla wszystkich 16~kombinacji wejściowych}
 \label{fig:wykres_point4}
 \end{figure}
 
 Z wykresu czasowego wynika, że dla kombinacji wejściowych, w których suma liczb wejściowych jest większa lub równa 4, następuje zmiana stanu \(S_2\) na 1. W pozostałych przypadkach \(S_2\) przyjmuje wartość 0.
 
 Następnie, w kolejnym punkcie pracy omówione zostaną szczegóły symulacji i weryfikacji działania układu. Dalsza część pracy odnosi się bezpośrednio do przedstawionej tu struktury układu.
-
-\maketitle
 
 \section{Symulacja i testowanie}
 
@@ -618,8 +857,8 @@ Warto zwrócić uwagę na to, że w schemacie logicznym wejścia układu oraz wy
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg2.png}
-\caption{Schemath logistyczny układu z wynikami symulacji}
+\resizebox{\linewidth}{!}{\RysSchematNOR}
+\caption{Schemat logiczny układu zrealizowany wyłącznie na bramkach NOR}
 \label{fig:schemat_blok5}
 \end{figure}
 
@@ -627,12 +866,10 @@ Następnie, w kolejnym punkcie pracy omówione zostaną podsumowanie i wnioski. 
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg3.png}
-\caption{Rysunek prezentujący przejście do następnego punktu pracy}
+\resizebox{0.85\linewidth}{!}{\RysPrzebiegi}
+\caption{Przebiegi czasowe sygnałów wejściowych $A_1, A_0, B_1, B_0$ oraz wyjścia $S_2$ dla wszystkich 16~kombinacji wejściowych}
 \label{fig:przejscie_point5}
 \end{figure}
-
-\maketitle
 
 \section{Podsumowanie i wnioski}
 
@@ -710,8 +947,8 @@ Projekt został przygotowany w formie gotowej do dalszych prac rozwojowych oraz 
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg1.png}
-\caption{Schemath końcowy układu}
+\resizebox{0.95\linewidth}{!}{\RysSchematBlokowy}
+\caption{Schemat blokowy układu}
 \label{fig:schemat_koncowy}
 \end{figure}
 
@@ -719,8 +956,8 @@ Na schemacie końcowym przedstawiono układ w formie uproszczonej, z wydzielenie
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg2.png}
-\caption{Schemath logiczny układu}
+\resizebox{\linewidth}{!}{\RysSchematNOR}
+\caption{Schemat logiczny układu zrealizowany wyłącznie na bramkach NOR}
 \label{fig:schemat_log_konc}
 \end{figure}
 
@@ -728,12 +965,11 @@ Rysunek \ref{fig:schemat_log_konc} przedstawia szczegółowo zależności międz
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg3.png}
-\caption{Końcowy rysunek podsumowujący}
+\resizebox{0.85\linewidth}{!}{\RysPrzebiegi}
+\caption{Przebiegi czasowe sygnałów wejściowych $A_1, A_0, B_1, B_0$ oraz wyjścia $S_2$ dla wszystkich 16~kombinacji wejściowych}
 \label{fig:koniec}
 \end{figure}
 
 Praca została zakończona. Wszystkie punkty zostały wykonane zgodnie z planem.
-
 
 \end{document}

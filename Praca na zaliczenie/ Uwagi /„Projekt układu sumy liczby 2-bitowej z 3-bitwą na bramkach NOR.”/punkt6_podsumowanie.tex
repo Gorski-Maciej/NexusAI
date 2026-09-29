@@ -1,5 +1,6 @@
 \documentclass[11pt]{article}
 \input{preamble.tex}
+\input{rysunki.tex}
 \title{Projekt układu sumy liczby 2-bitowej z 3-bitową na bramkach NOR}
 \author{}
 \date{}
@@ -84,8 +85,8 @@ Projekt został przygotowany w formie gotowej do dalszych prac rozwojowych oraz 
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg1.png}
-\caption{Schemath końcowy układu}
+\resizebox{0.95\linewidth}{!}{\RysSchematBlokowy}
+\caption{Schemat blokowy układu}
 \label{fig:schemat_koncowy}
 \end{figure}
 
@@ -93,8 +94,8 @@ Na schemacie końcowym przedstawiono układ w formie uproszczonej, z wydzielenie
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg2.png}
-\caption{Schemath logiczny układu}
+\resizebox{\linewidth}{!}{\RysSchematNOR}
+\caption{Schemat logiczny układu zrealizowany wyłącznie na bramkach NOR}
 \label{fig:schemat_log_konc}
 \end{figure}
 
@@ -102,8 +103,8 @@ Rysunek \ref{fig:schemat_log_konc} przedstawia szczegółowo zależności międz
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{syg3.png}
-\caption{Końcowy rysunek podsumowujący}
+\resizebox{0.85\linewidth}{!}{\RysPrzebiegi}
+\caption{Przebiegi czasowe sygnałów wejściowych $A_1, A_0, B_1, B_0$ oraz wyjścia $S_2$ dla wszystkich 16~kombinacji wejściowych}
 \label{fig:koniec}
 \end{figure}
 
