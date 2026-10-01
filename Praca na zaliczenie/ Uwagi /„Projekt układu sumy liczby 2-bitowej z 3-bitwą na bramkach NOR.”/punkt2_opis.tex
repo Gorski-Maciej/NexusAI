@@ -13,21 +13,22 @@
 
 \subsection{Założenia projektowe}
 
-Celem projektu jest zaprojektowanie układu kombinacyjnego realizującego funkcję sumy dwóch liczb dwubitowych, a następnie zminimalizowanie liczby wykorzystanych bramek logicznych przy zachowaniu realizacji wyłącznie na bramkach NOR.
+Celem projektu jest zaprojektowanie układu kombinacyjnego realizującego funkcję sumy liczby dwubitowej z liczbą trójbitową, a następnie zminimalizowanie liczby wykorzystanych bramek logicznych przy zachowaniu realizacji wyłącznie na bramkach NOR.
 
-Projektowany układ będzie dodawał dwie liczby binarne o długości dwóch bitów:
+Projektowany układ będzie dodawał dwie liczby binarne o różnych długościach:
 \begin{center}
-$A = (A_1 A_0),\quad B = (B_1 B_0)$
+$A = (A_1 A_0),\quad B = (B_2 B_1 B_0)$
 \end{center}
-Układ posiada cztery wejścia binarne oraz wyjście 3-bitowe. Wynik będzie informował o sumie liczb wraz z ewentualnym przeniesieniem najstarszego bitu.
+Układ posiada pięć wejść binarnych oraz wyjście 4-bitowe. Wynik będzie informował o sumie liczb wraz z ewentualnym przeniesieniem najstarszego bitu.
 
 Przyjęto następujące założenia:
 \begin{itemize}
-    \item liczby wejściowe mają długość 2 bitów,
+    \item liczba \(A\) ma długość 2 bitów, a liczba \(B\) -- 3 bity,
     \item wszystkie wejścia przyjmują wartości logiczne 0 lub 1,
     \item układ jest układem kombinacyjnym,
-    \item wynik sumy ma 3 bity: \(S_2 S_1 S_0\),
-    \item stan wyjścia \(S_2\) oznacza przeniesienie z poziomu bitów starszych,
+    \item wynik sumy ma 4 bity: \(S_3 S_2 S_1 S_0\),
+    \item stan wyjścia \(S_3\) oznacza przeniesienie z najstarszego poziomu,
+    \item maksymalna wartość sumy wynosi \(3 + 7 = 10 = 1010_2\),
     \item podstawowym celem projektu jest minimalizacja liczby bramek logicznych,
     \item poprawność działania zostanie sprawdzona za pomocą tablicy prawdy i symulacji.
 \end{itemize}
@@ -36,57 +37,62 @@ Minimalizacja układu ma na celu zmniejszenie jego złożoności. Mniejsza liczb
 
 \subsection{Specyfikacja wejść i wyjść}
 
-Projektowany sumator posiada cztery wejścia:
+Projektowany sumator posiada pięć wejść:
 \begin{itemize}
-    \item \(A_1\) -- starszy bit pierwszej liczby,
-    \item \(A_0\) -- młodszy bit pierwszej liczby,
-    \item \(B_1\) -- starszy bit drugiej liczby,
-    \item \(B_0\) -- młodszy bit drugiej liczby.
+    \item \(A_1\) -- starszy bit liczby \(A\),
+    \item \(A_0\) -- młodszy bit liczby \(A\),
+    \item \(B_2\) -- najstarszy bit liczby \(B\),
+    \item \(B_1\) -- bit środkowy liczby \(B\),
+    \item \(B_0\) -- najmłodszy bit liczby \(B\).
 \end{itemize}
 
 Wyjścia układu to:
 \begin{itemize}
     \item \(S_0\) -- bit wyniku najmłodszy,
     \item \(S_1\) -- bit wyniku pośredni,
-    \item \(S_2\) -- najstarszy bit wyniku (przeniesienie).
+    \item \(S_2\) -- bit wyniku starszy,
+    \item \(S_3\) -- najstarszy bit wyniku (przeniesienie).
 \end{itemize}
 
 Zależność pomiędzy wejściami a wyjściami można zapisać jako:
 \begin{equation}
-(A_1 A_0)_2 + (B_1 B_0)_2 = (S_2 S_1 S_0)_2
+(A_1 A_0)_2 + (B_2 B_1 B_0)_2 = (S_3 S_2 S_1 S_0)_2
 \end{equation}
 
 Przykładowo, dla:
 \begin{center}
-$A = 10_2$, $B = 01_2$
+$A = 10_2$, $B = 011_2$
 \end{center}
 otrzymujemy:
 \begin{center}
-$S = 11_2$
+$S = 1001_2$
 \end{center}
 
-Natomiast dla:
+Natomiast dla maksymalnych wartości:
 \begin{center}
-$A = 11_2$, $B = 11_2$
+$A = 11_2$, $B = 111_2$
 \end{center}
 otrzymujemy:
 \begin{center}
-$S = 110_2$
+$S = 1010_2$
 \end{center}
 
 Tabela sygnałowa przedstawia podstawowe sygnały wejściowe i wyjściowe projektowanego układu:
-\begin{table}[h]
+\begin{table}[H]
 \centering
-\caption{Sygnały wejściowe i wyjściowe sumatora 2-bitowego z sumą 3-bitową}
+\caption{Sygnały wejściowe i wyjściowe sumatora liczby 2-bitowej z 3-bitową}
+\label{tab:sygnaly}
 \begin{tabular}{lll}
 \toprule
 Sygnał & Rodzaj & Opis \\
 \midrule
-\(A_1\) & wejście & starszy bit pierwszej liczby \\
-\(A_0\) & wejście & młodszy bit pierwszej liczby \\
-\(B_1\) & wejście & starszy bit drugiej liczby \\
-\(B_0\) & wejście & młodszy bit drugiej liczby \\
-\(S_2\) & wyjście & najstarszy bit wyniku (przeniesienie) \\
+\(A_1\) & wejście & starszy bit liczby \(A\) (2-bitowej) \\
+\(A_0\) & wejście & młodszy bit liczby \(A\) (2-bitowej) \\
+\(B_2\) & wejście & najstarszy bit liczby \(B\) (3-bitowej) \\
+\(B_1\) & wejście & bit środkowy liczby \(B\) (3-bitowej) \\
+\(B_0\) & wejście & najmłodszy bit liczby \(B\) (3-bitowej) \\
+\(S_3\) & wyjście & najstarszy bit wyniku (przeniesienie) \\
+\(S_2\) & wyjście & bit wyniku starszy \\
 \(S_1\) & wyjście & bit wyniku pośredni \\
 \(S_0\) & wyjście & bit wyniku najmłodszy \\
 \bottomrule
@@ -108,63 +114,45 @@ Generowanie przeniesienia na najmłodszym poziomie wynosi:
 P_0 = A_0 \cdot B_0
 \end{equation}
 
-Dla bitów starszych:
+Dla poziomu środkowego:
 \begin{equation}
 S_1 = A_1 \oplus B_1 \oplus P_0
 \end{equation}
-oraz:
+oraz przeniesienie:
 \begin{equation}
-P_1 = (A_1 \cdot B_1) + (P_0 \cdot (A_1 \oplus B_1))
+P_1 = (A_1 \cdot B_1) \lor \bigl(P_0 \cdot (A_1 \lor B_1)\bigr)
 \end{equation}
 
-Wynik najstarszy to:
+Dla poziomu najstarszego, na którym pozostaje tylko bit \(B_2\) liczby \(B\) oraz przeniesienie \(P_1\):
 \begin{equation}
-S_2 = P_1
+S_2 = B_2 \oplus P_1
+\end{equation}
+\begin{equation}
+S_3 = B_2 \cdot P_1
 \end{equation}
 
 Funkcje te można zapisać w postaci sumy iloczynów lub iloczynu sum, a następnie zminimalizować do postaci przyjaznej dla bramek NOR.
 
-W praktyce realizacji na bramkach NOR każda z tych funkcji może być przekształcana do postaci, w której wykorzystywane są wyłącznie operacje NOR, co wymaga odpowiedniego zaznaczenia negacji i zamiany bramek na ich równoważniki.
-
 Schemat działania można opisać następująco:
 \begin{enumerate}
     \item poziom młodszy: określenie \(S_0\) oraz \(P_0\),
-    \item poziom starszy: określenie \(S_1\) oraz \(P_1\),
-    \item wyjście najstarsze: \(S_2 = P_1\).
+    \item poziom środkowy: określenie \(S_1\) oraz \(P_1\),
+    \item poziom starszy: określenie \(S_2\) oraz \(S_3\).
 \end{enumerate}
 
 \subsection{Prezentacja układu i przejście do dalszej części pracy}
 
-Struktura układu przedstawiona jest na schemacie blokowym oraz schematach logicznych. Na rysunku \ref{fig:schemat_bloku2} przedstawiono układ w formie uproszczonej, z wydzieleniem dwóch poziomów sumacyjnych oraz wyjścia przeniesienia. Na rysunku \ref{fig:schemat_logical2} szczegółowo przedstawiono zależności między wejściami a wyjściami w formie bramek logicznych.
+Struktura układu przedstawiona jest na schemacie blokowym (rysunek \ref{fig:schemat_bloku2}), gdzie wydzielono trzy poziomy sumacyjne oraz wyjście przeniesienia.
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
-\begin{subfigure}[b]{0.97\linewidth}
-    \centering
-    \resizebox{\linewidth}{!}{\RysSchematBlokowy}
-    \caption{Schemat blokowy układu}
-    \label{fig:schemat_bloku2}
-\end{subfigure}
-
-\begin{subfigure}[b]{0.97\linewidth}
-    \centering
-    \resizebox{\linewidth}{!}{\RysSchematNOR}
-    \caption{Schemat logiczny układu zrealizowany wyłącznie na bramkach NOR}
-    \label{fig:schemat_logical2}
-\end{subfigure}
-\caption{Prezentacja układu sumatora 2-bitowego z 3-bitową sumą}
-\label{fig:schematy_point2}
+\resizebox{0.9\linewidth}{!}{\RysSchematBlokowy}
+\caption{Schemat blokowy sumatora liczby 2-bitowej z 3-bitową}
+\label{fig:schemat_bloku2}
 \end{figure}
 
-Warto zwrócić uwagę na to, że w schemacie logicznym wejścia układu oraz wyjścia są połączone z bramkami NOR. Rysunek \ref{fig:schemat_bloku2} przedstawia układ w formie hierarchicznej: wejścia \(A_1, A_0, B_1, B_0\) są przetwarzane na poziomie młodszym, a następnie na poziomie starszym, a wynik końcowy jest sumą 3-bitową.
+Rysunek \ref{fig:schemat_bloku2} przedstawia układ w formie hierarchicznej: wejścia \(A_0, B_0\) są przetwarzane na poziomie młodszym, gdzie powstają \(S_0\) oraz przeniesienie \(P_0\); następnie bity \(A_1, B_1\) wraz z \(P_0\) wchodzą na poziom środkowy, gdzie powstają \(S_1\) oraz \(P_1\); na końcu bit \(B_2\) wraz z \(P_1\) wchodzi na poziom starszy, dając \(S_2\) oraz \(S_3\). Wynik końcowy jest sumą 4-bitową \(S_3 S_2 S_1 S_0\).
 
-Następnie, w kolejnym punkcie pracy omówione zostaną minimalizacja funkcji logicznych na bramkach NOR, tablica prawdy oraz dalsze schematy i rysunki. Dalsza część pracy odnosi się bezpośrednio do przedstawionej tu struktury układu.
-
-\begin{figure}[h]
-\centering
-\resizebox{0.85\linewidth}{!}{\RysPrzebiegi}
-\caption{Przebiegi czasowe sygnałów wejściowych $A_1, A_0, B_1, B_0$ oraz wyjścia $S_2$ dla wszystkich 16~kombinacji wejściowych}
-\label{fig:przejscie_point2}
-\end{figure}
+W kolejnym punkcie pracy przeprowadzona zostanie minimalizacja wyznaczonych funkcji logicznych z wykorzystaniem kart Karnaugha, w kierunku realizacji wyłącznie na bramkach NOR.
 
 \end{document}

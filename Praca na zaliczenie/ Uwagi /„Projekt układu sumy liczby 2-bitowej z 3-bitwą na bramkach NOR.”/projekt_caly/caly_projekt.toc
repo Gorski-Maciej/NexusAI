@@ -1,0 +1,37 @@
+\babel@toc {polish}{}\relax 
+\contentsline {section}{\numberline {1}Wstęp teoretyczny}{2}{}%
+\contentsline {subsection}{\numberline {1.1}Definicja sumatora cyfrowego}{2}{}%
+\contentsline {subsection}{\numberline {1.2}Zasada działania sumatora liczby 2-bitowej z liczbą 3-bitową}{2}{}%
+\contentsline {subsection}{\numberline {1.3}Zastosowanie sumatorów cyfrowych}{3}{}%
+\contentsline {subsection}{\numberline {1.4}Rodzaje sumatorów}{3}{}%
+\contentsline {section}{\numberline {2}Opis techniczny projektu}{4}{}%
+\contentsline {subsection}{\numberline {2.1}Założenia projektowe}{4}{}%
+\contentsline {subsection}{\numberline {2.2}Specyfikacja wejść i wyjść}{4}{}%
+\contentsline {subsection}{\numberline {2.3}Analiza logiczna układu}{6}{}%
+\contentsline {subsection}{\numberline {2.4}Prezentacja układu i przejście do dalszej części pracy}{6}{}%
+\contentsline {section}{\numberline {3}Minimalizacja funkcji logicznej}{7}{}%
+\contentsline {subsection}{\numberline {3.1}Funkcje wyjściowe układu}{7}{}%
+\contentsline {subsection}{\numberline {3.2}Siatka Karnaugha dla funkcji \(S_0\)}{8}{}%
+\contentsline {subsection}{\numberline {3.3}Siatka Karnaugha dla funkcji \(S_1\)}{8}{}%
+\contentsline {subsection}{\numberline {3.4}Siatka Karnaugha dla funkcji \(S_2\)}{8}{}%
+\contentsline {subsection}{\numberline {3.5}Siatka Karnaugha dla funkcji \(S_3\) oraz przeniesienia \(P_1\)}{9}{}%
+\contentsline {subsection}{\numberline {3.6}Postać minimalna i realizacja na bramkach NOR}{10}{}%
+\contentsline {subsection}{\numberline {3.7}Porównanie liczby bramek przed i po minimalizacji}{11}{}%
+\contentsline {section}{\numberline {4}Schematy logiczne, tabelaryczne i wykresowe}{11}{}%
+\contentsline {subsection}{\numberline {4.1}Schemat logiczny układu}{11}{}%
+\contentsline {subsection}{\numberline {4.2}Tablica prawdy}{12}{}%
+\contentsline {subsection}{\numberline {4.3}Schemat blokowy układu}{14}{}%
+\contentsline {subsection}{\numberline {4.4}Wykres czasowy i opis działania}{14}{}%
+\contentsline {section}{\numberline {5}Symulacja i testowanie}{15}{}%
+\contentsline {subsection}{\numberline {5.1}Środowisko symulacyjne}{15}{}%
+\contentsline {subsection}{\numberline {5.2}Przygotowanie układu do symulacji}{16}{}%
+\contentsline {subsection}{\numberline {5.3}Scenariusze testowe}{16}{}%
+\contentsline {subsection}{\numberline {5.4}Oczekiwane wyniki symulacji}{16}{}%
+\contentsline {subsection}{\numberline {5.5}Analiza wyników}{16}{}%
+\contentsline {section}{\numberline {6}Podsumowanie i wnioski}{18}{}%
+\contentsline {subsection}{\numberline {6.1}Ocena zaprojektowanego układu}{18}{}%
+\contentsline {subsection}{\numberline {6.2}Korzyści wynikające z minimalizacji bramek NOR}{18}{}%
+\contentsline {subsection}{\numberline {6.3}Ograniczenia rozwiązania}{18}{}%
+\contentsline {subsection}{\numberline {6.4}Możliwości rozwoju projektu}{19}{}%
+\contentsline {subsection}{\numberline {6.5}Zakres pracy}{19}{}%
+\contentsline {section}{\numberline {7}Źródła}{19}{}%

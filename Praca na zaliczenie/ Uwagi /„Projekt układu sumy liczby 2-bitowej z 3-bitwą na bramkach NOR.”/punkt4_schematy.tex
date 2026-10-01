@@ -11,108 +11,132 @@
 
 \section{Schematy logiczne, tabelaryczne i wykresowe}
 
-\subsection{Schemath logiczny układu}
+\subsection{Schemat logiczny układu}
 
-Schemat logiczny sumatora 2-bitowego z 3-bitową sumą przedstawia strukturę realizowaną wyłącznie na bramkach NOR. Wejścia układu to \(A_1, A_0, B_1, B_0\), a wyjścia to \(S_2, S_1, S_0\).
+Schemat logiczny zminimalizowanego sumatora opiera się na strukturze trójpoziomowej, zrealizowanej wyłącznie na bramkach NOR. Wejścia układu to \(A_1, A_0, B_2, B_1, B_0\), a wyjścia to \(S_3, S_2, S_1, S_0\).
 
 Schemat działania układu można opisać w następujący sposób:
 \begin{enumerate}
-    \item poziom pierwszy: bramki NOR realizujące funkcję sumy bitów najmłodszych oraz przeniesienia \(P_0\),
-    \item poziom drugi: bramki NOR realizujące funkcję sumy bitów starszych oraz przeniesienia \(P_1\),
-    \item wyjście najstarsze: \(S_2 = P_1\).
+    \item poziom pierwszy (młodszy): negatory NOR o połączonych wejściach wytwarzają \(\overline{A_0}\) i \(\overline{B_0}\), blok trzech NOR realizuje \(S_0 = A_0 \oplus B_0\), a bramka NOR z zanegowanymi wejściami wyznacza \(P_0 = A_0 \cdot B_0\),
+    \item poziom drugi (środkowy): analogiczny blok NOR wyznacza \(X = A_1 \oplus B_1\) oraz \(S_1 = X \oplus P_0\), a struktura NOR--NOR--NOR realizuje \(P_1 = A_1B_1 \lor P_0(A_1 \lor B_1)\),
+    \item poziom trzeci (starszy): blok NOR realizuje \(S_2 = B_2 \oplus P_1\), a bramka NOR z zanegowanymi wejściami daje \(S_3 = B_2 \cdot P_1\).
 \end{enumerate}
 
-W schemacie logicznym wszystkie bramki są typu NOR, a sygnały są przetwarzane w celu uzyskania wyniku 3-bitowego. Schemat przedstawia zależności między wejściami a wyjściami w postaci uproszczonej, co ułatwia zrozumienie działania układu.
+Pełny schemat logiczny układu zrealizowany wyłącznie na bramkach NOR (27 bramek) przedstawia rysunek \ref{fig:schemat_log}.
 
-\begin{figure}[h]
+\begin{figure}[!htb]
 \centering
-\begin{subfigure}[b]{0.97\linewidth}
-    \centering
-    \resizebox{\linewidth}{!}{\RysSchematBlokowy}
-    \caption{Schemat blokowy układu}
-    \label{fig:schemat_blok}
-\end{subfigure}
-
-\begin{subfigure}[b]{0.97\linewidth}
-    \centering
-    \resizebox{\linewidth}{!}{\RysSchematNOR}
-    \caption{Schemat logiczny układu zrealizowany wyłącznie na bramkach NOR}
-    \label{fig:schemat_log}
-\end{subfigure}
-\caption{Prezentacja układu sumatora 2-bitowego z 3-bitową sumą}
-\label{fig:schematy_point4}
+\resizebox{0.62\linewidth}{!}{\RysSchematNOR}
+\caption{Schemat logiczny sumatora liczby 2-bitowej z 3-bitową zrealizowany wyłącznie na bramkach NOR}
+\label{fig:schemat_log}
 \end{figure}
 
-Warto zwrócić uwagę na to, że w schemacie logicznym wejścia układu oraz wyjścia są połączone z bramkami NOR. Rysunek \ref{fig:schemat_blok} przedstawia układ w formie hierarchicznej: wejścia \(A_1, A_0, B_1, B_0\) są przetwarzane na poziomie młodszym, a następnie na poziomie starszym, a wynik końcowy jest sumą 3-bitową.
+W schemacie wszystkie bramki są typu NOR. Bramki o połączonych wejściach pełnią rolę negatorów, bloki po trzy NOR realizują funkcje XOR, dzięki czemu struktura układu jest jednolita technologicznie i może być zbudowana z jednego typu układu scalonego (np. 74HC02 -- poczwórny NOR 2-wejściowy; cała sieć wymaga siedmiu takich układów).
 
 \subsection{Tablica prawdy}
 
-Ponieważ układ posiada cztery wejścia binarne, liczba możliwych kombinacji wynosi:
+Ponieważ układ posiada pięć wejść binarnych, liczba możliwych kombinacji wynosi:
 \begin{equation}
-2^4 = 16
+2^5 = 32
 \end{equation}
 
 Pełna tablica prawdy przedstawia się następująco:
-\begin{table}[h]
+\begin{table}[H]
 \centering
-\caption{Tablica prawdy sumatora 2-bitowego z 3-bitową sumą}
-\begin{tabular}{cccc|ccc}
+\caption{Tablica prawdy sumatora liczby 2-bitowej z 3-bitową (suma 4-bitowa)}
+\label{tab:tablica_prawdy}
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{ccccc|cccc}
 \hline
-\(A_1\) & \(A_0\) & \(B_1\) & \(B_0\) & \(S_2\) & \(S_1\) & \(S_0\) \\
+\(A_1\) & \(A_0\) & \(B_2\) & \(B_1\) & \(B_0\) & \(S_3\) & \(S_2\) & \(S_1\) & \(S_0\) \\
 \hline
-0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-0 & 0 & 0 & 1 & 0 & 0 & 1 \\
-0 & 0 & 1 & 0 & 0 & 1 & 0 \\
-0 & 0 & 1 & 1 & 0 & 1 & 1 \\
-0 & 1 & 0 & 0 & 0 & 0 & 1 \\
-0 & 1 & 0 & 1 & 0 & 1 & 0 \\
-0 & 1 & 1 & 0 & 0 & 1 & 1 \\
-0 & 1 & 1 & 1 & 1 & 0 & 0 \\
-1 & 0 & 0 & 0 & 0 & 1 & 0 \\
-1 & 0 & 0 & 1 & 0 & 1 & 1 \\
-1 & 0 & 1 & 0 & 1 & 0 & 0 \\
-1 & 0 & 1 & 1 & 1 & 0 & 1 \\
-1 & 1 & 0 & 0 & 0 & 1 & 1 \\
-1 & 1 & 0 & 1 & 1 & 0 & 0 \\
-1 & 1 & 1 & 0 & 1 & 0 & 1 \\
-1 & 1 & 1 & 1 & 1 & 1 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 \\
+0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1 & 1 & 0 & 0 & 1 & 1 \\
+0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 \\
+0 & 0 & 1 & 1 & 0 & 0 & 1 & 1 & 0 \\
+0 & 0 & 1 & 1 & 1 & 0 & 1 & 1 & 1 \\
+0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 1 \\
+0 & 1 & 0 & 0 & 1 & 0 & 0 & 1 & 0 \\
+0 & 1 & 0 & 1 & 0 & 0 & 0 & 1 & 1 \\
+0 & 1 & 0 & 1 & 1 & 0 & 1 & 0 & 0 \\
+0 & 1 & 1 & 0 & 0 & 0 & 1 & 0 & 1 \\
+0 & 1 & 1 & 0 & 1 & 0 & 1 & 1 & 0 \\
+0 & 1 & 1 & 1 & 0 & 0 & 1 & 1 & 1 \\
+0 & 1 & 1 & 1 & 1 & 1 & 0 & 0 & 0 \\
+1 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+1 & 0 & 0 & 0 & 1 & 0 & 0 & 1 & 1 \\
+1 & 0 & 0 & 1 & 0 & 0 & 1 & 0 & 0 \\
+1 & 0 & 0 & 1 & 1 & 0 & 1 & 0 & 1 \\
+1 & 0 & 1 & 0 & 0 & 0 & 1 & 1 & 0 \\
+1 & 0 & 1 & 0 & 1 & 0 & 1 & 1 & 1 \\
+1 & 0 & 1 & 1 & 0 & 1 & 0 & 0 & 0 \\
+1 & 0 & 1 & 1 & 1 & 1 & 0 & 0 & 1 \\
+1 & 1 & 0 & 0 & 0 & 0 & 0 & 1 & 1 \\
+1 & 1 & 0 & 0 & 1 & 0 & 1 & 0 & 0 \\
+1 & 1 & 0 & 1 & 0 & 0 & 1 & 0 & 1 \\
+1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 \\
+1 & 1 & 1 & 0 & 0 & 0 & 1 & 1 & 1 \\
+1 & 1 & 1 & 0 & 1 & 1 & 0 & 0 & 0 \\
+1 & 1 & 1 & 1 & 0 & 1 & 0 & 0 & 1 \\
+1 & 1 & 1 & 1 & 1 & 1 & 0 & 1 & 0 \\
 \hline
 \end{tabular}
 \end{table}
 
-Wartość wyjścia \(S_2\) występuje wyłącznie dla kombinacji, w których suma liczb wejściowych jest większa lub równa 4. W pozostałych przypadkach przyjmuje wartość 0.
+Wartość wyjścia \(S_3 = 1\) występuje wyłącznie dla sześciu kombinacji, w których suma liczb wejściowych wynosi 8, 9 lub 10: \(A=01, B=111\) (7+1=8), \(A=10, B=110\) (2+6=8), \(A=10, B=111\) (2+7=9), \(A=11, B=101\) (3+5=8), \(A=11, B=110\) (3+6=9) oraz \(A=11, B=111\) (3+7=10). W pozostałych 26 przypadkach \(S_3 = 0\).
 
-Funkcję w postaci sumy iloczynów mintermów można więc zapisać jako:
+Funkcje w postaci sumy iloczynów mintermów odczytane z tablicy prawdy (numeracja \(m = 16A_1 + 8A_0 + 4B_2 + 2B_1 + B_0\)) mają postać:
 \begin{equation}
-S_2 = \sum m(7,11,13,14,15)
+S_3 = \sum m(15,22,23,29,30,31)
 \end{equation}
+\begin{equation}
+S_0 = \sum m(1,3,5,7,8,10,12,14,17,19,21,23,24,26,28,30)
+\end{equation}
+\begin{equation}
+S_1 = \sum m(2,3,6,7,9,10,13,14,16,17,20,21,24,27,28,31), \quad
+S_2 = \sum m(4,5,6,7,11,12,13,14,18,19,20,21,25,26,27,28)
+\end{equation}
+Jest to postać kanoniczna, którą zminimalizowano w punkcie 3 z wykorzystaniem siatek Karnaugha.
 
-\subsection{Schemath blokowy układu}
+Zgodność schematu logicznego (rysunek \ref{fig:schemat_log}) z tablicą prawdy można zweryfikować przykładowo dla kombinacji \(A_1A_0B_2B_1B_0 = 01111\) (\(A=1\), \(B=7\), suma 8):
+\begin{itemize}
+    \item \(S_0 = A_0 \oplus B_0 = 1 \oplus 1 = 0\), \(P_0 = A_0 \cdot B_0 = 1\),
+    \item \(X = A_1 \oplus B_1 = 0 \oplus 1 = 1\), \(S_1 = X \oplus P_0 = 1 \oplus 1 = 0\),
+    \item \(P_1 = A_1B_1 \lor P_0(A_1 \lor B_1) = 0 \lor 1\cdot 1 = 1\),
+    \item \(S_2 = B_2 \oplus P_1 = 1 \oplus 1 = 0\), \(S_3 = B_2 \cdot P_1 = 1\),
+\end{itemize}
+co daje \(S_3S_2S_1S_0 = 1000_2 = 8\) -- zgodnie z tablicą. Dla kombinacji \(A=11\), \(B=111\) (suma 10): \(S_0 = 1 \oplus 1 = 0\), \(P_0 = 1\), \(X = 1 \oplus 1 = 0\), \(S_1 = 0 \oplus 1 = 1\), \(P_1 = 1 \lor 1 = 1\), \(S_2 = 1 \oplus 1 = 0\), \(S_3 = 1\), czyli \(1010_2 = 10\) -- również zgodnie z tablicą prawdy.
 
-Schemat blokowy układu przedstawia zależność między wejściami a wyjściami w formie uproszczonej. Na schemacie wydzielono dwa poziomy sumacyjne oraz wyjście przeniesienia.
+\subsection{Schemat blokowy układu}
 
-\begin{figure}[h]
+Schemat blokowy układu przedstawia zależność między wejściami a wyjściami w formie uproszczonej. Na schemacie wydzielono trzy poziomy sumacyjne oraz wyjście przeniesienia.
+
+\begin{figure}[!htb]
 \centering
-\resizebox{0.95\linewidth}{!}{\RysSchematBlokowy}
-\caption{Schemat blokowy układu}
-\label{fig:schemat_blok2}
+\resizebox{0.9\linewidth}{!}{\RysSchematBlokowy}
+\caption{Schemat blokowy sumatora liczby 2-bitowej z 3-bitową}
+\label{fig:schemat_blok}
 \end{figure}
 
-Na schemacie blokowym przedstawiono układ w formie uproszczonej, z wydzieleniem dwóch poziomów sumacyjnych oraz wyjścia przeniesienia. Rysunek \ref{fig:schemat_blok2} przedstawia układ w formie hierarchicznej: wejścia \(A_1, A_0, B_1, B_0\) są przetwarzane na poziomie młodszym, a następnie na poziomie starszym, a wynik końcowy jest sumą 3-bitową.
+Rysunek \ref{fig:schemat_blok} przedstawia układ w formie hierarchicznej: poziom młodszy (\(S_0\), \(P_0\)), poziom środkowy (\(S_1\), \(P_1\)) i poziom starszy (\(S_2\), \(S_3\)). Wewnątrz każdego bloku znajduje się struktura NOR przedstawiona szczegółowo na rysunku \ref{fig:schemat_log}.
 
 \subsection{Wykres czasowy i opis działania}
 
-Wykres czasowy prezentuje zmianę stanów wyjściowych w funkcji stanów wejściowych. W szczególności warto zwrócić uwagę na momenty, w których następuje zmiana stanu przeniesienia \(S_2\).
+Wykres czasowy prezentuje zmianę stanów wejściowych oraz wszystkich wyjść w funkcji czasu, dla kolejnych 32 kombinacji wejściowych zgodnych z tablicą prawdy \ref{tab:tablica_prawdy}.
 
-\begin{figure}[h]
+\begin{figure}[!htb]
 \centering
-\resizebox{0.85\linewidth}{!}{\RysPrzebiegi}
-\caption{Przebiegi czasowe sygnałów wejściowych $A_1, A_0, B_1, B_0$ oraz wyjścia $S_2$ dla wszystkich 16~kombinacji wejściowych}
-\label{fig:wykres_point4}
+\resizebox{0.78\linewidth}{!}{\RysPrzebiegi}
+\caption{Przebiegi czasowe sygnałów wejściowych \(A_1, A_0, B_2, B_1, B_0\) oraz wyjść \(S_3, S_2, S_1, S_0\) dla wszystkich 32~kombinacji wejściowych}
+\label{fig:wykres_czasowy}
 \end{figure}
 
-Z wykresu czasowego wynika, że dla kombinacji wejściowych, w których suma liczb wejściowych jest większa lub równa 4, następuje zmiana stanu \(S_2\) na 1. W pozostałych przypadkach \(S_2\) przyjmuje wartość 0.
+Z wykresu czasowego wynika, że najstarszy bit \(S_3\) przyjmuje wartość 1 wyłącznie dla kombinacji, w których suma liczb wejściowych jest większa lub równa 8 (kombinacje t = 15, 22--23, 29--31 na osi czasu), co jest zgodne z tablicą prawdy oraz z postacią minimalną \(S_3 = B_2 \cdot P_1\).
 
-Następnie, w kolejnym punkcie pracy omówione zostaną szczegóły symulacji i weryfikacji działania układu. Dalsza część pracy odnosi się bezpośrednio do przedstawionej tu struktury układu.
+W kolejnym punkcie pracy opisano szczegóły symulacji oraz weryfikacji działania układu.
+
 
 \end{document}

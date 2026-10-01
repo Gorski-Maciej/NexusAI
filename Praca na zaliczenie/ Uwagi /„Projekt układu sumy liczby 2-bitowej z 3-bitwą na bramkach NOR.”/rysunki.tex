@@ -1,68 +1,52 @@
 % =====================================================================
 %  RYSUNKI LOGICZNE (inline TikZ) — wspolny plik dolaczany przez \input
+%  Sumator: liczba 2-bitowa (A1A0) + liczba 3-bitowa (B2B1B0) = suma 4-bitowa
 %  Wymaga w preamble:
 %  \usetikzlibrary{shapes.gates.logic.US, arrows.meta, positioning, calc}
 % =====================================================================
 
 % ---------------------------------------------------------------------
-% RYSUNEK A — SCHEMAT BLOKOWY SUMATORA 2-BITOWEGO
+% RYSUNEK A — SCHEMAT BLOKOWY SUMATORA 2-BIT + 3-BIT (3 POZIOMY)
 % ---------------------------------------------------------------------
 \newcommand{\RysSchematBlokowy}{%
 \begin{tikzpicture}[
   font=\small,
   line width=0.7pt,
   >=Latex,
-  blok/.style={draw, thick, minimum width=32mm, minimum height=13mm, align=center},
+  blok/.style={draw, thick, minimum width=30mm, minimum height=14mm, align=center},
   dotTikZ/.style={draw, circle, inner sep=1.1pt, fill=black}
 ]
-  \node[blok, fill=gray!10] (hs) at (0,0)   {półsumator\\[-2pt]$S_0=A_0\oplus B_0$\\[-2pt]$P_0=A_0\cdot B_0$};
-  \node[blok, fill=gray!10] (fs) at (7.0,0) {pełny sumator\\[-2pt]$S_1=A_1\oplus B_1\oplus P_0$\\[-2pt]$P_1$};
-  \node[blok, minimum width=24mm, minimum height=9mm, fill=gray!10] (wys) at (7.0,2.9) {$S_2=P_1$};
+  \node[blok, fill=gray!10] (p0) at (0,0)
+    {poziom 0\\[-2pt]$S_0=A_0\oplus B_0$\\[-2pt]$P_0=A_0\cdot B_0$};
+  \node[blok, fill=gray!10] (p1) at (6.4,0)
+    {poziom 1\\[-2pt]$S_1=X\oplus P_0$\\[-2pt]$P_1=A_1B_1\lor P_0(A_1\lor B_1)$};
+  \node[blok, fill=gray!10] (p2) at (12.8,0)
+    {poziom 2\\[-2pt]$S_2=B_2\oplus P_1$\\[-2pt]$S_3=B_2\cdot P_1$};
 
-  \draw[->] (-4.6,0.8)  node[left] {$A_0$} -- (hs.160);
-  \draw[->] (-4.6,-0.8) node[left] {$B_0$} -- (hs.200);
-  \draw[->] (-4.6,2.1)  node[left] {$A_1$} -- (3.6,2.1) -- (fs.150);
-  \draw[->] (-4.6,-2.1) node[left] {$B_1$} -- (5.4,-2.1) -- (fs.210);
-  \draw[->] (hs.east) -- ++(0.5,0) coordinate(pd) node[dotTikZ] {} node[above=1pt] {$P_0$};
-  \draw[->] (pd) -- (fs.205);
-  \draw[->] (hs.north) |- (9.6,-1.6) node[dotTikZ] {} |- ($(fs.east)+(0.35,-1.0)$);
-  \draw[->] ($(hs.east)+(0.25,0.45)$) node[dotTikZ] {} -- ++(0.4,0) |- (9.6,-2.6) node[right] {$S_0$};
-  \draw[->] (fs.north) -- (wys.south);
-  \draw[->] (wys.east) -- ++(2.0,0) node[right] {$S_2$};
-  \draw[->] (fs.east) -- ++(2.0,0) node[right] {$S_1$};
+  \draw[->] (-4.4,0.7)  node[left] {$A_0$} -- (p0.155);
+  \draw[->] (-4.4,-0.7) node[left] {$B_0$} -- (p0.205);
+  \draw[->] (-4.4,2.4) node[left] {$A_1$} -- (4.2,2.4) -- (p1.150);
+  \draw[->] (-4.4,-2.4) node[left] {$B_1$} -- (5.0,-2.4) -- (p1.210);
+  \draw[->] (p0.east) -- node[above] {$P_0$} (p1.west);
+  \draw[->] (-4.4,3.9) node[left] {$B_2$} -- (10.2,3.9) -- (10.2,2.4) -- (p2.150);
+  \draw[->] (p1.east) -- node[above] {$P_1$} (p2.west);
+  \draw[->] (p0.south) |- (-1.6,-2.9) node[dotTikZ] {} |- ($(p1.south)+(0,-0.9)$) -- ($(p1.south)+(0,-0.9)$) ;
+  \draw[->] (-1.6,-2.9) -- (-1.6,-4.4) node[below] {$S_0$};
+  \draw[->] (p1.south) ++(0,-0.9) -- ++(0,-1.5) node[below] {$S_1$};
+  \draw[->] (p2.north) -- ++(0,1.0) node[dotTikZ] {} -- ++(1.6,0) node[right] {$S_2$};
+  \draw[->] (p2.south) -- ++(0,0.0) ;
+  \draw[->] (p2.south) ++(0,-0.0) -- ++(0,-0.9) node[dotTikZ] {} -- ++(0,-1.5) node[below] {$S_3$};
 \end{tikzpicture}%
 }
 
 % ---------------------------------------------------------------------
-% RYSUNEK B — UKŁAD HIERARCHICZNY: DWA POZIOMY SUMACYJNE
-% ---------------------------------------------------------------------
-\newcommand{\RysSchematBlokowyDwa}{%
-\begin{tikzpicture}[
-  font=\small,
-  line width=0.7pt,
-  >=Latex,
-  blok/.style={draw, thick, minimum width=34mm, minimum height=12mm, align=center}
-]
-  \node[blok, fill=gray!10] (p1) at (0,1.6)   {poziom młodszy\\[-2pt]$S_0,\ P_0$};
-  \node[blok, fill=gray!10] (p2) at (6.8,1.6) {poziom starszy\\[-2pt]$S_1,\ P_1$};
-  \node[blok, minimum width=20mm, minimum height=8mm, fill=gray!10] (p3) at (6.8,4.1) {$S_2$};
-
-  \draw[->] (-4.8,2.2) node[left] {$A_0,\ B_0$} -- (p1.west);
-  \draw[->] (-4.8,1.0) node[left] {$A_1,\ B_1$} -- (-2.8,1.0) -- (-2.8,4.1) -| (p2.west);
-  \draw[->] (p1.east) -- node[above] {$P_0$} (p2.west);
-  \draw[->] (p1.north) |- (9.4,-2.2) node[right] {$S_0$};
-  \draw[->] (p2.north) -- (p3.south);
-  \draw[->] (p2.east) -- ++(2.2,0) node[right] {$S_1$};
-  \draw[->] (p3.east) -- ++(2.2,0) node[right] {$S_2$};
-\end{tikzpicture}%
-}
-
-% ---------------------------------------------------------------------
-% RYSUNEK C — PEŁNY SCHEMAT LOGICZNY NA BRAMKACH NOR (17 BRAMEK)
-%  S0 = XOR(A0,B0);  P0 = A0*B0;
-%  X  = XOR(A1,B1);  S1 = XOR(X,P0);
-%  S2 = P1 = NOR( NOR(A1,B1), NOR(X,P0) )
-%  XOR(u,v) z 4 NOR: N1=NOR(u,v), N2=NOR(u,~N1), N3=NOR(v,~N1), out=NOR(N2,N3)
+% RYSUNEK B — PEŁNY SCHEMAT LOGICZNY NA BRAMKACH NOR (27 BRAMEK)
+%  S0 = XOR(A0,B0);  P0 = A0*B0;          [poziom 0]
+%  X  = XOR(A1,B1);  S1 = XOR(X,P0);      [poziom 1]
+%  P1 = A1*B1 + P0*(A1 v B1)              [poziom 1]
+%     (d2 = hXOR2 = A1*B1;  hT2 = NOR(P0bar, (A1 v B1)bar) = P0*(A1 v B1))
+%  S2 = XOR(B2,P1);  S3 = NOR(B2bar,P1bar)=B2*P1   [poziom 2]
+%  XOR(u,v) = NOR(NOR(u,v), NOR(~u,~v));  AND(u,v) = NOR(~u,~v)
 % ---------------------------------------------------------------------
 \newcommand{\RysSchematNOR}{%
 \begin{tikzpicture}[
@@ -73,29 +57,25 @@
   dotTikZ/.style={draw, circle, inner sep=1.1pt, fill=black},
   lbl/.style={font=\footnotesize}
 ]
-  % ================= POZIOM MLodszy: S0, P0 =================
-  % --- bramki ---
+  % ================= POZIOM 0: S0, P0 =================
   \node[norI2] (iA0)   at (0,1.2)    {};
   \node[norI2] (iB0)   at (0,-0.4)   {};
   \node[norI2] (gXOR1) at (2.8,0.4)  {};
   \node[norI2] (gXOR2) at (2.8,-1.6) {};
   \node[norI2] (gS0)   at (5.6,-0.6) {};
   \node[norI2] (gP0)   at (5.6,-2.6) {};
-  % --- wejscia A0, B0 + inwertery ---
   \draw (iA0.input 1) -- ++(-0.6,0) coordinate(A0) node[left] {$A_0$};
   \draw (iB0.input 1) -- ++(-0.6,0) coordinate(B0) node[left] {$B_0$};
   \draw ($(A0)+(-0.6,0)$) node[dotTikZ] {} coordinate(A0b);
   \draw ($(B0)+(-0.6,0)$) node[dotTikZ] {} coordinate(B0b);
   \draw (iA0.input 1) -- (iA0.input 2);
   \draw (iB0.input 1) -- (iB0.input 2);
-  % --- XOR(A0,B0) ---
   \draw (A0b) |- ($(gXOR1.input 1)+(-0.3,0)$) -- (gXOR1.input 1);
   \draw (B0)  |- ($(gXOR1.input 2)+(-0.3,0)$) -- (gXOR1.input 2);
   \draw (iA0.output) -- ++(0.3,0) coordinate(v1);
   \draw (iB0.output) -- ++(0.3,0) coordinate(v2);
   \draw (v1) |- ($(gXOR2.input 1)+(-0.3,0)$) -- (gXOR2.input 1);
   \draw (v2) |- ($(gXOR2.input 2)+(-0.3,0)$) -- (gXOR2.input 2);
-  % --- NOR = OR dla S0 oraz P0 ---
   \draw (gXOR1.output) -- ++(0.3,0) coordinate(c1) node[dotTikZ] {};
   \draw (gXOR2.output) -- ++(0.3,0) coordinate(c2);
   \draw (c1) |- ($(gS0.input 1)+(-0.3,0)$) -- (gS0.input 1);
@@ -103,29 +83,20 @@
   \draw (c2) |- ($(gS0.input 2)+(-0.3,0)$) -- (gS0.input 2);
   \draw (gS0.output) -- ++(0.5,0) node[dotTikZ] {} coordinate(S0b) node[right, lbl] {$S_0$};
   \draw (S0b) |- (gP0.input 2);
-  \draw (gP0.output) -- ++(0.6,0) node[dotTikZ] {} coordinate(P0) node[below=3pt, lbl] {$P_0$};
+  \draw (gP0.output) -- ++(0.9,0) node[dotTikZ] {} coordinate(P0) node[below=3pt, lbl] {$P_0$};
 
-  % ================= POZIOM STARSZY: S1, S2=P1 =================
-  % --- bramki ---
+  % ================= POZIOM 1a: X = XOR(A1,B1) =================
   \node[norI2] (iA1)   at (0,8.2)    {};
   \node[norI2] (iB1)   at (0,6.6)    {};
   \node[norI2] (hXOR1) at (2.8,7.4)  {};
   \node[norI2] (hXOR2) at (2.8,5.4)  {};
   \node[norI2] (hX)    at (5.6,6.4)  {};
-  \node[norI2] (iX)    at (5.6,4.2)  {};
-  \node[norI2] (hXP)   at (8.6,5.3)  {};
-  \node[norI2] (iP0h)  at (8.6,2.9)  {};
-  \node[norI2] (hXP2)  at (11.4,4.1) {};
-  \node[norI2] (hS1)   at (14.2,4.7) {};
-  \node[norI2] (hP1)   at (14.2,7.0) {};
-  % --- wejscia A1, B1 + inwertery ---
   \draw (iA1.input 1) -- ++(-0.6,0) coordinate(A1) node[left] {$A_1$};
   \draw (iB1.input 1) -- ++(-0.6,0) coordinate(B1) node[left] {$B_1$};
   \draw ($(A1)+(-0.6,0)$) node[dotTikZ] {} coordinate(A1b);
   \draw ($(B1)+(-0.6,0)$) node[dotTikZ] {} coordinate(B1b);
   \draw (iA1.input 1) -- (iA1.input 2);
   \draw (iB1.input 1) -- (iB1.input 2);
-  % --- X = XOR(A1,B1) ---
   \draw (A1b) |- ($(hXOR1.input 1)+(-0.3,0)$) -- (hXOR1.input 1);
   \draw (B1b) |- ($(hXOR1.input 2)+(-0.3,0)$) -- (hXOR1.input 2);
   \draw (iA1.output) -- ++(0.3,0) coordinate(w1);
@@ -133,96 +104,188 @@
   \draw (w1) |- ($(hXOR2.input 1)+(-0.3,0)$) -- (hXOR2.input 1);
   \draw (w2) |- ($(hXOR2.input 2)+(-0.3,0)$) -- (hXOR2.input 2);
   \draw (hXOR1.output) -- ++(0.3,0) coordinate(d1) node[dotTikZ] {};
-  \draw (hXOR2.output) -- ++(0.3,0) coordinate(d2);
+  \draw (hXOR2.output) -- ++(0.6,0) coordinate(d2) node[dotTikZ] {};
   \draw (d1) |- ($(hX.input 1)+(-0.3,0)$) -- (hX.input 1);
   \draw (d2) |- ($(hX.input 2)+(-0.3,0)$) -- (hX.input 2);
-  % --- inwerter X -> notX ---
   \draw (hX.output) -- ++(0.25,0) node[dotTikZ] {} coordinate(Xb);
-  \draw (Xb) |- (iX.input 1);
+
+  % ================= POZIOM 1b: S1 = XOR(X,P0) =================
+  \node[norI2] (iX)    at (8.6,3.6)  {};
+  \node[norI2] (iP0)   at (8.6,1.6)  {};
+  \node[norI2] (hS1a)  at (12.2,4.7) {};
+  \node[norI2] (hS1b)  at (12.2,2.9) {};
+  \node[norI2] (hS1)   at (15,3.8)   {};
+  \draw (Xb) |- ($(iX.input 1)+(-0.3,0)$) -- (iX.input 1);
   \draw (iX.input 1) -- (iX.input 2);
-  \draw (iX.output) -- ++(0.3,0) coordinate(e1);
-  % --- S1 = NOR( NOR(X,P0), NOR(notX, notP0) ) ---
-  \draw (Xb) |- ($(hXP.input 1)+(-0.3,0)$) -- (hXP.input 1);
-  \draw (e1) |- ($(hXP2.input 1)+(-0.3,0)$) -- (hXP2.input 1);
-  \draw (P0) |- (iP0h.input 1);
-  \draw (iP0h.input 1) -- (iP0h.input 2);
-  \draw (iP0h.output) -- ++(0.3,0) coordinate(e2);
-  \draw (e2) |- ($(hXP2.input 2)+(-0.3,0)$) -- (hXP2.input 2);
-  \draw (P0) |- ($(hXP.input 2)+(-0.3,0)$) -- (hXP.input 2);
-  \draw (hXP.output) -- ++(0.3,0) coordinate(f1) node[dotTikZ] {};
-  \draw (hXP2.output) -- ++(0.3,0) coordinate(f2);
-  \draw (f1) |- ($(hS1.input 1)+(-0.3,0)$) -- (hS1.input 1);
-  \draw (f2) |- ($(hS1.input 2)+(-0.3,0)$) -- (hS1.input 2);
-  \draw (hS1.output) -- ++(0.5,0) node[right, lbl] {$S_1$};
-  % --- S2 = P1 = NOR( NOR(A1,B1), NOR(X,P0) ) ---
-  \draw (d1) |- ($(hP1.input 1)+(-0.3,0)$) -- (hP1.input 1);
-  \draw (f1) |- ($(hP1.input 2)+(-0.3,0)$) -- (hP1.input 2);
-  \draw (hP1.output) -- ++(0.7,0) node[right, lbl] {$S_2=P_1$};
+  \draw (iX.output) -- ++(0.3,0) coordinate(nX) node[dotTikZ] {};
+  \draw (P0) |- ($(iP0.input 1)+(-0.3,0)$) -- (iP0.input 1);
+  \draw (iP0.input 1) -- (iP0.input 2);
+  \draw (iP0.output) -- ++(0.3,0) coordinate(nP0) node[dotTikZ] {};
+  \draw (Xb) |- ($(hS1a.input 1)+(-0.3,0)$) -- (hS1a.input 1);
+  \draw (P0) -- (7.4,-2.6) -- (7.4,5.15) -- (10.9,5.15) -- (10.9,4.45) -- ($(hS1a.input 2)+(-0.3,0)$) -- (hS1a.input 2);
+  \draw (nX) |- ($(hS1b.input 1)+(-0.3,0)$) -- (hS1b.input 1);
+  \draw (nP0) |- ($(hS1b.input 2)+(-0.3,0)$) -- (hS1b.input 2);
+  \draw (hS1a.output) -- ++(0.3,0) coordinate(e1);
+  \draw (hS1b.output) -- ++(0.3,0) coordinate(e2) node[dotTikZ] {};
+  \draw (e1) |- ($(hS1.input 1)+(-0.3,0)$) -- (hS1.input 1);
+  \draw (e2) |- ($(hS1.input 2)+(-0.3,0)$) -- (hS1.input 2);
+  \draw (hS1.output) -- ++(0.7,0) node[right, lbl] {$S_1$};
+
+  % ================= POZIOM 1c: P1 = A1*B1 + P0*(A1 v B1) =================
+  \node[norI2] (hAB)   at (0,11.0)   {};
+  \node[norI2] (iW)    at (2.8,11.0) {};
+  \node[norI2] (gX1b)  at (2.8,12.8) {};
+  \node[norI2] (hT2)   at (12.2,0.9) {};
+  \node[norI2] (gP1)   at (15,0.4)   {};
+  \node[norI2] (iP1)   at (17.8,0.4) {};
+  % u = A1 v B1 (dwie bramki: NOR + negator)
+  \draw (A1b) |- ($(hAB.input 1)+(-0.3,0)$) -- (hAB.input 1);
+  \draw (B1b) |- ($(hAB.input 2)+(-0.3,0)$) -- (hAB.input 2);
+  \draw (hAB.output) -- ++(0.4,0) coordinate(nW0) node[dotTikZ] {};
+  \draw (nW0) |- (iW.input 1);
+  \draw (iW.input 1) -- (iW.input 2);
+  \draw (iW.output) -- ++(0.4,0) coordinate(W0);
+  % Xbar = negacja d2 = (A1*B1)bar
+  \draw (d2) -- (4.3,5.4) -- (4.3,12.55) -- (gX1b.input 1);
+  \draw (gX1b.input 1) -- (gX1b.input 2);
+  \draw (gX1b.output) -- ++(0.4,0) coordinate(x1b);
+  % Y = P0*(A1 v B1) = NOR(P0bar, (A1 v B1)bar)
+  \draw (nW0) -- (1.15,11.9) -- (11.3,11.9) -- (11.3,1.15) -- (hT2.input 1);
+  \draw (nP0) -- (9.65,0.4) -- (11.4,0.4) -- (11.4,0.65) -- (hT2.input 2);
+  \draw (hT2.output) -- ++(0.3,0) coordinate(T2) node[dotTikZ] {};
+  % P1 = NOR(Xbar, Y)
+  \draw (x1b) -- (7.2,12.8) -- (7.2,0.15) -- (gP1.input 2);
+  \draw (T2) -- (13.4,0.9) -- (13.4,0.65) -- (gP1.input 1);
+  \draw (gP1.output) -- ++(0.45,0) coordinate(P1c) node[right, lbl] {$P_1$};
+  \draw (P1c) -- (16.3,0.4) node[dotTikZ] {};
+  \draw (16.3,0.4) -- (16.6,0.4) -- (16.6,0.65) -- (iP1.input 1);
+  \draw (iP1.input 1) -- (iP1.input 2);
+  \draw (iP1.output) -- ++(0.3,0) coordinate(nP1) node[dotTikZ] {};
+
+  % ================= POZIOM 2: S2 = XOR(B2,P1), S3 = B2*P1 =================
+  \node[norI2] (iB2)   at (17.8,6.2) {};
+  \node[norI2] (mA)    at (21,6.8)   {};
+  \node[norI2] (mB)    at (21,5.5)   {};
+  \node[norI2] (hS2)   at (23.8,6.6) {};
+  \node[norI2] (gS3)   at (23.8,4.6) {};
+  \draw (iB2.input 1) -- ++(-0.6,0) coordinate(B2i) node[left] {$B_2$};
+  \draw ($(B2i)+(0.15,0)$) node[dotTikZ] {} coordinate(B2raw);
+  \draw (iB2.input 1) -- (iB2.input 2);
+  \draw (iB2.output) -- ++(0.3,0) coordinate(nB2) node[dotTikZ] {};
+  % mA = NOR(B2bar, P1)
+  \draw (16.3,0.4) -- (16.3,7.05) -- (mA.input 1);
+  \draw (nB2) -- (19.6,6.2) -- (19.6,6.55) -- (mA.input 2);
+  % mB = NOR(B2, P1bar)
+  \draw (B2raw) -- (16.65,5.75) -- (mB.input 1);
+  \draw (nP1) -- (20.1,0.4) -- (20.1,5.25) -- (mB.input 2);
+  % S2 = NOR(mA, mB)
+  \draw (mA.output) -- ++(0.3,0) coordinate(mAo);
+  \draw (mB.output) -- ++(0.3,0) coordinate(mBo);
+  \draw (mAo) -- (22.9,6.85) -- (hS2.input 1);
+  \draw (mBo) -- (22.4,5.5) -- (22.4,6.35) -- (hS2.input 2);
+  \draw (hS2.output) -- ++(0.5,0) node[right, lbl] {$S_2$};
+  % S3 = NOR(B2bar, P1bar) = B2*P1
+  \draw (nB2) -- (21.9,6.2) -- (21.9,4.85) -- (gS3.input 1);
+  \draw (nP1) -- (23.0,0.4) -- (23.0,4.35) -- (gS3.input 2);
+  \draw (gS3.output) -- ++(0.5,0) node[right, lbl] {$S_3$};
+
   % --- etykiety poziomow ---
-  \node[lbl, gray] at (2.2,-3.9) {poziom młodszy: $S_0$, $P_0$};
-  \node[lbl, gray] at (7.2,9.4)  {poziom starszy: $S_1$, $S_2=P_1$};
+  \node[lbl, gray] at (2.2,-4.2)  {poziom 0: $S_0$, $P_0$};
+  \node[lbl, gray] at (2.5,9.9)   {poziom 1: $X$, $S_1$, $P_1$};
+  \node[lbl, gray] at (20.4,8.9)  {poziom 2: $S_2$, $S_3$};
 \end{tikzpicture}%
 }
 
-% alias dla punktu 3 (schemat zminimalizowany = ta sama siec NOR)
+% alias (nazwa zachowana dla zgodnosci)
 \newcommand{\RysSchematMinimalny}{\RysSchematNOR}
 
 % ---------------------------------------------------------------------
-% RYSUNEK D — PRZEBIEGI CZASOWE (16 KOMBINACJI WEJŚĆ, jak w tablicy prawdy)
+% RYSUNEK C — PRZEBIEGI CZASOWE (32 KOMBINACJE: A=00..11, B=000..111)
 % ---------------------------------------------------------------------
 \newcommand{\RysPrzebiegi}{%
 \begin{tikzpicture}[
   font=\footnotesize,
   >=Latex,
-  sig/.style={line width=1.0pt},
-  hi/.style={line width=1.0pt},
+  sig/.style={line width=0.9pt},
+  hi/.style={line width=0.9pt},
   gr/.style={gray!45, very thin}
 ]
-  \def\dx{0.62}
-  % siatka pionowa t = 0..16
-  \foreach \x in {0,1,...,16} {
-    \draw[gr] (2+\x*\dx, 0.1) -- (2+\x*\dx, 8.4);
+  \def\dx{0.42}
+  % siatka pionowa t = 0..32
+  \foreach \x in {0,4,...,32} {
+    \draw[gr] (2+\x*\dx, 0.6) -- (2+\x*\dx, 12.5);
   }
-  % ---------- A1: 0 dla t<8, 1 dla t>=8 ----------
-  \draw[sig] (2,7.9) node[left] {$A_1$} -- (2+16*\dx,7.9);
-  \draw[hi]  (2,7.2) -- (2+8*\dx,7.2);
-  \draw[hi]  (2+8*\dx,7.2) -- (2+8*\dx,7.9) -- (2+16*\dx,7.9);
-  % ---------- A0: 0,0,1,1 cyklicznie ----------
-  \draw[sig] (2,6.1) node[left] {$A_0$} -- (2+16*\dx,6.1);
-  \foreach \a/\b in {2/4,6/8,10/12,14/16} {
-    \draw[hi] (2+\a*\dx,5.4) -- (2+\b*\dx,5.4);
-    \draw[hi] (2+\a*\dx,5.4) -- (2+\a*\dx,6.1);
-    \draw[hi] (2+\b*\dx,5.4) -- (2+\b*\dx,6.1);
+  % ---------- A1 ----------
+  \draw[sig] (2,11.7) node[left] {$A_1$} -- (2+32*\dx,11.7);
+  \foreach \a/\b in {16/32} {
+    \draw[hi] (2+\a*\dx,11.05) -- (2+\b*\dx,11.05);
+    \draw[hi] (2+\a*\dx,11.05) -- (2+\a*\dx,11.7);
+    \draw[hi] (2+\b*\dx,11.05) -- (2+\b*\dx,11.7);
   }
-  % ---------- B1: 0,0,1,1 cyklicznie (wolniej) ----------
-  \draw[sig] (2,4.3) node[left] {$B_1$} -- (2+16*\dx,4.3);
-  \foreach \a/\b in {4/8,12/16} {
-    \draw[hi] (2+\a*\dx,3.6) -- (2+\b*\dx,3.6);
-    \draw[hi] (2+\a*\dx,3.6) -- (2+\a*\dx,4.3);
-    \draw[hi] (2+\b*\dx,3.6) -- (2+\b*\dx,4.3);
+  % ---------- A0 ----------
+  \draw[sig] (2,10.4) node[left] {$A_0$} -- (2+32*\dx,10.4);
+  \foreach \a/\b in {8/16,24/32} {
+    \draw[hi] (2+\a*\dx,9.75) -- (2+\b*\dx,9.75);
+    \draw[hi] (2+\a*\dx,9.75) -- (2+\a*\dx,10.4);
+    \draw[hi] (2+\b*\dx,9.75) -- (2+\b*\dx,10.4);
   }
-  % ---------- B0: 0,1,0,1 cyklicznie (najszybciej) ----------
-  \draw[sig] (2,2.5) node[left] {$B_0$} -- (2+16*\dx,2.5);
-  \foreach \a in {1,3,...,15} {
+  % ---------- B2 ----------
+  \draw[sig] (2,9.1) node[left] {$B_2$} -- (2+32*\dx,9.1);
+  \foreach \a/\b in {4/8,12/16,20/24,28/32} {
+    \draw[hi] (2+\a*\dx,8.45) -- (2+\b*\dx,8.45);
+    \draw[hi] (2+\a*\dx,8.45) -- (2+\a*\dx,9.1);
+    \draw[hi] (2+\b*\dx,8.45) -- (2+\b*\dx,9.1);
+  }
+  % ---------- B1 ----------
+  \draw[sig] (2,7.8) node[left] {$B_1$} -- (2+32*\dx,7.8);
+  \foreach \a/\b in {2/4,6/8,10/12,14/16,18/20,22/24,26/28,30/32} {
+    \draw[hi] (2+\a*\dx,7.15) -- (2+\b*\dx,7.15);
+    \draw[hi] (2+\a*\dx,7.15) -- (2+\a*\dx,7.8);
+    \draw[hi] (2+\b*\dx,7.15) -- (2+\b*\dx,7.8);
+  }
+  % ---------- B0 ----------
+  \draw[sig] (2,6.5) node[left] {$B_0$} -- (2+32*\dx,6.5);
+  \foreach \a in {1,3,...,31} {
     \pgfmathsetmacro\bp{\a+1}
-    \draw[hi] (2+\a*\dx,1.8) -- (2+\bp*\dx,1.8);
-    \draw[hi] (2+\a*\dx,1.8) -- (2+\a*\dx,2.5);
-    \draw[hi] (2+\bp*\dx,1.8) -- (2+\bp*\dx,2.5);
+    \draw[hi] (2+\a*\dx,5.85) -- (2+\bp*\dx,5.85);
+    \draw[hi] (2+\a*\dx,5.85) -- (2+\a*\dx,6.5);
+    \draw[hi] (2+\bp*\dx,5.85) -- (2+\bp*\dx,6.5);
   }
-  % ---------- S2: 1 gdy suma >= 4 (t = 4..7, 10..11, 13..16) ----------
-  \draw[sig] (2,0.7) node[left] {$S_2$} -- (2+16*\dx,0.7);
-  \foreach \a/\b in {4/8,10/12,13/16} {
-    \draw[hi] (2+\a*\dx,0.0) -- (2+\b*\dx,0.0);
-    \draw[hi] (2+\a*\dx,0.0) -- (2+\a*\dx,0.7);
-    \draw[hi] (2+\b*\dx,0.0) -- (2+\b*\dx,0.7);
+  % ---------- S3 ----------
+  \draw[sig] (2,5.2) node[left] {$S_3$} -- (2+32*\dx,5.2);
+  \foreach \a/\b in {15/16,22/24,29/32} {
+    \draw[hi] (2+\a*\dx,4.55) -- (2+\b*\dx,4.55);
+    \draw[hi] (2+\a*\dx,4.55) -- (2+\a*\dx,5.2);
+    \draw[hi] (2+\b*\dx,4.55) -- (2+\b*\dx,5.2);
   }
-  % ---------- podpisy stanow A1A0 / B1B0 pod osia ----------
-  \foreach \i [count=\j from 0] in {00,00,01,01,10,10,11,11,00,00,01,01,10,10,11,11} {
+  % ---------- S2 ----------
+  \draw[sig] (2,3.9) node[left] {$S_2$} -- (2+32*\dx,3.9);
+  \foreach \a/\b in {4/8,11/15,18/22,25/29} {
+    \draw[hi] (2+\a*\dx,3.25) -- (2+\b*\dx,3.25);
+    \draw[hi] (2+\a*\dx,3.25) -- (2+\a*\dx,3.9);
+    \draw[hi] (2+\b*\dx,3.25) -- (2+\b*\dx,3.9);
+  }
+  % ---------- S1 ----------
+  \draw[sig] (2,2.6) node[left] {$S_1$} -- (2+32*\dx,2.6);
+  \foreach \a/\b in {2/4,6/8,9/11,13/15,16/18,20/22,24/25,27/29,31/32} {
+    \draw[hi] (2+\a*\dx,1.95) -- (2+\b*\dx,1.95);
+    \draw[hi] (2+\a*\dx,1.95) -- (2+\a*\dx,2.6);
+    \draw[hi] (2+\b*\dx,1.95) -- (2+\b*\dx,2.6);
+  }
+  % ---------- S0 ----------
+  \draw[sig] (2,1.3) node[left] {$S_0$} -- (2+32*\dx,1.3);
+  \foreach \a/\b in {1/2,3/4,5/6,7/9,10/11,12/13,14/15,17/18,19/20,21/22,23/25,26/27,28/29,30/31} {
+    \draw[hi] (2+\a*\dx,0.65) -- (2+\b*\dx,0.65);
+    \draw[hi] (2+\a*\dx,0.65) -- (2+\a*\dx,1.3);
+    \draw[hi] (2+\b*\dx,0.65) -- (2+\b*\dx,1.3);
+  }
+  % ---------- podpisy stanow A1A0 / B2B1B0 pod osia ----------
+  \foreach \i [count=\j from 0] in {00,00,00,00,00,00,00,00,01,01,01,01,01,01,01,01,10,10,10,10,10,10,10,10,11,11,11,11,11,11,11,11} {
     \node[rotate=90, anchor=east, font=\tiny] at (2+\j*\dx+0.5*\dx, -0.25) {\i};
   }
-  \foreach \i [count=\j from 0] in {00,01,10,11,00,01,10,11,00,01,10,11,00,01,10,11} {
+  \foreach \i [count=\j from 0] in {000,001,010,011,100,101,110,111,000,001,010,011,100,101,110,111,000,001,010,011,100,101,110,111,000,001,010,011,100,101,110,111} {
     \node[rotate=90, anchor=east, font=\tiny] at (2+\j*\dx+0.5*\dx, -1.15) {\i};
   }
-  \node[font=\tiny, anchor=north] at (2+8*\dx, -2.35) {stany $A_1A_0$ (górny rząd) i $B_1B_0$ (dolny rząd) zgodne z tablicą prawdy};
+  \node[font=\tiny, anchor=north] at (2+16*\dx, -2.35) {stany $A_1A_0$ (górny rząd) i $B_2B_1B_0$ (dolny rząd) zgodne z tablicą prawdy};
 \end{tikzpicture}%
 }

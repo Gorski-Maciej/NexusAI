@@ -13,162 +13,228 @@
 
 \subsection{Funkcje wyjściowe układu}
 
-Układ sumacyjny 2-bitowy z 3-bitową sumą realizuje trzy funkcje wyjściowe:
+Układ sumujący liczbę dwubitową z trójbitową realizuje cztery funkcje wyjściowe:
 \begin{itemize}
     \item \(S_0\) -- wynik sumy bitów najmłodszych,
-    \item \(S_1\) -- wynik sumy bitów starszych z uwzględnieniem przeniesienia,
-    \item \(S_2\) -- przeniesienie z poziomu bitów starszych.
+    \item \(S_1\) -- wynik sumy bitów środkowych z uwzględnieniem przeniesienia,
+    \item \(S_2\) -- wynik sumy bitu najstarszego z uwzględnieniem przeniesienia,
+    \item \(S_3\) -- przeniesienie z najstarszego poziomu.
 \end{itemize}
 
-Dla każdej z tych funkcji należy wyznaczyć postać minimalną przyjazną dla bramek NOR. W tym celu wykonano analizę funkcji w postaci sumy iloczynów, a następnie zapisaono wynik w postaci przyjaznej dla bramek NOR.
-
-Początkowe równania wynikowe (przed minimalizacją) w postaci sumy iloczynów:
+Równania wynikowe (przed minimalizacją):
 \begin{align}
 S_0 &= A_0 \oplus B_0 \\
 S_1 &= A_1 \oplus B_1 \oplus P_0 \\
-S_2 &= P_1
+S_2 &= B_2 \oplus P_1 \\
+S_3 &= B_2 \cdot P_1
 \end{align}
-gdzie:
+gdzie funkcje przeniesień mają postać:
 \begin{align}
 P_0 &= A_0 \cdot B_0 \\
-P_1 &= (A_1 \cdot B_1) + (P_0 \cdot (A_1 \oplus B_1))
+P_1 &= (A_1 \cdot B_1) \lor \bigl(P_0 \cdot (A_1 \lor B_1)\bigr)
 \end{align}
 
-\subsection{Karta Karnaugha dla funkcji wyjściowych}
+Postacie kanoniczne, odczytane z tablicy prawdy (tabela \ref{tab:tablica_prawdy}), zapisane jako sumy mintermów (numeracja: \(m = 16A_1 + 8A_0 + 4B_2 + 2B_1 + B_0\)), mają postać:
+\begin{align}
+S_0 &= \sum m(1,3,5,7,8,10,12,14,17,19,21,23,24,26,28,30) \\
+S_1 &= \sum m(2,3,6,7,9,10,13,14,16,17,20,21,24,27,28,31) \\
+S_2 &= \sum m(4,5,6,7,11,12,13,14,18,19,20,21,25,26,27,28) \\
+S_3 &= \sum m(15,22,23,29,30,31)
+\end{align}
+Każda z funkcji \(S_0\), \(S_1\), \(S_2\) zawiera szesnaście pięciozmiennych iloczynów, a \(S_3\) -- sześć. Bezpośrednia realizacja wymagałaby kilkudziesięciu bramek AND oraz OR. Poniżej wykonano minimalizację każdej z funkcji z użyciem siatek Karnaugha.
 
-Do uproszczenia funkcji wykorzystano mapę Karnaugha dla czterech zmiennych w przypadku funkcji \(S_0\) oraz \(S_1\), oraz uproszczone podejście w przypadku funkcji przeniesienia.
+\subsection{Siatka Karnaugha dla funkcji \(S_0\)}
 
-Dla funkcji \(S_0\) przyjmujemy:
-\begin{itemize}
-    \item zmienne: \(A_0, B_0\),
-    \item wynik: \(S_0 = A_0 \oplus B_0\).
-\end{itemize}
-
-Mapa Karnaugha dla \(S_0\) przyjmuje postać:
-\begin{table}[h]
+Dla funkcji pięciu zmiennych stosuje się dwie pod-mapki czterozmienne (dla \(B_2=0\) i \(B_2=1\)), z wierszami \(A_1A_0\) oraz kolumnami \(B_1B_0\) ułożonymi w kodzie Graya (00, 01, 11, 10). Funkcja \(S_0 = A_0 \oplus B_0\) nie zależy od \(B_2\), więc obie pod-mapki są identyczne.
+\begin{table}[H]
 \centering
-\caption{Karta Karnaugha dla \(S_0\)}
-\begin{tabular}{cc|c|c}
-\multicolumn{2}{c}{} & \multicolumn{2}{c}{\(B_0\)} \\
-\multicolumn{2}{c}{} & 0 & 1 \\
+\caption{Siatka Karnaugha dla funkcji S0 (dwie pod-mapki: $B_2=0$ i $B_2=1$)}
+\label{tab:kmap_S0}
+\setlength{\tabcolsep}{5.5pt}
+\begin{tabular}{cc|c|c|c|c|c|c|c|c}
+\multicolumn{2}{c}{} & \multicolumn{8}{c}{$B_2$} \\
+\multicolumn{2}{c}{} & \multicolumn{4}{c}{$B_2=0$} & \multicolumn{4}{c}{$B_2=1$} \\
+\multicolumn{2}{c}{} & 00 & 01 & 11 & 10 & 00 & 01 & 11 & 10 \\
 \hline
-\multirow{2}{*}{\(A_0\)} & 0 & 0 & 1 \\
-\cline{2-4}
- & 1 & 1 & 0 \\
+\multirow{4}{*}{$A_1A_0$} & 00 & 0 & 1 & 1 & 0 & 0 & 1 & 1 & 0 \\
+01 & 1 & 0 & 0 & 1 & 1 & 0 & 0 & 1 \\
+11 & 1 & 0 & 0 & 1 & 1 & 0 & 0 & 1 \\
+10 & 0 & 1 & 1 & 0 & 0 & 1 & 1 & 0 \\
+\hline
 \end{tabular}
 \end{table}
 
-Jedynki znajdują się więc na przekątnej mapy. W tym przypadku nie można połączyć sąsiednich jedynek w większe grupy, ponieważ każda z nich nie posiada sąsiedniej jedynki zgodnie z zasadami map Karnaugha.
-
-Oznacza to, że bez wykorzystania dodatkowych zależności funkcję \(S_0\) otrzymujemy w postaci:
+Jedynki tworzą klasyczną „szachownicę” dla funkcji XOR: w każdej pod-mapce leżą na obu przekątnych. Ponieważ funkcja nie zależy od \(B_2\), jedynek nie da się pogrupować w większe bloki -- pozostaje dwuskładnikowa postać:
 \begin{equation}
-S_0 = \overline{A_0}\,\overline{B_0} \lor A_0 B_0
+S_0 = A_0\,\overline{B_0} \lor \overline{A_0}\,B_0 = A_0 \oplus B_0
 \end{equation}
-co jest równoważne z funkcją XOR. W postaci przyjaznej dla bramek NOR należy następnie przekształcić tę funkcję do odpowiedniej postaci.
+\subsection{Siatka Karnaugha dla funkcji \(S_1\)}
 
-Dla funkcji \(S_1\) przyjmujemy:
-\begin{itemize}
-    \item zmienne: \(A_1, B_1, P_0\),
-    \item wynik: \(S_1 = A_1 \oplus B_1 \oplus P_0\).
-\end{itemize}
-
-Mapa Karnaugha dla \(S_1\) przyjmuje postać w 3 zmiennych:
-\begin{table}[h]
+Funkcja \(S_1 = A_1 \oplus B_1 \oplus P_0\) (gdzie \(P_0 = A_0 B_0\)) również jest typu parzystości; na mapie pięciozmiennej jedynki układają się w rozrzucony wzorzec.
+\begin{table}[H]
 \centering
-\caption{Karta Karnaugha dla \(S_1\)}
-\begin{tabular}{cc|c|c|c}
-\multicolumn{2}{c}{} & \multicolumn{3}{c}{\(P_0\)} \\
-\multicolumn{2}{c}{} & 0 & 1 \\
+\caption{Siatka Karnaugha dla funkcji S1 (dwie pod-mapki: $B_2=0$ i $B_2=1$)}
+\label{tab:kmap_S1}
+\setlength{\tabcolsep}{5.5pt}
+\begin{tabular}{cc|c|c|c|c|c|c|c|c}
+\multicolumn{2}{c}{} & \multicolumn{8}{c}{$B_2$} \\
+\multicolumn{2}{c}{} & \multicolumn{4}{c}{$B_2=0$} & \multicolumn{4}{c}{$B_2=1$} \\
+\multicolumn{2}{c}{} & 00 & 01 & 11 & 10 & 00 & 01 & 11 & 10 \\
 \hline
-\multirow{4}{*}{\(A_1,B_1\)} & 00 & 0 & 1 \\
-\cline{2-4}
- & 01 & 1 & 0 \\
-\cline{2-4}
- & 11 & 1 & 0 \\
-\cline{2-4}
- & 10 & 0 & 1 \\
+\multirow{4}{*}{$A_1A_0$} & 00 & 0 & 0 & 1 & 1 & 0 & 0 & 1 & 1 \\
+01 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 \\
+11 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 0 \\
+10 & 1 & 1 & 0 & 0 & 1 & 1 & 0 & 0 \\
+\hline
 \end{tabular}
 \end{table}
 
-Wynik dla \(S_2\) (przeniesienie) wynosi:
+W pod-mapkach widoczne są sąsiadujące jedynki (np. wiersze 01--11 kolumny 01 pod-mapki \(B_2=1\)), jednak każda próba połączenia prowadzi do bloków, których komórki różnią się jednocześnie dwiema zmiennymi -- zgodnie z zasadami Karnaugha nie tworzą one poprawnych grup. Minimalna postać pozostaje zatem postacią parzystości:
 \begin{equation}
-S_2 = P_1 = (A_1 \cdot B_1) + (P_0 \cdot (A_1 \oplus B_1))
+S_1 = A_1 \oplus B_1 \oplus P_0 = X \oplus P_0, \qquad X = A_1 \oplus B_1
 \end{equation}
+Praktyczna minimalizacja polega tu na wprowadzeniu sygnału pośredniego \(X\), współdzielonego z funkcją \(P_1\).
+\subsection{Siatka Karnaugha dla funkcji \(S_2\)}
 
+Funkcja \(S_2 = B_2 \oplus P_1\), gdzie \(P_1\) jest przeniesieniem z poziomu środkowego. Na mapie widoczny jest wyraźny związek z \(B_2\): dla \(B_2=0\) jedynki pokrywają się z \(P_1\), a dla \(B_2=1\) -- z jego negacją.
+\begin{table}[H]
+\centering
+\caption{Siatka Karnaugha dla funkcji S2 (dwie pod-mapki: $B_2=0$ i $B_2=1$)}
+\label{tab:kmap_S2}
+\setlength{\tabcolsep}{5.5pt}
+\begin{tabular}{cc|c|c|c|c|c|c|c|c}
+\multicolumn{2}{c}{} & \multicolumn{8}{c}{$B_2$} \\
+\multicolumn{2}{c}{} & \multicolumn{4}{c}{$B_2=0$} & \multicolumn{4}{c}{$B_2=1$} \\
+\multicolumn{2}{c}{} & 00 & 01 & 11 & 10 & 00 & 01 & 11 & 10 \\
+\hline
+\multirow{4}{*}{$A_1A_0$} & 00 & 0 & 0 & 0 & 0 & 1 & 1 & 1 & 1 \\
+01 & 0 & 0 & 1 & 0 & 1 & 1 & 0 & 1 \\
+11 & 0 & 1 & 1 & 1 & 1 & 0 & 0 & 0 \\
+10 & 0 & 0 & 1 & 1 & 1 & 1 & 0 & 0 \\
+\hline
+\end{tabular}
+\end{table}
+
+Jedynek nie da się połączyć w duże bloki -- funkcja jest XOR-em zależnym od pięciu zmiennych. Minimalizacja strukturalna sprowadza się ponownie do współdzielenia sygnału \(P_1\):
+\begin{equation}
+S_2 = B_2 \oplus P_1
+\end{equation}
+\subsection{Siatka Karnaugha dla funkcji \(S_3\) oraz przeniesienia \(P_1\)}
+
+Funkcja \(S_3 = B_2 \cdot P_1\) przyjmuje wartość 1 tylko dla sześciu kombinacji wejściowych (suma równa 8, 9 lub 10). Jej mapę można czytelnie zredukować, zauważając, że \(S_3 = 1\) wymaga \(B_2 = 1\) oraz \(P_1 = 1\), a \(P_1\) zależy wyłącznie od czterech zmiennych \(A_1, A_0, B_1, B_0\).
+
+Siatka Karnaugha dla \(P_1\) (cztery zmienne, wiersze \(A_1A_0\), kolumny \(B_1B_0\), kod Graya):
+
+\begin{table}[H]
+\centering
+\caption{Siatka Karnaugha dla przeniesienia \(P_1 = A_1B_1 \lor P_0(A_1 \lor B_1)\)}
+\label{tab:kmap_P1}
+\begin{tabular}{cc|c|c|c|c}
+\multicolumn{2}{c}{} & \multicolumn{4}{c}{$B_1B_0$} \\
+\multicolumn{2}{c}{} & 00 & 01 & 11 & 10 \\
+\hline
+\multirow{4}{*}{$A_1A_0$} & 00 & 0 & 0 & 0 & 0 \\
+01 & 0 & 0 & 1 & 0 \\
+11 & 0 & 1 & 1 & 1 \\
+10 & 0 & 0 & 1 & 1 \\
+\hline
+\end{tabular}
+\end{table}
+
+Grupowanie jedynek na mapie \(P_1\):
+\begin{itemize}
+    \item cztery jedynki tworzące blok \(2\times2\) (wiersze \(A_1A_0 = 11, 10\); kolumny \(B_1B_0 = 11, 10\)) -- grupa daje iloczyn \(A_1 B_1\),
+    \item dwie jedynki w kolumnie \(B_1B_0=11\) (wiersze 01 i 11) -- grupa pionowa daje iloczyn \(A_0 B_1 B_0\),
+    \item dwie jedynki w wierszu \(A_1A_0=11\) (kolumny 01 i 11) -- grupa pozioma daje iloczyn \(A_1 A_0 B_0\); komórka \(A_1A_0B_1B_0=1111\) należy jednocześnie do wszystkich trzech grup, co jest dopuszczalne.
+\end{itemize}
+
+Po grupowaniu:
+\begin{equation}
+P_1 = A_1 B_1 \lor A_1 A_0 B_0 \lor A_0 B_1 B_0
+     = A_1 B_1 \lor P_0\,(A_1 \lor B_1)
+\end{equation}
+Obie postacie są równoważne -- druga jest zwięzlejsza strukturalnie, ponieważ wykorzystuje gotowy sygnał \(P_0\).
+
+Dla pełności obrazu siatka Karnaugha dla \(S_3\) na pięciu zmiennych:
+\begin{table}[H]
+\centering
+\caption{Siatka Karnaugha dla funkcji S3 (dwie pod-mapki: $B_2=0$ i $B_2=1$)}
+\label{tab:kmap_S3}
+\setlength{\tabcolsep}{5.5pt}
+\begin{tabular}{cc|c|c|c|c|c|c|c|c}
+\multicolumn{2}{c}{} & \multicolumn{8}{c}{$B_2$} \\
+\multicolumn{2}{c}{} & \multicolumn{4}{c}{$B_2=0$} & \multicolumn{4}{c}{$B_2=1$} \\
+\multicolumn{2}{c}{} & 00 & 01 & 11 & 10 & 00 & 01 & 11 & 10 \\
+\hline
+\multirow{4}{*}{$A_1A_0$} & 00 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+01 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+11 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 1 \\
+10 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 \\
+\hline
+\end{tabular}
+\end{table}
+
+Sześć jedynek (zgodnych z mintermami \(m(15,22,23,29,30,31)\)) leży wyłącznie w pod-mapce \(B_2=1\). Ich układ odpowiada dokładnie jedynkom mapy \(P_1\), co potwierdza zależność:
+\begin{equation}
+S_3 = B_2 \cdot P_1
+\end{equation}
 \subsection{Postać minimalna i realizacja na bramkach NOR}
 
-W rezultacie po minimalizacji otrzymujemy postać znacznie bardziej przejrzystą od postaci kanonicznej.
+W rezultacie po minimalizacji otrzymujemy układ funkcji:
+\begin{align}
+S_0 &= A_0 \oplus B_0 \\
+S_1 &= X \oplus P_0, \qquad X = A_1 \oplus B_1 \\
+P_1 &= A_1 B_1 \lor P_0\,(A_1 \lor B_1) \\
+S_2 &= B_2 \oplus P_1 \\
+S_3 &= B_2 \cdot P_1
+\end{align}
+gdzie \(P_0 = A_0 B_0\). Kluczowe korzyści minimalizacji: sygnały \(P_0\), \(X\) i \(P_1\) są współdzielone między funkcje, a każda funkcja sprowadziła się do co najwyżej trójargumentowych operacji prostych.
 
-Dla funkcji \(S_0\):
-\begin{equation}
-S_0 = \overline{\overline{A_0 \lor B_0} \land \overline{A_0 \lor B_0}} \quad \text{(w uproszczeniu XOR realizowane przez bramki NOR)}
-\end{equation}
+Bramka NOR jest bramką uniwersalną -- każdą funkcję logiczną da się zrealizować wyłącznie na niej, ponieważ:
+\begin{itemize}
+    \item negacja: \(\overline{u} = u \downarrow u\) -- jedna bramka NOR o połączonych wejściach,
+    \item iloczyn: \(u \cdot v = \overline{\overline{u} \lor \overline{v}}\) -- jedna bramka NOR z zanegowanymi argumentami,
+    \item suma: \(u \lor v = \overline{\overline{u \lor v}}\) -- dwie bramki NOR.
+\end{itemize}
 
-Dla funkcji \(S_1\):
-\begin{equation}
-S_1 = \overline{\overline{A_1 \lor B_1 \lor P_0} \land \overline{\dots}} \quad \text{(struktura AND-OR po przekształceniu na NOR)}
-\end{equation}
+Funkcja XOR ma zwięzłą realizację NOR-ową. Dla dwóch zmiennych \(u, v\):
+\begin{align}
+N_1 &= \overline{u \lor v}, & N_2 &= \overline{u \lor N_1}, & N_3 &= \overline{v \lor N_1}, & \text{XOR}(u,v) &= \overline{N_2 \lor N_3}
+\end{align}
+Blok XOR wymaga trzech bramek NOR właściwych oraz zanegowanych wersji obu argumentów (realizowanych osobnymi negatorami, współdzielonymi w całej sieci). W schemacie z punktu 4 bloki XOR zrealizowano dokładnie tą strukturą -- dla \(S_0\), \(X\), \(S_1\) oraz \(S_2\).
 
-Dla funkcji \(S_2\):
-\begin{equation}
-S_2 = \overline{\overline{A_1 B_1} \lor \overline{P_0 (A_1 \oplus B_1)}}
-\end{equation}
+Przeniesienie \(P_1 = A_1B_1 \lor P_0(A_1 \lor B_1)\) zrealizowano następująco: bramka NOR z zanegowanymi argumentami daje iloczyn \(P_0 \cdot (A_1 \lor B_1)\), druga bramka NOR łączy \(\overline{A_1 B_1}\) z tym iloczynem (co daje \(\overline{P_1}\)), a trzecia -- negator -- wytworzy \(P_1\). Na poziomie najstarszym \(S_3 = B_2 \cdot P_1 = \overline{\overline{B_2} \lor \overline{P_1}}\) -- jedna bramka NOR z zanegowanymi wejściami.
 
-Po zastosowaniu zależności wynikających z realizacji na bramkach NOR otrzymujemy układ, który można zrealizować przy użyciu bramek NOR w strukturze wielopoziomowej.
-
-Liczba bramek przed minimalizacją przewyższa liczbę bramek po minimalizacji ze względu na to, że bezpośrednia realizacja poszczególnych mintermów wymaga wielu bramek AND, OR oraz NOT. Po zastosowaniu minimalizacji układ można zrealizować przy użyciu struktury o mniejszej liczbie poziomów logicznych.
+Pełna sieć NOR opisana w punkcie 4 liczy łącznie \textbf{27 bramek NOR}:
+\begin{itemize}
+    \item 8 negatorów NOR o połączonych wejściach (\(\overline{A_0}\), \(\overline{B_0}\), \(\overline{A_1}\), \(\overline{B_1}\), \(\overline{X}\), \(\overline{P_0}\), \(\overline{B_2}\), \(\overline{P_1}\)),
+    \item 12 bramek w czterech blokach XOR (po 3 NOR: dla \(S_0\), \(X\), \(S_1\), \(S_2\)),
+    \item 2 bramki iloczynów: \(P_0 = A_0 B_0\) oraz \(S_3 = B_2 \cdot P_1\),
+    \item 5 bramek struktury przeniesienia: \(A_1 \lor B_1\) (NOR + negator), \(P_0(A_1 \lor B_1)\), \(P_1\) (NOR + negator) oraz dwie bramki budujące \(S_2\).
+\end{itemize}
 
 \subsection{Porównanie liczby bramek przed i po minimalizacji}
 
-Dla realizacji funkcji w sposób bezpośredni, na podstawie postaci kanonicznej, konieczne byłoby zastosowanie wielu bramek AND, NOT oraz OR.
+Dla realizacji w sposób bezpośredni, na podstawie postaci kanonicznej, konieczne byłoby zastosowanie wielu bramek AND, NOT oraz OR. Łącznie 54 mintermy pięciozmienne wymagałyby około 54 bramek AND 5-wejściowych, kilkunastu negatorów oraz drzew OR -- realnie około 80--90 bramek.
 
-Postać kanoniczna:
-\begin{equation}
-S_0 = \sum m(1,2)
-\end{equation}
-wymaga utworzenia iloczynów oraz ich zsumowania.
-
-Po zastosowaniu minimalizacji otrzymujemy:
-\begin{equation}
-S_0 = A_0 \oplus B_0,\quad S_1 = A_1 \oplus B_1 \oplus P_0,\quad S_2 = P_1
-\end{equation}
-
-W rezultacie układ można zrealizować przy użyciu bramek NOR w liczbie mniejszej niż w przypadku bezpośredniej implementacji. W praktyce minimalizacja pozwala na ograniczenie liczby połączeń oraz zmniejszenie opóźnień propagacji sygnału.
-
-Tabela porównawcza liczby bramek przed i po minimalizacji przedstawia się następująco:
-\begin{table}[h]
+Po minimalizacji i współdzieleniu sygnałów pośrednich uzyskano strukturę złożoną z 27 bramek NOR:
+\begin{table}[H]
 \centering
 \caption{Porównanie liczby bramek przed i po minimalizacji}
+\setlength{\tabcolsep}{5pt}
 \begin{tabular}{lll}
 \toprule
-Wariant & Liczba bramek & Uwagi \\
+Wariant & Bramki & Uwagi \\
 \midrule
-Wariant początkowy (SOP) & duża liczba AND/OR/NOT & brak minimalizacji \\
-Wariant zminimalizowany (NOR) & mniejsza liczba NOR & realiacja przyjazna dla NOR \\
+Kanoniczny (SOP) & ok.~80 (AND/OR/NOT) & 54 mintermy 5-zmiennych \\
+Zminimalizowany (NOR) & 27 (NOR) & wspó\l{}dzielenie \(P_0\), \(X\), \(P_1\) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Prezentacja schematu po minimalizacji i przejście do dalszej części pracy}
+W rezultacie układ można zrealizować przy użyciu bramek NOR w liczbie niemal trzykrotnie mniejszej niż w przypadku bezpośredniej implementacji postaci kanonicznych. W praktyce minimalizacja pozwala na ograniczenie liczby połączeń oraz zmniejszenie opóźnień propagacji sygnału.
 
-Schemat zminimalizowanego układu przedstawiono na rysunku \ref{fig:schemat_min}. Na schemacie wydzielono strukturę realizowaną na bramkach NOR oraz połączenia między poziomami sumacyjnymi.
+W kolejnym punkcie pracy przedstawiono schemat logiczny zminimalizowanej sieci NOR, tablicę prawdy oraz wykresy czasowe ilustrujące działanie układu.
 
-\begin{figure}[h]
-\centering
-\resizebox{\linewidth}{!}{\RysSchematNOR}
-\caption{Schemat logiczny układu zrealizowany wyłącznie na bramkach NOR}
-\label{fig:schemat_min}
-\end{figure}
-
-Warto zwrócić uwagę na to, że w schemacie zminimalizowanym wszystkie bramki są typu NOR, a struktura układu jest uproszczona w porównaniu ze wstępną postacią funkcyjną. Rysunek \ref{fig:schemat_min} przedstawia układ w formie hierarchicznej: wejścia są przetwarzane na poziomie młodszym, a następnie na poziomie starszym, a wynik końcowy jest sumą 3-bitową.
-
-Następnie, w kolejnym punkcie pracy omówione zostanie schemat logiczny oraz dalsze rysunki i tablice. Dalsza część pracy odnosi się bezpośrednio do przedstawionej tu struktury układu.
-
-\begin{figure}[h]
-\centering
-\resizebox{0.85\linewidth}{!}{\RysPrzebiegi}
-\caption{Przebiegi czasowe sygnałów wejściowych $A_1, A_0, B_1, B_0$ oraz wyjścia $S_2$ dla wszystkich 16~kombinacji wejściowych}
-\label{fig:przejscie_point3}
-\end{figure}
 
 \end{document}

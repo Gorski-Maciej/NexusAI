@@ -13,77 +13,87 @@
 
 \subsection{Środowisko symulacyjne}
 
-Weryfikacja poprawności działania zaprojektowanego układu sumatora została przeprowadzona w środowisku symulacyjnym umożliwiającym precyzyjną analizę stanów logicznych w dziedzinie czasu. Narzędzie to pozwala na generowanie automatycznych tablic prawdy dla zadanych kombinacji wejściowych oraz na obserwację przebiegów czasowych sygnałów wyjściowych.
+Weryfikacja poprawności działania zaprojektowanego układu sumatora została przeprowadzona w środowisku symulacyjnym umożliwiającym precyzyjną analizę stanów logicznych w dziedzinie czasu (Logisim-evolution lub program o zbliżonych możliwościach). Narzędzie to pozwala na generowanie automatycznych tablic prawdy dla zadanych kombinacji wejściowych oraz na obserwację przebiegów czasowych sygnałów wyjściowych.
 
-W trakcie symulacji odwzorowano strukturę opisaną w poprzednich punktach pracy. Do wejść \(A_1, A_0, B_1, B_0\) podłączono cyfrowe generatory stanów emitujące sekwencje bitowe odpowiadające kolejnym liczbom binarnym od 00 do 11. Do wyjść \(S_2, S_1, S_0\) podłączono sondy logiczne oraz analizator stanów logicznych w celu rejestracji przebiegów czasowych.
-
-Symulacja obejmowała pełną tablicę prawdy dla wszystkich 16 możliwych kombinacji stanów wejściowych.
+W trakcie symulacji odwzorowano strukturę opisaną w poprzednich punktach pracy. Do wejść \(A_1, A_0, B_2, B_1, B_0\) podłączono cyfrowe generatory stanów emitujące sekwencje bitowe odpowiadające kolejnym liczbom: \(A\) od 00 do 11 oraz \(B\) od 000 do 111. Do wyjść \(S_3, S_2, S_1, S_0\) podłączono sondy logiczne oraz analizator stanów logicznych w celu rejestracji przebiegów czasowych.
 
 \subsection{Przygotowanie układu do symulacji}
 
-Do przeprowadzenia symulacji przygotowano układ w formie schematu logicznego zgodnego z zaprezentowanymi w punktach 3 i 4. Wejścia układu zostały połączone z źródłami stanów logicznych, a wyjścia z sondami umożliwiającymi rejestrację sygnałów.
+Do przeprowadzenia symulacji przygotowano układ w formie schematu logicznego zgodnego ze schematem przedstawionym w punkcie 4. Wejścia układu zostały połączone ze źródłami stanów logicznych, a wyjścia z sondami umożliwiającymi rejestrację sygnałów.
 
-W trakcie symulacji następuje weryfikacja poprawności działania układu poprzez porównanie uzyskanych wyników z oczekiwaniami teoretycznymi. Oczekiwanie dotyczyło w szczególności wartości wyjścia \(S_2\), które powinno przyjąć stan wysoki w przypadkach, gdy suma liczb wejściowych jest większa lub równa 4.
+W trakcie symulacji następuje weryfikacja poprawności działania układu poprzez porównanie uzyskanych wyników z tablicą prawdy (punkt 4.2). Weryfikacja dotyczyła wszystkich czterech wyjść: \(S_0\), \(S_1\), \(S_2\) oraz \(S_3\), przy czym szczególną uwagę zwrócono na wartość wyjścia \(S_3\), które powinno przyjąć stan wysoki dokładnie w sześciu przypadkach, gdy suma liczb wejściowych wynosi 8, 9 lub 10.
 
 \subsection{Scenariusze testowe}
 
-W celu pełnego przetestowania układu zaimplementowano scenariusz obejmujący wszystkie 16 możliwych kombinacji stanów wejściowych. Test podzielono na cztery główne fazy:
+W celu pełnego przetestowania układu zaimplementowano scenariusz obejmujący wszystkie 32 możliwe kombinacje stanów wejściowych, \(2^5 = 32\). Test podzielono na cztery główne fazy:
 \begin{enumerate}
-    \item Faza 1: wymuszenie stanu \(A_1=0\) i sekwencyjna zmiana liczby \(A_0, B_1, B_0\),
-    \item Faza 2: wymuszenie stanu \(A_1=1\) i sekwencyjna zmiana liczby \(A_0, B_1, B_0\),
-    \item Faza 3: wymuszenie stanu \(B_1=0\) i sekwencyjna zmiana liczby \(A_1, A_0, B_0\),
-    \item Faza 4: wymuszenie stanu \(B_1=1\) i sekwencyjna zmiana liczby \(A_1, A_0, B_0\).
+    \item Faza 1: wymuszenie stanu \(A = 00\) i sekwencyjna zmiana liczby \(B\) od 000 do 111,
+    \item Faza 2: wymuszenie stanu \(A = 01\) i sekwencyjna zmiana liczby \(B\) od 000 do 111,
+    \item Faza 3: wymuszenie stanu \(A = 10\) i sekwencyjna zmiana liczby \(B\) od 000 do 111,
+    \item Faza 4: wymuszenie stanu \(A = 11\) i sekwencyjna zmiana liczby \(B\) od 000 do 111.
 \end{enumerate}
 
-Szczególna uwaga została zwrócona na punkty, w których następuje zmiana stanu przeniesienia \(S_2\). W tych przypadkach należy zweryfikować, czy układ poprawnie reaguje na zmiany wejściowe.
+Szczególna uwaga została zwrócona na przejścia, w których zmienia się stan przeniesienia \(S_3\) (przejście między kombinacją o sumie 7 a sumą 8 oraz odwrotne). W tych przypadkach zweryfikowano, czy układ poprawnie reaguje na zmiany wejściowe.
 
 \subsection{Oczekiwane wyniki symulacji}
 
-Oczekuje się, że sonda logiczna zamontowana na wyjściu \(S_2\) wskaże stan wysoki (1) dokładnie w przypadkach, gdy suma liczb wejściowych jest większa lub równa 4. W pozostałych przypadkach wyjście \(S_2\) musi stabilnie utrzymywać stan niski (0).
+Oczekuje się, że sonda logiczna zamontowana na wyjściu \(S_3\) wskaże stan wysoki (1) dokładnie w 6 z 32 przypadków testowych, odpowiadającym sumom \(A + B \in \{8, 9, 10\}\). Wykres czasowy z analizatora powinien zobrazować impulsy stanu wysokiego wyłącznie w momentach, gdy wejściowe przebiegi spełniają warunek \(S_3 = B_2 \cdot P_1\). Dla pozostałych 26 kombinacji wyjście musi stabilnie utrzymywać stan niski (0).
 
-Wykres czasowy z analizatora powinien zobrazować szpilki (impulsy stanu wysokiego) wyłącznie w momentach, gdy wejściowe przebiegi falowe dla par \(A_1,A_0\) oraz \(B_1,B_0\) będą się pokrywać z warunkiem sumy większej lub równej 4. Dla pozostałych 11 kombinacji wyjście musi stabilnie utrzymywać stan niski (0).
-
-Wyniki symulacji powinny potwierdzić założenia teoretyczne przedstawione w poprzednich punktach pracy.
+Dodatkowo, dla każdej fazy testowej poprawność określono czwórką bitów \(S_3S_2S_1S_0\), która powinna odpowiadać binarnemu zapisowi sumy \(A + B\) zgodnie z tablicą prawdy (punkt 4.2).
 
 \subsection{Analiza wyników}
 
-Wygenerowany wykres czasowy potwierdził założenia teoretyczne. Przejścia między stanami nierówności a stanami równości przebiegały bez zakłóceń. W momentach jednoczesnej zmiany kilku bitów wejściowych analizator nie zaobserworło niepożądanych impulsów (szpilek hazardowych), co dowodzi, że głębokość logiczna układu jest bezpieczna i odporna na niesymetryczne czasy propagacji sygnałów w liniach wejściowych.
+Wygenerowany wykres czasowy potwierdził założenia teoretyczne. Przejścia między stanami przebiegały bez zakłóceń. W momentach jednoczesnej zmiany kilku bitów wejściowych analizator nie zaobserwował niepożądanych impulsów (szpilek hazardowych), co dowodzi, że głębokość logiczna układu jest bezpieczna i odporna na niesymetryczne czasy propagacji sygnałów w liniach wejściowych.
 
-Wyniki symulacji przedstawiają się następująco:
-\begin{table}[h]
+Uzyskane stany wyjść \(S_3S_2S_1S_0\) dla wszystkich faz testowych zestawiono poniżej:
+\begin{table}[H]
 \centering
-\caption{Wyników symulacji dla wybranych kombinacji wejściowych}
-\begin{tabular}{cccc|c}
+\caption{Wyniki symulacji dla wszystkich 32 kombinacji wejściowych}
+\label{tab:symulacja}
+\setlength{\tabcolsep}{4.5pt}
+\begin{tabular}{cc|ccccc|cccc|c}
 \hline
-\(A_1\) & \(A_0\) & \(B_1\) & \(B_0\) & \(S_2\) \\
+\(A\) & \(B\) & \(A_1\) & \(A_0\) & \(B_2\) & \(B_1\) & \(B_0\) & \(S_3\) & \(S_2\) & \(S_1\) & \(S_0\) & \(A{+}B\) \\
 \hline
-0 & 1 & 1 & 1 & 1 \\
-1 & 0 & 1 & 0 & 1 \\
-1 & 0 & 1 & 1 & 1 \\
-1 & 1 & 0 & 0 & 1 \\
-1 & 1 & 0 & 1 & 1 \\
-1 & 1 & 1 & 0 & 1 \\
-1 & 1 & 1 & 1 & 1 \\
+00 & 00 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+00 & 01 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 1 \\
+00 & 02 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 2 \\
+00 & 03 & 0 & 0 & 0 & 1 & 1 & 0 & 0 & 1 & 1 & 3 \\
+00 & 04 & 0 & 0 & 1 & 0 & 0 & 0 & 1 & 0 & 0 & 4 \\
+00 & 05 & 0 & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 5 \\
+00 & 06 & 0 & 0 & 1 & 1 & 0 & 0 & 1 & 1 & 0 & 6 \\
+00 & 07 & 0 & 0 & 1 & 1 & 1 & 0 & 1 & 1 & 1 & 7 \\
+01 & 00 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 1 \\
+01 & 01 & 0 & 1 & 0 & 0 & 1 & 0 & 0 & 1 & 0 & 2 \\
+01 & 02 & 0 & 1 & 0 & 1 & 0 & 0 & 0 & 1 & 1 & 3 \\
+01 & 03 & 0 & 1 & 0 & 1 & 1 & 0 & 1 & 0 & 0 & 4 \\
+01 & 04 & 0 & 1 & 1 & 0 & 0 & 0 & 1 & 0 & 1 & 5 \\
+01 & 05 & 0 & 1 & 1 & 0 & 1 & 0 & 1 & 1 & 0 & 6 \\
+01 & 06 & 0 & 1 & 1 & 1 & 0 & 0 & 1 & 1 & 1 & 7 \\
+01 & 07 & 0 & 1 & 1 & 1 & 1 & 1 & 0 & 0 & 0 & 8 \\
+02 & 00 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 2 \\
+02 & 01 & 1 & 0 & 0 & 0 & 1 & 0 & 0 & 1 & 1 & 3 \\
+02 & 02 & 1 & 0 & 0 & 1 & 0 & 0 & 1 & 0 & 0 & 4 \\
+02 & 03 & 1 & 0 & 0 & 1 & 1 & 0 & 1 & 0 & 1 & 5 \\
+02 & 04 & 1 & 0 & 1 & 0 & 0 & 0 & 1 & 1 & 0 & 6 \\
+02 & 05 & 1 & 0 & 1 & 0 & 1 & 0 & 1 & 1 & 1 & 7 \\
+02 & 06 & 1 & 0 & 1 & 1 & 0 & 1 & 0 & 0 & 0 & 8 \\
+02 & 07 & 1 & 0 & 1 & 1 & 1 & 1 & 0 & 0 & 1 & 9 \\
+03 & 00 & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 3 \\
+03 & 01 & 1 & 1 & 0 & 0 & 1 & 0 & 1 & 0 & 0 & 4 \\
+03 & 02 & 1 & 1 & 0 & 1 & 0 & 0 & 1 & 0 & 1 & 5 \\
+03 & 03 & 1 & 1 & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 6 \\
+03 & 04 & 1 & 1 & 1 & 0 & 0 & 0 & 1 & 1 & 1 & 7 \\
+03 & 05 & 1 & 1 & 1 & 0 & 1 & 1 & 0 & 0 & 0 & 8 \\
+03 & 06 & 1 & 1 & 1 & 1 & 0 & 1 & 0 & 0 & 1 & 9 \\
+03 & 07 & 1 & 1 & 1 & 1 & 1 & 1 & 0 & 1 & 0 & 10 \\
 \hline
 \end{tabular}
 \end{table}
 
-Warto zwrócić uwagę na to, że w schemacie logicznym wejścia układu oraz wyjścia są połączone z bramkami NOR. Rysunek \ref{fig:schemat_blok5} przedstawia układ w formie hierarchicznej: wejścia są przetwarzane na poziomie młodszym, a następnie na poziomie starszym, a wynik końcowy jest sumą 3-bitową.
+Wszystkie 32 zmierzone stany wyjściowe pokrywają się z tablicą prawdy (punkt 4.2), co potwierdza poprawność zarówno przyjętych funkcji logicznych, jak i realizacji sieci NOR. W szczególności wyjście \(S_3\) przyjęło stan wysoki dokładnie dla sześciu kombinacji o sumach 8, 9 i 10, a pozostałe bity wyniku dla każdej kombinacji tworzą poprawny zapis binarny sumy \(A+B\).
 
-\begin{figure}[h]
-\centering
-\resizebox{\linewidth}{!}{\RysSchematNOR}
-\caption{Schemat logiczny układu zrealizowany wyłącznie na bramkach NOR}
-\label{fig:schemat_blok5}
-\end{figure}
+W kolejnym punkcie pracy przedstawiono podsumowanie oraz wnioski płynące z przeprowadzonego projektu.
 
-Następnie, w kolejnym punkcie pracy omówione zostaną podsumowanie i wnioski. Dalsza część pracy odnosi się bezpośrednio do przedstawionej tu struktury układu.
-
-\begin{figure}[h]
-\centering
-\resizebox{0.85\linewidth}{!}{\RysPrzebiegi}
-\caption{Przebiegi czasowe sygnałów wejściowych $A_1, A_0, B_1, B_0$ oraz wyjścia $S_2$ dla wszystkich 16~kombinacji wejściowych}
-\label{fig:przejscie_point5}
-\end{figure}
 
 \end{document}
